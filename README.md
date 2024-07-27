@@ -74,6 +74,7 @@ The application can be build using (depending your target environment):
 ```shell script
 npm run build --configuration=development
 ```
+
 ```shell script
 npm run build --configuration=production
 ```
@@ -84,7 +85,8 @@ The application is now usable using `dist/browser/index.html`.
 
 #### Code scaffolding
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+Run `ng generate component component-name` to generate a new component. You can also
+use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
 
 #### Further help
 
@@ -104,7 +106,8 @@ WARNING :
 - Any development must be done on a separate branch.
 - It is strictly forbidden to merge a branch other than `develop` on `main`.
 
-If you have more question, please have a look on [contributing file](https://gitlab.com/laucoin/global-readme/-/blob/main/CONTRIBUTING.md)
+If you have more question, please have a look
+on [contributing file](https://gitlab.com/laucoin/global-readme/-/blob/main/CONTRIBUTING.md)
 
 ## Contributors 🧑‍💻
 
@@ -113,7 +116,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <table>
   <tbody>
     <tr>
-      <td><div style='text-align: center'><a href="https://luc-aucoin.fr"><img src="https://gitlab.com/uploads/-/system/user/avatar/4656880/avatar.png?width=400" width="100px;" alt="Luc AUCOIN"/><br /><sub><b>Luc AUCOIN</b></sub></a><br /><a href="https://gitlab.com/laucoin/registry-frontend/commits?author=laucoin" title="Code">💻</a> <a href="https://gitlab.com/laucoin/registry-frontend/commits?author=laucoin" title="Documentation">📖</a> <a href="#" title="Maintenance">🚧</a> <a href="#" title="Project Management">📆</a> <a href="https://gitlab.com/laucoin/registry-frontend/commits?author=laucoin" title="Tests">⚠️</a></div></td>
+      <td><div style='text-align: center'><a href="https://laucoin.fr"><img src="https://gitlab.com/uploads/-/system/user/avatar/4656880/avatar.png?width=400" width="100px;" alt="Luc AUCOIN"/><br /><sub><b>Luc AUCOIN</b></sub></a><br /><a href="https://gitlab.com/laucoin/registry-frontend/commits?author=laucoin" title="Code">💻</a> <a href="https://gitlab.com/laucoin/registry-frontend/commits?author=laucoin" title="Documentation">📖</a> <a href="#" title="Maintenance">🚧</a> <a href="#" title="Project Management">📆</a> <a href="https://gitlab.com/laucoin/registry-frontend/commits?author=laucoin" title="Tests">⚠️</a></div></td>
     </tr>
   </tbody>
 </table>

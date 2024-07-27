@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core'
+import { Component } from '@angular/core'
 
 @Component( {
     selector: 'app-silent-auth-callback',
@@ -6,6 +6,5 @@ import { Component, OnInit } from '@angular/core'
     imports: [],
     template: '',
 } )
-export class SilentAuthCallbackComponent implements OnInit {
-    public ngOnInit (): void {}
+export class SilentAuthCallbackComponent {
 }

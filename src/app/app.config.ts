@@ -78,7 +78,7 @@ export class AppConfig {
     public static provideNgxs (): Provider | EnvironmentProviders {
         return importProvidersFrom(
             NgxsModule.forRoot( [], {
-                developmentMode: !environment.production,
+                developmentMode: !AppConfig.config.production,
             } ),
         )
 
@@ -87,7 +87,7 @@ export class AppConfig {
     public static provideNgxsReduxDevtools (): Provider | EnvironmentProviders {
         return importProvidersFrom(
             NgxsReduxDevtoolsPluginModule.forRoot( {
-                disabled: environment.production,
+                disabled: AppConfig.config.production,
             } ),
         )
     }

@@ -1,0 +1,145 @@
+# .gitlab-ci.yml
+
+stages:
+  - "🧪 Test code 🧪"
+  - "⚙️ Build image ⚙️"
+  - "🆕 Release 🆕"
+  - "🚀 Deploy 🚀"
+
+services:
+  - name: docker:dind
+    command: [ "--tls=false" ]
+
+variables:
+  DOCKER_HOST: "tcp://docker:2375"
+  DOCKER_TLS_CERTDIR: ""
+  DOCKER_DRIVER: overlay2
+
+include:
+  - project: "laucoin/gitlab-ci--commons"
+    file: delivery.gitlab-ci.yml
+
+"👨‍💻 Execute `ng lint` 👩‍💻":
+  stage: "🧪 Test code 🧪"
+  image: node:latest
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+  before_script:
+    - npm config set depth 0
+    - npm cache clean --force
+    - npm install ci --no-progress
+  script:
+    - node_modules/.bin/ng lint
+  cache:
+    paths:
+      - node_modules/
+
+"👨‍💻 Execute `ng build` 👩‍💻":
+  stage: "⚙️ Build image ⚙️"
+  image: node:latest
+  except:
+    variables:
+      - $RELEASE
+  before_script:
+    - npm config set depth 0
+    - npm cache clean --force
+    - npm install ci --no-progress
+  script:
+    - node_modules/.bin/ng build --aot
+  artifacts:
+    paths:
+      - dist/
+    expire_in: 2 hours
+  cache:
+    paths:
+      - node_modules/
+
+"👨‍💻 Execute `docker build --pull -t $IMAGE_TAG .` 👩‍💻":
+  stage: "⚙️ Build image ⚙️"
+  image: docker:latest
+  services:
+    - docker:dind
+  needs:
+    - job: "👨‍💻 Execute `ng build` 👩‍💻"
+  only:
+    refs:
+      - develop
+      - main
+  except:
+    variables:
+      - $RELEASE
+  variables:
+    IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+  before_script:
+    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+  script:
+    - docker build --pull -t $IMAGE_TAG .
+    - |-
+      if [[ $CI_COMMIT_REF_SLUG == "develop" || $CI_COMMIT_REF_SLUG == "main" ]]; then
+          docker push $IMAGE_TAG
+      fi
+
+"📝 Generate changelog 📝":
+  stage: "🆕 Release 🆕"
+  rules:
+    - if: '$RELEASE =~ /^\d+\.\d+\.\d+$/'
+  extends: .delivery-changelog
+
+"🆕 Create release 🆕":
+  stage: "🆕 Release 🆕"
+  needs:
+    - job: "📝 Generate changelog 📝"
+  image: node:latest
+  rules:
+    - if: '$RELEASE =~ /^\d+\.\d+\.\d+$/'
+  before_script:
+    - cd ..
+    - rm -rf ${CI_PROJECT_NAME}
+    - git clone https://gitlab-ci-token:${GITLAB_TOKEN}@gitlab.com/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}.git
+    - cd ${CI_PROJECT_NAME}
+    - git config --global user.email ${GITLAB_USER_EMAIL}
+    - git config --global user.name "Service account"
+  script:
+    - git checkout main
+    - git merge -Xtheirs develop
+    - npx release-it --ci ${RELEASE}
+
+.deploy:
+  stage: "🚀 Deploy 🚀"
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache openssh
+    - mkdir -p ~/.ssh
+    - eval `ssh-agent -s`
+    - echo "${SSH_KNOWN_HOSTS}" > ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+    - echo "${SSH_PRIVATE_KEY}" | base64 -d | tr -d '\r' | ssh-add -
+  script:
+    - ssh ${SSH_USER}@${SSH_HOST} "uptime"
+
+"🚀 Development 🚀":
+  environment:
+    name: development
+  needs:
+    - "👨‍💻 Execute `docker build --pull -t $IMAGE_TAG .` 👩‍💻"
+  only:
+    refs:
+      - develop
+  except:
+    variables:
+      - $RELEASE
+  extends: .deploy
+  when: manual
+
+"🚀 Production 🚀":
+  environment:
+    name: production
+  needs:
+    - "👨‍💻 Execute `docker build --pull -t $IMAGE_TAG .` 👩‍💻"
+  only:
+    - main
+  except:
+    variables:
+      - $RELEASE
+  extends: .deploy
+  when: manual
