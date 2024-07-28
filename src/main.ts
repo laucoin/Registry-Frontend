@@ -5,8 +5,10 @@ import { enableProdMode, provideZoneChangeDetection } from '@angular/core'
 import { environment } from './environments/environment'
 import { provideRouter } from '@angular/router'
 import { routes } from './app/app.routes'
-import { provideHttpClient } from '@angular/common/http'
+import { provideHttpClient, withInterceptors } from '@angular/common/http'
 import { provideAnimations } from '@angular/platform-browser/animations'
+import { MessageService } from 'primeng/api'
+import { backendHandler } from './app/shared/util-auth/handler/backend.handler'
 
 if (environment.production) {
     enableProdMode()
@@ -19,8 +21,11 @@ if (environment.production) {
         providers: [
             provideZoneChangeDetection( { eventCoalescing: true } ),
             provideAnimations(),
-            provideHttpClient(),
+            provideHttpClient(
+                withInterceptors( [ backendHandler ] ),
+            ),
             provideRouter( routes ),
+            MessageService,
             AppConfig,
             AppConfig.provideOidc(),
             AppConfig.provideNgxs(),

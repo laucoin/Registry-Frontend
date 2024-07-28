@@ -8,6 +8,5 @@ export interface EnvironmentConfigModel {
         oidcUrl: string
         realm: string
         clientId: string
-        clientSecret: string
     }
 }

@@ -172,5 +172,6 @@
       "rotateRight": "Tourner à droite",
       "rotateLeft": "Tourner à gauche"
     }
-  }
+  },
+  "loading": "Chargement en cours…"
 }
