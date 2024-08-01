@@ -1,8 +1,8 @@
 import { EnvironmentProviders, importProvidersFrom, Injectable, Provider } from '@angular/core'
-import { EnvironmentConfigModel } from './shared/util-model/config/environment-config.model'
-import { StringUtils } from './shared/utils/string.util'
-import { ExecutionContextEnum } from './shared/util-model/config/execution-context.enum'
-import { ConfigModel } from './shared/util-model/config/config.model'
+import { EnvironmentConfigModel } from './shared/model/config/environment-config.model'
+import { StringUtils } from './shared/util-tool/string.util'
+import { ExecutionContextEnum } from './shared/model/config/execution-context.enum'
+import { ConfigModel } from './shared/model/config/config.model'
 import { UserManager } from 'oidc-client-ts'
 import { NgxsReduxDevtoolsPluginModule } from '@ngxs/devtools-plugin'
 import { environment } from '../environments/environment'
@@ -12,6 +12,7 @@ import { HttpClient } from '@angular/common/http'
 import { TranslateHttpLoader } from '@ngx-translate/http-loader'
 import { EnvironmentModel } from './config/environment.model'
 import { sgdfConfig } from './config/sgdf.config'
+import { AuthState } from './shared/util-auth/auth.state'
 
 @Injectable( {
     providedIn: 'root',
@@ -57,27 +58,22 @@ export class AppConfig {
         return {
             provide: UserManager,
             useFactory: () => new UserManager( {
-                authority: AppConfig.config.security.oidcUrl,
+                authority: `${AppConfig.config.security.oidcUrl}/realms/${AppConfig.config.security.realm}`,
                 client_id: AppConfig.config.security.clientId,
-                client_secret: AppConfig.config.security.clientSecret,
                 redirect_uri: `${AppConfig.config.frontendUrl}/auth-callback`,
                 silent_redirect_uri: `${AppConfig.config.frontendUrl}/silent-auth-callback`,
                 post_logout_redirect_uri: `${AppConfig.config.frontendUrl}/home`,
                 response_type: 'code',
-                checkSessionIntervalInSeconds: 500,
-                scope: 'openid profile email roles',
-                filterProtocolClaims: true,
+                scope: 'openid profile email',
                 loadUserInfo: false,
                 automaticSilentRenew: true,
-                accessTokenExpiringNotificationTimeInSeconds: 14160,
-                includeIdTokenInSilentRenew: true,
             } ),
         }
     }
 
     public static provideNgxs (): Provider | EnvironmentProviders {
         return importProvidersFrom(
-            NgxsModule.forRoot( [], {
+            NgxsModule.forRoot( [ AuthState ], {
                 developmentMode: !AppConfig.config.production,
             } ),
         )
