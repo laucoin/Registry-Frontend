@@ -1,13 +1,19 @@
+import { AsyncPipe, DOCUMENT } from '@angular/common'
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core'
 import { RouterOutlet } from '@angular/router'
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
-import { ConfirmationService, MessageService, PrimeNGConfig, Translation } from 'primeng/api'
-import { AppConfig } from './app.config'
-import { Subscription } from 'rxjs'
-import { ToastModule } from 'primeng/toast'
-import { SideBarComponent } from './shell/side-bar/side-bar.component'
+import { ConfirmationService, Message, MessageService, PrimeNGConfig, Translation } from 'primeng/api'
+import { BlockUIModule } from 'primeng/blockui'
 import { ConfirmDialogModule } from 'primeng/confirmdialog'
-import { DOCUMENT } from '@angular/common'
+import { ProgressSpinnerModule } from 'primeng/progressspinner'
+import { ToastModule } from 'primeng/toast'
+import { fromEvent, map, merge, Observable, of, Subscription } from 'rxjs'
+import { AppConfig } from './app.config'
+import { RegistryFacade } from './shared/util-common/state/registry.facade'
+import { MessageComponent } from './shared/util-ui/message/message.component'
+import { SideBarComponent } from './shell/side-bar/side-bar.component'
+import { breakPoint } from './shared/util-tool/util/breakpoint.const'
+import { GenericUtil } from './shared/util-tool/util/generic.util'
 
 @Component( {
     selector: 'app-root',
@@ -18,37 +24,54 @@ import { DOCUMENT } from '@angular/common'
         SideBarComponent,
         ToastModule,
         RouterOutlet,
+        BlockUIModule,
+        AsyncPipe,
+        ProgressSpinnerModule,
+        MessageComponent,
     ],
     providers: [ ConfirmationService, MessageService ],
-    template: '<main class="main">' +
-              '    <p-confirmDialog />' +
-              '    <app-side-bar>' +
-              '        <p-toast />' +
-              '        <router-outlet />' +
-              '    </app-side-bar>' +
-              '</main>',
+    templateUrl: './app.component.html',
+    styleUrl: './app.component.scss',
 } )
 export class AppComponent implements OnInit, OnDestroy {
-    private readonly subscriptions: Subscription = new Subscription()
-
+    protected readonly GenericUtil: typeof GenericUtil = GenericUtil
+    protected readonly loading$: Observable<boolean>
+    protected readonly error$: Observable<Message | undefined>
+    protected readonly breakPoint: object = breakPoint
     protected isLight!: boolean
+    private readonly subscriptions: Subscription = new Subscription()
     private themeElement: HTMLLinkElement | undefined
 
-    private readonly themeMediaQuery: MediaQueryList = window.matchMedia(
-        '(prefers-color-scheme: light)',
-    )
+    private readonly themeMediaQuery: MediaQueryList = window.matchMedia( '(prefers-color-scheme: light)' )
 
     public constructor (
-        @Inject( DOCUMENT )
-        private readonly document: Document,
+        @Inject( DOCUMENT ) private readonly document: Document,
         private readonly translateService: TranslateService,
         private readonly primeConfig: PrimeNGConfig,
-    ) { }
+        private readonly notifyService: MessageService,
+        private readonly registryFacade: RegistryFacade,
+    ) {
+        this.loading$ = this.registryFacade.globalLoading
+        this.error$ = this.registryFacade.globalError
+    }
 
     public ngOnInit (): void {
         this.initTheme()
         this.listenThemeChange()
+
         this.initTranslation()
+
+        this.handleNetwork()
+
+        this.handleNotification()
+    }
+
+    public ngOnDestroy (): void {
+        this.subscriptions.unsubscribe()
+    }
+
+    protected signOut (): void {
+        this.registryFacade.signOut()
     }
 
     private initTheme (): void {
@@ -57,8 +80,9 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     private listenThemeChange (): void {
-        this.themeMediaQuery.addEventListener( 'change', (e: MediaQueryListEvent): void =>
-            this.updateTheme( e.matches ),
+        this.themeMediaQuery.addEventListener(
+            'change',
+            (e: MediaQueryListEvent): void => this.updateTheme( e.matches ),
         )
     }
 
@@ -85,7 +109,18 @@ export class AppComponent implements OnInit, OnDestroy {
             .subscribe( (it: Translation) => this.primeConfig.setTranslation( it ) )
     }
 
-    public ngOnDestroy (): void {
-        this.subscriptions.unsubscribe()
+    private handleNetwork (): void {
+        this.subscriptions.add( merge( fromEvent( window, 'online' )
+            .pipe( map( (): boolean => true ) ), fromEvent( window, 'offline' )
+            .pipe( map( (): boolean => false ) ), of( navigator.onLine ) )
+            .subscribe( (online: boolean): void => this.registryFacade.updateNetwork( online ) ) )
+    }
+
+    private handleNotification (): void {
+        this.subscriptions.add( this.registryFacade.notification.subscribe( (message: Message | undefined): void => {
+            if (!message) return
+            this.notifyService.add( message )
+            this.registryFacade.ackNotification()
+        } ) )
     }
 }

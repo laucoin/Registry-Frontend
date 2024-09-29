@@ -1,0 +1,41 @@
+<app-element-card [element]='element'
+                  [actions]='actions'
+                  [showActionMenu]='showActionMenu'
+                  (action)='handleAction($event)'
+                  [layout]='layout'
+                  icon='pi pi-user'>
+    <div [class.flex-lg-row]='layout === "list"' [class.mr-6]='layout === "list"'
+         class='d-flex flex-column gap-2 justify-content-between'>
+        <div class='user-info d-flex flex-column gap-1 justify-content-center'>
+            <div>
+                <div class='pointer user-name'
+                     tabindex='1'
+                     (click)='copied()'
+                     (keydown.enter)='copied()'
+                     [cdkCopyToClipboard]='element.email'>
+                    {{ (element.firstName | titlecase) + ' ' + (element.lastName | uppercase) }}
+                </div>
+                @if (element.birthday) {
+                    <div class='d-flex align-content-center gap-1'>
+                        <i class='pi pi-gift'></i>
+                        <span>{{ element.birthday | date: ('datetime.format.date' | translate) }}</span>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class='secondary-color last-login'>
+            <i>
+                {{
+                    'datetime.last-login' | translate
+                        : {
+                            date: element.lastLogin | date: ('datetime.format.date' | translate),
+                            time: element.lastLogin | date: ('datetime.format.time' | translate),
+                        }
+                }}
+            </i>
+        </div>
+        @if (element.role) {
+            <p-tag severity='info' [value]='("user.role." + element.role) | translate' />
+        }
+    </div>
+</app-element-card>

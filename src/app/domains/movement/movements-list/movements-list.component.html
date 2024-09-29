@@ -1,0 +1,81 @@
+<app-list (updateRequired)='loadPage($event, contextEventId())'
+          [elementPage$]='elementPage$!'
+          [error$]='error$'
+          [loading$]='loading$'>
+    <ng-template appTemplate='search' [formGroup]='form' let-pageEvent>
+        <div class='search-field'>
+            <label for='search'>{{ 'filter-sort.search' | translate }}</label>
+            <input id='search'
+                   type='text'
+                   pInputText
+                   (keydown.enter)='loadPage(pageEvent, contextEventId())'
+                   [formControl]='searched' />
+        </div>
+        <div class='row'>
+            <div class='col-12 col-sm-6 col-md-12 col-lg-6 search-field'>
+                <label for='type'>{{ 'movement.type.filter-sort' | translate }}</label>
+                <p-dropdown
+                        id='type'
+                        styleClass='full-w'
+                        [options]='typeMetadata'
+                        (keydown.enter)='loadPage(pageEvent, contextEventId())'
+                        [formControl]='type'
+                        [showClear]='true'
+                        optionLabel='label'
+                        optionValue='value' />
+            </div>
+            <div class='col-12 col-sm-6 col-md-12 col-lg-6 search-field'>
+                <label for='range'>{{ 'filter-sort.date-range' | translate }}</label>
+                <p-calendar [firstDayOfWeek]='1'
+                            [formControl]='range'
+                            [readonlyInput]='true'
+                            [showTime]='true'
+                            [touchUI]='isMobile'
+                            id='range'
+                            inputId='range'
+                            selectionMode='range'
+                            styleClass='full-w' />
+            </div>
+        </div>
+        <div class='d-flex flex-wrap justify-content-center gap-3'>
+            <p-toggleButton
+                    [formControl]='onlyVisible'
+                    (keydown.enter)='loadPage(pageEvent, contextEventId())'
+                    [onLabel]='"filter-sort.only-visible.false" | translate'
+                    [offLabel]='"filter-sort.only-visible.true" | translate'
+                    onIcon='pi pi-eye-slash'
+                    offIcon='pi pi-eye'
+                    [ariaLabel]='"filter-sort.only-visible.title" | translate' />
+            <p-toggleButton
+                    [formControl]='order'
+                    (keydown.enter)='loadPage(pageEvent, contextEventId())'
+                    [onLabel]='"filter-sort.order.DESC" | translate'
+                    [offLabel]='"filter-sort.order.ASC" | translate'
+                    onIcon='pi pi-sort-alpha-down-alt'
+                    offIcon='pi pi-sort-alpha-down'
+                    [ariaLabel]='"filter-sort.order.title" | translate' />
+            <p-button (click)='loadPage(pageEvent, contextEventId())'
+                      [label]='"filter-sort.apply" | translate'
+                      [outlined]='true'
+                      [rounded]='true'
+                      icon='pi pi-search'
+                      [loading]='(loading$ | async) || (silentLoading$ | async)' />
+        </div>
+    </ng-template>
+    <ng-template appTemplate='element' let-layout='layout' let-movement>
+        <app-movement-element [element]='movement' [layout]='layout' />
+    </ng-template>
+    <ng-template appTemplate='creation'>
+        @if (hasEventAuthority(currentUser$ | async, contextEventId(), EventAuthority.REGISTRY_EVENT_MOVEMENT_C)) {
+            <p-button severity='success'
+                      [outlined]='true'
+                      [rounded]='true'
+                      [label]='isMobile ? "" : "create" | translate'
+                      icon='pi pi-plus'
+                      [routerLink]='MovementRoutesEnum.CREATE' />
+        }
+    </ng-template>
+    <ng-template appTemplate='empty'>
+        <app-message [message]='message' />
+    </ng-template>
+</app-list>

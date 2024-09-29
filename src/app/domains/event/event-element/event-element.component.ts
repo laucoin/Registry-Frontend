@@ -1,0 +1,84 @@
+import { Component, OnChanges } from '@angular/core'
+import { EventModel } from '../../../shared/util-model/model/event.model'
+import { DatePipe, NgForOf } from '@angular/common'
+import { ElementCardComponent } from '../../../shared/util-ui/element-card/element-card.component'
+import { TagModule } from 'primeng/tag'
+import { TranslateModule } from '@ngx-translate/core'
+import { GenericElementComponent } from '../../../shared/util-tool/component/generic-element.component'
+import { AppConfig } from '../../../app.config'
+import { ChipModule } from 'primeng/chip'
+import { EventActionEnum } from '../data/state/event.action'
+import { ActionModel } from '../../../shared/util-model/model/action.model'
+import { EventOptionIconPipe } from '../../../shared/util-tool/pipe/event-option-icon.pipe'
+import { DateIsPastPipe } from '../../../shared/util-tool/pipe/date-is-past.pipe'
+import { EventFacade } from '../data/state/event.facade'
+import { CurrentUserUtil } from '../../../shared/util-authentication/tool/current-user.util'
+import { EventRoutesEnum } from '../event-routes.enum'
+import { CurrentUserModel } from '../../../shared/util-model/model/current-user.model'
+
+@Component( {
+    selector: 'app-event-element',
+    standalone: true,
+    imports: [
+        ElementCardComponent,
+        TagModule,
+        TranslateModule,
+        DatePipe,
+        NgForOf,
+        ChipModule,
+        DateIsPastPipe,
+        EventOptionIconPipe,
+    ],
+    templateUrl: './event-element.component.html',
+    styleUrl: './event-element.component.scss',
+} )
+export class EventElementComponent extends GenericElementComponent<EventModel, EventActionEnum> implements OnChanges {
+    public constructor (private readonly facade: EventFacade) {super()}
+
+    public ngOnChanges (): void {
+        this.defineActions()
+    }
+
+    private defineActions (): void {
+        const currentUser: CurrentUserModel = this.registryFacade.actualCurrentUser!
+        this.actions = AppConfig
+            .config.event.action
+            .filter( (action: ActionModel<EventActionEnum>): boolean => this.leaveNecessaryDisableOrEnable( action ) )
+            .map( (action: ActionModel<EventActionEnum>): ActionModel<EventActionEnum> => ({
+                    ...action,
+                    disabled: CurrentUserUtil.isFeasible(
+                        currentUser,
+                        this.element,
+                        action,
+                    ) ? !((action.disabled && !this.element.visible) || (!action.disabled && this.element.visible)) : true,
+                }),
+            )
+    }
+
+    private leaveNecessaryDisableOrEnable (action: ActionModel<EventActionEnum>): boolean {
+        return (action.id !== EventActionEnum.ENABLE_EVENT && this.element.visible)
+               || (action.id !== EventActionEnum.DISABLE_EVENT && !this.element.visible)
+    }
+
+    protected handleAction (action: EventActionEnum): void {
+        switch (action) {
+            case EventActionEnum.UPDATE_EVENT:
+                this.router.navigate(
+                    [ EventRoutesEnum.EDIT.replace( ':id', this.element.id ) ],
+                    { relativeTo: this.route },
+                ).catch( console.error )
+                break
+            case EventActionEnum.DISABLE_EVENT:
+                this.facade.disableElement( this.element.id )
+                break
+            case EventActionEnum.ENABLE_EVENT:
+                this.facade.enableElement( this.element.id )
+                break
+            case EventActionEnum.DELETE_EVENT:
+                this.facade.deleteElement( this.element )
+                break
+            default:
+                console.warn( this.translateService.instant( 'warning.message.invalid-action' ) )
+        }
+    }
+}

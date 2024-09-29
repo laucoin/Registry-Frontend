@@ -43,6 +43,15 @@ body {
     padding: var(--min-spacer);
 }
 
+.search-field {
+    display:        flex;
+    flex-direction: column;
+
+    label {
+        margin-bottom: calc(var(--min-spacer) / 2);
+    }
+}
+
 .field {
     display:        flex;
     flex-direction: column;
@@ -63,62 +72,6 @@ body {
 
 .p-panel.p-panel-toggleable .p-panel-header {
     padding: 0;
-}
-
-.top-basic-margin {
-    margin-top: var(--basic-spacer);
-}
-
-.bottom-basic-margin {
-    margin-bottom: var(--basic-spacer);
-}
-
-.left-basic-margin {
-    margin-left: var(--basic-spacer);
-}
-
-.right-basic-margin {
-    margin-right: var(--basic-spacer);
-}
-
-.vertical-basic-margin {
-    margin: var(--basic-spacer) 0;
-}
-
-.horizontal-basic-margin {
-    margin: 0 var(--basic-spacer);
-}
-
-.basic-margin {
-    margin: var(--basic-spacer);
-}
-
-.top-min-margin {
-    margin-top: var(--min-spacer);
-}
-
-.bottom-min-margin {
-    margin-bottom: var(--min-spacer);
-}
-
-.left-min-margin {
-    margin-left: var(--min-spacer);
-}
-
-.right-min-margin {
-    margin-right: var(--min-spacer);
-}
-
-.vertical-min-margin {
-    margin: var(--min-spacer) 0;
-}
-
-.horizontal-min-margin {
-    margin: 0 var(--min-spacer);
-}
-
-.min-margin {
-    margin: var(--min-spacer);
 }
 
 .multiple-min-margin {
@@ -246,4 +199,14 @@ p-panel .p-panel-content {
     .center-on-mobile {
         text-align: center;
     }
+}
+
+a,
+a:hover,
+a:focus,
+a:active,
+a:visited,
+a:link {
+    text-decoration: none;
+    color:           white;
 }

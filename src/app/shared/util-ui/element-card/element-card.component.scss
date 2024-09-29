@@ -1,0 +1,29 @@
+@import '../../../../responsive';
+
+::ng-deep {
+    .non-visible {
+        background: var(--surgace-c);
+    }
+
+    .p-card {
+        height: 100%;
+    }
+
+    .p-menu {
+        border-left:  none;
+        border-right: none;
+        border-top:   none;
+        padding:      0;
+        width:        100%;
+    }
+}
+
+.element-actions-container {
+    position: relative;
+}
+
+.option-button {
+    position: absolute;
+    right:    var(--min-spacer);
+    top:      var(--min-spacer);
+}

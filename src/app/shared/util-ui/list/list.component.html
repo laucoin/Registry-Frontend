@@ -1,0 +1,93 @@
+@if (error$ | async) {
+    @if (GenericUtil.nonNull(getTemplate('error'))) {
+        <ng-container [ngTemplateOutlet]='getTemplate("error")' />
+    } @else {
+        <app-message [message]='(error$ | async)!' />
+    }
+} @else {
+    <p-dataView #data
+                [value]='(elementPage$ | async)?.content'
+                [paginator]='true'
+                [layout]='layout'
+                [lazy]='true'
+                [alwaysShowPaginator]='false'
+                [rows]='20'
+                [totalRecords]='(elementPage$ | async)?.totalElements'
+                (onPage)='updateData($event)'>
+        <ng-template pTemplate='header'>
+            @if (elementPage$ | async) {
+                <div class='ml-2 mr-2'>
+                    <div class='row gap-2'>
+                        <div class='col-12 order-1 order-sm-2 d-flex align-items-center justify-content-between'>
+                            <i class='secondary-color last-refresh'>
+                                {{
+                                    'datetime.last-refresh' | translate
+                                        : {
+                                            date:
+                                                (elementPage$ | async)?.lastRefresh | date: ('datetime.format.date' | translate),
+                                            time:
+                                                (elementPage$ | async)?.lastRefresh | date: ('datetime.format.time' | translate),
+                                        }
+                                }}
+                            </i>
+                            <div class='ml-2 d-flex gap-1'>
+                                <ng-container [ngTemplateOutlet]='getTemplate("creation")' />
+                                <p-toggleButton
+                                        (onChange)='updateLayout($event.checked ?? false)'
+                                        offIcon='pi pi-th-large'
+                                        onIcon='pi pi-list' />
+                            </div>
+                        </div>
+                        @if (GenericUtil.nonNull(getTemplate('search'))) {
+                            <div class='col-12 order-2 order-sm-1 mt-1'>
+                                <p-accordion>
+                                    <p-accordionTab [header]='"filter-sort.title" | translate'
+                                                    iconPos='end'
+                                                    [selected]='!isTinyScreen()'>
+                                        <ng-container [ngTemplateOutlet]='getTemplate("search")'
+                                                      [ngTemplateOutletContext]='{ $implicit: pageEvent() }' />
+                                    </p-accordionTab>
+                                </p-accordion>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </ng-template>
+        <ng-template let-elements pTemplate='list'>
+            <div class='layout list m-1'>
+                @if (loading$ | async) {
+                    <p-card *ngFor='let i of counterArray(6)'>
+                        <app-element-skeleton [withIcon]='true' layout='list' />
+                    </p-card>
+                } @else {
+                    <div *ngFor='let element of elements'>
+                        <ng-container [ngTemplateOutlet]='getTemplate("element")'
+                                      [ngTemplateOutletContext]='{ $implicit: element, layout: "list" }' />
+                    </div>
+                }
+            </div>
+        </ng-template>
+        <ng-template let-elements pTemplate='grid'>
+            <div class='layout grid m-1'>
+                @if (loading$ | async) {
+                    <p-card *ngFor='let i of counterArray(6)'>
+                        <app-element-skeleton [withIcon]='true' layout='grid' />
+                    </p-card>
+                } @else {
+                    <div *ngFor='let element of elements'>
+                        <ng-container [ngTemplateOutlet]='getTemplate("element")'
+                                      [ngTemplateOutletContext]='{ $implicit: element, layout: "grid" }' />
+                    </div>
+                }
+            </div>
+        </ng-template>
+        @if (getTemplate('empty')) {
+            <ng-template pTemplate='empty'>
+                @if ((loading$ | async) === false) {
+                    <ng-container [ngTemplateOutlet]='getTemplate("empty")' />
+                }
+            </ng-template>
+        }
+    </p-dataView>
+}

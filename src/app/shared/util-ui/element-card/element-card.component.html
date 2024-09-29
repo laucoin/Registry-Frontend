@@ -1,0 +1,99 @@
+<p-card [styleClass]='element.visible ? "" : "non-visible"'>
+    <div class='element-actions-container'>
+        @if (loading) {
+            <app-element-skeleton [withIcon]='!!icon' [layout]='layout' />
+        } @else {
+            <div class='d-flex align-items-center' [class.flex-column]='layout === "grid"'>
+                @if (icon) {
+                    <div class='ml-2 mr-2'>
+                        <p-avatar [icon]='icon' size='large' shape='circle' />
+                    </div>
+                }
+                <div class='full-w'
+                     [class.mt-2]='layout === "grid"'
+                     [class.text-center]='layout === "grid"'>
+                    <ng-content />
+                </div>
+            </div>
+            @if ((actions.length > 0 || element.creation || element.lastEdition) && showActionMenu) {
+                <div class='option-button'>
+                    <p-overlayPanel #menu appendTo='body'>
+                        @if ((items$ | async)!.length > 0) {
+                            <p-menu (click)='menu.toggle($event)' [model]='(items$ | async) ?? []'>
+                                <ng-template let-item pTemplate='item'>
+                                    <a class='p-menuitem-link flex justify-content-between align-items-center p-3'>
+                                        <div>
+                                            <span [class]='item.icon'></span>&nbsp;
+                                            <span>{{ item.label | translate }}</span>
+                                        </div>
+                                    </a>
+                                </ng-template>
+                            </p-menu>
+                        }
+                        <div class='m-1 secondary-color'>
+                            @if (element.creation) {
+                                <small>{{ buildHistoryItem(element.creation, true) }}</small>
+                            }
+                            @if (element.creation && element.lastEdition) {
+                                <br />
+                            }
+                            @if (element.lastEdition) {
+                                <small>{{ buildHistoryItem(element.lastEdition, false) }}</small>
+                            }
+                        </div>
+                    </p-overlayPanel>
+                    <p-button
+                            [ariaLabel]='"menu.options" | translate'
+                            (click)='$event.stopPropagation(); menu.toggle($event)'
+                            [rounded]='true'
+                            [text]='true'
+                            icon='pi pi-ellipsis-v' />
+                </div>
+            }
+        }
+    </div>
+</p-card>
+
+<p-dialog
+        [breakpoints]='breakpoint'
+        [header]='(dialogContent?.confirmation?.header ?? "") | translate'
+        [(visible)]='showDialog'
+        [formGroup]='form'
+        [modal]='true'>
+    <div class='mb-3'>
+        {{ (dialogContent?.confirmation?.message ?? '') | translate: { element: element } }}
+    </div>
+    @if (dialogContent?.confirmation?.confirmProperty) {
+        <div class='field'>
+            <label for='confirmation-name'>{{
+                    'confirmation.info' | translate: {
+                        name:
+                            propertyValue(dialogContent?.confirmation?.confirmProperty)
+                    }
+                }}</label>
+            <input [formControl]='confirmationName'
+                   [placeholder]='"confirmation.info" | translate: { name: propertyValue(dialogContent?.confirmation?.confirmProperty) }'
+                   (keydown.enter)='confirmAction(dialogContent)'
+                   id='confirmation-name'
+                   pInputText
+                   type='text' />
+            <app-form-field-error [control]='confirmationName'
+                                  [example]='"confirmation.info" | translate: { name: propertyValue(dialogContent?.confirmation?.confirmProperty) }'
+                                  [label]='"confirmation.label" | translate' />
+        </div>
+    }
+    <ng-template pTemplate='footer'>
+        <p-button
+                [label]='"confirmation.cancel" | translate'
+                [text]='true'
+                [rounded]='true'
+                [severity]='dialogContent?.confirmation?.rejectSeverity'
+                (click)='cancelAction()' />
+        <p-button
+                [label]='"confirmation.confirm" | translate'
+                [rounded]='true'
+                [outlined]='true'
+                [severity]='dialogContent?.confirmation?.acceptSeverity'
+                (click)='confirmAction(dialogContent)' />
+    </ng-template>
+</p-dialog>

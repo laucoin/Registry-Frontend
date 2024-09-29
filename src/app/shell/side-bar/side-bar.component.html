@@ -1,2 +1,89 @@
-<p>side-bar works!</p>
-<p-calendar />
+<div *ngIf='currentUser$ | async as currentUser'>
+    <p-sidebar [(visible)]='isSidebarOpen'
+               styleClass='torn-paper'>
+        <ng-template pTemplate='header'>
+            <a (click)='closeMenuOnTinyScreen()'
+               [tabIndex]='-1'
+               (keydown.enter)='closeMenuOnTinyScreen()'
+               [routerLink]='homeMenuItem.route.toString()'
+               [attr.href]='homeMenuItem.route.toString()'>
+                <img
+                        [alt]="'menu.home' | translate"
+                        [ngSrc]='"img/" + organization + "/logo.svg"'
+                        class='pointer'
+                        height='105'
+                        priority
+                        tabindex='0'
+                        width='248' />
+            </a>
+        </ng-template>
+        <ng-template pTemplate='content'>
+            <menu>
+                <li>
+                    <a (click)='closeMenuOnTinyScreen()'
+                       (keydown.enter)='closeMenuOnTinyScreen()'
+                       [class.router-active-card]='isRouteActive(homeMenuItem.route)'
+                       class='menu-item card clickable-card pointer'
+                       tabindex='0'
+                       [routerLink]='homeMenuItem.route.toString()' [attr.href]='homeMenuItem.route.toString()'>
+                        <i [class]='homeMenuItem.icon'></i>
+                        <span>{{ homeMenuItem.name | translate | truncate: maxMenuTextLength }}</span>
+                    </a>
+                </li>
+                @for (link of (menuItems$ | async); track link; let index = $index) {
+                    <li>
+                        <a [tabindex]='index + 1' (click)='closeMenuOnTinyScreen()'
+                           (keydown.enter)='closeMenuOnTinyScreen()'
+                           [class.router-active-card]='isRouteActive(link.route)'
+                           [routerLink]='buildUri(link.route.toString())'
+                           [attr.href]='buildUri(link.route.toString())'
+                           class='menu-item card clickable-card pointer'>
+                            <i [class]='link.icon'></i>
+                            <span>{{ link.name | translate | truncate: maxMenuTextLength }}</span>
+                        </a>
+                    </li>
+                }
+            </menu>
+        </ng-template>
+        <ng-template pTemplate='footer'>
+            <hr class='mb-3 mx-3' />
+            @if (settingsMenuItem(currentUser); as settingMenu) {
+                <a [tabindex]='((menuItems$ | async)?.length ?? 0) + 1' (click)='closeMenuOnTinyScreen()'
+                   (keydown.enter)='closeMenuOnTinyScreen()'
+                   [class.router-active-card]='isRouteActive(settingMenu.route)'
+                   [routerLink]='settingMenu.route.toString()'
+                   class='menu-item card clickable-card pointer'>
+                    <i [class]='settingMenu.icon'></i>
+                    <span>{{ settingMenu.name | translate | truncate: maxMenuTextLength }}</span>
+                </a>
+            }
+            <div class='center mt-2'>
+                <p-button
+                        (click)='signOut()'
+                        [label]="'menu.sign-out' | translate"
+                        [outlined]='true'
+                        [rounded]='true'
+                        icon='pi pi-sign-out'
+                        severity='secondary' />
+            </div>
+        </ng-template>
+    </p-sidebar>
+
+
+    <div [class.container]='!isSidebarOpen || isTinyScreen()'
+         [class.menu-container]='isSidebarOpen && !isTinyScreen()'
+         [class.wide-screen-menu-margin]='isSidebarOpen && !isTinyScreen()'
+         class='menu-padding'>
+        @if (!isSidebarOpen) {
+            <div class='menu-button'>
+                <p-button
+                        [ariaLabel]='"menu.toggle" | translate'
+                        (click)='isSidebarOpen = !isSidebarOpen'
+                        [rounded]='true'
+                        icon='pi pi-bars'
+                        severity='secondary' />
+            </div>
+        }
+        <ng-content />
+    </div>
+</div>

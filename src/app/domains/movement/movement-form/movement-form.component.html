@@ -1,0 +1,79 @@
+<app-form [form]='form' [loading]='(loading$ | async) ?? false'>
+    @if (movement()) {
+        <h2>
+            {{
+                'movement.form.title.edit.' + movement()?.type | translate: {
+                    date: movement()?.dateTime | date: ('datetime.format.date' | translate),
+                    time: movement()?.dateTime | date: ('datetime.format.time' | translate),
+                }
+            }}
+        </h2>
+    } @else {
+        <h2>{{ 'movement.form.title.create' | translate }}</h2>
+    }
+    <p-card>
+        <div class='field'>
+            <label for='datetime'>{{ 'movement.form.datetime' | translate }}</label>
+            <p-calendar [firstDayOfWeek]='1'
+                        [formControl]='dateTime'
+                        [placeholder]='"movement.example.datetime" | translate: {
+                            date: now | date: ("datetime.format.date" | translate),
+                            time: now | date: ("datetime.format.time" | translate),
+                        }'
+                        [readonlyInput]='true'
+                        [touchUI]='isMobile'
+                        [showTime]='true'
+                        [showClear]='true'
+                        id='datetime'
+                        styleClass='full-w' />
+            <app-form-field-error [control]='dateTime'
+                                  [example]='"movement.example.datetime" | translate: {
+                                      date: now | date: ("datetime.format.date" | translate),
+                                      time: now | date: ("datetime.format.time" | translate),
+                                  }'
+                                  [label]='"movement.form.datetime" | translate' />
+        </div>
+        <div class='field'>
+            <label for='type'>{{ 'movement.form.type' | translate }}</label>
+            <p-dropdown
+                    id='type'
+                    styleClass='full-w'
+                    [options]='typeMetadata'
+                    [placeholder]='"movement.example.type" | translate'
+                    [formControl]='type'
+                    optionLabel='label'
+                    optionValue='value' />
+            <app-form-field-error [control]='type'
+                                  [label]='"movement.form.type" | translate' />
+        </div>
+        <div class='field'>
+            <label for='content'>{{ 'movement.form.content' | translate }}</label>
+            <app-movement-content-field id='content' [formArray]='content' />
+            <app-form-field-error [control]='content'
+                                  [label]='"movement.form.content" | translate' />
+        </div>
+        <div class='flex pt-4 gap-2 justify-content-center'>
+            <p-button
+                    (click)='navigateToRedirectUri()'
+                    [label]='"cancel" | translate'
+                    [outlined]='true'
+                    [rounded]='true' />
+
+            @if (movement()) {
+                <p-button
+                        (click)='submit()'
+                        [label]='"edit" | translate'
+                        [rounded]='true'
+                        icon='pi pi-pen-to-square'
+                        severity='success' />
+            } @else {
+                <p-button
+                        (click)='submit()'
+                        [label]='"create" | translate'
+                        [rounded]='true'
+                        icon='pi pi-plus'
+                        severity='success' />
+            }
+        </div>
+    </p-card>
+</app-form>

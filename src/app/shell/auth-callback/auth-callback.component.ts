@@ -1,20 +1,17 @@
 import { Component, OnInit } from '@angular/core'
-import { Store } from '@ngxs/store'
-import { GetTokenFromAuthorizationCode } from '../../shared/util-auth/auth.action'
-import { LoaderComponent } from '../../shared/util-ui/loader/loader.component'
+import { Router } from '@angular/router'
+import { SessionStorageUtils } from '../../shared/util-tool/util/session-storage.util'
+import { REDIRECT_URI } from '../../shared/util-tool/util/request.util'
 
 @Component( {
     selector: 'app-auth-callback',
     standalone: true,
-    imports: [
-        LoaderComponent,
-    ],
-    template: '<app-loader/>',
+    template: '',
 } )
 export class AuthCallbackComponent implements OnInit {
-    public constructor (private readonly store: Store) {}
+    public constructor (private readonly router: Router) {}
 
     public ngOnInit (): void {
-        this.store.dispatch( GetTokenFromAuthorizationCode )
+        this.router.navigateByUrl( SessionStorageUtils.get( REDIRECT_URI )?.toString() ?? '' ).then()
     }
 }

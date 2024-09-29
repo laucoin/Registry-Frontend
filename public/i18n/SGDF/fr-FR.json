@@ -1,0 +1,810 @@
+{
+    "primeng": {
+        "startsWith": "Commence par",
+        "contains": "Contient",
+        "notContains": "Ne contient pas",
+        "endsWith": "Se termine par",
+        "equals": "Égal",
+        "notEquals": "Non égal",
+        "noFilter": "Pas de filtre",
+        "lt": "Plus petit que",
+        "lte": "Plus petit ou égal à",
+        "gt": "Plus grand que",
+        "gte": "Plus grand ou égal à",
+        "dateIs": "Est",
+        "dateIsNot": "N'est pas",
+        "dateBefore": "Avant",
+        "dateAfter": "Après",
+        "clear": "Effacer",
+        "reset-form": "Réinitialiser la recherche",
+        "apply": "Appliquer",
+        "matchAll": "Correspond à tous",
+        "matchAny": "Correspond",
+        "addRule": "Ajouter une règle",
+        "removeRule": "Supprimer une règle",
+        "accept": "Oui",
+        "reject": "Non",
+        "choose": "Choisir",
+        "upload": "Téléverser",
+        "cancel": "Annuler",
+        "completed": "Terminé",
+        "pending": "En attente",
+        "fileSizeTypes": [
+            "o",
+            "Ko",
+            "Mo",
+            "Go",
+            "To"
+        ],
+        "dayNames": [
+            "dimanche",
+            "lundi",
+            "mardi",
+            "mercredi",
+            "jeudi",
+            "vendredi",
+            "samedi"
+        ],
+        "dayNamesShort": [
+            "dim",
+            "lun",
+            "mar",
+            "mer",
+            "jeu",
+            "ven",
+            "sam"
+        ],
+        "dayNamesMin": [
+            "di",
+            "lu",
+            "ma",
+            "me",
+            "je",
+            "ve",
+            "sa"
+        ],
+        "monthNames": [
+            "janvier",
+            "février",
+            "mars",
+            "avril",
+            "mai",
+            "juin",
+            "juillet",
+            "août",
+            "septembre",
+            "octobre",
+            "novembre",
+            "décembre"
+        ],
+        "monthNamesShort": [
+            "jan",
+            "fev",
+            "mar",
+            "avr",
+            "mai",
+            "jui",
+            "jui",
+            "aoû",
+            "sep",
+            "oct",
+            "nov",
+            "déc"
+        ],
+        "chooseYear": "Choisir une année",
+        "chooseMonth": "Choisir un mois",
+        "chooseDate": "Choisir une date",
+        "prevDecade": "Décennie précédente",
+        "nextDecade": "Décennie suivante",
+        "prevYear": "Année précédente",
+        "nextYear": "Année suivante",
+        "prevMonth": "Mois précédent",
+        "nextMonth": "Mois suivant",
+        "prevHour": "Heure précédente",
+        "nextHour": "Heure suivante",
+        "prevMinute": "Minute précédente",
+        "nextMinute": "Minute suivante",
+        "prevSecond": "Seconde précédente",
+        "nextSecond": "Seconde suivante",
+        "am": "am",
+        "pm": "pm",
+        "today": "Aujourd'hui",
+        "weekHeader": "Sem",
+        "firstDayOfWeek": "0",
+        "dateFormat": "dd/mm/yy",
+        "weak": "Faible",
+        "medium": "Moyen",
+        "strong": "Fort",
+        "passwordPrompt": "Entrez un mot de passe",
+        "emptyFilterMessage": "Aucun résultat trouvé",
+        "searchMessage": "{0} résultats disponibles",
+        "selectionMessage": "{0} éléments sélectionnés",
+        "emptySelectionMessage": "Aucun élément sélectionné",
+        "emptySearchMessage": "Aucun résultat trouvé",
+        "emptyMessage": "Aucune option disponible",
+        "aria": {
+            "trueLabel": "Vrai",
+            "falseLabel": "Faux",
+            "nullLabel": "Non sélectionné",
+            "star": "1 étoile",
+            "stars": "{star} étoiles",
+            "selectAll": "Tous les éléments sélectionnés",
+            "unselectAll": "Tous les éléments non sélectionnés",
+            "close": "Fermer",
+            "previous": "Précédent",
+            "next": "Suivant",
+            "navigation": "Navigation",
+            "scrollTop": "Haut de page",
+            "moveTop": "Déplacer en haut",
+            "moveUp": "Monter",
+            "moveDown": "Descendre",
+            "moveBottom": "Déplacer en bas",
+            "moveToTarget": "Déplacer vers la cible",
+            "moveToSource": "Retourner à la source",
+            "moveAllToTarget": "Tout déplacer vers la cible",
+            "moveAllToSource": "Tout retourner à la source",
+            "pageLabel": "{page}",
+            "firstPageLabel": "Première page",
+            "lastPageLabel": "Dernière page",
+            "nextPageLabel": "Page suivante",
+            "prevPageLabel": "Page précédente",
+            "rowsPerPageLabel": "Lignes par page",
+            "jumpToPageDropdownLabel": "Menu déroulant Aller à la page",
+            "jumpToPageInputLabel": "Entrée Aller à la page",
+            "selectRow": "Ligne sélectionnée",
+            "unselectRow": "Ligne non sélectionnée",
+            "expandRow": "Ligne étendue",
+            "collapseRow": "Ligne réduite",
+            "showFilterMenu": "Afficher le menu de filtre",
+            "hideFilterMenu": "Masquer le menu de filtre",
+            "filterOperator": "Opérateur de filtre",
+            "filterConstraint": "Contrainte de filtre",
+            "editRow": "Modifier la ligne",
+            "saveEdit": "Sauvegarder la modification",
+            "cancelEdit": "Annuler la modification",
+            "listView": "Vue liste",
+            "gridView": "Vue grille",
+            "slide": "Diapositive",
+            "slideNumber": "{slideNumber}",
+            "zoomImage": "Zoomer sur l'image",
+            "zoomIn": "Agrandir",
+            "zoomOut": "Réduire",
+            "rotateRight": "Tourner à droite",
+            "rotateLeft": "Tourner à gauche"
+        }
+    },
+    "info": {
+        "message": {
+            "email-copied": "L'adresse email de {{element.firstName}} {{element.lastName}} copiée."
+        }
+    },
+    "error": {
+        "title": {
+            "undefined": "🤔 Erreur inconnue",
+            "400": "🙃 Demande éronnée",
+            "401": "😰 Tu n'est pas connecté à l'application",
+            "403": "👮 Droits insuffisants",
+            "404": "🧐 Ressource non trouvée",
+            "408": "⌚ Délai d'attente dépassé",
+            "409": "🤯 Conflit de donnée",
+            "413": "🫣 Demande trop volumineuse",
+            "414": "🫣 URI trop longue",
+            "415": "😇 Type de média non supporté",
+            "420": "🚣 Connexion trop faible",
+            "422": "😅 Données non-traitables",
+            "424": "😱 Erreur d'une dépendance externe",
+            "429": "🤿 Trop de demandes",
+            "500": "😶 ‍Erreur serveur",
+            "501": "🧪 Fonctionnalité non implémentée",
+            "503": "🥴 Serveur indisponible"
+        },
+        "message": {
+            "undefined": "Une erreur inconnue est survenue. Si tu veux bien m'aider à la résoudre, contactes {{maintainerEmail}} et expliques moi comment tu es arrivé dans ce cas.",
+            "400": "Les paramètres de la demande semblent incorrects. Vérifies-les et réessaies. Si le problème persiste, contactes {{maintainerEmail}}.",
+            "401": "Tu peux essayer de rafraîchir la page ou de te reconnecter. Si le problème persiste, contactes {{maintainerEmail}}.",
+            "403": "Tu n'as pas les droits nécessaires pour accéder à cette ressource. Si tu penses que c'est une erreur, contactes {{maintainerEmail}}.",
+            "404": "La ressource demandée n'a pas été trouvée, a été supprimée ou déplacée.",
+            "408": "Vérifies ta connexion internet. Si elle est correcte c'est que le serveur est probablement surchargé. Réessaies plus tard. Si le problème persiste, contactes {{maintainerEmail}}.",
+            "409": "Problème de donnée. Vérifies les informations que tu as entrées et réessaies. Si le problème persiste, contactes {{maintainerEmail}}.",
+            "413": "Ah oui ! Ça fait beaucoup de données d'un coup ça. Réduis un peu la taille de ta demande et réessaies (si ta requête contient des fichiers, tu peux essayer de réduire leur taille). Si le problème persiste, contactes {{maintainerEmail}}.",
+            "414": "C'est un peu long comme adresse ça. Vérifies que tu n'as pas fait d'erreur et réessaies. Si le problème persiste, contactes {{maintainerEmail}}.",
+            "415": "Tu as encore tout cassé avec tes types de médias bizarres. C'est plus la pré-histoire tu sais? Et normalement, tu devrais passer par le front pas par l'API. Si le problème persiste, contactes {{maintainerEmail}}.",
+            "420": "Vérifies ta connexion internet. Si tu es utilise le Wi-Fi, essaies de te rapprocher de la box. Si tu es en 4G, essaies de te rapprocher d'une fenêtre. Si tu es en 3G, essaies de te rapprocher d'un autre siècle. Si le problème persiste, contactes {{maintainerEmail}}.",
+            "422": "Les paramètres de la demande semblent corrects mais ne sont pas exploitable dans l'état. Vérifies-les et réessaies. Si le problème persiste, contactes {{maintainerEmail}}.",
+            "424": "Promis c'est pas ma faute. C'est un problème avec une dépendance externe. Si tu veux bien me donner un coup de main pour la débugger, contactes {{maintainerEmail}}.",
+            "429": "Pas trop d'un coup. Tu as envoyé trop de demandes en peu de temps. Attends un peu et réessaies. Si le problème persiste, contactes {{maintainerEmail}}.",
+            "500": "Un peu obscur tout ça. Il y a eu une erreur serveur. Si tu veux bien m'aider à la résoudre, contactes {{maintainerEmail}} et expliques moi comment tu es arrivé dans ce cas.",
+            "501": "Tu vas trop vite pour moi. La fonctionnalité demandée n'est pas encore implémentée. Si tu veux bien m'aider à la développer, contactes {{maintainerEmail}}.",
+            "503": "Ça sent le roussi. Le serveur est indisponible. Réessaies plus tard. Si le problème persiste, contactes {{maintainerEmail}}.",
+            "NOT_IMPLEMENTED_YET": "Tu vas trop vite pour moi. La fonctionnalité demandée n'est pas encore implémentée. Si tu veux bien m'aider à la développer, contactes {{maintainerEmail}}.",
+            "NO_PARAMETER_FOUND_FOR_SPECIFIED_NAME": "Le paramètre demandé n'a pas été trouvé.",
+            "COMPARING_WRONG_PARAMETER_TYPE": "Les deux paramètres ne sont pas comparables.",
+            "NOT_FOUND_WITH_GIVEN_IDENTIFIER": "L'élément demandé n'a pas été trouvé avec l'identifiant ({{identifier}}).",
+            "NOT_AUTHENTICATED": "Ça fonctionne moins bien si tu n'es pas connecté à l'application.",
+            "NOT_ENOUGH_PERMISSION": "C'est non ! Tu n'a pas les droits nécessaires pour effectuer cette action.",
+            "PARAMETER_TYPE_MISMATCH": "Le paramètre ({{constraint_0}}) envoyé n'est pas correct.",
+            "WRONG_AUTHENTICATION_MOD": "Erreur lors de l'authentification, essayes de te reconnecter.",
+            "UNKNOWN_ERROR": "Un peu obscur tout ça, je ne connais pas cette erreur. Si tu veux bien m'aider à la résoudre, contactes {{maintainerEmail}} et expliques moi comment tu es arrivé dans ce cas.",
+            "AUTH_EMAIL_OR_ID_NOT_FOUND_IN_TOKEN": "Erreur lors de l'authentification, il me manque des informations pour te connecter.",
+            "AUTH_BLOCKED_ACCOUNT": "Aïe ! Ton compte a été bloqué. Tu n'as plus accès à l'application.",
+            "AUTH_IMPERSONATED_ACCOUNT": "Ton compte a été annonymisé. Si tu penses que c'est une erreur, contactes {{maintainerEmail}}.",
+            "USER_ASSIGNS_ROLE_HIGHER_THAN_ITS_OWN": "Tu ne peux pas assigner un rôle supérieur au tien.",
+            "USER_UPDATE_LAST_APPLICATION_ADMINISTRATOR_ROLE": "Tu ne peux pas modifier le rôle du dernier administrateur de l'application",
+            "USER_BLOCK_LAST_APPLICATION_ADMINISTRATOR": "Tu ne peux pas bloquer le dernier administrateur de l'application",
+            "USER_BLOCK_LAST_EVENT_ADMINISTRATOR": "Tu ne peux pas bloquer le dernier administrateur d'un évènement",
+            "USER_IMPERSONATE_LAST_APPLICATION_ADMINISTRATOR": "Tu ne peux pas anonymiser le dernier administrateur de l'application",
+            "USER_IMPERSONATE_LAST_EVENT_ADMINISTRATOR": "Tu ne peux pas anonymiser le dernier administrateur d'un évènement'",
+            "USER_DELETE_LAST_APPLICATION_ADMINISTRATOR": "Tu ne peux pas supprimer le dernier administrateur de l'application",
+            "USER_DELETE_LAST_EVENT_ADMINISTRATOR": "Tu ne peux pas supprimer le dernier administrateur d'un évènement",
+            "EVENT_NAME_BLANK": "Le nom de l'évènement ne peut pas être vide.",
+            "EVENT_NAME_TOO_LONG": "Le nom de l'évènement est trop long.",
+            "EVENT_BEGIN_LATER_THAN_END_TIME": "La date de début de l'évènement doit être antérieure à la date de fin.",
+            "EVENT_OPTIONS_MISSING": "Les options de l'évènements sont incompatible (Ajoutes-en ou retires-en).",
+            "EVENT_DATE_CONFLICT_WITH_ELEMENTS": "Certains éléments déjà crée liées à cet évènement sont en conflit avec les dates de celui-ci.",
+            "EVENT_PROFILE_ROLE_BLANK": "Le rôle du profil lié à l'évènement ne peut pas être vide.",
+            "EVENT_PROFILE_START_ACCESS_LATER_THAN_END_ACCESS": "La date de début du profil lié à l'évènement doit être antérieure à la date de fin.",
+            "EVENT_PROFILE_USERS_EMPTY": "La liste des utilisateurs du profil lié à l'évènement ne peut pas être vide.",
+            "EVENT_PROFILE_STATUS_NOT_ACCEPTED_OR_REJECTED": "Status invalide pour accepter ou refuser une invitation.",
+            "EVENT_PROFILE_DELETE_LAST_EVENT_ADMINISTRATOR": "Tu ne peux pas supprimer le profil du dernier administrateur d'un évènement. Si tu veux absoluement supprimer ce profil, deux solutions : Soit tu nommes un autre administrateur, soit tu supprimes l'évènement entièrement.",
+            "EVENT_PROFILE_UPDATE_LAST_EVENT_ADMINISTRATOR": "Tu ne peux pas mettre à jour le profil du dernier administrateur d'un évènement",
+            "EVENT_PROFILE_UPDATE_ROLE_HIGHER_THAN_CURRENT_USER": "Tu ne peux pas modifier le rôle s'il est plus haut que le tien.",
+            "EVENT_PROFILE_ASSIGNS_ROLE_HIGHER_THAN_CURRENT_USER": "Tu ne peux pas assigner un rôle supérieur au tien.",
+            "EVENT_PROFILE_ALREADY_EXIST_ON_RANGE": "Un profil existe déjà sur cette période.",
+            "MOVEMENT_PARTICIPANT_NULL": "Un mouvement doit être lié à au moins un participant.",
+            "MOVEMENT_DATETIME_NULL": "La date d'un mouvement doit être définie.",
+            "MOVEMENT_DATETIME_OUT_OF_EVENT_DATE_RANGE": "La date d'un mouvement ne peut pas être daté en dehors de l'évènement.",
+            "MOVEMENT_TYPE_NULL": "Le type d'un mouvement doit être défini.",
+            "MOVEMENT_CONTENT_EMPTY": "Un mouvement doit être lié à au moins un participant.",
+            "PARTICIPANT_FIRST_NAME_BLANK": "Le prénom d'un participant ne peut pas être vide.",
+            "PARTICIPANT_FIRST_NAME_TOO_LONG": "Le prénom du participant est trop long.",
+            "PARTICIPANT_LAST_NAME_BLANK": "Le nom du participant ne peut pas être vide.",
+            "PARTICIPANT_LAST_NAME_TOO_LONG": "Le nom du participant est trop long.",
+            "PARTICIPANT_BIRTHDAY_FUTURE": "À priori, un participant ne peut pas être né dans le futur.",
+            "PARTICIPANT_START_LATER_THAN_END": "La date de début de présence d'un participant doit être antérieure à sa date de fin de présence.",
+            "PARTICIPANT_PRESENCE_DATES_OUT_OF_EVENT_DATE_RANGE": "Les dates de présence d'un participant ne peut pas être daté en dehors de l'évènement.",
+            "PARTICIPANT_IN_EVENT_ALREADY_LINKED_TO_USER": "Cet utilisateur est déjà lié à un participant de l'évènement."
+        },
+        "form": {
+            "min": {
+                "message": "La {{label}} minimum du champ est {{min}}.",
+                "message-example": "La valeur minimum du champ est {{min}} ({{example}})."
+            },
+            "max": {
+                "message": "La {{label}} maximum du champ est {{min}}.",
+                "message-example": "La valeur maximum du champ est {{min}} ({{example}})."
+            },
+            "minlenght": {
+                "message": "{{label}} doit contenir au moins {{min}} caractères.",
+                "message-example": "Le champ doit contenir au moins {{min}} caractères ({{example}})."
+            },
+            "maxlenght": {
+                "message": "{{label}} peut contenir au maximum {{max}} caractères.",
+                "message-example": "Le champ peut contenir au maximum {{max}} caractères ({{example}})."
+            },
+            "required": {
+                "message": "{{label}} est requis.",
+                "message-example": "{{label}} est requis ({{example}})."
+            },
+            "blank": {
+                "message": "{{label}} ne peut pas être vide.",
+                "message-example": "{{label}} ne peut pas être vide ({{example}})."
+            },
+            "email": {
+                "message": "{{label}} doit avoir la forme d'une adresse email.",
+                "message-example": "{{label}} doit avoir la forme d'une adresse email ({{example}})."
+            },
+            "pattern": {
+                "message": "{{label}} n'est pas au bon format.",
+                "message-example": "{{label}} n'est pas au bon format ({{example}})."
+            },
+            "eventOptionConflict": {
+                "message": "{{label}} est incorrect, pour {{for}} il manque {{require}}.",
+                "message-example": "{{label}} est incorrect, pour {{for}} il manque {{require}} ({{example}})."
+            }
+        }
+    },
+    "warning": {
+        "title": {
+            "OFFLINE": "⏳ Connexion Perdue",
+            "NO_SELECTED_PROFILE": "🔍 Aucun Profil Sélectionné",
+            "EMPTY": "🕵️‍♂️ Aucune Donnée",
+            "EMPTY_EVENT_PROFILE": "🕵️‍♂️ Aucun Profil",
+            "EMPTY_USER_EVENT_PROFILE": "🕵️‍♂️ Aucun Profil",
+            "EMPTY_USER_EVENT_INVITATION": "🕵️‍♂️ Aucune Invitation",
+            "event-profile": {
+                "create": "+ Profiles partiellements créés"
+            }
+        },
+        "message": {
+            "OFFLINE": "Vérifies ta connexion internet. Si tu es utilise le Wi-Fi, essaies de te rapprocher de la box. Si tu es en 4G, essaies de te rapprocher d'une fenêtre. Si tu es en 3G, essaies de te rapprocher d'un autre siècle.",
+            "NO_SELECTED_PROFILE": "Sélectionnes un profil lié à un évènement pour effectuer cette action.",
+            "EMPTY": "Aucune donnée n'a été trouvée.",
+            "EMPTY_EVENT_PROFILE": "Aucun profil pour ta recherche 🥺. Tu peux inviter des personnes à rejoindre l'évènement.",
+            "EMPTY_USER_EVENT_PROFILE": "Aucun profil actif 🥺. Tu peux créer un nouvel évènement. Si tu cherches à accéder à un évènement précis tu peux vérifier si tu as une invitation en attente d'acceptation.",
+            "EMPTY_USER_EVENT_INVITATION": "Aucune invitation en attente d'acceptation. Pour recevoir une invitation, il faut que les personnes en charge de l'évènement t'en envoient une.",
+            "invalid-form": "🙅‍♂️ Le formulaire n'est pas valide.",
+            "invalid-action": "🙅‍♂️ L'action choisie n'est pas prise en charge.",
+            "event-profile": {
+                "create": {
+                    "singular": "Un profile a été créé (sur les {{asked}} demandés) pour l'évènement.",
+                    "plural": "{{created}} Profiles ont été créés (sur les {{asked}} demandés) pour l'évènement."
+                }
+            }
+        }
+    },
+    "success": {
+        "title": {
+            "online": "⚡️ Connexion Rétablie",
+            "event": {
+                "create": "+ Évènement créé",
+                "edit": "✏️ Évènement modifié",
+                "disable": "🙈 Évènement désactivé",
+                "enable": "👀 Évènement réactivé",
+                "delete": "🗑️ Évènement supprimé"
+            },
+            "event-profile": {
+                "create": {
+                    "normal": {
+                        "singular": "+ Profile créé",
+                        "plural": "+ Profiles créés"
+                    },
+                    "support": "+ Profile support créé"
+                },
+                "select": "✅ Profile sélectionné",
+                "manage-acceptance": {
+                    "ACCEPTED": "✅ Invitation acceptée",
+                    "REJECTED": "✅ Invitation refusée"
+                },
+                "edit": "✏️ Profile modifié",
+                "block": "⛔️ Profile bloqué",
+                "unblock": "✅ Profile débloqué",
+                "delete": "🗑️ Profile supprimé"
+            },
+            "movement": {
+                "IN": {
+                    "create": "+ Entrée créée",
+                    "edit": "✏️ Entrée modifiée",
+                    "disable": "🙈 Entrée cachée",
+                    "enable": "👀 Entrée visible",
+                    "delete": "🗑️ Entrée supprimée"
+                },
+                "OUT": {
+                    "create": "+ Sortie créée",
+                    "edit": "✏️ Sortie modifiée",
+                    "disable": "🙈 Sortie cachée",
+                    "enable": "👀 Sortie visible",
+                    "delete": "🗑️ Sortie supprimée"
+                }
+            },
+            "participant": {
+                "create": "+ Personne participante créée",
+                "link": "✏️ Personne participante liée",
+                "edit": "✏️ Personne participante modifiée",
+                "disable": "🙈 Personne participante cachée",
+                "enable": "👀 Personne participante visible",
+                "delete": "🗑️ Personne participante supprimée"
+            },
+            "user": {
+                "edit": "✏️ Personne utilisatrice modifiée",
+                "block": "⛔️ Personne utilisatrice bloquée",
+                "unblock": "✅ Personne utilisatrice débloquée",
+                "delete": "🗑️ Personne utilisatrice supprimée"
+            }
+        },
+        "message": {
+            "online": "Ta connexion internet est de retour. Tu peux de nouveau utiliser l'application normalement.",
+            "event": {
+                "create": "L'évènement {{name}} a été créé",
+                "edit": "L'évènement {{name}} a été modifié",
+                "disable": "L'évènement {{name}} a été désactivé",
+                "enable": "L'évènement {{name}} a été réactivé",
+                "delete": "L'évènement {{name}} a été supprimé"
+            },
+            "event-profile": {
+                "create": {
+                    "normal": {
+                        "singular": "Le profile a été créé pour l'évènement.",
+                        "plural": "{{created}} Profiles ont été créés pour l'évènement."
+                    },
+                    "support": "Le profile support a été créé pour l'évènement, il est disponible jusqu'à {{end}}."
+                },
+                "manage-acceptance": {
+                    "ACCEPTED": "Tu as accepté l'invitation pour l'évènement, tu peux désormais le sélectionner.",
+                    "REJECTED": "Tu as refusé l'invitation pour l'évènement."
+                },
+                "select": "Toutes les actions que tu fais à partir de maintenant seront liées à l'évènement {{name}} tant qu'il est sélectionné.",
+                "edit": "Le profile de {{firstName}} {{lastName}} pour l'évènement {{name}} a été modifié",
+                "block": "Le profile de {{firstName}} {{lastName}} pour l'évènement {{name}} a été bloqué",
+                "unblock": "Le profile de {{firstName}} {{lastName}} pour l'évènement {{name}} a été débloqué",
+                "delete": {
+                    "someone": "Le profile de {{firstName}} {{lastName}} pour l'évènement {{name}} a été supprimé",
+                    "mine": "Ton profile pour l'évènement {{name}} a été supprimé"
+                }
+            },
+            "movement": {
+                "IN": {
+                    "create": {
+                        "singular": "L'entrée du {{date}} à {{time}} a été créée avec un participant",
+                        "plural": "L'entrée du {{date}} à {{time}} a été créée avec {{participants}} participant"
+                    },
+                    "edit": "L'entrée du {{date}} à {{time}} a été modifiée",
+                    "disable": "L'entrée du {{date}} à {{time}} a été cachée",
+                    "enable": "L'entrée du {{date}} à {{time}} est de nouveau visible",
+                    "delete": "L'entrée du {{date}} à {{time}} a été supprimée"
+                },
+                "OUT": {
+                    "create": {
+                        "singular": "La sortie du {{date}} à {{time}} a été créée avec un participant",
+                        "plural": "La sortie du {{date}} à {{time}} a été créée avec {{participants}} participant"
+                    },
+                    "edit": "La sortie du {{date}} à {{time}} a été modifiée",
+                    "disable": "La sortie du {{date}} à {{time}} a été cachée",
+                    "enable": "La sortie du {{date}} à {{time}} est de nouveau visible",
+                    "delete": "La sortie du {{date}} à {{time}} a été supprimée"
+                }
+            },
+            "participant": {
+                "create": "La personne participante {{firstName}} {{lastName}} a été créée",
+                "edit": "La personne participante {{firstName}} {{lastName}} a été modifiée",
+                "disable": "La personne participante {{firstName}} {{lastName}} a été cachée",
+                "enable": "La personne participante {{firstName}} {{lastName}} est de nouveau visible",
+                "delete": "La personne participante {{firstName}} {{lastName}} a été supprimée"
+            },
+            "user": {
+                "edit": "La personne utilisatrice {{firstName}} {{lastName}} a été modifiée",
+                "block": "La personne utilisatrice {{firstName}} {{lastName}} a été bloquée",
+                "unblock": "La personne utilisatrice {{firstName}} {{lastName}} a été débloquée",
+                "impersonate": "La personne utilisatrice {{firstName}} {{lastName}} a été anonymisée",
+                "delete": "La personne utilisatrice {{firstName}} {{lastName}} a été supprimée"
+            }
+        }
+    },
+    "img": {
+        "console-someone": "Image illustrant une erreur",
+        "no-data": "Image illustrant l'absence de données"
+    },
+    "next": "Suivant",
+    "previous": "Précédent",
+    "cancel": "Annuler",
+    "close": "Fermer",
+    "create": "Créer",
+    "edit": "Mettre à jour",
+    "loading": "Chargement en cours…",
+    "title": "Registry | {{menu}}",
+    "write-something": "Écris quelque chose…",
+    "confirmation": {
+        "label": "La confirmation",
+        "info": "Entres \"{{name}}\" pour confirmer",
+        "confirm": "Confirmer",
+        "cancel": "Annuler"
+    },
+    "finished": "Terminé",
+    "outdated": "Expiré",
+    "menu": {
+        "home": "Accueil",
+        "users": "Utilisateurs",
+        "users-preferences": "Préférences",
+        "events": "Événements",
+        "profiles": "Profils",
+        "movements": "Mouvements",
+        "participants": "Participants",
+        "sign-out": "Déconnexion",
+        "attempt-to-sign-out": "Tentative de Déconnexion",
+        "toggle": "Fermer le menu de navigation",
+        "options": "Options"
+    },
+    "filter-sort": {
+        "title": "Filtrer & Trier",
+        "search": "Recherche",
+        "order": {
+            "title": "Tri",
+            "ASC": "Croissant",
+            "DESC": "Décroissant"
+        },
+        "only-visible": {
+            "title": "Tout afficher ou seulement les éléments visibles",
+            "true": "Visibles",
+            "false": "Tous"
+        },
+        "date-range": "Plage de dates",
+        "apply": "Appliquer"
+    },
+    "datetime": {
+        "format": {
+            "date": "dd/MM/yyyy",
+            "time": "HH:mm"
+        },
+        "datetime": "Le {{date}} à {{time}}",
+        "created": "Créé le {{date}} à {{time}}",
+        "created-user": "Créé le {{date}} à {{time}} par {{user}}",
+        "last-update": "Modifié le {{date}} à {{time}}",
+        "last-update-user": "Modifié le {{date}} à {{time}} par {{user}}",
+        "last-refresh": "Dernière actualisation le {{date}} à {{time}}",
+        "last-login": "Dernière connexion le {{date}} à {{time}}",
+        "presence": "Présence du {{start}} au {{end}}"
+    },
+    "event": {
+        "create": "Créer un Évènement",
+        "option": {
+            "ACTIVITY": "Activités",
+            "PHONE_COMMUNICATION": "Communications",
+            "ACTIVITY_COMMUNICATION": "Communication des activités",
+            "SMOKE_REPORT": "Signalement de fumée",
+            "MOVEMENT_REPORT": "Signalement de mouvement",
+            "TICKETING": "Billeterie",
+            "VEHICLE": "Véhicules",
+            "FIRE_RISK": "Risque incendie"
+        },
+        "action": {
+            "edit": "Modifier",
+            "disable": "Désactiver",
+            "enable": "Ré-activer",
+            "delete": "Supprimer",
+            "confirmation": {
+                "title": {
+                    "disable": "Désactiver l'évènement",
+                    "enable": "Ré-activer l'évènement",
+                    "delete": "Supprimer l'évènement"
+                },
+                "message": {
+                    "disable": "Attention ! Tu vas désactiver l'évènement \"{{element.name}}\". Tant qu'il est désactivé, il ne sera plus possible d'y créer des profils, mouvements, participants, etc.",
+                    "enable": "Attention ! Tu vas ré-activer l'évènement \"{{element.name}}\". Il sera de nouveau possible d'y créer des profils, mouvements, participant, etc.",
+                    "delete": "Attention ! Tu vas définitivement supprimer l'évènement \"{{element.name}}\" ainsi que tous les élements qui lui sont liés (profils, mouvements, participants, etc.)."
+                }
+            }
+        },
+        "form": {
+            "title": {
+                "information": "Informations",
+                "option": "Options",
+                "create": "Créer un Évènement",
+                "edit": "Modifier l'Évènement \"{{name}}\""
+            },
+            "subtitle": {
+                "subscription": "Inscriptions",
+                "transport": "Transport",
+                "activity": "Activité",
+                "communication": "Communication",
+                "dfci": "Défense des Forêts Contre les Incendies"
+            },
+            "create": "Créer l'évènement",
+            "edit": "Modifier l'Évènement",
+            "name": "Nom",
+            "range": "Dates",
+            "activity": "L'évènement va-t-il faire vivre des activités qui on besoin d'être identifié lorsqu'elles sont sorties ?",
+            "phone-communication": "L'évènement a-t-il besoin répertorier les communications ?",
+            "activity-communication": "L'évènement a-t-il besoin d'isoler les communications liées aux activités ?",
+            "smoke-reporting": "L'évènement a-t-il besoin de répertorier les signalements de fumée ?",
+            "movement-reporting": "L'évènement a-t-il besoin de répertorier les entrées et sortie d'inconnues d'une zone définie ?",
+            "ticketing": "L'évènement sera-t-il ouvert aux inscriptions ?",
+            "vehicle": "L'évènement a-t-il besoin de suivre les véhicules (entrée, sortie, conducteur) ?",
+            "fire-risk": "L'évènement a-t-il besoin de suivre le risque incendie ?"
+        },
+        "example": {
+            "name": "Ex: Camp D.F.C.I. Pionniers-Caravelles",
+            "range": "Ex: {{begin}} - {{end}}"
+        },
+        "role": {
+            "EVENT_ADMINISTRATOR": "Administrateur",
+            "EVENT_COORDINATOR": "Coordinateur",
+            "EVENT_PARTICIPANT": "Participant"
+        }
+    },
+    "profile": {
+        "action": {
+            "invite-user": {
+                "title": "Inviter des utilisateurs",
+                "singular": "Inviter {{number}} utilisateur",
+                "plural": "Inviter {{number}} utilisateurs"
+            },
+            "create-support": "Profil support",
+            "select": "Sélectionner",
+            "edit": "Modifier",
+            "block": "Bloquer",
+            "unblock": "Débloquer",
+            "delete": "Supprimer",
+            "manage-acceptance": "Veux-tu accepter cette invitation ?",
+            "accept": "Accepter",
+            "reject": "Refuser",
+            "confirmation": {
+                "title": {
+                    "create-support": "Créer un profil de support",
+                    "ACCEPTED": "Accepter l'invitation",
+                    "REJECTED": "Refuser l'invitation",
+                    "select": "Sélectionner le profil",
+                    "block": "Bloquer le profil",
+                    "unblock": "Débloquer le profil",
+                    "delete": "Supprimer le profil"
+                },
+                "message": {
+                    "create-support": "En poursuivant, tu crées un profil support pour venir en soutient à l'évènement \"{{element.name}}\".",
+                    "ACCEPTED": "En acceptant l'invitation à \"{{element.event.name}}\", le profil sera automatiquement sélectioné et apparaitra dans la liste des profils liés à ton compte (dans le premier onglet).",
+                    "REJECTED": "En refusant définitivement l'invitation, tu ne pourras pas utiliser ce profil. Tu devras te faire réinviter pour accéder à l'évènement \"{{element.event.name}}\"",
+                    "select": "Tu vas sélectionner un profil pour l'évènement \"{{element.event.name}}\". Tant qu'il est sélectionné, toutes les actions que tu feras lui seront liées.",
+                    "block": "Attention ! Tu vas bloquer un profil pour l'évènement \"{{element.event.name}}\". Tant qu'il est bloqué, {{element.user.firstName}} {{element.user.lastName}} ne pourra plus l'utiliser.",
+                    "unblock": "Attention ! Tu vas débloquer un profil pour l'évènement \"{{element.event.name}}\". {{element.user.firstName}} {{element.user.lastName}} pourra à nouveau l'utiliser si il est toujours valable.",
+                    "delete": "Attention ! Tu vas supprimer un profil pour l'évènement \"{{element.event.name}}\". {{element.user.firstName}} {{element.user.lastName}} ne pourra plus l'utiliser."
+                }
+            }
+        },
+        "status": {
+            "filter-sort": "Statut",
+            "ACCEPTED": "Accepté",
+            "REJECTED": "Refusé",
+            "INVITED": "Invité"
+        },
+        "event": {
+            "mine": {
+                "singular": "Mon Profil",
+                "plural": "Mes Profils"
+            },
+            "invitation": {
+                "singular": "Invitation Reçue",
+                "plural": "Invitations Reçues"
+            },
+            "validity": "Période de validité"
+        },
+        "form": {
+            "title": {
+                "create": "Inviter des utilisateurs sur l'évènement \"{{name}}\"",
+                "edit": "Modifier le Profil de {{firstName}} {{lastName}}"
+            },
+            "create": {
+                "singular": "Inviter l'utilisateur",
+                "plural": "Inviter les utilisateurs"
+            },
+            "edit": "Modifier le profil",
+            "users": "Utilisateurs",
+            "role": "Rôle",
+            "date-range": "Dates de validités",
+            "no-user": {
+                "singular": "Cliques sur le bouton ci-dessous pour chercher un utilisateur.",
+                "plural": "Cliques sur le bouton ci-dessous pour chercher des utilisateurs."
+            }
+        }
+    },
+    "participant": {
+        "search": "Rechercher des participants",
+        "select": "Sélectionnes des participants",
+        "add-participant": {
+            "singular": "{{number}} Participant",
+            "plural": "{{number}} Participants"
+        },
+        "action": {
+            "edit": "Modifier",
+            "disable": "Désactiver",
+            "enable": "Ré-activer",
+            "delete": "Supprimer",
+            "confirmation": {
+                "title": {
+                    "disable": "Désactiver la personne participante",
+                    "enable": "Ré-activer la personne participante",
+                    "delete": "Supprimer la personne participante"
+                },
+                "message": {
+                    "disable": "Attention ! Tu vas désactiver la personne \"{{element.firstName}} {{element.lastName}}\". Tant qu'elle est désactivé, la personne ne pourra plus être intégrée dans les entrées/sorties.",
+                    "enable": "Attention ! Tu vas ré-activer la personne \"{{element.firstName}} {{element.lastName}}\". Il sera de nouveau possible de l'intégrée dans les entrées/sorties.",
+                    "delete": "Attention ! Tu vas définitivement supprimer la personne \"{{element.firstName}} {{element.lastName}}\". Elle sera donc définitivement dissociée des mouvements et autres éléments."
+                }
+            }
+        },
+        "form": {
+            "title": {
+                "create": "Créer une personne participante",
+                "edit": "Modifier la personne participante \"{{firstName}} {{lastName}}\""
+            },
+            "user": "Utilisateur lié",
+            "first-name": "Prénom",
+            "previous-first-name": "L'ancien prénom \"{{firstName}}\" a été remplacé par celui de l'utilisateur lié.",
+            "last-name": "Nom",
+            "previous-last-name": "L'ancien nom \"{{lastName}}\" a été remplacé par celui de l'utilisateur lié.",
+            "birthday": "Date de naissance",
+            "presence": "Dates de présence"
+        },
+        "example": {
+            "first-name": "Ex: Robert",
+            "last-name": "Ex: BADEN-POWELL",
+            "birthday": "Ex: 22/02/1857",
+            "presence": "Ex: {{begin}} - {{end}}"
+        }
+    },
+    "movement": {
+        "type": {
+            "filter-sort": "Type",
+            "IN": "Entrée",
+            "OUT": "Sortie"
+        },
+        "content": {
+            "title": "Contenu",
+            "all": "Tous",
+            "adult": {
+                "singular": "{{adults}} Adulte",
+                "plural": "{{adults}} Adultes"
+            },
+            "child": {
+                "singular": "{{children}} Jeune",
+                "plural": "{{children}} Jeunes"
+            }
+        },
+        "person-and-others": {
+            "normal": {
+                "singular": "{{person}} et {{others}} autre.",
+                "plural": "{{person}} et {{others}} autres."
+            },
+            "purged": {
+                "singular": "{{others}} personne",
+                "plural": "{{others}} personnes"
+            }
+        },
+        "form": {
+            "title": {
+                "create": "Créer un mouvement",
+                "edit": {
+                    "IN": "Modifier l'entrée du {{date}} à {{time}}",
+                    "OUT": "Modifier la sortie du {{date}} à {{time}}"
+                }
+            },
+            "datetime": "Horodatage",
+            "type": "Type",
+            "content": "Contenu",
+            "no-user": "Cliques sur le bouton ci-dessous pour chercher des participants."
+        },
+        "example": {
+            "type": "Ex: Entrée",
+            "datetime": "Ex: {{date}} {{time}}"
+        },
+        "action": {
+            "edit": "Modifier",
+            "disable": "Désactiver",
+            "enable": "Ré-activer",
+            "delete": "Supprimer",
+            "confirmation": {
+                "title": {
+                    "disable": "Désactiver le mouvement",
+                    "enable": "Ré-activer le mouvement",
+                    "delete": "Supprimer le mouvement"
+                },
+                "message": {
+                    "disable": "Attention ! Tu vas désactiver le mouvement. Tant qu'il est désactivé, le mouvement ne sera plus visible pour ses participants.",
+                    "enable": "Attention ! Tu vas ré-activer le mouvement. Il sera de nouveau visible pour les participants.",
+                    "delete": "Attention ! Tu vas définitivement supprimer le movement. Il sera définitivement dissociée des mouvements et autres éléments."
+                }
+            }
+        }
+    },
+    "user": {
+        "select": {
+            "singular": "Sélectionnes un utilisateur",
+            "plural": "Sélectionnes des utilisateurs"
+        },
+        "search": {
+            "singular": "Rechercher un utilisateur",
+            "plural": "Rechercher des utilisateurs"
+        },
+        "add-user": {
+            "singular": "{{number}} Utilisateur",
+            "plural": "{{number}} Utilisateurs"
+        },
+        "action": {
+            "block": "Bloquer",
+            "unblock": "Débloquer",
+            "delete": "Supprimer",
+            "confirmation": {
+                "title": {
+                    "block": "Bloquer l'utilisateur",
+                    "unblock": "Débloquer l'utilisateur",
+                    "delete": "Supprimer l'utilisateur'"
+                },
+                "message": {
+                    "block": "Attention ! Tu vas bloquer un utilisateur. Tant qu'il est bloqué, {{element.firstName}} {{element.lastName}} ne pourra plus se connecter.",
+                    "unblock": "Attention ! Tu vas débloquer un utilisateur. {{element.firstName}} {{element.lastName}} pourra à nouveau se connecter.",
+                    "delete": "Attention ! Tu vas supprimer un utilisateur. Tous les profiles associées à {{element.firstName}} {{element.lastName}} seront également supprimés."
+                }
+            }
+        },
+        "role": {
+            "USER_ADMINISTRATOR": "Administrateur",
+            "USER": "Utilisateur"
+        }
+    }
+}

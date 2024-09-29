@@ -1,0 +1,74 @@
+::ng-deep {
+    .p-sidebar {
+        background: transparent;
+        border:     none;
+        color:      white;
+    }
+
+    .torn-paper {
+        background-image:    url('/img/side_bar_background.svg');
+        background-position: center;
+        background-size:     cover;
+    }
+}
+
+.menu-button {
+    left:     var(--basic-spacer);
+    position: fixed;
+    top:      var(--basic-spacer);
+    z-index:  1;
+}
+
+.menu-padding {
+    padding-bottom: var(--basic-spacer);
+    padding-top:    var(--basic-spacer);
+}
+
+.wide-screen-menu-margin {
+    margin-left:  2.5rem;
+    margin-right: 2.5rem;
+}
+
+.menu-container {
+    padding-left: var(--menu-width);
+}
+
+menu {
+    padding: 0;
+}
+
+.menu-item {
+    padding: 0 var(--basic-spacer) 0;
+
+    span {
+        margin-left: var(--min-spacer);
+    }
+}
+
+li {
+    list-style-type: none;
+}
+
+.card {
+    align-items:         center;
+    border-radius:       var(--basic-rounder);
+    display:             flex;
+    height:              3em;
+    justify-content:     left;
+    margin:              calc(var(--min-spacer) / 2) var(--basic-spacer) calc(var(--min-spacer) / 2) 0;
+    transition-duration: 150ms;
+}
+
+.clickable-card:hover {
+    background-color: #00507a;
+    border:           #003a59 1px solid;
+}
+
+.clickable-card:active {
+    background-color: #002940;
+    border:           #001d30 1px solid;
+}
+
+.router-active-card {
+    background-color: #002940;
+}

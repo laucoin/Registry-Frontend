@@ -1,0 +1,69 @@
+<app-list (updateRequired)='loadPage($event)'
+          [elementPage$]='elementPage$!'
+          [error$]='error$'
+          [loading$]='loading$'>
+    <ng-template appTemplate='search' [formGroup]='form' let-pageEvent>
+        <div class='row'>
+            <div class='col-12 col-sm-6 col-md-12 col-lg-6 search-field'>
+                <label for='search'>{{ 'filter-sort.search' | translate }}</label>
+                <input id='search'
+                       type='text'
+                       pInputText
+                       (keydown.enter)='loadPage(pageEvent)'
+                       [formControl]='searched' />
+            </div>
+            <div class='col-12 col-sm-6 col-md-12 col-lg-6 search-field'>
+                <label for='range'>{{ 'filter-sort.date-range' | translate }}</label>
+                <p-calendar [firstDayOfWeek]='1'
+                            [formControl]='range'
+                            [readonlyInput]='true'
+                            [showTime]='true'
+                            [showClear]='true'
+                            [touchUI]='isMobile'
+                            id='range'
+                            selectionMode='range'
+                            styleClass='full-w' />
+            </div>
+        </div>
+        <div class='d-flex flex-wrap justify-content-center gap-3'>
+            <p-toggleButton
+                    [formControl]='onlyVisible'
+                    (keydown.enter)='loadPage(pageEvent)'
+                    [onLabel]='"filter-sort.only-visible.false" | translate'
+                    [offLabel]='"filter-sort.only-visible.true" | translate'
+                    onIcon='pi pi-eye-slash'
+                    offIcon='pi pi-eye'
+                    [ariaLabel]='"filter-sort.only-visible.title" | translate' />
+            <p-toggleButton
+                    [formControl]='order'
+                    (keydown.enter)='loadPage(pageEvent)'
+                    [onLabel]='"filter-sort.order.DESC" | translate'
+                    [offLabel]='"filter-sort.order.ASC" | translate'
+                    onIcon='pi pi-sort-alpha-down-alt'
+                    offIcon='pi pi-sort-alpha-down'
+                    [ariaLabel]='"filter-sort.order.title" | translate' />
+            <p-button (click)='loadPage(pageEvent)'
+                      [label]='"filter-sort.apply" | translate'
+                      [outlined]='true'
+                      [rounded]='true'
+                      icon='pi pi-search'
+                      [loading]='(loading$ | async) || (silentLoading$ | async)' />
+        </div>
+    </ng-template>
+    <ng-template appTemplate='creation'>
+        @if (hasUserAuthority(currentUser$ | async, UserAuthority.REGISTRY_EVENT_C)) {
+            <p-button severity='success'
+                      [outlined]='true'
+                      [rounded]='true'
+                      [label]='isMobile ? "" : "create" | translate'
+                      icon='pi pi-plus'
+                      [routerLink]='EventRoutesEnum.CREATE' />
+        }
+    </ng-template>
+    <ng-template appTemplate='element' let-event let-layout='layout'>
+        <app-event-element [element]='event' [layout]='layout' />
+    </ng-template>
+    <ng-template appTemplate='empty'>
+        <app-message [message]='message' />
+    </ng-template>
+</app-list>
