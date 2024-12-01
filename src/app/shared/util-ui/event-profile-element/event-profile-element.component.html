@@ -1,0 +1,85 @@
+<p-confirmDialog [breakpoints]='breakpoint' />
+<app-element-card *ngIf='currentUser$ | async as currentUser'
+                  [element]='element'
+                  [actions]='actions'
+                  [layout]='layout'
+                  (action)='handleAction($event)'
+                  [icon]='currentUser.preferences.selectedProfile?.id === element.id ? "pi pi-verified" : "pi pi-user"'>
+    <div [class.flex-lg-row]='layout === "list"' [class.mr-6]='layout === "list"'
+         class='d-flex flex-column gap-2 justify-content-between'>
+        <div class='info d-flex flex-column gap-1 justify-content-center'>
+            <div>
+                <span [class.strikethrough]='element.endAccess | isPast' class='event-name'>
+                    @if (view === 'user') {
+                        {{ element.event.name }}
+                    } @else {
+                        {{ (element.user.firstName | titlecase) + ' ' + (element.user.lastName | uppercase) }}
+                    }
+                </span>
+                @if (element.endAccess | isPast) {
+                    <i> ({{ 'outdated' | translate }})</i>
+                }
+            </div>
+            @if (element.startAccess || element.endAccess) {
+                <p-badge severity='info' value='{{ "event.role." + element.role | translate }}' />
+            }
+        </div>
+        <div class='role d-flex flex-wrap gap-1 align-content-center' [class.justify-content-center]='layout === "grid"'>
+            @if (element.startAccess || element.endAccess) {
+                <div *ngIf='element.startAccess || element.endAccess'>
+                    <small>{{ 'profile.event.validity' | translate }}</small>
+                    @if (element.startAccess) {
+                        <div class='d-flex align-content-center gap-1'>
+                            <i class='pi pi-play-circle'></i>
+                            <span>
+                            {{
+                                    'datetime.datetime' | translate: {
+                                        date: element.startAccess | date: ('datetime.format.date' | translate),
+                                        time: element.startAccess | date: ('datetime.format.time' | translate),
+                                    }
+                                }}
+                        </span>
+                        </div>
+                    }
+                    @if (element.endAccess) {
+                        <div class='d-flex align-content-center gap-1'>
+                            <i class='pi pi-stop-circle'></i>
+                            <span>
+                            {{
+                                    'datetime.datetime' | translate: {
+                                        date: element.endAccess | date: ('datetime.format.date' | translate),
+                                        time: element.endAccess | date: ('datetime.format.time' | translate),
+                                    }
+                                }}
+                        </span>
+                        </div>
+                    }
+                </div>
+            } @else {
+                <p-badge severity='info' value='{{ "event.role." + element.role | translate }}' />
+            }
+        </div>
+        <div class='status d-flex' [class.justify-content-center]='layout === "grid"'>
+            @if (element.status !== ProfileStatusEnum.INVITED || element.user.id !== currentUser.id) {
+                <p-badge [severity]='severityFromStatus(element.status)'
+                         value='{{ "profile.status." + element.status | translate }}' />
+            } @else {
+                <div [class.mt-2]='layout === "grid"' class='d-flex flex-column gap-1'>
+                    <div [class.mb-1]='layout === "grid"'>{{ 'profile.action.manage-acceptance' | translate }}</div>
+                    <div class='d-flex justify-content-center gap-2'>
+                        <p-button
+                                [label]='"profile.action.reject" | translate'
+                                [rounded]='true'
+                                severity='danger'
+                                (click)='confirmManageAcceptance(ProfileStatusEnum.REJECTED)' />
+                        <p-button
+                                [label]='"profile.action.accept" | translate'
+                                [rounded]='true'
+                                severity='success'
+                                (click)='confirmManageAcceptance(ProfileStatusEnum.ACCEPTED)' />
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</app-element-card>

@@ -1,0 +1,99 @@
+<app-element-card [element]='element'
+                  [actions]='actions'
+                  [showActionMenu]='showActionMenu'
+                  (action)='handleAction($event)'
+                  [layout]='layout'
+                  [icon]='element.type === MovementTypeEnum.OUT ? "pi pi-arrow-up" : "pi pi-arrow-down"'>
+    <div [class.flex-lg-row]='layout === "list"' [class.mr-6]='layout === "list"'
+         class='d-flex flex-column gap-2 justify-content-between'>
+        <div class='type d-flex'>
+            <p-tag [severity]='element.type === MovementTypeEnum.OUT ? "secondary" : "info"'
+                   [value]='("movement.type." + element.type) | translate' />
+        </div>
+        <div class='datetime d-flex'>
+            {{
+                'datetime.datetime' | translate: {
+                    date: element.dateTime | date: ('datetime.format.date' | translate),
+                    time: element.dateTime | date: ('datetime.format.time' | translate),
+                }
+            }}
+        </div>
+        <div class='content d-flex'>
+            <div class='pointer movement-content'
+                 tabindex='1'
+                 (click)='layerOpened = true'
+                 (keydown.enter)='layerOpened = true'>
+                @switch (true) {
+                    @case (firstNotPurged && others() === 0) {
+                        {{ (firstNotPurged!.firstName | titlecase) + " " + (firstNotPurged!.lastName | uppercase) }}
+                    }
+                    @case (firstNotPurged && others() > 0) {
+                        {{
+                            ('movement.person-and-others.normal.' + (others() === 1 ? 'singular' : 'plural')) | translate: {
+                                person: (firstNotPurged!.firstName | titlecase) + " " + (firstNotPurged!.lastName | uppercase),
+                                others: others()
+                            }
+                        }}
+                    }
+                    @default {
+                        {{
+                            ('movement.person-and-others.purged.' + (others() <= 1 ? 'singular' : 'plural')) | translate: {
+                                others: others()
+                            }
+                        }}
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</app-element-card>
+
+<app-layer [(visible)]='layerOpened'
+           [header]='"movement.content.title" | translate'>
+    <p-tabView>
+        <p-tabPanel [header]='"movement.content.all" | translate'>
+            <p-listbox
+                    [options]='element.content'
+                    [readonly]='true'
+                    optionLabel='name'>
+                <ng-template let-participant pTemplate='item'>
+                    <app-movement-participant-element [element]='participant' />
+                </ng-template>
+            </p-listbox>
+        </p-tabPanel>
+        @if (adults().length > 0) {
+            <p-tabPanel [header]='("movement.content.adult." + (adults().length > 1 ? "plural" : "singular")) | translate: {
+                adults: adults().length
+            }'>
+                <p-listbox
+                        [options]='adults()'
+                        [readonly]='true'
+                        optionLabel='name'>
+                    <ng-template let-adult pTemplate='item'>
+                        <app-movement-participant-element [element]='adult' />
+                    </ng-template>
+                </p-listbox>
+            </p-tabPanel>
+        }
+        @if (children().length > 0) {
+            <p-tabPanel [header]='("movement.content.child." + (children().length > 1 ? "plural" : "singular")) | translate: {
+                children: children().length
+            }'>
+                <p-listbox
+                        [options]='children()'
+                        [readonly]='true'
+                        optionLabel='name'>
+                    <ng-template let-child pTemplate='item'>
+                        <app-movement-participant-element [element]='child' />
+                    </ng-template>
+                </p-listbox>
+            </p-tabPanel>
+        }
+    </p-tabView>
+    <ng-template appTemplate='footer'>
+        <div class='d-flex justify-content-center align-content-center'>
+            <p-button (click)='layerOpened = false' [rounded]='true' [outlined]='true' severity='secondary'
+                      [label]='"close" | translate' />
+        </div>
+    </ng-template>
+</app-layer>

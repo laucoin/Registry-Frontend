@@ -1,0 +1,38 @@
+<main class='main'>
+    <p-blockUI [blocked]='(loading$ | async) ?? false || GenericUtil.nonNull(error$ | async)'>
+        @if ((loading$ | async) ?? false) {
+            <p-progressSpinner></p-progressSpinner>
+        } @else {
+            <app-message [message]='(error$ | async)!'>
+                <p-button
+                        (click)='signOut()'
+                        [label]="'menu.attempt-to-sign-out' | translate"
+                        [rounded]='true'
+                        icon='pi pi-sign-out'
+                        severity='danger' />
+            </app-message>
+        }
+    </p-blockUI>
+    @if (GenericUtil.isNull(error$ | async)) {
+        <p-confirmDialog [breakpoints]='breakPoint' />
+        <p-toast [breakpoints]="{ '576px': { width: '95%', right: '2.5%', left: '2.5%' } }">
+            <ng-template let-message pTemplate='message'>
+                <div class='d-flex flex-column align-items-start full-w'>
+                    @if (message.summary) {
+                        <div class='toast-title'>
+                            {{ message.summary | translate }}
+                        </div>
+                    }
+                    @if (message.detail) {
+                        <div class='toast-content'>
+                            {{ message.detail | translate: message.data }}
+                        </div>
+                    }
+                </div>
+            </ng-template>
+        </p-toast>
+        <app-side-bar>
+            <router-outlet />
+        </app-side-bar>
+    }
+</main>

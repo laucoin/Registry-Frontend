@@ -1,0 +1,17 @@
+::ng-deep {
+    @media (max-width: 768px) {
+        .p-dialog .p-dialog-footer {
+            border-radius: 0;
+        }
+    }
+
+    @media (min-width: 768px) {
+        .p-dialog .p-dialog-header {
+            border-top-right-radius: 0;
+        }
+
+        .p-dialog .p-dialog-footer {
+            border-bottom-right-radius: 0;
+        }
+    }
+}

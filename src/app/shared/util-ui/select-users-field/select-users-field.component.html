@@ -1,0 +1,68 @@
+<ul class='list-box' id='users' [class.invalid]='invalid'>
+    @if ((formControl?.value?.length ?? 0) > 0) {
+        <li class='item list-item full-w d-flex align-items-center justify-content-between' *ngFor='let user of formControl?.value'>
+            <div class='ml-3'>{{ user.firstName + " " + user.lastName }}</div>
+            <p-button icon='pi pi-times'
+                      size='small'
+                      [rounded]='true'
+                      [text]='true'
+                      [disabled]='disabled()'
+                      (click)='removeUser(user)'></p-button>
+        </li>
+    } @else {
+        <li class='item empty-message'>
+            <div class='ml-2 secondary-color'>{{
+                    (multiple ?
+                     'profile.form.no-user.plural' : 'profile.form.no-user.singular') | translate
+                }}
+            </div>
+        </li>
+    }
+</ul>
+<div class='d-flex justify-content-center'>
+    <p-button (click)='layerOpened = true'
+              icon='pi pi-search'
+              [severity]='invalid ? "danger" : "info"'
+              [disabled]='disabled()'
+              [rounded]='true'
+              [outlined]='true'
+              [label]='(multiple ? "user.search.plural" : "user.search.singular") | translate' />
+</div>
+
+
+<app-layer (closeLayer)='closeLayer()'
+           [(visible)]='layerOpened'
+           [header]='(multiple ? "user.select.plural" : "user.select.singular") | translate'>
+    <form [formGroup]='layerForm'>
+        <div class='search-frame'>
+            <p-iconField iconPosition='right'>
+                <p-inputIcon styleClass='pi pi-search' />
+                <input [formControl]='layerSearched' pInputText type='text' class='full-w'>
+            </p-iconField>
+        </div>
+        @if (layerUsers$ | async; as users) {
+            <p-listbox
+                    styleClass='border-none'
+                    [formControl]='layerUsers'
+                    scrollHeight='100%'
+                    [multiple]='true'
+                    (onChange)='onLayerSelectionChange($event, users)'
+                    [options]='users'>
+                <ng-template pTemplate='empty'>
+                    <app-message [message]='message' />
+                </ng-template>
+            </p-listbox>
+        }
+    </form>
+    <ng-template appTemplate='footer'>
+        <div class='d-flex justify-content-center align-content-center'>
+            <p-button (click)='closeLayer()' [rounded]='true' [outlined]='true' [text]='true' severity='secondary'
+                      [label]='"cancel" | translate' />
+            <p-button (click)='addSelectedUsers()'
+                      [rounded]='true' [outlined]='true' severity='success'
+                      [label]='("user.add-user." + (layerSelectedUsers().length > 1 ? "plural" : "singular")) | translate: {
+                        number: layerSelectedUsers().length
+                      }' />
+        </div>
+    </ng-template>
+</app-layer>

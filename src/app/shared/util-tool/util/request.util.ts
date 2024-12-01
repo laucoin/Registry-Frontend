@@ -1,0 +1,6 @@
+export const CURRENT_USER_ID: string = '{{currentUserId}}'
+export const SELECT_PROFILE_EVENT_ID: string = '{{defaultProfileEventId}}'
+export const AUTHORIZATION: string = 'Authorization'
+export const CURRENT_USER: string = 'currentUser'
+export const REDIRECT_URI: string = 'redirect_uri'
+export const TOKEN: string = 'token'

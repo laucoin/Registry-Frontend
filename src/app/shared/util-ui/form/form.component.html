@@ -1,0 +1,7 @@
+@if (form.untouched && loading) {
+    <div class='d-flex justify-content-center'>
+        <p-progressSpinner></p-progressSpinner>
+    </div>
+} @else {
+    <ng-content />
+}

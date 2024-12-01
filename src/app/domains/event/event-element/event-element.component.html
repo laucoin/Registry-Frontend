@@ -1,0 +1,50 @@
+<app-element-card [element]='element'
+                  [actions]='actions'
+                  (action)='handleAction($event)'
+                  [layout]='layout'
+                  icon='pi pi-calendar'>
+    <div [class.flex-lg-row]='layout === "list"' [class.mr-6]='layout === "list"'
+         class='d-flex flex-column gap-2 justify-content-between'>
+        <div class='info d-flex flex-column gap-1 justify-content-center'>
+            <div>
+                <span [class.strikethrough]='element.end | isPast' class='event-name'>
+                    {{ element.name }}
+                </span>
+                @if (element.end | isPast) {
+                    <i> ({{ 'finished' | translate }})</i>
+                }
+            </div>
+            <div class='d-flex align-content-center gap-1'>
+                @if (element.begin) {
+                    <i class='pi pi-play-circle'></i>
+                    <span>
+                        {{
+                            'datetime.datetime' | translate: {
+                                date: element.begin | date: ('datetime.format.date' | translate),
+                                time: element.begin | date: ('datetime.format.time' | translate),
+                            }
+                        }}
+                    </span>
+                }
+            </div>
+            @if (element.end) {
+                <div class='d-flex align-content-center gap-1'>
+                    <i class='pi pi-stop-circle'></i>
+                    <span>
+                    {{
+                            'datetime.datetime' | translate: {
+                                date: element.end | date: ('datetime.format.date' | translate),
+                                time: element.end | date: ('datetime.format.time' | translate),
+                            }
+                        }}
+                </span>
+                </div>
+            }
+        </div>
+        <div class='options d-flex flex-wrap gap-1' [class.justify-content-center]='layout === "grid"'>
+            <p-chip *ngFor='let option of element.options'
+                    [icon]='option | optionIcon'
+                    [label]='("event.option." + option) | translate' />
+        </div>
+    </div>
+</app-element-card>

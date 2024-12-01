@@ -1,0 +1,53 @@
+<app-form [form]='form' [loading]='(loading$ | async) ?? false'>
+    <h2>{{ 'profile.form.title.create' | translate : { name: (contextEvent$ | async)?.name } }}</h2>
+    <p-card>
+        <form [formGroup]='form'>
+            <div class='field'>
+                <label for='roles'>{{ 'profile.form.role' | translate }}</label>
+                <p-dropdown
+                        id='roles'
+                        styleClass='full-w'
+                        [options]='(assignableRoles$ | async) ?? []'
+                        [formControl]='role'
+                        optionLabel='label'
+                        optionValue='value' />
+                <app-form-field-error [control]='role'
+                                      [label]='"profile.form.role" | translate' />
+            </div>
+            <div class='field'>
+                <label for='profiles-range'>{{ 'profile.form.date-range' | translate }}</label>
+                <p-calendar [firstDayOfWeek]='1'
+                            [formControl]='range'
+                            [readonlyInput]='true'
+                            [showTime]='true'
+                            [touchUI]='isMobile'
+                            [showClear]='true'
+                            id='profiles-range'
+                            inputId='profiles-range'
+                            selectionMode='range'
+                            styleClass='full-w' />
+                <app-form-field-error [control]='range'
+                                      [label]='"profile.form.date-range" | translate' />
+            </div>
+            <div class='field'>
+                <label for='users'>{{ 'profile.form.users' | translate }}</label>
+                <app-select-users-field id='users' [multiple]='true' [formControl]='users' />
+                <app-form-field-error [control]='users'
+                                      [label]='"profile.form.users" | translate' />
+            </div>
+        </form>
+        <div class='flex pt-4 gap-2 justify-content-center'>
+            <p-button
+                    (click)='navigateToRedirectUri()'
+                    [label]='"cancel" | translate'
+                    [outlined]='true'
+                    [rounded]='true' />
+            <p-button
+                    (click)='submit()'
+                    [label]='("profile.form.create." + (users.value?.length > 1 ? "plural" : "singular")) | translate'
+                    [rounded]='true'
+                    icon='pi pi-user-plus'
+                    severity='success' />
+        </div>
+    </p-card>
+</app-form>

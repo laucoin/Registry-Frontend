@@ -1,0 +1,33 @@
+<app-element-card [element]='element'
+                  [actions]='actions'
+                  [showActionMenu]='showActionMenu'
+                  (action)='handleAction($event)'
+                  [layout]='layout'
+                  icon='pi pi-users'>
+    <div [class.flex-lg-row]='layout === "list"' [class.mr-6]='layout === "list"'
+         class='d-flex flex-column gap-2 justify-content-between'>
+        <div class='info'>
+            {{ (element.firstName | titlecase) + ' ' + (element.lastName | uppercase) }}
+        </div>
+        <div class='birthday d-flex align-content-center gap-1'>
+            @if (element.birthday) {
+                <i class='pi pi-gift'></i>
+                <span>{{ element.birthday | date: ('datetime.format.date' | translate) }}</span>
+
+            }
+        </div>
+        <div class='presence secondary-color'>
+            @if (element.begin && element.end) {
+                <i>
+                    {{
+                        'datetime.presence' | translate
+                            : {
+                                start: element.begin | date: ('datetime.format.date' | translate),
+                                end: element.end | date: ('datetime.format.date' | translate),
+                            }
+                    }}
+                </i>
+            }
+        </div>
+    </div>
+</app-element-card>

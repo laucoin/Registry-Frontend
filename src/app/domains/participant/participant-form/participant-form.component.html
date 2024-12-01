@@ -1,0 +1,111 @@
+<app-form [form]='form' [loading]='(loading$ | async) ?? false'>
+    @if (participant()) {
+        <h2>{{
+                'participant.form.title.edit' | translate: {
+                    firstName: participant()?.firstName,
+                    lastName: participant()?.lastName
+                }
+            }}
+        </h2>
+    } @else {
+        <h2>{{ 'participant.form.title.create' | translate }}</h2>
+    }
+    <p-card>
+        <div class='field'>
+            <label for='user'>{{ 'participant.form.user' | translate }}</label>
+            <app-select-users-field id='user' [formControl]='user' />
+            <app-form-field-error [control]='user'
+                                  [label]='"participant.form.user" | translate' />
+        </div>
+        <p-divider align='center' />
+        <div class='field'>
+            <label for='first-name'>{{ 'participant.form.first-name' | translate }}</label>
+            <input [formControl]='firstName'
+                   [placeholder]='"participant.example.first-name" | translate'
+                   id='first-name'
+                   pInputText
+                   type='text' />
+            @if (previousFirstName() && previousFirstName() !== firstName.value) {
+                <small class='secondary-color'>
+                    {{ 'participant.form.previous-first-name' | translate: { firstName: previousFirstName() } }}
+                </small>
+            }
+            <app-form-field-error [control]='firstName'
+                                  [example]='"participant.example.first-name" | translate'
+                                  [label]='"participant.form.first-name" | translate' />
+        </div>
+        <div class='field'>
+            <label for='last-name'>{{ 'participant.form.last-name' | translate }}</label>
+            <input [formControl]='lastName'
+                   [placeholder]='"participant.example.last-name" | translate'
+                   id='last-name'
+                   pInputText
+                   type='text' />
+            @if (previousLastName() && previousLastName() !== lastName.value) {
+                <small class='secondary-color'>
+                    {{ 'participant.form.previous-last-name' | translate: { lastName: previousLastName() } }}
+                </small>
+            }
+            <app-form-field-error [control]='lastName'
+                                  [example]='"participant.example.last-name" | translate'
+                                  [label]='"participant.form.last-name" | translate' />
+        </div>
+        <div class='field'>
+            <label for='birthday'>{{ 'participant.form.birthday' | translate }}</label>
+            <p-calendar [firstDayOfWeek]='1'
+                        [formControl]='birthday'
+                        [placeholder]='"participant.example.birthday" | translate'
+                        [readonlyInput]='true'
+                        [maxDate]='today'
+                        [touchUI]='isMobile'
+                        [showClear]='true'
+                        id='birthday'
+                        styleClass='full-w' />
+            <app-form-field-error [control]='birthday'
+                                  [example]='"participant.example.birthday" | translate'
+                                  [label]='"participant.form.birthday" | translate' />
+        </div>
+        <div class='field'>
+            <label for='presence'>{{ 'participant.form.presence' | translate }}</label>
+            <p-calendar [firstDayOfWeek]='1'
+                        [formControl]='presence'
+                        [placeholder]='"participant.example.presence" | translate: {
+                                    begin: exampleBeginDate | date: ("datetime.format.date" | translate),
+                                    end: exampleEndDate | date: ("datetime.format.date" | translate)
+                                }'
+                        [readonlyInput]='true'
+                        [showTime]='true'
+                        [touchUI]='isMobile'
+                        [showClear]='true'
+                        id='presence'
+                        selectionMode='range'
+                        styleClass='full-w' />
+            <app-form-field-error [control]='presence'
+                                  [example]='"participant.example.presence" | translate'
+                                  [label]='"participant.form.presence" | translate' />
+        </div>
+        <div class='flex pt-4 gap-2 justify-content-center'>
+            <p-button
+                    (click)='navigateToRedirectUri()'
+                    [label]='"cancel" | translate'
+                    [outlined]='true'
+                    [rounded]='true' />
+
+            @if (participant()) {
+                <p-button
+                        (click)='submit()'
+                        [label]='"edit" | translate'
+                        [rounded]='true'
+                        icon='pi pi-pen-to-square'
+                        severity='success' />
+            } @else {
+                <p-button
+                        (click)='submit()'
+                        [label]='"create" | translate'
+                        [rounded]='true'
+                        icon='pi pi-plus'
+                        severity='success' />
+            }
+        </div>
+    </p-card>
+</app-form>

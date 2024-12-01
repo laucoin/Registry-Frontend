@@ -1,0 +1,34 @@
+.type {
+    flex-basis: 15%;
+}
+
+.datetime {
+    flex-basis: 40%;
+}
+
+.content {
+    flex-basis: 45%;
+}
+
+.movement-content:hover {
+    text-decoration: underline;
+}
+
+::ng-deep {
+    .p-dialog .p-dialog-header {
+        border-bottom: none;
+    }
+
+    .p-dialog .p-dialog-content {
+        padding: 0;
+    }
+
+    .p-tabview .p-tabview-panels {
+        background: transparent;
+        padding:    0;
+    }
+
+    .p-listbox {
+        border: none;
+    }
+}

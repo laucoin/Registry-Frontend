@@ -1,0 +1,30 @@
+@if (currentUser$ | async; as currentUser) {
+    <app-element-card [element]='currentUser'
+                      [layout]='(isTinyScreen() || isMobile) ? "grid" : "list"'
+                      icon='pi pi-user'>
+        <div class='current-user'>
+            <div class='name-container'>
+                <span
+                        class='name'>{{ (currentUser.firstName | titlecase) + ' ' + (currentUser.lastName | uppercase) }}</span>
+                @if (currentUser.role) {
+                    <div>
+                        <p-tag [value]="'user.role.' + currentUser.role | translate"
+                               severity='info'>
+                            <ng-template pTemplate='icon'>
+                                <i class='pi pi-sparkles'></i>
+                            </ng-template>
+                        </p-tag>
+                    </div>
+                }
+            </div>
+            <div class='ml-1 mr-1'>
+                <a class='email' href='mailto:{{ currentUser.email }}'><i>{{ currentUser.email }}</i></a>
+            </div>
+        </div>
+    </app-element-card>
+}
+<p-tabView [activeIndex]='activeIndex' [scrollable]='true' (onChange)='tabNavigation($event)' styleClass='mt-2'>
+    <p-tabPanel [header]='"profile.event.mine" | pluralTranslation: (profilePage$ | async)?.content?.length ?? 0 | translate' />
+    <p-tabPanel [header]='"profile.event.invitation" | pluralTranslation:(invitationPage$ | async)?.content?.length ?? 0 | translate' />
+</p-tabView>
+<router-outlet />
