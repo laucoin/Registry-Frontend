@@ -182,11 +182,11 @@
         "title": {
             "undefined": "🤔 Erreur inconnue",
             "400": "🙃 Demande éronnée",
-            "401": "😰 Tu n'est pas connecté à l'application",
+            "401": "😰 Tu n'es pas connecté à l'application",
             "403": "👮 Droits insuffisants",
             "404": "🧐 Ressource non trouvée",
             "408": "⌚ Délai d'attente dépassé",
-            "409": "🤯 Conflit de donnée",
+            "409": "🤯 Conflit de données",
             "413": "🫣 Demande trop volumineuse",
             "414": "🫣 URI trop longue",
             "415": "😇 Type de média non supporté",
@@ -199,23 +199,23 @@
             "503": "🥴 Serveur indisponible"
         },
         "message": {
-            "undefined": "Une erreur inconnue est survenue. Si tu veux bien m'aider à la résoudre, contactes {{maintainerEmail}} et expliques moi comment tu es arrivé dans ce cas.",
-            "400": "Les paramètres de la demande semblent incorrects. Vérifies-les et réessaies. Si le problème persiste, contactes {{maintainerEmail}}.",
-            "401": "Tu peux essayer de rafraîchir la page ou de te reconnecter. Si le problème persiste, contactes {{maintainerEmail}}.",
-            "403": "Tu n'as pas les droits nécessaires pour accéder à cette ressource. Si tu penses que c'est une erreur, contactes {{maintainerEmail}}.",
-            "404": "La ressource demandée n'a pas été trouvée, a été supprimée ou déplacée.",
+            "undefined": "Une erreur inconnue est survenue. Contactes {{maintainerEmail}} et expliques moi comment tu es arrivé dans ce cas.",
+            "400": "Les paramètres de la demande semblent incorrects. Si le problème persiste, contactes {{maintainerEmail}}.",
+            "401": "Tu ne semble pas connecté. Si le problème persiste, contactes {{maintainerEmail}}.",
+            "403": "Tu n'as pas les droits nécessaires. Si tu penses que c'est une erreur, contactes {{maintainerEmail}}.",
+            "404": "La ressource demandée n'a pas été trouvée ou a été supprimée.",
             "408": "Vérifies ta connexion internet. Si elle est correcte c'est que le serveur est probablement surchargé. Réessaies plus tard. Si le problème persiste, contactes {{maintainerEmail}}.",
-            "409": "Problème de donnée. Vérifies les informations que tu as entrées et réessaies. Si le problème persiste, contactes {{maintainerEmail}}.",
+            "409": "Problème de données. Vérifies les informations que tu as entrées et réessaies. Si le problème persiste, contactes {{maintainerEmail}}.",
             "413": "Ah oui ! Ça fait beaucoup de données d'un coup ça. Réduis un peu la taille de ta demande et réessaies (si ta requête contient des fichiers, tu peux essayer de réduire leur taille). Si le problème persiste, contactes {{maintainerEmail}}.",
-            "414": "C'est un peu long comme adresse ça. Vérifies que tu n'as pas fait d'erreur et réessaies. Si le problème persiste, contactes {{maintainerEmail}}.",
-            "415": "Tu as encore tout cassé avec tes types de médias bizarres. C'est plus la pré-histoire tu sais? Et normalement, tu devrais passer par le front pas par l'API. Si le problème persiste, contactes {{maintainerEmail}}.",
-            "420": "Vérifies ta connexion internet. Si tu es utilise le Wi-Fi, essaies de te rapprocher de la box. Si tu es en 4G, essaies de te rapprocher d'une fenêtre. Si tu es en 3G, essaies de te rapprocher d'un autre siècle. Si le problème persiste, contactes {{maintainerEmail}}.",
-            "422": "Les paramètres de la demande semblent corrects mais ne sont pas exploitable dans l'état. Vérifies-les et réessaies. Si le problème persiste, contactes {{maintainerEmail}}.",
-            "424": "Promis c'est pas ma faute. C'est un problème avec une dépendance externe. Si tu veux bien me donner un coup de main pour la débugger, contactes {{maintainerEmail}}.",
-            "429": "Pas trop d'un coup. Tu as envoyé trop de demandes en peu de temps. Attends un peu et réessaies. Si le problème persiste, contactes {{maintainerEmail}}.",
-            "500": "Un peu obscur tout ça. Il y a eu une erreur serveur. Si tu veux bien m'aider à la résoudre, contactes {{maintainerEmail}} et expliques moi comment tu es arrivé dans ce cas.",
+            "414": "C'est un peu long comme adresse ça. Si le problème persiste, contactes {{maintainerEmail}}.",
+            "415": "Tu as encore tout cassé avec tes types de médias bizarres. C'est plus la pré-histoire tu sais ? Si le problème persiste, contactes {{maintainerEmail}}.",
+            "420": "Vérifies ta connexion internet. Si tu utilises le Wi-Fi, essaies de te rapprocher de la box. Si tu es en 4G, essaies de te rapprocher d'une fenêtre. Si tu es en 3G, essaies de te rapprocher d'un autre siècle.",
+            "422": "Les paramètres de la demande semblent corrects mais ne sont pas exploitables dans l'état. Vérifies-les et réessaies. Si le problème persiste, contactes {{maintainerEmail}}.",
+            "424": "Promis c'est pas ma faute. C'est un problème avec une dépendance externe.",
+            "429": "Pas trop d'un coup. Le serveur a reçu trop de demandes en peu de temps. Attends un peu et réessaies. Si le problème persiste, contactes {{maintainerEmail}}.",
+            "500": "À ça c'est chiant comme erreur, je sais pas ce qu'il s'est passé mais il y a un truc bizarre. Contactes {{maintainerEmail}} et expliques moi comment tu es arrivé dans ce cas.",
             "501": "Tu vas trop vite pour moi. La fonctionnalité demandée n'est pas encore implémentée. Si tu veux bien m'aider à la développer, contactes {{maintainerEmail}}.",
-            "503": "Ça sent le roussi. Le serveur est indisponible. Réessaies plus tard. Si le problème persiste, contactes {{maintainerEmail}}.",
+            "503": "Ça sent le roussi, le serveur est indisponible. Réessaies plus tard. Si le problème persiste, contactes {{maintainerEmail}}.",
             "NOT_IMPLEMENTED_YET": "Tu vas trop vite pour moi. La fonctionnalité demandée n'est pas encore implémentée. Si tu veux bien m'aider à la développer, contactes {{maintainerEmail}}.",
             "NO_PARAMETER_FOUND_FOR_SPECIFIED_NAME": "Le paramètre demandé n'a pas été trouvé.",
             "COMPARING_WRONG_PARAMETER_TYPE": "Les deux paramètres ne sont pas comparables.",
@@ -239,13 +239,13 @@
             "EVENT_NAME_BLANK": "Le nom de l'évènement ne peut pas être vide.",
             "EVENT_NAME_TOO_LONG": "Le nom de l'évènement est trop long.",
             "EVENT_BEGIN_LATER_THAN_END_TIME": "La date de début de l'évènement doit être antérieure à la date de fin.",
-            "EVENT_OPTIONS_MISSING": "Les options de l'évènements sont incompatible (Ajoutes-en ou retires-en).",
-            "EVENT_DATE_CONFLICT_WITH_ELEMENTS": "Certains éléments déjà crée liées à cet évènement sont en conflit avec les dates de celui-ci.",
+            "EVENT_OPTIONS_MISSING": "Les options de l'évènements sont incompatibles (Ajoutes-en ou retires-en).",
+            "EVENT_DATE_CONFLICT_WITH_ELEMENTS": "Certains éléments déjà créés liées à cet évènement sont en conflit avec les dates de celui-ci.",
             "EVENT_PROFILE_ROLE_BLANK": "Le rôle du profil lié à l'évènement ne peut pas être vide.",
             "EVENT_PROFILE_START_ACCESS_LATER_THAN_END_ACCESS": "La date de début du profil lié à l'évènement doit être antérieure à la date de fin.",
             "EVENT_PROFILE_USERS_EMPTY": "La liste des utilisateurs du profil lié à l'évènement ne peut pas être vide.",
-            "EVENT_PROFILE_STATUS_NOT_ACCEPTED_OR_REJECTED": "Status invalide pour accepter ou refuser une invitation.",
-            "EVENT_PROFILE_DELETE_LAST_EVENT_ADMINISTRATOR": "Tu ne peux pas supprimer le profil du dernier administrateur d'un évènement. Si tu veux absoluement supprimer ce profil, deux solutions : Soit tu nommes un autre administrateur, soit tu supprimes l'évènement entièrement.",
+            "EVENT_PROFILE_STATUS_NOT_ACCEPTED_OR_REJECTED": "Statut invalide pour accepter ou refuser une invitation.",
+            "EVENT_PROFILE_DELETE_LAST_EVENT_ADMINISTRATOR": "Tu ne peux pas supprimer le profil du dernier administrateur d'un évènement. Si tu veux absoluement supprimer ce profil, deux solutions : Soit tu nommes un autre administrateur, soit tu supprimes l'évènement entièrement.",
             "EVENT_PROFILE_UPDATE_LAST_EVENT_ADMINISTRATOR": "Tu ne peux pas mettre à jour le profil du dernier administrateur d'un évènement",
             "EVENT_PROFILE_UPDATE_ROLE_HIGHER_THAN_CURRENT_USER": "Tu ne peux pas modifier le rôle s'il est plus haut que le tien.",
             "EVENT_PROFILE_ASSIGNS_ROLE_HIGHER_THAN_CURRENT_USER": "Tu ne peux pas assigner un rôle supérieur au tien.",
@@ -261,7 +261,7 @@
             "PARTICIPANT_LAST_NAME_TOO_LONG": "Le nom du participant est trop long.",
             "PARTICIPANT_BIRTHDAY_FUTURE": "À priori, un participant ne peut pas être né dans le futur.",
             "PARTICIPANT_START_LATER_THAN_END": "La date de début de présence d'un participant doit être antérieure à sa date de fin de présence.",
-            "PARTICIPANT_PRESENCE_DATES_OUT_OF_EVENT_DATE_RANGE": "Les dates de présence d'un participant ne peut pas être daté en dehors de l'évènement.",
+            "PARTICIPANT_PRESENCE_DATES_OUT_OF_EVENT_DATE_RANGE": "Les dates de présence d'un participant ne peuvent pas être datées en dehors de l'évènement.",
             "PARTICIPANT_IN_EVENT_ALREADY_LINKED_TO_USER": "Cet utilisateur est déjà lié à un participant de l'évènement."
         },
         "form": {
@@ -326,8 +326,8 @@
             "invalid-action": "🙅‍♂️ L'action choisie n'est pas prise en charge.",
             "event-profile": {
                 "create": {
-                    "singular": "Un profile a été créé (sur les {{asked}} demandés) pour l'évènement.",
-                    "plural": "{{created}} Profiles ont été créés (sur les {{asked}} demandés) pour l'évènement."
+                    "singular": "Un profil a été créé (sur les {{asked}} demandés) pour l'évènement.",
+                    "plural": "{{created}} Profils ont été créés (sur les {{asked}} demandés) pour l'évènement."
                 }
             }
         }
@@ -345,20 +345,20 @@
             "event-profile": {
                 "create": {
                     "normal": {
-                        "singular": "+ Profile créé",
-                        "plural": "+ Profiles créés"
+                        "singular": "+ Profil créé",
+                        "plural": "+ Profils créés"
                     },
-                    "support": "+ Profile support créé"
+                    "support": "+ Profil support créé"
                 },
-                "select": "✅ Profile sélectionné",
+                "select": "✅ Profil sélectionné",
                 "manage-acceptance": {
                     "ACCEPTED": "✅ Invitation acceptée",
                     "REJECTED": "✅ Invitation refusée"
                 },
-                "edit": "✏️ Profile modifié",
-                "block": "⛔️ Profile bloqué",
-                "unblock": "✅ Profile débloqué",
-                "delete": "🗑️ Profile supprimé"
+                "edit": "✏️ Profil modifié",
+                "block": "⛔️ Profil bloqué",
+                "unblock": "✅ Profil débloqué",
+                "delete": "🗑️ Profil supprimé"
             },
             "movement": {
                 "IN": {
@@ -403,29 +403,29 @@
             "event-profile": {
                 "create": {
                     "normal": {
-                        "singular": "Le profile a été créé pour l'évènement.",
-                        "plural": "{{created}} Profiles ont été créés pour l'évènement."
+                        "singular": "Le profil a été créé pour l'évènement.",
+                        "plural": "{{created}} Profils ont été créés pour l'évènement."
                     },
-                    "support": "Le profile support a été créé pour l'évènement, il est disponible jusqu'à {{end}}."
+                    "support": "Le profil support a été créé pour l'évènement, il est disponible jusqu'à {{end}}."
                 },
                 "manage-acceptance": {
                     "ACCEPTED": "Tu as accepté l'invitation pour l'évènement, tu peux désormais le sélectionner.",
                     "REJECTED": "Tu as refusé l'invitation pour l'évènement."
                 },
                 "select": "Toutes les actions que tu fais à partir de maintenant seront liées à l'évènement {{name}} tant qu'il est sélectionné.",
-                "edit": "Le profile de {{firstName}} {{lastName}} pour l'évènement {{name}} a été modifié",
-                "block": "Le profile de {{firstName}} {{lastName}} pour l'évènement {{name}} a été bloqué",
-                "unblock": "Le profile de {{firstName}} {{lastName}} pour l'évènement {{name}} a été débloqué",
+                "edit": "Le profil de {{firstName}} {{lastName}} pour l'évènement {{name}} a été modifié",
+                "block": "Le profil de {{firstName}} {{lastName}} pour l'évènement {{name}} a été bloqué",
+                "unblock": "Le profil de {{firstName}} {{lastName}} pour l'évènement {{name}} a été débloqué",
                 "delete": {
-                    "someone": "Le profile de {{firstName}} {{lastName}} pour l'évènement {{name}} a été supprimé",
-                    "mine": "Ton profile pour l'évènement {{name}} a été supprimé"
+                    "someone": "Le profil de {{firstName}} {{lastName}} pour l'évènement {{name}} a été supprimé",
+                    "mine": "Ton profil pour l'évènement {{name}} a été supprimé"
                 }
             },
             "movement": {
                 "IN": {
                     "create": {
                         "singular": "L'entrée du {{date}} à {{time}} a été créée avec un participant",
-                        "plural": "L'entrée du {{date}} à {{time}} a été créée avec {{participants}} participant"
+                        "plural": "L'entrée du {{date}} à {{time}} a été créée avec {{participants}} participants"
                     },
                     "edit": "L'entrée du {{date}} à {{time}} a été modifiée",
                     "disable": "L'entrée du {{date}} à {{time}} a été cachée",
@@ -435,7 +435,7 @@
                 "OUT": {
                     "create": {
                         "singular": "La sortie du {{date}} à {{time}} a été créée avec un participant",
-                        "plural": "La sortie du {{date}} à {{time}} a été créée avec {{participants}} participant"
+                        "plural": "La sortie du {{date}} à {{time}} a été créée avec {{participants}} participants"
                     },
                     "edit": "La sortie du {{date}} à {{time}} a été modifiée",
                     "disable": "La sortie du {{date}} à {{time}} a été cachée",
@@ -571,7 +571,7 @@
             "edit": "Modifier l'Évènement",
             "name": "Nom",
             "range": "Dates",
-            "activity": "L'évènement va-t-il faire vivre des activités qui on besoin d'être identifié lorsqu'elles sont sorties ?",
+            "activity": "Est-ce que l’évènement que tu es entrain de créer va proposer des évènement qui vont sortir du lieu de l’évènement et que tu voudras suivre ?",
             "phone-communication": "L'évènement a-t-il besoin répertorier les communications ?",
             "activity-communication": "L'évènement a-t-il besoin d'isoler les communications liées aux activités ?",
             "smoke-reporting": "L'évènement a-t-il besoin de répertorier les signalements de fumée ?",
@@ -617,12 +617,12 @@
                     "delete": "Supprimer le profil"
                 },
                 "message": {
-                    "create-support": "En poursuivant, tu crées un profil support pour venir en soutient à l'évènement \"{{element.name}}\".",
-                    "ACCEPTED": "En acceptant l'invitation à \"{{element.event.name}}\", le profil sera automatiquement sélectioné et apparaitra dans la liste des profils liés à ton compte (dans le premier onglet).",
+                    "create-support": "En poursuivant, tu crées un profil support pour venir en soutien à l'évènement \"{{element.name}}\".",
+                    "ACCEPTED": "En acceptant l'invitation à \"{{element.event.name}}\", le profil sera automatiquement sélectionné et apparaitra dans la liste des profils liés à ton compte (dans le premier onglet).",
                     "REJECTED": "En refusant définitivement l'invitation, tu ne pourras pas utiliser ce profil. Tu devras te faire réinviter pour accéder à l'évènement \"{{element.event.name}}\"",
                     "select": "Tu vas sélectionner un profil pour l'évènement \"{{element.event.name}}\". Tant qu'il est sélectionné, toutes les actions que tu feras lui seront liées.",
                     "block": "Attention ! Tu vas bloquer un profil pour l'évènement \"{{element.event.name}}\". Tant qu'il est bloqué, {{element.user.firstName}} {{element.user.lastName}} ne pourra plus l'utiliser.",
-                    "unblock": "Attention ! Tu vas débloquer un profil pour l'évènement \"{{element.event.name}}\". {{element.user.firstName}} {{element.user.lastName}} pourra à nouveau l'utiliser si il est toujours valable.",
+                    "unblock": "Attention ! Tu vas débloquer un profil pour l'évènement \"{{element.event.name}}\". {{element.user.firstName}} {{element.user.lastName}} pourra à nouveau l'utiliser s'il est toujours valable.",
                     "delete": "Attention ! Tu vas supprimer un profil pour l'évènement \"{{element.event.name}}\". {{element.user.firstName}} {{element.user.lastName}} ne pourra plus l'utiliser."
                 }
             }
@@ -656,7 +656,7 @@
             "edit": "Modifier le profil",
             "users": "Utilisateurs",
             "role": "Rôle",
-            "date-range": "Dates de validités",
+            "date-range": "Dates de validité",
             "no-user": {
                 "singular": "Cliques sur le bouton ci-dessous pour chercher un utilisateur.",
                 "plural": "Cliques sur le bouton ci-dessous pour chercher des utilisateurs."
@@ -665,7 +665,7 @@
     },
     "participant": {
         "search": "Rechercher des participants",
-        "select": "Sélectionnes des participants",
+        "select": "Sélectionner des participants",
         "add-participant": {
             "singular": "{{number}} Participant",
             "plural": "{{number}} Participants"
@@ -682,8 +682,8 @@
                     "delete": "Supprimer la personne participante"
                 },
                 "message": {
-                    "disable": "Attention ! Tu vas désactiver la personne \"{{element.firstName}} {{element.lastName}}\". Tant qu'elle est désactivé, la personne ne pourra plus être intégrée dans les entrées/sorties.",
-                    "enable": "Attention ! Tu vas ré-activer la personne \"{{element.firstName}} {{element.lastName}}\". Il sera de nouveau possible de l'intégrée dans les entrées/sorties.",
+                    "disable": "Attention ! Tu vas désactiver la personne \"{{element.firstName}} {{element.lastName}}\". Tant qu'elle est désactivée, la personne ne pourra plus être intégrée dans les entrées/sorties.",
+                    "enable": "Attention ! Tu vas ré-activer la personne \"{{element.firstName}} {{element.lastName}}\". Il sera de nouveau possible de l'intégrer dans les entrées/sorties.",
                     "delete": "Attention ! Tu vas définitivement supprimer la personne \"{{element.firstName}} {{element.lastName}}\". Elle sera donc définitivement dissociée des mouvements et autres éléments."
                 }
             }
@@ -767,7 +767,7 @@
                 "message": {
                     "disable": "Attention ! Tu vas désactiver le mouvement. Tant qu'il est désactivé, le mouvement ne sera plus visible pour ses participants.",
                     "enable": "Attention ! Tu vas ré-activer le mouvement. Il sera de nouveau visible pour les participants.",
-                    "delete": "Attention ! Tu vas définitivement supprimer le movement. Il sera définitivement dissociée des mouvements et autres éléments."
+                    "delete": "Attention ! Tu vas définitivement supprimer le mouvement. Il sera définitivement dissocié des mouvements et autres éléments."
                 }
             }
         }
@@ -778,8 +778,8 @@
             "plural": "Sélectionnes des utilisateurs"
         },
         "search": {
-            "singular": "Rechercher un utilisateur",
-            "plural": "Rechercher des utilisateurs"
+            "singular": "Recherche un utilisateur",
+            "plural": "Recherche des utilisateurs"
         },
         "add-user": {
             "singular": "{{number}} Utilisateur",
@@ -798,7 +798,7 @@
                 "message": {
                     "block": "Attention ! Tu vas bloquer un utilisateur. Tant qu'il est bloqué, {{element.firstName}} {{element.lastName}} ne pourra plus se connecter.",
                     "unblock": "Attention ! Tu vas débloquer un utilisateur. {{element.firstName}} {{element.lastName}} pourra à nouveau se connecter.",
-                    "delete": "Attention ! Tu vas supprimer un utilisateur. Tous les profiles associées à {{element.firstName}} {{element.lastName}} seront également supprimés."
+                    "delete": "Attention ! Tu vas supprimer un utilisateur. Tous les profils associés à {{element.firstName}} {{element.lastName}} seront également supprimés."
                 }
             }
         },
