@@ -1,1 +1,12 @@
-<p>home works!</p>
+<div *ngIf='currentUser$ | async as currentUser'>
+    @if (currentUser.preferences.selectedProfile) {
+        TODO
+    } @else {
+        <p-message
+                [title]='"info.title.missing-selected-profile" | translate'
+                [text]='"info.message.missing-selected-profile" | translate'
+                severity='info'
+                styleClass='full-w p-message p-message-info d-flex justify-content-start' />
+        <app-profile-list />
+    }
+</div>

@@ -25,6 +25,7 @@ import {
     SelectInvitationPageOrder,
     SelectProfilePageOrder,
     SelectUserEventProfile,
+    SetGlobalError,
     SignIn,
     SignOut,
     StartContextEventLoader,
@@ -44,6 +45,7 @@ import { StateUtil } from '../../util-tool/state/state.util'
 import { OrderEnum } from '../../util-model/enumeration/order.enum'
 import { FormUtil } from '../../util-tool/util/form.util'
 import { EventModel } from '../../util-model/model/event.model'
+import { HttpErrorResponse } from '@angular/common/http'
 
 @Injectable()
 export class RegistryFacade {
@@ -175,6 +177,10 @@ export class RegistryFacade {
 
     public stopGlobalLoader (): void {
         this.ngStore.dispatch( StopGlobalLoader )
+    }
+
+    public setGlobalError (error: HttpErrorResponse): void {
+        this.ngStore.dispatch( new SetGlobalError( error ) )
     }
 
     public updateNetwork (online: boolean): void {

@@ -2,6 +2,7 @@ import { Message } from 'primeng/api'
 import { ProfileStatusEnum } from '../../util-model/enumeration/profile-status.enum'
 import { OrderEnum } from '../../util-model/enumeration/order.enum'
 import { EventProfileModel } from '../../util-model/model/event-profile.model'
+import { HttpErrorResponse } from '@angular/common/http'
 
 enum ActionEnum {
     START_GLOBAL_LOADER = '[Local] Starting global loader',
@@ -22,6 +23,7 @@ enum ActionEnum {
 
     START_PROFILES_PAGE_LOADER = '[Local] Starting profiles page loader',
     STOP_PROFILES_PAGE_LOADER = '[Local] Stopping profiles page loader',
+    SET_GLOBAL_ERROR = '[Local] Setting global error',
 
     FETCH_USER_EVENT_PROFILE_PAGE = '[Backend] Fetching user\'s event profile page',
     INPUT_PROFILE_PAGE_SEARCH = '[Local] Inputting user\'s event profile page search',
@@ -55,6 +57,12 @@ export class StartGlobalLoader {
 
 export class StopGlobalLoader {
     public static readonly type: ActionEnum = ActionEnum.STOP_GLOBAL_LOADER
+}
+
+export class SetGlobalError {
+    public static readonly type: ActionEnum = ActionEnum.SET_GLOBAL_ERROR
+
+    public constructor (public readonly error: HttpErrorResponse) {}
 }
 
 export class UpdateNetwork {

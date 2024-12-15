@@ -12,6 +12,7 @@ import { InputSwitchModule } from 'primeng/inputswitch'
 import { DividerModule } from 'primeng/divider'
 import { GenericEventFormComponent } from '../generic-event-form.component'
 import { FormComponent } from '../../../../shared/util-ui/form/form.component'
+import { RegistryTemplateDirective } from '../../../../shared/util-tool/directive/registry-required.directive'
 
 @Component( {
     selector: 'app-event-creation-form',
@@ -28,6 +29,7 @@ import { FormComponent } from '../../../../shared/util-ui/form/form.component'
         DividerModule,
         FormComponent,
         AsyncPipe,
+        RegistryTemplateDirective,
     ],
     templateUrl: './event-creation-form.component.html',
     styleUrl: './event-creation-form.component.scss',

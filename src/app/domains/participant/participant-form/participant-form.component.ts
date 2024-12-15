@@ -22,6 +22,7 @@ import { FormUtil } from '../../../shared/util-tool/util/form.util'
 import { ParticipantModel } from '../../../shared/util-model/model/participant.model'
 import { UserDto } from '../../../shared/util-model/dto/user.dto'
 import { DateUtil } from '../../../shared/util-tool/util/date.util'
+import { RegistryTemplateDirective } from '../../../shared/util-tool/directive/registry-required.directive'
 
 @Component( {
     selector: 'app-participant-form',
@@ -41,6 +42,7 @@ import { DateUtil } from '../../../shared/util-tool/util/date.util'
         TranslateModule,
         ReactiveFormsModule,
         SelectUsersFieldComponent,
+        RegistryTemplateDirective,
     ],
     templateUrl: './participant-form.component.html',
     styleUrl: './participant-form.component.scss',

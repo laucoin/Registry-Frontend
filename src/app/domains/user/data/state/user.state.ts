@@ -304,16 +304,24 @@ export class UserState extends GenericElementState<UserStateModel> {
     }
 
     protected pageError (ctx: StateContext<UserStateModel>, error: HttpErrorResponse): Observable<void> {
-        ctx.patchState( {
-            users: this.buildErrorMessageAndNotify( ctx.getState().users, error ),
-        } )
+        if (error.status == 503) {
+            this.registryFacade.setGlobalError( error )
+        } else {
+            ctx.patchState( {
+                users: this.buildErrorMessageAndNotify( ctx.getState().users, error ),
+            } )
+        }
         throw error.error
     }
 
     protected elementError (ctx: StateContext<UserStateModel>, error: HttpErrorResponse): Observable<void> {
-        ctx.patchState( {
-            user: this.buildErrorMessageAndNotify( ctx.getState().user, error ),
-        } )
+        if (error.status == 503) {
+            this.registryFacade.setGlobalError( error )
+        } else {
+            ctx.patchState( {
+                user: this.buildErrorMessageAndNotify( ctx.getState().user, error ),
+            } )
+        }
         throw error.error
     }
 }

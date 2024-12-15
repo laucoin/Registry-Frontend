@@ -3,7 +3,7 @@
     <p-card>
         <form [formGroup]='form'>
             <div class='field'>
-                <label for='roles'>{{ 'profile.form.role' | translate }}</label>
+                <label for='roles' appRequired>{{ 'profile.form.role' | translate }}</label>
                 <p-dropdown
                         id='roles'
                         styleClass='full-w'
@@ -30,7 +30,7 @@
                                       [label]='"profile.form.date-range" | translate' />
             </div>
             <div class='field'>
-                <label for='users'>{{ 'profile.form.users' | translate }}</label>
+                <label for='users' appRequired>{{ 'profile.form.users' | translate }}</label>
                 <app-select-users-field id='users' [multiple]='true' [formControl]='users' />
                 <app-form-field-error [control]='users'
                                       [label]='"profile.form.users" | translate' />

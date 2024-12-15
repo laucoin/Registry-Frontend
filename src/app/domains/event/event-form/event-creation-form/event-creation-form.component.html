@@ -6,7 +6,7 @@
                 <div class='flex flex-column'>
                     <h3>{{ 'event.form.title.information' | translate }}</h3>
                     <div class='field'>
-                        <label for='name'>{{ 'event.form.name' | translate }}</label>
+                        <label for='name' appRequired>{{ 'event.form.name' | translate }}</label>
                         <input [formControl]='name'
                                [placeholder]='"event.example.name" | translate'
                                id='name'

@@ -192,7 +192,7 @@ p-panel .p-panel-content {
 
 .p-tabview .p-tabview-panels {
     background: var(--surface-ground);
-    padding:    var(--min-spacer) 0;
+    padding:    0;
 }
 
 @include less-than(md) {
@@ -208,5 +208,5 @@ a:active,
 a:visited,
 a:link {
     text-decoration: none;
-    color:           white;
+    color:           var(--text-color);
 }

@@ -13,7 +13,7 @@
     }
     <p-card>
         <div class='field'>
-            <label for='datetime'>{{ 'movement.form.datetime' | translate }}</label>
+            <label for='datetime' appRequired>{{ 'movement.form.datetime' | translate }}</label>
             <p-calendar [firstDayOfWeek]='1'
                         [formControl]='dateTime'
                         [placeholder]='"movement.example.datetime" | translate: {
@@ -34,7 +34,7 @@
                                   [label]='"movement.form.datetime" | translate' />
         </div>
         <div class='field'>
-            <label for='type'>{{ 'movement.form.type' | translate }}</label>
+            <label for='type' appRequired>{{ 'movement.form.type' | translate }}</label>
             <p-dropdown
                     id='type'
                     styleClass='full-w'
@@ -47,7 +47,7 @@
                                   [label]='"movement.form.type" | translate' />
         </div>
         <div class='field'>
-            <label for='content'>{{ 'movement.form.content' | translate }}</label>
+            <label for='content' appRequired>{{ 'movement.form.content' | translate }}</label>
             <app-movement-content-field id='content' [formArray]='content' />
             <app-form-field-error [control]='content'
                                   [label]='"movement.form.content" | translate' />

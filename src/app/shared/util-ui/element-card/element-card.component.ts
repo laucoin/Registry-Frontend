@@ -144,4 +144,9 @@ export class ElementCardComponent<T extends GenericModel, A> extends GenericElem
     protected get confirmationName (): FormControl {
         return this.form.get( 'confirmationName' ) as FormControl
     }
+
+    protected isActionDisabled (): boolean {
+        // Do nothing
+        return false
+    }
 }

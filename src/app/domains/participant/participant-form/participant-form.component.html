@@ -19,7 +19,7 @@
         </div>
         <p-divider align='center' />
         <div class='field'>
-            <label for='first-name'>{{ 'participant.form.first-name' | translate }}</label>
+            <label for='first-name' appRequired>{{ 'participant.form.first-name' | translate }}</label>
             <input [formControl]='firstName'
                    [placeholder]='"participant.example.first-name" | translate'
                    id='first-name'
@@ -35,7 +35,7 @@
                                   [label]='"participant.form.first-name" | translate' />
         </div>
         <div class='field'>
-            <label for='last-name'>{{ 'participant.form.last-name' | translate }}</label>
+            <label for='last-name' appRequired>{{ 'participant.form.last-name' | translate }}</label>
             <input [formControl]='lastName'
                    [placeholder]='"participant.example.last-name" | translate'
                    id='last-name'
@@ -51,7 +51,7 @@
                                   [label]='"participant.form.last-name" | translate' />
         </div>
         <div class='field'>
-            <label for='birthday'>{{ 'participant.form.birthday' | translate }}</label>
+            <label for='birthday' appRequired>{{ 'participant.form.birthday' | translate }}</label>
             <p-calendar [firstDayOfWeek]='1'
                         [formControl]='birthday'
                         [placeholder]='"participant.example.birthday" | translate'

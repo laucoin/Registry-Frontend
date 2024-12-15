@@ -38,20 +38,31 @@ export class ParticipantElementComponent extends GenericElementComponent<Partici
         const currentUser: CurrentUserModel = this.registryFacade.actualCurrentUser!
         this.actions = AppConfig
             .config.participant.action
-            .filter( (action: ActionModel<ParticipantActionEnum>): boolean => this.leaveNecessaryDisableOrEnable( action ) )
             .map( (action: ActionModel<ParticipantActionEnum>): ActionModel<ParticipantActionEnum> => ({
                 ...action,
-                disabled: CurrentUserUtil.isFeasible(
-                    currentUser,
-                    this.element.event,
-                    action,
-                ) ? !((action.disabled && !this.element.visible) || (!action.disabled && this.element.visible)) : true,
+                disabled: this.isActionDisabled( currentUser, action ),
             }) )
+            .filter( (action: ActionModel<ParticipantActionEnum>): boolean => !action.disabled )
     }
 
-    private leaveNecessaryDisableOrEnable (action: ActionModel<ParticipantActionEnum>): boolean {
-        return (action.id !== ParticipantActionEnum.ENABLE_PARTICIPANT && this.element.visible)
-               || (action.id !== ParticipantActionEnum.DISABLE_PARTICIPANT && !this.element.visible)
+    protected override isActionDisabled (
+        currentUser: CurrentUserModel,
+        action: ActionModel<ParticipantActionEnum>,
+    ): boolean {
+        const isActionFeasible: boolean = CurrentUserUtil.isFeasible(
+            currentUser,
+            this.element.event,
+            action,
+        )
+
+        switch (action.id) {
+            case ParticipantActionEnum.DISABLE_PARTICIPANT:
+                return !(isActionFeasible && this.element.visible)
+            case ParticipantActionEnum.ENABLE_PARTICIPANT:
+                return !(isActionFeasible && !this.element.visible)
+            default:
+                return !isActionFeasible
+        }
     }
 
     protected handleAction (action: ParticipantActionEnum): void {

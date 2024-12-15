@@ -417,16 +417,24 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
     }
 
     protected pageError (ctx: StateContext<ParticipantStateModel>, error: HttpErrorResponse): Observable<void> {
-        ctx.patchState( {
-            participants: this.buildErrorMessageAndNotify( ctx.getState().participants, error ),
-        } )
+        if (error.status == 503) {
+            this.registryFacade.setGlobalError( error )
+        } else {
+            ctx.patchState( {
+                participants: this.buildErrorMessageAndNotify( ctx.getState().participants, error ),
+            } )
+        }
         throw error.error
     }
 
     protected elementError (ctx: StateContext<ParticipantStateModel>, error: HttpErrorResponse): Observable<void> {
-        ctx.patchState( {
-            participant: this.buildErrorMessageAndNotify( ctx.getState().participant, error ),
-        } )
+        if (error.status == 503) {
+            this.registryFacade.setGlobalError( error )
+        } else {
+            ctx.patchState( {
+                participant: this.buildErrorMessageAndNotify( ctx.getState().participant, error ),
+            } )
+        }
         throw error.error
     }
 }

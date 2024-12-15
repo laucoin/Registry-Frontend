@@ -225,6 +225,7 @@ export class EventState extends GenericElementState<EventStateModel> {
             this.eventIcon,
             this.buildTranslationArgs( event ),
         )
+        this.registryFacade.fetchCurrentUser( true )
         this.refreshPage( ctx )
     }
 
@@ -325,16 +326,24 @@ export class EventState extends GenericElementState<EventStateModel> {
     }
 
     protected pageError (ctx: StateContext<EventStateModel>, error: HttpErrorResponse): Observable<void> {
-        ctx.patchState( {
-            events: this.buildErrorMessageAndNotify( ctx.getState().events, error ),
-        } )
+        if (error.status == 503) {
+            this.registryFacade.setGlobalError( error )
+        } else {
+            ctx.patchState( {
+                events: this.buildErrorMessageAndNotify( ctx.getState().events, error ),
+            } )
+        }
         throw error.error
     }
 
     protected elementError (ctx: StateContext<EventStateModel>, error: HttpErrorResponse): Observable<void> {
-        ctx.patchState( {
-            event: this.buildErrorMessageAndNotify( ctx.getState().event, error ),
-        } )
+        if (error.status == 503) {
+            this.registryFacade.setGlobalError( error )
+        } else {
+            ctx.patchState( {
+                event: this.buildErrorMessageAndNotify( ctx.getState().event, error ),
+            } )
+        }
         throw error.error
     }
 }

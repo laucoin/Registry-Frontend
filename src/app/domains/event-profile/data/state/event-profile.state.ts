@@ -42,7 +42,7 @@ const defaultEventProfileState: EventProfileStateModel = {
         params: {
             order: OrderEnum.ASC,
             onlyVisible: true,
-            isUsable: false,
+            onlyUsable: false,
             status: undefined,
             searched: undefined,
             startAccess: undefined,
@@ -480,16 +480,24 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
     }
 
     protected pageError (ctx: StateContext<EventProfileStateModel>, error: HttpErrorResponse): Observable<void> {
-        ctx.patchState( {
-            eventProfiles: this.buildErrorMessageAndNotify( ctx.getState().eventProfiles, error ),
-        } )
+        if (error.status == 503) {
+            this.registryFacade.setGlobalError( error )
+        } else {
+            ctx.patchState( {
+                eventProfiles: this.buildErrorMessageAndNotify( ctx.getState().eventProfiles, error ),
+            } )
+        }
         throw error.error
     }
 
     protected elementError (ctx: StateContext<EventProfileStateModel>, error: HttpErrorResponse): Observable<void> {
-        ctx.patchState( {
-            eventProfile: this.buildErrorMessageAndNotify( ctx.getState().eventProfile, error ),
-        } )
+        if (error.status == 503) {
+            this.registryFacade.setGlobalError( error )
+        } else {
+            ctx.patchState( {
+                eventProfile: this.buildErrorMessageAndNotify( ctx.getState().eventProfile, error ),
+            } )
+        }
         throw error.error
     }
 }

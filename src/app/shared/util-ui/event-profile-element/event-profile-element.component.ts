@@ -62,26 +62,37 @@ export class EventProfileElementComponent extends GenericElementComponent<EventP
         const currentUser: CurrentUserModel = this.registryFacade.actualCurrentUser!
         this.actions = AppConfig
             .config.profile.event.action
-            .filter( (action: ActionModel<EventProfileActionEnum>): boolean => this.leaveSelectIfCurrentUser( action ) )
-            .filter( (action: ActionModel<EventProfileActionEnum>): boolean =>
-                this.leaveEditBlockAndUnblockIfNotCurrentUser( action ),
-            )
-            .filter( (action: ActionModel<EventProfileActionEnum>): boolean =>
-                this.leaveNecessaryBlockOrUnblock( action ),
-            )
             .map( (action: ActionModel<EventProfileActionEnum>): ActionModel<EventProfileActionEnum> => ({
                     ...action,
-                    disabled: (!this.element.visible && action.disabled) ||
-                              !CurrentUserUtil.isFeasible(
-                                  currentUser,
-                                  this.element.event,
-                                  action,
-                              ) || (
-                                  this.element.id === this.registryFacade.actualCurrentUser?.preferences?.selectedProfile?.id &&
-                                  action.id === EventProfileActionEnum.SELECT_EVENT_PROFILE
-                              ),
+                    disabled: this.isActionDisabled( currentUser, action ),
                 }),
             )
+            .filter( (action: ActionModel<EventProfileActionEnum>): boolean => !action.disabled )
+    }
+
+    protected override isActionDisabled (
+        currentUser: CurrentUserModel,
+        action: ActionModel<EventProfileActionEnum>,
+    ): boolean {
+        const isActionFeasible: boolean = CurrentUserUtil.isFeasible(
+            currentUser,
+            this.element.event,
+            action,
+        )
+        const isCurrentUserProfile: boolean = this.registryFacade.actualCurrentUser?.id === this.element.user.id
+
+        switch (action.id) {
+            case EventProfileActionEnum.SELECT_EVENT_PROFILE:
+                return !isCurrentUserProfile
+            case EventProfileActionEnum.UPDATE_EVENT_PROFILE:
+                return isCurrentUserProfile || !isActionFeasible
+            case EventProfileActionEnum.BLOCK_EVENT_PROFILE:
+                return isCurrentUserProfile || !(isActionFeasible && this.element.visible)
+            case EventProfileActionEnum.UNBLOCK_EVENT_PROFILE:
+                return isCurrentUserProfile || !(isActionFeasible && !this.element.visible)
+            default:
+                return !isActionFeasible
+        }
     }
 
     protected handleAction (action: EventProfileActionEnum): void {
@@ -110,26 +121,6 @@ export class EventProfileElementComponent extends GenericElementComponent<EventP
             default:
                 console.warn( this.translateService.instant( 'warning.message.invalid-action' ) )
         }
-    }
-
-    private leaveSelectIfCurrentUser (action: ActionModel<EventProfileActionEnum>): boolean {
-        return action.id !== EventProfileActionEnum.SELECT_EVENT_PROFILE
-               || this.registryFacade.actualCurrentUser?.id === this.element.user.id
-    }
-
-    private leaveEditBlockAndUnblockIfNotCurrentUser (action: ActionModel<EventProfileActionEnum>): boolean {
-        const blockUnblockActions: EventProfileActionEnum[] = [
-            EventProfileActionEnum.UPDATE_EVENT_PROFILE,
-            EventProfileActionEnum.BLOCK_EVENT_PROFILE,
-            EventProfileActionEnum.UNBLOCK_EVENT_PROFILE,
-        ]
-
-        return !blockUnblockActions.includes( action.id ) || this.registryFacade.actualCurrentUser?.id !== this.element.user.id
-    }
-
-    private leaveNecessaryBlockOrUnblock (action: ActionModel<EventProfileActionEnum>): boolean {
-        return (action.id !== EventProfileActionEnum.UNBLOCK_EVENT_PROFILE && this.element.visible)
-               || (action.id !== EventProfileActionEnum.BLOCK_EVENT_PROFILE && !this.element.visible)
     }
 
     protected severityFromStatus (status: ProfileStatusEnum): 'success' | 'danger' | 'help' {

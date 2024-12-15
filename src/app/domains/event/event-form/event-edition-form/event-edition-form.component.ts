@@ -19,6 +19,7 @@ import { Observable } from 'rxjs'
 import { CardModule } from 'primeng/card'
 import { FormComponent } from '../../../../shared/util-ui/form/form.component'
 import { GenericUtil } from '../../../../shared/util-tool/util/generic.util'
+import { RegistryTemplateDirective } from '../../../../shared/util-tool/directive/registry-required.directive'
 
 @Component( {
     selector: 'app-event-edition-form',
@@ -36,6 +37,7 @@ import { GenericUtil } from '../../../../shared/util-tool/util/generic.util'
         ProgressSpinnerModule,
         CardModule,
         FormComponent,
+        RegistryTemplateDirective,
     ],
     templateUrl: './event-edition-form.component.html',
     styleUrl: './event-edition-form.component.scss',

@@ -20,7 +20,7 @@ export const routes: Routes = [
     {
         path: AppRouteEnum.HOME,
         component: HomeComponent,
-        canActivate: [ authGuard, selectedProfileGuard ],
+        canActivate: [ authGuard ],
     },
     {
         path: AppRouteEnum.AUTH_CALLBACK,

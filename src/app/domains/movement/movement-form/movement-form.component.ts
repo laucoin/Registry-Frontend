@@ -22,6 +22,7 @@ import { DropdownModule } from 'primeng/dropdown'
 import { MovementContentFieldComponent } from '../movement-content-field/movement-content-field.component'
 import { MovementContentModel } from '../data/model/movement-content.model'
 import { MovementContentDto } from '../data/dto/movement-content.dto'
+import { RegistryTemplateDirective } from '../../../shared/util-tool/directive/registry-required.directive'
 
 @Component( {
     selector: 'app-movement-form',
@@ -40,6 +41,7 @@ import { MovementContentDto } from '../data/dto/movement-content.dto'
         TranslateModule,
         DropdownModule,
         MovementContentFieldComponent,
+        RegistryTemplateDirective,
     ],
     templateUrl: './movement-form.component.html',
     styleUrl: './movement-form.component.scss',
