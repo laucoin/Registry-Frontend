@@ -14,6 +14,7 @@ import { AsyncPipe } from '@angular/common'
 import { FormComponent } from '../../../../shared/util-ui/form/form.component'
 import { GenericEventProfileFormComponent } from '../generic-event-profile-form.component'
 import { UserDto } from '../../../../shared/util-model/dto/user.dto'
+import { RegistryTemplateDirective } from '../../../../shared/util-tool/directive/registry-required.directive'
 
 @Component( {
     selector: 'app-event-profile-invitation-form',
@@ -31,6 +32,7 @@ import { UserDto } from '../../../../shared/util-model/dto/user.dto'
         FormFieldErrorComponent,
         AsyncPipe,
         FormComponent,
+        RegistryTemplateDirective,
     ],
     templateUrl: './event-profile-invitation-form.component.html',
     styleUrl: './event-profile-invitation-form.component.scss',

@@ -3812,12 +3812,10 @@
     }
 
     .p-dataview .p-dataview-header {
-        background:   #2a323d;
-        color:        rgba(255, 255, 255, 0.6);
-        border:       solid #3f4b5b;
-        border-width: 1px 0 0 0;
-        padding:      1rem 1rem;
-        font-weight:  600;
+        background:  #2a323d;
+        color:       rgba(255, 255, 255, 0.6);
+        padding:     1rem 1rem;
+        font-weight: 600;
     }
 
     .p-dataview .p-dataview-content {
@@ -5442,7 +5440,8 @@
     }
 
     .p-stepper-separator {
-        flex: 1 1 0;
+        background: var(--text-color);
+        flex:       1 1 0;
     }
 
     .p-stepper .p-stepper-header {

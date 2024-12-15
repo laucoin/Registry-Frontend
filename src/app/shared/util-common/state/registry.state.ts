@@ -31,6 +31,7 @@ import {
     SelectInvitationPageOrder,
     SelectProfilePageOrder,
     SelectUserEventProfile,
+    SetGlobalError,
     SignIn,
     SignOut,
     StartContextEventLoader,
@@ -60,7 +61,7 @@ const defaultRegistryState: RegistryStateModel = {
         params: {
             order: OrderEnum.ASC,
             onlyVisible: true,
-            isUsable: true,
+            onlyUsable: true,
             status: ProfileStatusEnum.ACCEPTED,
             searched: undefined,
             startAccess: undefined,
@@ -75,10 +76,10 @@ const defaultRegistryState: RegistryStateModel = {
         params: {
             order: OrderEnum.ASC,
             onlyVisible: true,
-            isUsable: false,
+            onlyUsable: false,
             status: ProfileStatusEnum.INVITED,
             searched: undefined,
-            startAccess: new Date().toISOString(),
+            startAccess: undefined,
             endAccess: undefined,
         },
         element: undefined,
@@ -125,6 +126,11 @@ export class RegistryState extends GenericState {
     @Action( StopGlobalLoader )
     public stopGlobalLoader (ctx: StateContext<RegistryStateModel>): void {
         this.updateGlobalLoader( ctx, false )
+    }
+
+    @Action( SetGlobalError )
+    public setGlobalError (ctx: StateContext<RegistryStateModel>, payload: SetGlobalError): void {
+        this.globalError( ctx, payload.error )
     }
 
     @Action( UpdateNetwork )

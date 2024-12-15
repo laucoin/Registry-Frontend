@@ -43,21 +43,29 @@ export class EventElementComponent extends GenericElementComponent<EventModel, E
         const currentUser: CurrentUserModel = this.registryFacade.actualCurrentUser!
         this.actions = AppConfig
             .config.event.action
-            .filter( (action: ActionModel<EventActionEnum>): boolean => this.leaveNecessaryDisableOrEnable( action ) )
             .map( (action: ActionModel<EventActionEnum>): ActionModel<EventActionEnum> => ({
                     ...action,
-                    disabled: CurrentUserUtil.isFeasible(
-                        currentUser,
-                        this.element,
-                        action,
-                    ) ? !((action.disabled && !this.element.visible) || (!action.disabled && this.element.visible)) : true,
+                    disabled: this.isActionDisabled( currentUser, action ),
                 }),
             )
+            .filter( (action: ActionModel<EventActionEnum>): boolean => !action.disabled )
     }
 
-    private leaveNecessaryDisableOrEnable (action: ActionModel<EventActionEnum>): boolean {
-        return (action.id !== EventActionEnum.ENABLE_EVENT && this.element.visible)
-               || (action.id !== EventActionEnum.DISABLE_EVENT && !this.element.visible)
+    protected override isActionDisabled (currentUser: CurrentUserModel, action: ActionModel<EventActionEnum>): boolean {
+        const isActionFeasible: boolean = CurrentUserUtil.isFeasible(
+            currentUser,
+            this.element,
+            action,
+        )
+
+        switch (action.id) {
+            case EventActionEnum.DISABLE_EVENT:
+                return !(isActionFeasible && this.element.visible)
+            case EventActionEnum.ENABLE_EVENT:
+                return !(isActionFeasible && !this.element.visible)
+            default:
+                return !isActionFeasible
+        }
     }
 
     protected handleAction (action: EventActionEnum): void {

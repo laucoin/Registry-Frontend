@@ -18,6 +18,7 @@ import { UserElementComponent } from '../../../user/user-element/user-element.co
 import { FormComponent } from '../../../../shared/util-ui/form/form.component'
 import { GenericEventProfileFormComponent } from '../generic-event-profile-form.component'
 import { GenericUtil } from '../../../../shared/util-tool/util/generic.util'
+import { RegistryTemplateDirective } from '../../../../shared/util-tool/directive/registry-required.directive'
 
 @Component( {
     selector: 'app-event-profile-edition-form',
@@ -32,6 +33,7 @@ import { GenericUtil } from '../../../../shared/util-tool/util/generic.util'
         CalendarModule,
         UserElementComponent,
         FormComponent,
+        RegistryTemplateDirective,
     ],
     templateUrl: './event-profile-edition-form.component.html',
     styleUrl: './event-profile-edition-form.component.scss',

@@ -384,16 +384,24 @@ export class MovementState extends GenericEventElementState<MovementStateModel> 
     }
 
     protected pageError (ctx: StateContext<MovementStateModel>, error: HttpErrorResponse): Observable<void> {
-        ctx.patchState( {
-            movements: this.buildErrorMessageAndNotify( ctx.getState().movements, error ),
-        } )
+        if (error.status == 503) {
+            this.registryFacade.setGlobalError( error )
+        } else {
+            ctx.patchState( {
+                movements: this.buildErrorMessageAndNotify( ctx.getState().movements, error ),
+            } )
+        }
         throw error.error
     }
 
     protected elementError (ctx: StateContext<MovementStateModel>, error: HttpErrorResponse): Observable<void> {
-        ctx.patchState( {
-            movement: this.buildErrorMessageAndNotify( ctx.getState().movement, error ),
-        } )
+        if (error.status == 503) {
+            this.registryFacade.setGlobalError( error )
+        } else {
+            ctx.patchState( {
+                movement: this.buildErrorMessageAndNotify( ctx.getState().movement, error ),
+            } )
+        }
         throw error.error
     }
 }

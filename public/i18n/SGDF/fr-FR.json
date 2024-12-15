@@ -174,8 +174,12 @@
         }
     },
     "info": {
+        "title": {
+            "missing-selected-profile": "🔍 Aucun profil sélectionné"
+        },
         "message": {
-            "email-copied": "L'adresse email de {{element.firstName}} {{element.lastName}} copiée."
+            "email-copied": "L'adresse email de {{element.firstName}} {{element.lastName}} copiée.",
+            "missing-selected-profile": "Pour profiter de la page d'accueil, il faut avoir un profil sélectionné. Donc \"Pas de profil, pas de page d'accueil 😝\"."
         }
     },
     "error": {
@@ -466,6 +470,7 @@
     "next": "Suivant",
     "previous": "Précédent",
     "cancel": "Annuler",
+    "required": "Obligatoire",
     "close": "Fermer",
     "create": "Créer",
     "edit": "Mettre à jour",

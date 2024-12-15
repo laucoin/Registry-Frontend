@@ -15,7 +15,7 @@
     <p-card>
         <form [formGroup]='form'>
             <div class='field'>
-                <label for='roles'>{{ 'profile.form.role' | translate }}</label>
+                <label for='roles' appRequired>{{ 'profile.form.role' | translate }}</label>
                 <p-dropdown
                         id='roles'
                         styleClass='full-w'

@@ -2,7 +2,6 @@
     .p-sidebar {
         background: transparent;
         border:     none;
-        color:      white;
     }
 
     .torn-paper {
@@ -39,6 +38,7 @@ menu {
 
 .menu-item {
     padding: 0 var(--basic-spacer) 0;
+    color:   white;
 
     span {
         margin-left: var(--min-spacer);

@@ -69,33 +69,28 @@ export class UserElementComponent extends GenericElementComponent<UserModel, Use
         const currentUser: CurrentUserModel = this.registryFacade.actualCurrentUser!
         this.actions = AppConfig
             .config.user.action
-            .filter( (action: ActionModel<UserActionEnum>): boolean => this.leaveNecessaryDisableOrEnable( action ) )
-            .filter( (action: ActionModel<UserActionEnum>): boolean => this.removeActionIfCurrentUser(
-                currentUser,
-                action,
-            ) )
             .map( (action: ActionModel<UserActionEnum>): ActionModel<UserActionEnum> => ({
-                ...action, disabled:
-                    CurrentUserUtil.isFeasible(
-                        currentUser,
-                        undefined,
-                        action,
-                    ) ?
-                    !((action.disabled && !this.element.visible) || (!action.disabled && this.element.visible)) : true,
+                ...action, disabled: this.isActionDisabled( currentUser, action ),
             }) )
+            .filter( (action: ActionModel<UserActionEnum>): boolean => !action.disabled )
     }
 
-    private leaveNecessaryDisableOrEnable (action: ActionModel<UserActionEnum>): boolean {
-        return (action.id !== UserActionEnum.UNBLOCK_USER && this.element.visible)
-               || (action.id !== UserActionEnum.BLOCK_USER && !this.element.visible)
-    }
+    protected override isActionDisabled (currentUser: CurrentUserModel, action: ActionModel<UserActionEnum>): boolean {
+        const isActionFeasible: boolean = CurrentUserUtil.isFeasible(
+            currentUser,
+            undefined,
+            action,
+        )
+        const isCurrentUser: boolean = this.element.id == currentUser?.id
 
-    private removeActionIfCurrentUser (
-        currentUser: CurrentUserModel | undefined,
-        action: ActionModel<UserActionEnum>,
-    ): boolean {
-        return ![ UserActionEnum.UNBLOCK_USER, UserActionEnum.BLOCK_USER ].includes( action.id )
-               || this.element.id !== currentUser?.id
+        switch (action.id) {
+            case UserActionEnum.BLOCK_USER:
+                return !isCurrentUser || !(isActionFeasible && this.element.visible)
+            case UserActionEnum.UNBLOCK_USER:
+                return !isCurrentUser || !(isActionFeasible && !this.element.visible)
+            default:
+                return !isActionFeasible
+        }
     }
 
     protected handleAction (action: UserActionEnum): void {

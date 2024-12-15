@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core'
 import { GenericComponent } from './generic.component'
 import { ActionModel } from '../../util-model/model/action.model'
+import { CurrentUserModel } from '../../util-model/model/current-user.model'
 
 @Component( {
     template: '',
@@ -11,4 +12,6 @@ export abstract class GenericElementComponent<T, A> extends GenericComponent {
     @Input( { required: true } ) public element!: T
 
     protected loading: boolean = false
+
+    protected abstract isActionDisabled (currentUser: CurrentUserModel, action: ActionModel<A>): boolean
 }

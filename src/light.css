@@ -37,7 +37,7 @@
     --surface-f:            #ffffff;
     --font-family:          -apple-system, BlinkMacSystemFont, 'Sarabun', sans-serif, 'Apple Color Emoji';
     font-family:            -apple-system, BlinkMacSystemFont, 'Sarabun', sans-serif, 'Apple Color Emoji';
-    --surface-ground:       #efefef;
+    --surface-ground:       #ffffff;
     --surface-hover:        #e9ecef;
     --surface-overlay:      #ffffff;
     --content-padding:      1.25rem;
@@ -3804,12 +3804,9 @@
     }
 
     .p-dataview .p-dataview-header {
-        background:   #efefef;
-        color:        #212529;
-        border:       solid #dee2e6;
-        border-width: 1px 0 0 0;
-        padding:      1rem 1rem;
-        font-weight:  600;
+        color:       #212529;
+        padding:     1rem 1rem;
+        font-weight: 600;
     }
 
     .p-dataview .p-dataview-content {
@@ -5427,7 +5424,8 @@
     }
 
     .p-stepper-separator {
-        flex: 1 1 0;
+        background: var(--text-color);
+        flex:       1 1 0;
     }
 
     .p-stepper .p-stepper-header {
@@ -8280,11 +8278,11 @@
 
     .p-stepper .p-stepper-header.p-highlight .p-stepper-number {
         background: #ffffff;
-        color:      #84cc16;
+        color:      var(--primary-color);
     }
 
     .p-stepper .p-stepper-header.p-highlight .p-stepper-title {
-        color: #84cc16;
+        color: var(--primary-color);
     }
 
     .p-steps .p-steps-item .p-menuitem-link .p-steps-number {
@@ -8313,11 +8311,11 @@
 
     .p-steps .p-steps-item.p-highlight .p-steps-number {
         background: #ffffff;
-        color:      #84cc16;
+        color:      var(--primary-color);
     }
 
     .p-steps .p-steps-item.p-highlight .p-steps-title {
-        color: #84cc16;
+        color: var(--primary-color);
     }
 
     .p-steps .p-steps-item.p-disabled {

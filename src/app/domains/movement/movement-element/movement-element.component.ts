@@ -5,7 +5,7 @@ import { MovementActionEnum } from '../data/state/movement.action'
 import { ActionModel } from '../../../shared/util-model/model/action.model'
 import { MovementFacade } from '../data/state/movement.facade'
 import { ElementCardComponent } from '../../../shared/util-ui/element-card/element-card.component'
-import { DatePipe, NgForOf, TitleCasePipe, UpperCasePipe } from '@angular/common'
+import { DatePipe, TitleCasePipe, UpperCasePipe } from '@angular/common'
 import { AppConfig } from '../../../app.config'
 import { CurrentUserModel } from '../../../shared/util-model/model/current-user.model'
 import { CurrentUserUtil } from '../../../shared/util-authentication/tool/current-user.util'
@@ -39,7 +39,6 @@ import { ListboxModule } from 'primeng/listbox'
         RegistryTemplateDirective,
         TabViewModule,
         MovementParticipantElementComponent,
-        NgForOf,
         ListboxModule,
 
     ],
@@ -74,20 +73,31 @@ export class MovementElementComponent extends GenericElementComponent<MovementMo
         const currentUser: CurrentUserModel = this.registryFacade.actualCurrentUser!
         this.actions = AppConfig
             .config.movement.action
-            .filter( (action: ActionModel<MovementActionEnum>): boolean => this.leaveNecessaryDisableOrEnable( action ) )
             .map( (action: ActionModel<MovementActionEnum>): ActionModel<MovementActionEnum> => ({
                 ...action,
-                disabled: CurrentUserUtil.isFeasible(
-                    currentUser,
-                    this.element.event,
-                    action,
-                ) ? !((action.disabled && !this.element.visible) || (!action.disabled && this.element.visible)) : true,
+                disabled: this.isActionDisabled( currentUser, action ),
             }) )
+            .filter( (action: ActionModel<MovementActionEnum>): boolean => !action.disabled )
     }
 
-    private leaveNecessaryDisableOrEnable (action: ActionModel<MovementActionEnum>): boolean {
-        return (action.id !== MovementActionEnum.ENABLE_MOVEMENT && this.element.visible)
-               || (action.id !== MovementActionEnum.DISABLE_MOVEMENT && !this.element.visible)
+    protected override isActionDisabled (
+        currentUser: CurrentUserModel,
+        action: ActionModel<MovementActionEnum>,
+    ): boolean {
+        const isActionFeasible: boolean = CurrentUserUtil.isFeasible(
+            currentUser,
+            this.element.event,
+            action,
+        )
+
+        switch (action.id) {
+            case MovementActionEnum.DISABLE_MOVEMENT:
+                return !(isActionFeasible && this.element.visible)
+            case MovementActionEnum.ENABLE_MOVEMENT:
+                return !(isActionFeasible && !this.element.visible)
+            default:
+                return !isActionFeasible
+        }
     }
 
     protected handleAction (action: MovementActionEnum): void {
