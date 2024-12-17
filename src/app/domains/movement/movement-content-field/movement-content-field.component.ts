@@ -6,14 +6,13 @@ import { Observable, of } from 'rxjs'
 import { Button } from 'primeng/button'
 import { TranslateModule } from '@ngx-translate/core'
 import { LayerComponent } from '../../../shared/util-ui/layer/layer.component'
-import { RegistryTemplateDirective } from '../../../shared/util-tool/directive/registry-template.directive'
 import { IconFieldModule } from 'primeng/iconfield'
 import { InputIconModule } from 'primeng/inputicon'
 import { InputTextModule } from 'primeng/inputtext'
 import { ListboxChangeEvent, ListboxModule } from 'primeng/listbox'
 import { AsyncPipe, NgForOf } from '@angular/common'
 import { MessageComponent } from '../../../shared/util-ui/message/message.component'
-import { Message } from 'primeng/api'
+import { ToastMessageOptions } from 'primeng/api'
 import { CardModule } from 'primeng/card'
 import { ParticipantModel } from '../../../shared/util-model/model/participant.model'
 import { ItemModel } from '../../../shared/util-model/model/item.model'
@@ -25,7 +24,6 @@ import { ItemModel } from '../../../shared/util-model/model/item.model'
         Button,
         TranslateModule,
         LayerComponent,
-        RegistryTemplateDirective,
         ReactiveFormsModule,
         IconFieldModule,
         InputIconModule,
@@ -48,7 +46,7 @@ export class MovementContentFieldComponent extends GenericComponent implements O
     protected layerSelectedParticipants: WritableSignal<ParticipantModel[]> = signal( [] )
     protected layerForm: FormGroup
 
-    protected message: Message = {
+    protected message: ToastMessageOptions = {
         severity: 'warn', summary: 'warning.title.EMPTY', detail: 'warning.message.EMPTY',
     }
 

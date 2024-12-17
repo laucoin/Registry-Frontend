@@ -6,7 +6,6 @@ import { AvatarModule } from 'primeng/avatar'
 import { Button } from 'primeng/button'
 import { CardModule } from 'primeng/card'
 import { MenuModule } from 'primeng/menu'
-import { OverlayPanelModule } from 'primeng/overlaypanel'
 import { combineLatestWith, map, Observable, of } from 'rxjs'
 import { ActionModel } from '../../util-model/model/action.model'
 import { CurrentUserModel } from '../../util-model/model/current-user.model'
@@ -19,6 +18,8 @@ import { FormFieldErrorComponent } from '../form-field-error/form-field-error.co
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { InputTextModule } from 'primeng/inputtext'
 import { breakPoint } from '../../util-tool/util/breakpoint.const'
+import { Popover } from 'primeng/popover'
+import { Ripple } from 'primeng/ripple'
 
 @Component( {
     selector: 'app-element-card',
@@ -30,13 +31,14 @@ import { breakPoint } from '../../util-tool/util/breakpoint.const'
         AsyncPipe,
         Button,
         MenuModule,
-        OverlayPanelModule,
         TranslateModule,
         DialogModule,
         FormFieldErrorComponent,
         FormsModule,
         InputTextModule,
         ReactiveFormsModule,
+        Popover,
+        Ripple,
     ],
     templateUrl: './element-card.component.html',
     styleUrl: './element-card.component.scss',

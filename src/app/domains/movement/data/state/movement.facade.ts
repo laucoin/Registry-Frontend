@@ -23,7 +23,7 @@ import {
     StopMovementsPageLoader,
     UpdateMovement,
 } from './movement.action'
-import { Message } from 'primeng/api'
+import { ToastMessageOptions } from 'primeng/api'
 import { MovementModel } from '../model/movement.model'
 import { FormUtil } from '../../../../shared/util-tool/util/form.util'
 import { OrderEnum } from '../../../../shared/util-model/enumeration/order.enum'
@@ -67,8 +67,8 @@ export class MovementFacade extends GenericEventElementFacade<MovementModel> {
         return this.ngStore.select( (state: StateModel): boolean => state.movement.movements.silentLoading )
     }
 
-    public get pageError (): Observable<Message | undefined> {
-        return this.ngStore.select( (state: StateModel): Message | undefined => state.movement.movements.error )
+    public get pageError (): Observable<ToastMessageOptions | undefined> {
+        return this.ngStore.select( (state: StateModel): ToastMessageOptions | undefined => state.movement.movements.error )
     }
 
     public get element (): Observable<MovementModel | undefined> {
@@ -79,8 +79,8 @@ export class MovementFacade extends GenericEventElementFacade<MovementModel> {
         return this.ngStore.select( (state: StateModel): boolean => state.movement.movement.loading )
     }
 
-    public get elementError (): Observable<Message | undefined> {
-        return this.ngStore.select( (state: StateModel): Message | undefined => state.movement.movement.error )
+    public get elementError (): Observable<ToastMessageOptions | undefined> {
+        return this.ngStore.select( (state: StateModel): ToastMessageOptions | undefined => state.movement.movement.error )
     }
 
     public startPageLoader (): void {

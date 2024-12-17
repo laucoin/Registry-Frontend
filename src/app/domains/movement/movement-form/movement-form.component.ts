@@ -10,7 +10,6 @@ import { MovementModel } from '../data/model/movement.model'
 import { MovementDto } from '../data/dto/movement.dto'
 import { AsyncPipe, DatePipe } from '@angular/common'
 import { Button } from 'primeng/button'
-import { CalendarModule } from 'primeng/calendar'
 import { CardModule } from 'primeng/card'
 import { DividerModule } from 'primeng/divider'
 import { FormComponent } from '../../../shared/util-ui/form/form.component'
@@ -23,6 +22,8 @@ import { MovementContentFieldComponent } from '../movement-content-field/movemen
 import { MovementContentModel } from '../data/model/movement-content.model'
 import { MovementContentDto } from '../data/dto/movement-content.dto'
 import { RegistryTemplateDirective } from '../../../shared/util-tool/directive/registry-required.directive'
+import { Select } from 'primeng/select'
+import { DatePicker } from 'primeng/datepicker'
 
 @Component( {
     selector: 'app-movement-form',
@@ -30,7 +31,6 @@ import { RegistryTemplateDirective } from '../../../shared/util-tool/directive/r
     imports: [
         AsyncPipe,
         Button,
-        CalendarModule,
         CardModule,
         DatePipe,
         DividerModule,
@@ -42,6 +42,8 @@ import { RegistryTemplateDirective } from '../../../shared/util-tool/directive/r
         DropdownModule,
         MovementContentFieldComponent,
         RegistryTemplateDirective,
+        Select,
+        DatePicker,
     ],
     templateUrl: './movement-form.component.html',
     styleUrl: './movement-form.component.scss',

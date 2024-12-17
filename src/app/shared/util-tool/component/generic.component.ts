@@ -9,7 +9,7 @@ import { CurrentUserUtil } from '../../util-authentication/tool/current-user.uti
 import { ActivatedRoute, Router } from '@angular/router'
 import { GenericUtil } from '../util/generic.util'
 import { EventModel } from '../../util-model/model/event.model'
-import { Message } from 'primeng/api'
+import { ToastMessageOptions } from 'primeng/api'
 
 const EVENT_ID_REGEX: RegExp = /events\/([0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12})/
 
@@ -34,7 +34,7 @@ export abstract class GenericComponent implements OnDestroy {
     protected readonly contextEventId: WritableSignal<string | undefined> = signal( undefined )
     protected readonly contextEvent$: Observable<EventModel | undefined> = this.registryFacade.contextEvent
     protected readonly contextEventLoading$: Observable<boolean> = this.registryFacade.contextEventLoading
-    protected readonly contextEventError$: Observable<Message | undefined> = this.registryFacade.contextEventError
+    protected readonly contextEventError$: Observable<ToastMessageOptions | undefined> = this.registryFacade.contextEventError
 
     public constructor () {
         this.listenWindowsResize()

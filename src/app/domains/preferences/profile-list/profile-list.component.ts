@@ -11,7 +11,6 @@ import { ListComponent } from '../../../shared/util-ui/list/list.component'
 import { RegistryTemplateDirective } from '../../../shared/util-tool/directive/registry-template.directive'
 import { TranslateModule } from '@ngx-translate/core'
 import { InputTextModule } from 'primeng/inputtext'
-import { CalendarModule } from 'primeng/calendar'
 import { ToggleButtonModule } from 'primeng/togglebutton'
 import { AsyncPipe } from '@angular/common'
 import {
@@ -21,6 +20,8 @@ import { MessageComponent } from '../../../shared/util-ui/message/message.compon
 import { PluralTranslationPipe } from '../../../shared/util-tool/pipe/plural-translation.pipe'
 import { AppRouteEnum } from '../../../app-route.enum'
 import { RegistryFacade } from '../../../shared/util-common/state/registry.facade'
+import { Button } from 'primeng/button'
+import { DatePicker } from 'primeng/datepicker'
 
 @Component( {
     selector: 'app-profile-list',
@@ -31,13 +32,14 @@ import { RegistryFacade } from '../../../shared/util-common/state/registry.facad
         RegistryTemplateDirective,
         TranslateModule,
         InputTextModule,
-        CalendarModule,
         ToggleButtonModule,
         AsyncPipe,
         EventProfileElementComponent,
         MessageComponent,
         PluralTranslationPipe,
         RouterLink,
+        Button,
+        DatePicker,
     ],
     templateUrl: './profile-list.component.html',
 } )

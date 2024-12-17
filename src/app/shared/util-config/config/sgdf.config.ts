@@ -8,8 +8,103 @@ import { EventProfileActionEnum } from '../../util-model/enumeration/event-profi
 import { UserActionEnum } from '../../../domains/user/data/state/user.action'
 import { ParticipantActionEnum } from '../../../domains/participant/data/state/participant.action'
 import { MovementActionEnum } from '../../../domains/movement/data/state/movement.action'
+import { definePreset } from '@primeng/themes'
+import Lara from '@primeng/themes/lara'
 
 export const sgdfConfig: ContextConfigModel = {
+    theme: definePreset( Lara, {
+        semantic: {
+            primary: {
+                '50': '#eef9ff',
+                '100': '#dcf4ff',
+                '200': '#b2ebff',
+                '300': '#6ddcff',
+                '400': '#20cbff',
+                '500': '#00b5ff',
+                '600': '#0091df',
+                '700': '#0073b4',
+                '800': '#006295',
+                '900': '#00507a',
+                '950': '#003a5d',
+            },
+            colorScheme: {
+                light: {
+                    primary: {
+                        color: '#003a5d',
+                        inverseColor: '#eef9ff',
+                        hoverColor: '#00507a',
+                        activeColor: '#006295',
+                    },
+                    highlight: {
+                        background: '#003a5d',
+                        focusBackground: '#0073b4',
+                        color: '#ffffff',
+                        focusColor: '#ffffff',
+                    },
+                },
+                dark: {
+                    primary: {
+                        color: '#eef9ff',
+                        inverseColor: '#003a5d',
+                        hoverColor: '#dcf4ff',
+                        activeColor: '#b2ebff',
+                    },
+                    highlight: {
+                        background: 'rgba(250, 250, 250, .16)',
+                        focusBackground: 'rgba(250, 250, 250, .24)',
+                        color: 'rgba(255,255,255,.87)',
+                        focusColor: 'rgba(255,255,255,.87)',
+                    },
+                },
+            },
+        },
+        components: {
+            drawer: {
+                background: '#003a5d',
+                color: '#eef9ff',
+                border: {
+                    color: 'transparent',
+                },
+            },
+            dataview: {
+                header: {
+                    padding: 0,
+                },
+            },
+            popover: {
+                content: {
+                    padding: 0,
+                },
+            },
+            menu: {
+                item: {
+                    padding: 0,
+                },
+            },
+            card: {
+                colorScheme: {
+                    light: {
+                        background: '#f8fafc',
+                    },
+                    dark: {
+                        background: '#27272a',
+                    },
+                },
+                body: {
+                    padding: '1rem',
+                },
+            },
+            tabs: {
+                tabpanel: {
+                    padding: '1rem 0',
+                },
+            },
+        },
+    } ),
+    logo: {
+        light: 'img/SGDF/logo-white.svg',
+        dark: 'img/SGDF/logo-white.svg',
+    },
     defaultLanguage: 'fr-FR',
     maintainerEmail: 'laucoin@sgdf.fr',
     menu: [
@@ -59,7 +154,6 @@ export const sgdfConfig: ContextConfigModel = {
             enabled: true,
         },
     ],
-    majority: 18,
     event: {
         optionIcons: new Map( [
             [ EventOptionEnum.TICKETING, 'pi pi-ticket' ],
@@ -94,7 +188,7 @@ export const sgdfConfig: ContextConfigModel = {
                     header: 'event.action.confirmation.title.disable',
                     message: 'event.action.confirmation.message.disable',
                     icon: 'pi pi-exclamation-triangle',
-                    acceptSeverity: 'warning',
+                    acceptSeverity: 'warn',
                     rejectSeverity: 'secondary',
                     confirmProperty: undefined,
                 },
@@ -177,7 +271,7 @@ export const sgdfConfig: ContextConfigModel = {
                         header: 'profile.action.confirmation.title.block',
                         message: 'profile.action.confirmation.message.block',
                         icon: 'pi pi-exclamation-triangle',
-                        acceptSeverity: 'warning',
+                        acceptSeverity: 'warn',
                         rejectSeverity: 'secondary',
                         confirmProperty: undefined,
                     },
@@ -243,7 +337,7 @@ export const sgdfConfig: ContextConfigModel = {
                     header: 'participant.action.confirmation.title.disable',
                     message: 'participant.action.confirmation.message.disable',
                     icon: 'pi pi-exclamation-triangle',
-                    acceptSeverity: 'warning',
+                    acceptSeverity: 'warn',
                     rejectSeverity: 'secondary',
                     confirmProperty: undefined,
                 },
@@ -260,7 +354,7 @@ export const sgdfConfig: ContextConfigModel = {
                     header: 'participant.action.confirmation.title.enable',
                     message: 'participant.action.confirmation.message.enable',
                     icon: 'pi pi-exclamation-triangle',
-                    acceptSeverity: 'warning',
+                    acceptSeverity: 'warn',
                     rejectSeverity: 'secondary',
                     confirmProperty: undefined,
                 },
@@ -308,7 +402,7 @@ export const sgdfConfig: ContextConfigModel = {
                     header: 'movement.action.confirmation.title.disable',
                     message: 'movement.action.confirmation.message.disable',
                     icon: 'pi pi-exclamation-triangle',
-                    acceptSeverity: 'warning',
+                    acceptSeverity: 'warn',
                     rejectSeverity: 'secondary',
                     confirmProperty: undefined,
                 },
@@ -325,7 +419,7 @@ export const sgdfConfig: ContextConfigModel = {
                     header: 'movement.action.confirmation.title.enable',
                     message: 'movement.action.confirmation.message.enable',
                     icon: 'pi pi-exclamation-triangle',
-                    acceptSeverity: 'warning',
+                    acceptSeverity: 'warn',
                     rejectSeverity: 'secondary',
                     confirmProperty: undefined,
                 },
@@ -363,7 +457,7 @@ export const sgdfConfig: ContextConfigModel = {
                     header: 'user.action.confirmation.title.block',
                     message: 'user.action.confirmation.message.block',
                     icon: 'pi pi-exclamation-triangle',
-                    acceptSeverity: 'warning',
+                    acceptSeverity: 'warn',
                     rejectSeverity: 'secondary',
                     confirmProperty: undefined,
                 },
@@ -380,7 +474,7 @@ export const sgdfConfig: ContextConfigModel = {
                     header: 'user.action.confirmation.title.unblock',
                     message: 'user.action.confirmation.message.unblock',
                     icon: 'pi pi-exclamation-triangle',
-                    acceptSeverity: 'warning',
+                    acceptSeverity: 'warn',
                     rejectSeverity: 'secondary',
                     confirmProperty: undefined,
                 },

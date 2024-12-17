@@ -2,32 +2,33 @@ import { AsyncPipe, NgIf, NgOptimizedImage } from '@angular/common'
 import { Component, OnInit } from '@angular/core'
 import { FormGroup } from '@angular/forms'
 import { Title } from '@angular/platform-browser'
-import { RouterLink } from '@angular/router'
 import { TranslateModule } from '@ngx-translate/core'
-import { CalendarModule } from 'primeng/calendar'
-import { SidebarModule } from 'primeng/sidebar'
 import { combineLatestWith, map, Observable, of } from 'rxjs'
 import { AppConfig } from '../../app.config'
 import { AppRouteEnum } from '../../app-route.enum'
-import { ExecutionContextEnum } from '../../shared/util-config/enumeration/execution-context.enum'
 import { CurrentUserModel } from '../../shared/util-model/model/current-user.model'
 import { GenericComponent } from '../../shared/util-tool/component/generic.component'
-import { TruncatePipe } from '../../shared/util-tool/pipe/truncate.pipe'
 import { MenuItemModel } from '../data/model/menu-item.model'
 import { CurrentUserUtil } from '../../shared/util-authentication/tool/current-user.util'
+import { Button } from 'primeng/button'
+import { Drawer } from 'primeng/drawer'
+import { RouterLink } from '@angular/router'
+import { TruncatePipe } from '../../shared/util-tool/pipe/truncate.pipe'
+import { Ripple } from 'primeng/ripple'
 
 @Component( {
     selector: 'app-side-bar',
     standalone: true,
     imports: [
-        CalendarModule,
         NgIf,
         AsyncPipe,
-        SidebarModule,
-        RouterLink,
         TranslateModule,
+        Button,
+        Drawer,
+        RouterLink,
         NgOptimizedImage,
         TruncatePipe,
+        Ripple,
     ],
     templateUrl: './side-bar.component.html',
     styleUrl: './side-bar.component.scss',
@@ -43,9 +44,9 @@ export class SideBarComponent extends GenericComponent implements OnInit {
         enabled: true,
     }
 
-    protected readonly organization: ExecutionContextEnum = AppConfig.config.executionContext
     protected readonly maxMenuTextLength: number = 26
 
+    protected readonly logoPath$: Observable<string> = this.registryFacade.logoPath
     protected menuItems$: Observable<MenuItemModel[]> = of( [] )
     protected isSidebarOpen: boolean = !this.isMobile && !this.isTinyScreen()
 

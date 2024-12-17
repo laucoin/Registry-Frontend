@@ -1,7 +1,7 @@
-import { Message } from 'primeng/api'
+import { ToastMessageOptions } from 'primeng/api'
 
 export interface ElementRequestInformationModel<M> {
     element: M | undefined
     loading: boolean
-    error: Message | undefined
+    error: ToastMessageOptions | undefined
 }

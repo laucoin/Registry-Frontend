@@ -26,7 +26,7 @@ import {
     UnblockEventProfile,
     UpdateEventProfile,
 } from './event-profile.action'
-import { Message } from 'primeng/api'
+import { ToastMessageOptions } from 'primeng/api'
 import { FormUtil } from '../../../../shared/util-tool/util/form.util'
 import { OrderEnum } from '../../../../shared/util-model/enumeration/order.enum'
 import { ProfileStatusEnum } from '../../../../shared/util-model/enumeration/profile-status.enum'
@@ -70,8 +70,8 @@ export class EventProfileFacade extends GenericEventElementFacade<EventProfileMo
         return this.ngStore.select( (state: StateModel): boolean => state.eventProfile.eventProfiles.silentLoading )
     }
 
-    public get pageError (): Observable<Message | undefined> {
-        return this.ngStore.select( (state: StateModel): Message | undefined => state.eventProfile.eventProfiles.error )
+    public get pageError (): Observable<ToastMessageOptions | undefined> {
+        return this.ngStore.select( (state: StateModel): ToastMessageOptions | undefined => state.eventProfile.eventProfiles.error )
     }
 
     public get element (): Observable<EventProfileModel | undefined> {
@@ -82,8 +82,8 @@ export class EventProfileFacade extends GenericEventElementFacade<EventProfileMo
         return this.ngStore.select( (state: StateModel): boolean => state.eventProfile.eventProfile.loading )
     }
 
-    public get elementError (): Observable<Message | undefined> {
-        return this.ngStore.select( (state: StateModel): Message | undefined => state.eventProfile.eventProfile.error )
+    public get elementError (): Observable<ToastMessageOptions | undefined> {
+        return this.ngStore.select( (state: StateModel): ToastMessageOptions | undefined => state.eventProfile.eventProfile.error )
     }
 
     public get assignableRoles (): Observable<ItemModel[]> {

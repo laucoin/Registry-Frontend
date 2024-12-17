@@ -1,6 +1,5 @@
 import { Component, Input } from '@angular/core'
 import { ProgressSpinnerModule } from 'primeng/progressspinner'
-import { AsyncPipe } from '@angular/common'
 import { FormGroup } from '@angular/forms'
 
 @Component( {
@@ -8,7 +7,6 @@ import { FormGroup } from '@angular/forms'
     standalone: true,
     imports: [
         ProgressSpinnerModule,
-        AsyncPipe,
     ],
     templateUrl: './form.component.html',
 } )

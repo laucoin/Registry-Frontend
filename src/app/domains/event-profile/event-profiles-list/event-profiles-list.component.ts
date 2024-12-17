@@ -9,7 +9,6 @@ import { ListComponent } from '../../../shared/util-ui/list/list.component'
 import { RegistryTemplateDirective } from '../../../shared/util-tool/directive/registry-template.directive'
 import { TranslateModule } from '@ngx-translate/core'
 import { InputTextModule } from 'primeng/inputtext'
-import { CalendarModule } from 'primeng/calendar'
 import { ToggleButtonModule } from 'primeng/togglebutton'
 import { AsyncPipe, NgIf } from '@angular/common'
 import {
@@ -21,6 +20,9 @@ import { DropdownModule } from 'primeng/dropdown'
 import { ConfirmationService } from 'primeng/api'
 import { EventModel } from '../../../shared/util-model/model/event.model'
 import { EventProfileRoutesEnum } from '../event-profile-routes.enum'
+import { Select } from 'primeng/select'
+import { Button } from 'primeng/button'
+import { DatePicker } from 'primeng/datepicker'
 
 @Component( {
     selector: 'app-event-profiles-list',
@@ -33,13 +35,15 @@ import { EventProfileRoutesEnum } from '../event-profile-routes.enum'
         ReactiveFormsModule,
         TranslateModule,
         InputTextModule,
-        CalendarModule,
         ToggleButtonModule,
         AsyncPipe,
         EventProfileElementComponent,
         DropdownModule,
         RouterLink,
         NgIf,
+        Select,
+        Button,
+        DatePicker,
 
     ],
 } )

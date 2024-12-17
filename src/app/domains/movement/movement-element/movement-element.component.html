@@ -4,8 +4,8 @@
                   (action)='handleAction($event)'
                   [layout]='layout'
                   [icon]='element.type === MovementTypeEnum.OUT ? "pi pi-arrow-up" : "pi pi-arrow-down"'>
-    <div [class.flex-lg-row]='layout === "list"' [class.mr-6]='layout === "list"'
-         class='d-flex flex-column gap-2 justify-content-between'>
+    <div [class.flex-lg-row]='layout === "list"'
+         class='d-flex flex-column justify-content-between align-items-center'>
         <div class='type d-flex'>
             <p-tag [severity]='element.type === MovementTypeEnum.OUT ? "secondary" : "info"'
                    [value]='("movement.type." + element.type) | translate' />
@@ -50,50 +50,65 @@
 
 <app-layer [(visible)]='layerOpened'
            [header]='"movement.content.title" | translate'>
-    <p-tabView>
-        <p-tabPanel [header]='"movement.content.all" | translate'>
-            <p-listbox
-                    [options]='element.content'
-                    [readonly]='true'
-                    optionLabel='name'>
-                <ng-template let-participant pTemplate='item'>
-                    <app-movement-participant-element [element]='participant' />
-                </ng-template>
-            </p-listbox>
-        </p-tabPanel>
-        @if (adults().length > 0) {
-            <p-tabPanel [header]='("movement.content.adult." + (adults().length > 1 ? "plural" : "singular")) | translate: {
-                adults: adults().length
-            }'>
+    <p-tabs [(value)]='activeTab'>
+        <p-tablist>
+            <p-tab [value]='1'>{{ 'movement.content.all' | translate }}</p-tab>
+            @if (adults().length > 0) {
+                <p-tab [value]='2'>{{
+                        ('movement.content.adult.' + (adults().length > 1 ? 'plural' : 'singular')) | translate: {
+                            adults: adults().length
+                        }
+                    }}
+                </p-tab>
+            }
+            @if (children().length > 0) {
+                <p-tab [value]='3'>{{
+                        ('movement.content.child.' + (children().length > 1 ? 'plural' : 'singular')) | translate: {
+                            children: children().length
+                        }
+                    }}
+                </p-tab>
+            }
+        </p-tablist>
+        <p-tabpanels>
+            <p-tabpanel [value]='1'>
                 <p-listbox
-                        [options]='adults()'
+                        [options]='element.content'
                         [readonly]='true'
                         optionLabel='name'>
-                    <ng-template let-adult pTemplate='item'>
-                        <app-movement-participant-element [element]='adult' />
+                    <ng-template #item let-participant>
+                        <app-movement-participant-element [element]='participant' />
                     </ng-template>
                 </p-listbox>
-            </p-tabPanel>
-        }
-        @if (children().length > 0) {
-            <p-tabPanel [header]='("movement.content.child." + (children().length > 1 ? "plural" : "singular")) | translate: {
-                children: children().length
-            }'>
-                <p-listbox
-                        [options]='children()'
-                        [readonly]='true'
-                        optionLabel='name'>
-                    <ng-template let-child pTemplate='item'>
-                        <app-movement-participant-element [element]='child' />
-                    </ng-template>
-                </p-listbox>
-            </p-tabPanel>
-        }
-    </p-tabView>
-    <ng-template appTemplate='footer'>
-        <div class='d-flex justify-content-center align-content-center'>
-            <p-button (click)='layerOpened = false' [rounded]='true' [outlined]='true' severity='secondary'
-                      [label]='"close" | translate' />
-        </div>
-    </ng-template>
+            </p-tabpanel>
+            @if (adults().length > 0) {
+                <p-tabpanel [value]='2'>
+                    <p-listbox
+                            [options]='adults()'
+                            [readonly]='true'
+                            optionLabel='name'>
+                        <ng-template #item let-adult>
+                            <app-movement-participant-element [element]='adult' />
+                        </ng-template>
+                    </p-listbox>
+                </p-tabpanel>
+            }
+            @if (children().length > 0) {
+                <p-tabpanel [value]='3'>
+                    <p-listbox
+                            [options]='children()'
+                            [readonly]='true'
+                            optionLabel='name'>
+                        <ng-template #item let-child>
+                            <app-movement-participant-element [element]='child' />
+                        </ng-template>
+                    </p-listbox>
+                </p-tabpanel>
+            }
+        </p-tabpanels>
+    </p-tabs>
+    <div class='d-flex justify-content-center align-content-center'>
+        <p-button (click)='layerOpened = false' [rounded]='true' [outlined]='true' severity='secondary'
+                  [label]='"close" | translate' />
+    </div>
 </app-layer>

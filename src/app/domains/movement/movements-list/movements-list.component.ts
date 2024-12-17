@@ -9,7 +9,6 @@ import { ListComponent } from '../../../shared/util-ui/list/list.component'
 import { RegistryTemplateDirective } from '../../../shared/util-tool/directive/registry-template.directive'
 import { TranslateModule } from '@ngx-translate/core'
 import { InputTextModule } from 'primeng/inputtext'
-import { CalendarModule } from 'primeng/calendar'
 import { ToggleButtonModule } from 'primeng/togglebutton'
 import { AsyncPipe } from '@angular/common'
 import { MessageComponent } from '../../../shared/util-ui/message/message.component'
@@ -18,6 +17,9 @@ import { MovementTypeEnum } from '../data/model/movement-type.enum'
 import { MovementElementComponent } from '../movement-element/movement-element.component'
 import { RouterLink } from '@angular/router'
 import { MovementRoutesEnum } from '../movement-routes.enum'
+import { Select } from 'primeng/select'
+import { Button } from 'primeng/button'
+import { DatePicker } from 'primeng/datepicker'
 
 @Component( {
     selector: 'app-movements-list',
@@ -30,13 +32,15 @@ import { MovementRoutesEnum } from '../movement-routes.enum'
         ReactiveFormsModule,
         TranslateModule,
         InputTextModule,
-        CalendarModule,
         ToggleButtonModule,
         AsyncPipe,
         MessageComponent,
         DropdownModule,
         MovementElementComponent,
         RouterLink,
+        Select,
+        Button,
+        DatePicker,
     ],
 } )
 export class MovementsListComponent extends GenericListComponent<MovementModel> implements OnInit {

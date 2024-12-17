@@ -16,7 +16,6 @@
         "dateBefore": "Avant",
         "dateAfter": "Après",
         "clear": "Effacer",
-        "reset-form": "Réinitialiser la recherche",
         "apply": "Appliquer",
         "matchAll": "Correspond à tous",
         "matchAny": "Correspond",
@@ -110,7 +109,7 @@
         "pm": "pm",
         "today": "Aujourd'hui",
         "weekHeader": "Sem",
-        "firstDayOfWeek": "0",
+        "firstDayOfWeek": "1",
         "dateFormat": "dd/mm/yy",
         "weak": "Faible",
         "medium": "Moyen",
@@ -483,6 +482,10 @@
         "confirm": "Confirmer",
         "cancel": "Annuler"
     },
+    "layout": {
+        "list": "Liste",
+        "grid": "Grille"
+    },
     "finished": "Terminé",
     "outdated": "Expiré",
     "menu": {
@@ -576,7 +579,7 @@
             "edit": "Modifier l'Évènement",
             "name": "Nom",
             "range": "Dates",
-            "activity": "Est-ce que l’évènement que tu es entrain de créer va proposer des évènement qui vont sortir du lieu de l’évènement et que tu voudras suivre ?",
+            "activity": "Est-ce que l’évènement que tu es entrain de créer va proposer des activités vécue à l'extérieur du lieu de l’évènement et que tu voudras suivre ?",
             "phone-communication": "L'évènement a-t-il besoin répertorier les communications ?",
             "activity-communication": "L'évènement a-t-il besoin d'isoler les communications liées aux activités ?",
             "smoke-reporting": "L'évènement a-t-il besoin de répertorier les signalements de fumée ?",

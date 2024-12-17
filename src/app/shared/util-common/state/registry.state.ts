@@ -45,6 +45,7 @@ import {
     StopProfileLoader,
     StopProfilesPageLoader,
     UpdateNetwork,
+    UpdateTheme,
 } from './registry.action'
 import { UserEventProfileService } from './user-event-profile.service'
 import { OrderEnum } from '../../util-model/enumeration/order.enum'
@@ -98,6 +99,7 @@ const defaultRegistryState: RegistryStateModel = {
         error: undefined,
     },
     _util: {
+        theme: (!window.matchMedia || window.matchMedia( '(prefers-color-scheme: light)' ).matches) ? 'light' : 'dark',
         online: undefined,
         notification: undefined,
         loading: false,
@@ -111,6 +113,9 @@ const defaultRegistryState: RegistryStateModel = {
 } )
 @Injectable()
 export class RegistryState extends GenericState {
+    private readonly darkModeClass: string = 'dark-mod'
+    private readonly htmlElement: HTMLHtmlElement = document.querySelector( 'html' ) as HTMLHtmlElement
+
     public constructor (
         private readonly service: SecurityService,
         private readonly eventService: EventService,
@@ -476,6 +481,22 @@ export class RegistryState extends GenericState {
     @Action( StopProfileLoader )
     public stopProfileLoader (ctx: StateContext<RegistryStateModel>): void {
         this.updateProfileLoader( ctx, false )
+    }
+
+    @Action( UpdateTheme )
+    public updateTheme (ctx: StateContext<RegistryStateModel>, payload: UpdateTheme): void {
+        if (payload.theme == 'light') {
+            this.htmlElement?.classList.remove( this.darkModeClass )
+        } else {
+            this.htmlElement?.classList.add( this.darkModeClass )
+        }
+
+        ctx.patchState( {
+            _util: {
+                ...ctx.getState()._util,
+                theme: payload.theme,
+            },
+        } )
     }
 
     private updateProfileLoader (ctx: StateContext<RegistryStateModel>, loading: boolean): void {

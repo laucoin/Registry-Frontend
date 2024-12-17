@@ -1,54 +1,53 @@
 <div *ngIf='currentUser$ | async as currentUser'>
-    <p-sidebar [(visible)]='isSidebarOpen'
-               styleClass='torn-paper'>
-        <ng-template pTemplate='header'>
-            <a (click)='closeMenuOnTinyScreen()'
-               [tabIndex]='-1'
-               (keydown.enter)='closeMenuOnTinyScreen()'
-               [routerLink]='homeMenuItem.route.toString()'
-               [attr.href]='homeMenuItem.route.toString()'>
-                <img
-                        [alt]="'menu.home' | translate"
-                        [ngSrc]='"img/" + organization + "/logo.svg"'
-                        class='pointer'
-                        height='105'
-                        priority
-                        tabindex='0'
-                        width='248' />
-            </a>
-        </ng-template>
-        <ng-template pTemplate='content'>
-            <menu>
+    <p-drawer [(visible)]='isSidebarOpen' styleClass='side-bar'>
+        @if (logoPath$ | async; as logoPath) {
+            <ng-template #header>
+                <a (click)='closeMenuOnTinyScreen()'
+                   [tabIndex]='-1'
+                   (keydown.enter)='closeMenuOnTinyScreen()'
+                   [routerLink]='homeMenuItem.route.toString()'
+                   [attr.href]='homeMenuItem.route.toString()'>
+                    <img
+                            [alt]="'menu.home' | translate"
+                            [ngSrc]='logoPath'
+                            class='pointer'
+                            height='105'
+                            priority
+                            tabindex='0'
+                            width='248' />
+                </a>
+            </ng-template>
+        }
+        <menu>
+            <li>
+                <a pRipple (click)='closeMenuOnTinyScreen()'
+                   (keydown.enter)='closeMenuOnTinyScreen()'
+                   [class.router-active-card]='isRouteActive(homeMenuItem.route)'
+                   class='menu-item card clickable-card pointer'
+                   tabindex='0'
+                   [routerLink]='homeMenuItem.route.toString()' [attr.href]='homeMenuItem.route.toString()'>
+                    <i [class]='homeMenuItem.icon'></i>
+                    <span>{{ homeMenuItem.name | translate | truncate: maxMenuTextLength }}</span>
+                </a>
+            </li>
+            @for (link of (menuItems$ | async); track link; let index = $index) {
                 <li>
-                    <a (click)='closeMenuOnTinyScreen()'
+                    <a pRipple [tabindex]='index + 1' (click)='closeMenuOnTinyScreen()'
                        (keydown.enter)='closeMenuOnTinyScreen()'
-                       [class.router-active-card]='isRouteActive(homeMenuItem.route)'
-                       class='menu-item card clickable-card pointer'
-                       tabindex='0'
-                       [routerLink]='homeMenuItem.route.toString()' [attr.href]='homeMenuItem.route.toString()'>
-                        <i [class]='homeMenuItem.icon'></i>
-                        <span>{{ homeMenuItem.name | translate | truncate: maxMenuTextLength }}</span>
+                       [class.router-active-card]='isRouteActive(link.route)'
+                       [routerLink]='buildUri(link.route.toString())'
+                       [attr.href]='buildUri(link.route.toString())'
+                       class='menu-item card clickable-card pointer'>
+                        <i [class]='link.icon'></i>
+                        <span>{{ link.name | translate | truncate: maxMenuTextLength }}</span>
                     </a>
                 </li>
-                @for (link of (menuItems$ | async); track link; let index = $index) {
-                    <li>
-                        <a [tabindex]='index + 1' (click)='closeMenuOnTinyScreen()'
-                           (keydown.enter)='closeMenuOnTinyScreen()'
-                           [class.router-active-card]='isRouteActive(link.route)'
-                           [routerLink]='buildUri(link.route.toString())'
-                           [attr.href]='buildUri(link.route.toString())'
-                           class='menu-item card clickable-card pointer'>
-                            <i [class]='link.icon'></i>
-                            <span>{{ link.name | translate | truncate: maxMenuTextLength }}</span>
-                        </a>
-                    </li>
-                }
-            </menu>
-        </ng-template>
-        <ng-template pTemplate='footer'>
+            }
+        </menu>
+        <ng-template #footer>
             <hr class='mb-3 mx-3' />
             @if (settingsMenuItem(currentUser); as settingMenu) {
-                <a [tabindex]='((menuItems$ | async)?.length ?? 0) + 1' (click)='closeMenuOnTinyScreen()'
+                <a pRipple [tabindex]='((menuItems$ | async)?.length ?? 0) + 1' (click)='closeMenuOnTinyScreen()'
                    (keydown.enter)='closeMenuOnTinyScreen()'
                    [class.router-active-card]='isRouteActive(settingMenu.route)'
                    [routerLink]='settingMenu.route.toString()'
@@ -67,7 +66,7 @@
                         severity='secondary' />
             </div>
         </ng-template>
-    </p-sidebar>
+    </p-drawer>
 
 
     <div [class.container]='!isSidebarOpen || isTinyScreen()'

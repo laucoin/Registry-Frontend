@@ -23,7 +23,7 @@ import {
     StopEventsPageLoader,
     UpdateEvent,
 } from './event.action'
-import { Message } from 'primeng/api'
+import { ToastMessageOptions } from 'primeng/api'
 import { ofActionSuccessful } from '@ngxs/store'
 import { OrderEnum } from '../../../../shared/util-model/enumeration/order.enum'
 
@@ -67,8 +67,8 @@ export class EventFacade extends GenericElementFacade<EventModel> {
         return this.ngStore.select( (state: StateModel): boolean => state.event.events.silentLoading )
     }
 
-    public get pageError (): Observable<Message | undefined> {
-        return this.ngStore.select( (state: StateModel): Message | undefined => state.event.events.error )
+    public get pageError (): Observable<ToastMessageOptions | undefined> {
+        return this.ngStore.select( (state: StateModel): ToastMessageOptions | undefined => state.event.events.error )
     }
 
     public get element (): Observable<EventModel | undefined> {
@@ -79,8 +79,8 @@ export class EventFacade extends GenericElementFacade<EventModel> {
         return this.ngStore.select( (state: StateModel): boolean => state.event.event.loading )
     }
 
-    public get elementError (): Observable<Message | undefined> {
-        return this.ngStore.select( (state: StateModel): Message | undefined => state.event.event.error )
+    public get elementError (): Observable<ToastMessageOptions | undefined> {
+        return this.ngStore.select( (state: StateModel): ToastMessageOptions | undefined => state.event.event.error )
     }
 
     public startPageLoader (): void {

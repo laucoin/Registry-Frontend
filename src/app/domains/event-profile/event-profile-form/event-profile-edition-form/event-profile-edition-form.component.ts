@@ -13,12 +13,14 @@ import { AsyncPipe } from '@angular/common'
 import { CardModule } from 'primeng/card'
 import { DropdownModule } from 'primeng/dropdown'
 import { FormFieldErrorComponent } from '../../../../shared/util-ui/form-field-error/form-field-error.component'
-import { CalendarModule } from 'primeng/calendar'
 import { UserElementComponent } from '../../../user/user-element/user-element.component'
 import { FormComponent } from '../../../../shared/util-ui/form/form.component'
 import { GenericEventProfileFormComponent } from '../generic-event-profile-form.component'
 import { GenericUtil } from '../../../../shared/util-tool/util/generic.util'
 import { RegistryTemplateDirective } from '../../../../shared/util-tool/directive/registry-required.directive'
+import { Button } from 'primeng/button'
+import { Select } from 'primeng/select'
+import { DatePicker } from 'primeng/datepicker'
 
 @Component( {
     selector: 'app-event-profile-edition-form',
@@ -30,10 +32,12 @@ import { RegistryTemplateDirective } from '../../../../shared/util-tool/directiv
         ReactiveFormsModule,
         DropdownModule,
         FormFieldErrorComponent,
-        CalendarModule,
         UserElementComponent,
         FormComponent,
         RegistryTemplateDirective,
+        Button,
+        Select,
+        DatePicker,
     ],
     templateUrl: './event-profile-edition-form.component.html',
     styleUrl: './event-profile-edition-form.component.scss',

@@ -7,12 +7,10 @@ import { CustomValidators } from '../../../shared/util-tool/util/custom-validato
 import { ParticipantDto } from '../data/dto/participant.dto'
 import { AsyncPipe, DatePipe } from '@angular/common'
 import { Button } from 'primeng/button'
-import { CalendarModule } from 'primeng/calendar'
 import { CardModule } from 'primeng/card'
 import { DividerModule } from 'primeng/divider'
 import { FormComponent } from '../../../shared/util-ui/form/form.component'
 import { FormFieldErrorComponent } from '../../../shared/util-ui/form-field-error/form-field-error.component'
-import { InputSwitchModule } from 'primeng/inputswitch'
 import { InputTextModule } from 'primeng/inputtext'
 import { TranslateModule } from '@ngx-translate/core'
 import { SelectUsersFieldComponent } from '../../../shared/util-ui/select-users-field/select-users-field.component'
@@ -23,6 +21,7 @@ import { ParticipantModel } from '../../../shared/util-model/model/participant.m
 import { UserDto } from '../../../shared/util-model/dto/user.dto'
 import { DateUtil } from '../../../shared/util-tool/util/date.util'
 import { RegistryTemplateDirective } from '../../../shared/util-tool/directive/registry-required.directive'
+import { DatePicker } from 'primeng/datepicker'
 
 @Component( {
     selector: 'app-participant-form',
@@ -30,19 +29,18 @@ import { RegistryTemplateDirective } from '../../../shared/util-tool/directive/r
     imports: [
         AsyncPipe,
         Button,
-        CalendarModule,
         CardModule,
         DatePipe,
         DividerModule,
         FormComponent,
         FormFieldErrorComponent,
         FormsModule,
-        InputSwitchModule,
         InputTextModule,
         TranslateModule,
         ReactiveFormsModule,
         SelectUsersFieldComponent,
         RegistryTemplateDirective,
+        DatePicker,
     ],
     templateUrl: './participant-form.component.html',
     styleUrl: './participant-form.component.scss',

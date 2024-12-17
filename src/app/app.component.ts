@@ -1,8 +1,8 @@
-import { AsyncPipe, DOCUMENT } from '@angular/common'
-import { Component, Inject, OnDestroy, OnInit } from '@angular/core'
+import { AsyncPipe } from '@angular/common'
+import { Component, OnDestroy, OnInit } from '@angular/core'
 import { RouterOutlet } from '@angular/router'
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
-import { ConfirmationService, Message, MessageService, PrimeNGConfig, Translation } from 'primeng/api'
+import { ConfirmationService, MessageService, ToastMessageOptions, Translation } from 'primeng/api'
 import { BlockUIModule } from 'primeng/blockui'
 import { ConfirmDialogModule } from 'primeng/confirmdialog'
 import { ProgressSpinnerModule } from 'primeng/progressspinner'
@@ -14,6 +14,8 @@ import { MessageComponent } from './shared/util-ui/message/message.component'
 import { SideBarComponent } from './shell/side-bar/side-bar.component'
 import { breakPoint } from './shared/util-tool/util/breakpoint.const'
 import { GenericUtil } from './shared/util-tool/util/generic.util'
+import { PrimeNG } from 'primeng/config'
+import { Button } from 'primeng/button'
 
 @Component( {
     selector: 'app-root',
@@ -28,6 +30,7 @@ import { GenericUtil } from './shared/util-tool/util/generic.util'
         AsyncPipe,
         ProgressSpinnerModule,
         MessageComponent,
+        Button,
     ],
     providers: [ ConfirmationService, MessageService ],
     templateUrl: './app.component.html',
@@ -36,18 +39,14 @@ import { GenericUtil } from './shared/util-tool/util/generic.util'
 export class AppComponent implements OnInit, OnDestroy {
     protected readonly GenericUtil: typeof GenericUtil = GenericUtil
     protected readonly loading$: Observable<boolean>
-    protected readonly error$: Observable<Message | undefined>
+    protected readonly error$: Observable<ToastMessageOptions | undefined>
     protected readonly breakPoint: object = breakPoint
-    protected isLight!: boolean
     private readonly subscriptions: Subscription = new Subscription()
-    private themeElement: HTMLLinkElement | undefined
-
     private readonly themeMediaQuery: MediaQueryList = window.matchMedia( '(prefers-color-scheme: light)' )
 
     public constructor (
-        @Inject( DOCUMENT ) private readonly document: Document,
         private readonly translateService: TranslateService,
-        private readonly primeConfig: PrimeNGConfig,
+        private readonly primeConfig: PrimeNG,
         private readonly notifyService: MessageService,
         private readonly registryFacade: RegistryFacade,
     ) {
@@ -75,21 +74,14 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     private initTheme (): void {
-        this.themeElement = this.document.getElementById( 'app-theme' ) as HTMLLinkElement
-        this.updateTheme( !window.matchMedia || this.themeMediaQuery.matches )
+        this.registryFacade.updateTheme( !window.matchMedia || this.themeMediaQuery.matches ? 'light' : 'dark' )
     }
 
     private listenThemeChange (): void {
         this.themeMediaQuery.addEventListener(
             'change',
-            (e: MediaQueryListEvent): void => this.updateTheme( e.matches ),
+            (e: MediaQueryListEvent): void => this.registryFacade.updateTheme( e.matches ? 'light' : 'dark' ),
         )
-    }
-
-    private updateTheme = (isLight: boolean): void => {
-        if (!this.themeElement) return
-        this.isLight = isLight
-        this.themeElement.href = isLight ? 'light.css' : 'dark.css'
     }
 
     private initTranslation (): void {
@@ -117,7 +109,7 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     private handleNotification (): void {
-        this.subscriptions.add( this.registryFacade.notification.subscribe( (message: Message | undefined): void => {
+        this.subscriptions.add( this.registryFacade.notification.subscribe( (message: ToastMessageOptions | undefined): void => {
             if (!message) return
             this.notifyService.add( message )
             this.registryFacade.ackNotification()

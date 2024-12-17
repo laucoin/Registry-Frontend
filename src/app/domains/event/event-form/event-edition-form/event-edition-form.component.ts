@@ -4,11 +4,9 @@ import { EventDto } from '../../data/dto/event.dto'
 import { TranslateModule } from '@ngx-translate/core'
 import { ReactiveFormsModule } from '@angular/forms'
 import { FormFieldErrorComponent } from '../../../../shared/util-ui/form-field-error/form-field-error.component'
-import { CalendarModule } from 'primeng/calendar'
 import { AsyncPipe, DatePipe } from '@angular/common'
 import { InputTextModule } from 'primeng/inputtext'
 import { DividerModule } from 'primeng/divider'
-import { InputSwitchModule } from 'primeng/inputswitch'
 import { Params } from '@angular/router'
 import { AppRouteEnum } from '../../../../app-route.enum'
 import { EventModel } from '../../../../shared/util-model/model/event.model'
@@ -20,6 +18,9 @@ import { CardModule } from 'primeng/card'
 import { FormComponent } from '../../../../shared/util-ui/form/form.component'
 import { GenericUtil } from '../../../../shared/util-tool/util/generic.util'
 import { RegistryTemplateDirective } from '../../../../shared/util-tool/directive/registry-required.directive'
+import { Button } from 'primeng/button'
+import { DatePicker } from 'primeng/datepicker'
+import { ToggleSwitch } from 'primeng/toggleswitch'
 
 @Component( {
     selector: 'app-event-edition-form',
@@ -28,16 +29,17 @@ import { RegistryTemplateDirective } from '../../../../shared/util-tool/directiv
         TranslateModule,
         ReactiveFormsModule,
         FormFieldErrorComponent,
-        CalendarModule,
         DatePipe,
         InputTextModule,
         DividerModule,
-        InputSwitchModule,
         AsyncPipe,
         ProgressSpinnerModule,
         CardModule,
         FormComponent,
         RegistryTemplateDirective,
+        Button,
+        DatePicker,
+        ToggleSwitch,
     ],
     templateUrl: './event-edition-form.component.html',
     styleUrl: './event-edition-form.component.scss',

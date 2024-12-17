@@ -15,14 +15,13 @@ import { ItemModel } from '../../util-model/model/item.model'
 import { Button } from 'primeng/button'
 import { TranslateModule } from '@ngx-translate/core'
 import { LayerComponent } from '../layer/layer.component'
-import { RegistryTemplateDirective } from '../../util-tool/directive/registry-template.directive'
 import { IconFieldModule } from 'primeng/iconfield'
 import { InputIconModule } from 'primeng/inputicon'
 import { InputTextModule } from 'primeng/inputtext'
 import { ListboxChangeEvent, ListboxModule } from 'primeng/listbox'
 import { AsyncPipe, NgForOf } from '@angular/common'
 import { MessageComponent } from '../message/message.component'
-import { Message } from 'primeng/api'
+import { ToastMessageOptions } from 'primeng/api'
 import { UserDto } from '../../util-model/dto/user.dto'
 
 @Component( {
@@ -32,7 +31,6 @@ import { UserDto } from '../../util-model/dto/user.dto'
         Button,
         TranslateModule,
         LayerComponent,
-        RegistryTemplateDirective,
         ReactiveFormsModule,
         IconFieldModule,
         InputIconModule,
@@ -62,7 +60,7 @@ export class SelectUsersFieldComponent extends GenericComponent implements Contr
 
     protected disabled: WritableSignal<boolean> = signal( false )
 
-    protected message: Message = {
+    protected message: ToastMessageOptions = {
         severity: 'warn', summary: 'warning.title.EMPTY', detail: 'warning.message.EMPTY',
     }
 

@@ -5,8 +5,8 @@
                   [layout]='layout'
                   (action)='handleAction($event)'
                   [icon]='currentUser.preferences.selectedProfile?.id === element.id ? "pi pi-verified" : "pi pi-user"'>
-    <div [class.flex-lg-row]='layout === "list"' [class.mr-6]='layout === "list"'
-         class='d-flex flex-column gap-2 justify-content-between'>
+    <div [class.flex-lg-row]='layout === "list"'
+         class='d-flex flex-column justify-content-between align-items-center'>
         <div class='info d-flex flex-column gap-1 justify-content-center'>
             <div>
                 <span [class.strikethrough]='element.endAccess | isPast' class='event-name'>
@@ -21,7 +21,7 @@
                 }
             </div>
             @if (element.startAccess || element.endAccess) {
-                <p-badge severity='info' value='{{ "event.role." + element.role | translate }}' />
+                <p-badge [class.mt-1]='layout === "grid"' severity='info' value='{{ "event.role." + element.role | translate }}' />
             }
         </div>
         <div class='role d-flex flex-wrap gap-1 align-content-center' [class.justify-content-center]='layout === "grid"'>
@@ -59,7 +59,7 @@
                 <p-badge severity='info' value='{{ "event.role." + element.role | translate }}' />
             }
         </div>
-        <div class='status d-flex' [class.justify-content-center]='layout === "grid"'>
+        <div class='status d-flex' [class.mt-1]='layout === "grid"' [class.justify-content-center]='layout === "grid"'>
             @if (element.status !== ProfileStatusEnum.INVITED || element.user.id !== currentUser.id) {
                 <p-badge [severity]='severityFromStatus(element.status)'
                          value='{{ "profile.status." + element.status | translate }}' />

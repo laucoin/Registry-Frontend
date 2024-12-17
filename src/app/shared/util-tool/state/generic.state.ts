@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http'
-import { Message } from 'primeng/api'
+import { ToastMessageOptions } from 'primeng/api'
 import { AppConfig } from '../../../app.config'
 import { ErrorModel } from '../../util-model/model/error.model'
 import { RegistryFacade } from '../../util-common/state/registry.facade'
@@ -10,7 +10,7 @@ import { ElementRequestInformationModel } from '../../util-model/model/element-r
 export abstract class GenericState {
     protected readonly registryFacade: RegistryFacade = inject( RegistryFacade )
 
-    protected buildError (error: HttpErrorResponse): Message {
+    protected buildError (error: HttpErrorResponse): ToastMessageOptions {
         const registryError: ErrorModel | undefined = error.error
         let title: string
         let message: string
@@ -46,7 +46,7 @@ export abstract class GenericState {
         requestInformation: I,
         error: HttpErrorResponse,
     ): I {
-        const message: Message = this.buildError( error )
+        const message: ToastMessageOptions = this.buildError( error )
         this.registryFacade.notify( message )
         return {
             ...requestInformation,
@@ -61,7 +61,7 @@ export abstract class GenericState {
         icon: string | undefined = undefined,
         data: object | undefined = undefined,
     ): void {
-        const message: Message = StateUtil.buildNotificationMessage(
+        const message: ToastMessageOptions = StateUtil.buildNotificationMessage(
             severity,
             summary,
             detail,

@@ -3,7 +3,7 @@ import { Actions, Store } from '@ngxs/store'
 import { Observable } from 'rxjs'
 import { GenericModel } from '../../util-model/model/generic.model'
 import { PageModel } from '../../util-model/model/page.model'
-import { Message } from 'primeng/api'
+import { ToastMessageOptions } from 'primeng/api'
 
 export abstract class GenericFacade<M extends GenericModel> {
     protected readonly ngStore: Store = inject( Store )
@@ -15,11 +15,11 @@ export abstract class GenericFacade<M extends GenericModel> {
 
     public abstract get pageSilentLoading (): Observable<boolean>
 
-    public abstract get pageError (): Observable<Message | undefined>
+    public abstract get pageError (): Observable<ToastMessageOptions | undefined>
 
     public abstract get element (): Observable<M | undefined>
 
     public abstract get elementLoading (): Observable<boolean>
 
-    public abstract get elementError (): Observable<Message | undefined>
+    public abstract get elementError (): Observable<ToastMessageOptions | undefined>
 }

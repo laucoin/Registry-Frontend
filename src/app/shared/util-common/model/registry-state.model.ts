@@ -1,4 +1,4 @@
-import { Message } from 'primeng/api'
+import { ToastMessageOptions } from 'primeng/api'
 import { EventProfilePageParamsModel } from '../../../domains/event-profile/data/model/event-profile-page-params.model'
 import { TokenModel } from '../../util-authentication/model/token.model'
 import { CurrentUserModel } from '../../util-model/model/current-user.model'
@@ -17,9 +17,10 @@ export interface RegistryStateModel {
     profile: ElementRequestInformationModel<EventProfileModel>,
     event: ElementRequestInformationModel<EventModel>,
     _util: {
+        theme: 'light' | 'dark'
         online: boolean | undefined
-        notification: Message | undefined
+        notification: ToastMessageOptions | undefined
         loading: boolean
-        error: Message | undefined
+        error: ToastMessageOptions | undefined
     }
 }

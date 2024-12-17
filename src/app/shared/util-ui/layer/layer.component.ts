@@ -1,5 +1,4 @@
 import { Component, ContentChildren, EventEmitter, Input, Output, QueryList, TemplateRef } from '@angular/core'
-import { AccordionModule } from 'primeng/accordion'
 import { NgTemplateOutlet } from '@angular/common'
 import { RegistryTemplateDirective } from '../../util-tool/directive/registry-template.directive'
 import { DialogModule } from 'primeng/dialog'
@@ -9,7 +8,6 @@ import { GenericComponent } from '../../util-tool/component/generic.component'
     selector: 'app-layer',
     standalone: true,
     imports: [
-        AccordionModule,
         NgTemplateOutlet,
         DialogModule,
     ],

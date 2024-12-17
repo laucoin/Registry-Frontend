@@ -1,15 +1,4 @@
-::ng-deep {
-    .p-sidebar {
-        background: transparent;
-        border:     none;
-    }
-
-    .torn-paper {
-        background-image:    url('/img/side_bar_background.svg');
-        background-position: center;
-        background-size:     cover;
-    }
-}
+@import '../../../responsive';
 
 .menu-button {
     left:     var(--basic-spacer);
@@ -38,7 +27,6 @@ menu {
 
 .menu-item {
     padding: 0 var(--basic-spacer) 0;
-    color:   white;
 
     span {
         margin-left: var(--min-spacer);
@@ -55,20 +43,28 @@ li {
     display:             flex;
     height:              3em;
     justify-content:     left;
-    margin:              calc(var(--min-spacer) / 2) var(--basic-spacer) calc(var(--min-spacer) / 2) 0;
+    margin:              calc(var(--min-spacer) / 2) 0 calc(var(--min-spacer) / 2) 0;
     transition-duration: 150ms;
 }
 
 .clickable-card:hover {
-    background-color: #00507a;
-    border:           #003a59 1px solid;
+    border: var(--p-highlight-focus-background) 2px solid;
 }
 
 .clickable-card:active {
-    background-color: #002940;
-    border:           #001d30 1px solid;
+    background-color: var(--p-highlight-focus-background);
+    color:            #fff;
 }
 
 .router-active-card {
-    background-color: #002940;
+    background-color: var(--p-highlight-background);
+    color:            #fff;
+}
+
+::ng-deep {
+    @include greater-than(md) {
+        .p-overlay-mask {
+            display: none;
+        }
+    }
 }
