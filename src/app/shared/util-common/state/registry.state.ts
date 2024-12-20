@@ -241,7 +241,12 @@ export class RegistryState extends GenericState {
     public refreshToken (ctx: StateContext<RegistryStateModel>): Observable<void> {
         return this.service.refreshToken( ctx.getState().authentication.token! ).pipe(
             map( (token: TokenModel): void => this.fetchTokenComplete( ctx, token ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.globalError( ctx, error ) ),
+            catchError( (error: HttpErrorResponse): Observable<void> => {
+                if (error.status === 401) {
+                    this.registryFacade.login()
+                }
+                return this.globalError( ctx, error )
+            } ),
         )
     }
 
