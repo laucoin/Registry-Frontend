@@ -8,7 +8,7 @@ import { CurrentUserModel } from '../../util-model/model/current-user.model'
 import { EventProfileModel } from '../../util-model/model/event-profile.model'
 import { PageModel } from '../../util-model/model/page.model'
 import { GenericState } from '../../util-tool/state/generic.state'
-import { REDIRECT_URI } from '../../util-tool/util/request.util'
+import { CURRENT_USER, REDIRECT_URI, TOKEN } from '../../util-tool/util/request.util'
 import { initialize } from '../../util-tool/util/rx.util'
 import { SessionStorageUtils } from '../../util-tool/util/session-storage.util'
 import { RegistryStateModel } from '../model/registry-state.model'
@@ -24,12 +24,13 @@ import {
     InputInvitationPageSearch,
     InputProfilePageDateRange,
     InputProfilePageSearch,
-    LocalSignOut,
     Login,
     Logout,
     ManageEventInvitationAcceptance,
     Notify,
     RefreshToken,
+    RestoreCurrentUser,
+    RestoreTokens,
     SelectInvitationPageOrder,
     SelectProfilePageOrder,
     SelectUserEventProfile,
@@ -175,6 +176,8 @@ export class RegistryState extends GenericState {
 
     @Action( Login )
     public login (ctx: StateContext<RegistryStateModel>): Observable<void> {
+        SessionStorageUtils.clear()
+        ctx.setState( defaultRegistryState )
         return this.service.getLoginUri( `${location.origin}/${AppRouteEnum.AUTH_CALLBACK}` ).pipe(
             initialize( (): void => this.registryFacade.startGlobalLoader() ),
             finalize( (): void => this.registryFacade.stopGlobalLoader() ),
@@ -193,10 +196,24 @@ export class RegistryState extends GenericState {
         )
     }
 
-    @Action( LocalSignOut )
-    public localSignOut (ctx: StateContext<RegistryStateModel>): void {
-        SessionStorageUtils.clear()
-        ctx.setState( defaultRegistryState )
+    @Action( RestoreTokens )
+    public restoreTokens (ctx: StateContext<RegistryStateModel>, payload: RestoreTokens): void {
+        ctx.patchState( {
+            authentication: {
+                ...ctx.getState().authentication,
+                token: payload.token,
+            },
+        } )
+    }
+
+    @Action( RestoreCurrentUser )
+    public restoreCurrentUser (ctx: StateContext<RegistryStateModel>, payload: RestoreCurrentUser): void {
+        ctx.patchState( {
+            authentication: {
+                ...ctx.getState().authentication,
+                currentUser: payload.currentUser,
+            },
+        } )
     }
 
     @Action( FetchToken )
@@ -229,6 +246,7 @@ export class RegistryState extends GenericState {
     }
 
     private fetchTokenComplete (ctx: StateContext<RegistryStateModel>, token: TokenModel): void {
+        SessionStorageUtils.set( TOKEN, token )
         ctx.patchState( {
             authentication: {
                 ...ctx.getState().authentication,
@@ -248,6 +266,7 @@ export class RegistryState extends GenericState {
     }
 
     private fetchCurrentUserComplete (ctx: StateContext<RegistryStateModel>, currentUser: CurrentUserModel): void {
+        SessionStorageUtils.set( CURRENT_USER, currentUser )
         ctx.patchState( {
             authentication: {
                 ...ctx.getState().authentication,
@@ -543,7 +562,7 @@ export class RegistryState extends GenericState {
             'pi pi-user',
         )
 
-        this.registryFacade.fetchCurrentUser( true )
+        this.registryFacade.fetchCurrentUser()
         this.refreshProfilesPage( ctx )
         this.refreshInvitationsPage( ctx )
     }
@@ -583,7 +602,7 @@ export class RegistryState extends GenericState {
             { name: profile.event.name },
         )
 
-        this.registryFacade.fetchCurrentUser( true )
+        this.registryFacade.fetchCurrentUser()
     }
 
     private selectEventProfileError (
@@ -621,7 +640,7 @@ export class RegistryState extends GenericState {
             'pi pi-user',
             { name: profile.event.name },
         )
-        this.registryFacade.fetchCurrentUser( true )
+        this.registryFacade.fetchCurrentUser()
         this.refreshProfilesPage( ctx )
     }
 

@@ -3,6 +3,8 @@ import { ProfileStatusEnum } from '../../util-model/enumeration/profile-status.e
 import { OrderEnum } from '../../util-model/enumeration/order.enum'
 import { EventProfileModel } from '../../util-model/model/event-profile.model'
 import { HttpErrorResponse } from '@angular/common/http'
+import { TokenModel } from '../../util-authentication/model/token.model'
+import { CurrentUserModel } from '../../util-model/model/current-user.model'
 
 enum ActionEnum {
     START_GLOBAL_LOADER = '[Local] Starting global loader',
@@ -15,8 +17,9 @@ enum ActionEnum {
 
     LOGIN = '[Backend] Logging in',
     LOGOUT = '[Backend] Logging out',
-    LOCAL_SIGN_OUT = '[Local] Signing out',
 
+    RESTORE_TOKEN = '[Local] Restoring token',
+    RESTORE_CURRENT_USER = '[Local] Restoring current user',
     FETCH_TOKEN = '[Backend] Fetching token',
     REFRESH_TOKEN = '[Backend] Refreshing token',
 
@@ -92,8 +95,16 @@ export class Logout {
     public static readonly type: ActionEnum = ActionEnum.LOGOUT
 }
 
-export class LocalSignOut {
-    public static readonly type: ActionEnum = ActionEnum.LOCAL_SIGN_OUT
+export class RestoreTokens {
+    public static readonly type: ActionEnum = ActionEnum.RESTORE_TOKEN
+
+    public constructor (public readonly token: TokenModel) {}
+}
+
+export class RestoreCurrentUser {
+    public static readonly type: ActionEnum = ActionEnum.RESTORE_CURRENT_USER
+
+    public constructor (public readonly currentUser: CurrentUserModel) {}
 }
 
 export class FetchToken {
@@ -108,8 +119,6 @@ export class RefreshToken {
 
 export class FetchCurrentUser {
     public static readonly type: ActionEnum = ActionEnum.FETCH_CURRENT_USER
-
-    public constructor (public readonly force: boolean = false) {}
 }
 
 export class StartProfilesPageLoader {

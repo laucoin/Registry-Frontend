@@ -10,8 +10,14 @@ import { inject } from '@angular/core'
 import { catchError, map, mergeMap, Observable, throwError } from 'rxjs'
 import { RegistryFacade } from '../../util-common/state/registry.facade'
 import { CurrentUserModel } from '../../util-model/model/current-user.model'
-import { AUTHORIZATION, CURRENT_USER_ID, SELECT_PROFILE_EVENT_ID } from '../../util-tool/util/request.util'
+import {
+    AUTHORIZATION,
+    CURRENT_USER_ID,
+    REDIRECT_URI,
+    SELECT_PROFILE_EVENT_ID,
+} from '../../util-tool/util/request.util'
 import { TokenModel } from '../model/token.model'
+import { SessionStorageUtils } from '../../util-tool/util/session-storage.util'
 
 export const backendHandler: HttpInterceptorFn = (
     req: HttpRequest<unknown>,
@@ -38,7 +44,10 @@ export const backendHandler: HttpInterceptorFn = (
                             return next( req.clone( { url: url, headers: retryHeaders } ) )
                         } ),
                         catchError( (retryError: HttpErrorResponse): Observable<HttpEvent<unknown>> => {
-                            if (retryError.status === 401) registryFacade.login()
+                            if (retryError.status === 401) {
+                                SessionStorageUtils.set( REDIRECT_URI, location.pathname )
+                                registryFacade.login()
+                            }
                             return throwError( (): HttpErrorResponse => retryError )
                         } ),
                     )
