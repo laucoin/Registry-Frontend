@@ -89,4 +89,7 @@
     <ng-template appTemplate='element' let-layout='layout' let-profile>
         <app-event-profile-element [element]='profile' [layout]='layout' view='event' />
     </ng-template>
+    <ng-template appTemplate='empty'>
+        <app-message [message]='message' />
+    </ng-template>
 </app-list>

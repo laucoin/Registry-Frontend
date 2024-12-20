@@ -48,7 +48,7 @@
                     [multiple]='true'
                     (onChange)='onLayerSelectionChange($event, users)'
                     [options]='users'>
-                <ng-template #empty>
+                <ng-template #emptymessage>
                     <app-message [message]='message' />
                 </ng-template>
             </p-listbox>

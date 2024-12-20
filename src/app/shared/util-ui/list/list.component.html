@@ -83,8 +83,7 @@
             </div>
         </ng-template>
         @if (getTemplate('empty')) {
-            <ng-template #empty>
-                test
+            <ng-template #emptymessage>
                 @if ((loading$ | async) === false) {
                     <ng-container [ngTemplateOutlet]='getTemplate("empty")' />
                 }

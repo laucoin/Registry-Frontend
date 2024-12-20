@@ -7,7 +7,7 @@
                   [icon]='currentUser.preferences.selectedProfile?.id === element.id ? "pi pi-verified" : "pi pi-user"'>
     <div [class.flex-lg-row]='layout === "list"'
          class='d-flex flex-column justify-content-between align-items-center'>
-        <div class='info d-flex flex-column gap-1 justify-content-center'>
+        <div class='info d-flex flex-column justify-content-center'>
             <div>
                 <span [class.strikethrough]='element.endAccess | isPast' class='event-name'>
                     @if (view === 'user') {
@@ -24,12 +24,12 @@
                 <p-badge [class.mt-1]='layout === "grid"' severity='info' value='{{ "event.role." + element.role | translate }}' />
             }
         </div>
-        <div class='role d-flex flex-wrap gap-1 align-content-center' [class.justify-content-center]='layout === "grid"'>
+        <div class='role d-flex flex-wrap align-content-center' [class.justify-content-center]='layout === "grid"'>
             @if (element.startAccess || element.endAccess) {
                 <div *ngIf='element.startAccess || element.endAccess'>
                     <small>{{ 'profile.event.validity' | translate }}</small>
                     @if (element.startAccess) {
-                        <div class='d-flex align-content-center gap-1'>
+                        <div class='d-flex align-content-center'>
                             <i class='pi pi-play-circle'></i>
                             <span>
                             {{
@@ -42,7 +42,7 @@
                         </div>
                     }
                     @if (element.endAccess) {
-                        <div class='d-flex align-content-center gap-1'>
+                        <div class='d-flex align-content-center'>
                             <i class='pi pi-stop-circle'></i>
                             <span>
                             {{
@@ -64,15 +64,16 @@
                 <p-badge [severity]='severityFromStatus(element.status)'
                          value='{{ "profile.status." + element.status | translate }}' />
             } @else {
-                <div [class.mt-2]='layout === "grid"' class='d-flex flex-column gap-1'>
+                <div [class.mt-2]='layout === "grid"' class='d-flex flex-column'>
                     <div [class.mb-1]='layout === "grid"'>{{ 'profile.action.manage-acceptance' | translate }}</div>
-                    <div class='d-flex justify-content-center gap-2'>
+                    <div class='d-flex justify-content-center'>
                         <p-button
                                 [label]='"profile.action.reject" | translate'
                                 [rounded]='true'
                                 severity='danger'
                                 (click)='confirmManageAcceptance(ProfileStatusEnum.REJECTED)' />
                         <p-button
+                                class='ms-2'
                                 [label]='"profile.action.accept" | translate'
                                 [rounded]='true'
                                 severity='success'
