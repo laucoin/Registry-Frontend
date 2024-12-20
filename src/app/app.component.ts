@@ -49,6 +49,8 @@ export class AppComponent implements OnInit, OnDestroy {
         private readonly notifyService: MessageService,
         private readonly registryFacade: RegistryFacade,
     ) {
+        this.registryFacade.restoreTokensFromSessionStorage()
+        this.registryFacade.restoreCurrentUserFromSessionStorage()
         this.handleLoadingAndError()
     }
 

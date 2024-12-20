@@ -225,7 +225,7 @@ export class EventState extends GenericElementState<EventStateModel> {
             this.eventIcon,
             this.buildTranslationArgs( event ),
         )
-        this.registryFacade.fetchCurrentUser( true )
+        this.registryFacade.fetchCurrentUser()
         this.refreshPage( ctx )
     }
 
@@ -268,7 +268,7 @@ export class EventState extends GenericElementState<EventStateModel> {
             this.eventIcon,
             this.buildTranslationArgs( event ),
         )
-        this.registryFacade.fetchCurrentUser( true )
+        this.registryFacade.fetchCurrentUser()
         this.refreshPage( ctx )
     }
 
@@ -290,7 +290,7 @@ export class EventState extends GenericElementState<EventStateModel> {
             this.eventIcon,
             this.buildTranslationArgs( event ),
         )
-        this.registryFacade.fetchCurrentUser( true )
+        this.registryFacade.fetchCurrentUser()
         this.refreshPage( ctx )
     }
 
@@ -312,7 +312,7 @@ export class EventState extends GenericElementState<EventStateModel> {
             this.eventIcon,
             this.buildTranslationArgs( event ),
         )
-        this.registryFacade.fetchCurrentUser( true )
+        this.registryFacade.fetchCurrentUser()
         this.refreshPage( ctx )
     }
 

@@ -19,12 +19,13 @@ import {
     InputInvitationPageSearch,
     InputProfilePageDateRange,
     InputProfilePageSearch,
-    LocalSignOut,
     Login,
     Logout,
     ManageEventInvitationAcceptance,
     Notify,
     RefreshToken,
+    RestoreCurrentUser,
+    RestoreTokens,
     SelectInvitationPageOrder,
     SelectProfilePageOrder,
     SelectUserEventProfile,
@@ -49,6 +50,8 @@ import { FormUtil } from '../../util-tool/util/form.util'
 import { EventModel } from '../../util-model/model/event.model'
 import { HttpErrorResponse } from '@angular/common/http'
 import { AppConfig } from '../../../app.config'
+import { SessionStorageUtils } from '../../util-tool/util/session-storage.util'
+import { CURRENT_USER, TOKEN } from '../../util-tool/util/request.util'
 
 @Injectable()
 export class RegistryFacade {
@@ -221,12 +224,20 @@ export class RegistryFacade {
         this.ngStore.dispatch( Logout )
     }
 
-    public localSignOut (): void {
-        this.ngStore.dispatch( LocalSignOut )
+    public fetchCurrentUser (): void {
+        this.ngStore.dispatch( FetchCurrentUser )
     }
 
-    public fetchCurrentUser (force: boolean = false): void {
-        this.ngStore.dispatch( new FetchCurrentUser( force ) )
+    public restoreTokensFromSessionStorage (): void {
+        if (SessionStorageUtils.check( TOKEN )) {
+            this.ngStore.dispatch( new RestoreTokens( SessionStorageUtils.get( TOKEN ) as TokenModel ) )
+        }
+    }
+
+    public restoreCurrentUserFromSessionStorage (): void {
+        if (SessionStorageUtils.check( CURRENT_USER )) {
+            this.ngStore.dispatch( new RestoreCurrentUser( SessionStorageUtils.get( CURRENT_USER ) as CurrentUserModel ) )
+        }
     }
 
     public fetchToken (authorizationCode: string): void {
