@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core'
 import { Observable } from 'rxjs'
-import { AppConfig } from '../../../app.config'
 import { CurrentUserModel } from '../../util-model/model/current-user.model'
 import { GenericService } from '../../util-tool/service/generic.service'
+import { AuthenticationUriModel } from '../../util-model/model/authentication-uri.model'
+import { CredentialsModel } from '../../util-model/model/credentials.model'
+import { HttpParams } from '@angular/common/http'
 import { TokenModel } from '../model/token.model'
 
 @Injectable( {
@@ -10,24 +12,34 @@ import { TokenModel } from '../model/token.model'
 } )
 export class SecurityService extends GenericService {
     public constructor () {
-        super( '/auth' )
+        super( '/api/authentication' )
     }
 
-    public signIn (): void {
-        location.href = `${AppConfig.config.backendUrl}/oauth2/authorization/${AppConfig.config.authProvider}`
+    public getLoginUri (redirectUri: string): Observable<AuthenticationUriModel> {
+        return this.http.get<AuthenticationUriModel>( `${this.baseUrl}/login/uri?${new HttpParams().set(
+            'redirectUri',
+            redirectUri,
+        ).toString()}` )
     }
 
-    public signOut (): void {
-        location.href = `${AppConfig.config.backendUrl}/logout`
+    public getLogoutUri (redirectUri: string): Observable<AuthenticationUriModel> {
+        return this.http.get<AuthenticationUriModel>( `${this.baseUrl}/logout/uri?${new HttpParams().set(
+            'redirectUri',
+            redirectUri,
+        ).toString()}` )
     }
 
-    public findCurrentUser (): Observable<CurrentUserModel> {
-        return this.http.get<CurrentUserModel>( `${this.baseUrl}/profile` )
+    public fetchToken (credentials: CredentialsModel): Observable<TokenModel> {
+        return this.http.post<TokenModel>( `${this.baseUrl}/token`, credentials )
     }
 
-    public findCurrentUserToken (): Observable<TokenModel> {
-        return this.http.get<TokenModel>( `${this.baseUrl}/token`, {
-            withCredentials: true,
+    public refreshToken (credentials: TokenModel): Observable<TokenModel> {
+        return this.http.post<TokenModel>( `${this.baseUrl}/token/refresh`, {
+            refreshToken: credentials.refreshToken,
         } )
+    }
+
+    public fetchCurrentUser (): Observable<CurrentUserModel> {
+        return this.http.get<CurrentUserModel>( `${this.baseUrl}/user/current` )
     }
 }

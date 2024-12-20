@@ -1,15 +1,14 @@
 import { HttpErrorResponse } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import { Action, State, StateContext } from '@ngxs/store'
-import { catchError, finalize, map, Observable, of } from 'rxjs'
-import { TokenModel } from '../../util-authentication/model/token.model'
+import { catchError, finalize, map, mergeMap, Observable, of } from 'rxjs'
 import { SecurityService } from '../../util-authentication/service/security.service'
 import { ProfileStatusEnum } from '../../util-model/enumeration/profile-status.enum'
 import { CurrentUserModel } from '../../util-model/model/current-user.model'
 import { EventProfileModel } from '../../util-model/model/event-profile.model'
 import { PageModel } from '../../util-model/model/page.model'
 import { GenericState } from '../../util-tool/state/generic.state'
-import { CURRENT_USER, REDIRECT_URI, TOKEN } from '../../util-tool/util/request.util'
+import { REDIRECT_URI } from '../../util-tool/util/request.util'
 import { initialize } from '../../util-tool/util/rx.util'
 import { SessionStorageUtils } from '../../util-tool/util/session-storage.util'
 import { RegistryStateModel } from '../model/registry-state.model'
@@ -26,14 +25,15 @@ import {
     InputProfilePageDateRange,
     InputProfilePageSearch,
     LocalSignOut,
+    Login,
+    Logout,
     ManageEventInvitationAcceptance,
     Notify,
+    RefreshToken,
     SelectInvitationPageOrder,
     SelectProfilePageOrder,
     SelectUserEventProfile,
     SetGlobalError,
-    SignIn,
-    SignOut,
     StartContextEventLoader,
     StartGlobalLoader,
     StartInvitationsPageLoader,
@@ -52,6 +52,10 @@ import { OrderEnum } from '../../util-model/enumeration/order.enum'
 import { PreferencesService } from './preferences.service'
 import { EventService } from '../../../domains/event/data/state/event.service'
 import { EventModel } from '../../util-model/model/event.model'
+import { TokenModel } from '../../util-authentication/model/token.model'
+import { AppRouteEnum } from '../../../app-route.enum'
+import { AuthenticationUriModel } from '../../util-model/model/authentication-uri.model'
+import { Router } from '@angular/router'
 
 const defaultRegistryState: RegistryStateModel = {
     authentication: {
@@ -121,6 +125,7 @@ export class RegistryState extends GenericState {
         private readonly eventService: EventService,
         private readonly userEventProfileService: UserEventProfileService,
         private readonly preferencesService: PreferencesService,
+        private readonly router: Router,
     ) { super() }
 
     @Action( StartGlobalLoader )
@@ -168,15 +173,24 @@ export class RegistryState extends GenericState {
         } )
     }
 
-    @Action( SignIn )
-    public signIn (): void {
-        SessionStorageUtils.set( REDIRECT_URI, window.location.pathname + window.location.search )
-        this.service.signIn()
+    @Action( Login )
+    public login (ctx: StateContext<RegistryStateModel>): Observable<void> {
+        return this.service.getLoginUri( `${location.origin}/${AppRouteEnum.AUTH_CALLBACK}` ).pipe(
+            initialize( (): void => this.registryFacade.startGlobalLoader() ),
+            finalize( (): void => this.registryFacade.stopGlobalLoader() ),
+            map( (uri: AuthenticationUriModel): void => { window.location.href = uri.uri } ),
+            catchError( (error: HttpErrorResponse): Observable<void> => this.globalError( ctx, error ) ),
+        )
     }
 
-    @Action( SignOut )
-    public signOut (): void {
-        this.service.signOut()
+    @Action( Logout )
+    public logout (ctx: StateContext<RegistryStateModel>): Observable<void> {
+        return this.service.getLogoutUri( `${location.origin}/${AppRouteEnum.LOGOUT_CALLBACK}` ).pipe(
+            initialize( (): void => this.registryFacade.startGlobalLoader() ),
+            finalize( (): void => this.registryFacade.stopGlobalLoader() ),
+            map( (uri: AuthenticationUriModel): void => { window.location.href = uri.uri } ),
+            catchError( (error: HttpErrorResponse): Observable<void> => this.globalError( ctx, error ) ),
+        )
     }
 
     @Action( LocalSignOut )
@@ -186,60 +200,54 @@ export class RegistryState extends GenericState {
     }
 
     @Action( FetchToken )
-    public fetchToken (ctx: StateContext<RegistryStateModel>): Observable<void> {
-        if (SessionStorageUtils.check( TOKEN )) {
-            const token: TokenModel | undefined = SessionStorageUtils.get( TOKEN ) as TokenModel
-            if (new Date( token.expiredAt ) > new Date()) {
-                this.fetchTokenComplete( ctx, token )
-                return of()
-            }
-        }
-
-        return this.service.findCurrentUserToken().pipe(
+    public fetchToken (ctx: StateContext<RegistryStateModel>, payload: FetchToken): Observable<void> {
+        return this.service.fetchToken( {
+            authorizationCode: payload.authorizationCode,
+            redirectUri: `${location.origin}/${AppRouteEnum.AUTH_CALLBACK}`,
+        } ).pipe(
             initialize( (): void => this.registryFacade.startGlobalLoader() ),
             finalize( (): void => this.registryFacade.stopGlobalLoader() ),
             map( (token: TokenModel): void => this.fetchTokenComplete( ctx, token ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => {
-                SessionStorageUtils.delete( TOKEN )
-                return this.globalError( ctx, error )
+            mergeMap( (): Observable<CurrentUserModel> => this.service.fetchCurrentUser() ),
+            map( (currentUser: CurrentUserModel): void => this.fetchCurrentUserComplete( ctx, currentUser ) ),
+            map( (): void => {
+                const redirectUri: string = SessionStorageUtils.check( REDIRECT_URI ) ?
+                                            SessionStorageUtils.get( REDIRECT_URI ) as string
+                                                                                      : AppRouteEnum.HOME
+                this.router.navigateByUrl( redirectUri ).then( (): void => SessionStorageUtils.delete( REDIRECT_URI ) )
             } ),
+            catchError( (error: HttpErrorResponse): Observable<void> => this.globalError( ctx, error ) ),
+        )
+    }
+
+    @Action( RefreshToken )
+    public refreshToken (ctx: StateContext<RegistryStateModel>): Observable<void> {
+        return this.service.refreshToken( ctx.getState().authentication.token! ).pipe(
+            map( (token: TokenModel): void => this.fetchTokenComplete( ctx, token ) ),
+            catchError( (error: HttpErrorResponse): Observable<void> => this.globalError( ctx, error ) ),
         )
     }
 
     private fetchTokenComplete (ctx: StateContext<RegistryStateModel>, token: TokenModel): void {
-        SessionStorageUtils.set( TOKEN, token )
         ctx.patchState( {
             authentication: {
                 ...ctx.getState().authentication,
                 token: token,
             },
         } )
-        this.registryFacade.fetchCurrentUser( true )
     }
 
     @Action( FetchCurrentUser )
-    public fetchCurrentUser (ctx: StateContext<RegistryStateModel>, payload: FetchCurrentUser): Observable<void> {
-        if (!payload.force && SessionStorageUtils.check( CURRENT_USER )) {
-            this.fetchCurrentUserComplete(
-                ctx,
-                SessionStorageUtils.get( CURRENT_USER ) as CurrentUserModel,
-            )
-            return of()
-        }
-
-        return this.service.findCurrentUser().pipe(
+    public fetchCurrentUser (ctx: StateContext<RegistryStateModel>): Observable<void> {
+        return this.service.fetchCurrentUser().pipe(
             initialize( (): void => this.registryFacade.startGlobalLoader() ),
             finalize( (): void => this.registryFacade.stopGlobalLoader() ),
             map( (currentUser: CurrentUserModel): void => this.fetchCurrentUserComplete( ctx, currentUser ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => {
-                SessionStorageUtils.delete( CURRENT_USER )
-                return this.globalError( ctx, error )
-            } ),
+            catchError( (error: HttpErrorResponse): Observable<void> => this.globalError( ctx, error ) ),
         )
     }
 
     private fetchCurrentUserComplete (ctx: StateContext<RegistryStateModel>, currentUser: CurrentUserModel): void {
-        SessionStorageUtils.set( CURRENT_USER, currentUser )
         ctx.patchState( {
             authentication: {
                 ...ctx.getState().authentication,

@@ -5,5 +5,4 @@ export interface EnvironmentModel {
     languages: string[]
     executionContext: ExecutionContextEnum
     backendUrl: string
-    authProvider: string
 }

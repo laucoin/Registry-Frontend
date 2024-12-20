@@ -6,8 +6,8 @@ import { MovementRoutesEnum } from './domains/movement/movement-routes.enum'
 
 export enum AppRouteEnum {
     HOME = 'home',
-    AUTH_CALLBACK = 'auth-callback',
-    SIGN_OUT_CALLBACK = 'sign-out-callback',
+    AUTH_CALLBACK = 'callback',
+    LOGOUT_CALLBACK = 'logout-callback',
     USERS = 'users',
     PREFERENCES = `${USERS}/preferences`,
     PREFERENCES_PROFILES = `${PREFERENCES}/${PreferencesRoutesEnum.PROFILES}`,

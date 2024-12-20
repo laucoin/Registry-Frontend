@@ -60,8 +60,7 @@ You need to install a Node environment. To do that there are 2 possibilities.
             "fr-FR"
         ],
         "executionContext": "SGDF",
-        "backendUrl": "http://localhost:8081",
-        "authProvider": "keycloak"
+        "backendUrl": "http://localhost:8081"
     }
     ```
 5. Now, you can use the following scripts. Enjoy !

@@ -1,17 +1,38 @@
-import { Component, OnInit } from '@angular/core'
-import { Router } from '@angular/router'
-import { SessionStorageUtils } from '../../shared/util-tool/util/session-storage.util'
-import { REDIRECT_URI } from '../../shared/util-tool/util/request.util'
+import { Component, OnDestroy, OnInit } from '@angular/core'
+import { ActivatedRoute, Params } from '@angular/router'
+import { RegistryFacade } from '../../shared/util-common/state/registry.facade'
+import { Subscription } from 'rxjs'
 
 @Component( {
     selector: 'app-auth-callback',
     standalone: true,
     template: '',
 } )
-export class AuthCallbackComponent implements OnInit {
-    public constructor (private readonly router: Router) {}
+export class AuthCallbackComponent implements OnInit, OnDestroy {
+    private readonly subscriptions: Subscription = new Subscription()
+
+    public constructor (
+        private readonly facade: RegistryFacade,
+        private readonly route: ActivatedRoute,
+    ) {}
 
     public ngOnInit (): void {
-        this.router.navigateByUrl( SessionStorageUtils.get( REDIRECT_URI )?.toString() ?? '' ).then()
+        this.handleAuthorizationCode()
+    }
+
+    private handleAuthorizationCode (): void {
+        this.subscriptions.add(
+            this.route.queryParams.subscribe( (params: Params): void => {
+                if (params['code']) {
+                    this.facade.fetchToken( params['code'] )
+                } else {
+                    throw new Error( 'No authorization code found' )
+                }
+            } ),
+        )
+    }
+
+    public ngOnDestroy (): void {
+        this.subscriptions.unsubscribe()
     }
 }

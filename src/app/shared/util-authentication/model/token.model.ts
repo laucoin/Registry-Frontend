@@ -1,6 +1,7 @@
 export interface TokenModel {
-    type: string,
-    token: string,
-    issuedAt: Date,
-    expiredAt: Date,
+    accessToken: string,
+    refreshExpiresIn: number,
+    expiresIn: number,
+    refreshToken: string,
+    tokenType: string,
 }
