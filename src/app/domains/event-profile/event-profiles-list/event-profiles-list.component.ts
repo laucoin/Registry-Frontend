@@ -23,6 +23,7 @@ import { EventProfileRoutesEnum } from '../event-profile-routes.enum'
 import { Select } from 'primeng/select'
 import { Button } from 'primeng/button'
 import { DatePicker } from 'primeng/datepicker'
+import { MessageComponent } from '../../../shared/util-ui/message/message.component'
 
 @Component( {
     selector: 'app-event-profiles-list',
@@ -44,6 +45,7 @@ import { DatePicker } from 'primeng/datepicker'
         Select,
         Button,
         DatePicker,
+        MessageComponent,
 
     ],
 } )
