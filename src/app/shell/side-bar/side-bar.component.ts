@@ -120,7 +120,7 @@ export class SideBarComponent extends GenericComponent implements OnInit {
     }
 
     protected signOut (): void {
-        this.registryFacade.signOut()
+        this.registryFacade.logout()
     }
 
     private handleTinyScreen (): void {

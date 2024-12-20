@@ -27,7 +27,7 @@ export const routes: Routes = [
         component: AuthCallbackComponent,
     },
     {
-        path: AppRouteEnum.SIGN_OUT_CALLBACK,
+        path: AppRouteEnum.LOGOUT_CALLBACK,
         component: SignOutCallbackComponent,
     },
     {

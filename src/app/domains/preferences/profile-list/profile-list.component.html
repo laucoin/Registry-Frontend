@@ -50,7 +50,7 @@
     </ng-template>
     <ng-template appTemplate='empty'>
         <app-message [message]='message'>
-            <div class='d-flex gap-2 align-content-center justify-content-center'>
+            <div class='d-flex align-content-center justify-content-center'>
                 <p-button
                         [routerLink]='"/" + AppRouteEnum.EVENTS_CREATION.toString()'
                         [label]="'event.create' | translate"
@@ -58,6 +58,7 @@
                         icon='pi pi-plus'
                         severity='success' />
                 <p-button
+                        class='ms-2'
                         [routerLink]='"/" + AppRouteEnum.PREFERENCES_INVITATIONS.toString()'
                         [label]='"profile.event.invitation" | pluralTranslation:(invitationPage$ | async)?.content?.length ?? 0 | translate'
                         [rounded]='true'

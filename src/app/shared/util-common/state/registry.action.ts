@@ -13,11 +13,12 @@ enum ActionEnum {
     NOTIFY = '[Local] Notifying',
     ACK_NOTIFICATION = '[Local] Acknowledging notification',
 
-    SIGN_IN = '[Backend] Signing in',
-    SIGN_OUT = '[Backend] Signing out',
+    LOGIN = '[Backend] Logging in',
+    LOGOUT = '[Backend] Logging out',
     LOCAL_SIGN_OUT = '[Local] Signing out',
 
     FETCH_TOKEN = '[Backend] Fetching token',
+    REFRESH_TOKEN = '[Backend] Refreshing token',
 
     FETCH_CURRENT_USER = '[Backend] Fetching current user',
 
@@ -83,12 +84,12 @@ export class AckNotification {
     public static readonly type: ActionEnum = ActionEnum.ACK_NOTIFICATION
 }
 
-export class SignIn {
-    public static readonly type: ActionEnum = ActionEnum.SIGN_IN
+export class Login {
+    public static readonly type: ActionEnum = ActionEnum.LOGIN
 }
 
-export class SignOut {
-    public static readonly type: ActionEnum = ActionEnum.SIGN_OUT
+export class Logout {
+    public static readonly type: ActionEnum = ActionEnum.LOGOUT
 }
 
 export class LocalSignOut {
@@ -97,6 +98,12 @@ export class LocalSignOut {
 
 export class FetchToken {
     public static readonly type: ActionEnum = ActionEnum.FETCH_TOKEN
+
+    public constructor (public readonly authorizationCode: string) {}
+}
+
+export class RefreshToken {
+    public static readonly type: ActionEnum = ActionEnum.REFRESH_TOKEN
 }
 
 export class FetchCurrentUser {

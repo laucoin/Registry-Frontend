@@ -7,7 +7,7 @@ import {
     HttpRequest,
 } from '@angular/common/http'
 import { inject } from '@angular/core'
-import { catchError, EMPTY, Observable, throwError } from 'rxjs'
+import { catchError, map, mergeMap, Observable, throwError } from 'rxjs'
 import { RegistryFacade } from '../../util-common/state/registry.facade'
 import { CurrentUserModel } from '../../util-model/model/current-user.model'
 import { AUTHORIZATION, CURRENT_USER_ID, SELECT_PROFILE_EVENT_ID } from '../../util-tool/util/request.util'
@@ -31,10 +31,19 @@ export const backendHandler: HttpInterceptorFn = (
                 case 0:
                     return throwError( (): HttpErrorResponse => new HttpErrorResponse( { status: 503 } ) )
                 case 401:
-                    registryFacade.signIn()
-                    return EMPTY
+                    return registryFacade.refreshToken().pipe(
+                        map( (): TokenModel => registryFacade.actualToken! ),
+                        mergeMap( (newToken: TokenModel): Observable<HttpEvent<unknown>> => {
+                            const retryHeaders: HttpHeaders = buildHeaders( newToken, req.headers )
+                            return next( req.clone( { url: url, headers: retryHeaders } ) )
+                        } ),
+                        catchError( (retryError: HttpErrorResponse): Observable<HttpEvent<unknown>> => {
+                            if (retryError.status === 401) registryFacade.login()
+                            return throwError( (): HttpErrorResponse => retryError )
+                        } ),
+                    )
                 default:
-                    return throwError( () => error )
+                    return throwError( (): HttpErrorResponse => error )
             }
         } ) )
 }
@@ -59,9 +68,7 @@ function formatUrlIfNecessary (currentUser: CurrentUserModel | undefined, url: s
 function buildHeaders (token: TokenModel | undefined, headers: HttpHeaders | undefined): HttpHeaders {
     let filledHeaders: HttpHeaders = headers ?? new HttpHeaders()
 
-    if (token) {
-        filledHeaders = filledHeaders.set( AUTHORIZATION, `${token.type} ${token.token}` )
-    }
+    filledHeaders = filledHeaders.set( AUTHORIZATION, `${token?.tokenType} ${token?.accessToken}` )
 
     return filledHeaders
 }

@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core'
-import { Store } from '@ngxs/store'
+import { inject, Injectable } from '@angular/core'
+import { Actions, ofActionSuccessful, Store } from '@ngxs/store'
 import { ToastMessageOptions } from 'primeng/api'
 import { map, Observable } from 'rxjs'
 import { TokenModel } from '../../util-authentication/model/token.model'
@@ -20,14 +20,15 @@ import {
     InputProfilePageDateRange,
     InputProfilePageSearch,
     LocalSignOut,
+    Login,
+    Logout,
     ManageEventInvitationAcceptance,
     Notify,
+    RefreshToken,
     SelectInvitationPageOrder,
     SelectProfilePageOrder,
     SelectUserEventProfile,
     SetGlobalError,
-    SignIn,
-    SignOut,
     StartContextEventLoader,
     StartGlobalLoader,
     StartInvitationsPageLoader,
@@ -51,6 +52,8 @@ import { AppConfig } from '../../../app.config'
 
 @Injectable()
 export class RegistryFacade {
+    private readonly actions$: Actions = inject( Actions )
+
     private readonly onlineMessage: ToastMessageOptions = StateUtil.buildNotificationMessage(
         'success',
         'success.title.online',
@@ -210,12 +213,12 @@ export class RegistryFacade {
         this.ngStore.dispatch( AckNotification )
     }
 
-    public signIn (): void {
-        this.ngStore.dispatch( SignIn )
+    public login (): void {
+        this.ngStore.dispatch( Login )
     }
 
-    public signOut (): void {
-        this.ngStore.dispatch( SignOut )
+    public logout (): void {
+        this.ngStore.dispatch( Logout )
     }
 
     public localSignOut (): void {
@@ -226,8 +229,13 @@ export class RegistryFacade {
         this.ngStore.dispatch( new FetchCurrentUser( force ) )
     }
 
-    public fetchToken (): void {
-        this.ngStore.dispatch( FetchToken )
+    public fetchToken (authorizationCode: string): void {
+        this.ngStore.dispatch( new FetchToken( authorizationCode ) )
+    }
+
+    public refreshToken (): Observable<RefreshToken> {
+        this.ngStore.dispatch( RefreshToken )
+        return this.actions$.pipe( ofActionSuccessful( RefreshToken ) )
     }
 
     public startProfilesPageLoader (): void {

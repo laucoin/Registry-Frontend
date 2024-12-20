@@ -1,5 +1,4 @@
-import { AsyncPipe } from '@angular/common'
-import { Component, OnDestroy, OnInit } from '@angular/core'
+import { Component, OnDestroy, OnInit, signal, WritableSignal } from '@angular/core'
 import { RouterOutlet } from '@angular/router'
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import { ConfirmationService, MessageService, ToastMessageOptions, Translation } from 'primeng/api'
@@ -7,7 +6,7 @@ import { BlockUIModule } from 'primeng/blockui'
 import { ConfirmDialogModule } from 'primeng/confirmdialog'
 import { ProgressSpinnerModule } from 'primeng/progressspinner'
 import { ToastModule } from 'primeng/toast'
-import { fromEvent, map, merge, Observable, of, Subscription } from 'rxjs'
+import { fromEvent, map, merge, of, Subscription } from 'rxjs'
 import { AppConfig } from './app.config'
 import { RegistryFacade } from './shared/util-common/state/registry.facade'
 import { MessageComponent } from './shared/util-ui/message/message.component'
@@ -27,7 +26,6 @@ import { Button } from 'primeng/button'
         ToastModule,
         RouterOutlet,
         BlockUIModule,
-        AsyncPipe,
         ProgressSpinnerModule,
         MessageComponent,
         Button,
@@ -38,11 +36,12 @@ import { Button } from 'primeng/button'
 } )
 export class AppComponent implements OnInit, OnDestroy {
     protected readonly GenericUtil: typeof GenericUtil = GenericUtil
-    protected readonly loading$: Observable<boolean>
-    protected readonly error$: Observable<ToastMessageOptions | undefined>
     protected readonly breakPoint: object = breakPoint
     private readonly subscriptions: Subscription = new Subscription()
     private readonly themeMediaQuery: MediaQueryList = window.matchMedia( '(prefers-color-scheme: light)' )
+
+    protected loading: WritableSignal<boolean> = signal( false )
+    protected error: WritableSignal<ToastMessageOptions | undefined> = signal( undefined )
 
     public constructor (
         private readonly translateService: TranslateService,
@@ -50,8 +49,7 @@ export class AppComponent implements OnInit, OnDestroy {
         private readonly notifyService: MessageService,
         private readonly registryFacade: RegistryFacade,
     ) {
-        this.loading$ = this.registryFacade.globalLoading
-        this.error$ = this.registryFacade.globalError
+        this.handleLoadingAndError()
     }
 
     public ngOnInit (): void {
@@ -69,8 +67,17 @@ export class AppComponent implements OnInit, OnDestroy {
         this.subscriptions.unsubscribe()
     }
 
-    protected signOut (): void {
-        this.registryFacade.signOut()
+    private handleLoadingAndError (): void {
+        this.subscriptions.add(
+            this.registryFacade.globalLoading.subscribe( this.loading ),
+        )
+        this.subscriptions.add(
+            this.registryFacade.globalError.subscribe( this.error ),
+        )
+    }
+
+    protected logout (): void {
+        this.registryFacade.logout()
     }
 
     private initTheme (): void {
