@@ -6,41 +6,43 @@
         <div class='row'>
             <div class='col-12 col-sm-6 col-md-12 col-lg-6 search-field'>
                 <label for='profiles-search'>{{ 'filter-sort.search' | translate }}</label>
-                <input id='profiles-search'
+                <input pInputText id='profiles-search'
                        type='text'
-                       pInputText
                        (keydown.enter)='loadPage(pageEvent)'
                        [formControl]='searched' />
             </div>
             <div class='col-12 col-sm-6 col-md-12 col-lg-6 search-field'>
                 <label for='profiles-range'>{{ 'filter-sort.date-range' | translate }}</label>
-                <p-calendar [firstDayOfWeek]='1'
-                            [formControl]='range'
-                            [readonlyInput]='true'
-                            [showTime]='true'
-                            [showClear]='true'
-                            [touchUI]='isMobile'
-                            id='profiles-range'
-                            inputId='profiles-range'
-                            selectionMode='range'
-                            styleClass='full-w' />
+                <p-date-picker [formControl]='range'
+                               [showButtonBar]='true'
+                               [readonlyInput]='true'
+                               [showTime]='true'
+                               [touchUI]='isMobile'
+                               id='profiles-range'
+                               inputId='profiles-range'
+                               selectionMode='range'
+                               styleClass='full-w' />
             </div>
         </div>
-        <div class='d-flex flex-wrap justify-content-center gap-3'>
-            <p-toggleButton
-                    [formControl]='order'
-                    (keydown.enter)='loadPage(pageEvent)'
-                    [onLabel]='"filter-sort.order.DESC" | translate'
-                    [offLabel]='"filter-sort.order.ASC" | translate'
-                    onIcon='pi pi-sort-alpha-down-alt'
-                    offIcon='pi pi-sort-alpha-down'
-                    [ariaLabel]='"filter-sort.order.title" | translate' />
-            <p-button (click)='loadPage(pageEvent)'
-                      [label]='"filter-sort.apply" | translate'
-                      [outlined]='true'
-                      [rounded]='true'
-                      icon='pi pi-search'
-                      [loading]='(loading$ | async) || (silentLoading$ | async)' />
+        <div class='d-flex flex-wrap justify-content-center pt-2'>
+            <div class='pe-1 flex-grow-1'>
+                <p-toggleButton
+                        [formControl]='order'
+                        (keydown.enter)='loadPage(pageEvent)'
+                        [onLabel]='"filter-sort.order.DESC" | translate'
+                        [offLabel]='"filter-sort.order.ASC" | translate'
+                        onIcon='pi pi-sort-alpha-down-alt'
+                        offIcon='pi pi-sort-alpha-down'
+                        [ariaLabel]='"filter-sort.order.title" | translate' />
+            </div>
+            <div class='ps-1'>
+                <p-button (click)='loadPage(pageEvent)'
+                          [label]='"filter-sort.apply" | translate'
+                          [outlined]='true'
+                          [rounded]='true'
+                          icon='pi pi-search'
+                          [loading]='(loading$ | async) || (silentLoading$ | async)' />
+            </div>
         </div>
     </ng-template>
     <ng-template appTemplate='element' let-layout='layout' let-profile>

@@ -1,5 +1,3 @@
-@import 'primeng/resources/primeng.css';
-@import 'primeflex/primeflex.scss';
 @import 'primeicons/primeicons.css';
 @import 'responsive';
 
@@ -7,16 +5,10 @@ body {
     background:              var(--surface-ground);
     color:                   var(--text-color);
     font-family:             Sarabun, sans-serif;
-    -webkit-font-smoothing:  antialiased;
     font-weight:             normal;
     margin:                  0;
+    -webkit-font-smoothing:  antialiased;
     -moz-osx-font-smoothing: grayscale;
-}
-
-@include greater-than(md) {
-    .p-sidebar-mask {
-        display: none;
-    }
 }
 
 .center {
@@ -24,23 +16,11 @@ body {
 }
 
 :root {
-    --error-color:   var(--red-500);
-    --info-color:    var(--cyan-500);
-    --success-color: var(--green-400);
-    --warn-color:    var(--yellow-500);
     --basic-rounder: 0.5em;
     --tiny-screen:   400px;
     --basic-spacer:  1em;
     --min-spacer:    0.5em;
     --menu-width:    20em;
-}
-
-.p-card .p-card-title {
-    margin: 0;
-}
-
-.p-card .p-card-body {
-    padding: var(--min-spacer);
 }
 
 .search-field {
@@ -62,35 +42,8 @@ body {
     }
 }
 
-.p-calendar .p-datepicker {
-    min-width: 0;
-}
-
-.p-card .p-card-content {
-    padding: 0;
-}
-
-.p-panel.p-panel-toggleable .p-panel-header {
-    padding: 0;
-}
-
-.multiple-min-margin {
-    margin: calc(var(--min-spacer) / 2);
-}
-
-.grid-container {
-    display:               grid;
-    gap:                   var(--min-spacer);
-    grid-template-columns: 1fr;
-}
-
 .full-w {
     width: 100%;
-}
-
-.hidden-place {
-    color:           var(--error-color);
-    text-decoration: line-through;
 }
 
 .pointer {
@@ -99,106 +52,6 @@ body {
 
 .secondary-color {
     color: var(--text-color-secondary);
-}
-
-.p-tooltip,
-.p-dialog {
-    max-height: 95%;
-    max-width:  95%;
-}
-
-.p-overlaypanel .p-overlaypanel-content {
-    padding: 0;
-}
-
-.p-toast-message {
-    background: var(--surface-a);
-}
-
-.p-message {
-    background: var(--surface-hover);
-}
-
-.p-message,
-.p-toast-message {
-    border-width: 0;
-}
-
-.p-message.p-message-error,
-.p-toast-message.p-toast-message-error {
-    border-left: solid var(--error-color) 3px;
-    color:       var(--error-color);
-
-    .p-message-icon,
-    .p-toast-message-icon,
-    .p-toast-icon-close {
-        color: var(--error-color);
-    }
-}
-
-.p-message.p-message-warn,
-.p-toast-message.p-toast-message-warn {
-    border-left: solid var(--warn-color) 3px;
-    color:       var(--warn-color);
-
-    .p-message-icon,
-    .p-toast-message-icon,
-    .p-toast-icon-close {
-        color: var(--warn-color);
-    }
-}
-
-.p-message.p-message-info,
-.p-toast-message.p-toast-message-info {
-    border-left: solid var(--info-color) 3px;
-    color:       var(--info-color);
-
-    .p-message-icon,
-    .p-toast-message-icon,
-    .p-toast-icon-close {
-        color: var(--info-color);
-    }
-}
-
-.p-message.p-message-success,
-.p-toast-message.p-toast-message-success {
-    border-left: solid var(--success-color) 3px;
-    color:       var(--success-color);
-
-    .p-message-icon,
-    .p-toast-message-icon,
-    .p-toast-icon-close {
-        color: var(--success-color);
-    }
-}
-
-.p-panel .p-panel-header {
-    background: var(--surface-a);
-}
-
-.p-panel .p-panel-content {
-    padding: var(--min-spacer) 0;
-}
-
-.p-panel .p-panel-header,
-p-panel .p-panel-content {
-    border:     none;
-    text-align: justify;
-}
-
-.p-tabview .p-tabview-nav li .p-tabview-nav-link {
-    padding: var(--min-spacer) var(--basic-spacer);
-}
-
-.p-tabview .p-tabview-panels {
-    background: var(--surface-ground);
-    padding:    0;
-}
-
-@include less-than(md) {
-    .center-on-mobile {
-        text-align: center;
-    }
 }
 
 a,

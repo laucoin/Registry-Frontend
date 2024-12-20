@@ -14,18 +14,17 @@
     <p-card>
         <div class='field'>
             <label for='datetime' appRequired>{{ 'movement.form.datetime' | translate }}</label>
-            <p-calendar [firstDayOfWeek]='1'
-                        [formControl]='dateTime'
-                        [placeholder]='"movement.example.datetime" | translate: {
+            <p-date-picker [formControl]='dateTime'
+                           [showButtonBar]='true'
+                           [placeholder]='"movement.example.datetime" | translate: {
                             date: now | date: ("datetime.format.date" | translate),
                             time: now | date: ("datetime.format.time" | translate),
                         }'
-                        [readonlyInput]='true'
-                        [touchUI]='isMobile'
-                        [showTime]='true'
-                        [showClear]='true'
-                        id='datetime'
-                        styleClass='full-w' />
+                           [readonlyInput]='true'
+                           [touchUI]='isMobile'
+                           [showTime]='true'
+                           id='datetime'
+                           styleClass='full-w' />
             <app-form-field-error [control]='dateTime'
                                   [example]='"movement.example.datetime" | translate: {
                                       date: now | date: ("datetime.format.date" | translate),
@@ -35,7 +34,7 @@
         </div>
         <div class='field'>
             <label for='type' appRequired>{{ 'movement.form.type' | translate }}</label>
-            <p-dropdown
+            <p-select
                     id='type'
                     styleClass='full-w'
                     [options]='typeMetadata'
@@ -52,28 +51,30 @@
             <app-form-field-error [control]='content'
                                   [label]='"movement.form.content" | translate' />
         </div>
-        <div class='flex pt-4 gap-2 justify-content-center'>
-            <p-button
-                    (click)='navigateToRedirectUri()'
-                    [label]='"cancel" | translate'
-                    [outlined]='true'
-                    [rounded]='true' />
-
-            @if (movement()) {
-                <p-button
-                        (click)='submit()'
-                        [label]='"edit" | translate'
-                        [rounded]='true'
-                        icon='pi pi-pen-to-square'
-                        severity='success' />
-            } @else {
-                <p-button
-                        (click)='submit()'
-                        [label]='"create" | translate'
-                        [rounded]='true'
-                        icon='pi pi-plus'
-                        severity='success' />
-            }
-        </div>
     </p-card>
+    <div class='d-flex mt-2 justify-content-center'>
+        <p-button
+                (click)='navigateToRedirectUri()'
+                [label]='"cancel" | translate'
+                [outlined]='true'
+                [rounded]='true' />
+
+        @if (movement()) {
+            <p-button
+                    class='ms-2'
+                    (click)='submit()'
+                    [label]='"edit" | translate'
+                    [rounded]='true'
+                    icon='pi pi-pen-to-square'
+                    severity='success' />
+        } @else {
+            <p-button
+                    class='ms-2'
+                    (click)='submit()'
+                    [label]='"create" | translate'
+                    [rounded]='true'
+                    icon='pi pi-plus'
+                    severity='success' />
+        }
+    </div>
 </app-form>

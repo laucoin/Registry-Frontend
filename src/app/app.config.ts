@@ -11,6 +11,7 @@ import { ConfigModel } from './shared/util-config/model/config.model'
 import { EnvironmentModel } from './shared/util-config/model/environment.model'
 import { StringUtils } from './shared/util-tool/util/string.util'
 import { UserState } from './domains/user/data/state/user.state'
+import { providePrimeNG } from 'primeng/config'
 
 @Injectable( {
     providedIn: 'root',
@@ -55,7 +56,18 @@ export class AppConfig {
                 developmentMode: !AppConfig.config.production,
             },
         ) )
+    }
 
+    public static providePrimeNg (): Provider | EnvironmentProviders {
+        return providePrimeNG( {
+            ripple: true,
+            theme: {
+                preset: AppConfig.config.theme,
+                options: {
+                    darkModeSelector: `.dark-mod`,
+                },
+            },
+        } )
     }
 
     public static provideNgxsReduxDevtools (): Provider | EnvironmentProviders {

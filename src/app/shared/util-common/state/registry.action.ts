@@ -1,4 +1,4 @@
-import { Message } from 'primeng/api'
+import { ToastMessageOptions } from 'primeng/api'
 import { ProfileStatusEnum } from '../../util-model/enumeration/profile-status.enum'
 import { OrderEnum } from '../../util-model/enumeration/order.enum'
 import { EventProfileModel } from '../../util-model/model/event-profile.model'
@@ -41,6 +41,8 @@ enum ActionEnum {
     START_PROFILE_LOADER = '[Local] Starting profile loader',
     STOP_PROFILE_LOADER = '[Local] Stopping profile loader',
 
+    UPDATE_THEME = '[Local] Updating application theme',
+
     MANAGE_EVENT_INVITATION_ACCEPTANCE = '[Backend] Managing event\'s invitation acceptance',
     SELECT_USER_EVENT_PROFILE = '[Backend] Selecting user\'s event profile',
     DELETE_USER_EVENT_PROFILE = '[Backend] Deleting user\'s event profile',
@@ -74,7 +76,7 @@ export class UpdateNetwork {
 export class Notify {
     public static readonly type: ActionEnum = ActionEnum.NOTIFY
 
-    public constructor (public readonly message: Message) {}
+    public constructor (public readonly message: ToastMessageOptions) {}
 }
 
 export class AckNotification {
@@ -187,6 +189,12 @@ export class StartProfileLoader {
 
 export class StopProfileLoader {
     public static readonly type: ActionEnum = ActionEnum.STOP_PROFILE_LOADER
+}
+
+export class UpdateTheme {
+    public static readonly type: ActionEnum = ActionEnum.UPDATE_THEME
+
+    public constructor (public readonly theme: 'light' | 'dark') {}
 }
 
 export class StartContextEventLoader {

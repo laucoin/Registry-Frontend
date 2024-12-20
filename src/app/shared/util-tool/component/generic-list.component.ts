@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core'
 import { FormBuilder, FormGroup } from '@angular/forms'
-import { Message } from 'primeng/api'
+import { ToastMessageOptions } from 'primeng/api'
 import { combineLatest, map, Observable, of } from 'rxjs'
 import { GenericModel } from '../../util-model/model/generic.model'
 import { PageEventModel } from '../../util-model/model/page-event.model'
@@ -16,8 +16,8 @@ export abstract class GenericListComponent<T extends GenericModel> extends Gener
     protected form: FormGroup = this.formBuilder.group( {} )
 
     protected readonly loading$: Observable<boolean> = of( false )
-    protected readonly error$: Observable<Message | undefined> = of( undefined )
-    protected message: Message = {
+    protected readonly error$: Observable<ToastMessageOptions | undefined> = of( undefined )
+    protected message: ToastMessageOptions = {
         severity: 'warn', summary: 'warning.title.EMPTY', detail: 'warning.message.EMPTY',
     }
 
@@ -25,7 +25,7 @@ export abstract class GenericListComponent<T extends GenericModel> extends Gener
         protected readonly elementPage$: Observable<PageModel<T> | undefined> = of( undefined ),
         loading$: Observable<boolean> = of( false ),
         protected readonly silentLoading$: Observable<boolean> = of( false ),
-        error$: Observable<Message | undefined> = of( undefined ),
+        error$: Observable<ToastMessageOptions | undefined> = of( undefined ),
     ) {
         super()
 
@@ -33,7 +33,7 @@ export abstract class GenericListComponent<T extends GenericModel> extends Gener
             map( ([ loading, contextEventLoading ]: [ boolean, boolean ]): boolean => loading || contextEventLoading ),
         )
         this.error$ = combineLatest( [ error$, this.contextEventError$ ] ).pipe(
-            map( ([ error, contextEventError ]: [ Message | undefined, Message | undefined ]): Message | undefined => error ?? contextEventError ),
+            map( ([ error, contextEventError ]: [ ToastMessageOptions | undefined, ToastMessageOptions | undefined ]): ToastMessageOptions | undefined => error ?? contextEventError ),
         )
 
         this.fetchContextEventOnEventIdChange()

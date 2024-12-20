@@ -11,12 +11,12 @@ import { EventElementComponent } from '../event-element/event-element.component'
 import { OrderEnum } from '../../../shared/util-model/enumeration/order.enum'
 import { AsyncPipe } from '@angular/common'
 import { Button } from 'primeng/button'
-import { CalendarModule } from 'primeng/calendar'
 import { InputTextModule } from 'primeng/inputtext'
 import { ToggleButtonModule } from 'primeng/togglebutton'
 import { TranslateModule } from '@ngx-translate/core'
 import { RouterLink } from '@angular/router'
 import { EventRoutesEnum } from '../event-routes.enum'
+import { DatePicker } from 'primeng/datepicker'
 
 @Component( {
     selector: 'app-events-list',
@@ -28,13 +28,13 @@ import { EventRoutesEnum } from '../event-routes.enum'
         EventElementComponent,
         AsyncPipe,
         Button,
-        CalendarModule,
         FormsModule,
         InputTextModule,
         ToggleButtonModule,
         TranslateModule,
         ReactiveFormsModule,
         RouterLink,
+        DatePicker,
     ],
     templateUrl: './events-list.component.html',
 } )

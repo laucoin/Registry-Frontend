@@ -16,7 +16,7 @@
         <form [formGroup]='form'>
             <div class='field'>
                 <label for='roles' appRequired>{{ 'profile.form.role' | translate }}</label>
-                <p-dropdown
+                <p-select
                         id='roles'
                         styleClass='full-w'
                         [options]='(assignableRoles$ | async) ?? []'
@@ -28,32 +28,32 @@
             </div>
             <div class='field'>
                 <label for='profiles-range'>{{ 'profile.form.date-range' | translate }}</label>
-                <p-calendar [firstDayOfWeek]='1'
-                            [formControl]='range'
-                            [readonlyInput]='true'
-                            [showTime]='true'
-                            [touchUI]='isMobile'
-                            [showClear]='true'
-                            id='profiles-range'
-                            inputId='profiles-range'
-                            selectionMode='range'
-                            styleClass='full-w' />
+                <p-date-picker [formControl]='range'
+                               [showButtonBar]='true'
+                               [readonlyInput]='true'
+                               [showTime]='true'
+                               [touchUI]='isMobile'
+                               id='profiles-range'
+                               inputId='profiles-range'
+                               selectionMode='range'
+                               styleClass='full-w' />
                 <app-form-field-error [control]='range'
                                       [label]='"profile.form.date-range" | translate' />
             </div>
         </form>
-        <div class='flex pt-4 gap-2 justify-content-center'>
-            <p-button
-                    (click)='navigateToRedirectUri()'
-                    [label]='"cancel" | translate'
-                    [outlined]='true'
-                    [rounded]='true' />
-            <p-button
-                    (click)='submit()'
-                    [label]='"edit" | translate'
-                    [rounded]='true'
-                    icon='pi pi-pen-to-square'
-                    severity='success' />
-        </div>
     </p-card>
+    <div class='mt-2 d-flex justify-content-center'>
+        <p-button
+                (click)='navigateToRedirectUri()'
+                [label]='"cancel" | translate'
+                [outlined]='true'
+                [rounded]='true' />
+        <p-button
+                class='ms-2'
+                (click)='submit()'
+                [label]='"edit" | translate'
+                [rounded]='true'
+                icon='pi pi-pen-to-square'
+                severity='success' />
+    </div>
 </app-form>

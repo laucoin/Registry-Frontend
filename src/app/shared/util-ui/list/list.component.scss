@@ -1,3 +1,5 @@
+@import '../../../../responsive';
+
 .col-12 {
     padding: 0;
 }
@@ -14,31 +16,31 @@
 .grid {
     grid-template-columns: repeat(6, 1fr);
 
-    @media screen and (min-width: 0px) {
+    @include greater-than(xxs) {
         * {
             grid-column: span 6;
         }
     }
 
-    @media screen and (min-width: 540px) {
+    @include greater-than(xs) {
         * {
             grid-column: span 3;
         }
     }
 
-    @media screen and (min-width: 720px) {
+    @include greater-than(md) {
         * {
             grid-column: span 6;
         }
     }
 
-    @media screen and (min-width: 960px) {
+    @include greater-than(lg) {
         * {
             grid-column: span 3;
         }
     }
 
-    @media screen and (min-width: 1140px) {
+    @include greater-than(xl) {
         * {
             grid-column: span 2;
         }
@@ -49,7 +51,7 @@
     grid-template-columns: repeat(1, 1fr);
 }
 
-.button-container {
-    display:   flex;
-    flex-wrap: wrap;
+.row {
+    --bs-gutter-x: 0;
+    --bs-gutter-y: 0;
 }

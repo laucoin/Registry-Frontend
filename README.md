@@ -52,8 +52,18 @@ You need to install a Node environment. To do that there are 2 possibilities.
     ```shell
     npm i
     ```
-4. Duplicate and rename [environment.development.ts](src/environments/environment.development.ts) to `environment.local.ts` and setup
-   your environment config
+4. Create [config.json](public/config/config.json) and setup your environment config
+    ```json
+    {
+        "production": false,
+        "languages": [
+            "fr-FR"
+        ],
+        "executionContext": "SGDF",
+        "backendUrl": "http://localhost:8081",
+        "authProvider": "keycloak"
+    }
+    ```
 5. Now, you can use the following scripts. Enjoy !
 
 > To use the frontend properly, you need to start the backend too. To do that refer to

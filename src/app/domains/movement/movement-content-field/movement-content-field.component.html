@@ -2,7 +2,7 @@
     @if ((formArray?.controls?.length ?? 0) > 0) {
         <li class='item list-item full-w d-flex align-items-center justify-content-between'
             *ngFor='let participant of formArray?.controls; let i = index;'>
-            <div class='ml-3'>{{ findParticipant(i).value.firstName + " " + findParticipant(i).value.lastName }}</div>
+            <div class='ms-3'>{{ findParticipant(i).value.firstName + " " + findParticipant(i).value.lastName }}</div>
             <p-button icon='pi pi-times'
                       size='small'
                       [rounded]='true'
@@ -11,7 +11,7 @@
         </li>
     } @else {
         <li class='item empty-message'>
-            <div class='ml-2 secondary-color'>{{ 'movement.form.no-user' | translate }}</div>
+            <div class='ms-2 secondary-color'>{{ 'movement.form.no-user' | translate }}</div>
         </li>
     }
 </ul>
@@ -31,10 +31,10 @@
            [header]='"participant.select" | translate'>
     <form [formGroup]='layerForm'>
         <div class='search-frame'>
-            <p-iconField iconPosition='right'>
-                <p-inputIcon styleClass='pi pi-search' />
+            <p-icon-field iconPosition='right'>
+                <p-inputicon styleClass='pi pi-search' />
                 <input [formControl]='layerSearched' pInputText type='text' class='full-w'>
-            </p-iconField>
+            </p-icon-field>
         </div>
         @if (layerParticipants$ | async; as participants) {
             <p-listbox
@@ -44,21 +44,20 @@
                     [multiple]='true'
                     (onChange)='onLayerSelectionChange($event)'
                     [options]='participants'>
-                <ng-template pTemplate='empty'>
+                <ng-template #empty>
                     <app-message [message]='message' />
                 </ng-template>
             </p-listbox>
         }
     </form>
-    <ng-template appTemplate='footer'>
-        <div class='d-flex justify-content-center align-content-center'>
-            <p-button (click)='closeLayer()' [rounded]='true' [outlined]='true' [text]='true' severity='secondary'
-                      [label]='"cancel" | translate' />
-            <p-button (click)='addSelectedParticipants()'
-                      [rounded]='true' [outlined]='true' severity='success'
-                      [label]='("participant.add-participant." + (layerSelectedParticipants().length > 1 ? "plural" : "singular")) | translate: {
+    <div class='mt-2 d-flex justify-content-center align-content-center'>
+        <p-button (click)='closeLayer()' [rounded]='true' [outlined]='true' [text]='true' severity='secondary'
+                  [label]='"cancel" | translate' />
+        <p-button class='ms-2'
+                  (click)='addSelectedParticipants()'
+                  [rounded]='true' [outlined]='true' severity='success'
+                  [label]='("participant.add-participant." + (layerSelectedParticipants().length > 1 ? "plural" : "singular")) | translate: {
                         number: layerSelectedParticipants().length
                       }' />
-        </div>
-    </ng-template>
+    </div>
 </app-layer>

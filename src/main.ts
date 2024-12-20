@@ -1,7 +1,6 @@
 import { provideHttpClient, withInterceptors } from '@angular/common/http'
 import { enableProdMode, provideZoneChangeDetection } from '@angular/core'
 import { bootstrapApplication } from '@angular/platform-browser'
-import { provideAnimations } from '@angular/platform-browser/animations'
 import { provideRouter } from '@angular/router'
 import { MessageService } from 'primeng/api'
 import { AppComponent } from './app/app.component'
@@ -11,6 +10,7 @@ import { backendHandler } from './app/shared/util-authentication/handler/backend
 import { RegistryFacade } from './app/shared/util-common/state/registry.facade'
 import { DatePipe } from '@angular/common'
 import { UserFacade } from './app/domains/user/data/state/user.facade'
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async'
 
 (async (): Promise<void> => {
     await AppConfig.load()
@@ -22,7 +22,7 @@ import { UserFacade } from './app/domains/user/data/state/user.facade'
     bootstrapApplication( AppComponent, {
         providers: [
             provideZoneChangeDetection( { eventCoalescing: true } ),
-            provideAnimations(),
+            provideAnimationsAsync(),
             provideHttpClient(),
             provideHttpClient( withInterceptors( [ backendHandler ] ) ),
             provideRouter( routes ),
@@ -31,6 +31,7 @@ import { UserFacade } from './app/domains/user/data/state/user.facade'
             UserFacade,
             DatePipe,
             AppConfig,
+            AppConfig.providePrimeNg(),
             AppConfig.provideNgxs(),
             AppConfig.provideNgxsReduxDevtools(),
             AppConfig.provideTranslator(),

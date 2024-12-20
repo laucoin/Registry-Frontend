@@ -9,7 +9,7 @@
         [position]='isTinyScreen() ? "bottom" : "right"'
         [style]='dialogStyle'>
     <ng-content />
-    <ng-template pTemplate='footer'>
+    <ng-template #footer>
         <ng-container [ngTemplateOutlet]='getTemplate("footer")' />
     </ng-template>
 </p-dialog>

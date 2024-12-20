@@ -8,10 +8,14 @@ import { ParticipantActionEnum } from '../../../domains/participant/data/state/p
 import { MovementActionEnum } from '../../../domains/movement/data/state/movement.action'
 
 export interface ContextConfigModel {
+    theme: unknown
+    logo: {
+        light: string,
+        dark: string,
+    }
     defaultLanguage: string
     maintainerEmail: string
     menu: MenuItemModel[]
-    majority: number,
     event: {
         optionIcons: Map<EventOptionEnum, string>
         action: ActionModel<EventActionEnum>[]
@@ -29,7 +33,7 @@ export interface ContextConfigModel {
     }
     movement: {
         action: ActionModel<MovementActionEnum>[]
-    }
+    },
     notification: {
         duration: {
             info: number

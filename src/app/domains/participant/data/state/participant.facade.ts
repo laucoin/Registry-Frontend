@@ -24,7 +24,7 @@ import {
     StopParticipantsPageLoader,
     UpdateParticipant,
 } from './participant.action'
-import { Message } from 'primeng/api'
+import { ToastMessageOptions } from 'primeng/api'
 import { FormUtil } from '../../../../shared/util-tool/util/form.util'
 import { OrderEnum } from '../../../../shared/util-model/enumeration/order.enum'
 import { ofActionSuccessful } from '@ngxs/store'
@@ -63,8 +63,8 @@ export class ParticipantFacade extends GenericEventElementFacade<ParticipantMode
         return this.ngStore.select( (state: StateModel): boolean => state.participant.participants.silentLoading )
     }
 
-    public get pageError (): Observable<Message | undefined> {
-        return this.ngStore.select( (state: StateModel): Message | undefined => state.participant.participants.error )
+    public get pageError (): Observable<ToastMessageOptions | undefined> {
+        return this.ngStore.select( (state: StateModel): ToastMessageOptions | undefined => state.participant.participants.error )
     }
 
     public get searchedParticipants (): Observable<ItemModel[]> {
@@ -88,8 +88,8 @@ export class ParticipantFacade extends GenericEventElementFacade<ParticipantMode
         return this.ngStore.select( (state: StateModel): boolean => state.participant.participant.loading )
     }
 
-    public get elementError (): Observable<Message | undefined> {
-        return this.ngStore.select( (state: StateModel): Message | undefined => state.participant.participant.error )
+    public get elementError (): Observable<ToastMessageOptions | undefined> {
+        return this.ngStore.select( (state: StateModel): ToastMessageOptions | undefined => state.participant.participant.error )
     }
 
     public startPageLoader (): void {

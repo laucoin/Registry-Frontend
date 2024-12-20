@@ -3,7 +3,7 @@ import { GenericModel } from '../../util-model/model/generic.model'
 import { PageRequestInformationModel } from '../../util-model/model/page-request-information.model'
 import { PageModel } from '../../util-model/model/page.model'
 import { ElementRequestInformationModel } from '../../util-model/model/element-request-information.model'
-import { Message } from 'primeng/api'
+import { ToastMessageOptions } from 'primeng/api'
 import { AppConfig } from '../../../app.config'
 import { GenericUtil } from '../util/generic.util'
 
@@ -50,7 +50,7 @@ export class StateUtil {
         detail: string,
         icon: string | undefined = undefined,
         data: object | undefined = undefined,
-    ): Message {
+    ): ToastMessageOptions {
         const life: number | undefined = this.notificationLife( severity )
         return {
             severity: severity,

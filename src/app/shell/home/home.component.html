@@ -2,11 +2,12 @@
     @if (currentUser.preferences.selectedProfile) {
         TODO
     } @else {
-        <p-message
-                [title]='"info.title.missing-selected-profile" | translate'
-                [text]='"info.message.missing-selected-profile" | translate'
-                severity='info'
-                styleClass='full-w p-message p-message-info d-flex justify-content-start' />
+        <p-message severity='info'>
+            <div>
+                <b>{{ "info.title.missing-selected-profile" | translate }}</b>
+            </div>
+            {{ "info.message.missing-selected-profile" | translate }}
+        </p-message>
         <app-profile-list />
     }
 </div>

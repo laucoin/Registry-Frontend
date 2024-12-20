@@ -1,20 +1,8 @@
 @import '../../../../responsive';
 
-::ng-deep {
+:host {
     .non-visible {
-        background: var(--surface-c);
-    }
-
-    .p-card {
-        height: 100%;
-    }
-
-    .p-menu {
-        border-left:  none;
-        border-right: none;
-        border-top:   none;
-        padding:      0;
-        width:        100%;
+        --p-card-background: var(--surface-c);
     }
 }
 

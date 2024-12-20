@@ -4,15 +4,15 @@
                   (action)='handleAction($event)'
                   [layout]='layout'
                   icon='pi pi-users'>
-    <div [class.flex-lg-row]='layout === "list"' [class.mr-6]='layout === "list"'
-         class='d-flex flex-column gap-2 justify-content-between'>
+    <div [class.flex-lg-row]='layout === "list"'
+         class='d-flex flex-column justify-content-between align-items-center'>
         <div class='info'>
             {{ (element.firstName | titlecase) + ' ' + (element.lastName | uppercase) }}
         </div>
-        <div class='birthday d-flex align-content-center gap-1'>
+        <div class='birthday d-flex align-items-center'>
             @if (element.birthday) {
                 <i class='pi pi-gift'></i>
-                <span>{{ element.birthday | date: ('datetime.format.date' | translate) }}</span>
+                <span class='ms-2'>{{ element.birthday | date: ('datetime.format.date' | translate) }}</span>
 
             }
         </div>

@@ -17,12 +17,11 @@ import { ParticipantModel } from '../../../shared/util-model/model/participant.m
 import { MovementContentModel } from '../data/model/movement-content.model'
 import { LayerComponent } from '../../../shared/util-ui/layer/layer.component'
 import { Button } from 'primeng/button'
-import { RegistryTemplateDirective } from '../../../shared/util-tool/directive/registry-template.directive'
-import { TabViewModule } from 'primeng/tabview'
 import {
     MovementParticipantElementComponent,
 } from '../movement-participant-element/movement-participant-element.component'
 import { ListboxModule } from 'primeng/listbox'
+import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs'
 
 @Component( {
     selector: 'app-movement-element',
@@ -36,10 +35,14 @@ import { ListboxModule } from 'primeng/listbox'
         UpperCasePipe,
         LayerComponent,
         Button,
-        RegistryTemplateDirective,
-        TabViewModule,
         MovementParticipantElementComponent,
         ListboxModule,
+        Tabs,
+        TabPanels,
+        TabList,
+        Tab,
+        TabPanel,
+
 
     ],
     templateUrl: './movement-element.component.html',
@@ -48,9 +51,9 @@ import { ListboxModule } from 'primeng/listbox'
 export class MovementElementComponent extends GenericElementComponent<MovementModel, MovementActionEnum> implements OnChanges {
     @Input() public showActionMenu: boolean = true
 
-    private readonly majority: number = AppConfig.config.majority
     protected readonly MovementTypeEnum: typeof MovementTypeEnum = MovementTypeEnum
     protected layerOpened: boolean = false
+    protected activeTab: number = 1
 
     protected others: WritableSignal<number> = signal( 0 )
     protected adults: WritableSignal<MovementContentModel[]> = signal( [] )

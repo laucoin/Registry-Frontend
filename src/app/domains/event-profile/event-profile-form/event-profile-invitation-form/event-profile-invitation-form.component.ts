@@ -1,9 +1,7 @@
 import { Component } from '@angular/core'
 import { SelectUsersFieldComponent } from '../../../../shared/util-ui/select-users-field/select-users-field.component'
-import { CalendarModule } from 'primeng/calendar'
 import { CardModule } from 'primeng/card'
 import { DividerModule } from 'primeng/divider'
-import { InputSwitchModule } from 'primeng/inputswitch'
 import { InputTextModule } from 'primeng/inputtext'
 import { PaginatorModule } from 'primeng/paginator'
 import { TranslateModule } from '@ngx-translate/core'
@@ -15,16 +13,17 @@ import { FormComponent } from '../../../../shared/util-ui/form/form.component'
 import { GenericEventProfileFormComponent } from '../generic-event-profile-form.component'
 import { UserDto } from '../../../../shared/util-model/dto/user.dto'
 import { RegistryTemplateDirective } from '../../../../shared/util-tool/directive/registry-required.directive'
+import { SelectModule } from 'primeng/select'
+import { Button } from 'primeng/button'
+import { DatePicker } from 'primeng/datepicker'
 
 @Component( {
     selector: 'app-event-profile-invitation-form',
     standalone: true,
     imports: [
         SelectUsersFieldComponent,
-        CalendarModule,
         CardModule,
         DividerModule,
-        InputSwitchModule,
         InputTextModule,
         PaginatorModule,
         TranslateModule,
@@ -33,6 +32,9 @@ import { RegistryTemplateDirective } from '../../../../shared/util-tool/directiv
         AsyncPipe,
         FormComponent,
         RegistryTemplateDirective,
+        SelectModule,
+        Button,
+        DatePicker,
     ],
     templateUrl: './event-profile-invitation-form.component.html',
     styleUrl: './event-profile-invitation-form.component.scss',

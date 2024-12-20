@@ -2,58 +2,31 @@
     <div class='error-message'>
         @switch (true) {
             @case (control.hasError('min')) {
-                <p-message
-                        [text]='buildText("min")'
-                        severity='error'
-                        styleClass='full-w p-message p-message-error d-flex justify-content-start' />
+                <p-message severity='error' variant='simple'>{{ buildText("min") }}</p-message>
             }
             @case (control.hasError('max')) {
-                <p-message
-                        [text]='buildText("max")'
-                        severity='error'
-                        styleClass='full-w p-message p-message-error d-flex justify-content-start' />
+                <p-message severity='error' variant='simple'>{{ buildText("max") }}</p-message>
             }
             @case (control.hasError('required')) {
-                <p-message
-                        [text]='buildText("required")'
-                        severity='error'
-                        styleClass='full-w p-message p-message-error d-flex justify-content-start' />
+                <p-message severity='error' variant='simple'>{{ buildText("required") }}</p-message>
             }
             @case (control.hasError('blank')) {
-                <p-message
-                        [text]='buildText("blank")'
-                        severity='error'
-                        styleClass='full-w p-message p-message-error d-flex justify-content-start' />
+                <p-message severity='error' variant='simple'>{{ buildText("blank") }}</p-message>
             }
             @case (control.hasError('email')) {
-                <p-message
-                        [text]='buildText("email")'
-                        severity='error'
-                        styleClass='full-w p-message p-message-error d-flex justify-content-start' />
+                <p-message severity='error' variant='simple'>{{ buildText("email") }}</p-message>
             }
             @case (control.hasError('minlength')) {
-                <p-message
-                        [text]='buildText("minlength")'
-                        severity='error'
-                        styleClass='full-w p-message p-message-error d-flex justify-content-start' />
+                <p-message severity='error' variant='simple'>{{ buildText("minlength") }}</p-message>
             }
             @case (control.hasError('maxlength')) {
-                <p-message
-                        [text]='buildText("maxlength")'
-                        severity='error'
-                        styleClass='full-w p-message p-message-error d-flex justify-content-start' />
+                <p-message severity='error' variant='simple'>{{ buildText("maxlength") }}</p-message>
             }
             @case (control.hasError('pattern')) {
-                <p-message
-                        [text]='buildText("pattern")'
-                        severity='error'
-                        styleClass='full-w p-message p-message-error d-flex justify-content-start' />
+                <p-message severity='error' variant='simple'>{{ buildText("pattern") }}</p-message>
             }
             @case (control.hasError('eventOptionConflict')) {
-                <p-message
-                        [text]='buildText("eventOptionConflict")'
-                        severity='error'
-                        styleClass='full-w p-message p-message-error d-flex justify-content-start' />
+                <p-message severity='error' variant='simple'>{{ buildText("eventOptionConflict") }}</p-message>
             }
         }
         <ng-content />

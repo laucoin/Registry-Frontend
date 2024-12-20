@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core'
 import { Store } from '@ngxs/store'
-import { Message } from 'primeng/api'
-import { Observable } from 'rxjs'
+import { ToastMessageOptions } from 'primeng/api'
+import { map, Observable } from 'rxjs'
 import { TokenModel } from '../../util-authentication/model/token.model'
 import { CurrentUserModel } from '../../util-model/model/current-user.model'
 import { EventProfileModel } from '../../util-model/model/event-profile.model'
@@ -39,6 +39,7 @@ import {
     StopProfileLoader,
     StopProfilesPageLoader,
     UpdateNetwork,
+    UpdateTheme,
 } from './registry.action'
 import { ProfileStatusEnum } from '../../util-model/enumeration/profile-status.enum'
 import { StateUtil } from '../../util-tool/state/state.util'
@@ -46,17 +47,18 @@ import { OrderEnum } from '../../util-model/enumeration/order.enum'
 import { FormUtil } from '../../util-tool/util/form.util'
 import { EventModel } from '../../util-model/model/event.model'
 import { HttpErrorResponse } from '@angular/common/http'
+import { AppConfig } from '../../../app.config'
 
 @Injectable()
 export class RegistryFacade {
-    private readonly onlineMessage: Message = StateUtil.buildNotificationMessage(
+    private readonly onlineMessage: ToastMessageOptions = StateUtil.buildNotificationMessage(
         'success',
         'success.title.online',
         'success.message.online',
         'pi pi-sort-alt',
     )
 
-    private readonly offlineMessage: Message = StateUtil.buildNotificationMessage(
+    private readonly offlineMessage: ToastMessageOptions = StateUtil.buildNotificationMessage(
         'warn',
         'warning.title.OFFLINE',
         'warning.message.OFFLINE',
@@ -65,8 +67,8 @@ export class RegistryFacade {
 
     public constructor (private readonly ngStore: Store) {}
 
-    public get globalError (): Observable<Message | undefined> {
-        return this.ngStore.select( (state: StateModel): Message | undefined => state.registry._util.error )
+    public get globalError (): Observable<ToastMessageOptions | undefined> {
+        return this.ngStore.select( (state: StateModel): ToastMessageOptions | undefined => state.registry._util.error )
     }
 
     public get globalLoading (): Observable<boolean> {
@@ -83,6 +85,12 @@ export class RegistryFacade {
 
     public get currentUser (): Observable<CurrentUserModel | undefined> {
         return this.ngStore.select( (state: StateModel): CurrentUserModel | undefined => state.registry.authentication.currentUser )
+    }
+
+    public get logoPath (): Observable<string> {
+        return this.ngStore.select( (state: StateModel): 'light' | 'dark' => state.registry._util.theme ).pipe(
+            map( (theme: 'light' | 'dark'): string => theme === 'light' ? AppConfig.config.logo.light : AppConfig.config.logo.dark ),
+        )
     }
 
     public get profilesPage (): Observable<PageModel<EventProfileModel> | undefined> {
@@ -112,8 +120,8 @@ export class RegistryFacade {
         return this.ngStore.select( (state: StateModel): boolean => state.registry.profiles.silentLoading )
     }
 
-    public get profilesError (): Observable<Message | undefined> {
-        return this.ngStore.select( (state: StateModel): Message | undefined => state.registry.profiles.error )
+    public get profilesError (): Observable<ToastMessageOptions | undefined> {
+        return this.ngStore.select( (state: StateModel): ToastMessageOptions | undefined => state.registry.profiles.error )
     }
 
     public get invitationPage (): Observable<PageModel<EventProfileModel> | undefined> {
@@ -143,8 +151,8 @@ export class RegistryFacade {
         return this.ngStore.select( (state: StateModel): boolean => state.registry.invitations.silentLoading )
     }
 
-    public get invitationsError (): Observable<Message | undefined> {
-        return this.ngStore.select( (state: StateModel): Message | undefined => state.registry.invitations.error )
+    public get invitationsError (): Observable<ToastMessageOptions | undefined> {
+        return this.ngStore.select( (state: StateModel): ToastMessageOptions | undefined => state.registry.invitations.error )
     }
 
     public get contextEvent (): Observable<EventModel | undefined> {
@@ -159,12 +167,12 @@ export class RegistryFacade {
         return this.ngStore.select( (state: StateModel): boolean => state.registry.event.loading )
     }
 
-    public get contextEventError (): Observable<Message | undefined> {
-        return this.ngStore.select( (state: StateModel): Message | undefined => state.registry.event.error )
+    public get contextEventError (): Observable<ToastMessageOptions | undefined> {
+        return this.ngStore.select( (state: StateModel): ToastMessageOptions | undefined => state.registry.event.error )
     }
 
-    public get notification (): Observable<Message | undefined> {
-        return this.ngStore.select( (state: StateModel): Message | undefined => state.registry._util.notification )
+    public get notification (): Observable<ToastMessageOptions | undefined> {
+        return this.ngStore.select( (state: StateModel): ToastMessageOptions | undefined => state.registry._util.notification )
     }
 
     private get actualOnline (): boolean | undefined {
@@ -191,7 +199,7 @@ export class RegistryFacade {
         this.ngStore.dispatch( new UpdateNetwork( online ) )
     }
 
-    public notify (message: Message): void {
+    public notify (message: ToastMessageOptions): void {
         if (message.summary?.endsWith( '401' )) {
             return
         }
@@ -280,6 +288,10 @@ export class RegistryFacade {
 
     public stopProfileLoader (): void {
         this.ngStore.dispatch( StopProfileLoader )
+    }
+
+    public updateTheme (theme: 'light' | 'dark'): void {
+        this.ngStore.dispatch( new UpdateTheme( theme ) )
     }
 
     public manageEventInvitationAcceptance (id: string, status: ProfileStatusEnum): void {

@@ -12,11 +12,11 @@ import {
     EventProfileElementComponent,
 } from '../../../shared/util-ui/event-profile-element/event-profile-element.component'
 import { AsyncPipe } from '@angular/common'
-import { CalendarModule } from 'primeng/calendar'
 import { InputTextModule } from 'primeng/inputtext'
 import { ToggleButtonModule } from 'primeng/togglebutton'
 import { OrderEnum } from '../../../shared/util-model/enumeration/order.enum'
 import { RegistryFacade } from '../../../shared/util-common/state/registry.facade'
+import { DatePicker } from 'primeng/datepicker'
 
 @Component( {
     selector: 'app-invitation-list',
@@ -29,11 +29,11 @@ import { RegistryFacade } from '../../../shared/util-common/state/registry.facad
         TranslateModule,
         EventProfileElementComponent,
         AsyncPipe,
-        CalendarModule,
         FormsModule,
         InputTextModule,
         ToggleButtonModule,
         ReactiveFormsModule,
+        DatePicker,
     ],
     templateUrl: './invitation-list.component.html',
 } )

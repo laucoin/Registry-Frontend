@@ -7,6 +7,15 @@
     text-decoration: underline;
 }
 
+.user-info {
+    flex-basis: 40%;
+}
+
 .last-login {
-    font-size: 14px;
+    flex-basis: 40%;
+    font-size:  14px;
+}
+
+.role {
+    flex-basis: 20%;
 }

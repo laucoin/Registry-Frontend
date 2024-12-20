@@ -85,9 +85,9 @@ export class UserElementComponent extends GenericElementComponent<UserModel, Use
 
         switch (action.id) {
             case UserActionEnum.BLOCK_USER:
-                return !isCurrentUser || !(isActionFeasible && this.element.visible)
+                return isCurrentUser || !(isActionFeasible && this.element.visible)
             case UserActionEnum.UNBLOCK_USER:
-                return !isCurrentUser || !(isActionFeasible && !this.element.visible)
+                return isCurrentUser || !(isActionFeasible && !this.element.visible)
             default:
                 return !isActionFeasible
         }

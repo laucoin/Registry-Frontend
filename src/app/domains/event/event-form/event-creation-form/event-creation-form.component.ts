@@ -5,14 +5,16 @@ import { FormUtil } from '../../../../shared/util-tool/util/form.util'
 import { StepperModule } from 'primeng/stepper'
 import { TranslateModule } from '@ngx-translate/core'
 import { FormFieldErrorComponent } from '../../../../shared/util-ui/form-field-error/form-field-error.component'
-import { CalendarModule } from 'primeng/calendar'
 import { AsyncPipe, DatePipe } from '@angular/common'
 import { InputTextModule } from 'primeng/inputtext'
-import { InputSwitchModule } from 'primeng/inputswitch'
 import { DividerModule } from 'primeng/divider'
 import { GenericEventFormComponent } from '../generic-event-form.component'
 import { FormComponent } from '../../../../shared/util-ui/form/form.component'
 import { RegistryTemplateDirective } from '../../../../shared/util-tool/directive/registry-required.directive'
+import { Button } from 'primeng/button'
+import { DatePicker } from 'primeng/datepicker'
+import { ToggleSwitch } from 'primeng/toggleswitch'
+import { Card } from 'primeng/card'
 
 @Component( {
     selector: 'app-event-creation-form',
@@ -22,19 +24,23 @@ import { RegistryTemplateDirective } from '../../../../shared/util-tool/directiv
         TranslateModule,
         ReactiveFormsModule,
         FormFieldErrorComponent,
-        CalendarModule,
         DatePipe,
         InputTextModule,
-        InputSwitchModule,
         DividerModule,
         FormComponent,
         AsyncPipe,
         RegistryTemplateDirective,
+        Button,
+        DatePicker,
+        ToggleSwitch,
+        Card,
     ],
     templateUrl: './event-creation-form.component.html',
     styleUrl: './event-creation-form.component.scss',
 } )
 export class EventCreationFormComponent extends GenericEventFormComponent {
+    protected activeStep: number = 1
+
     protected next (): void {
         const event: EventDto = {
             name: this.name.value,

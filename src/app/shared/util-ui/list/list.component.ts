@@ -10,7 +10,7 @@ import {
     ViewChild,
 } from '@angular/core'
 import { TranslateModule } from '@ngx-translate/core'
-import { Message } from 'primeng/api'
+import { ToastMessageOptions } from 'primeng/api'
 import { CardModule } from 'primeng/card'
 import { DataView, DataViewModule, DataViewPageEvent } from 'primeng/dataview'
 import { ToggleButtonModule } from 'primeng/togglebutton'
@@ -22,7 +22,10 @@ import { GenericComponent } from '../../util-tool/component/generic.component'
 import { RegistryTemplateDirective } from '../../util-tool/directive/registry-template.directive'
 import { ElementSkeletonComponent } from '../element-skeleton/element-skeleton.component'
 import { MessageComponent } from '../message/message.component'
-import { AccordionModule } from 'primeng/accordion'
+import { Panel } from 'primeng/panel'
+import { SelectButton } from 'primeng/selectbutton'
+import { ItemModel } from '../../util-model/model/item.model'
+import { FormsModule } from '@angular/forms'
 
 @Component( {
     selector: 'app-list',
@@ -38,7 +41,9 @@ import { AccordionModule } from 'primeng/accordion'
         CardModule,
         ElementSkeletonComponent,
         MessageComponent,
-        AccordionModule,
+        Panel,
+        SelectButton,
+        FormsModule,
     ],
     templateUrl: './list.component.html',
     styleUrl: './list.component.scss',
@@ -49,11 +54,15 @@ export class ListComponent<T extends GenericModel> extends GenericComponent {
 
     @Input( { required: true } ) public elementPage$!: Observable<PageModel<T> | undefined>
     @Input( { required: true } ) public loading$!: Observable<boolean>
-    @Input( { required: true } ) public error$!: Observable<Message | undefined>
+    @Input( { required: true } ) public error$!: Observable<ToastMessageOptions | undefined>
 
     @Output() public readonly updateRequired: EventEmitter<PageEventModel> = new EventEmitter<PageEventModel>()
 
     protected layout: 'list' | 'grid' = 'list'
+    protected readonly layouts: ItemModel[] = [
+        { label: 'pi pi-list', value: 'list' },
+        { label: 'pi pi-th-large', value: 'grid' },
+    ]
 
     protected updateData (pageEvent: DataViewPageEvent | undefined = undefined): void {
         return this.updateRequired.emit( this.pageEvent( pageEvent ) )
@@ -68,10 +77,6 @@ export class ListComponent<T extends GenericModel> extends GenericComponent {
     protected getTemplate (name: string): TemplateRef<unknown> | null {
         const customTemplate: RegistryTemplateDirective | undefined = this.templates?.find( (t: RegistryTemplateDirective): boolean => t.name === name )
         return customTemplate ? customTemplate.template : null
-    }
-
-    protected updateLayout (isGrid: boolean): void {
-        this.layout = isGrid ? 'grid' : 'list'
     }
 
     protected counterArray (n: number): unknown[] {

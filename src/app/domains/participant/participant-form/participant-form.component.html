@@ -52,60 +52,60 @@
         </div>
         <div class='field'>
             <label for='birthday' appRequired>{{ 'participant.form.birthday' | translate }}</label>
-            <p-calendar [firstDayOfWeek]='1'
-                        [formControl]='birthday'
-                        [placeholder]='"participant.example.birthday" | translate'
-                        [readonlyInput]='true'
-                        [maxDate]='today'
-                        [touchUI]='isMobile'
-                        [showClear]='true'
-                        id='birthday'
-                        styleClass='full-w' />
+            <p-date-picker [formControl]='birthday'
+                           [showButtonBar]='true'
+                           [placeholder]='"participant.example.birthday" | translate'
+                           [readonlyInput]='true'
+                           [maxDate]='today'
+                           [touchUI]='isMobile'
+                           id='birthday'
+                           styleClass='full-w' />
             <app-form-field-error [control]='birthday'
                                   [example]='"participant.example.birthday" | translate'
                                   [label]='"participant.form.birthday" | translate' />
         </div>
         <div class='field'>
             <label for='presence'>{{ 'participant.form.presence' | translate }}</label>
-            <p-calendar [firstDayOfWeek]='1'
-                        [formControl]='presence'
-                        [placeholder]='"participant.example.presence" | translate: {
+            <p-date-picker [formControl]='presence'
+                           [showButtonBar]='true'
+                           [placeholder]='"participant.example.presence" | translate: {
                                     begin: exampleBeginDate | date: ("datetime.format.date" | translate),
                                     end: exampleEndDate | date: ("datetime.format.date" | translate)
                                 }'
-                        [readonlyInput]='true'
-                        [showTime]='true'
-                        [touchUI]='isMobile'
-                        [showClear]='true'
-                        id='presence'
-                        selectionMode='range'
-                        styleClass='full-w' />
+                           [readonlyInput]='true'
+                           [showTime]='true'
+                           [touchUI]='isMobile'
+                           id='presence'
+                           selectionMode='range'
+                           styleClass='full-w' />
             <app-form-field-error [control]='presence'
                                   [example]='"participant.example.presence" | translate'
                                   [label]='"participant.form.presence" | translate' />
         </div>
-        <div class='flex pt-4 gap-2 justify-content-center'>
-            <p-button
-                    (click)='navigateToRedirectUri()'
-                    [label]='"cancel" | translate'
-                    [outlined]='true'
-                    [rounded]='true' />
-
-            @if (participant()) {
-                <p-button
-                        (click)='submit()'
-                        [label]='"edit" | translate'
-                        [rounded]='true'
-                        icon='pi pi-pen-to-square'
-                        severity='success' />
-            } @else {
-                <p-button
-                        (click)='submit()'
-                        [label]='"create" | translate'
-                        [rounded]='true'
-                        icon='pi pi-plus'
-                        severity='success' />
-            }
-        </div>
     </p-card>
+    <div class='d-flex mt-2 justify-content-center'>
+        <p-button
+                (click)='navigateToRedirectUri()'
+                [label]='"cancel" | translate'
+                [outlined]='true'
+                [rounded]='true' />
+
+        @if (participant()) {
+            <p-button
+                    class='ms-2'
+                    (click)='submit()'
+                    [label]='"edit" | translate'
+                    [rounded]='true'
+                    icon='pi pi-pen-to-square'
+                    severity='success' />
+        } @else {
+            <p-button
+                    class='ms-2'
+                    (click)='submit()'
+                    [label]='"create" | translate'
+                    [rounded]='true'
+                    icon='pi pi-plus'
+                    severity='success' />
+        }
+    </div>
 </app-form>

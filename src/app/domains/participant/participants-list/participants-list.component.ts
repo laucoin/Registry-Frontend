@@ -10,13 +10,14 @@ import { RegistryTemplateDirective } from '../../../shared/util-tool/directive/r
 import { TranslateModule } from '@ngx-translate/core'
 import { InputTextModule } from 'primeng/inputtext'
 import { DropdownModule } from 'primeng/dropdown'
-import { CalendarModule } from 'primeng/calendar'
 import { ToggleButtonModule } from 'primeng/togglebutton'
 import { AsyncPipe } from '@angular/common'
 import { ParticipantElementComponent } from '../../../shared/util-ui/participant-element/participant-element.component'
 import { MessageComponent } from '../../../shared/util-ui/message/message.component'
 import { RouterLink } from '@angular/router'
 import { ParticipantRoutesEnum } from '../participant-routes.enum'
+import { Button } from 'primeng/button'
+import { DatePicker } from 'primeng/datepicker'
 
 @Component( {
     selector: 'app-participants-list',
@@ -30,12 +31,13 @@ import { ParticipantRoutesEnum } from '../participant-routes.enum'
         TranslateModule,
         InputTextModule,
         DropdownModule,
-        CalendarModule,
         ToggleButtonModule,
         AsyncPipe,
         ParticipantElementComponent,
         MessageComponent,
         RouterLink,
+        Button,
+        DatePicker,
     ],
 } )
 export class ParticipantsListComponent extends GenericListComponent<ParticipantModel> implements OnInit {

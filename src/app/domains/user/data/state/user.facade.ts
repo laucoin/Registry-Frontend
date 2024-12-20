@@ -22,7 +22,7 @@ import {
     UnblockUser,
     UpdateUserRole,
 } from './user.action'
-import { Message } from 'primeng/api'
+import { ToastMessageOptions } from 'primeng/api'
 import { OrderEnum } from '../../../../shared/util-model/enumeration/order.enum'
 import { UserDto } from '../../../../shared/util-model/dto/user.dto'
 import { ItemModel } from '../../../../shared/util-model/model/item.model'
@@ -53,8 +53,8 @@ export class UserFacade extends GenericElementFacade<UserModel> {
         return this.ngStore.select( (state: StateModel): boolean => state.user.users.silentLoading )
     }
 
-    public get pageError (): Observable<Message | undefined> {
-        return this.ngStore.select( (state: StateModel): Message | undefined => state.user.users.error )
+    public get pageError (): Observable<ToastMessageOptions | undefined> {
+        return this.ngStore.select( (state: StateModel): ToastMessageOptions | undefined => state.user.users.error )
     }
 
     public get searchedUsers (): Observable<ItemModel[]> {
@@ -78,8 +78,8 @@ export class UserFacade extends GenericElementFacade<UserModel> {
         return this.ngStore.select( (state: StateModel): boolean => state.user.user.loading )
     }
 
-    public get elementError (): Observable<Message | undefined> {
-        return this.ngStore.select( (state: StateModel): Message | undefined => state.eventProfile.eventProfile.error )
+    public get elementError (): Observable<ToastMessageOptions | undefined> {
+        return this.ngStore.select( (state: StateModel): ToastMessageOptions | undefined => state.eventProfile.eventProfile.error )
     }
 
     public startPageLoader (): void {
