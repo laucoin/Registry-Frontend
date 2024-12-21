@@ -1,5 +1,5 @@
 <div *ngIf='currentUser$ | async as currentUser'>
-    <p-drawer [(visible)]='isSidebarOpen' styleClass='side-bar'>
+    <p-drawer [(visible)]='isSidebarOpen' [ariaCloseLabel]='"menu.toggle" | translate' styleClass='side-bar'>
         @if (logoPath$ | async; as logoPath) {
             <ng-template #header>
                 <a (click)='closeMenuOnTinyScreen()'

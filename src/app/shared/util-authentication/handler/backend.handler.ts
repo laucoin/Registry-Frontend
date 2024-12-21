@@ -18,21 +18,39 @@ import {
 } from '../../util-tool/util/request.util'
 import { TokenModel } from '../model/token.model'
 import { SessionStorageUtils } from '../../util-tool/util/session-storage.util'
+import { AppConfig } from '../../../app.config'
+
+const BASE_URL: string = `/api/authentication`
+const PERMIT_ALL: string[] = [
+    `${BASE_URL}/login/uri`,
+    `${BASE_URL}/logout/uri`,
+    `${BASE_URL}/token`,
+    `${BASE_URL}/token/refresh`,
+]
 
 export const backendHandler: HttpInterceptorFn = (
     req: HttpRequest<unknown>,
     next: HttpHandlerFn,
 ): Observable<HttpEvent<unknown>> => {
-    const registryFacade: RegistryFacade = inject( RegistryFacade )
+    if (!req.url.startsWith( AppConfig.config.backendUrl )) {
+        return next( req )
+    }
 
-    const token: TokenModel | undefined = registryFacade.actualToken
-    const headers: HttpHeaders = buildHeaders( token, req.headers )
+    const registryFacade: RegistryFacade = inject( RegistryFacade )
 
     const currentUser: CurrentUserModel | undefined = registryFacade.actualCurrentUser
     const url: string = formatUrlIfNecessary( currentUser, req.url )
 
-    return next( req.clone( { url: url, headers: headers } ) )
+    return next( req.clone( {
+        url: url,
+        headers: buildHeaders( req.url, registryFacade.actualToken, req.headers ),
+    } ) )
         .pipe( catchError( (error: HttpErrorResponse) => {
+            if (PERMIT_ALL.some( (permitAll: string): boolean => req.url.includes( permitAll ) ) && error.status === 401) {
+                SessionStorageUtils.set( REDIRECT_URI, location.pathname )
+                registryFacade.login()
+            }
+
             switch (error.status) {
                 case 0:
                     return throwError( (): HttpErrorResponse => new HttpErrorResponse( { status: 503 } ) )
@@ -40,15 +58,8 @@ export const backendHandler: HttpInterceptorFn = (
                     return registryFacade.refreshToken().pipe(
                         map( (): TokenModel => registryFacade.actualToken! ),
                         mergeMap( (newToken: TokenModel): Observable<HttpEvent<unknown>> => {
-                            const retryHeaders: HttpHeaders = buildHeaders( newToken, req.headers )
+                            const retryHeaders: HttpHeaders = buildHeaders( req.url, newToken, req.headers )
                             return next( req.clone( { url: url, headers: retryHeaders } ) )
-                        } ),
-                        catchError( (retryError: HttpErrorResponse): Observable<HttpEvent<unknown>> => {
-                            if (retryError.status === 401) {
-                                SessionStorageUtils.set( REDIRECT_URI, location.pathname )
-                                registryFacade.login()
-                            }
-                            return throwError( (): HttpErrorResponse => retryError )
                         } ),
                     )
                 default:
@@ -74,10 +85,13 @@ function formatUrlIfNecessary (currentUser: CurrentUserModel | undefined, url: s
     return formattedUrl
 }
 
-function buildHeaders (token: TokenModel | undefined, headers: HttpHeaders | undefined): HttpHeaders {
+function buildHeaders (url: string, token: TokenModel | undefined, headers: HttpHeaders | undefined): HttpHeaders {
     let filledHeaders: HttpHeaders = headers ?? new HttpHeaders()
 
-    filledHeaders = filledHeaders.set( AUTHORIZATION, `${token?.tokenType} ${token?.accessToken}` )
+    if (PERMIT_ALL.some( (permitAll: string): boolean => url.includes( permitAll ) )) {
+        return filledHeaders
+    }
 
+    filledHeaders = filledHeaders.set( AUTHORIZATION, `${token?.tokenType} ${token?.accessToken}` )
     return filledHeaders
 }
