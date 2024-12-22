@@ -1,7 +1,6 @@
 import { HttpParams } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import { Observable } from 'rxjs'
-import { UserDto } from '../../../../shared/util-model/dto/user.dto'
 import { PageParamsModel } from '../../../../shared/util-model/model/page-params.model'
 import { PageModel } from '../../../../shared/util-model/model/page.model'
 import { UserModel } from '../../../../shared/util-model/model/user.model'
@@ -28,12 +27,6 @@ export class UserService extends GenericService {
 
     public findUserById (id: string): Observable<UserModel> {
         return this.http.get<UserModel>( `${this.baseUrl}/${id}` )
-    }
-
-    public searchUser (searched: string | undefined): Observable<UserDto[]> {
-        return this.http.get<UserDto[]>(
-            `${this.baseUrl}/search${searched ? '?' + new HttpParams().set( 'searched', searched ).toString() : ''}`,
-        )
     }
 
     public getAssignableUserRoles (): Observable<string[]> {

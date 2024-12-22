@@ -29,7 +29,6 @@ import { MessageComponent } from '../../../shared/util-ui/message/message.compon
     selector: 'app-event-profiles-list',
     standalone: true,
     templateUrl: './event-profiles-list.component.html',
-    styleUrl: './event-profiles-list.component.scss',
     imports: [
         ListComponent,
         RegistryTemplateDirective,
@@ -46,7 +45,6 @@ import { MessageComponent } from '../../../shared/util-ui/message/message.compon
         Button,
         DatePicker,
         MessageComponent,
-
     ],
 } )
 export class EventProfilesListComponent extends GenericListComponent<EventProfileModel> implements OnInit {

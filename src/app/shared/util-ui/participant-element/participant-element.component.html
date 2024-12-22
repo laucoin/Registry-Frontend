@@ -8,13 +8,49 @@
          class='d-flex flex-column justify-content-between align-items-center'>
         <div class='info'>
             {{ (element.firstName | titlecase) + ' ' + (element.lastName | uppercase) }}
-        </div>
-        <div class='birthday d-flex align-items-center'>
-            @if (element.birthday) {
-                <i class='pi pi-gift'></i>
-                <span class='ms-2'>{{ element.birthday | date: ('datetime.format.date' | translate) }}</span>
+            <div class='d-flex align-items-center'>
+                @if (element.birthday) {
+                    <i class='pi pi-gift'></i>
+                    <span class='ms-2'>{{ element.birthday | date: ('datetime.format.date' | translate) }}</span>
 
-            }
+                }
+            </div>
+        </div>
+        <div class='groups d-flex'>
+            <div [class.pointer]='additionalTotal() > 0'
+                 [class.groups-content]='additionalTotal() > 0'
+                 tabindex='1'
+                 (click)='additionalTotal() > 0 ? layerOpened = true : ""'
+                 (keydown.enter)='additionalTotal()> 0 ? layerOpened = true : ""'>
+                @switch (true) {
+                    @case ((element.groups?.length ?? 0) === 0) {
+                        {{ 'participant.group-and-others.none' | translate }}
+                    }
+                    @case (element.groups.length === 1) {
+                        {{
+                            'participant.group-and-others.one' | translate: {
+                                group: element.groups[0].name,
+                            }
+                        }}
+                    }
+                    @case (element.groups.length === 2) {
+                        {{
+                            'participant.group-and-others.singular' | translate: {
+                                group: element.groups[0].name,
+                                others: additionalTotal(),
+                            }
+                        }}
+                    }
+                    @default {
+                        {{
+                            'participant.group-and-others.plural' | translate: {
+                                group: element.groups[0].name,
+                                others: additionalTotal(),
+                            }
+                        }}
+                    }
+                }
+            </div>
         </div>
         <div class='presence secondary-color'>
             @if (element.begin && element.end) {
@@ -31,3 +67,22 @@
         </div>
     </div>
 </app-element-card>
+
+<app-layer [(visible)]='layerOpened'
+           [header]='"group.content.title" | translate'>
+    <p-listbox
+            [options]='element.groups'
+            [readonly]='true'
+            optionLabel='name'>
+        <ng-template #item let-group>
+            <div class='d-flex align-items-center'>
+                <p-avatar icon='pi pi-sitemap' class='me-2' shape='circle' />
+                <div>{{ group.name }}</div>
+            </div>
+        </ng-template>
+    </p-listbox>
+    <div class='d-flex justify-content-center align-content-center'>
+        <p-button (click)='layerOpened = false' [rounded]='true' [outlined]='true' severity='secondary'
+                  [label]='"close" | translate' />
+    </div>
+</app-layer>

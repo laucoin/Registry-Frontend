@@ -13,8 +13,8 @@ import { EventOptionIconPipe } from '../../../shared/util-tool/pipe/event-option
 import { DateIsPastPipe } from '../../../shared/util-tool/pipe/date-is-past.pipe'
 import { EventFacade } from '../data/state/event.facade'
 import { CurrentUserUtil } from '../../../shared/util-authentication/tool/current-user.util'
-import { EventRoutesEnum } from '../event-routes.enum'
 import { CurrentUserModel } from '../../../shared/util-model/model/current-user.model'
+import { AppRouteEnum } from '../../../app-route.enum'
 
 @Component( {
     selector: 'app-event-element',
@@ -71,9 +71,8 @@ export class EventElementComponent extends GenericElementComponent<EventModel, E
     protected handleAction (action: EventActionEnum): void {
         switch (action) {
             case EventActionEnum.UPDATE_EVENT:
-                this.router.navigate(
-                    [ EventRoutesEnum.EDIT.replace( ':id', this.element.id ) ],
-                    { relativeTo: this.route },
+                this.router.navigateByUrl(
+                    this.buildUri( AppRouteEnum.EVENTS_EDITION.replace( ':id', this.element.id ) ),
                 ).catch( console.error )
                 break
             case EventActionEnum.DISABLE_EVENT:

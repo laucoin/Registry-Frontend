@@ -18,6 +18,7 @@ export enum MovementActionEnum {
     SELECT_MOVEMENT_PAGE_ORDER = '[Local] Selecting movement page order',
 
     FETCH_MOVEMENT = '[Backend] Fetching movement',
+    SEARCH_PARTICIPANTS_AND_GROUPS = '[Backend] Searching participants and groups to add in a movement',
     CREATE_MOVEMENT = '[Backend] Creating movement',
     UPDATE_MOVEMENT = '[Backend] Updating movement',
     DISABLE_MOVEMENT = '[Backend] Disabling movement',
@@ -91,6 +92,12 @@ export class FetchMovement {
     public static readonly type: MovementActionEnum = MovementActionEnum.FETCH_MOVEMENT
 
     public constructor (public readonly eventId: string | undefined, public readonly id: string) {}
+}
+
+export class SearchParticipantsAndGroups {
+    public static readonly type: MovementActionEnum = MovementActionEnum.SEARCH_PARTICIPANTS_AND_GROUPS
+
+    public constructor (public readonly eventId: string | undefined, public readonly searched: string | undefined) {}
 }
 
 export class ResetMovement {

@@ -15,6 +15,7 @@ import {
     InputMovementPageDateRange,
     InputMovementPageSearch,
     ResetMovement,
+    SearchParticipantsAndGroups,
     SelectMovementPageOrder,
     SelectMovementPageType,
     SelectMovementPageVisibility,
@@ -33,6 +34,14 @@ import { OrderEnum } from '../../../../shared/util-model/enumeration/order.enum'
 import { Injectable } from '@angular/core'
 import { ElementRequestInformationModel } from '../../../../shared/util-model/model/element-request-information.model'
 import { MovementStateModel } from '../model/movement-state.model'
+import {
+    MovementParticipantsAndGroupsModel,
+} from '../../../../shared/util-model/model/movement-participants-and-groups.model'
+import { ParticipantUtil } from '../../../../shared/util-tool/util/participant.util'
+import { ParticipantModel } from '../../../../shared/util-model/model/participant.model'
+import { GroupModel } from '../../../../shared/util-model/model/group.model'
+import { GroupUtil } from '../../../../shared/util-tool/util/group.util'
+import { SelectItem, SelectItemGroup } from 'primeng/api'
 
 const defaultMovement: ElementRequestInformationModel<MovementModel> = {
     element: undefined,
@@ -56,6 +65,7 @@ const defaultMovementState: MovementStateModel = {
         error: undefined,
     },
     movement: defaultMovement,
+    searched: [],
 }
 
 @State<MovementStateModel>( {
@@ -211,6 +221,50 @@ export class MovementState extends GenericEventElementState<MovementStateModel> 
                     order: payload.order,
                 },
             },
+        } )
+    }
+
+    @Action( SearchParticipantsAndGroups )
+    public searchParticipantsAndGroups (
+        ctx: StateContext<MovementStateModel>,
+        payload: SearchParticipantsAndGroups,
+    ): Observable<void> {
+        return this.service.searchParticipantsAndGroups( payload.eventId, payload.searched ).pipe(
+            map( (participantsAndGroups: MovementParticipantsAndGroupsModel): void => this.searchParticipantsAndGroupsComplete(
+                ctx,
+                participantsAndGroups,
+            ) ),
+            catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
+        )
+    }
+
+    private searchParticipantsAndGroupsComplete (
+        ctx: StateContext<MovementStateModel>,
+        participantsAndGroups: MovementParticipantsAndGroupsModel,
+    ): void {
+        const searched: SelectItemGroup<ParticipantModel | GroupModel>[] = []
+
+        if (participantsAndGroups.participants?.length > 0) {
+            searched.push( {
+                label: this.translateService.instant( 'movement.searched.participant.' + (participantsAndGroups.participants.length > 1 ? 'plural' : 'singular') ),
+                items: participantsAndGroups.participants.map(
+                    (participant: ParticipantModel): SelectItem<ParticipantModel> =>
+                        ParticipantUtil.toSelectItem( participant ),
+                ),
+            } )
+        }
+
+        if (participantsAndGroups.groups.length > 0) {
+            searched.push( {
+                label: this.translateService.instant( 'movement.searched.group.' + (participantsAndGroups.participants.length > 1 ? 'plural' : 'singular') ),
+                items: participantsAndGroups.groups.map( (group: GroupModel): SelectItem<GroupModel> =>
+                    GroupUtil.toSelectItem( group ),
+                ),
+            } )
+        }
+
+        ctx.patchState( {
+            searched: searched,
         } )
     }
 

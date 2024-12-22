@@ -10,6 +10,7 @@ import { ParticipantActionEnum } from '../../../domains/participant/data/state/p
 import { MovementActionEnum } from '../../../domains/movement/data/state/movement.action'
 import { definePreset } from '@primeng/themes'
 import Lara from '@primeng/themes/lara'
+import { GroupActionEnum } from '../../../domains/group/data/state/group.action'
 
 export const sgdfConfig: ContextConfigModel = {
     theme: definePreset( Lara, {
@@ -59,28 +60,6 @@ export const sgdfConfig: ContextConfigModel = {
             },
         },
         components: {
-            drawer: {
-                background: '#003a5d',
-                color: '#eef9ff',
-                border: {
-                    color: 'transparent',
-                },
-            },
-            dataview: {
-                header: {
-                    padding: 0,
-                },
-            },
-            popover: {
-                content: {
-                    padding: 0,
-                },
-            },
-            menu: {
-                item: {
-                    padding: 0,
-                },
-            },
             card: {
                 colorScheme: {
                     light: {
@@ -92,6 +71,28 @@ export const sgdfConfig: ContextConfigModel = {
                 },
                 body: {
                     padding: '1rem',
+                },
+            },
+            dataview: {
+                header: {
+                    padding: 0,
+                },
+            },
+            drawer: {
+                background: '#003a5d',
+                color: '#eef9ff',
+                border: {
+                    color: 'transparent',
+                },
+            },
+            menu: {
+                item: {
+                    padding: 0,
+                },
+            },
+            popover: {
+                content: {
+                    padding: 0,
                 },
             },
             tabs: {
@@ -150,6 +151,15 @@ export const sgdfConfig: ContextConfigModel = {
             route: AppRouteEnum.PARTICIPANTS,
             requiredUserAuthority: undefined,
             requiredEventAuthority: EventAuthorityEnum.REGISTRY_EVENT_PARTICIPANT_R,
+            requiredEventOption: undefined,
+            enabled: true,
+        },
+        {
+            name: 'menu.groups',
+            icon: 'pi pi-sitemap',
+            route: AppRouteEnum.GROUPS,
+            requiredUserAuthority: undefined,
+            requiredEventAuthority: EventAuthorityEnum.REGISTRY_EVENT_GROUP_R,
             requiredEventOption: undefined,
             enabled: true,
         },
@@ -326,6 +336,23 @@ export const sgdfConfig: ContextConfigModel = {
                 confirmation: undefined,
             },
             {
+                id: GroupActionEnum.REMOVE_MEMBER_FROM_GROUP,
+                name: 'group.action.remove-member',
+                icon: 'pi pi-user-minus',
+                disabled: false,
+                requiredUserAuthority: undefined,
+                requiredEventAuthority: EventAuthorityEnum.REGISTRY_EVENT_GROUP_U,
+                requiredEventOption: undefined,
+                confirmation: {
+                    header: 'group.action.confirmation.title.remove-member',
+                    message: 'group.action.confirmation.message.remove-member',
+                    icon: 'pi pi-exclamation-triangle',
+                    acceptSeverity: 'warn',
+                    rejectSeverity: 'secondary',
+                    confirmProperty: undefined,
+                },
+            },
+            {
                 id: ParticipantActionEnum.DISABLE_PARTICIPANT,
                 name: 'participant.action.disable',
                 icon: 'pi pi-eye-slash',
@@ -374,6 +401,81 @@ export const sgdfConfig: ContextConfigModel = {
                     acceptSeverity: 'danger',
                     rejectSeverity: 'secondary',
                     confirmProperty: 'firstName',
+                },
+            },
+        ],
+    },
+    group: {
+        action: [
+            {
+                id: GroupActionEnum.FETCH_GROUP_MEMBER_PAGE,
+                name: 'group.action.members',
+                icon: 'pi pi-users',
+                disabled: false,
+                requiredUserAuthority: undefined,
+                requiredEventAuthority: EventAuthorityEnum.REGISTRY_EVENT_GROUP_R,
+                requiredEventOption: undefined,
+                confirmation: undefined,
+            },
+            {
+                id: GroupActionEnum.UPDATE_GROUP,
+                name: 'group.action.edit',
+                icon: 'pi pi-pen-to-square',
+                disabled: false,
+                requiredUserAuthority: undefined,
+                requiredEventAuthority: EventAuthorityEnum.REGISTRY_EVENT_GROUP_U,
+                requiredEventOption: undefined,
+                confirmation: undefined,
+            },
+            {
+                id: GroupActionEnum.DISABLE_GROUP,
+                name: 'group.action.disable',
+                icon: 'pi pi-eye-slash',
+                disabled: false,
+                requiredUserAuthority: undefined,
+                requiredEventAuthority: EventAuthorityEnum.REGISTRY_EVENT_GROUP_U,
+                requiredEventOption: undefined,
+                confirmation: {
+                    header: 'group.action.confirmation.title.disable',
+                    message: 'group.action.confirmation.message.disable',
+                    icon: 'pi pi-exclamation-triangle',
+                    acceptSeverity: 'warn',
+                    rejectSeverity: 'secondary',
+                    confirmProperty: undefined,
+                },
+            },
+            {
+                id: GroupActionEnum.ENABLE_GROUP,
+                name: 'group.action.enable',
+                icon: 'pi pi-replay',
+                disabled: true,
+                requiredUserAuthority: undefined,
+                requiredEventAuthority: EventAuthorityEnum.REGISTRY_EVENT_GROUP_U,
+                requiredEventOption: undefined,
+                confirmation: {
+                    header: 'group.action.confirmation.title.enable',
+                    message: 'group.action.confirmation.message.enable',
+                    icon: 'pi pi-exclamation-triangle',
+                    acceptSeverity: 'warn',
+                    rejectSeverity: 'secondary',
+                    confirmProperty: undefined,
+                },
+            },
+            {
+                id: GroupActionEnum.DELETE_GROUP,
+                name: 'group.action.delete',
+                icon: 'pi pi-trash',
+                disabled: false,
+                requiredUserAuthority: undefined,
+                requiredEventAuthority: EventAuthorityEnum.REGISTRY_EVENT_GROUP_D,
+                requiredEventOption: undefined,
+                confirmation: {
+                    header: 'group.action.confirmation.title.delete',
+                    message: 'group.action.confirmation.message.delete',
+                    icon: 'pi pi-exclamation-triangle',
+                    acceptSeverity: 'danger',
+                    rejectSeverity: 'secondary',
+                    confirmProperty: 'name',
                 },
             },
         ],
@@ -438,7 +540,7 @@ export const sgdfConfig: ContextConfigModel = {
                     icon: 'pi pi-exclamation-triangle',
                     acceptSeverity: 'danger',
                     rejectSeverity: 'secondary',
-                    confirmProperty: 'firstName',
+                    confirmProperty: undefined,
                 },
             },
         ],

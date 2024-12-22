@@ -14,6 +14,7 @@ import {
     InputMovementPageDateRange,
     InputMovementPageSearch,
     ResetMovement,
+    SearchParticipantsAndGroups,
     SelectMovementPageOrder,
     SelectMovementPageType,
     SelectMovementPageVisibility,
@@ -23,12 +24,14 @@ import {
     StopMovementsPageLoader,
     UpdateMovement,
 } from './movement.action'
-import { ToastMessageOptions } from 'primeng/api'
+import { SelectItemGroup, ToastMessageOptions } from 'primeng/api'
 import { MovementModel } from '../model/movement.model'
 import { FormUtil } from '../../../../shared/util-tool/util/form.util'
 import { OrderEnum } from '../../../../shared/util-model/enumeration/order.enum'
 import { MovementTypeEnum } from '../model/movement-type.enum'
 import { ofActionSuccessful } from '@ngxs/store'
+import { ParticipantModel } from '../../../../shared/util-model/model/participant.model'
+import { GroupModel } from '../../../../shared/util-model/model/group.model'
 
 @Injectable()
 export class MovementFacade extends GenericEventElementFacade<MovementModel> {
@@ -69,6 +72,10 @@ export class MovementFacade extends GenericEventElementFacade<MovementModel> {
 
     public get pageError (): Observable<ToastMessageOptions | undefined> {
         return this.ngStore.select( (state: StateModel): ToastMessageOptions | undefined => state.movement.movements.error )
+    }
+
+    public get searchedParticipantsAndGroups (): Observable<SelectItemGroup<ParticipantModel | GroupModel>[]> {
+        return this.ngStore.select( (state: StateModel): SelectItemGroup<ParticipantModel | GroupModel>[] => state.movement.searched )
     }
 
     public get element (): Observable<MovementModel | undefined> {
@@ -130,6 +137,13 @@ export class MovementFacade extends GenericEventElementFacade<MovementModel> {
 
     public fetchElement (id: string, eventId: string | undefined = this.actualSelectedEventId): void {
         this.ngStore.dispatch( new FetchMovement( eventId, id ) )
+    }
+
+    public searchParticipantsAndGroups (
+        searched: string | undefined = undefined,
+        eventId: string | undefined = this.actualSelectedEventId,
+    ): void {
+        this.ngStore.dispatch( new SearchParticipantsAndGroups( eventId, searched ) )
     }
 
     public resetElement (): void {

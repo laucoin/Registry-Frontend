@@ -4,15 +4,15 @@ import { AppRouteEnum } from '../../../app-route.enum'
 import { FormControl } from '@angular/forms'
 import { Observable } from 'rxjs'
 import { EventProfileFacade } from '../data/state/event-profile.facade'
-import { ItemModel } from '../../../shared/util-model/model/item.model'
+import { SelectItem } from 'primeng/api'
 
 @Component( {
     template: '',
 } )
 export abstract class GenericEventProfileFormComponent extends GenericFormComponent {
-    protected readonly assignableRoles$: Observable<ItemModel[]>
+    protected readonly assignableRoles$: Observable<SelectItem<string>[]>
 
-    public constructor (protected readonly facade: EventProfileFacade) {
+    protected constructor (protected readonly facade: EventProfileFacade) {
         super(
             AppRouteEnum.PROFILES,
             facade.elementLoading,

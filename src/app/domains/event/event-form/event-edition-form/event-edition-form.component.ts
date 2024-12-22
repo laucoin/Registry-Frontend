@@ -17,10 +17,11 @@ import { Observable } from 'rxjs'
 import { CardModule } from 'primeng/card'
 import { FormComponent } from '../../../../shared/util-ui/form/form.component'
 import { GenericUtil } from '../../../../shared/util-tool/util/generic.util'
-import { RegistryTemplateDirective } from '../../../../shared/util-tool/directive/registry-required.directive'
+import { RegistryRequiredDirective } from '../../../../shared/util-tool/directive/registry-required.directive'
 import { Button } from 'primeng/button'
 import { DatePicker } from 'primeng/datepicker'
 import { ToggleSwitch } from 'primeng/toggleswitch'
+import { StringUtils } from '../../../../shared/util-tool/util/string.util'
 
 @Component( {
     selector: 'app-event-edition-form',
@@ -36,7 +37,7 @@ import { ToggleSwitch } from 'primeng/toggleswitch'
         ProgressSpinnerModule,
         CardModule,
         FormComponent,
-        RegistryTemplateDirective,
+        RegistryRequiredDirective,
         Button,
         DatePicker,
         ToggleSwitch,
@@ -56,6 +57,9 @@ export class EventEditionFormComponent extends GenericEventFormComponent impleme
     }
 
     private handleIdParam (): void {
+        if (!StringUtils.isRouteActive( AppRouteEnum.EVENTS )) {
+            return
+        }
         this.subscriptions.add(
             this.route.params.subscribe( (params: Params): void => {
                 if (GenericUtil.isNull( params['id'] )) {

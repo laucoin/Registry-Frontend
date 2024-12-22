@@ -15,7 +15,7 @@
             <div class='col-12 col-sm-6 col-md-12 col-lg-6 search-field'>
                 <label for='profiles-search'>{{ 'profile.status.filter-sort' | translate }}</label>
                 <p-select
-                        styleClass='full-w'
+                        fluid
                         [options]='statusMetadata'
                         (keydown.enter)='loadPage(pageEvent, contextEventId())'
                         [formControl]='status'
@@ -32,7 +32,7 @@
                                id='profiles-range'
                                inputId='profiles-range'
                                selectionMode='range'
-                               styleClass='full-w' />
+                               fluid />
             </div>
         </div>
         <div class='d-flex flex-wrap justify-content-center pt-2'>

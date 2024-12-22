@@ -10,7 +10,7 @@ import {
     ViewChild,
 } from '@angular/core'
 import { TranslateModule } from '@ngx-translate/core'
-import { ToastMessageOptions } from 'primeng/api'
+import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { CardModule } from 'primeng/card'
 import { DataView, DataViewModule, DataViewPageEvent } from 'primeng/dataview'
 import { ToggleButtonModule } from 'primeng/togglebutton'
@@ -24,7 +24,6 @@ import { ElementSkeletonComponent } from '../element-skeleton/element-skeleton.c
 import { MessageComponent } from '../message/message.component'
 import { Panel } from 'primeng/panel'
 import { SelectButton } from 'primeng/selectbutton'
-import { ItemModel } from '../../util-model/model/item.model'
 import { FormsModule } from '@angular/forms'
 
 @Component( {
@@ -59,7 +58,7 @@ export class ListComponent<T extends GenericModel> extends GenericComponent {
     @Output() public readonly updateRequired: EventEmitter<PageEventModel> = new EventEmitter<PageEventModel>()
 
     protected layout: 'list' | 'grid' = 'list'
-    protected readonly layouts: ItemModel[] = [
+    protected readonly layouts: SelectItem<'list' | 'grid'>[] = [
         { label: 'pi pi-list', value: 'list' },
         { label: 'pi pi-th-large', value: 'grid' },
     ]

@@ -2,4 +2,5 @@ import { EventProfileModel } from '../../../../shared/util-model/model/event-pro
 
 export interface CreatedEventProfiles {
     profiles: EventProfileModel[]
+    notCreatedUserIds: string[]
 }

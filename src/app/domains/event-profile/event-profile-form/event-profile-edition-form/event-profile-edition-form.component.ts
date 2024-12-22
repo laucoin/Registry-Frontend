@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core'
 import { combineLatest, Observable } from 'rxjs'
-import { ItemModel } from '../../../../shared/util-model/model/item.model'
 import { EventProfileFacade } from '../../data/state/event-profile.facade'
 import { AppRouteEnum } from '../../../../app-route.enum'
 import { FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
@@ -17,10 +16,12 @@ import { UserElementComponent } from '../../../user/user-element/user-element.co
 import { FormComponent } from '../../../../shared/util-ui/form/form.component'
 import { GenericEventProfileFormComponent } from '../generic-event-profile-form.component'
 import { GenericUtil } from '../../../../shared/util-tool/util/generic.util'
-import { RegistryTemplateDirective } from '../../../../shared/util-tool/directive/registry-required.directive'
+import { RegistryRequiredDirective } from '../../../../shared/util-tool/directive/registry-required.directive'
 import { Button } from 'primeng/button'
 import { Select } from 'primeng/select'
 import { DatePicker } from 'primeng/datepicker'
+import { SelectItem } from 'primeng/api'
+import { StringUtils } from '../../../../shared/util-tool/util/string.util'
 
 @Component( {
     selector: 'app-event-profile-edition-form',
@@ -34,13 +35,12 @@ import { DatePicker } from 'primeng/datepicker'
         FormFieldErrorComponent,
         UserElementComponent,
         FormComponent,
-        RegistryTemplateDirective,
+        RegistryRequiredDirective,
         Button,
         Select,
         DatePicker,
     ],
     templateUrl: './event-profile-edition-form.component.html',
-    styleUrl: './event-profile-edition-form.component.scss',
 } )
 export class EventProfileEditionFormComponent extends GenericEventProfileFormComponent implements OnInit {
     protected readonly profile$: Observable<EventProfileModel | undefined>
@@ -65,6 +65,9 @@ export class EventProfileEditionFormComponent extends GenericEventProfileFormCom
     }
 
     private handleIdParam (): void {
+        if (!StringUtils.isRouteActive( AppRouteEnum.PROFILES )) {
+            return
+        }
         this.subscriptions.add(
             this.route.params.subscribe( (params: Params): void => {
                 if (GenericUtil.isNull( params['id'] )) {
@@ -78,7 +81,7 @@ export class EventProfileEditionFormComponent extends GenericEventProfileFormCom
     private handleLoadedProfile (): void {
         this.subscriptions.add(
             combineLatest( [ this.assignableRoles$, this.profile$ ] ).subscribe(
-                ([ roles, profile ]: [ ItemModel[], EventProfileModel | undefined ]): void => {
+                ([ roles, profile ]: [ SelectItem<string>[], EventProfileModel | undefined ]): void => {
                     if (!roles || !profile) return
                     this.role.setValue( profile.role )
                     this.range.setValue( FormUtil.buildDateRange( profile.startAccess, profile.endAccess ) )

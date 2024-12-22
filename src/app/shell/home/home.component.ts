@@ -9,7 +9,6 @@ import { TranslateModule } from '@ngx-translate/core'
     selector: 'app-home',
     standalone: true,
     templateUrl: './home.component.html',
-    styleUrl: './home.component.scss',
     imports: [
         NgIf,
         AsyncPipe,

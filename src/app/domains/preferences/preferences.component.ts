@@ -27,8 +27,6 @@ import { Tab, TabList, Tabs } from 'primeng/tabs'
         Tabs,
         TabList,
         Tab,
-
-
     ],
     templateUrl: './preferences.component.html',
     styleUrl: './preferences.component.scss',

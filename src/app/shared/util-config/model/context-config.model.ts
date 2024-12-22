@@ -6,6 +6,7 @@ import { EventProfileActionEnum } from '../../util-model/enumeration/event-profi
 import { UserActionEnum } from '../../../domains/user/data/state/user.action'
 import { ParticipantActionEnum } from '../../../domains/participant/data/state/participant.action'
 import { MovementActionEnum } from '../../../domains/movement/data/state/movement.action'
+import { GroupActionEnum } from '../../../domains/group/data/state/group.action'
 
 export interface ContextConfigModel {
     theme: unknown
@@ -29,7 +30,10 @@ export interface ContextConfigModel {
         action: ActionModel<UserActionEnum>[]
     }
     participant: {
-        action: ActionModel<ParticipantActionEnum>[]
+        action: ActionModel<ParticipantActionEnum | GroupActionEnum>[]
+    }
+    group: {
+        action: ActionModel<GroupActionEnum>[]
     }
     movement: {
         action: ActionModel<MovementActionEnum>[]

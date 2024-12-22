@@ -4,6 +4,7 @@ import { MovementStateModel } from '../../../domains/movement/data/model/movemen
 import { ParticipantStateModel } from '../../../domains/participant/data/model/participant-state.model'
 import { UserStateModel } from '../../../domains/user/data/model/user-state.model'
 import { RegistryStateModel } from '../../util-common/model/registry-state.model'
+import { GroupStateModel } from '../../../domains/group/data/model/group-state.model'
 
 export interface StateModel {
     registry: RegistryStateModel
@@ -11,5 +12,6 @@ export interface StateModel {
     event: EventStateModel
     eventProfile: EventProfileStateModel
     participant: ParticipantStateModel
+    group: GroupStateModel
     movement: MovementStateModel
 }

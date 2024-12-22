@@ -19,6 +19,7 @@ enum ActionEnum {
     SELECT_EVENT_PROFILE_PAGE_ORDER = '[Local] Selecting event\'s profile page order',
 
     FETCH_EVENT_PROFILE = '[Backend] Fetching event\'s profile',
+    SEARCH_USERS = '[Backend] Searching users to invite to an event',
     FETCH_ASSIGNABLE_EVENT_PROFILE_ROLES = '[Backend] Fetching assignable event profile\'s roles',
     CREATE_EVENT_PROFILES = '[Backend] Creating event\'s profile',
     CREATE_SUPPORT_EVENT_PROFILE = '[Backend] Creating event\'s profiles',
@@ -92,6 +93,15 @@ export class FetchEventProfile {
     public static readonly type: ActionEnum = ActionEnum.FETCH_EVENT_PROFILE
 
     public constructor (public readonly eventId: string | undefined, public readonly id: string) {}
+}
+
+export class SearchUsers {
+    public static readonly type: ActionEnum = ActionEnum.SEARCH_USERS
+
+    public constructor (
+        public readonly eventId: string | undefined,
+        public readonly searched: string | undefined,
+    ) {}
 }
 
 export class FetchAssignableEventProfileRoles {

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core'
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { GenericComponent } from './generic.component'
 import { FormBuilder, FormGroup } from '@angular/forms'
 import { FormUtil } from '../util/form.util'
@@ -10,6 +10,9 @@ import { ToastMessageOptions } from 'primeng/api'
     template: '',
 } )
 export abstract class GenericFormComponent extends GenericComponent {
+    @Input() public redirect: boolean = true
+    @Output() public handleSubmit: EventEmitter<void> = new EventEmitter<void>()
+
     protected readonly formBuilder: FormBuilder = inject( FormBuilder )
 
     protected readonly loading$: Observable<boolean> = of( false )
@@ -39,6 +42,7 @@ export abstract class GenericFormComponent extends GenericComponent {
 
     protected submit (): void {
         if (this.isFormValid()) {
+            this.handleSubmit.emit()
             this.next()
         } else {
             console.warn( this.translateService.instant( 'warning.message.invalid-form' ) )
@@ -52,7 +56,9 @@ export abstract class GenericFormComponent extends GenericComponent {
     }
 
     protected navigateToRedirectUri (): void {
-        this.router.navigateByUrl( this.buildUri( this.redirectPath ) ).catch( console.error )
+        if (this.redirect) {
+            this.router.navigateByUrl( this.buildUri( this.redirectPath ) ).catch( console.error )
+        }
     }
 
     protected isFormValid (): boolean {

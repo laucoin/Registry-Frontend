@@ -1,0 +1,81 @@
+<app-form [form]='form' [loading]='(loading$ | async) ?? false'>
+    @if (group()) {
+        <h2>
+            {{
+                'group.form.title.edit' | translate: { name: group()?.name }
+            }}
+        </h2>
+    } @else {
+        <h2>{{ 'group.form.title.create' | translate }}</h2>
+    }
+    <p-card>
+        <div class='field'>
+            <label for='name' appRequired>{{ 'group.form.name' | translate }}</label>
+            <input [formControl]='name'
+                   [placeholder]='"group.example.name" | translate'
+                   (keydown.enter)='submit()'
+                   id='name'
+                   pInputText
+                   type='text' />
+            <app-form-field-error [control]='name'
+                                  [example]='"group.example.name" | translate'
+                                  [label]='"group.form.name" | translate' />
+        </div>
+        <div class='field'>
+            <label for='presence'>{{ 'participant.form.presence' | translate }}</label>
+            <p-date-picker [formControl]='presence'
+                           [showButtonBar]='true'
+                           [placeholder]='"participant.example.presence" | translate: {
+                                    begin: exampleBeginDate | date: ("datetime.format.date" | translate),
+                                    end: exampleEndDate | date: ("datetime.format.date" | translate)
+                                }'
+                           [readonlyInput]='true'
+                           [showTime]='true'
+                           [touchUI]='isMobile'
+                           (keydown.enter)='submit()'
+                           id='presence'
+                           selectionMode='range'
+                           fluid />
+            <app-form-field-error [control]='presence'
+                                  [example]='"participant.example.presence" | translate'
+                                  [label]='"participant.form.presence" | translate' />
+        </div>
+        <p-divider />
+        <div class='field'>
+            <label for='participants' appRequired>{{ 'group.form.participants' | translate }}</label>
+            <app-select-elements-field [formControl]='participants'
+                                       [suggestions]='(participantsSuggestion$ | async) ?? []'
+                                       [searchLabel]='"group.form.participant-search" | translate'
+                                       [emptyPlaceholder]='"group.form.no-participant" | translate'
+                                       inputId='participants'
+                                       (handleSearch)='handleSearch($event.query)' />
+            <app-form-field-error [control]='participants'
+                                  [label]='"group.form.participants" | translate' />
+        </div>
+    </p-card>
+    <div class='d-flex mt-2 justify-content-center'>
+        <p-button
+                (click)='navigateToRedirectUri()'
+                [label]='"cancel" | translate'
+                [outlined]='true'
+                [rounded]='true' />
+
+        @if (group()) {
+            <p-button
+                    class='ms-2'
+                    (click)='submit()'
+                    [label]='"edit" | translate'
+                    [rounded]='true'
+                    icon='pi pi-pen-to-square'
+                    severity='success' />
+        } @else {
+            <p-button
+                    class='ms-2'
+                    (click)='submit()'
+                    [label]='"create" | translate'
+                    [rounded]='true'
+                    icon='pi pi-plus'
+                    severity='success' />
+        }
+    </div>
+</app-form>

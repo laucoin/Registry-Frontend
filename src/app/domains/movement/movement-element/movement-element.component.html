@@ -24,21 +24,21 @@
                  (click)='layerOpened = true'
                  (keydown.enter)='layerOpened = true'>
                 @switch (true) {
-                    @case (firstNotPurged && others() === 0) {
+                    @case (firstNotPurged && total() === 0) {
                         {{ (firstNotPurged!.firstName | titlecase) + " " + (firstNotPurged!.lastName | uppercase) }}
                     }
-                    @case (firstNotPurged && others() > 0) {
+                    @case (firstNotPurged && total() > 0) {
                         {{
-                            ('movement.person-and-others.normal.' + (others() === 1 ? 'singular' : 'plural')) | translate: {
+                            ('movement.person-and-others.normal.' + (total() === 1 ? 'singular' : 'plural')) | translate: {
                                 person: (firstNotPurged!.firstName | titlecase) + " " + (firstNotPurged!.lastName | uppercase),
-                                others: others()
+                                others: total()
                             }
                         }}
                     }
                     @default {
                         {{
-                            ('movement.person-and-others.purged.' + (others() <= 1 ? 'singular' : 'plural')) | translate: {
-                                others: others()
+                            ('movement.person-and-others.purged.' + (total() <= 1 ? 'singular' : 'plural')) | translate: {
+                                others: total()
                             }
                         }}
                     }
@@ -76,8 +76,11 @@
                         [options]='element.content'
                         [readonly]='true'
                         optionLabel='name'>
-                    <ng-template #item let-participant>
-                        <app-movement-participant-element [element]='participant' />
+                    <ng-template #item let-content>
+                        <div class='d-flex align-items-center'>
+                            <p-avatar icon='pi pi-user' class='me-2' shape='circle' />
+                            <div>{{ (content.participant.firstName | titlecase) + ' ' + (content.participant.lastName | uppercase) }}</div>
+                        </div>
                     </ng-template>
                 </p-listbox>
             </p-tabpanel>
@@ -88,7 +91,10 @@
                             [readonly]='true'
                             optionLabel='name'>
                         <ng-template #item let-adult>
-                            <app-movement-participant-element [element]='adult' />
+                            <div class='d-flex align-items-center'>
+                                <p-avatar icon='pi pi-user' class='me-2' shape='circle' />
+                                <div>{{ (adult.participant.firstName | titlecase) + ' ' + (adult.participant.lastName | uppercase) }}</div>
+                            </div>
                         </ng-template>
                     </p-listbox>
                 </p-tabpanel>
@@ -100,7 +106,10 @@
                             [readonly]='true'
                             optionLabel='name'>
                         <ng-template #item let-child>
-                            <app-movement-participant-element [element]='child' />
+                            <div class='d-flex align-items-center'>
+                                <p-avatar icon='pi pi-user' class='me-2' shape='circle' />
+                                <div>{{ (child.participant.firstName | titlecase) + ' ' + (child.participant.lastName | uppercase) }}</div>
+                            </div>
                         </ng-template>
                     </p-listbox>
                 </p-tabpanel>

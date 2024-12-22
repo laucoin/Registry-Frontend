@@ -614,7 +614,6 @@ export class RegistryState extends GenericState {
         ctx: StateContext<RegistryStateModel>,
         error: HttpErrorResponse,
     ): Observable<void> {
-        console.log( error )
         ctx.patchState( {
             profile: this.buildErrorMessageAndNotify( ctx.getState().profile, error ),
         } )

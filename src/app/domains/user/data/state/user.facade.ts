@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core'
-import { map, Observable } from 'rxjs'
+import { Observable } from 'rxjs'
 import { PageModel } from '../../../../shared/util-model/model/page.model'
 import { StateModel } from '../../../../shared/util-model/model/state.model'
 import { UserModel } from '../../../../shared/util-model/model/user.model'
@@ -12,7 +12,6 @@ import {
     FetchUserPage,
     ImpersonateUser,
     InputUserPageSearch,
-    SearchUser,
     SelectUserPageOrder,
     SelectUserPageVisibility,
     StartUserLoader,
@@ -24,8 +23,6 @@ import {
 } from './user.action'
 import { ToastMessageOptions } from 'primeng/api'
 import { OrderEnum } from '../../../../shared/util-model/enumeration/order.enum'
-import { UserDto } from '../../../../shared/util-model/dto/user.dto'
-import { ItemModel } from '../../../../shared/util-model/model/item.model'
 
 @Injectable()
 export class UserFacade extends GenericElementFacade<UserModel> {
@@ -55,19 +52,6 @@ export class UserFacade extends GenericElementFacade<UserModel> {
 
     public get pageError (): Observable<ToastMessageOptions | undefined> {
         return this.ngStore.select( (state: StateModel): ToastMessageOptions | undefined => state.user.users.error )
-    }
-
-    public get searchedUsers (): Observable<ItemModel[]> {
-        return this.ngStore.select( (state: StateModel): UserDto[] => state.user.searched ).pipe(
-            map( (users: UserDto[]): ItemModel[] => users.map( (user: UserDto): ItemModel => ({
-                label: `${user.email} (${user.firstName} ${user.lastName})`,
-                value: user.id,
-            }) ) ),
-        )
-    }
-
-    public get actualSearchedUsers (): UserDto[] {
-        return this.ngStore.selectSnapshot( (state: StateModel): UserDto[] => state.user.searched )
     }
 
     public get element (): Observable<UserModel | undefined> {
@@ -120,10 +104,6 @@ export class UserFacade extends GenericElementFacade<UserModel> {
 
     public fetchElement (id: string): void {
         this.ngStore.dispatch( new FetchUser( id ) )
-    }
-
-    public searchUser (searched: string | undefined = undefined): void {
-        this.ngStore.dispatch( new SearchUser( searched ) )
     }
 
     public fetchAssignableRoles (): void {

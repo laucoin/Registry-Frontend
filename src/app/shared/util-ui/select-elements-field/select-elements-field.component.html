@@ -1,0 +1,37 @@
+<div class='form-decorator p-2'>
+    <div class='field'>
+        <label [for]='inputId' class='secondary-color'>{{ searchLabel }}</label>
+        <p-auto-complete id='elements-field'
+                         multiple
+                         class='no-autocomplete-item'
+                         completeOnFocus
+                         [disabled]='disabled()'
+                         [inputId]='inputId'
+                         [fluid]='fluid'
+                         [suggestions]='suggestions'
+                         (onSelect)='onElementSelection($event)'
+                         (completeMethod)='handleSearch.emit($event)'>
+            <ng-template #selecteditem />
+        </p-auto-complete>
+        <ul class='list-box mt-2'
+            [class.invalid]='(formControl.dirty || formControl.touched) && formControl.invalid'
+            id='elements'>
+            @if ((formControl.value?.length ?? 0) > 0) {
+                @for (element of formControl.value; track element.value.id) {
+                    <li class='item list-item full-w d-flex align-items-center justify-content-between'>
+                        <div class='ms-3'>{{ element.label }}</div>
+                        <p-button icon='pi pi-times'
+                                  size='small'
+                                  [rounded]='true'
+                                  [text]='true'
+                                  (click)='onElementRemoving(element.value)' />
+                    </li>
+                }
+            } @else {
+                <li class='item empty-message'>
+                    <div class='ms-2 secondary-color'>{{ emptyPlaceholder }}</div>
+                </li>
+            }
+        </ul>
+    </div>
+</div>

@@ -25,7 +25,6 @@ import { DatePicker } from 'primeng/datepicker'
     selector: 'app-movements-list',
     standalone: true,
     templateUrl: './movements-list.component.html',
-    styleUrl: './movements-list.component.scss',
     imports: [
         ListComponent,
         RegistryTemplateDirective,

@@ -20,6 +20,8 @@ import { InputTextModule } from 'primeng/inputtext'
 import { breakPoint } from '../../util-tool/util/breakpoint.const'
 import { Popover } from 'primeng/popover'
 import { Ripple } from 'primeng/ripple'
+import { ContextMenu } from 'primeng/contextmenu'
+import { FormUtil } from '../../util-tool/util/form.util'
 
 @Component( {
     selector: 'app-element-card',
@@ -39,6 +41,7 @@ import { Ripple } from 'primeng/ripple'
         ReactiveFormsModule,
         Popover,
         Ripple,
+        ContextMenu,
     ],
     templateUrl: './element-card.component.html',
     styleUrl: './element-card.component.scss',
@@ -113,7 +116,10 @@ export class ElementCardComponent<T extends GenericModel, A> extends GenericElem
     private showConfirmationIfNecessary (action: ActionModel<A>): void {
         if (action.confirmation) {
             if (action.confirmation.confirmProperty) {
-                this.confirmationName.addValidators( Validators.pattern( this.propertyValue( action.confirmation.confirmProperty ) ) )
+                const value: string | undefined = this.propertyValue( action.confirmation.confirmProperty )
+                if (value) {
+                    this.confirmationName.addValidators( [ Validators.required, Validators.pattern( value ) ] )
+                }
             }
 
             this.showDialog = true
@@ -125,17 +131,26 @@ export class ElementCardComponent<T extends GenericModel, A> extends GenericElem
 
     protected cancelAction (): void {
         this.confirmationName.reset()
-        this.form.clearValidators()
+        this.confirmationName.clearValidators()
         this.showDialog = false
         this.dialogContent = undefined
     }
 
     protected confirmAction (action: ActionModel<A> | undefined): void {
-        if (action) {
-            this.action.emit( action.id )
-        }
+        if (this.isConfirmationFormValid()) {
+            if (action) {
+                this.action.emit( action.id )
+            }
 
-        this.cancelAction()
+            this.cancelAction()
+        } else {
+            console.warn( this.translateService.instant( 'warning.message.invalid-form' ) )
+        }
+    }
+
+    protected isConfirmationFormValid (): boolean {
+        FormUtil.markAllControlsAsDirty( this.form )
+        return !this.form.invalid
     }
 
     protected propertyValue (property: string | undefined): string {

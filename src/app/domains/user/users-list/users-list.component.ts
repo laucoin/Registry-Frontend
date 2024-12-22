@@ -31,7 +31,6 @@ import { OrderEnum } from '../../../shared/util-model/enumeration/order.enum'
         MessageComponent,
     ],
     templateUrl: './users-list.component.html',
-    styleUrl: './users-list.component.scss',
 } )
 export class UsersListComponent extends GenericListComponent<UserModel> {
     public constructor (private readonly facade: UserFacade) {

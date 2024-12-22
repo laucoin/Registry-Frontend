@@ -1,5 +1,4 @@
 import { Component } from '@angular/core'
-import { SelectUsersFieldComponent } from '../../../../shared/util-ui/select-users-field/select-users-field.component'
 import { CardModule } from 'primeng/card'
 import { DividerModule } from 'primeng/divider'
 import { InputTextModule } from 'primeng/inputtext'
@@ -8,20 +7,27 @@ import { TranslateModule } from '@ngx-translate/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { EventProfilesDto } from '../../data/dto/event-profiles.dto'
 import { FormFieldErrorComponent } from '../../../../shared/util-ui/form-field-error/form-field-error.component'
-import { AsyncPipe } from '@angular/common'
+import { AsyncPipe, DatePipe } from '@angular/common'
 import { FormComponent } from '../../../../shared/util-ui/form/form.component'
 import { GenericEventProfileFormComponent } from '../generic-event-profile-form.component'
-import { UserDto } from '../../../../shared/util-model/dto/user.dto'
-import { RegistryTemplateDirective } from '../../../../shared/util-tool/directive/registry-required.directive'
+import { RegistryRequiredDirective } from '../../../../shared/util-tool/directive/registry-required.directive'
 import { SelectModule } from 'primeng/select'
 import { Button } from 'primeng/button'
 import { DatePicker } from 'primeng/datepicker'
+import { EventProfileFacade } from '../../data/state/event-profile.facade'
+import { Observable } from 'rxjs'
+import { TreeTableModule } from 'primeng/treetable'
+import { TableModule } from 'primeng/table'
+import {
+    SelectElementsFieldComponent,
+} from '../../../../shared/util-ui/select-elements-field/select-elements-field.component'
+import { UserDto } from '../../../../shared/util-model/dto/user.dto'
+import { SelectItem } from 'primeng/api'
 
 @Component( {
     selector: 'app-event-profile-invitation-form',
     standalone: true,
     imports: [
-        SelectUsersFieldComponent,
         CardModule,
         DividerModule,
         InputTextModule,
@@ -31,26 +37,39 @@ import { DatePicker } from 'primeng/datepicker'
         FormFieldErrorComponent,
         AsyncPipe,
         FormComponent,
-        RegistryTemplateDirective,
+        RegistryRequiredDirective,
         SelectModule,
         Button,
         DatePicker,
+        TreeTableModule,
+        TableModule,
+        SelectElementsFieldComponent,
+        DatePipe,
     ],
     templateUrl: './event-profile-invitation-form.component.html',
-    styleUrl: './event-profile-invitation-form.component.scss',
 } )
 export class EventProfileInvitationFormComponent extends GenericEventProfileFormComponent {
+    protected readonly usersSuggestion$: Observable<SelectItem<UserDto>[]>
+
+    public constructor (
+        protected override readonly facade: EventProfileFacade,
+    ) {
+        super( facade )
+
+        this.usersSuggestion$ = this.facade.searchedUsers
+    }
+
     protected initForm (): FormGroup {
         return this.formBuilder.group( {
-            users: this.formBuilder.control( [], [ Validators.required ] ),
             role: this.formBuilder.control( undefined, Validators.required ),
             range: this.formBuilder.control( undefined ),
+            users: this.formBuilder.control( [], [ Validators.required ] ),
         } )
     }
 
     protected next (): void {
         const profiles: EventProfilesDto = {
-            userIds: this.users.value.map( (user: UserDto): string => user.id ),
+            userIds: this.users.value.map( (item: SelectItem<UserDto>): string => item.value.id ),
             role: this.role.value,
             startAccess: this.range.value?.[0],
             endAccess: this.range.value?.[1],
@@ -61,6 +80,27 @@ export class EventProfileInvitationFormComponent extends GenericEventProfileForm
                 this.navigateToRedirectUri()
             } ),
         )
+    }
+
+    protected get exampleBeginDate (): Date {
+        const now: Date = new Date()
+
+        if (now.getMonth() > 6) {
+            now.setFullYear( now.getFullYear() + 1 )
+        }
+
+        now.setMonth( 6, 20 )
+        return now
+    }
+
+    protected get exampleEndDate (): Date {
+        const now: Date = this.exampleBeginDate
+        now.setMonth( 7, 2 )
+        return now
+    }
+
+    protected handleSearch (searched: string | undefined): void {
+        this.facade.searchUsers( searched, this.contextEventId() )
     }
 
     protected get users (): FormControl {

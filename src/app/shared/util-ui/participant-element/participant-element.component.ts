@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges } from '@angular/core'
+import { Component, Input, OnChanges, signal, WritableSignal } from '@angular/core'
 import { GenericElementComponent } from '../../util-tool/component/generic-element.component'
 import { ParticipantModel } from '../../util-model/model/participant.model'
 import { ParticipantActionEnum } from '../../../domains/participant/data/state/participant.action'
@@ -10,7 +10,13 @@ import { CurrentUserUtil } from '../../util-authentication/tool/current-user.uti
 import { ElementCardComponent } from '../element-card/element-card.component'
 import { DatePipe, TitleCasePipe, UpperCasePipe } from '@angular/common'
 import { TranslateModule } from '@ngx-translate/core'
-import { ParticipantRoutesEnum } from '../../../domains/participant/participant-routes.enum'
+import { AppRouteEnum } from '../../../app-route.enum'
+import { Avatar } from 'primeng/avatar'
+import { Button } from 'primeng/button'
+import { LayerComponent } from '../layer/layer.component'
+import { Listbox } from 'primeng/listbox'
+import { GroupActionEnum } from '../../../domains/group/data/state/group.action'
+import { GroupFacade } from '../../../domains/group/data/state/group.facade'
 
 @Component( {
     selector: 'app-participant-element',
@@ -21,16 +27,29 @@ import { ParticipantRoutesEnum } from '../../../domains/participant/participant-
         UpperCasePipe,
         DatePipe,
         TranslateModule,
+        Avatar,
+        Button,
+        LayerComponent,
+        Listbox,
     ],
+    providers: [ GroupFacade ],
     templateUrl: './participant-element.component.html',
     styleUrl: './participant-element.component.scss',
 } )
-export class ParticipantElementComponent extends GenericElementComponent<ParticipantModel, ParticipantActionEnum> implements OnChanges {
+export class ParticipantElementComponent extends GenericElementComponent<ParticipantModel, ParticipantActionEnum | GroupActionEnum> implements OnChanges {
     @Input() public showActionMenu: boolean = true
+    @Input() public groupIdToRemove: string | undefined
+    protected layerOpened: boolean = false
 
-    public constructor (private readonly facade: ParticipantFacade) {super()}
+    protected additionalTotal: WritableSignal<number> = signal( 0 )
+
+    public constructor (
+        private readonly facade: ParticipantFacade,
+        private readonly groupFacade: GroupFacade,
+    ) {super()}
 
     public ngOnChanges (): void {
+        this.additionalTotal.set( this.element.groups.length - 1 )
         this.defineActions()
     }
 
@@ -38,16 +57,16 @@ export class ParticipantElementComponent extends GenericElementComponent<Partici
         const currentUser: CurrentUserModel = this.registryFacade.actualCurrentUser!
         this.actions = AppConfig
             .config.participant.action
-            .map( (action: ActionModel<ParticipantActionEnum>): ActionModel<ParticipantActionEnum> => ({
+            .map( (action: ActionModel<ParticipantActionEnum | GroupActionEnum>): ActionModel<ParticipantActionEnum | GroupActionEnum> => ({
                 ...action,
                 disabled: this.isActionDisabled( currentUser, action ),
             }) )
-            .filter( (action: ActionModel<ParticipantActionEnum>): boolean => !action.disabled )
+            .filter( (action: ActionModel<ParticipantActionEnum | GroupActionEnum>): boolean => !action.disabled )
     }
 
     protected override isActionDisabled (
         currentUser: CurrentUserModel,
-        action: ActionModel<ParticipantActionEnum>,
+        action: ActionModel<ParticipantActionEnum | GroupActionEnum>,
     ): boolean {
         const isActionFeasible: boolean = CurrentUserUtil.isFeasible(
             currentUser,
@@ -56,6 +75,8 @@ export class ParticipantElementComponent extends GenericElementComponent<Partici
         )
 
         switch (action.id) {
+            case GroupActionEnum.REMOVE_MEMBER_FROM_GROUP:
+                return !(isActionFeasible && this.groupIdToRemove)
             case ParticipantActionEnum.DISABLE_PARTICIPANT:
                 return !(isActionFeasible && this.element.visible)
             case ParticipantActionEnum.ENABLE_PARTICIPANT:
@@ -65,13 +86,15 @@ export class ParticipantElementComponent extends GenericElementComponent<Partici
         }
     }
 
-    protected handleAction (action: ParticipantActionEnum): void {
+    protected handleAction (action: ParticipantActionEnum | GroupActionEnum): void {
         switch (action) {
             case ParticipantActionEnum.UPDATE_PARTICIPANT:
-                this.router.navigate(
-                    [ ParticipantRoutesEnum.EDIT.replace( ':id', this.element.id ) ],
-                    { relativeTo: this.route },
+                this.router.navigateByUrl(
+                    this.buildUri( AppRouteEnum.PARTICIPANTS_EDITION.replace( ':id', this.element.id ) ),
                 ).catch( console.error )
+                break
+            case GroupActionEnum.REMOVE_MEMBER_FROM_GROUP:
+                this.groupFacade.removeMemberFromGroup( this.groupIdToRemove!, this.element, this.contextEventId() )
                 break
             case ParticipantActionEnum.DISABLE_PARTICIPANT:
                 this.facade.disableElement( this.element.id, this.contextEventId() )

@@ -2,8 +2,6 @@ import { HttpErrorResponse } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import { Action, State, StateContext } from '@ngxs/store'
 import { catchError, finalize, map, Observable } from 'rxjs'
-import { UserDto } from '../../../../shared/util-model/dto/user.dto'
-import { ItemModel } from '../../../../shared/util-model/model/item.model'
 import { PageModel } from '../../../../shared/util-model/model/page.model'
 import { UserModel } from '../../../../shared/util-model/model/user.model'
 import { GenericElementState } from '../../../../shared/util-tool/state/generic-element.state'
@@ -17,7 +15,6 @@ import {
     FetchUserPage,
     ImpersonateUser,
     InputUserPageSearch,
-    SearchUser,
     SelectUserPageOrder,
     SelectUserPageVisibility,
     UnblockUser,
@@ -26,6 +23,7 @@ import {
 import { UserService } from './user.service'
 import { UserFacade } from './user.facade'
 import { OrderEnum } from '../../../../shared/util-model/enumeration/order.enum'
+import { SelectItem } from 'primeng/api'
 
 const defaultUserState: UserStateModel = {
     users: {
@@ -149,22 +147,6 @@ export class UserState extends GenericElementState<UserStateModel> {
         } )
     }
 
-    @Action( SearchUser )
-    public searchUser (ctx: StateContext<UserStateModel>, payload: SearchUser): Observable<void> {
-        return this.service.searchUser( payload.searched ).pipe(
-            initialize( (): void => this.facade.startElementLoader() ),
-            finalize( (): void => this.facade.stopElementLoader() ),
-            map( (users: UserDto[]): void => this.searchUserComplete( ctx, users ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
-        )
-    }
-
-    private searchUserComplete (ctx: StateContext<UserStateModel>, users: UserDto[]): void {
-        ctx.patchState( {
-            searched: users,
-        } )
-    }
-
     @Action( FetchAssignableUserRoles )
     public fetchAssignableUserRoles (ctx: StateContext<UserStateModel>): Observable<void> {
         return this.service.getAssignableUserRoles().pipe(
@@ -180,7 +162,7 @@ export class UserState extends GenericElementState<UserStateModel> {
         roles: string[],
     ): void {
         ctx.patchState( {
-            assignableRoles: roles.map( (role: string): ItemModel => ({
+            assignableRoles: roles.map( (role: string): SelectItem<string> => ({
                 label: `user.role.${role}`, value: role,
             }) ),
         } )

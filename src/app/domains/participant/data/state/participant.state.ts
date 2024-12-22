@@ -16,7 +16,8 @@ import {
     InputParticipantPageDateRange,
     InputParticipantPageSearch,
     ResetParticipant,
-    SearchParticipant,
+    SearchGroups,
+    SearchUsers,
     SelectParticipantPageOrder,
     SelectParticipantPageVisibility,
     StartParticipantLoader,
@@ -31,6 +32,11 @@ import { StateUtil } from '../../../../shared/util-tool/state/state.util'
 import { OrderEnum } from '../../../../shared/util-model/enumeration/order.enum'
 import { Injectable } from '@angular/core'
 import { ElementRequestInformationModel } from '../../../../shared/util-model/model/element-request-information.model'
+import { UserDto } from '../../../../shared/util-model/dto/user.dto'
+import { UserUtil } from '../../../../shared/util-tool/util/user.util'
+import { SelectItem } from 'primeng/api'
+import { GroupModel } from '../../../../shared/util-model/model/group.model'
+import { GroupUtil } from '../../../../shared/util-tool/util/group.util'
 
 const defaultParticipant: ElementRequestInformationModel<ParticipantModel> = {
     element: undefined,
@@ -54,7 +60,8 @@ const defaultParticipantState: ParticipantStateModel = {
         error: undefined,
     },
     participant: defaultParticipant,
-    searched: [],
+    searchedUsers: [],
+    searchedGroups: [],
 }
 
 @State<ParticipantStateModel>( {
@@ -220,32 +227,55 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
         } )
     }
 
-    @Action( SearchParticipant )
-    public searchParticipant (
+    @Action( SearchUsers )
+    public searchUsers (
         ctx: StateContext<ParticipantStateModel>,
-        payload: SearchParticipant,
+        payload: SearchUsers,
     ): Observable<void> {
-        return this.service.searchParticipant(
+        return this.service.searchUsers(
             payload.eventId,
-            payload.onlyPresent,
             payload.searched,
         ).pipe(
-            initialize( (): void => this.facade.startElementLoader() ),
-            finalize( (): void => this.facade.stopElementLoader() ),
-            map( (participants: ParticipantModel[]): void => this.searchParticipantComplete(
+            map( (users: UserDto[]): void => this.searchUsersComplete(
                 ctx,
-                participants,
+                users,
             ) ),
             catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
         )
     }
 
-    private searchParticipantComplete (
+    private searchUsersComplete (
         ctx: StateContext<ParticipantStateModel>,
-        participants: ParticipantModel[],
+        users: UserDto[],
     ): void {
         ctx.patchState( {
-            searched: participants,
+            searchedUsers: users.map( (user: UserDto): SelectItem<UserDto> => UserUtil.toSelectItem( user ) ),
+        } )
+    }
+
+    @Action( SearchGroups )
+    public searchGroups (
+        ctx: StateContext<ParticipantStateModel>,
+        payload: SearchGroups,
+    ): Observable<void> {
+        return this.service.searchGroups(
+            payload.eventId,
+            payload.searched,
+        ).pipe(
+            map( (groups: GroupModel[]): void => this.searchGroupsComplete(
+                ctx,
+                groups,
+            ) ),
+            catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
+        )
+    }
+
+    private searchGroupsComplete (
+        ctx: StateContext<ParticipantStateModel>,
+        groups: GroupModel[],
+    ): void {
+        ctx.patchState( {
+            searchedGroups: groups.map( (group: GroupModel): SelectItem<GroupModel> => GroupUtil.toSelectItem( group ) ),
         } )
     }
 

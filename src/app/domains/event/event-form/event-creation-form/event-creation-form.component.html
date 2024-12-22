@@ -14,6 +14,7 @@
                                 <label for='name' appRequired>{{ 'event.form.name' | translate }}</label>
                                 <input [formControl]='name'
                                        [placeholder]='"event.example.name" | translate'
+                                       (keydown.enter)='isFirstStepValid() ? activeStep = 2 : ""'
                                        id='name'
                                        pInputText
                                        type='text' />
@@ -26,15 +27,16 @@
                                 <p-date-picker [formControl]='range'
                                                [showButtonBar]='true'
                                                [placeholder]='"event.example.range" | translate: {
-                                    begin: exampleBeginDate | date: ("datetime.format.date" | translate),
-                                    end: exampleEndDate | date: ("datetime.format.date" | translate)
-                                }'
+                                                   begin: exampleBeginDate | date: ("datetime.format.date" | translate),
+                                                   end: exampleEndDate | date: ("datetime.format.date" | translate)
+                                               }'
                                                [readonlyInput]='true'
                                                [showTime]='true'
                                                [touchUI]='isMobile'
-                                               id='range'
+                                               (keydown.enter)='isFirstStepValid() ? activeStep = 2 : ""'
+                                               inputId='range'
                                                selectionMode='range'
-                                               styleClass='full-w' />
+                                               fluid />
                                 <app-form-field-error [control]='range'
                                                       [example]='"event.example.range" | translate'
                                                       [label]='"event.form.range" | translate' />
@@ -65,7 +67,8 @@
                                         {{ 'event.form.ticketing' | translate }}
                                     </label>
                                     <p-toggle-switch [formControl]='ticketing'
-                                                     id='ticketing' />
+                                                     (keydown.enter)='ticketing.setValue(!ticketing.value)'
+                                                     inputId='ticketing' />
                                 </div>
                                 <app-form-field-error [control]='ticketing'
                                                       [label]='"event.form.ticketing" | translate' />
@@ -79,7 +82,8 @@
                                         {{ 'event.form.vehicle' | translate }}
                                     </label>
                                     <p-toggle-switch [formControl]='vehicle'
-                                                     id='vehicle' />
+                                                     inputId='vehicle'
+                                                     (keydown.enter)='vehicle.setValue(!vehicle.value)' />
                                 </div>
                                 <app-form-field-error [control]='vehicle'
                                                       [label]='"event.form.vehicle" | translate' />
@@ -92,7 +96,9 @@
                                         <i [class]='optionIcon(EventOptionEnum.ACTIVITY)'></i>
                                         {{ 'event.form.activity' | translate }}
                                     </label>
-                                    <p-toggle-switch [formControl]='activity' id='activity' />
+                                    <p-toggle-switch [formControl]='activity'
+                                                     inputId='activity'
+                                                     (keydown.enter)='activity.setValue(!activity.value)' />
                                 </div>
                                 <app-form-field-error [control]='activity'
                                                       [label]='"event.form.activity" | translate' />
@@ -106,7 +112,8 @@
                                         {{ 'event.form.phone-communication' | translate }}
                                     </label>
                                     <p-toggle-switch [formControl]='phoneCommunication'
-                                                     id='phone-communication' />
+                                                     inputId='phone-communication'
+                                                     (keydown.enter)='phoneCommunication.setValue(!phoneCommunication.value)' />
                                 </div>
                                 <app-form-field-error [control]='phoneCommunication'
                                                       [label]='"event.form.phone-communication" | translate' />
@@ -118,7 +125,8 @@
                                         {{ 'event.form.activity-communication' | translate }}
                                     </label>
                                     <p-toggle-switch [formControl]='activityCommunication'
-                                                     id='activity-communication' />
+                                                     inputId='activity-communication'
+                                                     (keydown.enter)='activityCommunication.setValue(!activityCommunication.value)' />
                                 </div>
                                 <app-form-field-error [control]='activityCommunication'
                                                       [label]='"event.form.activity-communication" | translate' />
@@ -132,7 +140,8 @@
                                         {{ 'event.form.fire-risk' | translate }}
                                     </label>
                                     <p-toggle-switch [formControl]='fireRisk'
-                                                     id='fire-risk' />
+                                                     inputId='fire-risk'
+                                                     (keydown.enter)='fireRisk.setValue(!fireRisk.value)' />
                                 </div>
                                 <app-form-field-error [control]='fireRisk'
                                                       [label]='"event.form.fire-risk" | translate' />
@@ -145,7 +154,8 @@
                                         {{ 'event.form.smoke-reporting' | translate }}
                                     </label>
                                     <p-toggle-switch [formControl]='smokeReporting'
-                                                     id='smoke-reporting' />
+                                                     inputId='smoke-reporting'
+                                                     (keydown.enter)='smokeReporting.setValue(!smokeReporting.value)' />
                                 </div>
                                 <app-form-field-error [control]='smokeReporting'
                                                       [label]='"event.form.smoke-reporting" | translate' />
@@ -158,7 +168,8 @@
                                         {{ 'event.form.movement-reporting' | translate }}
                                     </label>
                                     <p-toggle-switch [formControl]='movementReporting'
-                                                     id='movement-reporting' />
+                                                     inputId='movement-reporting'
+                                                     (keydown.enter)='movementReporting.setValue(!movementReporting.value)' />
                                 </div>
                                 <app-form-field-error [control]='movementReporting'
                                                       [label]='"event.form.movement-reporting" | translate' />

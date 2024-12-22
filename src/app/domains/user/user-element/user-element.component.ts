@@ -39,7 +39,6 @@ import { ReactiveFormsModule } from '@angular/forms'
         InputTextModule,
         ListboxModule,
         ReactiveFormsModule,
-
     ],
     templateUrl: './user-element.component.html',
     styleUrl: './user-element.component.scss',

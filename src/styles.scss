@@ -37,7 +37,7 @@ body {
     flex-direction: column;
     margin-bottom:  var(--min-spacer);
 
-    label {
+    label, .label {
         margin-bottom: calc(var(--min-spacer) / 2);
     }
 }
@@ -51,7 +51,7 @@ body {
 }
 
 .secondary-color {
-    color: var(--text-color-secondary);
+    color: var(--p-text-muted-color);
 }
 
 a,
