@@ -316,6 +316,17 @@
             "EMPTY_USER_EVENT_INVITATION": "🕵️‍♂️ Aucune Invitation",
             "event-profile": {
                 "create": "+ Profiles partiellements créés"
+            },
+            "group": {
+                "add-members": "+ Membres partiellements ajoutés"
+            },
+            "duplicated-selection": {
+                "normal": "🤥 Élément déjà sélectionné",
+                "group": "🤥 Groupe déjà sélectionné",
+                "participant": {
+                    "singular": "🤥 Personne déjà sélectionnée",
+                    "plural": "🤥 Personnes déjà sélectionnées"
+                }
             }
         },
         "message": {
@@ -331,6 +342,20 @@
                 "create": {
                     "singular": "Un profil a été créé (sur les {{asked}} demandés) pour l'évènement.",
                     "plural": "{{created}} Profils ont été créés (sur les {{asked}} demandés) pour l'évènement."
+                }
+            },
+            "group": {
+                "add-members": {
+                    "singular": "Un membre a été ajouté (sur les {{asked}} demandés) au groupe.",
+                    "plural": "{{added}} Membres ont été ajoutés (sur les {{asked}} demandés) au groupe."
+                }
+            },
+            "duplicated-selection": {
+                "normal": "L'élément \"{{name}}\" déjà sélectionné, il n'a donc pas été ajouté une deuxième fois.",
+                "group": "Le groupe \"{{name}}\" déjà sélectionné, il n'a donc pas été ajouté une deuxième fois.",
+                "participant": {
+                    "singular": "Une personne été déjà sélectionnée soit individuellement soit dans un autre groupe. Le dernier ajout prime.",
+                    "plural": "{{count}} personnes été déjà sélectionnées soit individuellement soit dans un autre groupe. Le dernier ajout prime."
                 }
             }
         }
@@ -386,6 +411,18 @@
                 "disable": "🙈 Personne participante cachée",
                 "enable": "👀 Personne participante visible",
                 "delete": "🗑️ Personne participante supprimée"
+            },
+            "group": {
+                "add-members": {
+                    "singular": "+ Membre ajouté",
+                    "plural": "+ Membres ajoutés"
+                },
+                "remove-member": "- Membre retiré",
+                "create": "+ Groupe de personnes créé",
+                "edit": "✏️ Groupe de personnes modifié",
+                "disable": "🙈 Groupe de personnes caché",
+                "enable": "👀 Groupe de personnes visible",
+                "delete": "🗑️ Groupe de personnes supprimé"
             },
             "user": {
                 "edit": "✏️ Personne utilisatrice modifiée",
@@ -453,6 +490,18 @@
                 "enable": "La personne participante {{firstName}} {{lastName}} est de nouveau visible",
                 "delete": "La personne participante {{firstName}} {{lastName}} a été supprimée"
             },
+            "group": {
+                "add-members": {
+                    "singular": "Le membre a bien été ajouté au groupe.",
+                    "plural": "{{added}} ont bien été ajoutés au groupe."
+                },
+                "remove-member": "Le membre {{firstName}} {{lastName}} a été retiré du groupe {{name}}.",
+                "create": "Le groupe de personnes {{name}} a été créé",
+                "edit": "Le groupe de personnes {{name}} a été modifié",
+                "disable": "Le groupe de personnes {{name}} a été caché",
+                "enable": "Le groupe de personnes {{name}} est de nouveau visible",
+                "delete": "Le groupe de personnes {{name}} a été supprimé"
+            },
             "user": {
                 "edit": "La personne utilisatrice {{firstName}} {{lastName}} a été modifiée",
                 "block": "La personne utilisatrice {{firstName}} {{lastName}} a été bloquée",
@@ -469,6 +518,7 @@
     "next": "Suivant",
     "previous": "Précédent",
     "cancel": "Annuler",
+    "add": "Ajouter",
     "required": "Obligatoire",
     "close": "Fermer",
     "create": "Créer",
@@ -496,6 +546,7 @@
         "profiles": "Profils",
         "movements": "Mouvements",
         "participants": "Participants",
+        "groups": "Groupes",
         "sign-out": "Déconnexion",
         "attempt-to-sign-out": "Tentative de Déconnexion",
         "toggle": "Fermer le menu de navigation",
@@ -654,7 +705,7 @@
         },
         "form": {
             "title": {
-                "create": "Inviter des utilisateurs sur l'évènement \"{{name}}\"",
+                "create": "Partager l'évènement \"{{name}}\"",
                 "edit": "Modifier le Profil de {{firstName}} {{lastName}}"
             },
             "create": {
@@ -662,21 +713,36 @@
                 "plural": "Inviter les utilisateurs"
             },
             "edit": "Modifier le profil",
-            "users": "Utilisateurs",
+            "users": "Utilisateurs avec accès",
             "role": "Rôle",
             "date-range": "Dates de validité",
-            "no-user": {
-                "singular": "Cliques sur le bouton ci-dessous pour chercher un utilisateur.",
-                "plural": "Cliques sur le bouton ci-dessous pour chercher des utilisateurs."
-            }
+            "user-search": "Ajouter des personnes",
+            "no-user": "Aucun utilisateur selectionné"
+        },
+        "example": {
+            "users": "Ex: Robert BADEN-POWELL",
+            "presence": "Ex: {{begin}} - {{end}}",
+            "role": "Ex: {{role}}"
         }
     },
     "participant": {
-        "search": "Rechercher des participants",
-        "select": "Sélectionner des participants",
+        "search": {
+            "singular": "Rechercher des personne participante",
+            "plural": "Rechercher des personnes participantes"
+        },
+        "select": {
+            "singular": "Sélectionner une personne participante",
+            "plural": "Sélectionner des personnes participantes"
+        },
         "add-participant": {
             "singular": "{{number}} Participant",
             "plural": "{{number}} Participants"
+        },
+        "group-and-others": {
+            "none": "Aucun groupe associé.",
+            "one": "Associé au groupe {{group}}.",
+            "singular": "Associé au groupe {{group}} et {{others}} autre.",
+            "plural": "Associé au groupe {{group}} et {{others}} autres."
         },
         "action": {
             "edit": "Modifier",
@@ -701,18 +767,87 @@
                 "create": "Créer une personne participante",
                 "edit": "Modifier la personne participante \"{{firstName}} {{lastName}}\""
             },
-            "user": "Utilisateur lié",
+            "user": "Utilisateur",
             "first-name": "Prénom",
             "previous-first-name": "L'ancien prénom \"{{firstName}}\" a été remplacé par celui de l'utilisateur lié.",
             "last-name": "Nom",
             "previous-last-name": "L'ancien nom \"{{lastName}}\" a été remplacé par celui de l'utilisateur lié.",
             "birthday": "Date de naissance",
-            "presence": "Dates de présence"
+            "presence": "Dates de présence",
+            "link-user": "Lier un utilisateur",
+            "groups": "Groupes",
+            "group-search": "Ajouter des groupes",
+            "no-group": "Aucun groupe selectionné"
         },
         "example": {
             "first-name": "Ex: Robert",
             "last-name": "Ex: BADEN-POWELL",
             "birthday": "Ex: 22/02/1857",
+            "presence": "Ex: {{begin}} - {{end}}"
+        }
+    },
+    "group": {
+        "search": "Rechercher des groupes",
+        "select": "Sélectionner des groupes",
+        "action": {
+            "create-member": "Créer un membre",
+            "remove-member": "Retirer du groupe",
+            "add-members": "Ajouter des membres",
+            "members": "Gérer les membres",
+            "edit": "Modifier",
+            "disable": "Désactiver",
+            "enable": "Ré-activer",
+            "delete": "Supprimer",
+            "confirmation": {
+                "title": {
+                    "remove-member": "Retirer du groupe",
+                    "disable": "Désactiver le groupe de personnes",
+                    "enable": "Ré-activer le groupe de personnes",
+                    "delete": "Supprimer le groupe de personnes"
+                },
+                "message": {
+                    "remove-member": "Attention ! Tu vas retirer \"{{element.firstName}} {{element.lastName}}\" du groupe.",
+                    "disable": "Attention ! Tu vas désactiver le groupe de personnes \"{{element.name}}\". Tant qu'il est désactivé, le groupe ne pourra plus être intégré dans les entrées/sorties.",
+                    "enable": "Attention ! Tu vas ré-activer le groupe de personnes \"{{element.name}}\". Il sera de nouveau possible de l'intégrer dans les entrées/sorties.",
+                    "delete": "Attention ! Tu vas définitivement supprimer le groupe de personnes \"{{element.name}}\". Elle sera donc définitivement dissocié des mouvements et autres éléments."
+                }
+            }
+        },
+        "content": {
+            "title": "Personne participantes",
+            "all": "Tous",
+            "adult": {
+                "singular": "{{adults}} Adulte",
+                "plural": "{{adults}} Adultes"
+            },
+            "child": {
+                "singular": "{{children}} Jeune",
+                "plural": "{{children}} Jeunes"
+            }
+        },
+        "person-and-others": {
+            "normal": {
+                "singular": "Associé à {{person}} et {{others}} autre.",
+                "plural": "Associé à {{person}} et {{others}} autres."
+            },
+            "purged": {
+                "singular": "Associé à {{others}} personne",
+                "plural": "Associé à {{others}} personnes"
+            }
+        },
+        "form": {
+            "title": {
+                "create": "Créer un groupe de personnes",
+                "edit": "Modifier le groupe de personnes \"{{name}}\""
+            },
+            "name": "Nom",
+            "presence": "Dates de présence",
+            "participants": "Participants",
+            "participant-search": "Ajouter des personnes",
+            "no-participant": "Aucune personne participante selectionnée"
+        },
+        "example": {
+            "name": "Ex: Pionniers-Caravelles - Charles de Foucauld Bondues",
             "presence": "Ex: {{begin}} - {{end}}"
         }
     },
@@ -754,12 +889,24 @@
             },
             "datetime": "Horodatage",
             "type": "Type",
-            "content": "Contenu",
-            "no-user": "Cliques sur le bouton ci-dessous pour chercher des participants."
+            "content": "Personnes participantes au mouvement",
+            "content-search": "Ajouter des personnes et des groupes",
+            "no-participant": "Aucune personne selectionnée",
+            "group": "Groupe \"{{name}}\""
         },
         "example": {
             "type": "Ex: Entrée",
             "datetime": "Ex: {{date}} {{time}}"
+        },
+        "searched": {
+            "participant": {
+                "singular": "Personne participante",
+                "plural": "Personnes participante"
+            },
+            "group": {
+                "singular": "Groupe",
+                "plural": "Groupes"
+            }
         },
         "action": {
             "edit": "Modifier",

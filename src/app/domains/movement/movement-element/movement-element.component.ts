@@ -10,18 +10,16 @@ import { AppConfig } from '../../../app.config'
 import { CurrentUserModel } from '../../../shared/util-model/model/current-user.model'
 import { CurrentUserUtil } from '../../../shared/util-authentication/tool/current-user.util'
 import { MovementTypeEnum } from '../data/model/movement-type.enum'
-import { MovementRoutesEnum } from '../movement-routes.enum'
 import { TranslateModule } from '@ngx-translate/core'
 import { TagModule } from 'primeng/tag'
 import { ParticipantModel } from '../../../shared/util-model/model/participant.model'
 import { MovementContentModel } from '../data/model/movement-content.model'
 import { LayerComponent } from '../../../shared/util-ui/layer/layer.component'
 import { Button } from 'primeng/button'
-import {
-    MovementParticipantElementComponent,
-} from '../movement-participant-element/movement-participant-element.component'
 import { ListboxModule } from 'primeng/listbox'
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs'
+import { Avatar } from 'primeng/avatar'
+import { AppRouteEnum } from '../../../app-route.enum'
 
 @Component( {
     selector: 'app-movement-element',
@@ -35,15 +33,13 @@ import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs'
         UpperCasePipe,
         LayerComponent,
         Button,
-        MovementParticipantElementComponent,
         ListboxModule,
         Tabs,
         TabPanels,
         TabList,
         Tab,
         TabPanel,
-
-
+        Avatar,
     ],
     templateUrl: './movement-element.component.html',
     styleUrl: './movement-element.component.scss',
@@ -55,7 +51,7 @@ export class MovementElementComponent extends GenericElementComponent<MovementMo
     protected layerOpened: boolean = false
     protected activeTab: number = 1
 
-    protected others: WritableSignal<number> = signal( 0 )
+    protected total: WritableSignal<number> = signal( 0 )
     protected adults: WritableSignal<MovementContentModel[]> = signal( [] )
     protected children: WritableSignal<MovementContentModel[]> = signal( [] )
 
@@ -63,7 +59,7 @@ export class MovementElementComponent extends GenericElementComponent<MovementMo
 
     public ngOnChanges (): void {
         this.defineActions()
-        this.others.set( this.element.content.length - 1 )
+        this.total.set( this.element.content.length - 1 )
         this.adults.set( this.filterContent( true ) )
         this.children.set( this.filterContent( false ) )
     }
@@ -106,9 +102,8 @@ export class MovementElementComponent extends GenericElementComponent<MovementMo
     protected handleAction (action: MovementActionEnum): void {
         switch (action) {
             case MovementActionEnum.UPDATE_MOVEMENT:
-                this.router.navigate(
-                    [ MovementRoutesEnum.EDIT.replace( ':id', this.element.id ) ],
-                    { relativeTo: this.route },
+                this.router.navigateByUrl(
+                    this.buildUri( AppRouteEnum.MOVEMENTS_EDITION.replace( ':id', this.element.id ) ),
                 ).catch( console.error )
                 break
             case MovementActionEnum.DISABLE_MOVEMENT:

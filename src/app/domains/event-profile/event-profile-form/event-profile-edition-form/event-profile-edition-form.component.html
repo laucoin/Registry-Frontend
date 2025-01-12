@@ -18,9 +18,10 @@
                 <label for='roles' appRequired>{{ 'profile.form.role' | translate }}</label>
                 <p-select
                         id='roles'
-                        styleClass='full-w'
+                        fluid
                         [options]='(assignableRoles$ | async) ?? []'
                         [formControl]='role'
+                        (keydown.enter)='submit()'
                         optionLabel='label'
                         optionValue='value' />
                 <app-form-field-error [control]='role'
@@ -33,10 +34,11 @@
                                [readonlyInput]='true'
                                [showTime]='true'
                                [touchUI]='isMobile'
+                               (keydown.enter)='submit()'
                                id='profiles-range'
                                inputId='profiles-range'
                                selectionMode='range'
-                               styleClass='full-w' />
+                               fluid />
                 <app-form-field-error [control]='range'
                                       [label]='"profile.form.date-range" | translate' />
             </div>

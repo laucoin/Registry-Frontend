@@ -1,19 +1,32 @@
 <app-form [form]='form' [loading]='(loading$ | async) ?? false'>
-    @if (participant()) {
-        <h2>{{
-                'participant.form.title.edit' | translate: {
-                    firstName: participant()?.firstName,
-                    lastName: participant()?.lastName
-                }
-            }}
-        </h2>
-    } @else {
-        <h2>{{ 'participant.form.title.create' | translate }}</h2>
+    @if (showTitle) {
+        @if (participant()) {
+            <h2>{{
+                    'participant.form.title.edit' | translate: {
+                        firstName: participant()?.firstName,
+                        lastName: participant()?.lastName
+                    }
+                }}
+            </h2>
+        } @else {
+            <h2>{{ 'participant.form.title.create' | translate }}</h2>
+        }
     }
     <p-card>
         <div class='field'>
             <label for='user'>{{ 'participant.form.user' | translate }}</label>
-            <app-select-users-field id='user' [formControl]='user' />
+            <p-auto-complete inputId='user'
+                             fluid
+                             completeOnFocus
+                             optionValue='value.id'
+                             optionLabel='label'
+                             [placeholder]='"participant.form.link-user" | translate'
+                             [formControl]='user'
+                             [forceSelection]='true'
+                             [suggestions]='(usersSuggestion$ | async) ?? []'
+                             (keydown.enter)='submit()'
+                             (onSelect)='onUserSelection($event)'
+                             (completeMethod)='handleUserSearch($event)' />
             <app-form-field-error [control]='user'
                                   [label]='"participant.form.user" | translate' />
         </div>
@@ -22,6 +35,7 @@
             <label for='first-name' appRequired>{{ 'participant.form.first-name' | translate }}</label>
             <input [formControl]='firstName'
                    [placeholder]='"participant.example.first-name" | translate'
+                   (keydown.enter)='submit()'
                    id='first-name'
                    pInputText
                    type='text' />
@@ -38,6 +52,7 @@
             <label for='last-name' appRequired>{{ 'participant.form.last-name' | translate }}</label>
             <input [formControl]='lastName'
                    [placeholder]='"participant.example.last-name" | translate'
+                   (keydown.enter)='submit()'
                    id='last-name'
                    pInputText
                    type='text' />
@@ -55,11 +70,11 @@
             <p-date-picker [formControl]='birthday'
                            [showButtonBar]='true'
                            [placeholder]='"participant.example.birthday" | translate'
-                           [readonlyInput]='true'
                            [maxDate]='today'
                            [touchUI]='isMobile'
+                           (keydown.enter)='submit()'
                            id='birthday'
-                           styleClass='full-w' />
+                           fluid />
             <app-form-field-error [control]='birthday'
                                   [example]='"participant.example.birthday" | translate'
                                   [label]='"participant.form.birthday" | translate' />
@@ -75,13 +90,28 @@
                            [readonlyInput]='true'
                            [showTime]='true'
                            [touchUI]='isMobile'
+                           (keydown.enter)='submit()'
                            id='presence'
                            selectionMode='range'
-                           styleClass='full-w' />
+                           fluid />
             <app-form-field-error [control]='presence'
                                   [example]='"participant.example.presence" | translate'
                                   [label]='"participant.form.presence" | translate' />
         </div>
+        @if (!defaultGroup) {
+            <p-divider />
+            <div class='field'>
+                <label for='groups' appRequired>{{ 'participant.form.groups' | translate }}</label>
+                <app-select-elements-field [formControl]='groups'
+                                           [suggestions]='(groupsSuggestion$ | async) ?? []'
+                                           [searchLabel]='"participant.form.group-search" | translate'
+                                           [emptyPlaceholder]='"participant.form.no-group" | translate'
+                                           inputId='groups'
+                                           (handleSearch)='handleGroupSearch($event)' />
+                <app-form-field-error [control]='groups'
+                                      [label]='"participant.form.groups" | translate' />
+            </div>
+        }
     </p-card>
     <div class='d-flex mt-2 justify-content-center'>
         <p-button

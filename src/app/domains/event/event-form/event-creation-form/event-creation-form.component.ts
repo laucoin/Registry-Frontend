@@ -10,7 +10,7 @@ import { InputTextModule } from 'primeng/inputtext'
 import { DividerModule } from 'primeng/divider'
 import { GenericEventFormComponent } from '../generic-event-form.component'
 import { FormComponent } from '../../../../shared/util-ui/form/form.component'
-import { RegistryTemplateDirective } from '../../../../shared/util-tool/directive/registry-required.directive'
+import { RegistryRequiredDirective } from '../../../../shared/util-tool/directive/registry-required.directive'
 import { Button } from 'primeng/button'
 import { DatePicker } from 'primeng/datepicker'
 import { ToggleSwitch } from 'primeng/toggleswitch'
@@ -29,7 +29,7 @@ import { Card } from 'primeng/card'
         DividerModule,
         FormComponent,
         AsyncPipe,
-        RegistryTemplateDirective,
+        RegistryRequiredDirective,
         Button,
         DatePicker,
         ToggleSwitch,

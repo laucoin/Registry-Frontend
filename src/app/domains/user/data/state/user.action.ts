@@ -14,7 +14,6 @@ export enum UserActionEnum {
     SELECT_USER_PAGE_ORDER = '[Local] Selecting user page order',
 
     FETCH_USER = '[Backend] Fetching user',
-    SEARCH_USER = '[Backend] Searching user',
     FETCH_ASSIGNABLE_USER_ROLES = '[Backend] Fetching assignable user\'s roles',
     UPDATE_USER_ROLE = '[Backend] Updating user role',
     BLOCK_USER = '[Backend] Blocking user',
@@ -71,12 +70,6 @@ export class FetchUser {
     public static readonly type: UserActionEnum = UserActionEnum.FETCH_USER
 
     public constructor (public readonly id: string) {}
-}
-
-export class SearchUser {
-    public static readonly type: UserActionEnum = UserActionEnum.SEARCH_USER
-
-    public constructor (public readonly searched: string | undefined) {}
 }
 
 export class FetchAssignableUserRoles {

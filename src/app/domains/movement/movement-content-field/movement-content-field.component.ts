@@ -1,133 +1,198 @@
-import { Component, Input, OnChanges, signal, WritableSignal } from '@angular/core'
-import { ParticipantFacade } from '../../participant/data/state/participant.facade'
-import { GenericComponent } from '../../../shared/util-tool/component/generic.component'
-import { FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms'
-import { Observable, of } from 'rxjs'
+import { Component, EventEmitter, forwardRef, Input, Output, signal, WritableSignal } from '@angular/core'
+import { ParticipantUtil } from '../../../shared/util-tool/util/participant.util'
+import { GroupUtil } from '../../../shared/util-tool/util/group.util'
+import { AutoComplete, AutoCompleteCompleteEvent } from 'primeng/autocomplete'
 import { Button } from 'primeng/button'
-import { TranslateModule } from '@ngx-translate/core'
-import { LayerComponent } from '../../../shared/util-ui/layer/layer.component'
-import { IconFieldModule } from 'primeng/iconfield'
-import { InputIconModule } from 'primeng/inputicon'
-import { InputTextModule } from 'primeng/inputtext'
-import { ListboxChangeEvent, ListboxModule } from 'primeng/listbox'
-import { AsyncPipe, NgForOf } from '@angular/common'
-import { MessageComponent } from '../../../shared/util-ui/message/message.component'
-import { ToastMessageOptions } from 'primeng/api'
-import { CardModule } from 'primeng/card'
+import { TranslatePipe } from '@ngx-translate/core'
+import { ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR } from '@angular/forms'
+import { SelectItem, SelectItemGroup } from 'primeng/api'
 import { ParticipantModel } from '../../../shared/util-model/model/participant.model'
-import { ItemModel } from '../../../shared/util-model/model/item.model'
+import { GroupModel } from '../../../shared/util-model/model/group.model'
+import { StateUtil } from '../../../shared/util-tool/state/state.util'
+import { RegistryFacade } from '../../../shared/util-common/state/registry.facade'
 
 @Component( {
     selector: 'app-movement-content-field',
-    standalone: true,
     imports: [
+        AutoComplete,
         Button,
-        TranslateModule,
-        LayerComponent,
-        ReactiveFormsModule,
-        IconFieldModule,
-        InputIconModule,
-        InputTextModule,
-        ListboxModule,
-        AsyncPipe,
-        NgForOf,
-        MessageComponent,
-        CardModule,
+        TranslatePipe,
+    ],
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef( (): typeof MovementContentFieldComponent => MovementContentFieldComponent ),
+            multi: true,
+        },
     ],
     templateUrl: './movement-content-field.component.html',
     styleUrl: './movement-content-field.component.scss',
 } )
-export class MovementContentFieldComponent extends GenericComponent implements OnChanges {
-    @Input( { required: true } ) public formArray: FormArray | undefined
-    protected readonly form: FormGroup
+export class MovementContentFieldComponent implements ControlValueAccessor {
+    protected readonly ParticipantUtil: typeof ParticipantUtil = ParticipantUtil
+    protected readonly GroupUtil: typeof GroupUtil = GroupUtil
 
-    protected layerOpened: boolean = false
-    protected layerParticipants$: Observable<ItemModel[]> = of( [] )
-    protected layerSelectedParticipants: WritableSignal<ParticipantModel[]> = signal( [] )
-    protected layerForm: FormGroup
+    @Input( { required: true } ) public formControl!: FormControl
+    @Input() public suggestions: SelectItemGroup<ParticipantModel | GroupModel>[] = []
+    @Input() public fluid: boolean = true
+    @Input() public unique: boolean = true
+    @Input() public inputId: string | undefined
+    @Input() public searchLabel: string | undefined
+    @Input() public emptyPlaceholder: string | undefined
 
-    protected message: ToastMessageOptions = {
-        severity: 'warn', summary: 'warning.title.EMPTY', detail: 'warning.message.EMPTY',
+    @Output() public handleSearch: EventEmitter<AutoCompleteCompleteEvent> = new EventEmitter<AutoCompleteCompleteEvent>()
+
+    private onChange: ((value: SelectItem<ParticipantModel | GroupModel>[]) => void) | undefined = undefined
+    private onTouched: (() => void) | undefined = undefined
+
+    protected readonly disabled: WritableSignal<boolean> = signal( false )
+    protected readonly participants: WritableSignal<ParticipantModel[]> = signal( [] )
+    protected readonly groups: WritableSignal<GroupModel[]> = signal( [] )
+
+    public constructor (private readonly registryFacade: RegistryFacade) {}
+
+    private isGroup (element: ParticipantModel | GroupModel): boolean {
+        return 'name' in element
     }
 
-    public constructor (
-        private readonly facade: ParticipantFacade,
-        private readonly formBuilder: FormBuilder,
-    ) {
-        super()
+    protected onRemoveParticipant (participantId: string): void {
+        this.updateValue(
+            this.formControl.value.filter( (item: ParticipantModel | GroupModel): boolean =>
+                !(!this.isGroup( item ) && item.id == participantId),
+            ),
+        )
+    }
 
-        this.layerForm = this.initLayerForm()
-        this.form = this.formBuilder.group( {
-            content: this.formBuilder.array( [] ),
+    protected onRemoveGroup (groupId: string): void {
+        this.updateValue(
+            this.formControl.value.filter( (item: ParticipantModel | GroupModel): boolean =>
+                !(this.isGroup( item ) && item.id == groupId),
+            ),
+        )
+    }
+
+    protected onRemoveGroupParticipant (groupId: string, memberId: string): void {
+        const content: (ParticipantModel | GroupModel)[] = this.formControl.value
+        const index: number = content.findIndex( (item: ParticipantModel | GroupModel): boolean =>
+            this.isGroup( item ) && item.id == groupId,
+        )
+        const group: GroupModel = this.formControl.value[index] as GroupModel
+        if (group.members.length === 1) {
+            this.onRemoveGroup( groupId )
+        } else {
+            content[index] = {
+                ...group,
+                members: group.members.filter( (member: ParticipantModel): boolean =>
+                    member.id !== memberId,
+                ),
+            }
+            this.updateValue( content )
+        }
+    }
+
+    protected onElementSelection (element: SelectItem<ParticipantModel | GroupModel>): void {
+        const newParticipantIds: string[] = []
+        if (this.isGroup( element.value )) {
+            if (this.groups().find( (group: GroupModel): boolean => group.id == element.value.id )) {
+                this.registryFacade.notify(
+                    StateUtil.buildNotificationMessage(
+                        'warn',
+                        'warning.title.duplicated-selection.group',
+                        'warning.message.duplicated-selection.group',
+                        undefined,
+                        { name: element.label },
+                    ),
+                )
+                return
+            }
+
+            newParticipantIds.push(
+                ...(element.value as GroupModel).members.map( (member: ParticipantModel): string => member.id ),
+            )
+        } else {
+            newParticipantIds.push( element.value.id )
+        }
+
+        let duplicationCount: number = 0
+
+        this.participants()
+            .filter( (participant: ParticipantModel): boolean => newParticipantIds.includes( participant.id ) )
+            .forEach( (participant: ParticipantModel): void => {
+                duplicationCount++
+                this.onRemoveParticipant( participant.id )
+            } )
+
+        this.groups().forEach( (group: GroupModel): void => {
+            group.members
+                 .filter( (member: ParticipantModel): boolean => newParticipantIds.includes( member.id ) )
+                 .forEach( (member: ParticipantModel): void => {
+                     duplicationCount++
+                     this.onRemoveGroupParticipant( group.id, member.id )
+                 } )
         } )
+
+        if (duplicationCount > 0) {
+            this.registryFacade.notify(
+                StateUtil.buildNotificationMessage(
+                    'warn',
+                    'warning.title.duplicated-selection.participant.' + (duplicationCount > 1 ? 'plural' : 'singular'),
+                    'warning.message.duplicated-selection.participant.' + (duplicationCount > 1 ? 'plural' : 'singular'),
+                    undefined,
+                    { count: duplicationCount },
+                ),
+            )
+        }
+
+        this.updateValue( [ ...this.groups(), ...this.participants(), element.value ] )
     }
 
-    public ngOnChanges (): void {
-        this.form.addControl( 'content', this.formArray )
+    private updateValue (value: (GroupModel | ParticipantModel)[]): void {
+        this.formControl.setValue( value )
+        this.handleContentChanges()
     }
 
-    private addContent (participant: ParticipantModel): void {
-        const form: FormGroup = this.formBuilder.group( {
-            participant: this.formBuilder.control( participant ),
-        } )
+    private handleContentChanges (): void {
+        const content: (GroupModel | ParticipantModel)[] = this.formControl.value
+        const participants: ParticipantModel[] = []
+        const groups: GroupModel[] = []
 
-        this.formArray?.push( form )
-    }
-
-    protected removeContent (index: number): void {
-        this.formArray?.removeAt( index )
-    }
-
-    protected addSelectedParticipants (): void {
-        const participants: ParticipantModel[] = (this.formArray?.controls as FormGroup[] ?? [])
-            .map( (group: FormGroup): ParticipantModel => group.get( 'participant' )?.value )
-
-        this.layerSelectedParticipants().forEach( (item: ParticipantModel): void => {
-            if (!participants.some( (participant: ParticipantModel): boolean => item.id === participant.id )) {
-                this.addContent( item )
+        content.forEach( (item: GroupModel | ParticipantModel): void => {
+            if (this.isGroup( item )) {
+                groups.push( item as GroupModel )
+            } else {
+                participants.push( item as ParticipantModel )
             }
         } )
 
-        this.closeLayer()
+        this.participants.set( participants )
+        this.groups.set( groups )
     }
 
-    protected get invalid (): boolean {
-        return ((this.formArray?.dirty || this.formArray?.touched) && this.formArray?.invalid) ?? false
-    }
+    public writeValue (value: (ParticipantModel | GroupModel)[]): void {
+        const participants: ParticipantModel[] = []
+        const groups: GroupModel[] = []
 
-    private initLayerForm (): FormGroup {
-        this.facade.searchParticipant( true, undefined, this.contextEventId() )
-        this.layerParticipants$ = this.facade.searchedParticipants
-        this.layerSelectedParticipants.set( [] )
-
-        return this.formBuilder.group( {
-            searched: this.formBuilder.control( '' ),
-            participants: this.formBuilder.control( [] ),
+        value.forEach( (item: GroupModel | ParticipantModel): void => {
+            if (this.isGroup( item )) {
+                groups.push( item as GroupModel )
+            } else {
+                participants.push( item as ParticipantModel )
+            }
         } )
+
+        this.participants.set( participants )
+        this.groups.set( groups )
     }
 
-    protected closeLayer (): void {
-        this.layerForm = this.initLayerForm()
-        this.layerOpened = false
+    public registerOnChange (fn: (value: SelectItem<ParticipantModel | GroupModel>[]) => void): void {
+        this.onChange = fn
     }
 
-    protected onLayerSelectionChange (event: ListboxChangeEvent): void {
-        const selection: ParticipantModel[] =
-            this.facade.actualSearchedParticipants
-                .filter( (participant: ParticipantModel): boolean => event.value.includes( participant.id ) )
-
-        this.layerSelectedParticipants.set( selection )
+    public registerOnTouched (fn: () => void): void {
+        this.onTouched = fn
     }
 
-    protected findParticipant (index: number): FormControl {
-        return (this.formArray?.controls as FormGroup[])?.[index]?.get( 'participant' ) as FormControl
-    }
-
-    protected get layerSearched (): FormControl {
-        return this.layerForm.get( 'searched' ) as FormControl
-    }
-
-    protected get layerParticipants (): FormControl {
-        return this.layerForm.get( 'participants' ) as FormControl
+    public setDisabledState? (isDisabled: boolean): void {
+        this.disabled.set( isDisabled )
     }
 }

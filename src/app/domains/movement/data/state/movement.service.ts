@@ -7,6 +7,10 @@ import { MovementDto } from '../dto/movement.dto'
 import { MovementPageParamsModel } from '../model/movement-page-params.model'
 import { QueryUtil } from '../../../../shared/util-tool/util/query.util'
 import { MovementModel } from '../model/movement.model'
+import { HttpParams } from '@angular/common/http'
+import {
+    MovementParticipantsAndGroupsModel,
+} from '../../../../shared/util-model/model/movement-participants-and-groups.model'
 
 @Injectable( {
     providedIn: 'root',
@@ -29,6 +33,18 @@ export class MovementService extends GenericEventService {
 
     public findMovementById (eventId: string | undefined, id: string): Observable<MovementModel> {
         return this.http.get<MovementModel>( `${this.buildRequestBaseUrl( eventId )}/${id}` )
+    }
+
+    public searchParticipantsAndGroups (
+        eventId: string | undefined,
+        searched: string | undefined,
+    ): Observable<MovementParticipantsAndGroupsModel> {
+        return this.http.get<MovementParticipantsAndGroupsModel>(
+            `${this.buildRequestBaseUrl( eventId )}/search/participants-and-groups${searched ? '?' + new HttpParams().set(
+                'searched',
+                searched,
+            ).toString() : ''}`,
+        )
     }
 
     public createMovement (eventId: string | undefined, movement: MovementDto): Observable<MovementModel> {

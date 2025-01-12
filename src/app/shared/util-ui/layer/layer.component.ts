@@ -12,7 +12,6 @@ import { GenericComponent } from '../../util-tool/component/generic.component'
         DialogModule,
     ],
     templateUrl: './layer.component.html',
-    styleUrl: './layer.component.scss',
 } )
 export class LayerComponent extends GenericComponent {
     @ContentChildren( RegistryTemplateDirective ) public templates: QueryList<RegistryTemplateDirective> | undefined

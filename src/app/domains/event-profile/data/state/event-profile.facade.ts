@@ -16,6 +16,7 @@ import {
     FetchEventProfilePage,
     InputEventProfilePageDateRange,
     InputEventProfilePageSearch,
+    SearchUsers,
     SelectEventProfilePageOrder,
     SelectEventProfilePageStatus,
     SelectEventProfilePageVisibility,
@@ -26,12 +27,12 @@ import {
     UnblockEventProfile,
     UpdateEventProfile,
 } from './event-profile.action'
-import { ToastMessageOptions } from 'primeng/api'
+import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { FormUtil } from '../../../../shared/util-tool/util/form.util'
 import { OrderEnum } from '../../../../shared/util-model/enumeration/order.enum'
 import { ProfileStatusEnum } from '../../../../shared/util-model/enumeration/profile-status.enum'
-import { ItemModel } from '../../../../shared/util-model/model/item.model'
 import { ofActionSuccessful } from '@ngxs/store'
+import { UserDto } from '../../../../shared/util-model/dto/user.dto'
 
 @Injectable()
 export class EventProfileFacade extends GenericEventElementFacade<EventProfileModel> {
@@ -86,8 +87,12 @@ export class EventProfileFacade extends GenericEventElementFacade<EventProfileMo
         return this.ngStore.select( (state: StateModel): ToastMessageOptions | undefined => state.eventProfile.eventProfile.error )
     }
 
-    public get assignableRoles (): Observable<ItemModel[]> {
-        return this.ngStore.select( (state: StateModel): ItemModel[] => state.eventProfile.roles )
+    public get searchedUsers (): Observable<SelectItem<UserDto>[]> {
+        return this.ngStore.select( (state: StateModel): SelectItem<UserDto>[] => state.eventProfile.searched )
+    }
+
+    public get assignableRoles (): Observable<SelectItem<string>[]> {
+        return this.ngStore.select( (state: StateModel): SelectItem<string>[] => state.eventProfile.roles )
     }
 
     public startPageLoader (): void {
@@ -137,6 +142,13 @@ export class EventProfileFacade extends GenericEventElementFacade<EventProfileMo
 
     public fetchElement (id: string, eventId: string | undefined = this.actualSelectedEventId): void {
         this.ngStore.dispatch( new FetchEventProfile( eventId, id ) )
+    }
+
+    public searchUsers (
+        searched: string | undefined = undefined,
+        eventId: string | undefined = this.actualSelectedEventId,
+    ): void {
+        this.ngStore.dispatch( new SearchUsers( eventId, searched ) )
     }
 
     public fetchAssignableRoles (eventId: string | undefined = this.actualSelectedEventId): void {

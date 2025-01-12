@@ -16,7 +16,8 @@ export enum ParticipantActionEnum {
     SELECT_PARTICIPANT_PAGE_ORDER = '[Local] Selecting participant page order',
 
     FETCH_PARTICIPANT = '[Backend] Fetching participant',
-    SEARCH_PARTICIPANT = '[Backend] Searching participant',
+    SEARCH_USERS = '[Backend] Searching users to link to participant',
+    SEARCH_GROUPS = '[Backend] Searching groups to add participant in it',
     CREATE_PARTICIPANT = '[Backend] Creating participant',
     UPDATE_PARTICIPANT = '[Backend] Updating participant',
     DISABLE_PARTICIPANT = '[Backend] Disabling participant',
@@ -86,12 +87,20 @@ export class FetchParticipant {
     public constructor (public readonly eventId: string | undefined, public readonly id: string) {}
 }
 
-export class SearchParticipant {
-    public static readonly type: ParticipantActionEnum = ParticipantActionEnum.SEARCH_PARTICIPANT
+export class SearchUsers {
+    public static readonly type: ParticipantActionEnum = ParticipantActionEnum.SEARCH_USERS
 
     public constructor (
         public readonly eventId: string | undefined,
-        public readonly onlyPresent: boolean,
+        public readonly searched: string | undefined,
+    ) {}
+}
+
+export class SearchGroups {
+    public static readonly type: ParticipantActionEnum = ParticipantActionEnum.SEARCH_GROUPS
+
+    public constructor (
+        public readonly eventId: string | undefined,
         public readonly searched: string | undefined,
     ) {}
 }

@@ -11,7 +11,7 @@ export abstract class GenericService {
     }
 
     private buildBaseUrl (baseUrl: string | undefined): string {
-        let builtUrl: string = AppConfig.config.backendUrl
+        let builtUrl: string = AppConfig.config.backend.url
 
         if (baseUrl) {
             builtUrl += baseUrl.startsWith( '/' ) ? baseUrl : `/${baseUrl}`

@@ -6,9 +6,12 @@
                 <label for='roles' appRequired>{{ 'profile.form.role' | translate }}</label>
                 <p-select
                         id='roles'
-                        styleClass='full-w'
+                        fluid
                         [options]='(assignableRoles$ | async) ?? []'
                         [formControl]='role'
+                        [placeholder]='"profile.example.role" | translate: { role: ((assignableRoles$ | async) ?? []) ?
+                        (assignableRoles$ | async)?.[0]?.label : "" }'
+                        (keydown.enter)='submit()'
                         optionLabel='label'
                         optionValue='value' />
                 <app-form-field-error [control]='role'
@@ -21,16 +24,27 @@
                                [readonlyInput]='true'
                                [showTime]='true'
                                [touchUI]='isMobile'
+                               [placeholder]='"profile.example.presence" | translate: {
+                                   begin: exampleBeginDate | date: ("datetime.format.date" | translate),
+                                   end: exampleEndDate | date: ("datetime.format.date" | translate)
+                               }'
+                               (keydown.enter)='submit()'
                                id='profiles-range'
                                inputId='profiles-range'
                                selectionMode='range'
-                               styleClass='full-w' />
+                               fluid />
                 <app-form-field-error [control]='range'
                                       [label]='"profile.form.date-range" | translate' />
             </div>
+            <p-divider />
             <div class='field'>
                 <label for='users' appRequired>{{ 'profile.form.users' | translate }}</label>
-                <app-select-users-field id='users' [multiple]='true' [formControl]='users' />
+                <app-select-elements-field [formControl]='users'
+                                           [suggestions]='(usersSuggestion$ | async) ?? []'
+                                           [searchLabel]='"profile.form.user-search" | translate'
+                                           [emptyPlaceholder]='"profile.form.no-user" | translate'
+                                           inputId='users'
+                                           (handleSearch)='handleSearch($event.query)' />
                 <app-form-field-error [control]='users'
                                       [label]='"profile.form.users" | translate' />
             </div>

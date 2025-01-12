@@ -15,6 +15,7 @@ import { Drawer } from 'primeng/drawer'
 import { RouterLink } from '@angular/router'
 import { TruncatePipe } from '../../shared/util-tool/pipe/truncate.pipe'
 import { Ripple } from 'primeng/ripple'
+import { StringUtils } from '../../shared/util-tool/util/string.util'
 
 @Component( {
     selector: 'app-side-bar',
@@ -79,26 +80,7 @@ export class SideBarComponent extends GenericComponent implements OnInit {
     }
 
     protected isRouteActive (route: AppRouteEnum): boolean {
-        const castedRoute: string = this.sanitizeRoute( route )
-        const currentUri: string = this.sanitizeRoute( location.pathname )
-        const isEventRoute: boolean = [
-            AppRouteEnum.EVENTS.toString(),
-            AppRouteEnum.EVENTS_CREATION.toString(),
-            AppRouteEnum.EVENTS_EDITION.toString(),
-        ].includes( castedRoute )
-
-        let isActive: boolean
-        switch (true) {
-            case currentUri.includes( AppRouteEnum.PREFERENCES ) && route == AppRouteEnum.USERS:
-            case currentUri.includes( AppRouteEnum.PROFILES ) && isEventRoute:
-            case currentUri.includes( AppRouteEnum.PARTICIPANTS ) && isEventRoute:
-            case currentUri.includes( AppRouteEnum.MOVEMENTS ) && isEventRoute:
-                isActive = false
-                break
-            default:
-                isActive = currentUri.includes( route )
-        }
-
+        const isActive: boolean = StringUtils.isRouteActive( route )
         if (isActive) {
             const params: object = {
                 menu: this.translateService.instant( `menu.${route.replace(
@@ -110,13 +92,6 @@ export class SideBarComponent extends GenericComponent implements OnInit {
         }
 
         return isActive
-    }
-
-    private sanitizeRoute (route: string): string {
-        return route.replace(
-            /events\/[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}/,
-            'events/:eventId',
-        )
     }
 
     protected signOut (): void {

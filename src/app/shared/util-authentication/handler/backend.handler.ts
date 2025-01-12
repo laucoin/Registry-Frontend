@@ -20,19 +20,11 @@ import { TokenModel } from '../model/token.model'
 import { SessionStorageUtils } from '../../util-tool/util/session-storage.util'
 import { AppConfig } from '../../../app.config'
 
-const BASE_URL: string = `/api/authentication`
-const PERMIT_ALL: string[] = [
-    `${BASE_URL}/login/uri`,
-    `${BASE_URL}/logout/uri`,
-    `${BASE_URL}/token`,
-    `${BASE_URL}/token/refresh`,
-]
-
 export const backendHandler: HttpInterceptorFn = (
     req: HttpRequest<unknown>,
     next: HttpHandlerFn,
 ): Observable<HttpEvent<unknown>> => {
-    if (!req.url.startsWith( AppConfig.config.backendUrl )) {
+    if (!req.url.startsWith( AppConfig.config.backend.url )) {
         return next( req )
     }
 
@@ -46,7 +38,7 @@ export const backendHandler: HttpInterceptorFn = (
         headers: buildHeaders( req.url, registryFacade.actualToken, req.headers ),
     } ) )
         .pipe( catchError( (error: HttpErrorResponse) => {
-            if (PERMIT_ALL.some( (permitAll: string): boolean => req.url.includes( permitAll ) ) && error.status === 401) {
+            if (AppConfig.config.backend.noAuthPaths.some( (permitAll: string): boolean => req.url.includes( permitAll ) ) && error.status === 401) {
                 SessionStorageUtils.set( REDIRECT_URI, location.pathname )
                 registryFacade.login()
             }
@@ -88,7 +80,7 @@ function formatUrlIfNecessary (currentUser: CurrentUserModel | undefined, url: s
 function buildHeaders (url: string, token: TokenModel | undefined, headers: HttpHeaders | undefined): HttpHeaders {
     let filledHeaders: HttpHeaders = headers ?? new HttpHeaders()
 
-    if (PERMIT_ALL.some( (permitAll: string): boolean => url.includes( permitAll ) )) {
+    if (AppConfig.config.backend.noAuthPaths.some( (permitAll: string): boolean => url.includes( permitAll ) )) {
         return filledHeaders
     }
 

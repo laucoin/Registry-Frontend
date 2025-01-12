@@ -2,7 +2,6 @@ import { HttpErrorResponse } from '@angular/common/http'
 import { Action, State, StateContext } from '@ngxs/store'
 import { catchError, finalize, map, Observable } from 'rxjs'
 import { EventProfileModel } from '../../../../shared/util-model/model/event-profile.model'
-import { ItemModel } from '../../../../shared/util-model/model/item.model'
 import { PageModel } from '../../../../shared/util-model/model/page.model'
 import { GenericEventElementState } from '../../../../shared/util-tool/state/generic-event-element.state'
 import { initialize } from '../../../../shared/util-tool/util/rx.util'
@@ -17,6 +16,7 @@ import {
     FetchEventProfilePage,
     InputEventProfilePageDateRange,
     InputEventProfilePageSearch,
+    SearchUsers,
     SelectEventProfilePageOrder,
     SelectEventProfilePageStatus,
     SelectEventProfilePageVisibility,
@@ -35,6 +35,9 @@ import { DatePipe } from '@angular/common'
 import { StateUtil } from '../../../../shared/util-tool/state/state.util'
 import { OrderEnum } from '../../../../shared/util-model/enumeration/order.enum'
 import { CreatedEventProfiles } from '../dto/created-event-profiles.dto'
+import { UserDto } from '../../../../shared/util-model/dto/user.dto'
+import { UserUtil } from '../../../../shared/util-tool/util/user.util'
+import { SelectItem } from 'primeng/api'
 
 const defaultEventProfileState: EventProfileStateModel = {
     eventProfiles: {
@@ -58,6 +61,7 @@ const defaultEventProfileState: EventProfileStateModel = {
         error: undefined,
     },
     roles: [],
+    searched: [],
 }
 
 @State<EventProfileStateModel>( {
@@ -241,6 +245,32 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
         } )
     }
 
+    @Action( SearchUsers )
+    public SearchUsers (
+        ctx: StateContext<EventProfileStateModel>,
+        payload: SearchUsers,
+    ): Observable<void> {
+        return this.service.searchUsers(
+            payload.eventId,
+            payload.searched,
+        ).pipe(
+            map( (users: UserDto[]): void => this.searchUsersComplete(
+                ctx,
+                users,
+            ) ),
+            catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
+        )
+    }
+
+    private searchUsersComplete (
+        ctx: StateContext<EventProfileStateModel>,
+        users: UserDto[],
+    ): void {
+        ctx.patchState( {
+            searched: users.map( (user: UserDto): SelectItem<UserDto> => UserUtil.toSelectItem( user ) ),
+        } )
+    }
+
     @Action( FetchAssignableEventProfileRoles )
     public fetchAssignableEventProfileRoles (
         ctx: StateContext<EventProfileStateModel>,
@@ -259,8 +289,9 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
         roles: string[],
     ): void {
         ctx.patchState( {
-            roles: roles.map( (role: string): ItemModel => ({
-                label: this.translateService.instant( `event.role.${role}` ), value: role,
+            roles: roles.map( (role: string): SelectItem<string> => ({
+                label: this.translateService.instant( `event.role.${role}` ),
+                value: role,
             }) ),
         } )
     }

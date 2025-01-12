@@ -8,6 +8,8 @@ import { ParticipantDto } from '../dto/participant.dto'
 import { ParticipantPageParamsModel } from '../model/participant-page-params.model'
 import { QueryUtil } from '../../../../shared/util-tool/util/query.util'
 import { HttpParams } from '@angular/common/http'
+import { UserDto } from '../../../../shared/util-model/dto/user.dto'
+import { GroupModel } from '../../../../shared/util-model/model/group.model'
 
 @Injectable( {
     providedIn: 'root',
@@ -32,20 +34,27 @@ export class ParticipantService extends GenericEventService {
         return this.http.get<ParticipantModel>( `${this.buildRequestBaseUrl( eventId )}/${id}` )
     }
 
-    public searchParticipant (
+    public searchUsers (
         eventId: string | undefined,
-        onlyPresent: boolean,
         searched: string | undefined,
-    ): Observable<ParticipantModel[]> {
-        let params: HttpParams = new HttpParams()
-            .set( 'onlyPresent', onlyPresent )
+    ): Observable<UserDto[]> {
+        return this.http.get<UserDto[]>(
+            `${this.buildRequestBaseUrl( eventId )}/search/users${searched ? '?' + new HttpParams().set(
+                'searched',
+                searched,
+            ).toString() : ''}`,
+        )
+    }
 
-        if (searched) {
-            params = params.set( 'searched', searched )
-        }
-
-        return this.http.get<ParticipantModel[]>(
-            `${this.buildRequestBaseUrl( eventId )}/search?${params.toString()}`,
+    public searchGroups (
+        eventId: string | undefined,
+        searched: string | undefined,
+    ): Observable<GroupModel[]> {
+        return this.http.get<GroupModel[]>(
+            `${this.buildRequestBaseUrl( eventId )}/search/groups${searched ? '?' + new HttpParams().set(
+                'searched',
+                searched,
+            ).toString() : ''}`,
         )
     }
 

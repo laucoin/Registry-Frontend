@@ -12,7 +12,6 @@ import { GenericComponent } from '../../util-tool/component/generic.component'
         TranslateModule,
     ],
     templateUrl: './form-field-error.component.html',
-    styleUrl: './form-field-error.component.scss',
 } )
 export class FormFieldErrorComponent extends GenericComponent {
     @Input( { required: true } ) public control!: AbstractControl

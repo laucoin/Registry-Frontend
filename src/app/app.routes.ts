@@ -15,6 +15,8 @@ import { EventProfileFacade } from './domains/event-profile/data/state/event-pro
 import { ParticipantFacade } from './domains/participant/data/state/participant.facade'
 import { MovementFacade } from './domains/movement/data/state/movement.facade'
 import { SignOutCallbackComponent } from './shell/sign-out-callback/sign-out-callback.component'
+import { GroupFacade } from './domains/group/data/state/group.facade'
+import { GroupState } from './domains/group/data/state/group.state'
 
 export const routes: Routes = [
     {
@@ -50,7 +52,7 @@ export const routes: Routes = [
         path: AppRouteEnum.MOVEMENTS,
         loadChildren: () => import('./domains/movement/movement.routes').then( (m: typeof import('./domains/movement/movement.routes')) => m.movementRoutes ),
         canActivate: [ authGuard, selectedProfileGuard ],
-        providers: [ MovementFacade, ParticipantFacade, importProvidersFrom( NgxsModule.forFeature( [ MovementState, ParticipantState ] ) ) ],
+        providers: [ MovementFacade, importProvidersFrom( NgxsModule.forFeature( [ MovementState ] ) ) ],
     },
     {
         path: AppRouteEnum.PROFILES,
@@ -63,6 +65,12 @@ export const routes: Routes = [
         loadChildren: () => import('./domains/participant/participant.routes').then( (m: typeof import('./domains/participant/participant.routes')) => m.participantRoutes ),
         canActivate: [ authGuard, selectedProfileGuard ],
         providers: [ ParticipantFacade, importProvidersFrom( NgxsModule.forFeature( [ ParticipantState ] ) ) ],
+    },
+    {
+        path: AppRouteEnum.GROUPS,
+        loadChildren: () => import('./domains/group/group.routes').then( (m: typeof import('./domains/group/group.routes')) => m.groupRoutes ),
+        canActivate: [ authGuard, selectedProfileGuard ],
+        providers: [ GroupFacade, ParticipantFacade, importProvidersFrom( NgxsModule.forFeature( [ GroupState, ParticipantState ] ) ) ],
     },
     {
         path: '**', pathMatch: 'full', redirectTo: AppRouteEnum.HOME,

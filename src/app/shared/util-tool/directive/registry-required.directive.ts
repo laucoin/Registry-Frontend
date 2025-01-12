@@ -5,7 +5,7 @@ import { TranslateService } from '@ngx-translate/core'
     selector: '[appRequired]',
     standalone: true,
 } )
-export class RegistryTemplateDirective implements OnInit {
+export class RegistryRequiredDirective implements OnInit {
     @Input( 'appRequired' ) public name: string | undefined
 
     public constructor (

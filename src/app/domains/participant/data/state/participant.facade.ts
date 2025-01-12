@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core'
-import { map, Observable } from 'rxjs'
+import { Observable } from 'rxjs'
 import { PageModel } from '../../../../shared/util-model/model/page.model'
 import { ParticipantModel } from '../../../../shared/util-model/model/participant.model'
 import { StateModel } from '../../../../shared/util-model/model/state.model'
@@ -15,7 +15,8 @@ import {
     InputParticipantPageDateRange,
     InputParticipantPageSearch,
     ResetParticipant,
-    SearchParticipant,
+    SearchGroups,
+    SearchUsers,
     SelectParticipantPageOrder,
     SelectParticipantPageVisibility,
     StartParticipantLoader,
@@ -24,11 +25,12 @@ import {
     StopParticipantsPageLoader,
     UpdateParticipant,
 } from './participant.action'
-import { ToastMessageOptions } from 'primeng/api'
+import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { FormUtil } from '../../../../shared/util-tool/util/form.util'
 import { OrderEnum } from '../../../../shared/util-model/enumeration/order.enum'
 import { ofActionSuccessful } from '@ngxs/store'
-import { ItemModel } from '../../../../shared/util-model/model/item.model'
+import { UserDto } from '../../../../shared/util-model/dto/user.dto'
+import { GroupModel } from '../../../../shared/util-model/model/group.model'
 
 @Injectable()
 export class ParticipantFacade extends GenericEventElementFacade<ParticipantModel> {
@@ -67,17 +69,12 @@ export class ParticipantFacade extends GenericEventElementFacade<ParticipantMode
         return this.ngStore.select( (state: StateModel): ToastMessageOptions | undefined => state.participant.participants.error )
     }
 
-    public get searchedParticipants (): Observable<ItemModel[]> {
-        return this.ngStore.select( (state: StateModel): ParticipantModel[] => state.participant.searched ).pipe(
-            map( (participants: ParticipantModel[]): ItemModel[] => participants.map( (participant: ParticipantModel): ItemModel => ({
-                label: `${participant.firstName} ${participant.lastName}`,
-                value: participant.id,
-            }) ) ),
-        )
+    public get searchedUsers (): Observable<SelectItem<UserDto>[]> {
+        return this.ngStore.select( (state: StateModel): SelectItem<UserDto>[] => state.participant.searchedUsers )
     }
 
-    public get actualSearchedParticipants (): ParticipantModel[] {
-        return this.ngStore.selectSnapshot( (state: StateModel): ParticipantModel[] => state.participant.searched )
+    public get searchedGroups (): Observable<SelectItem<GroupModel>[]> {
+        return this.ngStore.select( (state: StateModel): SelectItem<GroupModel>[] => state.participant.searchedGroups )
     }
 
     public get element (): Observable<ParticipantModel | undefined> {
@@ -137,12 +134,18 @@ export class ParticipantFacade extends GenericEventElementFacade<ParticipantMode
         this.ngStore.dispatch( new FetchParticipant( eventId, id ) )
     }
 
-    public searchParticipant (
-        onlyPresent: boolean,
+    public searchUsers (
         searched: string | undefined = undefined,
         eventId: string | undefined = this.actualSelectedEventId,
     ): void {
-        this.ngStore.dispatch( new SearchParticipant( eventId, onlyPresent, searched ) )
+        this.ngStore.dispatch( new SearchUsers( eventId, searched ) )
+    }
+
+    public searchGroups (
+        searched: string | undefined = undefined,
+        eventId: string | undefined = this.actualSelectedEventId,
+    ): void {
+        this.ngStore.dispatch( new SearchGroups( eventId, searched ) )
     }
 
     public resetElement (): void {
@@ -154,6 +157,10 @@ export class ParticipantFacade extends GenericEventElementFacade<ParticipantMode
         eventId: string | undefined = this.actualSelectedEventId,
     ): Observable<CreateParticipant> {
         this.ngStore.dispatch( new CreateParticipant( eventId, participant ) )
+        return this.actions$.pipe( ofActionSuccessful( CreateParticipant ) )
+    }
+
+    public handleElementCreation (): Observable<CreateParticipant> {
         return this.actions$.pipe( ofActionSuccessful( CreateParticipant ) )
     }
 

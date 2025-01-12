@@ -1,7 +1,7 @@
 import { Component, signal, WritableSignal } from '@angular/core'
 import { GenericFormComponent } from '../../../shared/util-tool/component/generic-form.component'
 import { AppRouteEnum } from '../../../app-route.enum'
-import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Params } from '@angular/router'
 import { GenericUtil } from '../../../shared/util-tool/util/generic.util'
 import { FormUtil } from '../../../shared/util-tool/util/form.util'
@@ -15,15 +15,20 @@ import { DividerModule } from 'primeng/divider'
 import { FormComponent } from '../../../shared/util-ui/form/form.component'
 import { FormFieldErrorComponent } from '../../../shared/util-ui/form-field-error/form-field-error.component'
 import { InputTextModule } from 'primeng/inputtext'
-import { TranslateModule } from '@ngx-translate/core'
+import { TranslateModule, TranslatePipe } from '@ngx-translate/core'
 import { MovementTypeEnum } from '../data/model/movement-type.enum'
 import { DropdownModule } from 'primeng/dropdown'
-import { MovementContentFieldComponent } from '../movement-content-field/movement-content-field.component'
-import { MovementContentModel } from '../data/model/movement-content.model'
 import { MovementContentDto } from '../data/dto/movement-content.dto'
-import { RegistryTemplateDirective } from '../../../shared/util-tool/directive/registry-required.directive'
 import { Select } from 'primeng/select'
 import { DatePicker } from 'primeng/datepicker'
+import { Observable, of } from 'rxjs'
+import { SelectItemGroup } from 'primeng/api'
+import { ParticipantModel } from '../../../shared/util-model/model/participant.model'
+import { GroupModel } from '../../../shared/util-model/model/group.model'
+import { RegistryRequiredDirective } from '../../../shared/util-tool/directive/registry-required.directive'
+import { MovementContentFieldComponent } from '../movement-content-field/movement-content-field.component'
+import { MovementContentModel } from '../data/model/movement-content.model'
+import { StringUtils } from '../../../shared/util-tool/util/string.util'
 
 @Component( {
     selector: 'app-movement-form',
@@ -32,7 +37,6 @@ import { DatePicker } from 'primeng/datepicker'
         AsyncPipe,
         Button,
         CardModule,
-        DatePipe,
         DividerModule,
         FormComponent,
         FormFieldErrorComponent,
@@ -40,13 +44,14 @@ import { DatePicker } from 'primeng/datepicker'
         ReactiveFormsModule,
         TranslateModule,
         DropdownModule,
-        MovementContentFieldComponent,
-        RegistryTemplateDirective,
         Select,
         DatePicker,
+        RegistryRequiredDirective,
+        MovementContentFieldComponent,
+        TranslatePipe,
+        DatePipe,
     ],
     templateUrl: './movement-form.component.html',
-    styleUrl: './movement-form.component.scss',
 } )
 export class MovementFormComponent extends GenericFormComponent {
     protected now: Date = new Date()
@@ -55,6 +60,8 @@ export class MovementFormComponent extends GenericFormComponent {
         { label: this.translateService.instant( 'movement.type.IN' ), value: MovementTypeEnum.IN },
         { label: this.translateService.instant( 'movement.type.OUT' ), value: MovementTypeEnum.OUT },
     ]
+
+    protected contentSuggestions$: Observable<SelectItemGroup<ParticipantModel | GroupModel>[]> = of( [] )
 
     protected readonly movement: WritableSignal<MovementModel | undefined> = signal( undefined )
 
@@ -68,19 +75,23 @@ export class MovementFormComponent extends GenericFormComponent {
         facade.resetElement()
 
         this.handleIdParam()
-
         this.handleLoadedMovement()
+
+        this.contentSuggestions$ = this.facade.searchedParticipantsAndGroups
     }
 
     protected initForm (): FormGroup {
         return this.formBuilder.group( {
             dateTime: this.formBuilder.control( new Date(), [ Validators.required ] ),
             type: this.formBuilder.control( undefined, [ Validators.required ] ),
-            content: this.formBuilder.array( [], [ Validators.required ] ),
+            content: this.formBuilder.control( [], [ Validators.required ] ),
         } )
     }
 
     private handleIdParam (): void {
+        if (!StringUtils.isRouteActive( AppRouteEnum.MOVEMENTS )) {
+            return
+        }
         this.subscriptions.add(
             this.route.params.subscribe( (params: Params): void => {
                 if (GenericUtil.isNull( params['id'] )) {
@@ -94,15 +105,15 @@ export class MovementFormComponent extends GenericFormComponent {
 
     private handleLoadedMovement (): void {
         this.subscriptions.add(
-            this.facade.element.subscribe( (movement: MovementModel | undefined): void => {
+            this.facade.element?.subscribe( (movement: MovementModel | undefined): void => {
                 this.movement.set( movement )
                 if (!movement) return
                 this.dateTime.setValue( new Date( movement?.dateTime ) )
                 this.type.setValue( movement.type )
-                movement.content.forEach( (content: MovementContentModel): void =>
-                    this.content.push( this.formBuilder.group( {
-                        participant: this.formBuilder.control( content.participant ),
-                    } ) ),
+                this.content.setValue(
+                    movement.content.map( (content: MovementContentModel): ParticipantModel | GroupModel =>
+                        content.participant,
+                    ),
                 )
                 FormUtil.markAllControlsAsDirty( this.form )
             } ),
@@ -126,9 +137,32 @@ export class MovementFormComponent extends GenericFormComponent {
     }
 
     private buildContent (): MovementContentDto[] {
-        return (this.content.controls as FormGroup[] ?? []).map( (group: FormGroup): MovementContentDto => ({
-            participantId: group.get( 'participant' )?.value?.id,
-        }) )
+        const participantsFromGroup: MovementContentDto[] = []
+
+        this.content.value.forEach( (item: GroupModel | ParticipantModel): void => {
+            if (this.isGroup( item )) {
+                (item as GroupModel).members.forEach( (member: ParticipantModel): void => {
+                    participantsFromGroup.push( {
+                        participantId: member.id,
+                    } )
+                } )
+            } else {
+                participantsFromGroup.push( { participantId: item.id } )
+            }
+        } )
+
+        return participantsFromGroup
+    }
+
+    private isGroup (element: ParticipantModel | GroupModel): boolean {
+        return 'name' in element
+    }
+
+    protected handleSearch (searched: string | undefined): void {
+        this.facade.searchParticipantsAndGroups(
+            searched,
+            this.contextEventId(),
+        )
     }
 
     protected get dateTime (): FormControl {
@@ -139,7 +173,7 @@ export class MovementFormComponent extends GenericFormComponent {
         return this.form.get( 'type' ) as FormControl
     }
 
-    protected get content (): FormArray {
-        return this.form.get( 'content' ) as FormArray
+    protected get content (): FormControl {
+        return this.form.get( 'content' ) as FormControl
     }
 }

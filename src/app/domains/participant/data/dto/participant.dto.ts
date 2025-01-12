@@ -3,6 +3,7 @@ export interface ParticipantDto {
     lastName: string
     birthday: string
     userId: string
+    groupIds: string[]
     begin: Date | undefined
     end: Date | undefined
 }

@@ -16,7 +16,7 @@
                 <label for='type'>{{ 'movement.type.filter-sort' | translate }}</label>
                 <p-select
                         id='type'
-                        styleClass='full-w'
+                        fluid
                         [options]='typeMetadata'
                         (keydown.enter)='loadPage(pageEvent, contextEventId())'
                         [formControl]='type'
@@ -33,7 +33,7 @@
                                id='range'
                                inputId='range'
                                selectionMode='range'
-                               styleClass='full-w' />
+                               fluid />
             </div>
         </div>
         <div class='d-flex flex-wrap justify-content-center pt-2'>

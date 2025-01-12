@@ -1,0 +1,133 @@
+@if (group()) {
+    <div class='mb-2'>
+        <app-group-element [element]='group()!' [layout]='(isTinyScreen() || isMobile) ? "grid" : "list"' />
+    </div>
+}
+
+<app-list (updateRequired)='loadPage($event, contextEventId())'
+          [elementPage$]='elementPage$!'
+          [error$]='error$'
+          [loading$]='loading$'>
+    <ng-template appTemplate='search' [formGroup]='form' let-pageEvent>
+        <div class='row'>
+            <div class='col-12 col-sm-6 col-md-12 col-lg-6 search-field'>
+                <label for='search'>{{ 'filter-sort.search' | translate }}</label>
+                <input id='search'
+                       type='text'
+                       pInputText
+                       (keydown.enter)='loadPage(pageEvent, contextEventId())'
+                       [formControl]='searched' />
+            </div>
+            <div class='col-12 col-sm-6 col-md-12 col-lg-6 search-field'>
+                <label for='range'>{{ 'filter-sort.date-range' | translate }}</label>
+                <p-date-picker [formControl]='range'
+                               [showButtonBar]='true'
+                               [readonlyInput]='true'
+                               [showTime]='true'
+                               [touchUI]='isMobile'
+                               id='range'
+                               inputId='range'
+                               selectionMode='range'
+                               fluid />
+            </div>
+        </div>
+        <div class='d-flex flex-wrap justify-content-center pt-2'>
+            <div class='pe-1 flex-grow-1'>
+                <p-toggleButton
+                        [formControl]='onlyVisible'
+                        (keydown.enter)='loadPage(pageEvent, contextEventId())'
+                        [onLabel]='"filter-sort.only-visible.false" | translate'
+                        [offLabel]='"filter-sort.only-visible.true" | translate'
+                        onIcon='pi pi-eye-slash'
+                        offIcon='pi pi-eye'
+                        [ariaLabel]='"filter-sort.only-visible.title" | translate' />
+                <p-toggleButton
+                        class='ms-2'
+                        [formControl]='order'
+                        (keydown.enter)='loadPage(pageEvent, contextEventId())'
+                        [onLabel]='"filter-sort.order.DESC" | translate'
+                        [offLabel]='"filter-sort.order.ASC" | translate'
+                        onIcon='pi pi-sort-alpha-down-alt'
+                        offIcon='pi pi-sort-alpha-down'
+                        [ariaLabel]='"filter-sort.order.title" | translate' />
+            </div>
+            <div class='ps-1'>
+                <p-button (click)='loadPage(pageEvent, contextEventId())'
+                          [label]='"filter-sort.apply" | translate'
+                          [outlined]='true'
+                          [rounded]='true'
+                          icon='pi pi-search'
+                          [loading]='(loading$ | async) || (silentLoading$ | async)' />
+            </div>
+        </div>
+    </ng-template>
+    <ng-template appTemplate='element' let-layout='layout' let-participant>
+        <app-participant-element [element]='participant' [layout]='layout' [groupIdToRemove]='group()?.id' />
+    </ng-template>
+    <ng-template appTemplate='creation'>
+        @if (hasEventAuthority(currentUser$ | async, contextEventId(), EventAuthority.REGISTRY_EVENT_GROUP_U)) {
+            <p-button *ngIf='contextEvent$ | async; let event'
+                      (click)='initAddMembersForm()'
+                      class='m-1'
+                      severity='info'
+                      [rounded]='true'
+                      [outlined]='true'
+                      [label]='isMobile ? "" : "group.action.add-members" | translate'
+                      icon='pi pi-user-plus' />
+        }
+        @if (hasEventAuthority(currentUser$ | async, contextEventId(), EventAuthority.REGISTRY_EVENT_PARTICIPANT_C)
+             && hasEventAuthority(currentUser$ | async, contextEventId(), EventAuthority.REGISTRY_EVENT_GROUP_U)) {
+            <p-button *ngIf='contextEvent$ | async; let event'
+                      (click)='initCreateMemberForm()'
+                      class='m-1'
+                      severity='success'
+                      [rounded]='true'
+                      [outlined]='true'
+                      [label]='isMobile ? "" : "group.action.create-member" | translate'
+                      icon='pi pi-plus' />
+        }
+    </ng-template>
+    <ng-template appTemplate='empty'>
+        <app-message [message]='message' />
+    </ng-template>
+</app-list>
+
+<app-layer [(visible)]='addMembersFormLayerOpened'
+           [header]='"group.action.add-members" | translate'>
+    @if (addMembersParticipant) {
+        <form>
+            <div class='field'>
+                <label for='participants' appRequired>{{ 'group.form.participants' | translate }}</label>
+                <app-select-elements-field [formControl]='addMembersParticipant'
+                                           [suggestions]='(participantsSuggestion$ | async) ?? []'
+                                           [searchLabel]='"group.form.participant-search" | translate'
+                                           [emptyPlaceholder]='"group.form.no-participant" | translate'
+                                           inputId='participants'
+                                           (handleSearch)='handleSearch($event.query)' />
+                <app-form-field-error [control]='addMembersParticipant'
+                                      [label]='"group.form.participants" | translate' />
+            </div>
+
+            <div class='d-flex mt-2 justify-content-center'>
+                <p-button
+                        (click)='addMembersFormLayerOpened = false'
+                        [label]='"cancel" | translate'
+                        [outlined]='true'
+                        [rounded]='true' />
+                <p-button
+                        class='ms-2'
+                        (click)='addMembers()'
+                        [label]='"add" | translate'
+                        [rounded]='true'
+                        icon='pi pi-user-plus'
+                        severity='success' />
+            </div>
+        </form>
+    }
+</app-layer>
+
+<app-layer [(visible)]='createMemberFormLayerOpened'
+           [header]='"group.action.create-member" | translate'>
+    <app-participant-form [showTitle]='false' [defaultGroup]='group()' [redirect]='false'
+                          (handleSubmit)='handleParticipantCreation()' />
+</app-layer>

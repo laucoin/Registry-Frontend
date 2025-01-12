@@ -23,7 +23,6 @@ import { DatePicker } from 'primeng/datepicker'
     selector: 'app-participants-list',
     standalone: true,
     templateUrl: './participants-list.component.html',
-    styleUrl: './participants-list.component.scss',
     imports: [
         ListComponent,
         RegistryTemplateDirective,
