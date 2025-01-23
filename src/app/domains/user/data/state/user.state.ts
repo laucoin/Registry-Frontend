@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import { Action, State, StateContext } from '@ngxs/store'
-import { catchError, finalize, map, Observable } from 'rxjs'
+import { catchError, finalize, map, Observable, of } from 'rxjs'
 import { PageModel } from '../../../../shared/util-model/model/page.model'
 import { UserModel } from '../../../../shared/util-model/model/user.model'
 import { GenericElementState } from '../../../../shared/util-tool/state/generic-element.state'
@@ -40,10 +40,10 @@ const defaultUserState: UserStateModel = {
     user: {
         element: undefined,
         loading: false,
-        error: undefined,
     },
-    searched: [],
-    assignableRoles: [],
+    _metadata: {
+        assignableRoles: [],
+    },
 }
 
 @State<UserStateModel>( {
@@ -134,7 +134,6 @@ export class UserState extends GenericElementState<UserStateModel> {
             initialize( (): void => this.facade.startElementLoader() ),
             finalize( (): void => this.facade.stopElementLoader() ),
             map( (user: UserModel): void => this.fetchUserComplete( ctx, user ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
         )
     }
 
@@ -152,19 +151,19 @@ export class UserState extends GenericElementState<UserStateModel> {
         return this.service.getAssignableUserRoles().pipe(
             initialize( (): void => this.facade.startElementLoader() ),
             finalize( (): void => this.facade.stopElementLoader() ),
-            map( (roles: string[]): void => this.fetchAssignableUserRolesComplete( ctx, roles ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
+            map( (roles: SelectItem<string>[]): void => this.fetchAssignableUserRolesComplete( ctx, roles ) ),
         )
     }
 
     private fetchAssignableUserRolesComplete (
         ctx: StateContext<UserStateModel>,
-        roles: string[],
+        roles: SelectItem<string>[],
     ): void {
         ctx.patchState( {
-            assignableRoles: roles.map( (role: string): SelectItem<string> => ({
-                label: `user.role.${role}`, value: role,
-            }) ),
+            _metadata: {
+                ...ctx.getState()._metadata,
+                assignableRoles: roles,
+            },
         } )
     }
 
@@ -174,7 +173,6 @@ export class UserState extends GenericElementState<UserStateModel> {
             initialize( (): void => this.facade.startElementLoader() ),
             finalize( (): void => this.facade.stopElementLoader() ),
             map( (user: UserModel): void => this.updateUserRoleComplete( ctx, user ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
         )
     }
 
@@ -195,7 +193,6 @@ export class UserState extends GenericElementState<UserStateModel> {
             initialize( (): void => this.facade.startElementLoader() ),
             finalize( (): void => this.facade.stopElementLoader() ),
             map( (user: UserModel): void => this.blockUserComplete( ctx, user ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
         )
     }
 
@@ -216,7 +213,6 @@ export class UserState extends GenericElementState<UserStateModel> {
             initialize( (): void => this.facade.startElementLoader() ),
             finalize( (): void => this.facade.stopElementLoader() ),
             map( (user: UserModel): void => this.unblockUserComplete( ctx, user ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
         )
     }
 
@@ -237,7 +233,6 @@ export class UserState extends GenericElementState<UserStateModel> {
             initialize( (): void => this.facade.startElementLoader() ),
             finalize( (): void => this.facade.stopElementLoader() ),
             map( (): void => this.impersonateUserComplete( ctx, payload.user ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
         )
     }
 
@@ -258,7 +253,6 @@ export class UserState extends GenericElementState<UserStateModel> {
             initialize( (): void => this.facade.startElementLoader() ),
             finalize( (): void => this.facade.stopElementLoader() ),
             map( (): void => this.deleteUserComplete( ctx, payload.user ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
         )
     }
 
@@ -286,24 +280,14 @@ export class UserState extends GenericElementState<UserStateModel> {
     }
 
     protected pageError (ctx: StateContext<UserStateModel>, error: HttpErrorResponse): Observable<void> {
-        if (error.status == 503) {
-            this.registryFacade.setGlobalError( error )
+        if (error.status === 503) {
+            throw error
         } else {
             ctx.patchState( {
-                users: this.buildErrorMessageAndNotify( ctx.getState().users, error ),
+                users: this.buildErrorMessage( ctx.getState().users, error ),
             } )
         }
-        throw error.error
-    }
 
-    protected elementError (ctx: StateContext<UserStateModel>, error: HttpErrorResponse): Observable<void> {
-        if (error.status == 503) {
-            this.registryFacade.setGlobalError( error )
-        } else {
-            ctx.patchState( {
-                user: this.buildErrorMessageAndNotify( ctx.getState().user, error ),
-            } )
-        }
-        throw error.error
+        throw of()
     }
 }

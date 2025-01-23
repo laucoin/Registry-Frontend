@@ -31,6 +31,7 @@ import {
 } from '../../../shared/util-ui/select-elements-field/select-elements-field.component'
 import { GroupUtil } from '../../../shared/util-tool/util/group.util'
 import { StringUtils } from '../../../shared/util-tool/util/string.util'
+import { UserModel } from '../../../shared/util-model/model/user.model'
 
 @Component( {
     selector: 'app-participant-form',
@@ -71,7 +72,6 @@ export class ParticipantFormComponent extends GenericFormComponent implements On
         super(
             AppRouteEnum.PARTICIPANTS,
             facade.elementLoading,
-            facade.elementError,
         )
 
         facade.resetElement()
@@ -134,8 +134,13 @@ export class ParticipantFormComponent extends GenericFormComponent implements On
                 this.previousLastName.set( participant.lastName )
                 this.lastName.setValue( participant?.lastName )
                 this.birthday.setValue( participant?.birthday ? new Date( participant?.birthday ) : undefined )
-                this.user.setValue( participant?.user?.id ? UserUtil.toSelectItem( participant?.user ) : undefined )
-                this.manageFormFieldDependingUser( participant?.user )
+                if (participant?.user?.id) {
+                    const user: SelectItem<UserModel> = UserUtil.toSelectItem( participant.user )
+                    this.selectedUser.set( user )
+                    this.user.setValue( user )
+                    this.manageFormFieldDependingUser( participant?.user )
+                }
+                this.groups.setValue( participant?.groups.map( GroupUtil.toSelectItem ) )
                 this.presence.setValue( FormUtil.buildDateRange( participant?.begin, participant?.end ) )
                 FormUtil.markAllControlsAsDirty( this.form )
             } ),
@@ -147,7 +152,7 @@ export class ParticipantFormComponent extends GenericFormComponent implements On
             firstName: this.firstName.value,
             lastName: this.lastName.value,
             birthday: DateUtil.getDate( this.birthday.value ),
-            userId: this.user.value?.value?.id,
+            userId: this.selectedUser()?.value.id,
             groupIds: this.buildContent(),
             begin: this.presence.value?.[0],
             end: this.presence.value?.[1],

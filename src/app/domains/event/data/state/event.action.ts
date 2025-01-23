@@ -15,6 +15,8 @@ export enum EventActionEnum {
     SELECT_EVENT_PAGE_VISIBILITY = '[Local] Selecting user\'s event page visibility',
     SELECT_EVENT_PAGE_ORDER = '[Local] Selecting user\'s event page order',
 
+    FETCH_EVENT_OPTIONS = '[Backend] Fetching event options',
+
     FETCH_EVENT = '[Backend] Fetching event',
     CREATE_EVENT = '[Backend] Creating event',
     UPDATE_EVENT = '[Backend] Updating event',
@@ -76,6 +78,10 @@ export class SelectEventPageOrder {
     public static readonly type: EventActionEnum = EventActionEnum.SELECT_EVENT_PAGE_ORDER
 
     public constructor (public readonly order: OrderEnum) {}
+}
+
+export class FetchEventOptions {
+    public static readonly type: EventActionEnum = EventActionEnum.FETCH_EVENT_OPTIONS
 }
 
 export class FetchEvent {

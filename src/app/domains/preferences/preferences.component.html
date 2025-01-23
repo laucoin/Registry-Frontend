@@ -1,6 +1,6 @@
 @if (currentUser$ | async; as currentUser) {
     <app-element-card [element]='currentUser'
-                      [layout]='(isTinyScreen() || isMobile) ? "grid" : "list"'
+                      [layout]='(isTinyScreen() || isMobile()) ? "grid" : "list"'
                       icon='pi pi-user'>
         <div class='current-user'>
             <div class='name-container'>

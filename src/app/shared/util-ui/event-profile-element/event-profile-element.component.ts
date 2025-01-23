@@ -8,7 +8,6 @@ import { ElementCardComponent } from '../element-card/element-card.component'
 import { TranslateModule } from '@ngx-translate/core'
 import { DateIsPastPipe } from '../../util-tool/pipe/date-is-past.pipe'
 import { BadgeModule } from 'primeng/badge'
-import { ProfileStatusEnum } from '../../util-model/enumeration/profile-status.enum'
 import { AppConfig } from '../../../app.config'
 import { ActionModel } from '../../util-model/model/action.model'
 import { Button } from 'primeng/button'
@@ -45,7 +44,6 @@ export class EventProfileElementComponent extends GenericElementComponent<EventP
     @Input( { required: true } ) public view!: 'user' | 'event'
 
     protected readonly breakpoint: object = breakPoint
-    protected readonly ProfileStatusEnum: typeof ProfileStatusEnum = ProfileStatusEnum
 
     public constructor (
         private readonly confirmationService: ConfirmationService,
@@ -83,7 +81,7 @@ export class EventProfileElementComponent extends GenericElementComponent<EventP
 
         switch (action.id) {
             case EventProfileActionEnum.SELECT_EVENT_PROFILE:
-                return !isCurrentUserProfile
+                return !isCurrentUserProfile || this.registryFacade.actualCurrentUser?.preferences?.selectedProfile?.id === this.element.id
             case EventProfileActionEnum.UPDATE_EVENT_PROFILE:
                 return isCurrentUserProfile || !isActionFeasible
             case EventProfileActionEnum.BLOCK_EVENT_PROFILE:
@@ -123,34 +121,34 @@ export class EventProfileElementComponent extends GenericElementComponent<EventP
         }
     }
 
-    protected severityFromStatus (status: ProfileStatusEnum): 'success' | 'danger' | 'help' {
+    protected severityFromStatus (status: string): 'success' | 'danger' | 'help' {
         switch (status) {
-            case ProfileStatusEnum.INVITED:
-                return 'help'
-            case ProfileStatusEnum.ACCEPTED:
+            case 'ACCEPTED':
                 return 'success'
-            case ProfileStatusEnum.REJECTED:
+            case 'REJECTED':
                 return 'danger'
+            default:
+                return 'help'
         }
     }
 
-    protected confirmManageAcceptance (status: ProfileStatusEnum): void {
+    protected confirmManageAcceptance (status: string): void {
         this.confirmationService.confirm( {
             header: this.translateService.instant( `profile.action.confirmation.title.${status}` ),
             message: this.translateService.instant(
                 `profile.action.confirmation.message.${status}`,
                 { element: this.element },
             ),
-            icon: status === ProfileStatusEnum.ACCEPTED ? 'pi pi-info-circle' : 'pi pi-exclamation-triangle',
+            icon: status === 'ACCEPTED' ? 'pi pi-info-circle' : 'pi pi-exclamation-triangle',
             acceptLabel: this.translateService.instant( 'confirmation.confirm' ),
             rejectLabel: this.translateService.instant( 'confirmation.cancel' ),
-            acceptButtonStyleClass: `p-button p-button-rounded p-button-outlined ${status === ProfileStatusEnum.ACCEPTED ? 'p-button-success' : 'p-button-danger'}`,
+            acceptButtonStyleClass: `p-button p-button-rounded p-button-outlined ${status === 'ACCEPTED' ? 'p-button-success' : 'p-button-danger'}`,
             rejectButtonStyleClass: 'p-button p-button-rounded p-button-text p-button-secondary',
-            accept: (): void => this.manageAcceptance( status ),
+            accept: (): void => this.manageAcceptance( status === 'ACCEPTED' ),
         } )
     }
 
-    protected manageAcceptance (status: ProfileStatusEnum): void {
-        this.registryFacade.manageEventInvitationAcceptance( this.element.id, status )
+    protected manageAcceptance (accepted: boolean): void {
+        this.registryFacade.manageEventInvitationAcceptance( this.element.id, accepted )
     }
 }

@@ -19,6 +19,8 @@ import {
 import { TokenModel } from '../model/token.model'
 import { SessionStorageUtils } from '../../util-tool/util/session-storage.util'
 import { AppConfig } from '../../../app.config'
+import { ErrorModel } from '../../util-model/model/error.model'
+import { TranslateService } from '@ngx-translate/core'
 
 export const backendHandler: HttpInterceptorFn = (
     req: HttpRequest<unknown>,
@@ -29,6 +31,7 @@ export const backendHandler: HttpInterceptorFn = (
     }
 
     const registryFacade: RegistryFacade = inject( RegistryFacade )
+    const translateService: TranslateService = inject( TranslateService )
 
     const currentUser: CurrentUserModel | undefined = registryFacade.actualCurrentUser
     const url: string = formatUrlIfNecessary( currentUser, req.url )
@@ -45,7 +48,14 @@ export const backendHandler: HttpInterceptorFn = (
 
             switch (error.status) {
                 case 0:
-                    return throwError( (): HttpErrorResponse => new HttpErrorResponse( { status: 503 } ) )
+                case 502:
+                case 503:
+                    return throwError( (): ErrorModel => ({
+                        status: 503,
+                        name: 'Service Unavailable',
+                        title: translateService.instant( 'error.title.503' ),
+                        message: translateService.instant( 'error.message.503' ),
+                    }) )
                 case 401:
                     return registryFacade.refreshToken().pipe(
                         map( (): TokenModel => registryFacade.actualToken! ),
@@ -55,7 +65,7 @@ export const backendHandler: HttpInterceptorFn = (
                         } ),
                     )
                 default:
-                    return throwError( (): HttpErrorResponse => error )
+                    return throwError( (): ErrorModel => new ErrorModel( error ) )
             }
         } ) )
 }

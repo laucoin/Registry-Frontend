@@ -12,6 +12,7 @@ import {
     CreateSupportEventProfile,
     DeleteEventProfile,
     FetchAssignableEventProfileRoles,
+    FetchAssignableEventProfileStatus,
     FetchEventProfile,
     FetchEventProfilePage,
     InputEventProfilePageDateRange,
@@ -30,7 +31,6 @@ import {
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { FormUtil } from '../../../../shared/util-tool/util/form.util'
 import { OrderEnum } from '../../../../shared/util-model/enumeration/order.enum'
-import { ProfileStatusEnum } from '../../../../shared/util-model/enumeration/profile-status.enum'
 import { ofActionSuccessful } from '@ngxs/store'
 import { UserDto } from '../../../../shared/util-model/dto/user.dto'
 
@@ -51,8 +51,8 @@ export class EventProfileFacade extends GenericEventElementFacade<EventProfileMo
         ) )
     }
 
-    public get actualPageStatus (): ProfileStatusEnum | undefined {
-        return this.ngStore.selectSnapshot( (state: StateModel): ProfileStatusEnum | undefined => state.eventProfile.eventProfiles.params.status )
+    public get actualPageStatus (): string | undefined {
+        return this.ngStore.selectSnapshot( (state: StateModel): string | undefined => state.eventProfile.eventProfiles.params.status )
     }
 
     public get actualPageOnlyVisible (): boolean {
@@ -83,16 +83,16 @@ export class EventProfileFacade extends GenericEventElementFacade<EventProfileMo
         return this.ngStore.select( (state: StateModel): boolean => state.eventProfile.eventProfile.loading )
     }
 
-    public get elementError (): Observable<ToastMessageOptions | undefined> {
-        return this.ngStore.select( (state: StateModel): ToastMessageOptions | undefined => state.eventProfile.eventProfile.error )
-    }
-
     public get searchedUsers (): Observable<SelectItem<UserDto>[]> {
-        return this.ngStore.select( (state: StateModel): SelectItem<UserDto>[] => state.eventProfile.searched )
+        return this.ngStore.select( (state: StateModel): SelectItem<UserDto>[] => state.eventProfile._metadata.searched )
     }
 
     public get assignableRoles (): Observable<SelectItem<string>[]> {
-        return this.ngStore.select( (state: StateModel): SelectItem<string>[] => state.eventProfile.roles )
+        return this.ngStore.select( (state: StateModel): SelectItem<string>[] => state.eventProfile._metadata.roles )
+    }
+
+    public get availableStatus (): Observable<SelectItem<string>[]> {
+        return this.ngStore.select( (state: StateModel): SelectItem<string>[] => state.eventProfile._metadata.status )
     }
 
     public startPageLoader (): void {
@@ -120,7 +120,7 @@ export class EventProfileFacade extends GenericEventElementFacade<EventProfileMo
         this.ngStore.dispatch( new InputEventProfilePageDateRange( range?.[0], range?.[1] ) )
     }
 
-    public selectPageStatus (status: ProfileStatusEnum | undefined): void {
+    public selectPageStatus (status: string | undefined): void {
         this.ngStore.dispatch( new SelectEventProfilePageStatus( status ) )
     }
 
@@ -153,6 +153,10 @@ export class EventProfileFacade extends GenericEventElementFacade<EventProfileMo
 
     public fetchAssignableRoles (eventId: string | undefined = this.actualSelectedEventId): void {
         this.ngStore.dispatch( new FetchAssignableEventProfileRoles( eventId ) )
+    }
+
+    public fetchAvailableStatus (eventId: string | undefined = this.actualSelectedEventId): void {
+        this.ngStore.dispatch( new FetchAssignableEventProfileStatus( eventId ) )
     }
 
     public createElements (

@@ -3,9 +3,9 @@
                   (action)='handleAction($event)'
                   [layout]='layout'
                   icon='pi pi-calendar'>
-    <div [class.flex-lg-row]='layout === "list"'
-         class='d-flex flex-column justify-content-between align-items-center'>
-        <div class='info d-flex flex-column justify-content-center' [class.align-items-center]='layout === "grid"'>
+    <div [class.flex-lg-row]='layout === "list"' [class.flex-column]='layout === "grid"'
+         class='d-flex flex-wrap justify-content-between align-items-center'>
+        <div class='info d-flex flex-column justify-content-center p-1' [class.align-items-center]='layout === "grid"'>
             <div>
                 <span [class.strikethrough]='element.end | isPast' class='event-name'>
                     {{ element.name }}
@@ -41,11 +41,11 @@
                 </div>
             }
         </div>
-        <div class='options d-flex flex-wrap' [class.justify-content-center]='layout === "grid"'>
+        <div class='options d-flex flex-wrap p-1' [class.justify-content-center]='layout === "grid"'>
             <p-chip *ngFor='let option of element.options; let i = index'
                     [class.ms-1]='i > 0'
-                    [icon]='option | optionIcon'
-                    [label]='("event.option." + option) | translate' />
+                    [icon]='option.value | optionIcon'
+                    [label]='option.label' />
         </div>
     </div>
 </app-element-card>

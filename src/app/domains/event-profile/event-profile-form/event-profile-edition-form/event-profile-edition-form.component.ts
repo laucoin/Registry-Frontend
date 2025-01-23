@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core'
-import { combineLatest, Observable } from 'rxjs'
+import { Observable } from 'rxjs'
 import { EventProfileFacade } from '../../data/state/event-profile.facade'
 import { AppRouteEnum } from '../../../../app-route.enum'
 import { FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
@@ -20,7 +20,6 @@ import { RegistryRequiredDirective } from '../../../../shared/util-tool/directiv
 import { Button } from 'primeng/button'
 import { Select } from 'primeng/select'
 import { DatePicker } from 'primeng/datepicker'
-import { SelectItem } from 'primeng/api'
 import { StringUtils } from '../../../../shared/util-tool/util/string.util'
 
 @Component( {
@@ -80,11 +79,10 @@ export class EventProfileEditionFormComponent extends GenericEventProfileFormCom
 
     private handleLoadedProfile (): void {
         this.subscriptions.add(
-            combineLatest( [ this.assignableRoles$, this.profile$ ] ).subscribe(
-                ([ roles, profile ]: [ SelectItem<string>[], EventProfileModel | undefined ]): void => {
-                    if (!roles || !profile) return
-                    this.role.setValue( profile.role )
-                    this.range.setValue( FormUtil.buildDateRange( profile.startAccess, profile.endAccess ) )
+            this.profile$.subscribe(
+                (profile: EventProfileModel | undefined): void => {
+                    this.role.setValue( profile?.role.value )
+                    this.range.setValue( FormUtil.buildDateRange( profile?.startAccess, profile?.endAccess ) )
                     FormUtil.markAllControlsAsDirty( this.form )
                 } ),
         )

@@ -8,8 +8,8 @@ import { ParticipantDto } from '../dto/participant.dto'
 import { ParticipantPageParamsModel } from '../model/participant-page-params.model'
 import { QueryUtil } from '../../../../shared/util-tool/util/query.util'
 import { HttpParams } from '@angular/common/http'
-import { UserDto } from '../../../../shared/util-model/dto/user.dto'
 import { GroupModel } from '../../../../shared/util-model/model/group.model'
+import { UserModel } from '../../../../shared/util-model/model/user.model'
 
 @Injectable( {
     providedIn: 'root',
@@ -37,8 +37,8 @@ export class ParticipantService extends GenericEventService {
     public searchUsers (
         eventId: string | undefined,
         searched: string | undefined,
-    ): Observable<UserDto[]> {
-        return this.http.get<UserDto[]>(
+    ): Observable<UserModel[]> {
+        return this.http.get<UserModel[]>(
             `${this.buildRequestBaseUrl( eventId )}/search/users${searched ? '?' + new HttpParams().set(
                 'searched',
                 searched,

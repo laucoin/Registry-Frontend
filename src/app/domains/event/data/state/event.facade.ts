@@ -11,6 +11,7 @@ import {
     DisableEvent,
     EnableEvent,
     FetchEvent,
+    FetchEventOptions,
     FetchEventPage,
     InputEventPageDateRange,
     InputEventPageSearch,
@@ -26,6 +27,7 @@ import {
 import { ToastMessageOptions } from 'primeng/api'
 import { ofActionSuccessful } from '@ngxs/store'
 import { OrderEnum } from '../../../../shared/util-model/enumeration/order.enum'
+import { EventOptionModel } from '../model/event-option.model'
 
 @Injectable()
 export class EventFacade extends GenericElementFacade<EventModel> {
@@ -71,16 +73,16 @@ export class EventFacade extends GenericElementFacade<EventModel> {
         return this.ngStore.select( (state: StateModel): ToastMessageOptions | undefined => state.event.events.error )
     }
 
+    public get eventOptions (): Observable<EventOptionModel[]> {
+        return this.ngStore.select( (state: StateModel): EventOptionModel[] => state.event._metadata.options )
+    }
+
     public get element (): Observable<EventModel | undefined> {
         return this.ngStore.select( (state: StateModel): EventModel | undefined => state.event.event.element )
     }
 
     public get elementLoading (): Observable<boolean> {
         return this.ngStore.select( (state: StateModel): boolean => state.event.event.loading )
-    }
-
-    public get elementError (): Observable<ToastMessageOptions | undefined> {
-        return this.ngStore.select( (state: StateModel): ToastMessageOptions | undefined => state.event.event.error )
     }
 
     public startPageLoader (): void {
@@ -121,6 +123,10 @@ export class EventFacade extends GenericElementFacade<EventModel> {
 
     public stopElementLoader (): void {
         this.ngStore.dispatch( StopEventLoader )
+    }
+
+    public fetchEventOptions (): void {
+        this.ngStore.dispatch( FetchEventOptions )
     }
 
     public fetchElement (id: string): void {

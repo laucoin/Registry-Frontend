@@ -4,7 +4,7 @@ import { EventDto } from '../../data/dto/event.dto'
 import { TranslateModule } from '@ngx-translate/core'
 import { ReactiveFormsModule } from '@angular/forms'
 import { FormFieldErrorComponent } from '../../../../shared/util-ui/form-field-error/form-field-error.component'
-import { AsyncPipe, DatePipe } from '@angular/common'
+import { AsyncPipe, DatePipe, NgForOf, NgIf } from '@angular/common'
 import { InputTextModule } from 'primeng/inputtext'
 import { DividerModule } from 'primeng/divider'
 import { Params } from '@angular/router'
@@ -12,16 +12,16 @@ import { AppRouteEnum } from '../../../../app-route.enum'
 import { EventModel } from '../../../../shared/util-model/model/event.model'
 import { ProgressSpinnerModule } from 'primeng/progressspinner'
 import { FormUtil } from '../../../../shared/util-tool/util/form.util'
-import { EventOptionEnum } from '../../../../shared/util-model/enumeration/event-option.enum'
-import { Observable } from 'rxjs'
+import { filter, mergeMap, Observable } from 'rxjs'
 import { CardModule } from 'primeng/card'
-import { FormComponent } from '../../../../shared/util-ui/form/form.component'
 import { GenericUtil } from '../../../../shared/util-tool/util/generic.util'
 import { RegistryRequiredDirective } from '../../../../shared/util-tool/directive/registry-required.directive'
 import { Button } from 'primeng/button'
 import { DatePicker } from 'primeng/datepicker'
 import { ToggleSwitch } from 'primeng/toggleswitch'
 import { StringUtils } from '../../../../shared/util-tool/util/string.util'
+import { EventOptionModel } from '../../data/model/event-option.model'
+import { SelectItem } from 'primeng/api'
 
 @Component( {
     selector: 'app-event-edition-form',
@@ -36,11 +36,12 @@ import { StringUtils } from '../../../../shared/util-tool/util/string.util'
         AsyncPipe,
         ProgressSpinnerModule,
         CardModule,
-        FormComponent,
         RegistryRequiredDirective,
         Button,
         DatePicker,
         ToggleSwitch,
+        NgForOf,
+        NgIf,
     ],
     templateUrl: './event-edition-form.component.html',
     styleUrl: './event-edition-form.component.scss',
@@ -61,7 +62,10 @@ export class EventEditionFormComponent extends GenericEventFormComponent impleme
             return
         }
         this.subscriptions.add(
-            this.route.params.subscribe( (params: Params): void => {
+            this.eventOptions$.pipe(
+                filter( (options: EventOptionModel[]): boolean => options && options.length > 0 ),
+                mergeMap( (): Observable<Params> => this.route.params ),
+            ).subscribe( (params: Params): void => {
                 if (GenericUtil.isNull( params['id'] )) {
                     this.router.navigateByUrl( AppRouteEnum.EVENTS_CREATION ).catch( console.error )
                 }
@@ -76,17 +80,16 @@ export class EventEditionFormComponent extends GenericEventFormComponent impleme
                 if (!event) return
                 this.name.setValue( event?.name )
                 this.range.setValue( FormUtil.buildDateRange( event?.begin, event?.end ) )
-                this.ticketing.setValue( event?.options.includes( EventOptionEnum.TICKETING ) )
-                this.vehicle.setValue( event?.options.includes( EventOptionEnum.VEHICLE ) )
-                this.activity.setValue( event?.options.includes( EventOptionEnum.ACTIVITY ) )
-                this.phoneCommunication.setValue( event?.options.includes( EventOptionEnum.PHONE_COMMUNICATION ) )
-                this.activityCommunication.setValue( event?.options.includes( EventOptionEnum.ACTIVITY_COMMUNICATION ) )
-                this.fireRisk.setValue( event?.options.includes( EventOptionEnum.FIRE_RISK ) )
-                this.smokeReporting.setValue( event?.options.includes( EventOptionEnum.SMOKE_REPORT ) )
-                this.movementReporting.setValue( event?.options.includes( EventOptionEnum.MOVEMENT_REPORT ) )
+                this.fillFormWithOptions( event?.options )
                 FormUtil.markAllControlsAsDirty( this.form )
             } ),
         )
+    }
+
+    private fillFormWithOptions (options: SelectItem<string>[] | undefined): void {
+        options?.forEach( (option: SelectItem<string>): void => {
+            this.getOptionControl( option.value ).setValue( true )
+        } )
     }
 
     protected next (): void {

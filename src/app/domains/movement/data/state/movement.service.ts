@@ -11,6 +11,7 @@ import { HttpParams } from '@angular/common/http'
 import {
     MovementParticipantsAndGroupsModel,
 } from '../../../../shared/util-model/model/movement-participants-and-groups.model'
+import { SelectItem } from 'primeng/api'
 
 @Injectable( {
     providedIn: 'root',
@@ -45,6 +46,10 @@ export class MovementService extends GenericEventService {
                 searched,
             ).toString() : ''}`,
         )
+    }
+
+    public getAvailableMovementTypes (eventId: string | undefined): Observable<SelectItem<string>[]> {
+        return this.http.get<SelectItem<string>[]>( `${this.buildRequestBaseUrl( eventId )}/types` )
     }
 
     public createMovement (eventId: string | undefined, movement: MovementDto): Observable<MovementModel> {

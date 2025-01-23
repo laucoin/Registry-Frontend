@@ -85,10 +85,6 @@ export class ParticipantFacade extends GenericEventElementFacade<ParticipantMode
         return this.ngStore.select( (state: StateModel): boolean => state.participant.participant.loading )
     }
 
-    public get elementError (): Observable<ToastMessageOptions | undefined> {
-        return this.ngStore.select( (state: StateModel): ToastMessageOptions | undefined => state.participant.participant.error )
-    }
-
     public startPageLoader (): void {
         this.ngStore.dispatch( StartParticipantsPageLoader )
     }

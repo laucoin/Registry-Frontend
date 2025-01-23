@@ -1,9 +1,7 @@
-import { HttpErrorResponse } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import { Action, State, StateContext } from '@ngxs/store'
 import { catchError, finalize, map, mergeMap, Observable, of } from 'rxjs'
 import { SecurityService } from '../../util-authentication/service/security.service'
-import { ProfileStatusEnum } from '../../util-model/enumeration/profile-status.enum'
 import { CurrentUserModel } from '../../util-model/model/current-user.model'
 import { EventProfileModel } from '../../util-model/model/event-profile.model'
 import { PageModel } from '../../util-model/model/page.model'
@@ -57,6 +55,7 @@ import { TokenModel } from '../../util-authentication/model/token.model'
 import { AppRouteEnum } from '../../../app-route.enum'
 import { AuthenticationUriModel } from '../../util-model/model/authentication-uri.model'
 import { Router } from '@angular/router'
+import { ErrorModel } from '../../util-model/model/error.model'
 
 const defaultRegistryState: RegistryStateModel = {
     authentication: {
@@ -68,7 +67,7 @@ const defaultRegistryState: RegistryStateModel = {
             order: OrderEnum.ASC,
             onlyVisible: true,
             onlyUsable: true,
-            status: ProfileStatusEnum.ACCEPTED,
+            status: 'ACCEPTED',
             searched: undefined,
             startAccess: undefined,
             endAccess: undefined,
@@ -83,7 +82,7 @@ const defaultRegistryState: RegistryStateModel = {
             order: OrderEnum.ASC,
             onlyVisible: true,
             onlyUsable: false,
-            status: ProfileStatusEnum.INVITED,
+            status: 'INVITED',
             searched: undefined,
             startAccess: undefined,
             endAccess: undefined,
@@ -96,12 +95,10 @@ const defaultRegistryState: RegistryStateModel = {
     profile: {
         element: undefined,
         loading: false,
-        error: undefined,
     },
     event: {
         element: undefined,
         loading: false,
-        error: undefined,
     },
     _util: {
         theme: (!window.matchMedia || window.matchMedia( '(prefers-color-scheme: light)' ).matches) ? 'light' : 'dark',
@@ -182,7 +179,7 @@ export class RegistryState extends GenericState {
             initialize( (): void => this.registryFacade.startGlobalLoader() ),
             finalize( (): void => this.registryFacade.stopGlobalLoader() ),
             map( (uri: AuthenticationUriModel): void => { window.location.href = uri.uri } ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.globalError( ctx, error ) ),
+            catchError( (error: ErrorModel): Observable<void> => this.globalError( ctx, error ) ),
         )
     }
 
@@ -192,7 +189,7 @@ export class RegistryState extends GenericState {
             initialize( (): void => this.registryFacade.startGlobalLoader() ),
             finalize( (): void => this.registryFacade.stopGlobalLoader() ),
             map( (uri: AuthenticationUriModel): void => { window.location.href = uri.uri } ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.globalError( ctx, error ) ),
+            catchError( (error: ErrorModel): Observable<void> => this.globalError( ctx, error ) ),
         )
     }
 
@@ -233,7 +230,7 @@ export class RegistryState extends GenericState {
                                                                                       : AppRouteEnum.HOME
                 this.router.navigateByUrl( redirectUri ).then( (): void => SessionStorageUtils.delete( REDIRECT_URI ) )
             } ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.globalError( ctx, error ) ),
+            catchError( (error: ErrorModel): Observable<void> => this.globalError( ctx, error ) ),
         )
     }
 
@@ -241,7 +238,7 @@ export class RegistryState extends GenericState {
     public refreshToken (ctx: StateContext<RegistryStateModel>): Observable<void> {
         return this.service.refreshToken( ctx.getState().authentication.token! ).pipe(
             map( (token: TokenModel): void => this.fetchTokenComplete( ctx, token ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => {
+            catchError( (error: ErrorModel): Observable<void> => {
                 if (error.status === 401) {
                     this.registryFacade.login()
                 }
@@ -266,7 +263,7 @@ export class RegistryState extends GenericState {
             initialize( (): void => this.registryFacade.startGlobalLoader() ),
             finalize( (): void => this.registryFacade.stopGlobalLoader() ),
             map( (currentUser: CurrentUserModel): void => this.fetchCurrentUserComplete( ctx, currentUser ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.globalError( ctx, error ) ),
+            catchError( (error: ErrorModel): Observable<void> => this.globalError( ctx, error ) ),
         )
     }
 
@@ -314,7 +311,7 @@ export class RegistryState extends GenericState {
                 ctx,
                 profilePage,
             ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.fetchUserEventProfilePageError(
+            catchError( (error: ErrorModel): Observable<void> => this.fetchUserEventProfilePageError(
                 ctx,
                 error,
             ) ),
@@ -335,12 +332,12 @@ export class RegistryState extends GenericState {
 
     private fetchUserEventProfilePageError (
         ctx: StateContext<RegistryStateModel>,
-        error: HttpErrorResponse,
+        error: ErrorModel,
     ): Observable<void> {
         ctx.patchState( {
-            profiles: this.buildErrorMessageAndNotify( ctx.getState().profiles, error ),
+            profiles: this.buildErrorMessage( ctx.getState().profiles, error ),
         } )
-        throw error.error
+        throw error
     }
 
     @Action( InputProfilePageSearch )
@@ -427,7 +424,7 @@ export class RegistryState extends GenericState {
                 ctx,
                 invitationPage,
             ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.fetchUserEventProfileInvitationPageError(
+            catchError( (error: ErrorModel): Observable<void> => this.fetchUserEventProfileInvitationPageError(
                 ctx,
                 error,
             ) ),
@@ -448,12 +445,12 @@ export class RegistryState extends GenericState {
 
     private fetchUserEventProfileInvitationPageError (
         ctx: StateContext<RegistryStateModel>,
-        error: HttpErrorResponse,
+        error: ErrorModel,
     ): Observable<void> {
         ctx.patchState( {
-            invitations: this.buildErrorMessageAndNotify( ctx.getState().invitations, error ),
+            invitations: this.buildErrorMessage( ctx.getState().invitations, error ),
         } )
-        throw error.error
+        throw error
     }
 
     @Action( InputInvitationPageSearch )
@@ -545,14 +542,13 @@ export class RegistryState extends GenericState {
         ctx: StateContext<RegistryStateModel>,
         payload: ManageEventInvitationAcceptance,
     ): Observable<void> {
-        return this.userEventProfileService.manageUserEventProfileAcceptance( payload.profileId, payload.status ).pipe(
+        return this.userEventProfileService.manageUserEventProfileAcceptance(
+            payload.profileId,
+            payload.accepted,
+        ).pipe(
             initialize( (): void => this.registryFacade.startProfileLoader() ),
             finalize( (): void => this.registryFacade.stopProfileLoader() ),
             map( (profile: EventProfileModel): void => this.manageEventInvitationAcceptanceComplete( ctx, profile ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.manageEventInvitationAcceptanceError(
-                ctx,
-                error,
-            ) ),
         )
     }
 
@@ -572,29 +568,15 @@ export class RegistryState extends GenericState {
         this.refreshInvitationsPage( ctx )
     }
 
-    private manageEventInvitationAcceptanceError (
-        ctx: StateContext<RegistryStateModel>,
-        error: HttpErrorResponse,
-    ): Observable<void> {
-        ctx.patchState( {
-            profile: this.buildErrorMessageAndNotify( ctx.getState().profile, error ),
-        } )
-        throw error.error
-    }
-
     @Action( SelectUserEventProfile )
     public selectEventProfile (
-        ctx: StateContext<RegistryStateModel>,
+        _: StateContext<RegistryStateModel>,
         payload: SelectUserEventProfile,
     ): Observable<void> {
         return this.preferencesService.selectUserEventProfile( payload.profile.id ).pipe(
             initialize( (): void => this.registryFacade.startProfileLoader() ),
             finalize( (): void => this.registryFacade.stopProfileLoader() ),
             map( (): void => this.selectEventProfileComplete( payload.profile ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.selectEventProfileError(
-                ctx,
-                error,
-            ) ),
         )
     }
 
@@ -610,16 +592,6 @@ export class RegistryState extends GenericState {
         this.registryFacade.fetchCurrentUser()
     }
 
-    private selectEventProfileError (
-        ctx: StateContext<RegistryStateModel>,
-        error: HttpErrorResponse,
-    ): Observable<void> {
-        ctx.patchState( {
-            profile: this.buildErrorMessageAndNotify( ctx.getState().profile, error ),
-        } )
-        throw error.error
-    }
-
     @Action( DeleteUserEventProfile )
     public deleteUserEventProfile (
         ctx: StateContext<RegistryStateModel>,
@@ -629,10 +601,6 @@ export class RegistryState extends GenericState {
             initialize( (): void => this.registryFacade.startProfileLoader() ),
             finalize( (): void => this.registryFacade.stopProfileLoader() ),
             map( (): void => this.deleteUserEventProfileComplete( ctx, payload.profile ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.deleteUserEventProfileError(
-                ctx,
-                error,
-            ) ),
         )
     }
 
@@ -646,16 +614,6 @@ export class RegistryState extends GenericState {
         )
         this.registryFacade.fetchCurrentUser()
         this.refreshProfilesPage( ctx )
-    }
-
-    private deleteUserEventProfileError (
-        ctx: StateContext<RegistryStateModel>,
-        error: HttpErrorResponse,
-    ): Observable<void> {
-        ctx.patchState( {
-            profile: this.buildErrorMessageAndNotify( ctx.getState().profile, error ),
-        } )
-        throw error.error
     }
 
     @Action( StartContextEventLoader )
@@ -690,7 +648,6 @@ export class RegistryState extends GenericState {
             initialize( (): void => this.registryFacade.startContextEventLoader() ),
             finalize( (): void => this.registryFacade.stopContextEventLoader() ),
             map( (event: EventModel): void => this.fetchContextEventComplete( ctx, event ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.fetchContextEventError( ctx, error ) ),
         )
     }
 
@@ -706,16 +663,6 @@ export class RegistryState extends GenericState {
         } )
     }
 
-    private fetchContextEventError (
-        ctx: StateContext<RegistryStateModel>,
-        error: HttpErrorResponse,
-    ): Observable<void> {
-        ctx.patchState( {
-            event: this.buildErrorMessageAndNotify( ctx.getState().event, error ),
-        } )
-        throw error.error
-    }
-
     private updateGlobalLoader (ctx: StateContext<RegistryStateModel>, loading: boolean): void {
         ctx.patchState( {
             _util: {
@@ -725,14 +672,20 @@ export class RegistryState extends GenericState {
         } )
     }
 
-    private globalError (ctx: StateContext<RegistryStateModel>, error: HttpErrorResponse): Observable<void> {
+    private globalError (ctx: StateContext<RegistryStateModel>, error: ErrorModel): Observable<void> {
         ctx.patchState( {
             _util: {
                 ...ctx.getState()._util,
-                error: this.buildError( error ),
+                error: {
+                    severity: 'error',
+                    summary: error.title,
+                    detail: error.message,
+                    icon: 'pi pi-exclamation-triangle',
+                    closable: true,
+                },
             },
         } )
-        throw error.error
+        throw error
     }
 
     protected refreshProfilesPage (ctx: StateContext<RegistryStateModel>): void {

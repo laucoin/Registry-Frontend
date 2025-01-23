@@ -9,7 +9,6 @@ import { DatePipe, TitleCasePipe, UpperCasePipe } from '@angular/common'
 import { AppConfig } from '../../../app.config'
 import { CurrentUserModel } from '../../../shared/util-model/model/current-user.model'
 import { CurrentUserUtil } from '../../../shared/util-authentication/tool/current-user.util'
-import { MovementTypeEnum } from '../data/model/movement-type.enum'
 import { TranslateModule } from '@ngx-translate/core'
 import { TagModule } from 'primeng/tag'
 import { ParticipantModel } from '../../../shared/util-model/model/participant.model'
@@ -47,7 +46,6 @@ import { AppRouteEnum } from '../../../app-route.enum'
 export class MovementElementComponent extends GenericElementComponent<MovementModel, MovementActionEnum> implements OnChanges {
     @Input() public showActionMenu: boolean = true
 
-    protected readonly MovementTypeEnum: typeof MovementTypeEnum = MovementTypeEnum
     protected layerOpened: boolean = false
     protected activeTab: number = 1
 

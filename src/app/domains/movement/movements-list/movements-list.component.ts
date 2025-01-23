@@ -13,13 +13,14 @@ import { ToggleButtonModule } from 'primeng/togglebutton'
 import { AsyncPipe } from '@angular/common'
 import { MessageComponent } from '../../../shared/util-ui/message/message.component'
 import { DropdownModule } from 'primeng/dropdown'
-import { MovementTypeEnum } from '../data/model/movement-type.enum'
 import { MovementElementComponent } from '../movement-element/movement-element.component'
 import { RouterLink } from '@angular/router'
 import { MovementRoutesEnum } from '../movement-routes.enum'
 import { Select } from 'primeng/select'
 import { Button } from 'primeng/button'
 import { DatePicker } from 'primeng/datepicker'
+import { Observable } from 'rxjs'
+import { SelectItem } from 'primeng/api'
 
 @Component( {
     selector: 'app-movements-list',
@@ -44,11 +45,7 @@ import { DatePicker } from 'primeng/datepicker'
 } )
 export class MovementsListComponent extends GenericListComponent<MovementModel> implements OnInit {
     protected readonly MovementRoutesEnum: typeof MovementRoutesEnum = MovementRoutesEnum
-
-    protected typeMetadata: { label: string, value: MovementTypeEnum }[] = [
-        { label: this.translateService.instant( 'movement.type.IN' ), value: MovementTypeEnum.IN },
-        { label: this.translateService.instant( 'movement.type.OUT' ), value: MovementTypeEnum.OUT },
-    ]
+    protected readonly movementTypes$: Observable<SelectItem<string>[]>
 
     public constructor (private readonly facade: MovementFacade) {
         super(
@@ -59,6 +56,7 @@ export class MovementsListComponent extends GenericListComponent<MovementModel> 
         )
 
         this.form = this.initForm()
+        this.movementTypes$ = facade.movementTypes
 
         this.handleSearchedChanges()
         this.handleTypeChanges()
@@ -68,6 +66,7 @@ export class MovementsListComponent extends GenericListComponent<MovementModel> 
     }
 
     public ngOnInit (): void {
+        this.facade.fetchMovementTypes( this.contextEventId() )
         this.facade.fetchElementPage( undefined, undefined, false, this.contextEventId() )
     }
 
@@ -95,7 +94,7 @@ export class MovementsListComponent extends GenericListComponent<MovementModel> 
 
     private handleTypeChanges (): void {
         this.subscriptions.add(
-            this.type.valueChanges.subscribe( (type: MovementTypeEnum | undefined): void =>
+            this.type.valueChanges.subscribe( (type: string | undefined): void =>
                 this.facade.selectPageType( type ),
             ),
         )

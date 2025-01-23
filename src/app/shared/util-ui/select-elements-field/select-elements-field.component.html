@@ -12,6 +12,11 @@
                          (onSelect)='onElementSelection($event)'
                          (completeMethod)='handleSearch.emit($event)'>
             <ng-template #selecteditem />
+            @if (emptySearchMessage) {
+                <ng-template #empty>
+                    <span>{{ emptySearchMessage }}</span>
+                </ng-template>
+            }
         </p-auto-complete>
         <ul class='list-box mt-2'
             [class.invalid]='(formControl.dirty || formControl.touched) && formControl.invalid'

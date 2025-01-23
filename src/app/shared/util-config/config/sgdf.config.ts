@@ -2,7 +2,6 @@ import { AppRouteEnum } from '../../../app-route.enum'
 import { EventAuthorityEnum } from '../../util-model/enumeration/event-authority.enum'
 import { UserAuthorityEnum } from '../../util-model/enumeration/user-authority.enum'
 import { ContextConfigModel } from '../model/context-config.model'
-import { EventOptionEnum } from '../../util-model/enumeration/event-option.enum'
 import { EventActionEnum } from '../../../domains/event/data/state/event.action'
 import { EventProfileActionEnum } from '../../util-model/enumeration/event-profile-action.enum'
 import { UserActionEnum } from '../../../domains/user/data/state/user.action'
@@ -166,14 +165,14 @@ export const sgdfConfig: ContextConfigModel = {
     ],
     event: {
         optionIcons: new Map( [
-            [ EventOptionEnum.TICKETING, 'pi pi-ticket' ],
-            [ EventOptionEnum.VEHICLE, 'pi pi-car' ],
-            [ EventOptionEnum.ACTIVITY, 'pi pi-hammer' ],
-            [ EventOptionEnum.PHONE_COMMUNICATION, 'pi pi-phone' ],
-            [ EventOptionEnum.ACTIVITY_COMMUNICATION, 'pi pi-microphone' ],
-            [ EventOptionEnum.FIRE_RISK, 'pi pi-exclamation-triangle' ],
-            [ EventOptionEnum.SMOKE_REPORT, 'pi pi-cloud' ],
-            [ EventOptionEnum.MOVEMENT_REPORT, 'pi pi-sort-alt-slash' ],
+            [ 'TICKETING', 'pi pi-ticket' ],
+            [ 'VEHICLE', 'pi pi-car' ],
+            [ 'ACTIVITY', 'pi pi-hammer' ],
+            [ 'PHONE_COMMUNICATION', 'pi pi-phone' ],
+            [ 'ACTIVITY_COMMUNICATION', 'pi pi-microphone' ],
+            [ 'FIRE_RISK', 'pi pi-exclamation-triangle' ],
+            [ 'SMOKE_REPORT', 'pi pi-cloud' ],
+            [ 'MOVEMENT_REPORT', 'pi pi-sort-alt-slash' ],
         ] ),
         action: [
             {

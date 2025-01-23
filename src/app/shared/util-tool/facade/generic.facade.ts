@@ -20,6 +20,4 @@ export abstract class GenericFacade<M extends GenericModel> {
     public abstract get element (): Observable<M | undefined>
 
     public abstract get elementLoading (): Observable<boolean>
-
-    public abstract get elementError (): Observable<ToastMessageOptions | undefined>
 }

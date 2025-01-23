@@ -4,9 +4,9 @@
                   (action)='handleAction($event)'
                   [layout]='layout'
                   icon='pi pi-users'>
-    <div [class.flex-lg-row]='layout === "list"'
-         class='d-flex flex-column justify-content-between align-items-center'>
-        <div class='info d-flex flex-column justify-content-center'>
+    <div [class.flex-lg-row]='layout === "list"' [class.flex-column]='layout === "grid"'
+         class='d-flex flex-wrap justify-content-between align-items-center'>
+        <div class='info d-flex flex-column justify-content-center p-1'>
             <div>
                 <span [class.strikethrough]='element.end | isPast' class='group-name'>
                     {{ element.name }}
@@ -47,7 +47,7 @@
                 }
             </div>
         </div>
-        <div class='content d-flex'>
+        <div class='content d-flex p-1'>
             <div [class.pointer]='additionalTotal() > 0'
                  [class.participants]='additionalTotal() > 0'
                  tabindex='1'

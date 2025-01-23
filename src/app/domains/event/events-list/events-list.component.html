@@ -18,7 +18,7 @@
                                [showButtonBar]='true'
                                [readonlyInput]='true'
                                [showTime]='true'
-                               [touchUI]='isMobile'
+                               [touchUI]='isMobile()'
                                id='profiles-range'
                                selectionMode='range'
                                fluid />
@@ -60,7 +60,7 @@
                       severity='success'
                       [outlined]='true'
                       [rounded]='true'
-                      [label]='isMobile ? "" : "create" | translate'
+                      [label]='isTinyScreen() || isMobile() ? "" : "create" | translate'
                       icon='pi pi-plus'
                       [routerLink]='EventRoutesEnum.CREATE' />
         }

@@ -32,9 +32,7 @@ export abstract class GenericListComponent<T extends GenericModel> extends Gener
         this.loading$ = combineLatest( [ loading$, this.contextEventLoading$ ] ).pipe(
             map( ([ loading, contextEventLoading ]: [ boolean, boolean ]): boolean => loading || contextEventLoading ),
         )
-        this.error$ = combineLatest( [ error$, this.contextEventError$ ] ).pipe(
-            map( ([ error, contextEventError ]: [ ToastMessageOptions | undefined, ToastMessageOptions | undefined ]): ToastMessageOptions | undefined => error ?? contextEventError ),
-        )
+        this.error$ = error$
 
         this.fetchContextEventOnEventIdChange()
     }

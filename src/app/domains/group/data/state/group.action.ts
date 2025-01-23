@@ -25,8 +25,9 @@ export enum GroupActionEnum {
     SELECT_GROUP_MEMBER_PAGE_VISIBILITY = '[Local] Selecting participants of group page visibility',
     SELECT_GROUP_MEMBER_PAGE_ORDER = '[Local] Selecting participants of group page order',
 
-    FETCH_GROUP = '[Backend] Fetching Group',
     SEARCH_PARTICIPANTS = '[Backend] Searching participants to add in a group',
+
+    FETCH_GROUP = '[Backend] Fetching Group',
     CREATE_GROUP = '[Backend] Creating Group',
     UPDATE_GROUP = '[Backend] Updating Group',
     ADD_MEMBERS_TO_GROUP = '[Backend] Adding members to group',
@@ -139,12 +140,6 @@ export class SelectGroupMemberPageOrder {
     public constructor (public readonly order: OrderEnum) {}
 }
 
-export class FetchGroup {
-    public static readonly type: GroupActionEnum = GroupActionEnum.FETCH_GROUP
-
-    public constructor (public readonly eventId: string | undefined, public readonly id: string) {}
-}
-
 export class SearchParticipants {
     public static readonly type: GroupActionEnum = GroupActionEnum.SEARCH_PARTICIPANTS
 
@@ -152,6 +147,12 @@ export class SearchParticipants {
         public readonly eventId: string | undefined,
         public readonly searched: string | undefined,
     ) {}
+}
+
+export class FetchGroup {
+    public static readonly type: GroupActionEnum = GroupActionEnum.FETCH_GROUP
+
+    public constructor (public readonly eventId: string | undefined, public readonly id: string) {}
 }
 
 export class ResetGroup {

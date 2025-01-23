@@ -1,6 +1,5 @@
-import { HttpErrorResponse } from '@angular/common/http'
 import { Action, State, StateContext } from '@ngxs/store'
-import { catchError, finalize, map, Observable } from 'rxjs'
+import { catchError, finalize, map, Observable, of } from 'rxjs'
 import { EventProfileModel } from '../../../../shared/util-model/model/event-profile.model'
 import { PageModel } from '../../../../shared/util-model/model/page.model'
 import { GenericEventElementState } from '../../../../shared/util-tool/state/generic-event-element.state'
@@ -12,6 +11,7 @@ import {
     CreateSupportEventProfile,
     DeleteEventProfile,
     FetchAssignableEventProfileRoles,
+    FetchAssignableEventProfileStatus,
     FetchEventProfile,
     FetchEventProfilePage,
     InputEventProfilePageDateRange,
@@ -35,9 +35,10 @@ import { DatePipe } from '@angular/common'
 import { StateUtil } from '../../../../shared/util-tool/state/state.util'
 import { OrderEnum } from '../../../../shared/util-model/enumeration/order.enum'
 import { CreatedEventProfiles } from '../dto/created-event-profiles.dto'
-import { UserDto } from '../../../../shared/util-model/dto/user.dto'
 import { UserUtil } from '../../../../shared/util-tool/util/user.util'
 import { SelectItem } from 'primeng/api'
+import { UserModel } from '../../../../shared/util-model/model/user.model'
+import { ErrorModel } from '../../../../shared/util-model/model/error.model'
 
 const defaultEventProfileState: EventProfileStateModel = {
     eventProfiles: {
@@ -58,10 +59,12 @@ const defaultEventProfileState: EventProfileStateModel = {
     eventProfile: {
         element: undefined,
         loading: false,
-        error: undefined,
     },
-    roles: [],
-    searched: [],
+    _metadata: {
+        roles: [],
+        status: [],
+        searched: [],
+    },
 }
 
 @State<EventProfileStateModel>( {
@@ -126,7 +129,7 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
                 ctx,
                 profilePage,
             ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.pageError( ctx, error ) ),
+            catchError( (error: ErrorModel): Observable<void> => this.pageError( ctx, error ) ),
         )
     }
 
@@ -229,7 +232,6 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
             initialize( (): void => this.facade.startElementLoader() ),
             finalize( (): void => this.facade.stopElementLoader() ),
             map( (profile: EventProfileModel): void => this.fetchEventProfileComplete( ctx, profile ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
         )
     }
 
@@ -254,20 +256,22 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
             payload.eventId,
             payload.searched,
         ).pipe(
-            map( (users: UserDto[]): void => this.searchUsersComplete(
+            map( (users: UserModel[]): void => this.searchUsersComplete(
                 ctx,
                 users,
             ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
         )
     }
 
     private searchUsersComplete (
         ctx: StateContext<EventProfileStateModel>,
-        users: UserDto[],
+        users: UserModel[],
     ): void {
         ctx.patchState( {
-            searched: users.map( (user: UserDto): SelectItem<UserDto> => UserUtil.toSelectItem( user ) ),
+            _metadata: {
+                ...ctx.getState()._metadata,
+                searched: users.map( (user: UserModel): SelectItem<UserModel> => UserUtil.toSelectItem( user ) ),
+            },
         } )
     }
 
@@ -279,20 +283,46 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
         return this.service.getAssignableEventProfileRoles( payload.eventId ).pipe(
             initialize( (): void => this.facade.startElementLoader() ),
             finalize( (): void => this.facade.stopElementLoader() ),
-            map( (roles: string[]): void => this.fetchAssignableEventProfileRolesComplete( ctx, roles ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
+            map( (roles: SelectItem<string>[]): void => this.fetchAssignableEventProfileRolesComplete( ctx, roles ) ),
         )
     }
 
     private fetchAssignableEventProfileRolesComplete (
         ctx: StateContext<EventProfileStateModel>,
-        roles: string[],
+        roles: SelectItem<string>[],
     ): void {
         ctx.patchState( {
-            roles: roles.map( (role: string): SelectItem<string> => ({
-                label: this.translateService.instant( `event.role.${role}` ),
-                value: role,
-            }) ),
+            _metadata: {
+                ...ctx.getState()._metadata,
+                roles: roles,
+            },
+        } )
+    }
+
+    @Action( FetchAssignableEventProfileStatus )
+    public fetchAssignableEventProfileStatus (
+        ctx: StateContext<EventProfileStateModel>,
+        payload: FetchAssignableEventProfileStatus,
+    ): Observable<void> {
+        return this.service.getAvailableEventProfileStatus( payload.eventId ).pipe(
+            initialize( (): void => this.facade.startElementLoader() ),
+            finalize( (): void => this.facade.stopElementLoader() ),
+            map( (status: SelectItem<string>[]): void => this.fetchAssignableEventProfileStatusComplete(
+                ctx,
+                status,
+            ) ),
+        )
+    }
+
+    private fetchAssignableEventProfileStatusComplete (
+        ctx: StateContext<EventProfileStateModel>,
+        status: SelectItem<string>[],
+    ): void {
+        ctx.patchState( {
+            _metadata: {
+                ...ctx.getState()._metadata,
+                status: status,
+            },
         } )
     }
 
@@ -304,32 +334,29 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
         return this.service.createEventProfiles( payload.eventId, payload.profiles ).pipe(
             initialize( (): void => this.facade.startElementLoader() ),
             finalize( (): void => this.facade.stopElementLoader() ),
-            map( (profiles: CreatedEventProfiles): void => this.createEventProfilesComplete(
+            map( (creationStatus: CreatedEventProfiles): void => this.createEventProfilesComplete(
                 ctx,
                 payload.eventId,
-                payload.profiles.userIds.length,
-                profiles.profiles,
+                creationStatus,
             ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
         )
     }
 
     private createEventProfilesComplete (
         ctx: StateContext<EventProfileStateModel>,
         eventId: string | undefined,
-        asked: number,
-        profiles: EventProfileModel[],
+        creationStatus: CreatedEventProfiles,
     ): void {
-        if (asked != profiles.length) {
+        if (creationStatus?.notCreatedUserIds.length > 0) {
             const message: string = 'warning.message.event-profile.create.'
             this.buildMessageAndNotify(
                 'warn',
                 'warning.title.event-profile.create',
-                profiles?.length <= 1 ? `${message}singular` : `${message}plural`,
+                creationStatus?.createdUserIds?.length <= 1 ? `${message}singular` : `${message}plural`,
                 this.eventProfileIcon,
                 {
-                    asked: asked,
-                    created: profiles.length,
+                    asked: creationStatus.createdUserIds.length + creationStatus.notCreatedUserIds.length,
+                    created: creationStatus.createdUserIds.length,
                 },
             )
         } else {
@@ -337,11 +364,11 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
             const message: string = 'success.message.event-profile.create.normal.'
             this.buildMessageAndNotify(
                 'success',
-                profiles?.length <= 1 ? `${title}singular` : `${title}plural`,
-                profiles?.length <= 1 ? `${message}singular` : `${message}plural`,
+                creationStatus.createdUserIds?.length <= 1 ? `${title}singular` : `${title}plural`,
+                creationStatus.createdUserIds?.length <= 1 ? `${message}singular` : `${message}plural`,
                 this.eventProfileIcon,
                 {
-                    created: profiles.length,
+                    created: creationStatus.createdUserIds.length,
                 },
             )
         }
@@ -357,7 +384,6 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
             initialize( (): void => this.facade.startElementLoader() ),
             finalize( (): void => this.facade.stopElementLoader() ),
             map( (): void => this.updateEventProfileComplete( ctx, payload.eventId ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
         )
     }
 
@@ -388,7 +414,6 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
                 payload.eventId,
                 profile,
             ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
         )
     }
 
@@ -422,7 +447,6 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
             initialize( (): void => this.facade.startElementLoader() ),
             finalize( (): void => this.facade.stopElementLoader() ),
             map( (): void => this.blockEventProfileComplete( ctx, payload.eventId, payload.profile ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
         )
     }
 
@@ -450,7 +474,6 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
             initialize( (): void => this.facade.startElementLoader() ),
             finalize( (): void => this.facade.stopElementLoader() ),
             map( (): void => this.unblockEventProfileComplete( ctx, payload.eventId, payload.profile ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
         )
     }
 
@@ -478,7 +501,6 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
             initialize( (): void => this.facade.startElementLoader() ),
             finalize( (): void => this.facade.stopElementLoader() ),
             map( (): void => this.deleteEventProfileComplete( ctx, payload.eventId, payload.profile ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
         )
     }
 
@@ -510,25 +532,14 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
         this.facade.fetchElementPage( page?.offset, page?.limit, true, eventId )
     }
 
-    protected pageError (ctx: StateContext<EventProfileStateModel>, error: HttpErrorResponse): Observable<void> {
+    protected pageError (ctx: StateContext<EventProfileStateModel>, error: ErrorModel): Observable<void> {
         if (error.status == 503) {
-            this.registryFacade.setGlobalError( error )
+            throw error
         } else {
             ctx.patchState( {
-                eventProfiles: this.buildErrorMessageAndNotify( ctx.getState().eventProfiles, error ),
+                eventProfiles: this.buildErrorMessage( ctx.getState().eventProfiles, error ),
             } )
         }
-        throw error.error
-    }
-
-    protected elementError (ctx: StateContext<EventProfileStateModel>, error: HttpErrorResponse): Observable<void> {
-        if (error.status == 503) {
-            this.registryFacade.setGlobalError( error )
-        } else {
-            ctx.patchState( {
-                eventProfile: this.buildErrorMessageAndNotify( ctx.getState().eventProfile, error ),
-            } )
-        }
-        throw error.error
+        return of()
     }
 }

@@ -5,9 +5,9 @@
                   [layout]='layout'
                   (action)='handleAction($event)'
                   [icon]='currentUser.preferences.selectedProfile?.id === element.id ? "pi pi-verified" : "pi pi-user"'>
-    <div [class.flex-lg-row]='layout === "list"'
-         class='d-flex flex-column justify-content-between align-items-center'>
-        <div class='info d-flex flex-column justify-content-center'>
+    <div [class.flex-lg-row]='layout === "list"' [class.flex-column]='layout === "grid"'
+         class='d-flex flex-wrap justify-content-between align-items-center'>
+        <div class='info d-flex flex-column justify-content-center p-1'>
             <div>
                 <span [class.strikethrough]='element.endAccess | isPast' class='event-name'>
                     @if (view === 'user') {
@@ -24,7 +24,7 @@
                 <p-badge [class.mt-1]='layout === "grid"' severity='info' value='{{ "event.role." + element.role | translate }}' />
             }
         </div>
-        <div class='role d-flex flex-wrap align-content-center' [class.justify-content-center]='layout === "grid"'>
+        <div class='role d-flex flex-wrap align-content-center p-1' [class.justify-content-center]='layout === "grid"'>
             @if (element.startAccess || element.endAccess) {
                 <div *ngIf='element.startAccess || element.endAccess'>
                     <small>{{ 'profile.event.validity' | translate }}</small>
@@ -56,13 +56,13 @@
                     }
                 </div>
             } @else {
-                <p-badge severity='info' value='{{ "event.role." + element.role | translate }}' />
+                <p-badge severity='info' value='{{ element.role.label }}' />
             }
         </div>
-        <div class='status d-flex' [class.mt-1]='layout === "grid"' [class.justify-content-center]='layout === "grid"'>
-            @if (element.status !== ProfileStatusEnum.INVITED || element.user.id !== currentUser.id) {
-                <p-badge [severity]='severityFromStatus(element.status)'
-                         value='{{ "profile.status." + element.status | translate }}' />
+        <div class='status d-flex p-1' [class.mt-1]='layout === "grid"' [class.justify-content-center]='layout === "grid"'>
+            @if (element.status.value !== 'INVITED' || element.user.id !== currentUser.id) {
+                <p-badge [severity]='severityFromStatus(element.status.value)'
+                         value='{{ element.status.label }}' />
             } @else {
                 <div [class.mt-2]='layout === "grid"' class='d-flex flex-column'>
                     <div [class.mb-1]='layout === "grid"'>{{ 'profile.action.manage-acceptance' | translate }}</div>
@@ -71,13 +71,13 @@
                                 [label]='"profile.action.reject" | translate'
                                 [rounded]='true'
                                 severity='danger'
-                                (click)='confirmManageAcceptance(ProfileStatusEnum.REJECTED)' />
+                                (click)='confirmManageAcceptance("REJECTED")' />
                         <p-button
                                 class='ms-2'
                                 [label]='"profile.action.accept" | translate'
                                 [rounded]='true'
                                 severity='success'
-                                (click)='confirmManageAcceptance(ProfileStatusEnum.ACCEPTED)' />
+                                (click)='confirmManageAcceptance("ACCEPTED")' />
                     </div>
                 </div>
             }

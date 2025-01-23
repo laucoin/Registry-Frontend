@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core'
 import { Observable } from 'rxjs'
 import { EventProfilePageParamsModel } from '../../../domains/event-profile/data/model/event-profile-page-params.model'
-import { ProfileStatusEnum } from '../../util-model/enumeration/profile-status.enum'
 import { EventProfileModel } from '../../util-model/model/event-profile.model'
 import { PageModel } from '../../util-model/model/page.model'
 import { GenericService } from '../../util-tool/service/generic.service'
@@ -29,8 +28,8 @@ export class UserEventProfileService extends GenericService {
         return this.http.get<EventProfileModel>( `${this.baseUrl}/${id}` )
     }
 
-    public manageUserEventProfileAcceptance (id: string, status: ProfileStatusEnum): Observable<EventProfileModel> {
-        return this.http.post<EventProfileModel>( `${this.baseUrl}/${id}/status/${status}`, null )
+    public manageUserEventProfileAcceptance (id: string, accepted: boolean): Observable<EventProfileModel> {
+        return this.http.post<EventProfileModel>( `${this.baseUrl}/${id}/accept/${accepted}`, null )
     }
 
     public deleteUserProfileById (id: string): Observable<void> {

@@ -55,7 +55,6 @@ export class GroupFormComponent extends GenericFormComponent {
         super(
             AppRouteEnum.GROUPS,
             facade.elementLoading,
-            facade.elementError,
         )
 
         facade.resetElement()

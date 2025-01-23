@@ -10,5 +10,7 @@ export interface GroupStateModel {
     groups: PageRequestInformationModel<GroupPageParamsModel, GroupModel>
     members: PageRequestInformationModel<ParticipantPageParamsModel, ParticipantModel> & { groupId: string | undefined }
     group: ElementRequestInformationModel<GroupModel>
-    searched: SelectItem<ParticipantModel>[]
+    _metadata: {
+        searched: SelectItem<ParticipantModel>[]
+    }
 }

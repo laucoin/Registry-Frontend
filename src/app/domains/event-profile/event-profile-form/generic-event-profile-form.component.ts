@@ -16,7 +16,6 @@ export abstract class GenericEventProfileFormComponent extends GenericFormCompon
         super(
             AppRouteEnum.PROFILES,
             facade.elementLoading,
-            facade.elementError,
         )
 
         this.assignableRoles$ = facade.assignableRoles

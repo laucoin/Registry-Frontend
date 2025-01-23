@@ -11,6 +11,7 @@ import {
     EnableMovement,
     FetchMovement,
     FetchMovementPage,
+    FetchMovementTypes,
     InputMovementPageDateRange,
     InputMovementPageSearch,
     ResetMovement,
@@ -24,11 +25,10 @@ import {
     StopMovementsPageLoader,
     UpdateMovement,
 } from './movement.action'
-import { SelectItemGroup, ToastMessageOptions } from 'primeng/api'
+import { SelectItem, SelectItemGroup, ToastMessageOptions } from 'primeng/api'
 import { MovementModel } from '../model/movement.model'
 import { FormUtil } from '../../../../shared/util-tool/util/form.util'
 import { OrderEnum } from '../../../../shared/util-model/enumeration/order.enum'
-import { MovementTypeEnum } from '../model/movement-type.enum'
 import { ofActionSuccessful } from '@ngxs/store'
 import { ParticipantModel } from '../../../../shared/util-model/model/participant.model'
 import { GroupModel } from '../../../../shared/util-model/model/group.model'
@@ -75,7 +75,11 @@ export class MovementFacade extends GenericEventElementFacade<MovementModel> {
     }
 
     public get searchedParticipantsAndGroups (): Observable<SelectItemGroup<ParticipantModel | GroupModel>[]> {
-        return this.ngStore.select( (state: StateModel): SelectItemGroup<ParticipantModel | GroupModel>[] => state.movement.searched )
+        return this.ngStore.select( (state: StateModel): SelectItemGroup<ParticipantModel | GroupModel>[] => state.movement._metadata.searched )
+    }
+
+    public get movementTypes (): Observable<SelectItem<string>[]> {
+        return this.ngStore.select( (state: StateModel): SelectItem<string>[] => state.movement._metadata.types )
     }
 
     public get element (): Observable<MovementModel | undefined> {
@@ -84,10 +88,6 @@ export class MovementFacade extends GenericEventElementFacade<MovementModel> {
 
     public get elementLoading (): Observable<boolean> {
         return this.ngStore.select( (state: StateModel): boolean => state.movement.movement.loading )
-    }
-
-    public get elementError (): Observable<ToastMessageOptions | undefined> {
-        return this.ngStore.select( (state: StateModel): ToastMessageOptions | undefined => state.movement.movement.error )
     }
 
     public startPageLoader (): void {
@@ -111,7 +111,7 @@ export class MovementFacade extends GenericEventElementFacade<MovementModel> {
         this.ngStore.dispatch( new InputMovementPageSearch( searched ) )
     }
 
-    public selectPageType (type: MovementTypeEnum | undefined): void {
+    public selectPageType (type: string | undefined): void {
         this.ngStore.dispatch( new SelectMovementPageType( type ) )
     }
 
@@ -144,6 +144,10 @@ export class MovementFacade extends GenericEventElementFacade<MovementModel> {
         eventId: string | undefined = this.actualSelectedEventId,
     ): void {
         this.ngStore.dispatch( new SearchParticipantsAndGroups( eventId, searched ) )
+    }
+
+    public fetchMovementTypes (eventId: string | undefined = this.actualSelectedEventId): void {
+        this.ngStore.dispatch( new FetchMovementTypes( eventId ) )
     }
 
     public resetElement (): void {

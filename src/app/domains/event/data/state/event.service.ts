@@ -6,6 +6,7 @@ import { GenericService } from '../../../../shared/util-tool/service/generic.ser
 import { EventDto } from '../dto/event.dto'
 import { EventPageParamsModel } from '../model/event-page-params.model'
 import { QueryUtil } from '../../../../shared/util-tool/util/query.util'
+import { EventOptionModel } from '../model/event-option.model'
 
 @Injectable( {
     providedIn: 'root',
@@ -23,6 +24,10 @@ export class EventService extends GenericService {
         return this.http.get<PageModel<EventModel>>(
             `${this.baseUrl}?${QueryUtil.buildQueryParams( offset, limit, params ).toString()}`,
         )
+    }
+
+    public getAvailableEventOptions (): Observable<EventOptionModel[]> {
+        return this.http.get<EventOptionModel[]>( `${this.baseUrl}/options` )
     }
 
     public findEventById (id: string): Observable<EventModel> {

@@ -1,10 +1,9 @@
 import { ToastMessageOptions } from 'primeng/api'
-import { ProfileStatusEnum } from '../../util-model/enumeration/profile-status.enum'
 import { OrderEnum } from '../../util-model/enumeration/order.enum'
 import { EventProfileModel } from '../../util-model/model/event-profile.model'
-import { HttpErrorResponse } from '@angular/common/http'
 import { TokenModel } from '../../util-authentication/model/token.model'
 import { CurrentUserModel } from '../../util-model/model/current-user.model'
+import { ErrorModel } from '../../util-model/model/error.model'
 
 enum ActionEnum {
     START_GLOBAL_LOADER = '[Local] Starting global loader',
@@ -68,7 +67,7 @@ export class StopGlobalLoader {
 export class SetGlobalError {
     public static readonly type: ActionEnum = ActionEnum.SET_GLOBAL_ERROR
 
-    public constructor (public readonly error: HttpErrorResponse) {}
+    public constructor (public readonly error: ErrorModel) {}
 }
 
 export class UpdateNetwork {
@@ -230,7 +229,7 @@ export class FetchContextEvent {
 export class ManageEventInvitationAcceptance {
     public static readonly type: ActionEnum = ActionEnum.MANAGE_EVENT_INVITATION_ACCEPTANCE
 
-    public constructor (public readonly profileId: string, public readonly status: ProfileStatusEnum) {}
+    public constructor (public readonly profileId: string, public readonly accepted: boolean) {}
 }
 
 export class SelectUserEventProfile {
