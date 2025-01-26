@@ -35,6 +35,87 @@
         </p-toast>
         <app-side-bar>
             <router-outlet />
+            <p class='d-flex flex-wrap justify-content-center secondary-color'>
+                © Luc AUCOIN {{ currentYear() }} | 
+                <span class='pointer legal'
+                      tabindex='1'
+                      (click)='showInformationDialog = true'
+                      (keydown.enter)='showInformationDialog = true'>
+                    {{ 'legal.information.name' | translate }}
+                </span> | 
+                <span class='pointer legal'
+                      tabindex='2'
+                      (click)='showTermsOfUserDialog = true'
+                      (keydown.enter)='showTermsOfUserDialog = true'>
+                    {{ 'legal.terms-of-use.name' | translate }}
+                </span>
+            </p>
         </app-side-bar>
     }
 </main>
+
+<p-dialog
+        class='text-align-justify'
+        [breakpoints]='breakPoint'
+        [header]='"legal.information.about" | translate'
+        [(visible)]='showInformationDialog'
+        [modal]='true'
+        [draggable]='false'
+        [resizable]='false'>
+    <p>{{ 'legal.information.summary' | translate }}</p>
+    <p-divider />
+    <h4>{{ 'legal.information.who.title' | translate }}</h4>
+    <p>{{ 'legal.information.who.content' | translate }}</p>
+    <p class='d-flex flex-wrap justify-content-center secondary-color'>
+        <a href='https://laucoin.fr'
+           target='_blank'
+           class='legal'>laucoin.fr</a> | 
+        <a href='https://sgdf.fr'
+           target='_blank'
+           class='legal'>sgdf.fr</a>
+    </p>
+</p-dialog>
+
+<p-dialog
+        class='text-align-justify'
+        [header]='"legal.terms-of-use.name" | translate'
+        [breakpoints]='breakPoint'
+        [(visible)]='showTermsOfUserDialog'
+        [modal]='true'
+        [draggable]='false'
+        [resizable]='false'>
+    <p>{{ 'legal.terms-of-use.summary' | translate: { url: currentUrl() } }}</p>
+    <p-divider />
+    <h4>{{ 'legal.terms-of-use.service.title' | translate }}</h4>
+    <p>{{ 'legal.terms-of-use.service.content' | translate }}</p>
+    <p-divider />
+    <h4>{{ 'legal.terms-of-use.liability.title' | translate }}</h4>
+    <h5>{{ 'legal.terms-of-use.liability.subtitle1' | translate }}</h5>
+    <p [innerHTML]='"legal.terms-of-use.liability.content1" | translate'></p>
+    <h5>{{ 'legal.terms-of-use.liability.subtitle2' | translate }}</h5>
+    <p [innerHTML]='"legal.terms-of-use.liability.content2" | translate'></p>
+    <h5>{{ 'legal.terms-of-use.liability.subtitle3' | translate }}</h5>
+    <p [innerHTML]='"legal.terms-of-use.liability.content3" | translate'></p>
+    <p-divider />
+    <h4>{{ 'legal.terms-of-use.data-usage.title' | translate }}</h4>
+    <p [innerHTML]='"legal.terms-of-use.data-usage.content" | translate'></p>
+    <p-divider />
+    <h4>{{ 'legal.terms-of-use.intellectual-ownership.title' | translate }}</h4>
+    <p>
+        {{ 'legal.terms-of-use.intellectual-ownership.content' | translate }}
+    </p>
+    <p-divider />
+    <h4>{{ 'legal.terms-of-use.liability-limitation.title' | translate }}</h4>
+    <p>{{ 'legal.terms-of-use.liability-limitation.content' | translate }}</p>
+    <p-divider />
+    <h4>{{ 'legal.terms-of-use.cancellation.title' | translate }}</h4>
+    <p>{{ 'legal.terms-of-use.cancellation.content' | translate }}</p>
+    <p-divider />
+    <h4>{{ 'legal.terms-of-use.terms-of-use-modification.title' | translate }}</h4>
+    <p>{{ 'legal.terms-of-use.terms-of-use-modification.content' | translate }}</p>
+    <p-divider />
+    <h4>{{ 'legal.terms-of-use.contact.title' | translate }}</h4>
+    <p [innerHTML]='"legal.terms-of-use.contact.content" | translate'></p>
+    <p-divider />
+    <p [innerHTML]='"legal.terms-of-use.conclusion" | translate'></p>
+</p-dialog>

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, signal, WritableSignal } from '@angular/core'
+import { Component, OnDestroy, OnInit, Signal, signal, WritableSignal } from '@angular/core'
 import { RouterOutlet } from '@angular/router'
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import { ConfirmationService, MessageService, ToastMessageOptions, Translation } from 'primeng/api'
@@ -15,6 +15,8 @@ import { breakPoint } from './shared/util-tool/util/breakpoint.const'
 import { GenericUtil } from './shared/util-tool/util/generic.util'
 import { PrimeNG } from 'primeng/config'
 import { Button } from 'primeng/button'
+import { Dialog } from 'primeng/dialog'
+import { Divider } from 'primeng/divider'
 
 @Component( {
     selector: 'app-root',
@@ -29,6 +31,8 @@ import { Button } from 'primeng/button'
         ProgressSpinnerModule,
         MessageComponent,
         Button,
+        Dialog,
+        Divider,
     ],
     providers: [ ConfirmationService, MessageService ],
     templateUrl: './app.component.html',
@@ -40,8 +44,14 @@ export class AppComponent implements OnInit, OnDestroy {
     private readonly subscriptions: Subscription = new Subscription()
     private readonly themeMediaQuery: MediaQueryList = window.matchMedia( '(prefers-color-scheme: light)' )
 
-    protected loading: WritableSignal<boolean> = signal( false )
-    protected error: WritableSignal<ToastMessageOptions | undefined> = signal( undefined )
+    protected readonly loading: WritableSignal<boolean> = signal( false )
+    protected readonly error: WritableSignal<ToastMessageOptions | undefined> = signal( undefined )
+
+    protected readonly currentYear: Signal<number> = signal( new Date().getFullYear() )
+    protected readonly currentUrl: Signal<string> = signal( location.host )
+
+    protected showInformationDialog: boolean = false
+    protected showTermsOfUserDialog: boolean = false
 
     public constructor (
         private readonly translateService: TranslateService,

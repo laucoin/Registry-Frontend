@@ -10,8 +10,8 @@ import { GroupActionEnum } from '../../../domains/group/data/state/group.action'
 export interface ContextConfigModel {
     theme: unknown
     logo: {
-        light: string,
-        dark: string,
+        light: string
+        dark: string
     }
     defaultLanguage: string
     maintainerEmail: string
