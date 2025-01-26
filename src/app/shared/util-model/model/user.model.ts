@@ -1,13 +1,11 @@
-import { UserTypeEnum } from '../enumeration/user-type.enum'
 import { GenericModel } from './generic.model'
+import { SelectItem } from 'primeng/api'
 
 export interface UserModel extends GenericModel {
-    oidcId: string
-    type: UserTypeEnum
     firstName: string | undefined
     lastName: string | undefined
     email: string
-    role: string | undefined
+    role: SelectItem<string> | undefined
     birthday: Date
     lastLogin: Date
     purged: boolean

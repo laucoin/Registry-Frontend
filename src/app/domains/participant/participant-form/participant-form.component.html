@@ -26,7 +26,11 @@
                              [suggestions]='(usersSuggestion$ | async) ?? []'
                              (keydown.enter)='submit()'
                              (onSelect)='onUserSelection($event)'
-                             (completeMethod)='handleUserSearch($event)' />
+                             (completeMethod)='handleUserSearch($event)'>
+                <ng-template #empty>
+                    <span>{{ 'participant.form.empty-user-search' | translate }}</span>
+                </ng-template>
+            </p-auto-complete>
             <app-form-field-error [control]='user'
                                   [label]='"participant.form.user" | translate' />
         </div>
@@ -71,7 +75,7 @@
                            [showButtonBar]='true'
                            [placeholder]='"participant.example.birthday" | translate'
                            [maxDate]='today'
-                           [touchUI]='isMobile'
+                           [touchUI]='isMobile()'
                            (keydown.enter)='submit()'
                            id='birthday'
                            fluid />
@@ -89,7 +93,7 @@
                                 }'
                            [readonlyInput]='true'
                            [showTime]='true'
-                           [touchUI]='isMobile'
+                           [touchUI]='isMobile()'
                            (keydown.enter)='submit()'
                            id='presence'
                            selectionMode='range'
@@ -103,6 +107,7 @@
             <div class='field'>
                 <label for='groups' appRequired>{{ 'participant.form.groups' | translate }}</label>
                 <app-select-elements-field [formControl]='groups'
+                                           [emptySearchMessage]='"participant.form.empty-user-search" | translate'
                                            [suggestions]='(groupsSuggestion$ | async) ?? []'
                                            [searchLabel]='"participant.form.group-search" | translate'
                                            [emptyPlaceholder]='"participant.form.no-group" | translate'

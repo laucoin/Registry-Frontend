@@ -71,10 +71,14 @@ export class AppComponent implements OnInit, OnDestroy {
 
     private handleLoadingAndError (): void {
         this.subscriptions.add(
-            this.registryFacade.globalLoading.subscribe( this.loading ),
+            this.registryFacade.globalLoading.subscribe( (loading: boolean): void => {
+                this.loading.set( loading )
+            } ),
         )
         this.subscriptions.add(
-            this.registryFacade.globalError.subscribe( this.error ),
+            this.registryFacade.globalError.subscribe( (error: ToastMessageOptions | undefined): void => {
+                this.error.set( error )
+            } ),
         )
     }
 

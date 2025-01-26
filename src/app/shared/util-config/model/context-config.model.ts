@@ -1,5 +1,4 @@
 import { MenuItemModel } from '../../../shell/data/model/menu-item.model'
-import { EventOptionEnum } from '../../util-model/enumeration/event-option.enum'
 import { ActionModel } from '../../util-model/model/action.model'
 import { EventActionEnum } from '../../../domains/event/data/state/event.action'
 import { EventProfileActionEnum } from '../../util-model/enumeration/event-profile-action.enum'
@@ -18,7 +17,7 @@ export interface ContextConfigModel {
     maintainerEmail: string
     menu: MenuItemModel[]
     event: {
-        optionIcons: Map<EventOptionEnum, string>
+        optionIcons: Map<string, string>
         action: ActionModel<EventActionEnum>[]
     }
     profile: {

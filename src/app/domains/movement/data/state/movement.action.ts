@@ -1,7 +1,6 @@
 import { MovementDto } from '../dto/movement.dto'
 import { MovementModel } from '../model/movement.model'
 import { OrderEnum } from '../../../../shared/util-model/enumeration/order.enum'
-import { MovementTypeEnum } from '../model/movement-type.enum'
 
 export enum MovementActionEnum {
     START_MOVEMENTS_PAGE_LOADER = '[Local] Starting movement\'s page loader',
@@ -17,8 +16,10 @@ export enum MovementActionEnum {
     SELECT_MOVEMENT_PAGE_VISIBILITY = '[Local] Selecting movement page visibility',
     SELECT_MOVEMENT_PAGE_ORDER = '[Local] Selecting movement page order',
 
-    FETCH_MOVEMENT = '[Backend] Fetching movement',
     SEARCH_PARTICIPANTS_AND_GROUPS = '[Backend] Searching participants and groups to add in a movement',
+    FETCH_MOVEMENT_TYPES = '[Backend] Fetching available movement types',
+
+    FETCH_MOVEMENT = '[Backend] Fetching movement',
     CREATE_MOVEMENT = '[Backend] Creating movement',
     UPDATE_MOVEMENT = '[Backend] Updating movement',
     DISABLE_MOVEMENT = '[Backend] Disabling movement',
@@ -64,7 +65,7 @@ export class InputMovementPageSearch {
 export class SelectMovementPageType {
     public static readonly type: MovementActionEnum = MovementActionEnum.SELECT_MOVEMENT_PAGE_TYPE
 
-    public constructor (public readonly type: MovementTypeEnum | undefined) {}
+    public constructor (public readonly type: string | undefined) {}
 }
 
 export class InputMovementPageDateRange {
@@ -98,6 +99,12 @@ export class SearchParticipantsAndGroups {
     public static readonly type: MovementActionEnum = MovementActionEnum.SEARCH_PARTICIPANTS_AND_GROUPS
 
     public constructor (public readonly eventId: string | undefined, public readonly searched: string | undefined) {}
+}
+
+export class FetchMovementTypes {
+    public static readonly type: MovementActionEnum = MovementActionEnum.FETCH_MOVEMENT_TYPES
+
+    public constructor (public readonly eventId: string | undefined) {}
 }
 
 export class ResetMovement {

@@ -1,6 +1,5 @@
-import { HttpErrorResponse } from '@angular/common/http'
 import { Action, State, StateContext } from '@ngxs/store'
-import { catchError, finalize, map, Observable } from 'rxjs'
+import { catchError, finalize, map, Observable, of } from 'rxjs'
 import { PageModel } from '../../../../shared/util-model/model/page.model'
 import { GenericEventElementState } from '../../../../shared/util-tool/state/generic-event-element.state'
 import { initialize } from '../../../../shared/util-tool/util/rx.util'
@@ -12,6 +11,7 @@ import {
     EnableMovement,
     FetchMovement,
     FetchMovementPage,
+    FetchMovementTypes,
     InputMovementPageDateRange,
     InputMovementPageSearch,
     ResetMovement,
@@ -42,11 +42,11 @@ import { ParticipantModel } from '../../../../shared/util-model/model/participan
 import { GroupModel } from '../../../../shared/util-model/model/group.model'
 import { GroupUtil } from '../../../../shared/util-tool/util/group.util'
 import { SelectItem, SelectItemGroup } from 'primeng/api'
+import { ErrorModel } from '../../../../shared/util-model/model/error.model'
 
 const defaultMovement: ElementRequestInformationModel<MovementModel> = {
     element: undefined,
     loading: false,
-    error: undefined,
 }
 
 const defaultMovementState: MovementStateModel = {
@@ -65,7 +65,10 @@ const defaultMovementState: MovementStateModel = {
         error: undefined,
     },
     movement: defaultMovement,
-    searched: [],
+    _metadata: {
+        types: [],
+        searched: [],
+    },
 }
 
 @State<MovementStateModel>( {
@@ -127,7 +130,7 @@ export class MovementState extends GenericEventElementState<MovementStateModel> 
                 ctx,
                 movementPage,
             ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.pageError( ctx, error ) ),
+            catchError( (error: ErrorModel): Observable<void> => this.pageError( ctx, error ) ),
         )
     }
 
@@ -234,7 +237,6 @@ export class MovementState extends GenericEventElementState<MovementStateModel> 
                 ctx,
                 participantsAndGroups,
             ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
         )
     }
 
@@ -264,7 +266,31 @@ export class MovementState extends GenericEventElementState<MovementStateModel> 
         }
 
         ctx.patchState( {
-            searched: searched,
+            _metadata: {
+                ...ctx.getState()._metadata,
+                searched: searched,
+            },
+        } )
+    }
+
+    @Action( FetchMovementTypes )
+    public fetchMovementTypes (ctx: StateContext<MovementStateModel>, payload: FetchMovementTypes): Observable<void> {
+        return this.service.getAvailableMovementTypes( payload.eventId ).pipe(
+            initialize( (): void => this.facade.startElementLoader() ),
+            finalize( (): void => this.facade.stopElementLoader() ),
+            map( (types: SelectItem<string>[]): void => this.fetchMovementTypesComplete( ctx, types ) ),
+        )
+    }
+
+    private fetchMovementTypesComplete (
+        ctx: StateContext<MovementStateModel>,
+        types: SelectItem<string>[],
+    ): void {
+        ctx.patchState( {
+            _metadata: {
+                ...ctx.getState()._metadata,
+                types: types,
+            },
         } )
     }
 
@@ -274,7 +300,6 @@ export class MovementState extends GenericEventElementState<MovementStateModel> 
             initialize( (): void => this.facade.startElementLoader() ),
             finalize( (): void => this.facade.stopElementLoader() ),
             map( (movement: MovementModel): void => this.fetchMovementComplete( ctx, movement ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
         )
     }
 
@@ -300,7 +325,6 @@ export class MovementState extends GenericEventElementState<MovementStateModel> 
             initialize( (): void => this.facade.startElementLoader() ),
             finalize( (): void => this.facade.stopElementLoader() ),
             map( (movement: MovementModel): void => this.createMovementComplete( ctx, payload.eventId, movement ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
         )
     }
 
@@ -311,8 +335,8 @@ export class MovementState extends GenericEventElementState<MovementStateModel> 
     ): void {
         this.buildMessageAndNotify(
             'success',
-            `success.title.movement.${movement.type}.create`,
-            `success.message.movement.${movement.type}.create.${movement.content.length <= 1 ? 'singular' : 'plural'}`,
+            `success.title.movement.${movement.type.value}.create`,
+            `success.message.movement.${movement.type.value}.create.${movement.content.length <= 1 ? 'singular' : 'plural'}`,
             this.movementIcon,
             this.buildTranslationArgs( movement ),
         )
@@ -325,7 +349,6 @@ export class MovementState extends GenericEventElementState<MovementStateModel> 
             initialize( (): void => this.facade.startElementLoader() ),
             finalize( (): void => this.facade.stopElementLoader() ),
             map( (movement: MovementModel): void => this.updateMovementComplete( ctx, payload.eventId, movement ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
         )
     }
 
@@ -336,8 +359,8 @@ export class MovementState extends GenericEventElementState<MovementStateModel> 
     ): void {
         this.buildMessageAndNotify(
             'success',
-            `success.title.movement.${movement.type}.edit`,
-            `success.message.movement.${movement.type}.edit`,
+            `success.title.movement.${movement.type.value}.edit`,
+            `success.message.movement.${movement.type.value}.edit`,
             this.movementIcon,
             this.buildTranslationArgs( movement ),
         )
@@ -350,7 +373,6 @@ export class MovementState extends GenericEventElementState<MovementStateModel> 
             initialize( (): void => this.facade.startElementLoader() ),
             finalize( (): void => this.facade.stopElementLoader() ),
             map( (movement: MovementModel): void => this.disableMovementComplete( ctx, payload.eventId, movement ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
         )
     }
 
@@ -361,8 +383,8 @@ export class MovementState extends GenericEventElementState<MovementStateModel> 
     ): void {
         this.buildMessageAndNotify(
             'success',
-            `success.title.movement.${movement.type}.disable`,
-            `success.message.movement.${movement.type}.disable"`,
+            `success.title.movement.${movement.type.value}.disable`,
+            `success.message.movement.${movement.type.value}.disable"`,
             this.movementIcon,
             this.buildTranslationArgs( movement ),
         )
@@ -375,7 +397,6 @@ export class MovementState extends GenericEventElementState<MovementStateModel> 
             initialize( (): void => this.facade.startElementLoader() ),
             finalize( (): void => this.facade.stopElementLoader() ),
             map( (movement: MovementModel): void => this.enableMovementComplete( ctx, payload.eventId, movement ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
         )
     }
 
@@ -386,8 +407,8 @@ export class MovementState extends GenericEventElementState<MovementStateModel> 
     ): void {
         this.buildMessageAndNotify(
             'success',
-            `success.title.movement.${movement.type}.enable`,
-            `success.message.movement.${movement.type}.enable"`,
+            `success.title.movement.${movement.type.value}.enable`,
+            `success.message.movement.${movement.type.value}.enable"`,
             this.movementIcon,
             this.buildTranslationArgs( movement ),
         )
@@ -400,7 +421,6 @@ export class MovementState extends GenericEventElementState<MovementStateModel> 
             initialize( (): void => this.facade.startElementLoader() ),
             finalize( (): void => this.facade.stopElementLoader() ),
             map( (): void => this.deleteMovementComplete( ctx, payload.eventId, payload.movement ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
         )
     }
 
@@ -411,8 +431,8 @@ export class MovementState extends GenericEventElementState<MovementStateModel> 
     ): void {
         this.buildMessageAndNotify(
             'success',
-            `success.title.movement.${movement.type}.delete`,
-            `success.message.movement.${movement.type}.delete"`,
+            `success.title.movement.${movement.type.value}.delete`,
+            `success.message.movement.${movement.type.value}.delete"`,
             this.movementIcon,
             this.buildTranslationArgs( movement ),
         )
@@ -437,25 +457,14 @@ export class MovementState extends GenericEventElementState<MovementStateModel> 
         this.facade.fetchElementPage( page?.offset, page?.limit, true, eventId )
     }
 
-    protected pageError (ctx: StateContext<MovementStateModel>, error: HttpErrorResponse): Observable<void> {
+    protected pageError (ctx: StateContext<MovementStateModel>, error: ErrorModel): Observable<void> {
         if (error.status == 503) {
-            this.registryFacade.setGlobalError( error )
+            throw error
         } else {
             ctx.patchState( {
-                movements: this.buildErrorMessageAndNotify( ctx.getState().movements, error ),
+                movements: this.buildErrorMessage( ctx.getState().movements, error ),
             } )
         }
-        throw error.error
-    }
-
-    protected elementError (ctx: StateContext<MovementStateModel>, error: HttpErrorResponse): Observable<void> {
-        if (error.status == 503) {
-            this.registryFacade.setGlobalError( error )
-        } else {
-            ctx.patchState( {
-                movement: this.buildErrorMessageAndNotify( ctx.getState().movement, error ),
-            } )
-        }
-        throw error.error
+        return of()
     }
 }

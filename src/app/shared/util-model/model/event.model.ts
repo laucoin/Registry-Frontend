@@ -1,9 +1,9 @@
-import { EventOptionEnum } from '../enumeration/event-option.enum'
 import { GenericModel } from './generic.model'
+import { SelectItem } from 'primeng/api'
 
 export interface EventModel extends GenericModel {
     name: string,
     begin: Date | undefined,
     end: Date | undefined,
-    options: EventOptionEnum[],
+    options: SelectItem<string>[],
 }

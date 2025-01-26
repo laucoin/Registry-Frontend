@@ -5,7 +5,7 @@ import { FormUtil } from '../../../../shared/util-tool/util/form.util'
 import { StepperModule } from 'primeng/stepper'
 import { TranslateModule } from '@ngx-translate/core'
 import { FormFieldErrorComponent } from '../../../../shared/util-ui/form-field-error/form-field-error.component'
-import { AsyncPipe, DatePipe } from '@angular/common'
+import { AsyncPipe, DatePipe, NgForOf, NgIf } from '@angular/common'
 import { InputTextModule } from 'primeng/inputtext'
 import { DividerModule } from 'primeng/divider'
 import { GenericEventFormComponent } from '../generic-event-form.component'
@@ -34,6 +34,8 @@ import { Card } from 'primeng/card'
         DatePicker,
         ToggleSwitch,
         Card,
+        NgForOf,
+        NgIf,
     ],
     templateUrl: './event-creation-form.component.html',
     styleUrl: './event-creation-form.component.scss',

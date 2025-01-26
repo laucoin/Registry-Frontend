@@ -9,8 +9,9 @@ import { EventProfilesDto } from '../dto/event-profiles.dto'
 import { EventProfilePageParamsModel } from '../model/event-profile-page-params.model'
 import { QueryUtil } from '../../../../shared/util-tool/util/query.util'
 import { CreatedEventProfiles } from '../dto/created-event-profiles.dto'
-import { UserDto } from '../../../../shared/util-model/dto/user.dto'
 import { HttpParams } from '@angular/common/http'
+import { UserModel } from '../../../../shared/util-model/model/user.model'
+import { SelectItem } from 'primeng/api'
 
 @Injectable( {
     providedIn: 'root',
@@ -31,15 +32,11 @@ export class EventProfileService extends GenericEventService {
         )
     }
 
-    public findEventProfileById (eventId: string | undefined, id: string): Observable<EventProfileModel> {
-        return this.http.get<EventProfileModel>( `${this.buildRequestBaseUrl( eventId )}/${id}` )
-    }
-
     public searchUsers (
         eventId: string | undefined,
         searched: string | undefined,
-    ): Observable<UserDto[]> {
-        return this.http.get<UserDto[]>(
+    ): Observable<UserModel[]> {
+        return this.http.get<UserModel[]>(
             `${this.buildRequestBaseUrl( eventId )}/search/users${searched ? '?' + new HttpParams().set(
                 'searched',
                 searched,
@@ -47,8 +44,16 @@ export class EventProfileService extends GenericEventService {
         )
     }
 
-    public getAssignableEventProfileRoles (eventId: string | undefined): Observable<string[]> {
-        return this.http.get<string[]>( `${this.buildRequestBaseUrl( eventId )}/roles` )
+    public getAssignableEventProfileRoles (eventId: string | undefined): Observable<SelectItem<string>[]> {
+        return this.http.get<SelectItem<string>[]>( `${this.buildRequestBaseUrl( eventId )}/roles` )
+    }
+
+    public getAvailableEventProfileStatus (eventId: string | undefined): Observable<SelectItem<string>[]> {
+        return this.http.get<SelectItem<string>[]>( `${this.buildRequestBaseUrl( eventId )}/status` )
+    }
+
+    public findEventProfileById (eventId: string | undefined, id: string): Observable<EventProfileModel> {
+        return this.http.get<EventProfileModel>( `${this.buildRequestBaseUrl( eventId )}/${id}` )
     }
 
     public createEventProfiles (

@@ -4,7 +4,6 @@ import { FormBuilder, FormGroup } from '@angular/forms'
 import { FormUtil } from '../util/form.util'
 import { AppRouteEnum } from '../../../app-route.enum'
 import { combineLatest, map, Observable, of } from 'rxjs'
-import { ToastMessageOptions } from 'primeng/api'
 
 @Component( {
     template: '',
@@ -16,23 +15,18 @@ export abstract class GenericFormComponent extends GenericComponent {
     protected readonly formBuilder: FormBuilder = inject( FormBuilder )
 
     protected readonly loading$: Observable<boolean> = of( false )
-    protected readonly error$: Observable<ToastMessageOptions | undefined> = of( undefined )
 
     protected form: FormGroup
 
     protected constructor (
         private readonly defaultRedirectPath: AppRouteEnum,
         loading$: Observable<boolean> = of( false ),
-        error$: Observable<ToastMessageOptions | undefined> = of( undefined ),
     ) {
         super()
 
         this.form = this.initForm()
         this.loading$ = combineLatest( [ loading$, this.contextEventLoading$ ] ).pipe(
             map( ([ loading, contextEventLoading ]: [ boolean, boolean ]): boolean => loading || contextEventLoading ),
-        )
-        this.error$ = combineLatest( [ error$, this.contextEventError$ ] ).pipe(
-            map( ([ error, contextEventError ]: [ ToastMessageOptions | undefined, ToastMessageOptions | undefined ]): ToastMessageOptions | undefined => error ?? contextEventError ),
         )
 
         this.fetchContextEventOnEventIdChange()

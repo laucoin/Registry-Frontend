@@ -1,6 +1,10 @@
-<app-form [form]='form' [loading]='(loading$ | async) ?? false'>
+@if (form.untouched && (loading$ | async) ?? false) {
+    <div class='d-flex justify-content-center'>
+        <p-progressSpinner></p-progressSpinner>
+    </div>
+} @else {
     <h2>{{ 'event.form.title.edit' | translate: { name: (event$ | async)?.name } }}</h2>
-    <p-card [header]='"event.form.title.information" | translate'>
+    <p-card [formGroup]='form' [header]='"event.form.title.information" | translate'>
         <div class='field'>
             <label for='name' appRequired>{{ 'event.form.name' | translate }}</label>
             <input [formControl]='name' [placeholder]='"event.example.name" | translate' id='name' pInputText type='text' />
@@ -18,7 +22,7 @@
                                 }'
                            [readonlyInput]='true'
                            [showTime]='true'
-                           [touchUI]='isMobile'
+                           [touchUI]='isMobile()'
                            id='range'
                            selectionMode='range'
                            fluid />
@@ -28,112 +32,23 @@
         </div>
     </p-card>
     <p-divider />
-    <p-card [header]='"event.form.title.option" | translate'>
-        <h4>{{ 'event.form.subtitle.subscription' | translate }}</h4>
-        <div class='field'>
-            <div class='switch-field'>
-                <label for='ticketing'>
-                    <i [class]='optionIcon(EventOptionEnum.TICKETING)'></i>
-                    {{ 'event.form.ticketing' | translate }}
-                </label>
-                <p-toggle-switch [formControl]='ticketing'
-                                 id='ticketing' />
+    <p-card [formGroup]='optionsForm' [header]='"event.form.title.option" | translate' *ngIf='eventOptions$ | async as eventOptions'>
+        <div *ngFor='let option of eventOptions; let i = index;'>
+            <div class='field'>
+                <div class='switch-field'>
+                    <label [for]='option.value'>
+                        <i [class]='optionIcon(option.value)'></i>
+                        {{ option.ask }}
+                    </label>
+                    <p-toggle-switch [formControl]='getOptionControl(option.value)'
+                                     id='ticketing' />
+                </div>
+                <app-form-field-error [control]='getOptionControl(option.value)'
+                                      [label]='"event.form.ticketing" | translate' />
             </div>
-            <app-form-field-error [control]='ticketing'
-                                  [label]='"event.form.ticketing" | translate' />
-        </div>
-        <p-divider />
-        <h4>{{ 'event.form.subtitle.transport' | translate }}</h4>
-        <div class='field'>
-            <div class='switch-field'>
-                <label for='vehicle'>
-                    <i [class]='optionIcon(EventOptionEnum.VEHICLE)'></i>
-                    {{ 'event.form.vehicle' | translate }}
-                </label>
-                <p-toggle-switch [formControl]='vehicle'
-                                 id='vehicle' />
-            </div>
-            <app-form-field-error [control]='vehicle'
-                                  [label]='"event.form.vehicle" | translate' />
-        </div>
-        <p-divider />
-        <h4>{{ 'event.form.subtitle.activity' | translate }}</h4>
-        <div class='field'>
-            <div class='switch-field'>
-                <label for='activity'>
-                    <i [class]='optionIcon(EventOptionEnum.ACTIVITY)'></i>
-                    {{ 'event.form.activity' | translate }}
-                </label>
-                <p-toggle-switch [formControl]='activity' id='activity' />
-            </div>
-            <app-form-field-error [control]='activity'
-                                  [label]='"event.form.activity" | translate' />
-        </div>
-        <p-divider />
-        <h4>{{ 'event.form.subtitle.communication' | translate }}</h4>
-        <div class='field'>
-            <div class='switch-field'>
-                <label for='phone-communication'>
-                    <i [class]='optionIcon(EventOptionEnum.PHONE_COMMUNICATION)'></i>
-                    {{ 'event.form.phone-communication' | translate }}
-                </label>
-                <p-toggle-switch [formControl]='phoneCommunication'
-                                 id='phone-communication' />
-            </div>
-            <app-form-field-error [control]='phoneCommunication'
-                                  [label]='"event.form.phone-communication" | translate' />
-        </div>
-        <div class='field'>
-            <div class='switch-field'>
-                <label [class.p-disabled]='activityCommunication.disabled' for='activity-communication'>
-                    <i [class]='optionIcon(EventOptionEnum.ACTIVITY_COMMUNICATION)'></i>
-                    {{ 'event.form.activity-communication' | translate }}
-                </label>
-                <p-toggle-switch [formControl]='activityCommunication'
-                                 id='activity-communication' />
-            </div>
-            <app-form-field-error [control]='activityCommunication'
-                                  [label]='"event.form.activity-communication" | translate' />
-        </div>
-        <p-divider />
-        <h4>{{ 'event.form.subtitle.dfci' | translate }}</h4>
-        <div class='field'>
-            <div class='switch-field'>
-                <label for='fire-risk'>
-                    <i [class]='optionIcon(EventOptionEnum.FIRE_RISK)'></i>
-                    {{ 'event.form.fire-risk' | translate }}
-                </label>
-                <p-toggle-switch [formControl]='fireRisk'
-                                 id='fire-risk' />
-            </div>
-            <app-form-field-error [control]='fireRisk'
-                                  [label]='"event.form.fire-risk" | translate' />
-        </div>
-        <div class='field'>
-            <div class='switch-field'>
-                <label [class.p-disabled]='smokeReporting.disabled'
-                       for='smoke-reporting'>
-                    <i [class]='optionIcon(EventOptionEnum.SMOKE_REPORT)'></i>
-                    {{ 'event.form.smoke-reporting' | translate }}
-                </label>
-                <p-toggle-switch [formControl]='smokeReporting'
-                                 id='smoke-reporting' />
-            </div>
-            <app-form-field-error [control]='smokeReporting'
-                                  [label]='"event.form.smoke-reporting" | translate' />
-        </div>
-        <div class='field'>
-            <div class='switch-field'>
-                <label [class.p-disabled]='movementReporting.disabled'
-                       for='movement-reporting'>
-                    <i [class]='optionIcon(EventOptionEnum.MOVEMENT_REPORT)'></i>
-                    {{ 'event.form.movement-reporting' | translate }}
-                </label>
-                <p-toggle-switch [formControl]='movementReporting'
-                                 id='movement-reporting' />
-            </div>
-            <app-form-field-error [control]='movementReporting'
-                                  [label]='"event.form.movement-reporting" | translate' />
+            @if (i < eventOptions.length - 1) {
+                <p-divider />
+            }
         </div>
     </p-card>
     <div class='mt-2 d-flex justify-content-center'>
@@ -150,4 +65,4 @@
                 icon='pi pi-pen-to-square'
                 severity='success' />
     </div>
-</app-form>
+}

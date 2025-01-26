@@ -7,6 +7,4 @@ export abstract class GenericEventElementState<S> extends GenericState {
     protected abstract refreshPage (ctx: StateContext<S>, eventId: string | undefined): void
 
     protected abstract pageError (ctx: StateContext<S>, error: HttpErrorResponse): Observable<void>
-
-    protected abstract elementError (ctx: StateContext<S>, error: HttpErrorResponse): Observable<void>
 }

@@ -43,15 +43,14 @@ import {
     UpdateNetwork,
     UpdateTheme,
 } from './registry.action'
-import { ProfileStatusEnum } from '../../util-model/enumeration/profile-status.enum'
 import { StateUtil } from '../../util-tool/state/state.util'
 import { OrderEnum } from '../../util-model/enumeration/order.enum'
 import { FormUtil } from '../../util-tool/util/form.util'
 import { EventModel } from '../../util-model/model/event.model'
-import { HttpErrorResponse } from '@angular/common/http'
 import { AppConfig } from '../../../app.config'
 import { SessionStorageUtils } from '../../util-tool/util/session-storage.util'
 import { CURRENT_USER, TOKEN } from '../../util-tool/util/request.util'
+import { ErrorModel } from '../../util-model/model/error.model'
 
 @Injectable()
 export class RegistryFacade {
@@ -173,10 +172,6 @@ export class RegistryFacade {
         return this.ngStore.select( (state: StateModel): boolean => state.registry.event.loading )
     }
 
-    public get contextEventError (): Observable<ToastMessageOptions | undefined> {
-        return this.ngStore.select( (state: StateModel): ToastMessageOptions | undefined => state.registry.event.error )
-    }
-
     public get notification (): Observable<ToastMessageOptions | undefined> {
         return this.ngStore.select( (state: StateModel): ToastMessageOptions | undefined => state.registry._util.notification )
     }
@@ -193,7 +188,7 @@ export class RegistryFacade {
         this.ngStore.dispatch( StopGlobalLoader )
     }
 
-    public setGlobalError (error: HttpErrorResponse): void {
+    public setGlobalError (error: ErrorModel): void {
         this.ngStore.dispatch( new SetGlobalError( error ) )
     }
 
@@ -313,8 +308,8 @@ export class RegistryFacade {
         this.ngStore.dispatch( new UpdateTheme( theme ) )
     }
 
-    public manageEventInvitationAcceptance (id: string, status: ProfileStatusEnum): void {
-        this.ngStore.dispatch( new ManageEventInvitationAcceptance( id, status ) )
+    public manageEventInvitationAcceptance (id: string, accepted: boolean): void {
+        this.ngStore.dispatch( new ManageEventInvitationAcceptance( id, accepted ) )
     }
 
     public selectUserEventProfile (profile: EventProfileModel): void {

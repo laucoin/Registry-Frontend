@@ -16,7 +16,7 @@
                 <label for='profiles-search'>{{ 'profile.status.filter-sort' | translate }}</label>
                 <p-select
                         fluid
-                        [options]='statusMetadata'
+                        [options]='(statusMetadata$ | async) ?? []'
                         (keydown.enter)='loadPage(pageEvent, contextEventId())'
                         [formControl]='status'
                         optionLabel='label'
@@ -28,7 +28,7 @@
                                [showButtonBar]='true'
                                [readonlyInput]='true'
                                [showTime]='true'
-                               [touchUI]='isMobile'
+                               [touchUI]='isMobile()'
                                id='profiles-range'
                                inputId='profiles-range'
                                selectionMode='range'
@@ -72,7 +72,7 @@
                       severity='info'
                       [rounded]='true'
                       [outlined]='true'
-                      [label]='isMobile ? "" : "profile.action.create-support" | translate'
+                      [label]='isTinyScreen() || isMobile() ? "" : "profile.action.create-support" | translate'
                       icon='pi pi-plus'
                       (click)='confirmSupportProfileCreation(event)' />
         }
@@ -81,7 +81,7 @@
                       severity='success'
                       [outlined]='true'
                       [rounded]='true'
-                      [label]='isMobile ? "" : "profile.action.invite-user.title" | translate'
+                      [label]='isTinyScreen() || isMobile() ? "" : "profile.action.invite-user.title" | translate'
                       icon='pi pi-user-plus'
                       [routerLink]='EventProfileRoutesEnum.INVITE' />
         }

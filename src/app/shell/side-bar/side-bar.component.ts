@@ -49,7 +49,7 @@ export class SideBarComponent extends GenericComponent implements OnInit {
 
     protected readonly logoPath$: Observable<string> = this.registryFacade.logoPath
     protected menuItems$: Observable<MenuItemModel[]> = of( [] )
-    protected isSidebarOpen: boolean = !this.isMobile && !this.isTinyScreen()
+    protected isSidebarOpen: boolean = !this.isMobile() && !this.isTinyScreen()
 
     protected form!: FormGroup
 

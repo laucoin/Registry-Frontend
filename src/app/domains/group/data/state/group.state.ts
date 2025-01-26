@@ -1,6 +1,5 @@
-import { HttpErrorResponse } from '@angular/common/http'
 import { Action, State, StateContext } from '@ngxs/store'
-import { catchError, finalize, map, Observable } from 'rxjs'
+import { catchError, finalize, map, Observable, of } from 'rxjs'
 import { PageModel } from '../../../../shared/util-model/model/page.model'
 import { GroupModel } from '../../../../shared/util-model/model/group.model'
 import { GenericEventElementState } from '../../../../shared/util-tool/state/generic-event-element.state'
@@ -47,11 +46,11 @@ import { GenericUtil } from '../../../../shared/util-tool/util/generic.util'
 import { AddedGroupMembersDto } from '../../../../shared/util-model/dto/added-group-members.dto'
 import { PageRequestInformationModel } from '../../../../shared/util-model/model/page-request-information.model'
 import { ParticipantPageParamsModel } from '../../../participant/data/model/participant-page-params.model'
+import { ErrorModel } from '../../../../shared/util-model/model/error.model'
 
 const defaultGroup: ElementRequestInformationModel<GroupModel> = {
     element: undefined,
     loading: false,
-    error: undefined,
 }
 
 const defaultGroupState: GroupStateModel = {
@@ -85,7 +84,9 @@ const defaultGroupState: GroupStateModel = {
         error: undefined,
     },
     group: defaultGroup,
-    searched: [],
+    _metadata: {
+        searched: [],
+    },
 }
 
 @State<GroupStateModel>( {
@@ -180,7 +181,7 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
                 ctx,
                 groupPage,
             ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.pageError( ctx, error ) ),
+            catchError( (error: ErrorModel): Observable<void> => this.pageError( ctx, error ) ),
         )
     }
 
@@ -288,7 +289,7 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
                 ctx,
                 membersPage,
             ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.memberPageError( ctx, error ) ),
+            catchError( (error: ErrorModel): Observable<void> => this.memberPageError( ctx, error ) ),
         )
     }
 
@@ -375,7 +376,6 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
             initialize( (): void => this.facade.startElementLoader() ),
             finalize( (): void => this.facade.stopElementLoader() ),
             map( (group: GroupModel): void => this.fetchGroupComplete( ctx, group ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
         )
     }
 
@@ -404,7 +404,6 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
                 ctx,
                 participants,
             ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
         )
     }
 
@@ -413,9 +412,11 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
         participants: ParticipantModel[],
     ): void {
         ctx.patchState( {
-            searched: participants.map( (participant: ParticipantModel): SelectItem<ParticipantModel> =>
-                ParticipantUtil.toSelectItem( participant ),
-            ),
+            _metadata: {
+                searched: participants.map( (participant: ParticipantModel): SelectItem<ParticipantModel> =>
+                    ParticipantUtil.toSelectItem( participant ),
+                ),
+            },
         } )
     }
 
@@ -436,7 +437,6 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
                 payload.eventId,
                 group,
             ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
         )
     }
 
@@ -465,7 +465,6 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
                 payload.eventId,
                 group,
             ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
         )
     }
 
@@ -495,7 +494,6 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
                 payload.memberIds.length,
                 response.members,
             ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
         )
     }
 
@@ -547,7 +545,6 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
                 group,
                 payload.participant,
             ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
         )
     }
 
@@ -584,7 +581,6 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
                 payload.eventId,
                 group,
             ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
         )
     }
 
@@ -613,7 +609,6 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
                 payload.eventId,
                 group,
             ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
         )
     }
 
@@ -642,7 +637,6 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
                 payload.eventId,
                 payload.group,
             ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
         )
     }
 
@@ -684,36 +678,28 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
         this.facade.fetchElement( pageInformation.groupId!, eventId )
     }
 
-    protected pageError (ctx: StateContext<GroupStateModel>, error: HttpErrorResponse): Observable<void> {
+    protected pageError (ctx: StateContext<GroupStateModel>, error: ErrorModel): Observable<void> {
         if (error.status == 503) {
-            this.registryFacade.setGlobalError( error )
+            throw error
         } else {
             ctx.patchState( {
-                groups: this.buildErrorMessageAndNotify( ctx.getState().groups, error ),
+                groups: this.buildErrorMessage( ctx.getState().groups, error ),
             } )
         }
-        throw error.error
+        return of()
     }
 
-    protected memberPageError (ctx: StateContext<GroupStateModel>, error: HttpErrorResponse): Observable<void> {
+    protected memberPageError (ctx: StateContext<GroupStateModel>, error: ErrorModel): Observable<void> {
         if (error.status == 503) {
-            this.registryFacade.setGlobalError( error )
+            throw error
         } else {
             ctx.patchState( {
-                members: this.buildErrorMessageAndNotify( ctx.getState().members, error ),
+                members: {
+                    groupId: ctx.getState().members.groupId,
+                    ...this.buildErrorMessage( ctx.getState().members, error ),
+                },
             } )
         }
-        throw error.error
-    }
-
-    protected elementError (ctx: StateContext<GroupStateModel>, error: HttpErrorResponse): Observable<void> {
-        if (error.status == 503) {
-            this.registryFacade.setGlobalError( error )
-        } else {
-            ctx.patchState( {
-                group: this.buildErrorMessageAndNotify( ctx.getState().group, error ),
-            } )
-        }
-        throw error.error
+        return of()
     }
 }

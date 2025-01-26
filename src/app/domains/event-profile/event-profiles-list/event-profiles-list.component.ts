@@ -15,15 +15,15 @@ import {
     EventProfileElementComponent,
 } from '../../../shared/util-ui/event-profile-element/event-profile-element.component'
 import { RouterLink } from '@angular/router'
-import { ProfileStatusEnum } from '../../../shared/util-model/enumeration/profile-status.enum'
 import { DropdownModule } from 'primeng/dropdown'
-import { ConfirmationService } from 'primeng/api'
+import { ConfirmationService, SelectItem } from 'primeng/api'
 import { EventModel } from '../../../shared/util-model/model/event.model'
 import { EventProfileRoutesEnum } from '../event-profile-routes.enum'
 import { Select } from 'primeng/select'
 import { Button } from 'primeng/button'
 import { DatePicker } from 'primeng/datepicker'
 import { MessageComponent } from '../../../shared/util-ui/message/message.component'
+import { Observable } from 'rxjs'
 
 @Component( {
     selector: 'app-event-profiles-list',
@@ -49,11 +49,7 @@ import { MessageComponent } from '../../../shared/util-ui/message/message.compon
 } )
 export class EventProfilesListComponent extends GenericListComponent<EventProfileModel> implements OnInit {
     protected readonly EventProfileRoutesEnum: typeof EventProfileRoutesEnum = EventProfileRoutesEnum
-    protected statusMetadata: { label: string, value: ProfileStatusEnum }[] = [
-        { label: this.translateService.instant( 'profile.status.ACCEPTED' ), value: ProfileStatusEnum.ACCEPTED },
-        { label: this.translateService.instant( 'profile.status.REJECTED' ), value: ProfileStatusEnum.REJECTED },
-        { label: this.translateService.instant( 'profile.status.INVITED' ), value: ProfileStatusEnum.INVITED },
-    ]
+    protected readonly statusMetadata$: Observable<SelectItem<string>[]>
 
     public constructor (
         private readonly facade: EventProfileFacade,
@@ -69,6 +65,7 @@ export class EventProfilesListComponent extends GenericListComponent<EventProfil
         this.changeEmptyMessageTranslationKey( 'EMPTY_EVENT_PROFILE' )
 
         this.form = this.initForm()
+        this.statusMetadata$ = facade.availableStatus
 
         this.handleSearchedChanges()
         this.handleRangeChanges()
@@ -78,6 +75,7 @@ export class EventProfilesListComponent extends GenericListComponent<EventProfil
     }
 
     public ngOnInit (): void {
+        this.facade.fetchAvailableStatus( this.contextEventId() )
         this.facade.fetchElementPage( undefined, undefined, false, this.contextEventId() )
     }
 
@@ -129,7 +127,7 @@ export class EventProfilesListComponent extends GenericListComponent<EventProfil
 
     private handleStatusChanges (): void {
         this.subscriptions.add(
-            this.status.valueChanges.subscribe( (status: ProfileStatusEnum | undefined): void => {
+            this.status.valueChanges.subscribe( (status: string | undefined): void => {
                 this.facade.selectPageStatus( status )
             } ),
         )

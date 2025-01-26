@@ -1,6 +1,5 @@
-import { HttpErrorResponse } from '@angular/common/http'
 import { Action, State, StateContext } from '@ngxs/store'
-import { catchError, finalize, map, Observable } from 'rxjs'
+import { catchError, finalize, map, Observable, of } from 'rxjs'
 import { PageModel } from '../../../../shared/util-model/model/page.model'
 import { ParticipantModel } from '../../../../shared/util-model/model/participant.model'
 import { GenericEventElementState } from '../../../../shared/util-tool/state/generic-event-element.state'
@@ -32,16 +31,16 @@ import { StateUtil } from '../../../../shared/util-tool/state/state.util'
 import { OrderEnum } from '../../../../shared/util-model/enumeration/order.enum'
 import { Injectable } from '@angular/core'
 import { ElementRequestInformationModel } from '../../../../shared/util-model/model/element-request-information.model'
-import { UserDto } from '../../../../shared/util-model/dto/user.dto'
 import { UserUtil } from '../../../../shared/util-tool/util/user.util'
 import { SelectItem } from 'primeng/api'
 import { GroupModel } from '../../../../shared/util-model/model/group.model'
 import { GroupUtil } from '../../../../shared/util-tool/util/group.util'
+import { UserModel } from '../../../../shared/util-model/model/user.model'
+import { ErrorModel } from '../../../../shared/util-model/model/error.model'
 
 const defaultParticipant: ElementRequestInformationModel<ParticipantModel> = {
     element: undefined,
     loading: false,
-    error: undefined,
 }
 
 const defaultParticipantState: ParticipantStateModel = {
@@ -124,7 +123,7 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
                 ctx,
                 participantPage,
             ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.pageError( ctx, error ) ),
+            catchError( (error: ErrorModel): Observable<void> => this.pageError( ctx, error ) ),
         )
     }
 
@@ -211,7 +210,6 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
             initialize( (): void => this.facade.startElementLoader() ),
             finalize( (): void => this.facade.stopElementLoader() ),
             map( (participant: ParticipantModel): void => this.fetchParticipantComplete( ctx, participant ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
         )
     }
 
@@ -236,20 +234,19 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
             payload.eventId,
             payload.searched,
         ).pipe(
-            map( (users: UserDto[]): void => this.searchUsersComplete(
+            map( (users: UserModel[]): void => this.searchUsersComplete(
                 ctx,
                 users,
             ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
         )
     }
 
     private searchUsersComplete (
         ctx: StateContext<ParticipantStateModel>,
-        users: UserDto[],
+        users: UserModel[],
     ): void {
         ctx.patchState( {
-            searchedUsers: users.map( (user: UserDto): SelectItem<UserDto> => UserUtil.toSelectItem( user ) ),
+            searchedUsers: users.map( (user: UserModel): SelectItem<UserModel> => UserUtil.toSelectItem( user ) ),
         } )
     }
 
@@ -266,7 +263,6 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
                 ctx,
                 groups,
             ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
         )
     }
 
@@ -296,7 +292,6 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
                 payload.eventId,
                 participant,
             ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
         )
     }
 
@@ -325,7 +320,6 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
                 payload.eventId,
                 participant,
             ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
         )
     }
 
@@ -357,7 +351,6 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
                 payload.eventId,
                 participant,
             ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
         )
     }
 
@@ -386,7 +379,6 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
                 payload.eventId,
                 participant,
             ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
         )
     }
 
@@ -415,7 +407,6 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
                 payload.eventId,
                 payload.participant,
             ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
         )
     }
 
@@ -446,25 +437,14 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
         this.facade.fetchElementPage( page?.offset, page?.limit, true, eventId )
     }
 
-    protected pageError (ctx: StateContext<ParticipantStateModel>, error: HttpErrorResponse): Observable<void> {
+    protected pageError (ctx: StateContext<ParticipantStateModel>, error: ErrorModel): Observable<void> {
         if (error.status == 503) {
-            this.registryFacade.setGlobalError( error )
+            throw error
         } else {
             ctx.patchState( {
-                participants: this.buildErrorMessageAndNotify( ctx.getState().participants, error ),
+                participants: this.buildErrorMessage( ctx.getState().participants, error ),
             } )
         }
-        throw error.error
-    }
-
-    protected elementError (ctx: StateContext<ParticipantStateModel>, error: HttpErrorResponse): Observable<void> {
-        if (error.status == 503) {
-            this.registryFacade.setGlobalError( error )
-        } else {
-            ctx.patchState( {
-                participant: this.buildErrorMessageAndNotify( ctx.getState().participant, error ),
-            } )
-        }
-        throw error.error
+        return of()
     }
 }

@@ -3,14 +3,14 @@
                   [showActionMenu]='showActionMenu'
                   (action)='handleAction($event)'
                   [layout]='layout'
-                  [icon]='element.type === MovementTypeEnum.OUT ? "pi pi-arrow-up" : "pi pi-arrow-down"'>
-    <div [class.flex-lg-row]='layout === "list"'
-         class='d-flex flex-column justify-content-between align-items-center'>
-        <div class='type d-flex'>
-            <p-tag [severity]='element.type === MovementTypeEnum.OUT ? "secondary" : "info"'
-                   [value]='("movement.type." + element.type) | translate' />
+                  [icon]='element.type.value === "OUT" ? "pi pi-arrow-up" : "pi pi-arrow-down"'>
+    <div [class.flex-lg-row]='layout === "list"' [class.flex-column]='layout === "grid"'
+         class='d-flex flex-wrap justify-content-between align-items-center'>
+        <div class='type d-flex p-1'>
+            <p-tag [severity]='element.type.value === "OUT" ? "secondary" : "info"'
+                   [value]='element.type.label' />
         </div>
-        <div class='datetime d-flex'>
+        <div class='datetime d-flex p-1'>
             {{
                 'datetime.datetime' | translate: {
                     date: element.dateTime | date: ('datetime.format.date' | translate),
@@ -18,7 +18,7 @@
                 }
             }}
         </div>
-        <div class='content d-flex'>
+        <div class='content d-flex p-1'>
             <div class='pointer movement-content'
                  tabindex='1'
                  (click)='layerOpened = true'

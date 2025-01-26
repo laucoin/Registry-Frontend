@@ -46,6 +46,7 @@ export class SelectElementsFieldComponent<T extends BaseModel> implements Contro
     @Input() public inputId: string | undefined
     @Input() public searchLabel: string | undefined
     @Input() public emptyPlaceholder: string | undefined
+    @Input() public emptySearchMessage: string | undefined
 
     @Output() public handleSearch: EventEmitter<AutoCompleteCompleteEvent> = new EventEmitter<AutoCompleteCompleteEvent>()
 

@@ -1,5 +1,5 @@
 <div [class.flex-column]='layout === "grid"' class='d-flex align-items-center'>
-    @if (withIcon && !isMobile) {
+    @if (withIcon && !isMobile()) {
         <p-skeleton shape='circle' height='48px' width='48px' />
     }
     <div [class.text-center]='layout === "grid"'

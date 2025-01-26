@@ -1,4 +1,4 @@
-import { Component, effect, inject, OnDestroy, signal, WritableSignal } from '@angular/core'
+import { Component, effect, inject, OnDestroy, Signal, signal, WritableSignal } from '@angular/core'
 import { TranslateService } from '@ngx-translate/core'
 import { Observable, Subscription } from 'rxjs'
 import { RegistryFacade } from '../../util-common/state/registry.facade'
@@ -9,7 +9,6 @@ import { CurrentUserUtil } from '../../util-authentication/tool/current-user.uti
 import { ActivatedRoute, Router } from '@angular/router'
 import { GenericUtil } from '../util/generic.util'
 import { EventModel } from '../../util-model/model/event.model'
-import { ToastMessageOptions } from 'primeng/api'
 
 const EVENT_ID_REGEX: RegExp = /events\/([0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12})/
 
@@ -30,20 +29,18 @@ export abstract class GenericComponent implements OnDestroy {
     protected readonly currentUser$: Observable<CurrentUserModel | undefined> = this.registryFacade.currentUser
     protected readonly tinyScreenMediaQuery: MediaQueryList = window.matchMedia( '(max-width: 768px)' )
     protected readonly isTinyScreen: WritableSignal<boolean> = signal( this.tinyScreenMediaQuery.matches )
+    protected readonly isMobile: Signal<boolean> = signal(
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS/i.test( navigator.userAgent ),
+    )
 
     protected readonly contextEventId: WritableSignal<string | undefined> = signal( undefined )
     protected readonly contextEvent$: Observable<EventModel | undefined> = this.registryFacade.contextEvent
     protected readonly contextEventLoading$: Observable<boolean> = this.registryFacade.contextEventLoading
-    protected readonly contextEventError$: Observable<ToastMessageOptions | undefined> = this.registryFacade.contextEventError
 
     public constructor () {
         this.listenWindowsResize()
 
         this.handleEventIdFromRoute()
-    }
-
-    protected get isMobile (): boolean {
-        return (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS/i.test( navigator.userAgent ))
     }
 
     protected hasUserAuthority (

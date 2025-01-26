@@ -31,7 +31,7 @@
                                 }'
                            [readonlyInput]='true'
                            [showTime]='true'
-                           [touchUI]='isMobile'
+                           [touchUI]='isMobile()'
                            (keydown.enter)='submit()'
                            id='presence'
                            selectionMode='range'
@@ -44,6 +44,7 @@
         <div class='field'>
             <label for='participants' appRequired>{{ 'group.form.participants' | translate }}</label>
             <app-select-elements-field [formControl]='participants'
+                                       [emptySearchMessage]='"group.form.empty-participant-search" | translate'
                                        [suggestions]='(participantsSuggestion$ | async) ?? []'
                                        [searchLabel]='"group.form.participant-search" | translate'
                                        [emptyPlaceholder]='"group.form.no-participant" | translate'

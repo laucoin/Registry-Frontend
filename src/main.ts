@@ -11,6 +11,10 @@ import { RegistryFacade } from './app/shared/util-common/state/registry.facade'
 import { DatePipe } from '@angular/common'
 import { UserFacade } from './app/domains/user/data/state/user.facade'
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async'
+import {
+    RegistryNgxsUnhandledErrorHandler,
+} from './app/shared/util-config/handler/registry-ngxs-unhandled-error.handler'
+import { withNgxsPlugin } from '@ngxs/store'
 
 (async (): Promise<void> => {
     await AppConfig.load()
@@ -34,6 +38,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
             AppConfig.providePrimeNg(),
             AppConfig.provideNgxs(),
             AppConfig.provideNgxsReduxDevtools(),
+            withNgxsPlugin( RegistryNgxsUnhandledErrorHandler ),
             AppConfig.provideTranslator(),
         ],
     } ).catch( (error: Error) => console.error( error ) )

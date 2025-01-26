@@ -1,6 +1,6 @@
 import { GenericEventModel } from './generic-event.model'
-import { UserDto } from '../dto/user.dto'
 import { GroupModel } from './group.model'
+import { UserModel } from './user.model'
 
 export interface ParticipantModel extends GenericEventModel {
     firstName: string
@@ -10,6 +10,6 @@ export interface ParticipantModel extends GenericEventModel {
     groups: GroupModel[]
     begin: Date | undefined
     end: Date | undefined
-    user: UserDto | undefined
+    user: UserModel | undefined
     purged: boolean
 }

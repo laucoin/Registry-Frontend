@@ -6,6 +6,7 @@ import { PageModel } from '../../../../shared/util-model/model/page.model'
 import { UserModel } from '../../../../shared/util-model/model/user.model'
 import { GenericService } from '../../../../shared/util-tool/service/generic.service'
 import { QueryUtil } from '../../../../shared/util-tool/util/query.util'
+import { SelectItem } from 'primeng/api'
 
 @Injectable( {
     providedIn: 'root',
@@ -29,8 +30,8 @@ export class UserService extends GenericService {
         return this.http.get<UserModel>( `${this.baseUrl}/${id}` )
     }
 
-    public getAssignableUserRoles (): Observable<string[]> {
-        return this.http.get<string[]>( `${this.baseUrl}/roles` )
+    public getAssignableUserRoles (): Observable<SelectItem<string>[]> {
+        return this.http.get<SelectItem<string>[]>( `${this.baseUrl}/roles` )
     }
 
     public updateUserRole (id: string, role: string | undefined): Observable<UserModel> {

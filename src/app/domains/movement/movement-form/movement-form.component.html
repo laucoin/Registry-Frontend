@@ -21,7 +21,7 @@
                                time: now | date: ("datetime.format.time" | translate),
                            }'
                            [readonlyInput]='true'
-                           [touchUI]='isMobile'
+                           [touchUI]='isMobile()'
                            [showTime]='true'
                            (keydown.enter)='submit()'
                            inputId='datetime'
@@ -38,7 +38,7 @@
             <p-select
                     fluid
                     inputId='type'
-                    [options]='typeMetadata'
+                    [options]='(movementTypes$ | async) ?? []'
                     [placeholder]='"movement.example.type" | translate'
                     [formControl]='type'
                     (keydown.enter)='submit()'

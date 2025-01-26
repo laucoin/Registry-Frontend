@@ -2,7 +2,6 @@ import { EventProfileModel } from '../../../../shared/util-model/model/event-pro
 import { EventProfileDto } from '../dto/event-profile.dto'
 import { EventProfilesDto } from '../dto/event-profiles.dto'
 import { OrderEnum } from '../../../../shared/util-model/enumeration/order.enum'
-import { ProfileStatusEnum } from '../../../../shared/util-model/enumeration/profile-status.enum'
 
 enum ActionEnum {
     START_EVENT_PROFILES_PAGE_LOADER = '[Local] Starting event profile\'s page loader',
@@ -18,9 +17,11 @@ enum ActionEnum {
     SELECT_EVENT_PROFILE_PAGE_VISIBILITY = '[Local] Selecting event\'s profile page visibility',
     SELECT_EVENT_PROFILE_PAGE_ORDER = '[Local] Selecting event\'s profile page order',
 
-    FETCH_EVENT_PROFILE = '[Backend] Fetching event\'s profile',
     SEARCH_USERS = '[Backend] Searching users to invite to an event',
+
+    FETCH_EVENT_PROFILE = '[Backend] Fetching event\'s profile',
     FETCH_ASSIGNABLE_EVENT_PROFILE_ROLES = '[Backend] Fetching assignable event profile\'s roles',
+    FETCH_AVAILABLE_EVENT_PROFILE_STATUS = '[Backend] Fetching available event profile\'s status',
     CREATE_EVENT_PROFILES = '[Backend] Creating event\'s profile',
     CREATE_SUPPORT_EVENT_PROFILE = '[Backend] Creating event\'s profiles',
     UPDATE_EVENT_PROFILE = '[Backend] Updating event\'s profile',
@@ -74,7 +75,7 @@ export class InputEventProfilePageDateRange {
 export class SelectEventProfilePageStatus {
     public static readonly type: ActionEnum = ActionEnum.SELECT_EVENT_PROFILE_PAGE_STATUS
 
-    public constructor (public readonly status: ProfileStatusEnum | undefined) {}
+    public constructor (public readonly status: string | undefined) {}
 }
 
 export class SelectEventProfilePageVisibility {
@@ -89,12 +90,6 @@ export class SelectEventProfilePageOrder {
     public constructor (public readonly order: OrderEnum) {}
 }
 
-export class FetchEventProfile {
-    public static readonly type: ActionEnum = ActionEnum.FETCH_EVENT_PROFILE
-
-    public constructor (public readonly eventId: string | undefined, public readonly id: string) {}
-}
-
 export class SearchUsers {
     public static readonly type: ActionEnum = ActionEnum.SEARCH_USERS
 
@@ -104,8 +99,20 @@ export class SearchUsers {
     ) {}
 }
 
+export class FetchEventProfile {
+    public static readonly type: ActionEnum = ActionEnum.FETCH_EVENT_PROFILE
+
+    public constructor (public readonly eventId: string | undefined, public readonly id: string) {}
+}
+
 export class FetchAssignableEventProfileRoles {
     public static readonly type: ActionEnum = ActionEnum.FETCH_ASSIGNABLE_EVENT_PROFILE_ROLES
+
+    public constructor (public readonly eventId: string | undefined) {}
+}
+
+export class FetchAssignableEventProfileStatus {
+    public static readonly type: ActionEnum = ActionEnum.FETCH_AVAILABLE_EVENT_PROFILE_STATUS
 
     public constructor (public readonly eventId: string | undefined) {}
 }

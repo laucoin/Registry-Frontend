@@ -62,10 +62,6 @@ export class UserFacade extends GenericElementFacade<UserModel> {
         return this.ngStore.select( (state: StateModel): boolean => state.user.user.loading )
     }
 
-    public get elementError (): Observable<ToastMessageOptions | undefined> {
-        return this.ngStore.select( (state: StateModel): ToastMessageOptions | undefined => state.eventProfile.eventProfile.error )
-    }
-
     public startPageLoader (): void {
         this.ngStore.dispatch( StartUsersPageLoader )
     }

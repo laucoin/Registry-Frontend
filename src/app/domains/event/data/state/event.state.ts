@@ -1,6 +1,5 @@
-import { HttpErrorResponse } from '@angular/common/http'
 import { Action, State, StateContext } from '@ngxs/store'
-import { catchError, finalize, map, Observable } from 'rxjs'
+import { catchError, finalize, map, Observable, of } from 'rxjs'
 import { EventModel } from '../../../../shared/util-model/model/event.model'
 import { PageModel } from '../../../../shared/util-model/model/page.model'
 import { GenericElementState } from '../../../../shared/util-tool/state/generic-element.state'
@@ -12,6 +11,7 @@ import {
     DisableEvent,
     EnableEvent,
     FetchEvent,
+    FetchEventOptions,
     FetchEventPage,
     InputEventPageDateRange,
     InputEventPageSearch,
@@ -30,11 +30,12 @@ import { Injectable } from '@angular/core'
 import { StateUtil } from '../../../../shared/util-tool/state/state.util'
 import { OrderEnum } from '../../../../shared/util-model/enumeration/order.enum'
 import { ElementRequestInformationModel } from '../../../../shared/util-model/model/element-request-information.model'
+import { EventOptionModel } from '../model/event-option.model'
+import { ErrorModel } from '../../../../shared/util-model/model/error.model'
 
 const defaultEvent: ElementRequestInformationModel<EventModel> = {
     element: undefined,
     loading: false,
-    error: undefined,
 }
 
 const defaultEventState: EventStateModel = {
@@ -52,6 +53,9 @@ const defaultEventState: EventStateModel = {
         error: undefined,
     },
     event: defaultEvent,
+    _metadata: {
+        options: [],
+    },
 }
 
 @State<EventStateModel>( {
@@ -103,7 +107,7 @@ export class EventState extends GenericElementState<EventStateModel> {
             initialize( (): void => this.facade.startPageLoader() ),
             finalize( (): void => this.facade.stopPageLoader() ),
             map( (eventPage: PageModel<EventModel>): void => this.fetchEventPageComplete( ctx, eventPage ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.pageError( ctx, error ) ),
+            catchError( (error: ErrorModel): Observable<void> => this.pageError( ctx, error ) ),
         )
     }
 
@@ -181,13 +185,29 @@ export class EventState extends GenericElementState<EventStateModel> {
         } )
     }
 
+    @Action( FetchEventOptions )
+    public fetchEventOptions (ctx: StateContext<EventStateModel>): Observable<void> {
+        return this.service.getAvailableEventOptions().pipe(
+            initialize( (): void => this.facade.startElementLoader() ),
+            finalize( (): void => this.facade.stopElementLoader() ),
+            map( (options: EventOptionModel[]): void => this.fetchEventOptionsComplete( ctx, options ) ),
+        )
+    }
+
+    private fetchEventOptionsComplete (ctx: StateContext<EventStateModel>, options: EventOptionModel[]): void {
+        ctx.patchState( {
+            _metadata: {
+                options: options,
+            },
+        } )
+    }
+
     @Action( FetchEvent )
     public fetchEvent (ctx: StateContext<EventStateModel>, payload: FetchEvent): Observable<void> {
         return this.service.findEventById( payload.id ).pipe(
             initialize( (): void => this.facade.startElementLoader() ),
             finalize( (): void => this.facade.stopElementLoader() ),
             map( (event: EventModel): void => this.fetchEventComplete( ctx, event ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
         )
     }
 
@@ -213,7 +233,6 @@ export class EventState extends GenericElementState<EventStateModel> {
             initialize( (): void => this.facade.startElementLoader() ),
             finalize( (): void => this.facade.stopElementLoader() ),
             map( (event: EventModel): void => this.createEventComplete( ctx, event ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
         )
     }
 
@@ -235,7 +254,6 @@ export class EventState extends GenericElementState<EventStateModel> {
             initialize( (): void => this.facade.startElementLoader() ),
             finalize( (): void => this.facade.stopElementLoader() ),
             map( (event: EventModel): void => this.updateEventComplete( ctx, event ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
         )
     }
 
@@ -256,7 +274,6 @@ export class EventState extends GenericElementState<EventStateModel> {
             initialize( (): void => this.facade.startElementLoader() ),
             finalize( (): void => this.facade.stopElementLoader() ),
             map( (event: EventModel): void => this.disableEventComplete( ctx, event ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
         )
     }
 
@@ -278,7 +295,6 @@ export class EventState extends GenericElementState<EventStateModel> {
             initialize( (): void => this.facade.startElementLoader() ),
             finalize( (): void => this.facade.stopElementLoader() ),
             map( (event: EventModel): void => this.enableEventComplete( ctx, event ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
         )
     }
 
@@ -300,7 +316,6 @@ export class EventState extends GenericElementState<EventStateModel> {
             initialize( (): void => this.facade.startElementLoader() ),
             finalize( (): void => this.facade.stopElementLoader() ),
             map( (): void => this.deleteEventComplete( ctx, payload.event ) ),
-            catchError( (error: HttpErrorResponse): Observable<void> => this.elementError( ctx, error ) ),
         )
     }
 
@@ -325,25 +340,15 @@ export class EventState extends GenericElementState<EventStateModel> {
         this.facade.fetchPage( page?.offset, page?.limit, true )
     }
 
-    protected pageError (ctx: StateContext<EventStateModel>, error: HttpErrorResponse): Observable<void> {
+    protected pageError (ctx: StateContext<EventStateModel>, error: ErrorModel): Observable<void> {
         if (error.status == 503) {
-            this.registryFacade.setGlobalError( error )
+            throw error
         } else {
             ctx.patchState( {
-                events: this.buildErrorMessageAndNotify( ctx.getState().events, error ),
+                events: this.buildErrorMessage( ctx.getState().events, error ),
             } )
         }
-        throw error.error
-    }
 
-    protected elementError (ctx: StateContext<EventStateModel>, error: HttpErrorResponse): Observable<void> {
-        if (error.status == 503) {
-            this.registryFacade.setGlobalError( error )
-        } else {
-            ctx.patchState( {
-                event: this.buildErrorMessageAndNotify( ctx.getState().event, error ),
-            } )
-        }
-        throw error.error
+        return of()
     }
 }

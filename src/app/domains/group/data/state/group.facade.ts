@@ -112,7 +112,7 @@ export class GroupFacade extends GenericEventElementFacade<GroupModel> {
     }
 
     public get searchedParticipants (): Observable<SelectItem<ParticipantModel>[]> {
-        return this.ngStore.select( (state: StateModel): SelectItem<ParticipantModel>[] => state.group.searched )
+        return this.ngStore.select( (state: StateModel): SelectItem<ParticipantModel>[] => state.group._metadata.searched )
     }
 
     public get element (): Observable<GroupModel | undefined> {
@@ -121,10 +121,6 @@ export class GroupFacade extends GenericEventElementFacade<GroupModel> {
 
     public get elementLoading (): Observable<boolean> {
         return this.ngStore.select( (state: StateModel): boolean => state.group.group.loading )
-    }
-
-    public get elementError (): Observable<ToastMessageOptions | undefined> {
-        return this.ngStore.select( (state: StateModel): ToastMessageOptions | undefined => state.group.group.error )
     }
 
     public startPageLoader (): void {
