@@ -172,6 +172,59 @@
             "rotateLeft": "Tourner à gauche"
         }
     },
+    "legal": {
+        "information": {
+            "name": "Informations",
+            "about": "À propos de Registry",
+            "summary": "Bienvenue sur Registry ! Un outil de gestion d'évènements. Il permet notamment la tenue de registres de présences.",
+            "who": {
+                "title": "Qui sommes-nous ?",
+                "content": "Registry a débuté sur un camp des Scouts et Guides de France en août 2019. Il a été créé par Luc AUCOIN avec l'aide d'Alexandre D'HONT et Louis VICAINNE (Ils ont du mérite car je les ai bien saoulé avec mes idées.)."
+            }
+        },
+        "terms-of-use": {
+            "name": "Conditions générales d'utilisation",
+            "summary": "Bienvenue sur Registry ({{url}}), une plateforme de type SaaS exploitée par Luc AUCOIN. En utilisant le Site et ses services, vous acceptez les Conditions d’utilisation suivantes. Si vous n’êtes pas d’accord avec ces conditions, vous ne devez pas utiliser le Site.",
+            "conclusion": "En utilisant le Site, vous reconnaissez avoir lu et compris ces Conditions d’utilisation, et vous acceptez de les respecter.",
+            "service": {
+                "title": "1. Objet du service",
+                "content": "Le Site fournit une plateforme permettant aux utilisateurs de saisir, gérer et traiter des données. Les utilisateurs sont entièrement responsables des données qu’ils saisissent, notamment concernant les obligations légales relatives au consentement des personnes concernées. Cela en vertu du Règlement Général sur la Protection des Données (RGPD)."
+            },
+            "liability": {
+                "title": "2. Responsabilité des utilisateurs",
+                "subtitle1": "2.1 Respect de la législation RGPD",
+                "content1": "Les utilisateurs garantissent qu’ils collectent, traitent et saisissent les données des personnes conformément aux dispositions du RGPD. En particulier, ils s’engagent à :<ul><li>Obtenir le consentement explicite des personnes concernées avant toute collecte de données ;</li><li>Fournir aux personnes concernées les informations nécessaires sur l’usage de leurs données ;</li><li>Respecter les droits des personnes (droit d’accès, de rectification, d’effacement, etc.).</li></ul>",
+                "subtitle2": "2.2 Exactitude et sécurité des données",
+                "content2": "Les utilisateurs s’engagent à :<ul><li>Fournir des informations exactes, complètes et à jour ;</li><li>Protéger les données saisies contre tout accès non autorisé.</li></ul>",
+                "subtitle3": "2.3 Contenu interdit",
+                "content3": "Les utilisateurs s’engagent à ne pas saisir de contenus illicites, incorrects ou contraires à la loi dans le cadre de l’utilisation du Site. Cela inclut, sans s’y limiter :<ul><li>Les propos injurieux, diffamatoires ou haineux ;</li><li>Les contenus discriminatoires ou incitant à la violence ;</li><li>Toute donnée violant les droits des tiers ou enfreignant les lois en vigueur.</li></ul>Luc AUCOIN se réserve le droit de supprimer tout contenu non conforme ou de suspendre l’accès au Site en cas de non-respect de ces règles."
+            },
+            "data-usage": {
+                "title": "3. Utilisation des données",
+                "content": "Les données saisies dans l’application peuvent être utilisées dans les conditions suivantes :<ul><li><b>Monitoring</b> : Pour surveiller les performances et la stabilité de l’application.</li><li><b>Débogage</b> : Pour identifier et corriger les anomalies.</li><li><b>Amélioration des services</b> : Pour optimiser les fonctionnalités et l’expérience utilisateur.</li><li><b>Analyse et Enquête</b> : L'utilisateur qui créé ou modifie une donnée est affiché avec celle-ci et pourra être consulté dans ce cadre.</li></ul>Ces données ne seront jamais volontairement utilisées à des fins commerciales ou partagées avec des tiers à des fins de marketing."
+            },
+            "intellectual-ownership": {
+                "title": "4. Propriété intellectuelle",
+                "content": "Tout le contenu du Site, y compris mais sans s’y limiter, le code source, les textes, les graphiques, les logos et les images, est protégé par le droit d’auteur et est la propriété exclusive de Luc AUCOIN. Cependant, si le Site est utilisé dans un contexte de marque blanche, les droits liés à l’apparence personnalisée et aux éléments de marque blanche appartiennent au client qui en fait usage, tandis que la propriété intellectuelle sur la technologie sous-jacente et les fonctionnalités demeure celle de Luc AUCOIN. Toute reproduction, modification, distribution ou exploitation non autorisée de ce contenu est strictement interdite."
+            },
+            "liability-limitation": {
+                "title": "5. Limitation de responsabilité",
+                "content": "Luc AUCOIN s’efforce de garantir le bon fonctionnement du Site, mais ne peut être tenu responsable des dommages directs ou indirects résultant de l’utilisation ou de l’impossibilité d’utiliser le Site, notamment en cas de perte de données, de panne technique ou de violation de la sécurité des données."
+            },
+            "cancellation": {
+                "title": "6. Résiliation",
+                "content": "Luc AUCOIN se réserve le droit de suspendre ou de résilier l’accès au Site en cas de violation des présentes Conditions d’utilisation ou pour toute autre raison jugée nécessaire."
+            },
+            "terms-of-use-modification": {
+                "title": "7. Modifications des conditions d’utilisation",
+                "content": "Ces Conditions d’utilisation peuvent être modifiées à tout moment. Les utilisateurs seront informés des modifications importantes via un avis sur le Site ou par tout autre moyen approprié. La poursuite de l’utilisation du Site après modification vaut acceptation des nouvelles conditions."
+            },
+            "contact": {
+                "title": "8. Contact",
+                "content": "Pour toute question ou demande d’information relative à ces Conditions d’utilisation, veuillez contacter :<ul><li><b>Nom</b> : Luc AUCOIN</li><li><b>Email</b> : luc.aucoin1998@gmail.com</li></ul>"
+            }
+        }
+    },
     "info": {
         "title": {
             "missing-selected-profile": "🔍 Aucun profil sélectionné"
