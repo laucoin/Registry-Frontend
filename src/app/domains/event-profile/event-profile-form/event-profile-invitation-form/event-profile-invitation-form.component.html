@@ -3,9 +3,9 @@
     <p-card>
         <form [formGroup]='form'>
             <div class='field'>
-                <label for='roles' appRequired>{{ 'profile.form.role' | translate }}</label>
+                <label for='role' appRequired>{{ 'profile.form.role' | translate }}</label>
                 <p-select
-                        id='roles'
+                        inputId='role'
                         fluid
                         [options]='(assignableRoles$ | async) ?? []'
                         [formControl]='role'
@@ -15,7 +15,7 @@
                         optionLabel='label'
                         optionValue='value' />
                 <app-form-field-error [control]='role'
-                                      [label]='"profile.form.role" | translate' />
+                                      translationPrefix='profile.form.error.role' />
             </div>
             <div class='field'>
                 <label for='profiles-range'>{{ 'profile.form.date-range' | translate }}</label>
@@ -34,7 +34,7 @@
                                selectionMode='range'
                                fluid />
                 <app-form-field-error [control]='range'
-                                      [label]='"profile.form.date-range" | translate' />
+                                      translationPrefix='profile.form.error.range' />
             </div>
             <p-divider />
             <div class='field'>
@@ -46,7 +46,7 @@
                                            inputId='users'
                                            (handleSearch)='handleSearch($event.query)' />
                 <app-form-field-error [control]='users'
-                                      [label]='"profile.form.users" | translate' />
+                                      translationPrefix='profile.form.error.users' />
             </div>
         </form>
         <div class='d-flex pt-4 justify-content-center align-items-center'>

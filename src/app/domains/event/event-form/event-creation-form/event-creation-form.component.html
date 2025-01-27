@@ -19,8 +19,7 @@
                                        pInputText
                                        type='text' />
                                 <app-form-field-error [control]='name'
-                                                      [example]='"event.example.name" | translate'
-                                                      [label]='"event.form.name" | translate' />
+                                                      translationPrefix='event.form.error.name' />
                             </div>
                             <div class='field'>
                                 <label for='range'>{{ 'event.form.range' | translate }}</label>
@@ -37,9 +36,6 @@
                                                inputId='range'
                                                selectionMode='range'
                                                fluid />
-                                <app-form-field-error [control]='range'
-                                                      [example]='"event.example.range" | translate'
-                                                      [label]='"event.form.range" | translate' />
                             </div>
                         </div>
                         <div class='d-flex pt-4 justify-content-end'>
@@ -65,17 +61,26 @@
                                         <label [for]='option.value'>
                                             <i [class]='optionIcon(option.value)'></i>
                                             {{ option.ask }}
+                                            <b> ({{ option.label }})</b>
                                         </label>
                                         <p-toggle-switch [formControl]='getOptionControl(option.value)'
                                                          id='ticketing' />
                                     </div>
                                     <app-form-field-error [control]='getOptionControl(option.value)'
-                                                          [label]='"event.form.ticketing" | translate' />
+                                                          translationPrefix='event.form.error.options' />
                                 </div>
                                 @if (i < eventOptions.length - 1) {
                                     <p-divider />
                                 }
                             </div>
+                            @if (optionsForm.hasError('preRequiredOptions')) {
+                                <p-message severity='error'
+                                           variant='simple'>{{
+                                        'event.form.error.options.preRequiredOptions' | translate:
+                                            optionsForm.getError('preRequiredOptions')
+                                    }}
+                                </p-message>
+                            }
                         </div>
                         <div class='d-flex pt-4 justify-content-between'>
                             <p-button

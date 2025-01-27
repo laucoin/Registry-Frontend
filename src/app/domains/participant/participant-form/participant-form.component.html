@@ -31,8 +31,6 @@
                     <span>{{ 'participant.form.empty-user-search' | translate }}</span>
                 </ng-template>
             </p-auto-complete>
-            <app-form-field-error [control]='user'
-                                  [label]='"participant.form.user" | translate' />
         </div>
         <p-divider align='center' />
         <div class='field'>
@@ -49,8 +47,7 @@
                 </small>
             }
             <app-form-field-error [control]='firstName'
-                                  [example]='"participant.example.first-name" | translate'
-                                  [label]='"participant.form.first-name" | translate' />
+                                  translationPrefix='participant.form.error.first-name' />
         </div>
         <div class='field'>
             <label for='last-name' appRequired>{{ 'participant.form.last-name' | translate }}</label>
@@ -66,22 +63,19 @@
                 </small>
             }
             <app-form-field-error [control]='lastName'
-                                  [example]='"participant.example.last-name" | translate'
-                                  [label]='"participant.form.last-name" | translate' />
+                                  translationPrefix='participant.form.error.last-name' />
         </div>
         <div class='field'>
             <label for='birthday' appRequired>{{ 'participant.form.birthday' | translate }}</label>
             <p-date-picker [formControl]='birthday'
                            [showButtonBar]='true'
                            [placeholder]='"participant.example.birthday" | translate'
-                           [maxDate]='today'
                            [touchUI]='isMobile()'
                            (keydown.enter)='submit()'
                            id='birthday'
                            fluid />
             <app-form-field-error [control]='birthday'
-                                  [example]='"participant.example.birthday" | translate'
-                                  [label]='"participant.form.birthday" | translate' />
+                                  translationPrefix='participant.form.error.birthday' />
         </div>
         <div class='field'>
             <label for='presence'>{{ 'participant.form.presence' | translate }}</label>
@@ -99,8 +93,7 @@
                            selectionMode='range'
                            fluid />
             <app-form-field-error [control]='presence'
-                                  [example]='"participant.example.presence" | translate'
-                                  [label]='"participant.form.presence" | translate' />
+                                  translationPrefix='participant.form.error.presence' />
         </div>
         @if (!defaultGroup) {
             <p-divider />
@@ -113,8 +106,6 @@
                                            [emptyPlaceholder]='"participant.form.no-group" | translate'
                                            inputId='groups'
                                            (handleSearch)='handleGroupSearch($event)' />
-                <app-form-field-error [control]='groups'
-                                      [label]='"participant.form.groups" | translate' />
             </div>
         }
     </p-card>

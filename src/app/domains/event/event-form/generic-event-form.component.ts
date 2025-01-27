@@ -8,7 +8,6 @@ import { AppConfig } from '../../../app.config'
 import { EventOptionModel } from '../data/model/event-option.model'
 import { Observable } from 'rxjs'
 import { FormUtil } from '../../../shared/util-tool/util/form.util'
-import { SelectItem } from 'primeng/api'
 
 @Component( {
     template: '',
@@ -34,7 +33,10 @@ export abstract class GenericEventFormComponent extends GenericFormComponent {
 
     protected initForm (): FormGroup {
         return this.formBuilder.group( {
-            name: this.formBuilder.control( undefined, [ Validators.required, CustomValidators.nonBlank() ] ),
+            name: this.formBuilder.control(
+                undefined,
+                [ Validators.required, CustomValidators.nonBlank(), Validators.maxLength( 150 ) ],
+            ),
             range: this.formBuilder.control( [] ),
         } )
     }
@@ -48,33 +50,11 @@ export abstract class GenericEventFormComponent extends GenericFormComponent {
     private handleEventOptions (): void {
         this.subscriptions.add(
             this.eventOptions$.subscribe( (options: EventOptionModel[]): void => {
-                    options.forEach( (option: EventOptionModel): void => this.optionsForm.addControl(
-                        option.value,
-                        this.formBuilder.control( false ),
-                    ) )
-                    options.forEach( (option: EventOptionModel): void => {
-                        if (option.preRequired.length > 0) {
-                            this.getOptionControl( option.value ).disable()
-                        }
-                    } )
-                    this.handleOptionsFormValueChanges( options.filter( (option: EventOptionModel): boolean => option.preRequired.length > 0 ) )
-                },
-            ),
-        )
-    }
-
-    private handleOptionsFormValueChanges (options: EventOptionModel[]): void {
-        this.optionsForm.valueChanges.subscribe( (): void =>
-            options.forEach( (option: EventOptionModel): void => {
-                const missing: SelectItem<string>[] = option.preRequired.filter(
-                    (preRequired: SelectItem<string>): boolean => !this.getOptionControl( preRequired.value ).value,
-                )
-                if (missing.length > 0) {
-                    this.getOptionControl( option.value ).setValue( false, { emitEvent: false } )
-                    this.getOptionControl( option.value ).disable( { emitEvent: false } )
-                } else {
-                    this.getOptionControl( option.value ).enable( { emitEvent: false } )
-                }
+                if (!options || options.length === 0) return
+                options.forEach( (option: EventOptionModel): void => {
+                    this.optionsForm.addControl( option.value, this.formBuilder.control( false ) )
+                } )
+                this.optionsForm.addValidators( CustomValidators.preRequiredOptions( options ) )
             } ),
         )
     }

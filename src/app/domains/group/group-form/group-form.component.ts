@@ -27,6 +27,7 @@ import {
 import { ParticipantUtil } from '../../../shared/util-tool/util/participant.util'
 import { SelectItem } from 'primeng/api'
 import { StringUtils } from '../../../shared/util-tool/util/string.util'
+import { EventModel } from '../../../shared/util-model/model/event.model'
 
 @Component( {
     selector: 'app-group-form',
@@ -44,6 +45,7 @@ import { StringUtils } from '../../../shared/util-tool/util/string.util'
         ReactiveFormsModule,
         Divider,
         SelectElementsFieldComponent,
+
     ],
     templateUrl: './group-form.component.html',
 } )
@@ -51,7 +53,10 @@ export class GroupFormComponent extends GenericFormComponent {
     protected readonly participantsSuggestion$: Observable<SelectItem<ParticipantModel>[]>
     protected readonly group: WritableSignal<GroupModel | undefined> = signal( undefined )
 
-    public constructor (protected readonly facade: GroupFacade) {
+    public constructor (
+        protected readonly facade: GroupFacade,
+        private readonly datePipe: DatePipe,
+    ) {
         super(
             AppRouteEnum.GROUPS,
             facade.elementLoading,
@@ -59,8 +64,8 @@ export class GroupFormComponent extends GenericFormComponent {
 
         facade.resetElement()
 
+        this.handleContextEvent()
         this.handleIdParam()
-
         this.handleLoadedGroup()
 
         this.participantsSuggestion$ = this.facade.searchedParticipants
@@ -75,6 +80,31 @@ export class GroupFormComponent extends GenericFormComponent {
             presence: this.formBuilder.control( [] ),
             participants: this.formBuilder.control( [], [ Validators.required ] ),
         } )
+    }
+
+    private handleContextEvent (): void {
+        this.subscriptions.add(
+            this.contextEvent$.subscribe( (event: EventModel | undefined): void => {
+                if (event?.begin) {
+                    this.presence.addValidators( CustomValidators.minDate(
+                        new Date( event?.begin ),
+                        this.datePipe.transform(
+                            new Date( event?.begin ),
+                            this.translateService.instant( 'datetime.format.datetime' ),
+                        )!,
+                    ) )
+                }
+                if (event?.end) {
+                    this.presence.addValidators( CustomValidators.maxDate(
+                        new Date( event?.end ),
+                        this.datePipe.transform(
+                            new Date( event?.end ),
+                            this.translateService.instant( 'datetime.format.datetime' ),
+                        )!,
+                    ) )
+                }
+            } ),
+        )
     }
 
     private handleIdParam (): void {

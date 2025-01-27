@@ -51,9 +51,7 @@ import { SelectItem } from 'primeng/api'
 export class EventProfileInvitationFormComponent extends GenericEventProfileFormComponent {
     protected readonly usersSuggestion$: Observable<SelectItem<UserDto>[]>
 
-    public constructor (
-        protected override readonly facade: EventProfileFacade,
-    ) {
+    public constructor (protected override readonly facade: EventProfileFacade) {
         super( facade )
 
         this.usersSuggestion$ = this.facade.searchedUsers

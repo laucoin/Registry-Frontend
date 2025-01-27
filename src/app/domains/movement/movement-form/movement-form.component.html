@@ -27,11 +27,7 @@
                            inputId='datetime'
                            fluid />
             <app-form-field-error [control]='dateTime'
-                                  [example]='"movement.example.datetime" | translate: {
-                                      date: now | date: ("datetime.format.date" | translate),
-                                      time: now | date: ("datetime.format.time" | translate),
-                                  }'
-                                  [label]='"movement.form.datetime" | translate' />
+                                  translationPrefix='movement.form.error.date-time' />
         </div>
         <div class='field'>
             <label for='type' appRequired>{{ 'movement.form.type' | translate }}</label>
@@ -45,7 +41,7 @@
                     optionLabel='label'
                     optionValue='value' />
             <app-form-field-error [control]='type'
-                                  [label]='"movement.form.type" | translate' />
+                                  translationPrefix='movement.form.error.type' />
         </div>
         <p-divider />
         <div class='field'>
@@ -59,7 +55,7 @@
                                                 (handleSearch)='handleSearch($event.query)' />
                 </div>
                 <app-form-field-error [control]='content'
-                                      [label]='"movement.form.content" | translate' />
+                                      translationPrefix='movement.form.error.participants' />
             </div>
         </div>
     </p-card>

@@ -28,6 +28,8 @@ import { RegistryRequiredDirective } from '../../../shared/util-tool/directive/r
 import { MovementContentFieldComponent } from '../movement-content-field/movement-content-field.component'
 import { MovementContentModel } from '../data/model/movement-content.model'
 import { StringUtils } from '../../../shared/util-tool/util/string.util'
+import { EventModel } from '../../../shared/util-model/model/event.model'
+import { CustomValidators } from '../../../shared/util-tool/util/custom-validator'
 
 @Component( {
     selector: 'app-movement-form',
@@ -49,6 +51,7 @@ import { StringUtils } from '../../../shared/util-tool/util/string.util'
         MovementContentFieldComponent,
         TranslatePipe,
         DatePipe,
+
     ],
     templateUrl: './movement-form.component.html',
 } )
@@ -60,7 +63,10 @@ export class MovementFormComponent extends GenericFormComponent implements OnIni
 
     protected readonly movement: WritableSignal<MovementModel | undefined> = signal( undefined )
 
-    public constructor (protected readonly facade: MovementFacade) {
+    public constructor (
+        protected readonly facade: MovementFacade,
+        private readonly datePipe: DatePipe,
+    ) {
         super(
             AppRouteEnum.MOVEMENTS,
             facade.elementLoading,
@@ -69,6 +75,7 @@ export class MovementFormComponent extends GenericFormComponent implements OnIni
         facade.resetElement()
         this.movementTypes$ = facade.movementTypes
 
+        this.handleContextEvent()
         this.handleIdParam()
         this.handleLoadedMovement()
 
@@ -85,6 +92,31 @@ export class MovementFormComponent extends GenericFormComponent implements OnIni
             type: this.formBuilder.control( undefined, [ Validators.required ] ),
             content: this.formBuilder.control( [], [ Validators.required ] ),
         } )
+    }
+
+    private handleContextEvent (): void {
+        this.subscriptions.add(
+            this.contextEvent$.subscribe( (event: EventModel | undefined): void => {
+                if (event?.begin) {
+                    this.dateTime.addValidators( CustomValidators.minDate(
+                        new Date( event?.begin ),
+                        this.datePipe.transform(
+                            new Date( event?.begin ),
+                            this.translateService.instant( 'datetime.format.datetime' ),
+                        )!,
+                    ) )
+                }
+                if (event?.end) {
+                    this.dateTime.addValidators( CustomValidators.maxDate(
+                        new Date( event?.end ),
+                        this.datePipe.transform(
+                            new Date( event?.end ),
+                            this.translateService.instant( 'datetime.format.datetime' ),
+                        )!,
+                    ) )
+                }
+            } ),
+        )
     }
 
     private handleIdParam (): void {

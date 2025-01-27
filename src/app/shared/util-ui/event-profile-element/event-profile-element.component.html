@@ -21,7 +21,9 @@
                 }
             </div>
             @if (element.startAccess || element.endAccess) {
-                <p-badge [class.mt-1]='layout === "grid"' severity='info' value='{{ "event.role." + element.role | translate }}' />
+                <div>
+                    <p-badge [class.mt-1]='layout === "grid"' severity='info' [value]='element.role.label ?? ""' />
+                </div>
             }
         </div>
         <div class='role d-flex flex-wrap align-content-center p-1' [class.justify-content-center]='layout === "grid"'>
@@ -56,13 +58,15 @@
                     }
                 </div>
             } @else {
-                <p-badge severity='info' value='{{ element.role.label }}' />
+                <div>
+                    <p-badge severity='info' [value]='element.role.label ?? ""' />
+                </div>
             }
         </div>
         <div class='status d-flex p-1' [class.mt-1]='layout === "grid"' [class.justify-content-center]='layout === "grid"'>
             @if (element.status.value !== 'INVITED' || element.user.id !== currentUser.id) {
                 <p-badge [severity]='severityFromStatus(element.status.value)'
-                         value='{{ element.status.label }}' />
+                         [value]='element.status.label ?? ""' />
             } @else {
                 <div [class.mt-2]='layout === "grid"' class='d-flex flex-column'>
                     <div [class.mb-1]='layout === "grid"'>{{ 'profile.action.manage-acceptance' | translate }}</div>

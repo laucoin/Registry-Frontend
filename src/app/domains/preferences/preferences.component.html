@@ -8,7 +8,7 @@
                         class='name'>{{ (currentUser.firstName | titlecase) + ' ' + (currentUser.lastName | uppercase) }}</span>
                 @if (currentUser.role) {
                     <div>
-                        <p-tag [value]="'user.role.' + currentUser.role | translate"
+                        <p-tag [value]='currentUser.role.label'
                                severity='info'>
                             <ng-template #icon>
                                 <i class='pi pi-sparkles'></i>

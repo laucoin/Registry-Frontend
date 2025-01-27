@@ -15,6 +15,7 @@ import { Button } from 'primeng/button'
 import { DatePicker } from 'primeng/datepicker'
 import { ToggleSwitch } from 'primeng/toggleswitch'
 import { Card } from 'primeng/card'
+import { Message } from 'primeng/message'
 
 @Component( {
     selector: 'app-event-creation-form',
@@ -36,6 +37,7 @@ import { Card } from 'primeng/card'
         Card,
         NgForOf,
         NgIf,
+        Message,
     ],
     templateUrl: './event-creation-form.component.html',
     styleUrl: './event-creation-form.component.scss',

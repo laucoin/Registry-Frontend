@@ -2,7 +2,6 @@ import { ToastMessageOptions } from 'primeng/api'
 import { OrderEnum } from '../../util-model/enumeration/order.enum'
 import { EventProfileModel } from '../../util-model/model/event-profile.model'
 import { TokenModel } from '../../util-authentication/model/token.model'
-import { CurrentUserModel } from '../../util-model/model/current-user.model'
 import { ErrorModel } from '../../util-model/model/error.model'
 
 enum ActionEnum {
@@ -18,7 +17,6 @@ enum ActionEnum {
     LOGOUT = '[Backend] Logging out',
 
     RESTORE_TOKEN = '[Local] Restoring token',
-    RESTORE_CURRENT_USER = '[Local] Restoring current user',
     FETCH_TOKEN = '[Backend] Fetching token',
     REFRESH_TOKEN = '[Backend] Refreshing token',
 
@@ -98,12 +96,6 @@ export class RestoreTokens {
     public static readonly type: ActionEnum = ActionEnum.RESTORE_TOKEN
 
     public constructor (public readonly token: TokenModel) {}
-}
-
-export class RestoreCurrentUser {
-    public static readonly type: ActionEnum = ActionEnum.RESTORE_CURRENT_USER
-
-    public constructor (public readonly currentUser: CurrentUserModel) {}
 }
 
 export class FetchToken {

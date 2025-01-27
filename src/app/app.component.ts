@@ -60,11 +60,12 @@ export class AppComponent implements OnInit, OnDestroy {
         private readonly registryFacade: RegistryFacade,
     ) {
         this.registryFacade.restoreTokensFromSessionStorage()
-        this.registryFacade.restoreCurrentUserFromSessionStorage()
         this.handleLoadingAndError()
     }
 
     public ngOnInit (): void {
+        this.registryFacade.fetchCurrentUser()
+
         this.initTheme()
         this.listenThemeChange()
 

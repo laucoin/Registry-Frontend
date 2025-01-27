@@ -24,7 +24,6 @@ import {
     ManageEventInvitationAcceptance,
     Notify,
     RefreshToken,
-    RestoreCurrentUser,
     RestoreTokens,
     SelectInvitationPageOrder,
     SelectProfilePageOrder,
@@ -48,9 +47,9 @@ import { OrderEnum } from '../../util-model/enumeration/order.enum'
 import { FormUtil } from '../../util-tool/util/form.util'
 import { EventModel } from '../../util-model/model/event.model'
 import { AppConfig } from '../../../app.config'
-import { SessionStorageUtils } from '../../util-tool/util/session-storage.util'
-import { CURRENT_USER, TOKEN } from '../../util-tool/util/request.util'
 import { ErrorModel } from '../../util-model/model/error.model'
+import { SessionStorageUtils } from '../../util-tool/util/session-storage.util'
+import { TOKEN } from '../../util-tool/util/request.util'
 
 @Injectable()
 export class RegistryFacade {
@@ -226,12 +225,6 @@ export class RegistryFacade {
     public restoreTokensFromSessionStorage (): void {
         if (SessionStorageUtils.check( TOKEN )) {
             this.ngStore.dispatch( new RestoreTokens( SessionStorageUtils.get( TOKEN ) as TokenModel ) )
-        }
-    }
-
-    public restoreCurrentUserFromSessionStorage (): void {
-        if (SessionStorageUtils.check( CURRENT_USER )) {
-            this.ngStore.dispatch( new RestoreCurrentUser( SessionStorageUtils.get( CURRENT_USER ) as CurrentUserModel ) )
         }
     }
 
