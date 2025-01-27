@@ -25,7 +25,7 @@
                         optionLabel='label'
                         optionValue='value' />
                 <app-form-field-error [control]='role'
-                                      [label]='"profile.form.role" | translate' />
+                                      translationPrefix='profile.form.error.role' />
             </div>
             <div class='field'>
                 <label for='profiles-range'>{{ 'profile.form.date-range' | translate }}</label>
@@ -40,7 +40,7 @@
                                selectionMode='range'
                                fluid />
                 <app-form-field-error [control]='range'
-                                      [label]='"profile.form.date-range" | translate' />
+                                      translationPrefix='profile.form.error.range' />
             </div>
         </form>
     </p-card>

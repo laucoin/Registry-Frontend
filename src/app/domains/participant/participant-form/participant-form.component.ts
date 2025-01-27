@@ -32,6 +32,7 @@ import {
 import { GroupUtil } from '../../../shared/util-tool/util/group.util'
 import { StringUtils } from '../../../shared/util-tool/util/string.util'
 import { UserModel } from '../../../shared/util-model/model/user.model'
+import { EventModel } from '../../../shared/util-model/model/event.model'
 
 @Component( {
     selector: 'app-participant-form',
@@ -58,7 +59,6 @@ import { UserModel } from '../../../shared/util-model/model/user.model'
 export class ParticipantFormComponent extends GenericFormComponent implements OnChanges {
     @Input() public showTitle: boolean = true
     @Input() public defaultGroup: GroupModel | undefined
-    protected readonly today: Date = new Date()
     protected readonly participant: WritableSignal<ParticipantModel | undefined> = signal( undefined )
 
     protected readonly groupsSuggestion$: Observable<SelectItem<GroupModel>[]>
@@ -68,7 +68,10 @@ export class ParticipantFormComponent extends GenericFormComponent implements On
     protected previousFirstName: WritableSignal<string | undefined> = signal( undefined )
     protected previousLastName: WritableSignal<string | undefined> = signal( undefined )
 
-    public constructor (protected readonly facade: ParticipantFacade) {
+    public constructor (
+        protected readonly facade: ParticipantFacade,
+        private readonly datePipe: DatePipe,
+    ) {
         super(
             AppRouteEnum.PARTICIPANTS,
             facade.elementLoading,
@@ -76,10 +79,9 @@ export class ParticipantFormComponent extends GenericFormComponent implements On
 
         facade.resetElement()
 
+        this.handleContextEvent()
         this.handleIdParam()
-
         this.handleLoadedParticipant()
-
         this.handleUserDeselection()
 
         this.usersSuggestion$ = this.facade.searchedUsers
@@ -102,11 +104,39 @@ export class ParticipantFormComponent extends GenericFormComponent implements On
                 undefined,
                 [ Validators.required, Validators.max( 150 ), CustomValidators.nonBlank() ],
             ),
-            birthday: this.formBuilder.control( undefined, [ Validators.required ] ),
+            birthday: this.formBuilder.control(
+                undefined,
+                [ Validators.required, CustomValidators.maxDate( new Date(), undefined ) ],
+            ),
             user: this.formBuilder.control( undefined ),
             groups: this.formBuilder.control( undefined ),
             presence: this.formBuilder.control( [] ),
         } )
+    }
+
+    private handleContextEvent (): void {
+        this.subscriptions.add(
+            this.contextEvent$.subscribe( (event: EventModel | undefined): void => {
+                if (event?.begin) {
+                    this.presence.addValidators( CustomValidators.minDate(
+                        new Date( event?.begin ),
+                        this.datePipe.transform(
+                            new Date( event?.begin ),
+                            this.translateService.instant( 'datetime.format.datetime' ),
+                        )!,
+                    ) )
+                }
+                if (event?.end) {
+                    this.presence.addValidators( CustomValidators.maxDate(
+                        new Date( event?.end ),
+                        this.datePipe.transform(
+                            new Date( event?.end ),
+                            this.translateService.instant( 'datetime.format.datetime' ),
+                        )!,
+                    ) )
+                }
+            } ),
+        )
     }
 
     private handleIdParam (): void {

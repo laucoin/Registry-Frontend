@@ -6,7 +6,7 @@ import { CurrentUserModel } from '../../util-model/model/current-user.model'
 import { EventProfileModel } from '../../util-model/model/event-profile.model'
 import { PageModel } from '../../util-model/model/page.model'
 import { GenericState } from '../../util-tool/state/generic.state'
-import { CURRENT_USER, REDIRECT_URI, TOKEN } from '../../util-tool/util/request.util'
+import { REDIRECT_URI, TOKEN } from '../../util-tool/util/request.util'
 import { initialize } from '../../util-tool/util/rx.util'
 import { SessionStorageUtils } from '../../util-tool/util/session-storage.util'
 import { RegistryStateModel } from '../model/registry-state.model'
@@ -27,7 +27,6 @@ import {
     ManageEventInvitationAcceptance,
     Notify,
     RefreshToken,
-    RestoreCurrentUser,
     RestoreTokens,
     SelectInvitationPageOrder,
     SelectProfilePageOrder,
@@ -185,6 +184,7 @@ export class RegistryState extends GenericState {
 
     @Action( Logout )
     public logout (ctx: StateContext<RegistryStateModel>): Observable<void> {
+        SessionStorageUtils.delete( TOKEN )
         return this.service.getLogoutUri( `${location.origin}/${AppRouteEnum.LOGOUT_CALLBACK}` ).pipe(
             initialize( (): void => this.registryFacade.startGlobalLoader() ),
             finalize( (): void => this.registryFacade.stopGlobalLoader() ),
@@ -199,16 +199,6 @@ export class RegistryState extends GenericState {
             authentication: {
                 ...ctx.getState().authentication,
                 token: payload.token,
-            },
-        } )
-    }
-
-    @Action( RestoreCurrentUser )
-    public restoreCurrentUser (ctx: StateContext<RegistryStateModel>, payload: RestoreCurrentUser): void {
-        ctx.patchState( {
-            authentication: {
-                ...ctx.getState().authentication,
-                currentUser: payload.currentUser,
             },
         } )
     }
@@ -236,6 +226,7 @@ export class RegistryState extends GenericState {
 
     @Action( RefreshToken )
     public refreshToken (ctx: StateContext<RegistryStateModel>): Observable<void> {
+        if (!ctx.getState().authentication.token) return of()
         return this.service.refreshToken( ctx.getState().authentication.token! ).pipe(
             map( (token: TokenModel): void => this.fetchTokenComplete( ctx, token ) ),
             catchError( (error: ErrorModel): Observable<void> => {
@@ -268,7 +259,6 @@ export class RegistryState extends GenericState {
     }
 
     private fetchCurrentUserComplete (ctx: StateContext<RegistryStateModel>, currentUser: CurrentUserModel): void {
-        SessionStorageUtils.set( CURRENT_USER, currentUser )
         ctx.patchState( {
             authentication: {
                 ...ctx.getState().authentication,

@@ -22,6 +22,7 @@ import { ToggleSwitch } from 'primeng/toggleswitch'
 import { StringUtils } from '../../../../shared/util-tool/util/string.util'
 import { EventOptionModel } from '../../data/model/event-option.model'
 import { SelectItem } from 'primeng/api'
+import { Message } from 'primeng/message'
 
 @Component( {
     selector: 'app-event-edition-form',
@@ -42,6 +43,7 @@ import { SelectItem } from 'primeng/api'
         ToggleSwitch,
         NgForOf,
         NgIf,
+        Message,
     ],
     templateUrl: './event-edition-form.component.html',
     styleUrl: './event-edition-form.component.scss',

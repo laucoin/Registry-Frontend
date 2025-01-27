@@ -15,68 +15,45 @@ import { GenericComponent } from '../../util-tool/component/generic.component'
 } )
 export class FormFieldErrorComponent extends GenericComponent {
     @Input( { required: true } ) public control!: AbstractControl
-    @Input( { required: true } ) public label!: string
-    @Input() public example: string | undefined
-    @Input() public message: Map<string, string> | undefined
+    @Input( { required: true } ) public translationPrefix!: string
 
     protected buildText (code: string): string {
         return this.translateService.instant(
-            this.buildTranslationKey( code ),
+            `${this.translationPrefix}.${code}`,
             this.buildTranslationParams( code ),
         )
     }
 
-    private buildTranslationKey (code: string): string {
-        let translationKey: string = `error.form.${code}.message`
-
-        if (this.example) {
-            translationKey += '-example'
-        }
-
-        if (this.message) {
-            this.message.forEach( (key: string, value: string): void => {
-                if (key === code) translationKey = value
-            } )
-        }
-
-        return translationKey
-    }
-
     protected buildTranslationParams (code: string): object {
-        const params: object = {
-            label: this.label,
-            example: this.example,
-        }
-
         switch (code) {
             case 'min':
                 return {
-                    ...params,
                     min: this.errorProperty( code, 'min' ),
                 }
             case 'max':
                 return {
-                    ...params,
                     max: this.errorProperty( code, 'max' ),
                 }
             case 'minlength':
                 return {
-                    ...params,
-                    min: this.errorProperty( code, 'min' ),
+                    actualLength: this.errorProperty( code, 'actualLength' ),
+                    requiredLength: this.errorProperty( code, 'requiredLength' ),
                 }
             case 'maxlength':
                 return {
-                    ...params,
+                    actualLength: this.errorProperty( code, 'actualLength' ),
+                    requiredLength: this.errorProperty( code, 'requiredLength' ),
+                }
+            case 'minDate':
+                return {
+                    min: this.errorProperty( code, 'min' ),
+                }
+            case 'maxDate':
+                return {
                     max: this.errorProperty( code, 'max' ),
                 }
-            case 'eventOptionConflict':
-                return {
-                    ...params,
-                    require: this.translateService.instant( this.errorProperty( code, 'required' ) ),
-                    for: this.translateService.instant( this.errorProperty( code, 'for' ) ),
-                }
             default:
-                return params
+                return {}
         }
     }
 

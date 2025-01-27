@@ -18,8 +18,7 @@
                    pInputText
                    type='text' />
             <app-form-field-error [control]='name'
-                                  [example]='"group.example.name" | translate'
-                                  [label]='"group.form.name" | translate' />
+                                  translationPrefix='group.form.error.role' />
         </div>
         <div class='field'>
             <label for='presence'>{{ 'participant.form.presence' | translate }}</label>
@@ -37,8 +36,7 @@
                            selectionMode='range'
                            fluid />
             <app-form-field-error [control]='presence'
-                                  [example]='"participant.example.presence" | translate'
-                                  [label]='"participant.form.presence" | translate' />
+                                  translationPrefix='group.form.error.presence' />
         </div>
         <p-divider />
         <div class='field'>
@@ -50,8 +48,8 @@
                                        [emptyPlaceholder]='"group.form.no-participant" | translate'
                                        inputId='participants'
                                        (handleSearch)='handleSearch($event.query)' />
-            <app-form-field-error [control]='participants'
-                                  [label]='"group.form.participants" | translate' />
+            <app-form-field-error [control]='name'
+                                  translationPrefix='group.form.error.participants' />
         </div>
     </p-card>
     <div class='d-flex mt-2 justify-content-center'>

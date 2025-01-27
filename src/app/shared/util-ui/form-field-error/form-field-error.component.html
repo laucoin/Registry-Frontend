@@ -25,8 +25,11 @@
             @case (control.hasError('pattern')) {
                 <p-message severity='error' variant='simple'>{{ buildText("pattern") }}</p-message>
             }
-            @case (control.hasError('eventOptionConflict')) {
-                <p-message severity='error' variant='simple'>{{ buildText("eventOptionConflict") }}</p-message>
+            @case (control.hasError('minDate')) {
+                <p-message severity='error' variant='simple'>{{ buildText("minDate") }}</p-message>
+            }
+            @case (control.hasError('maxDate')) {
+                <p-message severity='error' variant='simple'>{{ buildText("maxDate") }}</p-message>
             }
         }
         <ng-content />

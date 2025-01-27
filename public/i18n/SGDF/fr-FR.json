@@ -239,45 +239,7 @@
             "503": "🥴 Serveur indisponible"
         },
         "message": {
-            "503": "Ça sent le roussi, le serveur est indisponible. Réessaies plus tard. Si le problème persiste, contactes {{maintainerEmail}}."
-        },
-        "form": {
-            "min": {
-                "message": "La {{label}} minimum du champ est {{min}}.",
-                "message-example": "La valeur minimum du champ est {{min}} ({{example}})."
-            },
-            "max": {
-                "message": "La {{label}} maximum du champ est {{min}}.",
-                "message-example": "La valeur maximum du champ est {{min}} ({{example}})."
-            },
-            "minlenght": {
-                "message": "{{label}} doit contenir au moins {{min}} caractères.",
-                "message-example": "Le champ doit contenir au moins {{min}} caractères ({{example}})."
-            },
-            "maxlenght": {
-                "message": "{{label}} peut contenir au maximum {{max}} caractères.",
-                "message-example": "Le champ peut contenir au maximum {{max}} caractères ({{example}})."
-            },
-            "required": {
-                "message": "{{label}} est requis.",
-                "message-example": "{{label}} est requis ({{example}})."
-            },
-            "blank": {
-                "message": "{{label}} ne peut pas être vide.",
-                "message-example": "{{label}} ne peut pas être vide ({{example}})."
-            },
-            "email": {
-                "message": "{{label}} doit avoir la forme d'une adresse email.",
-                "message-example": "{{label}} doit avoir la forme d'une adresse email ({{example}})."
-            },
-            "pattern": {
-                "message": "{{label}} n'est pas au bon format.",
-                "message-example": "{{label}} n'est pas au bon format ({{example}})."
-            },
-            "eventOptionConflict": {
-                "message": "{{label}} est incorrect, pour {{for}} il manque {{require}}.",
-                "message-example": "{{label}} est incorrect, pour {{for}} il manque {{require}} ({{example}})."
-            }
+            "503": "Ça sent le roussi, le serveur est indisponible. Réessaies plus tard. Si le problème persiste contactes l'administrateur."
         }
     },
     "warning": {
@@ -438,7 +400,7 @@
             "movement": {
                 "IN": {
                     "create": {
-                        "singular": "L'entrée du {{date}} à {{time}} a été créée avec un participant",
+                        "singular": "L'entrée du {{date}} à {{time}} a été créée avec une personne participante",
                         "plural": "L'entrée du {{date}} à {{time}} a été créée avec {{participants}} participants"
                     },
                     "edit": "L'entrée du {{date}} à {{time}} a été modifiée",
@@ -448,7 +410,7 @@
                 },
                 "OUT": {
                     "create": {
-                        "singular": "La sortie du {{date}} à {{time}} a été créée avec un participant",
+                        "singular": "La sortie du {{date}} à {{time}} a été créée avec une personne participante",
                         "plural": "La sortie du {{date}} à {{time}} a été créée avec {{participants}} participants"
                     },
                     "edit": "La sortie du {{date}} à {{time}} a été modifiée",
@@ -545,7 +507,8 @@
     "datetime": {
         "format": {
             "date": "dd/MM/yyyy",
-            "time": "HH:mm"
+            "time": "HH:mm",
+            "datetime": "dd/MM/yyyy HH:mm"
         },
         "datetime": "Le {{date}} à {{time}}",
         "created": "Créé le {{date}} à {{time}}",
@@ -558,16 +521,6 @@
     },
     "event": {
         "create": "Créer un Évènement",
-        "option": {
-            "ACTIVITY": "Activités",
-            "PHONE_COMMUNICATION": "Communications",
-            "ACTIVITY_COMMUNICATION": "Communication des activités",
-            "SMOKE_REPORT": "Signalement de fumée",
-            "MOVEMENT_REPORT": "Signalement de mouvement",
-            "TICKETING": "Billeterie",
-            "VEHICLE": "Véhicules",
-            "FIRE_RISK": "Risque incendie"
-        },
         "action": {
             "edit": "Modifier",
             "disable": "Désactiver",
@@ -604,23 +557,20 @@
             "edit": "Modifier l'Évènement",
             "name": "Nom",
             "range": "Dates",
-            "activity": "Est-ce que l’évènement que tu es entrain de créer va proposer des activités vécue à l'extérieur du lieu de l’évènement et que tu voudras suivre ?",
-            "phone-communication": "L'évènement a-t-il besoin répertorier les communications ?",
-            "activity-communication": "L'évènement a-t-il besoin d'isoler les communications liées aux activités ?",
-            "smoke-reporting": "L'évènement a-t-il besoin de répertorier les signalements de fumée ?",
-            "movement-reporting": "L'évènement a-t-il besoin de répertorier les entrées et sortie d'inconnues d'une zone définie ?",
-            "ticketing": "L'évènement sera-t-il ouvert aux inscriptions ?",
-            "vehicle": "L'évènement a-t-il besoin de suivre les véhicules (entrée, sortie, conducteur) ?",
-            "fire-risk": "L'évènement a-t-il besoin de suivre le risque incendie ?"
+            "error": {
+                "name": {
+                    "required": "Un événement sans nom ? Sérieusement, donne-lui un nom !",
+                    "blank": "Non, non, non ! tu ne m'auras pas. Un nom vide ça ne fonctionne pas !",
+                    "maxlength": "T'as vu la longueur du nom 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c'est {{requiredLength}}."
+                },
+                "options": {
+                    "preRequiredOptions": "L'option \"{{for}}\" sans \"{{missing}}\" ça risque d''être complexe."
+                }
+            }
         },
         "example": {
             "name": "Ex: Camp D.F.C.I. Pionniers-Caravelles",
             "range": "Ex: {{begin}} - {{end}}"
-        },
-        "role": {
-            "EVENT_ADMINISTRATOR": "Administrateur",
-            "EVENT_COORDINATOR": "Coordinateur",
-            "EVENT_PARTICIPANT": "Participant"
         }
     },
     "profile": {
@@ -691,7 +641,19 @@
             "role": "Rôle",
             "date-range": "Dates de validité",
             "user-search": "Ajouter des personnes",
-            "no-user": "Aucun utilisateur selectionné"
+            "no-user": "Aucun utilisateur selectionné",
+            "error": {
+                "role": {
+                    "required": "Pas de rôle de profile ! Le rôle du profil de l'événement ne peut pas être vide."
+                },
+                "range": {
+                    "minDate": "L'accès à l'événement via ce profile ne peut pas commencer avant l'événement ({{min}}).",
+                    "maxDate": "L'accès à l'événement via ce profile ne peut pas finir après l'événement ({{max}})."
+                },
+                "users": {
+                    "required": "Impossible de créer des profils sans utilisateur. Il en faut au moins un !"
+                }
+            }
         },
         "example": {
             "users": "Ex: Robert BADEN-POWELL",
@@ -753,7 +715,27 @@
             "groups": "Groupes",
             "group-search": "Ajouter des groupes",
             "empty-group-search": "Aucun groupe trouvé",
-            "no-group": "Aucun groupe selectionné"
+            "no-group": "Aucun groupe selectionné",
+            "error": {
+                "first-name": {
+                    "required": "Une personne participante sans prénom ? Moins pratique pour l'identifier !",
+                    "blank": "Non, non, non ! tu ne m'auras pas. Un prénom vide ça ne fonctionne pas !",
+                    "maxlength": "T'as vu la longueur du prénom 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c'est {{requiredLength}}."
+                },
+                "last-name": {
+                    "required": "Une personne participante sans nom ? Moins pratique pour l'identifier !",
+                    "blank": "Non, non, non ! tu ne m'auras pas. Un nom vide ça ne fonctionne pas !",
+                    "maxlength": "T'as vu la longueur du nom 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c'est {{requiredLength}}."
+                },
+                "birthday": {
+                    "required": "À priori les gens naissent un jour. Merci de me fournir cette date !",
+                    "maxDate": "Naître dans le futur ? Pas dans ce monde, désolé !"
+                },
+                "presence": {
+                    "minDate": "La personne participante ne peut pas arriver avant le début de l'événement ({{min}}).",
+                    "maxDate": "La personne participante ne peut pas partir après la fin de l'événement ({{max}})."
+                }
+            }
         },
         "example": {
             "first-name": "Ex: Robert",
@@ -821,7 +803,21 @@
             "participants": "Participants",
             "participant-search": "Ajouter des personnes",
             "empty-participant-search": "Aucune personne participante trouvée",
-            "no-participant": "Aucune personne participante selectionnée"
+            "no-participant": "Aucune personne participante selectionnée",
+            "error": {
+                "name": {
+                    "required": "Un groupe sans nom ? Sérieusement, donne-lui un nom !",
+                    "blank": "Non, non, non ! tu ne m'auras pas. Un nom vide ça ne fonctionne pas !",
+                    "maxlength": "T'as vu la longueur du nom 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c'est {{requiredLength}}."
+                },
+                "presence": {
+                    "minDate": "Le groupe ne peut pas arriver avant le début de l'événement ({{min}}).",
+                    "maxDate": "Le groupe ne peut pas partir après la fin de l'événement ({{max}})."
+                },
+                "participants": {
+                    "required": "Impossible de créer un groupe sans membres. Ce groupe a besoin de renforts !"
+                }
+            }
         },
         "example": {
             "name": "Ex: Pionniers-Caravelles - Charles de Foucauld Bondues",
@@ -869,7 +865,20 @@
             "content": "Personnes participantes au mouvement",
             "content-search": "Ajouter des personnes et des groupes",
             "no-participant": "Aucune personne selectionnée",
-            "group": "Groupe \"{{name}}\""
+            "group": "Groupe \"{{name}}\"",
+            "error": {
+                "date-time": {
+                    "required": "L'horodatage du mouvement doivent être définies. Sinon, comment savoir quand ça se passe ?",
+                    "minDate": "L'horodatage du mouvement est plus tôt que la fin de l'événement ({{min}}). Restons dans les clous !",
+                    "maxDate": "L'horodatage du mouvement est plus tard que la fin de l'événement ({{max}}). Restons dans les clous !"
+                },
+                "type": {
+                    "required": "Le type de mouvement doit être défini. Sinon je risque d'avoir du mal à te dire s'il s'agit d'une entrée ou d'une sortie la prochaine fois que tu me demandes."
+                },
+                "participants": {
+                    "required": "Impossible de créer un mouvement sans participants. Reviens avec une équipe !"
+                }
+            }
         },
         "example": {
             "type": "Ex: Entrée",
@@ -933,10 +942,6 @@
                     "delete": "Attention ! Tu vas supprimer un utilisateur. Tous les profils associés à {{element.firstName}} {{element.lastName}} seront également supprimés."
                 }
             }
-        },
-        "role": {
-            "USER_ADMINISTRATOR": "Administrateur",
-            "USER": "Utilisateur"
         }
     }
 }
