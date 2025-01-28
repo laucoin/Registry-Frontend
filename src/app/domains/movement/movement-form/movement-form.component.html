@@ -2,7 +2,7 @@
     @if (movement()) {
         <h2>
             {{
-                'movement.form.title.edit.' + movement()?.type | translate: {
+                'movement.form.title.edit.' + movement()!.type.value | translate: {
                     date: movement()?.dateTime | date: ('datetime.format.date' | translate),
                     time: movement()?.dateTime | date: ('datetime.format.time' | translate),
                 }

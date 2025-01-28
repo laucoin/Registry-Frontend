@@ -53,7 +53,7 @@ const defaultMovementState: MovementStateModel = {
     movements: {
         element: undefined,
         params: {
-            order: OrderEnum.ASC,
+            order: OrderEnum.DESC,
             onlyVisible: true,
             searched: undefined,
             type: undefined,

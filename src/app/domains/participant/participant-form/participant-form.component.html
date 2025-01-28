@@ -74,6 +74,7 @@
                            (keydown.enter)='submit()'
                            id='birthday'
                            fluid />
+            <small class='secondary-color'>{{ 'info.message.default-range' | translate }}</small>
             <app-form-field-error [control]='birthday'
                                   translationPrefix='participant.form.error.birthday' />
         </div>

@@ -5,7 +5,7 @@ import { MovementActionEnum } from '../data/state/movement.action'
 import { ActionModel } from '../../../shared/util-model/model/action.model'
 import { MovementFacade } from '../data/state/movement.facade'
 import { ElementCardComponent } from '../../../shared/util-ui/element-card/element-card.component'
-import { DatePipe, TitleCasePipe, UpperCasePipe } from '@angular/common'
+import { DatePipe, KeyValuePipe, TitleCasePipe, UpperCasePipe } from '@angular/common'
 import { AppConfig } from '../../../app.config'
 import { CurrentUserModel } from '../../../shared/util-model/model/current-user.model'
 import { CurrentUserUtil } from '../../../shared/util-authentication/tool/current-user.util'
@@ -39,6 +39,7 @@ import { AppRouteEnum } from '../../../app-route.enum'
         Tab,
         TabPanel,
         Avatar,
+        KeyValuePipe,
     ],
     templateUrl: './movement-element.component.html',
     styleUrl: './movement-element.component.scss',
@@ -52,6 +53,7 @@ export class MovementElementComponent extends GenericElementComponent<MovementMo
     protected total: WritableSignal<number> = signal( 0 )
     protected adults: WritableSignal<MovementContentModel[]> = signal( [] )
     protected children: WritableSignal<MovementContentModel[]> = signal( [] )
+    protected pools: WritableSignal<Record<string, MovementContentModel[]>> = signal( {} )
 
     public constructor (private readonly facade: MovementFacade) {super()}
 
@@ -60,10 +62,26 @@ export class MovementElementComponent extends GenericElementComponent<MovementMo
         this.total.set( this.element.content.length - 1 )
         this.adults.set( this.filterContent( true ) )
         this.children.set( this.filterContent( false ) )
+        this.pools.set( this.groupByPool() )
     }
 
     private filterContent (major: boolean): MovementContentModel[] {
         return this.element.content.filter( (content: MovementContentModel): boolean => content.participant.major === major )
+    }
+
+    private groupByPool (): Record<string, MovementContentModel[]> {
+        return this.element.content.reduce( (
+            grouped: Record<string, MovementContentModel[]>,
+            item: MovementContentModel,
+        ): Record<string, MovementContentModel[]> => {
+            if (item.poolName) {
+                if (!grouped[item.poolName]) {
+                    grouped[item.poolName] = []
+                }
+                grouped[item.poolName].push( item )
+            }
+            return grouped
+        }, {} as Record<string, MovementContentModel[]> )
     }
 
     private defineActions (): void {

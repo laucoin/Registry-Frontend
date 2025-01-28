@@ -63,22 +63,22 @@ export class MovementContentFieldComponent implements ControlValueAccessor {
         )
     }
 
-    protected onRemoveGroup (groupId: string): void {
+    protected onRemoveGroup (groupName: string): void {
         this.updateValue(
             this.formControl.value.filter( (item: ParticipantModel | GroupModel): boolean =>
-                !(this.isGroup( item ) && item.id == groupId),
+                !(this.isGroup( item ) && (item as GroupModel).name == groupName),
             ),
         )
     }
 
-    protected onRemoveGroupParticipant (groupId: string, memberId: string): void {
+    protected onRemoveGroupParticipant (groupName: string, memberId: string): void {
         const content: (ParticipantModel | GroupModel)[] = this.formControl.value
         const index: number = content.findIndex( (item: ParticipantModel | GroupModel): boolean =>
-            this.isGroup( item ) && item.id == groupId,
+            this.isGroup( item ) && (item as GroupModel).name == groupName,
         )
         const group: GroupModel = this.formControl.value[index] as GroupModel
         if (group.members.length === 1) {
-            this.onRemoveGroup( groupId )
+            this.onRemoveGroup( groupName )
         } else {
             content[index] = {
                 ...group,
@@ -93,7 +93,7 @@ export class MovementContentFieldComponent implements ControlValueAccessor {
     protected onElementSelection (element: SelectItem<ParticipantModel | GroupModel>): void {
         const newParticipantIds: string[] = []
         if (this.isGroup( element.value )) {
-            if (this.groups().find( (group: GroupModel): boolean => group.id == element.value.id )) {
+            if (this.groups().find( (group: GroupModel): boolean => group.name == (element.value as GroupModel).name )) {
                 this.registryFacade.notify(
                     StateUtil.buildNotificationMessage(
                         'warn',
@@ -127,7 +127,7 @@ export class MovementContentFieldComponent implements ControlValueAccessor {
                  .filter( (member: ParticipantModel): boolean => newParticipantIds.includes( member.id ) )
                  .forEach( (member: ParticipantModel): void => {
                      duplicationCount++
-                     this.onRemoveGroupParticipant( group.id, member.id )
+                     this.onRemoveGroupParticipant( group.name, member.id )
                  } )
         } )
 

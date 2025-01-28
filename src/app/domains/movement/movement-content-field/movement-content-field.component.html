@@ -35,7 +35,7 @@
     }
 </ul>
 @if (groups().length > 0) {
-    @for (group of groups(); track group.id) {
+    @for (group of groups(); track group.name) {
         <div class='full-w d-flex align-items-center justify-content-between'>
             <div>
                 {{ 'movement.form.group' | translate: { name: GroupUtil.toSelectItem(group).label } }}
@@ -44,7 +44,7 @@
                       size='small'
                       [rounded]='true'
                       [text]='true'
-                      (click)='onRemoveGroup(group.id)' />
+                      (click)='onRemoveGroup(group.name)' />
         </div>
         <ul class='list-box'>
             @for (member of group.members; track member.id) {
@@ -54,7 +54,7 @@
                               size='small'
                               [rounded]='true'
                               [text]='true'
-                              (click)='onRemoveGroupParticipant(group.id, member.id)' />
+                              (click)='onRemoveGroupParticipant(group.name, member.id)' />
                 </li>
             }
         </ul>
