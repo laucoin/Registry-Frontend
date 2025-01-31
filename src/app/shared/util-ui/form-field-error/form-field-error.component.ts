@@ -16,6 +16,7 @@ import { GenericComponent } from '../../util-tool/component/generic.component'
 export class FormFieldErrorComponent extends GenericComponent {
     @Input( { required: true } ) public control!: AbstractControl
     @Input( { required: true } ) public translationPrefix!: string
+    @Input() public translationArgs: object = {}
 
     protected buildText (code: string): string {
         return this.translateService.instant(
@@ -28,32 +29,43 @@ export class FormFieldErrorComponent extends GenericComponent {
         switch (code) {
             case 'min':
                 return {
+                    ...this.translationArgs,
                     min: this.errorProperty( code, 'min' ),
                 }
             case 'max':
                 return {
+                    ...this.translationArgs,
                     max: this.errorProperty( code, 'max' ),
                 }
             case 'minlength':
                 return {
+                    ...this.translationArgs,
                     actualLength: this.errorProperty( code, 'actualLength' ),
                     requiredLength: this.errorProperty( code, 'requiredLength' ),
                 }
             case 'maxlength':
                 return {
+                    ...this.translationArgs,
                     actualLength: this.errorProperty( code, 'actualLength' ),
                     requiredLength: this.errorProperty( code, 'requiredLength' ),
                 }
             case 'minDate':
                 return {
+                    ...this.translationArgs,
                     min: this.errorProperty( code, 'min' ),
                 }
             case 'maxDate':
                 return {
+                    ...this.translationArgs,
                     max: this.errorProperty( code, 'max' ),
                 }
+            case 'pattern':
+                return {
+                    ...this.translationArgs,
+                    actual: this.errorProperty( code, 'actualValue' ),
+                }
             default:
-                return {}
+                return this.translationArgs
         }
     }
 

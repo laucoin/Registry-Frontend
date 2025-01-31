@@ -78,6 +78,10 @@ export class ParticipantService extends GenericEventService {
         return this.http.patch<ParticipantModel>( `${this.buildRequestBaseUrl( eventId )}/${id}/enable`, null )
     }
 
+    public impersonateParticipantById (eventId: string | undefined, id: string): Observable<void> {
+        return this.http.patch<void>( `${this.buildRequestBaseUrl( eventId )}/${id}/impersonate`, null )
+    }
+
     public deleteParticipantById (eventId: string | undefined, id: string): Observable<void> {
         return this.http.delete<void>( `${this.buildRequestBaseUrl( eventId )}/${id}` )
     }

@@ -18,6 +18,7 @@ import {
     FetchToken,
     FetchUserEventProfileInvitationPage,
     FetchUserEventProfilePage,
+    ImpersonateCurrentUser,
     InputInvitationPageDateRange,
     InputInvitationPageSearch,
     InputProfilePageDateRange,
@@ -55,6 +56,7 @@ import { AppRouteEnum } from '../../../app-route.enum'
 import { AuthenticationUriModel } from '../../util-model/model/authentication-uri.model'
 import { Router } from '@angular/router'
 import { ErrorModel } from '../../util-model/model/error.model'
+import { UserService } from '../../../domains/user/data/state/user.service'
 
 const defaultRegistryState: RegistryStateModel = {
     authentication: {
@@ -122,6 +124,7 @@ export class RegistryState extends GenericState {
         private readonly eventService: EventService,
         private readonly userEventProfileService: UserEventProfileService,
         private readonly preferencesService: PreferencesService,
+        private readonly userService: UserService,
         private readonly router: Router,
     ) { super() }
 
@@ -265,6 +268,15 @@ export class RegistryState extends GenericState {
                 currentUser: currentUser,
             },
         } )
+    }
+
+    @Action( ImpersonateCurrentUser )
+    public impersonateCurrentUser (): Observable<void> {
+        return this.userService.impersonateCurrentUser().pipe(
+            initialize( (): void => this.registryFacade.startGlobalLoader() ),
+            finalize( (): void => this.registryFacade.stopGlobalLoader() ),
+            map( (): void => this.registryFacade.logout() ),
+        )
     }
 
     @Action( StartProfilesPageLoader )
@@ -675,7 +687,7 @@ export class RegistryState extends GenericState {
                 },
             },
         } )
-        throw error
+        return of()
     }
 
     protected refreshProfilesPage (ctx: StateContext<RegistryStateModel>): void {

@@ -1,5 +1,7 @@
 @if (currentUser$ | async; as currentUser) {
     <app-element-card [element]='currentUser'
+                      [actions]='actions'
+                      (action)='handleAction($event)'
                       [layout]='(isTinyScreen() || isMobile()) ? "grid" : "list"'
                       icon='pi pi-user'>
         <div class='current-user'>

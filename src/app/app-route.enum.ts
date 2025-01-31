@@ -4,12 +4,14 @@ import { PreferencesRoutesEnum } from './domains/preferences/preferences-routes.
 import { ParticipantRoutesEnum } from './domains/participant/participant-routes.enum'
 import { MovementRoutesEnum } from './domains/movement/movement-routes.enum'
 import { GroupRoutesEnum } from './domains/group/group-routes.enum'
+import { UserRoutesEnum } from './domains/user/user-routes.enum'
 
 export enum AppRouteEnum {
     HOME = 'home',
     AUTH_CALLBACK = 'callback',
     LOGOUT_CALLBACK = 'logout-callback',
     USERS = 'users',
+    USERS_EDITION = `${USERS}/${UserRoutesEnum.EDIT}`,
     PREFERENCES = `${USERS}/preferences`,
     PREFERENCES_PROFILES = `${PREFERENCES}/${PreferencesRoutesEnum.PROFILES}`,
     PREFERENCES_INVITATIONS = `${PREFERENCES}/${PreferencesRoutesEnum.INVITATIONS}`,

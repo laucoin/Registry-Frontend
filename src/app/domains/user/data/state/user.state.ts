@@ -15,6 +15,7 @@ import {
     FetchUserPage,
     ImpersonateUser,
     InputUserPageSearch,
+    ResetUser,
     SelectUserPageOrder,
     SelectUserPageVisibility,
     UnblockUser,
@@ -24,6 +25,12 @@ import { UserService } from './user.service'
 import { UserFacade } from './user.facade'
 import { OrderEnum } from '../../../../shared/util-model/enumeration/order.enum'
 import { SelectItem } from 'primeng/api'
+import { ElementRequestInformationModel } from '../../../../shared/util-model/model/element-request-information.model'
+
+const defaultUser: ElementRequestInformationModel<UserModel> = {
+    element: undefined,
+    loading: false,
+}
 
 const defaultUserState: UserStateModel = {
     users: {
@@ -37,10 +44,7 @@ const defaultUserState: UserStateModel = {
         silentLoading: false,
         error: undefined,
     },
-    user: {
-        element: undefined,
-        loading: false,
-    },
+    user: defaultUser,
     _metadata: {
         assignableRoles: [],
     },
@@ -146,6 +150,13 @@ export class UserState extends GenericElementState<UserStateModel> {
         } )
     }
 
+    @Action( ResetUser )
+    public resetUser (ctx: StateContext<UserStateModel>): void {
+        ctx.patchState( {
+            user: defaultUser,
+        } )
+    }
+
     @Action( FetchAssignableUserRoles )
     public fetchAssignableUserRoles (ctx: StateContext<UserStateModel>): Observable<void> {
         return this.service.getAssignableUserRoles().pipe(
@@ -244,6 +255,7 @@ export class UserState extends GenericElementState<UserStateModel> {
             this.userIcon,
             this.buildTranslationArgs( user ),
         )
+
         this.refreshPage( ctx )
     }
 
