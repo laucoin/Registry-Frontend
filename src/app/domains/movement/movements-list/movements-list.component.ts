@@ -76,7 +76,7 @@ export class MovementsListComponent extends GenericListComponent<MovementModel> 
             type: this.formBuilder.control( this.facade.actualPageType ),
             range: this.formBuilder.control( this.facade.actualPageDateRange ),
             onlyVisible: this.formBuilder.control( this.facade.actualPageOnlyVisible ),
-            order: this.formBuilder.control( this.facade.actualPageOrder === OrderEnum.ASC ),
+            order: this.formBuilder.control( this.facade.actualPageOrder === OrderEnum.DESC ),
         } )
     }
 
@@ -122,7 +122,7 @@ export class MovementsListComponent extends GenericListComponent<MovementModel> 
         this.subscriptions.add(
             this.order.valueChanges.subscribe( (order: boolean | undefined): void => {
                 if (order != undefined) {
-                    this.facade.selectPageOrder( order ? OrderEnum.ASC : OrderEnum.DESC )
+                    this.facade.selectPageOrder( order ? OrderEnum.DESC : OrderEnum.ASC )
                 }
             } ),
         )

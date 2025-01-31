@@ -144,14 +144,33 @@ export class MovementFormComponent extends GenericFormComponent implements OnIni
                 if (!movement) return
                 this.dateTime.setValue( new Date( movement?.dateTime ) )
                 this.type.setValue( movement.type.value )
-                this.content.setValue(
-                    movement.content.map( (content: MovementContentModel): ParticipantModel | GroupModel =>
-                        content.participant,
-                    ),
-                )
+                this.content.setValue( this.buildContentFromLoadedMovement() )
                 FormUtil.markAllControlsAsDirty( this.form )
             } ),
         )
+    }
+
+    private buildContentFromLoadedMovement (): (ParticipantModel | GroupModel)[] {
+        const participants: ParticipantModel[] = []
+        const groups: GroupModel[] = []
+
+        this.movement()?.content.forEach( (content: MovementContentModel): void => {
+            if (content.poolName) {
+                const groupIndex: number = groups.findIndex( (group: GroupModel): boolean => group.name === content.poolName )
+                if (groupIndex === -1) {
+                    groups.push( {
+                        name: content.poolName,
+                        members: [ content.participant ],
+                    } as GroupModel )
+                } else {
+                    groups[groupIndex].members.push( content.participant )
+                }
+            } else {
+                participants.push( content.participant )
+            }
+        } )
+
+        return [ ...participants, ...groups ]
     }
 
     protected next (): void {
@@ -171,21 +190,22 @@ export class MovementFormComponent extends GenericFormComponent implements OnIni
     }
 
     private buildContent (): MovementContentDto[] {
-        const participantsFromGroup: MovementContentDto[] = []
+        const content: MovementContentDto[] = []
 
         this.content.value.forEach( (item: GroupModel | ParticipantModel): void => {
             if (this.isGroup( item )) {
                 (item as GroupModel).members.forEach( (member: ParticipantModel): void => {
-                    participantsFromGroup.push( {
+                    content.push( {
+                        poolName: (item as GroupModel).name,
                         participantId: member.id,
                     } )
                 } )
             } else {
-                participantsFromGroup.push( { participantId: item.id } )
+                content.push( { participantId: item.id } )
             }
         } )
 
-        return participantsFromGroup
+        return content
     }
 
     private isGroup (element: ParticipantModel | GroupModel): boolean {

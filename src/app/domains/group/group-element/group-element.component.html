@@ -82,21 +82,20 @@
            [header]='"group.content.title" | translate'>
     <p-tabs [(value)]='activeTab'>
         <p-tablist>
-            <p-tab [value]='1'>{{ 'group.content.all' | translate }}</p-tab>
+            <p-tab [value]='1'>
+                <p-tag [value]='element.members.length.toString()' class='me-1' />
+                {{ 'group.content.all' | translate }}
+            </p-tab>
             @if (adults().length > 0) {
-                <p-tab [value]='2'>{{
-                        ('group.content.adult.' + (adults().length > 1 ? 'plural' : 'singular')) | translate: {
-                            adults: adults().length
-                        }
-                    }}
+                <p-tab [value]='2'>
+                    <p-tag [value]='adults().length.toString()' severity='info' class='me-1' />
+                    {{ ('group.content.adult.' + (adults().length > 1 ? 'plural' : 'singular')) | translate }}
                 </p-tab>
             }
             @if (children().length > 0) {
-                <p-tab [value]='3'>{{
-                        ('group.content.child.' + (children().length > 1 ? 'plural' : 'singular')) | translate: {
-                            children: children().length
-                        }
-                    }}
+                <p-tab [value]='3'>
+                    <p-tag [value]='children().length.toString()' severity='info' class='me-1' />
+                    {{ ('group.content.child.' + (children().length > 1 ? 'plural' : 'singular')) | translate }}
                 </p-tab>
             }
         </p-tablist>

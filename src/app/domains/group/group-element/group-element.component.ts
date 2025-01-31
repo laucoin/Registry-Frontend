@@ -18,6 +18,7 @@ import { ParticipantModel } from '../../../shared/util-model/model/participant.m
 import { DateIsPastPipe } from '../../../shared/util-tool/pipe/date-is-past.pipe'
 import { Avatar } from 'primeng/avatar'
 import { AppRouteEnum } from '../../../app-route.enum'
+import { Tag } from 'primeng/tag'
 
 @Component( {
     selector: 'app-group-element',
@@ -39,6 +40,7 @@ import { AppRouteEnum } from '../../../app-route.enum'
         DateIsPastPipe,
         NgIf,
         Avatar,
+        Tag,
     ],
     templateUrl: './group-element.component.html',
     styleUrl: './group-element.component.scss',

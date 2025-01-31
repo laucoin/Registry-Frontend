@@ -230,6 +230,7 @@
             "missing-selected-profile": "🔍 Aucun profil sélectionné"
         },
         "message": {
+            "default-range": "Si tu laisses le champ vide, par défaut se sera borné aux dates de l'événement",
             "email-copied": "L'adresse email de {{element.firstName}} {{element.lastName}} copiée.",
             "missing-selected-profile": "Pour profiter de la page d'accueil, il faut avoir un profil sélectionné. Donc \"Pas de profil, pas de page d'accueil 😝\"."
         }
@@ -775,12 +776,12 @@
             "title": "Personne participantes",
             "all": "Tous",
             "adult": {
-                "singular": "{{adults}} Adulte",
-                "plural": "{{adults}} Adultes"
+                "singular": "Adulte",
+                "plural": "Adultes"
             },
             "child": {
-                "singular": "{{children}} Jeune",
-                "plural": "{{children}} Jeunes"
+                "singular": "Jeune",
+                "plural": "Jeunes"
             }
         },
         "person-and-others": {
@@ -834,12 +835,12 @@
             "title": "Contenu",
             "all": "Tous",
             "adult": {
-                "singular": "{{adults}} Adulte",
-                "plural": "{{adults}} Adultes"
+                "singular": "Adulte",
+                "plural": "Adultes"
             },
             "child": {
-                "singular": "{{children}} Jeune",
-                "plural": "{{children}} Jeunes"
+                "singular": "Jeune",
+                "plural": "Jeunes"
             }
         },
         "person-and-others": {
