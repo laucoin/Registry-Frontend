@@ -40,15 +40,15 @@ export class UserFormComponent extends GenericFormComponent {
     public constructor (protected readonly facade: UserFacade) {
         super(
             AppRouteEnum.USERS,
-            facade.elementLoading,
+            facade.userLoading,
         )
 
-        facade.resetElement()
+        facade.resetUser()
 
         this.handleIdParam()
         this.handleLoadedUser()
 
-        this.assignableRoles$ = facade.assignableRoles
+        this.assignableRoles$ = facade.assignableRolesMetadata
     }
 
     protected initForm (): FormGroup {
@@ -66,7 +66,7 @@ export class UserFormComponent extends GenericFormComponent {
                 if (GenericUtil.isNull( params['id'] )) {
                     this.router.navigateByUrl( this.buildUri( AppRouteEnum.USERS ) ).catch( console.error )
                 } else {
-                    this.facade.fetchElement( params['id'] )
+                    this.facade.fetchUser( params['id'] )
                 }
             } ),
         )
@@ -74,7 +74,7 @@ export class UserFormComponent extends GenericFormComponent {
 
     private handleLoadedUser (): void {
         this.subscriptions.add(
-            this.facade.element?.subscribe( (user: UserModel | undefined): void => {
+            this.facade.user?.subscribe( (user: UserModel | undefined): void => {
                 this.user.set( user )
                 if (!user) return
                 this.role.setValue( user.role )
@@ -85,7 +85,7 @@ export class UserFormComponent extends GenericFormComponent {
 
     protected next (): void {
         this.subscriptions.add(
-            this.facade.updateElementRole(
+            this.facade.updateUserRole(
                 this.user()!.id,
                 this.role.value,
             ).subscribe( (): void => this.navigateToRedirectUri() ),

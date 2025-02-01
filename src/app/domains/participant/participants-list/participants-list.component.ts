@@ -44,10 +44,10 @@ export class ParticipantsListComponent extends GenericListComponent<ParticipantM
 
     public constructor (private readonly facade: ParticipantFacade) {
         super(
-            facade.page,
-            facade.pageLoading,
-            facade.pageSilentLoading,
-            facade.pageError,
+            facade.participantsPage,
+            facade.participantsPageLoading,
+            facade.participantsPageSilentLoading,
+            facade.participantsPageError,
         )
 
         this.form = this.initForm()
@@ -59,26 +59,26 @@ export class ParticipantsListComponent extends GenericListComponent<ParticipantM
     }
 
     public ngOnInit (): void {
-        this.facade.fetchElementPage( undefined, undefined, false, this.contextEventId() )
+        this.facade.fetchParticipantsPage( undefined, undefined, false, this.contextEventId() )
     }
 
     protected initForm (): FormGroup {
         return this.formBuilder.group( {
-            searched: this.formBuilder.control( this.facade.actualPageSearched ),
-            range: this.formBuilder.control( this.facade.actualPageDateRange ),
-            onlyVisible: this.formBuilder.control( this.facade.actualPageOnlyVisible ),
-            order: this.formBuilder.control( this.facade.actualPageOrder === OrderEnum.ASC ),
+            searched: this.formBuilder.control( this.facade.actualParticipantsPageSearchParam ),
+            range: this.formBuilder.control( this.facade.actualParticipantsPageDateRangeParam ),
+            onlyVisible: this.formBuilder.control( this.facade.actualParticipantsPageOnlyVisibleParam ),
+            order: this.formBuilder.control( this.facade.actualParticipantsPageOrderParam === OrderEnum.ASC ),
         } )
     }
 
     protected loadPage (pageEvent: PageEventModel, eventId: string | undefined): void {
-        this.facade.fetchElementPage( pageEvent.offset, pageEvent.limit, false, eventId )
+        this.facade.fetchParticipantsPage( pageEvent.offset, pageEvent.limit, false, eventId )
     }
 
     private handleSearchedChanges (): void {
         this.subscriptions.add(
             this.searched.valueChanges.subscribe( (searched: string | undefined): void =>
-                this.facade.inputPageSearch( searched ),
+                this.facade.inputParticipantsPageSearch( searched ),
             ),
         )
     }
@@ -86,7 +86,7 @@ export class ParticipantsListComponent extends GenericListComponent<ParticipantM
     private handleRangeChanges (): void {
         this.subscriptions.add(
             this.range.valueChanges.subscribe( (range: Date[] | undefined): void =>
-                this.facade.inputPageDateRange( range ),
+                this.facade.inputParticipantsPageDateRange( range ),
             ),
         )
     }
@@ -95,7 +95,7 @@ export class ParticipantsListComponent extends GenericListComponent<ParticipantM
         this.subscriptions.add(
             this.onlyVisible.valueChanges.subscribe( (onlyVisible: boolean | undefined): void => {
                 if (onlyVisible != undefined) {
-                    this.facade.selectPageVisibility( onlyVisible )
+                    this.facade.selectParticipantsPageVisibility( onlyVisible )
                 }
             } ),
         )
@@ -105,7 +105,7 @@ export class ParticipantsListComponent extends GenericListComponent<ParticipantM
         this.subscriptions.add(
             this.order.valueChanges.subscribe( (order: boolean | undefined): void => {
                 if (order != undefined) {
-                    this.facade.selectPageOrder( order ? OrderEnum.ASC : OrderEnum.DESC )
+                    this.facade.selectParticipantsPageOrder( order ? OrderEnum.ASC : OrderEnum.DESC )
                 }
             } ),
         )

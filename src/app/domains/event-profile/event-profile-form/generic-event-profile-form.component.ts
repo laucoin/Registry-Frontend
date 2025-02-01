@@ -19,10 +19,10 @@ export abstract class GenericEventProfileFormComponent extends GenericFormCompon
     protected constructor (protected readonly facade: EventProfileFacade) {
         super(
             AppRouteEnum.PROFILES,
-            facade.elementLoading,
+            facade.eventProfileLoading,
         )
 
-        this.assignableRoles$ = facade.assignableRoles
+        this.assignableRoles$ = facade.eventProfileAssignableRolesMetadata
         this.facade.fetchAssignableRoles( this.contextEventId() )
 
         this.handleContextEvent()

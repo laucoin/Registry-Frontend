@@ -56,16 +56,16 @@ export class EventProfilesListComponent extends GenericListComponent<EventProfil
         private readonly confirmationService: ConfirmationService,
     ) {
         super(
-            facade.page,
-            facade.pageLoading,
-            facade.pageSilentLoading,
-            facade.pageError,
+            facade.eventProfilesPage,
+            facade.eventProfilesPageLoading,
+            facade.eventProfilesPageSilentLoading,
+            facade.eventProfilesPageError,
         )
 
         this.changeEmptyMessageTranslationKey( 'EMPTY_EVENT_PROFILE' )
 
         this.form = this.initForm()
-        this.statusMetadata$ = facade.availableStatus
+        this.statusMetadata$ = facade.eventProfilesStatusMetadata
 
         this.handleSearchedChanges()
         this.handleRangeChanges()
@@ -76,21 +76,21 @@ export class EventProfilesListComponent extends GenericListComponent<EventProfil
 
     public ngOnInit (): void {
         this.facade.fetchAvailableStatus( this.contextEventId() )
-        this.facade.fetchElementPage( undefined, undefined, false, this.contextEventId() )
+        this.facade.fetchEventProfilesPage( undefined, undefined, false, this.contextEventId() )
     }
 
     protected initForm (): FormGroup {
         return this.formBuilder.group( {
-            searched: this.formBuilder.control( this.facade.actualPageSearched ),
-            range: this.formBuilder.control( this.facade.actualPageDateRange ),
-            status: this.formBuilder.control( this.facade.actualPageStatus ),
-            onlyVisible: this.formBuilder.control( this.facade.actualPageOnlyVisible ),
-            order: this.formBuilder.control( this.facade.actualPageOrder === OrderEnum.ASC ),
+            searched: this.formBuilder.control( this.facade.actualEventProfilesPageSearchParam ),
+            range: this.formBuilder.control( this.facade.actualEventProfilesPageDateRangeParam ),
+            status: this.formBuilder.control( this.facade.actualEventProfilesPageStatusParam ),
+            onlyVisible: this.formBuilder.control( this.facade.actualEventProfilesPageOnlyVisibleParam ),
+            order: this.formBuilder.control( this.facade.actualEventProfilesPageOrderParam === OrderEnum.ASC ),
         } )
     }
 
     protected loadPage (pageEvent: PageEventModel, eventId: string | undefined): void {
-        this.facade.fetchElementPage( pageEvent.offset, pageEvent.limit, false, eventId )
+        this.facade.fetchEventProfilesPage( pageEvent.offset, pageEvent.limit, false, eventId )
     }
 
     protected confirmSupportProfileCreation (event: EventModel): void {
@@ -112,7 +112,7 @@ export class EventProfilesListComponent extends GenericListComponent<EventProfil
     private handleSearchedChanges (): void {
         this.subscriptions.add(
             this.searched.valueChanges.subscribe( (searched: string | undefined): void =>
-                this.facade.inputPageSearch( searched ),
+                this.facade.inputEventProfilesPageSearch( searched ),
             ),
         )
     }
@@ -120,7 +120,7 @@ export class EventProfilesListComponent extends GenericListComponent<EventProfil
     private handleRangeChanges (): void {
         this.subscriptions.add(
             this.range.valueChanges.subscribe( (range: Date[] | undefined): void =>
-                this.facade.inputPageDateRange( range ),
+                this.facade.inputEventProfilesPageDateRange( range ),
             ),
         )
     }
@@ -128,7 +128,7 @@ export class EventProfilesListComponent extends GenericListComponent<EventProfil
     private handleStatusChanges (): void {
         this.subscriptions.add(
             this.status.valueChanges.subscribe( (status: string | undefined): void => {
-                this.facade.selectPageStatus( status )
+                this.facade.selectEventProfilesPageStatus( status )
             } ),
         )
     }
@@ -137,7 +137,7 @@ export class EventProfilesListComponent extends GenericListComponent<EventProfil
         this.subscriptions.add(
             this.onlyVisible.valueChanges.subscribe( (onlyVisible: boolean | undefined): void => {
                 if (onlyVisible != undefined) {
-                    this.facade.selectPageVisibility( onlyVisible )
+                    this.facade.selectEventProfilesPageVisibility( onlyVisible )
                 }
             } ),
         )
@@ -147,7 +147,7 @@ export class EventProfilesListComponent extends GenericListComponent<EventProfil
         this.subscriptions.add(
             this.order.valueChanges.subscribe( (order: boolean | undefined): void => {
                 if (order != undefined) {
-                    this.facade.selectPageOrder( order ? OrderEnum.ASC : OrderEnum.DESC )
+                    this.facade.selectEventProfilesPageOrder( order ? OrderEnum.ASC : OrderEnum.DESC )
                 }
             } ),
         )

@@ -43,13 +43,13 @@ export class EventsListComponent extends GenericListComponent<EventModel> {
 
     public constructor (private readonly facade: EventFacade) {
         super(
-            facade.page,
-            facade.pageLoading,
-            facade.pageSilentLoading,
-            facade.pageError,
+            facade.eventsPage,
+            facade.eventsPageLoading,
+            facade.eventsPageSilentLoading,
+            facade.eventsPageError,
         )
 
-        this.facade.fetchPage( undefined, undefined, false )
+        this.facade.fetchEventsPage( undefined, undefined, false )
 
         this.form = this.initForm()
 
@@ -61,21 +61,21 @@ export class EventsListComponent extends GenericListComponent<EventModel> {
 
     protected initForm (): FormGroup {
         return this.formBuilder.group( {
-            searched: this.formBuilder.control( this.facade.actualPageSearched ),
-            range: this.formBuilder.control( this.facade.actualPageDateRange ?? [] ),
-            onlyVisible: this.formBuilder.control( this.facade.actualPageVisibility ),
-            order: this.formBuilder.control( this.facade.actualPageOrder === OrderEnum.ASC ),
+            searched: this.formBuilder.control( this.facade.actualEventsPageSearchParam ),
+            range: this.formBuilder.control( this.facade.actualEventsPageDateRangeParam ?? [] ),
+            onlyVisible: this.formBuilder.control( this.facade.actualEventsPageOnlyVisibleParam ),
+            order: this.formBuilder.control( this.facade.actualEventsPageOrderParam === OrderEnum.ASC ),
         } )
     }
 
     protected loadPage (pageEvent: PageEventModel): void {
-        this.facade.fetchPage( pageEvent.offset, pageEvent.limit, false )
+        this.facade.fetchEventsPage( pageEvent.offset, pageEvent.limit, false )
     }
 
     private handleSearchedChanges (): void {
         this.subscriptions.add(
             this.searched.valueChanges.subscribe( (searched: string | undefined): void =>
-                this.facade.inputPageSearch( searched ),
+                this.facade.inputEventsPageSearch( searched ),
             ),
         )
     }
@@ -83,7 +83,7 @@ export class EventsListComponent extends GenericListComponent<EventModel> {
     private handleRangeChanges (): void {
         this.subscriptions.add(
             this.range.valueChanges.subscribe( (range: Date[] | undefined): void =>
-                this.facade.inputPageDateRange( range ),
+                this.facade.inputEventsPageDateRange( range ),
             ),
         )
     }
@@ -92,7 +92,7 @@ export class EventsListComponent extends GenericListComponent<EventModel> {
         this.subscriptions.add(
             this.onlyVisible.valueChanges.subscribe( (onlyVisible: boolean | undefined): void => {
                 if (onlyVisible != undefined) {
-                    this.facade.selectPageVisibility( onlyVisible )
+                    this.facade.selectEventsPageVisibility( onlyVisible )
                 }
             } ),
         )
@@ -102,7 +102,7 @@ export class EventsListComponent extends GenericListComponent<EventModel> {
         this.subscriptions.add(
             this.order.valueChanges.subscribe( (order: boolean | undefined): void => {
                 if (order != undefined) {
-                    this.facade.selectPageOrder( order ? OrderEnum.ASC : OrderEnum.DESC )
+                    this.facade.selectEventsPageOrder( order ? OrderEnum.ASC : OrderEnum.DESC )
                 }
             } ),
         )

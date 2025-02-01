@@ -40,10 +40,10 @@ import { DatePicker } from 'primeng/datepicker'
 export class InvitationListComponent extends GenericListComponent<EventProfileModel> {
     public constructor (facade: RegistryFacade) {
         super(
-            facade.invitationPage,
-            facade.invitationsLoading,
-            facade.invitationsSilentLoading,
-            facade.invitationsError,
+            facade.userEventProfileInvitationsPage,
+            facade.userEventProfileInvitationsPageLoading,
+            facade.userEventProfileInvitationsPageSilentLoading,
+            facade.userEventProfileInvitationsPageError,
         )
 
         this.changeEmptyMessageTranslationKey( 'EMPTY_USER_EVENT_INVITATION' )
@@ -59,9 +59,9 @@ export class InvitationListComponent extends GenericListComponent<EventProfileMo
 
     protected initForm (): FormGroup {
         return this.formBuilder.group( {
-            searched: this.formBuilder.control( this.registryFacade.actualInvitationPageSearched ),
-            range: this.formBuilder.control( this.registryFacade.actualInvitationPageDateRange ?? [] ),
-            order: this.formBuilder.control( this.registryFacade.actualInvitationPageOrder === OrderEnum.ASC ),
+            searched: this.formBuilder.control( this.registryFacade.actualUserEventProfileInvitationsPageSearchParam ),
+            range: this.formBuilder.control( this.registryFacade.actualUserEventProfileInvitationsPageDateRangeParam ?? [] ),
+            order: this.formBuilder.control( this.registryFacade.actualUserEventProfileInvitationsPageOrderParam === OrderEnum.ASC ),
         } )
     }
 

@@ -1,20 +1,18 @@
 import { Injectable } from '@angular/core'
 import { Observable } from 'rxjs'
 import { PageModel } from '../../../../shared/util-model/model/page.model'
-import { StateModel } from '../../../../shared/util-model/model/state.model'
 import { UserModel } from '../../../../shared/util-model/model/user.model'
-import { GenericElementFacade } from '../../../../shared/util-tool/facade/generic-element.facade'
 import {
     BlockUser,
     DeleteUser,
     FetchAssignableUserRoles,
     FetchUser,
-    FetchUserPage,
+    FetchUsersPage,
     ImpersonateUser,
-    InputUserPageSearch,
+    InputUsersPageSearch,
     ResetUser,
-    SelectUserPageOrder,
-    SelectUserPageVisibility,
+    SelectUsersPageOrder,
+    SelectUsersPageVisibility,
     StartUserLoader,
     StartUsersPageLoader,
     StopUserLoader,
@@ -25,90 +23,93 @@ import {
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { OrderEnum } from '../../../../shared/util-model/enumeration/order.enum'
 import { ofActionSuccessful } from '@ngxs/store'
+import { GenericFacade } from '../../../../shared/util-tool/facade/generic.facade'
+import { UserState } from './user.state'
 
 @Injectable()
-export class UserFacade extends GenericElementFacade<UserModel> {
-    public get page (): Observable<PageModel<UserModel> | undefined> {
-        return this.ngStore.select( (state: StateModel): PageModel<UserModel> | undefined => state.user.users.element )
+export class UserFacade extends GenericFacade {
+
+    public get usersPage (): Observable<PageModel<UserModel> | undefined> {
+        return this.ngStore.select( UserState.usersPage )
     }
 
-    public get actualPageSearched (): string | undefined {
-        return this.ngStore.selectSnapshot( (state: StateModel): string | undefined => state.user.users.params.searched )
+    public get usersPageLoading (): Observable<boolean> {
+        return this.ngStore.select( UserState.usersPageLoading )
     }
 
-    public get actualPageVisibility (): boolean {
-        return this.ngStore.selectSnapshot( (state: StateModel): boolean => state.user.users.params.onlyVisible )
+    public get usersPageSilentLoading (): Observable<boolean> {
+        return this.ngStore.select( UserState.usersPageSilentLoading )
     }
 
-    public get actualPageOrder (): OrderEnum {
-        return this.ngStore.selectSnapshot( (state: StateModel): OrderEnum => state.user.users.params.order )
+    public get usersPageError (): Observable<ToastMessageOptions | undefined> {
+        return this.ngStore.select( UserState.usersPageError )
     }
 
-    public get pageLoading (): Observable<boolean> {
-        return this.ngStore.select( (state: StateModel): boolean => state.user.users.loading )
+    public get actualUsersPageSearchParam (): string | undefined {
+        return this.ngStore.selectSnapshot( UserState.usersPageSearchParam )
     }
 
-    public get pageSilentLoading (): Observable<boolean> {
-        return this.ngStore.select( (state: StateModel): boolean => state.user.users.silentLoading )
+    public get actualUsersPageOnlyVisibleParam (): boolean {
+        return this.ngStore.selectSnapshot( UserState.usersPageOnlyVisibleParam )
     }
 
-    public get pageError (): Observable<ToastMessageOptions | undefined> {
-        return this.ngStore.select( (state: StateModel): ToastMessageOptions | undefined => state.user.users.error )
+    public get actualUsersPageOrderParam (): OrderEnum {
+        return this.ngStore.selectSnapshot( UserState.usersPageOrderParam )
     }
 
-    public get element (): Observable<UserModel | undefined> {
-        return this.ngStore.select( (state: StateModel): UserModel | undefined => state.user.user.element )
+    public get user (): Observable<UserModel | undefined> {
+        return this.ngStore.select( UserState.user )
     }
 
-    public get assignableRoles (): Observable<SelectItem<string>[]> {
-        return this.ngStore.select( (state: StateModel): SelectItem<string>[] => state.user._metadata.assignableRoles )
+    public get userLoading (): Observable<boolean> {
+        return this.ngStore.select( UserState.userLoading )
     }
 
-    public get elementLoading (): Observable<boolean> {
-        return this.ngStore.select( (state: StateModel): boolean => state.user.user.loading )
+    public get assignableRolesMetadata (): Observable<SelectItem<string>[]> {
+        return this.ngStore.select( UserState.assignableRolesMetadata )
     }
 
-    public startPageLoader (): void {
+    public startUsersPageLoader (): void {
         this.ngStore.dispatch( StartUsersPageLoader )
     }
 
-    public stopPageLoader (): void {
+    public stopUsersPageLoader (): void {
         this.ngStore.dispatch( StopUsersPageLoader )
     }
 
-    public fetchPage (
+    public fetchUsersPage (
         offset: number | undefined,
         limit: number | undefined,
-        force: boolean = false,
+        force: boolean,
     ): void {
-        this.ngStore.dispatch( new FetchUserPage( offset, limit, force ) )
+        this.ngStore.dispatch( new FetchUsersPage( offset, limit, force ) )
     }
 
-    public inputPageSearch (searched: string | undefined): void {
-        this.ngStore.dispatch( new InputUserPageSearch( searched ) )
+    public inputUsersPageSearch (searched: string | undefined): void {
+        this.ngStore.dispatch( new InputUsersPageSearch( searched ) )
     }
 
-    public selectPageVisibility (onlyVisible: boolean): void {
-        this.ngStore.dispatch( new SelectUserPageVisibility( onlyVisible ) )
+    public selectUsersPageVisibility (onlyVisible: boolean): void {
+        this.ngStore.dispatch( new SelectUsersPageVisibility( onlyVisible ) )
     }
 
-    public selectPageOrder (order: OrderEnum): void {
-        this.ngStore.dispatch( new SelectUserPageOrder( order ) )
+    public selectUsersPageOrder (order: OrderEnum): void {
+        this.ngStore.dispatch( new SelectUsersPageOrder( order ) )
     }
 
-    public startElementLoader (): void {
+    public startUserLoader (): void {
         this.ngStore.dispatch( StartUserLoader )
     }
 
-    public stopElementLoader (): void {
+    public stopUserLoader (): void {
         this.ngStore.dispatch( StopUserLoader )
     }
 
-    public fetchElement (id: string): void {
+    public fetchUser (id: string): void {
         this.ngStore.dispatch( new FetchUser( id ) )
     }
 
-    public resetElement (): void {
+    public resetUser (): void {
         this.ngStore.dispatch( ResetUser )
     }
 
@@ -116,17 +117,17 @@ export class UserFacade extends GenericElementFacade<UserModel> {
         this.ngStore.dispatch( new FetchAssignableUserRoles() )
     }
 
-    public updateElementRole (id: string, role: string | undefined): Observable<UpdateUserRole> {
+    public updateUserRole (id: string, role: string | undefined): Observable<UpdateUserRole> {
         this.ngStore.dispatch( new UpdateUserRole( id, role ) )
 
         return this.actions$.pipe( ofActionSuccessful( UpdateUserRole ) )
     }
 
-    public bockElement (id: string): void {
+    public bockUser (id: string): void {
         this.ngStore.dispatch( new BlockUser( id ) )
     }
 
-    public unblockElement (id: string): void {
+    public unblockUser (id: string): void {
         this.ngStore.dispatch( new UnblockUser( id ) )
     }
 
@@ -134,7 +135,7 @@ export class UserFacade extends GenericElementFacade<UserModel> {
         this.ngStore.dispatch( new ImpersonateUser( user ) )
     }
 
-    public deleteElement (element: UserModel): void {
-        this.ngStore.dispatch( new DeleteUser( element ) )
+    public deleteUser (user: UserModel): void {
+        this.ngStore.dispatch( new DeleteUser( user ) )
     }
 }

@@ -35,14 +35,14 @@ import { OrderEnum } from '../../../shared/util-model/enumeration/order.enum'
 export class UsersListComponent extends GenericListComponent<UserModel> {
     public constructor (private readonly facade: UserFacade) {
         super(
-            facade.page,
-            facade.pageLoading,
-            facade.pageSilentLoading,
-            facade.pageError,
+            facade.usersPage,
+            facade.usersPageLoading,
+            facade.usersPageSilentLoading,
+            facade.usersPageError,
         )
 
         this.facade.fetchAssignableRoles()
-        this.facade.fetchPage( undefined, undefined, false )
+        this.facade.fetchUsersPage( undefined, undefined, false )
 
         this.form = this.initForm()
 
@@ -53,16 +53,16 @@ export class UsersListComponent extends GenericListComponent<UserModel> {
 
     protected initForm (): FormGroup {
         return this.formBuilder.group( {
-            searched: this.formBuilder.control( this.facade.actualPageSearched ),
-            onlyVisible: this.formBuilder.control( this.facade.actualPageVisibility ),
-            order: this.formBuilder.control( this.facade.actualPageOrder === OrderEnum.ASC ),
+            searched: this.formBuilder.control( this.facade.actualUsersPageSearchParam ),
+            onlyVisible: this.formBuilder.control( this.facade.actualUsersPageOnlyVisibleParam ),
+            order: this.formBuilder.control( this.facade.actualUsersPageOrderParam === OrderEnum.ASC ),
         } )
     }
 
     private handleSearchedChanges (): void {
         this.subscriptions.add(
             this.searched.valueChanges.subscribe( (searched: string | undefined): void =>
-                this.facade.inputPageSearch( searched ),
+                this.facade.inputUsersPageSearch( searched ),
             ),
         )
     }
@@ -71,7 +71,7 @@ export class UsersListComponent extends GenericListComponent<UserModel> {
         this.subscriptions.add(
             this.onlyVisible.valueChanges.subscribe( (onlyVisible: boolean | undefined): void => {
                 if (onlyVisible != undefined) {
-                    this.facade.selectPageVisibility( onlyVisible )
+                    this.facade.selectUsersPageVisibility( onlyVisible )
                 }
             } ),
         )
@@ -81,14 +81,14 @@ export class UsersListComponent extends GenericListComponent<UserModel> {
         this.subscriptions.add(
             this.order.valueChanges.subscribe( (order: boolean | undefined): void => {
                 if (order != undefined) {
-                    this.facade.selectPageOrder( order ? OrderEnum.ASC : OrderEnum.DESC )
+                    this.facade.selectUsersPageOrder( order ? OrderEnum.ASC : OrderEnum.DESC )
                 }
             } ),
         )
     }
 
     protected loadPage (pageEvent: PageEventModel): void {
-        this.facade.fetchPage( pageEvent.offset, pageEvent.limit, false )
+        this.facade.fetchUsersPage( pageEvent.offset, pageEvent.limit, false )
     }
 
     protected get searched (): FormControl {

@@ -108,16 +108,16 @@ export class UserElementComponent extends GenericElementComponent<UserModel, Use
                 ).catch( console.error )
                 break
             case UserActionEnum.BLOCK_USER:
-                this.facade.bockElement( this.element.id )
+                this.facade.bockUser( this.element.id )
                 break
             case UserActionEnum.UNBLOCK_USER:
-                this.facade.unblockElement( this.element.id )
+                this.facade.unblockUser( this.element.id )
                 break
             case UserActionEnum.IMPERSONATE_USER:
                 this.facade.impersonateUser( this.element )
                 break
             case UserActionEnum.DELETE_USER:
-                this.facade.deleteElement( this.element )
+                this.facade.deleteUser( this.element )
                 break
             default:
                 console.warn( this.translateService.instant( 'warning.message.invalid-action' ) )

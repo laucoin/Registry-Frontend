@@ -1,4 +1,4 @@
-import { PageParamsModel } from '../../../../shared/util-model/model/page-params.model'
+import { PageParamsModel } from './model/page-params.model'
 
 export interface MovementPageParamsModel extends PageParamsModel {
     type: string | undefined,

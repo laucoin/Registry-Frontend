@@ -88,6 +88,11 @@ export class ParticipantElementComponent extends GenericElementComponent<Partici
 
     protected handleAction (action: ParticipantActionEnum | GroupActionEnum): void {
         switch (action) {
+            case ParticipantActionEnum.FETCH_PARTICIPANT_MOVEMENTS_PAGE:
+                this.router.navigateByUrl(
+                    this.buildUri( AppRouteEnum.PARTICIPANTS_MOVEMENTS.replace( ':id', this.element.id ) ),
+                ).catch( console.error )
+                break
             case ParticipantActionEnum.UPDATE_PARTICIPANT:
                 this.router.navigateByUrl(
                     this.buildUri( AppRouteEnum.PARTICIPANTS_EDITION.replace( ':id', this.element.id ) ),
@@ -97,13 +102,13 @@ export class ParticipantElementComponent extends GenericElementComponent<Partici
                 this.groupFacade.removeMemberFromGroup( this.groupIdToRemove!, this.element, this.contextEventId() )
                 break
             case ParticipantActionEnum.DISABLE_PARTICIPANT:
-                this.facade.disableElement( this.element.id, this.contextEventId() )
+                this.facade.disableParticipant( this.element.id, this.contextEventId() )
                 break
             case ParticipantActionEnum.ENABLE_PARTICIPANT:
-                this.facade.enableElement( this.element.id, this.contextEventId() )
+                this.facade.enableParticipant( this.element.id, this.contextEventId() )
                 break
             case ParticipantActionEnum.DELETE_PARTICIPANT:
-                this.facade.deleteElement( this.element, this.contextEventId() )
+                this.facade.deleteParticipant( this.element, this.contextEventId() )
                 break
             default:
                 console.warn( this.translateService.instant( 'warning.message.invalid-action' ) )

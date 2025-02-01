@@ -326,6 +326,16 @@ export const sgdfConfig: ContextConfigModel = {
     participant: {
         action: [
             {
+                id: ParticipantActionEnum.FETCH_PARTICIPANT_MOVEMENTS_PAGE,
+                name: 'participant.action.movements-history',
+                icon: 'pi pi-history',
+                disabled: false,
+                requiredUserAuthority: undefined,
+                requiredEventAuthority: EventAuthorityEnum.REGISTRY_EVENT_PARTICIPANT_HISTORY_R,
+                requiredEventOption: undefined,
+                confirmation: undefined,
+            },
+            {
                 id: ParticipantActionEnum.UPDATE_PARTICIPANT,
                 name: 'participant.action.edit',
                 icon: 'pi pi-pen-to-square',
@@ -408,7 +418,7 @@ export const sgdfConfig: ContextConfigModel = {
     group: {
         action: [
             {
-                id: GroupActionEnum.FETCH_GROUP_MEMBER_PAGE,
+                id: GroupActionEnum.FETCH_GROUP_MEMBERS_PAGE,
                 name: 'group.action.members',
                 icon: 'pi pi-users',
                 disabled: false,

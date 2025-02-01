@@ -42,10 +42,10 @@ export class GroupListComponent extends GenericListComponent<GroupModel> impleme
 
     public constructor (private readonly facade: GroupFacade) {
         super(
-            facade.page,
-            facade.pageLoading,
-            facade.pageSilentLoading,
-            facade.pageError,
+            facade.groupsPage,
+            facade.groupsPageLoading,
+            facade.groupsPageSilentLoading,
+            facade.groupsPageError,
         )
 
         this.form = this.initForm()
@@ -57,26 +57,26 @@ export class GroupListComponent extends GenericListComponent<GroupModel> impleme
     }
 
     public ngOnInit (): void {
-        this.facade.fetchElementPage( undefined, undefined, false, this.contextEventId() )
+        this.facade.fetchGroupsPage( undefined, undefined, false, this.contextEventId() )
     }
 
     protected initForm (): FormGroup {
         return this.formBuilder.group( {
-            searched: this.formBuilder.control( this.facade.actualPageSearched ),
-            range: this.formBuilder.control( this.facade.actualPageDateRange ),
-            onlyVisible: this.formBuilder.control( this.facade.actualPageOnlyVisible ),
-            order: this.formBuilder.control( this.facade.actualPageOrder === OrderEnum.ASC ),
+            searched: this.formBuilder.control( this.facade.actualGroupsPageSearchParam ),
+            range: this.formBuilder.control( this.facade.actualGroupsPageDateRangeParam ),
+            onlyVisible: this.formBuilder.control( this.facade.actualGroupsPageOnlyVisibleParam ),
+            order: this.formBuilder.control( this.facade.actualGroupsPageOrderParam === OrderEnum.ASC ),
         } )
     }
 
     protected loadPage (pageEvent: PageEventModel, eventId: string | undefined): void {
-        this.facade.fetchElementPage( pageEvent.offset, pageEvent.limit, false, eventId )
+        this.facade.fetchGroupsPage( pageEvent.offset, pageEvent.limit, false, eventId )
     }
 
     private handleSearchedChanges (): void {
         this.subscriptions.add(
             this.searched.valueChanges.subscribe( (searched: string | undefined): void =>
-                this.facade.inputPageSearch( searched ),
+                this.facade.inputGroupsPageSearch( searched ),
             ),
         )
     }
@@ -84,7 +84,7 @@ export class GroupListComponent extends GenericListComponent<GroupModel> impleme
     private handleRangeChanges (): void {
         this.subscriptions.add(
             this.range.valueChanges.subscribe( (range: Date[] | undefined): void =>
-                this.facade.inputPageDateRange( range ),
+                this.facade.inputGroupsPageDateRange( range ),
             ),
         )
     }
@@ -93,7 +93,7 @@ export class GroupListComponent extends GenericListComponent<GroupModel> impleme
         this.subscriptions.add(
             this.onlyVisible.valueChanges.subscribe( (onlyVisible: boolean | undefined): void => {
                 if (onlyVisible != undefined) {
-                    this.facade.selectPageVisibility( onlyVisible )
+                    this.facade.selectGroupsPageVisibility( onlyVisible )
                 }
             } ),
         )
@@ -103,7 +103,7 @@ export class GroupListComponent extends GenericListComponent<GroupModel> impleme
         this.subscriptions.add(
             this.order.valueChanges.subscribe( (order: boolean | undefined): void => {
                 if (order != undefined) {
-                    this.facade.selectPageOrder( order ? OrderEnum.ASC : OrderEnum.DESC )
+                    this.facade.selectGroupsPageOrder( order ? OrderEnum.ASC : OrderEnum.DESC )
                 }
             } ),
         )

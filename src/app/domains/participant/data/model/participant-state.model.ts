@@ -5,10 +5,16 @@ import { ParticipantModel } from '../../../../shared/util-model/model/participan
 import { UserDto } from '../../../../shared/util-model/dto/user.dto'
 import { SelectItem } from 'primeng/api'
 import { GroupModel } from '../../../../shared/util-model/model/group.model'
+import { MovementPageParamsModel } from '../../../../shared/util-model/movement-page-params.model'
+import { MovementModel } from '../../../../shared/util-model/movement.model'
 
 export interface ParticipantStateModel {
     participants: PageRequestInformationModel<ParticipantPageParamsModel, ParticipantModel>
+    movements: PageRequestInformationModel<MovementPageParamsModel, MovementModel>
     participant: ElementRequestInformationModel<ParticipantModel>
-    searchedUsers: SelectItem<UserDto>[]
-    searchedGroups: SelectItem<GroupModel>[]
+    _metadata: {
+        searchedUsers: SelectItem<UserDto>[]
+        searchedGroups: SelectItem<GroupModel>[]
+        movementTypes: SelectItem<string>[]
+    }
 }

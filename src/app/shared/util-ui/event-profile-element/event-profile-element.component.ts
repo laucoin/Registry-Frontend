@@ -113,7 +113,7 @@ export class EventProfileElementComponent extends GenericElementComponent<EventP
                 if (this.element.user.id === this.registryFacade.actualCurrentUser?.id) {
                     this.registryFacade.deleteUserEventProfile( this.element )
                 } else {
-                    this.facade.deleteElement( this.element )
+                    this.facade.deleteEventProfile( this.element )
                 }
                 break
             default:

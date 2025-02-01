@@ -59,16 +59,16 @@ export class GroupFormComponent extends GenericFormComponent {
     ) {
         super(
             AppRouteEnum.GROUPS,
-            facade.elementLoading,
+            facade.groupLoading,
         )
 
-        facade.resetElement()
+        facade.resetGroup()
 
         this.handleContextEvent()
         this.handleIdParam()
         this.handleLoadedGroup()
 
-        this.participantsSuggestion$ = this.facade.searchedParticipants
+        this.participantsSuggestion$ = this.facade.searchedParticipantsMetadata
     }
 
     protected initForm (): FormGroup {
@@ -116,7 +116,7 @@ export class GroupFormComponent extends GenericFormComponent {
                 if (GenericUtil.isNull( params['id'] )) {
                     this.router.navigateByUrl( this.buildUri( AppRouteEnum.GROUPS_CREATION ) ).catch( console.error )
                 } else {
-                    this.facade.fetchElement( params['id'], this.contextEventId() )
+                    this.facade.fetchGroup( params['id'], this.contextEventId() )
                 }
             } ),
         )
@@ -124,7 +124,7 @@ export class GroupFormComponent extends GenericFormComponent {
 
     private handleLoadedGroup (): void {
         this.subscriptions.add(
-            this.facade.element?.subscribe( (group: GroupModel | undefined): void => {
+            this.facade.group?.subscribe( (group: GroupModel | undefined): void => {
                 this.group.set( group )
                 if (!group) return
                 this.name.setValue( group.name )
@@ -152,8 +152,8 @@ export class GroupFormComponent extends GenericFormComponent {
         this.subscriptions.add(
             (
                 this.group() ?
-                this.facade.updateElement( this.group()!.id, participant, this.contextEventId() )
-                             : this.facade.createElement( participant, this.contextEventId() )
+                this.facade.updateGroup( this.group()!.id, participant, this.contextEventId() )
+                             : this.facade.createGroup( participant, this.contextEventId() )
             ).subscribe( (): void => this.navigateToRedirectUri() ),
         )
     }

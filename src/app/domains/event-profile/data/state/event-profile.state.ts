@@ -1,10 +1,8 @@
-import { Action, State, StateContext } from '@ngxs/store'
+import { Action, Selector, State, StateContext } from '@ngxs/store'
 import { catchError, finalize, map, Observable, of } from 'rxjs'
-import { EventProfileModel } from '../../../../shared/util-model/model/event-profile.model'
 import { PageModel } from '../../../../shared/util-model/model/page.model'
 import { GenericEventElementState } from '../../../../shared/util-tool/state/generic-event-element.state'
 import { initialize } from '../../../../shared/util-tool/util/rx.util'
-import { EventProfileStateModel } from '../model/event-profile-state.model'
 import {
     BlockEventProfile,
     CreateEventProfiles,
@@ -13,13 +11,13 @@ import {
     FetchAssignableEventProfileRoles,
     FetchAssignableEventProfileStatus,
     FetchEventProfile,
-    FetchEventProfilePage,
-    InputEventProfilePageDateRange,
-    InputEventProfilePageSearch,
+    FetchEventProfilesPage,
+    InputEventProfilesPageDateRange,
+    InputEventProfilesPageSearch,
     SearchUsers,
-    SelectEventProfilePageOrder,
-    SelectEventProfilePageStatus,
-    SelectEventProfilePageVisibility,
+    SelectEventProfilesPageOrder,
+    SelectEventProfilesPageStatus,
+    SelectEventProfilesPageVisibility,
     StartEventProfileLoader,
     StartEventProfilesPageLoader,
     StopEventProfileLoader,
@@ -36,9 +34,11 @@ import { StateUtil } from '../../../../shared/util-tool/state/state.util'
 import { OrderEnum } from '../../../../shared/util-model/enumeration/order.enum'
 import { CreatedEventProfiles } from '../dto/created-event-profiles.dto'
 import { UserUtil } from '../../../../shared/util-tool/util/user.util'
-import { SelectItem } from 'primeng/api'
+import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { UserModel } from '../../../../shared/util-model/model/user.model'
 import { ErrorModel } from '../../../../shared/util-model/model/error.model'
+import { EventProfileStateModel } from '../model/event-profile-state.model'
+import { EventProfileModel } from '../../../../shared/util-model/model/event-profile.model'
 
 const defaultEventProfileState: EventProfileStateModel = {
     eventProfiles: {
@@ -84,6 +84,81 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
         super()
     }
 
+    @Selector()
+    public static eventProfilesPage (state: EventProfileStateModel): PageModel<EventProfileModel> | undefined {
+        return state.eventProfiles.element
+    }
+
+    @Selector()
+    public static eventProfilesPageLoading (state: EventProfileStateModel): boolean {
+        return state.eventProfiles.loading
+    }
+
+    @Selector()
+    public static eventProfilesPageError (state: EventProfileStateModel): ToastMessageOptions | undefined {
+        return state.eventProfiles.error
+    }
+
+    @Selector()
+    public static eventProfilesPageSilentLoading (state: EventProfileStateModel): boolean {
+        return state.eventProfiles.silentLoading
+    }
+
+    @Selector()
+    public static eventProfilesPageSearchParam (state: EventProfileStateModel): string | undefined {
+        return state.eventProfiles.params.searched
+    }
+
+    @Selector()
+    public static eventProfilesPageStatusParam (state: EventProfileStateModel): string | undefined {
+        return state.eventProfiles.params.status
+    }
+
+    @Selector()
+    public static eventProfilesPageStartAccessParam (state: EventProfileStateModel): string | undefined {
+        return state.eventProfiles.params.startAccess
+    }
+
+    @Selector()
+    public static eventProfilesPageEndAccessParam (state: EventProfileStateModel): string | undefined {
+        return state.eventProfiles.params.endAccess
+    }
+
+    @Selector()
+    public static eventProfilesPageOnlyVisibleParam (state: EventProfileStateModel): boolean {
+        return state.eventProfiles.params.onlyVisible
+    }
+
+    @Selector()
+    public static eventProfilesPageOrderParam (state: EventProfileStateModel): OrderEnum {
+        return state.eventProfiles.params.order
+    }
+
+    @Selector()
+    public static eventProfile (state: EventProfileStateModel): EventProfileModel | undefined {
+        return state.eventProfile.element
+    }
+
+    @Selector()
+    public static eventProfileLoading (state: EventProfileStateModel): boolean {
+        return state.eventProfile.loading
+    }
+
+    @Selector()
+    public static searchedUsersMetadata (state: EventProfileStateModel): SelectItem<UserModel>[] {
+        return state._metadata.searched
+    }
+
+    @Selector()
+    public static eventProfileAssignableRolesMetadata (state: EventProfileStateModel): SelectItem<string>[] {
+        return state._metadata.roles
+    }
+
+    @Selector()
+    public static eventProfilesStatusMetadata (state: EventProfileStateModel): SelectItem<string>[] {
+        return state._metadata.status
+    }
+
     @Action( StartEventProfilesPageLoader )
     public startEventProfilesPageLoader (ctx: StateContext<EventProfileStateModel>): void {
         ctx.patchState( {
@@ -95,6 +170,120 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
     public stopEventProfilesPageLoader (ctx: StateContext<EventProfileStateModel>): void {
         ctx.patchState( {
             eventProfiles: StateUtil.updatePageLoader( ctx.getState().eventProfiles, false ),
+        } )
+    }
+
+    @Action( FetchEventProfilesPage )
+    public fetchEventProfilesPage (
+        ctx: StateContext<EventProfileStateModel>,
+        payload: FetchEventProfilesPage,
+    ): Observable<void> {
+        return this.service.findEventProfiles(
+            payload.eventId,
+            payload.offset,
+            payload.limit,
+            ctx.getState().eventProfiles.params,
+        ).pipe(
+            initialize( (): void => this.facade.startEventProfilesPageLoader() ),
+            finalize( (): void => this.facade.stopEventProfilesPageLoader() ),
+            map( (profilePage: PageModel<EventProfileModel>): void => this.fetchEventProfilesPageComplete(
+                ctx,
+                profilePage,
+            ) ),
+            catchError( (error: ErrorModel): Observable<void> => this.pageError( ctx, error ) ),
+        )
+    }
+
+    private fetchEventProfilesPageComplete (
+        ctx: StateContext<EventProfileStateModel>,
+        profilePage: PageModel<EventProfileModel>,
+    ): void {
+        ctx.patchState( {
+            eventProfiles: {
+                ...ctx.getState().eventProfiles,
+                element: profilePage,
+            },
+        } )
+    }
+
+    @Action( InputEventProfilesPageSearch )
+    public inputEventProfilesPageSearch (
+        ctx: StateContext<EventProfileStateModel>,
+        payload: InputEventProfilesPageSearch,
+    ): void {
+        ctx.patchState( {
+            eventProfiles: {
+                ...ctx.getState().eventProfiles,
+                params: {
+                    ...ctx.getState().eventProfiles.params,
+                    searched: payload.searched,
+                },
+            },
+        } )
+    }
+
+    @Action( InputEventProfilesPageDateRange )
+    public inputEventProfilesPageDateRange (
+        ctx: StateContext<EventProfileStateModel>,
+        payload: InputEventProfilesPageDateRange,
+    ): void {
+        ctx.patchState( {
+            eventProfiles: {
+                ...ctx.getState().eventProfiles,
+                params: {
+                    ...ctx.getState().eventProfiles.params,
+                    startAccess: payload.begin?.toISOString(),
+                    endAccess: payload.end?.toISOString(),
+                },
+            },
+        } )
+    }
+
+    @Action( SelectEventProfilesPageStatus )
+    public selectEventProfilesPageStatus (
+        ctx: StateContext<EventProfileStateModel>,
+        payload: SelectEventProfilesPageStatus,
+    ): void {
+        ctx.patchState( {
+            eventProfiles: {
+                ...ctx.getState().eventProfiles,
+                params: {
+                    ...ctx.getState().eventProfiles.params,
+                    status: payload.status,
+                },
+            },
+        } )
+    }
+
+    @Action( SelectEventProfilesPageVisibility )
+    public selectEventProfilesPageVisibility (
+        ctx: StateContext<EventProfileStateModel>,
+        payload: SelectEventProfilesPageVisibility,
+    ): void {
+        ctx.patchState( {
+            eventProfiles: {
+                ...ctx.getState().eventProfiles,
+                params: {
+                    ...ctx.getState().eventProfiles.params,
+                    onlyVisible: payload.onlyVisible,
+                },
+            },
+        } )
+    }
+
+    @Action( SelectEventProfilesPageOrder )
+    public selectEventProfilesPageOrder (
+        ctx: StateContext<EventProfileStateModel>,
+        payload: SelectEventProfilesPageOrder,
+    ): void {
+        ctx.patchState( {
+            eventProfiles: {
+                ...ctx.getState().eventProfiles,
+                params: {
+                    ...ctx.getState().eventProfiles.params,
+                    order: payload.order,
+                },
+            },
         } )
     }
 
@@ -112,125 +301,11 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
         } )
     }
 
-    @Action( FetchEventProfilePage )
-    public fetchEventProfilePage (
-        ctx: StateContext<EventProfileStateModel>,
-        payload: FetchEventProfilePage,
-    ): Observable<void> {
-        return this.service.findEventProfiles(
-            payload.eventId,
-            payload.offset,
-            payload.limit,
-            ctx.getState().eventProfiles.params,
-        ).pipe(
-            initialize( (): void => this.facade.startPageLoader() ),
-            finalize( (): void => this.facade.stopPageLoader() ),
-            map( (profilePage: PageModel<EventProfileModel>): void => this.fetchEventProfilePageComplete(
-                ctx,
-                profilePage,
-            ) ),
-            catchError( (error: ErrorModel): Observable<void> => this.pageError( ctx, error ) ),
-        )
-    }
-
-    private fetchEventProfilePageComplete (
-        ctx: StateContext<EventProfileStateModel>,
-        profilePage: PageModel<EventProfileModel>,
-    ): void {
-        ctx.patchState( {
-            eventProfiles: {
-                ...ctx.getState().eventProfiles,
-                element: profilePage,
-            },
-        } )
-    }
-
-    @Action( InputEventProfilePageSearch )
-    public inputEventProfilePageSearch (
-        ctx: StateContext<EventProfileStateModel>,
-        payload: InputEventProfilePageSearch,
-    ): void {
-        ctx.patchState( {
-            eventProfiles: {
-                ...ctx.getState().eventProfiles,
-                params: {
-                    ...ctx.getState().eventProfiles.params,
-                    searched: payload.searched,
-                },
-            },
-        } )
-    }
-
-    @Action( InputEventProfilePageDateRange )
-    public inputEventProfilePageDateRange (
-        ctx: StateContext<EventProfileStateModel>,
-        payload: InputEventProfilePageDateRange,
-    ): void {
-        ctx.patchState( {
-            eventProfiles: {
-                ...ctx.getState().eventProfiles,
-                params: {
-                    ...ctx.getState().eventProfiles.params,
-                    startAccess: payload.begin?.toISOString(),
-                    endAccess: payload.end?.toISOString(),
-                },
-            },
-        } )
-    }
-
-    @Action( SelectEventProfilePageStatus )
-    public selectEventProfilePageStatus (
-        ctx: StateContext<EventProfileStateModel>,
-        payload: SelectEventProfilePageStatus,
-    ): void {
-        ctx.patchState( {
-            eventProfiles: {
-                ...ctx.getState().eventProfiles,
-                params: {
-                    ...ctx.getState().eventProfiles.params,
-                    status: payload.status,
-                },
-            },
-        } )
-    }
-
-    @Action( SelectEventProfilePageVisibility )
-    public selectEventProfilePageVisibility (
-        ctx: StateContext<EventProfileStateModel>,
-        payload: SelectEventProfilePageVisibility,
-    ): void {
-        ctx.patchState( {
-            eventProfiles: {
-                ...ctx.getState().eventProfiles,
-                params: {
-                    ...ctx.getState().eventProfiles.params,
-                    onlyVisible: payload.onlyVisible,
-                },
-            },
-        } )
-    }
-
-    @Action( SelectEventProfilePageOrder )
-    public selectEventProfilePageOrder (
-        ctx: StateContext<EventProfileStateModel>,
-        payload: SelectEventProfilePageOrder,
-    ): void {
-        ctx.patchState( {
-            eventProfiles: {
-                ...ctx.getState().eventProfiles,
-                params: {
-                    ...ctx.getState().eventProfiles.params,
-                    order: payload.order,
-                },
-            },
-        } )
-    }
-
     @Action( FetchEventProfile )
     public fetchEventProfile (ctx: StateContext<EventProfileStateModel>, payload: FetchEventProfile): Observable<void> {
         return this.service.findEventProfileById( payload.eventId, payload.id ).pipe(
-            initialize( (): void => this.facade.startElementLoader() ),
-            finalize( (): void => this.facade.stopElementLoader() ),
+            initialize( (): void => this.facade.startEventProfileLoader() ),
+            finalize( (): void => this.facade.stopEventProfileLoader() ),
             map( (profile: EventProfileModel): void => this.fetchEventProfileComplete( ctx, profile ) ),
         )
     }
@@ -281,8 +356,8 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
         payload: FetchAssignableEventProfileRoles,
     ): Observable<void> {
         return this.service.getAssignableEventProfileRoles( payload.eventId ).pipe(
-            initialize( (): void => this.facade.startElementLoader() ),
-            finalize( (): void => this.facade.stopElementLoader() ),
+            initialize( (): void => this.facade.startEventProfileLoader() ),
+            finalize( (): void => this.facade.stopEventProfileLoader() ),
             map( (roles: SelectItem<string>[]): void => this.fetchAssignableEventProfileRolesComplete( ctx, roles ) ),
         )
     }
@@ -305,8 +380,8 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
         payload: FetchAssignableEventProfileStatus,
     ): Observable<void> {
         return this.service.getAvailableEventProfileStatus( payload.eventId ).pipe(
-            initialize( (): void => this.facade.startElementLoader() ),
-            finalize( (): void => this.facade.stopElementLoader() ),
+            initialize( (): void => this.facade.startEventProfileLoader() ),
+            finalize( (): void => this.facade.stopEventProfileLoader() ),
             map( (status: SelectItem<string>[]): void => this.fetchAssignableEventProfileStatusComplete(
                 ctx,
                 status,
@@ -327,13 +402,13 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
     }
 
     @Action( CreateEventProfiles )
-    public createEventProfile (
+    public createEventProfiles (
         ctx: StateContext<EventProfileStateModel>,
         payload: CreateEventProfiles,
     ): Observable<void> {
         return this.service.createEventProfiles( payload.eventId, payload.profiles ).pipe(
-            initialize( (): void => this.facade.startElementLoader() ),
-            finalize( (): void => this.facade.stopElementLoader() ),
+            initialize( (): void => this.facade.startEventProfileLoader() ),
+            finalize( (): void => this.facade.stopEventProfileLoader() ),
             map( (creationStatus: CreatedEventProfiles): void => this.createEventProfilesComplete(
                 ctx,
                 payload.eventId,
@@ -381,8 +456,8 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
         payload: UpdateEventProfile,
     ): Observable<void> {
         return this.service.updateEventProfileById( payload.eventId, payload.id, payload.profile ).pipe(
-            initialize( (): void => this.facade.startElementLoader() ),
-            finalize( (): void => this.facade.stopElementLoader() ),
+            initialize( (): void => this.facade.startEventProfileLoader() ),
+            finalize( (): void => this.facade.stopEventProfileLoader() ),
             map( (): void => this.updateEventProfileComplete( ctx, payload.eventId ) ),
         )
     }
@@ -407,8 +482,8 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
         payload: CreateSupportEventProfile,
     ): Observable<void> {
         return this.service.createSupportEventProfile( payload.eventId ).pipe(
-            initialize( (): void => this.facade.startElementLoader() ),
-            finalize( (): void => this.facade.stopElementLoader() ),
+            initialize( (): void => this.facade.startEventProfileLoader() ),
+            finalize( (): void => this.facade.stopEventProfileLoader() ),
             map( (profile: EventProfileModel): void => this.createSupportEventProfileComplete(
                 ctx,
                 payload.eventId,
@@ -444,8 +519,8 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
         payload: BlockEventProfile,
     ): Observable<void> {
         return this.service.blockEventProfileById( payload.eventId, payload.profile.id ).pipe(
-            initialize( (): void => this.facade.startElementLoader() ),
-            finalize( (): void => this.facade.stopElementLoader() ),
+            initialize( (): void => this.facade.startEventProfileLoader() ),
+            finalize( (): void => this.facade.stopEventProfileLoader() ),
             map( (): void => this.blockEventProfileComplete( ctx, payload.eventId, payload.profile ) ),
         )
     }
@@ -471,8 +546,8 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
         payload: UnblockEventProfile,
     ): Observable<void> {
         return this.service.unblockEventProfileById( payload.eventId, payload.profile.id ).pipe(
-            initialize( (): void => this.facade.startElementLoader() ),
-            finalize( (): void => this.facade.stopElementLoader() ),
+            initialize( (): void => this.facade.startEventProfileLoader() ),
+            finalize( (): void => this.facade.stopEventProfileLoader() ),
             map( (): void => this.unblockEventProfileComplete( ctx, payload.eventId, payload.profile ) ),
         )
     }
@@ -498,8 +573,8 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
         payload: DeleteEventProfile,
     ): Observable<void> {
         return this.service.deleteEventProfileById( undefined, payload.profile.id ).pipe(
-            initialize( (): void => this.facade.startElementLoader() ),
-            finalize( (): void => this.facade.stopElementLoader() ),
+            initialize( (): void => this.facade.startEventProfileLoader() ),
+            finalize( (): void => this.facade.stopEventProfileLoader() ),
             map( (): void => this.deleteEventProfileComplete( ctx, payload.eventId, payload.profile ) ),
         )
     }
@@ -529,7 +604,7 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
 
     protected refreshPage (ctx: StateContext<EventProfileStateModel>, eventId: string | undefined): void {
         const page: PageModel<EventProfileModel> | undefined = ctx.getState().eventProfiles.element
-        this.facade.fetchElementPage( page?.offset, page?.limit, true, eventId )
+        this.facade.fetchEventProfilesPage( page?.offset, page?.limit, true, eventId )
     }
 
     protected pageError (ctx: StateContext<EventProfileStateModel>, error: ErrorModel): Observable<void> {
@@ -540,6 +615,7 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
                 eventProfiles: this.buildErrorMessage( ctx.getState().eventProfiles, error ),
             } )
         }
+
         return of()
     }
 }

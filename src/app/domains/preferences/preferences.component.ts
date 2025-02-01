@@ -37,8 +37,8 @@ import { RegistryActionEnum } from '../../shared/util-common/state/registry.acti
 export class PreferencesComponent extends GenericComponent {
     protected readonly AppRouteEnum: typeof AppRouteEnum = AppRouteEnum
 
-    protected readonly profilePage$: Observable<PageModel<EventProfileModel> | undefined> = this.registryFacade.profilesPage
-    protected readonly invitationPage$: Observable<PageModel<EventProfileModel> | undefined> = this.registryFacade.invitationPage
+    protected readonly profilePage$: Observable<PageModel<EventProfileModel> | undefined> = this.registryFacade.userEventProfilesPage
+    protected readonly invitationPage$: Observable<PageModel<EventProfileModel> | undefined> = this.registryFacade.userEventProfileInvitationsPage
 
     protected actions: ActionModel<RegistryActionEnum>[] = AppConfig.config.user.myAction
 

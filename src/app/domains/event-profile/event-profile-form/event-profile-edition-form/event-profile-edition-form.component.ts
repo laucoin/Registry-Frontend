@@ -47,7 +47,7 @@ export class EventProfileEditionFormComponent extends GenericEventProfileFormCom
     public constructor (protected override readonly facade: EventProfileFacade) {
         super( facade )
 
-        this.profile$ = facade.element
+        this.profile$ = facade.eventProfile
     }
 
     public ngOnInit (): void {
@@ -72,7 +72,7 @@ export class EventProfileEditionFormComponent extends GenericEventProfileFormCom
                 if (GenericUtil.isNull( params['id'] )) {
                     this.router.navigateByUrl( AppRouteEnum.PROFILES_INVITATION ).catch( console.error )
                 }
-                this.facade.fetchElement( params['id'] )
+                this.facade.fetchEventProfile( params['id'] )
             } ),
         )
     }
@@ -96,7 +96,7 @@ export class EventProfileEditionFormComponent extends GenericEventProfileFormCom
         }
 
         this.subscriptions.add(
-            this.facade.updateElement( this.route.snapshot.params['id'], profile )
+            this.facade.updateEventProfile( this.route.snapshot.params['id'], profile )
                 .subscribe( (): void => this.navigateToRedirectUri() ),
         )
     }

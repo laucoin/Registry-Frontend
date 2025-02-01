@@ -45,14 +45,14 @@ import { DatePicker } from 'primeng/datepicker'
 } )
 export class ProfileListComponent extends GenericListComponent<EventProfileModel> {
     protected readonly AppRouteEnum: typeof AppRouteEnum = AppRouteEnum
-    protected readonly invitationPage$: Observable<PageModel<EventProfileModel> | undefined> = this.registryFacade.invitationPage
+    protected readonly invitationPage$: Observable<PageModel<EventProfileModel> | undefined> = this.registryFacade.userEventProfileInvitationsPage
 
     public constructor (facade: RegistryFacade) {
         super(
-            facade.profilesPage,
-            facade.profilesLoading,
-            facade.profilesSilentLoading,
-            facade.profilesError,
+            facade.userEventProfilesPage,
+            facade.userEventProfilesPageLoading,
+            facade.userEventProfilesPageSilentLoading,
+            facade.userEventProfilesPageError,
         )
 
         this.changeEmptyMessageTranslationKey( 'EMPTY_USER_EVENT_PROFILE' )
@@ -68,9 +68,9 @@ export class ProfileListComponent extends GenericListComponent<EventProfileModel
 
     protected initForm (): FormGroup {
         return this.formBuilder.group( {
-            searched: this.formBuilder.control( this.registryFacade.actualProfilePageSearched ),
-            range: this.formBuilder.control( this.registryFacade.actualProfilePageDateRange ?? [] ),
-            order: this.formBuilder.control( this.registryFacade.actualProfilePageOrder === OrderEnum.ASC ),
+            searched: this.formBuilder.control( this.registryFacade.actualUserEventProfilesPageSearchParam ),
+            range: this.formBuilder.control( this.registryFacade.actualUserEventProfilesPageDateRangeParam ?? [] ),
+            order: this.formBuilder.control( this.registryFacade.actualUserEventProfilesPageOrderParam === OrderEnum.ASC ),
         } )
     }
 
