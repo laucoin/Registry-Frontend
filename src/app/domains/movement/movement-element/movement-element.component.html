@@ -50,7 +50,7 @@
 
 <app-layer [(visible)]='layerOpened'
            [header]='"movement.content.title" | translate'>
-    <p-tabs [(value)]='activeTab'>
+    <p-tabs [(value)]='activeTab' [scrollable]='true'>
         <p-tablist>
             <p-tab [value]='1'>
                 <p-tag [value]='element.content.length.toString()' class='me-1' />

@@ -12,6 +12,7 @@ import {
     FetchUserPage,
     ImpersonateUser,
     InputUserPageSearch,
+    ResetUser,
     SelectUserPageOrder,
     SelectUserPageVisibility,
     StartUserLoader,
@@ -21,8 +22,9 @@ import {
     UnblockUser,
     UpdateUserRole,
 } from './user.action'
-import { ToastMessageOptions } from 'primeng/api'
+import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { OrderEnum } from '../../../../shared/util-model/enumeration/order.enum'
+import { ofActionSuccessful } from '@ngxs/store'
 
 @Injectable()
 export class UserFacade extends GenericElementFacade<UserModel> {
@@ -56,6 +58,10 @@ export class UserFacade extends GenericElementFacade<UserModel> {
 
     public get element (): Observable<UserModel | undefined> {
         return this.ngStore.select( (state: StateModel): UserModel | undefined => state.user.user.element )
+    }
+
+    public get assignableRoles (): Observable<SelectItem<string>[]> {
+        return this.ngStore.select( (state: StateModel): SelectItem<string>[] => state.user._metadata.assignableRoles )
     }
 
     public get elementLoading (): Observable<boolean> {
@@ -102,12 +108,18 @@ export class UserFacade extends GenericElementFacade<UserModel> {
         this.ngStore.dispatch( new FetchUser( id ) )
     }
 
+    public resetElement (): void {
+        this.ngStore.dispatch( ResetUser )
+    }
+
     public fetchAssignableRoles (): void {
         this.ngStore.dispatch( new FetchAssignableUserRoles() )
     }
 
-    public updateElementRole (id: string, role: string | undefined): void {
+    public updateElementRole (id: string, role: string | undefined): Observable<UpdateUserRole> {
         this.ngStore.dispatch( new UpdateUserRole( id, role ) )
+
+        return this.actions$.pipe( ofActionSuccessful( UpdateUserRole ) )
     }
 
     public bockElement (id: string): void {
@@ -118,7 +130,7 @@ export class UserFacade extends GenericElementFacade<UserModel> {
         this.ngStore.dispatch( new UnblockUser( id ) )
     }
 
-    public impersonateElement (user: UserModel): void {
+    public impersonateUser (user: UserModel): void {
         this.ngStore.dispatch( new ImpersonateUser( user ) )
     }
 

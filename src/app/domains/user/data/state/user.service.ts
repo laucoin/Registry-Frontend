@@ -54,6 +54,10 @@ export class UserService extends GenericService {
         return this.http.patch<UserModel>( `${this.baseUrl}/${id}/impersonate`, null )
     }
 
+    public impersonateCurrentUser (): Observable<UserModel> {
+        return this.http.patch<UserModel>( `${this.baseUrl}/impersonate`, null )
+    }
+
     public deleteUserById (id: string): Observable<void> {
         return this.http.delete<void>( `${this.baseUrl}/${id}` )
     }

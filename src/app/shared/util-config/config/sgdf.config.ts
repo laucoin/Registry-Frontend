@@ -10,6 +10,7 @@ import { MovementActionEnum } from '../../../domains/movement/data/state/movemen
 import { definePreset } from '@primeng/themes'
 import Lara from '@primeng/themes/lara'
 import { GroupActionEnum } from '../../../domains/group/data/state/group.action'
+import { RegistryActionEnum } from '../../util-common/state/registry.action'
 
 export const sgdfConfig: ContextConfigModel = {
     theme: definePreset( Lara, {
@@ -545,7 +546,36 @@ export const sgdfConfig: ContextConfigModel = {
         ],
     },
     user: {
+        myAction: [
+            {
+                id: RegistryActionEnum.IMPERSONATE_CURRENT_USER,
+                name: 'user.action.impersonate',
+                icon: 'pi pi-eraser',
+                disabled: false,
+                requiredUserAuthority: undefined,
+                requiredEventAuthority: undefined,
+                requiredEventOption: undefined,
+                confirmation: {
+                    header: 'user.action.confirmation.title.impersonate-myself',
+                    message: 'user.action.confirmation.message.impersonate-myself',
+                    icon: 'pi pi-exclamation-triangle',
+                    acceptSeverity: 'danger',
+                    rejectSeverity: 'secondary',
+                    confirmProperty: 'firstName',
+                },
+            },
+        ],
         action: [
+            {
+                id: UserActionEnum.UPDATE_USER_ROLE,
+                name: 'user.action.update-role',
+                icon: 'pi pi-user-edit',
+                disabled: false,
+                requiredUserAuthority: UserAuthorityEnum.REGISTRY_USER_U,
+                requiredEventAuthority: undefined,
+                requiredEventOption: undefined,
+                confirmation: undefined,
+            },
             {
                 id: UserActionEnum.BLOCK_USER,
                 name: 'user.action.block',
@@ -578,6 +608,23 @@ export const sgdfConfig: ContextConfigModel = {
                     acceptSeverity: 'warn',
                     rejectSeverity: 'secondary',
                     confirmProperty: undefined,
+                },
+            },
+            {
+                id: UserActionEnum.IMPERSONATE_USER,
+                name: 'user.action.impersonate',
+                icon: 'pi pi-eraser',
+                disabled: false,
+                requiredUserAuthority: UserAuthorityEnum.REGISTRY_USER_D,
+                requiredEventAuthority: undefined,
+                requiredEventOption: undefined,
+                confirmation: {
+                    header: 'user.action.confirmation.title.impersonate',
+                    message: 'user.action.confirmation.message.impersonate',
+                    icon: 'pi pi-exclamation-triangle',
+                    acceptSeverity: 'danger',
+                    rejectSeverity: 'secondary',
+                    confirmProperty: 'firstName',
                 },
             },
             {

@@ -4,7 +4,7 @@ import { EventProfileModel } from '../../util-model/model/event-profile.model'
 import { TokenModel } from '../../util-authentication/model/token.model'
 import { ErrorModel } from '../../util-model/model/error.model'
 
-enum ActionEnum {
+export enum RegistryActionEnum {
     START_GLOBAL_LOADER = '[Local] Starting global loader',
     STOP_GLOBAL_LOADER = '[Local] Stopping global loader',
 
@@ -21,6 +21,7 @@ enum ActionEnum {
     REFRESH_TOKEN = '[Backend] Refreshing token',
 
     FETCH_CURRENT_USER = '[Backend] Fetching current user',
+    IMPERSONATE_CURRENT_USER = '[Backend] Impersonating current user',
 
     START_PROFILES_PAGE_LOADER = '[Local] Starting profiles page loader',
     STOP_PROFILES_PAGE_LOADER = '[Local] Stopping profiles page loader',
@@ -55,73 +56,77 @@ enum ActionEnum {
 }
 
 export class StartGlobalLoader {
-    public static readonly type: ActionEnum = ActionEnum.START_GLOBAL_LOADER
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.START_GLOBAL_LOADER
 }
 
 export class StopGlobalLoader {
-    public static readonly type: ActionEnum = ActionEnum.STOP_GLOBAL_LOADER
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.STOP_GLOBAL_LOADER
 }
 
 export class SetGlobalError {
-    public static readonly type: ActionEnum = ActionEnum.SET_GLOBAL_ERROR
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.SET_GLOBAL_ERROR
 
     public constructor (public readonly error: ErrorModel) {}
 }
 
 export class UpdateNetwork {
-    public static readonly type: ActionEnum = ActionEnum.UPDATE_NETWORK
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.UPDATE_NETWORK
 
     public constructor (public readonly online: boolean) {}
 }
 
 export class Notify {
-    public static readonly type: ActionEnum = ActionEnum.NOTIFY
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.NOTIFY
 
     public constructor (public readonly message: ToastMessageOptions) {}
 }
 
 export class AckNotification {
-    public static readonly type: ActionEnum = ActionEnum.ACK_NOTIFICATION
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.ACK_NOTIFICATION
 }
 
 export class Login {
-    public static readonly type: ActionEnum = ActionEnum.LOGIN
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.LOGIN
 }
 
 export class Logout {
-    public static readonly type: ActionEnum = ActionEnum.LOGOUT
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.LOGOUT
 }
 
 export class RestoreTokens {
-    public static readonly type: ActionEnum = ActionEnum.RESTORE_TOKEN
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.RESTORE_TOKEN
 
     public constructor (public readonly token: TokenModel) {}
 }
 
 export class FetchToken {
-    public static readonly type: ActionEnum = ActionEnum.FETCH_TOKEN
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.FETCH_TOKEN
 
     public constructor (public readonly authorizationCode: string) {}
 }
 
 export class RefreshToken {
-    public static readonly type: ActionEnum = ActionEnum.REFRESH_TOKEN
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.REFRESH_TOKEN
 }
 
 export class FetchCurrentUser {
-    public static readonly type: ActionEnum = ActionEnum.FETCH_CURRENT_USER
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.FETCH_CURRENT_USER
+}
+
+export class ImpersonateCurrentUser {
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.IMPERSONATE_CURRENT_USER
 }
 
 export class StartProfilesPageLoader {
-    public static readonly type: ActionEnum = ActionEnum.START_PROFILES_PAGE_LOADER
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.START_PROFILES_PAGE_LOADER
 }
 
 export class StopProfilesPageLoader {
-    public static readonly type: ActionEnum = ActionEnum.STOP_PROFILES_PAGE_LOADER
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.STOP_PROFILES_PAGE_LOADER
 }
 
 export class FetchUserEventProfilePage {
-    public static readonly type: ActionEnum = ActionEnum.FETCH_USER_EVENT_PROFILE_PAGE
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.FETCH_USER_EVENT_PROFILE_PAGE
 
     public constructor (
         public readonly offset: number | undefined,
@@ -131,13 +136,13 @@ export class FetchUserEventProfilePage {
 }
 
 export class InputProfilePageSearch {
-    public static readonly type: ActionEnum = ActionEnum.INPUT_PROFILE_PAGE_SEARCH
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.INPUT_PROFILE_PAGE_SEARCH
 
     public constructor (public readonly searched: string | undefined) {}
 }
 
 export class InputProfilePageDateRange {
-    public static readonly type: ActionEnum = ActionEnum.INPUT_PROFILE_PAGE_DATE_RANGE
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.INPUT_PROFILE_PAGE_DATE_RANGE
 
     public constructor (
         public readonly begin: Date | undefined,
@@ -146,21 +151,21 @@ export class InputProfilePageDateRange {
 }
 
 export class SelectProfilePageOrder {
-    public static readonly type: ActionEnum = ActionEnum.SELECT_PROFILE_PAGE_ORDER
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.SELECT_PROFILE_PAGE_ORDER
 
     public constructor (public readonly order: OrderEnum) {}
 }
 
 export class StartInvitationsPageLoader {
-    public static readonly type: ActionEnum = ActionEnum.START_INVITATIONS_PAGE_LOADER
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.START_INVITATIONS_PAGE_LOADER
 }
 
 export class StopInvitationsPageLoader {
-    public static readonly type: ActionEnum = ActionEnum.STOP_INVITATIONS_PAGE_LOADER
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.STOP_INVITATIONS_PAGE_LOADER
 }
 
 export class FetchUserEventProfileInvitationPage {
-    public static readonly type: ActionEnum = ActionEnum.FETCH_USER_EVENT_PROFILE_INVITATION_PAGE
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.FETCH_USER_EVENT_PROFILE_INVITATION_PAGE
 
     public constructor (
         public readonly offset: number | undefined,
@@ -170,13 +175,13 @@ export class FetchUserEventProfileInvitationPage {
 }
 
 export class InputInvitationPageSearch {
-    public static readonly type: ActionEnum = ActionEnum.INPUT_INVITATION_PAGE_SEARCH
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.INPUT_INVITATION_PAGE_SEARCH
 
     public constructor (public readonly searched: string | undefined) {}
 }
 
 export class InputInvitationPageDateRange {
-    public static readonly type: ActionEnum = ActionEnum.INPUT_INVITATION_PAGE_DATE_RANGE
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.INPUT_INVITATION_PAGE_DATE_RANGE
 
     public constructor (
         public readonly begin: Date | undefined,
@@ -185,53 +190,53 @@ export class InputInvitationPageDateRange {
 }
 
 export class SelectInvitationPageOrder {
-    public static readonly type: ActionEnum = ActionEnum.SELECT_INVITATION_PAGE_ORDER
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.SELECT_INVITATION_PAGE_ORDER
 
     public constructor (public readonly order: OrderEnum) {}
 }
 
 export class StartProfileLoader {
-    public static readonly type: ActionEnum = ActionEnum.START_PROFILE_LOADER
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.START_PROFILE_LOADER
 }
 
 export class StopProfileLoader {
-    public static readonly type: ActionEnum = ActionEnum.STOP_PROFILE_LOADER
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.STOP_PROFILE_LOADER
 }
 
 export class UpdateTheme {
-    public static readonly type: ActionEnum = ActionEnum.UPDATE_THEME
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.UPDATE_THEME
 
     public constructor (public readonly theme: 'light' | 'dark') {}
 }
 
 export class StartContextEventLoader {
-    public static readonly type: ActionEnum = ActionEnum.START_CONTEXT_EVENT_LOADER
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.START_CONTEXT_EVENT_LOADER
 }
 
 export class StopContextEventLoader {
-    public static readonly type: ActionEnum = ActionEnum.STOP_CONTEXT_EVENT_LOADER
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.STOP_CONTEXT_EVENT_LOADER
 }
 
 export class FetchContextEvent {
-    public static readonly type: ActionEnum = ActionEnum.FETCH_CONTEXT_EVENT
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.FETCH_CONTEXT_EVENT
 
     public constructor (public readonly eventId: string, public readonly force: boolean) {}
 }
 
 export class ManageEventInvitationAcceptance {
-    public static readonly type: ActionEnum = ActionEnum.MANAGE_EVENT_INVITATION_ACCEPTANCE
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.MANAGE_EVENT_INVITATION_ACCEPTANCE
 
     public constructor (public readonly profileId: string, public readonly accepted: boolean) {}
 }
 
 export class SelectUserEventProfile {
-    public static readonly type: ActionEnum = ActionEnum.SELECT_USER_EVENT_PROFILE
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.SELECT_USER_EVENT_PROFILE
 
     public constructor (public readonly profile: EventProfileModel) {}
 }
 
 export class DeleteUserEventProfile {
-    public static readonly type: ActionEnum = ActionEnum.DELETE_USER_EVENT_PROFILE
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.DELETE_USER_EVENT_PROFILE
 
     public constructor (public readonly profile: EventProfileModel) {}
 }

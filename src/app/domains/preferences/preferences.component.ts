@@ -11,6 +11,9 @@ import { PluralTranslationPipe } from '../../shared/util-tool/pipe/plural-transl
 import { ElementCardComponent } from '../../shared/util-ui/element-card/element-card.component'
 import { AppRouteEnum } from '../../app-route.enum'
 import { Tab, TabList, Tabs } from 'primeng/tabs'
+import { ActionModel } from '../../shared/util-model/model/action.model'
+import { AppConfig } from '../../app.config'
+import { RegistryActionEnum } from '../../shared/util-common/state/registry.action'
 
 @Component( {
     selector: 'app-preferences',
@@ -36,6 +39,15 @@ export class PreferencesComponent extends GenericComponent {
 
     protected readonly profilePage$: Observable<PageModel<EventProfileModel> | undefined> = this.registryFacade.profilesPage
     protected readonly invitationPage$: Observable<PageModel<EventProfileModel> | undefined> = this.registryFacade.invitationPage
+
+    protected actions: ActionModel<RegistryActionEnum>[] = AppConfig.config.user.myAction
+
+    protected handleAction (action: RegistryActionEnum): void {
+        switch (action) {
+            case RegistryActionEnum.IMPERSONATE_CURRENT_USER:
+                this.registryFacade.impersonateCurrentUser()
+        }
+    }
 
     protected tabNavigation (route: unknown): void {
         this.router.navigateByUrl( route as AppRouteEnum ).catch( console.error )

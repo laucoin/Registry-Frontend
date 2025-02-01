@@ -41,6 +41,7 @@ export class UsersListComponent extends GenericListComponent<UserModel> {
             facade.pageError,
         )
 
+        this.facade.fetchAssignableRoles()
         this.facade.fetchPage( undefined, undefined, false )
 
         this.form = this.initForm()

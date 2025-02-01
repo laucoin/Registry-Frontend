@@ -1,0 +1,33 @@
+<app-form [form]='form' [loading]='(loading$ | async) ?? false'>
+    @if (user()) {
+        <h2>
+            {{
+                'user.form.title' | translate: { firstName: user()?.firstName, lastName: user()?.lastName }
+            }}
+        </h2>
+    }
+    <p-card>
+        <div class='field'>
+            <label for='role' appRequired>{{ 'profile.form.role' | translate }}</label>
+            <p-select
+                    id='role'
+                    fluid
+                    [options]='(assignableRoles$ | async) ?? []'
+                    [formControl]='role'
+                    (keydown.enter)='submit()'
+                    optionLabel='label'
+                    optionValue='value' />
+        </div>
+    </p-card>
+    <div class='d-flex mt-2 justify-content-center'>
+        @if (user()) {
+            <p-button
+                    class='ms-2'
+                    (click)='submit()'
+                    [label]='"edit" | translate'
+                    [rounded]='true'
+                    icon='pi pi-pen-to-square'
+                    severity='success' />
+        }
+    </div>
+</app-form>

@@ -20,6 +20,7 @@ import { InputIconModule } from 'primeng/inputicon'
 import { InputTextModule } from 'primeng/inputtext'
 import { ListboxModule } from 'primeng/listbox'
 import { ReactiveFormsModule } from '@angular/forms'
+import { AppRouteEnum } from '../../../app-route.enum'
 
 @Component( {
     selector: 'app-user-element',
@@ -39,6 +40,7 @@ import { ReactiveFormsModule } from '@angular/forms'
         InputTextModule,
         ListboxModule,
         ReactiveFormsModule,
+
     ],
     templateUrl: './user-element.component.html',
     styleUrl: './user-element.component.scss',
@@ -46,9 +48,9 @@ import { ReactiveFormsModule } from '@angular/forms'
 export class UserElementComponent extends GenericElementComponent<UserModel, UserActionEnum> implements OnChanges {
     @Input() public showActionMenu: boolean = true
 
-    public constructor (
-        private readonly facade: UserFacade,
-    ) {super()}
+    public constructor (private readonly facade: UserFacade) {
+        super()
+    }
 
     public ngOnChanges (): void {
         this.defineActions()
@@ -83,10 +85,16 @@ export class UserElementComponent extends GenericElementComponent<UserModel, Use
         const isCurrentUser: boolean = this.element.id == currentUser?.id
 
         switch (action.id) {
+            case UserActionEnum.UPDATE_USER_ROLE:
+                return isCurrentUser || !isActionFeasible
             case UserActionEnum.BLOCK_USER:
                 return isCurrentUser || !(isActionFeasible && this.element.visible)
             case UserActionEnum.UNBLOCK_USER:
                 return isCurrentUser || !(isActionFeasible && !this.element.visible)
+            case UserActionEnum.IMPERSONATE_USER:
+                return isCurrentUser || !isActionFeasible
+            case UserActionEnum.DELETE_USER:
+                return isCurrentUser || !isActionFeasible
             default:
                 return !isActionFeasible
         }
@@ -94,11 +102,19 @@ export class UserElementComponent extends GenericElementComponent<UserModel, Use
 
     protected handleAction (action: UserActionEnum): void {
         switch (action) {
+            case UserActionEnum.UPDATE_USER_ROLE:
+                this.router.navigateByUrl(
+                    this.buildUri( AppRouteEnum.USERS_EDITION.replace( ':id', this.element.id ) ),
+                ).catch( console.error )
+                break
             case UserActionEnum.BLOCK_USER:
                 this.facade.bockElement( this.element.id )
                 break
             case UserActionEnum.UNBLOCK_USER:
                 this.facade.unblockElement( this.element.id )
+                break
+            case UserActionEnum.IMPERSONATE_USER:
+                this.facade.impersonateUser( this.element )
                 break
             case UserActionEnum.DELETE_USER:
                 this.facade.deleteElement( this.element )

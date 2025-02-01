@@ -1,7 +1,7 @@
 <main class='main'>
     <p-blockUI [blocked]='loading() || GenericUtil.nonNull(error())'>
         @if (loading()) {
-            <p-progressSpinner></p-progressSpinner>
+            <p-progressSpinner class='m-auto'></p-progressSpinner>
         } @else {
             <div class='m-auto'>
                 <app-message [message]='error()'>

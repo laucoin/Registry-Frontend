@@ -303,8 +303,8 @@
             "event": {
                 "create": "+ Évènement créé",
                 "edit": "✏️ Évènement modifié",
-                "disable": "🙈 Évènement désactivé",
-                "enable": "👀 Évènement réactivé",
+                "disable": "🙈 Évènement masqué",
+                "enable": "👀 Évènement à nouveau visible",
                 "delete": "🗑️ Évènement supprimé"
             },
             "event-profile": {
@@ -329,15 +329,15 @@
                 "IN": {
                     "create": "+ Entrée créée",
                     "edit": "✏️ Entrée modifiée",
-                    "disable": "🙈 Entrée cachée",
-                    "enable": "👀 Entrée visible",
+                    "disable": "🙈 Entrée masquée",
+                    "enable": "👀 Entrée à nouveau visible",
                     "delete": "🗑️ Entrée supprimée"
                 },
                 "OUT": {
                     "create": "+ Sortie créée",
                     "edit": "✏️ Sortie modifiée",
-                    "disable": "🙈 Sortie cachée",
-                    "enable": "👀 Sortie visible",
+                    "disable": "🙈 Sortie masquée",
+                    "enable": "👀 Sortie à nouveau visible",
                     "delete": "🗑️ Sortie supprimée"
                 }
             },
@@ -345,8 +345,8 @@
                 "create": "+ Personne participante créée",
                 "link": "✏️ Personne participante liée",
                 "edit": "✏️ Personne participante modifiée",
-                "disable": "🙈 Personne participante cachée",
-                "enable": "👀 Personne participante visible",
+                "disable": "🙈 Personne participante masquée",
+                "enable": "👀 Personne participante à nouveau visible",
                 "delete": "🗑️ Personne participante supprimée"
             },
             "group": {
@@ -357,14 +357,15 @@
                 "remove-member": "- Membre retiré",
                 "create": "+ Groupe de personnes créé",
                 "edit": "✏️ Groupe de personnes modifié",
-                "disable": "🙈 Groupe de personnes caché",
-                "enable": "👀 Groupe de personnes visible",
+                "disable": "🙈 Groupe de personnes masqué",
+                "enable": "👀 Groupe de personnes à nouveau visible",
                 "delete": "🗑️ Groupe de personnes supprimé"
             },
             "user": {
                 "edit": "✏️ Personne utilisatrice modifiée",
                 "block": "⛔️ Personne utilisatrice bloquée",
                 "unblock": "✅ Personne utilisatrice débloquée",
+                "impersonate": "✅ Personne utilisatrice anonymisée",
                 "delete": "🗑️ Personne utilisatrice supprimée"
             }
         },
@@ -373,8 +374,8 @@
             "event": {
                 "create": "L'évènement {{name}} a été créé",
                 "edit": "L'évènement {{name}} a été modifié",
-                "disable": "L'évènement {{name}} a été désactivé",
-                "enable": "L'évènement {{name}} a été réactivé",
+                "disable": "L'évènement {{name}} a été masqué",
+                "enable": "L'évènement {{name}} est à nouveau visible",
                 "delete": "L'évènement {{name}} a été supprimé"
             },
             "event-profile": {
@@ -405,7 +406,7 @@
                         "plural": "L'entrée du {{date}} à {{time}} a été créée avec {{participants}} participants"
                     },
                     "edit": "L'entrée du {{date}} à {{time}} a été modifiée",
-                    "disable": "L'entrée du {{date}} à {{time}} a été cachée",
+                    "disable": "L'entrée du {{date}} à {{time}} a été masquée",
                     "enable": "L'entrée du {{date}} à {{time}} est de nouveau visible",
                     "delete": "L'entrée du {{date}} à {{time}} a été supprimée"
                 },
@@ -415,7 +416,7 @@
                         "plural": "La sortie du {{date}} à {{time}} a été créée avec {{participants}} participants"
                     },
                     "edit": "La sortie du {{date}} à {{time}} a été modifiée",
-                    "disable": "La sortie du {{date}} à {{time}} a été cachée",
+                    "disable": "La sortie du {{date}} à {{time}} a été masquée",
                     "enable": "La sortie du {{date}} à {{time}} est de nouveau visible",
                     "delete": "La sortie du {{date}} à {{time}} a été supprimée"
                 }
@@ -423,7 +424,7 @@
             "participant": {
                 "create": "La personne participante {{firstName}} {{lastName}} a été créée",
                 "edit": "La personne participante {{firstName}} {{lastName}} a été modifiée",
-                "disable": "La personne participante {{firstName}} {{lastName}} a été cachée",
+                "disable": "La personne participante {{firstName}} {{lastName}} a été masquée",
                 "enable": "La personne participante {{firstName}} {{lastName}} est de nouveau visible",
                 "delete": "La personne participante {{firstName}} {{lastName}} a été supprimée"
             },
@@ -435,7 +436,7 @@
                 "remove-member": "Le membre {{firstName}} {{lastName}} a été retiré du groupe {{name}}.",
                 "create": "Le groupe de personnes {{name}} a été créé",
                 "edit": "Le groupe de personnes {{name}} a été modifié",
-                "disable": "Le groupe de personnes {{name}} a été caché",
+                "disable": "Le groupe de personnes {{name}} a été masqué",
                 "enable": "Le groupe de personnes {{name}} est de nouveau visible",
                 "delete": "Le groupe de personnes {{name}} a été supprimé"
             },
@@ -467,7 +468,11 @@
         "label": "La confirmation",
         "info": "Entres \"{{name}}\" pour confirmer",
         "confirm": "Confirmer",
-        "cancel": "Annuler"
+        "cancel": "Annuler",
+        "error": {
+            "required": "Ne rien écrire n'est pas un consentement. Si tu confirmes rien, aucune action sera effectuée !",
+            "pattern": "Il faut que tu recopies exactement \"{{toConfirm}}\". Pour l'instant tu as écris \"{{actual}}\" par conséquent aucune peut-être confirmée !"
+        }
     },
     "layout": {
         "list": "Liste",
@@ -534,7 +539,7 @@
                     "delete": "Supprimer l'évènement"
                 },
                 "message": {
-                    "disable": "Attention ! Tu vas désactiver l'évènement \"{{element.name}}\". Tant qu'il est désactivé, il ne sera plus possible d'y créer des profils, mouvements, participants, etc.",
+                    "disable": "Attention ! Tu vas désactiver l'évènement \"{{element.name}}\". Tant qu'il est masqué, il ne sera plus possible d'y créer des profils, mouvements, participants, etc.",
                     "enable": "Attention ! Tu vas ré-activer l'évènement \"{{element.name}}\". Il sera de nouveau possible d'y créer des profils, mouvements, participant, etc.",
                     "delete": "Attention ! Tu vas définitivement supprimer l'évènement \"{{element.name}}\" ainsi que tous les élements qui lui sont liés (profils, mouvements, participants, etc.)."
                 }
@@ -693,7 +698,7 @@
                     "delete": "Supprimer la personne participante"
                 },
                 "message": {
-                    "disable": "Attention ! Tu vas désactiver la personne \"{{element.firstName}} {{element.lastName}}\". Tant qu'elle est désactivée, la personne ne pourra plus être intégrée dans les entrées/sorties.",
+                    "disable": "Attention ! Tu vas désactiver la personne \"{{element.firstName}} {{element.lastName}}\". Tant qu'elle est masquée, la personne ne pourra plus être intégrée dans les entrées/sorties.",
                     "enable": "Attention ! Tu vas ré-activer la personne \"{{element.firstName}} {{element.lastName}}\". Il sera de nouveau possible de l'intégrer dans les entrées/sorties.",
                     "delete": "Attention ! Tu vas définitivement supprimer la personne \"{{element.firstName}} {{element.lastName}}\". Elle sera donc définitivement dissociée des mouvements et autres éléments."
                 }
@@ -766,7 +771,7 @@
                 },
                 "message": {
                     "remove-member": "Attention ! Tu vas retirer \"{{element.firstName}} {{element.lastName}}\" du groupe.",
-                    "disable": "Attention ! Tu vas désactiver le groupe de personnes \"{{element.name}}\". Tant qu'il est désactivé, le groupe ne pourra plus être intégré dans les entrées/sorties.",
+                    "disable": "Attention ! Tu vas désactiver le groupe de personnes \"{{element.name}}\". Tant qu'il est masqué, le groupe ne pourra plus être intégré dans les entrées/sorties.",
                     "enable": "Attention ! Tu vas ré-activer le groupe de personnes \"{{element.name}}\". Il sera de nouveau possible de l'intégrer dans les entrées/sorties.",
                     "delete": "Attention ! Tu vas définitivement supprimer le groupe de personnes \"{{element.name}}\". Elle sera donc définitivement dissocié des mouvements et autres éléments."
                 }
@@ -907,7 +912,7 @@
                     "delete": "Supprimer le mouvement"
                 },
                 "message": {
-                    "disable": "Attention ! Tu vas désactiver le mouvement. Tant qu'il est désactivé, le mouvement ne sera plus visible pour ses participants.",
+                    "disable": "Attention ! Tu vas désactiver le mouvement. Tant qu'il est masqué, le mouvement ne sera plus visible pour ses participants.",
                     "enable": "Attention ! Tu vas ré-activer le mouvement. Il sera de nouveau visible pour les participants.",
                     "delete": "Attention ! Tu vas définitivement supprimer le mouvement. Il sera définitivement dissocié des mouvements et autres éléments."
                 }
@@ -927,19 +932,28 @@
             "singular": "{{number}} Utilisateur",
             "plural": "{{number}} Utilisateurs"
         },
+        "form": {
+            "title": "Mettre à jour le role de {{firstName}} {{lastName}}"
+        },
         "action": {
+            "update-role": "Mettre à jour le rôle",
             "block": "Bloquer",
             "unblock": "Débloquer",
+            "impersonate": "Anonymiser",
             "delete": "Supprimer",
             "confirmation": {
                 "title": {
                     "block": "Bloquer l'utilisateur",
                     "unblock": "Débloquer l'utilisateur",
-                    "delete": "Supprimer l'utilisateur'"
+                    "impersonate": "Anonymiser l'utilisateur",
+                    "impersonate-myself": "Anonymiser mon compte",
+                    "delete": "Supprimer l'utilisateur"
                 },
                 "message": {
                     "block": "Attention ! Tu vas bloquer un utilisateur. Tant qu'il est bloqué, {{element.firstName}} {{element.lastName}} ne pourra plus se connecter.",
                     "unblock": "Attention ! Tu vas débloquer un utilisateur. {{element.firstName}} {{element.lastName}} pourra à nouveau se connecter.",
+                    "impersonate": "Attention ! Tu vas anonymiser un utilisateur. Tous les profils et participants associés à {{element.firstName}} {{element.lastName}} seront également anonymisé.",
+                    "impersonate-myself": "Attention ! Tu vas anonymiser tom compte. Cette action irréversible entrainera ta déconnexion et t'empêcheras de te connecter à nouveau.",
                     "delete": "Attention ! Tu vas supprimer un utilisateur. Tous les profils associés à {{element.firstName}} {{element.lastName}} seront également supprimés."
                 }
             }

@@ -15,6 +15,7 @@ import {
     FetchToken,
     FetchUserEventProfileInvitationPage,
     FetchUserEventProfilePage,
+    ImpersonateCurrentUser,
     InputInvitationPageDateRange,
     InputInvitationPageSearch,
     InputProfilePageDateRange,
@@ -220,6 +221,10 @@ export class RegistryFacade {
 
     public fetchCurrentUser (): void {
         this.ngStore.dispatch( FetchCurrentUser )
+    }
+
+    public impersonateCurrentUser (): void {
+        this.ngStore.dispatch( ImpersonateCurrentUser )
     }
 
     public restoreTokensFromSessionStorage (): void {
