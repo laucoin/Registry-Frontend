@@ -49,10 +49,10 @@ import { Message } from 'primeng/message'
     styleUrl: './event-edition-form.component.scss',
 } )
 export class EventEditionFormComponent extends GenericEventFormComponent implements OnInit {
-    protected readonly event$: Observable<EventModel | undefined> = this.facade.element
+    protected readonly event$: Observable<EventModel | undefined> = this.facade.event
 
     public ngOnInit (): void {
-        this.facade.resetElement()
+        this.facade.resetEvent()
 
         this.handleIdParam()
 
@@ -71,7 +71,7 @@ export class EventEditionFormComponent extends GenericEventFormComponent impleme
                 if (GenericUtil.isNull( params['id'] )) {
                     this.router.navigateByUrl( AppRouteEnum.EVENTS_CREATION ).catch( console.error )
                 }
-                this.facade.fetchElement( params['id'] )
+                this.facade.fetchEvent( params['id'] )
             } ),
         )
     }
@@ -103,7 +103,7 @@ export class EventEditionFormComponent extends GenericEventFormComponent impleme
         }
 
         this.subscriptions.add(
-            this.facade.updateElement( this.route.snapshot.params['id'], event )
+            this.facade.updateEvent( this.route.snapshot.params['id'], event )
                 .subscribe( (): void => this.navigateToRedirectUri() ),
         )
     }

@@ -100,7 +100,7 @@ export class GroupElementComponent extends GenericElementComponent<GroupModel, G
 
     protected handleAction (action: GroupActionEnum): void {
         switch (action) {
-            case GroupActionEnum.FETCH_GROUP_MEMBER_PAGE:
+            case GroupActionEnum.FETCH_GROUP_MEMBERS_PAGE:
                 this.router.navigateByUrl(
                     this.buildUri( AppRouteEnum.GROUP_MEMBERS.replace( ':id', this.element.id ) ),
                 ).catch( console.error )
@@ -111,13 +111,13 @@ export class GroupElementComponent extends GenericElementComponent<GroupModel, G
                 ).catch( console.error )
                 break
             case GroupActionEnum.DISABLE_GROUP:
-                this.facade.disableElement( this.element.id, this.contextEventId() )
+                this.facade.disableGroup( this.element.id, this.contextEventId() )
                 break
             case GroupActionEnum.ENABLE_GROUP:
-                this.facade.enableElement( this.element.id, this.contextEventId() )
+                this.facade.enableGroup( this.element.id, this.contextEventId() )
                 break
             case GroupActionEnum.DELETE_GROUP:
-                this.facade.deleteElement( this.element, this.contextEventId() )
+                this.facade.deleteGroup( this.element, this.contextEventId() )
                 break
             default:
                 console.warn( this.translateService.instant( 'warning.message.invalid-action' ) )

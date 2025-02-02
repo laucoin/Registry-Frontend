@@ -1,141 +1,141 @@
 import { Injectable } from '@angular/core'
 import { Observable } from 'rxjs'
 import { PageModel } from '../../../../shared/util-model/model/page.model'
-import { StateModel } from '../../../../shared/util-model/model/state.model'
-import { GenericEventElementFacade } from '../../../../shared/util-tool/facade/generic-event-element.facade'
-import { MovementDto } from '../dto/movement.dto'
+import { SelectItem, SelectItemGroup, ToastMessageOptions } from 'primeng/api'
+import { FormUtil } from '../../../../shared/util-tool/util/form.util'
+import { OrderEnum } from '../../../../shared/util-model/enumeration/order.enum'
+import { ofActionSuccessful } from '@ngxs/store'
+import { GroupModel } from '../../../../shared/util-model/model/group.model'
+import { MovementState } from './movement.state'
 import {
     CreateMovement,
     DeleteMovement,
     DisableMovement,
     EnableMovement,
     FetchMovement,
-    FetchMovementPage,
+    FetchMovementsPage,
     FetchMovementTypes,
-    InputMovementPageDateRange,
-    InputMovementPageSearch,
+    InputMovementsPageDateRange,
+    InputMovementsPageSearch,
     ResetMovement,
     SearchParticipantsAndGroups,
-    SelectMovementPageOrder,
-    SelectMovementPageType,
-    SelectMovementPageVisibility,
+    SelectMovementsPageOrder,
+    SelectMovementsPageType,
+    SelectMovementsPageVisibility,
     StartMovementLoader,
     StartMovementsPageLoader,
     StopMovementLoader,
     StopMovementsPageLoader,
     UpdateMovement,
 } from './movement.action'
-import { SelectItem, SelectItemGroup, ToastMessageOptions } from 'primeng/api'
-import { MovementModel } from '../model/movement.model'
-import { FormUtil } from '../../../../shared/util-tool/util/form.util'
-import { OrderEnum } from '../../../../shared/util-model/enumeration/order.enum'
-import { ofActionSuccessful } from '@ngxs/store'
+import { MovementDto } from '../dto/movement.dto'
+import { MovementModel } from '../../../../shared/util-model/movement.model'
 import { ParticipantModel } from '../../../../shared/util-model/model/participant.model'
-import { GroupModel } from '../../../../shared/util-model/model/group.model'
+import { GenericEventElementFacade } from '../../../../shared/util-tool/facade/generic-event-element.facade'
 
 @Injectable()
-export class MovementFacade extends GenericEventElementFacade<MovementModel> {
-    public get page (): Observable<PageModel<MovementModel> | undefined> {
-        return this.ngStore.select( (state: StateModel): PageModel<MovementModel> | undefined => state.movement.movements.element )
+export class MovementFacade extends GenericEventElementFacade {
+    public get movementsPage (): Observable<PageModel<MovementModel> | undefined> {
+        return this.ngStore.select( MovementState.movementsPage )
     }
 
-    public get actualPageSearched (): string | undefined {
-        return this.ngStore.selectSnapshot( (state: StateModel): string | undefined => state.movement.movements.params.searched )
+    public get movementsPageLoading (): Observable<boolean> {
+        return this.ngStore.select( MovementState.movementsPageLoading )
     }
 
-    public get actualPageType (): string | undefined {
-        return this.ngStore.selectSnapshot( (state: StateModel): string | undefined => state.movement.movements.params.type )
+    public get movementsPageSilentLoading (): Observable<boolean> {
+        return this.ngStore.select( MovementState.movementsPageSilentLoading )
     }
 
-    public get actualPageDateRange (): Date[] | undefined {
-        return this.ngStore.selectSnapshot( (state: StateModel): Date[] | undefined => FormUtil.buildDateRange(
-            state.movement.movements.params.startDate,
-            state.movement.movements.params.endDate,
-        ) )
+    public get movementsPageError (): Observable<ToastMessageOptions | undefined> {
+        return this.ngStore.select( MovementState.movementsPageError )
     }
 
-    public get actualPageOnlyVisible (): boolean {
-        return this.ngStore.selectSnapshot( (state: StateModel): boolean => state.movement.movements.params.onlyVisible )
+    public get actualMovementsPageSearchParam (): string | undefined {
+        return this.ngStore.selectSnapshot( MovementState.movementsPageSearchParam )
     }
 
-    public get actualPageOrder (): OrderEnum {
-        return this.ngStore.selectSnapshot( (state: StateModel): OrderEnum => state.movement.movements.params.order )
+    public get actualMovementsPageMovementTypeParam (): string | undefined {
+        return this.ngStore.selectSnapshot( MovementState.movementsPageMovementTypeParam )
     }
 
-    public get pageLoading (): Observable<boolean> {
-        return this.ngStore.select( (state: StateModel): boolean => state.movement.movements.loading )
+    public get actualMovementsPageDateRangeParam (): Date[] | undefined {
+        return FormUtil.buildDateRange(
+            this.ngStore.selectSnapshot( MovementState.movementsPageStartDateParam ),
+            this.ngStore.selectSnapshot( MovementState.movementsPageEndDateParam ),
+        )
     }
 
-    public get pageSilentLoading (): Observable<boolean> {
-        return this.ngStore.select( (state: StateModel): boolean => state.movement.movements.silentLoading )
+    public get actualMovementsPageOnlyVisibleParam (): boolean {
+        return this.ngStore.selectSnapshot( MovementState.movementsPageOnlyVisibleParam )
     }
 
-    public get pageError (): Observable<ToastMessageOptions | undefined> {
-        return this.ngStore.select( (state: StateModel): ToastMessageOptions | undefined => state.movement.movements.error )
+    public get actualMovementsPageOrderParam (): OrderEnum {
+        return this.ngStore.selectSnapshot( MovementState.movementsPageOrderParam )
     }
 
-    public get searchedParticipantsAndGroups (): Observable<SelectItemGroup<ParticipantModel | GroupModel>[]> {
-        return this.ngStore.select( (state: StateModel): SelectItemGroup<ParticipantModel | GroupModel>[] => state.movement._metadata.searched )
+    public get movement (): Observable<MovementModel | undefined> {
+        return this.ngStore.select( MovementState.movement )
     }
 
-    public get movementTypes (): Observable<SelectItem<string>[]> {
-        return this.ngStore.select( (state: StateModel): SelectItem<string>[] => state.movement._metadata.types )
+    public get movementLoading (): Observable<boolean> {
+        return this.ngStore.select( MovementState.movementLoading )
     }
 
-    public get element (): Observable<MovementModel | undefined> {
-        return this.ngStore.select( (state: StateModel): MovementModel | undefined => state.movement.movement.element )
+    public get searchedParticipantAndGroupMetadata (): Observable<SelectItemGroup<ParticipantModel | GroupModel>[]> {
+        return this.ngStore.select( MovementState.searchedParticipantAndGroupMetadata )
     }
 
-    public get elementLoading (): Observable<boolean> {
-        return this.ngStore.select( (state: StateModel): boolean => state.movement.movement.loading )
+    public get movementTypesMetadata (): Observable<SelectItem<string>[]> {
+        return this.ngStore.select( MovementState.movementTypesMetadata )
     }
 
-    public startPageLoader (): void {
+    public startMovementsPageLoader (): void {
         this.ngStore.dispatch( StartMovementsPageLoader )
     }
 
-    public stopPageLoader (): void {
+    public stopMovementsPageLoader (): void {
         this.ngStore.dispatch( StopMovementsPageLoader )
     }
 
-    public fetchElementPage (
+    public fetchMovementsPage (
         offset: number | undefined,
         limit: number | undefined,
         force: boolean,
         eventId: string | undefined = this.actualSelectedEventId,
     ): void {
-        this.ngStore.dispatch( new FetchMovementPage( eventId, offset, limit, force ) )
+        this.ngStore.dispatch( new FetchMovementsPage( eventId, offset, limit, force ) )
     }
 
-    public inputPageSearch (searched: string | undefined): void {
-        this.ngStore.dispatch( new InputMovementPageSearch( searched ) )
+    public inputMovementsPageSearch (searched: string | undefined): void {
+        this.ngStore.dispatch( new InputMovementsPageSearch( searched ) )
     }
 
-    public selectPageType (type: string | undefined): void {
-        this.ngStore.dispatch( new SelectMovementPageType( type ) )
+    public selectMovementsPageMovementType (type: string | undefined): void {
+        this.ngStore.dispatch( new SelectMovementsPageType( type ) )
     }
 
-    public inputPageDateRange (range: Date[] | undefined): void {
-        this.ngStore.dispatch( new InputMovementPageDateRange( range?.[0], range?.[1] ) )
+    public inputMovementsPageDateRange (range: Date[] | undefined): void {
+        this.ngStore.dispatch( new InputMovementsPageDateRange( range?.[0], range?.[1] ) )
     }
 
-    public selectPageVisibility (onlyVisible: boolean): void {
-        this.ngStore.dispatch( new SelectMovementPageVisibility( onlyVisible ) )
+    public selectMovementsPageVisibility (onlyVisible: boolean): void {
+        this.ngStore.dispatch( new SelectMovementsPageVisibility( onlyVisible ) )
     }
 
-    public selectPageOrder (order: OrderEnum): void {
-        this.ngStore.dispatch( new SelectMovementPageOrder( order ) )
+    public selectMovementsPageOrder (order: OrderEnum): void {
+        this.ngStore.dispatch( new SelectMovementsPageOrder( order ) )
     }
 
-    public startElementLoader (): void {
+    public startMovementLoader (): void {
         this.ngStore.dispatch( StartMovementLoader )
     }
 
-    public stopElementLoader (): void {
+    public stopMovementLoader (): void {
         this.ngStore.dispatch( StopMovementLoader )
     }
 
-    public fetchElement (id: string, eventId: string | undefined = this.actualSelectedEventId): void {
+    public fetchMovement (id: string, eventId: string | undefined = this.actualSelectedEventId): void {
         this.ngStore.dispatch( new FetchMovement( eventId, id ) )
     }
 
@@ -146,15 +146,11 @@ export class MovementFacade extends GenericEventElementFacade<MovementModel> {
         this.ngStore.dispatch( new SearchParticipantsAndGroups( eventId, searched ) )
     }
 
-    public fetchMovementTypes (eventId: string | undefined = this.actualSelectedEventId): void {
-        this.ngStore.dispatch( new FetchMovementTypes( eventId ) )
-    }
-
-    public resetElement (): void {
+    public resetMovement (): void {
         this.ngStore.dispatch( ResetMovement )
     }
 
-    public createElement (
+    public createMovement (
         movement: MovementDto,
         eventId: string | undefined = this.actualSelectedEventId,
     ): Observable<CreateMovement> {
@@ -162,7 +158,11 @@ export class MovementFacade extends GenericEventElementFacade<MovementModel> {
         return this.actions$.pipe( ofActionSuccessful( CreateMovement ) )
     }
 
-    public updateElement (
+    public handleMovementCreation (): Observable<CreateMovement> {
+        return this.actions$.pipe( ofActionSuccessful( CreateMovement ) )
+    }
+
+    public updateMovement (
         id: string,
         movement: MovementDto,
         eventId: string | undefined = this.actualSelectedEventId,
@@ -171,15 +171,22 @@ export class MovementFacade extends GenericEventElementFacade<MovementModel> {
         return this.actions$.pipe( ofActionSuccessful( UpdateMovement ) )
     }
 
-    public disableElement (id: string, eventId: string | undefined = this.actualSelectedEventId): void {
+    public disableMovement (id: string, eventId: string | undefined = this.actualSelectedEventId): void {
         this.ngStore.dispatch( new DisableMovement( eventId, id ) )
     }
 
-    public enableElement (id: string, eventId: string | undefined = this.actualSelectedEventId): void {
+    public enableMovement (id: string, eventId: string | undefined = this.actualSelectedEventId): void {
         this.ngStore.dispatch( new EnableMovement( eventId, id ) )
     }
 
-    public deleteElement (element: MovementModel, eventId: string | undefined = this.actualSelectedEventId): void {
-        this.ngStore.dispatch( new DeleteMovement( eventId, element ) )
+    public deleteMovement (
+        movement: MovementModel,
+        eventId: string | undefined = this.actualSelectedEventId,
+    ): void {
+        this.ngStore.dispatch( new DeleteMovement( eventId, movement ) )
+    }
+
+    public fetchMovementTypes (eventId: string | undefined = this.actualSelectedEventId): void {
+        this.ngStore.dispatch( new FetchMovementTypes( eventId ) )
     }
 }

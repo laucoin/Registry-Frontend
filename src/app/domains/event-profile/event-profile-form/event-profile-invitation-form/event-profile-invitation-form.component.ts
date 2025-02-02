@@ -54,7 +54,7 @@ export class EventProfileInvitationFormComponent extends GenericEventProfileForm
     public constructor (protected override readonly facade: EventProfileFacade) {
         super( facade )
 
-        this.usersSuggestion$ = this.facade.searchedUsers
+        this.usersSuggestion$ = this.facade.searchedUsersMetadata
     }
 
     protected initForm (): FormGroup {
@@ -74,7 +74,7 @@ export class EventProfileInvitationFormComponent extends GenericEventProfileForm
         }
 
         this.subscriptions.add(
-            this.facade.createElements( profiles ).subscribe( (): void => {
+            this.facade.createEventProfiles( profiles ).subscribe( (): void => {
                 this.navigateToRedirectUri()
             } ),
         )

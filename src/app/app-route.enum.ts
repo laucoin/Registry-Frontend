@@ -24,6 +24,7 @@ export enum AppRouteEnum {
     PARTICIPANTS = `${EVENTS}/:eventId/participants`,
     PARTICIPANTS_CREATION = `${PARTICIPANTS}/${ParticipantRoutesEnum.CREATE}`,
     PARTICIPANTS_EDITION = `${PARTICIPANTS}/${ParticipantRoutesEnum.EDIT}`,
+    PARTICIPANTS_MOVEMENTS = `${PARTICIPANTS}/${ParticipantRoutesEnum.MOVEMENTS}`,
     MOVEMENTS = `${EVENTS}/:eventId/movements`,
     MOVEMENTS_CREATION = `${MOVEMENTS}/${MovementRoutesEnum.CREATE}`,
     MOVEMENTS_EDITION = `${MOVEMENTS}/${MovementRoutesEnum.EDIT}`,

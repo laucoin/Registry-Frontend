@@ -76,13 +76,13 @@ export class EventElementComponent extends GenericElementComponent<EventModel, E
                 ).catch( console.error )
                 break
             case EventActionEnum.DISABLE_EVENT:
-                this.facade.disableElement( this.element.id )
+                this.facade.disableEvent( this.element.id )
                 break
             case EventActionEnum.ENABLE_EVENT:
-                this.facade.enableElement( this.element.id )
+                this.facade.enableEvent( this.element.id )
                 break
             case EventActionEnum.DELETE_EVENT:
-                this.facade.deleteElement( this.element )
+                this.facade.deleteEvent( this.element )
                 break
             default:
                 console.warn( this.translateService.instant( 'warning.message.invalid-action' ) )

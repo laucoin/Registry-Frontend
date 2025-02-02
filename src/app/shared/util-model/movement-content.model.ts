@@ -1,4 +1,4 @@
-import { ParticipantModel } from '../../../../shared/util-model/model/participant.model'
+import { ParticipantModel } from './model/participant.model'
 
 export interface MovementContentModel {
     poolName: string | undefined

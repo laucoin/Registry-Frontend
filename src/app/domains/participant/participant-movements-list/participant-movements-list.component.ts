@@ -1,7 +1,6 @@
-import { Component, OnInit } from '@angular/core'
+import { Component, OnInit, signal, WritableSignal } from '@angular/core'
 import { GenericListComponent } from '../../../shared/util-tool/component/generic-list.component'
 import { MovementModel } from '../../../shared/util-model/movement.model'
-import { MovementFacade } from '../data/state/movement.facade'
 import { OrderEnum } from '../../../shared/util-model/enumeration/order.enum'
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms'
 import { PageEventModel } from '../../../shared/util-model/model/page-event.model'
@@ -14,18 +13,23 @@ import { AsyncPipe } from '@angular/common'
 import { MessageComponent } from '../../../shared/util-ui/message/message.component'
 import { DropdownModule } from 'primeng/dropdown'
 import { MovementElementComponent } from '../../../shared/util-ui/movement-element/movement-element.component'
-import { RouterLink } from '@angular/router'
-import { MovementRoutesEnum } from '../movement-routes.enum'
+import { Params } from '@angular/router'
 import { Select } from 'primeng/select'
 import { Button } from 'primeng/button'
 import { DatePicker } from 'primeng/datepicker'
 import { Observable } from 'rxjs'
 import { SelectItem } from 'primeng/api'
+import { ParticipantFacade } from '../data/state/participant.facade'
+import { StringUtils } from '../../../shared/util-tool/util/string.util'
+import { AppRouteEnum } from '../../../app-route.enum'
+import { GenericUtil } from '../../../shared/util-tool/util/generic.util'
+import { ParticipantModel } from '../../../shared/util-model/model/participant.model'
+import { ParticipantElementComponent } from '../../../shared/util-ui/participant-element/participant-element.component'
 
 @Component( {
-    selector: 'app-movements-list',
+    selector: 'app-participant-movements-list',
     standalone: true,
-    templateUrl: './movements-list.component.html',
+    templateUrl: './participant-movements-list.component.html',
     imports: [
         ListComponent,
         RegistryTemplateDirective,
@@ -37,22 +41,22 @@ import { SelectItem } from 'primeng/api'
         MessageComponent,
         DropdownModule,
         MovementElementComponent,
-        RouterLink,
         Select,
         Button,
         DatePicker,
+        ParticipantElementComponent,
     ],
 } )
-export class MovementsListComponent extends GenericListComponent<MovementModel> implements OnInit {
-    protected readonly MovementRoutesEnum: typeof MovementRoutesEnum = MovementRoutesEnum
+export class ParticipantMovementsListComponent extends GenericListComponent<MovementModel> implements OnInit {
+    protected readonly participant: WritableSignal<ParticipantModel | undefined> = signal( undefined )
     protected readonly movementTypes$: Observable<SelectItem<string>[]>
 
-    public constructor (private readonly facade: MovementFacade) {
+    public constructor (private readonly facade: ParticipantFacade) {
         super(
-            facade.movementsPage,
-            facade.movementsPageLoading,
-            facade.movementsPageSilentLoading,
-            facade.movementsPageError,
+            facade.participantMovementsPage,
+            facade.participantMovementsPageLoading,
+            facade.participantMovementsPageSilentLoading,
+            facade.participantMovementsPageError,
         )
 
         this.form = this.initForm()
@@ -66,28 +70,60 @@ export class MovementsListComponent extends GenericListComponent<MovementModel> 
     }
 
     public ngOnInit (): void {
-        this.facade.fetchMovementTypes( this.contextEventId() )
-        this.facade.fetchMovementsPage( undefined, undefined, false, this.contextEventId() )
+        this.facade.fetchParticipantMovementTypes()
+        this.handleIdParam()
+
+        this.handleLoadedParticipant()
     }
 
     protected initForm (): FormGroup {
         return this.formBuilder.group( {
-            searched: this.formBuilder.control( this.facade.actualMovementsPageSearchParam ),
-            type: this.formBuilder.control( this.facade.actualMovementsPageMovementTypeParam ),
-            range: this.formBuilder.control( this.facade.actualMovementsPageDateRangeParam ),
-            onlyVisible: this.formBuilder.control( this.facade.actualMovementsPageOnlyVisibleParam ),
-            order: this.formBuilder.control( this.facade.actualMovementsPageOrderParam === OrderEnum.DESC ),
+            searched: this.formBuilder.control( this.facade.actualParticipantMovementsPageSearchParam ),
+            type: this.formBuilder.control( this.facade.actualParticipantMovementsPageMovementTypeParam ),
+            range: this.formBuilder.control( this.facade.actualParticipantMovementsPageDateRangeParam ),
+            onlyVisible: this.formBuilder.control( this.facade.actualParticipantMovementsPageOnlyVisibleParam ),
+            order: this.formBuilder.control( this.facade.actualParticipantMovementsPageOrderParam === OrderEnum.DESC ),
         } )
     }
 
+    private handleIdParam (): void {
+        if (!StringUtils.isRouteActive( AppRouteEnum.PARTICIPANTS )) {
+            return
+        }
+        this.subscriptions.add(
+            this.route.params.subscribe( (params: Params): void => {
+                if (GenericUtil.isNull( params['id'] )) {
+                    this.router.navigateByUrl( AppRouteEnum.PARTICIPANTS ).catch( console.error )
+                }
+                this.facade.fetchParticipant( params['id'], this.contextEventId() )
+                this.facade.fetchParticipantMovementsPage(
+                    params['id'],
+                    undefined,
+                    undefined,
+                    false,
+                    this.contextEventId(),
+                )
+            } ),
+        )
+    }
+
+    private handleLoadedParticipant (): void {
+        this.subscriptions.add(
+            this.facade.participant?.subscribe( (group: ParticipantModel | undefined): void => this.participant.set(
+                group ) ),
+        )
+    }
+
     protected loadPage (pageEvent: PageEventModel, eventId: string | undefined): void {
-        this.facade.fetchMovementsPage( pageEvent.offset, pageEvent.limit, false, eventId )
+        this.facade.fetchParticipantMovementsPage(
+            this.participant()!.id, pageEvent.offset, pageEvent.limit, false, eventId,
+        )
     }
 
     private handleSearchedChanges (): void {
         this.subscriptions.add(
             this.searched.valueChanges.subscribe( (searched: string | undefined): void =>
-                this.facade.inputMovementsPageSearch( searched ),
+                this.facade.inputParticipantMovementsPageSearch( searched ),
             ),
         )
     }
@@ -95,7 +131,7 @@ export class MovementsListComponent extends GenericListComponent<MovementModel> 
     private handleTypeChanges (): void {
         this.subscriptions.add(
             this.type.valueChanges.subscribe( (type: string | undefined): void =>
-                this.facade.selectMovementsPageMovementType( type ),
+                this.facade.selectParticipantMovementsPageType( type ),
             ),
         )
     }
@@ -103,7 +139,7 @@ export class MovementsListComponent extends GenericListComponent<MovementModel> 
     private handleRangeChanges (): void {
         this.subscriptions.add(
             this.range.valueChanges.subscribe( (range: Date[] | undefined): void =>
-                this.facade.inputMovementsPageDateRange( range ),
+                this.facade.inputParticipantMovementsPageDateRange( range ),
             ),
         )
     }
@@ -112,7 +148,7 @@ export class MovementsListComponent extends GenericListComponent<MovementModel> 
         this.subscriptions.add(
             this.onlyVisible.valueChanges.subscribe( (onlyVisible: boolean | undefined): void => {
                 if (onlyVisible != undefined) {
-                    this.facade.selectMovementsPageVisibility( onlyVisible )
+                    this.facade.selectParticipantMovementsPageVisibility( onlyVisible )
                 }
             } ),
         )
@@ -122,7 +158,7 @@ export class MovementsListComponent extends GenericListComponent<MovementModel> 
         this.subscriptions.add(
             this.order.valueChanges.subscribe( (order: boolean | undefined): void => {
                 if (order != undefined) {
-                    this.facade.selectMovementsPageOrder( order ? OrderEnum.DESC : OrderEnum.ASC )
+                    this.facade.selectParticipantMovementsPageOrder( order ? OrderEnum.DESC : OrderEnum.ASC )
                 }
             } ),
         )

@@ -687,6 +687,7 @@
             "plural": "Associé au groupe {{group}} et {{others}} autres."
         },
         "action": {
+            "movements-history": "Historique des mouvements",
             "edit": "Modifier",
             "disable": "Désactiver",
             "enable": "Ré-activer",
@@ -822,6 +823,9 @@
                 },
                 "participants": {
                     "required": "Impossible de créer un groupe sans membres. Ce groupe a besoin de renforts !"
+                },
+                "add-participants": {
+                    "required": "Pour ajouter des members à un groupe, il en faut 😅."
                 }
             }
         },
@@ -953,7 +957,7 @@
                     "block": "Attention ! Tu vas bloquer un utilisateur. Tant qu'il est bloqué, {{element.firstName}} {{element.lastName}} ne pourra plus se connecter.",
                     "unblock": "Attention ! Tu vas débloquer un utilisateur. {{element.firstName}} {{element.lastName}} pourra à nouveau se connecter.",
                     "impersonate": "Attention ! Tu vas anonymiser un utilisateur. Tous les profils et participants associés à {{element.firstName}} {{element.lastName}} seront également anonymisé.",
-                    "impersonate-myself": "Attention ! Tu vas anonymiser tom compte. Cette action irréversible entrainera ta déconnexion et t'empêcheras de te connecter à nouveau.",
+                    "impersonate-myself": "Attention ! Tu vas anonymiser ton compte. Cette action irréversible entrainera ta déconnexion et t'empêcheras de te connecter à nouveau. À titre informatif, ton utilisateur sera anonmysé immédiatement, les participants a qui tu es liés seront anonymisés à la fin de l'évènement. Cependant, si tu as conduit des véhicules dans le cadre de cet évènement, ton participant sera anonymisé 1 an après la fin de l'évènement.",
                     "delete": "Attention ! Tu vas supprimer un utilisateur. Tous les profils associés à {{element.firstName}} {{element.lastName}} seront également supprimés."
                 }
             }

@@ -4,9 +4,9 @@ import { PageModel } from '../../../../shared/util-model/model/page.model'
 import { GenericEventService } from '../../../../shared/util-tool/service/generic-event.service'
 import { SELECT_PROFILE_EVENT_ID } from '../../../../shared/util-tool/util/request.util'
 import { MovementDto } from '../dto/movement.dto'
-import { MovementPageParamsModel } from '../model/movement-page-params.model'
+import { MovementPageParamsModel } from '../../../../shared/util-model/movement-page-params.model'
 import { QueryUtil } from '../../../../shared/util-tool/util/query.util'
-import { MovementModel } from '../model/movement.model'
+import { MovementModel } from '../../../../shared/util-model/movement.model'
 import { HttpParams } from '@angular/common/http'
 import {
     MovementParticipantsAndGroupsModel,

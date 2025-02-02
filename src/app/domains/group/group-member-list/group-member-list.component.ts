@@ -22,7 +22,6 @@ import { ToggleButton } from 'primeng/togglebutton'
 import { TranslatePipe } from '@ngx-translate/core'
 import { ParticipantFacade } from '../../participant/data/state/participant.facade'
 import { LayerComponent } from '../../../shared/util-ui/layer/layer.component'
-import { FormFieldErrorComponent } from '../../../shared/util-ui/form-field-error/form-field-error.component'
 import { RegistryRequiredDirective } from '../../../shared/util-tool/directive/registry-required.directive'
 import {
     SelectElementsFieldComponent,
@@ -31,6 +30,7 @@ import { Observable } from 'rxjs'
 import { SelectItem } from 'primeng/api'
 import { ParticipantFormComponent } from '../../participant/participant-form/participant-form.component'
 import { StringUtils } from '../../../shared/util-tool/util/string.util'
+import { FormFieldErrorComponent } from '../../../shared/util-ui/form-field-error/form-field-error.component'
 
 @Component( {
     selector: 'app-group-member-list',
@@ -49,10 +49,10 @@ import { StringUtils } from '../../../shared/util-tool/util/string.util'
         TranslatePipe,
         NgIf,
         LayerComponent,
-        FormFieldErrorComponent,
         RegistryRequiredDirective,
         SelectElementsFieldComponent,
         ParticipantFormComponent,
+        FormFieldErrorComponent,
     ],
     templateUrl: './group-member-list.component.html',
 } )
@@ -70,10 +70,10 @@ export class GroupMemberListComponent extends GenericListComponent<ParticipantMo
         private readonly participantFacade: ParticipantFacade,
     ) {
         super(
-            facade.memberPage,
-            facade.memberPageLoading,
-            facade.memberPageSilentLoading,
-            facade.memberPageError,
+            facade.groupMembersPage,
+            facade.groupMembersPageLoading,
+            facade.groupMembersPageSilentLoading,
+            facade.groupMembersPageError,
         )
 
         this.form = this.initForm()
@@ -83,7 +83,7 @@ export class GroupMemberListComponent extends GenericListComponent<ParticipantMo
         this.handleOnlyVisibleChanges()
         this.handleOrderChanges()
 
-        this.participantsSuggestion$ = this.facade.searchedParticipants
+        this.participantsSuggestion$ = this.facade.searchedParticipantsMetadata
     }
 
     public ngOnInit (): void {
@@ -94,10 +94,10 @@ export class GroupMemberListComponent extends GenericListComponent<ParticipantMo
 
     protected initForm (): FormGroup {
         return this.formBuilder.group( {
-            searched: this.formBuilder.control( this.facade.actualMemberPageSearched ),
-            range: this.formBuilder.control( this.facade.actualMemberPageDateRange ),
-            onlyVisible: this.formBuilder.control( this.facade.actualMemberPageOnlyVisible ),
-            order: this.formBuilder.control( this.facade.actualMemberPageOrder === OrderEnum.ASC ),
+            searched: this.formBuilder.control( this.facade.actualGroupMembersPageSearchParam ),
+            range: this.formBuilder.control( this.facade.actualGroupMembersPageDateRangeParam ),
+            onlyVisible: this.formBuilder.control( this.facade.actualGroupMembersPageOnlyVisibleParam ),
+            order: this.formBuilder.control( this.facade.actualGroupMembersPageOrderParam === OrderEnum.ASC ),
         } )
     }
 
@@ -122,26 +122,26 @@ export class GroupMemberListComponent extends GenericListComponent<ParticipantMo
                 if (GenericUtil.isNull( params['id'] )) {
                     this.router.navigateByUrl( AppRouteEnum.GROUPS ).catch( console.error )
                 }
-                this.facade.fetchElement( params['id'], this.contextEventId() )
-                this.facade.fetchMemberPage( params['id'], undefined, undefined, false, this.contextEventId() )
+                this.facade.fetchGroup( params['id'], this.contextEventId() )
+                this.facade.fetchGroupMembersPage( params['id'], undefined, undefined, false, this.contextEventId() )
             } ),
         )
     }
 
     private handleLoadedGroup (): void {
         this.subscriptions.add(
-            this.facade.element?.subscribe( (group: GroupModel | undefined): void => this.group.set( group ) ),
+            this.facade.group?.subscribe( (group: GroupModel | undefined): void => this.group.set( group ) ),
         )
     }
 
     protected loadPage (pageEvent: PageEventModel, eventId: string | undefined): void {
-        this.facade.fetchMemberPage( this.group()!.id, pageEvent.offset, pageEvent.limit, false, eventId )
+        this.facade.fetchGroupMembersPage( this.group()!.id, pageEvent.offset, pageEvent.limit, false, eventId )
     }
 
     private handleSearchedChanges (): void {
         this.subscriptions.add(
             this.searched.valueChanges.subscribe( (searched: string | undefined): void =>
-                this.facade.inputMemberPageSearch( searched ),
+                this.facade.inputGroupMembersPageSearch( searched ),
             ),
         )
     }
@@ -149,7 +149,7 @@ export class GroupMemberListComponent extends GenericListComponent<ParticipantMo
     private handleRangeChanges (): void {
         this.subscriptions.add(
             this.range.valueChanges.subscribe( (range: Date[] | undefined): void =>
-                this.facade.inputMemberPageDateRange( range ),
+                this.facade.inputGroupMembersPageDateRange( range ),
             ),
         )
     }
@@ -158,7 +158,7 @@ export class GroupMemberListComponent extends GenericListComponent<ParticipantMo
         this.subscriptions.add(
             this.onlyVisible.valueChanges.subscribe( (onlyVisible: boolean | undefined): void => {
                 if (onlyVisible != undefined) {
-                    this.facade.selectMemberPageVisibility( onlyVisible )
+                    this.facade.selectGroupMembersPageVisibility( onlyVisible )
                 }
             } ),
         )
@@ -168,13 +168,14 @@ export class GroupMemberListComponent extends GenericListComponent<ParticipantMo
         this.subscriptions.add(
             this.order.valueChanges.subscribe( (order: boolean | undefined): void => {
                 if (order != undefined) {
-                    this.facade.selectMemberPageOrder( order ? OrderEnum.ASC : OrderEnum.DESC )
+                    this.facade.selectGroupMembersPageOrder( order ? OrderEnum.ASC : OrderEnum.DESC )
                 }
             } ),
         )
     }
 
     protected handleSearch (searched: string | undefined): void {
+        this.addMembersParticipants?.markAsTouched()
         this.facade.searchParticipants(
             searched,
             this.contextEventId(),
@@ -182,19 +183,29 @@ export class GroupMemberListComponent extends GenericListComponent<ParticipantMo
     }
 
     protected addMembers (): void {
+        if (this.addMembersParticipants?.invalid) {
+            return
+        }
+
         this.facade.addMembersToGroup(
             this.group()!.id,
-            this.addMembersParticipant?.value?.map( (item: SelectItem<ParticipantModel>): string => item.value.id ) ?? [],
+            this.addMembersParticipants?.value?.map( (item: SelectItem<ParticipantModel>): string => item.value.id ) ?? [],
             this.contextEventId(),
         ).subscribe( (): boolean => this.addMembersFormLayerOpened = false )
     }
 
     protected handleParticipantCreation (): void {
         this.subscriptions.add(
-            this.participantFacade.handleElementCreation().subscribe( (): void => {
+            this.participantFacade.handleParticipantCreation().subscribe( (): void => {
                 this.createMemberFormLayerOpened = false
-                this.facade.fetchElement( this.group()!.id, this.contextEventId() )
-                this.facade.fetchMemberPage( this.group()!.id, undefined, undefined, false, this.contextEventId() )
+                this.facade.fetchGroup( this.group()!.id, this.contextEventId() )
+                this.facade.fetchGroupMembersPage(
+                    this.group()!.id,
+                    undefined,
+                    undefined,
+                    false,
+                    this.contextEventId(),
+                )
             } ),
         )
     }
@@ -215,7 +226,7 @@ export class GroupMemberListComponent extends GenericListComponent<ParticipantMo
         return this.form.get( 'order' ) as FormControl
     }
 
-    protected get addMembersParticipant (): FormControl | undefined {
+    protected get addMembersParticipants (): FormControl | undefined {
         return this.addMembersForm?.get( 'participants' ) as FormControl | undefined
     }
 }

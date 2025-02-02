@@ -6,7 +6,7 @@ import { Params } from '@angular/router'
 import { GenericUtil } from '../../../shared/util-tool/util/generic.util'
 import { FormUtil } from '../../../shared/util-tool/util/form.util'
 import { MovementFacade } from '../data/state/movement.facade'
-import { MovementModel } from '../data/model/movement.model'
+import { MovementModel } from '../../../shared/util-model/movement.model'
 import { MovementDto } from '../data/dto/movement.dto'
 import { AsyncPipe, DatePipe } from '@angular/common'
 import { Button } from 'primeng/button'
@@ -26,7 +26,7 @@ import { ParticipantModel } from '../../../shared/util-model/model/participant.m
 import { GroupModel } from '../../../shared/util-model/model/group.model'
 import { RegistryRequiredDirective } from '../../../shared/util-tool/directive/registry-required.directive'
 import { MovementContentFieldComponent } from '../movement-content-field/movement-content-field.component'
-import { MovementContentModel } from '../data/model/movement-content.model'
+import { MovementContentModel } from '../../../shared/util-model/movement-content.model'
 import { StringUtils } from '../../../shared/util-tool/util/string.util'
 import { EventModel } from '../../../shared/util-model/model/event.model'
 import { CustomValidators } from '../../../shared/util-tool/util/custom-validator'
@@ -69,17 +69,17 @@ export class MovementFormComponent extends GenericFormComponent implements OnIni
     ) {
         super(
             AppRouteEnum.MOVEMENTS,
-            facade.elementLoading,
+            facade.movementLoading,
         )
 
-        facade.resetElement()
-        this.movementTypes$ = facade.movementTypes
+        facade.resetMovement()
+        this.movementTypes$ = facade.movementTypesMetadata
 
         this.handleContextEvent()
         this.handleIdParam()
         this.handleLoadedMovement()
 
-        this.contentSuggestions$ = this.facade.searchedParticipantsAndGroups
+        this.contentSuggestions$ = this.facade.searchedParticipantAndGroupMetadata
     }
 
     public ngOnInit (): void {
@@ -131,7 +131,7 @@ export class MovementFormComponent extends GenericFormComponent implements OnIni
                 if (GenericUtil.isNull( params['id'] )) {
                     this.router.navigateByUrl( this.buildUri( AppRouteEnum.MOVEMENTS_CREATION ) ).catch( console.error )
                 } else {
-                    this.facade.fetchElement( params['id'], this.contextEventId() )
+                    this.facade.fetchMovement( params['id'], this.contextEventId() )
                 }
             } ),
         )
@@ -139,7 +139,7 @@ export class MovementFormComponent extends GenericFormComponent implements OnIni
 
     private handleLoadedMovement (): void {
         this.subscriptions.add(
-            this.facade.element?.subscribe( (movement: MovementModel | undefined): void => {
+            this.facade.movement?.subscribe( (movement: MovementModel | undefined): void => {
                 this.movement.set( movement )
                 if (!movement) return
                 this.dateTime.setValue( new Date( movement?.dateTime ) )
@@ -183,8 +183,8 @@ export class MovementFormComponent extends GenericFormComponent implements OnIni
         this.subscriptions.add(
             (
                 this.movement() ?
-                this.facade.updateElement( this.movement()!.id, movement, this.contextEventId() )
-                                : this.facade.createElement( movement, this.contextEventId() )
+                this.facade.updateMovement( this.movement()!.id, movement, this.contextEventId() )
+                                : this.facade.createMovement( movement, this.contextEventId() )
             ).subscribe( (): void => this.navigateToRedirectUri() ),
         )
     }

@@ -3,6 +3,7 @@ import { ParticipantComponent } from './participant.component'
 import { ParticipantsListComponent } from './participants-list/participants-list.component'
 import { ParticipantRoutesEnum } from './participant-routes.enum'
 import { ParticipantFormComponent } from './participant-form/participant-form.component'
+import { ParticipantMovementsListComponent } from './participant-movements-list/participant-movements-list.component'
 
 export const participantRoutes: Routes = [
     {
@@ -15,6 +16,9 @@ export const participantRoutes: Routes = [
             },
             {
                 path: ParticipantRoutesEnum.EDIT, component: ParticipantFormComponent,
+            },
+            {
+                path: ParticipantRoutesEnum.MOVEMENTS, component: ParticipantMovementsListComponent,
             },
         ],
     },

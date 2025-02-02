@@ -1,10 +1,9 @@
-import { Action, State, StateContext } from '@ngxs/store'
+import { Action, Selector, State, StateContext } from '@ngxs/store'
 import { catchError, finalize, map, Observable, of } from 'rxjs'
 import { PageModel } from '../../../../shared/util-model/model/page.model'
 import { GroupModel } from '../../../../shared/util-model/model/group.model'
 import { GenericEventElementState } from '../../../../shared/util-tool/state/generic-event-element.state'
 import { initialize } from '../../../../shared/util-tool/util/rx.util'
-import { GroupStateModel } from '../model/group-state.model'
 import {
     AddMembersToGroup,
     CreateGroup,
@@ -13,18 +12,18 @@ import {
     EnableGroup,
     FetchGroup,
     FetchGroupMembersPage,
-    FetchGroupPage,
-    InputGroupMemberPageDateRange,
-    InputGroupMemberPageSearch,
-    InputGroupPageDateRange,
-    InputGroupPageSearch,
+    FetchGroupsPage,
+    InputGroupMembersPageDateRange,
+    InputGroupMembersPageSearch,
+    InputGroupsPageDateRange,
+    InputGroupsPageSearch,
     RemoveMemberFromGroup,
     ResetGroup,
     SearchParticipants,
-    SelectGroupMemberPageOrder,
-    SelectGroupMemberPageVisibility,
-    SelectGroupPageOrder,
-    SelectGroupPageVisibility,
+    SelectGroupMembersPageOrder,
+    SelectGroupMembersPageVisibility,
+    SelectGroupsPageOrder,
+    SelectGroupsPageVisibility,
     StartGroupLoader,
     StartGroupMembersPageLoader,
     StartGroupsPageLoader,
@@ -41,12 +40,13 @@ import { Injectable } from '@angular/core'
 import { ElementRequestInformationModel } from '../../../../shared/util-model/model/element-request-information.model'
 import { ParticipantModel } from '../../../../shared/util-model/model/participant.model'
 import { ParticipantUtil } from '../../../../shared/util-tool/util/participant.util'
-import { SelectItem } from 'primeng/api'
+import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { GenericUtil } from '../../../../shared/util-tool/util/generic.util'
 import { AddedGroupMembersDto } from '../../../../shared/util-model/dto/added-group-members.dto'
 import { PageRequestInformationModel } from '../../../../shared/util-model/model/page-request-information.model'
 import { ParticipantPageParamsModel } from '../../../participant/data/model/participant-page-params.model'
 import { ErrorModel } from '../../../../shared/util-model/model/error.model'
+import { GroupStateModel } from '../model/group-state.model'
 
 const defaultGroup: ElementRequestInformationModel<GroupModel> = {
     element: undefined,
@@ -104,6 +104,111 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
         super()
     }
 
+    @Selector()
+    public static groupsPage (state: GroupStateModel): PageModel<GroupModel> | undefined {
+        return state.groups.element
+    }
+
+    @Selector()
+    public static groupsPageLoading (state: GroupStateModel): boolean {
+        return state.groups.loading
+    }
+
+    @Selector()
+    public static groupsPageError (state: GroupStateModel): ToastMessageOptions | undefined {
+        return state.groups.error
+    }
+
+    @Selector()
+    public static groupsPageSilentLoading (state: GroupStateModel): boolean {
+        return state.groups.silentLoading
+    }
+
+    @Selector()
+    public static groupsPageSearchParam (state: GroupStateModel): string | undefined {
+        return state.groups.params.searched
+    }
+
+    @Selector()
+    public static groupsPageStartDateParam (state: GroupStateModel): string | undefined {
+        return state.groups.params.startDate
+    }
+
+    @Selector()
+    public static groupsPageEndDateParam (state: GroupStateModel): string | undefined {
+        return state.groups.params.endDate
+    }
+
+    @Selector()
+    public static groupsPageOnlyVisibleParam (state: GroupStateModel): boolean {
+        return state.groups.params.onlyVisible
+    }
+
+    @Selector()
+    public static groupsPageOrderParam (state: GroupStateModel): OrderEnum {
+        return state.groups.params.order
+    }
+
+    @Selector()
+    public static groupMembersPage (state: GroupStateModel): PageModel<ParticipantModel> | undefined {
+        return state.members.element
+    }
+
+    @Selector()
+    public static groupMembersPageLoading (state: GroupStateModel): boolean {
+        return state.members.loading
+    }
+
+    @Selector()
+    public static groupMembersPageError (state: GroupStateModel): ToastMessageOptions | undefined {
+        return state.members.error
+    }
+
+    @Selector()
+    public static groupMembersPageSilentLoading (state: GroupStateModel): boolean {
+        return state.members.silentLoading
+    }
+
+    @Selector()
+    public static groupMembersPageSearchParam (state: GroupStateModel): string | undefined {
+        return state.members.params.searched
+    }
+
+    @Selector()
+    public static groupMembersPageStartDateParam (state: GroupStateModel): string | undefined {
+        return state.members.params.startDate
+    }
+
+    @Selector()
+    public static groupMembersPageEndDateParam (state: GroupStateModel): string | undefined {
+        return state.members.params.endDate
+    }
+
+    @Selector()
+    public static groupMembersPageOnlyVisibleParam (state: GroupStateModel): boolean {
+        return state.members.params.onlyVisible
+    }
+
+    @Selector()
+    public static groupMembersPageOrderParam (state: GroupStateModel): OrderEnum {
+        return state.members.params.order
+    }
+
+    @Selector()
+    public static group (state: GroupStateModel): GroupModel | undefined {
+        return state.group.element
+    }
+
+    @Selector()
+    public static groupLoading (state: GroupStateModel): boolean {
+        return state.group.loading
+    }
+
+    @Selector()
+    public static searchedParticipantsMetadata (state: GroupStateModel): SelectItem<ParticipantModel>[] {
+        return state._metadata.searched
+    }
+
     @Action( StartGroupsPageLoader )
     public startGroupsPageLoader (ctx: StateContext<GroupStateModel>): void {
         ctx.patchState( {
@@ -115,6 +220,104 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
     public stopGroupsPageLoader (ctx: StateContext<GroupStateModel>): void {
         ctx.patchState( {
             groups: StateUtil.updatePageLoader( ctx.getState().groups, false ),
+        } )
+    }
+
+    @Action( FetchGroupsPage )
+    public fetchGroupsPage (
+        ctx: StateContext<GroupStateModel>,
+        payload: FetchGroupsPage,
+    ): Observable<void> {
+        return this.service.findGroups(
+            payload.eventId,
+            payload.offset,
+            payload.limit,
+            ctx.getState().groups.params,
+        ).pipe(
+            initialize( (): void => this.facade.startGroupsPageLoader() ),
+            finalize( (): void => this.facade.stopGroupsPageLoader() ),
+            map( (groupPage: PageModel<GroupModel>): void => this.fetchGroupsPageComplete(
+                ctx,
+                groupPage,
+            ) ),
+            catchError( (error: ErrorModel): Observable<void> => this.pageError( ctx, error ) ),
+        )
+    }
+
+    private fetchGroupsPageComplete (
+        ctx: StateContext<GroupStateModel>,
+        groupPage: PageModel<GroupModel>,
+    ): void {
+        ctx.patchState( {
+            groups: {
+                ...ctx.getState().groups,
+                element: groupPage,
+            },
+        } )
+    }
+
+    @Action( InputGroupsPageSearch )
+    public inputGroupsPageSearch (
+        ctx: StateContext<GroupStateModel>,
+        payload: InputGroupsPageSearch,
+    ): void {
+        ctx.patchState( {
+            groups: {
+                ...ctx.getState().groups,
+                params: {
+                    ...ctx.getState().groups.params,
+                    searched: payload.searched,
+                },
+            },
+        } )
+    }
+
+    @Action( InputGroupsPageDateRange )
+    public inputGroupsPageDateRange (
+        ctx: StateContext<GroupStateModel>,
+        payload: InputGroupsPageDateRange,
+    ): void {
+        ctx.patchState( {
+            groups: {
+                ...ctx.getState().groups,
+                params: {
+                    ...ctx.getState().groups.params,
+                    startDate: payload.start?.toISOString(),
+                    endDate: payload.end?.toISOString(),
+                },
+            },
+        } )
+    }
+
+    @Action( SelectGroupsPageVisibility )
+    public selectGroupsPageVisibility (
+        ctx: StateContext<GroupStateModel>,
+        payload: SelectGroupsPageVisibility,
+    ): void {
+        ctx.patchState( {
+            groups: {
+                ...ctx.getState().groups,
+                params: {
+                    ...ctx.getState().groups.params,
+                    onlyVisible: payload.onlyVisible,
+                },
+            },
+        } )
+    }
+
+    @Action( SelectGroupsPageOrder )
+    public selectGroupsPageOrder (
+        ctx: StateContext<GroupStateModel>,
+        payload: SelectGroupsPageOrder,
+    ): void {
+        ctx.patchState( {
+            groups: {
+                ...ctx.getState().groups,
+                params: {
+                    ...ctx.getState().groups.params,
+                    order: payload.order,
+                },
+            },
         } )
     }
 
@@ -150,118 +353,6 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
         } )
     }
 
-    @Action( StartGroupLoader )
-    public startGroupLoader (ctx: StateContext<GroupStateModel>): void {
-        ctx.patchState( {
-            group: StateUtil.updateElementLoader( ctx.getState().group, true ),
-        } )
-    }
-
-    @Action( StopGroupLoader )
-    public stopGroupLoader (ctx: StateContext<GroupStateModel>): void {
-        ctx.patchState( {
-            group: StateUtil.updateElementLoader( ctx.getState().group, false ),
-        } )
-    }
-
-    @Action( FetchGroupPage )
-    public fetchGroupPage (
-        ctx: StateContext<GroupStateModel>,
-        payload: FetchGroupPage,
-    ): Observable<void> {
-        return this.service.findGroups(
-            payload.eventId,
-            payload.offset,
-            payload.limit,
-            ctx.getState().groups.params,
-        ).pipe(
-            initialize( (): void => this.facade.startPageLoader() ),
-            finalize( (): void => this.facade.stopPageLoader() ),
-            map( (groupPage: PageModel<GroupModel>): void => this.fetchGroupPageComplete(
-                ctx,
-                groupPage,
-            ) ),
-            catchError( (error: ErrorModel): Observable<void> => this.pageError( ctx, error ) ),
-        )
-    }
-
-    private fetchGroupPageComplete (
-        ctx: StateContext<GroupStateModel>,
-        groupPage: PageModel<GroupModel>,
-    ): void {
-        ctx.patchState( {
-            groups: {
-                ...ctx.getState().groups,
-                element: groupPage,
-            },
-        } )
-    }
-
-    @Action( InputGroupPageSearch )
-    public inputGroupPageSearch (
-        ctx: StateContext<GroupStateModel>,
-        payload: InputGroupPageSearch,
-    ): void {
-        ctx.patchState( {
-            groups: {
-                ...ctx.getState().groups,
-                params: {
-                    ...ctx.getState().groups.params,
-                    searched: payload.searched,
-                },
-            },
-        } )
-    }
-
-    @Action( InputGroupPageDateRange )
-    public inputGroupPageDateRange (
-        ctx: StateContext<GroupStateModel>,
-        payload: InputGroupPageDateRange,
-    ): void {
-        ctx.patchState( {
-            groups: {
-                ...ctx.getState().groups,
-                params: {
-                    ...ctx.getState().groups.params,
-                    startDate: payload.start?.toISOString(),
-                    endDate: payload.end?.toISOString(),
-                },
-            },
-        } )
-    }
-
-    @Action( SelectGroupPageVisibility )
-    public selectGroupPageVisibility (
-        ctx: StateContext<GroupStateModel>,
-        payload: SelectGroupPageVisibility,
-    ): void {
-        ctx.patchState( {
-            groups: {
-                ...ctx.getState().groups,
-                params: {
-                    ...ctx.getState().groups.params,
-                    onlyVisible: payload.onlyVisible,
-                },
-            },
-        } )
-    }
-
-    @Action( SelectGroupPageOrder )
-    public selectGroupPageOrder (
-        ctx: StateContext<GroupStateModel>,
-        payload: SelectGroupPageOrder,
-    ): void {
-        ctx.patchState( {
-            groups: {
-                ...ctx.getState().groups,
-                params: {
-                    ...ctx.getState().groups.params,
-                    order: payload.order,
-                },
-            },
-        } )
-    }
-
     @Action( FetchGroupMembersPage )
     public fetchGroupMembersPage (
         ctx: StateContext<GroupStateModel>,
@@ -283,8 +374,8 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
             payload.limit,
             ctx.getState().groups.params,
         ).pipe(
-            initialize( (): void => this.facade.startMemberPageLoader() ),
-            finalize( (): void => this.facade.stopMemberPageLoader() ),
+            initialize( (): void => this.facade.startGroupMembersPageLoader() ),
+            finalize( (): void => this.facade.stopGroupMembersPageLoader() ),
             map( (membersPage: PageModel<ParticipantModel>): void => this.fetchGroupMembersPageComplete(
                 ctx,
                 membersPage,
@@ -305,10 +396,10 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
         } )
     }
 
-    @Action( InputGroupMemberPageSearch )
-    public inputGroupMemberPageSearch (
+    @Action( InputGroupMembersPageSearch )
+    public inputGroupMembersPageSearch (
         ctx: StateContext<GroupStateModel>,
-        payload: InputGroupMemberPageSearch,
+        payload: InputGroupMembersPageSearch,
     ): void {
         ctx.patchState( {
             members: {
@@ -321,10 +412,10 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
         } )
     }
 
-    @Action( InputGroupMemberPageDateRange )
-    public inputGroupMemberPageDateRange (
+    @Action( InputGroupMembersPageDateRange )
+    public inputGroupMembersPageDateRange (
         ctx: StateContext<GroupStateModel>,
-        payload: InputGroupMemberPageDateRange,
+        payload: InputGroupMembersPageDateRange,
     ): void {
         ctx.patchState( {
             members: {
@@ -338,10 +429,10 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
         } )
     }
 
-    @Action( SelectGroupMemberPageVisibility )
-    public selectGroupMemberPageVisibility (
+    @Action( SelectGroupMembersPageVisibility )
+    public selectGroupMembersPageVisibility (
         ctx: StateContext<GroupStateModel>,
-        payload: SelectGroupMemberPageVisibility,
+        payload: SelectGroupMembersPageVisibility,
     ): void {
         ctx.patchState( {
             members: {
@@ -354,10 +445,10 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
         } )
     }
 
-    @Action( SelectGroupMemberPageOrder )
-    public selectGroupMemberPageOrder (
+    @Action( SelectGroupMembersPageOrder )
+    public selectGroupMembersPageOrder (
         ctx: StateContext<GroupStateModel>,
-        payload: SelectGroupMemberPageOrder,
+        payload: SelectGroupMembersPageOrder,
     ): void {
         ctx.patchState( {
             members: {
@@ -370,11 +461,25 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
         } )
     }
 
+    @Action( StartGroupLoader )
+    public startGroupLoader (ctx: StateContext<GroupStateModel>): void {
+        ctx.patchState( {
+            group: StateUtil.updateElementLoader( ctx.getState().group, true ),
+        } )
+    }
+
+    @Action( StopGroupLoader )
+    public stopGroupLoader (ctx: StateContext<GroupStateModel>): void {
+        ctx.patchState( {
+            group: StateUtil.updateElementLoader( ctx.getState().group, false ),
+        } )
+    }
+
     @Action( FetchGroup )
     public fetchGroup (ctx: StateContext<GroupStateModel>, payload: FetchGroup): Observable<void> {
         return this.service.findGroupById( payload.eventId, payload.id ).pipe(
-            initialize( (): void => this.facade.startElementLoader() ),
-            finalize( (): void => this.facade.stopElementLoader() ),
+            initialize( (): void => this.facade.startGroupLoader() ),
+            finalize( (): void => this.facade.stopGroupLoader() ),
             map( (group: GroupModel): void => this.fetchGroupComplete( ctx, group ) ),
         )
     }
@@ -430,8 +535,8 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
     @Action( CreateGroup )
     public createGroup (ctx: StateContext<GroupStateModel>, payload: CreateGroup): Observable<void> {
         return this.service.createGroup( payload.eventId, payload.group ).pipe(
-            initialize( (): void => this.facade.startElementLoader() ),
-            finalize( (): void => this.facade.stopElementLoader() ),
+            initialize( (): void => this.facade.startGroupLoader() ),
+            finalize( (): void => this.facade.stopGroupLoader() ),
             map( (group: GroupModel): void => this.createGroupComplete(
                 ctx,
                 payload.eventId,
@@ -458,8 +563,8 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
     @Action( UpdateGroup )
     public updateGroup (ctx: StateContext<GroupStateModel>, payload: UpdateGroup): Observable<void> {
         return this.service.updateGroupById( payload.eventId, payload.id, payload.group ).pipe(
-            initialize( (): void => this.facade.startElementLoader() ),
-            finalize( (): void => this.facade.stopElementLoader() ),
+            initialize( (): void => this.facade.startGroupLoader() ),
+            finalize( (): void => this.facade.stopGroupLoader() ),
             map( (group: GroupModel): void => this.updateGroupComplete(
                 ctx,
                 payload.eventId,
@@ -486,8 +591,8 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
     @Action( AddMembersToGroup )
     public addMembersToGroup (ctx: StateContext<GroupStateModel>, payload: AddMembersToGroup): Observable<void> {
         return this.service.addMembersToGroupById( payload.eventId, payload.id, payload.memberIds ).pipe(
-            initialize( (): void => this.facade.startElementLoader() ),
-            finalize( (): void => this.facade.stopElementLoader() ),
+            initialize( (): void => this.facade.startGroupLoader() ),
+            finalize( (): void => this.facade.stopGroupLoader() ),
             map( (response: AddedGroupMembersDto): void => this.addMembersToGroupComplete(
                 ctx,
                 payload.eventId,
@@ -537,8 +642,8 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
         payload: RemoveMemberFromGroup,
     ): Observable<void> {
         return this.service.removeMemberFromGroupById( payload.eventId, payload.id, payload.participant.id ).pipe(
-            initialize( (): void => this.facade.startElementLoader() ),
-            finalize( (): void => this.facade.stopElementLoader() ),
+            initialize( (): void => this.facade.startGroupLoader() ),
+            finalize( (): void => this.facade.stopGroupLoader() ),
             map( (group: GroupModel): void => this.removeMemberFromGroupComplete(
                 ctx,
                 payload.eventId,
@@ -574,8 +679,8 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
         payload: DisableGroup,
     ): Observable<void> {
         return this.service.disableGroupById( payload.eventId, payload.id ).pipe(
-            initialize( (): void => this.facade.startElementLoader() ),
-            finalize( (): void => this.facade.stopElementLoader() ),
+            initialize( (): void => this.facade.startGroupLoader() ),
+            finalize( (): void => this.facade.stopGroupLoader() ),
             map( (group: GroupModel): void => this.disableGroupComplete(
                 ctx,
                 payload.eventId,
@@ -602,8 +707,8 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
     @Action( EnableGroup )
     public enableGroup (ctx: StateContext<GroupStateModel>, payload: EnableGroup): Observable<void> {
         return this.service.enableGroupById( payload.eventId, payload.id ).pipe(
-            initialize( (): void => this.facade.startElementLoader() ),
-            finalize( (): void => this.facade.stopElementLoader() ),
+            initialize( (): void => this.facade.startGroupLoader() ),
+            finalize( (): void => this.facade.stopGroupLoader() ),
             map( (group: GroupModel): void => this.enableGroupComplete(
                 ctx,
                 payload.eventId,
@@ -630,8 +735,8 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
     @Action( DeleteGroup )
     public deleteGroup (ctx: StateContext<GroupStateModel>, payload: DeleteGroup): Observable<void> {
         return this.service.deleteGroupById( undefined, payload.group.id ).pipe(
-            initialize( (): void => this.facade.startElementLoader() ),
-            finalize( (): void => this.facade.stopElementLoader() ),
+            initialize( (): void => this.facade.startGroupLoader() ),
+            finalize( (): void => this.facade.stopGroupLoader() ),
             map( (): void => this.deleteGroupComplete(
                 ctx,
                 payload.eventId,
@@ -661,21 +766,21 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
 
     protected refreshPage (ctx: StateContext<GroupStateModel>, eventId: string | undefined): void {
         const page: PageModel<GroupModel> | undefined = ctx.getState().groups.element
-        this.facade.fetchElementPage( page?.offset, page?.limit, true, eventId )
+        this.facade.fetchGroupsPage( page?.offset, page?.limit, true, eventId )
     }
 
     protected refreshGroupMembers (ctx: StateContext<GroupStateModel>, eventId: string | undefined): void {
         const pageInformation: PageRequestInformationModel<ParticipantPageParamsModel, ParticipantModel> & {
             groupId: string | undefined
         } = ctx.getState().members
-        this.facade.fetchMemberPage(
+        this.facade.fetchGroupMembersPage(
             pageInformation.groupId!,
             pageInformation.element?.offset,
             pageInformation.element?.limit,
             true,
             eventId,
         )
-        this.facade.fetchElement( pageInformation.groupId!, eventId )
+        this.facade.fetchGroup( pageInformation.groupId!, eventId )
     }
 
     protected pageError (ctx: StateContext<GroupStateModel>, error: ErrorModel): Observable<void> {
@@ -686,6 +791,7 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
                 groups: this.buildErrorMessage( ctx.getState().groups, error ),
             } )
         }
+
         return of()
     }
 

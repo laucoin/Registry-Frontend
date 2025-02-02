@@ -10,6 +10,8 @@ import { QueryUtil } from '../../../../shared/util-tool/util/query.util'
 import { HttpParams } from '@angular/common/http'
 import { GroupModel } from '../../../../shared/util-model/model/group.model'
 import { UserModel } from '../../../../shared/util-model/model/user.model'
+import { MovementPageParamsModel } from '../../../../shared/util-model/movement-page-params.model'
+import { MovementModel } from '../../../../shared/util-model/movement.model'
 
 @Injectable( {
     providedIn: 'root',
@@ -32,6 +34,22 @@ export class ParticipantService extends GenericEventService {
 
     public findParticipantById (eventId: string | undefined, id: string): Observable<ParticipantModel> {
         return this.http.get<ParticipantModel>( `${this.buildRequestBaseUrl( eventId )}/${id}` )
+    }
+
+    public findParticipantMovements (
+        eventId: string | undefined,
+        id: string,
+        offset: number | undefined,
+        limit: number | undefined,
+        params: MovementPageParamsModel,
+    ): Observable<PageModel<MovementModel>> {
+        return this.http.get<PageModel<MovementModel>>(
+            `${this.buildRequestBaseUrl( eventId )}/${id}/movements?${QueryUtil.buildQueryParams(
+                offset,
+                limit,
+                params,
+            ).toString()}`,
+        )
     }
 
     public searchUsers (

@@ -74,18 +74,18 @@ export class ParticipantFormComponent extends GenericFormComponent implements On
     ) {
         super(
             AppRouteEnum.PARTICIPANTS,
-            facade.elementLoading,
+            facade.participantLoading,
         )
 
-        facade.resetElement()
+        facade.resetParticipant()
 
         this.handleContextEvent()
         this.handleIdParam()
         this.handleLoadedParticipant()
         this.handleUserDeselection()
 
-        this.usersSuggestion$ = this.facade.searchedUsers
-        this.groupsSuggestion$ = this.facade.searchedGroups
+        this.usersSuggestion$ = this.facade.searchedUsersMetadata
+        this.groupsSuggestion$ = this.facade.searchedGroupsMetadata
     }
 
     public ngOnChanges (): void {
@@ -148,7 +148,7 @@ export class ParticipantFormComponent extends GenericFormComponent implements On
                 if (GenericUtil.isNull( params['id'] )) {
                     this.router.navigateByUrl( this.buildUri( AppRouteEnum.PARTICIPANTS_CREATION ) ).catch( console.error )
                 } else {
-                    this.facade.fetchElement( params['id'], this.contextEventId() )
+                    this.facade.fetchParticipant( params['id'], this.contextEventId() )
                 }
             } ),
         )
@@ -156,7 +156,7 @@ export class ParticipantFormComponent extends GenericFormComponent implements On
 
     private handleLoadedParticipant (): void {
         this.subscriptions.add(
-            this.facade.element?.subscribe( (participant: ParticipantModel | undefined): void => {
+            this.facade.participant?.subscribe( (participant: ParticipantModel | undefined): void => {
                 this.participant.set( participant )
                 if (!participant) return
                 this.previousFirstName.set( participant.firstName )
@@ -191,8 +191,8 @@ export class ParticipantFormComponent extends GenericFormComponent implements On
         this.subscriptions.add(
             (
                 this.participant() ?
-                this.facade.updateElement( this.participant()!.id, participant, this.contextEventId() )
-                                   : this.facade.createElement( participant, this.contextEventId() )
+                this.facade.updateParticipant( this.participant()!.id, participant, this.contextEventId() )
+                                   : this.facade.createParticipant( participant, this.contextEventId() )
             ).subscribe( (): void => this.navigateToRedirectUri() ),
         )
     }

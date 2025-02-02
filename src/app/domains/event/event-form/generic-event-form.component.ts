@@ -20,13 +20,13 @@ export abstract class GenericEventFormComponent extends GenericFormComponent {
     public constructor (protected readonly facade: EventFacade) {
         super(
             AppRouteEnum.EVENTS,
-            facade.elementLoading,
+            facade.eventLoading,
         )
 
-        this.eventOptions$ = facade.eventOptions
+        this.eventOptions$ = facade.eventOptionsMetadata
 
         facade.fetchEventOptions()
-        facade.resetElement()
+        facade.resetEvent()
 
         this.handleEventOptions()
     }

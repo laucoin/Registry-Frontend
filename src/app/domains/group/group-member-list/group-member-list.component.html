@@ -94,18 +94,18 @@
 
 <app-layer [(visible)]='addMembersFormLayerOpened'
            [header]='"group.action.add-members" | translate'>
-    @if (addMembersParticipant) {
+    @if (addMembersParticipants) {
         <form>
             <div class='field'>
                 <label for='participants' appRequired>{{ 'group.form.participants' | translate }}</label>
-                <app-select-elements-field [formControl]='addMembersParticipant'
+                <app-select-elements-field [formControl]='addMembersParticipants'
                                            [suggestions]='(participantsSuggestion$ | async) ?? []'
                                            [searchLabel]='"group.form.participant-search" | translate'
                                            [emptyPlaceholder]='"group.form.no-participant" | translate'
                                            inputId='participants'
                                            (handleSearch)='handleSearch($event.query)' />
-                <!--                <app-form-field-error [control]='addMembersParticipant'-->
-                <!--                                      [label]='"group.form.participants" | translate' />-->
+                <app-form-field-error [control]='addMembersParticipants'
+                                      translationPrefix='group.form.error.add-participants' />
             </div>
 
             <div class='d-flex mt-2 justify-content-center'>

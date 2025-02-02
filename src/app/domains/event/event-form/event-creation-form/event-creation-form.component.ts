@@ -54,7 +54,7 @@ export class EventCreationFormComponent extends GenericEventFormComponent {
         }
 
         this.subscriptions.add(
-            this.facade.createElement( event )
+            this.facade.createEvent( event )
                 .subscribe( (): void => this.navigateToRedirectUri() ),
         )
     }
