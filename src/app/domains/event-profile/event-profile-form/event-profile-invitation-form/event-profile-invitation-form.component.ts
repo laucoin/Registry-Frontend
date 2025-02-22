@@ -1,4 +1,4 @@
-import { Component } from '@angular/core'
+import { Component, signal, Signal } from '@angular/core'
 import { CardModule } from 'primeng/card'
 import { DividerModule } from 'primeng/divider'
 import { InputTextModule } from 'primeng/inputtext'
@@ -23,6 +23,7 @@ import {
 } from '../../../../shared/util-ui/select-elements-field/select-elements-field.component'
 import { UserDto } from '../../../../shared/util-model/dto/user.dto'
 import { SelectItem } from 'primeng/api'
+import { DateUtil } from '../../../../shared/util-tool/util/date.util'
 
 @Component( {
     selector: 'app-event-profile-invitation-form',
@@ -51,6 +52,9 @@ import { SelectItem } from 'primeng/api'
 export class EventProfileInvitationFormComponent extends GenericEventProfileFormComponent {
     protected readonly usersSuggestion$: Observable<SelectItem<UserDto>[]>
 
+    protected readonly startDateExample: Signal<Date> = signal( DateUtil.startDateExample )
+    protected readonly endDateExample: Signal<Date> = signal( DateUtil.endDateExample )
+
     public constructor (protected override readonly facade: EventProfileFacade) {
         super( facade )
 
@@ -78,23 +82,6 @@ export class EventProfileInvitationFormComponent extends GenericEventProfileForm
                 this.navigateToRedirectUri()
             } ),
         )
-    }
-
-    protected get exampleBeginDate (): Date {
-        const now: Date = new Date()
-
-        if (now.getMonth() > 6) {
-            now.setFullYear( now.getFullYear() + 1 )
-        }
-
-        now.setMonth( 6, 20 )
-        return now
-    }
-
-    protected get exampleEndDate (): Date {
-        const now: Date = this.exampleBeginDate
-        now.setMonth( 7, 2 )
-        return now
     }
 
     protected handleSearch (searched: string | undefined): void {

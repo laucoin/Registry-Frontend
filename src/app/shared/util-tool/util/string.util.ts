@@ -28,6 +28,7 @@ export class StringUtils {
             case currentUri.includes( AppRouteEnum.PREFERENCES ) && route == AppRouteEnum.USERS:
             case currentUri.includes( AppRouteEnum.PROFILES ) && isEventRoute:
             case currentUri.includes( AppRouteEnum.PARTICIPANTS ) && isEventRoute:
+            case currentUri.includes( AppRouteEnum.VEHICLES ) && isEventRoute:
             case currentUri.includes( AppRouteEnum.GROUPS ) && isEventRoute:
             case currentUri.includes( AppRouteEnum.MOVEMENTS ) && isEventRoute:
                 return false

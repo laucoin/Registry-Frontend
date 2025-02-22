@@ -19,6 +19,7 @@ import {
     InputMovementsPageSearch,
     ResetMovement,
     SearchParticipantsAndGroups,
+    SearchVehicles,
     SelectMovementsPageOrder,
     SelectMovementsPageType,
     SelectMovementsPageVisibility,
@@ -32,6 +33,7 @@ import { MovementDto } from '../dto/movement.dto'
 import { MovementModel } from '../../../../shared/util-model/movement.model'
 import { ParticipantModel } from '../../../../shared/util-model/model/participant.model'
 import { GenericEventElementFacade } from '../../../../shared/util-tool/facade/generic-event-element.facade'
+import { VehicleModel } from '../../../../shared/util-model/model/vehicle.model'
 
 @Injectable()
 export class MovementFacade extends GenericEventElementFacade {
@@ -84,6 +86,10 @@ export class MovementFacade extends GenericEventElementFacade {
 
     public get searchedParticipantAndGroupMetadata (): Observable<SelectItemGroup<ParticipantModel | GroupModel>[]> {
         return this.ngStore.select( MovementState.searchedParticipantAndGroupMetadata )
+    }
+
+    public get searchedVehicleMetadata (): Observable<SelectItem<VehicleModel>[]> {
+        return this.ngStore.select( MovementState.searchedVehicleMetadata )
     }
 
     public get movementTypesMetadata (): Observable<SelectItem<string>[]> {
@@ -144,6 +150,13 @@ export class MovementFacade extends GenericEventElementFacade {
         eventId: string | undefined = this.actualSelectedEventId,
     ): void {
         this.ngStore.dispatch( new SearchParticipantsAndGroups( eventId, searched ) )
+    }
+
+    public searchVehicles (
+        searched: string | undefined = undefined,
+        eventId: string | undefined = this.actualSelectedEventId,
+    ): void {
+        this.ngStore.dispatch( new SearchVehicles( eventId, searched ) )
     }
 
     public resetMovement (): void {

@@ -46,18 +46,34 @@
         <p-divider />
         <div class='field'>
             <span class='label' appRequired>{{ 'movement.form.content' | translate }}</span>
-            <div class='form-decorator p-2'>
+            <div class='form-decorator pt-2 pb-2'>
                 <div class='field'>
                     <label for='content' class='secondary-color'>{{ 'movement.form.content-search' | translate }}</label>
                     <app-movement-content-field [formControl]='content'
                                                 [suggestions]='(contentSuggestions$ | async) ?? []'
                                                 inputId='content'
-                                                (handleSearch)='handleSearch($event.query)' />
+                                                (handleSearch)='handleParticipantsAndGroupsSearch($event.query)' />
+                    <app-form-field-error [control]='content'
+                                          translationPrefix='movement.form.error.participants' />
                 </div>
-                <app-form-field-error [control]='content'
-                                      translationPrefix='movement.form.error.participants' />
             </div>
         </div>
+        @if (hasVehicleOption((contextEvent$ | async) ?? undefined)) {
+            <p-divider />
+            <div class='field'>
+                <span class='label' appRequired>{{ 'movement.form.vehicles-and-drivers' | translate }}</span>
+                <div class='form-decorator pt-2 pb-2'>
+                    <div class='field'>
+                        <label for='vehicles-drivers' class='secondary-color'>{{ 'movement.form.vehicles-search' | translate }}</label>
+                        <app-movement-vehicle-field [formArray]='vehiclesWithDrivers'
+                                                    [participants]='drivers()'
+                                                    [suggestions]='(vehicleSuggestions$ | async) ?? []'
+                                                    inputId='vehicles-drivers'
+                                                    (handleSearch)='handleVehiclesSearch($event.query)' />
+                    </div>
+                </div>
+            </div>
+        }
     </p-card>
     <div class='d-flex mt-2 justify-content-center'>
         <p-button

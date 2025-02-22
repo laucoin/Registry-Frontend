@@ -20,6 +20,7 @@ export enum MovementActionEnum {
 
     FETCH_MOVEMENT = '[Backend] Fetching movement',
     SEARCH_PARTICIPANTS_AND_GROUPS = '[Backend] Searching participants and groups to add in a movement',
+    SEARCH_VEHICLES = '[Backend] Searching vehicles to add in a movement',
     RESET_MOVEMENT = '[Local] Resetting movement',
     CREATE_MOVEMENT = '[Backend] Creating movement',
     UPDATE_MOVEMENT = '[Backend] Updating movement',
@@ -102,6 +103,12 @@ export class FetchMovement {
 
 export class SearchParticipantsAndGroups {
     public static readonly type: MovementActionEnum = MovementActionEnum.SEARCH_PARTICIPANTS_AND_GROUPS
+
+    public constructor (public readonly eventId: string | undefined, public readonly searched: string | undefined) {}
+}
+
+export class SearchVehicles {
+    public static readonly type: MovementActionEnum = MovementActionEnum.SEARCH_VEHICLES
 
     public constructor (public readonly eventId: string | undefined, public readonly searched: string | undefined) {}
 }

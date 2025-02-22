@@ -5,6 +5,7 @@ import { ParticipantRoutesEnum } from './domains/participant/participant-routes.
 import { MovementRoutesEnum } from './domains/movement/movement-routes.enum'
 import { GroupRoutesEnum } from './domains/group/group-routes.enum'
 import { UserRoutesEnum } from './domains/user/user-routes.enum'
+import { VehicleRoutesEnum } from './domains/vehicle/vehicle-routes.enum'
 
 export enum AppRouteEnum {
     HOME = 'home',
@@ -21,6 +22,10 @@ export enum AppRouteEnum {
     PROFILES = `${EVENTS}/:eventId/profiles`,
     PROFILES_INVITATION = `${PROFILES}/${EventProfileRoutesEnum.INVITE}`,
     PROFILES_EDITION = `${PROFILES}/${EventProfileRoutesEnum.EDIT}`,
+    VEHICLES = `${EVENTS}/:eventId/vehicles`,
+    VEHICLES_CREATION = `${VEHICLES}/${VehicleRoutesEnum.CREATE}`,
+    VEHICLES_EDITION = `${VEHICLES}/${VehicleRoutesEnum.EDIT}`,
+    VEHICLES_MOVEMENTS = `${VEHICLES}/${VehicleRoutesEnum.MOVEMENTS}`,
     PARTICIPANTS = `${EVENTS}/:eventId/participants`,
     PARTICIPANTS_CREATION = `${PARTICIPANTS}/${ParticipantRoutesEnum.CREATE}`,
     PARTICIPANTS_EDITION = `${PARTICIPANTS}/${ParticipantRoutesEnum.EDIT}`,

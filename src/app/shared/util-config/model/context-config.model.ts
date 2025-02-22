@@ -7,6 +7,7 @@ import { ParticipantActionEnum } from '../../../domains/participant/data/state/p
 import { MovementActionEnum } from '../../../domains/movement/data/state/movement.action'
 import { GroupActionEnum } from '../../../domains/group/data/state/group.action'
 import { RegistryActionEnum } from '../../util-common/state/registry.action'
+import { VehicleActionEnum } from '../../../domains/vehicle/data/state/vehicle.action'
 
 export interface ContextConfigModel {
     theme: unknown
@@ -29,6 +30,9 @@ export interface ContextConfigModel {
     user: {
         myAction: ActionModel<RegistryActionEnum>[]
         action: ActionModel<UserActionEnum>[]
+    }
+    vehicle: {
+        action: ActionModel<VehicleActionEnum>[]
     }
     participant: {
         action: ActionModel<ParticipantActionEnum | GroupActionEnum>[]

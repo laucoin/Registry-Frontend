@@ -12,6 +12,7 @@ import {
     MovementParticipantsAndGroupsModel,
 } from '../../../../shared/util-model/model/movement-participants-and-groups.model'
 import { SelectItem } from 'primeng/api'
+import { VehicleModel } from '../../../../shared/util-model/model/vehicle.model'
 
 @Injectable( {
     providedIn: 'root',
@@ -42,6 +43,18 @@ export class MovementService extends GenericEventService {
     ): Observable<MovementParticipantsAndGroupsModel> {
         return this.http.get<MovementParticipantsAndGroupsModel>(
             `${this.buildRequestBaseUrl( eventId )}/search/participants-and-groups${searched ? '?' + new HttpParams().set(
+                'searched',
+                searched,
+            ).toString() : ''}`,
+        )
+    }
+
+    public searchVehicles (
+        eventId: string | undefined,
+        searched: string | undefined,
+    ): Observable<VehicleModel[]> {
+        return this.http.get<VehicleModel[]>(
+            `${this.buildRequestBaseUrl( eventId )}/search/vehicles${searched ? '?' + new HttpParams().set(
                 'searched',
                 searched,
             ).toString() : ''}`,

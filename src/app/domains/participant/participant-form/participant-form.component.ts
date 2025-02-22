@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, signal, WritableSignal } from '@angular/core'
+import { Component, Input, OnChanges, Signal, signal, WritableSignal } from '@angular/core'
 import { GenericFormComponent } from '../../../shared/util-tool/component/generic-form.component'
 import { AppRouteEnum } from '../../../app-route.enum'
 import { ParticipantFacade } from '../data/state/participant.facade'
@@ -60,6 +60,9 @@ export class ParticipantFormComponent extends GenericFormComponent implements On
     @Input() public showTitle: boolean = true
     @Input() public defaultGroup: GroupModel | undefined
     protected readonly participant: WritableSignal<ParticipantModel | undefined> = signal( undefined )
+
+    protected readonly startDateExample: Signal<Date> = signal( DateUtil.startDateExample )
+    protected readonly endDateExample: Signal<Date> = signal( DateUtil.endDateExample )
 
     protected readonly groupsSuggestion$: Observable<SelectItem<GroupModel>[]>
     protected readonly usersSuggestion$: Observable<SelectItem<UserDto>[]>
@@ -199,23 +202,6 @@ export class ParticipantFormComponent extends GenericFormComponent implements On
 
     private buildContent (): string[] {
         return (this.groups.value ?? []).map( (item: SelectItem<GroupModel>): string => item.value.id )
-    }
-
-    protected get exampleBeginDate (): Date {
-        const now: Date = new Date()
-
-        if (now.getMonth() > 6) {
-            now.setFullYear( now.getFullYear() + 1 )
-        }
-
-        now.setMonth( 6, 20 )
-        return now
-    }
-
-    protected get exampleEndDate (): Date {
-        const now: Date = this.exampleBeginDate
-        now.setMonth( 7, 2 )
-        return now
     }
 
     protected handleUserSearch (searched: AutoCompleteCompleteEvent): void {

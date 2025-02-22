@@ -9,14 +9,17 @@
                  (onSelect)='onElementSelection($event.value)'
                  (completeMethod)='handleSearch.emit($event)'>
     <ng-template #selecteditem />
+    <ng-template #empty>
+        <div class='secondary-color'>{{ 'movement.form.empty-content-search' | translate }}</div>
+    </ng-template>
 </p-auto-complete>
-<span class='mt-3 secondary-color'>
-                        {{
+<div class='mt-3 secondary-color'>
+    {{
         ('movement.searched.participant.' + (participants().length > 1 ?
                                              'plural' : 'singular')) | translate
     }}
-                    </span>
-<ul class='list-box mt-2'>
+</div>
+<ul class='list-box mt-2' [class.invalid]='(formControl.dirty || formControl.touched) && formControl.invalid'>
     @if (participants().length > 0) {
         @for (participant of participants(); track participant.id) {
             <li class='item list-item full-w d-flex align-items-center justify-content-between'>
@@ -30,7 +33,9 @@
         }
     } @else {
         <li class='item empty-message'>
-            <div class='ms-2 secondary-color'>{{ 'movement.form.no-participant' | translate }}</div>
+            <div class='ms-2 secondary-color'
+                 [class.invalid]='(formControl.dirty || formControl.touched) && formControl.invalid'>{{ 'movement.form.no-participant' | translate }}
+            </div>
         </li>
     }
 </ul>

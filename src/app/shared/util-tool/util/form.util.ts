@@ -11,8 +11,12 @@ export class FormUtil {
             } else if (control instanceof FormArray) {
                 control.markAsDirty( { onlySelf: true } )
                 control.controls.forEach( (subControl: AbstractControl): void => {
-                    subControl.markAsDirty( { onlySelf: true } )
-                    subControl.updateValueAndValidity()
+                    if (subControl instanceof FormGroup) {
+                        FormUtil.markAllControlsAsDirty( subControl )
+                    } else {
+                        subControl.markAsDirty( { onlySelf: true } )
+                        subControl.updateValueAndValidity()
+                    }
                 } )
                 control.updateValueAndValidity()
             }

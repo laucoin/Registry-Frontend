@@ -11,6 +11,7 @@ import { definePreset } from '@primeng/themes'
 import Lara from '@primeng/themes/lara'
 import { GroupActionEnum } from '../../../domains/group/data/state/group.action'
 import { RegistryActionEnum } from '../../util-common/state/registry.action'
+import { VehicleActionEnum } from '../../../domains/vehicle/data/state/vehicle.action'
 
 export const sgdfConfig: ContextConfigModel = {
     theme: definePreset( Lara, {
@@ -143,6 +144,15 @@ export const sgdfConfig: ContextConfigModel = {
             requiredUserAuthority: undefined,
             requiredEventAuthority: EventAuthorityEnum.REGISTRY_EVENT_MOVEMENT_R,
             requiredEventOption: undefined,
+            enabled: true,
+        },
+        {
+            name: 'menu.vehicles',
+            icon: 'pi pi-car',
+            route: AppRouteEnum.VEHICLES,
+            requiredUserAuthority: undefined,
+            requiredEventAuthority: EventAuthorityEnum.REGISTRY_EVENT_VEHICLE_R,
+            requiredEventOption: 'VEHICLE',
             enabled: true,
         },
         {
@@ -322,6 +332,81 @@ export const sgdfConfig: ContextConfigModel = {
                 },
             ],
         },
+    },
+    vehicle: {
+        action: [
+            {
+                id: VehicleActionEnum.FETCH_VEHICLE_MOVEMENTS_PAGE,
+                name: 'vehicle.action.movements-history',
+                icon: 'pi pi-history',
+                disabled: false,
+                requiredUserAuthority: undefined,
+                requiredEventAuthority: EventAuthorityEnum.REGISTRY_EVENT_VEHICLE_HISTORY_R,
+                requiredEventOption: 'VEHICLE',
+                confirmation: undefined,
+            },
+            {
+                id: VehicleActionEnum.UPDATE_VEHICLE,
+                name: 'vehicle.action.edit',
+                icon: 'pi pi-pen-to-square',
+                disabled: false,
+                requiredUserAuthority: undefined,
+                requiredEventAuthority: EventAuthorityEnum.REGISTRY_EVENT_VEHICLE_U,
+                requiredEventOption: 'VEHICLE',
+                confirmation: undefined,
+            },
+            {
+                id: VehicleActionEnum.DISABLE_VEHICLE,
+                name: 'vehicle.action.disable',
+                icon: 'pi pi-eye-slash',
+                disabled: false,
+                requiredUserAuthority: undefined,
+                requiredEventAuthority: EventAuthorityEnum.REGISTRY_EVENT_VEHICLE_U,
+                requiredEventOption: 'VEHICLE',
+                confirmation: {
+                    header: 'vehicle.action.confirmation.title.disable',
+                    message: 'vehicle.action.confirmation.message.disable',
+                    icon: 'pi pi-exclamation-triangle',
+                    acceptSeverity: 'warn',
+                    rejectSeverity: 'secondary',
+                    confirmProperty: undefined,
+                },
+            },
+            {
+                id: VehicleActionEnum.ENABLE_VEHICLE,
+                name: 'vehicle.action.enable',
+                icon: 'pi pi-replay',
+                disabled: true,
+                requiredUserAuthority: undefined,
+                requiredEventAuthority: EventAuthorityEnum.REGISTRY_EVENT_VEHICLE_U,
+                requiredEventOption: 'VEHICLE',
+                confirmation: {
+                    header: 'vehicle.action.confirmation.title.enable',
+                    message: 'vehicle.action.confirmation.message.enable',
+                    icon: 'pi pi-exclamation-triangle',
+                    acceptSeverity: 'warn',
+                    rejectSeverity: 'secondary',
+                    confirmProperty: undefined,
+                },
+            },
+            {
+                id: VehicleActionEnum.DELETE_VEHICLE,
+                name: 'vehicle.action.delete',
+                icon: 'pi pi-trash',
+                disabled: false,
+                requiredUserAuthority: undefined,
+                requiredEventAuthority: EventAuthorityEnum.REGISTRY_EVENT_VEHICLE_D,
+                requiredEventOption: 'VEHICLE',
+                confirmation: {
+                    header: 'vehicle.action.confirmation.title.delete',
+                    message: 'vehicle.action.confirmation.message.delete',
+                    icon: 'pi pi-exclamation-triangle',
+                    acceptSeverity: 'danger',
+                    rejectSeverity: 'secondary',
+                    confirmProperty: 'registration',
+                },
+            },
+        ],
     },
     participant: {
         action: [

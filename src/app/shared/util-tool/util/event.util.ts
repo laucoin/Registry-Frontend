@@ -1,9 +1,9 @@
 import { EventModel } from '../../util-model/model/event.model'
-import { ArrayUtil } from './array.util'
+import { SelectItem } from 'primeng/api'
 
 export class EventUtil {
     public static hasOption (event: EventModel | undefined, option: string | undefined): boolean {
-        if (!event) return true
-        return ArrayUtil.includes( event!.options, option )
+        if (!event || !option) return true
+        return event?.options.some( (item: SelectItem<string>): boolean => item.value == option )
     }
 }

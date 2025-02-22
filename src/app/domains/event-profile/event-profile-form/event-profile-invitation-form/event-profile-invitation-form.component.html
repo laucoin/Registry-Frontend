@@ -25,9 +25,9 @@
                                [showTime]='true'
                                [touchUI]='isMobile()'
                                [placeholder]='"profile.example.presence" | translate: {
-                                   begin: exampleBeginDate | date: ("datetime.format.date" | translate),
-                                   end: exampleEndDate | date: ("datetime.format.date" | translate)
-                               }'
+                                    begin: startDateExample() | date: ("datetime.format.date" | translate),
+                                    end: endDateExample() | date: ("datetime.format.date" | translate)
+                                }'
                                (keydown.enter)='submit()'
                                id='profiles-range'
                                inputId='profiles-range'

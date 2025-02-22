@@ -17,6 +17,9 @@ import { MovementFacade } from './domains/movement/data/state/movement.facade'
 import { SignOutCallbackComponent } from './shell/sign-out-callback/sign-out-callback.component'
 import { GroupFacade } from './domains/group/data/state/group.facade'
 import { GroupState } from './domains/group/data/state/group.state'
+import { VehicleFacade } from './domains/vehicle/data/state/vehicle.facade'
+import { VehicleState } from './domains/vehicle/data/state/vehicle.state'
+import { vehicleOptionGuard } from './shared/util-authentication/guard/vehicle-option.guard'
 
 export const routes: Routes = [
     {
@@ -61,10 +64,16 @@ export const routes: Routes = [
         providers: [ EventProfileFacade, importProvidersFrom( NgxsModule.forFeature( [ EventProfileState ] ) ) ],
     },
     {
+        path: AppRouteEnum.VEHICLES,
+        loadChildren: () => import('./domains/vehicle/vehicle.routes').then( (m: typeof import('./domains/vehicle/vehicle.routes')) => m.vehicleRoutes ),
+        canActivate: [ authGuard, selectedProfileGuard, vehicleOptionGuard ],
+        providers: [ MovementFacade, VehicleFacade, importProvidersFrom( NgxsModule.forFeature( [ MovementState, VehicleState ] ) ) ],
+    },
+    {
         path: AppRouteEnum.PARTICIPANTS,
         loadChildren: () => import('./domains/participant/participant.routes').then( (m: typeof import('./domains/participant/participant.routes')) => m.participantRoutes ),
         canActivate: [ authGuard, selectedProfileGuard ],
-        providers: [ ParticipantFacade, importProvidersFrom( NgxsModule.forFeature( [ ParticipantState ] ) ) ],
+        providers: [ MovementFacade, ParticipantFacade, importProvidersFrom( NgxsModule.forFeature( [ MovementState, ParticipantState ] ) ) ],
     },
     {
         path: AppRouteEnum.GROUPS,

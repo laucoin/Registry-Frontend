@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core'
+import { Component, OnInit, signal, Signal } from '@angular/core'
 import { Observable } from 'rxjs'
 import { EventProfileFacade } from '../../data/state/event-profile.facade'
 import { AppRouteEnum } from '../../../../app-route.enum'
@@ -8,7 +8,7 @@ import { EventProfileModel } from '../../../../shared/util-model/model/event-pro
 import { Params } from '@angular/router'
 import { FormUtil } from '../../../../shared/util-tool/util/form.util'
 import { TranslateModule } from '@ngx-translate/core'
-import { AsyncPipe } from '@angular/common'
+import { AsyncPipe, DatePipe } from '@angular/common'
 import { CardModule } from 'primeng/card'
 import { DropdownModule } from 'primeng/dropdown'
 import { FormFieldErrorComponent } from '../../../../shared/util-ui/form-field-error/form-field-error.component'
@@ -21,6 +21,7 @@ import { Button } from 'primeng/button'
 import { Select } from 'primeng/select'
 import { DatePicker } from 'primeng/datepicker'
 import { StringUtils } from '../../../../shared/util-tool/util/string.util'
+import { DateUtil } from '../../../../shared/util-tool/util/date.util'
 
 @Component( {
     selector: 'app-event-profile-edition-form',
@@ -38,11 +39,15 @@ import { StringUtils } from '../../../../shared/util-tool/util/string.util'
         Button,
         Select,
         DatePicker,
+        DatePipe,
     ],
     templateUrl: './event-profile-edition-form.component.html',
 } )
 export class EventProfileEditionFormComponent extends GenericEventProfileFormComponent implements OnInit {
     protected readonly profile$: Observable<EventProfileModel | undefined>
+
+    protected readonly startDateExample: Signal<Date> = signal( DateUtil.startDateExample )
+    protected readonly endDateExample: Signal<Date> = signal( DateUtil.endDateExample )
 
     public constructor (protected override readonly facade: EventProfileFacade) {
         super( facade )

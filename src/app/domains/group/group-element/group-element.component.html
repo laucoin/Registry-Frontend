@@ -11,7 +11,7 @@
                 <span [class.strikethrough]='element.end | isPast' class='group-name'>
                     {{ element.name }}
                 </span>
-                @if (element.begin | isPast) {
+                @if (element.end | isPast) {
                     <i> ({{ 'outdated' | translate }})</i>
                 }
                 @if (element.begin || element.end) {

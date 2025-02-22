@@ -1,6 +1,6 @@
 @if (group()) {
     <div class='mb-2'>
-        <app-group-element [element]='group()!' [layout]='(isTinyScreen() || isMobile()) ? "grid" : "list"' />
+        <app-group-element [element]='group()!' [showActionMenu]='false' [layout]='(isTinyScreen() || isMobile()) ? "grid" : "list"' />
     </div>
 }
 

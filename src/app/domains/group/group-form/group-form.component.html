@@ -21,12 +21,12 @@
                                   translationPrefix='group.form.error.role' />
         </div>
         <div class='field'>
-            <label for='presence'>{{ 'participant.form.presence' | translate }}</label>
+            <label for='presence'>{{ 'group.form.presence' | translate }}</label>
             <p-date-picker [formControl]='presence'
                            [showButtonBar]='true'
-                           [placeholder]='"participant.example.presence" | translate: {
-                                    begin: exampleBeginDate | date: ("datetime.format.date" | translate),
-                                    end: exampleEndDate | date: ("datetime.format.date" | translate)
+                           [placeholder]='"group.example.presence" | translate: {
+                                    begin: startDateExample() | date: ("datetime.format.date" | translate),
+                                    end: endDateExample() | date: ("datetime.format.date" | translate)
                                 }'
                            [readonlyInput]='true'
                            [showTime]='true'
