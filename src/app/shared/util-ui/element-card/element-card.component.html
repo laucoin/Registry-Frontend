@@ -59,7 +59,7 @@
 </p-card>
 
 @if (items$ | async; as items) {
-    @if (items.length > 0) {
+    @if (items.length > 0 && showActionMenu) {
         <p-context-menu [target]='elementCard' [model]='items'>
             <ng-template #item let-item>
                 <a pRipple class='d-flex align-items-center p-2 pointer'>

@@ -259,6 +259,7 @@
             },
             "duplicated-selection": {
                 "normal": "🤥 Élément déjà sélectionné",
+                "vehicle": "🤥 Véhicule déjà sélectionné",
                 "group": "🤥 Groupe déjà sélectionné",
                 "participant": {
                     "singular": "🤥 Personne déjà sélectionnée",
@@ -288,8 +289,9 @@
                 }
             },
             "duplicated-selection": {
-                "normal": "L'élément \"{{name}}\" déjà sélectionné, il n'a donc pas été ajouté une deuxième fois.",
-                "group": "Le groupe \"{{name}}\" déjà sélectionné, il n'a donc pas été ajouté une deuxième fois.",
+                "normal": "L'élément \"{{name}}\" est déjà sélectionné, il n'a donc pas été ajouté une deuxième fois.",
+                "vehicle": "Le véhicle \"{{name}}\" est déjà sélectionné, il n'a donc pas été ajouté une deuxième fois.",
+                "group": "Le groupe \"{{name}}\" est déjà sélectionné, il n'a donc pas été ajouté une deuxième fois.",
                 "participant": {
                     "singular": "Une personne été déjà sélectionnée soit individuellement soit dans un autre groupe. Le dernier ajout prime.",
                     "plural": "{{count}} personnes été déjà sélectionnées soit individuellement soit dans un autre groupe. Le dernier ajout prime."
@@ -341,9 +343,15 @@
                     "delete": "🗑️ Sortie supprimée"
                 }
             },
+            "vehicle": {
+                "create": "+ Véhicule créé",
+                "edit": "✏️ Véhicule modifié",
+                "disable": "🙈 Véhicule masqué",
+                "enable": "👀 Véhicule à nouveau visible",
+                "delete": "🗑️ Véhicule supprimé"
+            },
             "participant": {
                 "create": "+ Personne participante créée",
-                "link": "✏️ Personne participante liée",
                 "edit": "✏️ Personne participante modifiée",
                 "disable": "🙈 Personne participante masquée",
                 "enable": "👀 Personne participante à nouveau visible",
@@ -421,6 +429,13 @@
                     "delete": "La sortie du {{date}} à {{time}} a été supprimée"
                 }
             },
+            "vehicle": {
+                "create": "Le véhicule {{brand}} {{model}} ({{registration}}) a été créé",
+                "edit": "Le véhicule {{brand}} {{model}} ({{registration}}) a été modifié",
+                "disable": "Le véhicule {{brand}} {{model}} ({{registration}}) a été masqué",
+                "enable": "Le véhicule {{brand}} {{model}} ({{registration}}) est de nouveau visible",
+                "delete": "Le véhicule {{brand}} {{model}} ({{registration}}) a été supprimée"
+            },
             "participant": {
                 "create": "La personne participante {{firstName}} {{lastName}} a été créée",
                 "edit": "La personne participante {{firstName}} {{lastName}} a été modifiée",
@@ -487,6 +502,7 @@
         "events": "Événements",
         "profiles": "Profils",
         "movements": "Mouvements",
+        "vehicles": "Véhicules",
         "participants": "Participants",
         "groups": "Groupes",
         "sign-out": "Déconnexion",
@@ -665,6 +681,64 @@
             "users": "Ex: Robert BADEN-POWELL",
             "presence": "Ex: {{begin}} - {{end}}",
             "role": "Ex: {{role}}"
+        }
+    },
+    "vehicle": {
+        "action": {
+            "movements-history": "Historique des utilisations",
+            "edit": "Modifier",
+            "disable": "Désactiver",
+            "enable": "Ré-activer",
+            "delete": "Supprimer",
+            "confirmation": {
+                "title": {
+                    "disable": "Désactiver le véhicule",
+                    "enable": "Ré-activer le véhicule",
+                    "delete": "Supprimer le véhicule"
+                },
+                "message": {
+                    "disable": "Attention ! Tu vas désactiver le véhicule \"{{element.brand}} {{element.model}} ({{element.registration}})\". Tant qu'il est masqué, il ne pourra plus être utilisé.",
+                    "enable": "Attention ! Tu vas ré-activer le véhicule \"{{element.brand}} {{element.model}} ({{element.registration}})\". Il sera de nouveau possible de l'utiliser.",
+                    "delete": "Attention ! Tu vas définitivement supprimer le véhicle \"{{element.brand}} {{element.model}} ({{element.registration}})\". Il sera donc définitivement dissociée des mouvements et autres éléments."
+                }
+            }
+        },
+        "form": {
+            "title": {
+                "create": "Créer un véhicule",
+                "edit": "Modifier le véhicule \"{{brand}} {{model}} ({{registration}})\""
+            },
+            "registration": "Immatriculation",
+            "brand": "Marque",
+            "model": "Modèle",
+            "presence": "Dates de présence",
+            "error": {
+                "registration": {
+                    "required": "Un véhicule sans immatriculation ? Moins pratique pour l'identifier !",
+                    "blank": "Non, non, non ! tu ne m'auras pas. Une immatriculation vide ça ne fonctionne pas !",
+                    "maxlength": "T'as vu la longueur de l'immatriculation 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c'est {{requiredLength}}."
+                },
+                "brand": {
+                    "required": "Un véhicule sans marque ? T'es pas obligé de l'aimer mais il a forcément une marque !",
+                    "blank": "Non, non, non ! tu ne m'auras pas. Une marque vide ça ne fonctionne pas !",
+                    "maxlength": "T'as vu la longueur de la marque 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c'est {{requiredLength}}."
+                },
+                "model": {
+                    "required": "Un véhicule sans nom de modèle ? T'es pas obligé de l'aimer mais il a forcément un nom de modèle !",
+                    "blank": "Non, non, non ! tu ne m'auras pas. Un nom de modèle vide ça ne fonctionne pas !",
+                    "maxlength": "T'as vu la longueur du modèle 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c'est {{requiredLength}}."
+                },
+                "presence": {
+                    "minDate": "Le véhicule ne peut pas arriver avant le début de l'événement ({{min}}).",
+                    "maxDate": "Le véhicule ne peut pas partir après la fin de l'événement ({{max}})."
+                }
+            }
+        },
+        "example": {
+            "registration": "Ex: AB-123-CD",
+            "brand": "Ex: Toyota",
+            "model": "Ex: Yaris",
+            "presence": "Ex: {{begin}} - {{end}}"
         }
     },
     "participant": {
@@ -873,9 +947,16 @@
             "datetime": "Horodatage",
             "type": "Type",
             "content": "Personnes participantes au mouvement",
+            "vehicles-and-drivers": "Véhicules et conducteurs",
+            "empty-vehicles-search": "Aucun véhicule trouvé",
             "content-search": "Ajouter des personnes et des groupes",
+            "empty-content-search": "Aucune personne ou groupe trouvé",
+            "vehicles-search": "Ajouter des véhicules",
             "no-participant": "Aucune personne selectionnée",
+            "no-vehicle": "Aucun véhicule selectionné",
+            "driver": "Responsable du véhicule et ses infractions",
             "group": "Groupe \"{{name}}\"",
+            "empty-drivers": "Aucun conducteur potentiel dans le mouvement",
             "error": {
                 "date-time": {
                     "required": "L'horodatage du mouvement doivent être définies. Sinon, comment savoir quand ça se passe ?",
@@ -887,6 +968,9 @@
                 },
                 "participants": {
                     "required": "Impossible de créer un mouvement sans participants. Reviens avec une équipe !"
+                },
+                "driver": {
+                    "required": "Un véhicule sans responsable ? Désolé, les voitures complètement autonomes c'est pas encore ici."
                 }
             }
         },
@@ -902,6 +986,10 @@
             "group": {
                 "singular": "Groupe",
                 "plural": "Groupes"
+            },
+            "vehicle": {
+                "singular": "Véhicule",
+                "plural": "Véhicules"
             }
         },
         "action": {

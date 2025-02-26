@@ -1,0 +1,34 @@
+<app-element-card [element]='element'
+                  [actions]='actions'
+                  [showActionMenu]='showActionMenu'
+                  (action)='handleAction($event)'
+                  [layout]='layout'
+                  icon='pi pi-car'>
+    <div [class.flex-lg-row]='layout === "list"' [class.flex-column]='layout === "grid"'
+         class='d-flex flex-wrap justify-content-between align-items-center'>
+        <div class='id p-1'>
+            <span [class.strikethrough]='element.end | isPast' class='vehicle-registration'>
+                {{ element.registration }}
+            </span>
+            @if (element.end | isPast) {
+                <i> ({{ 'outdated' | translate }})</i>
+            }
+        </div>
+        <div class='info d-flex p-1'>
+            {{ element.brand }} {{ element.model }}
+        </div>
+        <div class='presence secondary-color p-1'>
+            @if (element.begin && element.end) {
+                <i>
+                    {{
+                        'datetime.presence' | translate
+                            : {
+                                start: element.begin | date: ('datetime.format.date' | translate),
+                                end: element.end | date: ('datetime.format.date' | translate),
+                            }
+                    }}
+                </i>
+            }
+        </div>
+    </div>
+</app-element-card>

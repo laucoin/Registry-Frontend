@@ -15,6 +15,7 @@ import {
     InputMovementsPageSearch,
     ResetMovement,
     SearchParticipantsAndGroups,
+    SearchVehicles,
     SelectMovementsPageOrder,
     SelectMovementsPageType,
     SelectMovementsPageVisibility,
@@ -43,6 +44,8 @@ import {
     MovementParticipantsAndGroupsModel,
 } from '../../../../shared/util-model/model/movement-participants-and-groups.model'
 import { ParticipantUtil } from '../../../../shared/util-tool/util/participant.util'
+import { VehicleModel } from '../../../../shared/util-model/model/vehicle.model'
+import { VehicleUtil } from '../../../../shared/util-tool/util/vehicle.util'
 
 const defaultMovement: ElementRequestInformationModel<MovementModel> = {
     element: undefined,
@@ -67,7 +70,8 @@ const defaultMovementState: MovementStateModel = {
     movement: defaultMovement,
     _metadata: {
         types: [],
-        searched: [],
+        searchedParticipantsAndGroups: [],
+        searchedVehicles: [],
     },
 }
 
@@ -150,7 +154,12 @@ export class MovementState extends GenericEventElementState<MovementStateModel> 
 
     @Selector()
     public static searchedParticipantAndGroupMetadata (state: MovementStateModel): SelectItemGroup<ParticipantModel | GroupModel>[] {
-        return state._metadata.searched
+        return state._metadata.searchedParticipantsAndGroups
+    }
+
+    @Selector()
+    public static searchedVehicleMetadata (state: MovementStateModel): SelectItem<VehicleModel>[] {
+        return state._metadata.searchedVehicles
     }
 
     @Selector()
@@ -377,7 +386,34 @@ export class MovementState extends GenericEventElementState<MovementStateModel> 
         ctx.patchState( {
             _metadata: {
                 ...ctx.getState()._metadata,
-                searched: searched,
+                searchedParticipantsAndGroups: searched,
+            },
+        } )
+    }
+
+    @Action( SearchVehicles )
+    public searchVehicles (
+        ctx: StateContext<MovementStateModel>,
+        payload: SearchVehicles,
+    ): Observable<void> {
+        return this.service.searchVehicles( payload.eventId, payload.searched ).pipe(
+            map( (vehicles: VehicleModel[]): void => this.searchVehiclesComplete(
+                ctx,
+                vehicles,
+            ) ),
+        )
+    }
+
+    private searchVehiclesComplete (
+        ctx: StateContext<MovementStateModel>,
+        vehicles: VehicleModel[],
+    ): void {
+        ctx.patchState( {
+            _metadata: {
+                ...ctx.getState()._metadata,
+                searchedVehicles: vehicles.map( (vehicle: VehicleModel): SelectItem<VehicleModel> =>
+                    VehicleUtil.toSelectItem( vehicle ),
+                ),
             },
         } )
     }

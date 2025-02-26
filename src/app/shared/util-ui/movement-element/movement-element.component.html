@@ -24,6 +24,10 @@
                  (click)='layerOpened = true'
                  (keydown.enter)='layerOpened = true'>
                 @switch (true) {
+                    @case (!!driver()) {
+                        <p-tag icon='pi pi-car' [value]="(driver()?.participant?.firstName | titlecase) + ' ' +
+                            (driver()?.participant?.lastName | uppercase)" />
+                    }
                     @case (firstNotPurged && total() === 0) {
                         {{ (firstNotPurged!.firstName | titlecase) + " " + (firstNotPurged!.lastName | uppercase) }}
                     }
@@ -83,8 +87,13 @@
                         optionLabel='name'>
                     <ng-template #item let-content>
                         <div class='d-flex align-items-center'>
-                            <p-avatar icon='pi pi-user' class='me-2' shape='circle' />
-                            <div>{{ (content.participant.firstName | titlecase) + ' ' + (content.participant.lastName | uppercase) }}</div>
+                            <p-avatar [icon]='content.vehicle ? "pi pi-car" : "pi pi-user"' class='me-2' shape='circle' />
+                            <div>
+                                {{ (content.participant.firstName | titlecase) + ' ' + (content.participant.lastName | uppercase) }}
+                                @if (content.vehicle) {
+                                    <p-tag [value]='VehicleUtil.toSelectItem(content.vehicle).label' class='ms-2' />
+                                }
+                            </div>
                         </div>
                     </ng-template>
                 </p-listbox>
@@ -97,8 +106,13 @@
                             optionLabel='name'>
                         <ng-template #item let-adult>
                             <div class='d-flex align-items-center'>
-                                <p-avatar icon='pi pi-user' class='me-2' shape='circle' />
-                                <div>{{ (adult.participant.firstName | titlecase) + ' ' + (adult.participant.lastName | uppercase) }}</div>
+                                <p-avatar [icon]='adult.vehicle ? "pi pi-car" : "pi pi-user"' class='me-2' shape='circle' />
+                                <div>
+                                    {{ (adult.participant.firstName | titlecase) + ' ' + (adult.participant.lastName | uppercase) }}
+                                    @if (adult.vehicle) {
+                                        <p-tag [value]='VehicleUtil.toSelectItem(adult.vehicle).label' class='ms-2' />
+                                    }
+                                </div>
                             </div>
                         </ng-template>
                     </p-listbox>
@@ -125,10 +139,13 @@
                             [options]='pool.value'
                             [readonly]='true'
                             optionLabel='name'>
-                        <ng-template #item let-child>
+                        <ng-template #item let-content>
                             <div class='d-flex align-items-center'>
-                                <p-avatar icon='pi pi-user' class='me-2' shape='circle' />
-                                <div>{{ (child.participant.firstName | titlecase) + ' ' + (child.participant.lastName | uppercase) }}</div>
+                                <p-avatar [icon]='content.vehicle ? "pi pi-car" : "pi pi-user"' class='me-2' shape='circle' />
+                                <div>{{ (content.participant.firstName | titlecase) + ' ' + (content.participant.lastName | uppercase) }}</div>
+                                @if (content.vehicle) {
+                                    <p-tag [value]='VehicleUtil.toSelectItem(content.vehicle).label' class='ms-2' />
+                                }
                             </div>
                         </ng-template>
                     </p-listbox>

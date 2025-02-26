@@ -1,6 +1,8 @@
 @if (participant()) {
     <div class='mb-2'>
-        <app-participant-element [element]='participant()!' [layout]='(isTinyScreen() || isMobile()) ? "grid" : "list"' />
+        <app-participant-element [element]='participant()!' [showActionMenu]='false' [layout]='(isTinyScreen() || isMobile()) ?
+        "grid" :
+                                                                                                                         "list"' />
     </div>
 }
 

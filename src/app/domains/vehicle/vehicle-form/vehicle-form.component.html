@@ -1,0 +1,94 @@
+<app-form [form]='form' [loading]='(loading$ | async) ?? false'>
+    @if (showTitle) {
+        @if (vehicle()) {
+            <h2>{{
+                    'vehicle.form.title.edit' | translate: {
+                        registration: vehicle()?.registration,
+                        brand: vehicle()?.brand,
+                        model: vehicle()?.model,
+                    }
+                }}
+            </h2>
+        } @else {
+            <h2>{{ 'vehicle.form.title.create' | translate }}</h2>
+        }
+    }
+    <p-card>
+        <div class='field'>
+            <label for='registration' appRequired>{{ 'vehicle.form.registration' | translate }}</label>
+            <p-inputmask mask='aa-999-aa'
+                         styleClass='full-w'
+                         [formControl]='registration'
+                         [placeholder]='"vehicle.example.registration" | translate'
+                         (keydown.enter)='submit()'
+                         id='registration' />
+            <app-form-field-error [control]='registration'
+                                  translationPrefix='vehicle.form.error.registration' />
+        </div>
+        <div class='field'>
+            <label for='brand' appRequired>{{ 'vehicle.form.brand' | translate }}</label>
+            <input [formControl]='brand'
+                   [placeholder]='"vehicle.example.brand" | translate'
+                   (keydown.enter)='submit()'
+                   id='brand'
+                   pInputText
+                   type='text' />
+            <app-form-field-error [control]='brand'
+                                  translationPrefix='vehicle.form.error.brand' />
+        </div>
+        <div class='field'>
+            <label for='model' appRequired>{{ 'vehicle.form.model' | translate }}</label>
+            <input [formControl]='model'
+                   [placeholder]='"vehicle.example.model" | translate'
+                   (keydown.enter)='submit()'
+                   id='model'
+                   pInputText
+                   type='text' />
+            <app-form-field-error [control]='model'
+                                  translationPrefix='vehicle.form.error.model' />
+        </div>
+        <div class='field'>
+            <label for='presence'>{{ 'vehicle.form.presence' | translate }}</label>
+            <p-date-picker [formControl]='presence'
+                           [showButtonBar]='true'
+                           [placeholder]='"vehicle.example.presence" | translate: {
+                                    begin: startDateExample() | date: ("datetime.format.date" | translate),
+                                    end: endDateExample() | date: ("datetime.format.date" | translate)
+                                }'
+                           [readonlyInput]='true'
+                           [showTime]='true'
+                           [touchUI]='isMobile()'
+                           (keydown.enter)='submit()'
+                           id='presence'
+                           selectionMode='range'
+                           fluid />
+            <app-form-field-error [control]='presence'
+                                  translationPrefix='vehicle.form.error.presence' />
+        </div>
+    </p-card>
+    <div class='d-flex mt-2 justify-content-center'>
+        <p-button
+                (click)='navigateToRedirectUri()'
+                [label]='"cancel" | translate'
+                [outlined]='true'
+                [rounded]='true' />
+
+        @if (vehicle()) {
+            <p-button
+                    class='ms-2'
+                    (click)='submit()'
+                    [label]='"edit" | translate'
+                    [rounded]='true'
+                    icon='pi pi-pen-to-square'
+                    severity='success' />
+        } @else {
+            <p-button
+                    class='ms-2'
+                    (click)='submit()'
+                    [label]='"create" | translate'
+                    [rounded]='true'
+                    icon='pi pi-plus'
+                    severity='success' />
+        }
+    </div>
+</app-form>

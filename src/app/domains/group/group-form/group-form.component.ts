@@ -1,4 +1,4 @@
-import { Component, signal, WritableSignal } from '@angular/core'
+import { Component, Signal, signal, WritableSignal } from '@angular/core'
 import { GenericFormComponent } from '../../../shared/util-tool/component/generic-form.component'
 import { AppRouteEnum } from '../../../app-route.enum'
 import { GroupModel } from '../../../shared/util-model/model/group.model'
@@ -28,6 +28,7 @@ import { ParticipantUtil } from '../../../shared/util-tool/util/participant.util
 import { SelectItem } from 'primeng/api'
 import { StringUtils } from '../../../shared/util-tool/util/string.util'
 import { EventModel } from '../../../shared/util-model/model/event.model'
+import { DateUtil } from '../../../shared/util-tool/util/date.util'
 
 @Component( {
     selector: 'app-group-form',
@@ -52,6 +53,9 @@ import { EventModel } from '../../../shared/util-model/model/event.model'
 export class GroupFormComponent extends GenericFormComponent {
     protected readonly participantsSuggestion$: Observable<SelectItem<ParticipantModel>[]>
     protected readonly group: WritableSignal<GroupModel | undefined> = signal( undefined )
+
+    protected readonly startDateExample: Signal<Date> = signal( DateUtil.startDateExample )
+    protected readonly endDateExample: Signal<Date> = signal( DateUtil.endDateExample )
 
     public constructor (
         protected readonly facade: GroupFacade,
@@ -160,23 +164,6 @@ export class GroupFormComponent extends GenericFormComponent {
 
     private buildContent (): string[] {
         return (this.participants.value ?? []).map( (item: SelectItem<ParticipantModel>): string => item.value.id )
-    }
-
-    protected get exampleBeginDate (): Date {
-        const now: Date = new Date()
-
-        if (now.getMonth() > 6) {
-            now.setFullYear( now.getFullYear() + 1 )
-        }
-
-        now.setMonth( 6, 20 )
-        return now
-    }
-
-    protected get exampleEndDate (): Date {
-        const now: Date = this.exampleBeginDate
-        now.setMonth( 7, 2 )
-        return now
     }
 
     protected handleSearch (searched: string | undefined): void {

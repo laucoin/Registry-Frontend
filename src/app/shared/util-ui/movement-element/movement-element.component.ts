@@ -19,6 +19,7 @@ import { ListboxModule } from 'primeng/listbox'
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs'
 import { Avatar } from 'primeng/avatar'
 import { AppRouteEnum } from '../../../app-route.enum'
+import { VehicleUtil } from '../../util-tool/util/vehicle.util'
 
 @Component( {
     selector: 'app-movement-element',
@@ -46,6 +47,9 @@ import { AppRouteEnum } from '../../../app-route.enum'
 } )
 export class MovementElementComponent extends GenericElementComponent<MovementModel, MovementActionEnum> implements OnChanges {
     @Input() public showActionMenu: boolean = true
+    @Input() public vehicleId?: string
+
+    protected readonly VehicleUtil: typeof VehicleUtil = VehicleUtil
 
     protected layerOpened: boolean = false
     protected activeTab: number = 1
@@ -54,6 +58,7 @@ export class MovementElementComponent extends GenericElementComponent<MovementMo
     protected adults: WritableSignal<MovementContentModel[]> = signal( [] )
     protected children: WritableSignal<MovementContentModel[]> = signal( [] )
     protected pools: WritableSignal<Record<string, MovementContentModel[]>> = signal( {} )
+    protected driver: WritableSignal<MovementContentModel | undefined> = signal( undefined )
 
     public constructor (private readonly facade: MovementFacade) {super()}
 
@@ -63,6 +68,9 @@ export class MovementElementComponent extends GenericElementComponent<MovementMo
         this.adults.set( this.filterContent( true ) )
         this.children.set( this.filterContent( false ) )
         this.pools.set( this.groupByPool() )
+        if (this.vehicleId) {
+            this.driver.set( this.element.content.find( (content: MovementContentModel): boolean => content.vehicle?.id === this.vehicleId ) )
+        }
     }
 
     private filterContent (major: boolean): MovementContentModel[] {

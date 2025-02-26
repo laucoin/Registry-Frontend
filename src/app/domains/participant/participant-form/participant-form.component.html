@@ -83,8 +83,8 @@
             <p-date-picker [formControl]='presence'
                            [showButtonBar]='true'
                            [placeholder]='"participant.example.presence" | translate: {
-                                    begin: exampleBeginDate | date: ("datetime.format.date" | translate),
-                                    end: exampleEndDate | date: ("datetime.format.date" | translate)
+                                    begin: startDateExample() | date: ("datetime.format.date" | translate),
+                                    end: endDateExample() | date: ("datetime.format.date" | translate)
                                 }'
                            [readonlyInput]='true'
                            [showTime]='true'

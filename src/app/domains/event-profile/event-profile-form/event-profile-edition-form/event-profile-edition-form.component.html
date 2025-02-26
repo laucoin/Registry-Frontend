@@ -17,7 +17,7 @@
             <div class='field'>
                 <label for='roles' appRequired>{{ 'profile.form.role' | translate }}</label>
                 <p-select
-                        id='roles'
+                        inputId='roles'
                         fluid
                         [options]='(assignableRoles$ | async) ?? []'
                         [formControl]='role'
@@ -33,6 +33,10 @@
                                [showButtonBar]='true'
                                [readonlyInput]='true'
                                [showTime]='true'
+                               [placeholder]='"profile.example.presence" | translate: {
+                                    begin: startDateExample() | date: ("datetime.format.date" | translate),
+                                    end: endDateExample() | date: ("datetime.format.date" | translate)
+                                }'
                                [touchUI]='isMobile()'
                                (keydown.enter)='submit()'
                                id='profiles-range'

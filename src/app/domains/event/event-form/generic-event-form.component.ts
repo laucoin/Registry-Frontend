@@ -1,4 +1,4 @@
-import { Component } from '@angular/core'
+import { Component, signal, Signal } from '@angular/core'
 import { GenericFormComponent } from '../../../shared/util-tool/component/generic-form.component'
 import { EventFacade } from '../data/state/event.facade'
 import { AppRouteEnum } from '../../../app-route.enum'
@@ -8,12 +8,16 @@ import { AppConfig } from '../../../app.config'
 import { EventOptionModel } from '../data/model/event-option.model'
 import { Observable } from 'rxjs'
 import { FormUtil } from '../../../shared/util-tool/util/form.util'
+import { DateUtil } from '../../../shared/util-tool/util/date.util'
 
 @Component( {
     template: '',
 } )
 export abstract class GenericEventFormComponent extends GenericFormComponent {
     protected readonly optionsForm: FormGroup = this.formBuilder.group( {} )
+
+    protected readonly startDateExample: Signal<Date> = signal( DateUtil.startDateExample )
+    protected readonly endDateExample: Signal<Date> = signal( DateUtil.endDateExample )
 
     protected eventOptions$: Observable<EventOptionModel[]>
 
@@ -63,23 +67,6 @@ export abstract class GenericEventFormComponent extends GenericFormComponent {
         return Object.keys( this.optionsForm.controls )
                      .filter( (key: string): boolean => this.getOptionControl( key as string ).value )
                      .map( (key: string): string => key as string )
-    }
-
-    protected get exampleBeginDate (): Date {
-        const now: Date = new Date()
-
-        if (now.getMonth() > 6) {
-            now.setFullYear( now.getFullYear() + 1 )
-        }
-
-        now.setMonth( 6, 20 )
-        return now
-    }
-
-    protected get exampleEndDate (): Date {
-        const now: Date = this.exampleBeginDate
-        now.setMonth( 7, 2 )
-        return now
     }
 
     protected optionIcon (option: string): string {

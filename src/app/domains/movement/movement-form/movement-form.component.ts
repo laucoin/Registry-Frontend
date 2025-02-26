@@ -1,7 +1,7 @@
 import { Component, OnInit, signal, WritableSignal } from '@angular/core'
 import { GenericFormComponent } from '../../../shared/util-tool/component/generic-form.component'
 import { AppRouteEnum } from '../../../app-route.enum'
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
+import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Params } from '@angular/router'
 import { GenericUtil } from '../../../shared/util-tool/util/generic.util'
 import { FormUtil } from '../../../shared/util-tool/util/form.util'
@@ -30,6 +30,10 @@ import { MovementContentModel } from '../../../shared/util-model/movement-conten
 import { StringUtils } from '../../../shared/util-tool/util/string.util'
 import { EventModel } from '../../../shared/util-model/model/event.model'
 import { CustomValidators } from '../../../shared/util-tool/util/custom-validator'
+import { VehicleModel } from '../../../shared/util-model/model/vehicle.model'
+import { EventUtil } from '../../../shared/util-tool/util/event.util'
+import { MovementVehicleFieldComponent } from '../movement-vehicle-field/movement-vehicle-field.component'
+import { ParticipantUtil } from '../../../shared/util-tool/util/participant.util'
 
 @Component( {
     selector: 'app-movement-form',
@@ -51,7 +55,7 @@ import { CustomValidators } from '../../../shared/util-tool/util/custom-validato
         MovementContentFieldComponent,
         TranslatePipe,
         DatePipe,
-
+        MovementVehicleFieldComponent,
     ],
     templateUrl: './movement-form.component.html',
 } )
@@ -60,8 +64,10 @@ export class MovementFormComponent extends GenericFormComponent implements OnIni
     protected readonly movementTypes$: Observable<SelectItem<string>[]>
 
     protected contentSuggestions$: Observable<SelectItemGroup<ParticipantModel | GroupModel>[]> = of( [] )
+    protected vehicleSuggestions$: Observable<SelectItem<VehicleModel>[]> = of( [] )
 
     protected readonly movement: WritableSignal<MovementModel | undefined> = signal( undefined )
+    protected readonly drivers: WritableSignal<SelectItem<ParticipantModel>[]> = signal( [] )
 
     public constructor (
         protected readonly facade: MovementFacade,
@@ -78,8 +84,10 @@ export class MovementFormComponent extends GenericFormComponent implements OnIni
         this.handleContextEvent()
         this.handleIdParam()
         this.handleLoadedMovement()
+        this.handleContentChange()
 
         this.contentSuggestions$ = this.facade.searchedParticipantAndGroupMetadata
+        this.vehicleSuggestions$ = this.facade.searchedVehicleMetadata
     }
 
     public ngOnInit (): void {
@@ -91,6 +99,7 @@ export class MovementFormComponent extends GenericFormComponent implements OnIni
             dateTime: this.formBuilder.control( new Date(), [ Validators.required ] ),
             type: this.formBuilder.control( undefined, [ Validators.required ] ),
             content: this.formBuilder.control( [], [ Validators.required ] ),
+            vehiclesWithDrivers: this.formBuilder.array( [], [] ),
         } )
     }
 
@@ -145,7 +154,26 @@ export class MovementFormComponent extends GenericFormComponent implements OnIni
                 this.dateTime.setValue( new Date( movement?.dateTime ) )
                 this.type.setValue( movement.type.value )
                 this.content.setValue( this.buildContentFromLoadedMovement() )
+                this.buildVehiclesFromLoadedMovement()
                 FormUtil.markAllControlsAsDirty( this.form )
+            } ),
+        )
+    }
+
+    private handleContentChange (): void {
+        this.subscriptions.add(
+            this.content.valueChanges.subscribe( (content: (GroupModel | ParticipantModel)[]): void => {
+                const drivers: SelectItem<ParticipantModel>[] = []
+                content.forEach( (item: GroupModel | ParticipantModel): void => {
+                    if (this.isGroup( item )) {
+                        (item as GroupModel).members.forEach( (member: ParticipantModel): void => {
+                            drivers.push( ParticipantUtil.toSelectItem( member as ParticipantModel ) )
+                        } )
+                    } else {
+                        drivers.push( ParticipantUtil.toSelectItem( item as ParticipantModel ) )
+                    }
+                } )
+                this.drivers.set( drivers )
             } ),
         )
     }
@@ -173,6 +201,20 @@ export class MovementFormComponent extends GenericFormComponent implements OnIni
         return [ ...participants, ...groups ]
     }
 
+    private buildVehiclesFromLoadedMovement (): void {
+        this.vehiclesWithDrivers.clear()
+        this.movement()?.content
+            .filter( (content: MovementContentModel): boolean => !!content.vehicle )
+            .forEach( (content: MovementContentModel): void => {
+                this.vehiclesWithDrivers.push(
+                    this.formBuilder.group( {
+                        vehicle: this.formBuilder.control( content.vehicle!, [ Validators.required ] ),
+                        driver: this.formBuilder.control( content.participant!, [ Validators.required ] ),
+                    } ),
+                )
+            } )
+    }
+
     protected next (): void {
         const movement: MovementDto = {
             dateTime: this.dateTime.value,
@@ -182,9 +224,9 @@ export class MovementFormComponent extends GenericFormComponent implements OnIni
 
         this.subscriptions.add(
             (
-                this.movement() ?
-                this.facade.updateMovement( this.movement()!.id, movement, this.contextEventId() )
-                                : this.facade.createMovement( movement, this.contextEventId() )
+                this.movement()
+                ? this.facade.updateMovement( this.movement()!.id, movement, this.contextEventId() )
+                : this.facade.createMovement( movement, this.contextEventId() )
             ).subscribe( (): void => this.navigateToRedirectUri() ),
         )
     }
@@ -198,22 +240,43 @@ export class MovementFormComponent extends GenericFormComponent implements OnIni
                     content.push( {
                         poolName: (item as GroupModel).name,
                         participantId: member.id,
+                        vehicleId: this.getVehicleFromDriver( member )?.id,
                     } )
                 } )
             } else {
-                content.push( { participantId: item.id } )
+                content.push( {
+                    participantId: item.id,
+                    vehicleId: this.getVehicleFromDriver( item as ParticipantModel )?.id,
+                } )
             }
         } )
 
         return content
     }
 
+    private getVehicleFromDriver (driver: ParticipantModel): VehicleModel | undefined {
+        const group: FormGroup | undefined = this.vehiclesWithDrivers.value
+                                                 .find( (formGroup: FormGroup): boolean => Object.values( formGroup )[1].id === driver.id )
+        return group ? Object.values( group )[0] : undefined
+    }
+
+    protected hasVehicleOption (event: EventModel | undefined): boolean {
+        return EventUtil.hasOption( event, 'VEHICLE' )
+    }
+
     private isGroup (element: ParticipantModel | GroupModel): boolean {
         return 'name' in element
     }
 
-    protected handleSearch (searched: string | undefined): void {
+    protected handleParticipantsAndGroupsSearch (searched: string | undefined): void {
         this.facade.searchParticipantsAndGroups(
+            searched,
+            this.contextEventId(),
+        )
+    }
+
+    protected handleVehiclesSearch (searched: string | undefined): void {
+        this.facade.searchVehicles(
             searched,
             this.contextEventId(),
         )
@@ -229,5 +292,9 @@ export class MovementFormComponent extends GenericFormComponent implements OnIni
 
     protected get content (): FormControl {
         return this.form.get( 'content' ) as FormControl
+    }
+
+    protected get vehiclesWithDrivers (): FormArray {
+        return this.form.get( 'vehiclesWithDrivers' ) as FormArray
     }
 }

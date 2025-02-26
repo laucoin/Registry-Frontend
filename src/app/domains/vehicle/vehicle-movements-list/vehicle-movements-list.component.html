@@ -1,0 +1,83 @@
+@if (vehicle()) {
+    <div class='mb-2'>
+        <app-vehicle-element [element]='vehicle()!'
+                             [showActionMenu]='false'
+                             [layout]='(isTinyScreen() || isMobile()) ? "grid" : "list"' />
+    </div>
+}
+
+<app-list (updateRequired)='loadPage($event, contextEventId())'
+          [elementPage$]='elementPage$!'
+          [error$]='error$'
+          [loading$]='loading$'>
+    <ng-template appTemplate='search' [formGroup]='form' let-pageEvent>
+        <div class='field'>
+            <label for='search'>{{ 'filter-sort.search' | translate }}</label>
+            <input id='search'
+                   type='text'
+                   pInputText
+                   (keydown.enter)='loadPage(pageEvent, contextEventId())'
+                   [formControl]='searched' />
+        </div>
+        <div class='row'>
+            <div class='col-12 col-sm-6 col-md-12 col-lg-6 search-field'>
+                <label for='type'>{{ 'movement.type.filter-sort' | translate }}</label>
+                <p-select
+                        id='type'
+                        fluid
+                        [options]='(movementTypes$ | async) ?? []'
+                        (keydown.enter)='loadPage(pageEvent, contextEventId())'
+                        [formControl]='type'
+                        optionLabel='label'
+                        optionValue='value' />
+            </div>
+            <div class='col-12 col-sm-6 col-md-12 col-lg-6 search-field'>
+                <label for='range'>{{ 'filter-sort.date-range' | translate }}</label>
+                <p-date-picker [formControl]='range'
+                               [showButtonBar]='true'
+                               [readonlyInput]='true'
+                               [showTime]='true'
+                               [touchUI]='isMobile()'
+                               id='range'
+                               inputId='range'
+                               selectionMode='range'
+                               fluid />
+            </div>
+        </div>
+        <div class='d-flex flex-wrap justify-content-center pt-2'>
+            <div class='pe-1 flex-grow-1'>
+                <p-toggleButton
+                        [formControl]='onlyVisible'
+                        (keydown.enter)='loadPage(pageEvent, contextEventId())'
+                        [onLabel]='"filter-sort.only-visible.false" | translate'
+                        [offLabel]='"filter-sort.only-visible.true" | translate'
+                        onIcon='pi pi-eye-slash'
+                        offIcon='pi pi-eye'
+                        [ariaLabel]='"filter-sort.only-visible.title" | translate' />
+                <p-toggleButton
+                        class='ms-2'
+                        [formControl]='order'
+                        (keydown.enter)='loadPage(pageEvent, contextEventId())'
+                        [onLabel]='"filter-sort.order.ASC" | translate'
+                        [offLabel]='"filter-sort.order.DESC" | translate'
+                        onIcon='pi pi-sort-alpha-down-alt'
+                        offIcon='pi pi-sort-alpha-down'
+                        [ariaLabel]='"filter-sort.order.title" | translate' />
+            </div>
+            <div class='ps-1'>
+                <p-button (click)='loadPage(pageEvent, contextEventId())'
+                          [label]='"filter-sort.apply" | translate'
+                          [outlined]='true'
+                          [rounded]='true'
+                          icon='pi pi-search'
+                          [loading]='(loading$ | async) || (silentLoading$ | async)' />
+            </div>
+        </div>
+    </ng-template>
+    <ng-template appTemplate='element' let-layout='layout' let-movement>
+        <app-movement-element [element]='movement' [layout]='layout' [vehicleId]='vehicle()?.id' />
+    </ng-template>
+    <ng-template appTemplate='empty'>
+        <app-message [message]='message' />
+    </ng-template>
+</app-list>
