@@ -1,5 +1,5 @@
 {
-    "primeng": {
+    "prime-ng": {
         "startsWith": "Commence par",
         "contains": "Contient",
         "notContains": "Ne contient pas",
@@ -172,413 +172,275 @@
             "rotateLeft": "Tourner à gauche"
         }
     },
-    "legal": {
-        "information": {
-            "name": "Informations",
-            "about": "À propos de Registry",
-            "summary": "Bienvenue sur Registry ! Un outil de gestion d'évènements. Il permet notamment la tenue de registres de présences.",
-            "who": {
-                "title": "Qui sommes-nous ?",
-                "content": "Registry a débuté sur un camp des Scouts et Guides de France en août 2019. Il a été créé par Luc AUCOIN avec l'aide d'Alexandre D'HONT et Louis VICAINNE (Ils ont du mérite car je les ai bien saoulé avec mes idées.)."
-            }
-        },
-        "terms-of-use": {
-            "name": "Conditions générales d'utilisation",
-            "summary": "Bienvenue sur Registry ({{url}}), une plateforme de type SaaS exploitée par Luc AUCOIN. En utilisant le Site et ses services, vous acceptez les Conditions d’utilisation suivantes. Si vous n’êtes pas d’accord avec ces conditions, vous ne devez pas utiliser le Site.",
-            "conclusion": "En utilisant le Site, vous reconnaissez avoir lu et compris ces Conditions d’utilisation, et vous acceptez de les respecter.",
-            "service": {
-                "title": "1. Objet du service",
-                "content": "Le Site fournit une plateforme permettant aux utilisateurs de saisir, gérer et traiter des données. Les utilisateurs sont entièrement responsables des données qu’ils saisissent, notamment concernant les obligations légales relatives au consentement des personnes concernées. Cela en vertu du Règlement Général sur la Protection des Données (RGPD)."
+    "global": {
+        "legal": {
+            "information": {
+                "name": "Informations",
+                "about": "À propos de Registry",
+                "summary": "Bienvenue sur Registry ! Un outil de gestion d'évènements. Il permet notamment la tenue de registres de présences.",
+                "who": {
+                    "title": "Qui sommes-nous ?",
+                    "content": "Registry a débuté sur un camp des Scouts et Guides de France en août 2019. Il a été créé par Luc AUCOIN avec l'aide d'Alexandre D'HONT et Louis VICAINNE (Ils ont du mérite car je les ai bien saoulé avec mes idées.)."
+                }
             },
-            "liability": {
-                "title": "2. Responsabilité des utilisateurs",
-                "subtitle1": "2.1 Respect de la législation RGPD",
-                "content1": "Les utilisateurs garantissent qu’ils collectent, traitent et saisissent les données des personnes conformément aux dispositions du RGPD. En particulier, ils s’engagent à :<ul><li>Obtenir le consentement explicite des personnes concernées avant toute collecte de données ;</li><li>Fournir aux personnes concernées les informations nécessaires sur l’usage de leurs données ;</li><li>Respecter les droits des personnes (droit d’accès, de rectification, d’effacement, etc.).</li></ul>",
-                "subtitle2": "2.2 Exactitude et sécurité des données",
-                "content2": "Les utilisateurs s’engagent à :<ul><li>Fournir des informations exactes, complètes et à jour ;</li><li>Protéger les données saisies contre tout accès non autorisé.</li></ul>",
-                "subtitle3": "2.3 Contenu interdit",
-                "content3": "Les utilisateurs s’engagent à ne pas saisir de contenus illicites, incorrects ou contraires à la loi dans le cadre de l’utilisation du Site. Cela inclut, sans s’y limiter :<ul><li>Les propos injurieux, diffamatoires ou haineux ;</li><li>Les contenus discriminatoires ou incitant à la violence ;</li><li>Toute donnée violant les droits des tiers ou enfreignant les lois en vigueur.</li></ul>Luc AUCOIN se réserve le droit de supprimer tout contenu non conforme ou de suspendre l’accès au Site en cas de non-respect de ces règles."
-            },
-            "data-usage": {
-                "title": "3. Utilisation des données",
-                "content": "Les données saisies dans l’application peuvent être utilisées dans les conditions suivantes :<ul><li><b>Monitoring</b> : Pour surveiller les performances et la stabilité de l’application.</li><li><b>Débogage</b> : Pour identifier et corriger les anomalies.</li><li><b>Amélioration des services</b> : Pour optimiser les fonctionnalités et l’expérience utilisateur.</li><li><b>Analyse et Enquête</b> : L'utilisateur qui créé ou modifie une donnée est affiché avec celle-ci et pourra être consulté dans ce cadre.</li></ul>Ces données ne seront jamais volontairement utilisées à des fins commerciales ou partagées avec des tiers à des fins de marketing."
-            },
-            "intellectual-ownership": {
-                "title": "4. Propriété intellectuelle",
-                "content": "Tout le contenu du Site, y compris mais sans s’y limiter, le code source, les textes, les graphiques, les logos et les images, est protégé par le droit d’auteur et est la propriété exclusive de Luc AUCOIN. Cependant, si le Site est utilisé dans un contexte de marque blanche, les droits liés à l’apparence personnalisée et aux éléments de marque blanche appartiennent au client qui en fait usage, tandis que la propriété intellectuelle sur la technologie sous-jacente et les fonctionnalités demeure celle de Luc AUCOIN. Toute reproduction, modification, distribution ou exploitation non autorisée de ce contenu est strictement interdite."
-            },
-            "liability-limitation": {
-                "title": "5. Limitation de responsabilité",
-                "content": "Luc AUCOIN s’efforce de garantir le bon fonctionnement du Site, mais ne peut être tenu responsable des dommages directs ou indirects résultant de l’utilisation ou de l’impossibilité d’utiliser le Site, notamment en cas de perte de données, de panne technique ou de violation de la sécurité des données."
-            },
-            "cancellation": {
-                "title": "6. Résiliation",
-                "content": "Luc AUCOIN se réserve le droit de suspendre ou de résilier l’accès au Site en cas de violation des présentes Conditions d’utilisation ou pour toute autre raison jugée nécessaire."
-            },
-            "terms-of-use-modification": {
-                "title": "7. Modifications des conditions d’utilisation",
-                "content": "Ces Conditions d’utilisation peuvent être modifiées à tout moment. Les utilisateurs seront informés des modifications importantes via un avis sur le Site ou par tout autre moyen approprié. La poursuite de l’utilisation du Site après modification vaut acceptation des nouvelles conditions."
-            },
-            "contact": {
-                "title": "8. Contact",
-                "content": "Pour toute question ou demande d’information relative à ces Conditions d’utilisation, veuillez contacter :<ul><li><b>Nom</b> : Luc AUCOIN</li><li><b>Email</b> : luc.aucoin1998@gmail.com</li></ul>"
-            }
-        }
-    },
-    "info": {
-        "title": {
-            "missing-selected-profile": "🔍 Aucun profil sélectionné"
-        },
-        "message": {
-            "default-range": "Si tu laisses le champ vide, par défaut se sera borné aux dates de l'événement",
-            "email-copied": "L'adresse email de {{element.firstName}} {{element.lastName}} copiée.",
-            "missing-selected-profile": "Pour profiter de la page d'accueil, il faut avoir un profil sélectionné. Donc \"Pas de profil, pas de page d'accueil 😝\"."
-        }
-    },
-    "error": {
-        "title": {
-            "503": "🥴 Serveur indisponible"
-        },
-        "message": {
-            "503": "Ça sent le roussi, le serveur est indisponible. Réessaies plus tard. Si le problème persiste contactes l'administrateur."
-        }
-    },
-    "warning": {
-        "title": {
-            "OFFLINE": "⏳ Connexion Perdue",
-            "NO_SELECTED_PROFILE": "🔍 Aucun Profil Sélectionné",
-            "EMPTY": "🕵️‍♂️ Aucune Donnée",
-            "EMPTY_EVENT_PROFILE": "🕵️‍♂️ Aucun Profil",
-            "EMPTY_USER_EVENT_PROFILE": "🕵️‍♂️ Aucun Profil",
-            "EMPTY_USER_EVENT_INVITATION": "🕵️‍♂️ Aucune Invitation",
-            "event-profile": {
-                "create": "+ Profiles partiellements créés"
-            },
-            "group": {
-                "add-members": "+ Membres partiellements ajoutés"
-            },
-            "duplicated-selection": {
-                "normal": "🤥 Élément déjà sélectionné",
-                "vehicle": "🤥 Véhicule déjà sélectionné",
-                "group": "🤥 Groupe déjà sélectionné",
-                "participant": {
-                    "singular": "🤥 Personne déjà sélectionnée",
-                    "plural": "🤥 Personnes déjà sélectionnées"
+            "terms-of-use": {
+                "name": "Conditions générales d'utilisation",
+                "summary": "Bienvenue sur Registry ({{url}}), une plateforme de type SaaS exploitée par Luc AUCOIN. En utilisant le Site et ses services, vous acceptez les Conditions d’utilisation suivantes. Si vous n’êtes pas d’accord avec ces conditions, vous ne devez pas utiliser le Site.",
+                "conclusion": "En utilisant le Site, vous reconnaissez avoir lu et compris ces Conditions d’utilisation, et vous acceptez de les respecter.",
+                "service": {
+                    "title": "1. Objet du service",
+                    "content": "Le Site fournit une plateforme permettant aux utilisateurs de saisir, gérer et traiter des données. Les utilisateurs sont entièrement responsables des données qu’ils saisissent, notamment concernant les obligations légales relatives au consentement des personnes concernées. Cela en vertu du Règlement Général sur la Protection des Données (RGPD)."
+                },
+                "liability": {
+                    "title": "2. Responsabilité des utilisateurs",
+                    "subtitle1": "2.1 Respect de la législation RGPD",
+                    "content1": "Les utilisateurs garantissent qu’ils collectent, traitent et saisissent les données des personnes conformément aux dispositions du RGPD. En particulier, ils s’engagent à :<ul><li>Obtenir le consentement explicite des personnes concernées avant toute collecte de données ;</li><li>Fournir aux personnes concernées les informations nécessaires sur l’usage de leurs données ;</li><li>Respecter les droits des personnes (droit d’accès, de rectification, d’effacement, etc.).</li></ul>",
+                    "subtitle2": "2.2 Exactitude et sécurité des données",
+                    "content2": "Les utilisateurs s’engagent à :<ul><li>Fournir des informations exactes, complètes et à jour ;</li><li>Protéger les données saisies contre tout accès non autorisé.</li></ul>",
+                    "subtitle3": "2.3 Contenu interdit",
+                    "content3": "Les utilisateurs s’engagent à ne pas saisir de contenus illicites, incorrects ou contraires à la loi dans le cadre de l’utilisation du Site. Cela inclut, sans s’y pageSizeer :<ul><li>Les propos injurieux, diffamatoires ou haineux ;</li><li>Les contenus discriminatoires ou incitant à la violence ;</li><li>Toute donnée violant les droits des tiers ou enfreignant les lois en vigueur.</li></ul>Luc AUCOIN se réserve le droit de supprimer tout contenu non conforme ou de suspendre l’accès au Site en cas de non-respect de ces règles."
+                },
+                "data-usage": {
+                    "title": "3. Utilisation des données",
+                    "content": "Les données saisies dans l’application peuvent être utilisées dans les conditions suivantes :<ul><li><b>Monitoring</b> : Pour surveiller les performances et la stabilité de l’application.</li><li><b>Débogage</b> : Pour identifier et corriger les anomalies.</li><li><b>Amélioration des services</b> : Pour optimiser les fonctionnalités et l’expérience utilisateur.</li><li><b>Analyse et Enquête</b> : L'utilisateur qui créé ou modifie une donnée est affiché avec celle-ci et pourra être consulté dans ce cadre.</li></ul>Ces données ne seront jamais volontairement utilisées à des fins commerciales ou partagées avec des tiers à des fins de marketing."
+                },
+                "intellectual-ownership": {
+                    "title": "4. Propriété intellectuelle",
+                    "content": "Tout le contenu du Site, y compris mais sans s’y pageSizeer, le code source, les textes, les graphiques, les logos et les images, est protégé par le droit d’auteur et est la propriété exclusive de Luc AUCOIN. Cependant, si le Site est utilisé dans un contexte de marque blanche, les droits liés à l’apparence personnalisée et aux éléments de marque blanche appartiennent au client qui en fait usage, tandis que la propriété intellectuelle sur la technologie sous-jacente et les fonctionnalités demeure celle de Luc AUCOIN. Toute reproduction, modification, distribution ou exploitation non autorisée de ce contenu est strictement interdite."
+                },
+                "liability-pageSizeation": {
+                    "title": "5. pageSizeation de responsabilité",
+                    "content": "Luc AUCOIN s’efforce de garantir le bon fonctionnement du Site, mais ne peut être tenu responsable des dommages directs ou indirects résultant de l’utilisation ou de l’impossibilité d’utiliser le Site, notamment en cas de perte de données, de panne technique ou de violation de la sécurité des données."
+                },
+                "cancellation": {
+                    "title": "6. Résiliation",
+                    "content": "Luc AUCOIN se réserve le droit de suspendre ou de résilier l’accès au Site en cas de violation des présentes Conditions d’utilisation ou pour toute autre raison jugée nécessaire."
+                },
+                "terms-of-use-modification": {
+                    "title": "7. Modifications des conditions d’utilisation",
+                    "content": "Ces Conditions d’utilisation peuvent être modifiées à tout moment. Les utilisateurs seront informés des modifications importantes via un avis sur le Site ou par tout autre moyen approprié. La poursuite de l’utilisation du Site après modification vaut acceptation des nouvelles conditions."
+                },
+                "contact": {
+                    "title": "8. Contact",
+                    "content": "Pour toute question ou demande d’information relative à ces Conditions d’utilisation, veuillez contacter :<ul><li><b>Nom</b> : Luc AUCOIN</li><li><b>Email</b> : luc.aucoin1998@gmail.com</li></ul>"
                 }
             }
         },
-        "message": {
-            "OFFLINE": "Vérifies ta connexion internet. Si tu es utilise le Wi-Fi, essaies de te rapprocher de la box. Si tu es en 4G, essaies de te rapprocher d'une fenêtre. Si tu es en 3G, essaies de te rapprocher d'un autre siècle.",
-            "NO_SELECTED_PROFILE": "Sélectionnes un profil lié à un évènement pour effectuer cette action.",
-            "EMPTY": "Aucune donnée n'a été trouvée.",
-            "EMPTY_EVENT_PROFILE": "Aucun profil pour ta recherche 🥺. Tu peux inviter des personnes à rejoindre l'évènement.",
-            "EMPTY_USER_EVENT_PROFILE": "Aucun profil actif 🥺. Tu peux créer un nouvel évènement. Si tu cherches à accéder à un évènement précis tu peux vérifier si tu as une invitation en attente d'acceptation.",
-            "EMPTY_USER_EVENT_INVITATION": "Aucune invitation en attente d'acceptation. Pour recevoir une invitation, il faut que les personnes en charge de l'évènement t'en envoient une.",
-            "invalid-form": "🙅‍♂️ Le formulaire n'est pas valide.",
-            "invalid-action": "🙅‍♂️ L'action choisie n'est pas prise en charge.",
-            "event-profile": {
-                "create": {
-                    "singular": "Un profil a été créé (sur les {{asked}} demandés) pour l'évènement.",
-                    "plural": "{{created}} Profils ont été créés (sur les {{asked}} demandés) pour l'évènement."
-                }
-            },
-            "group": {
-                "add-members": {
-                    "singular": "Un membre a été ajouté (sur les {{asked}} demandés) au groupe.",
-                    "plural": "{{added}} Membres ont été ajoutés (sur les {{asked}} demandés) au groupe."
-                }
-            },
-            "duplicated-selection": {
-                "normal": "L'élément \"{{name}}\" est déjà sélectionné, il n'a donc pas été ajouté une deuxième fois.",
-                "vehicle": "Le véhicle \"{{name}}\" est déjà sélectionné, il n'a donc pas été ajouté une deuxième fois.",
-                "group": "Le groupe \"{{name}}\" est déjà sélectionné, il n'a donc pas été ajouté une deuxième fois.",
-                "participant": {
-                    "singular": "Une personne été déjà sélectionnée soit individuellement soit dans un autre groupe. Le dernier ajout prime.",
-                    "plural": "{{count}} personnes été déjà sélectionnées soit individuellement soit dans un autre groupe. Le dernier ajout prime."
-                }
-            }
-        }
-    },
-    "success": {
-        "title": {
-            "online": "⚡️ Connexion Rétablie",
-            "event": {
-                "create": "+ Évènement créé",
-                "edit": "✏️ Évènement modifié",
-                "disable": "🙈 Évènement masqué",
-                "enable": "👀 Évènement à nouveau visible",
-                "delete": "🗑️ Évènement supprimé"
-            },
-            "event-profile": {
-                "create": {
-                    "normal": {
-                        "singular": "+ Profil créé",
-                        "plural": "+ Profils créés"
-                    },
-                    "support": "+ Profil support créé"
-                },
-                "select": "✅ Profil sélectionné",
-                "manage-acceptance": {
-                    "ACCEPTED": "✅ Invitation acceptée",
-                    "REJECTED": "✅ Invitation refusée"
-                },
-                "edit": "✏️ Profil modifié",
-                "block": "⛔️ Profil bloqué",
-                "unblock": "✅ Profil débloqué",
-                "delete": "🗑️ Profil supprimé"
-            },
-            "movement": {
-                "IN": {
-                    "create": "+ Entrée créée",
-                    "edit": "✏️ Entrée modifiée",
-                    "disable": "🙈 Entrée masquée",
-                    "enable": "👀 Entrée à nouveau visible",
-                    "delete": "🗑️ Entrée supprimée"
-                },
-                "OUT": {
-                    "create": "+ Sortie créée",
-                    "edit": "✏️ Sortie modifiée",
-                    "disable": "🙈 Sortie masquée",
-                    "enable": "👀 Sortie à nouveau visible",
-                    "delete": "🗑️ Sortie supprimée"
-                }
-            },
-            "vehicle": {
-                "create": "+ Véhicule créé",
-                "edit": "✏️ Véhicule modifié",
-                "disable": "🙈 Véhicule masqué",
-                "enable": "👀 Véhicule à nouveau visible",
-                "delete": "🗑️ Véhicule supprimé"
-            },
-            "participant": {
-                "create": "+ Personne participante créée",
-                "edit": "✏️ Personne participante modifiée",
-                "disable": "🙈 Personne participante masquée",
-                "enable": "👀 Personne participante à nouveau visible",
-                "delete": "🗑️ Personne participante supprimée"
-            },
-            "group": {
-                "add-members": {
-                    "singular": "+ Membre ajouté",
-                    "plural": "+ Membres ajoutés"
-                },
-                "remove-member": "- Membre retiré",
-                "create": "+ Groupe de personnes créé",
-                "edit": "✏️ Groupe de personnes modifié",
-                "disable": "🙈 Groupe de personnes masqué",
-                "enable": "👀 Groupe de personnes à nouveau visible",
-                "delete": "🗑️ Groupe de personnes supprimé"
-            },
-            "user": {
-                "edit": "✏️ Personne utilisatrice modifiée",
-                "block": "⛔️ Personne utilisatrice bloquée",
-                "unblock": "✅ Personne utilisatrice débloquée",
-                "impersonate": "✅ Personne utilisatrice anonymisée",
-                "delete": "🗑️ Personne utilisatrice supprimée"
-            }
+        "menu": {
+            "home": "Accueil",
+            "users": "Utilisateurs",
+            "events": "Événements",
+            "event-profiles": "Profiles d'accès",
+            "movements": "Mouvements",
+            "participants": "Participants",
+            "groups": "Groupes",
+            "vehicles": "Véhicules",
+            "activities": "Activités"
         },
-        "message": {
-            "online": "Ta connexion internet est de retour. Tu peux de nouveau utiliser l'application normalement.",
-            "event": {
-                "create": "L'évènement {{name}} a été créé",
-                "edit": "L'évènement {{name}} a été modifié",
-                "disable": "L'évènement {{name}} a été masqué",
-                "enable": "L'évènement {{name}} est à nouveau visible",
-                "delete": "L'évènement {{name}} a été supprimé"
-            },
-            "event-profile": {
-                "create": {
-                    "normal": {
-                        "singular": "Le profil a été créé pour l'évènement.",
-                        "plural": "{{created}} Profils ont été créés pour l'évènement."
-                    },
-                    "support": "Le profil support a été créé pour l'évènement, il est disponible jusqu'à {{end}}."
-                },
-                "manage-acceptance": {
-                    "ACCEPTED": "Tu as accepté l'invitation pour l'évènement, tu peux désormais le sélectionner.",
-                    "REJECTED": "Tu as refusé l'invitation pour l'évènement."
-                },
-                "select": "Toutes les actions que tu fais à partir de maintenant seront liées à l'évènement {{name}} tant qu'il est sélectionné.",
-                "edit": "Le profil de {{firstName}} {{lastName}} pour l'évènement {{name}} a été modifié",
-                "block": "Le profil de {{firstName}} {{lastName}} pour l'évènement {{name}} a été bloqué",
-                "unblock": "Le profil de {{firstName}} {{lastName}} pour l'évènement {{name}} a été débloqué",
-                "delete": {
-                    "someone": "Le profil de {{firstName}} {{lastName}} pour l'évènement {{name}} a été supprimé",
-                    "mine": "Ton profil pour l'évènement {{name}} a été supprimé"
-                }
-            },
-            "movement": {
-                "IN": {
-                    "create": {
-                        "singular": "L'entrée du {{date}} à {{time}} a été créée avec une personne participante",
-                        "plural": "L'entrée du {{date}} à {{time}} a été créée avec {{participants}} participants"
-                    },
-                    "edit": "L'entrée du {{date}} à {{time}} a été modifiée",
-                    "disable": "L'entrée du {{date}} à {{time}} a été masquée",
-                    "enable": "L'entrée du {{date}} à {{time}} est de nouveau visible",
-                    "delete": "L'entrée du {{date}} à {{time}} a été supprimée"
-                },
-                "OUT": {
-                    "create": {
-                        "singular": "La sortie du {{date}} à {{time}} a été créée avec une personne participante",
-                        "plural": "La sortie du {{date}} à {{time}} a été créée avec {{participants}} participants"
-                    },
-                    "edit": "La sortie du {{date}} à {{time}} a été modifiée",
-                    "disable": "La sortie du {{date}} à {{time}} a été masquée",
-                    "enable": "La sortie du {{date}} à {{time}} est de nouveau visible",
-                    "delete": "La sortie du {{date}} à {{time}} a été supprimée"
-                }
-            },
-            "vehicle": {
-                "create": "Le véhicule {{brand}} {{model}} ({{registration}}) a été créé",
-                "edit": "Le véhicule {{brand}} {{model}} ({{registration}}) a été modifié",
-                "disable": "Le véhicule {{brand}} {{model}} ({{registration}}) a été masqué",
-                "enable": "Le véhicule {{brand}} {{model}} ({{registration}}) est de nouveau visible",
-                "delete": "Le véhicule {{brand}} {{model}} ({{registration}}) a été supprimée"
-            },
-            "participant": {
-                "create": "La personne participante {{firstName}} {{lastName}} a été créée",
-                "edit": "La personne participante {{firstName}} {{lastName}} a été modifiée",
-                "disable": "La personne participante {{firstName}} {{lastName}} a été masquée",
-                "enable": "La personne participante {{firstName}} {{lastName}} est de nouveau visible",
-                "delete": "La personne participante {{firstName}} {{lastName}} a été supprimée"
-            },
-            "group": {
-                "add-members": {
-                    "singular": "Le membre a bien été ajouté au groupe.",
-                    "plural": "{{added}} ont bien été ajoutés au groupe."
-                },
-                "remove-member": "Le membre {{firstName}} {{lastName}} a été retiré du groupe {{name}}.",
-                "create": "Le groupe de personnes {{name}} a été créé",
-                "edit": "Le groupe de personnes {{name}} a été modifié",
-                "disable": "Le groupe de personnes {{name}} a été masqué",
-                "enable": "Le groupe de personnes {{name}} est de nouveau visible",
-                "delete": "Le groupe de personnes {{name}} a été supprimé"
-            },
-            "user": {
-                "edit": "La personne utilisatrice {{firstName}} {{lastName}} a été modifiée",
-                "block": "La personne utilisatrice {{firstName}} {{lastName}} a été bloquée",
-                "unblock": "La personne utilisatrice {{firstName}} {{lastName}} a été débloquée",
-                "impersonate": "La personne utilisatrice {{firstName}} {{lastName}} a été anonymisée",
-                "delete": "La personne utilisatrice {{firstName}} {{lastName}} a été supprimée"
-            }
-        }
-    },
-    "img": {
-        "console-someone": "Image illustrant une erreur",
-        "no-data": "Image illustrant l'absence de données"
-    },
-    "next": "Suivant",
-    "previous": "Précédent",
-    "cancel": "Annuler",
-    "add": "Ajouter",
-    "required": "Obligatoire",
-    "close": "Fermer",
-    "create": "Créer",
-    "edit": "Mettre à jour",
-    "loading": "Chargement en cours…",
-    "title": "Registry | {{menu}}",
-    "write-something": "Écris quelque chose…",
-    "confirmation": {
-        "label": "La confirmation",
-        "info": "Entres \"{{name}}\" pour confirmer",
-        "confirm": "Confirmer",
-        "cancel": "Annuler",
-        "error": {
-            "required": "Ne rien écrire n'est pas un consentement. Si tu confirmes rien, aucune action sera effectuée !",
-            "pattern": "Il faut que tu recopies exactement \"{{toConfirm}}\". Pour l'instant tu as écris \"{{actual}}\" par conséquent aucune peut-être confirmée !"
-        }
-    },
-    "layout": {
-        "list": "Liste",
-        "grid": "Grille"
-    },
-    "finished": "Terminé",
-    "outdated": "Expiré",
-    "menu": {
-        "home": "Accueil",
-        "users": "Utilisateurs",
-        "users-preferences": "Préférences",
-        "events": "Événements",
-        "profiles": "Profils",
-        "movements": "Mouvements",
-        "vehicles": "Véhicules",
-        "participants": "Participants",
-        "groups": "Groupes",
-        "sign-out": "Déconnexion",
-        "attempt-to-sign-out": "Tentative de Déconnexion",
-        "toggle": "Fermer le menu de navigation",
-        "options": "Options"
-    },
-    "filter-sort": {
-        "title": "Filtrer & Trier",
-        "search": "Recherche",
-        "order": {
-            "title": "Tri",
-            "ASC": "Croissant",
-            "DESC": "Décroissant"
-        },
-        "only-visible": {
-            "title": "Tout afficher ou seulement les éléments visibles",
-            "true": "Visibles",
-            "false": "Tous"
-        },
-        "date-range": "Plage de dates",
-        "apply": "Appliquer"
-    },
-    "datetime": {
-        "format": {
+        "date-and-time-format": {
             "date": "dd/MM/yyyy",
             "time": "HH:mm",
-            "datetime": "dd/MM/yyyy HH:mm"
+            "datetime": "dd/MM/yyyy à HH:mm",
+            "year": {
+                "one": "{{count}} année",
+                "few": "{{count}} années"
+            },
+            "month": {
+                "one": "{{count}} mois",
+                "few": "{{count}} mois"
+            },
+            "day": {
+                "one": "{{count}} jour",
+                "few": "{{count}} jours"
+            },
+            "hour": {
+                "one": "{{count}} heure",
+                "few": "{{count}} heures"
+            },
+            "minute": {
+                "one": "{{count}} minute",
+                "few": "{{count}} minutes"
+            },
+            "second": {
+                "one": "{{count}} seconde",
+                "few": "{{count}} secondes"
+            },
+            "last-refresh": "Dernière actualisation le {{datetime}}",
+            "element-created": "Créé le {{datetime}}",
+            "element-created-user": "Créé le {{datetime}} par {{user}}",
+            "element-last-update": "Modifié le {{datetime}}",
+            "element-last-update-user": "Modifié le {{datetime}} par {{user}}"
         },
-        "datetime": "Le {{date}} à {{time}}",
-        "created": "Créé le {{date}} à {{time}}",
-        "created-user": "Créé le {{date}} à {{time}} par {{user}}",
-        "last-update": "Modifié le {{date}} à {{time}}",
-        "last-update-user": "Modifié le {{date}} à {{time}} par {{user}}",
-        "last-refresh": "Dernière actualisation le {{date}} à {{time}}",
-        "last-login": "Dernière connexion le {{date}} à {{time}}",
-        "presence": "Présence du {{start}} au {{end}}"
-    },
-    "event": {
-        "create": "Créer un Évènement",
-        "action": {
-            "edit": "Modifier",
-            "disable": "Désactiver",
-            "enable": "Ré-activer",
-            "delete": "Supprimer",
-            "confirmation": {
-                "title": {
-                    "disable": "Désactiver l'évènement",
-                    "enable": "Ré-activer l'évènement",
-                    "delete": "Supprimer l'évènement"
-                },
-                "message": {
-                    "disable": "Attention ! Tu vas désactiver l'évènement \"{{element.name}}\". Tant qu'il est masqué, il ne sera plus possible d'y créer des profils, mouvements, participants, etc.",
-                    "enable": "Attention ! Tu vas ré-activer l'évènement \"{{element.name}}\". Il sera de nouveau possible d'y créer des profils, mouvements, participant, etc.",
-                    "delete": "Attention ! Tu vas définitivement supprimer l'évènement \"{{element.name}}\" ainsi que tous les élements qui lui sont liés (profils, mouvements, participants, etc.)."
+        "people": {
+            "all": "Tous",
+            "major": {
+                "one": "Majeur",
+                "few": "Majeurs"
+            },
+            "minor": {
+                "one": "Mineur",
+                "few": "Mineurs"
+            }
+        },
+        "form": {
+            "confirmation": "Entres \"{{name}}\" pour confirmer",
+            "required": "Obligatoire",
+            "range": {
+                "min": "Min",
+                "max": "Max"
+            },
+            "error": {
+                "confirmation": {
+                    "required": "Ne rien écrire n'est pas un consentement. Si tu confirmes rien, aucune action sera effectuée !",
+                    "pattern": "Il faut que tu recopies exactement \"{{toConfirm}}\". Pour l'instant tu as écris \"{{actual}}\" par conséquent aucune peut-être confirmée !"
                 }
+            }
+        },
+        "actions": {
+            "confirm": "Confirmer",
+            "create": "Créer",
+            "edit": "Modifier",
+            "cancel": "Annuler",
+            "search-and-filter": "Rechercher & Filtrer",
+            "sign-out": "Déconnexion"
+        },
+        "messages": {
+            "not-implemented": "🙅‍♂️ La fonctionnalité n'est pas implémentée.",
+            "invalid-form": "🙅‍♂️ Le formulaire n'est pas valide.",
+            "invalid-action": "🙅‍♂️ L'action choisie n'est pas prise en charge."
+        },
+        "notifications": {
+            "503": {
+                "title": "🥴 Serveur indisponible",
+                "message": "Ça sent le roussi, le serveur est indisponible. Réessaies plus tard. Si le problème persiste contactes l'administrateur."
+            },
+            "UNKNOWN_ERROR": "Une erreur inconnue est survenue. Désolé, je ne peux pas te donner plus d'information ! 🤷",
+            "OFFLINE": {
+                "title": "📡 Hors ligne",
+                "message": "Tu es hors ligne. Si tu es utilise le Wi-Fi, essaies de te rapprocher de la box. Si tu es en 4G, essaies de te rapprocher d'une fenêtre. Si tu es en 3G, essaies de te rapprocher d'un autre siècle."
+            },
+            "ONLINE": {
+                "title": "⚡️ Connexion rétablie",
+                "message": "Ta connexion internet est de retour. Tu peux de nouveau utiliser l'application normalement."
+            },
+            "EMPTY": {
+                "title": "🕵️‍♀️ Aucune donnée",
+                "message": "Aucune donnée n'a été trouvée."
+            }
+        }
+    },
+    "users": {
+        "search-and-filter": {
+            "text": "Prénom, nom, email",
+            "visibility": "Statut"
+        },
+        "visible": {
+            "true": "Actif",
+            "false": "Bloqué"
+        },
+        "form": {
+            "title": "Mettre à jour le rôle de \"{{firstName}} {{lastName}}\"",
+            "role": "Rôle"
+        },
+        "actions": {
+            "update-role": "Changer son rôle",
+            "enable": "Débloquer",
+            "disable": "Bloquer",
+            "impersonate": "Anonymiser",
+            "delete": "Supprimer",
+            "confirmations": {
+                "disable": {
+                    "title": "Bloquer l'utilisateur",
+                    "message": "Attention ! Tu vas bloquer un utilisateur. Tant qu'il est bloqué, {{element.firstName}} {{element.lastName}} ne pourra plus se connecter."
+                },
+                "enable": {
+                    "title": "Débloquer l'utilisateur",
+                    "message": "Attention ! Tu vas débloquer un utilisateur. {{element.firstName}} {{element.lastName}} pourra à nouveau se connecter."
+                },
+                "impersonate": {
+                    "myself": {
+                        "title": "Anonymiser mon compte",
+                        "message": "Attention ! Tu vas anonymiser ton compte. Cette action irréversible entrainera ta déconnexion et t'empêcheras de te connecter à nouveau. À titre informatif, ton utilisateur sera anonmysé immédiatement, les participants a qui tu es liés seront anonymisés à la fin de l'évènement. Cependant, si tu as conduit des véhicules dans le cadre de cet évènement, ton participant sera anonymisé 1 an après la fin de l'évènement."
+                    },
+                    "other": {
+                        "title": "Anonymiser l'utilisateur",
+                        "message": "Attention ! Tu vas anonymiser un utilisateur. Tous les profils et participants associés à {{element.firstName}} {{element.lastName}} seront également anonymisé."
+                    }
+                },
+                "delete": {
+                    "title": "Supprimer l'utilisateur",
+                    "message": "Attention ! Tu vas supprimer un utilisateur. Tous les profils associés à {{element.firstName}} {{element.lastName}} seront également supprimés."
+                }
+            }
+        },
+        "notifications": {
+            "email-copied": "L'adresse email de {{element.firstName}} {{element.lastName}} copiée.",
+            "update-role": {
+                "title": "✏️ Role modifié",
+                "message": "Le rôle de {{firstName}} {{lastName}} a été modifié."
+            },
+            "disable": {
+                "title": "⛔️ Utilisateur bloqué",
+                "message": "{{firstName}} {{lastName}} a été bloqué"
+            },
+            "enable": {
+                "title": "⛓️‍💥 Utilisateur débloqué",
+                "message": "{{firstName}} {{lastName}} a été débloqué, il peut à nouveau se connecter."
+            },
+            "impersonate": {
+                "title": "🕵️‍♂️ Utilisateur anonymisé",
+                "message": "{{firstName}} {{lastName}} a été anonymisé, il ne peut plus se connecter et les informations le concernant ont été hashées."
+            },
+            "delete": {
+                "title": "🗑️ Utilisateur supprimé",
+                "message": "{{firstName}} {{lastName}} a été supprimé, il peut toujours se connecter mais toutes ses informations ont été supprimée."
+            }
+        }
+    },
+    "events": {
+        "search-and-filter": {
+            "text": "Nom",
+            "datetime": "Date & Heure",
+            "visibility": "Visibilité"
+        },
+        "visible": {
+            "true": "Visible",
+            "false": "Masqué"
+        },
+        "options": {
+            "zero": "Aucune option",
+            "one": "{{name}}",
+            "two": "{{name}} et 1 autre option",
+            "few": "{{name}} et {{others}} autres options",
+            "list": "Options"
+        },
+        "status": {
+            "IN_PROGRESS": "En cours",
+            "interval": {
+                "PLANNED": "Commence dans {{interval}}",
+                "IN_PROGRESS": "En cours depuis {{interval}}",
+                "FINISHED": "Terminée depuis {{interval}}"
             }
         },
         "form": {
             "title": {
-                "information": "Informations",
-                "option": "Options",
-                "create": "Créer un Évènement",
-                "edit": "Modifier l'Évènement \"{{name}}\""
+                "create": "Créer un évènement",
+                "edit": "Modifier l'évènement \"{{name}}\""
             },
             "subtitle": {
-                "subscription": "Inscriptions",
-                "transport": "Transport",
-                "activity": "Activité",
-                "communication": "Communication",
-                "dfci": "Défense des Forêts Contre les Incendies"
+                "information": "Informations",
+                "option": {
+                    "one": "Option",
+                    "few": "Options"
+                }
             },
-            "create": "Créer l'évènement",
-            "edit": "Modifier l'Évènement",
+            "navigation": {
+                "next-option": "Choisir les options",
+                "previous-information": "Information générale"
+            },
             "name": "Nom",
-            "range": "Dates",
+            "begin-datetime": "Date & Heure de début",
+            "end-datetime": "Date & Heure de fin",
             "error": {
                 "name": {
                     "required": "Un événement sans nom ? Sérieusement, donne-lui un nom !",
@@ -586,134 +448,774 @@
                     "maxlength": "T'as vu la longueur du nom 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c'est {{requiredLength}}."
                 },
                 "options": {
-                    "preRequiredOptions": "L'option \"{{for}}\" sans \"{{missing}}\" ça risque d''être complexe."
+                    "preRequiredOptions": "Activer l'option \"{{for}}\" sans \"{{missing}}\" ça risque d''être complexe."
+                },
+                "begin-datetime": {
+                    "dateRequiredForTime": "L'évènement commence à une certaine heure ok ! Mais quel jour ? 📆"
+                },
+                "end-datetime": {
+                    "dateRequiredForTime": "L'évènement termine à une certaine heure ok ! Mais quel jour ? 📆"
+                },
+                "date-range": {
+                    "beginDateBeforeEndDate": "Ton évènement finit avant d'avoir commencé ! Ça c'est de l'ambition."
+                }
+            },
+            "placeholder": {
+                "name": "Ex : Camp D.F.C.I. Pionniers-Caravelles",
+                "date": "Ex : {{date}}",
+                "time": "Ex : {{date}}"
+            }
+        },
+        "actions": {
+            "create-support": "Profil support",
+            "select": "Entrer",
+            "edit": "Modifier",
+            "enable": "Démasquer",
+            "disable": "Masquer",
+            "delete": "Supprimer",
+            "confirmations": {
+                "create-support": {
+                    "title": "Créer un profil de support",
+                    "message": "En poursuivant, tu crées un profil support ayant une validatité de 1 heure pour venir en soutien à l'évènement \"{{element.name}}\"."
+                },
+                "select": {
+                    "title": "Sélectionner le profil",
+                    "message": "Tu vas sélectionner ton profil pour l'événement \"{{element.name}}\". Tant qu'il est sélectionné, toutes les actions que tu feras lui seront liées."
+                },
+                "disable": {
+                    "title": "Masquer l'évènement",
+                    "message": "Attention ! Tu vas masquer l'évènement \"{{element.name}}\". Tant qu'il est masqué, il ne sera plus possible d'y créer des profils, mouvements, participants, etc."
+                },
+                "enable": {
+                    "title": "Afficher à nouveau l'évènement",
+                    "message": "Attention ! Tu vas à nouveau rendre l'évènement \"{{element.name}}\" visible. Il sera de nouveau possible d'y créer des profils, mouvements, participant, etc."
+                },
+                "delete": {
+                    "title": "Supprimer l'évènement",
+                    "message": "Attention ! Tu vas définitivement supprimer l'évènement \"{{element.name}}\" ainsi que tous les élements qui lui sont liés (profils, mouvements, participants, etc.)."
                 }
             }
         },
-        "example": {
-            "name": "Ex: Camp D.F.C.I. Pionniers-Caravelles",
-            "range": "Ex: {{begin}} - {{end}}"
+        "notifications": {
+            "create-support": {
+                "title": "+ Profil support créé",
+                "message": "Le profil support a été créé pour l'évènement, il est disponible jusqu'à {{end}}."
+            },
+            "select": {
+                "title": "👤 Profil sélectionné",
+                "message": "Toutes les actions que tu fais à partir de maintenant seront liées à l'évènement \"{{name}}\" tant qu'il est sélectionné."
+            },
+            "create": {
+                "title": "+ Évènement créé",
+                "message": "L'évènement \"{{name}}\" a été créé."
+            },
+            "edit": {
+                "title": "✏️ Évènement modifié",
+                "message": "L'évènement \"{{name}}\" a été modifié."
+            },
+            "disable": {
+                "title": "🙈 Évènement masqué",
+                "message": "L'évènement \"{{name}}\" a été masqué."
+            },
+            "enable": {
+                "title": "👀 Évènement visible",
+                "message": "L'évènement \"{{name}}\" est à nouveau visible."
+            },
+            "delete": {
+                "title": "🗑️ Évènement supprimé",
+                "message": "L'évènement \"{{name}}\" a été supprimé."
+            }
         }
     },
-    "profile": {
-        "action": {
-            "invite-user": {
-                "title": "Inviter des utilisateurs",
-                "singular": "Inviter {{number}} utilisateur",
-                "plural": "Inviter {{number}} utilisateurs"
+    "event-profiles": {
+        "search-and-filter": {
+            "text": {
+                "event": "Nom",
+                "user": "Prénom, nom, email"
             },
-            "create-support": "Profil support",
-            "select": "Sélectionner",
-            "edit": "Modifier",
-            "block": "Bloquer",
-            "unblock": "Débloquer",
-            "delete": "Supprimer",
-            "manage-acceptance": "Veux-tu accepter cette invitation ?",
-            "accept": "Accepter",
-            "reject": "Refuser",
-            "confirmation": {
-                "title": {
-                    "create-support": "Créer un profil de support",
-                    "ACCEPTED": "Accepter l'invitation",
-                    "REJECTED": "Refuser l'invitation",
-                    "select": "Sélectionner le profil",
-                    "block": "Bloquer le profil",
-                    "unblock": "Débloquer le profil",
-                    "delete": "Supprimer le profil"
-                },
-                "message": {
-                    "create-support": "En poursuivant, tu crées un profil support pour venir en soutien à l'évènement \"{{element.name}}\".",
-                    "ACCEPTED": "En acceptant l'invitation à \"{{element.event.name}}\", le profil sera automatiquement sélectionné et apparaitra dans la liste des profils liés à ton compte (dans le premier onglet).",
-                    "REJECTED": "En refusant définitivement l'invitation, tu ne pourras pas utiliser ce profil. Tu devras te faire réinviter pour accéder à l'évènement \"{{element.event.name}}\"",
-                    "select": "Tu vas sélectionner un profil pour l'évènement \"{{element.event.name}}\". Tant qu'il est sélectionné, toutes les actions que tu feras lui seront liées.",
-                    "block": "Attention ! Tu vas bloquer un profil pour l'évènement \"{{element.event.name}}\". Tant qu'il est bloqué, {{element.user.firstName}} {{element.user.lastName}} ne pourra plus l'utiliser.",
-                    "unblock": "Attention ! Tu vas débloquer un profil pour l'évènement \"{{element.event.name}}\". {{element.user.firstName}} {{element.user.lastName}} pourra à nouveau l'utiliser s'il est toujours valable.",
-                    "delete": "Attention ! Tu vas supprimer un profil pour l'évènement \"{{element.event.name}}\". {{element.user.firstName}} {{element.user.lastName}} ne pourra plus l'utiliser."
-                }
-            }
+            "datetime": "Date & Heure",
+            "status": "Statut",
+            "visibility": "Disponibilité"
         },
         "status": {
-            "filter-sort": "Statut",
-            "ACCEPTED": "Accepté",
-            "REJECTED": "Refusé",
-            "INVITED": "Invité"
+            "IN_PROGRESS": "En cours",
+            "interval": {
+                "PLANNED": "Commence dans {{interval}}",
+                "IN_PROGRESS": "En cours depuis {{interval}}",
+                "FINISHED": "Terminée depuis {{interval}}"
+            }
         },
-        "event": {
-            "mine": {
-                "singular": "Mon Profil",
-                "plural": "Mes Profils"
-            },
-            "invitation": {
-                "singular": "Invitation Reçue",
-                "plural": "Invitations Reçues"
-            },
-            "validity": "Période de validité"
+        "visible": {
+            "true": "Utilisable actuellement",
+            "false": "Non-utilisable actuellement"
         },
         "form": {
             "title": {
-                "create": "Partager l'évènement \"{{name}}\"",
-                "edit": "Modifier le Profil de {{firstName}} {{lastName}}"
+                "create": "Inviter à l'évènement \"{{name}}\"",
+                "edit": "Modifier le profil d'accès de {{firstName}} {{lastName}}"
             },
-            "create": {
-                "singular": "Inviter l'utilisateur",
-                "plural": "Inviter les utilisateurs"
-            },
-            "edit": "Modifier le profil",
-            "users": "Utilisateurs avec accès",
             "role": "Rôle",
-            "date-range": "Dates de validité",
-            "user-search": "Ajouter des personnes",
-            "no-user": "Aucun utilisateur selectionné",
+            "begin-datetime": "Date & Heure de début d'accès",
+            "end-datetime": "Date & Heure de fin d'accès",
+            "users": {
+                "empty": "Aucun utilisateur selectionnée",
+                "search": "Inviter des utilisateurs",
+                "empty-search": "Aucun utilisateur trouvé",
+                "one": "Utilisateur",
+                "few": "Utilisateurs",
+                "selected": {
+                    "one": "Utilisateur selectionné",
+                    "few": "Utilisateurs selectionnés"
+                }
+            },
+            "hint": {
+                "begin-date-time": "Par défaut se sera le profil sera disponible dès sa création.",
+                "end-date-time": "Par défaut se sera la profile n'a pas de fin de validité."
+            },
+            "placeholder": {
+                "role": "Ex : {{role}}",
+                "date": "Ex : {{date}}",
+                "time": "Ex : {{date}}"
+            },
             "error": {
                 "role": {
                     "required": "Pas de rôle de profile ! Le rôle du profil de l'événement ne peut pas être vide."
                 },
-                "range": {
-                    "minDate": "L'accès à l'événement via ce profile ne peut pas commencer avant l'événement ({{min}}).",
-                    "maxDate": "L'accès à l'événement via ce profile ne peut pas finir après l'événement ({{max}})."
-                },
                 "users": {
                     "required": "Impossible de créer des profils sans utilisateur. Il en faut au moins un !"
+                },
+                "begin-datetime": {
+                    "dateRequiredForTime": "L'accès à l'évènement commence à une certaine heure ok ! Mais quel jour ? 📆"
+                },
+                "end-datetime": {
+                    "dateRequiredForTime": "L'accès à l'évènement termine à une certaine heure ok ! Mais quel jour ? 📆"
+                },
+                "date-range": {
+                    "beginDateBeforeEndDate": "L'accès à l'évènement finit avant d'avoir commencé ! Ça c'est de l'ambition."
                 }
             }
         },
-        "example": {
-            "users": "Ex: Robert BADEN-POWELL",
-            "presence": "Ex: {{begin}} - {{end}}",
-            "role": "Ex: {{role}}"
-        }
-    },
-    "vehicle": {
-        "action": {
-            "movements-history": "Historique des utilisations",
+        "actions": {
+            "select": "Entrer",
+            "invite-user": {
+                "one": "Inviter un utilisateur",
+                "few": "Inviter des utilisateurs"
+            },
             "edit": "Modifier",
-            "disable": "Désactiver",
-            "enable": "Ré-activer",
+            "enable": "Débloquer",
+            "disable": "Bloquer",
+            "accept": "Accepter",
+            "reject": "Refuser",
             "delete": "Supprimer",
-            "confirmation": {
-                "title": {
-                    "disable": "Désactiver le véhicule",
-                    "enable": "Ré-activer le véhicule",
-                    "delete": "Supprimer le véhicule"
+            "confirmations": {
+                "ACCEPTED": {
+                    "title": "Accepter l'invitation",
+                    "message": "En acceptant l'invitation à \"{{element.event.name}}\", le profil sera automatiquement sélectionné et apparaitra dans la liste des profils liés à ton compte (dans le premier onglet)."
                 },
-                "message": {
-                    "disable": "Attention ! Tu vas désactiver le véhicule \"{{element.brand}} {{element.model}} ({{element.registration}})\". Tant qu'il est masqué, il ne pourra plus être utilisé.",
-                    "enable": "Attention ! Tu vas ré-activer le véhicule \"{{element.brand}} {{element.model}} ({{element.registration}})\". Il sera de nouveau possible de l'utiliser.",
-                    "delete": "Attention ! Tu vas définitivement supprimer le véhicle \"{{element.brand}} {{element.model}} ({{element.registration}})\". Il sera donc définitivement dissociée des mouvements et autres éléments."
+                "REJECTED": {
+                    "title": "Refuser l'invitation",
+                    "message": "En refusant définitivement l'invitation, tu ne pourras pas utiliser ce profil. Tu devras te faire réinviter pour accéder à l'évènement \"{{element.event.name}}\""
+                },
+                "select": {
+                    "title": "Sélectionner le profil",
+                    "message": "Tu vas sélectionner un profil pour l'événement \"{{element.event.name}}\". Tant qu'il est sélectionné, toutes les actions que tu feras lui seront liées."
+                },
+                "disable": {
+                    "title": "Bloquer le profil",
+                    "message": "Attention ! Tu vas bloquer un profil pour l'évènement \"{{element.event.name}}\". Tant qu'il est bloqué, {{element.user.firstName}} {{element.user.lastName}} ne pourra plus l'utiliser."
+                },
+                "enable": {
+                    "title": "Débloquer le profil",
+                    "message": "Attention ! Tu vas débloquer un profil pour l'évènement \"{{element.event.name}}\". {{element.user.firstName}} {{element.user.lastName}} pourra à nouveau l'utiliser s'il est toujours valable."
+                },
+                "delete": {
+                    "title": "Supprimer le profil",
+                    "message": "Attention ! Tu vas supprimer un profil pour l'évènement \"{{element.event.name}}\". {{element.user.firstName}} {{element.user.lastName}} ne pourra plus l'utiliser."
                 }
             }
+        },
+        "notifications": {
+            "EMPTY_USER_EVENT_PROFILE": {
+                "title": "🕵️‍♀️ Aucun profil",
+                "message": "Aucun profil pour ta recherche 🥺. Tu peux inviter des personnes à rejoindre l'évènement."
+            },
+            "partial-invitation": {
+                "title": {
+                    "one": "📧 Invitation partiellement envoyée",
+                    "few": "📧 Invitations partiellement envoyées"
+                },
+                "message": {
+                    "one": "Un profil a été créé sur les {{asked}} demandés.",
+                    "few": "{{created}} profils ont été créés sur les {{asked}} demandés."
+                }
+            },
+            "create": {
+                "title": {
+                    "one": "+ Profil créé",
+                    "few": "+ Profils créés"
+                },
+                "message": {
+                    "one": "Le profil a été créé.",
+                    "few": "{{created}} Profils ont été créés pour l'évènement."
+                }
+            },
+            "acceptance": {
+                "ACCEPTED": {
+                    "title": "✅ Invitation acceptée",
+                    "message": "Tu as accepté l'invitation pour l'évènement, tu peux désormais le sélectionner."
+                },
+                "REJECTED": {
+                    "title": "✅ Invitation refusée",
+                    "message": "Tu as refusé l'invitation pour l'évènement."
+                }
+            },
+            "select": {
+                "title": "👤 Profil sélectionné",
+                "message": "Toutes les actions que tu fais à partir de maintenant seront liées à l'évènement \"{{name}}\" tant qu'il est sélectionné."
+            },
+            "edit": {
+                "title": "✏️ Profil modifié",
+                "message": "Le profil de {{firstName}} {{lastName}} pour l'évènement {{name}} a été modifié."
+            },
+            "disable": {
+                "title": "⛔️ Profil bloqué",
+                "message": "Le profil de {{firstName}} {{lastName}} pour l'évènement {{name}} a été bloqué."
+            },
+            "enable": {
+                "title": "⛓️‍💥 Profil débloqué",
+                "message": "Le profil de {{firstName}} {{lastName}} pour l'évènement {{name}} a été débloqué."
+            },
+            "delete": {
+                "title": "🗑️ Profil supprimé",
+                "message": {
+                    "myself": "Ton profil pour l'évènement {{name}} a été supprimé",
+                    "other": "Le profil de {{firstName}} {{lastName}} pour l'évènement {{name}} a été supprimé."
+                }
+            }
+        }
+    },
+    "movements": {
+        "search-and-filter": {
+            "start-datetime": "Après le",
+            "end-datetime": "Avant le",
+            "type": "Type",
+            "visibility": "Visibilité"
+        },
+        "content-layer-title": {
+            "one": "Participant",
+            "few": "Participants"
+        },
+        "content": {
+            "one": "{{name}}",
+            "two": "{{name}} et 1 autre personne",
+            "few": "{{name}} et {{others}} autres personnes"
+        },
+        "visible": {
+            "true": "Visible",
+            "false": "Masqué"
         },
         "form": {
             "title": {
-                "create": "Créer un véhicule",
-                "edit": "Modifier le véhicule \"{{brand}} {{model}} ({{registration}})\""
+                "create": {
+                    "none": "Créer un mouvement",
+                    "IN": "Créer une entrée",
+                    "OUT": "Créer une sortie"
+                },
+                "edit": {
+                    "IN": "Modifier l'entrée du {{datetime}}",
+                    "OUT": "Modifier la sortie du {{datetime}}"
+                }
             },
-            "registration": "Immatriculation",
+            "datetime": "Date & Heure",
+            "type": "Type",
+            "content": {
+                "empty": "Aucune personne selectionnée",
+                "search": "Ajouter des personnes et des groupes",
+                "empty-search": "Aucune personne ou groupe trouvé",
+                "one": "Participant",
+                "few": "Participants",
+                "group": "Groupe \"{{name}}\"",
+                "selected": {
+                    "one": "Personne selectionné",
+                    "few": "Personnes selectionnés"
+                },
+                "searched": {
+                    "participant": {
+                        "one": "Personne",
+                        "few": "Personnes"
+                    },
+                    "group": {
+                        "one": "Groupe",
+                        "few": "Groupes"
+                    }
+                }
+            },
+            "vehicles": {
+                "empty": "Aucune véhicule selectionné",
+                "search": "Ajouter des véhicules",
+                "empty-search": "Aucun véhicule trouvé",
+                "one": "Véhicule",
+                "few": "Véhicules",
+                "selected": {
+                    "one": "Véhicle selectionné",
+                    "few": "Véhicles selectionnés"
+                }
+            },
+            "driver": {
+                "title": "Responsable du véhicule et ses infractions",
+                "empty": "Aucun conducteur potentiel dans le mouvement",
+                "empty-search": "Aucun véhicule trouvé"
+            },
+            "placeholder": {
+                "datetime": "Ex : {{date}}",
+                "type": "Ex : Entrée"
+            },
+            "error": {
+                "datetime": {
+                    "required": "L'horodatage du mouvement doivent être définies. Sinon, comment savoir quand ça se passe ?",
+                    "minDate": "L'horodatage du mouvement est plus tôt que la fin de l'événement ({{min}}). Restons dans les clous !",
+                    "maxDate": "L'horodatage du mouvement est plus tard que la fin de l'événement ({{max}}). Restons dans les clous !"
+                },
+                "type": {
+                    "required": "Le type de mouvement doit être défini. Sinon je risque d'avoir du mal à te dire s'il s'agit d'une entrée ou d'une sortie la prochaine fois que tu me demandes."
+                },
+                "content": {
+                    "required": "Impossible de créer un mouvement sans participants. Reviens avec une équipe !"
+                },
+                "driver": {
+                    "required": "Un véhicule sans responsable ? Désolé, les voitures complètement autonomes c'est pas encore ici."
+                }
+            }
+        },
+        "actions": {
+            "edit": "Modifier",
+            "disable": "Masquer",
+            "enable": "Démasquer",
+            "delete": "Supprimer",
+            "confirmations": {
+                "disable": {
+                    "title": "Masquer le mouvement",
+                    "message": "Attention ! Tu vas masquer le mouvement. Tant qu'il est masqué, c'est comme si il n'avait jamais eu lieu."
+                },
+                "enable": {
+                    "title": "Afficher à nouveau le mouvement",
+                    "message": "Attention ! Tu vas à nouveau rendre le mouvement visible. Il sera de nouveau considéré dans l'historique."
+                },
+                "delete": {
+                    "title": "Supprimer le mouvement",
+                    "message": "Attention ! Tu vas définitivement supprimer le mouvement. Il ne sera plus récupérable ni tracé."
+                }
+            }
+        },
+        "notifications": {
+            "create": {
+                "IN": {
+                    "title": "+ Entrée créée",
+                    "message": {
+                        "one": "1 personne est rentrée à {{datetime}}.",
+                        "few": "{{participants}} personnes sont rentrées à {{datetime}}."
+                    }
+                },
+                "OUT": {
+                    "title": "+ Sortie créée",
+                    "message": {
+                        "one": "1 personne est sorti à {{datetime}}.",
+                        "few": "{{participants}} personnes sont sortis à {{datetime}}."
+                    }
+                }
+            },
+            "edit": {
+                "IN": {
+                    "title": "✏️ Entrée modifiée",
+                    "message": "L'entrée du {{datetime}} a été modifiée."
+                },
+                "OUT": {
+                    "title": "✏️ Sortie modifiée",
+                    "message": "La sortie du {{datetime}} a été modifiée."
+                }
+            },
+            "disable": {
+                "IN": {
+                    "title": "🙈 Entrée masquée",
+                    "message": "L'entrée du {{datetime}} a été masquée."
+                },
+                "OUT": {
+                    "title": "🙈 Sortie masquée",
+                    "message": "La sortie du {{datetime}} a été masquée."
+                }
+            },
+            "enable": {
+                "IN": {
+                    "title": "👀 Entrée visible",
+                    "message": "L'entrée du {{datetime}} est à nouveau visible."
+                },
+                "OUT": {
+                    "title": "👀 Sortie masquée",
+                    "message": "La sortie du {{datetime}} est à nouveau visible."
+                }
+            },
+            "delete": {
+                "IN": {
+                    "title": "🗑️ Entrée supprimée",
+                    "message": "L'entrée du {{datetime}} a été supprimée."
+                },
+                "OUT": {
+                    "title": "🗑️ Sortie supprimée",
+                    "message": "La sortie du {{datetime}} a été supprimée."
+                }
+            }
+        }
+    },
+    "participants": {
+        "search-and-filter": {
+            "text": "Prénom, nom, email",
+            "status": "Statut",
+            "visibility": "Visibilité"
+        },
+        "group-layer-title": {
+            "one": "Groupe",
+            "few": "Groupes"
+        },
+        "group": {
+            "zero": "Aucun groupe",
+            "two": "{{name}} et 1 autre groupe",
+            "few": "{{name}} et {{others}} autres groupes"
+        },
+        "status": {
+            "interval": {
+                "PLANNED": "Arrive dans {{interval}}",
+                "FINISHED": "Parti depuis {{interval}}"
+            }
+        },
+        "visible": {
+            "true": "Visible",
+            "false": "Masqué"
+        },
+        "form": {
+            "title": {
+                "create": "Ajouter une personne",
+                "edit": "Modifier les informations de \"{{firstName}} {{lastName}}\""
+            },
+            "user": {
+                "title": "Utilisateur",
+                "empty-search": "Aucun utilisateur trouvé"
+            },
+            "firstname": "Prénom",
+            "lastname": "Nom",
+            "birthday": "Date de naissance",
+            "begin-datetime": "Date & Heure d'arrivée",
+            "end-datetime": "Date & Heure de départ",
+            "groups": {
+                "empty": "Aucun groupe selectionné",
+                "search": "Ajouter des groupes",
+                "empty-search": "Aucun groupe trouvé",
+                "one": "Groupe",
+                "few": "Groupes",
+                "selected": {
+                    "one": "Groupe selectionné",
+                    "few": "Groupes selectionnés"
+                }
+            },
+            "error": {
+                "firstname": {
+                    "required": "Une personne participante sans prénom ? Moins pratique pour l'identifier !",
+                    "blank": "Non, non, non ! tu ne m'auras pas. Un prénom vide ça ne fonctionne pas !",
+                    "maxlength": "T'as vu la longueur du prénom 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c'est {{requiredLength}}."
+                },
+                "lastname": {
+                    "required": "Une personne participante sans nom ? Moins pratique pour l'identifier !",
+                    "blank": "Non, non, non ! tu ne m'auras pas. Un nom vide ça ne fonctionne pas !",
+                    "maxlength": "T'as vu la longueur du nom 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c'est {{requiredLength}}."
+                },
+                "birthday": {
+                    "required": "À priori les gens naissent un jour. Merci de me fournir cette date !",
+                    "maxDate": "Naître dans le futur ? Pas dans ce monde, désolé !"
+                },
+                "begin-datetime": {
+                    "minDate": "Une personne ne peut pas arriver avant le début de l'événement ({{min}}).",
+                    "maxDate": "Une personne ne peut pas partir après la fin de l'événement ({{max}}).",
+                    "dateRequiredForTime": "Cette personne arrive à une certaine heure ok ! Mais quel jour ? 📆"
+                },
+                "end-datetime": {
+                    "minDate": "Une personne ne peut pas arriver avant le début de l'événement ({{min}}).",
+                    "maxDate": "Une personne ne peut pas partir après la fin de l'événement ({{max}}).",
+                    "dateRequiredForTime": "Cette personne termine à une certaine heure ok ! Mais quel jour ? 📆"
+                },
+                "date-range": {
+                    "beginDateBeforeEndDate": "Cette personne part avant d'être arrivé ! Ça c'est de l'ambition."
+                }
+            },
+            "hint": {
+                "begin-date-time": "Par défaut une personne arrive avec son groupe. Faute de groupe, la personne arrive au début de l'évènement.",
+                "end-date-time": "Par défaut une personne part avec son groupe. Faute de groupe, la personne part à la fin de l'évènement."
+            },
+            "placeholder": {
+                "user": "Ex : robert.baden-powell@exemple.fr (Robert BADEN-POWELL)",
+                "firstname": "Ex : Robert",
+                "lastname": "Ex : BADEN-POWELL",
+                "birthday": "Ex : 22/02/1857",
+                "date": "Ex : {{date}}",
+                "time": "Ex : {{date}}"
+            }
+        },
+        "actions": {
+            "movements-history": "Historique des mouvements",
+            "remove-member": "Retirer du groupe",
+            "edit": "Modifier",
+            "disable": "Masquer",
+            "enable": "Démasquer",
+            "delete": "Supprimer",
+            "confirmations": {
+                "remove-member": {
+                    "title": "Retirer du groupe",
+                    "message": "Attention ! Tu vas retirer \"{{element.firstName}} {{element.lastName}}\" du groupe."
+                },
+                "disable": {
+                    "title": "Masquer la personne",
+                    "message": "Attention ! Tu vas masquer \"{{element.firstName}} {{element.lastName}}\". Tant qu'elle est masquée, la personne ne pourra plus être intégrée dans les entrées/sorties."
+                },
+                "enable": {
+                    "title": "Afficher à nouveau la personne",
+                    "message": "Attention ! Tu vas à nouveau rendre \"{{element.firstName}} {{element.lastName}}\" visible. Il sera de nouveau possible de l'intégrer dans les entrées/sorties."
+                },
+                "delete": {
+                    "title": "Supprimer la personne",
+                    "message": "Attention ! Tu vas définitivement supprimer \"{{element.firstName}} {{element.lastName}}\". Cette suppression est possible uniquement si aucun mouvement lui est associé."
+                }
+            }
+        },
+        "notifications": {
+            "create": {
+                "title": "+ Personne ajoutée",
+                "message": "\"{{firstName}} {{lastName}}\" a été ajouté."
+            },
+            "edit": {
+                "title": "✏️ Informations d'une personne modifiées",
+                "message": "Les informations de \"{{firstName}} {{lastName}}\" ont été modifiées."
+            },
+            "disable": {
+                "title": "🙈 Personne masqué",
+                "message": "\"{{firstName}} {{lastName}}\" a été masqué."
+            },
+            "enable": {
+                "title": "👀 Personne visible",
+                "message": "\"{{firstName}} {{lastName}}\" est à nouveau visible."
+            },
+            "delete": {
+                "title": "🗑️ Personne supprimé",
+                "message": "\"{{firstName}} {{lastName}}\" a été supprimé."
+            }
+        }
+    },
+    "groups": {
+        "search-and-filter": {
+            "text": "Nom",
+            "datetime": "Date & Heure",
+            "presence": "Présence",
+            "visibility": "Visibilité"
+        },
+        "available": {
+            "true": "Disponible",
+            "false": "Non disponible"
+        },
+        "member-layer-title": {
+            "one": "Membre",
+            "few": "Membres"
+        },
+        "content": {
+            "list": "Membres",
+            "all": "Tous les membres",
+            "adult": {
+                "one": "Majeur",
+                "few": "Majeurs"
+            },
+            "child": {
+                "one": "Mineur",
+                "few": "Mineurs"
+            }
+        },
+        "member": {
+            "zero": "Aucun membre",
+            "one": "{{name}}",
+            "two": "{{name}} et 1 autre membre",
+            "few": "{{name}} et {{others}} autres membres"
+        },
+        "status": {
+            "IN_PROGRESS": "Présent",
+            "interval": {
+                "PLANNED": "Arrive dans {{interval}}",
+                "IN_PROGRESS": "Présent depuis {{interval}}",
+                "FINISHED": "Parti depuis {{interval}}"
+            }
+        },
+        "presence": {
+            "true": "Présent",
+            "false": "Absent"
+        },
+        "visible": {
+            "true": "Visible",
+            "false": "Masqué"
+        },
+        "form": {
+            "title": {
+                "create": "Créer un groupe",
+                "edit": "Modifier le groupe \"{{name}}\""
+            },
+            "name": "Nom",
+            "begin-datetime": "Date & Heure d'arrivée",
+            "end-datetime": "Date & Heure de départ",
+            "members": {
+                "empty": "Aucune personne selectionnée",
+                "search": "Ajouter des personnes",
+                "empty-search": "Aucune personne trouvée",
+                "one": "Participant",
+                "few": "Participants",
+                "selected": {
+                    "one": "Participant selectionné",
+                    "few": "Participants selectionnés"
+                }
+            },
+            "hint": {
+                "begin-date-time": "Par défaut un groupe arrive au début de l'évènement.",
+                "end-date-time": "Par défaut un groupe part à la fin de l'évènement."
+            },
+            "error": {
+                "name": {
+                    "required": "Un groupe sans nom ? Sérieusement, donne-lui un nom !",
+                    "blank": "Non, non, non ! tu ne m'auras pas. Un nom vide ça ne fonctionne pas !",
+                    "maxlength": "T'as vu la longueur du nom 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c'est {{requiredLength}}."
+                },
+                "begin-datetime": {
+                    "minDate": "Un groupe ne peut pas arriver avant le début de l'événement ({{min}}).",
+                    "maxDate": "Un groupe ne peut pas partir après la fin de l'événement ({{max}}).",
+                    "dateRequiredForTime": "Ce groupe arrive à une certaine heure ok ! Mais quel jour ? 📆"
+                },
+                "end-datetime": {
+                    "minDate": "Un groupe ne peut pas arriver avant le début de l'événement ({{min}}).",
+                    "maxDate": "Un groupe ne peut pas partir après la fin de l'événement ({{max}}).",
+                    "dateRequiredForTime": "Ce groupe termine à une certaine heure ok ! Mais quel jour ? 📆"
+                },
+                "date-range": {
+                    "beginDateBeforeEndDate": "Ce groupe part avant d'être arrivé ! Ça c'est de l'ambition."
+                },
+                "members": {
+                    "required": "Impossible de créer un groupe sans membres. Ce groupe a besoin de renforts !"
+                }
+            },
+            "placeholder": {
+                "name": "Ex : Pionniers-Caravelles - Charles de Foucauld Bondues",
+                "date": "Ex : {{date}}",
+                "time": "Ex : {{date}}"
+            }
+        },
+        "actions": {
+            "add-members": "Ajouter des membres",
+            "create-member": "Créer un membre",
+            "members": "Gestion des membres",
+            "edit": "Modifier",
+            "add": "Ajouter",
+            "disable": "Masquer",
+            "enable": "Démasquer",
+            "delete": "Supprimer",
+            "confirmations": {
+                "disable": {
+                    "title": "Masquer le groupe",
+                    "message": "Attention ! Tu vas masquer le groupe \"{{element.name}}\". Tant qu'il est masqué, le groupe ne pourra plus être intégré dans les entrées/sorties."
+                },
+                "enable": {
+                    "title": "Afficher à nouveau le groupe",
+                    "message": "Attention ! Tu vas à nouveau rendre le groupe \"{{element.name}}\" visible. Il sera de nouveau possible de l'intégrer dans les entrées/sorties."
+                },
+                "delete": {
+                    "title": "Supprimer le groupe",
+                    "message": "Attention ! Tu vas définitivement supprimer le groupe \"{{element.name}}\". Elle sera donc définitivement dissocié des mouvements et autres éléments."
+                }
+            }
+        },
+        "notifications": {
+            "partial-add-member": {
+                "title": {
+                    "one": "+ Membre partiellement ajouté",
+                    "few": "+ Membres partiellements ajoutés"
+                },
+                "message": {
+                    "one": "Un membre a été ajouté sur les {{asked}} demandés.",
+                    "few": "{{added}} membres ont été ajoutés sur les {{asked}} demandés."
+                }
+            },
+            "add-member": {
+                "title": {
+                    "one": "+ Membre ajouté",
+                    "few": "+ Membres ajoutés"
+                },
+                "message": {
+                    "one": "Un membre a été ajouté au groupe.",
+                    "few": "{{added}} membres ont été ajoutés au groupe."
+                }
+            },
+            "remove-member": {
+                "title": "- Membre retiré",
+                "message": "Le membre \"{{firstName}} {{lastName}}\" a été retiré du groupe."
+            },
+            "create": {
+                "title": "+ Groupe créé",
+                "message": "Le groupe \"{{name}}\" a été créé."
+            },
+            "edit": {
+                "title": "✏️ Groupe modifié",
+                "message": "Le groupe \"{{name}}\" a été modifié."
+            },
+            "disable": {
+                "title": "🙈 Groupe masqué",
+                "message": "Le groupe \"{{name}}\" a été masqué."
+            },
+            "enable": {
+                "title": "👀 Groupe visible",
+                "message": "Le groupe \"{{name}}\" est à nouveau visible."
+            },
+            "delete": {
+                "title": "🗑️ Groupe supprimé",
+                "message": "Le groupe \"{{name}}\" a été supprimé."
+            }
+        }
+    },
+    "vehicles": {
+        "search-and-filter": {
+            "text": "Immatriculation, modèle, marque",
+            "datetime": "Date & Heure",
+            "availability": "Disponibilité",
+            "visibility": "Visibilité"
+        },
+        "status": {
+            "interval": {
+                "PLANNED": "Disponible dans {{interval}}",
+                "FINISHED": "Non-Disponible depuis {{interval}}"
+            }
+        },
+        "available": {
+            "true": "Disponible",
+            "false": "Non-Disponible"
+        },
+        "visible": {
+            "true": "Visible",
+            "false": "Masqué"
+        },
+        "form": {
+            "title": {
+                "create": "Ajouter un véhicule",
+                "edit": "Modifier les informations du véhicule \"{{brand}} {{model}} ({{registration}})\""
+            },
+            "license-plate": "Immatriulation",
             "brand": "Marque",
             "model": "Modèle",
-            "presence": "Dates de présence",
+            "begin-datetime": "Date & Heure de début de disponibilité",
+            "end-datetime": "Date & Heure de fin de disponibilité",
+            "hint": {
+                "begin-date-time": "Par défaut un véhicule est disponible dès le début de l'évènement.",
+                "end-date-time": "Par défaut un véhicule est disponible jusqu'à la fin de l'évènement."
+            },
             "error": {
-                "registration": {
+                "license-plate": {
                     "required": "Un véhicule sans immatriculation ? Moins pratique pour l'identifier !",
                     "blank": "Non, non, non ! tu ne m'auras pas. Une immatriculation vide ça ne fonctionne pas !",
                     "maxlength": "T'as vu la longueur de l'immatriculation 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c'est {{requiredLength}}."
@@ -728,326 +1230,233 @@
                     "blank": "Non, non, non ! tu ne m'auras pas. Un nom de modèle vide ça ne fonctionne pas !",
                     "maxlength": "T'as vu la longueur du modèle 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c'est {{requiredLength}}."
                 },
-                "presence": {
+                "begin-datetime": {
                     "minDate": "Le véhicule ne peut pas arriver avant le début de l'événement ({{min}}).",
-                    "maxDate": "Le véhicule ne peut pas partir après la fin de l'événement ({{max}})."
+                    "maxDate": "Le véhicule ne peut pas partir après la fin de l'événement ({{max}}).",
+                    "dateRequiredForTime": "Ce véhicule arrive à une certaine heure ok ! Mais quel jour ? 📆"
+                },
+                "end-datetime": {
+                    "minDate": "Le véhicule ne peut pas arriver avant le début de l'événement ({{min}}).",
+                    "maxDate": "Le véhicule ne peut pas partir après la fin de l'événement ({{max}}).",
+                    "dateRequiredForTime": "Ce véhicule part à une certaine heure ok ! Mais quel jour ? 📆"
+                },
+                "date-range": {
+                    "beginDateBeforeEndDate": "Ce véhicule part avant d'être arrivé ! Ça c'est de l'ambition."
+                }
+            },
+            "placeholder": {
+                "license-plate": "Ex : AB-123-CD",
+                "brand": "Ex : Toyota",
+                "model": "Ex : Yaris",
+                "date": "Ex : {{date}}",
+                "time": "Ex : {{date}}"
+            }
+        },
+        "actions": {
+            "movements-history": "Historique des utilisations",
+            "edit": "Modifier",
+            "disable": "Masquer",
+            "enable": "Démasquer",
+            "delete": "Supprimer",
+            "confirmations": {
+                "disable": {
+                    "title": "Masquer le véhicule",
+                    "message": "Attention ! Tu vas masquer le véhicule \"{{element.brand}} {{element.model}} ({{element.licensePlate}})\". Tant qu'il est masqué, il ne sera plus possible de l'utiliser."
+                },
+                "enable": {
+                    "title": "Afficher à nouveau le véhicule",
+                    "message": "Attention ! Tu vas à nouveau rendre le véhicule \"{{element.brand}} {{element.model}} ({{element.licensePlate}})\" visible. Il sera de nouveau possible de l'utiliser."
+                },
+                "delete": {
+                    "title": "Supprimer le véhicule",
+                    "message": "Attention ! Tu vas définitivement supprimer le véhicle \"{{element.brand}} {{element.model}} ({{element.licensePlate}})\". Cette suppression est possible uniquement si aucun mouvement lui est associé."
                 }
             }
         },
-        "example": {
-            "registration": "Ex: AB-123-CD",
-            "brand": "Ex: Toyota",
-            "model": "Ex: Yaris",
-            "presence": "Ex: {{begin}} - {{end}}"
+        "notifications": {
+            "create": {
+                "title": "+ Véhicule ajoutée",
+                "message": "Le véhicule {{brand}} {{model}} ({{registration}}) a été ajouté."
+            },
+            "edit": {
+                "title": "✏️ Informations d'un véhicule modifiées",
+                "message": "Les informations du véhicule {{brand}} {{model}} ({{registration}}) ont été modifiées."
+            },
+            "disable": {
+                "title": "🙈 Véhicule masqué",
+                "message": "Le véhicule {{brand}} {{model}} ({{registration}}) a été masqué."
+            },
+            "enable": {
+                "title": "👀 Véhicule visible",
+                "message": "Le véhicule {{brand}} {{model}} ({{registration}}) est à nouveau visible."
+            },
+            "delete": {
+                "title": "🗑️ Véhicule supprimé",
+                "message": "Le véhicule {{brand}} {{model}} ({{registration}}) a été supprimé."
+            }
         }
     },
-    "participant": {
-        "search": {
-            "singular": "Rechercher des personne participante",
-            "plural": "Rechercher des personnes participantes"
+    "activities": {
+        "search-and-filter": {
+            "text": "Nom",
+            "datetime": "Date & Heure",
+            "availability": "Disponibilité",
+            "visibility": "Visibilité"
         },
-        "select": {
-            "singular": "Sélectionner une personne participante",
-            "plural": "Sélectionner des personnes participantes"
-        },
-        "add-participant": {
-            "singular": "{{number}} Participant",
-            "plural": "{{number}} Participants"
-        },
-        "group-and-others": {
-            "none": "Aucun groupe associé.",
-            "one": "Associé au groupe {{group}}.",
-            "singular": "Associé au groupe {{group}} et {{others}} autre.",
-            "plural": "Associé au groupe {{group}} et {{others}} autres."
-        },
-        "action": {
-            "movements-history": "Historique des mouvements",
-            "edit": "Modifier",
-            "disable": "Désactiver",
-            "enable": "Ré-activer",
-            "delete": "Supprimer",
-            "confirmation": {
-                "title": {
-                    "disable": "Désactiver la personne participante",
-                    "enable": "Ré-activer la personne participante",
-                    "delete": "Supprimer la personne participante"
-                },
-                "message": {
-                    "disable": "Attention ! Tu vas désactiver la personne \"{{element.firstName}} {{element.lastName}}\". Tant qu'elle est masquée, la personne ne pourra plus être intégrée dans les entrées/sorties.",
-                    "enable": "Attention ! Tu vas ré-activer la personne \"{{element.firstName}} {{element.lastName}}\". Il sera de nouveau possible de l'intégrer dans les entrées/sorties.",
-                    "delete": "Attention ! Tu vas définitivement supprimer la personne \"{{element.firstName}} {{element.lastName}}\". Elle sera donc définitivement dissociée des mouvements et autres éléments."
-                }
+        "participant.zero": "Aucun participant",
+        "description": "Description : ",
+        "status": {
+            "IN_PROGRESS": "Disponible",
+            "interval": {
+                "PLANNED": "Disponible dans {{interval}}",
+                "IN_PROGRESS": "Disponible depuis {{interval}}",
+                "FINISHED": "Non-Disponible depuis {{interval}}"
             }
+        },
+        "available": {
+            "true": "Disponible",
+            "false": "Non-Disponible"
+        },
+        "visible": {
+            "true": "Visible",
+            "false": "Masqué"
         },
         "form": {
             "title": {
-                "create": "Créer une personne participante",
-                "edit": "Modifier la personne participante \"{{firstName}} {{lastName}}\""
-            },
-            "user": "Utilisateur",
-            "empty-user-search": "Aucun utilisateur trouvé",
-            "first-name": "Prénom",
-            "previous-first-name": "L'ancien prénom \"{{firstName}}\" a été remplacé par celui de l'utilisateur lié.",
-            "last-name": "Nom",
-            "previous-last-name": "L'ancien nom \"{{lastName}}\" a été remplacé par celui de l'utilisateur lié.",
-            "birthday": "Date de naissance",
-            "presence": "Dates de présence",
-            "link-user": "Lier un utilisateur",
-            "groups": "Groupes",
-            "group-search": "Ajouter des groupes",
-            "empty-group-search": "Aucun groupe trouvé",
-            "no-group": "Aucun groupe selectionné",
-            "error": {
-                "first-name": {
-                    "required": "Une personne participante sans prénom ? Moins pratique pour l'identifier !",
-                    "blank": "Non, non, non ! tu ne m'auras pas. Un prénom vide ça ne fonctionne pas !",
-                    "maxlength": "T'as vu la longueur du prénom 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c'est {{requiredLength}}."
-                },
-                "last-name": {
-                    "required": "Une personne participante sans nom ? Moins pratique pour l'identifier !",
-                    "blank": "Non, non, non ! tu ne m'auras pas. Un nom vide ça ne fonctionne pas !",
-                    "maxlength": "T'as vu la longueur du nom 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c'est {{requiredLength}}."
-                },
-                "birthday": {
-                    "required": "À priori les gens naissent un jour. Merci de me fournir cette date !",
-                    "maxDate": "Naître dans le futur ? Pas dans ce monde, désolé !"
-                },
-                "presence": {
-                    "minDate": "La personne participante ne peut pas arriver avant le début de l'événement ({{min}}).",
-                    "maxDate": "La personne participante ne peut pas partir après la fin de l'événement ({{max}})."
-                }
-            }
-        },
-        "example": {
-            "first-name": "Ex: Robert",
-            "last-name": "Ex: BADEN-POWELL",
-            "birthday": "Ex: 22/02/1857",
-            "presence": "Ex: {{begin}} - {{end}}"
-        }
-    },
-    "group": {
-        "search": "Rechercher des groupes",
-        "select": "Sélectionner des groupes",
-        "action": {
-            "create-member": "Créer un membre",
-            "remove-member": "Retirer du groupe",
-            "add-members": "Ajouter des membres",
-            "members": "Gérer les membres",
-            "edit": "Modifier",
-            "disable": "Désactiver",
-            "enable": "Ré-activer",
-            "delete": "Supprimer",
-            "confirmation": {
-                "title": {
-                    "remove-member": "Retirer du groupe",
-                    "disable": "Désactiver le groupe de personnes",
-                    "enable": "Ré-activer le groupe de personnes",
-                    "delete": "Supprimer le groupe de personnes"
-                },
-                "message": {
-                    "remove-member": "Attention ! Tu vas retirer \"{{element.firstName}} {{element.lastName}}\" du groupe.",
-                    "disable": "Attention ! Tu vas désactiver le groupe de personnes \"{{element.name}}\". Tant qu'il est masqué, le groupe ne pourra plus être intégré dans les entrées/sorties.",
-                    "enable": "Attention ! Tu vas ré-activer le groupe de personnes \"{{element.name}}\". Il sera de nouveau possible de l'intégrer dans les entrées/sorties.",
-                    "delete": "Attention ! Tu vas définitivement supprimer le groupe de personnes \"{{element.name}}\". Elle sera donc définitivement dissocié des mouvements et autres éléments."
-                }
-            }
-        },
-        "content": {
-            "title": "Personne participantes",
-            "all": "Tous",
-            "adult": {
-                "singular": "Adulte",
-                "plural": "Adultes"
-            },
-            "child": {
-                "singular": "Jeune",
-                "plural": "Jeunes"
-            }
-        },
-        "person-and-others": {
-            "normal": {
-                "singular": "Associé à {{person}} et {{others}} autre.",
-                "plural": "Associé à {{person}} et {{others}} autres."
-            },
-            "purged": {
-                "singular": "Associé à {{others}} personne",
-                "plural": "Associé à {{others}} personnes"
-            }
-        },
-        "form": {
-            "title": {
-                "create": "Créer un groupe de personnes",
-                "edit": "Modifier le groupe de personnes \"{{name}}\""
+                "create": "Créer une activité",
+                "edit": "Modifier l'activité \"{{name}}\""
             },
             "name": "Nom",
-            "presence": "Dates de présence",
-            "participants": "Participants",
-            "participant-search": "Ajouter des personnes",
-            "empty-participant-search": "Aucune personne participante trouvée",
-            "no-participant": "Aucune personne participante selectionnée",
+            "description": "Description",
+            "duration": "Durée",
+            "allowed-participants": "Fourchette de participants",
+            "begin-datetime": "Date & Heure de début de disponibilité",
+            "end-datetime": "Date & Heure de fin de disponibilité",
+            "hint": {
+                "begin-date-time": "Par défaut une activité est disponible dès le début de l'évènement.",
+                "end-date-time": "Par défaut une activité est disponible jusqu'à la fin de l'évènement."
+            },
             "error": {
                 "name": {
-                    "required": "Un groupe sans nom ? Sérieusement, donne-lui un nom !",
+                    "required": "Une activité sans nom ? Moins pratique pour l'identifier !",
                     "blank": "Non, non, non ! tu ne m'auras pas. Un nom vide ça ne fonctionne pas !",
                     "maxlength": "T'as vu la longueur du nom 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c'est {{requiredLength}}."
                 },
-                "presence": {
-                    "minDate": "Le groupe ne peut pas arriver avant le début de l'événement ({{min}}).",
-                    "maxDate": "Le groupe ne peut pas partir après la fin de l'événement ({{max}})."
+                "description": {
+                    "maxlength": "T'as vu la longueur de la marque 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c'est {{requiredLength}}."
                 },
-                "participants": {
-                    "required": "Impossible de créer un groupe sans membres. Ce groupe a besoin de renforts !"
+                "duration": {
+                    "hour": {
+                        "min": "Tu as déjà vu des heures négatives ? Moi non plus. Je sais pas comment on remonte le temps mais c'est pas comme ça.",
+                        "max": "Désolé, j'ai eu la flemme de gérer les activités de plus de {{max}} heures. Tu peux pas faire plus court ?",
+                        "mustBeHigher": "Une activité doit durer au moins une minute. Tu n'es pas obligé de spécifier la durée donc vide le champ plutôt que de mettre 0."
+                    },
+                    "minute": {
+                        "min": "Tu as déjà vu des minutes négatives ? Moi non plus. Je sais pas comment on remonte le temps mais c'est pas comme ça.",
+                        "max": "Ça fait au moins une retenue ça ! Faut passer ça en heure, désolé, j'ai eu la flemme de gérer la conversion automatique.",
+                        "mustBeHigher": "Une activité doit durer au moins une minute. Tu n'es pas obligé de spécifier la durée donc vide le champ plutôt que de mettre 0."
+                    }
                 },
-                "add-participants": {
-                    "required": "Pour ajouter des members à un groupe, il en faut 😅."
-                }
-            }
-        },
-        "example": {
-            "name": "Ex: Pionniers-Caravelles - Charles de Foucauld Bondues",
-            "presence": "Ex: {{begin}} - {{end}}"
-        }
-    },
-    "movement": {
-        "type": {
-            "filter-sort": "Type",
-            "IN": "Entrée",
-            "OUT": "Sortie"
-        },
-        "content": {
-            "title": "Contenu",
-            "all": "Tous",
-            "adult": {
-                "singular": "Adulte",
-                "plural": "Adultes"
-            },
-            "child": {
-                "singular": "Jeune",
-                "plural": "Jeunes"
-            }
-        },
-        "person-and-others": {
-            "normal": {
-                "singular": "{{person}} et {{others}} autre.",
-                "plural": "{{person}} et {{others}} autres."
-            },
-            "purged": {
-                "singular": "{{others}} personne",
-                "plural": "{{others}} personnes"
-            }
-        },
-        "form": {
-            "title": {
-                "create": "Créer un mouvement",
-                "edit": {
-                    "IN": "Modifier l'entrée du {{date}} à {{time}}",
-                    "OUT": "Modifier la sortie du {{date}} à {{time}}"
+                "allowed-participants": {
+                    "min": "On va se faire chier à {{actual}}, il faut au moins {{min}} participant(s) pour une activité.",
+                    "rangeMin": "Tu vas rire mais ici, c'est comme partout ailleurs, le minimum doit être inférieur ou égal au maximum.",
+                    "max": "“Vous voyez ce que ça fait déjà {{actual}} Larmina ?” Et bien c'est trop ! Le max c'est {{max}} après c'est relou à gérer.",
+                    "rangeBothDefined": "Tu ne peux pas saisir que le minimum ou le maximum."
+                },
+                "begin-datetime": {
+                    "minDate": "L'activité ne peut pas être disponible avant le début de l'événement ({{min}}).",
+                    "maxDate": "L'activité ne peut pas être disponible après la fin de l'événement ({{max}}).",
+                    "dateRequiredForTime": "Cette activité est disponible à une certaine heure ok ! Mais quel jour ? 📆"
+                },
+                "end-datetime": {
+                    "minDate": "L'activité ne peut pas être disponible avant le début de l'événement ({{min}}).",
+                    "maxDate": "L'activité ne peut pas être disponible après la fin de l'événement ({{max}}).",
+                    "dateRequiredForTime": "Cette activité n'est plus disponible à une certaine heure ok ! Mais quel jour ? 📆"
+                },
+                "date-range": {
+                    "beginDateBeforeEndDate": "Cette activité n'est plus disponible avant de l'être ! Ça c'est de l'ambition."
                 }
             },
-            "datetime": "Horodatage",
-            "type": "Type",
-            "content": "Personnes participantes au mouvement",
-            "vehicles-and-drivers": "Véhicules et conducteurs",
-            "empty-vehicles-search": "Aucun véhicule trouvé",
-            "content-search": "Ajouter des personnes et des groupes",
-            "empty-content-search": "Aucune personne ou groupe trouvé",
-            "vehicles-search": "Ajouter des véhicules",
-            "no-participant": "Aucune personne selectionnée",
-            "no-vehicle": "Aucun véhicule selectionné",
-            "driver": "Responsable du véhicule et ses infractions",
-            "group": "Groupe \"{{name}}\"",
-            "empty-drivers": "Aucun conducteur potentiel dans le mouvement",
-            "error": {
-                "date-time": {
-                    "required": "L'horodatage du mouvement doivent être définies. Sinon, comment savoir quand ça se passe ?",
-                    "minDate": "L'horodatage du mouvement est plus tôt que la fin de l'événement ({{min}}). Restons dans les clous !",
-                    "maxDate": "L'horodatage du mouvement est plus tard que la fin de l'événement ({{max}}). Restons dans les clous !"
-                },
-                "type": {
-                    "required": "Le type de mouvement doit être défini. Sinon je risque d'avoir du mal à te dire s'il s'agit d'une entrée ou d'une sortie la prochaine fois que tu me demandes."
-                },
-                "participants": {
-                    "required": "Impossible de créer un mouvement sans participants. Reviens avec une équipe !"
-                },
-                "driver": {
-                    "required": "Un véhicule sans responsable ? Désolé, les voitures complètement autonomes c'est pas encore ici."
-                }
+            "placeholder": {
+                "name": "Ex : Randonnée dans les calanques",
+                "description": "Ex : Cette randonnée dans les Calanques de Marseilles, est une activité de 3 heures. Durant cette activité, les participants pourront…",
+                "duration": "Ex : 3h45",
+                "allowed-min-participants": "Ex : 5",
+                "allowed-max-participants": "Ex : 15",
+                "date": "Ex : {{date}}",
+                "time": "Ex : {{date}}"
             }
         },
-        "example": {
-            "type": "Ex: Entrée",
-            "datetime": "Ex: {{date}} {{time}}"
-        },
-        "searched": {
-            "participant": {
-                "singular": "Personne participante",
-                "plural": "Personnes participante"
-            },
-            "group": {
-                "singular": "Groupe",
-                "plural": "Groupes"
-            },
-            "vehicle": {
-                "singular": "Véhicule",
-                "plural": "Véhicules"
-            }
-        },
-        "action": {
+        "actions": {
+            "movements-history": "Historique des mouvements",
             "edit": "Modifier",
-            "disable": "Désactiver",
-            "enable": "Ré-activer",
+            "disable": "Masquer",
+            "enable": "Démasquer",
             "delete": "Supprimer",
-            "confirmation": {
-                "title": {
-                    "disable": "Désactiver le mouvement",
-                    "enable": "Ré-activer le mouvement",
-                    "delete": "Supprimer le mouvement"
+            "confirmations": {
+                "disable": {
+                    "title": "Masquer l'activité",
+                    "message": "Attention ! Tu vas masquer l'activité \"{{element.name}}\". Tant qu'elle est masquée, elle ne pourra plus être utilisé."
                 },
-                "message": {
-                    "disable": "Attention ! Tu vas désactiver le mouvement. Tant qu'il est masqué, le mouvement ne sera plus visible pour ses participants.",
-                    "enable": "Attention ! Tu vas ré-activer le mouvement. Il sera de nouveau visible pour les participants.",
-                    "delete": "Attention ! Tu vas définitivement supprimer le mouvement. Il sera définitivement dissocié des mouvements et autres éléments."
+                "enable": {
+                    "title": "Afficher à nouveau l'activité",
+                    "message": "Attention ! Tu vas à nouveau rendre l'activité \"{{element.name}}\" visible. Elle sera de nouveau possible de l'utiliser."
+                },
+                "delete": {
+                    "title": "Supprimer l'activité",
+                    "message": "Attention ! Tu vas définitivement supprimer l'activité \"{{element.name}}\". Elle sera donc définitivement dissociée des mouvements et autres éléments."
                 }
+            }
+        },
+        "notifications": {
+            "create": {
+                "title": "+ Activité créée",
+                "message": "L'activité {{name}} a été créée."
+            },
+            "edit": {
+                "title": "✏️ Activité modifiée",
+                "message": "L'activité {{name}} a été modifiée."
+            },
+            "disable": {
+                "title": "🙈 Activité masquée",
+                "message": "L'activité {{name}} a été masquée."
+            },
+            "enable": {
+                "title": "👀 Activité visible",
+                "message": "L'activité {{name}} est à nouveau visible."
+            },
+            "delete": {
+                "title": "🗑️ Activité supprimée",
+                "message": "L'activité {{name}} a été supprimée."
             }
         }
     },
-    "user": {
-        "select": {
-            "singular": "Sélectionnes un utilisateur",
-            "plural": "Sélectionnes des utilisateurs"
+    "preferences": {
+        "search-and-filter": {
+            "text": "Évènement",
+            "datetime": "Date & Heure"
         },
-        "search": {
-            "singular": "Recherche un utilisateur",
-            "plural": "Recherche des utilisateurs"
+        "profiles-tab": {
+            "profile": {
+                "one": "Mon Profil",
+                "few": "Mes Profils"
+            },
+            "invitation": {
+                "one": "Invitation",
+                "few": "Invitations"
+            }
         },
-        "add-user": {
-            "singular": "{{number}} Utilisateur",
-            "plural": "{{number}} Utilisateurs"
+        "actions": {
+            "create-event": "Créer un évènement",
+            "invitation": {
+                "one": "Invitation reçue",
+                "few": "Invitations reçues"
+            }
         },
-        "form": {
-            "title": "Mettre à jour le role de {{firstName}} {{lastName}}"
-        },
-        "action": {
-            "update-role": "Mettre à jour le rôle",
-            "block": "Bloquer",
-            "unblock": "Débloquer",
-            "impersonate": "Anonymiser",
-            "delete": "Supprimer",
-            "confirmation": {
-                "title": {
-                    "block": "Bloquer l'utilisateur",
-                    "unblock": "Débloquer l'utilisateur",
-                    "impersonate": "Anonymiser l'utilisateur",
-                    "impersonate-myself": "Anonymiser mon compte",
-                    "delete": "Supprimer l'utilisateur"
-                },
-                "message": {
-                    "block": "Attention ! Tu vas bloquer un utilisateur. Tant qu'il est bloqué, {{element.firstName}} {{element.lastName}} ne pourra plus se connecter.",
-                    "unblock": "Attention ! Tu vas débloquer un utilisateur. {{element.firstName}} {{element.lastName}} pourra à nouveau se connecter.",
-                    "impersonate": "Attention ! Tu vas anonymiser un utilisateur. Tous les profils et participants associés à {{element.firstName}} {{element.lastName}} seront également anonymisé.",
-                    "impersonate-myself": "Attention ! Tu vas anonymiser ton compte. Cette action irréversible entrainera ta déconnexion et t'empêcheras de te connecter à nouveau. À titre informatif, ton utilisateur sera anonmysé immédiatement, les participants a qui tu es liés seront anonymisés à la fin de l'évènement. Cependant, si tu as conduit des véhicules dans le cadre de cet évènement, ton participant sera anonymisé 1 an après la fin de l'évènement.",
-                    "delete": "Attention ! Tu vas supprimer un utilisateur. Tous les profils associés à {{element.firstName}} {{element.lastName}} seront également supprimés."
-                }
+        "notifications": {
+            "NO_SELECTED_PROFILE": {
+                "title": "Aucun profil sélectionné",
+                "message": "Sélectionnes un profil lié à un évènement pour effectuer cette action."
             }
         }
     }

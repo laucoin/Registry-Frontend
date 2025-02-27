@@ -8,6 +8,7 @@ import { MovementActionEnum } from '../../../domains/movement/data/state/movemen
 import { GroupActionEnum } from '../../../domains/group/data/state/group.action'
 import { RegistryActionEnum } from '../../util-common/state/registry.action'
 import { VehicleActionEnum } from '../../../domains/vehicle/data/state/vehicle.action'
+import { ActivityActionEnum } from '../../../domains/activity/data/state/activity.action'
 
 export interface ContextConfigModel {
     theme: unknown
@@ -20,7 +21,7 @@ export interface ContextConfigModel {
     menu: MenuItemModel[]
     event: {
         optionIcons: Map<string, string>
-        action: ActionModel<EventActionEnum>[]
+        action: ActionModel<EventActionEnum | RegistryActionEnum>[]
     }
     profile: {
         event: {
@@ -33,6 +34,9 @@ export interface ContextConfigModel {
     }
     vehicle: {
         action: ActionModel<VehicleActionEnum>[]
+    }
+    activity: {
+        action: ActionModel<ActivityActionEnum>[]
     }
     participant: {
         action: ActionModel<ParticipantActionEnum | GroupActionEnum>[]

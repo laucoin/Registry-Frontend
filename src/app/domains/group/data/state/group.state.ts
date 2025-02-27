@@ -12,18 +12,18 @@ import {
     EnableGroup,
     FetchGroup,
     FetchGroupMembersPage,
+    FetchGroupsMembers,
     FetchGroupsPage,
-    InputGroupMembersPageDateRange,
-    InputGroupMembersPageSearch,
-    InputGroupsPageDateRange,
-    InputGroupsPageSearch,
+    InputGroupMembersPageTextSearched,
+    InputGroupsPageDateTimeSearched,
+    InputGroupsPageTextSearched,
     RemoveMemberFromGroup,
     ResetGroup,
     SearchParticipants,
-    SelectGroupMembersPageOrder,
-    SelectGroupMembersPageVisibility,
-    SelectGroupsPageOrder,
-    SelectGroupsPageVisibility,
+    SelectGroupMembersPageStatusSearched,
+    SelectGroupMembersPageVisibilitySearched,
+    SelectGroupsPagePresenceSearched,
+    SelectGroupsPageVisibilitySearched,
     StartGroupLoader,
     StartGroupMembersPageLoader,
     StartGroupsPageLoader,
@@ -35,7 +35,6 @@ import {
 import { GroupService } from './group.service'
 import { GroupFacade } from './group.facade'
 import { StateUtil } from '../../../../shared/util-tool/state/state.util'
-import { OrderEnum } from '../../../../shared/util-model/enumeration/order.enum'
 import { Injectable } from '@angular/core'
 import { ElementRequestInformationModel } from '../../../../shared/util-model/model/element-request-information.model'
 import { ParticipantModel } from '../../../../shared/util-model/model/participant.model'
@@ -47,6 +46,9 @@ import { PageRequestInformationModel } from '../../../../shared/util-model/model
 import { ParticipantPageParamsModel } from '../../../participant/data/model/participant-page-params.model'
 import { ErrorModel } from '../../../../shared/util-model/model/error.model'
 import { GroupStateModel } from '../model/group-state.model'
+import { PairModel } from '../../../../shared/util-model/model/pair.model'
+import { GroupUtil } from '../../../../shared/util-tool/util/group.util'
+import { PluralTranslationPipe } from '../../../../shared/util-tool/pipe/plural-translation.pipe'
 
 const defaultGroup: ElementRequestInformationModel<GroupModel> = {
     element: undefined,
@@ -57,12 +59,10 @@ const defaultGroupState: GroupStateModel = {
     groups: {
         element: undefined,
         params: {
-            order: OrderEnum.ASC,
-            onlyVisible: true,
-            searched: undefined,
-            isPresent: false,
-            startDate: undefined,
-            endDate: undefined,
+            textSearched: undefined,
+            visibilitySearched: undefined,
+            presenceSearched: undefined,
+            dateTimeSearched: undefined,
         },
         loading: false,
         silentLoading: false,
@@ -72,12 +72,9 @@ const defaultGroupState: GroupStateModel = {
         element: undefined,
         groupId: undefined,
         params: {
-            order: OrderEnum.ASC,
-            onlyVisible: true,
-            searched: undefined,
-            isPresent: false,
-            startDate: undefined,
-            endDate: undefined,
+            visibilitySearched: undefined,
+            statusSearched: undefined,
+            textSearched: undefined,
         },
         loading: false,
         silentLoading: false,
@@ -86,6 +83,16 @@ const defaultGroupState: GroupStateModel = {
     group: defaultGroup,
     _metadata: {
         searched: [],
+        availabilities: [
+            { label: '-', value: undefined },
+            { label: 'groups.available.true', value: true },
+            { label: 'groups.available.false', value: false },
+        ],
+        visibilities: [
+            { label: '-', value: undefined },
+            { label: 'groups.visible.true', value: true },
+            { label: 'groups.visible.false', value: false },
+        ],
     },
 }
 
@@ -100,6 +107,7 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
     public constructor (
         private readonly service: GroupService,
         private readonly facade: GroupFacade,
+        private readonly pluralTranslationPipe: PluralTranslationPipe,
     ) {
         super()
     }
@@ -125,28 +133,23 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
     }
 
     @Selector()
-    public static groupsPageSearchParam (state: GroupStateModel): string | undefined {
-        return state.groups.params.searched
+    public static groupsPageTextSearchedParam (state: GroupStateModel): string | undefined {
+        return state.groups.params.textSearched
     }
 
     @Selector()
-    public static groupsPageStartDateParam (state: GroupStateModel): string | undefined {
-        return state.groups.params.startDate
+    public static groupsPageDateTimeSearchedParam (state: GroupStateModel): string | undefined {
+        return state.groups.params.dateTimeSearched
     }
 
     @Selector()
-    public static groupsPageEndDateParam (state: GroupStateModel): string | undefined {
-        return state.groups.params.endDate
+    public static groupsPagePresenceSearchedParam (state: GroupStateModel): boolean | undefined {
+        return state.groups.params.presenceSearched
     }
 
     @Selector()
-    public static groupsPageOnlyVisibleParam (state: GroupStateModel): boolean {
-        return state.groups.params.onlyVisible
-    }
-
-    @Selector()
-    public static groupsPageOrderParam (state: GroupStateModel): OrderEnum {
-        return state.groups.params.order
+    public static groupsPageVisibilitySearchedParam (state: GroupStateModel): boolean | undefined {
+        return state.groups.params.visibilitySearched
     }
 
     @Selector()
@@ -170,28 +173,18 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
     }
 
     @Selector()
-    public static groupMembersPageSearchParam (state: GroupStateModel): string | undefined {
-        return state.members.params.searched
+    public static groupMembersPageTextSearchedParam (state: GroupStateModel): string | undefined {
+        return state.members.params.textSearched
     }
 
     @Selector()
-    public static groupMembersPageStartDateParam (state: GroupStateModel): string | undefined {
-        return state.members.params.startDate
+    public static groupMembersPageStatusSearchedParam (state: GroupStateModel): string | undefined {
+        return state.members.params.statusSearched
     }
 
     @Selector()
-    public static groupMembersPageEndDateParam (state: GroupStateModel): string | undefined {
-        return state.members.params.endDate
-    }
-
-    @Selector()
-    public static groupMembersPageOnlyVisibleParam (state: GroupStateModel): boolean {
-        return state.members.params.onlyVisible
-    }
-
-    @Selector()
-    public static groupMembersPageOrderParam (state: GroupStateModel): OrderEnum {
-        return state.members.params.order
+    public static groupMembersPageVisibilitySearchedParam (state: GroupStateModel): boolean | undefined {
+        return state.members.params.visibilitySearched
     }
 
     @Selector()
@@ -207,6 +200,16 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
     @Selector()
     public static searchedParticipantsMetadata (state: GroupStateModel): SelectItem<ParticipantModel>[] {
         return state._metadata.searched
+    }
+
+    @Selector()
+    public static availabilitiesMetadata (state: GroupStateModel): SelectItem<boolean | undefined>[] {
+        return state._metadata.availabilities
+    }
+
+    @Selector()
+    public static visibilitiesMetadata (state: GroupStateModel): SelectItem<boolean | undefined>[] {
+        return state._metadata.visibilities
     }
 
     @Action( StartGroupsPageLoader )
@@ -230,15 +233,16 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
     ): Observable<void> {
         return this.service.findGroups(
             payload.eventId,
-            payload.offset,
-            payload.limit,
+            payload.pageNumber,
+            payload.pageSize,
             ctx.getState().groups.params,
         ).pipe(
             initialize( (): void => this.facade.startGroupsPageLoader() ),
             finalize( (): void => this.facade.stopGroupsPageLoader() ),
-            map( (groupPage: PageModel<GroupModel>): void => this.fetchGroupsPageComplete(
+            map( (groupsPage: PageModel<GroupModel>): void => this.fetchGroupsPageComplete(
                 ctx,
-                groupPage,
+                payload.eventId,
+                groupsPage,
             ) ),
             catchError( (error: ErrorModel): Observable<void> => this.pageError( ctx, error ) ),
         )
@@ -246,76 +250,118 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
 
     private fetchGroupsPageComplete (
         ctx: StateContext<GroupStateModel>,
-        groupPage: PageModel<GroupModel>,
+        eventId: string | undefined,
+        groupsPage: PageModel<GroupModel>,
     ): void {
         ctx.patchState( {
             groups: {
                 ...ctx.getState().groups,
-                element: groupPage,
+                element: groupsPage,
             },
         } )
+
+        if (groupsPage.content.length > 0) {
+            this.facade.fetchGroupMembers(
+                groupsPage.content.map( (group: GroupModel): string => group.id ),
+                eventId,
+            )
+        }
     }
 
-    @Action( InputGroupsPageSearch )
-    public inputGroupsPageSearch (
+    @Action( FetchGroupsMembers )
+    public fetchGroupsMembers (
         ctx: StateContext<GroupStateModel>,
-        payload: InputGroupsPageSearch,
+        payload: FetchGroupsMembers,
+    ): Observable<void> {
+        return this.service.findGroupsMembers(
+            payload.eventId,
+            payload.groupIds,
+        ).pipe(
+            map( (contents: PairModel<ParticipantModel[]>[]): void => this.fetchGroupsMembersComplete(
+                ctx,
+                contents,
+            ) ),
+        )
+    }
+
+    private fetchGroupsMembersComplete (
+        ctx: StateContext<GroupStateModel>,
+        members: PairModel<ParticipantModel[]>[],
     ): void {
+        if (!ctx.getState().groups.element) {
+            return
+        }
+
         ctx.patchState( {
             groups: {
                 ...ctx.getState().groups,
-                params: {
-                    ...ctx.getState().groups.params,
-                    searched: payload.searched,
+                element: {
+                    ...ctx.getState().groups.element!,
+                    content: GroupUtil.rebuildPageWithMembers( ctx.getState().groups.element!.content, members ),
                 },
             },
         } )
     }
 
-    @Action( InputGroupsPageDateRange )
-    public inputGroupsPageDateRange (
+    @Action( InputGroupsPageTextSearched )
+    public inputGroupsPageTextSearched (
         ctx: StateContext<GroupStateModel>,
-        payload: InputGroupsPageDateRange,
+        payload: InputGroupsPageTextSearched,
     ): void {
         ctx.patchState( {
             groups: {
                 ...ctx.getState().groups,
                 params: {
                     ...ctx.getState().groups.params,
-                    startDate: payload.start?.toISOString(),
-                    endDate: payload.end?.toISOString(),
+                    textSearched: payload.searched,
                 },
             },
         } )
     }
 
-    @Action( SelectGroupsPageVisibility )
-    public selectGroupsPageVisibility (
+    @Action( InputGroupsPageDateTimeSearched )
+    public inputGroupsPageDateTimeSearched (
         ctx: StateContext<GroupStateModel>,
-        payload: SelectGroupsPageVisibility,
+        payload: InputGroupsPageDateTimeSearched,
     ): void {
         ctx.patchState( {
             groups: {
                 ...ctx.getState().groups,
                 params: {
                     ...ctx.getState().groups.params,
-                    onlyVisible: payload.onlyVisible,
+                    dateTimeSearched: payload.dateTimeSearched?.toISOString(),
                 },
             },
         } )
     }
 
-    @Action( SelectGroupsPageOrder )
-    public selectGroupsPageOrder (
+    @Action( SelectGroupsPagePresenceSearched )
+    public selectGroupsPagePresenceSearched (
         ctx: StateContext<GroupStateModel>,
-        payload: SelectGroupsPageOrder,
+        payload: SelectGroupsPagePresenceSearched,
     ): void {
         ctx.patchState( {
             groups: {
                 ...ctx.getState().groups,
                 params: {
                     ...ctx.getState().groups.params,
-                    order: payload.order,
+                    presenceSearched: payload.presenceSearched,
+                },
+            },
+        } )
+    }
+
+    @Action( SelectGroupsPageVisibilitySearched )
+    public selectGroupsPageVisibilitySearched (
+        ctx: StateContext<GroupStateModel>,
+        payload: SelectGroupsPageVisibilitySearched,
+    ): void {
+        ctx.patchState( {
+            groups: {
+                ...ctx.getState().groups,
+                params: {
+                    ...ctx.getState().groups.params,
+                    visibilitySearched: payload.visibilitySearched,
                 },
             },
         } )
@@ -370,9 +416,9 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
         return this.service.findGroupMembersByGroupId(
             payload.eventId,
             payload.id,
-            payload.offset,
-            payload.limit,
-            ctx.getState().groups.params,
+            payload.pageNumber,
+            payload.pageSize,
+            ctx.getState().members.params,
         ).pipe(
             initialize( (): void => this.facade.startGroupMembersPageLoader() ),
             finalize( (): void => this.facade.stopGroupMembersPageLoader() ),
@@ -396,66 +442,49 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
         } )
     }
 
-    @Action( InputGroupMembersPageSearch )
-    public inputGroupMembersPageSearch (
+    @Action( InputGroupMembersPageTextSearched )
+    public inputGroupMembersPageTextSearched (
         ctx: StateContext<GroupStateModel>,
-        payload: InputGroupMembersPageSearch,
+        payload: InputGroupMembersPageTextSearched,
     ): void {
         ctx.patchState( {
             members: {
                 ...ctx.getState().members,
                 params: {
                     ...ctx.getState().members.params,
-                    searched: payload.searched,
+                    textSearched: payload.textSearched,
                 },
             },
         } )
     }
 
-    @Action( InputGroupMembersPageDateRange )
-    public inputGroupMembersPageDateRange (
+    @Action( SelectGroupMembersPageStatusSearched )
+    public selectGroupMembersPageStatusSearched (
         ctx: StateContext<GroupStateModel>,
-        payload: InputGroupMembersPageDateRange,
+        payload: SelectGroupMembersPageStatusSearched,
     ): void {
         ctx.patchState( {
             members: {
                 ...ctx.getState().members,
                 params: {
                     ...ctx.getState().members.params,
-                    startDate: payload.start?.toISOString(),
-                    endDate: payload.end?.toISOString(),
+                    statusSearched: payload.statusSearched,
                 },
             },
         } )
     }
 
-    @Action( SelectGroupMembersPageVisibility )
-    public selectGroupMembersPageVisibility (
+    @Action( SelectGroupMembersPageVisibilitySearched )
+    public selectGroupMembersPageVisibilitySearched (
         ctx: StateContext<GroupStateModel>,
-        payload: SelectGroupMembersPageVisibility,
+        payload: SelectGroupMembersPageVisibilitySearched,
     ): void {
         ctx.patchState( {
             members: {
                 ...ctx.getState().members,
                 params: {
                     ...ctx.getState().members.params,
-                    onlyVisible: payload.onlyVisible,
-                },
-            },
-        } )
-    }
-
-    @Action( SelectGroupMembersPageOrder )
-    public selectGroupMembersPageOrder (
-        ctx: StateContext<GroupStateModel>,
-        payload: SelectGroupMembersPageOrder,
-    ): void {
-        ctx.patchState( {
-            members: {
-                ...ctx.getState().members,
-                params: {
-                    ...ctx.getState().members.params,
-                    order: payload.order,
+                    visibilitySearched: payload.visibilitySearched,
                 },
             },
         } )
@@ -503,7 +532,7 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
     ): Observable<void> {
         return this.service.searchParticipants(
             payload.eventId,
-            payload.searched,
+            payload.textSearched,
         ).pipe(
             map( (participants: ParticipantModel[]): void => this.searchParticipantsComplete(
                 ctx,
@@ -518,6 +547,7 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
     ): void {
         ctx.patchState( {
             _metadata: {
+                ...ctx.getState()._metadata,
                 searched: participants.map( (participant: ParticipantModel): SelectItem<ParticipantModel> =>
                     ParticipantUtil.toSelectItem( participant ),
                 ),
@@ -552,8 +582,8 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
     ): void {
         this.buildMessageAndNotify(
             'success',
-            'success.title.group.create',
-            'success.message.group.create',
+            'groups.notifications.create.title',
+            'groups.notifications.create.message',
             this.groupIcon,
             this.buildTranslationArgs( group ),
         )
@@ -580,8 +610,8 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
     ): void {
         this.buildMessageAndNotify(
             'success',
-            'success.title.group.edit',
-            'success.message.group.edit',
+            'groups.notifications.edit.title',
+            'groups.notifications.edit.message',
             this.groupIcon,
             this.buildTranslationArgs( group ),
         )
@@ -609,11 +639,17 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
         members: string[],
     ): void {
         if (asked != members.length) {
-            const message: string = 'warning.message.group.add-members.'
+            const prefixKey: string = 'groups.notifications.partial-add-member'
             this.buildMessageAndNotify(
                 'warn',
-                'warning.title.group.add-members',
-                members.length <= 1 ? `${message}singular` : `${message}plural`,
+                this.pluralTranslationPipe.transform(
+                    prefixKey + '.title',
+                    members.length,
+                ),
+                this.pluralTranslationPipe.transform(
+                    prefixKey + '.message',
+                    members.length,
+                ),
                 'pi pi-user-plus',
                 {
                     asked: asked,
@@ -621,15 +657,20 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
                 },
             )
         } else {
-            const title: string = 'success.title.group.add-members.'
-            const message: string = 'success.message.group.add-members.'
+            const prefixKey: string = 'groups.notifications.add-member'
             this.buildMessageAndNotify(
                 'success',
-                members?.length <= 1 ? `${title}singular` : `${title}plural`,
-                members?.length <= 1 ? `${message}singular` : `${message}plural`,
+                this.pluralTranslationPipe.transform(
+                    prefixKey + '.title',
+                    members.length,
+                ),
+                this.pluralTranslationPipe.transform(
+                    prefixKey + '.message',
+                    members.length,
+                ),
                 'pi pi-user-plus',
                 {
-                    created: members.length,
+                    added: members.length,
                 },
             )
         }
@@ -661,8 +702,8 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
     ): void {
         this.buildMessageAndNotify(
             'success',
-            'success.title.group.remove-member',
-            'success.message.group.remove-member',
+            'groups.notifications.remove-member.title',
+            'groups.notifications.remove-member.message',
             'pi pi-user-minus',
             {
                 ...this.buildTranslationArgs( group ),
@@ -696,8 +737,8 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
     ): void {
         this.buildMessageAndNotify(
             'success',
-            'success.title.group.disable',
-            'success.message.group.disable',
+            'groups.notifications.disable.title',
+            'groups.notifications.disable.message',
             this.groupIcon,
             this.buildTranslationArgs( group ),
         )
@@ -724,8 +765,8 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
     ): void {
         this.buildMessageAndNotify(
             'success',
-            'success.title.group.enable',
-            'success.message.group.enable',
+            'groups.notifications.enable.title',
+            'groups.notifications.enable.message',
             this.groupIcon,
             this.buildTranslationArgs( group ),
         )
@@ -752,8 +793,8 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
     ): void {
         this.buildMessageAndNotify(
             'success',
-            'success.title.group.delete',
-            'success.message.group.delete',
+            'groups.notifications.delete.title',
+            'groups.notifications.delete.message',
             this.groupIcon,
             this.buildTranslationArgs( group ),
         )
@@ -766,7 +807,7 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
 
     protected refreshPage (ctx: StateContext<GroupStateModel>, eventId: string | undefined): void {
         const page: PageModel<GroupModel> | undefined = ctx.getState().groups.element
-        this.facade.fetchGroupsPage( page?.offset, page?.limit, true, eventId )
+        this.facade.fetchGroupsPage( page?.pageNumber, page?.pageSize, true, eventId )
     }
 
     protected refreshGroupMembers (ctx: StateContext<GroupStateModel>, eventId: string | undefined): void {
@@ -775,8 +816,8 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
         } = ctx.getState().members
         this.facade.fetchGroupMembersPage(
             pageInformation.groupId!,
-            pageInformation.element?.offset,
-            pageInformation.element?.limit,
+            pageInformation.element?.pageNumber,
+            pageInformation.element?.pageSize,
             true,
             eventId,
         )

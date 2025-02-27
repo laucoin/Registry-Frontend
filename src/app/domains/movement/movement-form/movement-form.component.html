@@ -1,103 +1,130 @@
-<app-form [form]='form' [loading]='(loading$ | async) ?? false'>
-    @if (movement()) {
-        <h2>
-            {{
-                'movement.form.title.edit.' + movement()!.type.value | translate: {
-                    date: movement()?.dateTime | date: ('datetime.format.date' | translate),
-                    time: movement()?.dateTime | date: ('datetime.format.time' | translate),
-                }
-            }}
-        </h2>
-    } @else {
-        <h2>{{ 'movement.form.title.create' | translate }}</h2>
-    }
+<app-form [form]='form'
+          [loading]='facade.movementLoading()'
+          [title]='(("movements.form.title" | formTitle: facade.movement()) + "." + (type.value ?? "none")) | translate: {
+              datetime: facade.movement()?.dateTime | dateFormat: "datetime"
+          }'>
     <p-card>
         <div class='field'>
-            <label for='datetime' appRequired>{{ 'movement.form.datetime' | translate }}</label>
+            <label for='datetime' appRequired>{{ 'movements.form.datetime' | translate }}</label>
             <p-date-picker [formControl]='dateTime'
                            [showButtonBar]='true'
-                           [placeholder]='"movement.example.datetime" | translate: {
-                               date: now | date: ("datetime.format.date" | translate),
-                               time: now | date: ("datetime.format.time" | translate),
+                           [placeholder]='"movements.form.placeholder.datetime" | translate: {
+                               date: now | dateFormat: "date",
+                               time: now | dateFormat: "time",
                            }'
                            [readonlyInput]='true'
-                           [touchUI]='isMobile()'
+                           [touchUI]='registryFacade.tinyScreen()'
                            [showTime]='true'
                            (keydown.enter)='submit()'
                            inputId='datetime'
                            fluid />
-            <app-form-field-error [control]='dateTime'
-                                  translationPrefix='movement.form.error.date-time' />
+            <app-form-field-error [errors]='dateTime.errors'
+                                  [invalid]='FormUtil.invalid(dateTime)'
+                                  translationPrefix='movements.form.error.datetime' />
         </div>
         <div class='field'>
-            <label for='type' appRequired>{{ 'movement.form.type' | translate }}</label>
+            <label for='type' appRequired>{{ 'movements.form.type' | translate }}</label>
             <p-select
                     fluid
                     inputId='type'
-                    [options]='(movementTypes$ | async) ?? []'
-                    [placeholder]='"movement.example.type" | translate'
+                    [options]='facade.movementTypesMetadata()'
+                    [placeholder]='"movements.form.placeholder.type" | translate'
                     [formControl]='type'
                     (keydown.enter)='submit()'
                     optionLabel='label'
                     optionValue='value' />
-            <app-form-field-error [control]='type'
-                                  translationPrefix='movement.form.error.type' />
+            <app-form-field-error [errors]='type.errors'
+                                  [invalid]='FormUtil.invalid(type)'
+                                  translationPrefix='movements.form.error.type' />
         </div>
         <p-divider />
         <div class='field'>
-            <span class='label' appRequired>{{ 'movement.form.content' | translate }}</span>
-            <div class='form-decorator pt-2 pb-2'>
-                <div class='field'>
-                    <label for='content' class='secondary-color'>{{ 'movement.form.content-search' | translate }}</label>
-                    <app-movement-content-field [formControl]='content'
-                                                [suggestions]='(contentSuggestions$ | async) ?? []'
-                                                inputId='content'
-                                                (handleSearch)='handleParticipantsAndGroupsSearch($event.query)' />
-                    <app-form-field-error [control]='content'
-                                          translationPrefix='movement.form.error.participants' />
-                </div>
-            </div>
+            <span class='label' appRequired>{{ 'movements.form.content' | pluralTranslation: content.value | translate }}</span>
+            <label for='content' class='secondary-color'>{{ 'movements.form.content.search' | translate }}</label>
+            <app-movement-content-field [formControl]='content'
+                                        [invalid]='FormUtil.invalid(content)'
+                                        [suggestions]='facade.searchedParticipantAndGroupMetadata()'
+                                        [selectionLabel]='"movements.form.content.selected" | pluralTranslation: content.value |
+                                        translate'
+                                        [emptyMessage]='"movements.form.content.empty" | translate'
+                                        [fluid]='true'
+                                        inputId='content'
+                                        (handleSearch)='handleParticipantsAndGroupsSearch($event.query)' />
+            <app-form-field-error [errors]='content.errors'
+                                  [invalid]='FormUtil.invalid(content)'
+                                  translationPrefix='movements.form.error.content' />
         </div>
-        @if (hasVehicleOption((contextEvent$ | async) ?? undefined)) {
+        @if (hasVehicleOption() || vehiclesWithDrivers.controls?.length) {
             <p-divider />
             <div class='field'>
-                <span class='label' appRequired>{{ 'movement.form.vehicles-and-drivers' | translate }}</span>
-                <div class='form-decorator pt-2 pb-2'>
-                    <div class='field'>
-                        <label for='vehicles-drivers' class='secondary-color'>{{ 'movement.form.vehicles-search' | translate }}</label>
-                        <app-movement-vehicle-field [formArray]='vehiclesWithDrivers'
-                                                    [participants]='drivers()'
-                                                    [suggestions]='(vehicleSuggestions$ | async) ?? []'
-                                                    inputId='vehicles-drivers'
-                                                    (handleSearch)='handleVehiclesSearch($event.query)' />
-                    </div>
+                <span class='label'
+                      appRequired>{{ 'movements.form.vehicles' | pluralTranslation: vehiclesWithDrivers.length | translate }}</span>
+                <label for='vehicles-drivers' class='secondary-color'>{{ 'movements.form.vehicles.search' | translate }}</label>
+                <p-auto-complete class='no-autocomplete-item'
+                                 multiple
+                                 inputId='vehicles-drivers'
+                                 [fluid]='true'
+                                 [suggestions]='facade.searchedVehicleMetadata()'
+                                 (onSelect)='addVehicle($event.value.value)'
+                                 (completeMethod)='handleVehiclesSearch($event.query)'>
+                    <ng-template #selecteditem />
+                    <ng-template #empty>
+                        <div class='secondary-color'>{{ 'movements.form.vehicles.empty-search' | translate }}</div>
+                    </ng-template>
+                </p-auto-complete>
+                <div class='mt-3 secondary-color'>
+                    {{
+                        'movements.form.vehicles.selected' | pluralTranslation: vehiclesWithDrivers.value | translate
+                    }}
                 </div>
+                @for (_ of vehiclesWithDrivers.controls; track $index) {
+                    @let control = driver($index);
+                    <div class='mt-2' [formGroup]='vehicleDriverFormGroup($index)'>
+                        <div class='field'>
+                            <p-inputgroup>
+                                <p-inputgroup-addon>{{ VehicleUtil.toSelectItem(vehicle($index).value).label }}</p-inputgroup-addon>
+                                <p-select [inputId]='"driver_" + $index' fluid
+                                          [options]='drivers()'
+                                          [formControl]='control'
+                                          [placeholder]='"movements.form.driver.title" | translate'
+                                          optionLabel='label'
+                                          optionValue='value'>
+                                    <ng-template #empty>
+                                        <div class='secondary-color'>{{ 'movements.form.driver.empty' | translate }}</div>
+                                    </ng-template>
+                                </p-select>
+                                <p-inputgroup-addon>
+                                    <p-button icon='pi pi-times' (click)='removeVehicle($index)' severity='danger' />
+                                </p-inputgroup-addon>
+                            </p-inputgroup>
+                            <app-form-field-error [errors]='control.errors'
+                                                  [invalid]='FormUtil.invalid(control)'
+                                                  translationPrefix='movements.form.error.driver' />
+                        </div>
+                    </div>
+                } @empty {
+                    <div class='list-box mt-2'>
+                        <div class='item empty-message'>
+                            <div class='ms-2 secondary-color'>{{ 'movements.form.vehicles.empty' | translate }}
+                            </div>
+                        </div>
+                    </div>
+                }
             </div>
         }
     </p-card>
     <div class='d-flex mt-2 justify-content-center'>
         <p-button
-                (click)='navigateToRedirectUri()'
-                [label]='"cancel" | translate'
+                (click)='navigateToRedirectUri(AppRouteEnum.MOVEMENTS)'
+                [label]='"global.actions.cancel" | translate'
                 [outlined]='true'
                 [rounded]='true' />
-
-        @if (movement()) {
-            <p-button
-                    class='ms-2'
-                    (click)='submit()'
-                    [label]='"edit" | translate'
-                    [rounded]='true'
-                    icon='pi pi-pen-to-square'
-                    severity='success' />
-        } @else {
-            <p-button
-                    class='ms-2'
-                    (click)='submit()'
-                    [label]='"create" | translate'
-                    [rounded]='true'
-                    icon='pi pi-plus'
-                    severity='success' />
-        }
+        <p-button
+                class='ms-2'
+                (click)='submit()'
+                [label]='facade.movement() | formButton | translate'
+                [rounded]='true'
+                icon='pi pi-pen-to-square'
+                severity='success' />
     </div>
 </app-form>

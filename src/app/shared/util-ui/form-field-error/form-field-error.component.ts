@@ -1,8 +1,8 @@
-import { Component, Input } from '@angular/core'
-import { AbstractControl } from '@angular/forms'
+import { Component, computed, inject, input, InputSignal, Signal } from '@angular/core'
+import { ValidationErrors } from '@angular/forms'
 import { MessageModule } from 'primeng/message'
-import { TranslateModule } from '@ngx-translate/core'
-import { GenericComponent } from '../../util-tool/component/generic.component'
+import { TranslateModule, TranslateService } from '@ngx-translate/core'
+import { DateFormatPipe } from '../../util-tool/pipe/date-format.pipe'
 
 @Component( {
     selector: 'app-form-field-error',
@@ -13,65 +13,93 @@ import { GenericComponent } from '../../util-tool/component/generic.component'
     ],
     templateUrl: './form-field-error.component.html',
 } )
-export class FormFieldErrorComponent extends GenericComponent {
-    @Input( { required: true } ) public control!: AbstractControl
-    @Input( { required: true } ) public translationPrefix!: string
-    @Input() public translationArgs: object = {}
+export class FormFieldErrorComponent {
+    private readonly translateService: TranslateService = inject( TranslateService )
+    private readonly datePipe: DateFormatPipe = inject( DateFormatPipe )
 
-    protected buildText (code: string): string {
+    public readonly invalid: InputSignal<boolean> = input.required()
+    public readonly errors: InputSignal<ValidationErrors | null> = input.required()
+    public readonly translationPrefix: InputSignal<string> = input.required()
+    public readonly translationArgs: InputSignal<object> = input( {} )
+
+    protected readonly errorText: Signal<string | undefined>
+
+    public constructor () {
+        this.errorText = computed( (): string | undefined => {
+            if (this.errors() === null || !this.invalid()) return undefined
+            return this.definedError( Object.keys( this.errors()! )[0] )
+        } )
+    }
+
+    private definedError (code: string | undefined): string | undefined {
+        if (!code) return undefined
         return this.translateService.instant(
-            `${this.translationPrefix}.${code}`,
+            `${this.translationPrefix()}.${code}`,
             this.buildTranslationParams( code ),
         )
     }
 
-    protected buildTranslationParams (code: string): object {
+    private buildTranslationParams (code: string): object {
         switch (code) {
             case 'min':
                 return {
-                    ...this.translationArgs,
+                    ...this.translationArgs(),
                     min: this.errorProperty( code, 'min' ),
+                    actual: this.errorProperty( code, 'actual' ),
                 }
             case 'max':
                 return {
-                    ...this.translationArgs,
+                    ...this.translationArgs(),
                     max: this.errorProperty( code, 'max' ),
+                    actual: this.errorProperty( code, 'actual' ),
                 }
             case 'minlength':
                 return {
-                    ...this.translationArgs,
+                    ...this.translationArgs(),
                     actualLength: this.errorProperty( code, 'actualLength' ),
                     requiredLength: this.errorProperty( code, 'requiredLength' ),
                 }
             case 'maxlength':
                 return {
-                    ...this.translationArgs,
+                    ...this.translationArgs(),
                     actualLength: this.errorProperty( code, 'actualLength' ),
                     requiredLength: this.errorProperty( code, 'requiredLength' ),
                 }
             case 'minDate':
                 return {
-                    ...this.translationArgs,
+                    ...this.translationArgs(),
                     min: this.errorProperty( code, 'min' ),
                 }
             case 'maxDate':
                 return {
-                    ...this.translationArgs,
+                    ...this.translationArgs(),
                     max: this.errorProperty( code, 'max' ),
+                }
+            case 'rangeMin':
+                return {
+                    ...this.translationArgs(),
+                    min: this.errorProperty( code, 'min' ),
+                    actual: this.errorProperty( code, 'actual' ),
+                }
+            case 'rangeMax':
+                return {
+                    ...this.translationArgs(),
+                    max: this.errorProperty( code, 'max' ),
+                    actual: this.errorProperty( code, 'actual' ),
                 }
             case 'pattern':
                 return {
-                    ...this.translationArgs,
+                    ...this.translationArgs(),
                     actual: this.errorProperty( code, 'actualValue' ),
                 }
             default:
-                return this.translationArgs
+                return this.translationArgs()
         }
     }
 
     private errorProperty (code: string, property: string): string {
-        if (!this.control.errors) return ''
-        if (!this.control.errors[code]) return ''
-        return this.control.errors[code][property]
+        if (!this.errors()) return ''
+        if (!this.errors()![code]) return ''
+        return this.errors()![code][property]
     }
 }

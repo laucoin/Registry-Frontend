@@ -1,22 +1,21 @@
-import { Component, OnDestroy, OnInit, Signal, signal, WritableSignal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, HostListener, OnDestroy } from '@angular/core'
 import { RouterOutlet } from '@angular/router'
-import { TranslateModule, TranslateService } from '@ngx-translate/core'
-import { ConfirmationService, MessageService, ToastMessageOptions, Translation } from 'primeng/api'
+import { TranslateModule } from '@ngx-translate/core'
+import { ConfirmationService, MessageService, ToastMessageOptions } from 'primeng/api'
 import { BlockUIModule } from 'primeng/blockui'
 import { ConfirmDialogModule } from 'primeng/confirmdialog'
 import { ProgressSpinnerModule } from 'primeng/progressspinner'
 import { ToastModule } from 'primeng/toast'
-import { fromEvent, map, merge, of, Subscription } from 'rxjs'
+import { map, Subscription } from 'rxjs'
 import { AppConfig } from './app.config'
-import { RegistryFacade } from './shared/util-common/state/registry.facade'
 import { MessageComponent } from './shared/util-ui/message/message.component'
 import { SideBarComponent } from './shell/side-bar/side-bar.component'
 import { breakPoint } from './shared/util-tool/util/breakpoint.const'
-import { GenericUtil } from './shared/util-tool/util/generic.util'
 import { PrimeNG } from 'primeng/config'
 import { Button } from 'primeng/button'
 import { Dialog } from 'primeng/dialog'
 import { Divider } from 'primeng/divider'
+import { GenericComponent } from './shared/util-tool/component/generic.component'
 
 @Component( {
     selector: 'app-root',
@@ -37,106 +36,70 @@ import { Divider } from 'primeng/divider'
     providers: [ ConfirmationService, MessageService ],
     templateUrl: './app.component.html',
     styleUrl: './app.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush,
 } )
-export class AppComponent implements OnInit, OnDestroy {
-    protected readonly GenericUtil: typeof GenericUtil = GenericUtil
+export class AppComponent extends GenericComponent implements OnDestroy {
     protected readonly breakPoint: object = breakPoint
     private readonly subscriptions: Subscription = new Subscription()
     private readonly themeMediaQuery: MediaQueryList = window.matchMedia( '(prefers-color-scheme: light)' )
 
-    protected readonly loading: WritableSignal<boolean> = signal( false )
-    protected readonly error: WritableSignal<ToastMessageOptions | undefined> = signal( undefined )
-
-    protected readonly currentYear: Signal<number> = signal( new Date().getFullYear() )
-    protected readonly currentUrl: Signal<string> = signal( location.host )
+    protected readonly currentYear: number = new Date().getFullYear()
+    protected readonly currentHost: string = location.host
 
     protected showInformationDialog: boolean = false
     protected showTermsOfUserDialog: boolean = false
 
     public constructor (
-        private readonly translateService: TranslateService,
         private readonly primeConfig: PrimeNG,
         private readonly notifyService: MessageService,
-        private readonly registryFacade: RegistryFacade,
     ) {
-        this.registryFacade.restoreTokensFromSessionStorage()
-        this.handleLoadingAndError()
-    }
-
-    public ngOnInit (): void {
-        this.registryFacade.fetchCurrentUser()
-
-        this.initTheme()
-        this.listenThemeChange()
+        super()
 
         this.initTranslation()
-
-        this.handleNetwork()
-
+        this.handleThemeChanges()
         this.handleNotification()
+
+        this.registryFacade.restoreTokensFromSessionStorage()
+        this.registryFacade.fetchCurrentUser()
     }
 
-    public ngOnDestroy (): void {
-        this.subscriptions.unsubscribe()
+    private initTranslation (): void {
+        this.translateService.addLangs( AppConfig.config.languages )
+        this.translateService.setDefaultLang( AppConfig.config.defaultLanguage )
+        this.translateService.get( 'prime-ng' ).pipe(
+            map( (lang: object): void => this.primeConfig.setTranslation( lang ) ),
+        ).subscribe()
     }
 
-    private handleLoadingAndError (): void {
-        this.subscriptions.add(
-            this.registryFacade.globalLoading.subscribe( (loading: boolean): void => {
-                this.loading.set( loading )
-            } ),
-        )
-        this.subscriptions.add(
-            this.registryFacade.globalError.subscribe( (error: ToastMessageOptions | undefined): void => {
-                this.error.set( error )
-            } ),
-        )
+    private handleThemeChanges (): void {
+        this.registryFacade.updateTheme( this.theme )
+        this.themeMediaQuery.addEventListener( 'change', (): void => this.registryFacade.updateTheme( this.theme ) )
+    }
+
+    private get theme (): 'light' | 'dark' {
+        return (!window.matchMedia || this.themeMediaQuery.matches) ? 'light' : 'dark'
+    }
+
+    @HostListener( 'window:online', [ '$event' ] )
+    @HostListener( 'window:offline', [ '$event' ] )
+    public handleNetwork (): void {
+        this.registryFacade.updateNetwork( navigator.onLine )
     }
 
     protected logout (): void {
         this.registryFacade.logout()
     }
 
-    private initTheme (): void {
-        this.registryFacade.updateTheme( !window.matchMedia || this.themeMediaQuery.matches ? 'light' : 'dark' )
-    }
-
-    private listenThemeChange (): void {
-        this.themeMediaQuery.addEventListener(
-            'change',
-            (e: MediaQueryListEvent): void => this.registryFacade.updateTheme( e.matches ? 'light' : 'dark' ),
+    private handleNotification (): void {
+        this.subscriptions.add(
+            this.registryFacade.notification.subscribe( (message: ToastMessageOptions | undefined): void => {
+                this.notifyService.add( message! )
+                this.registryFacade.ackNotification()
+            } ),
         )
     }
 
-    private initTranslation (): void {
-        this.translateService.addLangs( AppConfig.config.languages )
-
-        let nextLang: string | undefined
-
-        navigator.languages.forEach( (lang: string): void => {
-            if (this.translateService.langs.includes( lang ) && !nextLang) {
-                nextLang = lang
-            }
-        } )
-
-        this.translateService.setDefaultLang( nextLang || AppConfig.config.defaultLanguage )
-        this.translateService
-            .get( 'primeng' )
-            .subscribe( (it: Translation) => this.primeConfig.setTranslation( it ) )
-    }
-
-    private handleNetwork (): void {
-        this.subscriptions.add( merge( fromEvent( window, 'online' )
-            .pipe( map( (): boolean => true ) ), fromEvent( window, 'offline' )
-            .pipe( map( (): boolean => false ) ), of( navigator.onLine ) )
-            .subscribe( (online: boolean): void => this.registryFacade.updateNetwork( online ) ) )
-    }
-
-    private handleNotification (): void {
-        this.subscriptions.add( this.registryFacade.notification.subscribe( (message: ToastMessageOptions | undefined): void => {
-            if (!message) return
-            this.notifyService.add( message )
-            this.registryFacade.ackNotification()
-        } ) )
+    public ngOnDestroy (): void {
+        this.subscriptions.unsubscribe()
     }
 }

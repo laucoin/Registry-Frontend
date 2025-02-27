@@ -1,0 +1,53 @@
+@import '../../../../responsive.scss';
+
+.activity-name {
+    font-size:   16px;
+    font-weight: 700;
+}
+
+.activity-info, {
+    flex-basis: 100%;
+}
+
+.duration,
+.participants,
+.status,
+.visibility-status {
+    flex-basis: 50%;
+}
+
+@media (min-width: 768px) {
+    .activity-info, {
+        flex-basis: 100%;
+    }
+
+    .duration,
+    .participants,
+    .status,
+    .visibility-status {
+        flex-basis: 50%;
+    }
+}
+
+@media (min-width: 1140px) {
+    .activity-info {
+        flex-basis: 25%;
+    }
+
+    .duration,
+    .participants,
+    .visibility-status {
+        flex-basis: 15%;
+    }
+
+    .status {
+        flex-basis: 30%;
+    }
+}
+
+.description {
+    width:            100%;
+    background-color: var(--p-contextmenu-background);
+    border-radius:    0.5rem;
+    text-align:       justify;
+}

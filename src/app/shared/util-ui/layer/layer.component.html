@@ -1,12 +1,12 @@
 <p-dialog
         (close)='closeLayer.emit($event)'
-        [header]='header'
+        [header]='header()'
         [modal]='true'
         [dismissableMask]='true'
         [draggable]='false'
         [resizable]='false'
         [(visible)]='visible'
-        [position]='isTinyScreen() ? "bottom" : "right"'
+        [position]='registryFacade.tinyScreen() ? "bottom" : "right"'
         [style]='dialogStyle'>
     <ng-content />
     <ng-template #footer>

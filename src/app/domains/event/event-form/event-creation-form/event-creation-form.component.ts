@@ -1,21 +1,21 @@
-import { Component } from '@angular/core'
+import { Component, OnDestroy } from '@angular/core'
 import { ReactiveFormsModule } from '@angular/forms'
-import { EventDto } from '../../data/dto/event.dto'
-import { FormUtil } from '../../../../shared/util-tool/util/form.util'
 import { StepperModule } from 'primeng/stepper'
 import { TranslateModule } from '@ngx-translate/core'
 import { FormFieldErrorComponent } from '../../../../shared/util-ui/form-field-error/form-field-error.component'
-import { AsyncPipe, DatePipe, NgForOf, NgIf } from '@angular/common'
 import { InputTextModule } from 'primeng/inputtext'
 import { DividerModule } from 'primeng/divider'
 import { GenericEventFormComponent } from '../generic-event-form.component'
 import { FormComponent } from '../../../../shared/util-ui/form/form.component'
 import { RegistryRequiredDirective } from '../../../../shared/util-tool/directive/registry-required.directive'
 import { Button } from 'primeng/button'
-import { DatePicker } from 'primeng/datepicker'
 import { ToggleSwitch } from 'primeng/toggleswitch'
 import { Card } from 'primeng/card'
 import { Message } from 'primeng/message'
+import { EventOptionIconPipe } from '../../../../shared/util-tool/pipe/event-option-icon.pipe'
+import { PluralTranslationPipe } from '../../../../shared/util-tool/pipe/plural-translation.pipe'
+import { DateFormatPipe } from '../../../../shared/util-tool/pipe/date-format.pipe'
+import { DateTimeFieldComponent } from '../../../../shared/util-ui/date-time-field/date-time-field.component'
 
 @Component( {
     selector: 'app-event-creation-form',
@@ -25,44 +25,26 @@ import { Message } from 'primeng/message'
         TranslateModule,
         ReactiveFormsModule,
         FormFieldErrorComponent,
-        DatePipe,
         InputTextModule,
         DividerModule,
         FormComponent,
-        AsyncPipe,
         RegistryRequiredDirective,
         Button,
-        DatePicker,
         ToggleSwitch,
         Card,
-        NgForOf,
-        NgIf,
         Message,
+        EventOptionIconPipe,
+        PluralTranslationPipe,
+        DateFormatPipe,
+        DateTimeFieldComponent,
     ],
     templateUrl: './event-creation-form.component.html',
     styleUrl: './event-creation-form.component.scss',
 } )
-export class EventCreationFormComponent extends GenericEventFormComponent {
+export class EventCreationFormComponent extends GenericEventFormComponent implements OnDestroy {
     protected activeStep: number = 1
 
-    protected next (): void {
-        const event: EventDto = {
-            name: this.name.value,
-            begin: this.range.value[0],
-            end: this.range.value[1],
-            options: this.buildOptions(),
-        }
-
-        this.subscriptions.add(
-            this.facade.createEvent( event )
-                .subscribe( (): void => this.navigateToRedirectUri() ),
-        )
-    }
-
-    protected isFirstStepValid (): boolean {
-        FormUtil.markControlsAsDirty( this.name )
-        FormUtil.markControlsAsDirty( this.range )
-
-        return this.name.valid && this.range.valid
+    public ngOnDestroy (): void {
+        this.subscriptions.unsubscribe()
     }
 }

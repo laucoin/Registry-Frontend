@@ -1,14 +1,10 @@
-import { Component, OnInit, signal, WritableSignal } from '@angular/core'
-import { GenericFormComponent } from '../../../shared/util-tool/component/generic-form.component'
+import { Component, computed, inject, OnDestroy, Signal, signal, WritableSignal } from '@angular/core'
 import { AppRouteEnum } from '../../../app-route.enum'
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
-import { Params } from '@angular/router'
-import { GenericUtil } from '../../../shared/util-tool/util/generic.util'
 import { FormUtil } from '../../../shared/util-tool/util/form.util'
 import { MovementFacade } from '../data/state/movement.facade'
-import { MovementModel } from '../../../shared/util-model/movement.model'
+import { MovementModel } from '../../../shared/util-model/model/movement.model'
 import { MovementDto } from '../data/dto/movement.dto'
-import { AsyncPipe, DatePipe } from '@angular/common'
 import { Button } from 'primeng/button'
 import { CardModule } from 'primeng/card'
 import { DividerModule } from 'primeng/divider'
@@ -20,26 +16,32 @@ import { DropdownModule } from 'primeng/dropdown'
 import { MovementContentDto } from '../data/dto/movement-content.dto'
 import { Select } from 'primeng/select'
 import { DatePicker } from 'primeng/datepicker'
-import { filter, mergeMap, Observable, of } from 'rxjs'
-import { SelectItem, SelectItemGroup } from 'primeng/api'
+import { combineLatest, map, Observable } from 'rxjs'
+import { SelectItem } from 'primeng/api'
 import { ParticipantModel } from '../../../shared/util-model/model/participant.model'
-import { GroupModel } from '../../../shared/util-model/model/group.model'
 import { RegistryRequiredDirective } from '../../../shared/util-tool/directive/registry-required.directive'
-import { MovementContentFieldComponent } from '../movement-content-field/movement-content-field.component'
-import { MovementContentModel } from '../../../shared/util-model/movement-content.model'
-import { StringUtils } from '../../../shared/util-tool/util/string.util'
+import { MovementContentModel } from '../../../shared/util-model/model/movement-content.model'
 import { EventModel } from '../../../shared/util-model/model/event.model'
-import { CustomValidators } from '../../../shared/util-tool/util/custom-validator'
 import { VehicleModel } from '../../../shared/util-model/model/vehicle.model'
 import { EventUtil } from '../../../shared/util-tool/util/event.util'
-import { MovementVehicleFieldComponent } from '../movement-vehicle-field/movement-vehicle-field.component'
+import { DateFormatPipe } from '../../../shared/util-tool/pipe/date-format.pipe'
+import { GenericFormComponent } from '../../../shared/util-tool/component/generic-form.component'
+import { CreateMovement, UpdateMovement } from '../data/state/movement.action'
 import { ParticipantUtil } from '../../../shared/util-tool/util/participant.util'
+import { MovementContentFieldComponent } from './movement-content-field/movement-content-field.component'
+import { PluralTranslationPipe } from '../../../shared/util-tool/pipe/plural-translation.pipe'
+import { FormTitlePipe } from '../../../shared/util-tool/pipe/form-title.pipe'
+import { FormButtonPipe } from '../../../shared/util-tool/pipe/form-button.pipe'
+import { AutoComplete } from 'primeng/autocomplete'
+import { InputGroup } from 'primeng/inputgroup'
+import { InputGroupAddon } from 'primeng/inputgroupaddon'
+import { VehicleUtil } from '../../../shared/util-tool/util/vehicle.util'
+import { GenericUtil } from '../../../shared/util-tool/util/generic.util'
 
 @Component( {
     selector: 'app-movement-form',
     standalone: true,
     imports: [
-        AsyncPipe,
         Button,
         CardModule,
         DividerModule,
@@ -54,156 +56,135 @@ import { ParticipantUtil } from '../../../shared/util-tool/util/participant.util
         RegistryRequiredDirective,
         MovementContentFieldComponent,
         TranslatePipe,
-        DatePipe,
-        MovementVehicleFieldComponent,
+        DateFormatPipe,
+        MovementContentFieldComponent,
+        PluralTranslationPipe,
+        FormTitlePipe,
+        FormButtonPipe,
+        AutoComplete,
+        InputGroup,
+        InputGroupAddon,
+
     ],
     templateUrl: './movement-form.component.html',
+    styleUrl: './movement-form.component.scss',
 } )
-export class MovementFormComponent extends GenericFormComponent implements OnInit {
-    protected now: Date = new Date()
-    protected readonly movementTypes$: Observable<SelectItem<string>[]>
+export class MovementFormComponent extends GenericFormComponent<MovementModel, MovementDto> implements OnDestroy {
+    protected readonly facade: MovementFacade = inject( MovementFacade )
 
-    protected contentSuggestions$: Observable<SelectItemGroup<ParticipantModel | GroupModel>[]> = of( [] )
-    protected vehicleSuggestions$: Observable<SelectItem<VehicleModel>[]> = of( [] )
+    protected readonly VehicleUtil: typeof VehicleUtil = VehicleUtil
 
-    protected readonly movement: WritableSignal<MovementModel | undefined> = signal( undefined )
+    protected readonly now: Date = new Date()
+    protected readonly form: FormGroup
+
+    protected readonly hasVehicleOption: Signal<boolean> = computed( (): boolean => EventUtil.hasOption(
+        this.contextEvent(),
+        'VEHICLE',
+    ) )
     protected readonly drivers: WritableSignal<SelectItem<ParticipantModel>[]> = signal( [] )
 
-    public constructor (
-        protected readonly facade: MovementFacade,
-        private readonly datePipe: DatePipe,
-    ) {
-        super(
-            AppRouteEnum.MOVEMENTS,
-            facade.movementLoading,
-        )
+    public constructor () {
+        super()
 
-        facade.resetMovement()
-        this.movementTypes$ = facade.movementTypesMetadata
+        this.form = this.initForm()
 
-        this.handleContextEvent()
-        this.handleIdParam()
-        this.handleLoadedMovement()
+        this.loadData()
+
+        this.handleLoadedElement()
         this.handleContentChange()
-
-        this.contentSuggestions$ = this.facade.searchedParticipantAndGroupMetadata
-        this.vehicleSuggestions$ = this.facade.searchedVehicleMetadata
     }
 
-    public ngOnInit (): void {
-        this.facade.fetchMovementTypes( this.contextEventId() )
+    protected override loadData (): void {
+        this.facade.resetMovement()
+
+        if (GenericUtil.nonNull( this.idParam )) {
+            this.facade.fetchMovement( this.idParam!, this.contextEventId() )
+        } else {
+            super.loadData()
+        }
     }
 
     protected initForm (): FormGroup {
         return this.formBuilder.group( {
-            dateTime: this.formBuilder.control( new Date(), [ Validators.required ] ),
+            dateTime: this.formBuilder.control( this.now, [ Validators.required ] ),
             type: this.formBuilder.control( undefined, [ Validators.required ] ),
             content: this.formBuilder.control( [], [ Validators.required ] ),
             vehiclesWithDrivers: this.formBuilder.array( [], [] ),
         } )
     }
 
-    private handleContextEvent (): void {
+    protected handleLoadedElement (): void {
         this.subscriptions.add(
-            this.contextEvent$.subscribe( (event: EventModel | undefined): void => {
-                if (event?.begin) {
-                    this.dateTime.addValidators( CustomValidators.minDate(
-                        new Date( event?.begin ),
-                        this.datePipe.transform(
-                            new Date( event?.begin ),
-                            this.translateService.instant( 'datetime.format.datetime' ),
-                        )!,
-                    ) )
-                }
-                if (event?.end) {
-                    this.dateTime.addValidators( CustomValidators.maxDate(
-                        new Date( event?.end ),
-                        this.datePipe.transform(
-                            new Date( event?.end ),
-                            this.translateService.instant( 'datetime.format.datetime' ),
-                        )!,
-                    ) )
-                }
-            } ),
-        )
-    }
-
-    private handleIdParam (): void {
-        if (!StringUtils.isRouteActive( AppRouteEnum.MOVEMENTS )) {
-            return
-        }
-        this.subscriptions.add(
-            this.movementTypes$.pipe(
-                filter( (types: SelectItem<string>[]): boolean => types && types.length > 0 ),
-                mergeMap( (): Observable<Params> => this.route.params ),
-            ).subscribe( (params: Params): void => {
-                if (GenericUtil.isNull( params['id'] )) {
-                    this.router.navigateByUrl( this.buildUri( AppRouteEnum.MOVEMENTS_CREATION ) ).catch( console.error )
-                } else {
-                    this.facade.fetchMovement( params['id'], this.contextEventId() )
-                }
-            } ),
-        )
-    }
-
-    private handleLoadedMovement (): void {
-        this.subscriptions.add(
-            this.facade.movement?.subscribe( (movement: MovementModel | undefined): void => {
-                this.movement.set( movement )
-                if (!movement) return
-                this.dateTime.setValue( new Date( movement?.dateTime ) )
-                this.type.setValue( movement.type.value )
-                this.content.setValue( this.buildContentFromLoadedMovement() )
-                this.buildVehiclesFromLoadedMovement()
-                FormUtil.markAllControlsAsDirty( this.form )
-            } ),
+            combineLatest( [ this.facade.movement$, this.registryFacade.contextEvent$ ] ).pipe(
+                map( ([ movement, event ]: [ MovementModel | undefined, EventModel | undefined ]): void => {
+                    const contextEvent: EventModel | undefined = movement?.event || event
+                    this.addEventDateValidators( contextEvent, this.dateTime )
+                    this.fillForm( movement )
+                } ),
+            ).subscribe(),
         )
     }
 
     private handleContentChange (): void {
         this.subscriptions.add(
-            this.content.valueChanges.subscribe( (content: (GroupModel | ParticipantModel)[]): void => {
-                const drivers: SelectItem<ParticipantModel>[] = []
-                content.forEach( (item: GroupModel | ParticipantModel): void => {
-                    if (this.isGroup( item )) {
-                        (item as GroupModel).members.forEach( (member: ParticipantModel): void => {
-                            drivers.push( ParticipantUtil.toSelectItem( member as ParticipantModel ) )
-                        } )
-                    } else {
-                        drivers.push( ParticipantUtil.toSelectItem( item as ParticipantModel ) )
-                    }
-                } )
-                this.drivers.set( drivers )
-            } ),
+            this.content.valueChanges.pipe(
+                map( (item: MovementContentModel[]): void => this.drivers.set(
+                    item.map( (element: MovementContentModel): SelectItem<ParticipantModel> => ParticipantUtil.toSelectItem(
+                        element.participant ) ),
+                ) ),
+            ).subscribe(),
         )
     }
 
-    private buildContentFromLoadedMovement (): (ParticipantModel | GroupModel)[] {
-        const participants: ParticipantModel[] = []
-        const groups: GroupModel[] = []
+    protected fillForm (element: MovementModel | undefined): void {
+        if (!element) return
 
-        this.movement()?.content.forEach( (content: MovementContentModel): void => {
-            if (content.poolName) {
-                const groupIndex: number = groups.findIndex( (group: GroupModel): boolean => group.name === content.poolName )
-                if (groupIndex === -1) {
-                    groups.push( {
-                        name: content.poolName,
-                        members: [ content.participant ],
-                    } as GroupModel )
-                } else {
-                    groups[groupIndex].members.push( content.participant )
-                }
-            } else {
-                participants.push( content.participant )
-            }
-        } )
+        this.dateTime.patchValue( new Date( element?.dateTime ) )
+        this.type.patchValue( element.type.value )
+        this.content.patchValue( element.content )
+        this.buildVehiclesFromLoadedMovement()
+    }
 
-        return [ ...participants, ...groups ]
+    protected submit (): void {
+        if (!FormUtil.isFormValid( this.form )) {
+            console.warn( this.invalidFormMessage, this.form.value )
+            return
+        }
+
+        const dto: MovementDto = this.buildDto()
+        const observable: Observable<CreateMovement | UpdateMovement> =
+            this.facade.movement()
+            ? this.facade.updateMovement( this.facade.movement()!.id!, dto, this.contextEventId() )
+            : this.facade.createMovement( dto, this.contextEventId() )
+
+        this.subscriptions.add(
+            observable.pipe(
+                map( (): void => this.navigateToRedirectUri( AppRouteEnum.MOVEMENTS ) ),
+            ).subscribe(),
+        )
+    }
+
+    protected buildDto (): MovementDto {
+        return {
+            dateTime: this.dateTime.value,
+            type: this.type.value,
+            content: this.content.value?.map( (content: MovementContentModel): MovementContentDto => ({
+                poolName: content.poolName,
+                participantId: content.participant.id,
+                vehicleId: this.getVehicleFromDriver( content.participant.id ),
+            }) ),
+        }
+    }
+
+    private getVehicleFromDriver (driverId: string): string | undefined {
+        const group: FormGroup | undefined = this.vehiclesWithDrivers.value
+                                                 .find( (formGroup: FormGroup): boolean => Object.values( formGroup )[1].id === driverId )
+        return group ? Object.values( group )[0]?.id : undefined
     }
 
     private buildVehiclesFromLoadedMovement (): void {
         this.vehiclesWithDrivers.clear()
-        this.movement()?.content
+        this.facade.movement()?.content
             .filter( (content: MovementContentModel): boolean => !!content.vehicle )
             .forEach( (content: MovementContentModel): void => {
                 this.vehiclesWithDrivers.push(
@@ -213,59 +194,6 @@ export class MovementFormComponent extends GenericFormComponent implements OnIni
                     } ),
                 )
             } )
-    }
-
-    protected next (): void {
-        const movement: MovementDto = {
-            dateTime: this.dateTime.value,
-            type: this.type.value,
-            content: this.buildContent(),
-        }
-
-        this.subscriptions.add(
-            (
-                this.movement()
-                ? this.facade.updateMovement( this.movement()!.id, movement, this.contextEventId() )
-                : this.facade.createMovement( movement, this.contextEventId() )
-            ).subscribe( (): void => this.navigateToRedirectUri() ),
-        )
-    }
-
-    private buildContent (): MovementContentDto[] {
-        const content: MovementContentDto[] = []
-
-        this.content.value.forEach( (item: GroupModel | ParticipantModel): void => {
-            if (this.isGroup( item )) {
-                (item as GroupModel).members.forEach( (member: ParticipantModel): void => {
-                    content.push( {
-                        poolName: (item as GroupModel).name,
-                        participantId: member.id,
-                        vehicleId: this.getVehicleFromDriver( member )?.id,
-                    } )
-                } )
-            } else {
-                content.push( {
-                    participantId: item.id,
-                    vehicleId: this.getVehicleFromDriver( item as ParticipantModel )?.id,
-                } )
-            }
-        } )
-
-        return content
-    }
-
-    private getVehicleFromDriver (driver: ParticipantModel): VehicleModel | undefined {
-        const group: FormGroup | undefined = this.vehiclesWithDrivers.value
-                                                 .find( (formGroup: FormGroup): boolean => Object.values( formGroup )[1].id === driver.id )
-        return group ? Object.values( group )[0] : undefined
-    }
-
-    protected hasVehicleOption (event: EventModel | undefined): boolean {
-        return EventUtil.hasOption( event, 'VEHICLE' )
-    }
-
-    private isGroup (element: ParticipantModel | GroupModel): boolean {
-        return 'name' in element
     }
 
     protected handleParticipantsAndGroupsSearch (searched: string | undefined): void {
@@ -280,6 +208,37 @@ export class MovementFormComponent extends GenericFormComponent implements OnIni
             searched,
             this.contextEventId(),
         )
+    }
+
+    protected addVehicle (vehicle: VehicleModel): void {
+        this.vehiclesWithDrivers.push( this.formBuilder.group( {
+            vehicle: this.formBuilder.control( vehicle, [ Validators.required ] ),
+            driver: this.formBuilder.control( undefined, [ Validators.required ] ),
+        } ) )
+    }
+
+    protected removeVehicle (index: number): void {
+        this.vehiclesWithDrivers.removeAt( index )
+    }
+
+    protected vehicleDriverFormGroup (index: number): FormGroup {
+        return this.vehiclesWithDrivers.at( index ) as FormGroup
+    }
+
+    protected vehicle (index: number): FormControl {
+        return this.vehicleDriverFormGroup( index ).get( 'vehicle' ) as FormControl
+    }
+
+    protected driver (index: number): FormControl {
+        return this.vehicleDriverFormGroup( index ).get( 'driver' ) as FormControl
+    }
+
+    protected get idParam (): string | undefined {
+        return this.route.snapshot.params['movementId']
+    }
+
+    public ngOnDestroy (): void {
+        this.subscriptions.unsubscribe()
     }
 
     protected get dateTime (): FormControl {

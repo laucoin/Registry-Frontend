@@ -1,11 +1,11 @@
-import { Directive, Input, TemplateRef } from '@angular/core'
+import { Directive, input, InputSignal, TemplateRef } from '@angular/core'
 
 @Directive( {
     selector: '[appTemplate]',
     standalone: true,
 } )
 export class RegistryTemplateDirective {
-    @Input( 'appTemplate' ) public name: string | undefined
+    public appTemplate: InputSignal<string | undefined> = input.required()
 
     public constructor (public template: TemplateRef<unknown>) {}
 }

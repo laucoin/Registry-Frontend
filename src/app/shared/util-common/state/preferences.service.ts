@@ -17,4 +17,11 @@ export class PreferencesService extends GenericService {
             null,
         )
     }
+
+    public selectUserEventProfileByEventId (eventId: string): Observable<PreferencesModel> {
+        return this.http.patch<PreferencesModel>(
+            `${this.baseUrl}/events/${eventId}/profile/select`,
+            null,
+        )
+    }
 }

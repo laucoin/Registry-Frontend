@@ -9,9 +9,12 @@ import { sgdfConfig } from './shared/util-config/config/sgdf.config'
 import { ExecutionContextEnum } from './shared/util-config/enumeration/execution-context.enum'
 import { ConfigModel } from './shared/util-config/model/config.model'
 import { EnvironmentModel } from './shared/util-config/model/environment.model'
-import { StringUtils } from './shared/util-tool/util/string.util'
+import { StringUtil } from './shared/util-tool/util/string.util'
 import { UserState } from './domains/user/data/state/user.state'
 import { providePrimeNG } from 'primeng/config'
+import { LocalStorageUtils } from './shared/util-tool/util/local-storage.util'
+import { GenericUtil } from './shared/util-tool/util/generic.util'
+import { LOCALE } from './shared/util-tool/util/request.util'
 
 @Injectable( {
     providedIn: 'root',
@@ -25,7 +28,7 @@ export class AppConfig {
             resolve: (value: (PromiseLike<AppConfig> | AppConfig)) => void,
             reject: (reason?: Error) => void,
         ): void => {
-            fetch( StringUtils.addCacheBustingToUrl( this._jsonURL ) )
+            fetch( StringUtil.addCacheBustingToUrl( this._jsonURL ) )
                 .then( (res: Response): Promise<EnvironmentModel> => res.json() )
                 .then( (res: EnvironmentModel): void => {
                     const tempConfig: EnvironmentModel = res
@@ -76,9 +79,25 @@ export class AppConfig {
         } ) )
     }
 
+    private static get locale (): string {
+        let lang: string | undefined = LocalStorageUtils.get( LOCALE )?.toString()
+
+        if (GenericUtil.isNull( lang ) || !AppConfig.config.languages.includes( lang! )) {
+            navigator.languages.forEach( (nextLang: string): void => {
+                if (AppConfig.config.languages.includes( nextLang ) && !lang) {
+                    lang = nextLang
+                }
+            } )
+        }
+
+        lang = lang ?? AppConfig.config.defaultLanguage
+        LocalStorageUtils.set( LOCALE, lang )
+        return lang
+    }
+
     public static provideTranslator (): Provider | EnvironmentProviders {
         return importProvidersFrom( TranslateModule.forRoot( {
-            defaultLanguage: AppConfig.config.defaultLanguage, loader: {
+            defaultLanguage: this.locale, loader: {
                 provide: TranslateLoader,
                 useFactory: (http: HttpClient) => new TranslateHttpLoader(
                     http,

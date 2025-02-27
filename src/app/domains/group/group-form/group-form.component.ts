@@ -1,43 +1,40 @@
-import { Component, Signal, signal, WritableSignal } from '@angular/core'
-import { GenericFormComponent } from '../../../shared/util-tool/component/generic-form.component'
+import { Component, inject, OnDestroy } from '@angular/core'
 import { AppRouteEnum } from '../../../app-route.enum'
 import { GroupModel } from '../../../shared/util-model/model/group.model'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
-import { Params } from '@angular/router'
-import { GenericUtil } from '../../../shared/util-tool/util/generic.util'
 import { FormUtil } from '../../../shared/util-tool/util/form.util'
-import { CustomValidators } from '../../../shared/util-tool/util/custom-validator'
+import { RegistryValidators } from '../../../shared/util-tool/util/registry.validator'
 import { GroupFacade } from '../data/state/group.facade'
 import { GroupDto } from '../data/dto/group.dto'
-import { AsyncPipe, DatePipe } from '@angular/common'
 import { Button } from 'primeng/button'
 import { Card } from 'primeng/card'
-import { DatePicker } from 'primeng/datepicker'
 import { FormComponent } from '../../../shared/util-ui/form/form.component'
 import { FormFieldErrorComponent } from '../../../shared/util-ui/form-field-error/form-field-error.component'
 import { RegistryRequiredDirective } from '../../../shared/util-tool/directive/registry-required.directive'
 import { TranslatePipe } from '@ngx-translate/core'
 import { InputText } from 'primeng/inputtext'
 import { ParticipantModel } from '../../../shared/util-model/model/participant.model'
-import { Observable } from 'rxjs'
 import { Divider } from 'primeng/divider'
 import {
     SelectElementsFieldComponent,
 } from '../../../shared/util-ui/select-elements-field/select-elements-field.component'
 import { ParticipantUtil } from '../../../shared/util-tool/util/participant.util'
-import { SelectItem } from 'primeng/api'
-import { StringUtils } from '../../../shared/util-tool/util/string.util'
 import { EventModel } from '../../../shared/util-model/model/event.model'
-import { DateUtil } from '../../../shared/util-tool/util/date.util'
+import { DateFormatPipe } from '../../../shared/util-tool/pipe/date-format.pipe'
+import { GenericFormComponent } from '../../../shared/util-tool/component/generic-form.component'
+import { combineLatest, map, Observable } from 'rxjs'
+import { CreateGroup, UpdateGroup } from '../data/state/group.action'
+import { FormTitlePipe } from '../../../shared/util-tool/pipe/form-title.pipe'
+import { FormButtonPipe } from '../../../shared/util-tool/pipe/form-button.pipe'
+import { PluralTranslationPipe } from '../../../shared/util-tool/pipe/plural-translation.pipe'
+import { DateTimeFieldComponent } from '../../../shared/util-ui/date-time-field/date-time-field.component'
+import { GenericUtil } from '../../../shared/util-tool/util/generic.util'
 
 @Component( {
     selector: 'app-group-form',
     imports: [
-        AsyncPipe,
         Button,
         Card,
-        DatePicker,
-        DatePipe,
         FormComponent,
         FormFieldErrorComponent,
         RegistryRequiredDirective,
@@ -46,124 +43,104 @@ import { DateUtil } from '../../../shared/util-tool/util/date.util'
         ReactiveFormsModule,
         Divider,
         SelectElementsFieldComponent,
+        DateFormatPipe,
+        FormTitlePipe,
+        FormButtonPipe,
+        PluralTranslationPipe,
+        DateTimeFieldComponent,
 
     ],
     templateUrl: './group-form.component.html',
 } )
-export class GroupFormComponent extends GenericFormComponent {
-    protected readonly participantsSuggestion$: Observable<SelectItem<ParticipantModel>[]>
-    protected readonly group: WritableSignal<GroupModel | undefined> = signal( undefined )
+export class GroupFormComponent extends GenericFormComponent<GroupModel, GroupDto> implements OnDestroy {
+    protected readonly facade: GroupFacade = inject( GroupFacade )
 
-    protected readonly startDateExample: Signal<Date> = signal( DateUtil.startDateExample )
-    protected readonly endDateExample: Signal<Date> = signal( DateUtil.endDateExample )
+    protected readonly ParticipantUtil: typeof ParticipantUtil = ParticipantUtil
 
-    public constructor (
-        protected readonly facade: GroupFacade,
-        private readonly datePipe: DatePipe,
-    ) {
-        super(
-            AppRouteEnum.GROUPS,
-            facade.groupLoading,
-        )
+    protected readonly form: FormGroup
 
-        facade.resetGroup()
+    public constructor () {
+        super()
 
-        this.handleContextEvent()
-        this.handleIdParam()
-        this.handleLoadedGroup()
+        this.form = this.initForm()
 
-        this.participantsSuggestion$ = this.facade.searchedParticipantsMetadata
+        this.loadData()
+
+        this.handleLoadedElement()
+    }
+
+    protected override loadData (): void {
+        this.facade.resetGroup()
+
+        if (GenericUtil.nonNull( this.idParam )) {
+            this.facade.fetchGroup( this.idParam!, this.contextEventId() )
+        } else {
+            super.loadData()
+        }
     }
 
     protected initForm (): FormGroup {
         return this.formBuilder.group( {
             name: this.formBuilder.control(
                 undefined,
-                [ Validators.required, Validators.max( 150 ), CustomValidators.nonBlank() ],
+                [ Validators.required, Validators.maxLength( 150 ), RegistryValidators.nonBlank() ],
             ),
-            presence: this.formBuilder.control( [] ),
+            beginDateTime: this.formBuilder.control( undefined, [ RegistryValidators.dateRequiredForTime() ] ),
+            endDateTime: this.formBuilder.control( undefined, [ RegistryValidators.dateRequiredForTime() ] ),
             participants: this.formBuilder.control( [], [ Validators.required ] ),
+        }, {
+            validators: [ RegistryValidators.beginDateBeforeEndDate( 'beginDateTime', 'endDateTime' ) ],
         } )
     }
 
-    private handleContextEvent (): void {
+    protected handleLoadedElement (): void {
         this.subscriptions.add(
-            this.contextEvent$.subscribe( (event: EventModel | undefined): void => {
-                if (event?.begin) {
-                    this.presence.addValidators( CustomValidators.minDate(
-                        new Date( event?.begin ),
-                        this.datePipe.transform(
-                            new Date( event?.begin ),
-                            this.translateService.instant( 'datetime.format.datetime' ),
-                        )!,
-                    ) )
-                }
-                if (event?.end) {
-                    this.presence.addValidators( CustomValidators.maxDate(
-                        new Date( event?.end ),
-                        this.datePipe.transform(
-                            new Date( event?.end ),
-                            this.translateService.instant( 'datetime.format.datetime' ),
-                        )!,
-                    ) )
-                }
-            } ),
+            combineLatest( [ this.facade.group$, this.registryFacade.contextEvent$ ] ).pipe(
+                map( ([ group, event ]: [ GroupModel | undefined, EventModel | undefined ]): void => {
+                    const contextEvent: EventModel | undefined = group?.event || event
+                    this.addEventDateValidators( contextEvent, this.beginDateTime )
+                    this.addEventDateValidators( contextEvent, this.endDateTime )
+                    this.fillForm( group )
+                } ),
+            ).subscribe(),
         )
     }
 
-    private handleIdParam (): void {
-        if (!StringUtils.isRouteActive( AppRouteEnum.GROUPS )) {
+    protected fillForm (element: GroupModel | undefined): void {
+        if (!element) return
+
+        this.name.patchValue( element.name )
+        this.beginDateTime.patchValue( element.startAvailability )
+        this.endDateTime.patchValue( element.endAvailability )
+        this.participants.patchValue( element.members )
+    }
+
+    protected submit (): void {
+        if (!FormUtil.isFormValid( this.form )) {
+            console.warn( this.invalidFormMessage, this.form.value )
             return
         }
+
+        const dto: GroupDto = this.buildDto()
+        const observable: Observable<CreateGroup | UpdateGroup> =
+            this.facade.group()
+            ? this.facade.updateGroup( this.facade.group()!.id!, dto, this.contextEventId() )
+            : this.facade.createGroup( dto, this.contextEventId() )
+
         this.subscriptions.add(
-            this.route.params.subscribe( (params: Params): void => {
-                if (GenericUtil.isNull( params['id'] )) {
-                    this.router.navigateByUrl( this.buildUri( AppRouteEnum.GROUPS_CREATION ) ).catch( console.error )
-                } else {
-                    this.facade.fetchGroup( params['id'], this.contextEventId() )
-                }
-            } ),
+            observable.pipe(
+                map( (): void => this.navigateToRedirectUri( AppRouteEnum.GROUPS ) ),
+            ).subscribe(),
         )
     }
 
-    private handleLoadedGroup (): void {
-        this.subscriptions.add(
-            this.facade.group?.subscribe( (group: GroupModel | undefined): void => {
-                this.group.set( group )
-                if (!group) return
-                this.name.setValue( group.name )
-                this.presence.setValue( FormUtil.buildDateRange( group?.begin, group?.end ) )
-                this.participants.setValue( this.buildFormFromMembers( group.members ) )
-                FormUtil.markAllControlsAsDirty( this.form )
-            } ),
-        )
-    }
-
-    private buildFormFromMembers (members: ParticipantModel[]): SelectItem<ParticipantModel>[] {
-        return members.map( (member: ParticipantModel): SelectItem<ParticipantModel> =>
-            ParticipantUtil.toSelectItem( member ),
-        )
-    }
-
-    protected next (): void {
-        const participant: GroupDto = {
+    protected buildDto (): GroupDto {
+        return {
             name: this.name.value,
-            begin: this.presence.value?.[0],
-            end: this.presence.value?.[1],
-            members: this.buildContent(),
+            startAvailability: this.beginDateTime.value,
+            endAvailability: this.endDateTime.value,
+            members: (this.participants.value ?? []).map( (item: ParticipantModel): string => item.id ),
         }
-
-        this.subscriptions.add(
-            (
-                this.group() ?
-                this.facade.updateGroup( this.group()!.id, participant, this.contextEventId() )
-                             : this.facade.createGroup( participant, this.contextEventId() )
-            ).subscribe( (): void => this.navigateToRedirectUri() ),
-        )
-    }
-
-    private buildContent (): string[] {
-        return (this.participants.value ?? []).map( (item: SelectItem<ParticipantModel>): string => item.value.id )
     }
 
     protected handleSearch (searched: string | undefined): void {
@@ -173,12 +150,24 @@ export class GroupFormComponent extends GenericFormComponent {
         )
     }
 
+    protected get idParam (): string | undefined {
+        return this.route.snapshot.params['groupId']
+    }
+
+    public ngOnDestroy (): void {
+        this.subscriptions.unsubscribe()
+    }
+
     protected get name (): FormControl {
         return this.form.get( 'name' ) as FormControl
     }
 
-    protected get presence (): FormControl {
-        return this.form.get( 'presence' ) as FormControl
+    protected get beginDateTime (): FormControl {
+        return this.form.get( 'beginDateTime' ) as FormControl
+    }
+
+    protected get endDateTime (): FormControl {
+        return this.form.get( 'endDateTime' ) as FormControl
     }
 
     protected get participants (): FormControl {

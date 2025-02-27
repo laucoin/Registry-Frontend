@@ -1,5 +1,4 @@
 import { GroupDto } from '../dto/group.dto'
-import { OrderEnum } from '../../../../shared/util-model/enumeration/order.enum'
 import { GroupModel } from '../../../../shared/util-model/model/group.model'
 import { ParticipantModel } from '../../../../shared/util-model/model/participant.model'
 
@@ -8,19 +7,19 @@ export enum GroupActionEnum {
     STOP_GROUPS_PAGE_LOADER = '[Local] Stopping groups\' page loader',
 
     FETCH_GROUPS_PAGE = '[Backend] Fetching groups\' page',
-    INPUT_GROUPS_PAGE_SEARCH = '[Local] Inputting groups\' page search',
-    INPUT_GROUPS_PAGE_DATE_RANGE = '[Local] Inputting groups\' page date range',
-    SELECT_GROUPS_PAGE_VISIBILITY = '[Local] Selecting groups\' page visibility',
-    SELECT_GROUPS_PAGE_ORDER = '[Local] Selecting groups\' page order',
+    FETCH_GROUPS_MEMBERS = '[Backend] Fetching groups\' members',
+    INPUT_GROUPS_PAGE_TEXT_SEARCH = '[Local] Inputting groups\' page text search',
+    INPUT_GROUPS_PAGE_DATE_TIME_SEARCH = '[Local] Inputting groups\' page date time search',
+    SELECT_GROUPS_PAGE_PRESENCE_SEARCH = '[Local] Selecting groups\' page presence search',
+    SELECT_GROUPS_PAGE_VISIBILITY_SEARCH = '[Local] Selecting groups\' page visibility search',
 
     START_GROUP_MEMBERS_PAGE_LOADER = '[Local] Starting group members\' page loader',
     STOP_GROUP_MEMBERS_PAGE_LOADER = '[Local] Stopping group members\' page loader',
 
     FETCH_GROUP_MEMBERS_PAGE = '[Backend] Fetching group members\' page',
-    INPUT_GROUP_MEMBERS_PAGE_SEARCH = '[Local] Inputting group members\' page search',
-    INPUT_GROUP_MEMBERS_PAGE_DATE_RANGE = '[Local] Inputting group members\' page date range',
-    SELECT_GROUP_MEMBERS_PAGE_VISIBILITY = '[Local] Selecting group members\' page visibility',
-    SELECT_GROUP_MEMBERS_PAGE_ORDER = '[Local] Selecting group members\' page order',
+    INPUT_GROUP_MEMBERS_PAGE_TEXT_SEARCH = '[Local] Inputting group members\' page text search',
+    SELECT_GROUP_MEMBERS_PAGE_STATUS_SEARCH = '[Local] Selecting group members\' page status search',
+    SELECT_GROUP_MEMBERS_PAGE_VISIBILITY_SEARCH = '[Local] Selecting group members\' page visibility search',
 
     START_GROUP_LOADER = '[Local] Starting group loader',
     STOP_GROUP_LOADER = '[Local] Stopping group loader',
@@ -50,37 +49,43 @@ export class FetchGroupsPage {
 
     public constructor (
         public readonly eventId: string | undefined,
-        public readonly offset: number | undefined,
-        public readonly limit: number | undefined,
+        public readonly pageNumber: number | undefined,
+        public readonly pageSize: number | undefined,
         public readonly force: boolean = false,
     ) {}
 }
 
-export class InputGroupsPageSearch {
-    public static readonly type: GroupActionEnum = GroupActionEnum.INPUT_GROUPS_PAGE_SEARCH
+export class FetchGroupsMembers {
+    public static readonly type: GroupActionEnum = GroupActionEnum.FETCH_GROUPS_MEMBERS
+
+    public constructor (
+        public readonly eventId: string | undefined,
+        public readonly groupIds: string[],
+    ) {}
+}
+
+export class InputGroupsPageTextSearched {
+    public static readonly type: GroupActionEnum = GroupActionEnum.INPUT_GROUPS_PAGE_TEXT_SEARCH
 
     public constructor (public readonly searched: string | undefined) {}
 }
 
-export class InputGroupsPageDateRange {
-    public static readonly type: GroupActionEnum = GroupActionEnum.INPUT_GROUPS_PAGE_DATE_RANGE
+export class InputGroupsPageDateTimeSearched {
+    public static readonly type: GroupActionEnum = GroupActionEnum.INPUT_GROUPS_PAGE_DATE_TIME_SEARCH
 
-    public constructor (
-        public readonly start: Date | undefined,
-        public readonly end: Date | undefined,
-    ) {}
+    public constructor (public readonly dateTimeSearched: Date | undefined) {}
 }
 
-export class SelectGroupsPageVisibility {
-    public static readonly type: GroupActionEnum = GroupActionEnum.SELECT_GROUPS_PAGE_VISIBILITY
+export class SelectGroupsPagePresenceSearched {
+    public static readonly type: GroupActionEnum = GroupActionEnum.SELECT_GROUPS_PAGE_PRESENCE_SEARCH
 
-    public constructor (public readonly onlyVisible: boolean) {}
+    public constructor (public readonly presenceSearched: boolean | undefined) {}
 }
 
-export class SelectGroupsPageOrder {
-    public static readonly type: GroupActionEnum = GroupActionEnum.SELECT_GROUPS_PAGE_ORDER
+export class SelectGroupsPageVisibilitySearched {
+    public static readonly type: GroupActionEnum = GroupActionEnum.SELECT_GROUPS_PAGE_VISIBILITY_SEARCH
 
-    public constructor (public readonly order: OrderEnum) {}
+    public constructor (public readonly visibilitySearched: boolean | undefined) {}
 }
 
 export class StartGroupMembersPageLoader {
@@ -97,37 +102,28 @@ export class FetchGroupMembersPage {
     public constructor (
         public readonly eventId: string | undefined,
         public readonly id: string | undefined,
-        public readonly offset: number | undefined,
-        public readonly limit: number | undefined,
+        public readonly pageNumber: number | undefined,
+        public readonly pageSize: number | undefined,
         public readonly force: boolean = false,
     ) {}
 }
 
-export class InputGroupMembersPageSearch {
-    public static readonly type: GroupActionEnum = GroupActionEnum.INPUT_GROUP_MEMBERS_PAGE_SEARCH
+export class InputGroupMembersPageTextSearched {
+    public static readonly type: GroupActionEnum = GroupActionEnum.INPUT_GROUP_MEMBERS_PAGE_TEXT_SEARCH
 
-    public constructor (public readonly searched: string | undefined) {}
+    public constructor (public readonly textSearched: string | undefined) {}
 }
 
-export class InputGroupMembersPageDateRange {
-    public static readonly type: GroupActionEnum = GroupActionEnum.INPUT_GROUP_MEMBERS_PAGE_DATE_RANGE
+export class SelectGroupMembersPageStatusSearched {
+    public static readonly type: GroupActionEnum = GroupActionEnum.SELECT_GROUP_MEMBERS_PAGE_STATUS_SEARCH
 
-    public constructor (
-        public readonly start: Date | undefined,
-        public readonly end: Date | undefined,
-    ) {}
+    public constructor (public readonly statusSearched: string | undefined) {}
 }
 
-export class SelectGroupMembersPageVisibility {
-    public static readonly type: GroupActionEnum = GroupActionEnum.SELECT_GROUP_MEMBERS_PAGE_VISIBILITY
+export class SelectGroupMembersPageVisibilitySearched {
+    public static readonly type: GroupActionEnum = GroupActionEnum.SELECT_GROUP_MEMBERS_PAGE_VISIBILITY_SEARCH
 
-    public constructor (public readonly onlyVisible: boolean) {}
-}
-
-export class SelectGroupMembersPageOrder {
-    public static readonly type: GroupActionEnum = GroupActionEnum.SELECT_GROUP_MEMBERS_PAGE_ORDER
-
-    public constructor (public readonly order: OrderEnum) {}
+    public constructor (public readonly visibilitySearched: boolean | undefined) {}
 }
 
 export class StartGroupLoader {
@@ -153,7 +149,7 @@ export class SearchParticipants {
 
     public constructor (
         public readonly eventId: string | undefined,
-        public readonly searched: string | undefined,
+        public readonly textSearched: string | undefined,
     ) {}
 }
 

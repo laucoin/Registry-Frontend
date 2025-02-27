@@ -1,7 +1,6 @@
-import { PageParamsModel } from '../../../../shared/util-model/model/page-params.model'
-
-export interface VehiclePageParamsModel extends PageParamsModel {
-    isPresent: boolean
-    startDate: string | undefined
-    endDate: string | undefined
+export interface VehiclePageParamsModel {
+    visibilitySearched: boolean | undefined
+    textSearched: string | undefined
+    statusSearched: boolean | undefined
+    dateTimeSearched: string | undefined
 }

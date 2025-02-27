@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, input, InputSignal } from '@angular/core'
 import { TranslateModule } from '@ngx-translate/core'
 import { ToastMessageOptions } from 'primeng/api'
 import { MessagesModule } from 'primeng/messages'
@@ -10,11 +10,12 @@ import { Message } from 'primeng/message'
     imports: [ TranslateModule, MessagesModule, Message ],
     templateUrl: './message.component.html',
     styleUrl: './message.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush,
 } )
 export class MessageComponent {
-    @Input( { required: true } ) public message: ToastMessageOptions | undefined
+    public readonly message: InputSignal<ToastMessageOptions | undefined> = input.required()
 
     protected get isError (): boolean {
-        return this.message?.severity === 'error'
+        return this.message()?.severity === 'error'
     }
 }

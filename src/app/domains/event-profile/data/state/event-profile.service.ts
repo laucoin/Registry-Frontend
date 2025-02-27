@@ -23,33 +23,33 @@ export class EventProfileService extends GenericEventService {
 
     public findEventProfiles (
         eventId: string | undefined,
-        offset: number | undefined,
-        limit: number | undefined,
+        pageNumber: number | undefined,
+        pageSize: number | undefined,
         params: EventProfilePageParamsModel,
     ): Observable<PageModel<EventProfileModel>> {
         return this.http.get<PageModel<EventProfileModel>>(
-            `${this.buildRequestBaseUrl( eventId )}?${QueryUtil.buildQueryParams( offset, limit, params ).toString()}`,
+            `${this.buildRequestBaseUrl( eventId )}?${QueryUtil.buildQueryParams(
+                pageNumber,
+                pageSize,
+                params,
+            ).toString()}`,
         )
     }
 
     public searchUsers (
         eventId: string | undefined,
-        searched: string | undefined,
+        textSearched: string | undefined,
     ): Observable<UserModel[]> {
         return this.http.get<UserModel[]>(
-            `${this.buildRequestBaseUrl( eventId )}/search/users${searched ? '?' + new HttpParams().set(
-                'searched',
-                searched,
+            `${this.buildRequestBaseUrl( eventId )}/search/users${textSearched ? '?' + new HttpParams().set(
+                'textSearched',
+                textSearched,
             ).toString() : ''}`,
         )
     }
 
     public getAssignableEventProfileRoles (eventId: string | undefined): Observable<SelectItem<string>[]> {
         return this.http.get<SelectItem<string>[]>( `${this.buildRequestBaseUrl( eventId )}/roles` )
-    }
-
-    public getAvailableEventProfileStatus (eventId: string | undefined): Observable<SelectItem<string>[]> {
-        return this.http.get<SelectItem<string>[]>( `${this.buildRequestBaseUrl( eventId )}/status` )
     }
 
     public findEventProfileById (eventId: string | undefined, id: string): Observable<EventProfileModel> {
@@ -61,10 +61,6 @@ export class EventProfileService extends GenericEventService {
         profiles: EventProfilesDto,
     ): Observable<CreatedEventProfiles> {
         return this.http.post<CreatedEventProfiles>( `${this.buildRequestBaseUrl( eventId )}`, profiles )
-    }
-
-    public createSupportEventProfile (eventId: string | undefined): Observable<EventProfileModel> {
-        return this.http.post<EventProfileModel>( `${this.buildRequestBaseUrl( eventId )}/support`, null )
     }
 
     public updateEventProfileById (

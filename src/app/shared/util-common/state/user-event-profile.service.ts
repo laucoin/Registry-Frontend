@@ -15,17 +15,21 @@ export class UserEventProfileService extends GenericService {
     }
 
     public findUserEventProfiles (
-        offset: number | undefined,
-        limit: number | undefined,
+        pageNumber: number | undefined,
+        pageSize: number | undefined,
         params: EventProfilePageParamsModel,
     ): Observable<PageModel<EventProfileModel>> {
         return this.http.get<PageModel<EventProfileModel>>(
-            `${this.baseUrl}?${QueryUtil.buildQueryParams( offset, limit, params ).toString()}`,
+            `${this.baseUrl}?${QueryUtil.buildQueryParams( pageNumber, pageSize, params ).toString()}`,
         )
     }
 
     public findUserEventProfileById (id: string): Observable<EventProfileModel> {
         return this.http.get<EventProfileModel>( `${this.baseUrl}/${id}` )
+    }
+
+    public createSupportEventProfile (eventId: string): Observable<EventProfileModel> {
+        return this.http.post<EventProfileModel>( `${this.baseUrl}/${eventId}/support`, null )
     }
 
     public manageUserEventProfileAcceptance (id: string, accepted: boolean): Observable<EventProfileModel> {

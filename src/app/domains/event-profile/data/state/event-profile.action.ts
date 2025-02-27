@@ -1,28 +1,26 @@
 import { EventProfileModel } from '../../../../shared/util-model/model/event-profile.model'
 import { EventProfileDto } from '../dto/event-profile.dto'
 import { EventProfilesDto } from '../dto/event-profiles.dto'
-import { OrderEnum } from '../../../../shared/util-model/enumeration/order.enum'
 
 enum ActionEnum {
     START_EVENT_PROFILES_PAGE_LOADER = '[Local] Starting event profiles\' page loader',
     STOP_EVENT_PROFILES_PAGE_LOADER = '[Local] Stopping event profiles\' page loader',
 
     FETCH_EVENT_PROFILES_PAGE = '[Backend] Fetching event profiles\' page',
-    INPUT_EVENT_PROFILES_PAGE_SEARCH = '[Local] Inputting event profiles\' page search',
-    INPUT_EVENT_PROFILES_PAGE_DATE_RANGE = '[Local] Inputting event profiles\' page date range',
-    SELECT_EVENT_PROFILES_PAGE_STATUS = '[Local] Inputting event profiles\' page status',
-    SELECT_EVENT_PROFILES_PAGE_VISIBILITY = '[Local] Selecting event profiles\' page visibility',
-    SELECT_EVENT_PROFILES_PAGE_ORDER = '[Local] Selecting event profiles\' page order',
+    INPUT_EVENT_PROFILES_PAGE_TEXT_SEARCH = '[Local] Inputting event profiles\' page text search',
+    INPUT_EVENT_PROFILES_PAGE_DATE_TIME_SEARCH = '[Local] Inputting event profiles\' page date time search',
+    SELECT_EVENT_PROFILES_PAGE_STATUS_SEARCH = '[Local] Inputting event profiles\' page status search',
+    SELECT_EVENT_PROFILES_PAGE_AVAILABILITY_SEARCH = '[Local] Inputting event profiles\' page availability search',
 
     START_EVENT_PROFILE_LOADER = '[Local] Starting event profile\'s loader',
     STOP_EVENT_PROFILE_LOADER = '[Local] Stopping event profile\'s loader',
 
     FETCH_EVENT_PROFILE = '[Backend] Fetching event profile',
+    RESET_EVENT_PROFILE = '[Local] Resetting event profile',
     SEARCH_USERS = '[Backend] Searching users to invite',
     FETCH_ASSIGNABLE_EVENT_PROFILE_ROLES = '[Backend] Fetching assignable event profile\'s roles',
     FETCH_AVAILABLE_EVENT_PROFILE_STATUS = '[Backend] Fetching available event profile\'s status',
     CREATE_EVENT_PROFILES = '[Backend] Creating event profile',
-    CREATE_SUPPORT_EVENT_PROFILE = '[Backend] Creating event profiles',
     UPDATE_EVENT_PROFILE = '[Backend] Updating event profile',
     BLOCK_EVENT_PROFILE = '[Backend] Blocking event profile',
     UNBLOCK_EVENT_PROFILE = '[Backend] Unblocking event profile',
@@ -42,43 +40,34 @@ export class FetchEventProfilesPage {
 
     public constructor (
         public readonly eventId: string | undefined,
-        public readonly offset: number | undefined,
-        public readonly limit: number | undefined,
+        public readonly pageNumber: number | undefined,
+        public readonly pageSize: number | undefined,
         public readonly force: boolean = false,
     ) {}
 }
 
-export class InputEventProfilesPageSearch {
-    public static readonly type: ActionEnum = ActionEnum.INPUT_EVENT_PROFILES_PAGE_SEARCH
+export class InputEventProfilesPageTextSearched {
+    public static readonly type: ActionEnum = ActionEnum.INPUT_EVENT_PROFILES_PAGE_TEXT_SEARCH
 
-    public constructor (public readonly searched: string | undefined) {}
+    public constructor (public readonly textSearched: string | undefined) {}
 }
 
-export class InputEventProfilesPageDateRange {
-    public static readonly type: ActionEnum = ActionEnum.INPUT_EVENT_PROFILES_PAGE_DATE_RANGE
+export class InputEventProfilesPageDateTimeSearched {
+    public static readonly type: ActionEnum = ActionEnum.INPUT_EVENT_PROFILES_PAGE_DATE_TIME_SEARCH
 
-    public constructor (
-        public readonly begin: Date | undefined,
-        public readonly end: Date | undefined,
-    ) {}
+    public constructor (public readonly dateTime: Date | undefined) {}
 }
 
-export class SelectEventProfilesPageStatus {
-    public static readonly type: ActionEnum = ActionEnum.SELECT_EVENT_PROFILES_PAGE_STATUS
+export class SelectEventProfilesPageStatusSearched {
+    public static readonly type: ActionEnum = ActionEnum.SELECT_EVENT_PROFILES_PAGE_STATUS_SEARCH
 
-    public constructor (public readonly status: string | undefined) {}
+    public constructor (public readonly statusSearched: string | undefined) {}
 }
 
-export class SelectEventProfilesPageVisibility {
-    public static readonly type: ActionEnum = ActionEnum.SELECT_EVENT_PROFILES_PAGE_VISIBILITY
+export class SelectEventProfilesPageAvailabilitySearched {
+    public static readonly type: ActionEnum = ActionEnum.SELECT_EVENT_PROFILES_PAGE_AVAILABILITY_SEARCH
 
-    public constructor (public readonly onlyVisible: boolean) {}
-}
-
-export class SelectEventProfilesPageOrder {
-    public static readonly type: ActionEnum = ActionEnum.SELECT_EVENT_PROFILES_PAGE_ORDER
-
-    public constructor (public readonly order: OrderEnum) {}
+    public constructor (public readonly availabilitySearched: boolean | undefined) {}
 }
 
 export class StartEventProfileLoader {
@@ -95,12 +84,16 @@ export class FetchEventProfile {
     public constructor (public readonly eventId: string | undefined, public readonly id: string) {}
 }
 
+export class ResetEventProfile {
+    public static readonly type: ActionEnum = ActionEnum.RESET_EVENT_PROFILE
+}
+
 export class SearchUsers {
     public static readonly type: ActionEnum = ActionEnum.SEARCH_USERS
 
     public constructor (
         public readonly eventId: string | undefined,
-        public readonly searched: string | undefined,
+        public readonly textSearched: string | undefined,
     ) {}
 }
 
@@ -110,22 +103,14 @@ export class FetchAssignableEventProfileRoles {
     public constructor (public readonly eventId: string | undefined) {}
 }
 
-export class FetchAssignableEventProfileStatus {
+export class FetchProfileStatus {
     public static readonly type: ActionEnum = ActionEnum.FETCH_AVAILABLE_EVENT_PROFILE_STATUS
-
-    public constructor (public readonly eventId: string | undefined) {}
 }
 
 export class CreateEventProfiles {
     public static readonly type: ActionEnum = ActionEnum.CREATE_EVENT_PROFILES
 
     public constructor (public readonly eventId: string | undefined, public readonly profiles: EventProfilesDto) {}
-}
-
-export class CreateSupportEventProfile {
-    public static readonly type: ActionEnum = ActionEnum.CREATE_SUPPORT_EVENT_PROFILE
-
-    public constructor (public readonly eventId: string | undefined) {}
 }
 
 export class UpdateEventProfile {

@@ -1,8 +1,6 @@
-import { PageParamsModel } from '../../../../shared/util-model/model/page-params.model'
-
-export interface EventProfilePageParamsModel extends PageParamsModel {
-    onlyUsable: boolean
-    status: string | undefined
-    startAccess: string | undefined
-    endAccess: string | undefined
+export interface EventProfilePageParamsModel {
+    textSearched: string | undefined
+    availabilitySearched: boolean | undefined
+    statusSearched: string | undefined
+    dateTimeSearched: string | undefined
 }

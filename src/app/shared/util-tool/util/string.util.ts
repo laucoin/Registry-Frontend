@@ -1,14 +1,34 @@
 import { AppRouteEnum } from '../../../app-route.enum'
+import { GenericUtil } from './generic.util'
 
-export class StringUtils {
+export class StringUtil {
     public static addCacheBustingToUrl (url: string): string {
         const separator: string = url.includes( '?' ) ? '&' : '?'
         return `${url}${separator}cache-bust=${Math.random()}`
     }
 
-    public static truncate (text: string, maxLength: number, tail: string): string {
-        if (text.length > maxLength) return text.substring( 0, maxLength ) + tail
+    public static truncate (text: string, maxLength: number, tail?: string): string {
+        if (text.length > maxLength) return text.substring( 0, maxLength ) + (tail ?? '')
         return text
+    }
+
+    public static isBlank (text: string | undefined): boolean {
+        return GenericUtil.isNull( text ) || text!.trim().length === 0
+    }
+
+    public static isNotBlank (text: string | undefined): boolean {
+        return !this.isBlank( text )
+    }
+
+    public static toNumber (value: number | string | null | undefined): number | undefined {
+        switch (true) {
+            case GenericUtil.isNull( value ):
+                return undefined
+            case typeof value == 'string':
+                return Number.parseInt( value )
+            default:
+                return value!
+        }
     }
 
     public static formatDigits (value: number, range: number): string {
@@ -16,8 +36,8 @@ export class StringUtils {
     }
 
     public static isRouteActive (route: AppRouteEnum): boolean {
-        const castedRoute: string = StringUtils.sanitizeRoute( route )
-        const currentUri: string = StringUtils.sanitizeRoute( location.pathname )
+        const castedRoute: string = StringUtil.sanitizeRoute( route )
+        const currentUri: string = StringUtil.sanitizeRoute( location.pathname )
         const isEventRoute: boolean = [
             AppRouteEnum.EVENTS.toString(),
             AppRouteEnum.EVENTS_CREATION.toString(),
@@ -29,6 +49,7 @@ export class StringUtils {
             case currentUri.includes( AppRouteEnum.PROFILES ) && isEventRoute:
             case currentUri.includes( AppRouteEnum.PARTICIPANTS ) && isEventRoute:
             case currentUri.includes( AppRouteEnum.VEHICLES ) && isEventRoute:
+            case currentUri.includes( AppRouteEnum.ACTIVITIES ) && isEventRoute:
             case currentUri.includes( AppRouteEnum.GROUPS ) && isEventRoute:
             case currentUri.includes( AppRouteEnum.MOVEMENTS ) && isEventRoute:
                 return false

@@ -1,0 +1,26 @@
+.circle {
+    width:         0.75rem;
+    height:        0.75rem;
+    border-radius: 50%;
+    display:       inline-block;
+}
+
+.secondary {
+    background-color: darkgray;
+}
+
+.info {
+    background-color: var(--p-tag-info-background);
+}
+
+.success {
+    background-color: var(--p-tag-success-background);
+}
+
+.warn {
+    background-color: var(--p-tag-warn-background);
+}
+
+.danger {
+    background-color: var(--p-tag-danger-background);
+}

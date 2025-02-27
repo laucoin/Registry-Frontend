@@ -3,14 +3,48 @@
     font-weight: 700;
 }
 
-.strikethrough {
-    text-decoration: line-through;
+.event-info,
+.options,
+.status,
+.visibility-status {
+    flex-basis: 100%;
 }
 
-.info {
-    flex-basis: 25%;
+@media (min-width: 992px) {
+    .event-info,
+    .options {
+        flex-basis: 100%;
+    }
+
+    .status {
+        flex-basis: 70%;
+    }
+
+    .visibility-status {
+        flex-basis: 30%;
+    }
 }
 
-.options {
-    flex-basis: 75%;
+@media (min-width: 1140px) {
+    .event-info {
+        flex-basis: 30%;
+    }
+
+    .options {
+        flex-basis: 25%;
+    }
+
+    .status {
+        flex-basis: 30%;
+    }
+
+    .visibility-status {
+        flex-basis: 15%;
+    }
+}
+
+::ng-deep {
+    .max-list-box-height {
+        height: 100%;
+    }
 }

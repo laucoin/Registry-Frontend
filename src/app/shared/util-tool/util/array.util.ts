@@ -6,4 +6,8 @@ export class ArrayUtil {
         }
         return array.includes( value )
     }
+
+    public static isNullOrEmpty (array: unknown[] | undefined): boolean {
+        return !array || array.length === 0
+    }
 }

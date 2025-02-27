@@ -1,8 +1,5 @@
-import { Component, OnInit } from '@angular/core'
-import { GenericListComponent } from '../../../shared/util-tool/component/generic-list.component'
-import { MovementModel } from '../../../shared/util-model/movement.model'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { MovementFacade } from '../data/state/movement.facade'
-import { OrderEnum } from '../../../shared/util-model/enumeration/order.enum'
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms'
 import { PageEventModel } from '../../../shared/util-model/model/page-event.model'
 import { ListComponent } from '../../../shared/util-ui/list/list.component'
@@ -10,8 +7,6 @@ import { RegistryTemplateDirective } from '../../../shared/util-tool/directive/r
 import { TranslateModule } from '@ngx-translate/core'
 import { InputTextModule } from 'primeng/inputtext'
 import { ToggleButtonModule } from 'primeng/togglebutton'
-import { AsyncPipe } from '@angular/common'
-import { MessageComponent } from '../../../shared/util-ui/message/message.component'
 import { DropdownModule } from 'primeng/dropdown'
 import { MovementElementComponent } from '../../../shared/util-ui/movement-element/movement-element.component'
 import { RouterLink } from '@angular/router'
@@ -19,8 +14,7 @@ import { MovementRoutesEnum } from '../movement-routes.enum'
 import { Select } from 'primeng/select'
 import { Button } from 'primeng/button'
 import { DatePicker } from 'primeng/datepicker'
-import { Observable } from 'rxjs'
-import { SelectItem } from 'primeng/api'
+import { GenericListComponent } from '../../../shared/util-tool/component/generic-list.component'
 
 @Component( {
     selector: 'app-movements-list',
@@ -33,8 +27,6 @@ import { SelectItem } from 'primeng/api'
         TranslateModule,
         InputTextModule,
         ToggleButtonModule,
-        AsyncPipe,
-        MessageComponent,
         DropdownModule,
         MovementElementComponent,
         RouterLink,
@@ -42,109 +34,59 @@ import { SelectItem } from 'primeng/api'
         Button,
         DatePicker,
     ],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 } )
-export class MovementsListComponent extends GenericListComponent<MovementModel> implements OnInit {
-    protected readonly MovementRoutesEnum: typeof MovementRoutesEnum = MovementRoutesEnum
-    protected readonly movementTypes$: Observable<SelectItem<string>[]>
+export class MovementsListComponent extends GenericListComponent {
+    protected readonly facade: MovementFacade = inject( MovementFacade )
 
-    public constructor (private readonly facade: MovementFacade) {
-        super(
-            facade.movementsPage,
-            facade.movementsPageLoading,
-            facade.movementsPageSilentLoading,
-            facade.movementsPageError,
-        )
+    protected readonly MovementRoutesEnum: typeof MovementRoutesEnum = MovementRoutesEnum
+
+    public constructor () {
+        super()
 
         this.form = this.initForm()
-        this.movementTypes$ = facade.movementTypesMetadata
 
-        this.handleSearchedChanges()
-        this.handleTypeChanges()
-        this.handleRangeChanges()
-        this.handleOnlyVisibleChanges()
-        this.handleOrderChanges()
-    }
-
-    public ngOnInit (): void {
-        this.facade.fetchMovementTypes( this.contextEventId() )
-        this.facade.fetchMovementsPage( undefined, undefined, false, this.contextEventId() )
+        this.loadData()
     }
 
     protected initForm (): FormGroup {
         return this.formBuilder.group( {
-            searched: this.formBuilder.control( this.facade.actualMovementsPageSearchParam ),
-            type: this.formBuilder.control( this.facade.actualMovementsPageMovementTypeParam ),
-            range: this.formBuilder.control( this.facade.actualMovementsPageDateRangeParam ),
-            onlyVisible: this.formBuilder.control( this.facade.actualMovementsPageOnlyVisibleParam ),
-            order: this.formBuilder.control( this.facade.actualMovementsPageOrderParam === OrderEnum.DESC ),
+            typeSearched: this.formBuilder.control( this.facade.movementsPageMovementTypeSearchedParam() ),
+            startDateTimeSearched: this.formBuilder.control( this.facade.movementsPageStartDateTimeSearchedParam() ),
+            endDateTimeSearched: this.formBuilder.control( this.facade.movementsPageEndDateTimeSearchedParam() ),
+            visibilitySearched: this.formBuilder.control( this.facade.movementsPageVisibilitySearchedParam() ),
         } )
     }
 
+    protected loadData (): void {
+        const eventId: string | undefined = this.route.snapshot.params['eventId']
+        if (!eventId) return
+        this.facade.fetchMovementsPage( undefined, undefined, false, eventId )
+    }
+
     protected loadPage (pageEvent: PageEventModel, eventId: string | undefined): void {
-        this.facade.fetchMovementsPage( pageEvent.offset, pageEvent.limit, false, eventId )
-    }
-
-    private handleSearchedChanges (): void {
-        this.subscriptions.add(
-            this.searched.valueChanges.subscribe( (searched: string | undefined): void =>
-                this.facade.inputMovementsPageSearch( searched ),
-            ),
+        this.facade.inputPageSearchParameters(
+            this.typeSearched.value,
+            this.startDateTimeSearched.value,
+            this.endDateTimeSearched.value,
+            this.visibilitySearched.value,
         )
+        this.facade.fetchMovementsPage( pageEvent.pageNumber, pageEvent.pageSize, false, eventId )
     }
 
-    private handleTypeChanges (): void {
-        this.subscriptions.add(
-            this.type.valueChanges.subscribe( (type: string | undefined): void =>
-                this.facade.selectMovementsPageMovementType( type ),
-            ),
-        )
+    protected get typeSearched (): FormControl {
+        return this.form.get( 'typeSearched' ) as FormControl
     }
 
-    private handleRangeChanges (): void {
-        this.subscriptions.add(
-            this.range.valueChanges.subscribe( (range: Date[] | undefined): void =>
-                this.facade.inputMovementsPageDateRange( range ),
-            ),
-        )
+    protected get startDateTimeSearched (): FormControl {
+        return this.form.get( 'startDateTimeSearched' ) as FormControl
     }
 
-    private handleOnlyVisibleChanges (): void {
-        this.subscriptions.add(
-            this.onlyVisible.valueChanges.subscribe( (onlyVisible: boolean | undefined): void => {
-                if (onlyVisible != undefined) {
-                    this.facade.selectMovementsPageVisibility( onlyVisible )
-                }
-            } ),
-        )
+    protected get endDateTimeSearched (): FormControl {
+        return this.form.get( 'endDateTimeSearched' ) as FormControl
     }
 
-    private handleOrderChanges (): void {
-        this.subscriptions.add(
-            this.order.valueChanges.subscribe( (order: boolean | undefined): void => {
-                if (order != undefined) {
-                    this.facade.selectMovementsPageOrder( order ? OrderEnum.DESC : OrderEnum.ASC )
-                }
-            } ),
-        )
-    }
-
-    protected get searched (): FormControl {
-        return this.form.get( 'searched' ) as FormControl
-    }
-
-    protected get type (): FormControl {
-        return this.form.get( 'type' ) as FormControl
-    }
-
-    protected get range (): FormControl {
-        return this.form.get( 'range' ) as FormControl
-    }
-
-    protected get onlyVisible (): FormControl {
-        return this.form.get( 'onlyVisible' ) as FormControl
-    }
-
-    protected get order (): FormControl {
-        return this.form.get( 'order' ) as FormControl
+    protected get visibilitySearched (): FormControl {
+        return this.form.get( 'visibilitySearched' ) as FormControl
     }
 }

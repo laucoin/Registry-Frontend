@@ -1,19 +1,15 @@
-import { Component, Input, OnChanges } from '@angular/core'
-import { GenericElementComponent } from '../../../shared/util-tool/component/generic-element.component'
+import { ChangeDetectionStrategy, Component, computed, inject, input, InputSignal, Signal } from '@angular/core'
 import { UserModel } from '../../../shared/util-model/model/user.model'
 import { UserActionEnum } from '../data/state/user.action'
 import { ChipModule } from 'primeng/chip'
-import { DatePipe, TitleCasePipe, UpperCasePipe } from '@angular/common'
+import { TitleCasePipe, UpperCasePipe } from '@angular/common'
 import { ElementCardComponent } from '../../../shared/util-ui/element-card/element-card.component'
 import { TranslateModule } from '@ngx-translate/core'
 import { TagModule } from 'primeng/tag'
 import { ClipboardModule } from '@angular/cdk/clipboard'
 import { ToastModule } from 'primeng/toast'
 import { StateUtil } from '../../../shared/util-tool/state/state.util'
-import { AppConfig } from '../../../app.config'
 import { ActionModel } from '../../../shared/util-model/model/action.model'
-import { CurrentUserUtil } from '../../../shared/util-authentication/tool/current-user.util'
-import { CurrentUserModel } from '../../../shared/util-model/model/current-user.model'
 import { UserFacade } from '../data/state/user.facade'
 import { IconFieldModule } from 'primeng/iconfield'
 import { InputIconModule } from 'primeng/inputicon'
@@ -21,13 +17,17 @@ import { InputTextModule } from 'primeng/inputtext'
 import { ListboxModule } from 'primeng/listbox'
 import { ReactiveFormsModule } from '@angular/forms'
 import { AppRouteEnum } from '../../../app-route.enum'
+import { SeverityTagComponent } from '../../../shared/util-ui/severity-tag/severity-tag.component'
+import { GenericElementComponent } from '../../../shared/util-tool/component/generic-element.component'
+import { AppConfig } from '../../../app.config'
+import { DateFormatPipe } from '../../../shared/util-tool/pipe/date-format.pipe'
+import { VisibilityNamePipe } from '../../../shared/util-tool/pipe/visibility.pipe'
 
 @Component( {
     selector: 'app-user-element',
     standalone: true,
     imports: [
         ChipModule,
-        DatePipe,
         ElementCardComponent,
         TranslateModule,
         ClipboardModule,
@@ -40,63 +40,47 @@ import { AppRouteEnum } from '../../../app-route.enum'
         InputTextModule,
         ListboxModule,
         ReactiveFormsModule,
-
+        SeverityTagComponent,
+        DateFormatPipe,
+        VisibilityNamePipe,
     ],
     templateUrl: './user-element.component.html',
     styleUrl: './user-element.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush,
 } )
-export class UserElementComponent extends GenericElementComponent<UserModel, UserActionEnum> implements OnChanges {
-    @Input() public showActionMenu: boolean = true
+export class UserElementComponent extends GenericElementComponent<UserModel, UserActionEnum> {
+    private readonly facade: UserFacade = inject( UserFacade )
 
-    public constructor (private readonly facade: UserFacade) {
+    public readonly actionMenuVisible: InputSignal<boolean> = input( true )
+    public readonly user: InputSignal<UserModel> = input.required()
+
+    protected readonly actions: Signal<ActionModel<UserActionEnum>[]>
+
+    public constructor () {
         super()
-    }
 
-    public ngOnChanges (): void {
-        this.defineActions()
-    }
-
-    protected copied (): void {
-        this.registryFacade.notify( StateUtil.buildNotificationMessage(
-            'info',
-            undefined,
-            'info.message.email-copied',
-            undefined,
-            { element: this.element },
+        this.actions = computed( (): ActionModel<UserActionEnum>[] => this.buildActions(
+            this.user(),
+            AppConfig.config.user.action,
         ) )
     }
 
-    private defineActions (): void {
-        const currentUser: CurrentUserModel = this.registryFacade.actualCurrentUser!
-        this.actions = AppConfig
-            .config.user.action
-            .map( (action: ActionModel<UserActionEnum>): ActionModel<UserActionEnum> => ({
-                ...action, disabled: this.isActionDisabled( currentUser, action ),
-            }) )
-            .filter( (action: ActionModel<UserActionEnum>): boolean => !action.disabled )
-    }
-
-    protected override isActionDisabled (currentUser: CurrentUserModel, action: ActionModel<UserActionEnum>): boolean {
-        const isActionFeasible: boolean = CurrentUserUtil.isFeasible(
-            currentUser,
-            undefined,
-            action,
-        )
-        const isCurrentUser: boolean = this.element.id == currentUser?.id
+    protected isActionVisible (element: UserModel, action: ActionModel<UserActionEnum>): boolean {
+        const isCurrentUser: boolean = this.registryFacade.currentUser()?.id == element.id
 
         switch (action.id) {
             case UserActionEnum.UPDATE_USER_ROLE:
-                return isCurrentUser || !isActionFeasible
+                return !isCurrentUser
             case UserActionEnum.BLOCK_USER:
-                return isCurrentUser || !(isActionFeasible && this.element.visible)
+                return !isCurrentUser && element.visible
             case UserActionEnum.UNBLOCK_USER:
-                return isCurrentUser || !(isActionFeasible && !this.element.visible)
+                return !isCurrentUser && !element.visible
             case UserActionEnum.IMPERSONATE_USER:
-                return isCurrentUser || !isActionFeasible
+                return !isCurrentUser
             case UserActionEnum.DELETE_USER:
-                return isCurrentUser || !isActionFeasible
+                return !isCurrentUser
             default:
-                return !isActionFeasible
+                return true
         }
     }
 
@@ -104,23 +88,33 @@ export class UserElementComponent extends GenericElementComponent<UserModel, Use
         switch (action) {
             case UserActionEnum.UPDATE_USER_ROLE:
                 this.router.navigateByUrl(
-                    this.buildUri( AppRouteEnum.USERS_EDITION.replace( ':id', this.element.id ) ),
+                    this.buildUri( AppRouteEnum.USERS_EDITION.replace( ':userId', this.user().id ) ),
                 ).catch( console.error )
                 break
             case UserActionEnum.BLOCK_USER:
-                this.facade.bockUser( this.element.id )
+                this.facade.bockUser( this.user().id )
                 break
             case UserActionEnum.UNBLOCK_USER:
-                this.facade.unblockUser( this.element.id )
+                this.facade.unblockUser( this.user().id )
                 break
             case UserActionEnum.IMPERSONATE_USER:
-                this.facade.impersonateUser( this.element )
+                this.facade.impersonateUser( this.user() )
                 break
             case UserActionEnum.DELETE_USER:
-                this.facade.deleteUser( this.element )
+                this.facade.deleteUser( this.user() )
                 break
             default:
-                console.warn( this.translateService.instant( 'warning.message.invalid-action' ) )
+                console.warn( this.translateService.instant( 'global.messages.invalid-action' ) )
         }
+    }
+
+    protected copied (): void {
+        this.registryFacade.notify( StateUtil.buildNotificationMessage(
+            'info',
+            undefined,
+            'user.notifications.email-copied',
+            undefined,
+            { element: this.user() },
+        ) )
     }
 }

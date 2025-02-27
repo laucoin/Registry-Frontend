@@ -3,13 +3,13 @@ import { GenericUtil } from './generic.util'
 
 export class QueryUtil {
     public static buildQueryParams (
-        offset: number | undefined,
-        limit: number | undefined,
+        pageNumber: number | undefined,
+        pageSize: number | undefined,
         params: object | undefined,
     ): HttpParams {
         let builtParams: HttpParams = new HttpParams()
-            .set( 'offset', offset ?? 0 )
-            .set( 'limit', limit ?? 20 )
+            .set( 'pageNumber', pageNumber ?? 0 )
+            .set( 'pageSize', pageSize ?? 20 )
 
         if (GenericUtil.isNull( params )) return builtParams
 

@@ -7,7 +7,7 @@ import { REDIRECT_URI } from '../../util-tool/util/request.util'
 export const authGuard: CanActivateFn = (): boolean => {
     const registryFacade: RegistryFacade = inject( RegistryFacade )
 
-    if (!registryFacade.actualToken) {
+    if (!registryFacade.token()) {
         SessionStorageUtils.set( REDIRECT_URI, location.pathname )
         registryFacade.login()
     }

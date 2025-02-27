@@ -1,6 +1,8 @@
+import { CustomDatetimeModel } from '../../../../shared/util-model/model/custom-datetime.model'
+
 export interface EventDto {
     name: string
-    begin: Date | undefined
-    end: Date | undefined
+    begin: CustomDatetimeModel | undefined
+    end: CustomDatetimeModel | undefined
     options: string[] | undefined
 }

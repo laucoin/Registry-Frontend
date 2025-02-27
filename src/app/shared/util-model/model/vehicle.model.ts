@@ -1,9 +1,12 @@
 import { GenericEventModel } from './generic-event.model'
+import { CustomDatetimeModel } from './custom-datetime.model'
+import { SelectItem } from 'primeng/api'
 
 export interface VehicleModel extends GenericEventModel {
-    registration: string
+    licensePlate: string
     brand: string
     model: string
-    begin: Date | undefined
-    end: Date | undefined
+    status: SelectItem<string>
+    startAvailability: CustomDatetimeModel | undefined
+    endAvailability: CustomDatetimeModel | undefined
 }

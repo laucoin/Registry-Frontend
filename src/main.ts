@@ -8,13 +8,16 @@ import { AppConfig } from './app/app.config'
 import { routes } from './app/app.routes'
 import { backendHandler } from './app/shared/util-authentication/handler/backend.handler'
 import { RegistryFacade } from './app/shared/util-common/state/registry.facade'
-import { DatePipe } from '@angular/common'
 import { UserFacade } from './app/domains/user/data/state/user.facade'
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async'
 import {
     RegistryNgxsUnhandledErrorHandler,
 } from './app/shared/util-config/handler/registry-ngxs-unhandled-error.handler'
 import { withNgxsPlugin } from '@ngxs/store'
+import { DatePipe } from '@angular/common'
+import { DateFormatPipe } from './app/shared/util-tool/pipe/date-format.pipe'
+import { PluralTranslationPipe } from './app/shared/util-tool/pipe/plural-translation.pipe'
+import { CustomDateFormatPipe } from './app/shared/util-tool/pipe/custom-date-format.pipe'
 
 (async (): Promise<void> => {
     await AppConfig.load()
@@ -34,12 +37,15 @@ import { withNgxsPlugin } from '@ngxs/store'
             RegistryFacade,
             UserFacade,
             DatePipe,
+            DateFormatPipe,
+            CustomDateFormatPipe,
             AppConfig,
             AppConfig.providePrimeNg(),
             AppConfig.provideNgxs(),
             AppConfig.provideNgxsReduxDevtools(),
             withNgxsPlugin( RegistryNgxsUnhandledErrorHandler ),
             AppConfig.provideTranslator(),
+            PluralTranslationPipe,
         ],
     } ).catch( (error: Error) => console.error( error ) )
 })()

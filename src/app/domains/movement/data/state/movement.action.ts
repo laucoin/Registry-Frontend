@@ -1,6 +1,5 @@
 import { MovementDto } from '../dto/movement.dto'
-import { MovementModel } from '../../../../shared/util-model/movement.model'
-import { OrderEnum } from '../../../../shared/util-model/enumeration/order.enum'
+import { MovementModel } from '../../../../shared/util-model/model/movement.model'
 
 export enum MovementActionEnum {
     FETCH_MOVEMENT_TYPES = '[Backend] Fetching available movement types',
@@ -9,11 +8,11 @@ export enum MovementActionEnum {
     STOP_MOVEMENTS_PAGE_LOADER = '[Local] Stopping movements\' page loader',
 
     FETCH_MOVEMENTS_PAGE = '[Backend] Fetching movements\' page',
-    INPUT_MOVEMENTS_PAGE_SEARCH = '[Local] Inputting movements\' page search',
-    SELECT_MOVEMENTS_PAGE_TYPE = '[Local] Selecting movements\' page type',
-    INPUT_MOVEMENTS_PAGE_DATE_RANGE = '[Local] Inputting movements\' page date range',
-    SELECT_MOVEMENTS_PAGE_VISIBILITY = '[Local] Selecting movements\' page visibility',
-    SELECT_MOVEMENTS_PAGE_ORDER = '[Local] Selecting movements\' page order',
+    FETCH_MOVEMENTS_CONTENT = '[Backend] Fetching movements\' content',
+    SELECT_MOVEMENTS_PAGE_TYPE_SEARCH = '[Local] Selecting movements\' page type search',
+    INPUT_MOVEMENTS_PAGE_START_DATE_TIME_SEARCH = '[Local] Inputting movements\' page start date time search',
+    INPUT_MOVEMENTS_PAGE_END_DATE_TIME_SEARCH = '[Local] Inputting movements\' page end date time search',
+    SELECT_MOVEMENTS_PAGE_VISIBILITY_SEARCH = '[Local] Selecting movements\' page visibility search',
 
     START_MOVEMENT_LOADER = '[Local] Starting movement loader',
     STOP_MOVEMENT_LOADER = '[Local] Stopping movement loader',
@@ -31,8 +30,6 @@ export enum MovementActionEnum {
 
 export class FetchMovementTypes {
     public static readonly type: MovementActionEnum = MovementActionEnum.FETCH_MOVEMENT_TYPES
-
-    public constructor (public readonly eventId: string | undefined) {}
 }
 
 export class StartMovementsPageLoader {
@@ -48,43 +45,43 @@ export class FetchMovementsPage {
 
     public constructor (
         public readonly eventId: string | undefined,
-        public readonly offset: number | undefined,
-        public readonly limit: number | undefined,
+        public readonly pageNumber: number | undefined,
+        public readonly pageSize: number | undefined,
         public readonly force: boolean = false,
     ) {}
 }
 
-export class InputMovementsPageSearch {
-    public static readonly type: MovementActionEnum = MovementActionEnum.INPUT_MOVEMENTS_PAGE_SEARCH
-
-    public constructor (public readonly searched: string | undefined) {}
-}
-
-export class SelectMovementsPageType {
-    public static readonly type: MovementActionEnum = MovementActionEnum.SELECT_MOVEMENTS_PAGE_TYPE
-
-    public constructor (public readonly type: string | undefined) {}
-}
-
-export class InputMovementsPageDateRange {
-    public static readonly type: MovementActionEnum = MovementActionEnum.INPUT_MOVEMENTS_PAGE_DATE_RANGE
+export class FetchMovementsContent {
+    public static readonly type: MovementActionEnum = MovementActionEnum.FETCH_MOVEMENTS_CONTENT
 
     public constructor (
-        public readonly start: Date | undefined,
-        public readonly end: Date | undefined,
+        public readonly eventId: string | undefined,
+        public readonly movementIds: string[],
     ) {}
 }
 
-export class SelectMovementsPageVisibility {
-    public static readonly type: MovementActionEnum = MovementActionEnum.SELECT_MOVEMENTS_PAGE_VISIBILITY
+export class SelectMovementsPageTypeSearched {
+    public static readonly type: MovementActionEnum = MovementActionEnum.SELECT_MOVEMENTS_PAGE_TYPE_SEARCH
 
-    public constructor (public readonly onlyVisible: boolean) {}
+    public constructor (public readonly typeSearched: string | undefined) {}
 }
 
-export class SelectMovementsPageOrder {
-    public static readonly type: MovementActionEnum = MovementActionEnum.SELECT_MOVEMENTS_PAGE_ORDER
+export class InputMovementsPageStartDateTimeSearched {
+    public static readonly type: MovementActionEnum = MovementActionEnum.INPUT_MOVEMENTS_PAGE_START_DATE_TIME_SEARCH
 
-    public constructor (public readonly order: OrderEnum) {}
+    public constructor (public readonly startDateTimeSearched: Date | undefined) {}
+}
+
+export class InputMovementsPageEndDateTimeSearched {
+    public static readonly type: MovementActionEnum = MovementActionEnum.INPUT_MOVEMENTS_PAGE_END_DATE_TIME_SEARCH
+
+    public constructor (public readonly endDateTimeSearched: Date | undefined) {}
+}
+
+export class SelectMovementsPageVisibilitySearched {
+    public static readonly type: MovementActionEnum = MovementActionEnum.SELECT_MOVEMENTS_PAGE_VISIBILITY_SEARCH
+
+    public constructor (public readonly visibilitySearched: boolean | undefined) {}
 }
 
 export class StartMovementLoader {

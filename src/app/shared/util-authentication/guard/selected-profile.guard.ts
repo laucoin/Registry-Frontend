@@ -9,12 +9,12 @@ export const selectedProfileGuard: CanActivateFn = (): Promise<boolean> | boolea
     const registryFacade: RegistryFacade = inject( RegistryFacade )
     const router: Router = inject( Router )
 
-    const currentUser: CurrentUserModel | undefined = registryFacade.actualCurrentUser
+    const currentUser: CurrentUserModel | undefined = registryFacade.currentUser()
     if (currentUser && !currentUser.preferences.selectedProfile) {
         registryFacade.notify( {
             severity: 'warn',
-            summary: 'warning.title.NO_SELECTED_PROFILE',
-            detail: 'warning.message.NO_SELECTED_PROFILE',
+            summary: 'preferences.notifications.NO_SELECTED_PROFILE.title',
+            detail: 'preferences.notifications.NO_SELECTED_PROFILE.message',
             closable: true,
             icon: 'pi pi-sort-alt-slash',
             life: AppConfig.config.notification.duration.warn,

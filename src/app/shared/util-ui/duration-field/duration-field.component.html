@@ -1,0 +1,10 @@
+<p-select [options]='durations'
+          optionLabel='label'
+          optionValue='value'
+          [class.invalid]='invalid()'
+          [(ngModel)]='value'
+          (onChange)='onInputChange($event.value)'
+          [inputId]='inputId()'
+          [placeholder]='placeholder()'
+          [disabled]='disabled()'
+          [fluid]='fluid()' />

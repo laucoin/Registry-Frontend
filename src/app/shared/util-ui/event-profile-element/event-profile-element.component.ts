@@ -1,134 +1,144 @@
-import { Component, Input, OnChanges } from '@angular/core'
-import { GenericElementComponent } from '../../util-tool/component/generic-element.component'
+import { ChangeDetectionStrategy, Component, computed, inject, input, InputSignal, Signal } from '@angular/core'
 import { EventProfileModel } from '../../util-model/model/event-profile.model'
 import { EventProfileActionEnum } from '../../util-model/enumeration/event-profile-action.enum'
 import { ChipModule } from 'primeng/chip'
-import { AsyncPipe, DatePipe, NgIf, TitleCasePipe, UpperCasePipe } from '@angular/common'
+import { TitleCasePipe, UpperCasePipe } from '@angular/common'
 import { ElementCardComponent } from '../element-card/element-card.component'
 import { TranslateModule } from '@ngx-translate/core'
-import { DateIsPastPipe } from '../../util-tool/pipe/date-is-past.pipe'
 import { BadgeModule } from 'primeng/badge'
 import { AppConfig } from '../../../app.config'
 import { ActionModel } from '../../util-model/model/action.model'
 import { Button } from 'primeng/button'
 import { ConfirmationService } from 'primeng/api'
 import { ConfirmDialogModule } from 'primeng/confirmdialog'
-import { breakPoint } from '../../util-tool/util/breakpoint.const'
 import { EventProfileFacade } from '../../../domains/event-profile/data/state/event-profile.facade'
-import { CurrentUserUtil } from '../../util-authentication/tool/current-user.util'
 import { AppRouteEnum } from '../../../app-route.enum'
 import { CurrentUserModel } from '../../util-model/model/current-user.model'
+import { SeverityTagComponent } from '../severity-tag/severity-tag.component'
+import { DateIntervalStatusModel } from '../../util-model/model/date-interval-status.model'
+import { DateUtil } from '../../util-tool/util/date.util'
+import { GenericElementComponent } from '../../util-tool/component/generic-element.component'
+import { IntervalFormatPipe } from '../../util-tool/pipe/interval-format.pipe'
+import { CustomDateFormatPipe } from '../../util-tool/pipe/custom-date-format.pipe'
 
 @Component( {
     selector: 'app-event-profile-element',
     standalone: true,
     imports: [
         ChipModule,
-        DatePipe,
         ElementCardComponent,
         TranslateModule,
-        DateIsPastPipe,
         BadgeModule,
-        AsyncPipe,
-        NgIf,
         Button,
         ConfirmDialogModule,
         TitleCasePipe,
         UpperCasePipe,
+        SeverityTagComponent,
+        IntervalFormatPipe,
+        CustomDateFormatPipe,
     ],
     providers: [ ConfirmationService, EventProfileFacade ],
     templateUrl: './event-profile-element.component.html',
     styleUrl: './event-profile-element.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush,
 } )
-export class EventProfileElementComponent extends GenericElementComponent<EventProfileModel, EventProfileActionEnum> implements OnChanges {
-    @Input( { required: true } ) public view!: 'user' | 'event'
+export class EventProfileElementComponent extends GenericElementComponent<EventProfileModel, EventProfileActionEnum> {
+    private readonly facade: EventProfileFacade = inject( EventProfileFacade )
+    private readonly confirmationService: ConfirmationService = inject( ConfirmationService )
 
-    protected readonly breakpoint: object = breakPoint
+    public readonly actionMenuVisible: InputSignal<boolean> = input( true )
+    public readonly view: InputSignal<'user' | 'event'> = input.required()
+    public readonly profile: InputSignal<EventProfileModel> = input.required()
 
-    public constructor (
-        private readonly confirmationService: ConfirmationService,
-        private readonly facade: EventProfileFacade,
-    ) {
+    protected readonly actions: Signal<ActionModel<EventProfileActionEnum>[]>
+    protected readonly intervalStatus: Signal<DateIntervalStatusModel | undefined>
+
+    public constructor () {
         super()
+
+        this.intervalStatus = computed( (): DateIntervalStatusModel => DateUtil.dateRangeStatus(
+            this.profile().startAccess,
+            this.profile().endAccess,
+        ) )
+
+        this.actions = computed( (): ActionModel<EventProfileActionEnum>[] => this.buildActions(
+            this.profile(),
+            AppConfig.config.profile.event.action,
+        ) )
     }
 
-    public ngOnChanges (): void {
-        this.defineActions()
-    }
-
-    private defineActions (): void {
-        const currentUser: CurrentUserModel = this.registryFacade.actualCurrentUser!
-        this.actions = AppConfig
-            .config.profile.event.action
-            .map( (action: ActionModel<EventProfileActionEnum>): ActionModel<EventProfileActionEnum> => ({
-                    ...action,
-                    disabled: this.isActionDisabled( currentUser, action ),
-                }),
-            )
-            .filter( (action: ActionModel<EventProfileActionEnum>): boolean => !action.disabled )
-    }
-
-    protected override isActionDisabled (
-        currentUser: CurrentUserModel,
-        action: ActionModel<EventProfileActionEnum>,
-    ): boolean {
-        const isActionFeasible: boolean = CurrentUserUtil.isFeasible(
-            currentUser,
-            this.element.event,
-            action,
-        )
-        const isCurrentUserProfile: boolean = this.registryFacade.actualCurrentUser?.id === this.element.user.id
+    protected isActionVisible (element: EventProfileModel, action: ActionModel<EventProfileActionEnum>): boolean {
+        const currentUser: CurrentUserModel | undefined = this.registryFacade.currentUser()
+        const isCurrentUserProfile: boolean = currentUser?.id === element.user.id
 
         switch (action.id) {
             case EventProfileActionEnum.SELECT_EVENT_PROFILE:
-                return !isCurrentUserProfile || this.registryFacade.actualCurrentUser?.preferences?.selectedProfile?.id === this.element.id
+                return isCurrentUserProfile
             case EventProfileActionEnum.UPDATE_EVENT_PROFILE:
-                return isCurrentUserProfile || !isActionFeasible
+                return !isCurrentUserProfile
             case EventProfileActionEnum.BLOCK_EVENT_PROFILE:
-                return isCurrentUserProfile || !(isActionFeasible && this.element.visible)
+                return !isCurrentUserProfile && element.visible
             case EventProfileActionEnum.UNBLOCK_EVENT_PROFILE:
-                return isCurrentUserProfile || !(isActionFeasible && !this.element.visible)
+                return !isCurrentUserProfile && !element.visible
             default:
-                return !isActionFeasible
+                return true
         }
+    }
+
+    protected override disabledAction (
+        element: EventProfileModel,
+        action: ActionModel<EventProfileActionEnum>,
+    ): boolean {
+        const isNotFeasible: boolean = super.disabledAction( element, action )
+
+        if (action.id === EventProfileActionEnum.SELECT_EVENT_PROFILE) {
+            const currentUser: CurrentUserModel | undefined = this.registryFacade.currentUser()
+            const isCurrentUserSelectedProfile: boolean = currentUser?.preferences?.selectedProfile?.id === element.id
+
+            return isCurrentUserSelectedProfile || isNotFeasible
+        }
+
+        return isNotFeasible
     }
 
     protected handleAction (action: EventProfileActionEnum): void {
         switch (action) {
             case EventProfileActionEnum.SELECT_EVENT_PROFILE:
-                this.registryFacade.selectUserEventProfile( this.element )
+                this.registryFacade.selectUserEventProfile( this.profile() )
                 break
             case EventProfileActionEnum.UPDATE_EVENT_PROFILE:
                 this.router.navigateByUrl(
-                    this.buildUri( AppRouteEnum.PROFILES_EDITION ).replace( ':id', this.element.id ),
+                    this.buildUri( AppRouteEnum.PROFILES_EDITION ).replace( ':profileId', this.profile().id ),
                 ).catch( console.error )
                 break
             case EventProfileActionEnum.BLOCK_EVENT_PROFILE:
-                this.facade.blockEventProfile( this.element )
+                this.facade.blockEventProfile( this.profile() )
                 break
             case EventProfileActionEnum.UNBLOCK_EVENT_PROFILE:
-                this.facade.unblockEventProfile( this.element )
+                this.facade.unblockEventProfile( this.profile() )
                 break
             case EventProfileActionEnum.DELETE_EVENT_PROFILE:
-                if (this.element.user.id === this.registryFacade.actualCurrentUser?.id) {
-                    this.registryFacade.deleteUserEventProfile( this.element )
+                if (this.profile().user.id === this.registryFacade.currentUser()?.id) {
+                    this.registryFacade.deleteUserEventProfile( this.profile() )
                 } else {
-                    this.facade.deleteEventProfile( this.element )
+                    this.facade.deleteEventProfile( this.profile() )
                 }
                 break
             default:
-                console.warn( this.translateService.instant( 'warning.message.invalid-action' ) )
+                console.warn( this.translateService.instant( 'global.messages.invalid-action' ) )
         }
     }
 
-    protected severityFromStatus (status: string): 'success' | 'danger' | 'help' {
+    protected severityFromStatus (status: string): 'success' | 'info' | 'warn' | 'danger' {
         switch (status) {
             case 'ACCEPTED':
                 return 'success'
             case 'REJECTED':
+                return 'warn'
+            case 'BLOCKED':
                 return 'danger'
             default:
-                return 'help'
+                return 'info'
         }
     }
 
@@ -137,7 +147,7 @@ export class EventProfileElementComponent extends GenericElementComponent<EventP
             header: this.translateService.instant( `profile.action.confirmation.title.${status}` ),
             message: this.translateService.instant(
                 `profile.action.confirmation.message.${status}`,
-                { element: this.element },
+                { element: this.profile() },
             ),
             icon: status === 'ACCEPTED' ? 'pi pi-info-circle' : 'pi pi-exclamation-triangle',
             acceptLabel: this.translateService.instant( 'confirmation.confirm' ),
@@ -149,6 +159,6 @@ export class EventProfileElementComponent extends GenericElementComponent<EventP
     }
 
     protected manageAcceptance (accepted: boolean): void {
-        this.registryFacade.manageEventInvitationAcceptance( this.element.id, accepted )
+        this.registryFacade.manageEventInvitationAcceptance( this.profile().id, accepted )
     }
 }

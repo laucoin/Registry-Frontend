@@ -14,22 +14,20 @@ import {
     FetchUser,
     FetchUsersPage,
     ImpersonateUser,
-    InputUsersPageSearch,
+    InputUsersPageTextSearched,
     ResetUser,
-    SelectUsersPageOrder,
-    SelectUsersPageVisibility,
+    SelectUsersPageVisibilitySearched,
     StartUserLoader,
     StartUsersPageLoader,
     StopUserLoader,
+    StopUsersPageLoader,
     UnblockUser,
     UpdateUserRole,
 } from './user.action'
 import { UserService } from './user.service'
 import { UserFacade } from './user.facade'
-import { OrderEnum } from '../../../../shared/util-model/enumeration/order.enum'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { ElementRequestInformationModel } from '../../../../shared/util-model/model/element-request-information.model'
-import { StopParticipantsPageLoader } from '../../../participant/data/state/participant.action'
 import { StateUtil } from '../../../../shared/util-tool/state/state.util'
 
 const defaultUser: ElementRequestInformationModel<UserModel> = {
@@ -41,9 +39,8 @@ const defaultUserState: UserStateModel = {
     users: {
         element: undefined,
         params: {
-            order: OrderEnum.ASC,
-            onlyVisible: true,
-            searched: undefined,
+            textSearched: undefined,
+            visibilitySearched: undefined,
         },
         loading: false,
         silentLoading: false,
@@ -52,6 +49,20 @@ const defaultUserState: UserStateModel = {
     user: defaultUser,
     _metadata: {
         assignableRoles: [],
+        status: [
+            {
+                label: '-',
+                value: undefined,
+            },
+            {
+                label: 'users.visible.true',
+                value: true,
+            },
+            {
+                label: 'users.visible.false',
+                value: false,
+            },
+        ],
     },
 }
 
@@ -91,18 +102,13 @@ export class UserState extends GenericElementState<UserStateModel> {
     }
 
     @Selector()
-    public static usersPageSearchParam (state: UserStateModel): string | undefined {
-        return state.users.params.searched
+    public static usersPageTextSearchedParam (state: UserStateModel): string | undefined {
+        return state.users.params.textSearched
     }
 
     @Selector()
-    public static usersPageOnlyVisibleParam (state: UserStateModel): boolean {
-        return state.users.params.onlyVisible
-    }
-
-    @Selector()
-    public static usersPageOrderParam (state: UserStateModel): OrderEnum {
-        return state.users.params.order
+    public static usersPageVisibilitySearchedParam (state: UserStateModel): boolean | undefined {
+        return state.users.params.visibilitySearched
     }
 
     @Selector()
@@ -120,6 +126,11 @@ export class UserState extends GenericElementState<UserStateModel> {
         return state._metadata.assignableRoles
     }
 
+    @Selector()
+    public static statusMetadata (state: UserStateModel): SelectItem<boolean | undefined>[] {
+        return state._metadata.status
+    }
+
     @Action( StartUsersPageLoader )
     public startUsersPageLoader (ctx: StateContext<UserStateModel>): void {
         ctx.patchState( {
@@ -127,8 +138,8 @@ export class UserState extends GenericElementState<UserStateModel> {
         } )
     }
 
-    @Action( StopParticipantsPageLoader )
-    public stopParticipantsPageLoader (ctx: StateContext<UserStateModel>): void {
+    @Action( StopUsersPageLoader )
+    public stopUsersPageLoader (ctx: StateContext<UserStateModel>): void {
         ctx.patchState( {
             users: StateUtil.updatePageLoader( ctx.getState().users, false ),
         } )
@@ -136,7 +147,7 @@ export class UserState extends GenericElementState<UserStateModel> {
 
     @Action( FetchUsersPage )
     public fetchUsersPage (ctx: StateContext<UserStateModel>, payload: FetchUsersPage): Observable<void> {
-        return this.service.findUsers( payload.offset, payload.limit, ctx.getState().users.params ).pipe(
+        return this.service.findUsers( payload.pageNumber, payload.pageSize, ctx.getState().users.params ).pipe(
             initialize( (): void => this.facade.startUsersPageLoader() ),
             finalize( (): void => this.facade.stopUsersPageLoader() ),
             map( (userPage: PageModel<UserModel>): void => this.fetchUsersPageComplete( ctx, userPage ) ),
@@ -153,49 +164,33 @@ export class UserState extends GenericElementState<UserStateModel> {
         } )
     }
 
-    @Action( InputUsersPageSearch )
-    public inputUsersPageSearch (
+    @Action( InputUsersPageTextSearched )
+    public inputUsersPageTextSearched (
         ctx: StateContext<UserStateModel>,
-        payload: InputUsersPageSearch,
+        payload: InputUsersPageTextSearched,
     ): void {
         ctx.patchState( {
             users: {
                 ...ctx.getState().users,
                 params: {
                     ...ctx.getState().users.params,
-                    searched: payload.searched,
+                    textSearched: payload.textSearched,
                 },
             },
         } )
     }
 
-    @Action( SelectUsersPageVisibility )
-    public selectUsersPageVisibility (
+    @Action( SelectUsersPageVisibilitySearched )
+    public selectUsersPageVisibilitySearched (
         ctx: StateContext<UserStateModel>,
-        payload: SelectUsersPageVisibility,
+        payload: SelectUsersPageVisibilitySearched,
     ): void {
         ctx.patchState( {
             users: {
                 ...ctx.getState().users,
                 params: {
                     ...ctx.getState().users.params,
-                    onlyVisible: payload.onlyVisible,
-                },
-            },
-        } )
-    }
-
-    @Action( SelectUsersPageOrder )
-    public selectUsersPageOrder (
-        ctx: StateContext<UserStateModel>,
-        payload: SelectUsersPageOrder,
-    ): void {
-        ctx.patchState( {
-            users: {
-                ...ctx.getState().users,
-                params: {
-                    ...ctx.getState().users.params,
-                    order: payload.order,
+                    visibilitySearched: payload.visibilitySearched,
                 },
             },
         } )
@@ -273,8 +268,8 @@ export class UserState extends GenericElementState<UserStateModel> {
     private updateUserRoleComplete (ctx: StateContext<UserStateModel>, user: UserModel): void {
         this.buildMessageAndNotify(
             'success',
-            'success.title.user.edit',
-            'success.message.user.edit',
+            'users.notifications.update-role.title',
+            'users.notifications.update-role.message',
             this.userIcon,
             this.buildTranslationArgs( user ),
         )
@@ -293,8 +288,8 @@ export class UserState extends GenericElementState<UserStateModel> {
     private blockUserComplete (ctx: StateContext<UserStateModel>, user: UserModel): void {
         this.buildMessageAndNotify(
             'success',
-            'success.title.user.block',
-            'success.message.user.block',
+            'users.notifications.disable.title',
+            'users.notifications.disable.message',
             this.userIcon,
             this.buildTranslationArgs( user ),
         )
@@ -313,8 +308,8 @@ export class UserState extends GenericElementState<UserStateModel> {
     private unblockUserComplete (ctx: StateContext<UserStateModel>, user: UserModel): void {
         this.buildMessageAndNotify(
             'success',
-            'success.title.user.unblock',
-            'success.message.user.unblock',
+            'users.notifications.enable.title',
+            'users.notifications.enable.message',
             this.userIcon,
             this.buildTranslationArgs( user ),
         )
@@ -333,8 +328,8 @@ export class UserState extends GenericElementState<UserStateModel> {
     private impersonateUserComplete (ctx: StateContext<UserStateModel>, user: UserModel): void {
         this.buildMessageAndNotify(
             'success',
-            'success.title.user.impersonate',
-            'success.message.user.impersonate',
+            'users.notifications.impersonate.title',
+            'users.notifications.impersonate.message',
             this.userIcon,
             this.buildTranslationArgs( user ),
         )
@@ -354,8 +349,8 @@ export class UserState extends GenericElementState<UserStateModel> {
     private deleteUserComplete (ctx: StateContext<UserStateModel>, user: UserModel): void {
         this.buildMessageAndNotify(
             'success',
-            'success.title.user.delete',
-            'success.message.user.delete',
+            'users.notifications.delete.title',
+            'users.notifications.delete.message',
             this.userIcon,
             this.buildTranslationArgs( user ),
         )
@@ -371,7 +366,7 @@ export class UserState extends GenericElementState<UserStateModel> {
 
     protected refreshPage (ctx: StateContext<UserStateModel>): void {
         const page: PageModel<UserModel> | undefined = ctx.getState().users.element
-        this.facade.fetchUsersPage( page?.offset, page?.limit, true )
+        this.facade.fetchUsersPage( page?.pageNumber, page?.pageSize, true )
     }
 
     protected pageError (ctx: StateContext<UserStateModel>, error: HttpErrorResponse): Observable<void> {

@@ -24,6 +24,7 @@ export class RegistryNgxsUnhandledErrorHandler implements NgxsPlugin {
                         detail: error.message,
                         icon: 'pi pi-exclamation-triangle',
                         closable: true,
+                        sticky: true,
                     } )
                 }
                 throw error

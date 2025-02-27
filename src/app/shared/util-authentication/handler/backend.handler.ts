@@ -33,12 +33,12 @@ export const backendHandler: HttpInterceptorFn = (
     const registryFacade: RegistryFacade = inject( RegistryFacade )
     const translateService: TranslateService = inject( TranslateService )
 
-    const currentUser: CurrentUserModel | undefined = registryFacade.actualCurrentUser
+    const currentUser: CurrentUserModel | undefined = registryFacade.currentUser()
     const url: string = formatUrlIfNecessary( currentUser, req.url )
 
     return next( req.clone( {
         url: url,
-        headers: buildHeaders( req.url, registryFacade.actualToken, req.headers ),
+        headers: buildHeaders( req.url, registryFacade.token(), req.headers ),
     } ) )
         .pipe( catchError( (error: HttpErrorResponse) => {
             if (AppConfig.config.backend.noAuthPaths.some( (permitAll: string): boolean => req.url.includes( permitAll ) ) && error.status === 401) {
@@ -53,12 +53,12 @@ export const backendHandler: HttpInterceptorFn = (
                     return throwError( (): ErrorModel => ({
                         status: 503,
                         name: 'Service Unavailable',
-                        title: translateService.instant( 'error.title.503' ),
-                        message: translateService.instant( 'error.message.503' ),
+                        title: translateService.instant( 'global.notifications.503.title' ),
+                        message: translateService.instant( 'global.notifications.503.message' ),
                     }) )
                 case 401:
                     return registryFacade.refreshToken().pipe(
-                        map( (): TokenModel => registryFacade.actualToken! ),
+                        map( (): TokenModel => registryFacade.token()! ),
                         mergeMap( (newToken: TokenModel): Observable<HttpEvent<unknown>> => {
                             const retryHeaders: HttpHeaders = buildHeaders( req.url, newToken, req.headers )
                             return next( req.clone( { url: url, headers: retryHeaders } ) )

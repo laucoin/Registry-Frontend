@@ -11,11 +11,10 @@ import {
     FetchEvent,
     FetchEventOptions,
     FetchEventsPage,
-    InputEventsPageDateRange,
-    InputEventsPageSearch,
+    InputEventsPageDateTimeSearched,
+    InputEventsPageTextSearched,
     ResetEvent,
-    SelectEventsPageOrder,
-    SelectEventsPageVisibility,
+    SelectEventsPageVisibilitySearched,
     StartEventLoader,
     StartEventsPageLoader,
     StopEventLoader,
@@ -26,11 +25,10 @@ import { EventService } from './event.service'
 import { EventFacade } from './event.facade'
 import { Injectable } from '@angular/core'
 import { StateUtil } from '../../../../shared/util-tool/state/state.util'
-import { OrderEnum } from '../../../../shared/util-model/enumeration/order.enum'
 import { ElementRequestInformationModel } from '../../../../shared/util-model/model/element-request-information.model'
 import { EventOptionModel } from '../model/event-option.model'
 import { ErrorModel } from '../../../../shared/util-model/model/error.model'
-import { ToastMessageOptions } from 'primeng/api'
+import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { EventModel } from '../../../../shared/util-model/model/event.model'
 import { EventStateModel } from '../model/event-state.model'
 
@@ -43,11 +41,9 @@ const defaultEventState: EventStateModel = {
     events: {
         element: undefined,
         params: {
-            order: OrderEnum.ASC,
-            onlyVisible: true,
-            searched: undefined,
-            startDate: undefined,
-            endDate: undefined,
+            textSearched: undefined,
+            visibilitySearched: undefined,
+            dateTimeSearched: undefined,
         },
         loading: false,
         silentLoading: false,
@@ -56,6 +52,20 @@ const defaultEventState: EventStateModel = {
     event: defaultEvent,
     _metadata: {
         options: [],
+        visibilities: [
+            {
+                label: '-',
+                value: undefined,
+            },
+            {
+                label: 'events.visible.true',
+                value: true,
+            },
+            {
+                label: 'events.visible.false',
+                value: false,
+            },
+        ],
     },
 }
 
@@ -95,28 +105,18 @@ export class EventState extends GenericElementState<EventStateModel> {
     }
 
     @Selector()
-    public static eventsPageSearchParam (state: EventStateModel): string | undefined {
-        return state.events.params.searched
+    public static eventsPageTextSearchedParam (state: EventStateModel): string | undefined {
+        return state.events.params.textSearched
     }
 
     @Selector()
-    public static eventsPageStartDateParam (state: EventStateModel): string | undefined {
-        return state.events.params.startDate
+    public static eventsPageDateTimeSearchedParam (state: EventStateModel): string | undefined {
+        return state.events.params.dateTimeSearched
     }
 
     @Selector()
-    public static eventsPageEndDateParam (state: EventStateModel): string | undefined {
-        return state.events.params.endDate
-    }
-
-    @Selector()
-    public static eventsPageOnlyVisibleParam (state: EventStateModel): boolean {
-        return state.events.params.onlyVisible
-    }
-
-    @Selector()
-    public static eventsPageOrderParam (state: EventStateModel): OrderEnum {
-        return state.events.params.order
+    public static eventsPageVisibilitySearchedParam (state: EventStateModel): boolean | undefined {
+        return state.events.params.visibilitySearched
     }
 
     @Selector()
@@ -134,6 +134,11 @@ export class EventState extends GenericElementState<EventStateModel> {
         return state._metadata.options
     }
 
+    @Selector()
+    public static visibilitiesMetadata (state: EventStateModel): SelectItem<boolean | undefined>[] {
+        return state._metadata.visibilities
+    }
+
     @Action( FetchEventOptions )
     public fetchEventOptions (ctx: StateContext<EventStateModel>): Observable<void> {
         return this.service.getAvailableEventOptions().pipe(
@@ -144,6 +149,7 @@ export class EventState extends GenericElementState<EventStateModel> {
     private fetchEventOptionsComplete (ctx: StateContext<EventStateModel>, options: EventOptionModel[]): void {
         ctx.patchState( {
             _metadata: {
+                ...ctx.getState()._metadata,
                 options: options,
             },
         } )
@@ -165,7 +171,7 @@ export class EventState extends GenericElementState<EventStateModel> {
 
     @Action( FetchEventsPage )
     public fetchEventsPage (ctx: StateContext<EventStateModel>, payload: FetchEventsPage): Observable<void> {
-        return this.service.findEvents( payload.offset, payload.limit, ctx.getState().events.params ).pipe(
+        return this.service.findEvents( payload.pageNumber, payload.pageSize, ctx.getState().events.params ).pipe(
             initialize( (): void => this.facade.startEventsPageLoader() ),
             finalize( (): void => this.facade.stopEventsPageLoader() ),
             map( (eventPage: PageModel<EventModel>): void => this.fetchEventsPageComplete( ctx, eventPage ) ),
@@ -182,66 +188,49 @@ export class EventState extends GenericElementState<EventStateModel> {
         } )
     }
 
-    @Action( InputEventsPageSearch )
-    public inputEventsPageSearch (
+    @Action( InputEventsPageTextSearched )
+    public inputEventsPageTextSearched (
         ctx: StateContext<EventStateModel>,
-        payload: InputEventsPageSearch,
+        payload: InputEventsPageTextSearched,
     ): void {
         ctx.patchState( {
             events: {
                 ...ctx.getState().events,
                 params: {
                     ...ctx.getState().events.params,
-                    searched: payload.searched,
+                    textSearched: payload.textSearched,
                 },
             },
         } )
     }
 
-    @Action( InputEventsPageDateRange )
-    public inputEventsPageDateRange (
+    @Action( InputEventsPageDateTimeSearched )
+    public inputEventsPageDateTimeSearched (
         ctx: StateContext<EventStateModel>,
-        payload: InputEventsPageDateRange,
+        payload: InputEventsPageDateTimeSearched,
     ): void {
         ctx.patchState( {
             events: {
                 ...ctx.getState().events,
                 params: {
                     ...ctx.getState().events.params,
-                    startDate: payload.begin?.toISOString(),
-                    endDate: payload.end?.toISOString(),
+                    dateTimeSearched: payload.dateTime?.toISOString(),
                 },
             },
         } )
     }
 
-    @Action( SelectEventsPageVisibility )
-    public selectEventsPageVisibility (
+    @Action( SelectEventsPageVisibilitySearched )
+    public selectEventsPageVisibilitySearched (
         ctx: StateContext<EventStateModel>,
-        payload: SelectEventsPageVisibility,
+        payload: SelectEventsPageVisibilitySearched,
     ): void {
         ctx.patchState( {
             events: {
                 ...ctx.getState().events,
                 params: {
                     ...ctx.getState().events.params,
-                    onlyVisible: payload.onlyVisible,
-                },
-            },
-        } )
-    }
-
-    @Action( SelectEventsPageOrder )
-    public selectEventsPageOrder (
-        ctx: StateContext<EventStateModel>,
-        payload: SelectEventsPageOrder,
-    ): void {
-        ctx.patchState( {
-            events: {
-                ...ctx.getState().events,
-                params: {
-                    ...ctx.getState().events.params,
-                    order: payload.order,
+                    visibilitySearched: payload.visibilitySearched,
                 },
             },
         } )
@@ -298,8 +287,8 @@ export class EventState extends GenericElementState<EventStateModel> {
     private createEventComplete (ctx: StateContext<EventStateModel>, event: EventModel): void {
         this.buildMessageAndNotify(
             'success',
-            'success.title.event.create',
-            'success.message.event.create',
+            'events.notifications.create.title',
+            'events.notifications.create.message',
             this.eventIcon,
             this.buildTranslationArgs( event ),
         )
@@ -319,11 +308,16 @@ export class EventState extends GenericElementState<EventStateModel> {
     private updateEventComplete (ctx: StateContext<EventStateModel>, event: EventModel): void {
         this.buildMessageAndNotify(
             'success',
-            'success.title.event.edit',
-            'success.message.event.edit',
+            'events.notifications.edit.title',
+            'events.notifications.edit.message',
             this.eventIcon,
             this.buildTranslationArgs( event ),
         )
+
+        if (this.registryFacade.currentUser()?.preferences.selectedProfile?.event?.id == event.id) {
+            this.registryFacade.fetchCurrentUser()
+        }
+
         this.refreshPage( ctx )
     }
 
@@ -339,8 +333,8 @@ export class EventState extends GenericElementState<EventStateModel> {
     private disableEventComplete (ctx: StateContext<EventStateModel>, event: EventModel): void {
         this.buildMessageAndNotify(
             'success',
-            'success.title.event.disable',
-            'success.message.event.disable',
+            'events.notifications.disable.title',
+            'events.notifications.disable.message',
             this.eventIcon,
             this.buildTranslationArgs( event ),
         )
@@ -360,8 +354,8 @@ export class EventState extends GenericElementState<EventStateModel> {
     private enableEventComplete (ctx: StateContext<EventStateModel>, event: EventModel): void {
         this.buildMessageAndNotify(
             'success',
-            'success.title.event.enable',
-            'success.message.event.enable',
+            'events.notifications.enable.title',
+            'events.notifications.enable.message',
             this.eventIcon,
             this.buildTranslationArgs( event ),
         )
@@ -381,8 +375,8 @@ export class EventState extends GenericElementState<EventStateModel> {
     private deleteEventComplete (ctx: StateContext<EventStateModel>, event: EventModel): void {
         this.buildMessageAndNotify(
             'success',
-            'success.title.event.delete',
-            'success.message.event.delete',
+            'events.notifications.delete.title',
+            'events.notifications.delete.message',
             this.eventIcon,
             this.buildTranslationArgs( event ),
         )
@@ -396,7 +390,7 @@ export class EventState extends GenericElementState<EventStateModel> {
 
     protected refreshPage (ctx: StateContext<EventStateModel>): void {
         const page: PageModel<EventModel> | undefined = ctx.getState().events.element
-        this.facade.fetchEventsPage( page?.offset, page?.limit, true )
+        this.facade.fetchEventsPage( page?.pageNumber, page?.pageSize, true )
     }
 
     protected pageError (ctx: StateContext<EventStateModel>, error: ErrorModel): Observable<void> {

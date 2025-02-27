@@ -1,9 +1,10 @@
 import { GenericModel } from './generic.model'
 
 export interface PageModel<T extends GenericModel> {
-    offset: number
-    limit: number
+    pageNumber: number
+    pageSize: number
     totalElements: number
+    totalPages: number
     content: T[]
     lastRefresh: Date
 }

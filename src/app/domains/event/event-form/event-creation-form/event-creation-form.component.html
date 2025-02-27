@@ -1,4 +1,4 @@
-<h2>{{ 'event.form.title.create' | translate }}</h2>
+<h2>{{ 'events.form.title.create' | translate }}</h2>
 <p-stepper [(value)]='activeStep'>
     <p-step-list>
         <p-step [value]='1'></p-step>
@@ -7,41 +7,66 @@
     <p-step-panels>
         <p-step-panel [value]='1'>
             <ng-template #content>
-                <p-card [header]='"event.form.title.information" | translate'>
-                    <app-form [form]='form' [loading]='(loading$ | async) ?? false'>
+                <p-card [header]='"events.form.subtitle.information" | translate'>
+                    <app-form [form]='form' [loading]='facade.eventLoading()'>
                         <div class='d-flex flex-column'>
                             <div class='field'>
-                                <label for='name' appRequired>{{ 'event.form.name' | translate }}</label>
+                                <label for='name' appRequired>{{ 'events.form.name' | translate }}</label>
                                 <input [formControl]='name'
-                                       [placeholder]='"event.example.name" | translate'
-                                       (keydown.enter)='isFirstStepValid() ? activeStep = 2 : ""'
+                                       [placeholder]='"events.form.placeholder.name" | translate'
+                                       (keydown.enter)='FormUtil.isFormValid(form) ? activeStep = 2 : undefined'
                                        id='name'
                                        pInputText
                                        type='text' />
-                                <app-form-field-error [control]='name'
-                                                      translationPrefix='event.form.error.name' />
+                                <app-form-field-error [errors]='name.errors'
+                                                      [invalid]='FormUtil.invalid(name)'
+                                                      translationPrefix='events.form.error.name' />
                             </div>
-                            <div class='field'>
-                                <label for='range'>{{ 'event.form.range' | translate }}</label>
-                                <p-date-picker [formControl]='range'
-                                               [showButtonBar]='true'
-                                               [placeholder]='"event.example.range" | translate: {
-                                                   begin: startDateExample() | date: ("datetime.format.date" | translate),
-                                                   end: endDateExample() | date: ("datetime.format.date" | translate)
-                                               }'
-                                               [readonlyInput]='true'
-                                               [showTime]='true'
-                                               [touchUI]='isMobile()'
-                                               (keydown.enter)='isFirstStepValid() ? activeStep = 2 : ""'
-                                               inputId='range'
-                                               selectionMode='range'
-                                               fluid />
+                            <div class='d-flex flex-wrap'>
+                                <div class='begin-date-time field'>
+                                    <label for='begin-date-time'>{{ 'events.form.begin-datetime' | translate }}</label>
+                                    <app-date-time-field [formControl]='beginDateTime'
+                                                         [invalid]='FormUtil.invalid(beginDateTime)'
+                                                         inputId='begin-date-time'
+                                                         [datePlaceholder]='"events.form.placeholder.date" | translate: {
+                                                            date: startDateExample | dateFormat: "date"
+                                                         }'
+                                                         [timePlaceholder]='"events.form.placeholder.time" | translate: {
+                                                            date: startDateExample | dateFormat: "time"
+                                                         }' />
+                                    <app-form-field-error [errors]='beginDateTime.errors'
+                                                          [invalid]='FormUtil.invalid(beginDateTime)'
+                                                          translationPrefix='events.form.error.begin-datetime' />
+                                </div>
+                                <div class='end-date-time field'>
+                                    <label for='end-date-time'>{{ 'events.form.end-datetime' | translate }}</label>
+                                    <app-date-time-field [formControl]='endDateTime'
+                                                         [invalid]='FormUtil.invalid(endDateTime)'
+                                                         inputId='end-date-time'
+                                                         [datePlaceholder]='"events.form.placeholder.date" | translate: {
+                                                            date: endDateExample | dateFormat: "date"
+                                                         }'
+                                                         [timePlaceholder]='"events.form.placeholder.time" | translate: {
+                                                            date: endDateExample | dateFormat: "time"
+                                                         }' />
+                                    <app-form-field-error [errors]='endDateTime.errors'
+                                                          [invalid]='FormUtil.invalid(endDateTime)'
+                                                          translationPrefix='events.form.error.end-datetime' />
+                                </div>
                             </div>
                         </div>
-                        <div class='d-flex pt-4 justify-content-end'>
+                        <app-form-field-error [errors]='form.errors'
+                                              [invalid]='FormUtil.invalid(form) && beginDateTime.valid && endDateTime.valid'
+                                              translationPrefix='events.form.error.date-range' />
+                        <div class='d-flex pt-4 justify-content-between'>
                             <p-button
-                                    (click)='isFirstStepValid() ? activeStep = 2 : ""'
-                                    [label]='"next" | translate'
+                                    (click)='navigateToRedirectUri(nextNavigation)'
+                                    [label]='"global.actions.cancel" | translate'
+                                    [outlined]='true'
+                                    [rounded]='true' />
+                            <p-button
+                                    (click)='FormUtil.isFormValid(form) ? activeStep = 2 : undefined'
+                                    [label]='"events.form.navigation.next-option" | translate'
                                     [rounded]='true'
                                     icon='pi pi-arrow-right'
                                     iconPos='right' />
@@ -52,46 +77,47 @@
         </p-step-panel>
         <p-step-panel [value]='2'>
             <ng-template #content>
-                <p-card [header]='"event.form.title.option" | translate'>
-                    <app-form [form]='optionsForm' [loading]='(loading$ | async) ?? false'>
-                        <div class='d-flex flex-column' *ngIf='eventOptions$ | async as eventOptions'>
-                            <div *ngFor='let option of eventOptions; let i = index;'>
-                                <div class='field'>
-                                    <div class='switch-field'>
-                                        <label [for]='option.value'>
-                                            <i [class]='optionIcon(option.value)'></i>
-                                            {{ option.ask }}
-                                            <b> ({{ option.label }})</b>
-                                        </label>
-                                        <p-toggle-switch [formControl]='getOptionControl(option.value)'
-                                                         id='ticketing' />
+                <p-card [header]='"events.form.subtitle.option" | pluralTranslation: facade.eventOptionsMetadata() | translate'>
+                    <app-form [form]='optionsForm' [loading]='facade.eventLoading()'>
+                        @if (facade.eventOptionsMetadata()) {
+                            <div class='d-flex flex-column'>
+                                @for (option of facade.eventOptionsMetadata(); track option.value) {
+                                    @let control = getOptionControl(option.value);
+                                    <div class='field'>
+                                        <div class='switch-field'>
+                                            <label [for]='option.value'>
+                                                <i [class]='option.value | optionIcon'></i>
+                                                {{ option.ask }}
+                                                <b> ({{ option.label }})</b>
+                                            </label>
+                                            <p-toggle-switch [formControl]='control'
+                                                             [inputId]='option.value' />
+                                        </div>
                                     </div>
-                                    <app-form-field-error [control]='getOptionControl(option.value)'
-                                                          translationPrefix='event.form.error.options' />
-                                </div>
-                                @if (i < eventOptions.length - 1) {
-                                    <p-divider />
+                                    @if (!$last) {
+                                        <p-divider />
+                                    }
+                                }
+                                @if (optionsForm.hasError('preRequiredOptions')) {
+                                    <p-message severity='error'
+                                               variant='simple'>{{
+                                            'events.form.error.options.preRequiredOptions' | translate:
+                                                optionsForm.getError('preRequiredOptions')
+                                        }}
+                                    </p-message>
                                 }
                             </div>
-                            @if (optionsForm.hasError('preRequiredOptions')) {
-                                <p-message severity='error'
-                                           variant='simple'>{{
-                                        'event.form.error.options.preRequiredOptions' | translate:
-                                            optionsForm.getError('preRequiredOptions')
-                                    }}
-                                </p-message>
-                            }
-                        </div>
+                        }
                         <div class='d-flex pt-4 justify-content-between'>
                             <p-button
                                     (click)='activeStep = 1'
-                                    [label]='"previous" | translate'
+                                    [label]='"events.form.navigation.previous-information" | translate'
                                     [outlined]='true'
                                     [rounded]='true'
                                     icon='pi pi-arrow-left' />
                             <p-button
                                     (click)='submit()'
-                                    [label]='"create" | translate'
+                                    [label]='"global.actions.create" | translate'
                                     [rounded]='true'
                                     icon='pi pi-plus'
                                     severity='success' />

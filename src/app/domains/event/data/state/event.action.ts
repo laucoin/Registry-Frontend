@@ -1,6 +1,5 @@
 import { EventModel } from '../../../../shared/util-model/model/event.model'
 import { EventDto } from '../dto/event.dto'
-import { OrderEnum } from '../../../../shared/util-model/enumeration/order.enum'
 
 export enum EventActionEnum {
     FETCH_EVENT_OPTIONS = '[Backend] Fetching event\'s options',
@@ -9,10 +8,9 @@ export enum EventActionEnum {
     STOP_EVENTS_PAGE_LOADER = '[Local] Stopping events\' page loader',
 
     FETCH_EVENTS_PAGE = '[Backend] Fetching events\' page',
-    INPUT_EVENTS_PAGE_SEARCH = '[Local] Inputting events\' page search',
-    INPUT_EVENTS_PAGE_DATE_RANGE = '[Local] Inputting events\' page date range',
-    SELECT_EVENTS_PAGE_VISIBILITY = '[Local] Selecting events\' page visibility',
-    SELECT_EVENTS_PAGE_ORDER = '[Local] Selecting events\' page order',
+    INPUT_EVENTS_PAGE_TEXT_SEARCH = '[Local] Inputting events\' page text search',
+    INPUT_EVENTS_PAGE_DATE_TIME_SEARCH = '[Local] Inputting events\' page date time search',
+    SELECT_EVENTS_PAGE_VISIBILITY_SEARCH = '[Local] Selecting events\' page visibility search',
 
     START_EVENT_LOADER = '[Local] Starting event loader',
     STOP_EVENT_LOADER = '[Local] Stopping event loader',
@@ -42,37 +40,28 @@ export class FetchEventsPage {
     public static readonly type: EventActionEnum = EventActionEnum.FETCH_EVENTS_PAGE
 
     public constructor (
-        public readonly offset: number | undefined,
-        public readonly limit: number | undefined,
+        public readonly pageNumber: number | undefined,
+        public readonly pageSize: number | undefined,
         public readonly force: boolean = false,
     ) {}
 }
 
-export class InputEventsPageSearch {
-    public static readonly type: EventActionEnum = EventActionEnum.INPUT_EVENTS_PAGE_SEARCH
+export class InputEventsPageTextSearched {
+    public static readonly type: EventActionEnum = EventActionEnum.INPUT_EVENTS_PAGE_TEXT_SEARCH
 
-    public constructor (public readonly searched: string | undefined) {}
+    public constructor (public readonly textSearched: string | undefined) {}
 }
 
-export class InputEventsPageDateRange {
-    public static readonly type: EventActionEnum = EventActionEnum.INPUT_EVENTS_PAGE_DATE_RANGE
+export class InputEventsPageDateTimeSearched {
+    public static readonly type: EventActionEnum = EventActionEnum.INPUT_EVENTS_PAGE_DATE_TIME_SEARCH
 
-    public constructor (
-        public readonly begin: Date | undefined,
-        public readonly end: Date | undefined,
-    ) {}
+    public constructor (public readonly dateTime: Date | undefined) {}
 }
 
-export class SelectEventsPageVisibility {
-    public static readonly type: EventActionEnum = EventActionEnum.SELECT_EVENTS_PAGE_VISIBILITY
+export class SelectEventsPageVisibilitySearched {
+    public static readonly type: EventActionEnum = EventActionEnum.SELECT_EVENTS_PAGE_VISIBILITY_SEARCH
 
-    public constructor (public readonly onlyVisible: boolean) {}
-}
-
-export class SelectEventsPageOrder {
-    public static readonly type: EventActionEnum = EventActionEnum.SELECT_EVENTS_PAGE_ORDER
-
-    public constructor (public readonly order: OrderEnum) {}
+    public constructor (public readonly visibilitySearched: boolean | undefined) {}
 }
 
 export class StartEventLoader {

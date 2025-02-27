@@ -1,66 +1,53 @@
 <app-list (updateRequired)='loadPage($event)'
-          [elementPage$]='elementPage$!'
-          [error$]='error$'
-          [loading$]='loading$'>
+          [elementPage]='registryFacade.userEventProfilesPage()'
+          [error]='registryFacade.userEventProfilesPageError()'
+          [loading]='registryFacade.userEventProfilesPageLoading()'>
     <ng-template appTemplate='search' [formGroup]='form' let-pageEvent>
         <div class='row'>
             <div class='col-12 col-sm-6 col-md-12 col-lg-6 search-field'>
-                <label for='profiles-search'>{{ 'filter-sort.search' | translate }}</label>
-                <input pInputText id='profiles-search'
+                <label for='profiles-text-search-field'>{{ 'preferences.search-and-filter.text' | translate }}</label>
+                <input pInputText id='profiles-text-search-field'
                        type='text'
                        (keydown.enter)='loadPage(pageEvent)'
-                       [formControl]='searched' />
+                       [formControl]='textSearched' />
             </div>
             <div class='col-12 col-sm-6 col-md-12 col-lg-6 search-field'>
-                <label for='profiles-range'>{{ 'filter-sort.date-range' | translate }}</label>
-                <p-date-picker [formControl]='range'
+                <label for='profiles-date-time-search-field'>{{ 'preferences.search-and-filter.datetime' | translate }}</label>
+                <p-date-picker [formControl]='dateTimeSearched'
                                [showButtonBar]='true'
                                [readonlyInput]='true'
                                [showTime]='true'
-                               [touchUI]='isMobile()'
-                               id='profiles-range'
-                               inputId='profiles-range'
+                               [touchUI]='registryFacade.tinyScreen()'
+                               inputId='profiles-date-time-search-field'
                                selectionMode='range'
                                fluid />
             </div>
         </div>
         <div class='d-flex flex-wrap justify-content-center pt-2'>
-            <div class='pe-1 flex-grow-1'>
-                <p-toggleButton
-                        [formControl]='order'
-                        (keydown.enter)='loadPage(pageEvent)'
-                        [onLabel]='"filter-sort.order.DESC" | translate'
-                        [offLabel]='"filter-sort.order.ASC" | translate'
-                        onIcon='pi pi-sort-alpha-down-alt'
-                        offIcon='pi pi-sort-alpha-down'
-                        [ariaLabel]='"filter-sort.order.title" | translate' />
-            </div>
-            <div class='ps-1'>
-                <p-button (click)='loadPage(pageEvent)'
-                          [label]='"filter-sort.apply" | translate'
-                          [outlined]='true'
-                          [rounded]='true'
-                          icon='pi pi-search'
-                          [loading]='(loading$ | async) || (silentLoading$ | async)' />
-            </div>
+            <p-button (click)='loadPage(pageEvent)'
+                      [label]='"global.actions.search-and-filter" | translate'
+                      [outlined]='true'
+                      [rounded]='true'
+                      icon='pi pi-search'
+                      [loading]='registryFacade.userEventProfilesPageLoading() || registryFacade.userEventProfilesPageSilentLoading()' />
         </div>
     </ng-template>
-    <ng-template appTemplate='element' let-layout='layout' let-profile>
-        <app-event-profile-element [element]='profile' [layout]='layout' view='user' />
+    <ng-template appTemplate='element' let-profile>
+        <app-event-profile-element [profile]='profile' view='user' />
     </ng-template>
     <ng-template appTemplate='empty'>
         <app-message [message]='message'>
             <div class='d-flex align-content-center justify-content-center'>
                 <p-button
                         [routerLink]='"/" + AppRouteEnum.EVENTS_CREATION.toString()'
-                        [label]="'event.create' | translate"
+                        [label]='"preferences.actions.create-event" | translate'
                         [rounded]='true'
                         icon='pi pi-plus'
                         severity='success' />
                 <p-button
                         class='ms-2'
                         [routerLink]='"/" + AppRouteEnum.PREFERENCES_INVITATIONS.toString()'
-                        [label]='"profile.event.invitation" | pluralTranslation:(invitationPage$ | async)?.content?.length ?? 0 | translate'
+                        [label]='"preferences.actions.invitation" | pluralTranslation: (registryFacade.userEventProfileInvitationsPage()?.content?.length ?? 0) | translate'
                         [rounded]='true'
                         icon='pi pi-send'
                         severity='info' />

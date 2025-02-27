@@ -12,6 +12,7 @@ import { SessionStorageUtils } from '../../util-tool/util/session-storage.util'
 import { RegistryStateModel } from '../model/registry-state.model'
 import {
     AckNotification,
+    CreateSupportEventProfile,
     DeleteUserEventProfile,
     FetchContextEvent,
     FetchCurrentUser,
@@ -19,10 +20,10 @@ import {
     FetchUserEventProfileInvitationsPage,
     FetchUserEventProfilesPage,
     ImpersonateCurrentUser,
-    InputUserEventProfileInvitationsPageDateRange,
-    InputUserEventProfileInvitationsPageSearch,
-    InputUserEventProfilesPageDateRange,
-    InputUserEventProfilesPageSearch,
+    InputUserEventProfileInvitationsPageDateTimeSearched,
+    InputUserEventProfileInvitationsPageTextSearched,
+    InputUserEventProfilesPageDateTimeSearched,
+    InputUserEventProfilesPageTextSearched,
     Login,
     Logout,
     ManageUserEventInvitationAcceptance,
@@ -30,8 +31,7 @@ import {
     RefreshTokens,
     RestoreTokens,
     SelectUserEventProfile,
-    SelectUserEventProfileInvitationsPageOrder,
-    SelectUserEventProfilesPageOrder,
+    SelectUserEventProfileByEvent,
     SetGlobalError,
     StartContextEventLoader,
     StartGlobalLoader,
@@ -44,10 +44,10 @@ import {
     StopUserEventProfileLoader,
     StopUserEventProfilesPageLoader,
     UpdateNetwork,
+    UpdateScreenWidth,
     UpdateTheme,
 } from './registry.action'
 import { UserEventProfileService } from './user-event-profile.service'
-import { OrderEnum } from '../../util-model/enumeration/order.enum'
 import { PreferencesService } from './preferences.service'
 import { EventService } from '../../../domains/event/data/state/event.service'
 import { EventModel } from '../../util-model/model/event.model'
@@ -58,6 +58,8 @@ import { Router } from '@angular/router'
 import { ErrorModel } from '../../util-model/model/error.model'
 import { UserService } from '../../../domains/user/data/state/user.service'
 import { ToastMessageOptions } from 'primeng/api'
+import { ContextEventRequestInformationModel } from '../../util-model/model/context-event-request-information.model'
+import { CustomDateFormatPipe } from '../../util-tool/pipe/custom-date-format.pipe'
 
 const defaultRegistryState: RegistryStateModel = {
     authentication: {
@@ -66,13 +68,11 @@ const defaultRegistryState: RegistryStateModel = {
     },
     profiles: {
         params: {
-            order: OrderEnum.ASC,
-            onlyVisible: true,
-            onlyUsable: true,
-            status: 'ACCEPTED',
-            searched: undefined,
-            startAccess: undefined,
-            endAccess: undefined,
+            visibilitySearched: undefined,
+            availabilitySearched: true,
+            statusSearched: 'ACCEPTED',
+            textSearched: undefined,
+            dateTimeSearched: undefined,
         },
         element: undefined,
         loading: false,
@@ -81,13 +81,11 @@ const defaultRegistryState: RegistryStateModel = {
     },
     invitations: {
         params: {
-            order: OrderEnum.ASC,
-            onlyVisible: true,
-            onlyUsable: false,
-            status: 'INVITED',
-            searched: undefined,
-            startAccess: undefined,
-            endAccess: undefined,
+            visibilitySearched: undefined,
+            availabilitySearched: false,
+            statusSearched: 'INVITED',
+            textSearched: undefined,
+            dateTimeSearched: undefined,
         },
         element: undefined,
         loading: false,
@@ -99,11 +97,13 @@ const defaultRegistryState: RegistryStateModel = {
         loading: false,
     },
     event: {
+        id: undefined,
         element: undefined,
         loading: false,
     },
     _util: {
         theme: (!window.matchMedia || window.matchMedia( '(prefers-color-scheme: light)' ).matches) ? 'light' : 'dark',
+        screenWidth: window.innerWidth,
         online: undefined,
         notification: undefined,
         loading: false,
@@ -127,6 +127,7 @@ export class RegistryState extends GenericState {
         private readonly preferencesService: PreferencesService,
         private readonly userService: UserService,
         private readonly router: Router,
+        private readonly datePipe: CustomDateFormatPipe,
     ) { super() }
 
     @Selector()
@@ -142,6 +143,11 @@ export class RegistryState extends GenericState {
     @Selector()
     public static online (state: RegistryStateModel): boolean | undefined {
         return state._util.online
+    }
+
+    @Selector()
+    public static screenWidth (state: RegistryStateModel): number {
+        return state._util.screenWidth
     }
 
     @Selector()
@@ -171,7 +177,7 @@ export class RegistryState extends GenericState {
 
     @Selector()
     public static contextEventId (state: RegistryStateModel): string | undefined {
-        return state.event.element?.id
+        return state.event.id
     }
 
     @Selector()
@@ -205,23 +211,13 @@ export class RegistryState extends GenericState {
     }
 
     @Selector()
-    public static userEventProfilesPageSearchParam (state: RegistryStateModel): string | undefined {
-        return state.profiles.params.searched
+    public static userEventProfilesPageTextSearchParam (state: RegistryStateModel): string | undefined {
+        return state.profiles.params.textSearched
     }
 
     @Selector()
-    public static userEventProfilesPageStartAccessParam (state: RegistryStateModel): string | undefined {
-        return state.profiles.params.startAccess
-    }
-
-    @Selector()
-    public static userEventProfilesPageEndAccessParam (state: RegistryStateModel): string | undefined {
-        return state.profiles.params.endAccess
-    }
-
-    @Selector()
-    public static userEventProfilesPageOrderParam (state: RegistryStateModel): OrderEnum {
-        return state.profiles.params.order
+    public static userEventProfilesPageDateTimeSearchParam (state: RegistryStateModel): string | undefined {
+        return state.profiles.params.dateTimeSearched
     }
 
     @Selector()
@@ -245,23 +241,13 @@ export class RegistryState extends GenericState {
     }
 
     @Selector()
-    public static userEventProfileInvitationsPageSearchParam (state: RegistryStateModel): string | undefined {
-        return state.invitations.params.searched
+    public static userEventProfileInvitationsPageTextSearchParam (state: RegistryStateModel): string | undefined {
+        return state.invitations.params.textSearched
     }
 
     @Selector()
-    public static userEventProfileInvitationsPageStartAccessParam (state: RegistryStateModel): string | undefined {
-        return state.invitations.params.startAccess
-    }
-
-    @Selector()
-    public static userEventProfileInvitationsPageEndAccessParam (state: RegistryStateModel): string | undefined {
-        return state.invitations.params.endAccess
-    }
-
-    @Selector()
-    public static userEventProfileInvitationsPageOrderParam (state: RegistryStateModel): OrderEnum {
-        return state.invitations.params.order
+    public static userEventProfileInvitationsPageDateTimeParam (state: RegistryStateModel): string | undefined {
+        return state.invitations.params.dateTimeSearched
     }
 
     @Action( StartGlobalLoader )
@@ -285,6 +271,16 @@ export class RegistryState extends GenericState {
             _util: {
                 ...ctx.getState()._util,
                 online: payload.online,
+            },
+        } )
+    }
+
+    @Action( UpdateScreenWidth )
+    public updateScreenWidth (ctx: StateContext<RegistryStateModel>, payload: UpdateScreenWidth): void {
+        ctx.patchState( {
+            _util: {
+                ...ctx.getState()._util,
+                screenWidth: payload.screenWidth,
             },
         } )
     }
@@ -455,11 +451,22 @@ export class RegistryState extends GenericState {
         ctx: StateContext<RegistryStateModel>,
         payload: FetchContextEvent,
     ): Observable<void> {
-        if (!payload.force && ctx.getState().event.element?.id === payload.eventId) {
+        const newEventId: string | undefined = payload.eventId
+        const context: ContextEventRequestInformationModel = ctx.getState().event
+
+        if (!payload.force && context.element?.id === newEventId && context.id === newEventId) {
             return of()
         }
 
-        return this.eventService.findEventById( payload.eventId ).pipe(
+        ctx.patchState( {
+            event: {
+                ...ctx.getState().event,
+                id: newEventId,
+                element: context.element?.id === newEventId ? context.element : undefined,
+            },
+        } )
+
+        return this.eventService.findEventById( newEventId ).pipe(
             initialize( (): void => this.registryFacade.startContextEventLoader() ),
             finalize( (): void => this.registryFacade.stopContextEventLoader() ),
             map( (event: EventModel): void => this.fetchContextEventComplete( ctx, event ) ),
@@ -502,8 +509,8 @@ export class RegistryState extends GenericState {
         payload: FetchUserEventProfilesPage,
     ): Observable<void> {
         return this.userEventProfileService.findUserEventProfiles(
-            payload.offset,
-            payload.limit,
+            payload.pageNumber,
+            payload.pageSize,
             ctx.getState().profiles.params,
         ).pipe(
             initialize( (): void => this.registryFacade.startProfilesPageLoader() ),
@@ -546,50 +553,33 @@ export class RegistryState extends GenericState {
         return of()
     }
 
-    @Action( InputUserEventProfilesPageSearch )
-    public inputUserEventProfilesPageSearch (
+    @Action( InputUserEventProfilesPageTextSearched )
+    public inputUserEventProfilesPageTextSearch (
         ctx: StateContext<RegistryStateModel>,
-        payload: InputUserEventProfilesPageSearch,
+        payload: InputUserEventProfilesPageTextSearched,
     ): void {
         ctx.patchState( {
             profiles: {
                 ...ctx.getState().profiles,
                 params: {
                     ...ctx.getState().profiles.params,
-                    searched: payload.searched,
+                    textSearched: payload.textSearched,
                 },
             },
         } )
     }
 
-    @Action( InputUserEventProfilesPageDateRange )
-    public inputUserEventProfilesPageDateRange (
+    @Action( InputUserEventProfilesPageDateTimeSearched )
+    public inputUserEventProfilesPageDateTimeSearched (
         ctx: StateContext<RegistryStateModel>,
-        payload: InputUserEventProfilesPageDateRange,
+        payload: InputUserEventProfilesPageDateTimeSearched,
     ): void {
         ctx.patchState( {
             profiles: {
                 ...ctx.getState().profiles,
                 params: {
                     ...ctx.getState().profiles.params,
-                    startAccess: payload.begin?.toISOString(),
-                    endAccess: payload.end?.toISOString(),
-                },
-            },
-        } )
-    }
-
-    @Action( SelectUserEventProfilesPageOrder )
-    public selectUserEventProfilesPageOrder (
-        ctx: StateContext<RegistryStateModel>,
-        payload: SelectUserEventProfilesPageOrder,
-    ): void {
-        ctx.patchState( {
-            profiles: {
-                ...ctx.getState().profiles,
-                params: {
-                    ...ctx.getState().profiles.params,
-                    order: payload.order,
+                    dateTimeSearched: payload.dateTime?.toISOString(),
                 },
             },
         } )
@@ -620,8 +610,8 @@ export class RegistryState extends GenericState {
         payload: FetchUserEventProfileInvitationsPage,
     ): Observable<void> {
         return this.userEventProfileService.findUserEventProfiles(
-            payload.offset,
-            payload.limit,
+            payload.pageNumber,
+            payload.pageSize,
             ctx.getState().invitations.params,
         ).pipe(
             initialize( (): void => this.registryFacade.startInvitationsPageLoader() ),
@@ -664,50 +654,33 @@ export class RegistryState extends GenericState {
         return of()
     }
 
-    @Action( InputUserEventProfileInvitationsPageSearch )
-    public inputUserEventProfileInvitationsPageSearch (
+    @Action( InputUserEventProfileInvitationsPageTextSearched )
+    public inputUserEventProfileInvitationsPageTextSearched (
         ctx: StateContext<RegistryStateModel>,
-        payload: InputUserEventProfileInvitationsPageSearch,
+        payload: InputUserEventProfileInvitationsPageTextSearched,
     ): void {
         ctx.patchState( {
             invitations: {
                 ...ctx.getState().invitations,
                 params: {
                     ...ctx.getState().invitations.params,
-                    searched: payload.searched,
+                    textSearched: payload.textSearched,
                 },
             },
         } )
     }
 
-    @Action( InputUserEventProfileInvitationsPageDateRange )
-    public inputUserEventProfileInvitationsPageDateRange (
+    @Action( InputUserEventProfileInvitationsPageDateTimeSearched )
+    public inputUserEventProfileInvitationsPageDateTimeSearched (
         ctx: StateContext<RegistryStateModel>,
-        payload: InputUserEventProfileInvitationsPageDateRange,
+        payload: InputUserEventProfileInvitationsPageDateTimeSearched,
     ): void {
         ctx.patchState( {
             invitations: {
                 ...ctx.getState().invitations,
                 params: {
                     ...ctx.getState().invitations.params,
-                    startAccess: payload.begin?.toISOString(),
-                    endAccess: payload.end?.toISOString(),
-                },
-            },
-        } )
-    }
-
-    @Action( SelectUserEventProfileInvitationsPageOrder )
-    public selectUserEventProfileInvitationsPageOrder (
-        ctx: StateContext<RegistryStateModel>,
-        payload: SelectUserEventProfileInvitationsPageOrder,
-    ): void {
-        ctx.patchState( {
-            invitations: {
-                ...ctx.getState().invitations,
-                params: {
-                    ...ctx.getState().invitations.params,
-                    order: payload.order,
+                    dateTimeSearched: payload.dateTime?.toISOString(),
                 },
             },
         } )
@@ -753,8 +726,8 @@ export class RegistryState extends GenericState {
     ): void {
         this.buildMessageAndNotify(
             'success',
-            `success.title.event-profile.manage-acceptance.${profile.status}`,
-            `success.message.event-profile.manage-acceptance.${profile.status}`,
+            `event-profiles.notifications.acceptance.${profile.status}.title`,
+            `event-profiles.notifications.acceptance.${profile.status}.message`,
             'pi pi-user',
         )
 
@@ -778,10 +751,34 @@ export class RegistryState extends GenericState {
     private selectEventProfileComplete (profile: EventProfileModel): void {
         this.buildMessageAndNotify(
             'success',
-            'success.title.event-profile.select',
-            'success.message.event-profile.select',
+            'event-profiles.notifications.select.title',
+            'event-profiles.notifications.select.message',
             'pi pi-verified',
             { name: profile.event.name },
+        )
+
+        this.registryFacade.fetchCurrentUser()
+    }
+
+    @Action( SelectUserEventProfileByEvent )
+    public selectUserEventProfileByEvent (
+        _: StateContext<RegistryStateModel>,
+        payload: SelectUserEventProfileByEvent,
+    ): Observable<void> {
+        return this.preferencesService.selectUserEventProfileByEventId( payload.event.id ).pipe(
+            initialize( (): void => this.registryFacade.startProfileLoader() ),
+            finalize( (): void => this.registryFacade.stopProfileLoader() ),
+            map( (): void => this.selectUserEventProfileByEventComplete( payload.event ) ),
+        )
+    }
+
+    private selectUserEventProfileByEventComplete (event: EventModel): void {
+        this.buildMessageAndNotify(
+            'success',
+            'events.notifications.select.title',
+            'events.notifications.select.message',
+            'pi pi-verified',
+            { name: event.name },
         )
 
         this.registryFacade.fetchCurrentUser()
@@ -802,13 +799,38 @@ export class RegistryState extends GenericState {
     private deleteUserEventProfileComplete (ctx: StateContext<RegistryStateModel>, profile: EventProfileModel): void {
         this.buildMessageAndNotify(
             'success',
-            'success.title.event-profile.delete',
-            'success.message.event-profile.delete.mine',
+            'event-profiles.notifications.delete.title',
+            'event-profiles.notifications.delete.message.myself',
             'pi pi-user',
             { name: profile.event.name },
         )
         this.registryFacade.fetchCurrentUser()
         this.refreshProfilesPage( ctx )
+    }
+
+    @Action( CreateSupportEventProfile )
+    public createSupportEventProfile (
+        _: StateContext<RegistryStateModel>,
+        payload: CreateSupportEventProfile,
+    ): Observable<void> {
+        return this.userEventProfileService.createSupportEventProfile( payload.eventId ).pipe(
+            map( (profile: EventProfileModel): void => this.createSupportEventProfileComplete( profile ) ),
+        )
+    }
+
+    private createSupportEventProfileComplete (
+        profile: EventProfileModel,
+    ): void {
+        this.buildMessageAndNotify(
+            'success',
+            'events.notifications.create-support.title',
+            'events.notifications.create-support.message',
+            'pi pi-user-plus',
+            {
+                name: profile?.event?.name,
+                end: this.datePipe.transform( profile?.endAccess ),
+            },
+        )
     }
 
     private updateGlobalLoader (ctx: StateContext<RegistryStateModel>, loading: boolean): void {
@@ -839,11 +861,11 @@ export class RegistryState extends GenericState {
 
     protected refreshProfilesPage (ctx: StateContext<RegistryStateModel>): void {
         const page: PageModel<EventProfileModel> | undefined = ctx.getState().profiles.element
-        this.registryFacade.fetchEventProfilePage( page?.offset, page?.limit, true )
+        this.registryFacade.fetchEventProfilePage( page?.pageNumber, page?.pageSize, true )
     }
 
     protected refreshInvitationsPage (ctx: StateContext<RegistryStateModel>): void {
         const page: PageModel<EventProfileModel> | undefined = ctx.getState().invitations.element
-        this.registryFacade.fetchEventProfileInvitationPage( page?.offset, page?.limit, true )
+        this.registryFacade.fetchEventProfileInvitationPage( page?.pageNumber, page?.pageSize, true )
     }
 }

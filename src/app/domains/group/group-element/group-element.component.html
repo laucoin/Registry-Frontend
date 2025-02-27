@@ -1,108 +1,94 @@
-<app-element-card [element]='element'
-                  [actions]='actions'
-                  [showActionMenu]='showActionMenu'
+<app-element-card [element]='group()'
+                  [actionMenuVisible]='actionMenuVisible()'
+                  [actions]='actions()'
                   (action)='handleAction($event)'
-                  [layout]='layout'
                   icon='pi pi-users'>
-    <div [class.flex-lg-row]='layout === "list"' [class.flex-column]='layout === "grid"'
-         class='d-flex flex-wrap justify-content-between align-items-center'>
-        <div class='info d-flex flex-column justify-content-center p-1'>
-            <div>
-                <span [class.strikethrough]='element.end | isPast' class='group-name'>
-                    {{ element.name }}
-                </span>
-                @if (element.end | isPast) {
-                    <i> ({{ 'outdated' | translate }})</i>
-                }
-                @if (element.begin || element.end) {
-                    <div *ngIf='element.begin || element.end'>
-                        <small>{{ 'profile.event.validity' | translate }}</small>
-                        @if (element.begin) {
-                            <div class='d-flex align-content-center'>
-                                <i class='pi pi-play-circle'></i>
-                                <span>
-                            {{
-                                        'datetime.datetime' | translate: {
-                                            date: element.begin | date: ('datetime.format.date' | translate),
-                                            time: element.begin | date: ('datetime.format.time' | translate),
-                                        }
-                                    }}
-                        </span>
-                            </div>
-                        }
-                        @if (element.end) {
-                            <div class='d-flex align-content-center'>
-                                <i class='pi pi-stop-circle'></i>
-                                <span>
-                            {{
-                                        'datetime.datetime' | translate: {
-                                            date: element.end | date: ('datetime.format.date' | translate),
-                                            time: element.end | date: ('datetime.format.time' | translate),
-                                        }
-                                    }}
-                        </span>
-                            </div>
-                        }
-                    </div>
-                }
+    <div class='element-card'>
+        <div class='group-info'>
+            <div class='group-name d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
+                {{ (group().name | titlecase) }}
             </div>
+            @if (group().startAvailability) {
+                <div class='d-flex mt-1 align-content-center' [class.justify-content-center]='registryFacade.tinyScreen()'>
+                    <i class='pi pi-play-circle'></i>
+                    <span class='ms-1'> {{ group().startAvailability | customDateFormat }}</span>
+                </div>
+            }
+            @if (group().endAvailability) {
+                <div class='d-flex align-content-center'
+                     [class.justify-content-center]='registryFacade.tinyScreen()'
+                     [class.mt-1]='!group().startAvailability'>
+                    <i class='pi pi-stop-circle'></i>
+                    <span class='ms-1'> {{ group().endAvailability | customDateFormat }}</span>
+                </div>
+            }
         </div>
-        <div class='content d-flex p-1'>
+        <div class='members d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
             <div [class.pointer]='additionalTotal() > 0'
-                 [class.participants]='additionalTotal() > 0'
+                 [class.hover-underline]='additionalTotal() > 0'
                  tabindex='1'
                  (click)='additionalTotal() > 0 ? layerOpened = true : ""'
                  (keydown.enter)='additionalTotal() > 0 ? layerOpened = true : ""'>
                 @switch (true) {
-                    @case (firstNotPurged && additionalTotal() === 0) {
-                        {{ (firstNotPurged!.firstName | titlecase) + " " + (firstNotPurged!.lastName | uppercase) }}
+                    @case (additionalTotal() < 0) {
+                        <p-skeleton width='10rem' borderRadius='1rem' />
                     }
-                    @case (firstNotPurged && additionalTotal() > 0) {
-                        {{
-                            ('group.person-and-others.normal.' + (additionalTotal() === 1 ? 'singular' : 'plural')) | translate: {
-                                person: (firstNotPurged!.firstName | titlecase) + " " + (firstNotPurged!.lastName | uppercase),
-                                others: additionalTotal()
-                            }
-                        }}
+                    @case (additionalTotal() === 0) {
+                        {{ (group().members[0]!.firstName | titlecase) + " " + (group().members[0]!.lastName | uppercase) }}
                     }
                     @default {
                         {{
-                            ('group.person-and-others.purged.' + (additionalTotal() <= 1 ? 'singular' : 'plural')) | translate: {
+                            'groups.member' | pluralTranslation: additionalTotal() | translate: {
+                                name: (group().members[0]!.firstName | titlecase),
                                 others: additionalTotal()
                             }
                         }}
                     }
                 }
             </div>
+        </div>
+        <div class='status d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
+            @if (intervalStatus()) {
+                <app-severity-tag [severity]='intervalStatus()?.status === "IN_PROGRESS" ? "success" : intervalStatus()?.status ===
+                "FINISHED" ? "warn" : "info"'
+                                  [value]='intervalStatus() | intervalFormat: "groups.status" | translate: { interval: buildInterval(intervalStatus()!.interval!) }' />
+            }
+        </div>
+        <div class='visibility-status d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
+            <app-severity-tag
+                    [severity]='group().visible ? "success" : "danger"'
+                    [value]='group() | visibilityName: "groups" | translate' />
         </div>
     </div>
 </app-element-card>
 
 <app-layer [(visible)]='layerOpened'
-           [header]='"group.content.title" | translate'>
-    <p-tabs [(value)]='activeTab' [scrollable]='true'>
+           [header]='"groups.content.list" | translate'>
+    <p-tabs [(value)]='activeTab' [scrollable]='true' class='max-panel-height'>
         <p-tablist>
             <p-tab [value]='1'>
-                <p-tag [value]='element.members.length.toString()' class='me-1' />
-                {{ 'group.content.all' | translate }}
+                <p-tag [value]='group().members.length.toString()' class='me-1' />
+                {{ 'groups.content.all' | translate }}
             </p-tab>
             @if (adults().length > 0) {
                 <p-tab [value]='2'>
                     <p-tag [value]='adults().length.toString()' severity='info' class='me-1' />
-                    {{ ('group.content.adult.' + (adults().length > 1 ? 'plural' : 'singular')) | translate }}
+                    {{ 'groups.content.adult' | pluralTranslation: adults().length | translate }}
                 </p-tab>
             }
             @if (children().length > 0) {
                 <p-tab [value]='3'>
                     <p-tag [value]='children().length.toString()' severity='info' class='me-1' />
-                    {{ ('group.content.child.' + (children().length > 1 ? 'plural' : 'singular')) | translate }}
+                    {{ 'groups.content.child' | pluralTranslation: children().length | translate }}
                 </p-tab>
             }
         </p-tablist>
         <p-tabpanels>
             <p-tabpanel [value]='1'>
                 <p-listbox
-                        [options]='element.members'
+                        styleClass='max-list-box-height'
+                        scrollHeight='100%'
+                        [options]='group().members'
                         [readonly]='true'
                         optionLabel='name'>
                     <ng-template #item let-content>
@@ -116,6 +102,8 @@
             @if (adults().length > 0) {
                 <p-tabpanel [value]='2'>
                     <p-listbox
+                            styleClass='max-list-box-height'
+                            scrollHeight='100%'
                             [options]='adults()'
                             [readonly]='true'
                             optionLabel='name'>
@@ -131,6 +119,8 @@
             @if (children().length > 0) {
                 <p-tabpanel [value]='3'>
                     <p-listbox
+                            styleClass='max-list-box-height'
+                            scrollHeight='100%'
                             [options]='children()'
                             [readonly]='true'
                             optionLabel='name'>
@@ -145,8 +135,4 @@
             }
         </p-tabpanels>
     </p-tabs>
-    <div class='d-flex justify-content-center align-content-center'>
-        <p-button (click)='layerOpened = false' [rounded]='true' [outlined]='true' severity='secondary'
-                  [label]='"close" | translate' />
-    </div>
 </app-layer>

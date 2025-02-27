@@ -7,18 +7,21 @@
     z-index:  1;
 }
 
-.menu-padding {
-    padding-bottom: var(--basic-spacer);
-    padding-top:    var(--basic-spacer);
+.app-container {
+    display: flex;
 }
 
-.wide-screen-menu-margin {
-    margin-left:  2.5rem;
-    margin-right: 2.5rem;
+.menu-phantom {
+    display:    block;
+    left:       0;
+    top:        0;
+    min-width:  20rem;
+    min-height: 100vh;
 }
 
-.menu-container {
-    padding-left: var(--menu-width);
+.app-content {
+    flex-grow:  1;
+    min-height: 100vh;
 }
 
 menu {

@@ -6,11 +6,6 @@
     }
 }
 
-.form-decorator {
-    border-radius: 0.5rem;
-    border:        1px solid var(--p-form-field-border-color);
-}
-
 .list-box {
     margin:        0;
     padding:       0;
@@ -45,4 +40,13 @@ ul li:first-child {
 ul li:last-child {
     border-bottom-left-radius:  0.5rem;
     border-bottom-right-radius: 0.5rem;
+}
+
+@keyframes highlight {
+    0% { background-color: var(--p-button-warn-hover-background); }
+    100% { background-color: transparent; }
+}
+
+.highlight {
+    animation: highlight 1s ease-in-out;
 }

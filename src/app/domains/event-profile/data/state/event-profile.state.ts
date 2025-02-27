@@ -1,4 +1,4 @@
-import { Action, Selector, State, StateContext } from '@ngxs/store'
+import { Action, NgxsOnInit, Selector, State, StateContext } from '@ngxs/store'
 import { catchError, finalize, map, Observable, of } from 'rxjs'
 import { PageModel } from '../../../../shared/util-model/model/page.model'
 import { GenericEventElementState } from '../../../../shared/util-tool/state/generic-event-element.state'
@@ -6,18 +6,17 @@ import { initialize } from '../../../../shared/util-tool/util/rx.util'
 import {
     BlockEventProfile,
     CreateEventProfiles,
-    CreateSupportEventProfile,
     DeleteEventProfile,
     FetchAssignableEventProfileRoles,
-    FetchAssignableEventProfileStatus,
     FetchEventProfile,
     FetchEventProfilesPage,
-    InputEventProfilesPageDateRange,
-    InputEventProfilesPageSearch,
+    FetchProfileStatus,
+    InputEventProfilesPageDateTimeSearched,
+    InputEventProfilesPageTextSearched,
+    ResetEventProfile,
     SearchUsers,
-    SelectEventProfilesPageOrder,
-    SelectEventProfilesPageStatus,
-    SelectEventProfilesPageVisibility,
+    SelectEventProfilesPageAvailabilitySearched,
+    SelectEventProfilesPageStatusSearched,
     StartEventProfileLoader,
     StartEventProfilesPageLoader,
     StopEventProfileLoader,
@@ -28,10 +27,7 @@ import {
 import { EventProfileService } from './event-profile.service'
 import { EventProfileFacade } from './event-profile.facade'
 import { Injectable } from '@angular/core'
-import { TranslateService } from '@ngx-translate/core'
-import { DatePipe } from '@angular/common'
 import { StateUtil } from '../../../../shared/util-tool/state/state.util'
-import { OrderEnum } from '../../../../shared/util-model/enumeration/order.enum'
 import { CreatedEventProfiles } from '../dto/created-event-profiles.dto'
 import { UserUtil } from '../../../../shared/util-tool/util/user.util'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
@@ -39,31 +35,38 @@ import { UserModel } from '../../../../shared/util-model/model/user.model'
 import { ErrorModel } from '../../../../shared/util-model/model/error.model'
 import { EventProfileStateModel } from '../model/event-profile-state.model'
 import { EventProfileModel } from '../../../../shared/util-model/model/event-profile.model'
+import { ElementRequestInformationModel } from '../../../../shared/util-model/model/element-request-information.model'
+import { PluralTranslationPipe } from '../../../../shared/util-tool/pipe/plural-translation.pipe'
+import { MetadataService } from '../../../../shared/util-common/state/metadata.service'
+
+const defaultEventProfile: ElementRequestInformationModel<EventProfileModel> = {
+    element: undefined,
+    loading: false,
+}
 
 const defaultEventProfileState: EventProfileStateModel = {
     eventProfiles: {
         element: undefined,
         params: {
-            order: OrderEnum.ASC,
-            onlyVisible: true,
-            onlyUsable: false,
-            status: undefined,
-            searched: undefined,
-            startAccess: undefined,
-            endAccess: undefined,
+            availabilitySearched: undefined,
+            statusSearched: undefined,
+            textSearched: undefined,
+            dateTimeSearched: undefined,
         },
         loading: false,
         silentLoading: false,
         error: undefined,
     },
-    eventProfile: {
-        element: undefined,
-        loading: false,
-    },
+    eventProfile: defaultEventProfile,
     _metadata: {
         roles: [],
         status: [],
         searched: [],
+        availabilities: [
+            { label: '-', value: undefined },
+            { label: 'event-profiles.visible.true', value: true },
+            { label: 'event-profiles.visible.false', value: false },
+        ],
     },
 }
 
@@ -72,16 +75,20 @@ const defaultEventProfileState: EventProfileStateModel = {
     defaults: defaultEventProfileState,
 } )
 @Injectable()
-export class EventProfileState extends GenericEventElementState<EventProfileStateModel> {
+export class EventProfileState extends GenericEventElementState<EventProfileStateModel> implements NgxsOnInit {
     private readonly eventProfileIcon: string = 'pi pi-key'
 
     public constructor (
         private readonly service: EventProfileService,
+        private readonly serviceMetadata: MetadataService,
         private readonly facade: EventProfileFacade,
-        private readonly translateService: TranslateService,
-        private readonly datePipe: DatePipe,
+        private readonly pluralTranslationPipe: PluralTranslationPipe,
     ) {
         super()
+    }
+
+    public ngxsOnInit (): void {
+        this.facade.fetchProfileStatus()
     }
 
     @Selector()
@@ -105,33 +112,23 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
     }
 
     @Selector()
-    public static eventProfilesPageSearchParam (state: EventProfileStateModel): string | undefined {
-        return state.eventProfiles.params.searched
+    public static eventProfilesPageTextSearchedParam (state: EventProfileStateModel): string | undefined {
+        return state.eventProfiles.params.textSearched
     }
 
     @Selector()
-    public static eventProfilesPageStatusParam (state: EventProfileStateModel): string | undefined {
-        return state.eventProfiles.params.status
+    public static eventProfilesPageStatusSearchedParam (state: EventProfileStateModel): string | undefined {
+        return state.eventProfiles.params.statusSearched
     }
 
     @Selector()
-    public static eventProfilesPageStartAccessParam (state: EventProfileStateModel): string | undefined {
-        return state.eventProfiles.params.startAccess
+    public static eventProfilesPageDateTimeSearchedParam (state: EventProfileStateModel): string | undefined {
+        return state.eventProfiles.params.dateTimeSearched
     }
 
     @Selector()
-    public static eventProfilesPageEndAccessParam (state: EventProfileStateModel): string | undefined {
-        return state.eventProfiles.params.endAccess
-    }
-
-    @Selector()
-    public static eventProfilesPageOnlyVisibleParam (state: EventProfileStateModel): boolean {
-        return state.eventProfiles.params.onlyVisible
-    }
-
-    @Selector()
-    public static eventProfilesPageOrderParam (state: EventProfileStateModel): OrderEnum {
-        return state.eventProfiles.params.order
+    public static eventProfilesPageAvailabilitySearchedParam (state: EventProfileStateModel): boolean | undefined {
+        return state.eventProfiles.params.availabilitySearched
     }
 
     @Selector()
@@ -155,8 +152,13 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
     }
 
     @Selector()
-    public static eventProfilesStatusMetadata (state: EventProfileStateModel): SelectItem<string>[] {
+    public static eventProfilesStatusMetadata (state: EventProfileStateModel): SelectItem<string | undefined>[] {
         return state._metadata.status
+    }
+
+    @Selector()
+    public static eventProfilesAvailabilitiesMetadata (state: EventProfileStateModel): SelectItem<boolean | undefined>[] {
+        return state._metadata.availabilities
     }
 
     @Action( StartEventProfilesPageLoader )
@@ -180,8 +182,8 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
     ): Observable<void> {
         return this.service.findEventProfiles(
             payload.eventId,
-            payload.offset,
-            payload.limit,
+            payload.pageNumber,
+            payload.pageSize,
             ctx.getState().eventProfiles.params,
         ).pipe(
             initialize( (): void => this.facade.startEventProfilesPageLoader() ),
@@ -206,82 +208,65 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
         } )
     }
 
-    @Action( InputEventProfilesPageSearch )
-    public inputEventProfilesPageSearch (
+    @Action( InputEventProfilesPageTextSearched )
+    public inputEventProfilesPageTextSearched (
         ctx: StateContext<EventProfileStateModel>,
-        payload: InputEventProfilesPageSearch,
+        payload: InputEventProfilesPageTextSearched,
     ): void {
         ctx.patchState( {
             eventProfiles: {
                 ...ctx.getState().eventProfiles,
                 params: {
                     ...ctx.getState().eventProfiles.params,
-                    searched: payload.searched,
+                    textSearched: payload.textSearched,
                 },
             },
         } )
     }
 
-    @Action( InputEventProfilesPageDateRange )
-    public inputEventProfilesPageDateRange (
+    @Action( InputEventProfilesPageDateTimeSearched )
+    public inputEventProfilesPageDateTimeSearched (
         ctx: StateContext<EventProfileStateModel>,
-        payload: InputEventProfilesPageDateRange,
+        payload: InputEventProfilesPageDateTimeSearched,
     ): void {
         ctx.patchState( {
             eventProfiles: {
                 ...ctx.getState().eventProfiles,
                 params: {
                     ...ctx.getState().eventProfiles.params,
-                    startAccess: payload.begin?.toISOString(),
-                    endAccess: payload.end?.toISOString(),
+                    dateTimeSearched: payload.dateTime?.toISOString(),
                 },
             },
         } )
     }
 
-    @Action( SelectEventProfilesPageStatus )
-    public selectEventProfilesPageStatus (
+    @Action( SelectEventProfilesPageStatusSearched )
+    public selectEventProfilesPageStatusSearched (
         ctx: StateContext<EventProfileStateModel>,
-        payload: SelectEventProfilesPageStatus,
+        payload: SelectEventProfilesPageStatusSearched,
     ): void {
         ctx.patchState( {
             eventProfiles: {
                 ...ctx.getState().eventProfiles,
                 params: {
                     ...ctx.getState().eventProfiles.params,
-                    status: payload.status,
+                    statusSearched: payload.statusSearched,
                 },
             },
         } )
     }
 
-    @Action( SelectEventProfilesPageVisibility )
-    public selectEventProfilesPageVisibility (
+    @Action( SelectEventProfilesPageAvailabilitySearched )
+    public selectEventProfilesPageAvailabilitySearched (
         ctx: StateContext<EventProfileStateModel>,
-        payload: SelectEventProfilesPageVisibility,
+        payload: SelectEventProfilesPageAvailabilitySearched,
     ): void {
         ctx.patchState( {
             eventProfiles: {
                 ...ctx.getState().eventProfiles,
                 params: {
                     ...ctx.getState().eventProfiles.params,
-                    onlyVisible: payload.onlyVisible,
-                },
-            },
-        } )
-    }
-
-    @Action( SelectEventProfilesPageOrder )
-    public selectEventProfilesPageOrder (
-        ctx: StateContext<EventProfileStateModel>,
-        payload: SelectEventProfilesPageOrder,
-    ): void {
-        ctx.patchState( {
-            eventProfiles: {
-                ...ctx.getState().eventProfiles,
-                params: {
-                    ...ctx.getState().eventProfiles.params,
-                    order: payload.order,
+                    availabilitySearched: payload.availabilitySearched,
                 },
             },
         } )
@@ -322,6 +307,13 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
         } )
     }
 
+    @Action( ResetEventProfile )
+    public resetEventProfile (ctx: StateContext<EventProfileStateModel>): void {
+        ctx.patchState( {
+            eventProfile: defaultEventProfile,
+        } )
+    }
+
     @Action( SearchUsers )
     public SearchUsers (
         ctx: StateContext<EventProfileStateModel>,
@@ -329,7 +321,7 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
     ): Observable<void> {
         return this.service.searchUsers(
             payload.eventId,
-            payload.searched,
+            payload.textSearched,
         ).pipe(
             map( (users: UserModel[]): void => this.searchUsersComplete(
                 ctx,
@@ -374,29 +366,29 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
         } )
     }
 
-    @Action( FetchAssignableEventProfileStatus )
-    public fetchAssignableEventProfileStatus (
+    @Action( FetchProfileStatus )
+    public fetchProfileStatus (
         ctx: StateContext<EventProfileStateModel>,
-        payload: FetchAssignableEventProfileStatus,
     ): Observable<void> {
-        return this.service.getAvailableEventProfileStatus( payload.eventId ).pipe(
-            initialize( (): void => this.facade.startEventProfileLoader() ),
-            finalize( (): void => this.facade.stopEventProfileLoader() ),
-            map( (status: SelectItem<string>[]): void => this.fetchAssignableEventProfileStatusComplete(
+        return this.serviceMetadata.getProfilesStatus().pipe(
+            map( (status: SelectItem<string>[]): void => this.fetchProfileStatusComplete(
                 ctx,
                 status,
             ) ),
         )
     }
 
-    private fetchAssignableEventProfileStatusComplete (
+    private fetchProfileStatusComplete (
         ctx: StateContext<EventProfileStateModel>,
         status: SelectItem<string>[],
     ): void {
         ctx.patchState( {
             _metadata: {
                 ...ctx.getState()._metadata,
-                status: status,
+                status: [
+                    { label: '-', value: undefined },
+                    ...status,
+                ],
             },
         } )
     }
@@ -423,11 +415,17 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
         creationStatus: CreatedEventProfiles,
     ): void {
         if (creationStatus?.notCreatedUserIds.length > 0) {
-            const message: string = 'warning.message.event-profile.create.'
+            const prefixKey: string = 'event-profiles.notifications.partial-invitation'
             this.buildMessageAndNotify(
                 'warn',
-                'warning.title.event-profile.create',
-                creationStatus?.createdUserIds?.length <= 1 ? `${message}singular` : `${message}plural`,
+                this.pluralTranslationPipe.transform(
+                    prefixKey + '.title',
+                    creationStatus.createdUserIds.length,
+                ),
+                this.pluralTranslationPipe.transform(
+                    prefixKey + '.message',
+                    creationStatus.createdUserIds.length,
+                ),
                 this.eventProfileIcon,
                 {
                     asked: creationStatus.createdUserIds.length + creationStatus.notCreatedUserIds.length,
@@ -435,12 +433,16 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
                 },
             )
         } else {
-            const title: string = 'success.title.event-profile.create.normal.'
-            const message: string = 'success.message.event-profile.create.normal.'
             this.buildMessageAndNotify(
                 'success',
-                creationStatus.createdUserIds?.length <= 1 ? `${title}singular` : `${title}plural`,
-                creationStatus.createdUserIds?.length <= 1 ? `${message}singular` : `${message}plural`,
+                this.pluralTranslationPipe.transform(
+                    'event-profiles.notifications.create.title',
+                    creationStatus.createdUserIds,
+                ),
+                this.pluralTranslationPipe.transform(
+                    'event-profiles.notifications.create.message',
+                    creationStatus.createdUserIds,
+                ),
                 this.eventProfileIcon,
                 {
                     created: creationStatus.createdUserIds.length,
@@ -468,47 +470,10 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
     ): void {
         this.buildMessageAndNotify(
             'success',
-            'success.title.event-profile.edit',
-            'success.message.event-profile.edit',
+            'event-profiles.notifications.edit.title',
+            'event-profiles.notifications.edit.message',
             this.eventProfileIcon,
             this.buildTranslationArgs( ctx.getState().eventProfile.element! ),
-        )
-        this.refreshPage( ctx, eventId )
-    }
-
-    @Action( CreateSupportEventProfile )
-    public createSupportEventProfile (
-        ctx: StateContext<EventProfileStateModel>,
-        payload: CreateSupportEventProfile,
-    ): Observable<void> {
-        return this.service.createSupportEventProfile( payload.eventId ).pipe(
-            initialize( (): void => this.facade.startEventProfileLoader() ),
-            finalize( (): void => this.facade.stopEventProfileLoader() ),
-            map( (profile: EventProfileModel): void => this.createSupportEventProfileComplete(
-                ctx,
-                payload.eventId,
-                profile,
-            ) ),
-        )
-    }
-
-    private createSupportEventProfileComplete (
-        ctx: StateContext<EventProfileStateModel>,
-        eventId: string | undefined,
-        profile: EventProfileModel,
-    ): void {
-        this.buildMessageAndNotify(
-            'success',
-            'success.title.event-profile.create.support',
-            'success.message.event-profile.create.support',
-            this.eventProfileIcon,
-            {
-                name: profile?.event?.name,
-                end: this.datePipe.transform(
-                    profile?.endAccess,
-                    this.translateService.instant( 'datetime.format.date' ),
-                ),
-            },
         )
         this.refreshPage( ctx, eventId )
     }
@@ -532,8 +497,8 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
     ): void {
         this.buildMessageAndNotify(
             'success',
-            'success.title.event-profile.block',
-            'success.message.event-profile.block',
+            'event-profiles.notifications.disable.title',
+            'event-profiles.notifications.disable.message',
             this.eventProfileIcon,
             this.buildTranslationArgs( profile ),
         )
@@ -559,8 +524,8 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
     ): void {
         this.buildMessageAndNotify(
             'success',
-            'success.title.event-profile.unblock',
-            'success.message.event-profile.unblock',
+            'event-profiles.notifications.enable.title',
+            'event-profiles.notifications.enable.message',
             this.eventProfileIcon,
             this.buildTranslationArgs( profile ),
         )
@@ -586,8 +551,8 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
     ): void {
         this.buildMessageAndNotify(
             'success',
-            'success.title.event-profile.delete',
-            'success.message.event-profile.delete.someone',
+            'event-profiles.notifications.delete.title',
+            'event-profiles.notifications.delete.message.other',
             this.eventProfileIcon,
             this.buildTranslationArgs( profile ),
         )
@@ -604,7 +569,7 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
 
     protected refreshPage (ctx: StateContext<EventProfileStateModel>, eventId: string | undefined): void {
         const page: PageModel<EventProfileModel> | undefined = ctx.getState().eventProfiles.element
-        this.facade.fetchEventProfilesPage( page?.offset, page?.limit, true, eventId )
+        this.facade.fetchEventProfilesPage( page?.pageNumber, page?.pageSize, true, eventId )
     }
 
     protected pageError (ctx: StateContext<EventProfileStateModel>, error: ErrorModel): Observable<void> {

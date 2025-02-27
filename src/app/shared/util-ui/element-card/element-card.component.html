@@ -1,66 +1,62 @@
-<p-card [class]='element.visible ? "" : "non-visible"'>
+<p-card>
     <div #elementCard class='element-actions-container'>
-        @if (loading) {
-            <app-element-skeleton [withIcon]='!!icon' [layout]='layout' />
-        } @else {
-            <div class='d-flex align-items-center' [class.flex-column]='layout === "grid"'>
-                @if (icon) {
-                    <div class='ms-2 me-2'>
-                        <p-avatar [icon]='icon' size='large' shape='circle' />
+        <div [class]='registryFacade.tinyScreen() ? "card-content-grid" : "card-content-list"'>
+            @if (loading()) {
+                <app-element-skeleton [withIcon]='!!icon' [layout]='registryFacade.tinyScreen() ? "grid" : "list"' />
+            } @else {
+                <div class='d-flex align-items-center' [class.flex-column]='registryFacade.tinyScreen()'>
+                    @if (icon()) {
+                        <div [class.me-3]='!registryFacade.tinyScreen()'>
+                            <p-avatar [icon]='icon()' size='large' shape='circle' />
+                        </div>
+                    }
+                    <div class='full-w'
+                         [class.mt-2]='registryFacade.tinyScreen()'>
+                        <ng-content />
                     </div>
-                }
-                <div class='full-w'
-                     [class.mt-2]='layout === "grid"'>
-                    <ng-content />
                 </div>
-            </div>
-            @if ((actions.length > 0 || element.creation || element.lastEdition) && showActionMenu) {
-                <div class='option-button'>
-                    <p-popover #menu appendTo='body'>
-                        @if ((items$ | async)!.length > 0) {
-                            <p-menu [style]='{
+            }
+        </div>
+
+        @if ((actions().length > 0 || element().creation || element().lastEdition) && actionMenuVisible()) {
+            <div class='option-button'>
+                <p-popover #menu appendTo='body'>
+                    @if (items()!.length > 0) {
+                        <p-menu [style]='{
                                         "border-radius": "0",
                                         "border-top": "none",
                                         "border-left": "none",
                                         "border-right": "none"
                                     }'
-                                    (click)='menu.toggle($event)'
-                                    [model]='(items$ | async) ?? []'>
-                                <ng-template #item let-item>
-                                    <a pRipple class='d-flex align-items-center p-2 pointer'>
-                                        <span [class]='item.icon'></span>&nbsp;
-                                        <span class='ms-2'>{{ item.label | translate }}</span>
-                                    </a>
-                                </ng-template>
-                            </p-menu>
-                        }
-                        <div class='m-1 secondary-color'>
-                            @if (element.creation) {
-                                <small>{{ buildHistoryItem(element.creation, true) }}</small>
-                            }
-                            @if (element.creation && element.lastEdition) {
-                                <br />
-                            }
-                            @if (element.lastEdition) {
-                                <small>{{ buildHistoryItem(element.lastEdition, false) }}</small>
-                            }
-                        </div>
-                    </p-popover>
-                    <p-button
-                            [ariaLabel]='"menu.options" | translate'
-                            (click)='$event.stopPropagation(); menu.toggle($event)'
-                            [rounded]='true'
-                            [text]='true'
-                            icon='pi pi-ellipsis-v' />
-                </div>
-            }
+                                (click)='menu.toggle($event)'
+                                [model]='items()'>
+                            <ng-template #item let-item>
+                                <a pRipple class='d-flex align-items-center py-2 px-3 pointer'>
+                                    <span [class]='item.icon'></span>&nbsp;
+                                    <span class='ms-2'>{{ item.label | translate }}</span>
+                                </a>
+                            </ng-template>
+                        </p-menu>
+                    }
+                    <div class='m-1 secondary-color'>
+                        <small>{{ creationLabel() }}</small><br /><small>{{ lastEditionLabel() }}</small>
+                    </div>
+                </p-popover>
+                <p-button
+                        [ariaLabel]='"menu.options" | translate'
+                        (click)='$event.stopPropagation(); menu.toggle($event)'
+                        [rounded]='true'
+                        [text]='true'
+                        icon='pi pi-ellipsis-v' />
+            </div>
         }
     </div>
 </p-card>
 
-@if (items$ | async; as items) {
-    @if (items.length > 0 && showActionMenu) {
-        <p-context-menu [target]='elementCard' [model]='items'>
+
+@if (!registryFacade.tinyScreen()) {
+    @if (items.length > 0 && actionMenuVisible()) {
+        <p-context-menu [target]='elementCard' [model]='items()'>
             <ng-template #item let-item>
                 <a pRipple class='d-flex align-items-center p-2 pointer'>
                     <span [class]='item.icon'></span>&nbsp;
@@ -73,44 +69,45 @@
 
 <p-dialog
         [breakpoints]='breakpoint'
-        [header]='(dialogContent?.confirmation?.header ?? "") | translate'
+        [header]='(dialogContent()?.confirmation?.header ?? "") | translate'
         [(visible)]='showDialog'
         [formGroup]='form'
         [modal]='true'>
     <div class='mb-3'>
-        {{ (dialogContent?.confirmation?.message ?? '') | translate: { element: element } }}
+        {{ (dialogContent()?.confirmation?.message ?? '') | translate: { element: element() } }}
     </div>
-    @if (dialogContent?.confirmation?.confirmProperty) {
+    @if (dialogContent()?.confirmation?.confirmProperty) {
         <div class='field'>
             <label for='confirmation-name'>{{
-                    'confirmation.info' | translate: {
+                    'global.form.confirmation' | translate: {
                         name:
-                            propertyValue(dialogContent?.confirmation?.confirmProperty)
+                            propertyValue(dialogContent()?.confirmation?.confirmProperty)
                     }
                 }}</label>
             <input [formControl]='confirmationName'
-                   [placeholder]='"confirmation.info" | translate: { name: propertyValue(dialogContent?.confirmation?.confirmProperty) }'
-                   (keydown.enter)='confirmAction(dialogContent)'
+                   [placeholder]='"global.form.confirmation" | translate: { name: propertyValue(dialogContent()?.confirmation?.confirmProperty) }'
+                   (keydown.enter)='confirmAction(dialogContent())'
                    id='confirmation-name'
                    pInputText
                    type='text' />
-            <app-form-field-error [control]='confirmationName'
-                                  [translationArgs]='{ toConfirm: propertyValue(dialogContent?.confirmation?.confirmProperty) }'
-                                  translationPrefix='confirmation.error' />
+            <app-form-field-error [errors]='confirmationName.errors'
+                                  [invalid]='FormUtil.invalid(confirmationName)'
+                                  [translationArgs]='{ toConfirm: propertyValue(dialogContent()?.confirmation?.confirmProperty) }'
+                                  translationPrefix='global.form.error.confirmation' />
         </div>
     }
     <ng-template #footer>
         <p-button
-                [label]='"confirmation.cancel" | translate'
+                [label]='"global.actions.cancel" | translate'
                 [text]='true'
                 [rounded]='true'
-                [severity]='dialogContent?.confirmation?.rejectSeverity'
+                [severity]='dialogContent()?.confirmation?.rejectSeverity'
                 (click)='cancelAction()' />
         <p-button
-                [label]='"confirmation.confirm" | translate'
+                [label]='"global.actions.confirm" | translate'
                 [rounded]='true'
                 [outlined]='true'
-                [severity]='dialogContent?.confirmation?.acceptSeverity'
-                (click)='confirmAction(dialogContent)' />
+                [severity]='dialogContent()?.confirmation?.acceptSeverity'
+                (click)='confirmAction(dialogContent())' />
     </ng-template>
 </p-dialog>

@@ -1,77 +1,70 @@
-<app-element-card [element]='element'
-                  [actions]='actions'
-                  [showActionMenu]='showActionMenu'
+<app-element-card [element]='participant()'
+                  [actions]='actions()'
+                  [actionMenuVisible]='actionMenuVisible()'
                   (action)='handleAction($event)'
-                  [layout]='layout'
-                  icon='pi pi-users'>
-    <div [class.flex-lg-row]='layout === "list"' [class.flex-column]='layout === "grid"'
-         class='d-flex flex-wrap justify-content-between align-items-center'>
-        <div class='info p-1'>
-            {{ (element.firstName | titlecase) + ' ' + (element.lastName | uppercase) }}
-            <div class='d-flex align-items-center'>
-                @if (element.birthday) {
-                    <i class='pi pi-gift'></i>
-                    <span class='ms-2'>{{ element.birthday | date: ('datetime.format.date' | translate) }}</span>
-
-                }
+                  icon='pi pi-user'>
+    <div class='element-card'>
+        <div class='participant-info'>
+            <div class='participant-name d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
+                {{ (participant().firstName | titlecase) + ' ' + (participant().lastName | uppercase) }}
             </div>
+            @if (participant().startAvailability) {
+                <div class='d-flex mt-1 align-content-center' [class.justify-content-center]='registryFacade.tinyScreen()'>
+                    <i class='pi pi-play-circle'></i>
+                    <span class='ms-1'> {{ participant().startAvailability | customDateFormat }}</span>
+                </div>
+            }
+            @if (participant().endAvailability) {
+                <div class='d-flex align-content-center'
+                     [class.justify-content-center]='registryFacade.tinyScreen()'
+                     [class.mt-1]='!participant().startAvailability'>
+                    <i class='pi pi-stop-circle'></i>
+                    <span class='ms-1'> {{ participant().endAvailability | customDateFormat }}</span>
+                </div>
+            }
         </div>
-        <div class='groups d-flex p-1'>
+        <div class='groups d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
             <div [class.pointer]='additionalTotal() > 0'
-                 [class.groups-content]='additionalTotal() > 0'
+                 [class.hover-underline]='additionalTotal() > 0'
                  tabindex='1'
                  (click)='additionalTotal() > 0 ? layerOpened = true : ""'
                  (keydown.enter)='additionalTotal()> 0 ? layerOpened = true : ""'>
-                @switch (true) {
-                    @case ((element.groups?.length ?? 0) === 0) {
-                        {{ 'participant.group-and-others.none' | translate }}
-                    }
-                    @case (element.groups.length === 1) {
-                        {{
-                            'participant.group-and-others.one' | translate: {
-                                group: element.groups[0].name,
-                            }
-                        }}
-                    }
-                    @case (element.groups.length === 2) {
-                        {{
-                            'participant.group-and-others.singular' | translate: {
-                                group: element.groups[0].name,
-                                others: additionalTotal(),
-                            }
-                        }}
-                    }
-                    @default {
-                        {{
-                            'participant.group-and-others.plural' | translate: {
-                                group: element.groups[0].name,
-                                others: additionalTotal(),
-                            }
-                        }}
-                    }
+                @if (additionalTotal() === 0) {
+                    {{ participant().groups[0].name }}
+                } @else {
+                    {{
+                        'participants.group' | pluralTranslation: additionalTotal() + 1 | translate: {
+                            name: participant().groups[0]?.name,
+                            others: additionalTotal(),
+                        }
+                    }}
                 }
             </div>
         </div>
-        <div class='presence secondary-color p-1'>
-            @if (element.begin && element.end) {
-                <i>
-                    {{
-                        'datetime.presence' | translate
-                            : {
-                                start: element.begin | date: ('datetime.format.date' | translate),
-                                end: element.end | date: ('datetime.format.date' | translate),
-                            }
-                    }}
-                </i>
+        <div class='status d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
+            @if (participant().status.value === 'UNAVAILABLE') {
+                <app-severity-tag [severity]='participantStatusSeverity()'
+                                  [value]='intervalStatus() | intervalFormat: "participants.status" | translate: { interval:
+                                  buildInterval(intervalStatus()!.interval!) }' />
+            } @else {
+                <app-severity-tag [severity]='participantStatusSeverity()'
+                                  [value]='participant().status.label' />
             }
+        </div>
+        <div class='visibility d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
+            <app-severity-tag
+                    [severity]='participant().visible ? "success" : "danger"'
+                    [value]='participant() | visibilityName: "participants" | translate' />
         </div>
     </div>
 </app-element-card>
 
 <app-layer [(visible)]='layerOpened'
-           [header]='"group.content.title" | translate'>
+           [header]='"participants.group-layer-title" | pluralTranslation: participant().groups | translate'>
     <p-listbox
-            [options]='element.groups'
+            styleClass='max-list-box-height'
+            scrollHeight='100%'
+            [options]='participant().groups'
             [readonly]='true'
             optionLabel='name'>
         <ng-template #item let-group>
@@ -81,8 +74,4 @@
             </div>
         </ng-template>
     </p-listbox>
-    <div class='d-flex justify-content-center align-content-center'>
-        <p-button (click)='layerOpened = false' [rounded]='true' [outlined]='true' severity='secondary'
-                  [label]='"close" | translate' />
-    </div>
 </app-layer>

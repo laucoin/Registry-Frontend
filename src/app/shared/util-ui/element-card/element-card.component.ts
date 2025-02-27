@@ -1,27 +1,37 @@
-import { AsyncPipe, DatePipe } from '@angular/common'
-import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core'
+import {
+    ChangeDetectionStrategy,
+    Component,
+    computed,
+    inject,
+    input,
+    InputSignal,
+    output,
+    OutputEmitterRef,
+    signal,
+    Signal,
+    WritableSignal,
+} from '@angular/core'
 import { TranslateModule } from '@ngx-translate/core'
 import { MenuItem } from 'primeng/api'
 import { AvatarModule } from 'primeng/avatar'
 import { Button } from 'primeng/button'
 import { CardModule } from 'primeng/card'
 import { MenuModule } from 'primeng/menu'
-import { combineLatestWith, map, Observable, of } from 'rxjs'
 import { ActionModel } from '../../util-model/model/action.model'
 import { CurrentUserModel } from '../../util-model/model/current-user.model'
 import { GenericModel } from '../../util-model/model/generic.model'
 import { HistoryModel } from '../../util-model/model/history.model'
-import { GenericElementComponent } from '../../util-tool/component/generic-element.component'
 import { ElementSkeletonComponent } from '../element-skeleton/element-skeleton.component'
 import { DialogModule } from 'primeng/dialog'
 import { FormFieldErrorComponent } from '../form-field-error/form-field-error.component'
-import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { InputTextModule } from 'primeng/inputtext'
-import { breakPoint } from '../../util-tool/util/breakpoint.const'
 import { Popover } from 'primeng/popover'
 import { Ripple } from 'primeng/ripple'
 import { ContextMenu } from 'primeng/contextmenu'
 import { FormUtil } from '../../util-tool/util/form.util'
+import { GenericComponent } from '../../util-tool/component/generic.component'
+import { DateFormatPipe } from '../../util-tool/pipe/date-format.pipe'
 
 @Component( {
     selector: 'app-element-card',
@@ -30,7 +40,6 @@ import { FormUtil } from '../../util-tool/util/form.util'
         CardModule,
         AvatarModule,
         ElementSkeletonComponent,
-        AsyncPipe,
         Button,
         MenuModule,
         TranslateModule,
@@ -45,61 +54,55 @@ import { FormUtil } from '../../util-tool/util/form.util'
     ],
     templateUrl: './element-card.component.html',
     styleUrl: './element-card.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush,
 } )
-export class ElementCardComponent<T extends GenericModel, A> extends GenericElementComponent<T, A> implements OnChanges {
-    @Input() public icon: string | undefined
-    @Input() public showActionMenu: boolean = true
+export class ElementCardComponent<T extends GenericModel, A> extends GenericComponent {
+    private readonly datePipe: DateFormatPipe = inject( DateFormatPipe )
 
-    @Output() public readonly action: EventEmitter<A> = new EventEmitter<A>()
+    protected readonly FormUtil: typeof FormUtil = FormUtil
 
-    protected items$!: Observable<MenuItem[]>
-    protected showDialog: boolean = false
-    protected dialogContent: ActionModel<A> | undefined = undefined
-
-    protected readonly breakpoint: object = breakPoint
     protected readonly form: FormGroup
-    private readonly dateFormat: string = this.translateService.instant( 'datetime.format.date' )
-    private readonly timeFormat: string = this.translateService.instant( 'datetime.format.time' )
 
-    public constructor (
-        private readonly formBuilder: FormBuilder,
-        private readonly datePipe: DatePipe,
-    ) {
+    protected showDialog: boolean = false
+
+    public readonly element: InputSignal<T> = input.required()
+    public readonly actions: InputSignal<ActionModel<A>[]> = input<ActionModel<A>[]>( [] )
+    public readonly icon: InputSignal<string | undefined> = input()
+    public readonly loading: InputSignal<boolean> = input( false )
+    public readonly actionMenuVisible: InputSignal<boolean> = input( true )
+
+    protected readonly items: Signal<MenuItem[]>
+    protected readonly creationLabel: Signal<string>
+    protected readonly lastEditionLabel: Signal<string>
+    protected readonly dialogContent: WritableSignal<ActionModel<A> | undefined> = signal( undefined )
+
+    public readonly action: OutputEmitterRef<A> = output()
+
+    public constructor () {
         super()
 
         this.form = this.initForm()
-    }
 
-    public ngOnChanges (): void {
-        this.buildActionsMenu()
+        this.items = computed( (): MenuItem[] => this.definedMenuItems(
+            this.registryFacade.currentUser(),
+            this.actions(),
+        ) )
+
+        this.creationLabel = computed( (): string => this.buildHistoryItem(
+            this.element().creation,
+            'global.date-and-time-format.element-created',
+        ) )
+
+        this.lastEditionLabel = computed( (): string => this.buildHistoryItem(
+            this.element().lastEdition,
+            'global.date-and-time-format.element-last-update',
+        ) )
     }
 
     private initForm (): FormGroup {
         return this.formBuilder.group( {
             confirmationName: this.formBuilder.control( undefined, [] ),
         } )
-    }
-
-    protected buildHistoryItem (history: HistoryModel, isCreation: boolean): string {
-        const translationSuffix: string = history.user ? '-user' : ''
-        return this.translateService.instant(
-            (isCreation ? 'datetime.created' : 'datetime.last-update') + translationSuffix,
-            {
-                date: this.datePipe.transform( history.dateTime, this.dateFormat ),
-                time: this.datePipe.transform( history.dateTime, this.timeFormat ),
-                user: history.user?.email,
-            },
-        )
-    }
-
-    private buildActionsMenu (): void {
-        this.items$ = this.currentUser$.pipe(
-            combineLatestWith( of( this.actions ) ),
-            map( ([ currentUser, actions ]: [ CurrentUserModel | undefined, ActionModel<A>[] ]): MenuItem[] => this.definedMenuItems(
-                currentUser,
-                actions,
-            ) ),
-        )
     }
 
     private definedMenuItems (currentUser: CurrentUserModel | undefined, actions: ActionModel<A>[]): MenuItem[] {
@@ -113,6 +116,17 @@ export class ElementCardComponent<T extends GenericModel, A> extends GenericElem
             }) )
     }
 
+    private buildHistoryItem (history: HistoryModel, translationPrefix: string): string {
+        const key: string = `${translationPrefix}${history.user ? '-user' : ''}`
+        return this.translateService.instant(
+            key,
+            {
+                datetime: this.datePipe.transform( history.dateTime, 'datetime' ),
+                user: history.user?.email,
+            },
+        )
+    }
+
     private showConfirmationIfNecessary (action: ActionModel<A>): void {
         if (action.confirmation) {
             if (action.confirmation.confirmProperty) {
@@ -123,7 +137,7 @@ export class ElementCardComponent<T extends GenericModel, A> extends GenericElem
             }
 
             this.showDialog = true
-            this.dialogContent = action
+            this.dialogContent.set( action )
         } else {
             this.action.emit( action.id )
         }
@@ -133,7 +147,7 @@ export class ElementCardComponent<T extends GenericModel, A> extends GenericElem
         this.confirmationName.reset()
         this.confirmationName.clearValidators()
         this.showDialog = false
-        this.dialogContent = undefined
+        this.dialogContent.set( undefined )
     }
 
     protected confirmAction (action: ActionModel<A> | undefined): void {
@@ -144,7 +158,7 @@ export class ElementCardComponent<T extends GenericModel, A> extends GenericElem
 
             this.cancelAction()
         } else {
-            console.warn( this.translateService.instant( 'warning.message.invalid-form' ) )
+            console.warn( this.translateService.instant( 'global.messages.invalid-form' ) )
         }
     }
 
@@ -155,15 +169,10 @@ export class ElementCardComponent<T extends GenericModel, A> extends GenericElem
 
     protected propertyValue (property: string | undefined): string {
         if (!property) return ''
-        return Object( this.element )[property]
+        return Object( this.element() )[property]
     }
 
     protected get confirmationName (): FormControl {
         return this.form.get( 'confirmationName' ) as FormControl
-    }
-
-    protected isActionDisabled (): boolean {
-        // Do nothing
-        return false
     }
 }
