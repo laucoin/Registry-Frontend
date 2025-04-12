@@ -1,97 +1,41 @@
-import { Component, effect, inject, OnDestroy, Signal, signal, WritableSignal } from '@angular/core'
-import { TranslateService } from '@ngx-translate/core'
-import { Observable, Subscription } from 'rxjs'
 import { RegistryFacade } from '../../util-common/state/registry.facade'
-import { CurrentUserModel } from '../../util-model/model/current-user.model'
+import { inject, Signal } from '@angular/core'
+import { TranslateService } from '@ngx-translate/core'
+import { toSignal } from '@angular/core/rxjs-interop'
+import { ActivatedRoute, Router } from '@angular/router'
+import { FormBuilder } from '@angular/forms'
 import { UserAuthorityEnum } from '../../util-model/enumeration/user-authority.enum'
 import { EventAuthorityEnum } from '../../util-model/enumeration/event-authority.enum'
 import { CurrentUserUtil } from '../../util-authentication/tool/current-user.util'
-import { ActivatedRoute, Router } from '@angular/router'
 import { GenericUtil } from '../util/generic.util'
-import { EventModel } from '../../util-model/model/event.model'
+import { StringUtil } from '../util/string.util'
+import { breakPoint } from '../util/breakpoint.const'
+import { AppRouteEnum } from '../../../app-route.enum'
 
-const EVENT_ID_REGEX: RegExp = /events\/([0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12})/
+export abstract class GenericComponent {
+    protected readonly AppRouteEnum: typeof AppRouteEnum = AppRouteEnum
 
-@Component( {
-    template: '',
-} )
-export abstract class GenericComponent implements OnDestroy {
-    protected readonly subscriptions: Subscription = new Subscription()
-    protected readonly registryFacade: RegistryFacade = inject( RegistryFacade )
-    protected readonly translateService: TranslateService = inject( TranslateService )
-    protected readonly route: ActivatedRoute = inject( ActivatedRoute )
-    protected readonly router: Router = inject( Router )
+    protected readonly GenericUtil: typeof GenericUtil = GenericUtil
+    protected readonly StringUtil: typeof StringUtil = StringUtil
 
+    protected readonly CurrentUserUtil: typeof CurrentUserUtil = CurrentUserUtil
     protected readonly UserAuthority: typeof UserAuthorityEnum = UserAuthorityEnum
     protected readonly EventAuthority: typeof EventAuthorityEnum = EventAuthorityEnum
-    protected readonly GenericUtil: typeof GenericUtil = GenericUtil
 
-    protected readonly currentUser$: Observable<CurrentUserModel | undefined> = this.registryFacade.currentUser
-    protected readonly tinyScreenMediaQuery: MediaQueryList = window.matchMedia( '(max-width: 768px)' )
-    protected readonly isTinyScreen: WritableSignal<boolean> = signal( this.tinyScreenMediaQuery.matches )
-    protected readonly isMobile: Signal<boolean> = signal(
-        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS/i.test( navigator.userAgent ),
-    )
+    protected readonly formBuilder: FormBuilder = inject( FormBuilder )
+    protected readonly registryFacade: RegistryFacade = inject( RegistryFacade )
+    protected readonly route: ActivatedRoute = inject( ActivatedRoute )
+    protected readonly router: Router = inject( Router )
+    protected readonly translateService: TranslateService = inject( TranslateService )
 
-    protected readonly contextEventId: WritableSignal<string | undefined> = signal( undefined )
-    protected readonly contextEvent$: Observable<EventModel | undefined> = this.registryFacade.contextEvent
-    protected readonly contextEventLoading$: Observable<boolean> = this.registryFacade.contextEventLoading
+    protected readonly breakpoint: object = breakPoint
 
-    public constructor () {
-        this.listenWindowsResize()
-
-        this.handleEventIdFromRoute()
-    }
-
-    protected hasUserAuthority (
-        currentUser: CurrentUserModel | undefined | null,
-        authority: UserAuthorityEnum,
-    ): boolean {
-        return CurrentUserUtil.hasUserAuthority( currentUser ?? undefined, authority )
-    }
-
-    protected hasEventAuthority (
-        currentUser: CurrentUserModel | undefined | null,
-        eventId: string | undefined | null,
-        authority: EventAuthorityEnum,
-    ): boolean {
-        return CurrentUserUtil.hasEventAuthority( currentUser ?? undefined, eventId ?? undefined, authority )
-    }
+    protected readonly contextEventId: Signal<string | undefined> = toSignal( this.registryFacade.contextEventId )
 
     protected buildUri (route: string): string {
-        const contextEventId: string | undefined = this.contextEventId() ?? this.registryFacade.actualCurrentUser?.preferences.selectedProfile?.event.id
-        return route.includes( ':eventId' ) && contextEventId ? route.replace( ':eventId', contextEventId ) : route
-    }
-
-    public ngOnDestroy (): void {
-        this.subscriptions.unsubscribe()
-    }
-
-    private listenWindowsResize (): void {
-        this.tinyScreenMediaQuery.addEventListener( 'change', (e: MediaQueryListEvent): void => {
-            this.isTinyScreen.set( e.matches )
-        } )
-    }
-
-    private handleEventIdFromRoute (): void {
-        this.subscriptions.add(
-            this.route.params.subscribe( (): void => {
-                const contextEventId: string | undefined = EVENT_ID_REGEX.exec( location.pathname )?.[1]
-                if (contextEventId && contextEventId !== this.contextEventId()) {
-                    this.contextEventId.set( contextEventId )
-                }
-            } ),
-        )
-    }
-
-    protected fetchContextEventOnEventIdChange (): void {
-        effect( (): void => {
-            if (
-                GenericUtil.nonNull( this.contextEventId() ) &&
-                this.registryFacade.actualContextEventId != this.contextEventId()
-            ) {
-                this.registryFacade.fetchContextEvent( this.contextEventId()! )
-            }
-        } )
+        return route.includes( ':eventId' ) && this.contextEventId() ? route.replace(
+            ':eventId',
+            this.contextEventId()!,
+        ) : route
     }
 }

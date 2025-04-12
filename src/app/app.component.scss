@@ -7,10 +7,10 @@
     color: var(--text-color);
 }
 
-.legal:hover {
-    text-decoration: underline;
-}
-
 .text-align-justify {
     text-align: justify;
+}
+
+main {
+    min-height: 90%;
 }

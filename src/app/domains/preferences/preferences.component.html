@@ -1,16 +1,15 @@
-@if (currentUser$ | async; as currentUser) {
-    <app-element-card [element]='currentUser'
+@if (registryFacade.currentUser()) {
+    <app-element-card [element]='registryFacade.currentUser()!'
                       [actions]='actions'
                       (action)='handleAction($event)'
-                      [layout]='(isTinyScreen() || isMobile()) ? "grid" : "list"'
                       icon='pi pi-user'>
         <div class='current-user'>
             <div class='name-container'>
                 <span
-                        class='name'>{{ (currentUser.firstName | titlecase) + ' ' + (currentUser.lastName | uppercase) }}</span>
-                @if (currentUser.role) {
+                        class='name'>{{ (registryFacade.currentUser()!.firstName | titlecase) + ' ' + (registryFacade.currentUser()!.lastName | uppercase) }}</span>
+                @if (registryFacade.currentUser()!.role) {
                     <div>
-                        <p-tag [value]='currentUser.role.label'
+                        <p-tag [value]='registryFacade.currentUser()!.role!.label'
                                severity='info'>
                             <ng-template #icon>
                                 <i class='pi pi-sparkles'></i>
@@ -20,22 +19,27 @@
                 }
             </div>
             <div class='ms-1 me-1'>
-                <a class='email' href='mailto:{{ currentUser.email }}'><i>{{ currentUser.email }}</i></a>
+                <a class='email'
+                   href='mailto:{{ registryFacade.currentUser()!.email }}'><i>{{ registryFacade.currentUser()!.email }}</i></a>
             </div>
         </div>
     </app-element-card>
 }
-<p-tabs [value]='activeIndex' [scrollable]='true' (valueChange)='tabNavigation($event)' class='mt-2' [class.mt-5]='!isTinyScreen()'>
+<p-tabs [value]='activeIndex' [scrollable]='true' (valueChange)='tabNavigation($event)' class='mt-2'
+        [class.mt-5]='!registryFacade.tinyScreen()'>
     <p-tablist>
-        <p-tab [value]='AppRouteEnum.PREFERENCES_PROFILES'>{{
-                'profile.event.mine' | pluralTranslation:
-                (profilePage$ | async)?.content?.length ?? 0 |
+        <p-tab [value]='AppRouteEnum.PREFERENCES_PROFILES'>
+            {{
+                'preferences.profiles-tab.profile' | pluralTranslation:
+                    (registryFacade.userEventProfilesPage()?.content?.length ?? 0) |
                     translate
             }}
         </p-tab>
-        <p-tab [value]='AppRouteEnum.PREFERENCES_INVITATIONS'>{{
-                'profile.event.invitation' | pluralTranslation: (invitationPage$ | async)?.content?.length ?? 0 |
-                    translate
+        <p-tab [value]='AppRouteEnum.PREFERENCES_INVITATIONS'>
+            {{
+                'preferences.profiles-tab.invitation' | pluralTranslation:
+                    (registryFacade.userEventProfileInvitationsPage()?.content?.length ?? 0)
+                    | translate
             }}
         </p-tab>
     </p-tablist>

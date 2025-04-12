@@ -1,4 +1,4 @@
-import { Component, signal, Signal } from '@angular/core'
+import { Component, OnDestroy } from '@angular/core'
 import { CardModule } from 'primeng/card'
 import { DividerModule } from 'primeng/divider'
 import { InputTextModule } from 'primeng/inputtext'
@@ -7,23 +7,24 @@ import { TranslateModule } from '@ngx-translate/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { EventProfilesDto } from '../../data/dto/event-profiles.dto'
 import { FormFieldErrorComponent } from '../../../../shared/util-ui/form-field-error/form-field-error.component'
-import { AsyncPipe, DatePipe } from '@angular/common'
 import { FormComponent } from '../../../../shared/util-ui/form/form.component'
 import { GenericEventProfileFormComponent } from '../generic-event-profile-form.component'
 import { RegistryRequiredDirective } from '../../../../shared/util-tool/directive/registry-required.directive'
 import { SelectModule } from 'primeng/select'
 import { Button } from 'primeng/button'
-import { DatePicker } from 'primeng/datepicker'
-import { EventProfileFacade } from '../../data/state/event-profile.facade'
-import { Observable } from 'rxjs'
 import { TreeTableModule } from 'primeng/treetable'
 import { TableModule } from 'primeng/table'
 import {
     SelectElementsFieldComponent,
 } from '../../../../shared/util-ui/select-elements-field/select-elements-field.component'
-import { UserDto } from '../../../../shared/util-model/dto/user.dto'
-import { SelectItem } from 'primeng/api'
-import { DateUtil } from '../../../../shared/util-tool/util/date.util'
+import { PluralTranslationPipe } from '../../../../shared/util-tool/pipe/plural-translation.pipe'
+import { FormUtil } from '../../../../shared/util-tool/util/form.util'
+import { map } from 'rxjs'
+import { DateFormatPipe } from '../../../../shared/util-tool/pipe/date-format.pipe'
+import { UserUtil } from '../../../../shared/util-tool/util/user.util'
+import { DateTimeFieldComponent } from '../../../../shared/util-ui/date-time-field/date-time-field.component'
+import { UserModel } from '../../../../shared/util-model/model/user.model'
+import { RegistryValidators } from '../../../../shared/util-tool/util/registry.validator'
 
 @Component( {
     selector: 'app-event-profile-invitation-form',
@@ -36,56 +37,69 @@ import { DateUtil } from '../../../../shared/util-tool/util/date.util'
         TranslateModule,
         ReactiveFormsModule,
         FormFieldErrorComponent,
-        AsyncPipe,
         FormComponent,
         RegistryRequiredDirective,
         SelectModule,
         Button,
-        DatePicker,
         TreeTableModule,
         TableModule,
         SelectElementsFieldComponent,
-        DatePipe,
+        PluralTranslationPipe,
+        DateFormatPipe,
+        DateTimeFieldComponent,
     ],
     templateUrl: './event-profile-invitation-form.component.html',
 } )
-export class EventProfileInvitationFormComponent extends GenericEventProfileFormComponent {
-    protected readonly usersSuggestion$: Observable<SelectItem<UserDto>[]>
+export class EventProfileInvitationFormComponent extends GenericEventProfileFormComponent implements OnDestroy {
+    protected readonly UserUtil: typeof UserUtil = UserUtil
 
-    protected readonly startDateExample: Signal<Date> = signal( DateUtil.startDateExample )
-    protected readonly endDateExample: Signal<Date> = signal( DateUtil.endDateExample )
-
-    public constructor (protected override readonly facade: EventProfileFacade) {
-        super( facade )
-
-        this.usersSuggestion$ = this.facade.searchedUsersMetadata
+    public constructor () {
+        super()
     }
 
     protected initForm (): FormGroup {
         return this.formBuilder.group( {
             role: this.formBuilder.control( undefined, Validators.required ),
-            range: this.formBuilder.control( undefined ),
+            beginDateTime: this.formBuilder.control( undefined, [ RegistryValidators.dateRequiredForTime() ] ),
+            endDateTime: this.formBuilder.control( undefined, [ RegistryValidators.dateRequiredForTime() ] ),
             users: this.formBuilder.control( [], [ Validators.required ] ),
+        }, {
+            validators: [ RegistryValidators.beginDateBeforeEndDate( 'beginDateTime', 'endDateTime' ) ],
         } )
     }
 
-    protected next (): void {
-        const profiles: EventProfilesDto = {
-            userIds: this.users.value.map( (item: SelectItem<UserDto>): string => item.value.id ),
-            role: this.role.value,
-            startAccess: this.range.value?.[0],
-            endAccess: this.range.value?.[1],
+    protected fillForm (): void {
+        // do nothing
+    }
+
+    protected submit (): void {
+        if (!FormUtil.isFormValid( this.form )) {
+            console.warn( this.invalidFormMessage, this.form.value )
+            return
         }
 
         this.subscriptions.add(
-            this.facade.createEventProfiles( profiles ).subscribe( (): void => {
-                this.navigateToRedirectUri()
-            } ),
+            this.facade.createEventProfiles( this.buildDto() ).pipe(
+                map( (): void => this.navigateToRedirectUri( this.nextNavigation ) ),
+            ).subscribe(),
         )
+    }
+
+    protected buildDto (): EventProfilesDto {
+        return {
+            userIds: this.users.value.map( (user: UserModel): string => user.id ),
+            role: this.role.value,
+            startAccess: this.beginDateTime.value,
+            endAccess: this.endDateTime.value,
+        }
     }
 
     protected handleSearch (searched: string | undefined): void {
         this.facade.searchUsers( searched, this.contextEventId() )
+    }
+
+    public ngOnDestroy (): void {
+        this.subscriptions.unsubscribe()
     }
 
     protected get users (): FormControl {

@@ -1,4 +1,4 @@
-import { Action, Selector, State, StateContext } from '@ngxs/store'
+import { Action, NgxsOnInit, Selector, State, StateContext } from '@ngxs/store'
 import { catchError, finalize, map, Observable, of } from 'rxjs'
 import { PageModel } from '../../../../shared/util-model/model/page.model'
 import { ParticipantModel } from '../../../../shared/util-model/model/participant.model'
@@ -11,20 +11,20 @@ import {
     DisableParticipant,
     EnableParticipant,
     FetchParticipant,
+    FetchParticipantMovementsContents,
     FetchParticipantMovementsPage,
-    FetchParticipantMovementTypes,
+    FetchParticipantPresencesStatus,
     FetchParticipantsPage,
-    InputParticipantMovementsPageDateRange,
-    InputParticipantMovementsPageSearch,
-    InputParticipantsPageDateRange,
-    InputParticipantsPageSearch,
+    InputParticipantMovementsPageEndDateTimeSearched,
+    InputParticipantMovementsPageStartDateTimeSearched,
+    InputParticipantsPageTextSearched,
     ResetParticipant,
     SearchGroups,
     SearchUsers,
-    SelectParticipantMovementsPageOrder,
-    SelectParticipantMovementsPageVisibility,
-    SelectParticipantsPageOrder,
-    SelectParticipantsPageVisibility,
+    SelectParticipantMovementsPageTypeSearched,
+    SelectParticipantMovementsPageVisibilitySearched,
+    SelectParticipantsPageStatusSearched,
+    SelectParticipantsPageVisibilitySearched,
     StartParticipantLoader,
     StartParticipantMovementsPageLoader,
     StartParticipantsPageLoader,
@@ -36,7 +36,6 @@ import {
 import { ParticipantService } from './participant.service'
 import { ParticipantFacade } from './participant.facade'
 import { StateUtil } from '../../../../shared/util-tool/state/state.util'
-import { OrderEnum } from '../../../../shared/util-model/enumeration/order.enum'
 import { Injectable } from '@angular/core'
 import { ElementRequestInformationModel } from '../../../../shared/util-model/model/element-request-information.model'
 import { UserUtil } from '../../../../shared/util-tool/util/user.util'
@@ -45,9 +44,12 @@ import { GroupModel } from '../../../../shared/util-model/model/group.model'
 import { GroupUtil } from '../../../../shared/util-tool/util/group.util'
 import { UserModel } from '../../../../shared/util-model/model/user.model'
 import { ErrorModel } from '../../../../shared/util-model/model/error.model'
-import { UserDto } from '../../../../shared/util-model/dto/user.dto'
-import { MovementModel } from '../../../../shared/util-model/movement.model'
+import { MovementModel } from '../../../../shared/util-model/model/movement.model'
 import { MovementService } from '../../../movement/data/state/movement.service'
+import { PairModel } from '../../../../shared/util-model/model/pair.model'
+import { MovementContentModel } from '../../../../shared/util-model/model/movement-content.model'
+import { MovementUtil } from '../../../../shared/util-tool/util/movement.util'
+import { MetadataService } from '../../../../shared/util-common/state/metadata.service'
 
 const defaultParticipant: ElementRequestInformationModel<ParticipantModel> = {
     element: undefined,
@@ -58,12 +60,9 @@ const defaultParticipantState: ParticipantStateModel = {
     participants: {
         element: undefined,
         params: {
-            order: OrderEnum.ASC,
-            onlyVisible: true,
-            searched: undefined,
-            isPresent: false,
-            startDate: undefined,
-            endDate: undefined,
+            textSearched: undefined,
+            visibilitySearched: undefined,
+            statusSearched: undefined,
         },
         loading: false,
         silentLoading: false,
@@ -72,12 +71,10 @@ const defaultParticipantState: ParticipantStateModel = {
     movements: {
         element: undefined,
         params: {
-            order: OrderEnum.ASC,
-            onlyVisible: true,
-            searched: undefined,
-            type: undefined,
-            startDate: undefined,
-            endDate: undefined,
+            visibilitySearched: undefined,
+            typeSearched: undefined,
+            startDateTimeSearched: undefined,
+            endDateTimeSearched: undefined,
         },
         loading: false,
         silentLoading: false,
@@ -87,7 +84,12 @@ const defaultParticipantState: ParticipantStateModel = {
     _metadata: {
         searchedUsers: [],
         searchedGroups: [],
-        movementTypes: [],
+        presencesStatus: [],
+        visibilities: [
+            { label: '-', value: undefined },
+            { label: 'participants.visible.true', value: true },
+            { label: 'participants.visible.false', value: false },
+        ],
     },
 }
 
@@ -96,15 +98,20 @@ const defaultParticipantState: ParticipantStateModel = {
     defaults: defaultParticipantState,
 } )
 @Injectable()
-export class ParticipantState extends GenericEventElementState<ParticipantStateModel> {
+export class ParticipantState extends GenericEventElementState<ParticipantStateModel> implements NgxsOnInit {
     private readonly participantIcon: string = 'pi pi-users'
 
     public constructor (
         private readonly service: ParticipantService,
+        private readonly metadataService: MetadataService,
         private readonly movementService: MovementService,
         private readonly facade: ParticipantFacade,
     ) {
         super()
+    }
+
+    public ngxsOnInit (): void {
+        this.facade.fetchPresencesStatus()
     }
 
     @Selector()
@@ -128,28 +135,18 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
     }
 
     @Selector()
-    public static participantsPageSearchParam (state: ParticipantStateModel): string | undefined {
-        return state.participants.params.searched
+    public static participantsPageTextSearchedParam (state: ParticipantStateModel): string | undefined {
+        return state.participants.params.textSearched
     }
 
     @Selector()
-    public static participantsPageStartDateParam (state: ParticipantStateModel): string | undefined {
-        return state.participants.params.startDate
+    public static participantsPageStatusSearchedParam (state: ParticipantStateModel): string | undefined {
+        return state.participants.params.statusSearched
     }
 
     @Selector()
-    public static participantsPageEndDateParam (state: ParticipantStateModel): string | undefined {
-        return state.participants.params.endDate
-    }
-
-    @Selector()
-    public static participantsPageOnlyVisibleParam (state: ParticipantStateModel): boolean {
-        return state.participants.params.onlyVisible
-    }
-
-    @Selector()
-    public static participantsPageOrderParam (state: ParticipantStateModel): OrderEnum {
-        return state.participants.params.order
+    public static participantsPageVisibilitySearchedParam (state: ParticipantStateModel): boolean | undefined {
+        return state.participants.params.visibilitySearched
     }
 
     @Selector()
@@ -173,33 +170,23 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
     }
 
     @Selector()
-    public static participantMovementsPageSearchParam (state: ParticipantStateModel): string | undefined {
-        return state.movements.params.searched
+    public static participantMovementsPageMovementTypeSearchedParam (state: ParticipantStateModel): string | undefined {
+        return state.movements.params.typeSearched
     }
 
     @Selector()
-    public static participantMovementsPageMovementTypeParam (state: ParticipantStateModel): string | undefined {
-        return state.movements.params.searched
+    public static participantMovementsPageStartDateTimeSearchedParam (state: ParticipantStateModel): string | undefined {
+        return state.movements.params.startDateTimeSearched
     }
 
     @Selector()
-    public static participantMovementsPageStartDateParam (state: ParticipantStateModel): string | undefined {
-        return state.movements.params.startDate
+    public static participantMovementsPageEndDateTimeSearchedParam (state: ParticipantStateModel): string | undefined {
+        return state.movements.params.endDateTimeSearched
     }
 
     @Selector()
-    public static participantMovementsPageEndDateParam (state: ParticipantStateModel): string | undefined {
-        return state.movements.params.endDate
-    }
-
-    @Selector()
-    public static participantMovementsPageOnlyVisibleParam (state: ParticipantStateModel): boolean {
-        return state.movements.params.onlyVisible
-    }
-
-    @Selector()
-    public static participantMovementsPageOrderParam (state: ParticipantStateModel): OrderEnum {
-        return state.movements.params.order
+    public static participantMovementsPageVisibilitySearchedParam (state: ParticipantStateModel): boolean | undefined {
+        return state.movements.params.visibilitySearched
     }
 
     @Selector()
@@ -213,7 +200,7 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
     }
 
     @Selector()
-    public static searchedUsersMetadata (state: ParticipantStateModel): SelectItem<UserDto>[] {
+    public static searchedUsersMetadata (state: ParticipantStateModel): SelectItem<UserModel>[] {
         return state._metadata.searchedUsers
     }
 
@@ -223,8 +210,35 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
     }
 
     @Selector()
-    public static movementTypesMetadata (state: ParticipantStateModel): SelectItem<string>[] {
-        return state._metadata.movementTypes
+    public static presencesStatusMetadata (state: ParticipantStateModel): SelectItem<string | undefined>[] {
+        return state._metadata.presencesStatus
+    }
+
+    @Selector()
+    public static visibilitiesMetadata (state: ParticipantStateModel): SelectItem<boolean | undefined>[] {
+        return state._metadata.visibilities
+    }
+
+    @Action( FetchParticipantPresencesStatus )
+    public fetchParticipantPresencesStatus (ctx: StateContext<ParticipantStateModel>): Observable<void> {
+        return this.metadataService.getPresencesStatus().pipe(
+            map( (types: SelectItem<string>[]): void => this.fetchParticipantPresencesStatusComplete( ctx, types ) ),
+        )
+    }
+
+    private fetchParticipantPresencesStatusComplete (
+        ctx: StateContext<ParticipantStateModel>,
+        status: SelectItem<string>[],
+    ): void {
+        ctx.patchState( {
+            _metadata: {
+                ...ctx.getState()._metadata,
+                presencesStatus: [
+                    { label: '-', value: undefined },
+                    ...status,
+                ],
+            },
+        } )
     }
 
     @Action( StartParticipantsPageLoader )
@@ -248,8 +262,8 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
     ): Observable<void> {
         return this.service.findParticipants(
             payload.eventId,
-            payload.offset,
-            payload.limit,
+            payload.pageNumber,
+            payload.pageSize,
             ctx.getState().participants.params,
         ).pipe(
             initialize( (): void => this.facade.startParticipantsPageLoader() ),
@@ -274,66 +288,49 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
         } )
     }
 
-    @Action( InputParticipantsPageSearch )
-    public inputParticipantsPageSearch (
+    @Action( InputParticipantsPageTextSearched )
+    public inputParticipantsPageTextSearched (
         ctx: StateContext<ParticipantStateModel>,
-        payload: InputParticipantsPageSearch,
+        payload: InputParticipantsPageTextSearched,
     ): void {
         ctx.patchState( {
             participants: {
                 ...ctx.getState().participants,
                 params: {
                     ...ctx.getState().participants.params,
-                    searched: payload.searched,
+                    textSearched: payload.textSearched,
                 },
             },
         } )
     }
 
-    @Action( InputParticipantsPageDateRange )
-    public inputParticipantsPageDateRange (
+    @Action( SelectParticipantsPageStatusSearched )
+    public selectParticipantsPageStatusSearched (
         ctx: StateContext<ParticipantStateModel>,
-        payload: InputParticipantsPageDateRange,
+        payload: SelectParticipantsPageStatusSearched,
     ): void {
         ctx.patchState( {
             participants: {
                 ...ctx.getState().participants,
                 params: {
                     ...ctx.getState().participants.params,
-                    startDate: payload.start?.toISOString(),
-                    endDate: payload.end?.toISOString(),
+                    statusSearched: payload.statusSearched,
                 },
             },
         } )
     }
 
-    @Action( SelectParticipantsPageVisibility )
+    @Action( SelectParticipantsPageVisibilitySearched )
     public selectParticipantsPageVisibility (
         ctx: StateContext<ParticipantStateModel>,
-        payload: SelectParticipantsPageVisibility,
+        payload: SelectParticipantsPageVisibilitySearched,
     ): void {
         ctx.patchState( {
             participants: {
                 ...ctx.getState().participants,
                 params: {
                     ...ctx.getState().participants.params,
-                    onlyVisible: payload.onlyVisible,
-                },
-            },
-        } )
-    }
-
-    @Action( SelectParticipantsPageOrder )
-    public selectParticipantsPageOrder (
-        ctx: StateContext<ParticipantStateModel>,
-        payload: SelectParticipantsPageOrder,
-    ): void {
-        ctx.patchState( {
-            participants: {
-                ...ctx.getState().participants,
-                params: {
-                    ...ctx.getState().participants.params,
-                    order: payload.order,
+                    visibilitySearched: payload.visibilitySearched,
                 },
             },
         } )
@@ -353,28 +350,6 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
         } )
     }
 
-    @Action( FetchParticipantMovementTypes )
-    public fetchParticipantMovementTypes (
-        ctx: StateContext<ParticipantStateModel>,
-        payload: FetchParticipantMovementTypes,
-    ): Observable<void> {
-        return this.movementService.getAvailableMovementTypes( payload.eventId ).pipe(
-            map( (types: SelectItem<string>[]): void => this.fetchParticipantMovementTypesComplete( ctx, types ) ),
-        )
-    }
-
-    private fetchParticipantMovementTypesComplete (
-        ctx: StateContext<ParticipantStateModel>,
-        movementTypes: SelectItem<string>[],
-    ): void {
-        ctx.patchState( {
-            _metadata: {
-                ...ctx.getState()._metadata,
-                movementTypes: movementTypes,
-            },
-        } )
-    }
-
     @Action( FetchParticipantMovementsPage )
     public fetchParticipantMovementsPage (
         ctx: StateContext<ParticipantStateModel>,
@@ -383,14 +358,15 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
         return this.service.findParticipantMovements(
             payload.eventId,
             payload.id,
-            payload.offset,
-            payload.limit,
+            payload.pageNumber,
+            payload.pageSize,
             ctx.getState().movements.params,
         ).pipe(
             initialize( (): void => this.facade.startParticipantMovementsPageLoader() ),
             finalize( (): void => this.facade.stopParticipantMovementsPageLoader() ),
             map( (movementsPage: PageModel<MovementModel>): void => this.fetchParticipantMovementsPageComplete(
                 ctx,
+                payload.eventId,
                 movementsPage,
             ) ),
             catchError( (error: ErrorModel): Observable<void> => this.movementsPageError( ctx, error ) ),
@@ -399,6 +375,7 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
 
     private fetchParticipantMovementsPageComplete (
         ctx: StateContext<ParticipantStateModel>,
+        eventId: string | undefined,
         movementsPage: PageModel<MovementModel>,
     ): void {
         ctx.patchState( {
@@ -407,68 +384,109 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
                 element: movementsPage,
             },
         } )
+
+        if (movementsPage.content.length > 0) {
+            this.facade.fetchParticipantMovementsContent(
+                movementsPage.content.map( (movement: MovementModel): string => movement.id ),
+                eventId,
+            )
+        }
     }
 
-    @Action( InputParticipantMovementsPageSearch )
-    public inputParticipantMovementsPageSearch (
+    @Action( FetchParticipantMovementsContents )
+    public fetchParticipantMovementsContents (
         ctx: StateContext<ParticipantStateModel>,
-        payload: InputParticipantsPageSearch,
+        payload: FetchParticipantMovementsContents,
+    ): Observable<void> {
+        return this.movementService.findMovementsContent(
+            payload.eventId,
+            payload.movementIds,
+        ).pipe(
+            map( (contents: PairModel<MovementContentModel[]>[]): void => this.fetchParticipantMovementsContentsComplete(
+                ctx,
+                contents,
+            ) ),
+        )
+    }
+
+    private fetchParticipantMovementsContentsComplete (
+        ctx: StateContext<ParticipantStateModel>,
+        contents: PairModel<MovementContentModel[]>[],
     ): void {
+        if (!ctx.getState().movements.element) {
+            return
+        }
+
         ctx.patchState( {
             movements: {
                 ...ctx.getState().movements,
-                params: {
-                    ...ctx.getState().movements.params,
-                    searched: payload.searched,
+                element: {
+                    ...ctx.getState().movements.element!,
+                    content: MovementUtil.rebuildPageWithContent( ctx.getState().movements.element!.content, contents ),
                 },
             },
         } )
     }
 
-    @Action( InputParticipantMovementsPageDateRange )
-    public inputParticipantMovementsPageDateRange (
+    @Action( SelectParticipantMovementsPageTypeSearched )
+    public selectParticipantMovementsPageTypeSearched (
         ctx: StateContext<ParticipantStateModel>,
-        payload: InputParticipantsPageDateRange,
+        payload: SelectParticipantMovementsPageTypeSearched,
     ): void {
         ctx.patchState( {
             movements: {
                 ...ctx.getState().movements,
                 params: {
                     ...ctx.getState().movements.params,
-                    startDate: payload.start?.toISOString(),
-                    endDate: payload.end?.toISOString(),
+                    typeSearched: payload.typeSearched,
                 },
             },
         } )
     }
 
-    @Action( SelectParticipantMovementsPageVisibility )
-    public selectParticipantMovementsPageVisibility (
+    @Action( InputParticipantMovementsPageStartDateTimeSearched )
+    public inputParticipantMovementsPageStartDateTimeSearched (
         ctx: StateContext<ParticipantStateModel>,
-        payload: SelectParticipantsPageVisibility,
+        payload: InputParticipantMovementsPageStartDateTimeSearched,
     ): void {
         ctx.patchState( {
             movements: {
                 ...ctx.getState().movements,
                 params: {
                     ...ctx.getState().movements.params,
-                    onlyVisible: payload.onlyVisible,
+                    startDateTimeSearched: payload.startDateTimeSearched?.toISOString(),
                 },
             },
         } )
     }
 
-    @Action( SelectParticipantMovementsPageOrder )
-    public selectParticipantMovementsPageOrder (
+    @Action( InputParticipantMovementsPageEndDateTimeSearched )
+    public inputParticipantMovementsPageEndDateTimeSearched (
         ctx: StateContext<ParticipantStateModel>,
-        payload: SelectParticipantsPageOrder,
+        payload: InputParticipantMovementsPageEndDateTimeSearched,
     ): void {
         ctx.patchState( {
             movements: {
                 ...ctx.getState().movements,
                 params: {
                     ...ctx.getState().movements.params,
-                    order: payload.order,
+                    endDateTimeSearched: payload.endDateTimeSearched?.toISOString(),
+                },
+            },
+        } )
+    }
+
+    @Action( SelectParticipantMovementsPageVisibilitySearched )
+    public selectParticipantMovementsPageVisibilitySearched (
+        ctx: StateContext<ParticipantStateModel>,
+        payload: SelectParticipantMovementsPageVisibilitySearched,
+    ): void {
+        ctx.patchState( {
+            movements: {
+                ...ctx.getState().movements,
+                params: {
+                    ...ctx.getState().movements.params,
+                    visibilitySearched: payload.visibilitySearched,
                 },
             },
         } )
@@ -516,7 +534,7 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
     ): Observable<void> {
         return this.service.searchUsers(
             payload.eventId,
-            payload.searched,
+            payload.textSearched,
         ).pipe(
             map( (users: UserModel[]): void => this.searchUsersComplete(
                 ctx,
@@ -544,7 +562,7 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
     ): Observable<void> {
         return this.service.searchGroups(
             payload.eventId,
-            payload.searched,
+            payload.textSearched,
         ).pipe(
             map( (groups: GroupModel[]): void => this.searchGroupsComplete(
                 ctx,
@@ -592,8 +610,8 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
     ): void {
         this.buildMessageAndNotify(
             'success',
-            'success.title.participant.create',
-            'success.message.participant.create',
+            'participants.notifications.create.title',
+            'participants.notifications.create.message',
             this.participantIcon,
             this.buildTranslationArgs( participant ),
         )
@@ -620,8 +638,8 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
     ): void {
         this.buildMessageAndNotify(
             'success',
-            'success.title.participant.edit',
-            'success.message.participant.edit',
+            'participants.notifications.edit.title',
+            'participants.notifications.edit.message',
             this.participantIcon,
             this.buildTranslationArgs( participant ),
         )
@@ -651,8 +669,8 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
     ): void {
         this.buildMessageAndNotify(
             'success',
-            'success.title.participant.disable',
-            'success.message.participant.disable',
+            'participants.notifications.disable.title',
+            'participants.notifications.disable.message',
             this.participantIcon,
             this.buildTranslationArgs( participant ),
         )
@@ -679,8 +697,8 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
     ): void {
         this.buildMessageAndNotify(
             'success',
-            'success.title.participant.enable',
-            'success.message.participant.enable',
+            'participants.notifications.enable.title',
+            'participants.notifications.enable.message',
             this.participantIcon,
             this.buildTranslationArgs( participant ),
         )
@@ -707,8 +725,8 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
     ): void {
         this.buildMessageAndNotify(
             'success',
-            'success.title.participant.delete',
-            'success.message.participant.delete',
+            'participants.notifications.delete.title',
+            'participants.notifications.delete.message',
             this.participantIcon,
             this.buildTranslationArgs( participant ),
         )
@@ -724,7 +742,7 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
 
     protected refreshPage (ctx: StateContext<ParticipantStateModel>, eventId: string | undefined): void {
         const page: PageModel<ParticipantModel> | undefined = ctx.getState().participants.element
-        this.facade.fetchParticipantsPage( page?.offset, page?.limit, true, eventId )
+        this.facade.fetchParticipantsPage( page?.pageNumber, page?.pageSize, true, eventId )
     }
 
     protected pageError (ctx: StateContext<ParticipantStateModel>, error: ErrorModel): Observable<void> {

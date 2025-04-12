@@ -17,12 +17,12 @@ export class EventService extends GenericService {
     }
 
     public findEvents (
-        offset: number | undefined,
-        limit: number | undefined,
+        pageNumber: number | undefined,
+        pageSize: number | undefined,
         params: EventPageParamsModel,
     ): Observable<PageModel<EventModel>> {
         return this.http.get<PageModel<EventModel>>(
-            `${this.baseUrl}?${QueryUtil.buildQueryParams( offset, limit, params ).toString()}`,
+            `${this.baseUrl}?${QueryUtil.buildQueryParams( pageNumber, pageSize, params ).toString()}`,
         )
     }
 

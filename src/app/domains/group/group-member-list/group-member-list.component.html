@@ -1,123 +1,117 @@
-@if (group()) {
-    <div class='mb-2'>
-        <app-group-element [element]='group()!' [showActionMenu]='false' [layout]='(isTinyScreen() || isMobile()) ? "grid" : "list"' />
-    </div>
-}
+<div class='mb-2'>
+    @if (facade.groupLoading()) {
+        <p-card>
+            <app-element-skeleton [withIcon]='true' [layout]='registryFacade.tinyScreen() ? "grid" : "list"' />
+        </p-card>
+    } @else {
+        <app-group-element [group]='facade.group()!' [actionMenuVisible]='false' />
+    }
+</div>
+
 
 <app-list (updateRequired)='loadPage($event, contextEventId())'
-          [elementPage$]='elementPage$!'
-          [error$]='error$'
-          [loading$]='loading$'>
+          [elementPage]='facade.groupMembersPage()'
+          [error]='facade.groupMembersPageError()'
+          [loading]='facade.groupMembersPageLoading()'>
     <ng-template appTemplate='search' [formGroup]='form' let-pageEvent>
-        <div class='row'>
-            <div class='col-12 col-sm-6 col-md-12 col-lg-6 search-field'>
-                <label for='search'>{{ 'filter-sort.search' | translate }}</label>
-                <input id='search'
-                       type='text'
-                       pInputText
-                       (keydown.enter)='loadPage(pageEvent, contextEventId())'
-                       [formControl]='searched' />
+        <div class='field'>
+            <label for='text-search-field'>{{ 'participants.search-and-filter.text' | translate }}</label>
+            <input id='text-search-field'
+                   type='text'
+                   fluid
+                   pInputText
+                   (keydown.enter)='loadPage(pageEvent, contextEventId())'
+                   [formControl]='textSearched' />
+        </div>
+        <div class='d-grid search-line g-2'>
+            <div class='field'>
+                <label for='status-search-field'>{{ 'participants.search-and-filter.status' | translate }}</label>
+                <p-select inputId='status-search-field'
+                          fluid
+                          [options]='participantFacade.presencesStatusMetadata()'
+                          optionLabel='label'
+                          optionValue='value'
+                          (onChange)='loadPage(pageEvent, contextEventId())'
+                          [formControl]='statusSearched' />
             </div>
-            <div class='col-12 col-sm-6 col-md-12 col-lg-6 search-field'>
-                <label for='range'>{{ 'filter-sort.date-range' | translate }}</label>
-                <p-date-picker [formControl]='range'
-                               [showButtonBar]='true'
-                               [readonlyInput]='true'
-                               [showTime]='true'
-                               [touchUI]='isMobile()'
-                               id='range'
-                               inputId='range'
-                               selectionMode='range'
-                               fluid />
+            <div class='field'>
+                <label for='visibility-search-field'>{{ 'participants.search-and-filter.visibility' | translate }}</label>
+                <p-select inputId='visibility-search-field'
+                          fluid
+                          [options]='participantFacade.visibilitiesMetadata()'
+                          optionLabel='label'
+                          optionValue='value'
+                          (onChange)='loadPage(pageEvent, contextEventId())'
+                          [formControl]='visibilitySearched' />
             </div>
         </div>
-        <div class='d-flex flex-wrap justify-content-center pt-2'>
-            <div class='pe-1 flex-grow-1'>
-                <p-toggleButton
-                        [formControl]='onlyVisible'
-                        (keydown.enter)='loadPage(pageEvent, contextEventId())'
-                        [onLabel]='"filter-sort.only-visible.false" | translate'
-                        [offLabel]='"filter-sort.only-visible.true" | translate'
-                        onIcon='pi pi-eye-slash'
-                        offIcon='pi pi-eye'
-                        [ariaLabel]='"filter-sort.only-visible.title" | translate' />
-                <p-toggleButton
-                        class='ms-2'
-                        [formControl]='order'
-                        (keydown.enter)='loadPage(pageEvent, contextEventId())'
-                        [onLabel]='"filter-sort.order.DESC" | translate'
-                        [offLabel]='"filter-sort.order.ASC" | translate'
-                        onIcon='pi pi-sort-alpha-down-alt'
-                        offIcon='pi pi-sort-alpha-down'
-                        [ariaLabel]='"filter-sort.order.title" | translate' />
-            </div>
-            <div class='ps-1'>
-                <p-button (click)='loadPage(pageEvent, contextEventId())'
-                          [label]='"filter-sort.apply" | translate'
-                          [outlined]='true'
-                          [rounded]='true'
-                          icon='pi pi-search'
-                          [loading]='(loading$ | async) || (silentLoading$ | async)' />
-            </div>
+        <div class='d-flex justify-content-center'>
+            <p-button (click)='loadPage(pageEvent, contextEventId())'
+                      [label]='"global.actions.search-and-filter" | translate'
+                      [outlined]='true'
+                      [rounded]='true'
+                      icon='pi pi-search'
+                      [loading]='facade.groupMembersPageLoading() || facade.groupMembersPageSilentLoading()' />
         </div>
     </ng-template>
-    <ng-template appTemplate='element' let-layout='layout' let-participant>
-        <app-participant-element [element]='participant' [layout]='layout' [groupIdToRemove]='group()?.id' />
+    <ng-template appTemplate='element' let-participant>
+        <app-participant-element [participant]='participant' [groupIdToRemove]='facade.group()?.id' />
     </ng-template>
     <ng-template appTemplate='creation'>
-        @if (hasEventAuthority(currentUser$ | async, contextEventId(), EventAuthority.REGISTRY_EVENT_GROUP_U)) {
-            <p-button *ngIf='contextEvent$ | async; let event'
-                      (click)='initAddMembersForm()'
+        @if (CurrentUserUtil.hasEventAuthority(registryFacade.currentUser(), contextEventId(), EventAuthority.REGISTRY_EVENT_GROUP_U)) {
+            <p-button (click)='initAddMembersForm()'
                       class='m-1'
                       severity='info'
                       [rounded]='true'
                       [outlined]='true'
-                      [label]='isTinyScreen() || isMobile() ? "" : "group.action.add-members" | translate'
+                      [label]='registryFacade.tinyScreen() ? "" : "groups.actions.add-members" | translate'
                       icon='pi pi-user-plus' />
         }
-        @if (hasEventAuthority(currentUser$ | async, contextEventId(), EventAuthority.REGISTRY_EVENT_PARTICIPANT_C)
-             && hasEventAuthority(currentUser$ | async, contextEventId(), EventAuthority.REGISTRY_EVENT_GROUP_U)) {
-            <p-button *ngIf='contextEvent$ | async; let event'
-                      (click)='initCreateMemberForm()'
+        @if (CurrentUserUtil.hasEventAuthority(registryFacade.currentUser(), contextEventId(), EventAuthority.REGISTRY_EVENT_PARTICIPANT_C)
+             && CurrentUserUtil.hasEventAuthority(registryFacade.currentUser(), contextEventId(), EventAuthority.REGISTRY_EVENT_GROUP_U)) {
+            <p-button (click)='initCreateMemberForm()'
                       class='m-1'
                       severity='success'
                       [rounded]='true'
                       [outlined]='true'
-                      [label]='isTinyScreen() || isMobile() ? "" : "group.action.create-member" | translate'
+                      [label]='registryFacade.tinyScreen() ? "" : "groups.actions.create-member" | translate'
                       icon='pi pi-plus' />
         }
-    </ng-template>
-    <ng-template appTemplate='empty'>
-        <app-message [message]='message' />
     </ng-template>
 </app-list>
 
 <app-layer [(visible)]='addMembersFormLayerOpened'
-           [header]='"group.action.add-members" | translate'>
+           [header]='"groups.actions.add-members" | translate'>
     @if (addMembersParticipants) {
         <form>
             <div class='field'>
-                <label for='participants' appRequired>{{ 'group.form.participants' | translate }}</label>
-                <app-select-elements-field [formControl]='addMembersParticipants'
-                                           [suggestions]='(participantsSuggestion$ | async) ?? []'
-                                           [searchLabel]='"group.form.participant-search" | translate'
-                                           [emptyPlaceholder]='"group.form.no-participant" | translate'
-                                           inputId='participants'
+                <span class='label'
+                      appRequired>{{ 'groups.form.members' | pluralTranslation: addMembersParticipants.value | translate }}</span>
+                <label for='members' class='secondary-color'>{{ 'groups.form.members.search' | translate }}</label>
+                <app-select-elements-field [formControl]='addMembersParticipants' [suggestions]='facade.searchedParticipantsMetadata()'
+                                           [fluid]='true'
+                                           [multiple]='true'
+                                           [selectItemBuilder]='ParticipantUtil.toSelectItem'
+                                           [selectionLabel]='"groups.form.members.selected" | pluralTranslation: addMembersParticipants.value |
+                                       translate'
+                                           [emptyMessage]='"groups.form.members.empty" | translate'
+                                           inputId='members'
                                            (handleSearch)='handleSearch($event.query)' />
-                <app-form-field-error [control]='addMembersParticipants'
+                <app-form-field-error [errors]='addMembersParticipants.errors'
+                                      [invalid]='FormUtil.invalid(addMembersParticipants)'
                                       translationPrefix='group.form.error.add-participants' />
             </div>
 
             <div class='d-flex mt-2 justify-content-center'>
                 <p-button
                         (click)='addMembersFormLayerOpened = false'
-                        [label]='"cancel" | translate'
+                        [label]='"global.actions.cancel" | translate'
                         [outlined]='true'
                         [rounded]='true' />
                 <p-button
                         class='ms-2'
                         (click)='addMembers()'
-                        [label]='"add" | translate'
+                        [label]='"groups.actions.add" | translate'
                         [rounded]='true'
                         icon='pi pi-user-plus'
                         severity='success' />
@@ -127,7 +121,6 @@
 </app-layer>
 
 <app-layer [(visible)]='createMemberFormLayerOpened'
-           [header]='"group.action.create-member" | translate'>
-    <app-participant-form [showTitle]='false' [defaultGroup]='group()' [redirect]='false'
-                          (handleSubmit)='handleParticipantCreation()' />
+           [header]='"groups.actions.create-member" | translate'>
+    <app-participant-form [defaultGroup]='facade.group()' [showTitle]='false' [redirect]='false' />
 </app-layer>

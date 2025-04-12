@@ -1,6 +1,8 @@
+import { CustomDatetimeModel } from '../../../../shared/util-model/model/custom-datetime.model'
+
 export interface GroupDto {
     name: string
-    begin: Date | undefined
-    end: Date | undefined
+    startAvailability: CustomDatetimeModel | undefined
+    endAvailability: CustomDatetimeModel | undefined
     members: string[]
 }

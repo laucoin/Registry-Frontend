@@ -1,28 +1,25 @@
-import { Injectable } from '@angular/core'
+import { computed, Injectable, Signal } from '@angular/core'
 import { Observable } from 'rxjs'
 import { PageModel } from '../../../../shared/util-model/model/page.model'
 import { GenericEventElementFacade } from '../../../../shared/util-tool/facade/generic-event-element.facade'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
-import { FormUtil } from '../../../../shared/util-tool/util/form.util'
-import { OrderEnum } from '../../../../shared/util-model/enumeration/order.enum'
 import { ofActionSuccessful } from '@ngxs/store'
 import { EventProfileModel } from '../../../../shared/util-model/model/event-profile.model'
 import { EventProfileState } from './event-profile.state'
 import {
     BlockEventProfile,
     CreateEventProfiles,
-    CreateSupportEventProfile,
     DeleteEventProfile,
     FetchAssignableEventProfileRoles,
-    FetchAssignableEventProfileStatus,
     FetchEventProfile,
     FetchEventProfilesPage,
-    InputEventProfilesPageDateRange,
-    InputEventProfilesPageSearch,
+    FetchProfileStatus,
+    InputEventProfilesPageDateTimeSearched,
+    InputEventProfilesPageTextSearched,
+    ResetEventProfile,
     SearchUsers,
-    SelectEventProfilesPageOrder,
-    SelectEventProfilesPageStatus,
-    SelectEventProfilesPageVisibility,
+    SelectEventProfilesPageAvailabilitySearched,
+    SelectEventProfilesPageStatusSearched,
     StartEventProfileLoader,
     StartEventProfilesPageLoader,
     StopEventProfileLoader,
@@ -33,66 +30,77 @@ import {
 import { EventProfileDto } from '../dto/event-profile.dto'
 import { EventProfilesDto } from '../dto/event-profiles.dto'
 import { UserModel } from '../../../../shared/util-model/model/user.model'
+import { DateUtil } from '../../../../shared/util-tool/util/date.util'
 
 @Injectable()
 export class EventProfileFacade extends GenericEventElementFacade {
-    public get eventProfilesPage (): Observable<PageModel<EventProfileModel> | undefined> {
-        return this.ngStore.select( EventProfileState.eventProfilesPage )
+    public get eventProfilesPage (): Signal<PageModel<EventProfileModel> | undefined> {
+        return this.ngStore.selectSignal( EventProfileState.eventProfilesPage )
     }
 
-    public get eventProfilesPageLoading (): Observable<boolean> {
-        return this.ngStore.select( EventProfileState.eventProfilesPageLoading )
+    public get eventProfilesPageLoading (): Signal<boolean> {
+        return this.ngStore.selectSignal( EventProfileState.eventProfilesPageLoading )
     }
 
-    public get eventProfilesPageSilentLoading (): Observable<boolean> {
-        return this.ngStore.select( EventProfileState.eventProfilesPageSilentLoading )
+    public get eventProfilesPageSilentLoading (): Signal<boolean> {
+        return this.ngStore.selectSignal( EventProfileState.eventProfilesPageSilentLoading )
     }
 
-    public get eventProfilesPageError (): Observable<ToastMessageOptions | undefined> {
-        return this.ngStore.select( EventProfileState.eventProfilesPageError )
+    public get eventProfilesPageError (): Signal<ToastMessageOptions | undefined> {
+        return this.ngStore.selectSignal( EventProfileState.eventProfilesPageError )
     }
 
-    public get actualEventProfilesPageSearchParam (): string | undefined {
-        return this.ngStore.selectSnapshot( EventProfileState.eventProfilesPageSearchParam )
+    public get eventProfilesPageTextSearchedParam (): Signal<string | undefined> {
+        return this.ngStore.selectSignal( EventProfileState.eventProfilesPageTextSearchedParam )
     }
 
-    public get actualEventProfilesPageDateRangeParam (): Date[] | undefined {
-        return FormUtil.buildDateRange(
-            this.ngStore.selectSnapshot( EventProfileState.eventProfilesPageStartAccessParam ),
-            this.ngStore.selectSnapshot( EventProfileState.eventProfilesPageEndAccessParam ),
+    public get eventProfilesPageDateTimeSearchedParam (): Signal<Date | undefined> {
+        return computed( (): Date | undefined =>
+            DateUtil.buildDate( this.ngStore.selectSignal( EventProfileState.eventProfilesPageDateTimeSearchedParam )() ),
         )
     }
 
-    public get actualEventProfilesPageStatusParam (): string | undefined {
-        return this.ngStore.selectSnapshot( EventProfileState.eventProfilesPageStatusParam )
+    public get eventProfilesPageAvailabilitySearchedParam (): Signal<boolean | undefined> {
+        return this.ngStore.selectSignal( EventProfileState.eventProfilesPageAvailabilitySearchedParam )
     }
 
-    public get actualEventProfilesPageOnlyVisibleParam (): boolean {
-        return this.ngStore.selectSnapshot( EventProfileState.eventProfilesPageOnlyVisibleParam )
+    public get eventProfilesPageStatusSearchedParam (): Signal<string | undefined> {
+        return this.ngStore.selectSignal( EventProfileState.eventProfilesPageStatusSearchedParam )
     }
 
-    public get actualEventProfilesPageOrderParam (): OrderEnum {
-        return this.ngStore.selectSnapshot( EventProfileState.eventProfilesPageOrderParam )
+    public get eventProfile (): Signal<EventProfileModel | undefined> {
+        return this.ngStore.selectSignal( EventProfileState.eventProfile )
     }
 
-    public get eventProfile (): Observable<EventProfileModel | undefined> {
+    public get eventProfile$ (): Observable<EventProfileModel | undefined> {
         return this.ngStore.select( EventProfileState.eventProfile )
     }
 
-    public get eventProfileLoading (): Observable<boolean> {
-        return this.ngStore.select( EventProfileState.eventProfileLoading )
+    public get eventProfileLoading (): Signal<boolean> {
+        return computed( (): boolean =>
+            this.ngStore.selectSignal( EventProfileState.eventProfileLoading )() || this.registryFacade.contextEventLoading(),
+        )
     }
 
-    public get searchedUsersMetadata (): Observable<SelectItem<UserModel>[]> {
-        return this.ngStore.select( EventProfileState.searchedUsersMetadata )
+    public get searchedUsersMetadata (): Signal<SelectItem<UserModel>[]> {
+        return this.ngStore.selectSignal( EventProfileState.searchedUsersMetadata )
     }
 
-    public get eventProfileAssignableRolesMetadata (): Observable<SelectItem<string>[]> {
-        return this.ngStore.select( EventProfileState.eventProfileAssignableRolesMetadata )
+    public get eventProfileAssignableRolesMetadata (): Signal<SelectItem<string>[]> {
+        return this.ngStore.selectSignal( EventProfileState.eventProfileAssignableRolesMetadata )
     }
 
-    public get eventProfilesStatusMetadata (): Observable<SelectItem<string>[]> {
-        return this.ngStore.select( EventProfileState.eventProfilesStatusMetadata )
+    public get eventProfilesStatusMetadata (): Signal<SelectItem<string | undefined>[]> {
+        return this.ngStore.selectSignal( EventProfileState.eventProfilesStatusMetadata )
+    }
+
+    public get eventProfilesAvailabilitiesMetadata (): Signal<SelectItem<boolean | undefined>[]> {
+        return computed( (): SelectItem<boolean | undefined>[] =>
+            this.ngStore.selectSignal( EventProfileState.eventProfilesAvailabilitiesMetadata )().map( (status: SelectItem<boolean | undefined>): SelectItem<boolean | undefined> => ({
+                ...status,
+                label: this.translateService.instant( status.label! ),
+            }) ),
+        )
     }
 
     public startEventProfilesPageLoader (): void {
@@ -104,32 +112,35 @@ export class EventProfileFacade extends GenericEventElementFacade {
     }
 
     public fetchEventProfilesPage (
-        offset: number | undefined,
-        limit: number | undefined,
+        pageNumber: number | undefined,
+        pageSize: number | undefined,
         force: boolean,
         eventId: string | undefined = this.actualSelectedEventId,
     ): void {
-        this.ngStore.dispatch( new FetchEventProfilesPage( eventId, offset, limit, force ) )
+        this.ngStore.dispatch( new FetchEventProfilesPage( eventId, pageNumber, pageSize, force ) )
     }
 
-    public inputEventProfilesPageSearch (searched: string | undefined): void {
-        this.ngStore.dispatch( new InputEventProfilesPageSearch( searched ) )
-    }
+    public inputPageSearchParameters (
+        textSearched: string | undefined,
+        dateTimeSearched: Date | undefined,
+        statusSearched: string | undefined,
+        availabilitySearched: boolean | undefined,
+    ): void {
+        if (textSearched !== this.eventProfilesPageTextSearchedParam()) {
+            this.ngStore.dispatch( new InputEventProfilesPageTextSearched( textSearched ) )
+        }
 
-    public inputEventProfilesPageDateRange (range: Date[] | undefined): void {
-        this.ngStore.dispatch( new InputEventProfilesPageDateRange( range?.[0], range?.[1] ) )
-    }
+        if (dateTimeSearched !== this.eventProfilesPageDateTimeSearchedParam()) {
+            this.ngStore.dispatch( new InputEventProfilesPageDateTimeSearched( dateTimeSearched ) )
+        }
 
-    public selectEventProfilesPageStatus (status: string | undefined): void {
-        this.ngStore.dispatch( new SelectEventProfilesPageStatus( status ) )
-    }
+        if (statusSearched !== this.eventProfilesPageStatusSearchedParam()) {
+            this.ngStore.dispatch( new SelectEventProfilesPageStatusSearched( statusSearched ) )
+        }
 
-    public selectEventProfilesPageVisibility (onlyVisible: boolean): void {
-        this.ngStore.dispatch( new SelectEventProfilesPageVisibility( onlyVisible ) )
-    }
-
-    public selectEventProfilesPageOrder (order: OrderEnum): void {
-        this.ngStore.dispatch( new SelectEventProfilesPageOrder( order ) )
+        if (availabilitySearched !== this.eventProfilesPageAvailabilitySearchedParam()) {
+            this.ngStore.dispatch( new SelectEventProfilesPageAvailabilitySearched( availabilitySearched ) )
+        }
     }
 
     public startEventProfileLoader (): void {
@@ -144,19 +155,25 @@ export class EventProfileFacade extends GenericEventElementFacade {
         this.ngStore.dispatch( new FetchEventProfile( eventId, id ) )
     }
 
+    public resetEventProfile (): void {
+        this.ngStore.dispatch( ResetEventProfile )
+    }
+
     public searchUsers (
-        searched: string | undefined = undefined,
+        textSearched: string | undefined = undefined,
         eventId: string | undefined = this.actualSelectedEventId,
     ): void {
-        this.ngStore.dispatch( new SearchUsers( eventId, searched ) )
+        this.ngStore.dispatch( new SearchUsers( eventId, textSearched ) )
     }
 
     public fetchAssignableRoles (eventId: string | undefined = this.actualSelectedEventId): void {
         this.ngStore.dispatch( new FetchAssignableEventProfileRoles( eventId ) )
     }
 
-    public fetchAvailableStatus (eventId: string | undefined = this.actualSelectedEventId): void {
-        this.ngStore.dispatch( new FetchAssignableEventProfileStatus( eventId ) )
+    public fetchProfileStatus (): void {
+        if (this.eventProfilesStatusMetadata().length === 0) {
+            this.ngStore.dispatch( FetchProfileStatus )
+        }
     }
 
     public createEventProfiles (
@@ -165,10 +182,6 @@ export class EventProfileFacade extends GenericEventElementFacade {
     ): Observable<CreateEventProfiles> {
         this.ngStore.dispatch( new CreateEventProfiles( eventId, eventProfiles ) )
         return this.actions$.pipe( ofActionSuccessful( CreateEventProfiles ) )
-    }
-
-    public createSupportEventProfile (eventId: string | undefined = this.actualSelectedEventId): void {
-        this.ngStore.dispatch( new CreateSupportEventProfile( eventId ) )
     }
 
     public updateEventProfile (

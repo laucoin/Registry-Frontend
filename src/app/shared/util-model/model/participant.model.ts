@@ -1,6 +1,8 @@
 import { GenericEventModel } from './generic-event.model'
 import { GroupModel } from './group.model'
 import { UserModel } from './user.model'
+import { CustomDatetimeModel } from './custom-datetime.model'
+import { SelectItem } from 'primeng/api'
 
 export interface ParticipantModel extends GenericEventModel {
     firstName: string
@@ -8,8 +10,9 @@ export interface ParticipantModel extends GenericEventModel {
     birthday: string
     major: boolean
     groups: GroupModel[]
-    begin: Date | undefined
-    end: Date | undefined
+    status: SelectItem<string>
+    startAvailability: CustomDatetimeModel | undefined
+    endAvailability: CustomDatetimeModel | undefined
     user: UserModel | undefined
     purged: boolean
 }

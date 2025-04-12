@@ -1,3 +1,3 @@
 export enum UserRoutesEnum {
-    EDIT = ':id/edit'
+    EDIT = ':userId/edit'
 }

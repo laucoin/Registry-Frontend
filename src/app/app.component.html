@@ -1,71 +1,75 @@
-<main class='main'>
-    <p-blockUI [blocked]='loading() || GenericUtil.nonNull(error())'>
-        @if (loading()) {
-            <p-progressSpinner class='m-auto'></p-progressSpinner>
-        } @else {
-            <div class='m-auto'>
-                <app-message [message]='error()'>
-                    <p-button
-                            (click)='logout()'
-                            [label]="'menu.attempt-to-sign-out' | translate"
-                            [rounded]='true'
-                            icon='pi pi-sign-out'
-                            severity='danger' />
-                </app-message>
+<p-blockUI [blocked]='registryFacade.globalLoading() || GenericUtil.nonNull(registryFacade.globalError())'>
+    @if (registryFacade.globalLoading()) {
+        <p-progressSpinner class='m-auto'></p-progressSpinner>
+    } @else {
+        <div class='m-auto'>
+            <app-message [message]='registryFacade.globalError()'>
+                <p-button
+                        (click)='logout()'
+                        [label]="'global.actions.sign-out' | translate"
+                        [rounded]='true'
+                        icon='pi pi-sign-out'
+                        severity='danger' />
+            </app-message>
+        </div>
+    }
+</p-blockUI>
+@if (GenericUtil.isNull(registryFacade.globalError())) {
+    <p-confirmDialog [breakpoints]='breakPoint' />
+    <p-toast [breakpoints]="{ '576px': { width: '95%', right: '2.5%', left: '2.5%' } }">
+        <ng-template #message let-message>
+            <div class='d-flex flex-column align-items-start full-w'>
+                @if (message.summary) {
+                    <div class='toast-title'>
+                        {{ message.summary | translate }}
+                    </div>
+                }
+                @if (message.detail) {
+                    <div class='toast-content'>
+                        {{ message.detail | translate: message.data }}
+                    </div>
+                }
             </div>
-        }
-    </p-blockUI>
-    @if (GenericUtil.isNull(error())) {
-        <p-confirmDialog [breakpoints]='breakPoint' />
-        <p-toast [breakpoints]="{ '576px': { width: '95%', right: '2.5%', left: '2.5%' } }">
-            <ng-template #message let-message>
-                <div class='d-flex flex-column align-items-start full-w'>
-                    @if (message.summary) {
-                        <div class='toast-title'>
-                            {{ message.summary | translate }}
-                        </div>
-                    }
-                    @if (message.detail) {
-                        <div class='toast-content'>
-                            {{ message.detail | translate: message.data }}
-                        </div>
-                    }
-                </div>
-            </ng-template>
-        </p-toast>
-        <app-side-bar>
-            <router-outlet />
+        </ng-template>
+    </p-toast>
+    <app-side-bar>
+        <main class='main'>
+            <div class='container pt-3 pb-3'>
+                <router-outlet />
+            </div>
+        </main>
+        <footer>
             <p class='d-flex flex-wrap justify-content-center secondary-color'>
-                © Luc AUCOIN {{ currentYear() }} | 
-                <span class='pointer legal'
+                © Luc AUCOIN {{ currentYear }} | 
+                <span class='pointer hover-underline'
                       tabindex='1'
                       (click)='showInformationDialog = true'
                       (keydown.enter)='showInformationDialog = true'>
-                    {{ 'legal.information.name' | translate }}
+                    {{ 'global.legal.information.name' | translate }}
                 </span> | 
-                <span class='pointer legal'
+                <span class='pointer hover-underline'
                       tabindex='2'
                       (click)='showTermsOfUserDialog = true'
                       (keydown.enter)='showTermsOfUserDialog = true'>
-                    {{ 'legal.terms-of-use.name' | translate }}
+                    {{ 'global.legal.terms-of-use.name' | translate }}
                 </span>
             </p>
-        </app-side-bar>
-    }
-</main>
+        </footer>
+    </app-side-bar>
+}
 
 <p-dialog
         class='text-align-justify'
         [breakpoints]='breakPoint'
-        [header]='"legal.information.about" | translate'
+        [header]='"global.legal.information.about" | translate'
         [(visible)]='showInformationDialog'
         [modal]='true'
         [draggable]='false'
         [resizable]='false'>
-    <p>{{ 'legal.information.summary' | translate }}</p>
+    <p>{{ 'global.legal.information.summary' | translate }}</p>
     <p-divider />
-    <h4>{{ 'legal.information.who.title' | translate }}</h4>
-    <p>{{ 'legal.information.who.content' | translate }}</p>
+    <h4>{{ 'global.legal.information.who.title' | translate }}</h4>
+    <p>{{ 'global.legal.information.who.content' | translate }}</p>
     <p class='d-flex flex-wrap justify-content-center secondary-color'>
         <a href='https://laucoin.fr'
            target='_blank'
@@ -78,44 +82,44 @@
 
 <p-dialog
         class='text-align-justify'
-        [header]='"legal.terms-of-use.name" | translate'
+        [header]='"global.legal.terms-of-use.name" | translate'
         [breakpoints]='breakPoint'
         [(visible)]='showTermsOfUserDialog'
         [modal]='true'
         [draggable]='false'
         [resizable]='false'>
-    <p>{{ 'legal.terms-of-use.summary' | translate: { url: currentUrl() } }}</p>
+    <p>{{ 'global.legal.terms-of-use.summary' | translate: { url: currentHost } }}</p>
     <p-divider />
-    <h4>{{ 'legal.terms-of-use.service.title' | translate }}</h4>
-    <p>{{ 'legal.terms-of-use.service.content' | translate }}</p>
+    <h4>{{ 'global.legal.terms-of-use.service.title' | translate }}</h4>
+    <p>{{ 'global.legal.terms-of-use.service.content' | translate }}</p>
     <p-divider />
-    <h4>{{ 'legal.terms-of-use.liability.title' | translate }}</h4>
-    <h5>{{ 'legal.terms-of-use.liability.subtitle1' | translate }}</h5>
-    <p [innerHTML]='"legal.terms-of-use.liability.content1" | translate'></p>
-    <h5>{{ 'legal.terms-of-use.liability.subtitle2' | translate }}</h5>
-    <p [innerHTML]='"legal.terms-of-use.liability.content2" | translate'></p>
-    <h5>{{ 'legal.terms-of-use.liability.subtitle3' | translate }}</h5>
-    <p [innerHTML]='"legal.terms-of-use.liability.content3" | translate'></p>
+    <h4>{{ 'global.legal.terms-of-use.liability.title' | translate }}</h4>
+    <h5>{{ 'global.legal.terms-of-use.liability.subtitle1' | translate }}</h5>
+    <p [innerHTML]='"global.legal.terms-of-use.liability.content1" | translate'></p>
+    <h5>{{ 'global.legal.terms-of-use.liability.subtitle2' | translate }}</h5>
+    <p [innerHTML]='"global.legal.terms-of-use.liability.content2" | translate'></p>
+    <h5>{{ 'global.legal.terms-of-use.liability.subtitle3' | translate }}</h5>
+    <p [innerHTML]='"global.legal.terms-of-use.liability.content3" | translate'></p>
     <p-divider />
-    <h4>{{ 'legal.terms-of-use.data-usage.title' | translate }}</h4>
-    <p [innerHTML]='"legal.terms-of-use.data-usage.content" | translate'></p>
+    <h4>{{ 'global.legal.terms-of-use.data-usage.title' | translate }}</h4>
+    <p [innerHTML]='"global.legal.terms-of-use.data-usage.content" | translate'></p>
     <p-divider />
-    <h4>{{ 'legal.terms-of-use.intellectual-ownership.title' | translate }}</h4>
+    <h4>{{ 'global.legal.terms-of-use.intellectual-ownership.title' | translate }}</h4>
     <p>
-        {{ 'legal.terms-of-use.intellectual-ownership.content' | translate }}
+        {{ 'global.legal.terms-of-use.intellectual-ownership.content' | translate }}
     </p>
     <p-divider />
-    <h4>{{ 'legal.terms-of-use.liability-limitation.title' | translate }}</h4>
-    <p>{{ 'legal.terms-of-use.liability-limitation.content' | translate }}</p>
+    <h4>{{ 'global.legal.terms-of-use.liability-pageSizeation.title' | translate }}</h4>
+    <p>{{ 'global.legal.terms-of-use.liability-pageSizeation.content' | translate }}</p>
     <p-divider />
-    <h4>{{ 'legal.terms-of-use.cancellation.title' | translate }}</h4>
-    <p>{{ 'legal.terms-of-use.cancellation.content' | translate }}</p>
+    <h4>{{ 'global.legal.terms-of-use.cancellation.title' | translate }}</h4>
+    <p>{{ 'global.legal.terms-of-use.cancellation.content' | translate }}</p>
     <p-divider />
-    <h4>{{ 'legal.terms-of-use.terms-of-use-modification.title' | translate }}</h4>
-    <p>{{ 'legal.terms-of-use.terms-of-use-modification.content' | translate }}</p>
+    <h4>{{ 'global.legal.terms-of-use.terms-of-use-modification.title' | translate }}</h4>
+    <p>{{ 'global.legal.terms-of-use.terms-of-use-modification.content' | translate }}</p>
     <p-divider />
-    <h4>{{ 'legal.terms-of-use.contact.title' | translate }}</h4>
-    <p [innerHTML]='"legal.terms-of-use.contact.content" | translate'></p>
+    <h4>{{ 'global.legal.terms-of-use.contact.title' | translate }}</h4>
+    <p [innerHTML]='"global.legal.terms-of-use.contact.content" | translate'></p>
     <p-divider />
-    <p [innerHTML]='"legal.terms-of-use.conclusion" | translate'></p>
+    <p [innerHTML]='"global.legal.terms-of-use.conclusion" | translate'></p>
 </p-dialog>

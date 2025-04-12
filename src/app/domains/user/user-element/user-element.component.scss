@@ -3,19 +3,36 @@
     font-weight: 700;
 }
 
-.user-name:hover {
-    text-decoration: underline;
+.user-info,
+.status,
+.role,
+.birthday {
+    flex-basis: 100%;
 }
 
-.user-info {
-    flex-basis: 40%;
+@media (min-width: 576px) {
+    .user-info,
+    .status {
+        flex-basis: 100%;
+    }
+
+    .role,
+    .birthday {
+        flex-basis: 50%;
+    }
 }
 
-.last-login {
-    flex-basis: 40%;
-    font-size:  14px;
-}
+@media (min-width: 1140px) {
+    .user-info,
+    .role {
+        flex-basis: 30%;
+    }
 
-.role {
-    flex-basis: 20%;
+    .birthday {
+        flex-basis: 25%;
+    }
+
+    .status {
+        flex-basis: 15%;
+    }
 }

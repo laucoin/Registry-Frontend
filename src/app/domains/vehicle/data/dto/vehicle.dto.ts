@@ -1,7 +1,9 @@
+import { CustomDatetimeModel } from '../../../../shared/util-model/model/custom-datetime.model'
+
 export interface VehicleDto {
-    registration: string
+    licensePlate: string
     brand: string
     model: string
-    begin: Date | undefined
-    end: Date | undefined
+    startAvailability: CustomDatetimeModel | undefined
+    endAvailability: CustomDatetimeModel | undefined
 }

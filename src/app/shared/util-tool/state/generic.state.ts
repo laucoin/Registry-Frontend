@@ -4,13 +4,14 @@ import { RegistryFacade } from '../../util-common/state/registry.facade'
 import { inject } from '@angular/core'
 import { StateUtil } from './state.util'
 import { PageRequestInformationModel } from '../../util-model/model/page-request-information.model'
-import { PageParamsModel } from '../../util-model/model/page-params.model'
 import { GenericModel } from '../../util-model/model/generic.model'
+import { TranslateService } from '@ngx-translate/core'
 
 export abstract class GenericState {
     protected readonly registryFacade: RegistryFacade = inject( RegistryFacade )
+    protected readonly translateService: TranslateService = inject( TranslateService )
 
-    protected buildErrorMessage<P extends PageParamsModel, M extends GenericModel> (
+    protected buildErrorMessage<P, M extends GenericModel> (
         requestInformation: PageRequestInformationModel<P, M>,
         error: ErrorModel,
     ): PageRequestInformationModel<P, M> {

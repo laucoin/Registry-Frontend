@@ -1,42 +1,37 @@
-<app-element-card [element]='element'
-                  [actions]='actions'
-                  [showActionMenu]='showActionMenu'
+<app-element-card [element]='user()'
+                  [actions]='actions()'
+                  [actionMenuVisible]='actionMenuVisible()'
                   (action)='handleAction($event)'
-                  [layout]='layout'
                   icon='pi pi-user'>
-    <div [class.flex-lg-row]='layout === "list"' [class.flex-column]='layout === "grid"'
-         class='d-flex flex-wrap justify-content-between align-items-center'>
-        <div class='d-flex flex-column justify-content-center user-info p-1'>
-            <div class='pointer user-name'
-                 tabindex='1'
-                 (click)='copied()'
-                 (keydown.enter)='copied()'
-                 [cdkCopyToClipboard]='element.email'>
-                {{ (element.firstName | titlecase) + ' ' + (element.lastName | uppercase) }}
+    <div class='element-card'>
+        <div class='user-info'>
+            <div class='user-name d-flex'
+                 [class.justify-content-center]='registryFacade.tinyScreen()'>
+                <span class='pointer hover-underline'
+                      tabindex='1'
+                      (click)='copied()'
+                      (keydown.enter)='copied()'
+                      [cdkCopyToClipboard]='user().email'>
+                    {{ (user().firstName | titlecase) + ' ' + (user().lastName | uppercase) }}
+                </span>
             </div>
-            @if (element.birthday) {
-                <div class='d-flex align-content-center'>
-                    <i class='pi pi-gift'></i>
-                    <span class='ms-2'>{{ element.birthday | date: ('datetime.format.date' | translate) }}</span>
-                </div>
-            }
         </div>
-        @if (element.lastLogin) {
-            <div class='secondary-color last-login p-1'>
-                <i>
-                    {{
-                        'datetime.last-login' | translate
-                            : {
-                                date: element.lastLogin | date: ('datetime.format.date' | translate),
-                                time: element.lastLogin | date: ('datetime.format.time' | translate),
-                            }
-                    }}
-                </i>
+        @if (GenericUtil.nonNull(user().birthday)) {
+            <div class='birthday d-flex align-content-center' [class.justify-content-center]='registryFacade.tinyScreen()'>
+                <i class='pi pi-gift'></i>
+                <span class='ms-2'>{{ user().birthday | dateFormat: 'date' }}</span>
             </div>
         }
-        @if (element.role) {
-            <div class='role p-1'>
-                <p-tag severity='info' [value]='element.role.label' />
+        @if (GenericUtil.nonNull(user().role)) {
+            <div class='role d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
+                <app-severity-tag [value]='user().role!.label!' />
+            </div>
+        }
+        @if (GenericUtil.nonNull(user().visible)) {
+            <div class='status d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
+                <app-severity-tag
+                        [severity]='user().visible ? "success" : "danger"'
+                        [value]='user() | visibilityName: "users" | translate' />
             </div>
         }
     </div>

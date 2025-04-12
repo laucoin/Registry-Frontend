@@ -1,37 +1,5 @@
-@if (control.invalid && (control.dirty || !control.untouched)) {
+@if (errorText()) {
     <div class='error-message mt-1'>
-        @switch (true) {
-            @case (control.hasError('min')) {
-                <p-message severity='error' variant='simple'>{{ buildText("min") }}</p-message>
-            }
-            @case (control.hasError('max')) {
-                <p-message severity='error' variant='simple'>{{ buildText("max") }}</p-message>
-            }
-            @case (control.hasError('required')) {
-                <p-message severity='error' variant='simple'>{{ buildText("required") }}</p-message>
-            }
-            @case (control.hasError('blank')) {
-                <p-message severity='error' variant='simple'>{{ buildText("blank") }}</p-message>
-            }
-            @case (control.hasError('email')) {
-                <p-message severity='error' variant='simple'>{{ buildText("email") }}</p-message>
-            }
-            @case (control.hasError('minlength')) {
-                <p-message severity='error' variant='simple'>{{ buildText("minlength") }}</p-message>
-            }
-            @case (control.hasError('maxlength')) {
-                <p-message severity='error' variant='simple'>{{ buildText("maxlength") }}</p-message>
-            }
-            @case (control.hasError('pattern')) {
-                <p-message severity='error' variant='simple'>{{ buildText("pattern") }}</p-message>
-            }
-            @case (control.hasError('minDate')) {
-                <p-message severity='error' variant='simple'>{{ buildText("minDate") }}</p-message>
-            }
-            @case (control.hasError('maxDate')) {
-                <p-message severity='error' variant='simple'>{{ buildText("maxDate") }}</p-message>
-            }
-        }
-        <ng-content />
+        <p-message severity='error' variant='simple'>{{ errorText() }}</p-message>
     </div>
 }

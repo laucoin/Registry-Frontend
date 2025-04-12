@@ -1,51 +1,67 @@
-<app-element-card [element]='element'
-                  [actions]='actions'
+<app-element-card [element]='event()'
+                  [actionMenuVisible]='actionMenuVisible()'
+                  [actions]='actions()'
                   (action)='handleAction($event)'
-                  [layout]='layout'
                   icon='pi pi-calendar'>
-    <div [class.flex-lg-row]='layout === "list"' [class.flex-column]='layout === "grid"'
-         class='d-flex flex-wrap justify-content-between align-items-center'>
-        <div class='info d-flex flex-column justify-content-center p-1' [class.align-items-center]='layout === "grid"'>
-            <div>
-                <span [class.strikethrough]='element.end | isPast' class='event-name'>
-                    {{ element.name }}
-                </span>
-                @if (element.end | isPast) {
-                    <i> ({{ 'finished' | translate }})</i>
-                }
+    <div class='element-card'>
+        <div class='event-info d-flex flex-column justify-content-center'>
+            <div class='event-name d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
+                {{ event().name }}
             </div>
-            @if (element.begin) {
-                <div class='d-flex mt-1 align-items-center'>
+            @if (event().begin) {
+                <div class='d-flex mt-1 align-items-center' [class.justify-content-center]='registryFacade.tinyScreen()'>
                     <i class='pi pi-play-circle'></i>
-                    <span class='ms-2'>
-                        {{
-                            'datetime.datetime' | translate: {
-                                date: element.begin | date: ('datetime.format.date' | translate),
-                                time: element.begin | date: ('datetime.format.time' | translate),
-                            }
-                        }}
-                    </span>
+                    <span class='ms-1'>{{ event().begin | customDateFormat }}</span>
                 </div>
             }
-            @if (element.end) {
-                <div class='d-flex align-items-center'>
+            @if (event().end) {
+                <div class='d-flex align-items-center'
+                     [class.justify-content-center]='registryFacade.tinyScreen()'
+                     [class.mt-1]='!event().begin'>
                     <i class='pi pi-stop-circle'></i>
-                    <span class='ms-2'>
-                    {{
-                            'datetime.datetime' | translate: {
-                                date: element.end | date: ('datetime.format.date' | translate),
-                                time: element.end | date: ('datetime.format.time' | translate),
-                            }
-                        }}
-                    </span>
+                    <span class='ms-1'>{{ event().end | customDateFormat }}</span>
                 </div>
             }
         </div>
-        <div class='options d-flex flex-wrap p-1' [class.justify-content-center]='layout === "grid"'>
-            <p-chip *ngFor='let option of element.options; let i = index'
-                    [class.ms-1]='i > 0'
-                    [icon]='option.value | optionIcon'
-                    [label]='option.label' />
+        <div class='options d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
+            @let nbOfOptions = event().options.length;
+            <app-severity-tag
+                    (click)='nbOfOptions > 1 ? layerOpened = true : undefined'
+                    (keydown.enter)='nbOfOptions > 1 ? layerOpened = true : undefined'>
+                <span [class.pointer]='nbOfOptions > 1'
+                      [class.hover-underline]='nbOfOptions > 1'>
+                    {{
+                        'events.options' | pluralTranslation: event().options | translate: {
+                            name: event().options[0]?.label,
+                            others: nbOfOptions - 1
+                        }
+                    }}
+
+                </span>
+            </app-severity-tag>
+        </div>
+        <div class='status d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
+            @if (intervalStatus()) {
+                <app-severity-tag [severity]='intervalStatus()?.status === "IN_PROGRESS" ? "success" : intervalStatus()?.status ===
+                "FINISHED" ? "warn" : "info"'
+                                  [value]='intervalStatus() | intervalFormat: "events.status" | translate: { interval:
+                                  buildInterval(intervalStatus()!.interval!) }' />
+            }
+        </div>
+        <div class='visibility-status d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
+            <app-severity-tag
+                    [severity]='event().visible ? "success" : "danger"'
+                    [value]='event() | visibilityName: "events" | translate' />
         </div>
     </div>
 </app-element-card>
+
+<app-layer [(visible)]='layerOpened'
+           [header]='"events.options.list" | translate'>
+    <p-listbox
+            styleClass='max-list-box-height'
+            [options]='event().options'
+            [readonly]='true'
+            scrollHeight='100%'
+            optionLabel='label' />
+</app-layer>

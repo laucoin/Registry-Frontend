@@ -11,6 +11,8 @@ import { HttpParams } from '@angular/common/http'
 import { ParticipantModel } from '../../../../shared/util-model/model/participant.model'
 import { ParticipantPageParamsModel } from '../../../participant/data/model/participant-page-params.model'
 import { AddedGroupMembersDto } from '../../../../shared/util-model/dto/added-group-members.dto'
+import { PairModel } from '../../../../shared/util-model/model/pair.model'
+import { GenericUtil } from '../../../../shared/util-tool/util/generic.util'
 
 @Injectable( {
     providedIn: 'root',
@@ -22,26 +24,46 @@ export class GroupService extends GenericEventService {
 
     public findGroups (
         eventId: string | undefined,
-        offset: number | undefined,
-        limit: number | undefined,
+        pageNumber: number | undefined,
+        pageSize: number | undefined,
         params: GroupPageParamsModel,
     ): Observable<PageModel<GroupModel>> {
         return this.http.get<PageModel<GroupModel>>(
-            `${this.buildRequestBaseUrl( eventId )}?${QueryUtil.buildQueryParams( offset, limit, params ).toString()}`,
+            `${this.buildRequestBaseUrl( eventId )}?${QueryUtil.buildQueryParams(
+                pageNumber,
+                pageSize,
+                params,
+            ).toString()}`,
+        )
+    }
+
+    public findGroupsMembers (
+        eventId: string | undefined,
+        groupIds: string[],
+    ): Observable<PairModel<ParticipantModel[]>[]> {
+        let builtParams: HttpParams = new HttpParams()
+        if (GenericUtil.nonNull( groupIds )) {
+            groupIds.forEach( (movementId: string): void => {
+                builtParams = builtParams.append( 'groupIds', movementId )
+            } )
+        }
+
+        return this.http.get<PairModel<ParticipantModel[]>[]>(
+            `${this.buildRequestBaseUrl( eventId )}/members?${builtParams.toString()}`,
         )
     }
 
     public findGroupMembersByGroupId (
         eventId: string | undefined,
         id: string | undefined,
-        offset: number | undefined,
-        limit: number | undefined,
+        pageNumber: number | undefined,
+        pageSize: number | undefined,
         params: ParticipantPageParamsModel,
     ): Observable<PageModel<ParticipantModel>> {
         return this.http.get<PageModel<ParticipantModel>>(
             `${this.buildRequestBaseUrl( eventId )}/${id}/members?${QueryUtil.buildQueryParams(
-                offset,
-                limit,
+                pageNumber,
+                pageSize,
                 params,
             ).toString()}`,
         )
@@ -53,12 +75,12 @@ export class GroupService extends GenericEventService {
 
     public searchParticipants (
         eventId: string | undefined,
-        searched: string | undefined,
+        textSearched: string | undefined,
     ): Observable<ParticipantModel[]> {
         return this.http.get<ParticipantModel[]>(
-            `${this.buildRequestBaseUrl( eventId )}/search/participants${searched ? '?' + new HttpParams().set(
-                'searched',
-                searched,
+            `${this.buildRequestBaseUrl( eventId )}/search/participants${textSearched ? '?' + new HttpParams().set(
+                'textSearched',
+                textSearched,
             ).toString() : ''}`,
         )
     }

@@ -1,96 +1,73 @@
 <app-list (updateRequired)='loadPage($event, contextEventId())'
-          [elementPage$]='elementPage$!'
-          [error$]='error$'
-          [loading$]='loading$'>
+          [elementPage]='facade.eventProfilesPage()'
+          [error]='facade.eventProfilesPageError()'
+          [loading]='facade.eventProfilesPageLoading()'>
     <ng-template appTemplate='search' [formGroup]='form' let-pageEvent>
-        <div class='field'>
-            <label for='profiles-search'>{{ 'filter-sort.search' | translate }}</label>
-            <input id='profiles-search'
-                   type='text'
-                   pInputText
-                   (keydown.enter)='loadPage(pageEvent, contextEventId())'
-                   [formControl]='searched' />
-        </div>
-        <div class='row'>
-            <div class='col-12 col-sm-6 col-md-12 col-lg-6 search-field'>
-                <label for='profiles-search'>{{ 'profile.status.filter-sort' | translate }}</label>
-                <p-select
-                        inputId='profiles-search'
-                        fluid
-                        [options]='(statusMetadata$ | async) ?? []'
-                        (keydown.enter)='loadPage(pageEvent, contextEventId())'
-                        [formControl]='status'
-                        optionLabel='label'
-                        optionValue='value' />
+        <div class='d-grid search-line g-2'>
+            <div class='field'>
+                <label for='text-search-field'>{{ 'event-profiles.search-and-filter.text.user' | translate }}</label>
+                <input id='text-search-field'
+                       type='text'
+                       fluid
+                       pInputText
+                       (keydown.enter)='loadPage(pageEvent, contextEventId())'
+                       [formControl]='textSearched' />
             </div>
-            <div class='col-12 col-sm-6 col-md-12 col-lg-6 search-field'>
-                <label for='profiles-range'>{{ 'filter-sort.date-range' | translate }}</label>
-                <p-date-picker [formControl]='range'
+            <div class='field'>
+                <label for='date-time-search-field'>{{ 'event-profiles.search-and-filter.datetime' | translate }}</label>
+                <p-date-picker inputId='date-time-search-field'
+                               fluid
                                [showButtonBar]='true'
-                               [readonlyInput]='true'
                                [showTime]='true'
-                               [touchUI]='isMobile()'
-                               id='profiles-range'
-                               inputId='profiles-range'
-                               selectionMode='range'
-                               fluid />
+                               [touchUI]='registryFacade.tinyScreen()'
+                               (onBlur)='loadPage(pageEvent, contextEventId())'
+                               [formControl]='dateTimeSearched' />
             </div>
         </div>
-        <div class='d-flex flex-wrap justify-content-center pt-2'>
-            <div class='pe-1 flex-grow-1'>
-                <p-toggleButton
-                        [formControl]='onlyVisible'
-                        (keydown.enter)='loadPage(pageEvent, contextEventId())'
-                        [onLabel]='"filter-sort.only-visible.false" | translate'
-                        [offLabel]='"filter-sort.only-visible.true" | translate'
-                        onIcon='pi pi-eye-slash'
-                        offIcon='pi pi-eye'
-                        [ariaLabel]='"filter-sort.only-visible.title" | translate' />
-                <p-toggleButton
-                        class='ms-2'
-                        [formControl]='order'
-                        (keydown.enter)='loadPage(pageEvent, contextEventId())'
-                        [onLabel]='"filter-sort.order.DESC" | translate'
-                        [offLabel]='"filter-sort.order.ASC" | translate'
-                        onIcon='pi pi-sort-alpha-down-alt'
-                        offIcon='pi pi-sort-alpha-down'
-                        [ariaLabel]='"filter-sort.order.title" | translate' />
+        <div class='d-grid search-line g-2'>
+            <div class='field'>
+                <label for='status-search-field'>{{ 'event-profiles.search-and-filter.status' | translate }}</label>
+                <p-select inputId='status-search-field'
+                          fluid
+                          [loading]='!facade.eventProfilesStatusMetadata()'
+                          [options]='facade.eventProfilesStatusMetadata()'
+                          optionLabel='label'
+                          optionValue='value'
+                          (onChange)='loadPage(pageEvent, contextEventId())'
+                          [formControl]='statusSearched' />
             </div>
-            <div class='ps-1'>
-                <p-button (click)='loadPage(pageEvent, contextEventId())'
-                          [label]='"filter-sort.apply" | translate'
-                          [outlined]='true'
-                          [rounded]='true'
-                          icon='pi pi-search'
-                          [loading]='(loading$ | async) || (silentLoading$ | async)' />
+            <div class='field'>
+                <label for='availability-search-field'>{{ 'event-profiles.search-and-filter.visibility' | translate }}</label>
+                <p-select inputId='availability-search-field'
+                          fluid
+                          [options]='facade.eventProfilesAvailabilitiesMetadata()'
+                          optionLabel='label'
+                          optionValue='value'
+                          (onChange)='loadPage(pageEvent, contextEventId())'
+                          [formControl]='availabilitySearched' />
             </div>
+        </div>
+        <div class='d-flex justify-content-center'>
+            <p-button (click)='loadPage(pageEvent, contextEventId())'
+                      [label]='"global.actions.search-and-filter" | translate'
+                      [outlined]='true'
+                      [rounded]='true'
+                      icon='pi pi-search'
+                      [loading]='facade.eventProfilesPageLoading() || facade.eventProfilesPageSilentLoading()' />
         </div>
     </ng-template>
     <ng-template appTemplate='creation'>
-        @if (hasUserAuthority(currentUser$ | async, UserAuthority.REGISTRY_PROFILE_C)) {
-            <p-button *ngIf='contextEvent$ | async; let event'
-                      class='m-1'
-                      severity='info'
-                      [rounded]='true'
-                      [outlined]='true'
-                      [label]='isTinyScreen() || isMobile() ? "" : "profile.action.create-support" | translate'
-                      icon='pi pi-plus'
-                      (click)='confirmSupportProfileCreation(event)' />
-        }
-        @if (hasEventAuthority(currentUser$ | async, contextEventId(), EventAuthority.REGISTRY_EVENT_PROFILE_C)) {
+        @if (CurrentUserUtil.hasEventAuthority(registryFacade.currentUser(), contextEventId(), EventAuthority.REGISTRY_EVENT_PROFILE_C)) {
             <p-button class='m-1'
                       severity='success'
                       [outlined]='true'
                       [rounded]='true'
-                      [label]='isTinyScreen() || isMobile() ? "" : "profile.action.invite-user.title" | translate'
+                      [label]='registryFacade.tinyScreen() ? "" : "event-profiles.actions.invite-user.few" | translate'
                       icon='pi pi-user-plus'
                       [routerLink]='EventProfileRoutesEnum.INVITE' />
         }
     </ng-template>
-    <ng-template appTemplate='element' let-layout='layout' let-profile>
-        <app-event-profile-element [element]='profile' [layout]='layout' view='event' />
-    </ng-template>
-    <ng-template appTemplate='empty'>
-        <app-message [message]='message' />
+    <ng-template appTemplate='element' let-profile>
+        <app-event-profile-element [profile]='profile' view='event' />
     </ng-template>
 </app-list>

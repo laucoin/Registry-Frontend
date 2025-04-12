@@ -7,8 +7,8 @@ import { SELECT_PROFILE_EVENT_ID } from '../../../../shared/util-tool/util/reque
 import { VehicleDto } from '../dto/vehicle.dto'
 import { VehiclePageParamsModel } from '../model/vehicle-page-params.model'
 import { QueryUtil } from '../../../../shared/util-tool/util/query.util'
-import { MovementPageParamsModel } from '../../../../shared/util-model/movement-page-params.model'
-import { MovementModel } from '../../../../shared/util-model/movement.model'
+import { MovementPageParamsModel } from '../../../../shared/util-model/model/movement-page-params.model'
+import { MovementModel } from '../../../../shared/util-model/model/movement.model'
 
 @Injectable( {
     providedIn: 'root',
@@ -20,12 +20,16 @@ export class VehicleService extends GenericEventService {
 
     public findVehicles (
         eventId: string | undefined,
-        offset: number | undefined,
-        limit: number | undefined,
+        pageNumber: number | undefined,
+        pageSize: number | undefined,
         params: VehiclePageParamsModel,
     ): Observable<PageModel<VehicleModel>> {
         return this.http.get<PageModel<VehicleModel>>(
-            `${this.buildRequestBaseUrl( eventId )}?${QueryUtil.buildQueryParams( offset, limit, params ).toString()}`,
+            `${this.buildRequestBaseUrl( eventId )}?${QueryUtil.buildQueryParams(
+                pageNumber,
+                pageSize,
+                params,
+            ).toString()}`,
         )
     }
 
@@ -36,14 +40,14 @@ export class VehicleService extends GenericEventService {
     public findVehicleMovements (
         eventId: string | undefined,
         id: string,
-        offset: number | undefined,
-        limit: number | undefined,
+        pageNumber: number | undefined,
+        pageSize: number | undefined,
         params: MovementPageParamsModel,
     ): Observable<PageModel<MovementModel>> {
         return this.http.get<PageModel<MovementModel>>(
             `${this.buildRequestBaseUrl( eventId )}/${id}/movements?${QueryUtil.buildQueryParams(
-                offset,
-                limit,
+                pageNumber,
+                pageSize,
                 params,
             ).toString()}`,
         )

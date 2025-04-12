@@ -1,62 +1,97 @@
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
+import { FormControl, FormGroup } from '@angular/forms'
 import { GenericComponent } from './generic.component'
-import { FormBuilder, FormGroup } from '@angular/forms'
-import { FormUtil } from '../util/form.util'
 import { AppRouteEnum } from '../../../app-route.enum'
-import { combineLatest, map, Observable, of } from 'rxjs'
+import { Subscription } from 'rxjs'
+import { EventModel } from '../../util-model/model/event.model'
+import { RegistryValidators } from '../util/registry.validator'
+import { inject, Signal } from '@angular/core'
+import { FormUtil } from '../util/form.util'
+import { toSignal } from '@angular/core/rxjs-interop'
+import { CustomDateFormatPipe } from '../pipe/custom-date-format.pipe'
 
-@Component( {
-    template: '',
-} )
-export abstract class GenericFormComponent extends GenericComponent {
-    @Input() public redirect: boolean = true
-    @Output() public handleSubmit: EventEmitter<void> = new EventEmitter<void>()
+export abstract class GenericFormComponent<M, D> extends GenericComponent {
+    protected readonly FormUtil: typeof FormUtil = FormUtil
 
-    protected readonly formBuilder: FormBuilder = inject( FormBuilder )
+    private readonly datePipe: CustomDateFormatPipe = inject( CustomDateFormatPipe )
 
-    protected readonly loading$: Observable<boolean> = of( false )
+    protected readonly subscriptions: Subscription = new Subscription()
 
-    protected form: FormGroup
+    protected readonly invalidFormMessage: string = this.translateService.instant( 'global.messages.invalid-form' )
+    protected readonly startDateExample: Date = GenericFormComponent.startDateExample
+    protected readonly endDateExample: Date = GenericFormComponent.endDateExample
 
-    protected constructor (
-        private readonly defaultRedirectPath: AppRouteEnum,
-        loading$: Observable<boolean> = of( false ),
-    ) {
+    protected readonly contextEvent: Signal<EventModel | undefined>
+
+    protected constructor () {
         super()
 
-        this.form = this.initForm()
-        this.loading$ = combineLatest( [ loading$, this.contextEventLoading$ ] ).pipe(
-            map( ([ loading, contextEventLoading ]: [ boolean, boolean ]): boolean => loading || contextEventLoading ),
-        )
+        this.contextEvent = toSignal( this.registryFacade.contextEvent$ )
+    }
 
-        this.fetchContextEventOnEventIdChange()
+    private static get startDateExample (): Date {
+        const now: Date = new Date()
+
+        if (now.getMonth() > 6) {
+            now.setFullYear( now.getFullYear() + 1 )
+        }
+
+        now.setMonth( 6, 20 )
+        now.setHours(
+            Math.floor( Math.random() * 23 ),
+            Math.floor( Math.random() * 59 ),
+        )
+        return now
+    }
+
+    private static get endDateExample (): Date {
+        const now: Date = this.startDateExample
+        now.setMonth( 7, 2 )
+        now.setHours(
+            Math.floor( Math.random() * 23 ),
+            Math.floor( Math.random() * 59 ),
+        )
+        return now
+    }
+
+    protected loadData (): void {
+        const eventId: string | undefined = this.contextEventId()
+        if (!eventId) {
+            this.router.navigateByUrl( AppRouteEnum.HOME ).catch( console.error )
+        }
+        this.registryFacade.fetchContextEvent( eventId!, false )
     }
 
     protected abstract initForm (): FormGroup
 
-    protected submit (): void {
-        if (this.isFormValid()) {
-            this.handleSubmit.emit()
-            this.next()
-        } else {
-            console.warn( this.translateService.instant( 'warning.message.invalid-form' ) )
+    protected abstract handleLoadedElement (): void
+
+    protected addEventDateValidators (
+        event: EventModel | undefined,
+        control: FormControl,
+    ): void {
+        if (event?.begin) {
+            control.addValidators( RegistryValidators.minDateTime(
+                event?.begin,
+                this.datePipe.transform( event?.begin ),
+            ) )
+        }
+        if (event?.end) {
+            control.addValidators( RegistryValidators.maxDateTime(
+                event?.end,
+                this.datePipe.transform( event?.end ),
+            ) )
         }
     }
 
-    protected abstract next (): void
+    protected abstract fillForm (element: M | undefined): void
 
-    protected get redirectPath (): string {
-        return this.route.snapshot.queryParamMap.get( 'redirectPath' ) ?? this.defaultRedirectPath.toString()
+    protected abstract submit (): void
+
+    protected abstract buildDto (): D
+
+    protected navigateToRedirectUri (route: AppRouteEnum): void {
+        this.router.navigateByUrl( this.buildUri( route ) ).catch( console.error )
     }
 
-    protected navigateToRedirectUri (): void {
-        if (this.redirect) {
-            this.router.navigateByUrl( this.buildUri( this.redirectPath ) ).catch( console.error )
-        }
-    }
-
-    protected isFormValid (): boolean {
-        FormUtil.markAllControlsAsDirty( this.form )
-        return !this.form.invalid
-    }
+    protected abstract get idParam (): string | undefined
 }

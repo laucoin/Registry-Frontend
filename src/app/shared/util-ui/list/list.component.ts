@@ -1,80 +1,93 @@
-import { AsyncPipe, DatePipe, NgForOf, NgTemplateOutlet } from '@angular/common'
+import { NgTemplateOutlet } from '@angular/common'
 import {
+    ChangeDetectionStrategy,
     Component,
+    computed,
     ContentChildren,
-    EventEmitter,
-    Input,
-    Output,
+    input,
+    InputSignal,
+    output,
+    OutputEmitterRef,
     QueryList,
+    Signal,
     TemplateRef,
     ViewChild,
 } from '@angular/core'
 import { TranslateModule } from '@ngx-translate/core'
-import { SelectItem, ToastMessageOptions } from 'primeng/api'
+import { ToastMessageOptions } from 'primeng/api'
 import { CardModule } from 'primeng/card'
 import { DataView, DataViewModule, DataViewPageEvent } from 'primeng/dataview'
 import { ToggleButtonModule } from 'primeng/togglebutton'
-import { Observable } from 'rxjs'
 import { GenericModel } from '../../util-model/model/generic.model'
 import { PageEventModel } from '../../util-model/model/page-event.model'
 import { PageModel } from '../../util-model/model/page.model'
-import { GenericComponent } from '../../util-tool/component/generic.component'
 import { RegistryTemplateDirective } from '../../util-tool/directive/registry-template.directive'
 import { ElementSkeletonComponent } from '../element-skeleton/element-skeleton.component'
 import { MessageComponent } from '../message/message.component'
 import { Panel } from 'primeng/panel'
-import { SelectButton } from 'primeng/selectbutton'
 import { FormsModule } from '@angular/forms'
+import { GenericComponent } from '../../util-tool/component/generic.component'
+import { Skeleton } from 'primeng/skeleton'
+import { DateFormatPipe } from '../../util-tool/pipe/date-format.pipe'
 
 @Component( {
     selector: 'app-list',
     standalone: true,
     imports: [
         DataViewModule,
-        AsyncPipe,
         TranslateModule,
-        DatePipe,
         ToggleButtonModule,
         NgTemplateOutlet,
-        NgForOf,
         CardModule,
         ElementSkeletonComponent,
         MessageComponent,
         Panel,
-        SelectButton,
         FormsModule,
+        Skeleton,
+        DateFormatPipe,
     ],
     templateUrl: './list.component.html',
     styleUrl: './list.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush,
 } )
 export class ListComponent<T extends GenericModel> extends GenericComponent {
     @ContentChildren( RegistryTemplateDirective ) public templates: QueryList<RegistryTemplateDirective> | undefined
     @ViewChild( 'data' ) public dataView!: DataView
 
-    @Input( { required: true } ) public elementPage$!: Observable<PageModel<T> | undefined>
-    @Input( { required: true } ) public loading$!: Observable<boolean>
-    @Input( { required: true } ) public error$!: Observable<ToastMessageOptions | undefined>
+    protected readonly message: Signal<ToastMessageOptions>
 
-    @Output() public readonly updateRequired: EventEmitter<PageEventModel> = new EventEmitter<PageEventModel>()
+    public readonly elementPage: InputSignal<PageModel<T> | undefined> = input.required()
+    public readonly loading: InputSignal<boolean> = input.required()
+    public readonly error: InputSignal<ToastMessageOptions | undefined> = input.required()
+    public readonly warningTitle: InputSignal<string | undefined> = input()
+    public readonly warningMessage: InputSignal<string | undefined> = input()
 
-    protected layout: 'list' | 'grid' = 'list'
-    protected readonly layouts: SelectItem<'list' | 'grid'>[] = [
-        { label: 'pi pi-list', value: 'list' },
-        { label: 'pi pi-th-large', value: 'grid' },
-    ]
+    public readonly updateRequired: OutputEmitterRef<PageEventModel> = output()
+
+    public constructor () {
+        super()
+
+        this.message = computed( () => ({
+            severity: 'warn',
+            summary: this.warningTitle() ?? 'global.notifications.EMPTY.title',
+            detail: this.warningMessage() ?? 'global.notifications.EMPTY.message',
+        }) )
+    }
 
     protected updateData (pageEvent: DataViewPageEvent | undefined = undefined): void {
         return this.updateRequired.emit( this.pageEvent( pageEvent ) )
     }
 
     protected pageEvent (pageEvent: DataViewPageEvent | undefined = undefined): PageEventModel {
+        const pageSize: number = pageEvent?.rows || this.dataView?.rows || 20
         return {
-            offset: pageEvent?.first || this.dataView?.first || 0, limit: pageEvent?.rows || this.dataView?.rows || 20,
+            pageNumber: (pageEvent?.first || this.dataView?.first || 0) / pageSize,
+            pageSize: pageSize,
         }
     }
 
     protected getTemplate (name: string): TemplateRef<unknown> | null {
-        const customTemplate: RegistryTemplateDirective | undefined = this.templates?.find( (t: RegistryTemplateDirective): boolean => t.name === name )
+        const customTemplate: RegistryTemplateDirective | undefined = this.templates?.find( (t: RegistryTemplateDirective): boolean => t.appTemplate() === name )
         return customTemplate ? customTemplate.template : null
     }
 

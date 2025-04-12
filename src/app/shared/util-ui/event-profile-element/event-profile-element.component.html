@@ -1,90 +1,69 @@
 <p-confirmDialog [breakpoints]='breakpoint' />
-<app-element-card *ngIf='currentUser$ | async as currentUser'
-                  [element]='element'
-                  [actions]='actions'
-                  [layout]='layout'
-                  (action)='handleAction($event)'
-                  [icon]='currentUser.preferences.selectedProfile?.id === element.id ? "pi pi-verified" : "pi pi-user"'>
-    <div [class.flex-lg-row]='layout === "list"' [class.flex-column]='layout === "grid"'
-         class='d-flex flex-wrap justify-content-between align-items-center'>
-        <div class='info d-flex flex-column justify-content-center p-1'>
-            <div>
-                <span [class.strikethrough]='element.endAccess | isPast' class='event-name'>
-                    @if (view === 'user') {
-                        {{ element.event.name }}
+@if (registryFacade.currentUser()) {
+    <app-element-card [element]='profile()'
+                      [actionMenuVisible]='actionMenuVisible()'
+                      [actions]='actions()'
+                      (action)='handleAction($event)'
+                      [icon]='registryFacade.currentUser()!.preferences.selectedProfile?.id === profile().id ? "pi pi-verified" : "pi pi-user"'>
+        <div class='element-card'>
+            <div class='profile-info d-flex flex-column justify-content-center'>
+                <div class='profile-name d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
+                    @if (view() === 'user') {
+                        {{ profile().event.name }}
                     } @else {
-                        {{ (element.user.firstName | titlecase) + ' ' + (element.user.lastName | uppercase) }}
+                        {{ (profile().user.firstName | titlecase) + ' ' + (profile().user.lastName | uppercase) }}
                     }
-                </span>
-                @if (element.endAccess | isPast) {
-                    <i> ({{ 'outdated' | translate }})</i>
+                </div>
+                @if (profile().startAccess) {
+                    <div class='d-flex mt-1 align-content-center' [class.justify-content-center]='registryFacade.tinyScreen()'>
+                        <i class='pi pi-play-circle'></i>
+                        <span class='ms-1'>{{ profile().startAccess | customDateFormat }}</span>
+                    </div>
+                }
+                @if (profile().endAccess) {
+                    <div class='d-flex align-content-center'
+                         [class.justify-content-center]='registryFacade.tinyScreen()'
+                         [class.mt-1]='!profile().startAccess'>
+                        <i class='pi pi-stop-circle'></i>
+                        <span class='ms-1'>{{ profile().endAccess | customDateFormat }}</span>
+                    </div>
                 }
             </div>
-            @if (element.startAccess || element.endAccess) {
-                <div>
-                    <p-badge [class.mt-1]='layout === "grid"' severity='info' [value]='element.role.label ?? ""' />
-                </div>
-            }
-        </div>
-        <div class='role d-flex flex-wrap align-content-center p-1' [class.justify-content-center]='layout === "grid"'>
-            @if (element.startAccess || element.endAccess) {
-                <div *ngIf='element.startAccess || element.endAccess'>
-                    <small>{{ 'profile.event.validity' | translate }}</small>
-                    @if (element.startAccess) {
-                        <div class='d-flex align-content-center'>
-                            <i class='pi pi-play-circle'></i>
-                            <span>
-                            {{
-                                    'datetime.datetime' | translate: {
-                                        date: element.startAccess | date: ('datetime.format.date' | translate),
-                                        time: element.startAccess | date: ('datetime.format.time' | translate),
-                                    }
-                                }}
-                        </span>
-                        </div>
-                    }
-                    @if (element.endAccess) {
-                        <div class='d-flex align-content-center'>
-                            <i class='pi pi-stop-circle'></i>
-                            <span>
-                            {{
-                                    'datetime.datetime' | translate: {
-                                        date: element.endAccess | date: ('datetime.format.date' | translate),
-                                        time: element.endAccess | date: ('datetime.format.time' | translate),
-                                    }
-                                }}
-                        </span>
-                        </div>
+            <div class='role d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
+                <app-severity-tag [value]='profile().role.label!' />
+            </div>
+            @if (profile().status.value !== 'INVITED' || profile().user.id !== registryFacade.currentUser()!.id) {
+                <div class='status d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
+                    @if (intervalStatus()) {
+                        <app-severity-tag [severity]='intervalStatus()?.status === "IN_PROGRESS" ? "success" : intervalStatus()?.status ===
+                "FINISHED" ? "warn" : "info"'
+                                          [value]='intervalStatus() | intervalFormat: "event-profiles.status" |
+                            translate: { interval: buildInterval(intervalStatus()!.interval!) }' />
                     }
                 </div>
-            } @else {
-                <div>
-                    <p-badge severity='info' [value]='element.role.label ?? ""' />
+                <div class='invitation-status d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
+                    <app-severity-tag [severity]='severityFromStatus(profile().status.value)' [value]='profile().status.label!' />
                 </div>
-            }
-        </div>
-        <div class='status d-flex p-1' [class.mt-1]='layout === "grid"' [class.justify-content-center]='layout === "grid"'>
-            @if (element.status.value !== 'INVITED' || element.user.id !== currentUser.id) {
-                <p-badge [severity]='severityFromStatus(element.status.value)'
-                         [value]='element.status.label ?? ""' />
             } @else {
-                <div [class.mt-2]='layout === "grid"' class='d-flex flex-column'>
-                    <div [class.mb-1]='layout === "grid"'>{{ 'profile.action.manage-acceptance' | translate }}</div>
-                    <div class='d-flex justify-content-center'>
-                        <p-button
-                                [label]='"profile.action.reject" | translate'
-                                [rounded]='true'
-                                severity='danger'
-                                (click)='confirmManageAcceptance("REJECTED")' />
-                        <p-button
-                                class='ms-2'
-                                [label]='"profile.action.accept" | translate'
-                                [rounded]='true'
-                                severity='success'
-                                (click)='confirmManageAcceptance("ACCEPTED")' />
+                <div class='invitation-form d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
+                    <div class='d-flex flex-column'>
+                        <div>{{ 'profile.action.manage-acceptance' | translate }}</div>
+                        <div class='d-flex justify-content-center'>
+                            <p-button
+                                    [label]='"profile.action.reject" | translate'
+                                    [rounded]='true'
+                                    severity='danger'
+                                    (click)='confirmManageAcceptance("REJECTED")' />
+                            <p-button
+                                    class='ms-2'
+                                    [label]='"profile.action.accept" | translate'
+                                    [rounded]='true'
+                                    severity='success'
+                                    (click)='confirmManageAcceptance("ACCEPTED")' />
+                        </div>
                     </div>
                 </div>
             }
         </div>
-    </div>
-</app-element-card>
+    </app-element-card>
+}

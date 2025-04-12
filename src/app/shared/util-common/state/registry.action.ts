@@ -1,8 +1,8 @@
 import { ToastMessageOptions } from 'primeng/api'
-import { OrderEnum } from '../../util-model/enumeration/order.enum'
 import { EventProfileModel } from '../../util-model/model/event-profile.model'
 import { TokenModel } from '../../util-authentication/model/token.model'
 import { ErrorModel } from '../../util-model/model/error.model'
+import { EventModel } from '../../util-model/model/event.model'
 
 export enum RegistryActionEnum {
     START_GLOBAL_LOADER = '[Local] Starting global loader',
@@ -10,8 +10,8 @@ export enum RegistryActionEnum {
 
     SET_GLOBAL_ERROR = '[Local] Setting global error',
 
-    UPDATE_NETWORK = '[Local] Network status updated',
-
+    UPDATE_NETWORK = '[Local] Updating network status',
+    UPDATE_SCREEN_WIDTH = '[Local] Updating screen width',
     UPDATE_THEME = '[Local] Updating application theme',
 
     NOTIFY = '[Local] Notifying',
@@ -36,24 +36,25 @@ export enum RegistryActionEnum {
     STOP_USER_EVENT_PROFILES_PAGE_LOADER = '[Local] Stopping user event profiles\' page loader',
 
     FETCH_USER_EVENT_PROFILES_PAGE = '[Backend] Fetching user event profiles\' page',
-    INPUT_USER_EVENT_PROFILES_PAGE_SEARCH = '[Local] Inputting user event profiles\' page search',
-    INPUT_USER_EVENT_PROFILES_PAGE_DATE_RANGE = '[Local] Inputting user event profiles\' page date range',
-    SELECT_USER_EVENT_PROFILES_PAGE_ORDER = '[Local] Selecting user event profiles\' page order',
+    INPUT_USER_EVENT_PROFILES_PAGE_TEXT_SEARCH = '[Local] Inputting user event profiles\' page text search',
+    INPUT_USER_EVENT_PROFILES_PAGE_DATE_TIME_SEARCH = '[Local] Inputting user event profiles\' page date time search',
 
     START_USER_EVENT_PROFILE_INVITATIONS_PAGE_LOADER = '[Local] Starting user event profile invitations\' page loader',
     STOP_USER_EVENT_PROFILE_INVITATIONS_PAGE_LOADER = '[Local] Stopping user event profile invitations\' page loader',
 
     FETCH_USER_EVENT_PROFILE_INVITATIONS_PAGE = '[Backend] Fetching user event profile invitations\' page',
-    INPUT_USER_EVENT_PROFILE_INVITATIONS_PAGE_SEARCH = '[Local] Inputting user event profile invitations\' page search',
-    INPUT_USER_EVENT_PROFILE_INVITATIONS_PAGE_DATE_RANGE = '[Local] Inputting user event profile invitations\' page date range',
-    SELECT_USER_EVENT_PROFILE_INVITATIONS_PAGE_ORDER = '[Local] Selecting user event profile invitations\' page order',
+    INPUT_USER_EVENT_PROFILE_INVITATIONS_PAGE_TEXT_SEARCH = '[Local] Inputting user event profile invitations\' page text search',
+    INPUT_USER_EVENT_PROFILE_INVITATIONS_PAGE_DATE_TIME_SEARCH = '[Local] Inputting user event profile invitations\' page date time search',
 
     START_USER_EVENT_PROFILE_LOADER = '[Local] Starting user event profile loader',
     STOP_USER_EVENT_PROFILE_LOADER = '[Local] Stopping user event profile loader',
 
     MANAGE_USER_EVENT_INVITATION_ACCEPTANCE = '[Backend] Managing user event invitation acceptance',
     SELECT_USER_EVENT_PROFILE = '[Backend] Selecting user event profile',
+    SELECT_USER_EVENT_PROFILE_BY_EVENT = '[Backend] Selecting user event profile by event',
     DELETE_USER_EVENT_PROFILE = '[Backend] Deleting user event profile',
+
+    CREATE_SUPPORT_EVENT_PROFILE = '[Backend] Creating event profiles',
 }
 
 export class StartGlobalLoader {
@@ -74,6 +75,12 @@ export class UpdateNetwork {
     public static readonly type: RegistryActionEnum = RegistryActionEnum.UPDATE_NETWORK
 
     public constructor (public readonly online: boolean) {}
+}
+
+export class UpdateScreenWidth {
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.UPDATE_SCREEN_WIDTH
+
+    public constructor (public readonly screenWidth: number) {}
 }
 
 export class UpdateTheme {
@@ -150,31 +157,22 @@ export class FetchUserEventProfilesPage {
     public static readonly type: RegistryActionEnum = RegistryActionEnum.FETCH_USER_EVENT_PROFILES_PAGE
 
     public constructor (
-        public readonly offset: number | undefined,
-        public readonly limit: number | undefined,
+        public readonly pageNumber: number | undefined,
+        public readonly pageSize: number | undefined,
         public readonly force: boolean = false,
     ) {}
 }
 
-export class InputUserEventProfilesPageSearch {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.INPUT_USER_EVENT_PROFILES_PAGE_SEARCH
+export class InputUserEventProfilesPageTextSearched {
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.INPUT_USER_EVENT_PROFILES_PAGE_TEXT_SEARCH
 
-    public constructor (public readonly searched: string | undefined) {}
+    public constructor (public readonly textSearched: string | undefined) {}
 }
 
-export class InputUserEventProfilesPageDateRange {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.INPUT_USER_EVENT_PROFILES_PAGE_DATE_RANGE
+export class InputUserEventProfilesPageDateTimeSearched {
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.INPUT_USER_EVENT_PROFILES_PAGE_DATE_TIME_SEARCH
 
-    public constructor (
-        public readonly begin: Date | undefined,
-        public readonly end: Date | undefined,
-    ) {}
-}
-
-export class SelectUserEventProfilesPageOrder {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.SELECT_USER_EVENT_PROFILES_PAGE_ORDER
-
-    public constructor (public readonly order: OrderEnum) {}
+    public constructor (public readonly dateTime: Date | undefined) {}
 }
 
 export class StartUserEventProfileInvitationsPageLoader {
@@ -189,31 +187,22 @@ export class FetchUserEventProfileInvitationsPage {
     public static readonly type: RegistryActionEnum = RegistryActionEnum.FETCH_USER_EVENT_PROFILE_INVITATIONS_PAGE
 
     public constructor (
-        public readonly offset: number | undefined,
-        public readonly limit: number | undefined,
+        public readonly pageNumber: number | undefined,
+        public readonly pageSize: number | undefined,
         public readonly force: boolean = false,
     ) {}
 }
 
-export class InputUserEventProfileInvitationsPageSearch {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.INPUT_USER_EVENT_PROFILE_INVITATIONS_PAGE_SEARCH
+export class InputUserEventProfileInvitationsPageTextSearched {
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.INPUT_USER_EVENT_PROFILE_INVITATIONS_PAGE_TEXT_SEARCH
 
-    public constructor (public readonly searched: string | undefined) {}
+    public constructor (public readonly textSearched: string | undefined) {}
 }
 
-export class InputUserEventProfileInvitationsPageDateRange {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.INPUT_USER_EVENT_PROFILE_INVITATIONS_PAGE_DATE_RANGE
+export class InputUserEventProfileInvitationsPageDateTimeSearched {
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.INPUT_USER_EVENT_PROFILE_INVITATIONS_PAGE_DATE_TIME_SEARCH
 
-    public constructor (
-        public readonly begin: Date | undefined,
-        public readonly end: Date | undefined,
-    ) {}
-}
-
-export class SelectUserEventProfileInvitationsPageOrder {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.SELECT_USER_EVENT_PROFILE_INVITATIONS_PAGE_ORDER
-
-    public constructor (public readonly order: OrderEnum) {}
+    public constructor (public readonly dateTime: Date | undefined) {}
 }
 
 export class StartUserEventProfileLoader {
@@ -236,8 +225,20 @@ export class SelectUserEventProfile {
     public constructor (public readonly profile: EventProfileModel) {}
 }
 
+export class SelectUserEventProfileByEvent {
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.SELECT_USER_EVENT_PROFILE_BY_EVENT
+
+    public constructor (public readonly event: EventModel) {}
+}
+
 export class DeleteUserEventProfile {
     public static readonly type: RegistryActionEnum = RegistryActionEnum.DELETE_USER_EVENT_PROFILE
 
     public constructor (public readonly profile: EventProfileModel) {}
+}
+
+export class CreateSupportEventProfile {
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.CREATE_SUPPORT_EVENT_PROFILE
+
+    public constructor (public readonly eventId: string) {}
 }

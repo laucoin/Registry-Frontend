@@ -1,70 +1,97 @@
-@if (form.untouched && (loading$ | async) ?? false) {
+@if (form.untouched && optionsForm.untouched && facade.eventLoading()) {
     <div class='d-flex justify-content-center'>
         <p-progressSpinner></p-progressSpinner>
     </div>
 } @else {
-    <h2>{{ 'event.form.title.edit' | translate: { name: (event$ | async)?.name } }}</h2>
-    <p-card [formGroup]='form' [header]='"event.form.title.information" | translate'>
+    <h2>{{ 'events.form.title.edit' | translate: { name: facade.event()?.name } }}</h2>
+    <p-card [formGroup]='form' [header]='"events.form.subtitle.information" | translate'>
         <div class='field'>
-            <label for='name' appRequired>{{ 'event.form.name' | translate }}</label>
-            <input [formControl]='name' [placeholder]='"event.example.name" | translate' id='name' pInputText type='text' />
-            <app-form-field-error [control]='name'
-                                  translationPrefix='event.form.error.name' />
+            <label for='name' appRequired>{{ 'events.form.name' | translate }}</label>
+            <input [formControl]='name' [placeholder]='"events.form.placeholder.name" | translate' id='name' pInputText type='text' />
+            <app-form-field-error [errors]='name.errors'
+                                  [invalid]='FormUtil.invalid(name)'
+                                  translationPrefix='events.form.error.name' />
         </div>
-        <div class='field'>
-            <label for='range'>{{ 'event.form.range' | translate }}</label>
-            <p-date-picker [formControl]='range'
-                           [showButtonBar]='true'
-                           [placeholder]='"event.example.range" | translate: {
-                                    begin: startDateExample() | date: ("datetime.format.date" | translate),
-                                    end: endDateExample() | date: ("datetime.format.date" | translate)
-                                }'
-                           [readonlyInput]='true'
-                           [showTime]='true'
-                           [touchUI]='isMobile()'
-                           id='range'
-                           selectionMode='range'
-                           fluid />
-        </div>
-    </p-card>
-    <p-divider />
-    <p-card [formGroup]='optionsForm' [header]='"event.form.title.option" | translate' *ngIf='eventOptions$ | async as eventOptions'>
-        <div *ngFor='let option of eventOptions; let i = index;'>
-            <div class='field'>
-                <div class='switch-field'>
-                    <label [for]='option.value'>
-                        <i [class]='optionIcon(option.value)'></i>
-                        {{ option.ask }}
-                    </label>
-                    <p-toggle-switch [formControl]='getOptionControl(option.value)'
-                                     id='ticketing' />
-                </div>
-                <app-form-field-error [control]='getOptionControl(option.value)'
-                                      translationPrefix='event.form.error.options' />
+        <div class='d-flex flex-wrap'>
+            <div class='begin-date-time field'>
+                <label for='begin-date-time'>{{ 'events.form.begin-datetime' | translate }}</label>
+                <app-date-time-field [formControl]='beginDateTime'
+                                     [invalid]='FormUtil.invalid(beginDateTime)'
+                                     inputId='begin-date-time'
+                                     [datePlaceholder]='"events.form.placeholder.date" | translate: {
+                                                            date: startDateExample | dateFormat: "date"
+                                                         }'
+                                     [timePlaceholder]='"events.form.placeholder.time" | translate: {
+                                                            date: startDateExample | dateFormat: "time"
+                                                         }' />
+                <app-form-field-error [errors]='beginDateTime.errors'
+                                      [invalid]='FormUtil.invalid(beginDateTime)'
+                                      translationPrefix='events.form.error.begin-datetime' />
             </div>
-            @if (i < eventOptions.length - 1) {
-                <p-divider />
-            }
+            <div class='end-date-time field'>
+                <label for='end-date-time'>{{ 'events.form.end-datetime' | translate }}</label>
+                <app-date-time-field [formControl]='endDateTime'
+                                     [invalid]='FormUtil.invalid(endDateTime)'
+                                     inputId='end-date-time'
+                                     [datePlaceholder]='"events.form.placeholder.date" | translate: {
+                                                            date: endDateExample | dateFormat: "date"
+                                                         }'
+                                     [timePlaceholder]='"events.form.placeholder.time" | translate: {
+                                                            date: endDateExample | dateFormat: "time"
+                                                         }' />
+                <app-form-field-error [errors]='endDateTime.errors'
+                                      [invalid]='FormUtil.invalid(endDateTime)'
+                                      translationPrefix='events.form.error.end-datetime' />
+            </div>
         </div>
-        @if (optionsForm.hasError('preRequiredOptions')) {
-            <p-message severity='error'
-                       variant='simple'>{{
-                    'event.form.error.options.preRequiredOptions' | translate:
-                        optionsForm.getError('preRequiredOptions')
-                }}
-            </p-message>
-        }
+        <app-form-field-error [errors]='form.errors'
+                              [invalid]='FormUtil.invalid(form) && beginDateTime.valid && endDateTime.valid'
+                              translationPrefix='events.form.error.date-range' />
     </p-card>
+    @if (facade.eventOptionsMetadata()) {
+        <p-divider />
+        <p-card [formGroup]='optionsForm'
+                [header]='"events.form.subtitle.option" | pluralTranslation: facade.eventOptionsMetadata() | translate'>
+            @for (option of facade.eventOptionsMetadata(); track option.value) {
+                @let control = getOptionControl(option.value);
+                <div class='field'>
+                    <div class='switch-field'>
+                        <label [for]='option.value'>
+                            <i [class]='option.value | optionIcon'></i>
+                            {{ option.ask }}
+                            <b> ({{ option.label }})</b>
+                        </label>
+                        <p-toggle-switch [formControl]='control'
+                                         id='ticketing' />
+                    </div>
+                    <app-form-field-error [errors]='control.errors'
+                                          [invalid]='FormUtil.invalid(control)'
+                                          translationPrefix='events.form.error.options' />
+                </div>
+                @if (!$last) {
+                    <p-divider />
+                }
+            }
+            @if (optionsForm.hasError('preRequiredOptions')) {
+                <p-message severity='error'
+                           variant='simple'>{{
+                        'events.form.error.options.preRequiredOptions' | translate:
+                            optionsForm.getError('preRequiredOptions')
+                    }}
+                </p-message>
+            }
+        </p-card>
+    }
     <div class='mt-2 d-flex justify-content-center'>
         <p-button
-                (click)='navigateToRedirectUri()'
-                [label]='"cancel" | translate'
+                (click)='navigateToRedirectUri(nextNavigation)'
+                [label]='"global.actions.cancel" | translate'
                 [outlined]='true'
                 [rounded]='true' />
         <p-button
                 class='ms-2'
                 (click)='submit()'
-                [label]='"edit" | translate'
+                [label]='"global.actions.edit" | translate'
                 [rounded]='true'
                 icon='pi pi-pen-to-square'
                 severity='success' />

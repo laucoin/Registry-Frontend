@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core'
+import { computed, Injectable, Signal } from '@angular/core'
 import { Observable } from 'rxjs'
 import { PageModel } from '../../../../shared/util-model/model/page.model'
 import { VehicleModel } from '../../../../shared/util-model/model/vehicle.model'
@@ -9,19 +9,19 @@ import {
     DisableVehicle,
     EnableVehicle,
     FetchVehicle,
+    FetchVehicleMovementsContents,
     FetchVehicleMovementsPage,
-    FetchVehicleMovementTypes,
+    FetchVehiclePresencesStatus,
     FetchVehiclesPage,
-    InputVehicleMovementsPageDateRange,
-    InputVehicleMovementsPageSearch,
-    InputVehiclesPageDateRange,
-    InputVehiclesPageSearch,
+    InputVehicleMovementsPageEndDateTimeSearched,
+    InputVehicleMovementsPageStartDateTimeSearched,
+    InputVehiclesPageDateTimeSearched,
+    InputVehiclesPageTextSearched,
     ResetVehicle,
-    SelectVehicleMovementsPageOrder,
-    SelectVehicleMovementsPageType,
-    SelectVehicleMovementsPageVisibility,
-    SelectVehiclesPageOrder,
-    SelectVehiclesPageVisibility,
+    SelectVehicleMovementsPageTypeSearched,
+    SelectVehicleMovementsPageVisibilitySearched,
+    SelectVehiclesPageAvailabilitySearched,
+    SelectVehiclesPageVisibilitySearched,
     StartVehicleLoader,
     StartVehicleMovementsPageLoader,
     StartVehiclesPageLoader,
@@ -31,99 +31,111 @@ import {
     UpdateVehicle,
 } from './vehicle.action'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
-import { FormUtil } from '../../../../shared/util-tool/util/form.util'
-import { OrderEnum } from '../../../../shared/util-model/enumeration/order.enum'
 import { ofActionSuccessful } from '@ngxs/store'
 import { VehicleState } from './vehicle.state'
 import { GenericEventElementFacade } from '../../../../shared/util-tool/facade/generic-event-element.facade'
-import { MovementModel } from '../../../../shared/util-model/movement.model'
+import { MovementModel } from '../../../../shared/util-model/model/movement.model'
+import { DateUtil } from '../../../../shared/util-tool/util/date.util'
 
 @Injectable()
 export class VehicleFacade extends GenericEventElementFacade {
-    public get vehiclesPage (): Observable<PageModel<VehicleModel> | undefined> {
-        return this.ngStore.select( VehicleState.vehiclesPage )
+    public get vehiclesPage (): Signal<PageModel<VehicleModel> | undefined> {
+        return this.ngStore.selectSignal( VehicleState.vehiclesPage )
     }
 
-    public get vehiclesPageLoading (): Observable<boolean> {
-        return this.ngStore.select( VehicleState.vehiclesPageLoading )
+    public get vehiclesPageLoading (): Signal<boolean> {
+        return computed( (): boolean => this.ngStore.selectSignal( VehicleState.vehiclesPageLoading )() || this.registryFacade.contextEventLoading() )
     }
 
-    public get vehiclesPageSilentLoading (): Observable<boolean> {
-        return this.ngStore.select( VehicleState.vehiclesPageSilentLoading )
+    public get vehiclesPageSilentLoading (): Signal<boolean> {
+        return this.ngStore.selectSignal( VehicleState.vehiclesPageSilentLoading )
     }
 
-    public get vehiclesPageError (): Observable<ToastMessageOptions | undefined> {
-        return this.ngStore.select( VehicleState.vehiclesPageError )
+    public get vehiclesPageError (): Signal<ToastMessageOptions | undefined> {
+        return this.ngStore.selectSignal( VehicleState.vehiclesPageError )
     }
 
-    public get actualVehiclesPageSearchParam (): string | undefined {
-        return this.ngStore.selectSnapshot( VehicleState.vehiclesPageSearchParam )
+    public get vehiclesPageTextSearchedParam (): Signal<string | undefined> {
+        return this.ngStore.selectSignal( VehicleState.vehiclesPageTextSearchedParam )
     }
 
-    public get actualVehiclesPageDateRangeParam (): Date[] | undefined {
-        return FormUtil.buildDateRange(
-            this.ngStore.selectSnapshot( VehicleState.vehiclesPageStartDateParam ),
-            this.ngStore.selectSnapshot( VehicleState.vehiclesPageEndDateParam ),
+    public get vehiclesPageDateTimeSearchedParam (): Signal<Date | undefined> {
+        return computed( (): Date | undefined =>
+            DateUtil.buildDate( this.ngStore.selectSignal( VehicleState.vehiclesPageDateTimeSearchedParam )() ),
         )
     }
 
-    public get actualVehiclesPageOnlyVisibleParam (): boolean {
-        return this.ngStore.selectSnapshot( VehicleState.vehiclesPageOnlyVisibleParam )
+    public get vehiclesPageAvailabilitySearchedParam (): Signal<boolean | undefined> {
+        return this.ngStore.selectSignal( VehicleState.vehiclesPageAvailabilitySearchedParam )
     }
 
-    public get actualVehiclesPageOrderParam (): OrderEnum {
-        return this.ngStore.selectSnapshot( VehicleState.vehiclesPageOrderParam )
+    public get vehiclesPageVisibilitySearchedParam (): Signal<boolean | undefined> {
+        return this.ngStore.selectSignal( VehicleState.vehiclesPageVisibilitySearchedParam )
     }
 
-    public get vehicleMovementsPage (): Observable<PageModel<MovementModel> | undefined> {
-        return this.ngStore.select( VehicleState.vehicleMovementsPage )
+    public get vehicleMovementsPage (): Signal<PageModel<MovementModel> | undefined> {
+        return this.ngStore.selectSignal( VehicleState.vehicleMovementsPage )
     }
 
-    public get vehicleMovementsPageLoading (): Observable<boolean> {
-        return this.ngStore.select( VehicleState.vehicleMovementsPageLoading )
-    }
-
-    public get vehicleMovementsPageSilentLoading (): Observable<boolean> {
-        return this.ngStore.select( VehicleState.vehicleMovementsPageSilentLoading )
-    }
-
-    public get vehicleMovementsPageError (): Observable<ToastMessageOptions | undefined> {
-        return this.ngStore.select( VehicleState.vehicleMovementsPageError )
-    }
-
-    public get actualVehicleMovementsPageSearchParam (): string | undefined {
-        return this.ngStore.selectSnapshot( VehicleState.vehicleMovementsPageSearchParam )
-    }
-
-    public get actualVehicleMovementsPageMovementTypeParam (): string | undefined {
-        return this.ngStore.selectSnapshot( VehicleState.vehicleMovementsPageMovementTypeParam )
-    }
-
-    public get actualVehicleMovementsPageDateRangeParam (): Date[] | undefined {
-        return FormUtil.buildDateRange(
-            this.ngStore.selectSnapshot( VehicleState.vehicleMovementsPageStartDateParam ),
-            this.ngStore.selectSnapshot( VehicleState.vehicleMovementsPageEndDateParam ),
+    public get vehicleMovementsPageLoading (): Signal<boolean> {
+        return computed( (): boolean =>
+            this.ngStore.selectSignal( VehicleState.vehicleMovementsPageLoading )() || this.registryFacade.contextEventLoading(),
         )
     }
 
-    public get actualVehicleMovementsPageOnlyVisibleParam (): boolean {
-        return this.ngStore.selectSnapshot( VehicleState.vehicleMovementsPageOnlyVisibleParam )
+    public get vehicleMovementsPageSilentLoading (): Signal<boolean> {
+        return this.ngStore.selectSignal( VehicleState.vehicleMovementsPageSilentLoading )
     }
 
-    public get actualVehicleMovementsPageOrderParam (): OrderEnum {
-        return this.ngStore.selectSnapshot( VehicleState.vehicleMovementsPageOrderParam )
+    public get vehicleMovementsPageError (): Signal<ToastMessageOptions | undefined> {
+        return this.ngStore.selectSignal( VehicleState.vehicleMovementsPageError )
     }
 
-    public get vehicle (): Observable<VehicleModel | undefined> {
+    public get vehicleMovementsPageMovementTypeSearchedParam (): Signal<string | undefined> {
+        return this.ngStore.selectSignal( VehicleState.vehicleMovementsPageMovementTypeSearchedParam )
+    }
+
+    public get vehicleMovementsPageStartDateTimeSearchedParam (): Signal<Date | undefined> {
+        return computed( (): Date | undefined =>
+            DateUtil.buildDate( this.ngStore.selectSignal( VehicleState.vehicleMovementsPageStartDateTimeSearchedParam )() ),
+        )
+    }
+
+    public get vehicleMovementsPageEndDateTimeSearchedParam (): Signal<Date | undefined> {
+        return computed( (): Date | undefined =>
+            DateUtil.buildDate( this.ngStore.selectSignal( VehicleState.vehicleMovementsPageEndDateTimeSearchedParam )() ),
+        )
+    }
+
+    public get vehicleMovementsPageVisibilitySearchedParam (): Signal<boolean | undefined> {
+        return this.ngStore.selectSignal( VehicleState.vehicleMovementsPageVisibilitySearchedParam )
+    }
+
+    public get vehicle$ (): Observable<VehicleModel | undefined> {
         return this.ngStore.select( VehicleState.vehicle )
     }
 
-    public get vehicleLoading (): Observable<boolean> {
-        return this.ngStore.select( VehicleState.vehicleLoading )
+    public get vehicle (): Signal<VehicleModel | undefined> {
+        return this.ngStore.selectSignal( VehicleState.vehicle )
     }
 
-    public get movementTypesMetadata (): Observable<SelectItem<string>[]> {
-        return this.ngStore.select( VehicleState.movementTypesMetadata )
+    public get vehicleLoading (): Signal<boolean> {
+        return this.ngStore.selectSignal( VehicleState.vehicleLoading )
+    }
+
+    public get presencesStatusMetadata (): Signal<SelectItem<string | undefined>[]> {
+        return this.ngStore.selectSignal( VehicleState.presencesStatusMetadata )
+    }
+
+    public get visibilitiesMetadata (): Signal<SelectItem<boolean | undefined>[]> {
+        return computed( (): SelectItem<boolean | undefined>[] =>
+            this.ngStore.selectSignal( VehicleState.visibilitiesMetadata )().map(
+                (status: SelectItem<boolean | undefined>): SelectItem<boolean | undefined> => ({
+                    ...status,
+                    label: this.translateService.instant( status.label! ),
+                }),
+            ),
+        )
     }
 
     public startVehiclesPageLoader (): void {
@@ -135,28 +147,35 @@ export class VehicleFacade extends GenericEventElementFacade {
     }
 
     public fetchVehiclesPage (
-        offset: number | undefined,
-        limit: number | undefined,
+        pageNumber: number | undefined,
+        pageSize: number | undefined,
         force: boolean,
         eventId: string | undefined = this.actualSelectedEventId,
     ): void {
-        this.ngStore.dispatch( new FetchVehiclesPage( eventId, offset, limit, force ) )
+        this.ngStore.dispatch( new FetchVehiclesPage( eventId, pageNumber, pageSize, force ) )
     }
 
-    public inputVehiclesPageSearch (searched: string | undefined): void {
-        this.ngStore.dispatch( new InputVehiclesPageSearch( searched ) )
-    }
+    public inputPageSearchParameters (
+        textSearched: string | undefined,
+        dateTimeSearched: Date | undefined,
+        availabilitySearched: boolean | undefined,
+        visibilitySearched: boolean | undefined,
+    ): void {
+        if (textSearched !== this.vehiclesPageTextSearchedParam()) {
+            this.ngStore.dispatch( new InputVehiclesPageTextSearched( textSearched ) )
+        }
 
-    public inputVehiclesPageDateRange (range: Date[] | undefined): void {
-        this.ngStore.dispatch( new InputVehiclesPageDateRange( range?.[0], range?.[1] ) )
-    }
+        if (dateTimeSearched !== this.vehiclesPageDateTimeSearchedParam()) {
+            this.ngStore.dispatch( new InputVehiclesPageDateTimeSearched( dateTimeSearched ) )
+        }
 
-    public selectVehiclesPageVisibility (onlyVisible: boolean): void {
-        this.ngStore.dispatch( new SelectVehiclesPageVisibility( onlyVisible ) )
-    }
+        if (availabilitySearched !== this.vehiclesPageAvailabilitySearchedParam()) {
+            this.ngStore.dispatch( new SelectVehiclesPageAvailabilitySearched( availabilitySearched ) )
+        }
 
-    public selectVehiclesPageOrder (order: OrderEnum): void {
-        this.ngStore.dispatch( new SelectVehiclesPageOrder( order ) )
+        if (visibilitySearched !== this.vehiclesPageVisibilitySearchedParam()) {
+            this.ngStore.dispatch( new SelectVehiclesPageVisibilitySearched( visibilitySearched ) )
+        }
     }
 
     public startVehicleMovementsPageLoader (): void {
@@ -167,38 +186,44 @@ export class VehicleFacade extends GenericEventElementFacade {
         this.ngStore.dispatch( StopVehicleMovementsPageLoader )
     }
 
-    public fetchVehicleMovementTypes (eventId: string | undefined = this.actualSelectedEventId): void {
-        this.ngStore.dispatch( new FetchVehicleMovementTypes( eventId ) )
-    }
-
     public fetchVehicleMovementsPage (
         id: string,
-        offset: number | undefined,
-        limit: number | undefined,
+        pageNumber: number | undefined,
+        pageSize: number | undefined,
         force: boolean,
         eventId: string | undefined = this.actualSelectedEventId,
     ): void {
-        this.ngStore.dispatch( new FetchVehicleMovementsPage( eventId, id, offset, limit, force ) )
+        this.ngStore.dispatch( new FetchVehicleMovementsPage( eventId, id, pageNumber, pageSize, force ) )
     }
 
-    public inputVehicleMovementsPageSearch (searched: string | undefined): void {
-        this.ngStore.dispatch( new InputVehicleMovementsPageSearch( searched ) )
+    public fetchVehicleMovementsContent (
+        movementIds: string[],
+        eventId: string | undefined,
+    ): void {
+        this.ngStore.dispatch( new FetchVehicleMovementsContents( eventId, movementIds ) )
     }
 
-    public selectVehicleMovementsPageType (type: string | undefined): void {
-        this.ngStore.dispatch( new SelectVehicleMovementsPageType( type ) )
-    }
+    public inputMovementsPageSearchParameters (
+        typeSearched: string | undefined,
+        startDateTimeSearched: Date | undefined,
+        endDateTimeSearched: Date | undefined,
+        visibilitySearched: boolean | undefined,
+    ): void {
+        if (typeSearched !== this.vehicleMovementsPageMovementTypeSearchedParam()) {
+            this.ngStore.dispatch( new SelectVehicleMovementsPageTypeSearched( typeSearched ) )
+        }
 
-    public inputVehicleMovementsPageDateRange (range: Date[] | undefined): void {
-        this.ngStore.dispatch( new InputVehicleMovementsPageDateRange( range?.[0], range?.[1] ) )
-    }
+        if (startDateTimeSearched !== this.vehicleMovementsPageStartDateTimeSearchedParam()) {
+            this.ngStore.dispatch( new InputVehicleMovementsPageStartDateTimeSearched( startDateTimeSearched ) )
+        }
 
-    public selectVehicleMovementsPageVisibility (onlyVisible: boolean): void {
-        this.ngStore.dispatch( new SelectVehicleMovementsPageVisibility( onlyVisible ) )
-    }
+        if (endDateTimeSearched !== this.vehicleMovementsPageEndDateTimeSearchedParam()) {
+            this.ngStore.dispatch( new InputVehicleMovementsPageEndDateTimeSearched( endDateTimeSearched ) )
+        }
 
-    public selectVehicleMovementsPageOrder (order: OrderEnum): void {
-        this.ngStore.dispatch( new SelectVehicleMovementsPageOrder( order ) )
+        if (visibilitySearched !== this.vehicleMovementsPageVisibilitySearchedParam()) {
+            this.ngStore.dispatch( new SelectVehicleMovementsPageVisibilitySearched( visibilitySearched ) )
+        }
     }
 
     public startVehicleLoader (): void {
@@ -225,10 +250,6 @@ export class VehicleFacade extends GenericEventElementFacade {
         return this.actions$.pipe( ofActionSuccessful( CreateVehicle ) )
     }
 
-    public handleVehicleCreation (): Observable<CreateVehicle> {
-        return this.actions$.pipe( ofActionSuccessful( CreateVehicle ) )
-    }
-
     public updateVehicle (
         id: string,
         vehicle: VehicleDto,
@@ -251,5 +272,11 @@ export class VehicleFacade extends GenericEventElementFacade {
         eventId: string | undefined = this.actualSelectedEventId,
     ): void {
         this.ngStore.dispatch( new DeleteVehicle( eventId, vehicle ) )
+    }
+
+    public fetchPresencesStatus (): void {
+        if (this.presencesStatusMetadata().length === 0) {
+            this.ngStore.dispatch( FetchVehiclePresencesStatus )
+        }
     }
 }

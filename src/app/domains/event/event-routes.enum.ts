@@ -1,4 +1,4 @@
 export enum EventRoutesEnum {
     CREATE = 'create',
-    EDIT = ':id/edit',
+    EDIT = ':eventId/edit',
 }

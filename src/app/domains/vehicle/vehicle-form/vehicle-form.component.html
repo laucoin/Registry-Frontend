@@ -1,94 +1,97 @@
-<app-form [form]='form' [loading]='(loading$ | async) ?? false'>
-    @if (showTitle) {
-        @if (vehicle()) {
-            <h2>{{
-                    'vehicle.form.title.edit' | translate: {
-                        registration: vehicle()?.registration,
-                        brand: vehicle()?.brand,
-                        model: vehicle()?.model,
-                    }
-                }}
-            </h2>
-        } @else {
-            <h2>{{ 'vehicle.form.title.create' | translate }}</h2>
-        }
-    }
+<app-form [form]='form'
+          [loading]='facade.vehicleLoading()'
+          [title]='"vehicles.form.title" | formTitle: facade.vehicle() | translate : {
+              registration: facade.vehicle()?.licensePlate,
+              brand: facade.vehicle()?.brand,
+              model: facade.vehicle()?.model,
+          }'>
     <p-card>
         <div class='field'>
-            <label for='registration' appRequired>{{ 'vehicle.form.registration' | translate }}</label>
+            <label for='license-plate' appRequired>{{ 'vehicles.form.license-plate' | translate }}</label>
             <p-inputmask mask='aa-999-aa'
+                         inputId='license-plate'
                          styleClass='full-w'
-                         [formControl]='registration'
-                         [placeholder]='"vehicle.example.registration" | translate'
-                         (keydown.enter)='submit()'
-                         id='registration' />
-            <app-form-field-error [control]='registration'
-                                  translationPrefix='vehicle.form.error.registration' />
+                         [formControl]='licensePlate'
+                         [placeholder]='"vehicles.form.placeholder.license-plate" | translate'
+                         (keydown.enter)='submit()' />
+            <app-form-field-error [errors]='licensePlate.errors'
+                                  [invalid]='FormUtil.invalid(licensePlate)'
+                                  translationPrefix='vehicles.form.error.license-plate' />
         </div>
         <div class='field'>
-            <label for='brand' appRequired>{{ 'vehicle.form.brand' | translate }}</label>
+            <label for='brand' appRequired>{{ 'vehicles.form.brand' | translate }}</label>
             <input [formControl]='brand'
-                   [placeholder]='"vehicle.example.brand" | translate'
+                   [placeholder]='"vehicles.form.placeholder.brand" | translate'
                    (keydown.enter)='submit()'
                    id='brand'
                    pInputText
                    type='text' />
-            <app-form-field-error [control]='brand'
-                                  translationPrefix='vehicle.form.error.brand' />
+            <app-form-field-error [errors]='brand.errors'
+                                  [invalid]='FormUtil.invalid(brand)'
+                                  translationPrefix='vehicles.form.error.brand' />
         </div>
         <div class='field'>
-            <label for='model' appRequired>{{ 'vehicle.form.model' | translate }}</label>
+            <label for='model' appRequired>{{ 'vehicles.form.model' | translate }}</label>
             <input [formControl]='model'
-                   [placeholder]='"vehicle.example.model" | translate'
+                   [placeholder]='"vehicles.form.placeholder.model" | translate'
                    (keydown.enter)='submit()'
                    id='model'
                    pInputText
                    type='text' />
-            <app-form-field-error [control]='model'
-                                  translationPrefix='vehicle.form.error.model' />
+            <app-form-field-error [errors]='model.errors'
+                                  [invalid]='FormUtil.invalid(model)'
+                                  translationPrefix='vehicles.form.error.model' />
         </div>
-        <div class='field'>
-            <label for='presence'>{{ 'vehicle.form.presence' | translate }}</label>
-            <p-date-picker [formControl]='presence'
-                           [showButtonBar]='true'
-                           [placeholder]='"vehicle.example.presence" | translate: {
-                                    begin: startDateExample() | date: ("datetime.format.date" | translate),
-                                    end: endDateExample() | date: ("datetime.format.date" | translate)
-                                }'
-                           [readonlyInput]='true'
-                           [showTime]='true'
-                           [touchUI]='isMobile()'
-                           (keydown.enter)='submit()'
-                           id='presence'
-                           selectionMode='range'
-                           fluid />
-            <app-form-field-error [control]='presence'
-                                  translationPrefix='vehicle.form.error.presence' />
+        <div class='d-flex flex-wrap'>
+            <div class='begin-date-time field'>
+                <label for='begin-date-time'>{{ 'vehicles.form.begin-datetime' | translate }}</label>
+                <app-date-time-field [formControl]='beginDateTime'
+                                     [invalid]='FormUtil.invalid(beginDateTime)'
+                                     inputId='begin-date-time'
+                                     [datePlaceholder]='"vehicles.form.placeholder.date" | translate: {
+                                                            date: startDateExample | dateFormat: "date"
+                                                         }'
+                                     [timePlaceholder]='"vehicles.form.placeholder.time" | translate: {
+                                                            date: startDateExample | dateFormat: "time"
+                                                         }' />
+                <small class='secondary-color'>{{ 'vehicles.form.hint.begin-date-time' | translate }}</small>
+                <app-form-field-error [errors]='beginDateTime.errors'
+                                      [invalid]='FormUtil.invalid(beginDateTime)'
+                                      translationPrefix='vehicles.form.error.begin-datetime' />
+            </div>
+            <div class='end-date-time field'>
+                <label for='end-date-time'>{{ 'vehicles.form.end-datetime' | translate }}</label>
+                <app-date-time-field [formControl]='endDateTime'
+                                     [invalid]='FormUtil.invalid(endDateTime)'
+                                     inputId='end-date-time'
+                                     [datePlaceholder]='"vehicles.form.placeholder.date" | translate: {
+                                                            date: endDateExample | dateFormat: "date"
+                                                         }'
+                                     [timePlaceholder]='"vehicles.form.placeholder.time" | translate: {
+                                                            date: endDateExample | dateFormat: "time"
+                                                         }' />
+                <small class='secondary-color'>{{ 'vehicles.form.hint.end-date-time' | translate }}</small>
+                <app-form-field-error [errors]='endDateTime.errors'
+                                      [invalid]='FormUtil.invalid(endDateTime)'
+                                      translationPrefix='vehicles.form.error.end-datetime' />
+            </div>
         </div>
+        <app-form-field-error [errors]='form.errors'
+                              [invalid]='FormUtil.invalid(form) && beginDateTime.valid && endDateTime.valid'
+                              translationPrefix='vehicles.form.error.date-range' />
     </p-card>
     <div class='d-flex mt-2 justify-content-center'>
         <p-button
-                (click)='navigateToRedirectUri()'
-                [label]='"cancel" | translate'
+                (click)='navigateToRedirectUri(AppRouteEnum.VEHICLES)'
+                [label]='"global.actions.cancel" | translate'
                 [outlined]='true'
                 [rounded]='true' />
-
-        @if (vehicle()) {
-            <p-button
-                    class='ms-2'
-                    (click)='submit()'
-                    [label]='"edit" | translate'
-                    [rounded]='true'
-                    icon='pi pi-pen-to-square'
-                    severity='success' />
-        } @else {
-            <p-button
-                    class='ms-2'
-                    (click)='submit()'
-                    [label]='"create" | translate'
-                    [rounded]='true'
-                    icon='pi pi-plus'
-                    severity='success' />
-        }
+        <p-button
+                class='ms-2'
+                (click)='submit()'
+                [label]='facade.vehicle() | formButton | translate'
+                [rounded]='true'
+                icon='pi pi-pen-to-square'
+                severity='success' />
     </div>
 </app-form>

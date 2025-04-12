@@ -1,74 +1,60 @@
 <app-list (updateRequired)='loadPage($event)'
-          [elementPage$]='elementPage$!'
-          [error$]='error$'
-          [loading$]='loading$'>
+          [elementPage]='facade.eventsPage()'
+          [error]='facade.eventsPageError()'
+          [loading]='facade.eventsPageLoading()'>
     <ng-template appTemplate='search' [formGroup]='form' let-pageEvent>
-        <div class='row'>
-            <div class='col-12 col-sm-6 col-md-12 col-lg-6 search-field'>
-                <label for='profiles-search'>{{ 'filter-sort.search' | translate }}</label>
-                <input id='profiles-search'
-                       type='text'
-                       pInputText
-                       (keydown.enter)='loadPage(pageEvent)'
-                       [formControl]='searched' />
-            </div>
-            <div class='col-12 col-sm-6 col-md-12 col-lg-6 search-field'>
-                <label for='profiles-range'>{{ 'filter-sort.date-range' | translate }}</label>
-                <p-date-picker [formControl]='range'
+        <div class='field'>
+            <label for='text-search-field'>{{ 'events.search-and-filter.text' | translate }}</label>
+            <input id='text-search-field'
+                   type='text'
+                   fluid
+                   pInputText
+                   (keydown.enter)='loadPage(pageEvent)'
+                   [formControl]='textSearched' />
+        </div>
+        <div class='d-grid search-line g-2'>
+            <div class='field'>
+                <label for='date-time-search-field'>{{ 'events.search-and-filter.datetime' | translate }}</label>
+                <p-date-picker inputId='date-time-search-field'
+                               fluid
                                [showButtonBar]='true'
-                               [readonlyInput]='true'
                                [showTime]='true'
-                               [touchUI]='isMobile()'
-                               id='profiles-range'
-                               selectionMode='range'
-                               fluid />
+                               [touchUI]='registryFacade.tinyScreen()'
+                               (onBlur)='loadPage(pageEvent)'
+                               [formControl]='dateTimeSearched' />
+            </div>
+            <div class='field'>
+                <label for='visibility-search-field'>{{ 'events.search-and-filter.visibility' | translate }}</label>
+                <p-select inputId='visibility-search-field'
+                          fluid
+                          [options]='facade.visibilitiesMetadata()'
+                          optionLabel='label'
+                          optionValue='value'
+                          (onChange)='loadPage(pageEvent)'
+                          [formControl]='visibilitySearched' />
             </div>
         </div>
-        <div class='d-flex flex-wrap justify-content-center pt-2'>
-            <div class='pe-1 flex-grow-1'>
-                <p-toggleButton
-                        [formControl]='onlyVisible'
-                        (keydown.enter)='loadPage(pageEvent)'
-                        [onLabel]='"filter-sort.only-visible.false" | translate'
-                        [offLabel]='"filter-sort.only-visible.true" | translate'
-                        onIcon='pi pi-eye-slash'
-                        offIcon='pi pi-eye'
-                        [ariaLabel]='"filter-sort.only-visible.title" | translate' />
-                <p-toggleButton
-                        class='ms-2'
-                        [formControl]='order'
-                        (keydown.enter)='loadPage(pageEvent)'
-                        [onLabel]='"filter-sort.order.DESC" | translate'
-                        [offLabel]='"filter-sort.order.ASC" | translate'
-                        onIcon='pi pi-sort-alpha-down-alt'
-                        offIcon='pi pi-sort-alpha-down'
-                        [ariaLabel]='"filter-sort.order.title" | translate' />
-            </div>
-            <div class='ps-1'>
-                <p-button (click)='loadPage(pageEvent)'
-                          [label]='"filter-sort.apply" | translate'
-                          [outlined]='true'
-                          [rounded]='true'
-                          icon='pi pi-search'
-                          [loading]='(loading$ | async) || (silentLoading$ | async)' />
-            </div>
+        <div class='d-flex justify-content-center'>
+            <p-button (click)='loadPage(pageEvent)'
+                      [label]='"global.actions.search-and-filter" | translate'
+                      [outlined]='true'
+                      [rounded]='true'
+                      icon='pi pi-search'
+                      [loading]='facade.eventsPageLoading() || facade.eventsPageSilentLoading()' />
         </div>
     </ng-template>
     <ng-template appTemplate='creation'>
-        @if (hasUserAuthority(currentUser$ | async, UserAuthority.REGISTRY_EVENT_C)) {
+        @if (CurrentUserUtil.hasUserAuthority(registryFacade.currentUser(), UserAuthority.REGISTRY_EVENT_C)) {
             <p-button class='m-1'
                       severity='success'
                       [outlined]='true'
                       [rounded]='true'
-                      [label]='isTinyScreen() || isMobile() ? "" : "create" | translate'
+                      [label]='registryFacade.tinyScreen() ? "" : "global.actions.create" | translate'
                       icon='pi pi-plus'
                       [routerLink]='EventRoutesEnum.CREATE' />
         }
     </ng-template>
-    <ng-template appTemplate='element' let-event let-layout='layout'>
-        <app-event-element [element]='event' [layout]='layout' />
-    </ng-template>
-    <ng-template appTemplate='empty'>
-        <app-message [message]='message' />
+    <ng-template appTemplate='element' let-event>
+        <app-event-element [event]='event' />
     </ng-template>
 </app-list>

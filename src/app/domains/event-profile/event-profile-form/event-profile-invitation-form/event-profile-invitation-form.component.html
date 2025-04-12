@@ -1,65 +1,95 @@
-<app-form [form]='form' [loading]='(loading$ | async) ?? false'>
-    <h2>{{ 'profile.form.title.create' | translate : { name: (contextEvent$ | async)?.name } }}</h2>
+<app-form [form]='form' [loading]='facade.eventProfileLoading()'>
+    <h2>{{ 'event-profiles.form.title.create' | translate : { name: contextEvent()?.name } }}</h2>
     <p-card>
         <form [formGroup]='form'>
             <div class='field'>
-                <label for='role' appRequired>{{ 'profile.form.role' | translate }}</label>
+                <label for='role' appRequired>{{ 'event-profiles.form.role' | translate }}</label>
                 <p-select
                         inputId='role'
                         fluid
-                        [options]='(assignableRoles$ | async) ?? []'
+                        [loading]='!facade.eventProfileAssignableRolesMetadata()'
+                        [options]='facade.eventProfileAssignableRolesMetadata()'
                         [formControl]='role'
-                        [placeholder]='"profile.example.role" | translate: { role: ((assignableRoles$ | async) ?? []) ?
-                        (assignableRoles$ | async)?.[0]?.label : "" }'
+                        [placeholder]='"event-profiles.form.placeholder.role" | translate: {
+                            role: facade.eventProfileAssignableRolesMetadata().length > 0
+                                ? facade.eventProfileAssignableRolesMetadata()?.[0]?.label
+                                : ""
+                        }'
                         (keydown.enter)='submit()'
                         optionLabel='label'
                         optionValue='value' />
-                <app-form-field-error [control]='role'
-                                      translationPrefix='profile.form.error.role' />
+                <app-form-field-error [errors]='role.errors'
+                                      [invalid]='FormUtil.invalid(role)'
+                                      translationPrefix='event-profiles.form.error.role' />
             </div>
-            <div class='field'>
-                <label for='profiles-range'>{{ 'profile.form.date-range' | translate }}</label>
-                <p-date-picker [formControl]='range'
-                               [showButtonBar]='true'
-                               [readonlyInput]='true'
-                               [showTime]='true'
-                               [touchUI]='isMobile()'
-                               [placeholder]='"profile.example.presence" | translate: {
-                                    begin: startDateExample() | date: ("datetime.format.date" | translate),
-                                    end: endDateExample() | date: ("datetime.format.date" | translate)
-                                }'
-                               (keydown.enter)='submit()'
-                               id='profiles-range'
-                               inputId='profiles-range'
-                               selectionMode='range'
-                               fluid />
-                <small class='secondary-color'>{{ 'info.message.default-range' | translate }}</small>
-                <app-form-field-error [control]='range'
-                                      translationPrefix='profile.form.error.range' />
+            <div class='d-flex flex-wrap'>
+                <div class='begin-date-time field'>
+                    <label for='begin-date-time'>{{ 'event-profiles.form.begin-datetime' | translate }}</label>
+                    <app-date-time-field [formControl]='beginDateTime'
+                                         [invalid]='FormUtil.invalid(beginDateTime)'
+                                         inputId='begin-date-time'
+                                         [datePlaceholder]='"event-profiles.form.placeholder.date" | translate: {
+                                                            date: startDateExample | dateFormat: "date"
+                                                         }'
+                                         [timePlaceholder]='"event-profiles.form.placeholder.time" | translate: {
+                                                            date: startDateExample | dateFormat: "time"
+                                                         }' />
+                    <small class='secondary-color'>{{ 'event-profiles.form.hint.begin-date-time' | translate }}</small>
+                    <app-form-field-error [errors]='beginDateTime.errors'
+                                          [invalid]='FormUtil.invalid(beginDateTime)'
+                                          translationPrefix='event-profiles.form.error.begin-datetime' />
+                </div>
+                <div class='end-date-time field'>
+                    <label for='end-date-time'>{{ 'event-profiles.form.end-datetime' | translate }}</label>
+                    <app-date-time-field [formControl]='endDateTime'
+                                         [invalid]='FormUtil.invalid(endDateTime)'
+                                         inputId='end-date-time'
+                                         [datePlaceholder]='"event-profiles.form.placeholder.date" | translate: {
+                                                            date: startDateExample | dateFormat: "date"
+                                                         }'
+                                         [timePlaceholder]='"event-profiles.form.placeholder.time" | translate: {
+                                                            date: startDateExample | dateFormat: "time"
+                                                         }' />
+                    <small class='secondary-color'>{{ 'event-profiles.form.hint.end-date-time' | translate }}</small>
+                    <app-form-field-error [errors]='endDateTime.errors'
+                                          [invalid]='FormUtil.invalid(endDateTime)'
+                                          translationPrefix='event-profiles.form.error.end-datetime' />
+                </div>
             </div>
+            <app-form-field-error [errors]='form.errors'
+                                  [invalid]='FormUtil.invalid(form) && beginDateTime.valid && endDateTime.valid'
+                                  translationPrefix='event-profiles.form.error.date-range' />
             <p-divider />
             <div class='field'>
-                <label for='users' appRequired>{{ 'profile.form.users' | translate }}</label>
+                <span class='label'
+                      appRequired>{{ 'event-profiles.form.users' | pluralTranslation: users.value | translate }}</span>
+                <label for='users' class='secondary-color'>{{ 'event-profiles.form.users.search' | translate }}</label>
                 <app-select-elements-field [formControl]='users'
-                                           [suggestions]='(usersSuggestion$ | async) ?? []'
-                                           [searchLabel]='"profile.form.user-search" | translate'
-                                           [emptyPlaceholder]='"profile.form.no-user" | translate'
+                                           [fluid]='true'
+                                           [multiple]='true'
+                                           [invalid]='FormUtil.invalid(users)'
+                                           [selectionLabel]='"event-profiles.form.users.selected" | pluralTranslation:
+                                           (users.value?.length ?? 0) | translate'
+                                           [emptyMessage]='"event-profiles.form.users.empty" | translate'
+                                           [suggestions]='facade.searchedUsersMetadata()'
+                                           [selectItemBuilder]='UserUtil.toSelectItem'
                                            inputId='users'
                                            (handleSearch)='handleSearch($event.query)' />
-                <app-form-field-error [control]='users'
-                                      translationPrefix='profile.form.error.users' />
+                <app-form-field-error [errors]='users.errors'
+                                      [invalid]='FormUtil.invalid(users)'
+                                      translationPrefix='event-profiles.form.error.users' />
             </div>
         </form>
         <div class='d-flex pt-4 justify-content-center align-items-center'>
             <p-button
-                    (click)='navigateToRedirectUri()'
-                    [label]='"cancel" | translate'
+                    (click)='navigateToRedirectUri(nextNavigation)'
+                    [label]='"global.actions.cancel" | translate'
                     [outlined]='true'
                     [rounded]='true' />
             <p-button
                     class='ms-2'
                     (click)='submit()'
-                    [label]='("profile.form.create." + (users.value?.length > 1 ? "plural" : "singular")) | translate'
+                    [label]='"event-profiles.actions.invite-user" | pluralTranslation: users.value?.length | translate'
                     [rounded]='true'
                     icon='pi pi-user-plus'
                     severity='success' />

@@ -1,4 +1,4 @@
-@if (message) {
+@if (message()) {
     <div class='container'>
         <div class='row'>
             <div class='col-12 order-2 col-sm-6 order-sm-1 col-md-12 order-md-2 col-lg-6 order-lg-1'>
@@ -8,16 +8,16 @@
             </div>
             <div class='col-12 order-1 col-sm-6 order-sm-2 col-md-12 order-md-1 col-lg-6 order-lg-2 d-flex flex-column justify-content-center'>
                 <div class='full-w'>
-                    <p-message [severity]='message.severity'>
+                    <p-message [severity]='message()!.severity'>
                         <div class='d-flex flex-column align-items-start'>
-                            @if (message.summary) {
+                            @if (message()!.summary) {
                                 <div class='message-title'>
-                                    {{ message.summary | translate }}
+                                    {{ message()!.summary! | translate }}
                                 </div>
                             }
-                            @if (message.detail) {
+                            @if (message()!.detail) {
                                 <div class='message-content mt-1'>
-                                    {{ message.detail | translate: message.data }}
+                                    {{ message()!.detail! | translate: message()!.data }}
                                 </div>
                             }
                         </div>

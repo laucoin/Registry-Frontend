@@ -1,5 +1,5 @@
 export enum GroupRoutesEnum {
-    MEMBERS = ':id/members',
+    MEMBERS = ':groupId/members',
     CREATE = 'create',
-    EDIT = ':id/edit',
+    EDIT = ':groupId/edit',
 }

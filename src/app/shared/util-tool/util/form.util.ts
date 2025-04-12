@@ -1,6 +1,11 @@
 import { AbstractControl, FormArray, FormControl, FormGroup } from '@angular/forms'
 
 export class FormUtil {
+    public static isFormValid (form: FormGroup): boolean {
+        FormUtil.markAllControlsAsDirty( form )
+        return !form.invalid
+    }
+
     public static markAllControlsAsDirty (form: FormGroup): void {
         Object.values( form.controls ).forEach( (control: unknown) => {
             if (control instanceof FormGroup) {
@@ -38,5 +43,14 @@ export class FormUtil {
             }
         }
         return range
+    }
+
+    public static errorCode (control: AbstractControl): string | undefined {
+        if (control.valid || !(control.dirty && control.touched)) return undefined
+        return Object.keys( control.errors! )[0]
+    }
+
+    public static invalid (control: AbstractControl): boolean {
+        return control.invalid && (control.dirty || control.touched)
     }
 }

@@ -1,47 +1,36 @@
-<app-element-card [element]='element'
-                  [actions]='actions'
-                  [showActionMenu]='showActionMenu'
+<app-element-card [element]='movement()'
+                  [actions]='actions()'
+                  [actionMenuVisible]='actionMenuVisible()'
                   (action)='handleAction($event)'
-                  [layout]='layout'
-                  [icon]='element.type.value === "OUT" ? "pi pi-arrow-up" : "pi pi-arrow-down"'>
-    <div [class.flex-lg-row]='layout === "list"' [class.flex-column]='layout === "grid"'
-         class='d-flex flex-wrap justify-content-between align-items-center'>
-        <div class='type d-flex p-1'>
-            <p-tag [severity]='element.type.value === "OUT" ? "secondary" : "info"'
-                   [value]='element.type.label' />
+                  [icon]='movement().type.value === "OUT" ? "pi pi-arrow-up" : "pi pi-arrow-down"'>
+    <div class='element-card'>
+        <div class='type d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
+            <app-severity-tag [severity]='movement().type.value === "OUT" ? "warn" : "success"' [value]='movement().type.label!' />
         </div>
-        <div class='datetime d-flex p-1'>
-            {{
-                'datetime.datetime' | translate: {
-                    date: element.dateTime | date: ('datetime.format.date' | translate),
-                    time: element.dateTime | date: ('datetime.format.time' | translate),
-                }
-            }}
+        <div class='datetime d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
+            {{ movement().dateTime | dateFormat: 'datetime' }}
         </div>
-        <div class='content d-flex p-1'>
-            <div class='pointer movement-content'
+        <div class='content d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
+            <div class='pointer hover-underline'
                  tabindex='1'
                  (click)='layerOpened = true'
                  (keydown.enter)='layerOpened = true'>
                 @switch (true) {
+                    @case (total() <= 0) {
+                        <p-skeleton width='10rem' borderRadius='1rem' />
+                    }
                     @case (!!driver()) {
                         <p-tag icon='pi pi-car' [value]="(driver()?.participant?.firstName | titlecase) + ' ' +
-                            (driver()?.participant?.lastName | uppercase)" />
+                                            (driver()?.participant?.lastName | uppercase)" />
                     }
-                    @case (firstNotPurged && total() === 0) {
-                        {{ (firstNotPurged!.firstName | titlecase) + " " + (firstNotPurged!.lastName | uppercase) }}
-                    }
-                    @case (firstNotPurged && total() > 0) {
-                        {{
-                            ('movement.person-and-others.normal.' + (total() === 1 ? 'singular' : 'plural')) | translate: {
-                                person: (firstNotPurged!.firstName | titlecase) + " " + (firstNotPurged!.lastName | uppercase),
-                                others: total()
-                            }
-                        }}
+                    @case (total() === 1) {
+                        {{ (movement().content[0].participant!.firstName | titlecase) + " " + (movement().content[0].participant!.lastName | uppercase) }}
                     }
                     @default {
                         {{
-                            ('movement.person-and-others.purged.' + (total() <= 1 ? 'singular' : 'plural')) | translate: {
+                            'movements.content' | pluralTranslation: total() |
+                                translate: {
+                                name: (movement().content[0].participant!.firstName | titlecase) + " " + (movement().content[0].participant!.lastName | uppercase),
                                 others: total()
                             }
                         }}
@@ -49,31 +38,36 @@
                 }
             </div>
         </div>
+        <div class='visibility-status d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
+            <app-severity-tag
+                    [severity]='movement().visible ? "success" : "danger"'
+                    [value]='movement() | visibilityName: "movements" | translate' />
+        </div>
     </div>
 </app-element-card>
 
 <app-layer [(visible)]='layerOpened'
-           [header]='"movement.content.title" | translate'>
-    <p-tabs [(value)]='activeTab' [scrollable]='true'>
+           [header]='"movements.content-layer-title" | pluralTranslation: movement().content | translate'>
+    <p-tabs [(value)]='activeTab' [scrollable]='true' class='max-panel-height'>
         <p-tablist>
             <p-tab [value]='1'>
-                <p-tag [value]='element.content.length.toString()' class='me-1' />
-                {{ 'movement.content.all' | translate }}
+                <p-tag [value]='movement().content.length.toString()' class='me-1' />
+                {{ 'global.people.all' | translate }}
             </p-tab>
             @if (adults().length > 0) {
                 <p-tab [value]='2'>
                     <p-tag [value]='adults().length.toString()' severity='info' class='me-1' />
-                    {{ ('movement.content.adult.' + (adults().length > 1 ? 'plural' : 'singular')) | translate }}
+                    {{ 'global.people.major' | pluralTranslation: adults() | translate }}
                 </p-tab>
             }
             @if (children().length > 0) {
                 <p-tab [value]='3'>
                     <p-tag [value]='children().length.toString()' severity='info' class='me-1' />
-                    {{ ('movement.content.child.' + (children().length > 1 ? 'plural' : 'singular')) | translate }}
+                    {{ 'global.people.minor' | pluralTranslation: children() | translate }}
                 </p-tab>
             }
             @for (pool of pools() | keyvalue; track pool.key; let i = $index) {
-                <p-tab [value]='3 + i'>
+                <p-tab [value]='4 + i'>
                     <p-tag [value]='pool.value.length.toString()' severity='info' class='me-1' />
                     {{ pool.key }}
                 </p-tab>
@@ -82,18 +76,24 @@
         <p-tabpanels>
             <p-tabpanel [value]='1'>
                 <p-listbox
-                        [options]='element.content'
+                        styleClass='max-list-box-height'
+                        scrollHeight='100%'
+                        [options]='movement().content'
                         [readonly]='true'
                         optionLabel='name'>
                     <ng-template #item let-content>
-                        <div class='d-flex align-items-center'>
-                            <p-avatar [icon]='content.vehicle ? "pi pi-car" : "pi pi-user"' class='me-2' shape='circle' />
-                            <div>
-                                {{ (content.participant.firstName | titlecase) + ' ' + (content.participant.lastName | uppercase) }}
-                                @if (content.vehicle) {
-                                    <p-tag [value]='VehicleUtil.toSelectItem(content.vehicle).label' class='ms-2' />
-                                }
+                        <p-avatar [icon]='content.vehicle ? "pi pi-car" : "pi pi-user"' class='me-2' shape='circle' />
+                        <div>
+                            <div class='d-flex align-items-center'>
+                                <div>
+                                    {{ (content.participant.firstName | titlecase) + ' ' + (content.participant.lastName | uppercase) }}
+                                </div>
                             </div>
+                            @if (content.vehicle) {
+                                <div class='mt-2'>
+                                    <p-tag [value]='VehicleUtil.toSelectItem(content.vehicle).label' />
+                                </div>
+                            }
                         </div>
                     </ng-template>
                 </p-listbox>
@@ -101,18 +101,24 @@
             @if (adults().length > 0) {
                 <p-tabpanel [value]='2'>
                     <p-listbox
+                            styleClass='max-list-box-height'
+                            scrollHeight='100%'
                             [options]='adults()'
                             [readonly]='true'
                             optionLabel='name'>
                         <ng-template #item let-adult>
-                            <div class='d-flex align-items-center'>
-                                <p-avatar [icon]='adult.vehicle ? "pi pi-car" : "pi pi-user"' class='me-2' shape='circle' />
-                                <div>
-                                    {{ (adult.participant.firstName | titlecase) + ' ' + (adult.participant.lastName | uppercase) }}
-                                    @if (adult.vehicle) {
-                                        <p-tag [value]='VehicleUtil.toSelectItem(adult.vehicle).label' class='ms-2' />
-                                    }
+                            <p-avatar [icon]='adult.vehicle ? "pi pi-car" : "pi pi-user"' class='me-2' shape='circle' />
+                            <div>
+                                <div class='d-flex align-items-center'>
+                                    <div>
+                                        {{ (adult.participant.firstName | titlecase) + ' ' + (adult.participant.lastName | uppercase) }}
+                                    </div>
                                 </div>
+                                @if (adult.vehicle) {
+                                    <div class='mt-2'>
+                                        <p-tag [value]='VehicleUtil.toSelectItem(adult.vehicle).label' />
+                                    </div>
+                                }
                             </div>
                         </ng-template>
                     </p-listbox>
@@ -121,30 +127,40 @@
             @if (children().length > 0) {
                 <p-tabpanel [value]='3'>
                     <p-listbox
+                            styleClass='max-list-box-height'
+                            scrollHeight='100%'
                             [options]='children()'
                             [readonly]='true'
                             optionLabel='name'>
                         <ng-template #item let-child>
+                            <p-avatar [icon]='child.vehicle ? "pi pi-car" : "pi pi-user"' class='me-2' shape='circle' />
                             <div class='d-flex align-items-center'>
-                                <p-avatar icon='pi pi-user' class='me-2' shape='circle' />
-                                <div>{{ (child.participant.firstName | titlecase) + ' ' + (child.participant.lastName | uppercase) }}</div>
+                                {{ (child.participant.firstName | titlecase) + ' ' + (child.participant.lastName | uppercase) }}
                             </div>
                         </ng-template>
                     </p-listbox>
                 </p-tabpanel>
             }
             @for (pool of pools() | keyvalue; track pool.key; let i = $index) {
-                <p-tabpanel [value]='3 + i'>
+                <p-tabpanel [value]='4 + i'>
                     <p-listbox
+                            styleClass='max-list-box-height'
+                            scrollHeight='100%'
                             [options]='pool.value'
                             [readonly]='true'
                             optionLabel='name'>
                         <ng-template #item let-content>
-                            <div class='d-flex align-items-center'>
-                                <p-avatar [icon]='content.vehicle ? "pi pi-car" : "pi pi-user"' class='me-2' shape='circle' />
-                                <div>{{ (content.participant.firstName | titlecase) + ' ' + (content.participant.lastName | uppercase) }}</div>
+                            <p-avatar [icon]='content.vehicle ? "pi pi-car" : "pi pi-user"' class='me-2' shape='circle' />
+                            <div>
+                                <div class='d-flex align-items-center'>
+                                    <div>
+                                        {{ (content.participant.firstName | titlecase) + ' ' + (content.participant.lastName | uppercase) }}
+                                    </div>
+                                </div>
                                 @if (content.vehicle) {
-                                    <p-tag [value]='VehicleUtil.toSelectItem(content.vehicle).label' class='ms-2' />
+                                    <div class='mt-2'>
+                                        <p-tag [value]='VehicleUtil.toSelectItem(content.vehicle).label' />
+                                    </div>
                                 }
                             </div>
                         </ng-template>
@@ -153,8 +169,4 @@
             }
         </p-tabpanels>
     </p-tabs>
-    <div class='d-flex justify-content-center align-content-center'>
-        <p-button (click)='layerOpened = false' [rounded]='true' [outlined]='true' severity='secondary'
-                  [label]='"close" | translate' />
-    </div>
 </app-layer>

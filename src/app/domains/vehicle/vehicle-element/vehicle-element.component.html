@@ -1,34 +1,45 @@
-<app-element-card [element]='element'
-                  [actions]='actions'
-                  [showActionMenu]='showActionMenu'
+<app-element-card [element]='vehicle()'
+                  [actions]='actions()'
+                  [actionMenuVisible]='actionMenuVisible()'
                   (action)='handleAction($event)'
-                  [layout]='layout'
                   icon='pi pi-car'>
-    <div [class.flex-lg-row]='layout === "list"' [class.flex-column]='layout === "grid"'
-         class='d-flex flex-wrap justify-content-between align-items-center'>
-        <div class='id p-1'>
-            <span [class.strikethrough]='element.end | isPast' class='vehicle-registration'>
-                {{ element.registration }}
-            </span>
-            @if (element.end | isPast) {
-                <i> ({{ 'outdated' | translate }})</i>
+    <div class='element-card'>
+        <div class='vehicle-info d-flex flex-column justify-content-center'>
+            <div class='vehicle-license-plate d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
+                {{ vehicle().licensePlate }}
+            </div>
+            @if (vehicle().startAvailability) {
+                <div class='d-flex mt-1 align-items-center' [class.justify-content-center]='registryFacade.tinyScreen()'>
+                    <i class='pi pi-play-circle'></i>
+                    <span class='ms-1'>{{ vehicle().startAvailability | customDateFormat }}</span>
+                </div>
+            }
+            @if (vehicle().endAvailability) {
+                <div class='d-flex align-items-center'
+                     [class.justify-content-center]='registryFacade.tinyScreen()'
+                     [class.mt-1]='!vehicle().startAvailability'>
+                    <i class='pi pi-stop-circle'></i>
+                    <span class='ms-1'>{{ vehicle().endAvailability | customDateFormat }}</span>
+                </div>
             }
         </div>
-        <div class='info d-flex p-1'>
-            {{ element.brand }} {{ element.model }}
+        <div class='vehicle-detail d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
+            {{ vehicle().brand }} {{ vehicle().model }}
         </div>
-        <div class='presence secondary-color p-1'>
-            @if (element.begin && element.end) {
-                <i>
-                    {{
-                        'datetime.presence' | translate
-                            : {
-                                start: element.begin | date: ('datetime.format.date' | translate),
-                                end: element.end | date: ('datetime.format.date' | translate),
-                            }
-                    }}
-                </i>
+        <div class='availability d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
+            @if (vehicle().status.value === 'UNAVAILABLE') {
+                <app-severity-tag [severity]='vehicleStatusSeverity()'
+                                  [value]='intervalStatus() | intervalFormat: "vehicles.status" | translate: { interval:
+                                  buildInterval(intervalStatus()!.interval!) }' />
+            } @else {
+                <app-severity-tag [severity]='vehicleStatusSeverity()'
+                                  [value]='vehicle().status.label' />
             }
+        </div>
+        <div class='visibility d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
+            <app-severity-tag
+                    [severity]='vehicle().visible ? "success" : "danger"'
+                    [value]='vehicle() | visibilityName: "vehicles" | translate' />
         </div>
     </div>
 </app-element-card>

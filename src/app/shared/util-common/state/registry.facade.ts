@@ -1,13 +1,14 @@
-import { Injectable } from '@angular/core'
+import { computed, Injectable, Signal } from '@angular/core'
 import { ofActionSuccessful } from '@ngxs/store'
 import { ToastMessageOptions } from 'primeng/api'
-import { map, Observable } from 'rxjs'
+import { combineLatest, map, Observable } from 'rxjs'
 import { TokenModel } from '../../util-authentication/model/token.model'
 import { CurrentUserModel } from '../../util-model/model/current-user.model'
 import { EventProfileModel } from '../../util-model/model/event-profile.model'
 import { PageModel } from '../../util-model/model/page.model'
 import {
     AckNotification,
+    CreateSupportEventProfile,
     DeleteUserEventProfile,
     FetchContextEvent,
     FetchCurrentUser,
@@ -15,10 +16,10 @@ import {
     FetchUserEventProfileInvitationsPage,
     FetchUserEventProfilesPage,
     ImpersonateCurrentUser,
-    InputUserEventProfileInvitationsPageDateRange,
-    InputUserEventProfileInvitationsPageSearch,
-    InputUserEventProfilesPageDateRange,
-    InputUserEventProfilesPageSearch,
+    InputUserEventProfileInvitationsPageDateTimeSearched,
+    InputUserEventProfileInvitationsPageTextSearched,
+    InputUserEventProfilesPageDateTimeSearched,
+    InputUserEventProfilesPageTextSearched,
     Login,
     Logout,
     ManageUserEventInvitationAcceptance,
@@ -26,8 +27,7 @@ import {
     RefreshTokens,
     RestoreTokens,
     SelectUserEventProfile,
-    SelectUserEventProfileInvitationsPageOrder,
-    SelectUserEventProfilesPageOrder,
+    SelectUserEventProfileByEvent,
     SetGlobalError,
     StartContextEventLoader,
     StartGlobalLoader,
@@ -40,11 +40,10 @@ import {
     StopUserEventProfileLoader,
     StopUserEventProfilesPageLoader,
     UpdateNetwork,
+    UpdateScreenWidth,
     UpdateTheme,
 } from './registry.action'
 import { StateUtil } from '../../util-tool/state/state.util'
-import { OrderEnum } from '../../util-model/enumeration/order.enum'
-import { FormUtil } from '../../util-tool/util/form.util'
 import { EventModel } from '../../util-model/model/event.model'
 import { AppConfig } from '../../../app.config'
 import { ErrorModel } from '../../util-model/model/error.model'
@@ -52,130 +51,129 @@ import { SessionStorageUtils } from '../../util-tool/util/session-storage.util'
 import { TOKEN } from '../../util-tool/util/request.util'
 import { GenericFacade } from '../../util-tool/facade/generic.facade'
 import { RegistryState } from './registry.state'
+import { DateUtil } from '../../util-tool/util/date.util'
+import { StringUtil } from '../../util-tool/util/string.util'
 
 @Injectable()
 export class RegistryFacade extends GenericFacade {
-
     private readonly onlineMessage: ToastMessageOptions = StateUtil.buildNotificationMessage(
         'success',
-        'success.title.online',
-        'success.message.online',
+        'global.notifications.ONLINE.title',
+        'global.notifications.ONLINE.message',
         'pi pi-sort-alt',
     )
 
     private readonly offlineMessage: ToastMessageOptions = StateUtil.buildNotificationMessage(
         'warn',
-        'warning.title.OFFLINE',
-        'warning.message.OFFLINE',
+        'global.notifications.OFFLINE.title',
+        'global.notifications.OFFLINE.message',
         'pi pi-sort-alt-slash',
     )
 
-    public get globalLoading (): Observable<boolean> {
-        return this.ngStore.select( RegistryState.globalLoading )
+    public get theme (): Signal<'light' | 'dark'> {
+        return this.ngStore.selectSignal( RegistryState.theme )
     }
 
-    public get globalError (): Observable<ToastMessageOptions | undefined> {
-        return this.ngStore.select( RegistryState.globalError )
+    public get tinyScreen (): Signal<boolean> {
+        return computed( (): boolean => this.ngStore.selectSignal( RegistryState.screenWidth )() < 768 )
     }
 
-    private get actualOnline (): boolean | undefined {
-        return this.ngStore.selectSnapshot( RegistryState.online )
+    public get globalLoading (): Signal<boolean> {
+        return this.ngStore.selectSignal( RegistryState.globalLoading )
     }
 
-    public get logoPath (): Observable<string> {
-        return this.ngStore.select( RegistryState.theme ).pipe(
-            map( (theme: 'light' | 'dark'): string => theme === 'light' ? AppConfig.config.logo.light : AppConfig.config.logo.dark ),
-        )
+    public get globalError (): Signal<ToastMessageOptions | undefined> {
+        return this.ngStore.selectSignal( RegistryState.globalError )
+    }
+
+    private get online (): Signal<boolean | undefined> {
+        return this.ngStore.selectSignal( RegistryState.online )
+    }
+
+    public get logoPath (): Signal<string> {
+        return computed( (): string => this.theme() === 'light' ? AppConfig.config.logo.light : AppConfig.config.logo.dark )
     }
 
     public get notification (): Observable<ToastMessageOptions | undefined> {
         return this.ngStore.select( RegistryState.notification )
     }
 
-    public get actualToken (): TokenModel | undefined {
-        return this.ngStore.selectSnapshot( RegistryState.tokens )
+    public get token (): Signal<TokenModel | undefined> {
+        return this.ngStore.selectSignal( RegistryState.tokens )
     }
 
-    public get contextEventLoading (): Observable<boolean> {
-        return this.ngStore.select( RegistryState.contextEventLoading )
+    public get contextEventLoading (): Signal<boolean> {
+        return this.ngStore.selectSignal( RegistryState.contextEventLoading )
     }
 
-    public get contextEvent (): Observable<EventModel | undefined> {
+    public get contextEvent$ (): Observable<EventModel | undefined> {
         return this.ngStore.select( RegistryState.contextEvent )
     }
 
-    public get actualContextEventId (): string | undefined {
-        return this.ngStore.selectSnapshot( RegistryState.contextEventId )
-    }
-
-    public get currentUser (): Observable<CurrentUserModel | undefined> {
-        return this.ngStore.select( RegistryState.currentUser )
-    }
-
-    public get actualCurrentUser (): CurrentUserModel | undefined {
-        return this.ngStore.selectSnapshot( RegistryState.currentUser )
-    }
-
-    public get userEventProfilesPage (): Observable<PageModel<EventProfileModel> | undefined> {
-        return this.ngStore.select( RegistryState.userEventProfilesPage )
-    }
-
-    public get userEventProfilesPageLoading (): Observable<boolean> {
-        return this.ngStore.select( RegistryState.userEventProfilesPageLoading )
-    }
-
-    public get userEventProfilesPageSilentLoading (): Observable<boolean> {
-        return this.ngStore.select( RegistryState.userEventProfilesPageSilentLoading )
-    }
-
-    public get userEventProfilesPageError (): Observable<ToastMessageOptions | undefined> {
-        return this.ngStore.select( RegistryState.userEventProfilesPageError )
-    }
-
-    public get actualUserEventProfilesPageSearchParam (): string | undefined {
-        return this.ngStore.selectSnapshot( RegistryState.userEventProfilesPageSearchParam )
-    }
-
-    public get actualUserEventProfilesPageDateRangeParam (): Date[] | undefined {
-        return FormUtil.buildDateRange(
-            this.ngStore.selectSnapshot( RegistryState.userEventProfilesPageStartAccessParam ),
-            this.ngStore.selectSnapshot( RegistryState.userEventProfilesPageEndAccessParam ),
+    public get contextEventId (): Observable<string | undefined> {
+        return combineLatest( [ this.ngStore.select( RegistryState.contextEventId ), this.selectedEventId ] ).pipe(
+            map( (values: [ string | undefined, string | undefined ]): string | undefined => values[0] ?? values[1] ),
         )
     }
 
-    public get actualUserEventProfilesPageOrderParam (): OrderEnum {
-        return this.ngStore.selectSnapshot( RegistryState.userEventProfilesPageOrderParam )
+    public get currentUser (): Signal<CurrentUserModel | undefined> {
+        return this.ngStore.selectSignal( RegistryState.currentUser )
     }
 
-    public get userEventProfileInvitationsPage (): Observable<PageModel<EventProfileModel> | undefined> {
-        return this.ngStore.select( RegistryState.userEventProfileInvitationsPage )
+    public get selectedEventId (): Observable<string | undefined> {
+        return this.ngStore.select( RegistryState.currentUserSelectedEventId )
     }
 
-    public get userEventProfileInvitationsPageLoading (): Observable<boolean> {
-        return this.ngStore.select( RegistryState.userEventProfileInvitationsPageLoading )
+    public get userEventProfilesPage (): Signal<PageModel<EventProfileModel> | undefined> {
+        return this.ngStore.selectSignal( RegistryState.userEventProfilesPage )
     }
 
-    public get userEventProfileInvitationsPageSilentLoading (): Observable<boolean> {
-        return this.ngStore.select( RegistryState.userEventProfileInvitationsPageSilentLoading )
+    public get userEventProfilesPageLoading (): Signal<boolean> {
+        return this.ngStore.selectSignal( RegistryState.userEventProfilesPageLoading )
     }
 
-    public get userEventProfileInvitationsPageError (): Observable<ToastMessageOptions | undefined> {
-        return this.ngStore.select( RegistryState.userEventProfileInvitationsPageError )
+    public get userEventProfilesPageSilentLoading (): Signal<boolean> {
+        return this.ngStore.selectSignal( RegistryState.userEventProfilesPageSilentLoading )
     }
 
-    public get actualUserEventProfileInvitationsPageSearchParam (): string | undefined {
-        return this.ngStore.selectSnapshot( RegistryState.userEventProfileInvitationsPageSearchParam )
+    public get userEventProfilesPageError (): Signal<ToastMessageOptions | undefined> {
+        return this.ngStore.selectSignal( RegistryState.userEventProfilesPageError )
     }
 
-    public get actualUserEventProfileInvitationsPageDateRangeParam (): Date[] | undefined {
-        return FormUtil.buildDateRange(
-            this.ngStore.selectSnapshot( RegistryState.userEventProfileInvitationsPageStartAccessParam ),
-            this.ngStore.selectSnapshot( RegistryState.userEventProfileInvitationsPageEndAccessParam ),
+    public get userEventProfilesPageTextSearchParam (): Signal<string | undefined> {
+        return this.ngStore.selectSignal( RegistryState.userEventProfilesPageTextSearchParam )
+    }
+
+    public get userEventProfilesPageDateTimeSearchParam (): Signal<Date | undefined> {
+        return computed( (): Date | undefined =>
+            DateUtil.buildDate( this.ngStore.selectSignal( RegistryState.userEventProfilesPageDateTimeSearchParam )() ),
         )
     }
 
-    public get actualUserEventProfileInvitationsPageOrderParam (): OrderEnum {
-        return this.ngStore.selectSnapshot( RegistryState.userEventProfileInvitationsPageOrderParam )
+    public get userEventProfileInvitationsPage (): Signal<PageModel<EventProfileModel> | undefined> {
+        return this.ngStore.selectSignal( RegistryState.userEventProfileInvitationsPage )
+    }
+
+    public get userEventProfileInvitationsPageLoading (): Signal<boolean> {
+        return this.ngStore.selectSignal( RegistryState.userEventProfileInvitationsPageLoading )
+    }
+
+    public get userEventProfileInvitationsPageSilentLoading (): Signal<boolean> {
+        return this.ngStore.selectSignal( RegistryState.userEventProfileInvitationsPageSilentLoading )
+    }
+
+    public get userEventProfileInvitationsPageError (): Signal<ToastMessageOptions | undefined> {
+        return this.ngStore.selectSignal( RegistryState.userEventProfileInvitationsPageError )
+    }
+
+    public get userEventProfileInvitationsPageTextSearchParam (): Signal<string | undefined> {
+        return this.ngStore.selectSignal( RegistryState.userEventProfileInvitationsPageTextSearchParam )
+    }
+
+    public get userEventProfileInvitationsPageDateTimeSearchParam (): Signal<Date | undefined> {
+        return computed( (): Date | undefined =>
+            DateUtil.buildDate( this.ngStore.selectSignal( RegistryState.userEventProfileInvitationsPageDateTimeParam )() ),
+        )
     }
 
     public startGlobalLoader (): void {
@@ -191,18 +189,31 @@ export class RegistryFacade extends GenericFacade {
     }
 
     public updateNetwork (online: boolean): void {
-        if (this.actualOnline != undefined) {
+        if (this.online() != undefined) {
             this.notify( online ? this.onlineMessage : this.offlineMessage )
         }
 
         this.ngStore.dispatch( new UpdateNetwork( online ) )
     }
 
+    public updateScreenWidth (screenWidth: number): void {
+        this.ngStore.dispatch( new UpdateScreenWidth( screenWidth ) )
+    }
+
     public notify (message: ToastMessageOptions): void {
         if (message.summary?.endsWith( '401' )) {
             return
         }
-        this.ngStore.dispatch( new Notify( message ) )
+
+        let formattedMessage: ToastMessageOptions = message
+        if (StringUtil.isBlank( message.detail ) && StringUtil.isBlank( message.summary )) {
+            formattedMessage = {
+                ...message,
+                detail: this.translateService.instant( 'global.notifications.UNKNOWN_ERROR' ),
+            }
+        }
+
+        this.ngStore.dispatch( new Notify( formattedMessage ) )
     }
 
     public ackNotification (): void {
@@ -248,20 +259,25 @@ export class RegistryFacade extends GenericFacade {
         this.ngStore.dispatch( StopUserEventProfilesPageLoader )
     }
 
-    public fetchEventProfilePage (offset: number | undefined, limit: number | undefined, force: boolean): void {
-        this.ngStore.dispatch( new FetchUserEventProfilesPage( offset, limit, force ) )
+    public fetchEventProfilePage (
+        pageNumber: number | undefined,
+        pageSize: number | undefined,
+        force: boolean,
+    ): void {
+        this.ngStore.dispatch( new FetchUserEventProfilesPage( pageNumber, pageSize, force ) )
     }
 
-    public inputProfilesPageSearch (searched: string | undefined): void {
-        this.ngStore.dispatch( new InputUserEventProfilesPageSearch( searched ) )
-    }
+    public inputPageSearchParameters (
+        textSearched: string | undefined,
+        dateTimeSearched: Date | undefined,
+    ): void {
+        if (textSearched !== this.userEventProfilesPageTextSearchParam()) {
+            this.ngStore.dispatch( new InputUserEventProfilesPageTextSearched( textSearched ) )
+        }
 
-    public inputProfilesPageDateRange (range: Date[] | undefined): void {
-        this.ngStore.dispatch( new InputUserEventProfilesPageDateRange( range?.[0], range?.[1] ) )
-    }
-
-    public selectProfilesPageOrder (order: OrderEnum): void {
-        this.ngStore.dispatch( new SelectUserEventProfilesPageOrder( order ) )
+        if (dateTimeSearched !== this.userEventProfilesPageDateTimeSearchParam()) {
+            this.ngStore.dispatch( new InputUserEventProfilesPageDateTimeSearched( dateTimeSearched ) )
+        }
     }
 
     public startInvitationsPageLoader (): void {
@@ -273,23 +289,24 @@ export class RegistryFacade extends GenericFacade {
     }
 
     public fetchEventProfileInvitationPage (
-        offset: number | undefined,
-        limit: number | undefined,
+        pageNumber: number | undefined,
+        pageSize: number | undefined,
         force: boolean,
     ): void {
-        this.ngStore.dispatch( new FetchUserEventProfileInvitationsPage( offset, limit, force ) )
+        this.ngStore.dispatch( new FetchUserEventProfileInvitationsPage( pageNumber, pageSize, force ) )
     }
 
-    public inputInvitationsPageSearch (searched: string | undefined): void {
-        this.ngStore.dispatch( new InputUserEventProfileInvitationsPageSearch( searched ) )
-    }
+    public inputInvitationsPageSearchParameters (
+        textSearched: string | undefined,
+        dateTimeSearched: Date | undefined,
+    ): void {
+        if (textSearched !== this.userEventProfileInvitationsPageTextSearchParam()) {
+            this.ngStore.dispatch( new InputUserEventProfileInvitationsPageTextSearched( textSearched ) )
+        }
 
-    public inputInvitationsPageDateRange (range: Date[] | undefined): void {
-        this.ngStore.dispatch( new InputUserEventProfileInvitationsPageDateRange( range?.[0], range?.[1] ) )
-    }
-
-    public selectInvitationsPageOrder (order: OrderEnum): void {
-        this.ngStore.dispatch( new SelectUserEventProfileInvitationsPageOrder( order ) )
+        if (dateTimeSearched !== this.userEventProfileInvitationsPageDateTimeSearchParam()) {
+            this.ngStore.dispatch( new InputUserEventProfileInvitationsPageDateTimeSearched( dateTimeSearched ) )
+        }
     }
 
     public startProfileLoader (): void {
@@ -312,6 +329,10 @@ export class RegistryFacade extends GenericFacade {
         this.ngStore.dispatch( new SelectUserEventProfile( profile ) )
     }
 
+    public selectUserEventProfileByEvent (event: EventModel): void {
+        this.ngStore.dispatch( new SelectUserEventProfileByEvent( event ) )
+    }
+
     public deleteUserEventProfile (profile: EventProfileModel): void {
         this.ngStore.dispatch( new DeleteUserEventProfile( profile ) )
     }
@@ -324,7 +345,13 @@ export class RegistryFacade extends GenericFacade {
         this.ngStore.dispatch( StopContextEventLoader )
     }
 
-    public fetchContextEvent (id: string, force: boolean = false): void {
+    public fetchContextEvent (id: string, force: boolean = false): Observable<EventModel | undefined> {
         this.ngStore.dispatch( new FetchContextEvent( id, force ) )
+
+        return this.contextEvent$
+    }
+
+    public createSupportEventProfile (eventId: string): void {
+        this.ngStore.dispatch( new CreateSupportEventProfile( eventId ) )
     }
 }

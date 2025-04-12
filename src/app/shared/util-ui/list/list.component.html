@@ -1,93 +1,77 @@
-@if (error$ | async) {
-    @if (GenericUtil.nonNull(getTemplate('error'))) {
-        <ng-container [ngTemplateOutlet]='getTemplate("error")' />
-    } @else {
-        <app-message [message]='(error$ | async)!' />
-    }
-} @else {
-    <p-data-view #data
-                 [value]='(elementPage$ | async)?.content'
-                 [paginator]='true'
-                 [layout]='layout'
-                 [lazy]='true'
-                 [alwaysShowPaginator]='false'
-                 [rows]='20'
-                 [totalRecords]='(elementPage$ | async)?.totalElements'
-                 (onPage)='updateData($event)'>
-        <ng-template #header>
-            @if (elementPage$ | async) {
-                <div class='row'>
-                    <div class='col-12 order-1 order-sm-2 p-2'>
-                        <div class='d-flex align-items-center justify-content-between'>
-                            <i class='secondary-color last-refresh'>
-                                {{
-                                    'datetime.last-refresh' | translate
-                                        : {
-                                            date:
-                                                (elementPage$ | async)?.lastRefresh | date: ('datetime.format.date' | translate),
-                                            time:
-                                                (elementPage$ | async)?.lastRefresh | date: ('datetime.format.time' | translate),
-                                        }
-                                }}
-                            </i>
-                            <div class='d-flex flex-wrap align-items-center justify-content-end'>
-                                @if (getTemplate('creation')) {
-                                    <ng-container [ngTemplateOutlet]='getTemplate("creation")' />
-                                }
-                                <p-select-button class='m-1' [options]='layouts' [(ngModel)]='layout' [allowEmpty]='false'>
-                                    <ng-template #item let-layout>
-                                        <i [class]='layout.label'></i>
-                                    </ng-template>
-                                </p-select-button>
-                            </div>
-                        </div>
-                    </div>
-                    @if (GenericUtil.nonNull(getTemplate('search'))) {
-                        <div class='col-12 order-2 order-sm-1'>
-                            <p-panel [style]='{ "border": "none" }' [header]='"filter-sort.title" | translate' [toggleable]='true'
-                                     [collapsed]='isTinyScreen()'>
-                                <ng-container [ngTemplateOutlet]='getTemplate("search")'
-                                              [ngTemplateOutletContext]='{ $implicit: pageEvent() }' />
-                            </p-panel>
-                        </div>
+<p-data-view #data
+             [value]='elementPage()?.content'
+             [paginator]='true'
+             [lazy]='true'
+             [alwaysShowPaginator]='false'
+             [rows]='20'
+             [totalRecords]='elementPage()?.totalElements'
+             (onPage)='updateData($event)'>
+    <ng-template #header>
+        <div class='row'>
+            <div class='col-12 order-1 order-sm-2 p-2'>
+                <div class='d-flex align-items-center justify-content-between'>
+                    @if (elementPage()) {
+                        <i class='secondary-color last-refresh'>
+                            {{
+                                'global.date-and-time-format.last-refresh' | translate
+                                    : {
+                                        datetime: elementPage()?.lastRefresh | dateFormat: 'datetime',
+                                    }
+                            }}
+                        </i>
+                    } @else {
+                        <p-skeleton [width]='loading() ? "5rem" : "0"' borderRadius='1rem' />
                     }
+                    <div>
+                        @if (getTemplate('creation')) {
+                            <ng-container [ngTemplateOutlet]='getTemplate("creation")' />
+                        }
+                    </div>
+                </div>
+            </div>
+            @if (GenericUtil.nonNull(getTemplate('search'))) {
+                <div class='col-12 order-2 order-sm-1'>
+                    <p-panel [style]='{ "border": "none" }' [header]='"global.actions.search-and-filter" | translate'
+                             [toggleable]='true'
+                             [collapsed]='registryFacade.tinyScreen()'>
+                        <ng-container [ngTemplateOutlet]='getTemplate("search")'
+                                      [ngTemplateOutletContext]='{ $implicit: pageEvent() }' />
+                    </p-panel>
                 </div>
             }
-        </ng-template>
-        <ng-template #list let-elements>
-            <div class='layout list m-1'>
-                @if (loading$ | async) {
-                    <p-card *ngFor='let i of counterArray(6)'>
-                        <app-element-skeleton [withIcon]='true' layout='list' />
+        </div>
+    </ng-template>
+    <ng-template #list let-elements>
+        <div class='layout list m-1'>
+            @if (loading()) {
+                @for (i of counterArray(6); track $index) {
+                    <p-card>
+                        <app-element-skeleton [withIcon]='true' [layout]='registryFacade.tinyScreen() ? "grid" : "list"' />
                     </p-card>
-                } @else {
-                    <div *ngFor='let element of elements'>
-                        <ng-container [ngTemplateOutlet]='getTemplate("element")'
-                                      [ngTemplateOutletContext]='{ $implicit: element, layout: "list" }' />
-                    </div>
                 }
-            </div>
-        </ng-template>
-        <ng-template #grid let-elements>
-            <div class='layout grid m-1'>
-                @if (loading$ | async) {
-                    <p-card *ngFor='let i of counterArray(6)'>
-                        <app-element-skeleton [withIcon]='true' layout='grid' />
-                    </p-card>
-                } @else {
-                    <div *ngFor='let element of elements'>
-                        <ng-container [ngTemplateOutlet]='getTemplate("element")'
-                                      [ngTemplateOutletContext]='{ $implicit: element, layout: "grid" }' />
-                    </div>
+            } @else {
+                @for (element of elements; track $index) {
+                    <ng-container [ngTemplateOutlet]='getTemplate("element")'
+                                  [ngTemplateOutletContext]='{ $implicit: element }' />
                 }
-            </div>
-        </ng-template>
-        @if (getTemplate('empty')) {
-            <ng-template #emptymessage>
-                @if ((loading$ | async) === false) {
+            }
+        </div>
+    </ng-template>
+    <ng-template #emptymessage>
+        @if (error()) {
+            @if (GenericUtil.nonNull(getTemplate('error'))) {
+                <ng-container [ngTemplateOutlet]='getTemplate("error")' />
+            } @else {
+                <app-message [message]='error()!' />
+            }
+        } @else {
+            @if (!loading() && !error()) {
+                @if (getTemplate('empty')) {
                     <ng-container [ngTemplateOutlet]='getTemplate("empty")' />
+                } @else {
+                    <app-message [message]='message()' />
                 }
-            </ng-template>
+            }
         }
-    </p-data-view>
-}
+    </ng-template>
+</p-data-view>

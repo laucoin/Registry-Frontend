@@ -1,104 +1,129 @@
-import { Component, OnInit, signal, WritableSignal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, OnDestroy } from '@angular/core'
 import { ParticipantModel } from '../../../shared/util-model/model/participant.model'
-import { GenericListComponent } from '../../../shared/util-tool/component/generic-list.component'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { PageEventModel } from '../../../shared/util-model/model/page-event.model'
 import { GroupFacade } from '../data/state/group.facade'
-import { Params } from '@angular/router'
-import { GenericUtil } from '../../../shared/util-tool/util/generic.util'
 import { AppRouteEnum } from '../../../app-route.enum'
-import { OrderEnum } from '../../../shared/util-model/enumeration/order.enum'
-import { GroupModel } from '../../../shared/util-model/model/group.model'
 import { GroupElementComponent } from '../group-element/group-element.component'
-import { AsyncPipe, NgIf } from '@angular/common'
 import { Button } from 'primeng/button'
-import { DatePicker } from 'primeng/datepicker'
 import { InputText } from 'primeng/inputtext'
 import { ListComponent } from '../../../shared/util-ui/list/list.component'
-import { MessageComponent } from '../../../shared/util-ui/message/message.component'
 import { ParticipantElementComponent } from '../../../shared/util-ui/participant-element/participant-element.component'
 import { RegistryTemplateDirective } from '../../../shared/util-tool/directive/registry-template.directive'
-import { ToggleButton } from 'primeng/togglebutton'
 import { TranslatePipe } from '@ngx-translate/core'
-import { ParticipantFacade } from '../../participant/data/state/participant.facade'
 import { LayerComponent } from '../../../shared/util-ui/layer/layer.component'
 import { RegistryRequiredDirective } from '../../../shared/util-tool/directive/registry-required.directive'
 import {
     SelectElementsFieldComponent,
 } from '../../../shared/util-ui/select-elements-field/select-elements-field.component'
-import { Observable } from 'rxjs'
-import { SelectItem } from 'primeng/api'
-import { ParticipantFormComponent } from '../../participant/participant-form/participant-form.component'
-import { StringUtils } from '../../../shared/util-tool/util/string.util'
+import { Subscription, tap } from 'rxjs'
 import { FormFieldErrorComponent } from '../../../shared/util-ui/form-field-error/form-field-error.component'
+import { Select } from 'primeng/select'
+import { GenericListComponent } from '../../../shared/util-tool/component/generic-list.component'
+import { ParticipantUtil } from '../../../shared/util-tool/util/participant.util'
+import { FormUtil } from '../../../shared/util-tool/util/form.util'
+import { ParticipantFacade } from '../../participant/data/state/participant.facade'
+import { PluralTranslationPipe } from '../../../shared/util-tool/pipe/plural-translation.pipe'
+import { ParticipantFormComponent } from '../../participant/participant-form/participant-form.component'
+import { ElementSkeletonComponent } from '../../../shared/util-ui/element-skeleton/element-skeleton.component'
+import { Card } from 'primeng/card'
 
 @Component( {
     selector: 'app-group-member-list',
     imports: [
         GroupElementComponent,
-        AsyncPipe,
         Button,
-        DatePicker,
         InputText,
         ListComponent,
-        MessageComponent,
         ParticipantElementComponent,
         ReactiveFormsModule,
         RegistryTemplateDirective,
-        ToggleButton,
         TranslatePipe,
-        NgIf,
         LayerComponent,
         RegistryRequiredDirective,
         SelectElementsFieldComponent,
-        ParticipantFormComponent,
         FormFieldErrorComponent,
+        Select,
+        PluralTranslationPipe,
+        ParticipantFormComponent,
+        ElementSkeletonComponent,
+        Card,
+
     ],
     templateUrl: './group-member-list.component.html',
+    changeDetection: ChangeDetectionStrategy.OnPush,
 } )
-export class GroupMemberListComponent extends GenericListComponent<ParticipantModel> implements OnInit {
-    protected readonly group: WritableSignal<GroupModel | undefined> = signal( undefined )
-    protected readonly participantsSuggestion$: Observable<SelectItem<ParticipantModel>[]>
+export class GroupMemberListComponent extends GenericListComponent implements OnDestroy {
+    protected readonly facade: GroupFacade = inject( GroupFacade )
+    protected readonly participantFacade: ParticipantFacade = inject( ParticipantFacade )
+
+    protected readonly FormUtil: typeof FormUtil = FormUtil
+    protected readonly ParticipantUtil: typeof ParticipantUtil = ParticipantUtil
+
+    private readonly subscriptions: Subscription = new Subscription()
 
     protected addMembersForm: FormGroup | undefined
-
     protected addMembersFormLayerOpened: boolean = false
+
     protected createMemberFormLayerOpened: boolean = false
 
-    public constructor (
-        private readonly facade: GroupFacade,
-        private readonly participantFacade: ParticipantFacade,
-    ) {
-        super(
-            facade.groupMembersPage,
-            facade.groupMembersPageLoading,
-            facade.groupMembersPageSilentLoading,
-            facade.groupMembersPageError,
-        )
+    public constructor () {
+        super()
 
         this.form = this.initForm()
 
-        this.handleSearchedChanges()
-        this.handleRangeChanges()
-        this.handleOnlyVisibleChanges()
-        this.handleOrderChanges()
-
-        this.participantsSuggestion$ = this.facade.searchedParticipantsMetadata
-    }
-
-    public ngOnInit (): void {
-        this.handleIdParam()
-
-        this.handleLoadedGroup()
+        this.loadData()
+        this.handleParticipantActions()
     }
 
     protected initForm (): FormGroup {
         return this.formBuilder.group( {
-            searched: this.formBuilder.control( this.facade.actualGroupMembersPageSearchParam ),
-            range: this.formBuilder.control( this.facade.actualGroupMembersPageDateRangeParam ),
-            onlyVisible: this.formBuilder.control( this.facade.actualGroupMembersPageOnlyVisibleParam ),
-            order: this.formBuilder.control( this.facade.actualGroupMembersPageOrderParam === OrderEnum.ASC ),
+            textSearched: this.formBuilder.control( this.facade.groupMembersPageTextSearchedParam() ),
+            statusSearched: this.formBuilder.control( this.facade.groupMembersPageStatusSearchedParam() ),
+            visibilitySearched: this.formBuilder.control( this.facade.groupMembersPageVisibilitySearchedParam() ),
         } )
+    }
+
+    protected loadData (): void {
+        const id: string | undefined = this.route.snapshot.params['groupId']
+        const eventId: string | undefined = this.contextEventId()
+        if (!eventId || !id) {
+            this.router.navigateByUrl( AppRouteEnum.HOME ).catch( console.error )
+        }
+        this.facade.fetchGroup( id!, eventId )
+        this.facade.fetchGroupMembersPage( id!, undefined, undefined, false, eventId )
+    }
+
+    private handleParticipantActions (): void {
+        this.subscriptions.add(
+            this.participantFacade.handleParticipantFirstPageReload().pipe(
+                tap( (): void => {
+                    this.createMemberFormLayerOpened = false
+                    this.facade.fetchGroupMembersPage(
+                        this.route.snapshot.params['groupId'],
+                        undefined,
+                        undefined,
+                        true,
+                        this.contextEventId(),
+                    )
+                } ),
+            ).subscribe(),
+        )
+
+        this.subscriptions.add(
+            this.participantFacade.handleParticipantCurrentPageReload().pipe(
+                tap( (): void => {
+                    this.createMemberFormLayerOpened = false
+                    this.facade.fetchGroupMembersPage(
+                        this.route.snapshot.params['groupId'],
+                        this.facade.groupsPage()?.pageNumber,
+                        this.facade.groupsPage()?.pageSize,
+                        true,
+                        this.contextEventId(),
+                    )
+                } ),
+            ).subscribe(),
+        )
     }
 
     protected initAddMembersForm (): void {
@@ -113,64 +138,18 @@ export class GroupMemberListComponent extends GenericListComponent<ParticipantMo
         this.createMemberFormLayerOpened = true
     }
 
-    private handleIdParam (): void {
-        if (!StringUtils.isRouteActive( AppRouteEnum.GROUPS )) {
-            return
-        }
-        this.subscriptions.add(
-            this.route.params.subscribe( (params: Params): void => {
-                if (GenericUtil.isNull( params['id'] )) {
-                    this.router.navigateByUrl( AppRouteEnum.GROUPS ).catch( console.error )
-                }
-                this.facade.fetchGroup( params['id'], this.contextEventId() )
-                this.facade.fetchGroupMembersPage( params['id'], undefined, undefined, false, this.contextEventId() )
-            } ),
-        )
-    }
-
-    private handleLoadedGroup (): void {
-        this.subscriptions.add(
-            this.facade.group?.subscribe( (group: GroupModel | undefined): void => this.group.set( group ) ),
-        )
-    }
-
     protected loadPage (pageEvent: PageEventModel, eventId: string | undefined): void {
-        this.facade.fetchGroupMembersPage( this.group()!.id, pageEvent.offset, pageEvent.limit, false, eventId )
-    }
-
-    private handleSearchedChanges (): void {
-        this.subscriptions.add(
-            this.searched.valueChanges.subscribe( (searched: string | undefined): void =>
-                this.facade.inputGroupMembersPageSearch( searched ),
-            ),
+        this.facade.inputMembersPageSearchParameters(
+            this.textSearched.value,
+            this.statusSearched.value,
+            this.visibilitySearched.value,
         )
-    }
-
-    private handleRangeChanges (): void {
-        this.subscriptions.add(
-            this.range.valueChanges.subscribe( (range: Date[] | undefined): void =>
-                this.facade.inputGroupMembersPageDateRange( range ),
-            ),
-        )
-    }
-
-    private handleOnlyVisibleChanges (): void {
-        this.subscriptions.add(
-            this.onlyVisible.valueChanges.subscribe( (onlyVisible: boolean | undefined): void => {
-                if (onlyVisible != undefined) {
-                    this.facade.selectGroupMembersPageVisibility( onlyVisible )
-                }
-            } ),
-        )
-    }
-
-    private handleOrderChanges (): void {
-        this.subscriptions.add(
-            this.order.valueChanges.subscribe( (order: boolean | undefined): void => {
-                if (order != undefined) {
-                    this.facade.selectGroupMembersPageOrder( order ? OrderEnum.ASC : OrderEnum.DESC )
-                }
-            } ),
+        this.facade.fetchGroupMembersPage(
+            this.facade.group()!.id,
+            pageEvent.pageNumber,
+            pageEvent.pageSize,
+            false,
+            eventId,
         )
     }
 
@@ -187,43 +166,33 @@ export class GroupMemberListComponent extends GenericListComponent<ParticipantMo
             return
         }
 
-        this.facade.addMembersToGroup(
-            this.group()!.id,
-            this.addMembersParticipants?.value?.map( (item: SelectItem<ParticipantModel>): string => item.value.id ) ?? [],
-            this.contextEventId(),
-        ).subscribe( (): boolean => this.addMembersFormLayerOpened = false )
-    }
+        const eventId: string | undefined = this.contextEventId()
+        const groupId: string = this.facade.group()!.id
+        const newMemberIds: string[] = this.addMembersParticipants?.value?.map( (item: ParticipantModel): string => item.id ) ?? []
 
-    protected handleParticipantCreation (): void {
         this.subscriptions.add(
-            this.participantFacade.handleParticipantCreation().subscribe( (): void => {
-                this.createMemberFormLayerOpened = false
-                this.facade.fetchGroup( this.group()!.id, this.contextEventId() )
-                this.facade.fetchGroupMembersPage(
-                    this.group()!.id,
-                    undefined,
-                    undefined,
-                    false,
-                    this.contextEventId(),
-                )
+            this.facade.addMembersToGroup( groupId, newMemberIds, eventId ).subscribe( (): void => {
+                this.addMembersFormLayerOpened = false
+                this.facade.fetchGroup( groupId, eventId )
+                this.facade.fetchGroupMembersPage( groupId, undefined, undefined, true, eventId )
             } ),
         )
     }
 
-    protected get searched (): FormControl {
-        return this.form.get( 'searched' ) as FormControl
+    public ngOnDestroy (): void {
+        this.subscriptions.unsubscribe()
     }
 
-    protected get range (): FormControl {
-        return this.form.get( 'range' ) as FormControl
+    protected get textSearched (): FormControl {
+        return this.form.get( 'textSearched' ) as FormControl
     }
 
-    protected get onlyVisible (): FormControl {
-        return this.form.get( 'onlyVisible' ) as FormControl
+    protected get statusSearched (): FormControl {
+        return this.form.get( 'statusSearched' ) as FormControl
     }
 
-    protected get order (): FormControl {
-        return this.form.get( 'order' ) as FormControl
+    protected get visibilitySearched (): FormControl {
+        return this.form.get( 'visibilitySearched' ) as FormControl
     }
 
     protected get addMembersParticipants (): FormControl | undefined {

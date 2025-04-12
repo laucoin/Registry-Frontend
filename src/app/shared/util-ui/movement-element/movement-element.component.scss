@@ -1,15 +1,52 @@
-.type {
-    flex-basis: 15%;
+::ng-deep {
+    .max-list-box-height {
+        height: 100%;
+    }
 }
 
+.max-panel-height {
+    height: 100%;
+}
+
+.type,
 .datetime {
-    flex-basis: 40%;
+    flex-basis: 50%;
 }
 
-.content {
-    flex-basis: 45%;
+.content,
+.visibility-status {
+    flex-basis: 100%;
 }
 
-.movement-content:hover {
-    text-decoration: underline;
+@media (min-width: 768px) {
+    .type,
+    .datetime {
+        flex-basis: 50%;
+    }
+
+    .content {
+        flex-basis: 70%;
+    }
+
+    .visibility-status {
+        flex-basis: 30%;
+    }
+}
+
+@media (min-width: 1140px) {
+    .type {
+        flex-basis: 20%;
+    }
+
+    .datetime {
+        flex-basis: 25%;
+    }
+
+    .content {
+        flex-basis: 40%;
+    }
+
+    .visibility-status {
+        flex-basis: 15%;
+    }
 }

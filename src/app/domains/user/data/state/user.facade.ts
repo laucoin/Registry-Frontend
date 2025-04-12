@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core'
+import { computed, Injectable, Signal } from '@angular/core'
 import { Observable } from 'rxjs'
 import { PageModel } from '../../../../shared/util-model/model/page.model'
 import { UserModel } from '../../../../shared/util-model/model/user.model'
@@ -9,10 +9,9 @@ import {
     FetchUser,
     FetchUsersPage,
     ImpersonateUser,
-    InputUsersPageSearch,
+    InputUsersPageTextSearched,
     ResetUser,
-    SelectUsersPageOrder,
-    SelectUsersPageVisibility,
+    SelectUsersPageVisibilitySearched,
     StartUserLoader,
     StartUsersPageLoader,
     StopUserLoader,
@@ -21,52 +20,59 @@ import {
     UpdateUserRole,
 } from './user.action'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
-import { OrderEnum } from '../../../../shared/util-model/enumeration/order.enum'
 import { ofActionSuccessful } from '@ngxs/store'
 import { GenericFacade } from '../../../../shared/util-tool/facade/generic.facade'
 import { UserState } from './user.state'
 
 @Injectable()
 export class UserFacade extends GenericFacade {
-
-    public get usersPage (): Observable<PageModel<UserModel> | undefined> {
-        return this.ngStore.select( UserState.usersPage )
+    public get usersPage (): Signal<PageModel<UserModel> | undefined> {
+        return this.ngStore.selectSignal( UserState.usersPage )
     }
 
-    public get usersPageLoading (): Observable<boolean> {
-        return this.ngStore.select( UserState.usersPageLoading )
+    public get usersPageLoading (): Signal<boolean> {
+        return this.ngStore.selectSignal( UserState.usersPageLoading )
     }
 
-    public get usersPageSilentLoading (): Observable<boolean> {
-        return this.ngStore.select( UserState.usersPageSilentLoading )
+    public get usersPageSilentLoading (): Signal<boolean> {
+        return this.ngStore.selectSignal( UserState.usersPageSilentLoading )
     }
 
-    public get usersPageError (): Observable<ToastMessageOptions | undefined> {
-        return this.ngStore.select( UserState.usersPageError )
+    public get usersPageError (): Signal<ToastMessageOptions | undefined> {
+        return this.ngStore.selectSignal( UserState.usersPageError )
     }
 
-    public get actualUsersPageSearchParam (): string | undefined {
-        return this.ngStore.selectSnapshot( UserState.usersPageSearchParam )
+    public get usersPageTextSearchedParam (): Signal<string | undefined> {
+        return this.ngStore.selectSignal( UserState.usersPageTextSearchedParam )
     }
 
-    public get actualUsersPageOnlyVisibleParam (): boolean {
-        return this.ngStore.selectSnapshot( UserState.usersPageOnlyVisibleParam )
+    public get actualUsersPageVisibilitySearchedParam (): Signal<boolean | undefined> {
+        return this.ngStore.selectSignal( UserState.usersPageVisibilitySearchedParam )
     }
 
-    public get actualUsersPageOrderParam (): OrderEnum {
-        return this.ngStore.selectSnapshot( UserState.usersPageOrderParam )
+    public get user (): Signal<UserModel | undefined> {
+        return this.ngStore.selectSignal( UserState.user )
     }
 
-    public get user (): Observable<UserModel | undefined> {
+    public get user$ (): Observable<UserModel | undefined> {
         return this.ngStore.select( UserState.user )
     }
 
-    public get userLoading (): Observable<boolean> {
-        return this.ngStore.select( UserState.userLoading )
+    public get userLoading (): Signal<boolean> {
+        return this.ngStore.selectSignal( UserState.userLoading )
     }
 
-    public get assignableRolesMetadata (): Observable<SelectItem<string>[]> {
-        return this.ngStore.select( UserState.assignableRolesMetadata )
+    public get assignableRolesMetadata (): Signal<SelectItem<string>[]> {
+        return this.ngStore.selectSignal( UserState.assignableRolesMetadata )
+    }
+
+    public get statusMetadata (): Signal<SelectItem<boolean | undefined>[]> {
+        return computed( () =>
+            this.ngStore.selectSignal( UserState.statusMetadata )().map( (status: SelectItem<boolean | undefined>) => ({
+                ...status,
+                label: this.translateService.instant( status.label! ),
+            }) ),
+        )
     }
 
     public startUsersPageLoader (): void {
@@ -78,23 +84,24 @@ export class UserFacade extends GenericFacade {
     }
 
     public fetchUsersPage (
-        offset: number | undefined,
-        limit: number | undefined,
+        pageNumber: number | undefined,
+        pageSize: number | undefined,
         force: boolean,
     ): void {
-        this.ngStore.dispatch( new FetchUsersPage( offset, limit, force ) )
+        this.ngStore.dispatch( new FetchUsersPage( pageNumber, pageSize, force ) )
     }
 
-    public inputUsersPageSearch (searched: string | undefined): void {
-        this.ngStore.dispatch( new InputUsersPageSearch( searched ) )
-    }
+    public inputPageSearchParameters (
+        textSearched: string | undefined,
+        visibilitySearched: boolean | undefined,
+    ): void {
+        if (textSearched !== this.usersPageTextSearchedParam()) {
+            this.ngStore.dispatch( new InputUsersPageTextSearched( textSearched ) )
+        }
 
-    public selectUsersPageVisibility (onlyVisible: boolean): void {
-        this.ngStore.dispatch( new SelectUsersPageVisibility( onlyVisible ) )
-    }
-
-    public selectUsersPageOrder (order: OrderEnum): void {
-        this.ngStore.dispatch( new SelectUsersPageOrder( order ) )
+        if (visibilitySearched !== this.actualUsersPageVisibilitySearchedParam()) {
+            this.ngStore.dispatch( new SelectUsersPageVisibilitySearched( visibilitySearched ) )
+        }
     }
 
     public startUserLoader (): void {

@@ -1,34 +1,28 @@
-import { Component, OnInit, signal, Signal } from '@angular/core'
-import { Observable } from 'rxjs'
-import { EventProfileFacade } from '../../data/state/event-profile.facade'
-import { AppRouteEnum } from '../../../../app-route.enum'
+import { Component, OnDestroy } from '@angular/core'
 import { FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { EventProfileDto } from '../../data/dto/event-profile.dto'
 import { EventProfileModel } from '../../../../shared/util-model/model/event-profile.model'
-import { Params } from '@angular/router'
 import { FormUtil } from '../../../../shared/util-tool/util/form.util'
 import { TranslateModule } from '@ngx-translate/core'
-import { AsyncPipe, DatePipe } from '@angular/common'
 import { CardModule } from 'primeng/card'
 import { DropdownModule } from 'primeng/dropdown'
 import { FormFieldErrorComponent } from '../../../../shared/util-ui/form-field-error/form-field-error.component'
 import { UserElementComponent } from '../../../user/user-element/user-element.component'
 import { FormComponent } from '../../../../shared/util-ui/form/form.component'
 import { GenericEventProfileFormComponent } from '../generic-event-profile-form.component'
-import { GenericUtil } from '../../../../shared/util-tool/util/generic.util'
 import { RegistryRequiredDirective } from '../../../../shared/util-tool/directive/registry-required.directive'
 import { Button } from 'primeng/button'
 import { Select } from 'primeng/select'
-import { DatePicker } from 'primeng/datepicker'
-import { StringUtils } from '../../../../shared/util-tool/util/string.util'
-import { DateUtil } from '../../../../shared/util-tool/util/date.util'
+import { map } from 'rxjs'
+import { DateFormatPipe } from '../../../../shared/util-tool/pipe/date-format.pipe'
+import { DateTimeFieldComponent } from '../../../../shared/util-ui/date-time-field/date-time-field.component'
+import { RegistryValidators } from '../../../../shared/util-tool/util/registry.validator'
 
 @Component( {
     selector: 'app-event-profile-edition-form',
     standalone: true,
     imports: [
         TranslateModule,
-        AsyncPipe,
         CardModule,
         ReactiveFormsModule,
         DropdownModule,
@@ -38,71 +32,51 @@ import { DateUtil } from '../../../../shared/util-tool/util/date.util'
         RegistryRequiredDirective,
         Button,
         Select,
-        DatePicker,
-        DatePipe,
+        DateFormatPipe,
+        DateTimeFieldComponent,
     ],
     templateUrl: './event-profile-edition-form.component.html',
 } )
-export class EventProfileEditionFormComponent extends GenericEventProfileFormComponent implements OnInit {
-    protected readonly profile$: Observable<EventProfileModel | undefined>
-
-    protected readonly startDateExample: Signal<Date> = signal( DateUtil.startDateExample )
-    protected readonly endDateExample: Signal<Date> = signal( DateUtil.endDateExample )
-
-    public constructor (protected override readonly facade: EventProfileFacade) {
-        super( facade )
-
-        this.profile$ = facade.eventProfile
-    }
-
-    public ngOnInit (): void {
-        this.handleIdParam()
-
-        this.handleLoadedProfile()
-    }
-
+export class EventProfileEditionFormComponent extends GenericEventProfileFormComponent implements OnDestroy {
     protected initForm (): FormGroup {
         return this.formBuilder.group( {
             role: this.formBuilder.control( undefined, Validators.required ),
-            range: this.formBuilder.control( undefined ),
+            beginDateTime: this.formBuilder.control( undefined, [ RegistryValidators.dateRequiredForTime() ] ),
+            endDateTime: this.formBuilder.control( undefined, [ RegistryValidators.dateRequiredForTime() ] ),
+        }, {
+            validators: [ RegistryValidators.beginDateBeforeEndDate( 'beginDateTime', 'endDateTime' ) ],
         } )
     }
 
-    private handleIdParam (): void {
-        if (!StringUtils.isRouteActive( AppRouteEnum.PROFILES )) {
+    protected fillForm (element: EventProfileModel | undefined): void {
+        if (!element) return
+        this.role.patchValue( element?.role.value )
+        this.beginDateTime.patchValue( element?.startAccess )
+        this.endDateTime.patchValue( element?.endAccess )
+    }
+
+    protected submit (): void {
+        if (!FormUtil.isFormValid( this.form )) {
+            console.warn( this.invalidFormMessage, this.form.value )
             return
         }
+
         this.subscriptions.add(
-            this.route.params.subscribe( (params: Params): void => {
-                if (GenericUtil.isNull( params['id'] )) {
-                    this.router.navigateByUrl( AppRouteEnum.PROFILES_INVITATION ).catch( console.error )
-                }
-                this.facade.fetchEventProfile( params['id'] )
-            } ),
+            this.facade.updateEventProfile( this.facade.eventProfile()!.id!, this.buildDto() ).pipe(
+                map( (): void => this.navigateToRedirectUri( this.nextNavigation ) ),
+            ).subscribe(),
         )
     }
 
-    private handleLoadedProfile (): void {
-        this.subscriptions.add(
-            this.profile$.subscribe(
-                (profile: EventProfileModel | undefined): void => {
-                    this.role.setValue( profile?.role.value )
-                    this.range.setValue( FormUtil.buildDateRange( profile?.startAccess, profile?.endAccess ) )
-                    FormUtil.markAllControlsAsDirty( this.form )
-                } ),
-        )
-    }
-
-    protected next (): void {
-        const profile: EventProfileDto = {
+    protected buildDto (): EventProfileDto {
+        return {
             role: this.role.value,
-            startAccess: this.range.value?.[0],
-            endAccess: this.range.value?.[1],
+            startAccess: this.beginDateTime.value,
+            endAccess: this.endDateTime.value,
         }
+    }
 
-        this.subscriptions.add(
-            this.facade.updateEventProfile( this.route.snapshot.params['id'], profile )
-                .subscribe( (): void => this.navigateToRedirectUri() ),
-        )
+    public ngOnDestroy (): void {
+        this.subscriptions.unsubscribe()
     }
 }

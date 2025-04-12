@@ -12,5 +12,7 @@ export interface GroupStateModel {
     group: ElementRequestInformationModel<GroupModel>
     _metadata: {
         searched: SelectItem<ParticipantModel>[]
+        availabilities: SelectItem<boolean | undefined>[]
+        visibilities: SelectItem<boolean | undefined>[]
     }
 }

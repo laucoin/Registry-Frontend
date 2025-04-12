@@ -1,4 +1,4 @@
 export enum EventProfileRoutesEnum {
     INVITE = 'invite',
-    EDIT = ':id/edit',
+    EDIT = ':profileId/edit',
 }

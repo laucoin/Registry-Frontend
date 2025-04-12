@@ -1,7 +1,10 @@
-@if (form.untouched && loading) {
+@if (form().untouched && loading()) {
     <div class='d-flex justify-content-center'>
         <p-progressSpinner></p-progressSpinner>
     </div>
 } @else {
+    @if (title() && showTitle()) {
+        <h2>{{ title() }}</h2>
+    }
     <ng-content />
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core'
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core'
 import { Router } from '@angular/router'
 import { SessionStorageUtils } from '../../shared/util-tool/util/session-storage.util'
 import { REDIRECT_URI } from '../../shared/util-tool/util/request.util'
@@ -8,6 +8,7 @@ import { AppRouteEnum } from '../../app-route.enum'
     selector: 'app-sign-out-callback',
     standalone: true,
     template: '',
+    changeDetection: ChangeDetectionStrategy.OnPush,
 } )
 export class SignOutCallbackComponent implements OnInit {
     public constructor (private readonly router: Router) {}

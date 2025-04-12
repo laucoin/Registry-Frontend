@@ -1,9 +1,15 @@
 @import '../../../../responsive';
 
 :host {
-    .non-visible {
-        --p-card-background: var(--surface-c);
-    }
+    --p-card-body-padding: 0;
+}
+
+.card-content-grid {
+    padding: var(--basic-spacer)
+}
+
+.card-content-list {
+    padding: var(--basic-spacer) 52px var(--basic-spacer) var(--basic-spacer)
 }
 
 .element-actions-container {

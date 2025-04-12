@@ -1,5 +1,5 @@
 export enum VehicleRoutesEnum {
     CREATE = 'create',
-    EDIT = ':id/edit',
-    MOVEMENTS = ':id/movements',
+    EDIT = ':vehicleId/edit',
+    MOVEMENTS = ':vehicleId/movements',
 }

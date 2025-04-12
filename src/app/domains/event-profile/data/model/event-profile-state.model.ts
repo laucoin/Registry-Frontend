@@ -10,7 +10,8 @@ export interface EventProfileStateModel {
     eventProfile: ElementRequestInformationModel<EventProfileModel>
     _metadata: {
         roles: SelectItem<string>[]
-        status: SelectItem<string>[]
+        status: SelectItem<string | undefined>[]
         searched: SelectItem<UserModel>[]
+        availabilities: SelectItem<boolean | undefined>[]
     }
 }

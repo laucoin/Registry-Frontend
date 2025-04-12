@@ -1,22 +1,27 @@
-import { Component, Input, OnChanges, signal, WritableSignal } from '@angular/core'
-import { GenericElementComponent } from '../../util-tool/component/generic-element.component'
+import { ChangeDetectionStrategy, Component, computed, inject, input, InputSignal, Signal } from '@angular/core'
 import { ParticipantModel } from '../../util-model/model/participant.model'
 import { ParticipantActionEnum } from '../../../domains/participant/data/state/participant.action'
-import { CurrentUserModel } from '../../util-model/model/current-user.model'
 import { ActionModel } from '../../util-model/model/action.model'
 import { ParticipantFacade } from '../../../domains/participant/data/state/participant.facade'
 import { AppConfig } from '../../../app.config'
-import { CurrentUserUtil } from '../../util-authentication/tool/current-user.util'
 import { ElementCardComponent } from '../element-card/element-card.component'
-import { DatePipe, TitleCasePipe, UpperCasePipe } from '@angular/common'
+import { TitleCasePipe, UpperCasePipe } from '@angular/common'
 import { TranslateModule } from '@ngx-translate/core'
 import { AppRouteEnum } from '../../../app-route.enum'
 import { Avatar } from 'primeng/avatar'
-import { Button } from 'primeng/button'
 import { LayerComponent } from '../layer/layer.component'
 import { Listbox } from 'primeng/listbox'
 import { GroupActionEnum } from '../../../domains/group/data/state/group.action'
 import { GroupFacade } from '../../../domains/group/data/state/group.facade'
+import { SeverityTagComponent } from '../severity-tag/severity-tag.component'
+import { GenericElementComponent } from '../../util-tool/component/generic-element.component'
+import { DateIntervalStatusModel } from '../../util-model/model/date-interval-status.model'
+import { DateUtil } from '../../util-tool/util/date.util'
+import { PluralTranslationPipe } from '../../util-tool/pipe/plural-translation.pipe'
+import { VisibilityNamePipe } from '../../util-tool/pipe/visibility.pipe'
+import { CustomDateFormatPipe } from '../../util-tool/pipe/custom-date-format.pipe'
+import { IntervalFormatPipe } from '../../util-tool/pipe/interval-format.pipe'
+import { GenericUtil } from '../../util-tool/util/generic.util'
 
 @Component( {
     selector: 'app-participant-element',
@@ -25,64 +30,76 @@ import { GroupFacade } from '../../../domains/group/data/state/group.facade'
         ElementCardComponent,
         TitleCasePipe,
         UpperCasePipe,
-        DatePipe,
         TranslateModule,
         Avatar,
-        Button,
         LayerComponent,
         Listbox,
+        SeverityTagComponent,
+        PluralTranslationPipe,
+        VisibilityNamePipe,
+        CustomDateFormatPipe,
+        IntervalFormatPipe,
     ],
     providers: [ GroupFacade ],
     templateUrl: './participant-element.component.html',
     styleUrl: './participant-element.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush,
 } )
-export class ParticipantElementComponent extends GenericElementComponent<ParticipantModel, ParticipantActionEnum | GroupActionEnum> implements OnChanges {
-    @Input() public showActionMenu: boolean = true
-    @Input() public groupIdToRemove: string | undefined
+export class ParticipantElementComponent extends GenericElementComponent<ParticipantModel, ParticipantActionEnum | GroupActionEnum> {
+    private readonly facade: ParticipantFacade = inject( ParticipantFacade )
+    private readonly groupFacade: GroupFacade = inject( GroupFacade )
+
     protected layerOpened: boolean = false
 
-    protected additionalTotal: WritableSignal<number> = signal( 0 )
+    public readonly actionMenuVisible: InputSignal<boolean> = input( true )
+    public readonly groupIdToRemove: InputSignal<string | undefined> = input()
+    public readonly participant: InputSignal<ParticipantModel> = input.required()
 
-    public constructor (
-        private readonly facade: ParticipantFacade,
-        private readonly groupFacade: GroupFacade,
-    ) {super()}
+    protected readonly participantStatusSeverity: Signal<'success' | 'warn' | 'secondary'>
+    protected readonly actions: Signal<ActionModel<ParticipantActionEnum | GroupActionEnum>[]>
+    protected readonly intervalStatus: Signal<DateIntervalStatusModel | undefined>
+    protected readonly additionalTotal: Signal<number>
 
-    public ngOnChanges (): void {
-        this.additionalTotal.set( this.element.groups.length - 1 )
-        this.defineActions()
+    public constructor () {
+        super()
+
+        this.intervalStatus = computed( (): DateIntervalStatusModel => DateUtil.dateRangeStatus(
+            this.participant().startAvailability,
+            this.participant().endAvailability,
+        ) )
+
+        this.participantStatusSeverity = computed( (): 'success' | 'warn' | 'secondary' => {
+            switch (this.participant().status.value) {
+                case 'IN':
+                    return 'success'
+                case 'OUT':
+                    return 'warn'
+                default:
+                    return 'secondary'
+            }
+        } )
+
+        this.actions = computed( (): ActionModel<ParticipantActionEnum | GroupActionEnum>[] => this.buildActions(
+            this.participant(),
+            AppConfig.config.participant.action,
+        ) )
+
+        this.additionalTotal = computed( (): number => this.participant().groups.length - 1 )
     }
 
-    private defineActions (): void {
-        const currentUser: CurrentUserModel = this.registryFacade.actualCurrentUser!
-        this.actions = AppConfig
-            .config.participant.action
-            .map( (action: ActionModel<ParticipantActionEnum | GroupActionEnum>): ActionModel<ParticipantActionEnum | GroupActionEnum> => ({
-                ...action,
-                disabled: this.isActionDisabled( currentUser, action ),
-            }) )
-            .filter( (action: ActionModel<ParticipantActionEnum | GroupActionEnum>): boolean => !action.disabled )
-    }
-
-    protected override isActionDisabled (
-        currentUser: CurrentUserModel,
+    protected isActionVisible (
+        element: ParticipantModel,
         action: ActionModel<ParticipantActionEnum | GroupActionEnum>,
     ): boolean {
-        const isActionFeasible: boolean = CurrentUserUtil.isFeasible(
-            currentUser,
-            this.element.event,
-            action,
-        )
-
         switch (action.id) {
             case GroupActionEnum.REMOVE_MEMBER_FROM_GROUP:
-                return !(isActionFeasible && this.groupIdToRemove)
+                return GenericUtil.nonNull( this.groupIdToRemove() )
             case ParticipantActionEnum.DISABLE_PARTICIPANT:
-                return !(isActionFeasible && this.element.visible)
+                return element.visible
             case ParticipantActionEnum.ENABLE_PARTICIPANT:
-                return !(isActionFeasible && !this.element.visible)
+                return !element.visible
             default:
-                return !isActionFeasible
+                return true
         }
     }
 
@@ -90,28 +107,38 @@ export class ParticipantElementComponent extends GenericElementComponent<Partici
         switch (action) {
             case ParticipantActionEnum.FETCH_PARTICIPANT_MOVEMENTS_PAGE:
                 this.router.navigateByUrl(
-                    this.buildUri( AppRouteEnum.PARTICIPANTS_MOVEMENTS.replace( ':id', this.element.id ) ),
+                    this.buildUri( AppRouteEnum.PARTICIPANTS_MOVEMENTS.replace(
+                        ':participantId',
+                        this.participant().id,
+                    ) ),
                 ).catch( console.error )
                 break
             case ParticipantActionEnum.UPDATE_PARTICIPANT:
                 this.router.navigateByUrl(
-                    this.buildUri( AppRouteEnum.PARTICIPANTS_EDITION.replace( ':id', this.element.id ) ),
+                    this.buildUri( AppRouteEnum.PARTICIPANTS_EDITION.replace(
+                        ':participantId',
+                        this.participant().id,
+                    ) ),
                 ).catch( console.error )
                 break
             case GroupActionEnum.REMOVE_MEMBER_FROM_GROUP:
-                this.groupFacade.removeMemberFromGroup( this.groupIdToRemove!, this.element, this.contextEventId() )
+                this.groupFacade.removeMemberFromGroup(
+                    this.groupIdToRemove()!,
+                    this.participant(),
+                    this.contextEventId(),
+                )
                 break
             case ParticipantActionEnum.DISABLE_PARTICIPANT:
-                this.facade.disableParticipant( this.element.id, this.contextEventId() )
+                this.facade.disableParticipant( this.participant().id, this.contextEventId() )
                 break
             case ParticipantActionEnum.ENABLE_PARTICIPANT:
-                this.facade.enableParticipant( this.element.id, this.contextEventId() )
+                this.facade.enableParticipant( this.participant().id, this.contextEventId() )
                 break
             case ParticipantActionEnum.DELETE_PARTICIPANT:
-                this.facade.deleteParticipant( this.element, this.contextEventId() )
+                this.facade.deleteParticipant( this.participant(), this.contextEventId() )
                 break
             default:
-                console.warn( this.translateService.instant( 'warning.message.invalid-action' ) )
+                console.warn( this.translateService.instant( 'global.messages.invalid-action' ) )
         }
     }
 }

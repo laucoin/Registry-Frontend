@@ -20,6 +20,9 @@ import { GroupState } from './domains/group/data/state/group.state'
 import { VehicleFacade } from './domains/vehicle/data/state/vehicle.facade'
 import { VehicleState } from './domains/vehicle/data/state/vehicle.state'
 import { vehicleOptionGuard } from './shared/util-authentication/guard/vehicle-option.guard'
+import { activityOptionGuard } from './shared/util-authentication/guard/activity-option.guard'
+import { ActivityFacade } from './domains/activity/data/state/activity.facade'
+import { ActivityState } from './domains/activity/data/state/activity.state'
 
 export const routes: Routes = [
     {
@@ -68,6 +71,12 @@ export const routes: Routes = [
         loadChildren: () => import('./domains/vehicle/vehicle.routes').then( (m: typeof import('./domains/vehicle/vehicle.routes')) => m.vehicleRoutes ),
         canActivate: [ authGuard, selectedProfileGuard, vehicleOptionGuard ],
         providers: [ MovementFacade, VehicleFacade, importProvidersFrom( NgxsModule.forFeature( [ MovementState, VehicleState ] ) ) ],
+    },
+    {
+        path: AppRouteEnum.ACTIVITIES,
+        loadChildren: () => import('./domains/activity/activity.routes').then( (m: typeof import('./domains/activity/activity.routes')) => m.activityRoutes ),
+        canActivate: [ authGuard, selectedProfileGuard, activityOptionGuard ],
+        providers: [ MovementFacade, ActivityFacade, importProvidersFrom( NgxsModule.forFeature( [ MovementState, ActivityState ] ) ) ],
     },
     {
         path: AppRouteEnum.PARTICIPANTS,

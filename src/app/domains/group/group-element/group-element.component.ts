@@ -1,24 +1,29 @@
-import { Component, Input, OnChanges, signal, WritableSignal } from '@angular/core'
-import { GenericElementComponent } from '../../../shared/util-tool/component/generic-element.component'
+import { ChangeDetectionStrategy, Component, computed, inject, input, InputSignal, Signal } from '@angular/core'
 import { GroupModel } from '../../../shared/util-model/model/group.model'
 import { GroupActionEnum } from '../data/state/group.action'
-import { CurrentUserModel } from '../../../shared/util-model/model/current-user.model'
 import { AppConfig } from '../../../app.config'
 import { ActionModel } from '../../../shared/util-model/model/action.model'
-import { CurrentUserUtil } from '../../../shared/util-authentication/tool/current-user.util'
 import { GroupFacade } from '../data/state/group.facade'
 import { ElementCardComponent } from '../../../shared/util-ui/element-card/element-card.component'
 import { TranslatePipe } from '@ngx-translate/core'
-import { DatePipe, NgIf, TitleCasePipe, UpperCasePipe } from '@angular/common'
-import { Button } from 'primeng/button'
+import { TitleCasePipe, UpperCasePipe } from '@angular/common'
 import { LayerComponent } from '../../../shared/util-ui/layer/layer.component'
 import { Listbox } from 'primeng/listbox'
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs'
 import { ParticipantModel } from '../../../shared/util-model/model/participant.model'
-import { DateIsPastPipe } from '../../../shared/util-tool/pipe/date-is-past.pipe'
 import { Avatar } from 'primeng/avatar'
 import { AppRouteEnum } from '../../../app-route.enum'
 import { Tag } from 'primeng/tag'
+import { SeverityTagComponent } from '../../../shared/util-ui/severity-tag/severity-tag.component'
+import { Skeleton } from 'primeng/skeleton'
+import { DateIntervalStatusModel } from '../../../shared/util-model/model/date-interval-status.model'
+import { DateUtil } from '../../../shared/util-tool/util/date.util'
+import { GenericElementComponent } from '../../../shared/util-tool/component/generic-element.component'
+import { GroupUtil } from '../../../shared/util-tool/util/group.util'
+import { PluralTranslationPipe } from '../../../shared/util-tool/pipe/plural-translation.pipe'
+import { VisibilityNamePipe } from '../../../shared/util-tool/pipe/visibility.pipe'
+import { IntervalFormatPipe } from '../../../shared/util-tool/pipe/interval-format.pipe'
+import { CustomDateFormatPipe } from '../../../shared/util-tool/pipe/custom-date-format.pipe'
 
 @Component( {
     selector: 'app-group-element',
@@ -26,10 +31,8 @@ import { Tag } from 'primeng/tag'
     imports: [
         ElementCardComponent,
         TranslatePipe,
-        DatePipe,
         TitleCasePipe,
         UpperCasePipe,
-        Button,
         LayerComponent,
         Listbox,
         Tab,
@@ -37,64 +40,60 @@ import { Tag } from 'primeng/tag'
         TabPanel,
         TabPanels,
         Tabs,
-        DateIsPastPipe,
-        NgIf,
         Avatar,
         Tag,
+        SeverityTagComponent,
+        Skeleton,
+        PluralTranslationPipe,
+        VisibilityNamePipe,
+        IntervalFormatPipe,
+        CustomDateFormatPipe,
     ],
     templateUrl: './group-element.component.html',
     styleUrl: './group-element.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush,
 } )
-export class GroupElementComponent extends GenericElementComponent<GroupModel, GroupActionEnum> implements OnChanges {
-    @Input() public showActionMenu: boolean = true
+export class GroupElementComponent extends GenericElementComponent<GroupModel, GroupActionEnum> {
+    private readonly facade: GroupFacade = inject( GroupFacade )
+
     protected layerOpened: boolean = false
     protected activeTab: number = 1
 
-    protected additionalTotal: WritableSignal<number> = signal( 0 )
-    protected adults: WritableSignal<ParticipantModel[]> = signal( [] )
-    protected children: WritableSignal<ParticipantModel[]> = signal( [] )
+    public readonly actionMenuVisible: InputSignal<boolean> = input( true )
+    public readonly group: InputSignal<GroupModel> = input.required()
 
-    public constructor (private readonly facade: GroupFacade) {super()}
+    protected readonly actions: Signal<ActionModel<GroupActionEnum>[]>
+    protected readonly intervalStatus: Signal<DateIntervalStatusModel | undefined>
+    protected readonly additionalTotal: Signal<number>
+    protected readonly adults: Signal<ParticipantModel[]>
+    protected readonly children: Signal<ParticipantModel[]>
 
-    public ngOnChanges (): void {
-        this.defineActions()
-        this.additionalTotal.set( this.element.members.length - 1 )
-        this.adults.set( this.filterMembers( true ) )
-        this.children.set( this.filterMembers( false ) )
+    public constructor () {
+        super()
+
+        this.intervalStatus = computed( (): DateIntervalStatusModel => DateUtil.dateRangeStatus(
+            this.group().startAvailability,
+            this.group().endAvailability,
+        ) )
+
+        this.actions = computed( (): ActionModel<GroupActionEnum>[] => this.buildActions(
+            this.group(),
+            AppConfig.config.group.action,
+        ) )
+
+        this.additionalTotal = computed( (): number => this.group().members.length - 1 )
+        this.adults = computed( (): ParticipantModel[] => GroupUtil.getAdults( this.group() ) )
+        this.children = computed( (): ParticipantModel[] => GroupUtil.getChildren( this.group() ) )
     }
 
-    private filterMembers (major: boolean): ParticipantModel[] {
-        return this.element.members.filter( (member: ParticipantModel): boolean => member.major === major )
-    }
-
-    private defineActions (): void {
-        const currentUser: CurrentUserModel = this.registryFacade.actualCurrentUser!
-        this.actions = AppConfig
-            .config.group.action
-            .map( (action: ActionModel<GroupActionEnum>): ActionModel<GroupActionEnum> => ({
-                ...action,
-                disabled: this.isActionDisabled( currentUser, action ),
-            }) )
-            .filter( (action: ActionModel<GroupActionEnum>): boolean => !action.disabled )
-    }
-
-    protected override isActionDisabled (
-        currentUser: CurrentUserModel,
-        action: ActionModel<GroupActionEnum>,
-    ): boolean {
-        const isActionFeasible: boolean = CurrentUserUtil.isFeasible(
-            currentUser,
-            this.element.event,
-            action,
-        )
-
+    protected isActionVisible (element: GroupModel, action: ActionModel<GroupActionEnum>): boolean {
         switch (action.id) {
             case GroupActionEnum.DISABLE_GROUP:
-                return !(isActionFeasible && this.element.visible)
+                return element.visible
             case GroupActionEnum.ENABLE_GROUP:
-                return !(isActionFeasible && !this.element.visible)
+                return !element.visible
             default:
-                return !isActionFeasible
+                return true
         }
     }
 
@@ -102,29 +101,25 @@ export class GroupElementComponent extends GenericElementComponent<GroupModel, G
         switch (action) {
             case GroupActionEnum.FETCH_GROUP_MEMBERS_PAGE:
                 this.router.navigateByUrl(
-                    this.buildUri( AppRouteEnum.GROUP_MEMBERS.replace( ':id', this.element.id ) ),
+                    this.buildUri( AppRouteEnum.GROUP_MEMBERS.replace( ':groupId', this.group().id ) ),
                 ).catch( console.error )
                 break
             case GroupActionEnum.UPDATE_GROUP:
                 this.router.navigateByUrl(
-                    this.buildUri( AppRouteEnum.GROUPS_EDITION.replace( ':id', this.element.id ) ),
+                    this.buildUri( AppRouteEnum.GROUPS_EDITION.replace( ':groupId', this.group().id ) ),
                 ).catch( console.error )
                 break
             case GroupActionEnum.DISABLE_GROUP:
-                this.facade.disableGroup( this.element.id, this.contextEventId() )
+                this.facade.disableGroup( this.group().id, this.contextEventId() )
                 break
             case GroupActionEnum.ENABLE_GROUP:
-                this.facade.enableGroup( this.element.id, this.contextEventId() )
+                this.facade.enableGroup( this.group().id, this.contextEventId() )
                 break
             case GroupActionEnum.DELETE_GROUP:
-                this.facade.deleteGroup( this.element, this.contextEventId() )
+                this.facade.deleteGroup( this.group(), this.contextEventId() )
                 break
             default:
-                console.warn( this.translateService.instant( 'warning.message.invalid-action' ) )
+                console.warn( this.translateService.instant( 'global.messages.invalid-action' ) )
         }
-    }
-
-    protected get firstNotPurged (): ParticipantModel | undefined {
-        return this.element.members.find( (member: ParticipantModel): boolean => !member.purged )
     }
 }

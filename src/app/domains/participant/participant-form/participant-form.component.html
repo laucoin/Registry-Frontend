@@ -1,110 +1,135 @@
-<app-form [form]='form' [loading]='(loading$ | async) ?? false'>
-    @if (showTitle) {
-        @if (participant()) {
-            <h2>{{
-                    'participant.form.title.edit' | translate: {
-                        firstName: participant()?.firstName,
-                        lastName: participant()?.lastName
-                    }
-                }}
-            </h2>
-        } @else {
-            <h2>{{ 'participant.form.title.create' | translate }}</h2>
-        }
-    }
+<app-form [form]='form'
+          [loading]='facade.participantLoading()'
+          [showTitle]='showTitle()'
+          [title]='"participants.form.title" | formTitle: facade.participant() | translate : {
+              firstName: facade.participant()?.firstName,
+              lastName: facade.participant()?.lastName
+          }'>
     <p-card>
+        @if (!defaultGroup()) {
+            <div class='field'>
+                <label for='user'>{{ 'participants.form.user.title' | translate }}</label>
+                <p-auto-complete inputId='user'
+                                 fluid
+                                 completeOnFocus
+                                 showClear
+                                 optionValue='value.id'
+                                 optionLabel='label'
+                                 [placeholder]='"participants.form.placeholder.user" | translate'
+                                 [formControl]='user'
+                                 [forceSelection]='true'
+                                 [suggestions]='facade.searchedUsersMetadata()'
+                                 (keydown.enter)='submit()'
+                                 (onClear)='handleUserSelection(undefined)'
+                                 (onUnselect)='handleUserSelection(undefined)'
+                                 (onSelect)='handleUserSelection($event.value)'
+                                 (completeMethod)='handleUserSearch($event)'>
+                    <ng-template #empty>
+                        <span>{{ 'participants.form.user.empty-search' | translate }}</span>
+                    </ng-template>
+                </p-auto-complete>
+            </div>
+            <p-divider align='center' />
+        }
         <div class='field'>
-            <label for='user'>{{ 'participant.form.user' | translate }}</label>
-            <p-auto-complete inputId='user'
-                             fluid
-                             completeOnFocus
-                             optionValue='value.id'
-                             optionLabel='label'
-                             [placeholder]='"participant.form.link-user" | translate'
-                             [formControl]='user'
-                             [forceSelection]='true'
-                             [suggestions]='(usersSuggestion$ | async) ?? []'
-                             (keydown.enter)='submit()'
-                             (onSelect)='onUserSelection($event)'
-                             (completeMethod)='handleUserSearch($event)'>
-                <ng-template #empty>
-                    <span>{{ 'participant.form.empty-user-search' | translate }}</span>
-                </ng-template>
-            </p-auto-complete>
-        </div>
-        <p-divider align='center' />
-        <div class='field'>
-            <label for='first-name' appRequired>{{ 'participant.form.first-name' | translate }}</label>
+            <label for='first-name' appRequired>{{ 'participants.form.firstname' | translate }}</label>
             <input [formControl]='firstName'
-                   [placeholder]='"participant.example.first-name" | translate'
+                   [placeholder]='"participants.form.placeholder.firstname" | translate'
                    (keydown.enter)='submit()'
                    id='first-name'
                    pInputText
                    type='text' />
             @if (previousFirstName() && previousFirstName() !== firstName.value) {
                 <small class='secondary-color'>
-                    {{ 'participant.form.previous-first-name' | translate: { firstName: previousFirstName() } }}
+                    {{ 'participants.form.previous-first-name' | translate: { firstName: previousFirstName() } }}
                 </small>
             }
-            <app-form-field-error [control]='firstName'
-                                  translationPrefix='participant.form.error.first-name' />
+            <app-form-field-error [errors]='firstName.errors'
+                                  [invalid]='FormUtil.invalid(firstName)'
+                                  translationPrefix='participants.form.error.firstname' />
         </div>
         <div class='field'>
-            <label for='last-name' appRequired>{{ 'participant.form.last-name' | translate }}</label>
+            <label for='last-name' appRequired>{{ 'participants.form.lastname' | translate }}</label>
             <input [formControl]='lastName'
-                   [placeholder]='"participant.example.last-name" | translate'
+                   [placeholder]='"participants.form.placeholder.lastname" | translate'
                    (keydown.enter)='submit()'
                    id='last-name'
                    pInputText
                    type='text' />
             @if (previousLastName() && previousLastName() !== lastName.value) {
                 <small class='secondary-color'>
-                    {{ 'participant.form.previous-last-name' | translate: { lastName: previousLastName() } }}
+                    {{ 'participants.form.previous-last-name' | translate: { lastName: previousLastName() } }}
                 </small>
             }
-            <app-form-field-error [control]='lastName'
-                                  translationPrefix='participant.form.error.last-name' />
+            <app-form-field-error [errors]='lastName.errors'
+                                  [invalid]='FormUtil.invalid(lastName)'
+                                  translationPrefix='participants.form.error.lastname' />
         </div>
         <div class='field'>
-            <label for='birthday' appRequired>{{ 'participant.form.birthday' | translate }}</label>
+            <label for='birthday' appRequired>{{ 'participants.form.birthday' | translate }}</label>
             <p-date-picker [formControl]='birthday'
                            [showButtonBar]='true'
-                           [placeholder]='"participant.example.birthday" | translate'
-                           [touchUI]='isMobile()'
+                           [showIcon]='true'
+                           [showOnFocus]='false'
+                           [placeholder]='"participants.form.placeholder.birthday" | translate'
+                           [touchUI]='registryFacade.tinyScreen()'
                            (keydown.enter)='submit()'
                            id='birthday'
                            fluid />
-            <small class='secondary-color'>{{ 'info.message.default-range' | translate }}</small>
-            <app-form-field-error [control]='birthday'
-                                  translationPrefix='participant.form.error.birthday' />
+            <app-form-field-error [errors]='birthday.errors'
+                                  [invalid]='FormUtil.invalid(birthday)'
+                                  translationPrefix='participants.form.error.birthday' />
         </div>
-        <div class='field'>
-            <label for='presence'>{{ 'participant.form.presence' | translate }}</label>
-            <p-date-picker [formControl]='presence'
-                           [showButtonBar]='true'
-                           [placeholder]='"participant.example.presence" | translate: {
-                                    begin: startDateExample() | date: ("datetime.format.date" | translate),
-                                    end: endDateExample() | date: ("datetime.format.date" | translate)
-                                }'
-                           [readonlyInput]='true'
-                           [showTime]='true'
-                           [touchUI]='isMobile()'
-                           (keydown.enter)='submit()'
-                           id='presence'
-                           selectionMode='range'
-                           fluid />
-            <app-form-field-error [control]='presence'
-                                  translationPrefix='participant.form.error.presence' />
-        </div>
-        @if (!defaultGroup) {
+        @if (!defaultGroup()) {
+            <div class='d-flex flex-wrap'>
+                <div class='begin-date-time field'>
+                    <label for='begin-date-time'>{{ 'participants.form.begin-datetime' | translate }}</label>
+                    <app-date-time-field [formControl]='beginDateTime'
+                                         [invalid]='FormUtil.invalid(beginDateTime)'
+                                         inputId='begin-date-time'
+                                         [datePlaceholder]='"participants.form.placeholder.date" | translate: {
+                                                            date: startDateExample | dateFormat: "date"
+                                                         }'
+                                         [timePlaceholder]='"participants.form.placeholder.time" | translate: {
+                                                            date: startDateExample | dateFormat: "time"
+                                                         }' />
+                    <small class='secondary-color'>{{ 'participants.form.hint.begin-date-time' | translate }}</small>
+                    <app-form-field-error [errors]='beginDateTime.errors'
+                                          [invalid]='FormUtil.invalid(beginDateTime)'
+                                          translationPrefix='participants.form.error.begin-datetime' />
+                </div>
+                <div class='end-date-time field'>
+                    <label for='end-date-time'>{{ 'participants.form.end-datetime' | translate }}</label>
+                    <app-date-time-field [formControl]='endDateTime'
+                                         [invalid]='FormUtil.invalid(endDateTime)'
+                                         inputId='end-date-time'
+                                         [datePlaceholder]='"participants.form.placeholder.date" | translate: {
+                                                            date: endDateExample | dateFormat: "date"
+                                                         }'
+                                         [timePlaceholder]='"participants.form.placeholder.time" | translate: {
+                                                            date: endDateExample | dateFormat: "time"
+                                                         }' />
+                    <small class='secondary-color'>{{ 'participants.form.hint.end-date-time' | translate }}</small>
+                    <app-form-field-error [errors]='endDateTime.errors'
+                                          [invalid]='FormUtil.invalid(endDateTime)'
+                                          translationPrefix='participants.form.error.end-datetime' />
+                </div>
+            </div>
+            <app-form-field-error [errors]='form.errors'
+                                  [invalid]='FormUtil.invalid(form) && beginDateTime.valid && endDateTime.valid'
+                                  translationPrefix='participants.form.error.date-range' />
             <p-divider />
             <div class='field'>
-                <label for='groups' appRequired>{{ 'participant.form.groups' | translate }}</label>
+                <span class='label'>{{ 'participants.form.groups' | pluralTranslation: (groups.value?.length ?? 0)  | translate }}</span>
+                <label for='members' class='secondary-color'>{{ 'participants.form.groups.search' | translate }}</label>
                 <app-select-elements-field [formControl]='groups'
-                                           [emptySearchMessage]='"participant.form.empty-user-search" | translate'
-                                           [suggestions]='(groupsSuggestion$ | async) ?? []'
-                                           [searchLabel]='"participant.form.group-search" | translate'
-                                           [emptyPlaceholder]='"participant.form.no-group" | translate'
+                                           [fluid]='true'
+                                           [multiple]='true'
+                                           [selectItemBuilder]='GroupUtil.toSelectItem'
+                                           [selectionLabel]='"participants.form.groups.selected" | pluralTranslation:
+                                           (groups.value?.length ?? 0) | translate'
+                                           [emptyMessage]='"participants.form.groups.empty" | translate'
+                                           [suggestions]='facade.searchedGroupsMetadata()'
                                            inputId='groups'
                                            (handleSearch)='handleGroupSearch($event)' />
             </div>
@@ -112,27 +137,16 @@
     </p-card>
     <div class='d-flex mt-2 justify-content-center'>
         <p-button
-                (click)='navigateToRedirectUri()'
-                [label]='"cancel" | translate'
+                (click)='navigateToRedirectUri(AppRouteEnum.PARTICIPANTS)'
+                [label]='"global.actions.cancel" | translate'
                 [outlined]='true'
                 [rounded]='true' />
-
-        @if (participant()) {
-            <p-button
-                    class='ms-2'
-                    (click)='submit()'
-                    [label]='"edit" | translate'
-                    [rounded]='true'
-                    icon='pi pi-pen-to-square'
-                    severity='success' />
-        } @else {
-            <p-button
-                    class='ms-2'
-                    (click)='submit()'
-                    [label]='"create" | translate'
-                    [rounded]='true'
-                    icon='pi pi-plus'
-                    severity='success' />
-        }
+        <p-button
+                class='ms-2'
+                (click)='submit()'
+                [label]='facade.participant() | formButton | translate'
+                [rounded]='true'
+                icon='pi pi-pen-to-square'
+                severity='success' />
     </div>
 </app-form>

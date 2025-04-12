@@ -1,16 +1,60 @@
-.info {
-    flex-basis: 40%;
-}
-
-.content {
-    flex-basis: 60%;
-}
-
-.participants:hover {
-    text-decoration: underline;
-}
-
 .group-name {
     font-size:   16px;
     font-weight: 700;
+}
+
+.group-info,
+.members,
+.status,
+.visibility-status {
+    flex-basis: 100%;
+}
+
+
+@media (min-width: 576px) {
+    .group-info,
+    .members {
+        flex-basis: 100%;
+    }
+
+    .status,
+    .visibility-status {
+        flex-basis: 50%;
+    }
+}
+
+@media (min-width: 768px) {
+    .group-info,
+    .members {
+        flex-basis: 100%;
+    }
+
+    .status {
+        flex-basis: 70%;
+    }
+
+    .visibility-status {
+        flex-basis: 30%;
+    }
+}
+
+@media (min-width: 1140px) {
+    .group-info {
+        flex-basis: 25%;
+    }
+
+    .members,
+    .status {
+        flex-basis: 30%;
+    }
+
+    .visibility-status {
+        flex-basis: 15%;
+    }
+}
+
+::ng-deep {
+    .max-list-box-height {
+        height: 100%;
+    }
 }

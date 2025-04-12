@@ -1,75 +1,72 @@
 <app-list (updateRequired)='loadPage($event, contextEventId())'
-          [elementPage$]='elementPage$!'
-          [error$]='error$'
-          [loading$]='loading$'>
+          [elementPage]='facade.vehiclesPage()'
+          [error]='facade.vehiclesPageError()'
+          [loading]='facade.vehiclesPageLoading()'>
     <ng-template appTemplate='search' [formGroup]='form' let-pageEvent>
-        <div class='row'>
-            <div class='col-12 col-sm-6 col-md-12 col-lg-6 search-field'>
-                <label for='search'>{{ 'filter-sort.search' | translate }}</label>
-                <input id='search'
+        <div class='d-grid search-line g-2'>
+            <div class='field'>
+                <label for='text-search-field'>{{ 'vehicles.search-and-filter.text' | translate }}</label>
+                <input id='text-search-field'
                        type='text'
+                       fluid
                        pInputText
                        (keydown.enter)='loadPage(pageEvent, contextEventId())'
-                       [formControl]='searched' />
+                       [formControl]='textSearched' />
             </div>
-            <div class='col-12 col-sm-6 col-md-12 col-lg-6 search-field'>
-                <label for='range'>{{ 'filter-sort.date-range' | translate }}</label>
-                <p-date-picker [formControl]='range'
+            <div class='field'>
+                <label for='date-time-search-field'>{{ 'vehicles.search-and-filter.datetime' | translate }}</label>
+                <p-date-picker inputId='date-time-search-field'
+                               fluid
                                [showButtonBar]='true'
-                               [readonlyInput]='true'
                                [showTime]='true'
-                               [touchUI]='isMobile()'
-                               id='range'
-                               inputId='range'
-                               selectionMode='range'
-                               fluid />
+                               [touchUI]='registryFacade.tinyScreen()'
+                               (onBlur)='loadPage(pageEvent, contextEventId())'
+                               [formControl]='dateTimeSearched' />
             </div>
         </div>
-        <div class='d-flex flex-wrap justify-content-center pt-2'>
-            <div class='pe-1 flex-grow-1'>
-                <p-toggleButton
-                        [formControl]='onlyVisible'
-                        (keydown.enter)='loadPage(pageEvent, contextEventId())'
-                        [onLabel]='"filter-sort.only-visible.false" | translate'
-                        [offLabel]='"filter-sort.only-visible.true" | translate'
-                        onIcon='pi pi-eye-slash'
-                        offIcon='pi pi-eye'
-                        [ariaLabel]='"filter-sort.only-visible.title" | translate' />
-                <p-toggleButton
-                        class='ms-2'
-                        [formControl]='order'
-                        (keydown.enter)='loadPage(pageEvent, contextEventId())'
-                        [onLabel]='"filter-sort.order.DESC" | translate'
-                        [offLabel]='"filter-sort.order.ASC" | translate'
-                        onIcon='pi pi-sort-alpha-down-alt'
-                        offIcon='pi pi-sort-alpha-down'
-                        [ariaLabel]='"filter-sort.order.title" | translate' />
+        <div class='d-grid search-line g-2'>
+            <div class='field'>
+                <label for='availability-search-field'>{{ 'vehicles.search-and-filter.availability' | translate }}</label>
+                <p-select inputId='availability-search-field'
+                          fluid
+                          [options]='facade.presencesStatusMetadata()'
+                          optionLabel='label'
+                          optionValue='value'
+                          (onChange)='loadPage(pageEvent, contextEventId())'
+                          [formControl]='availabilitySearched' />
             </div>
-            <div class='ps-1'>
-                <p-button (click)='loadPage(pageEvent, contextEventId())'
-                          [label]='"filter-sort.apply" | translate'
-                          [outlined]='true'
-                          [rounded]='true'
-                          icon='pi pi-search'
-                          [loading]='(loading$ | async) || (silentLoading$ | async)' />
+            <div class='field'>
+                <label for='visibility-search-field'>{{ 'vehicles.search-and-filter.visibility' | translate }}</label>
+                <p-select inputId='visibility-search-field'
+                          fluid
+                          [options]='facade.visibilitiesMetadata()'
+                          optionLabel='label'
+                          optionValue='value'
+                          (onChange)='loadPage(pageEvent, contextEventId())'
+                          [formControl]='visibilitySearched' />
             </div>
+        </div>
+        <div class='d-flex justify-content-center'>
+            <p-button (click)='loadPage(pageEvent, contextEventId())'
+                      [label]='"global.actions.search-and-filter" | translate'
+                      [outlined]='true'
+                      [rounded]='true'
+                      icon='pi pi-search'
+                      [loading]='facade.vehiclesPageLoading() || facade.vehiclesPageSilentLoading()' />
         </div>
     </ng-template>
-    <ng-template appTemplate='element' let-layout='layout' let-vehicle>
-        <app-vehicle-element [element]='vehicle' [layout]='layout' />
+    <ng-template appTemplate='element' let-vehicle>
+        <app-vehicle-element [vehicle]='vehicle' />
     </ng-template>
     <ng-template appTemplate='creation'>
-        @if (hasEventAuthority(currentUser$ | async, contextEventId(), EventAuthority.REGISTRY_EVENT_VEHICLE_C)) {
+        @if (CurrentUserUtil.hasEventAuthority(registryFacade.currentUser(), contextEventId(), EventAuthority.REGISTRY_EVENT_VEHICLE_C)) {
             <p-button class='m-1'
                       severity='success'
                       [outlined]='true'
                       [rounded]='true'
-                      [label]='isTinyScreen() || isMobile() ? "" : "create" | translate'
+                      [label]='registryFacade.tinyScreen() ? "" : "global.actions.create" | translate'
                       icon='pi pi-plus'
                       [routerLink]='VehicleRoutesEnum.CREATE' />
         }
-    </ng-template>
-    <ng-template appTemplate='empty'>
-        <app-message [message]='message' />
     </ng-template>
 </app-list>

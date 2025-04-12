@@ -1,11 +1,9 @@
-import { Injectable } from '@angular/core'
+import { computed, Injectable, Signal } from '@angular/core'
 import { Observable } from 'rxjs'
 import { PageModel } from '../../../../shared/util-model/model/page.model'
 import { GenericEventElementFacade } from '../../../../shared/util-tool/facade/generic-event-element.facade'
 import { GroupDto } from '../dto/group.dto'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
-import { FormUtil } from '../../../../shared/util-tool/util/form.util'
-import { OrderEnum } from '../../../../shared/util-model/enumeration/order.enum'
 import { ofActionSuccessful } from '@ngxs/store'
 import {
     AddMembersToGroup,
@@ -15,18 +13,18 @@ import {
     EnableGroup,
     FetchGroup,
     FetchGroupMembersPage,
+    FetchGroupsMembers,
     FetchGroupsPage,
-    InputGroupMembersPageDateRange,
-    InputGroupMembersPageSearch,
-    InputGroupsPageDateRange,
-    InputGroupsPageSearch,
+    InputGroupMembersPageTextSearched,
+    InputGroupsPageDateTimeSearched,
+    InputGroupsPageTextSearched,
     RemoveMemberFromGroup,
     ResetGroup,
     SearchParticipants,
-    SelectGroupMembersPageOrder,
-    SelectGroupMembersPageVisibility,
-    SelectGroupsPageOrder,
-    SelectGroupsPageVisibility,
+    SelectGroupMembersPageStatusSearched,
+    SelectGroupMembersPageVisibilitySearched,
+    SelectGroupsPagePresenceSearched,
+    SelectGroupsPageVisibilitySearched,
     StartGroupLoader,
     StartGroupMembersPageLoader,
     StartGroupsPageLoader,
@@ -38,89 +36,117 @@ import {
 import { ParticipantModel } from '../../../../shared/util-model/model/participant.model'
 import { GroupModel } from '../../../../shared/util-model/model/group.model'
 import { GroupState } from './group.state'
+import { DateUtil } from '../../../../shared/util-tool/util/date.util'
 
 @Injectable()
 export class GroupFacade extends GenericEventElementFacade {
-    public get groupsPage (): Observable<PageModel<GroupModel> | undefined> {
-        return this.ngStore.select( GroupState.groupsPage )
+    public get groupsPage (): Signal<PageModel<GroupModel> | undefined> {
+        return this.ngStore.selectSignal( GroupState.groupsPage )
     }
 
-    public get groupsPageLoading (): Observable<boolean> {
-        return this.ngStore.select( GroupState.groupsPageLoading )
+    public get groupsPageLoading (): Signal<boolean> {
+        return this.ngStore.selectSignal( GroupState.groupsPageLoading )
     }
 
-    public get groupsPageSilentLoading (): Observable<boolean> {
-        return this.ngStore.select( GroupState.groupsPageSilentLoading )
+    public get groupsPageSilentLoading (): Signal<boolean> {
+        return this.ngStore.selectSignal( GroupState.groupsPageSilentLoading )
     }
 
-    public get groupsPageError (): Observable<ToastMessageOptions | undefined> {
-        return this.ngStore.select( GroupState.groupsPageError )
+    public get groupsPageError (): Signal<ToastMessageOptions | undefined> {
+        return this.ngStore.selectSignal( GroupState.groupsPageError )
     }
 
-    public get actualGroupsPageSearchParam (): string | undefined {
-        return this.ngStore.selectSnapshot( GroupState.groupsPageSearchParam )
+    public get groupsPageTextSearchedParam (): Signal<string | undefined> {
+        return this.ngStore.selectSignal( GroupState.groupsPageTextSearchedParam )
     }
 
-    public get actualGroupsPageDateRangeParam (): Date[] | undefined {
-        return FormUtil.buildDateRange(
-            this.ngStore.selectSnapshot( GroupState.groupsPageStartDateParam ),
-            this.ngStore.selectSnapshot( GroupState.groupsPageEndDateParam ),
+    public get groupsPageDateTimeSearchedParam (): Signal<Date | undefined> {
+        return computed( () =>
+            DateUtil.buildDate( this.ngStore.selectSignal( GroupState.groupsPageDateTimeSearchedParam )() ),
         )
     }
 
-    public get actualGroupsPageOnlyVisibleParam (): boolean {
-        return this.ngStore.selectSnapshot( GroupState.groupsPageOnlyVisibleParam )
+    public get groupsPagePresenceSearchedParam (): Signal<boolean | undefined> {
+        return this.ngStore.selectSignal( GroupState.groupsPagePresenceSearchedParam )
     }
 
-    public get actualGroupsPageOrderParam (): OrderEnum {
-        return this.ngStore.selectSnapshot( GroupState.groupsPageOrderParam )
+    public get groupsPageVisibilitySearchedParam (): Signal<boolean | undefined> {
+        return this.ngStore.selectSignal( GroupState.groupsPageVisibilitySearchedParam )
     }
 
-    public get groupMembersPage (): Observable<PageModel<ParticipantModel> | undefined> {
-        return this.ngStore.select( GroupState.groupMembersPage )
+    public get groupMembersPage (): Signal<PageModel<ParticipantModel> | undefined> {
+        return this.ngStore.selectSignal( GroupState.groupMembersPage )
     }
 
-    public get groupMembersPageLoading (): Observable<boolean> {
-        return this.ngStore.select( GroupState.groupMembersPageLoading )
-    }
-
-    public get groupMembersPageSilentLoading (): Observable<boolean> {
-        return this.ngStore.select( GroupState.groupMembersPageSilentLoading )
-    }
-
-    public get groupMembersPageError (): Observable<ToastMessageOptions | undefined> {
-        return this.ngStore.select( GroupState.groupMembersPageError )
-    }
-
-    public get actualGroupMembersPageSearchParam (): string | undefined {
-        return this.ngStore.selectSnapshot( GroupState.groupMembersPageSearchParam )
-    }
-
-    public get actualGroupMembersPageDateRangeParam (): Date[] | undefined {
-        return FormUtil.buildDateRange(
-            this.ngStore.selectSnapshot( GroupState.groupMembersPageStartDateParam ),
-            this.ngStore.selectSnapshot( GroupState.groupMembersPageEndDateParam ),
+    public get groupMembersPageLoading (): Signal<boolean> {
+        return computed( (): boolean =>
+            this.ngStore.selectSignal( GroupState.groupMembersPageLoading )() || this.registryFacade.contextEventLoading(),
         )
     }
 
-    public get actualGroupMembersPageOnlyVisibleParam (): boolean {
-        return this.ngStore.selectSnapshot( GroupState.groupMembersPageOnlyVisibleParam )
+    public get groupMembersPageSilentLoading (): Signal<boolean> {
+        return this.ngStore.selectSignal( GroupState.groupMembersPageSilentLoading )
     }
 
-    public get actualGroupMembersPageOrderParam (): OrderEnum {
-        return this.ngStore.selectSnapshot( GroupState.groupMembersPageOrderParam )
+    public get groupMembersPageError (): Signal<ToastMessageOptions | undefined> {
+        return this.ngStore.selectSignal( GroupState.groupMembersPageError )
     }
 
-    public get group (): Observable<GroupModel | undefined> {
+    public get groupMembersPageTextSearchedParam (): Signal<string | undefined> {
+        return this.ngStore.selectSignal( GroupState.groupMembersPageTextSearchedParam )
+    }
+
+    public get groupMembersPageStatusSearchedParam (): Signal<string | undefined> {
+        return this.ngStore.selectSignal( GroupState.groupMembersPageStatusSearchedParam )
+    }
+
+    public get groupMembersPageVisibilitySearchedParam (): Signal<boolean | undefined> {
+        return this.ngStore.selectSignal( GroupState.groupMembersPageVisibilitySearchedParam )
+    }
+
+    public get group (): Signal<GroupModel | undefined> {
+        return this.ngStore.selectSignal( GroupState.group )
+    }
+
+    public get group$ (): Observable<GroupModel | undefined> {
         return this.ngStore.select( GroupState.group )
     }
 
-    public get groupLoading (): Observable<boolean> {
-        return this.ngStore.select( GroupState.groupLoading )
+    public get groupLoading (): Signal<boolean> {
+        return computed( () =>
+            this.ngStore.selectSignal( GroupState.groupLoading )() || this.registryFacade.contextEventLoading(),
+        )
     }
 
-    public get searchedParticipantsMetadata (): Observable<SelectItem<ParticipantModel>[]> {
-        return this.ngStore.select( GroupState.searchedParticipantsMetadata )
+    public get searchedParticipantsMetadata (): Signal<SelectItem<ParticipantModel>[]> {
+        return this.ngStore.selectSignal( GroupState.searchedParticipantsMetadata )
+    }
+
+    public get presencesMetadata (): Signal<SelectItem<boolean | undefined>[]> {
+        return computed( (): SelectItem<boolean | undefined>[] =>
+            this.ngStore.selectSignal( GroupState.availabilitiesMetadata )().map( (status: SelectItem<boolean | undefined>): SelectItem<boolean | undefined> => ({
+                ...status,
+                label: this.translateService.instant( status.label! ),
+            }) ),
+        )
+    }
+
+    public get visibilitiesMetadata (): Signal<SelectItem<boolean | undefined>[]> {
+        return computed( (): SelectItem<boolean | undefined>[] =>
+            this.ngStore.selectSignal( GroupState.visibilitiesMetadata )().map( (status: SelectItem<boolean | undefined>): SelectItem<boolean | undefined> => ({
+                ...status,
+                label: this.translateService.instant( status.label! ),
+            }) ),
+        )
+    }
+
+    public get availabilitiesMetadata (): Signal<SelectItem<boolean | undefined>[]> {
+        return computed( (): SelectItem<boolean | undefined>[] =>
+            this.ngStore.selectSignal( GroupState.availabilitiesMetadata )().map( (status: SelectItem<boolean | undefined>): SelectItem<boolean | undefined> => ({
+                ...status,
+                label: this.translateService.instant( status.label! ),
+            }) ),
+        )
     }
 
     public startGroupsPageLoader (): void {
@@ -132,28 +158,42 @@ export class GroupFacade extends GenericEventElementFacade {
     }
 
     public fetchGroupsPage (
-        offset: number | undefined,
-        limit: number | undefined,
+        pageNumber: number | undefined,
+        pageSize: number | undefined,
         force: boolean,
         eventId: string | undefined = this.actualSelectedEventId,
     ): void {
-        this.ngStore.dispatch( new FetchGroupsPage( eventId, offset, limit, force ) )
+        this.ngStore.dispatch( new FetchGroupsPage( eventId, pageNumber, pageSize, force ) )
     }
 
-    public inputGroupsPageSearch (searched: string | undefined): void {
-        this.ngStore.dispatch( new InputGroupsPageSearch( searched ) )
+    public fetchGroupMembers (
+        groupIds: string[],
+        eventId: string | undefined = this.actualSelectedEventId,
+    ): void {
+        this.ngStore.dispatch( new FetchGroupsMembers( eventId, groupIds ) )
     }
 
-    public inputGroupsPageDateRange (range: Date[] | undefined): void {
-        this.ngStore.dispatch( new InputGroupsPageDateRange( range?.[0], range?.[1] ) )
-    }
+    public inputPageSearchParameters (
+        textSearched: string | undefined,
+        dateTimeSearched: Date | undefined,
+        presenceSearched: boolean | undefined,
+        visibilitySearched: boolean | undefined,
+    ): void {
+        if (textSearched !== this.groupMembersPageTextSearchedParam()) {
+            this.ngStore.dispatch( new InputGroupsPageTextSearched( textSearched ) )
+        }
 
-    public selectGroupsPageVisibility (onlyVisible: boolean): void {
-        this.ngStore.dispatch( new SelectGroupsPageVisibility( onlyVisible ) )
-    }
+        if (dateTimeSearched !== this.groupsPageDateTimeSearchedParam()) {
+            this.ngStore.dispatch( new InputGroupsPageDateTimeSearched( dateTimeSearched ) )
+        }
 
-    public selectGroupsPageOrder (order: OrderEnum): void {
-        this.ngStore.dispatch( new SelectGroupsPageOrder( order ) )
+        if (presenceSearched !== this.groupsPagePresenceSearchedParam()) {
+            this.ngStore.dispatch( new SelectGroupsPagePresenceSearched( presenceSearched ) )
+        }
+
+        if (visibilitySearched !== this.groupsPageVisibilitySearchedParam()) {
+            this.ngStore.dispatch( new SelectGroupsPageVisibilitySearched( visibilitySearched ) )
+        }
     }
 
     public startGroupMembersPageLoader (): void {
@@ -166,28 +206,30 @@ export class GroupFacade extends GenericEventElementFacade {
 
     public fetchGroupMembersPage (
         id: string,
-        offset: number | undefined,
-        limit: number | undefined,
+        pageNumber: number | undefined,
+        pageSize: number | undefined,
         force: boolean,
         eventId: string | undefined = this.actualSelectedEventId,
     ): void {
-        this.ngStore.dispatch( new FetchGroupMembersPage( eventId, id, offset, limit, force ) )
+        this.ngStore.dispatch( new FetchGroupMembersPage( eventId, id, pageNumber, pageSize, force ) )
     }
 
-    public inputGroupMembersPageSearch (searched: string | undefined): void {
-        this.ngStore.dispatch( new InputGroupMembersPageSearch( searched ) )
-    }
+    public inputMembersPageSearchParameters (
+        textSearched: string | undefined,
+        statusSearched: string | undefined,
+        visibilitySearched: boolean | undefined,
+    ): void {
+        if (textSearched !== this.groupMembersPageTextSearchedParam()) {
+            this.ngStore.dispatch( new InputGroupMembersPageTextSearched( textSearched ) )
+        }
 
-    public inputGroupMembersPageDateRange (range: Date[] | undefined): void {
-        this.ngStore.dispatch( new InputGroupMembersPageDateRange( range?.[0], range?.[1] ) )
-    }
+        if (statusSearched !== this.groupMembersPageStatusSearchedParam()) {
+            this.ngStore.dispatch( new SelectGroupMembersPageStatusSearched( statusSearched ) )
+        }
 
-    public selectGroupMembersPageVisibility (onlyVisible: boolean): void {
-        this.ngStore.dispatch( new SelectGroupMembersPageVisibility( onlyVisible ) )
-    }
-
-    public selectGroupMembersPageOrder (order: OrderEnum): void {
-        this.ngStore.dispatch( new SelectGroupMembersPageOrder( order ) )
+        if (visibilitySearched !== this.groupMembersPageVisibilitySearchedParam()) {
+            this.ngStore.dispatch( new SelectGroupMembersPageVisibilitySearched( visibilitySearched ) )
+        }
     }
 
     public addMembersToGroup (
@@ -196,6 +238,7 @@ export class GroupFacade extends GenericEventElementFacade {
         eventId: string | undefined = this.actualSelectedEventId,
     ): Observable<AddMembersToGroup> {
         this.ngStore.dispatch( new AddMembersToGroup( eventId, id, memberIds ) )
+
         return this.actions$.pipe( ofActionSuccessful( AddMembersToGroup ) )
     }
 
@@ -205,6 +248,7 @@ export class GroupFacade extends GenericEventElementFacade {
         eventId: string | undefined = this.actualSelectedEventId,
     ): Observable<RemoveMemberFromGroup> {
         this.ngStore.dispatch( new RemoveMemberFromGroup( eventId, id, participant ) )
+
         return this.actions$.pipe( ofActionSuccessful( RemoveMemberFromGroup ) )
     }
 
@@ -221,10 +265,10 @@ export class GroupFacade extends GenericEventElementFacade {
     }
 
     public searchParticipants (
-        searched: string | undefined = undefined,
+        textSearched: string | undefined = undefined,
         eventId: string | undefined = this.actualSelectedEventId,
     ): void {
-        this.ngStore.dispatch( new SearchParticipants( eventId, searched ) )
+        this.ngStore.dispatch( new SearchParticipants( eventId, textSearched ) )
     }
 
     public resetGroup (): void {
@@ -236,10 +280,6 @@ export class GroupFacade extends GenericEventElementFacade {
         eventId: string | undefined = this.actualSelectedEventId,
     ): Observable<CreateGroup> {
         this.ngStore.dispatch( new CreateGroup( eventId, group ) )
-        return this.actions$.pipe( ofActionSuccessful( CreateGroup ) )
-    }
-
-    public handleGroupCreation (): Observable<CreateGroup> {
         return this.actions$.pipe( ofActionSuccessful( CreateGroup ) )
     }
 

@@ -1,63 +1,62 @@
-import { Component, inject } from '@angular/core'
+import { inject } from '@angular/core'
+import { FormControl, FormGroup } from '@angular/forms'
+import { EventProfileFacade } from '../data/state/event-profile.facade'
+import { EventProfileModel } from '../../../shared/util-model/model/event-profile.model'
+import { EventProfileDto } from '../data/dto/event-profile.dto'
 import { GenericFormComponent } from '../../../shared/util-tool/component/generic-form.component'
 import { AppRouteEnum } from '../../../app-route.enum'
-import { FormControl } from '@angular/forms'
-import { Observable } from 'rxjs'
-import { EventProfileFacade } from '../data/state/event-profile.facade'
-import { SelectItem } from 'primeng/api'
-import { EventModel } from '../../../shared/util-model/model/event.model'
-import { CustomValidators } from '../../../shared/util-tool/util/custom-validator'
-import { DatePipe } from '@angular/common'
+import { map } from 'rxjs'
+import { EventProfilesDto } from '../data/dto/event-profiles.dto'
+import { GenericUtil } from '../../../shared/util-tool/util/generic.util'
 
-@Component( {
-    template: '',
-} )
-export abstract class GenericEventProfileFormComponent extends GenericFormComponent {
-    protected readonly assignableRoles$: Observable<SelectItem<string>[]>
-    private readonly datePipe: DatePipe = inject( DatePipe )
+export abstract class GenericEventProfileFormComponent extends GenericFormComponent<EventProfileModel, EventProfilesDto | EventProfileDto> {
+    protected readonly facade: EventProfileFacade = inject( EventProfileFacade )
 
-    protected constructor (protected readonly facade: EventProfileFacade) {
-        super(
-            AppRouteEnum.PROFILES,
-            facade.eventProfileLoading,
-        )
+    protected readonly form: FormGroup
+    protected readonly nextNavigation: AppRouteEnum = AppRouteEnum.PROFILES
 
-        this.assignableRoles$ = facade.eventProfileAssignableRolesMetadata
-        this.facade.fetchAssignableRoles( this.contextEventId() )
+    public constructor () {
+        super()
 
-        this.handleContextEvent()
+        this.form = this.initForm()
+
+        this.loadData()
+
+        this.handleLoadedElement()
     }
 
-    private handleContextEvent (): void {
+    protected override loadData (): void {
+        this.facade.resetEventProfile()
+        this.facade.fetchAssignableRoles( this.contextEventId() )
+
+        if (GenericUtil.nonNull( this.idParam )) {
+            this.facade.fetchEventProfile( this.idParam!, this.contextEventId() )
+        } else {
+            super.loadData()
+        }
+    }
+
+    protected handleLoadedElement (): void {
         this.subscriptions.add(
-            this.contextEvent$.subscribe( (event: EventModel | undefined): void => {
-                if (event?.begin) {
-                    this.range.addValidators( CustomValidators.minDate(
-                        new Date( event?.begin ),
-                        this.datePipe.transform(
-                            new Date( event?.begin ),
-                            this.translateService.instant( 'datetime.format.datetime' ),
-                        )!,
-                    ) )
-                }
-                if (event?.end) {
-                    this.range.addValidators( CustomValidators.maxDate(
-                        new Date( event?.end ),
-                        this.datePipe.transform(
-                            new Date( event?.end ),
-                            this.translateService.instant( 'datetime.format.datetime' ),
-                        )!,
-                    ) )
-                }
-            } ),
+            this.facade.eventProfile$.pipe(
+                map( (activity: EventProfileModel | undefined): void => this.fillForm( activity ) ),
+            ).subscribe(),
         )
+    }
+
+    protected get idParam (): string | undefined {
+        return this.route.snapshot.params['profileId']
     }
 
     protected get role (): FormControl {
         return this.form.get( 'role' ) as FormControl
     }
 
-    protected get range (): FormControl {
-        return this.form.get( 'range' ) as FormControl
+    protected get beginDateTime (): FormControl {
+        return this.form.get( 'beginDateTime' ) as FormControl
+    }
+
+    protected get endDateTime (): FormControl {
+        return this.form.get( 'endDateTime' ) as FormControl
     }
 }

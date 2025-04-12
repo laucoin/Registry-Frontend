@@ -1,4 +1,3 @@
-import { PageParamsModel } from '../../util-model/model/page-params.model'
 import { GenericModel } from '../../util-model/model/generic.model'
 import { PageRequestInformationModel } from '../../util-model/model/page-request-information.model'
 import { PageModel } from '../../util-model/model/page.model'
@@ -8,7 +7,7 @@ import { AppConfig } from '../../../app.config'
 import { GenericUtil } from '../util/generic.util'
 
 export class StateUtil {
-    public static updatePageLoader<P extends PageParamsModel, M extends GenericModel> (
+    public static updatePageLoader<P, M extends GenericModel> (
         requestInformation: PageRequestInformationModel<P, M>,
         loading: boolean,
     ): PageRequestInformationModel<P, M> {

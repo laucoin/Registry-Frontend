@@ -1,28 +1,26 @@
 import { ParticipantModel } from '../../../../shared/util-model/model/participant.model'
 import { ParticipantDto } from '../dto/participant.dto'
-import { OrderEnum } from '../../../../shared/util-model/enumeration/order.enum'
 
 export enum ParticipantActionEnum {
+    FETCH_PARTICIPANT_PRESENCES_STATUS = '[Backend] Fetching participant presences status',
+
     START_PARTICIPANTS_PAGE_LOADER = '[Local] Starting participants\' page loader',
     STOP_PARTICIPANTS_PAGE_LOADER = '[Local] Stopping participants\' page loader',
 
     FETCH_PARTICIPANTS_PAGE = '[Backend] Fetching participants\' page',
-    INPUT_PARTICIPANTS_PAGE_SEARCH = '[Local] Inputting participants\' page search',
-    INPUT_PARTICIPANTS_PAGE_DATE_RANGE = '[Local] Inputting participants\' page date range',
-    SELECT_PARTICIPANTS_PAGE_VISIBILITY = '[Local] Selecting participants\' page visibility',
-    SELECT_PARTICIPANTS_PAGE_ORDER = '[Local] Selecting participants\' page order',
+    INPUT_PARTICIPANTS_PAGE_TEXT_SEARCH = '[Local] Inputting participants\' page text search',
+    SELECT_PARTICIPANTS_PAGE_VISIBILITY_SEARCH = '[Local] Selecting participants\' page visibility search',
+    SELECT_PARTICIPANTS_PAGE_STATUS_SEARCH = '[Local] Selecting participants\' page status search',
 
     START_PARTICIPANT_MOVEMENTS_PAGE_LOADER = '[Local] Starting participant movements\' page loader',
     STOP_PARTICIPANT_MOVEMENTS_PAGE_LOADER = '[Local] Stopping participant movements\' page loader',
 
-    FETCH_PARTICIPANT_MOVEMENT_TYPES = '[Backend] Fetching participant movement types',
-
     FETCH_PARTICIPANT_MOVEMENTS_PAGE = '[Backend] Fetching participant movements\' page',
-    INPUT_PARTICIPANT_MOVEMENTS_PAGE_SEARCH = '[Local] Inputting participant movements\' page search',
-    INPUT_PARTICIPANT_MOVEMENTS_PAGE_TYPE = '[Local] Inputting participant movements\' page type',
-    INPUT_PARTICIPANT_MOVEMENTS_PAGE_DATE_RANGE = '[Local] Inputting participant movements\' page date range',
-    SELECT_PARTICIPANT_MOVEMENTS_PAGE_VISIBILITY = '[Local] Selecting participant movements\' page visibility',
-    SELECT_PARTICIPANT_MOVEMENTS_PAGE_ORDER = '[Local] Selecting participant movements\' page order',
+    FETCH_PARTICIPANT_MOVEMENTS_CONTENT = '[Backend] Fetching participant movements\' content',
+    INPUT_PARTICIPANT_MOVEMENTS_PAGE_TYPE_SEARCH = '[Local] Inputting participant movements\' page type search',
+    INPUT_PARTICIPANT_MOVEMENTS_PAGE_START_DATE_TIME_SEARCH = '[Local] Inputting participant movements\' page start date time search',
+    INPUT_PARTICIPANT_MOVEMENTS_PAGE_END_DATE_TIME_SEARCH = '[Local] Inputting participant movements\' page end date time search',
+    SELECT_PARTICIPANT_MOVEMENTS_PAGE_VISIBILITY_SEARCH = '[Local] Selecting participant movements\' page visibility search',
 
     START_PARTICIPANT_LOADER = '[Local] Starting participant\'s loader',
     STOP_PARTICIPANT_LOADER = '[Local] Stopping participant\'s loader',
@@ -38,6 +36,10 @@ export enum ParticipantActionEnum {
     DELETE_PARTICIPANT = '[Backend] Deleting participant',
 }
 
+export class FetchParticipantPresencesStatus {
+    public static readonly type: ParticipantActionEnum = ParticipantActionEnum.FETCH_PARTICIPANT_PRESENCES_STATUS
+}
+
 export class StartParticipantsPageLoader {
     public static readonly type: ParticipantActionEnum = ParticipantActionEnum.START_PARTICIPANTS_PAGE_LOADER
 }
@@ -51,37 +53,28 @@ export class FetchParticipantsPage {
 
     public constructor (
         public readonly eventId: string | undefined,
-        public readonly offset: number | undefined,
-        public readonly limit: number | undefined,
+        public readonly pageNumber: number | undefined,
+        public readonly pageSize: number | undefined,
         public readonly force: boolean = false,
     ) {}
 }
 
-export class InputParticipantsPageSearch {
-    public static readonly type: ParticipantActionEnum = ParticipantActionEnum.INPUT_PARTICIPANTS_PAGE_SEARCH
+export class InputParticipantsPageTextSearched {
+    public static readonly type: ParticipantActionEnum = ParticipantActionEnum.INPUT_PARTICIPANTS_PAGE_TEXT_SEARCH
 
-    public constructor (public readonly searched: string | undefined) {}
+    public constructor (public readonly textSearched: string | undefined) {}
 }
 
-export class InputParticipantsPageDateRange {
-    public static readonly type: ParticipantActionEnum = ParticipantActionEnum.INPUT_PARTICIPANTS_PAGE_DATE_RANGE
+export class SelectParticipantsPageStatusSearched {
+    public static readonly type: ParticipantActionEnum = ParticipantActionEnum.SELECT_PARTICIPANTS_PAGE_STATUS_SEARCH
 
-    public constructor (
-        public readonly start: Date | undefined,
-        public readonly end: Date | undefined,
-    ) {}
+    public constructor (public readonly statusSearched: string | undefined) {}
 }
 
-export class SelectParticipantsPageVisibility {
-    public static readonly type: ParticipantActionEnum = ParticipantActionEnum.SELECT_PARTICIPANTS_PAGE_VISIBILITY
+export class SelectParticipantsPageVisibilitySearched {
+    public static readonly type: ParticipantActionEnum = ParticipantActionEnum.SELECT_PARTICIPANTS_PAGE_VISIBILITY_SEARCH
 
-    public constructor (public readonly onlyVisible: boolean) {}
-}
-
-export class SelectParticipantsPageOrder {
-    public static readonly type: ParticipantActionEnum = ParticipantActionEnum.SELECT_PARTICIPANTS_PAGE_ORDER
-
-    public constructor (public readonly order: OrderEnum) {}
+    public constructor (public readonly visibilitySearched: boolean | undefined) {}
 }
 
 export class StartParticipantMovementsPageLoader {
@@ -92,55 +85,49 @@ export class StopParticipantMovementsPageLoader {
     public static readonly type: ParticipantActionEnum = ParticipantActionEnum.STOP_PARTICIPANT_MOVEMENTS_PAGE_LOADER
 }
 
-export class FetchParticipantMovementTypes {
-    public static readonly type: ParticipantActionEnum = ParticipantActionEnum.FETCH_PARTICIPANT_MOVEMENT_TYPES
-
-    public constructor (public readonly eventId: string | undefined) {}
-}
-
 export class FetchParticipantMovementsPage {
     public static readonly type: ParticipantActionEnum = ParticipantActionEnum.FETCH_PARTICIPANT_MOVEMENTS_PAGE
 
     public constructor (
         public readonly eventId: string | undefined,
         public readonly id: string,
-        public readonly offset: number | undefined,
-        public readonly limit: number | undefined,
+        public readonly pageNumber: number | undefined,
+        public readonly pageSize: number | undefined,
         public readonly force: boolean = false,
     ) {}
 }
 
-export class InputParticipantMovementsPageSearch {
-    public static readonly type: ParticipantActionEnum = ParticipantActionEnum.INPUT_PARTICIPANT_MOVEMENTS_PAGE_SEARCH
-
-    public constructor (public readonly searched: string | undefined) {}
-}
-
-export class SelectParticipantMovementsPageType {
-    public static readonly type: ParticipantActionEnum = ParticipantActionEnum.INPUT_PARTICIPANT_MOVEMENTS_PAGE_TYPE
-
-    public constructor (public readonly type: string | undefined) {}
-}
-
-export class InputParticipantMovementsPageDateRange {
-    public static readonly type: ParticipantActionEnum = ParticipantActionEnum.INPUT_PARTICIPANT_MOVEMENTS_PAGE_DATE_RANGE
+export class FetchParticipantMovementsContents {
+    public static readonly type: ParticipantActionEnum = ParticipantActionEnum.FETCH_PARTICIPANT_MOVEMENTS_CONTENT
 
     public constructor (
-        public readonly start: Date | undefined,
-        public readonly end: Date | undefined,
+        public readonly eventId: string | undefined,
+        public readonly movementIds: string[],
     ) {}
 }
 
-export class SelectParticipantMovementsPageVisibility {
-    public static readonly type: ParticipantActionEnum = ParticipantActionEnum.SELECT_PARTICIPANT_MOVEMENTS_PAGE_VISIBILITY
+export class SelectParticipantMovementsPageTypeSearched {
+    public static readonly type: ParticipantActionEnum = ParticipantActionEnum.INPUT_PARTICIPANT_MOVEMENTS_PAGE_TYPE_SEARCH
 
-    public constructor (public readonly onlyVisible: boolean) {}
+    public constructor (public readonly typeSearched: string | undefined) {}
 }
 
-export class SelectParticipantMovementsPageOrder {
-    public static readonly type: ParticipantActionEnum = ParticipantActionEnum.SELECT_PARTICIPANT_MOVEMENTS_PAGE_ORDER
+export class InputParticipantMovementsPageStartDateTimeSearched {
+    public static readonly type: ParticipantActionEnum = ParticipantActionEnum.INPUT_PARTICIPANT_MOVEMENTS_PAGE_START_DATE_TIME_SEARCH
 
-    public constructor (public readonly order: OrderEnum) {}
+    public constructor (public readonly startDateTimeSearched: Date | undefined) {}
+}
+
+export class InputParticipantMovementsPageEndDateTimeSearched {
+    public static readonly type: ParticipantActionEnum = ParticipantActionEnum.INPUT_PARTICIPANT_MOVEMENTS_PAGE_END_DATE_TIME_SEARCH
+
+    public constructor (public readonly endDateTimeSearched: Date | undefined) {}
+}
+
+export class SelectParticipantMovementsPageVisibilitySearched {
+    public static readonly type: ParticipantActionEnum = ParticipantActionEnum.SELECT_PARTICIPANT_MOVEMENTS_PAGE_VISIBILITY_SEARCH
+
+    public constructor (public readonly visibilitySearched: boolean | undefined) {}
 }
 
 export class StartParticipantLoader {
@@ -162,7 +149,7 @@ export class SearchUsers {
 
     public constructor (
         public readonly eventId: string | undefined,
-        public readonly searched: string | undefined,
+        public readonly textSearched: string | undefined,
     ) {}
 }
 
@@ -171,7 +158,7 @@ export class SearchGroups {
 
     public constructor (
         public readonly eventId: string | undefined,
-        public readonly searched: string | undefined,
+        public readonly textSearched: string | undefined,
     ) {}
 }
 

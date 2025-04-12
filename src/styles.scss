@@ -1,5 +1,4 @@
 @import 'primeicons/primeicons.css';
-@import 'responsive';
 
 body {
     background:              var(--surface-ground);
@@ -16,10 +15,10 @@ body {
 }
 
 :root {
-    --basic-rounder: 0.5em;
+    --basic-rounder: 0.5rem;
     --tiny-screen:   400px;
-    --basic-spacer:  1em;
-    --min-spacer:    0.5em;
+    --basic-spacer:  1rem;
+    --min-spacer:    0.5rem;
     --menu-width:    20em;
 }
 
@@ -32,13 +31,32 @@ body {
     }
 }
 
+.search-line {
+    grid-template-columns: 1fr;
+    gap:                   var(--min-spacer);
+}
+
+@media (min-width: 992px) {
+    .search-line {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.element-card {
+    display:         flex;
+    flex-wrap:       wrap;
+    justify-content: space-between;
+    align-items:     center;
+    row-gap:         var(--min-spacer);
+}
+
 .field {
     display:        flex;
     flex-direction: column;
-    margin-bottom:  var(--min-spacer);
+    padding-bottom: var(--min-spacer);
 
     label, .label {
-        margin-bottom: calc(var(--min-spacer) / 2);
+        padding-bottom: calc(var(--min-spacer) / 2);
     }
 }
 
@@ -48,6 +66,10 @@ body {
 
 .pointer {
     cursor: pointer;
+}
+
+.hover-underline:hover {
+    text-decoration: underline;
 }
 
 .secondary-color {
@@ -62,4 +84,21 @@ a:visited,
 a:link {
     text-decoration: none;
     color:           var(--text-color);
+}
+
+.begin-date-time,
+.end-date-time {
+    flex-basis: 100%;
+}
+
+@media (min-width: 992px) {
+    .begin-date-time {
+        flex-basis:    50%;
+        padding-right: var(--min-spacer);
+    }
+
+    .end-date-time {
+        flex-basis:   50%;
+        padding-left: var(--min-spacer);
+    }
 }

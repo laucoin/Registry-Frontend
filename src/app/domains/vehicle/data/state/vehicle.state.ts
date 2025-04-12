@@ -1,4 +1,4 @@
-import { Action, Selector, State, StateContext } from '@ngxs/store'
+import { Action, NgxsOnInit, Selector, State, StateContext } from '@ngxs/store'
 import { catchError, finalize, map, Observable, of } from 'rxjs'
 import { PageModel } from '../../../../shared/util-model/model/page.model'
 import { VehicleModel } from '../../../../shared/util-model/model/vehicle.model'
@@ -11,18 +11,19 @@ import {
     DisableVehicle,
     EnableVehicle,
     FetchVehicle,
+    FetchVehicleMovementsContents,
     FetchVehicleMovementsPage,
-    FetchVehicleMovementTypes,
+    FetchVehiclePresencesStatus,
     FetchVehiclesPage,
-    InputVehicleMovementsPageDateRange,
-    InputVehicleMovementsPageSearch,
-    InputVehiclesPageDateRange,
-    InputVehiclesPageSearch,
+    InputVehicleMovementsPageEndDateTimeSearched,
+    InputVehicleMovementsPageStartDateTimeSearched,
+    InputVehiclesPageDateTimeSearched,
+    InputVehiclesPageTextSearched,
     ResetVehicle,
-    SelectVehicleMovementsPageOrder,
-    SelectVehicleMovementsPageVisibility,
-    SelectVehiclesPageOrder,
-    SelectVehiclesPageVisibility,
+    SelectVehicleMovementsPageTypeSearched,
+    SelectVehicleMovementsPageVisibilitySearched,
+    SelectVehiclesPageAvailabilitySearched,
+    SelectVehiclesPageVisibilitySearched,
     StartVehicleLoader,
     StartVehicleMovementsPageLoader,
     StartVehiclesPageLoader,
@@ -34,13 +35,16 @@ import {
 import { VehicleService } from './vehicle.service'
 import { VehicleFacade } from './vehicle.facade'
 import { StateUtil } from '../../../../shared/util-tool/state/state.util'
-import { OrderEnum } from '../../../../shared/util-model/enumeration/order.enum'
 import { Injectable } from '@angular/core'
 import { ElementRequestInformationModel } from '../../../../shared/util-model/model/element-request-information.model'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { ErrorModel } from '../../../../shared/util-model/model/error.model'
-import { MovementModel } from '../../../../shared/util-model/movement.model'
+import { MovementModel } from '../../../../shared/util-model/model/movement.model'
 import { MovementService } from '../../../movement/data/state/movement.service'
+import { PairModel } from '../../../../shared/util-model/model/pair.model'
+import { MovementContentModel } from '../../../../shared/util-model/model/movement-content.model'
+import { MovementUtil } from '../../../../shared/util-tool/util/movement.util'
+import { MetadataService } from '../../../../shared/util-common/state/metadata.service'
 
 const defaultVehicle: ElementRequestInformationModel<VehicleModel> = {
     element: undefined,
@@ -51,12 +55,10 @@ const defaultVehicleState: VehicleStateModel = {
     vehicles: {
         element: undefined,
         params: {
-            order: OrderEnum.ASC,
-            onlyVisible: true,
-            searched: undefined,
-            isPresent: false,
-            startDate: undefined,
-            endDate: undefined,
+            visibilitySearched: undefined,
+            textSearched: undefined,
+            statusSearched: undefined,
+            dateTimeSearched: undefined,
         },
         loading: false,
         silentLoading: false,
@@ -65,12 +67,10 @@ const defaultVehicleState: VehicleStateModel = {
     movements: {
         element: undefined,
         params: {
-            order: OrderEnum.ASC,
-            onlyVisible: true,
-            searched: undefined,
-            type: undefined,
-            startDate: undefined,
-            endDate: undefined,
+            visibilitySearched: undefined,
+            typeSearched: undefined,
+            startDateTimeSearched: undefined,
+            endDateTimeSearched: undefined,
         },
         loading: false,
         silentLoading: false,
@@ -78,7 +78,17 @@ const defaultVehicleState: VehicleStateModel = {
     },
     vehicle: defaultVehicle,
     _metadata: {
-        movementTypes: [],
+        availabilities: [
+            { label: '-', value: undefined },
+            { label: 'vehicles.available.true', value: true },
+            { label: 'vehicles.available.false', value: false },
+        ],
+        visibilities: [
+            { label: '-', value: undefined },
+            { label: 'vehicles.visible.true', value: true },
+            { label: 'vehicles.visible.false', value: false },
+        ],
+        presencesStatus: [],
     },
 }
 
@@ -87,15 +97,20 @@ const defaultVehicleState: VehicleStateModel = {
     defaults: defaultVehicleState,
 } )
 @Injectable()
-export class VehicleState extends GenericEventElementState<VehicleStateModel> {
+export class VehicleState extends GenericEventElementState<VehicleStateModel> implements NgxsOnInit {
     private readonly vehicleIcon: string = 'pi pi-users'
 
     public constructor (
         private readonly service: VehicleService,
+        private readonly metadataService: MetadataService,
         private readonly movementService: MovementService,
         private readonly facade: VehicleFacade,
     ) {
         super()
+    }
+
+    public ngxsOnInit (): void {
+        this.facade.fetchPresencesStatus()
     }
 
     @Selector()
@@ -119,28 +134,23 @@ export class VehicleState extends GenericEventElementState<VehicleStateModel> {
     }
 
     @Selector()
-    public static vehiclesPageSearchParam (state: VehicleStateModel): string | undefined {
-        return state.vehicles.params.searched
+    public static vehiclesPageTextSearchedParam (state: VehicleStateModel): string | undefined {
+        return state.vehicles.params.textSearched
     }
 
     @Selector()
-    public static vehiclesPageStartDateParam (state: VehicleStateModel): string | undefined {
-        return state.vehicles.params.startDate
+    public static vehiclesPageDateTimeSearchedParam (state: VehicleStateModel): string | undefined {
+        return state.vehicles.params.dateTimeSearched
     }
 
     @Selector()
-    public static vehiclesPageEndDateParam (state: VehicleStateModel): string | undefined {
-        return state.vehicles.params.endDate
+    public static vehiclesPageAvailabilitySearchedParam (state: VehicleStateModel): boolean | undefined {
+        return state.vehicles.params.statusSearched
     }
 
     @Selector()
-    public static vehiclesPageOnlyVisibleParam (state: VehicleStateModel): boolean {
-        return state.vehicles.params.onlyVisible
-    }
-
-    @Selector()
-    public static vehiclesPageOrderParam (state: VehicleStateModel): OrderEnum {
-        return state.vehicles.params.order
+    public static vehiclesPageVisibilitySearchedParam (state: VehicleStateModel): boolean | undefined {
+        return state.vehicles.params.visibilitySearched
     }
 
     @Selector()
@@ -164,33 +174,23 @@ export class VehicleState extends GenericEventElementState<VehicleStateModel> {
     }
 
     @Selector()
-    public static vehicleMovementsPageSearchParam (state: VehicleStateModel): string | undefined {
-        return state.movements.params.searched
+    public static vehicleMovementsPageMovementTypeSearchedParam (state: VehicleStateModel): string | undefined {
+        return state.movements.params.typeSearched
     }
 
     @Selector()
-    public static vehicleMovementsPageMovementTypeParam (state: VehicleStateModel): string | undefined {
-        return state.movements.params.searched
+    public static vehicleMovementsPageStartDateTimeSearchedParam (state: VehicleStateModel): string | undefined {
+        return state.movements.params.startDateTimeSearched
     }
 
     @Selector()
-    public static vehicleMovementsPageStartDateParam (state: VehicleStateModel): string | undefined {
-        return state.movements.params.startDate
+    public static vehicleMovementsPageEndDateTimeSearchedParam (state: VehicleStateModel): string | undefined {
+        return state.movements.params.endDateTimeSearched
     }
 
     @Selector()
-    public static vehicleMovementsPageEndDateParam (state: VehicleStateModel): string | undefined {
-        return state.movements.params.endDate
-    }
-
-    @Selector()
-    public static vehicleMovementsPageOnlyVisibleParam (state: VehicleStateModel): boolean {
-        return state.movements.params.onlyVisible
-    }
-
-    @Selector()
-    public static vehicleMovementsPageOrderParam (state: VehicleStateModel): OrderEnum {
-        return state.movements.params.order
+    public static vehicleMovementsPageVisibilitySearchedParam (state: VehicleStateModel): boolean | undefined {
+        return state.movements.params.visibilitySearched
     }
 
     @Selector()
@@ -204,8 +204,40 @@ export class VehicleState extends GenericEventElementState<VehicleStateModel> {
     }
 
     @Selector()
-    public static movementTypesMetadata (state: VehicleStateModel): SelectItem<string>[] {
-        return state._metadata.movementTypes
+    public static availabilitiesMetadata (state: VehicleStateModel): SelectItem<boolean | undefined>[] {
+        return state._metadata.availabilities
+    }
+
+    @Selector()
+    public static visibilitiesMetadata (state: VehicleStateModel): SelectItem<boolean | undefined>[] {
+        return state._metadata.visibilities
+    }
+
+    @Selector()
+    public static presencesStatusMetadata (state: VehicleStateModel): SelectItem<string | undefined>[] {
+        return state._metadata.presencesStatus
+    }
+
+    @Action( FetchVehiclePresencesStatus )
+    public fetchVehiclePresencesStatus (ctx: StateContext<VehicleStateModel>): Observable<void> {
+        return this.metadataService.getPresencesStatus().pipe(
+            map( (types: SelectItem<string>[]): void => this.fetchVehiclePresencesStatusComplete( ctx, types ) ),
+        )
+    }
+
+    private fetchVehiclePresencesStatusComplete (
+        ctx: StateContext<VehicleStateModel>,
+        status: SelectItem<string>[],
+    ): void {
+        ctx.patchState( {
+            _metadata: {
+                ...ctx.getState()._metadata,
+                presencesStatus: [
+                    { label: '-', value: undefined },
+                    ...status,
+                ],
+            },
+        } )
     }
 
     @Action( StartVehiclesPageLoader )
@@ -229,8 +261,8 @@ export class VehicleState extends GenericEventElementState<VehicleStateModel> {
     ): Observable<void> {
         return this.service.findVehicles(
             payload.eventId,
-            payload.offset,
-            payload.limit,
+            payload.pageNumber,
+            payload.pageSize,
             ctx.getState().vehicles.params,
         ).pipe(
             initialize( (): void => this.facade.startVehiclesPageLoader() ),
@@ -255,66 +287,65 @@ export class VehicleState extends GenericEventElementState<VehicleStateModel> {
         } )
     }
 
-    @Action( InputVehiclesPageSearch )
-    public inputVehiclesPageSearch (
+    @Action( InputVehiclesPageTextSearched )
+    public inputVehiclesPageTextSearched (
         ctx: StateContext<VehicleStateModel>,
-        payload: InputVehiclesPageSearch,
+        payload: InputVehiclesPageTextSearched,
     ): void {
         ctx.patchState( {
             vehicles: {
                 ...ctx.getState().vehicles,
                 params: {
                     ...ctx.getState().vehicles.params,
-                    searched: payload.searched,
+                    textSearched: payload.textSearched,
                 },
             },
         } )
     }
 
-    @Action( InputVehiclesPageDateRange )
-    public inputVehiclesPageDateRange (
+    @Action( InputVehiclesPageDateTimeSearched )
+    public inputVehiclesPageDateTimeSearched (
         ctx: StateContext<VehicleStateModel>,
-        payload: InputVehiclesPageDateRange,
+        payload: InputVehiclesPageDateTimeSearched,
     ): void {
         ctx.patchState( {
             vehicles: {
                 ...ctx.getState().vehicles,
                 params: {
                     ...ctx.getState().vehicles.params,
-                    startDate: payload.start?.toISOString(),
-                    endDate: payload.end?.toISOString(),
+                    dateTimeSearched: payload.dateTimeSearched?.toISOString(),
                 },
             },
         } )
     }
 
-    @Action( SelectVehiclesPageVisibility )
-    public selectVehiclesPageVisibility (
+    @Action( SelectVehiclesPageAvailabilitySearched )
+    public selectVehiclesPageAvailabilitySearched (
         ctx: StateContext<VehicleStateModel>,
-        payload: SelectVehiclesPageVisibility,
+        payload: SelectVehiclesPageAvailabilitySearched,
     ): void {
         ctx.patchState( {
             vehicles: {
                 ...ctx.getState().vehicles,
                 params: {
                     ...ctx.getState().vehicles.params,
-                    onlyVisible: payload.onlyVisible,
+                    statusSearched: payload.availabilitySearched,
                 },
             },
         } )
     }
 
-    @Action( SelectVehiclesPageOrder )
-    public selectVehiclesPageOrder (
+    @Action( SelectVehiclesPageVisibilitySearched )
+    public selectVehiclesPageVisibilitySearched (
         ctx: StateContext<VehicleStateModel>,
-        payload: SelectVehiclesPageOrder,
+        payload: SelectVehiclesPageVisibilitySearched,
     ): void {
         ctx.patchState( {
             vehicles: {
                 ...ctx.getState().vehicles,
                 params: {
                     ...ctx.getState().vehicles.params,
-                    order: payload.order,
+                    visibilitySearched: payload.visibilitySearched,
                 },
             },
         } )
@@ -334,28 +365,6 @@ export class VehicleState extends GenericEventElementState<VehicleStateModel> {
         } )
     }
 
-    @Action( FetchVehicleMovementTypes )
-    public fetchVehicleMovementTypes (
-        ctx: StateContext<VehicleStateModel>,
-        payload: FetchVehicleMovementTypes,
-    ): Observable<void> {
-        return this.movementService.getAvailableMovementTypes( payload.eventId ).pipe(
-            map( (types: SelectItem<string>[]): void => this.fetchVehicleMovementTypesComplete( ctx, types ) ),
-        )
-    }
-
-    private fetchVehicleMovementTypesComplete (
-        ctx: StateContext<VehicleStateModel>,
-        movementTypes: SelectItem<string>[],
-    ): void {
-        ctx.patchState( {
-            _metadata: {
-                ...ctx.getState()._metadata,
-                movementTypes: movementTypes,
-            },
-        } )
-    }
-
     @Action( FetchVehicleMovementsPage )
     public fetchVehicleMovementsPage (
         ctx: StateContext<VehicleStateModel>,
@@ -364,14 +373,15 @@ export class VehicleState extends GenericEventElementState<VehicleStateModel> {
         return this.service.findVehicleMovements(
             payload.eventId,
             payload.id,
-            payload.offset,
-            payload.limit,
+            payload.pageNumber,
+            payload.pageSize,
             ctx.getState().movements.params,
         ).pipe(
             initialize( (): void => this.facade.startVehicleMovementsPageLoader() ),
             finalize( (): void => this.facade.stopVehicleMovementsPageLoader() ),
             map( (movementsPage: PageModel<MovementModel>): void => this.fetchVehicleMovementsPageComplete(
                 ctx,
+                payload.eventId,
                 movementsPage,
             ) ),
             catchError( (error: ErrorModel): Observable<void> => this.movementsPageError( ctx, error ) ),
@@ -380,6 +390,7 @@ export class VehicleState extends GenericEventElementState<VehicleStateModel> {
 
     private fetchVehicleMovementsPageComplete (
         ctx: StateContext<VehicleStateModel>,
+        eventId: string | undefined,
         movementsPage: PageModel<MovementModel>,
     ): void {
         ctx.patchState( {
@@ -388,68 +399,109 @@ export class VehicleState extends GenericEventElementState<VehicleStateModel> {
                 element: movementsPage,
             },
         } )
+
+        if (movementsPage.content.length > 0) {
+            this.facade.fetchVehicleMovementsContent(
+                movementsPage.content.map( (movement: MovementModel): string => movement.id ),
+                eventId,
+            )
+        }
     }
 
-    @Action( InputVehicleMovementsPageSearch )
-    public inputVehicleMovementsPageSearch (
+    @Action( FetchVehicleMovementsContents )
+    public fetchVehicleMovementsContents (
         ctx: StateContext<VehicleStateModel>,
-        payload: InputVehiclesPageSearch,
+        payload: FetchVehicleMovementsContents,
+    ): Observable<void> {
+        return this.movementService.findMovementsContent(
+            payload.eventId,
+            payload.movementIds,
+        ).pipe(
+            map( (contents: PairModel<MovementContentModel[]>[]): void => this.fetchVehicleMovementsContentsComplete(
+                ctx,
+                contents,
+            ) ),
+        )
+    }
+
+    private fetchVehicleMovementsContentsComplete (
+        ctx: StateContext<VehicleStateModel>,
+        contents: PairModel<MovementContentModel[]>[],
     ): void {
+        if (!ctx.getState().movements.element) {
+            return
+        }
+
         ctx.patchState( {
             movements: {
                 ...ctx.getState().movements,
-                params: {
-                    ...ctx.getState().movements.params,
-                    searched: payload.searched,
+                element: {
+                    ...ctx.getState().movements.element!,
+                    content: MovementUtil.rebuildPageWithContent( ctx.getState().movements.element!.content, contents ),
                 },
             },
         } )
     }
 
-    @Action( InputVehicleMovementsPageDateRange )
-    public inputVehicleMovementsPageDateRange (
+    @Action( SelectVehicleMovementsPageTypeSearched )
+    public selectVehicleMovementsPageTypeSearched (
         ctx: StateContext<VehicleStateModel>,
-        payload: InputVehiclesPageDateRange,
+        payload: SelectVehicleMovementsPageTypeSearched,
     ): void {
         ctx.patchState( {
             movements: {
                 ...ctx.getState().movements,
                 params: {
                     ...ctx.getState().movements.params,
-                    startDate: payload.start?.toISOString(),
-                    endDate: payload.end?.toISOString(),
+                    typeSearched: payload.typeSearched,
                 },
             },
         } )
     }
 
-    @Action( SelectVehicleMovementsPageVisibility )
-    public selectVehicleMovementsPageVisibility (
+    @Action( InputVehicleMovementsPageStartDateTimeSearched )
+    public inputVehicleMovementsPageStartDateTimeSearched (
         ctx: StateContext<VehicleStateModel>,
-        payload: SelectVehiclesPageVisibility,
+        payload: InputVehicleMovementsPageStartDateTimeSearched,
     ): void {
         ctx.patchState( {
             movements: {
                 ...ctx.getState().movements,
                 params: {
                     ...ctx.getState().movements.params,
-                    onlyVisible: payload.onlyVisible,
+                    startDateTimeSearched: payload.startDateTimeSearched?.toISOString(),
                 },
             },
         } )
     }
 
-    @Action( SelectVehicleMovementsPageOrder )
-    public selectVehicleMovementsPageOrder (
+    @Action( InputVehicleMovementsPageEndDateTimeSearched )
+    public inputVehicleMovementsPageEndDateTimeSearched (
         ctx: StateContext<VehicleStateModel>,
-        payload: SelectVehiclesPageOrder,
+        payload: InputVehicleMovementsPageEndDateTimeSearched,
     ): void {
         ctx.patchState( {
             movements: {
                 ...ctx.getState().movements,
                 params: {
                     ...ctx.getState().movements.params,
-                    order: payload.order,
+                    endDateTimeSearched: payload.endDateTimeSearched?.toISOString(),
+                },
+            },
+        } )
+    }
+
+    @Action( SelectVehicleMovementsPageVisibilitySearched )
+    public selectVehicleMovementsPageVisibilitySearched (
+        ctx: StateContext<VehicleStateModel>,
+        payload: SelectVehicleMovementsPageVisibilitySearched,
+    ): void {
+        ctx.patchState( {
+            movements: {
+                ...ctx.getState().movements,
+                params: {
+                    ...ctx.getState().movements.params,
+                    visibilitySearched: payload.visibilitySearched,
                 },
             },
         } )
@@ -517,8 +569,8 @@ export class VehicleState extends GenericEventElementState<VehicleStateModel> {
     ): void {
         this.buildMessageAndNotify(
             'success',
-            'success.title.vehicle.create',
-            'success.message.vehicle.create',
+            'vehicles.notifications.create.title',
+            'vehicles.notifications.create.message',
             this.vehicleIcon,
             this.buildTranslationArgs( vehicle ),
         )
@@ -545,8 +597,8 @@ export class VehicleState extends GenericEventElementState<VehicleStateModel> {
     ): void {
         this.buildMessageAndNotify(
             'success',
-            'success.title.vehicle.edit',
-            'success.message.vehicle.edit',
+            'vehicles.notifications.edit.title',
+            'vehicles.notifications.edit.message',
             this.vehicleIcon,
             this.buildTranslationArgs( vehicle ),
         )
@@ -576,8 +628,8 @@ export class VehicleState extends GenericEventElementState<VehicleStateModel> {
     ): void {
         this.buildMessageAndNotify(
             'success',
-            'success.title.vehicle.disable',
-            'success.message.vehicle.disable',
+            'vehicles.notifications.disable.title',
+            'vehicles.notifications.disable.message',
             this.vehicleIcon,
             this.buildTranslationArgs( vehicle ),
         )
@@ -604,8 +656,8 @@ export class VehicleState extends GenericEventElementState<VehicleStateModel> {
     ): void {
         this.buildMessageAndNotify(
             'success',
-            'success.title.vehicle.enable',
-            'success.message.vehicle.enable',
+            'vehicles.notifications.enable.title',
+            'vehicles.notifications.enable.message',
             this.vehicleIcon,
             this.buildTranslationArgs( vehicle ),
         )
@@ -632,8 +684,8 @@ export class VehicleState extends GenericEventElementState<VehicleStateModel> {
     ): void {
         this.buildMessageAndNotify(
             'success',
-            'success.title.vehicle.delete',
-            'success.message.vehicle.delete',
+            'vehicles.notifications.delete.title',
+            'vehicles.notifications.delete.message',
             this.vehicleIcon,
             this.buildTranslationArgs( vehicle ),
         )
@@ -642,7 +694,7 @@ export class VehicleState extends GenericEventElementState<VehicleStateModel> {
 
     private buildTranslationArgs (vehicle: VehicleModel): object {
         return {
-            registration: vehicle?.registration,
+            registration: vehicle?.licensePlate,
             brand: vehicle?.brand,
             model: vehicle?.model,
         }
@@ -650,7 +702,7 @@ export class VehicleState extends GenericEventElementState<VehicleStateModel> {
 
     protected refreshPage (ctx: StateContext<VehicleStateModel>, eventId: string | undefined): void {
         const page: PageModel<VehicleModel> | undefined = ctx.getState().vehicles.element
-        this.facade.fetchVehiclesPage( page?.offset, page?.limit, true, eventId )
+        this.facade.fetchVehiclesPage( page?.pageNumber, page?.pageSize, true, eventId )
     }
 
     protected pageError (ctx: StateContext<VehicleStateModel>, error: ErrorModel): Observable<void> {

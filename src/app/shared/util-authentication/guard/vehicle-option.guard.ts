@@ -9,7 +9,7 @@ export const vehicleOptionGuard: CanActivateFn = (): Promise<boolean> | boolean 
     const registryFacade: RegistryFacade = inject( RegistryFacade )
     const router: Router = inject( Router )
 
-    const currentUser: CurrentUserModel | undefined = registryFacade.actualCurrentUser
+    const currentUser: CurrentUserModel | undefined = registryFacade.currentUser()
     if (currentUser && !currentUser.preferences.selectedProfile) {
         router.navigateByUrl( AppRouteEnum.PREFERENCES_PROFILES ).then()
     }

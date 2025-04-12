@@ -1,14 +1,12 @@
 import { UserModel } from '../../../../shared/util-model/model/user.model'
-import { OrderEnum } from '../../../../shared/util-model/enumeration/order.enum'
 
 export enum UserActionEnum {
     START_USERS_PAGE_LOADER = '[Local] Starting users\' page loader',
     STOP_USERS_PAGE_LOADER = '[Local] Stopping users\' page loader',
 
     FETCH_USERS_PAGE = '[Backend] Fetching users\' page',
-    INPUT_USERS_PAGE_SEARCH = '[Local] Inputting users\' page search',
-    SELECT_USERS_PAGE_VISIBILITY = '[Local] Selecting users\' page visibility',
-    SELECT_USERS_PAGE_ORDER = '[Local] Selecting users\' page order',
+    INPUT_USERS_PAGE_TEXT_SEARCH = '[Local] Inputting users\' page text searched',
+    SELECT_USERS_PAGE_VISIBILITY_SEARCH = '[Local] Selecting users\' page visibility searched',
 
     START_USER_LOADER = '[Local] Starting user loader',
     STOP_USER_LOADER = '[Local] Stopping user loader',
@@ -35,28 +33,22 @@ export class FetchUsersPage {
     public static readonly type: UserActionEnum = UserActionEnum.FETCH_USERS_PAGE
 
     public constructor (
-        public readonly offset: number | undefined,
-        public readonly limit: number | undefined,
+        public readonly pageNumber: number | undefined,
+        public readonly pageSize: number | undefined,
         public readonly force: boolean = false,
     ) {}
 }
 
-export class InputUsersPageSearch {
-    public static readonly type: UserActionEnum = UserActionEnum.INPUT_USERS_PAGE_SEARCH
+export class InputUsersPageTextSearched {
+    public static readonly type: UserActionEnum = UserActionEnum.INPUT_USERS_PAGE_TEXT_SEARCH
 
-    public constructor (public readonly searched: string | undefined) {}
+    public constructor (public readonly textSearched: string | undefined) {}
 }
 
-export class SelectUsersPageVisibility {
-    public static readonly type: UserActionEnum = UserActionEnum.SELECT_USERS_PAGE_VISIBILITY
+export class SelectUsersPageVisibilitySearched {
+    public static readonly type: UserActionEnum = UserActionEnum.SELECT_USERS_PAGE_VISIBILITY_SEARCH
 
-    public constructor (public readonly onlyVisible: boolean) {}
-}
-
-export class SelectUsersPageOrder {
-    public static readonly type: UserActionEnum = UserActionEnum.SELECT_USERS_PAGE_ORDER
-
-    public constructor (public readonly order: OrderEnum) {}
+    public constructor (public readonly visibilitySearched: boolean | undefined) {}
 }
 
 export class StartUserLoader {
