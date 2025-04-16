@@ -14,7 +14,7 @@ export class RegistryNgxsUnhandledErrorHandler implements NgxsPlugin {
     public handle (state: unknown, action: ActionType, next: NgxsNextPluginFn): void {
         return next( state, action ).pipe(
             catchError( (error: ErrorModel): ObservableInput<void> => {
-                this.setRegistryFacadeIfNecessary()
+                this.setRegistryFacadeIfNeeded()
                 if (error.status === 503) {
                     this.registryFacade?.setGlobalError( error )
                 } else {
@@ -32,7 +32,7 @@ export class RegistryNgxsUnhandledErrorHandler implements NgxsPlugin {
         )
     }
 
-    private setRegistryFacadeIfNecessary (): void {
+    private setRegistryFacadeIfNeeded (): void {
         if (this.registryFacade === undefined) {
             this.registryFacade = this.injector.get( RegistryFacade )
         }

@@ -6,12 +6,14 @@ import { SelectItem, SelectItemGroup } from 'primeng/api'
 import { ParticipantModel } from '../../../../shared/util-model/model/participant.model'
 import { GroupModel } from '../../../../shared/util-model/model/group.model'
 import { VehicleModel } from '../../../../shared/util-model/model/vehicle.model'
+import { MovementReasonModel } from './movement-reason.model'
 
 export interface MovementStateModel {
     movements: PageRequestInformationModel<MovementPageParamsModel, MovementModel>
     movement: ElementRequestInformationModel<MovementModel>
     _metadata: {
         types: SelectItem<string | undefined>[]
+        searchedReasonsAndActivities: MovementReasonModel[]
         searchedParticipantsAndGroups: SelectItemGroup<ParticipantModel | GroupModel>[]
         searchedVehicles: SelectItem<VehicleModel>[]
         visibilities: SelectItem<boolean | undefined>[]

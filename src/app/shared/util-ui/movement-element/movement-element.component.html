@@ -1,16 +1,16 @@
 <app-element-card [element]='movement()'
                   [actions]='actions()'
                   [actionMenuVisible]='actionMenuVisible()'
-                  (action)='handleAction($event)'
+                  (action)='showDialogIfNeeded($event)'
                   [icon]='movement().type.value === "OUT" ? "pi pi-arrow-up" : "pi pi-arrow-down"'>
     <div class='element-card'>
         <div class='type d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
             <app-severity-tag [severity]='movement().type.value === "OUT" ? "warn" : "success"' [value]='movement().type.label!' />
         </div>
         <div class='datetime d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
-            {{ movement().dateTime | dateFormat: 'datetime' }}
+            <b>{{ movement().dateTime | dateFormat: 'datetime' }}</b>
         </div>
-        <div class='content d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
+        <div class='content d-flex flex-column' [class.justify-content-center]='registryFacade.tinyScreen()'>
             <div class='pointer hover-underline'
                  tabindex='1'
                  (click)='layerOpened = true'
@@ -37,6 +37,9 @@
                     }
                 }
             </div>
+            @if (movement().reason) {
+                <div>{{ 'movements.reason' | translate: { reason: movement().reason!.label } }}</div>
+            }
         </div>
         <div class='visibility-status d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
             <app-severity-tag
@@ -170,3 +173,9 @@
         </p-tabpanels>
     </p-tabs>
 </app-layer>
+
+<app-confirmation-dialog
+        [loading]='facade.movementLoading()'
+        [element]='movement()'
+        [action]='action()'
+        (handleAction)='handleAction($event)' />

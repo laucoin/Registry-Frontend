@@ -12,12 +12,12 @@
                 <p-auto-complete inputId='user'
                                  fluid
                                  completeOnFocus
+                                 forceSelection
                                  showClear
                                  optionValue='value.id'
                                  optionLabel='label'
                                  [placeholder]='"participants.form.placeholder.user" | translate'
                                  [formControl]='user'
-                                 [forceSelection]='true'
                                  [suggestions]='facade.searchedUsersMetadata()'
                                  (keydown.enter)='submit()'
                                  (onClear)='handleUserSelection(undefined)'
@@ -82,7 +82,7 @@
         </div>
         @if (!defaultGroup()) {
             <div class='d-flex flex-wrap'>
-                <div class='begin-date-time field'>
+                <div class='left-field field'>
                     <label for='begin-date-time'>{{ 'participants.form.begin-datetime' | translate }}</label>
                     <app-date-time-field [formControl]='beginDateTime'
                                          [invalid]='FormUtil.invalid(beginDateTime)'
@@ -98,7 +98,7 @@
                                           [invalid]='FormUtil.invalid(beginDateTime)'
                                           translationPrefix='participants.form.error.begin-datetime' />
                 </div>
-                <div class='end-date-time field'>
+                <div class='right-field field'>
                     <label for='end-date-time'>{{ 'participants.form.end-datetime' | translate }}</label>
                     <app-date-time-field [formControl]='endDateTime'
                                          [invalid]='FormUtil.invalid(endDateTime)'

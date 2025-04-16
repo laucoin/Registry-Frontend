@@ -9,18 +9,17 @@ import {
     FetchUser,
     FetchUsersPage,
     ImpersonateUser,
-    InputUsersPageTextSearched,
     ResetUser,
-    SelectUsersPageVisibilitySearched,
     StartUserLoader,
     StartUsersPageLoader,
     StopUserLoader,
     StopUsersPageLoader,
     UnblockUser,
     UpdateUserRole,
+    UpdateUsersPageSearchParams,
 } from './user.action'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
-import { ofActionSuccessful } from '@ngxs/store'
+import { ActionCompletion, ofActionCompleted, ofActionSuccessful } from '@ngxs/store'
 import { GenericFacade } from '../../../../shared/util-tool/facade/generic.facade'
 import { UserState } from './user.state'
 
@@ -40,6 +39,10 @@ export class UserFacade extends GenericFacade {
 
     public get usersPageError (): Signal<ToastMessageOptions | undefined> {
         return this.ngStore.selectSignal( UserState.usersPageError )
+    }
+
+    public get usersPageResetSearch (): Signal<boolean> {
+        return this.ngStore.selectSignal( UserState.usersPageResetSearch )
     }
 
     public get usersPageTextSearchedParam (): Signal<string | undefined> {
@@ -88,19 +91,23 @@ export class UserFacade extends GenericFacade {
         pageSize: number | undefined,
         force: boolean,
     ): void {
-        this.ngStore.dispatch( new FetchUsersPage( pageNumber, pageSize, force ) )
+        const index: number | undefined = this.usersPageResetSearch() ? 0 : pageNumber
+        this.ngStore.dispatch( new FetchUsersPage( index, pageSize, force ) )
     }
 
     public inputPageSearchParameters (
         textSearched: string | undefined,
         visibilitySearched: boolean | undefined,
     ): void {
-        if (textSearched !== this.usersPageTextSearchedParam()) {
-            this.ngStore.dispatch( new InputUsersPageTextSearched( textSearched ) )
-        }
+        const resetSearch: boolean = this.usersPageTextSearchedParam() != textSearched
+                                     || this.actualUsersPageVisibilitySearchedParam() != visibilitySearched
 
-        if (visibilitySearched !== this.actualUsersPageVisibilitySearchedParam()) {
-            this.ngStore.dispatch( new SelectUsersPageVisibilitySearched( visibilitySearched ) )
+        if (resetSearch) {
+            this.ngStore.dispatch( new UpdateUsersPageSearchParams( {
+                resetSearch: resetSearch,
+                textSearched: textSearched,
+                visibilitySearched: visibilitySearched,
+            } ) )
         }
     }
 
@@ -130,19 +137,27 @@ export class UserFacade extends GenericFacade {
         return this.actions$.pipe( ofActionSuccessful( UpdateUserRole ) )
     }
 
-    public bockUser (id: string): void {
+    public bockUser (id: string): Observable<ActionCompletion<BlockUser>> {
         this.ngStore.dispatch( new BlockUser( id ) )
+
+        return this.actions$.pipe( ofActionCompleted( BlockUser ) )
     }
 
-    public unblockUser (id: string): void {
+    public unblockUser (id: string): Observable<ActionCompletion<UnblockUser>> {
         this.ngStore.dispatch( new UnblockUser( id ) )
+
+        return this.actions$.pipe( ofActionCompleted( UnblockUser ) )
     }
 
-    public impersonateUser (user: UserModel): void {
+    public impersonateUser (user: UserModel): Observable<ActionCompletion<ImpersonateUser>> {
         this.ngStore.dispatch( new ImpersonateUser( user ) )
+
+        return this.actions$.pipe( ofActionCompleted( ImpersonateUser ) )
     }
 
-    public deleteUser (user: UserModel): void {
+    public deleteUser (user: UserModel): Observable<ActionCompletion<DeleteUser>> {
         this.ngStore.dispatch( new DeleteUser( user ) )
+
+        return this.actions$.pipe( ofActionCompleted( DeleteUser ) )
     }
 }

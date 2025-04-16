@@ -1,16 +1,14 @@
 import { EventProfileModel } from '../../../../shared/util-model/model/event-profile.model'
 import { EventProfileDto } from '../dto/event-profile.dto'
 import { EventProfilesDto } from '../dto/event-profiles.dto'
+import { EventProfilePageParamsModel } from '../model/event-profile-page-params.model'
 
 enum ActionEnum {
     START_EVENT_PROFILES_PAGE_LOADER = '[Local] Starting event profiles\' page loader',
     STOP_EVENT_PROFILES_PAGE_LOADER = '[Local] Stopping event profiles\' page loader',
 
     FETCH_EVENT_PROFILES_PAGE = '[Backend] Fetching event profiles\' page',
-    INPUT_EVENT_PROFILES_PAGE_TEXT_SEARCH = '[Local] Inputting event profiles\' page text search',
-    INPUT_EVENT_PROFILES_PAGE_DATE_TIME_SEARCH = '[Local] Inputting event profiles\' page date time search',
-    SELECT_EVENT_PROFILES_PAGE_STATUS_SEARCH = '[Local] Inputting event profiles\' page status search',
-    SELECT_EVENT_PROFILES_PAGE_AVAILABILITY_SEARCH = '[Local] Inputting event profiles\' page availability search',
+    UPDATE_EVENT_PROFILES_PAGE_SEARCH_PARAMS = '[Local] Updating event profiles\' page search params',
 
     START_EVENT_PROFILE_LOADER = '[Local] Starting event profile\'s loader',
     STOP_EVENT_PROFILE_LOADER = '[Local] Stopping event profile\'s loader',
@@ -46,28 +44,10 @@ export class FetchEventProfilesPage {
     ) {}
 }
 
-export class InputEventProfilesPageTextSearched {
-    public static readonly type: ActionEnum = ActionEnum.INPUT_EVENT_PROFILES_PAGE_TEXT_SEARCH
+export class UpdateEventProfilesPageSearchParams {
+    public static readonly type: ActionEnum = ActionEnum.UPDATE_EVENT_PROFILES_PAGE_SEARCH_PARAMS
 
-    public constructor (public readonly textSearched: string | undefined) {}
-}
-
-export class InputEventProfilesPageDateTimeSearched {
-    public static readonly type: ActionEnum = ActionEnum.INPUT_EVENT_PROFILES_PAGE_DATE_TIME_SEARCH
-
-    public constructor (public readonly dateTime: Date | undefined) {}
-}
-
-export class SelectEventProfilesPageStatusSearched {
-    public static readonly type: ActionEnum = ActionEnum.SELECT_EVENT_PROFILES_PAGE_STATUS_SEARCH
-
-    public constructor (public readonly statusSearched: string | undefined) {}
-}
-
-export class SelectEventProfilesPageAvailabilitySearched {
-    public static readonly type: ActionEnum = ActionEnum.SELECT_EVENT_PROFILES_PAGE_AVAILABILITY_SEARCH
-
-    public constructor (public readonly availabilitySearched: boolean | undefined) {}
+    public constructor (public readonly params: EventProfilePageParamsModel) {}
 }
 
 export class StartEventProfileLoader {

@@ -4,8 +4,16 @@ import { GenericComponent } from './generic.component'
 import { GenericModel } from '../../util-model/model/generic.model'
 import { CurrentUserUtil } from '../../util-authentication/tool/current-user.util'
 import { EventModel } from '../../util-model/model/event.model'
+import { FormUtil } from '../util/form.util'
+import { Subscription } from 'rxjs'
+import { signal, WritableSignal } from '@angular/core'
 
 export abstract class GenericElementComponent<M extends GenericModel, A> extends GenericComponent {
+    protected readonly FormUtil: typeof FormUtil = FormUtil
+
+    protected readonly subscriptions: Subscription = new Subscription()
+    public readonly action: WritableSignal<ActionModel<A> | undefined> = signal( undefined )
+
     protected buildActions (element: M, actions: ActionModel<A>[]): ActionModel<A>[] {
         return actions
             .filter( (action: ActionModel<A>): boolean => this.isActionVisible( element, action ) )
@@ -14,6 +22,14 @@ export abstract class GenericElementComponent<M extends GenericModel, A> extends
                     disabled: this.disabledAction( element, action ),
                 }),
             )
+    }
+
+    protected showDialogIfNeeded (action: ActionModel<A>): void {
+        if (action?.confirmation) {
+            this.action.set( action )
+        } else {
+            this.handleAction( action!.id )
+        }
     }
 
     protected abstract isActionVisible (element: M, action: ActionModel<A>): boolean

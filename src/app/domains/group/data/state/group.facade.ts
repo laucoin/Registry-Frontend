@@ -4,7 +4,7 @@ import { PageModel } from '../../../../shared/util-model/model/page.model'
 import { GenericEventElementFacade } from '../../../../shared/util-tool/facade/generic-event-element.facade'
 import { GroupDto } from '../dto/group.dto'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
-import { ofActionSuccessful } from '@ngxs/store'
+import { ActionCompletion, ofActionCompleted, ofActionSuccessful } from '@ngxs/store'
 import {
     AddMembersToGroup,
     CreateGroup,
@@ -15,16 +15,9 @@ import {
     FetchGroupMembersPage,
     FetchGroupsMembers,
     FetchGroupsPage,
-    InputGroupMembersPageTextSearched,
-    InputGroupsPageDateTimeSearched,
-    InputGroupsPageTextSearched,
     RemoveMemberFromGroup,
     ResetGroup,
     SearchParticipants,
-    SelectGroupMembersPageStatusSearched,
-    SelectGroupMembersPageVisibilitySearched,
-    SelectGroupsPagePresenceSearched,
-    SelectGroupsPageVisibilitySearched,
     StartGroupLoader,
     StartGroupMembersPageLoader,
     StartGroupsPageLoader,
@@ -32,6 +25,8 @@ import {
     StopGroupMembersPageLoader,
     StopGroupsPageLoader,
     UpdateGroup,
+    UpdateGroupMembersPageSearchParams,
+    UpdateGroupsPageSearchParams,
 } from './group.action'
 import { ParticipantModel } from '../../../../shared/util-model/model/participant.model'
 import { GroupModel } from '../../../../shared/util-model/model/group.model'
@@ -54,6 +49,10 @@ export class GroupFacade extends GenericEventElementFacade {
 
     public get groupsPageError (): Signal<ToastMessageOptions | undefined> {
         return this.ngStore.selectSignal( GroupState.groupsPageError )
+    }
+
+    public get groupsPageResetSearch (): Signal<boolean> {
+        return this.ngStore.selectSignal( GroupState.groupsPageResetSearch )
     }
 
     public get groupsPageTextSearchedParam (): Signal<string | undefined> {
@@ -92,6 +91,10 @@ export class GroupFacade extends GenericEventElementFacade {
         return this.ngStore.selectSignal( GroupState.groupMembersPageError )
     }
 
+    public get groupMembersPageResetSearch (): Signal<boolean> {
+        return this.ngStore.selectSignal( GroupState.groupMembersPageResetSearch )
+    }
+
     public get groupMembersPageTextSearchedParam (): Signal<string | undefined> {
         return this.ngStore.selectSignal( GroupState.groupMembersPageTextSearchedParam )
     }
@@ -122,7 +125,7 @@ export class GroupFacade extends GenericEventElementFacade {
         return this.ngStore.selectSignal( GroupState.searchedParticipantsMetadata )
     }
 
-    public get presencesMetadata (): Signal<SelectItem<boolean | undefined>[]> {
+    public get availabilitiesMetadata (): Signal<SelectItem<boolean | undefined>[]> {
         return computed( (): SelectItem<boolean | undefined>[] =>
             this.ngStore.selectSignal( GroupState.availabilitiesMetadata )().map( (status: SelectItem<boolean | undefined>): SelectItem<boolean | undefined> => ({
                 ...status,
@@ -134,15 +137,6 @@ export class GroupFacade extends GenericEventElementFacade {
     public get visibilitiesMetadata (): Signal<SelectItem<boolean | undefined>[]> {
         return computed( (): SelectItem<boolean | undefined>[] =>
             this.ngStore.selectSignal( GroupState.visibilitiesMetadata )().map( (status: SelectItem<boolean | undefined>): SelectItem<boolean | undefined> => ({
-                ...status,
-                label: this.translateService.instant( status.label! ),
-            }) ),
-        )
-    }
-
-    public get availabilitiesMetadata (): Signal<SelectItem<boolean | undefined>[]> {
-        return computed( (): SelectItem<boolean | undefined>[] =>
-            this.ngStore.selectSignal( GroupState.availabilitiesMetadata )().map( (status: SelectItem<boolean | undefined>): SelectItem<boolean | undefined> => ({
                 ...status,
                 label: this.translateService.instant( status.label! ),
             }) ),
@@ -163,7 +157,8 @@ export class GroupFacade extends GenericEventElementFacade {
         force: boolean,
         eventId: string | undefined = this.actualSelectedEventId,
     ): void {
-        this.ngStore.dispatch( new FetchGroupsPage( eventId, pageNumber, pageSize, force ) )
+        const index: number | undefined = this.groupsPageResetSearch() ? 0 : pageNumber
+        this.ngStore.dispatch( new FetchGroupsPage( eventId, index, pageSize, force ) )
     }
 
     public fetchGroupMembers (
@@ -179,20 +174,19 @@ export class GroupFacade extends GenericEventElementFacade {
         presenceSearched: boolean | undefined,
         visibilitySearched: boolean | undefined,
     ): void {
-        if (textSearched !== this.groupMembersPageTextSearchedParam()) {
-            this.ngStore.dispatch( new InputGroupsPageTextSearched( textSearched ) )
-        }
+        const resetSearch: boolean = this.groupsPageTextSearchedParam() != textSearched
+                                     || this.groupsPagePresenceSearchedParam() != presenceSearched
+                                     || this.groupsPageDateTimeSearchedParam() != dateTimeSearched?.toISOString()
+                                     || this.groupsPageVisibilitySearchedParam() != visibilitySearched
 
-        if (dateTimeSearched !== this.groupsPageDateTimeSearchedParam()) {
-            this.ngStore.dispatch( new InputGroupsPageDateTimeSearched( dateTimeSearched ) )
-        }
-
-        if (presenceSearched !== this.groupsPagePresenceSearchedParam()) {
-            this.ngStore.dispatch( new SelectGroupsPagePresenceSearched( presenceSearched ) )
-        }
-
-        if (visibilitySearched !== this.groupsPageVisibilitySearchedParam()) {
-            this.ngStore.dispatch( new SelectGroupsPageVisibilitySearched( visibilitySearched ) )
+        if (resetSearch) {
+            this.ngStore.dispatch( new UpdateGroupsPageSearchParams( {
+                resetSearch: resetSearch,
+                textSearched: textSearched,
+                presenceSearched: presenceSearched,
+                visibilitySearched: visibilitySearched,
+                dateTimeSearched: dateTimeSearched?.toISOString(),
+            } ) )
         }
     }
 
@@ -211,7 +205,8 @@ export class GroupFacade extends GenericEventElementFacade {
         force: boolean,
         eventId: string | undefined = this.actualSelectedEventId,
     ): void {
-        this.ngStore.dispatch( new FetchGroupMembersPage( eventId, id, pageNumber, pageSize, force ) )
+        const index: number | undefined = this.groupMembersPageResetSearch() ? 0 : pageNumber
+        this.ngStore.dispatch( new FetchGroupMembersPage( eventId, id, index, pageSize, force ) )
     }
 
     public inputMembersPageSearchParameters (
@@ -219,16 +214,17 @@ export class GroupFacade extends GenericEventElementFacade {
         statusSearched: string | undefined,
         visibilitySearched: boolean | undefined,
     ): void {
-        if (textSearched !== this.groupMembersPageTextSearchedParam()) {
-            this.ngStore.dispatch( new InputGroupMembersPageTextSearched( textSearched ) )
-        }
+        const resetSearch: boolean = this.groupMembersPageTextSearchedParam() != textSearched
+                                     || this.groupMembersPageStatusSearchedParam() != statusSearched
+                                     || this.groupMembersPageVisibilitySearchedParam() != visibilitySearched
 
-        if (statusSearched !== this.groupMembersPageStatusSearchedParam()) {
-            this.ngStore.dispatch( new SelectGroupMembersPageStatusSearched( statusSearched ) )
-        }
-
-        if (visibilitySearched !== this.groupMembersPageVisibilitySearchedParam()) {
-            this.ngStore.dispatch( new SelectGroupMembersPageVisibilitySearched( visibilitySearched ) )
+        if (resetSearch) {
+            this.ngStore.dispatch( new UpdateGroupMembersPageSearchParams( {
+                resetSearch: resetSearch,
+                visibilitySearched: visibilitySearched,
+                statusSearched: statusSearched,
+                textSearched: textSearched,
+            } ) )
         }
     }
 
@@ -292,18 +288,30 @@ export class GroupFacade extends GenericEventElementFacade {
         return this.actions$.pipe( ofActionSuccessful( UpdateGroup ) )
     }
 
-    public disableGroup (id: string, eventId: string | undefined = this.actualSelectedEventId): void {
+    public disableGroup (
+        id: string,
+        eventId: string | undefined = this.actualSelectedEventId,
+    ): Observable<ActionCompletion<DisableGroup>> {
         this.ngStore.dispatch( new DisableGroup( eventId, id ) )
+
+        return this.actions$.pipe( ofActionCompleted( DisableGroup ) )
     }
 
-    public enableGroup (id: string, eventId: string | undefined = this.actualSelectedEventId): void {
+    public enableGroup (
+        id: string,
+        eventId: string | undefined = this.actualSelectedEventId,
+    ): Observable<ActionCompletion<EnableGroup>> {
         this.ngStore.dispatch( new EnableGroup( eventId, id ) )
+
+        return this.actions$.pipe( ofActionCompleted( EnableGroup ) )
     }
 
     public deleteGroup (
         group: GroupModel,
         eventId: string | undefined = this.actualSelectedEventId,
-    ): void {
+    ): Observable<ActionCompletion<DeleteGroup>> {
         this.ngStore.dispatch( new DeleteGroup( eventId, group ) )
+
+        return this.actions$.pipe( ofActionCompleted( DeleteGroup ) )
     }
 }

@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input, InputSignal, Signal } from '@angular/core'
+import {
+    ChangeDetectionStrategy,
+    Component,
+    computed,
+    inject,
+    input,
+    InputSignal,
+    OnDestroy,
+    Signal,
+} from '@angular/core'
 import { GroupModel } from '../../../shared/util-model/model/group.model'
 import { GroupActionEnum } from '../data/state/group.action'
 import { AppConfig } from '../../../app.config'
@@ -24,6 +33,8 @@ import { PluralTranslationPipe } from '../../../shared/util-tool/pipe/plural-tra
 import { VisibilityNamePipe } from '../../../shared/util-tool/pipe/visibility.pipe'
 import { IntervalFormatPipe } from '../../../shared/util-tool/pipe/interval-format.pipe'
 import { CustomDateFormatPipe } from '../../../shared/util-tool/pipe/custom-date-format.pipe'
+import { ConfirmationDialogComponent } from '../../../shared/util-ui/confirmation-dialog/confirmation-dialog.component'
+import { tap } from 'rxjs'
 
 @Component( {
     selector: 'app-group-element',
@@ -48,13 +59,14 @@ import { CustomDateFormatPipe } from '../../../shared/util-tool/pipe/custom-date
         VisibilityNamePipe,
         IntervalFormatPipe,
         CustomDateFormatPipe,
+        ConfirmationDialogComponent,
     ],
     templateUrl: './group-element.component.html',
     styleUrl: './group-element.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
 } )
-export class GroupElementComponent extends GenericElementComponent<GroupModel, GroupActionEnum> {
-    private readonly facade: GroupFacade = inject( GroupFacade )
+export class GroupElementComponent extends GenericElementComponent<GroupModel, GroupActionEnum> implements OnDestroy {
+    protected readonly facade: GroupFacade = inject( GroupFacade )
 
     protected layerOpened: boolean = false
     protected activeTab: number = 1
@@ -86,6 +98,10 @@ export class GroupElementComponent extends GenericElementComponent<GroupModel, G
         this.children = computed( (): ParticipantModel[] => GroupUtil.getChildren( this.group() ) )
     }
 
+    public ngOnDestroy (): void {
+        this.subscriptions.unsubscribe()
+    }
+
     protected isActionVisible (element: GroupModel, action: ActionModel<GroupActionEnum>): boolean {
         switch (action.id) {
             case GroupActionEnum.DISABLE_GROUP:
@@ -110,13 +126,25 @@ export class GroupElementComponent extends GenericElementComponent<GroupModel, G
                 ).catch( console.error )
                 break
             case GroupActionEnum.DISABLE_GROUP:
-                this.facade.disableGroup( this.group().id, this.contextEventId() )
+                this.subscriptions.add(
+                    this.facade.disableGroup( this.group().id ).pipe(
+                        tap( () => this.action.set( undefined ) ),
+                    ).subscribe(),
+                )
                 break
             case GroupActionEnum.ENABLE_GROUP:
-                this.facade.enableGroup( this.group().id, this.contextEventId() )
+                this.subscriptions.add(
+                    this.facade.enableGroup( this.group().id ).pipe(
+                        tap( () => this.action.set( undefined ) ),
+                    ).subscribe(),
+                )
                 break
             case GroupActionEnum.DELETE_GROUP:
-                this.facade.deleteGroup( this.group(), this.contextEventId() )
+                this.subscriptions.add(
+                    this.facade.deleteGroup( this.group() ).pipe(
+                        tap( () => this.action.set( undefined ) ),
+                    ).subscribe(),
+                )
                 break
             default:
                 console.warn( this.translateService.instant( 'global.messages.invalid-action' ) )

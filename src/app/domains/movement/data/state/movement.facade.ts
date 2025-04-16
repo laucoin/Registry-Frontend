@@ -2,7 +2,7 @@ import { computed, Injectable, Signal } from '@angular/core'
 import { Observable } from 'rxjs'
 import { PageModel } from '../../../../shared/util-model/model/page.model'
 import { SelectItem, SelectItemGroup, ToastMessageOptions } from 'primeng/api'
-import { ofActionSuccessful } from '@ngxs/store'
+import { ActionCompletion, ofActionCompleted, ofActionSuccessful } from '@ngxs/store'
 import { GroupModel } from '../../../../shared/util-model/model/group.model'
 import { MovementState } from './movement.state'
 import {
@@ -14,18 +14,16 @@ import {
     FetchMovementsContent,
     FetchMovementsPage,
     FetchMovementTypes,
-    InputMovementsPageEndDateTimeSearched,
-    InputMovementsPageStartDateTimeSearched,
     ResetMovement,
     SearchParticipantsAndGroups,
+    SearchReasonsAndActivities,
     SearchVehicles,
-    SelectMovementsPageTypeSearched,
-    SelectMovementsPageVisibilitySearched,
     StartMovementLoader,
     StartMovementsPageLoader,
     StopMovementLoader,
     StopMovementsPageLoader,
     UpdateMovement,
+    UpdateMovementsPageSearchParams,
 } from './movement.action'
 import { MovementDto } from '../dto/movement.dto'
 import { MovementModel } from '../../../../shared/util-model/model/movement.model'
@@ -33,6 +31,7 @@ import { ParticipantModel } from '../../../../shared/util-model/model/participan
 import { GenericEventElementFacade } from '../../../../shared/util-tool/facade/generic-event-element.facade'
 import { VehicleModel } from '../../../../shared/util-model/model/vehicle.model'
 import { DateUtil } from '../../../../shared/util-tool/util/date.util'
+import { MovementReasonModel } from '../model/movement-reason.model'
 
 @Injectable()
 export class MovementFacade extends GenericEventElementFacade {
@@ -52,8 +51,12 @@ export class MovementFacade extends GenericEventElementFacade {
         return this.ngStore.selectSignal( MovementState.movementsPageError )
     }
 
-    public get movementsPageMovementTypeSearchedParam (): Signal<string | undefined> {
-        return this.ngStore.selectSignal( MovementState.movementsPageMovementTypeSearchedParam )
+    private get movementsPageResetSearch (): Signal<boolean> {
+        return this.ngStore.selectSignal( MovementState.movementsPageResetSearch )
+    }
+
+    public get movementsPageTypeSearchedParam (): Signal<string | undefined> {
+        return this.ngStore.selectSignal( MovementState.movementsPageTypeSearchedParam )
     }
 
     public get movementsPageStartDateTimeSearchedParam (): Signal<Date | undefined> {
@@ -84,6 +87,10 @@ export class MovementFacade extends GenericEventElementFacade {
         return computed( () =>
             this.ngStore.selectSignal( MovementState.movementLoading )() || this.registryFacade.contextEventLoading(),
         )
+    }
+
+    public get searchedReasonAndActivityMetadata (): Signal<MovementReasonModel[]> {
+        return this.ngStore.selectSignal( MovementState.searchedReasonAndActivityMetadata )
     }
 
     public get searchedParticipantAndGroupMetadata (): Signal<SelectItemGroup<ParticipantModel | GroupModel>[]> {
@@ -121,7 +128,8 @@ export class MovementFacade extends GenericEventElementFacade {
         force: boolean,
         eventId: string | undefined = this.actualSelectedEventId,
     ): void {
-        this.ngStore.dispatch( new FetchMovementsPage( eventId, pageNumber, pageSize, force ) )
+        const index: number | undefined = this.movementsPageResetSearch() ? 0 : pageNumber
+        this.ngStore.dispatch( new FetchMovementsPage( eventId, index, pageSize, force ) )
     }
 
     public fetchMovementsContents (
@@ -137,20 +145,19 @@ export class MovementFacade extends GenericEventElementFacade {
         endDateTimeSearched: Date | undefined,
         visibilitySearched: boolean | undefined,
     ): void {
-        if (typeSearched !== this.movementsPageMovementTypeSearchedParam()) {
-            this.ngStore.dispatch( new SelectMovementsPageTypeSearched( typeSearched ) )
-        }
+        const resetSearch: boolean = this.movementsPageTypeSearchedParam() != typeSearched
+                                     || this.movementsPageStartDateTimeSearchedParam() != startDateTimeSearched?.toISOString()
+                                     || this.movementsPageEndDateTimeSearchedParam() != endDateTimeSearched?.toISOString()
+                                     || this.movementsPageVisibilitySearchedParam() != visibilitySearched
 
-        if (startDateTimeSearched !== this.movementsPageStartDateTimeSearchedParam()) {
-            this.ngStore.dispatch( new InputMovementsPageStartDateTimeSearched( startDateTimeSearched ) )
-        }
-
-        if (endDateTimeSearched !== this.movementsPageEndDateTimeSearchedParam()) {
-            this.ngStore.dispatch( new InputMovementsPageEndDateTimeSearched( endDateTimeSearched ) )
-        }
-
-        if (visibilitySearched !== this.movementsPageVisibilitySearchedParam()) {
-            this.ngStore.dispatch( new SelectMovementsPageVisibilitySearched( visibilitySearched ) )
+        if (resetSearch) {
+            this.ngStore.dispatch( new UpdateMovementsPageSearchParams( {
+                resetSearch: resetSearch,
+                visibilitySearched: visibilitySearched,
+                typeSearched: typeSearched,
+                startDateTimeSearched: startDateTimeSearched?.toISOString(),
+                endDateTimeSearched: endDateTimeSearched?.toISOString(),
+            } ) )
         }
     }
 
@@ -166,18 +173,26 @@ export class MovementFacade extends GenericEventElementFacade {
         this.ngStore.dispatch( new FetchMovement( eventId, id ) )
     }
 
-    public searchParticipantsAndGroups (
-        searched: string | undefined = undefined,
+    public searchReasonsAndActivities (
+        textSearched: string | undefined = undefined,
+        typeSearched: string | undefined = undefined,
         eventId: string | undefined = this.actualSelectedEventId,
     ): void {
-        this.ngStore.dispatch( new SearchParticipantsAndGroups( eventId, searched ) )
+        this.ngStore.dispatch( new SearchReasonsAndActivities( eventId, textSearched, typeSearched ) )
+    }
+
+    public searchParticipantsAndGroups (
+        textSearched: string | undefined = undefined,
+        eventId: string | undefined = this.actualSelectedEventId,
+    ): void {
+        this.ngStore.dispatch( new SearchParticipantsAndGroups( eventId, textSearched ) )
     }
 
     public searchVehicles (
-        searched: string | undefined = undefined,
+        textSearched: string | undefined = undefined,
         eventId: string | undefined = this.actualSelectedEventId,
     ): void {
-        this.ngStore.dispatch( new SearchVehicles( eventId, searched ) )
+        this.ngStore.dispatch( new SearchVehicles( eventId, textSearched ) )
     }
 
     public resetMovement (): void {
@@ -213,19 +228,31 @@ export class MovementFacade extends GenericEventElementFacade {
         return this.actions$.pipe( ofActionSuccessful( UpdateMovement ) )
     }
 
-    public disableMovement (id: string, eventId: string | undefined = this.actualSelectedEventId): void {
+    public disableMovement (
+        id: string,
+        eventId: string | undefined = this.actualSelectedEventId,
+    ): Observable<ActionCompletion<DisableMovement>> {
         this.ngStore.dispatch( new DisableMovement( eventId, id ) )
+
+        return this.actions$.pipe( ofActionCompleted( DisableMovement ) )
     }
 
-    public enableMovement (id: string, eventId: string | undefined = this.actualSelectedEventId): void {
+    public enableMovement (
+        id: string,
+        eventId: string | undefined = this.actualSelectedEventId,
+    ): Observable<ActionCompletion<EnableMovement>> {
         this.ngStore.dispatch( new EnableMovement( eventId, id ) )
+
+        return this.actions$.pipe( ofActionCompleted( EnableMovement ) )
     }
 
     public deleteMovement (
         movement: MovementModel,
         eventId: string | undefined = this.actualSelectedEventId,
-    ): void {
+    ): Observable<ActionCompletion<DeleteMovement>> {
         this.ngStore.dispatch( new DeleteMovement( eventId, movement ) )
+
+        return this.actions$.pipe( ofActionCompleted( DeleteMovement ) )
     }
 
     public fetchMovementTypes (): void {

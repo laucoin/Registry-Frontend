@@ -20,10 +20,6 @@ import {
     FetchUserEventProfileInvitationsPage,
     FetchUserEventProfilesPage,
     ImpersonateCurrentUser,
-    InputUserEventProfileInvitationsPageDateTimeSearched,
-    InputUserEventProfileInvitationsPageTextSearched,
-    InputUserEventProfilesPageDateTimeSearched,
-    InputUserEventProfilesPageTextSearched,
     Login,
     Logout,
     ManageUserEventInvitationAcceptance,
@@ -46,6 +42,8 @@ import {
     UpdateNetwork,
     UpdateScreenWidth,
     UpdateTheme,
+    UpdateUserEventProfileInvitationsPageSearchParams,
+    UpdateUserEventProfilesPageSearchParams,
 } from './registry.action'
 import { UserEventProfileService } from './user-event-profile.service'
 import { PreferencesService } from './preferences.service'
@@ -68,8 +66,8 @@ const defaultRegistryState: RegistryStateModel = {
     },
     profiles: {
         params: {
-            visibilitySearched: undefined,
-            availabilitySearched: true,
+            resetSearch: false,
+            availabilitySearched: undefined,
             statusSearched: 'ACCEPTED',
             textSearched: undefined,
             dateTimeSearched: undefined,
@@ -81,8 +79,8 @@ const defaultRegistryState: RegistryStateModel = {
     },
     invitations: {
         params: {
-            visibilitySearched: undefined,
-            availabilitySearched: false,
+            resetSearch: false,
+            availabilitySearched: undefined,
             statusSearched: 'INVITED',
             textSearched: undefined,
             dateTimeSearched: undefined,
@@ -211,6 +209,11 @@ export class RegistryState extends GenericState {
     }
 
     @Selector()
+    public static userEventProfilesPageResetSearch (state: RegistryStateModel): boolean {
+        return state.profiles.params.resetSearch
+    }
+
+    @Selector()
     public static userEventProfilesPageTextSearchParam (state: RegistryStateModel): string | undefined {
         return state.profiles.params.textSearched
     }
@@ -238,6 +241,11 @@ export class RegistryState extends GenericState {
     @Selector()
     public static userEventProfileInvitationsPageSilentLoading (state: RegistryStateModel): boolean {
         return state.invitations.silentLoading
+    }
+
+    @Selector()
+    public static userEventProfileInvitationsPageResetSearch (state: RegistryStateModel): boolean {
+        return state.invitations.params.resetSearch
     }
 
     @Selector()
@@ -533,6 +541,10 @@ export class RegistryState extends GenericState {
         ctx.patchState( {
             profiles: {
                 ...ctx.getState().profiles,
+                params: {
+                    ...ctx.getState().profiles.params,
+                    resetSearch: false,
+                },
                 element: profilePage,
             },
         } )
@@ -553,33 +565,19 @@ export class RegistryState extends GenericState {
         return of()
     }
 
-    @Action( InputUserEventProfilesPageTextSearched )
-    public inputUserEventProfilesPageTextSearch (
+    @Action( UpdateUserEventProfilesPageSearchParams )
+    public updateUserEventProfilesPageSearchParams (
         ctx: StateContext<RegistryStateModel>,
-        payload: InputUserEventProfilesPageTextSearched,
+        payload: UpdateUserEventProfilesPageSearchParams,
     ): void {
         ctx.patchState( {
             profiles: {
                 ...ctx.getState().profiles,
                 params: {
-                    ...ctx.getState().profiles.params,
+                    ...ctx.getState().invitations.params,
+                    resetSearch: payload.resetSearch,
                     textSearched: payload.textSearched,
-                },
-            },
-        } )
-    }
-
-    @Action( InputUserEventProfilesPageDateTimeSearched )
-    public inputUserEventProfilesPageDateTimeSearched (
-        ctx: StateContext<RegistryStateModel>,
-        payload: InputUserEventProfilesPageDateTimeSearched,
-    ): void {
-        ctx.patchState( {
-            profiles: {
-                ...ctx.getState().profiles,
-                params: {
-                    ...ctx.getState().profiles.params,
-                    dateTimeSearched: payload.dateTime?.toISOString(),
+                    dateTimeSearched: payload.dateTimeSearched,
                 },
             },
         } )
@@ -634,6 +632,10 @@ export class RegistryState extends GenericState {
         ctx.patchState( {
             invitations: {
                 ...ctx.getState().invitations,
+                params: {
+                    ...ctx.getState().invitations.params,
+                    resetSearch: false,
+                },
                 element: invitationPage,
             },
         } )
@@ -654,33 +656,19 @@ export class RegistryState extends GenericState {
         return of()
     }
 
-    @Action( InputUserEventProfileInvitationsPageTextSearched )
-    public inputUserEventProfileInvitationsPageTextSearched (
+    @Action( UpdateUserEventProfileInvitationsPageSearchParams )
+    public updateUserEventProfileInvitationsPageSearchParams (
         ctx: StateContext<RegistryStateModel>,
-        payload: InputUserEventProfileInvitationsPageTextSearched,
+        payload: UpdateUserEventProfileInvitationsPageSearchParams,
     ): void {
         ctx.patchState( {
             invitations: {
                 ...ctx.getState().invitations,
                 params: {
                     ...ctx.getState().invitations.params,
+                    resetSearch: payload.resetSearch,
                     textSearched: payload.textSearched,
-                },
-            },
-        } )
-    }
-
-    @Action( InputUserEventProfileInvitationsPageDateTimeSearched )
-    public inputUserEventProfileInvitationsPageDateTimeSearched (
-        ctx: StateContext<RegistryStateModel>,
-        payload: InputUserEventProfileInvitationsPageDateTimeSearched,
-    ): void {
-        ctx.patchState( {
-            invitations: {
-                ...ctx.getState().invitations,
-                params: {
-                    ...ctx.getState().invitations.params,
-                    dateTimeSearched: payload.dateTime?.toISOString(),
+                    dateTimeSearched: payload.dateTimeSearched,
                 },
             },
         } )

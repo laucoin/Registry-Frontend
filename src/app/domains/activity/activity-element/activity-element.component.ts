@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input, InputSignal, Signal } from '@angular/core'
+import {
+    ChangeDetectionStrategy,
+    Component,
+    computed,
+    inject,
+    input,
+    InputSignal,
+    OnDestroy,
+    Signal,
+} from '@angular/core'
 import { ElementCardComponent } from '../../../shared/util-ui/element-card/element-card.component'
 import { TagModule } from 'primeng/tag'
 import { TranslateModule } from '@ngx-translate/core'
@@ -16,6 +25,9 @@ import { ActivityModel } from '../../../shared/util-model/model/activity.model'
 import { IntervalFormatPipe } from '../../../shared/util-tool/pipe/interval-format.pipe'
 import { VisibilityNamePipe } from '../../../shared/util-tool/pipe/visibility.pipe'
 import { CustomDateFormatPipe } from '../../../shared/util-tool/pipe/custom-date-format.pipe'
+import { ReactiveFormsModule } from '@angular/forms'
+import { tap } from 'rxjs'
+import { ConfirmationDialogComponent } from '../../../shared/util-ui/confirmation-dialog/confirmation-dialog.component'
 
 @Component( {
     selector: 'app-activity-element',
@@ -29,13 +41,15 @@ import { CustomDateFormatPipe } from '../../../shared/util-tool/pipe/custom-date
         IntervalFormatPipe,
         VisibilityNamePipe,
         CustomDateFormatPipe,
+        ReactiveFormsModule,
+        ConfirmationDialogComponent,
     ],
     templateUrl: './activity-element.component.html',
     styleUrl: './activity-element.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
 } )
-export class ActivityElementComponent extends GenericElementComponent<ActivityModel, ActivityActionEnum> {
-    private readonly facade: ActivityFacade = inject( ActivityFacade )
+export class ActivityElementComponent extends GenericElementComponent<ActivityModel, ActivityActionEnum> implements OnDestroy {
+    protected readonly facade: ActivityFacade = inject( ActivityFacade )
 
     public readonly actionMenuVisible: InputSignal<boolean> = input( true )
     public readonly activity: InputSignal<ActivityModel> = input.required()
@@ -55,6 +69,10 @@ export class ActivityElementComponent extends GenericElementComponent<ActivityMo
             this.activity(),
             AppConfig.config.activity.action,
         ) )
+    }
+
+    public ngOnDestroy (): void {
+        this.subscriptions.unsubscribe()
     }
 
     protected isActionVisible (element: ActivityModel, action: ActionModel<ActivityActionEnum>): boolean {
@@ -81,13 +99,25 @@ export class ActivityElementComponent extends GenericElementComponent<ActivityMo
                 ).catch( console.error )
                 break
             case ActivityActionEnum.DISABLE_ACTIVITY:
-                this.facade.disableActivity( this.activity().id, this.contextEventId() )
+                this.subscriptions.add(
+                    this.facade.disableActivity( this.activity().id, this.contextEventId() ).pipe(
+                        tap( (): void => this.action.set( undefined ) ),
+                    ).subscribe(),
+                )
                 break
             case ActivityActionEnum.ENABLE_ACTIVITY:
-                this.facade.enableActivity( this.activity().id, this.contextEventId() )
+                this.subscriptions.add(
+                    this.facade.enableActivity( this.activity().id, this.contextEventId() ).pipe(
+                        tap( (): void => this.action.set( undefined ) ),
+                    ).subscribe(),
+                )
                 break
             case ActivityActionEnum.DELETE_ACTIVITY:
-                this.facade.deleteActivity( this.activity(), this.contextEventId() )
+                this.subscriptions.add(
+                    this.facade.deleteActivity( this.activity(), this.contextEventId() ).pipe(
+                        tap( (): void => this.action.set( undefined ) ),
+                    ).subscribe(),
+                )
                 break
             default:
                 console.warn( this.translateService.instant( 'global.messages.invalid-action' ) )

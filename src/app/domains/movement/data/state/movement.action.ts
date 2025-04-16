@@ -1,5 +1,6 @@
 import { MovementDto } from '../dto/movement.dto'
 import { MovementModel } from '../../../../shared/util-model/model/movement.model'
+import { MovementPageParamsModel } from '../../../../shared/util-model/model/movement-page-params.model'
 
 export enum MovementActionEnum {
     FETCH_MOVEMENT_TYPES = '[Backend] Fetching available movement types',
@@ -9,15 +10,13 @@ export enum MovementActionEnum {
 
     FETCH_MOVEMENTS_PAGE = '[Backend] Fetching movements\' page',
     FETCH_MOVEMENTS_CONTENT = '[Backend] Fetching movements\' content',
-    SELECT_MOVEMENTS_PAGE_TYPE_SEARCH = '[Local] Selecting movements\' page type search',
-    INPUT_MOVEMENTS_PAGE_START_DATE_TIME_SEARCH = '[Local] Inputting movements\' page start date time search',
-    INPUT_MOVEMENTS_PAGE_END_DATE_TIME_SEARCH = '[Local] Inputting movements\' page end date time search',
-    SELECT_MOVEMENTS_PAGE_VISIBILITY_SEARCH = '[Local] Selecting movements\' page visibility search',
+    UPDATE_MOVEMENTS_PAGE_SEARCH_PARAMS = '[Local] Updating movements\' page search params',
 
     START_MOVEMENT_LOADER = '[Local] Starting movement loader',
     STOP_MOVEMENT_LOADER = '[Local] Stopping movement loader',
 
     FETCH_MOVEMENT = '[Backend] Fetching movement',
+    SEARCH_REASONS_AND_ACTIVITIES = '[Backend] Searching reasons and activities to add in a movement',
     SEARCH_PARTICIPANTS_AND_GROUPS = '[Backend] Searching participants and groups to add in a movement',
     SEARCH_VEHICLES = '[Backend] Searching vehicles to add in a movement',
     RESET_MOVEMENT = '[Local] Resetting movement',
@@ -60,28 +59,10 @@ export class FetchMovementsContent {
     ) {}
 }
 
-export class SelectMovementsPageTypeSearched {
-    public static readonly type: MovementActionEnum = MovementActionEnum.SELECT_MOVEMENTS_PAGE_TYPE_SEARCH
+export class UpdateMovementsPageSearchParams {
+    public static readonly type: MovementActionEnum = MovementActionEnum.UPDATE_MOVEMENTS_PAGE_SEARCH_PARAMS
 
-    public constructor (public readonly typeSearched: string | undefined) {}
-}
-
-export class InputMovementsPageStartDateTimeSearched {
-    public static readonly type: MovementActionEnum = MovementActionEnum.INPUT_MOVEMENTS_PAGE_START_DATE_TIME_SEARCH
-
-    public constructor (public readonly startDateTimeSearched: Date | undefined) {}
-}
-
-export class InputMovementsPageEndDateTimeSearched {
-    public static readonly type: MovementActionEnum = MovementActionEnum.INPUT_MOVEMENTS_PAGE_END_DATE_TIME_SEARCH
-
-    public constructor (public readonly endDateTimeSearched: Date | undefined) {}
-}
-
-export class SelectMovementsPageVisibilitySearched {
-    public static readonly type: MovementActionEnum = MovementActionEnum.SELECT_MOVEMENTS_PAGE_VISIBILITY_SEARCH
-
-    public constructor (public readonly visibilitySearched: boolean | undefined) {}
+    public constructor (public readonly params: MovementPageParamsModel) {}
 }
 
 export class StartMovementLoader {
@@ -98,16 +79,32 @@ export class FetchMovement {
     public constructor (public readonly eventId: string | undefined, public readonly id: string) {}
 }
 
+export class SearchReasonsAndActivities {
+    public static readonly type: MovementActionEnum = MovementActionEnum.SEARCH_REASONS_AND_ACTIVITIES
+
+    public constructor (
+        public readonly eventId: string | undefined,
+        public readonly textSearched: string | undefined,
+        public readonly typeSearched: string | undefined,
+    ) {}
+}
+
 export class SearchParticipantsAndGroups {
     public static readonly type: MovementActionEnum = MovementActionEnum.SEARCH_PARTICIPANTS_AND_GROUPS
 
-    public constructor (public readonly eventId: string | undefined, public readonly searched: string | undefined) {}
+    public constructor (
+        public readonly eventId: string | undefined,
+        public readonly textSearched: string | undefined,
+    ) {}
 }
 
 export class SearchVehicles {
     public static readonly type: MovementActionEnum = MovementActionEnum.SEARCH_VEHICLES
 
-    public constructor (public readonly eventId: string | undefined, public readonly searched: string | undefined) {}
+    public constructor (
+        public readonly eventId: string | undefined,
+        public readonly textSearched: string | undefined,
+    ) {}
 }
 
 export class ResetMovement {

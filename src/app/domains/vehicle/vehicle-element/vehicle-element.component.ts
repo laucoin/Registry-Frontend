@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input, InputSignal, Signal } from '@angular/core'
+import {
+    ChangeDetectionStrategy,
+    Component,
+    computed,
+    inject,
+    input,
+    InputSignal,
+    OnDestroy,
+    Signal,
+} from '@angular/core'
 import { ElementCardComponent } from '../../../shared/util-ui/element-card/element-card.component'
 import { TagModule } from 'primeng/tag'
 import { TranslateModule } from '@ngx-translate/core'
@@ -16,6 +25,8 @@ import { GenericElementComponent } from '../../../shared/util-tool/component/gen
 import { IntervalFormatPipe } from '../../../shared/util-tool/pipe/interval-format.pipe'
 import { VisibilityNamePipe } from '../../../shared/util-tool/pipe/visibility.pipe'
 import { CustomDateFormatPipe } from '../../../shared/util-tool/pipe/custom-date-format.pipe'
+import { ConfirmationDialogComponent } from '../../../shared/util-ui/confirmation-dialog/confirmation-dialog.component'
+import { tap } from 'rxjs'
 
 @Component( {
     selector: 'app-vehicle-element',
@@ -29,13 +40,14 @@ import { CustomDateFormatPipe } from '../../../shared/util-tool/pipe/custom-date
         IntervalFormatPipe,
         VisibilityNamePipe,
         CustomDateFormatPipe,
+        ConfirmationDialogComponent,
     ],
     templateUrl: './vehicle-element.component.html',
     styleUrl: './vehicle-element.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
 } )
-export class VehicleElementComponent extends GenericElementComponent<VehicleModel, VehicleActionEnum> {
-    private readonly facade: VehicleFacade = inject( VehicleFacade )
+export class VehicleElementComponent extends GenericElementComponent<VehicleModel, VehicleActionEnum> implements OnDestroy {
+    protected readonly facade: VehicleFacade = inject( VehicleFacade )
 
     public readonly actionMenuVisible: InputSignal<boolean> = input( true )
     public readonly vehicle: InputSignal<VehicleModel> = input.required()
@@ -69,6 +81,10 @@ export class VehicleElementComponent extends GenericElementComponent<VehicleMode
         ) )
     }
 
+    public ngOnDestroy (): void {
+        this.subscriptions.unsubscribe()
+    }
+
     protected isActionVisible (element: VehicleModel, action: ActionModel<VehicleActionEnum>): boolean {
         switch (action.id) {
             case VehicleActionEnum.DISABLE_VEHICLE:
@@ -93,13 +109,25 @@ export class VehicleElementComponent extends GenericElementComponent<VehicleMode
                 ).catch( console.error )
                 break
             case VehicleActionEnum.DISABLE_VEHICLE:
-                this.facade.disableVehicle( this.vehicle().id, this.contextEventId() )
+                this.subscriptions.add(
+                    this.facade.disableVehicle( this.vehicle().id, this.contextEventId() ).pipe(
+                        tap( (): void => this.action.set( undefined ) ),
+                    ).subscribe(),
+                )
                 break
             case VehicleActionEnum.ENABLE_VEHICLE:
-                this.facade.enableVehicle( this.vehicle().id, this.contextEventId() )
+                this.subscriptions.add(
+                    this.facade.enableVehicle( this.vehicle().id, this.contextEventId() ).pipe(
+                        tap( (): void => this.action.set( undefined ) ),
+                    ).subscribe(),
+                )
                 break
             case VehicleActionEnum.DELETE_VEHICLE:
-                this.facade.deleteVehicle( this.vehicle(), this.contextEventId() )
+                this.subscriptions.add(
+                    this.facade.deleteVehicle( this.vehicle(), this.contextEventId() ).pipe(
+                        tap( (): void => this.action.set( undefined ) ),
+                    ).subscribe(),
+                )
                 break
             default:
                 console.warn( this.translateService.instant( 'global.messages.invalid-action' ) )

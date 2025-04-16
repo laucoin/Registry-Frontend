@@ -1,7 +1,7 @@
 <app-element-card [element]='event()'
                   [actionMenuVisible]='actionMenuVisible()'
                   [actions]='actions()'
-                  (action)='handleAction($event)'
+                  (action)='showDialogIfNeeded($event)'
                   icon='pi pi-calendar'>
     <div class='element-card'>
         <div class='event-info d-flex flex-column justify-content-center'>
@@ -65,3 +65,9 @@
             scrollHeight='100%'
             optionLabel='label' />
 </app-layer>
+
+<app-confirmation-dialog
+        [loading]='facade.eventLoading()'
+        [element]='event()'
+        [action]='action()'
+        (handleAction)='handleAction($event)' />

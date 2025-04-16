@@ -2,7 +2,6 @@ import { Component, computed, inject, input, InputSignal, Signal } from '@angula
 import { ValidationErrors } from '@angular/forms'
 import { MessageModule } from 'primeng/message'
 import { TranslateModule, TranslateService } from '@ngx-translate/core'
-import { DateFormatPipe } from '../../util-tool/pipe/date-format.pipe'
 
 @Component( {
     selector: 'app-form-field-error',
@@ -15,7 +14,6 @@ import { DateFormatPipe } from '../../util-tool/pipe/date-format.pipe'
 } )
 export class FormFieldErrorComponent {
     private readonly translateService: TranslateService = inject( TranslateService )
-    private readonly datePipe: DateFormatPipe = inject( DateFormatPipe )
 
     public readonly invalid: InputSignal<boolean> = input.required()
     public readonly errors: InputSignal<ValidationErrors | null> = input.required()
@@ -91,6 +89,11 @@ export class FormFieldErrorComponent {
                 return {
                     ...this.translationArgs(),
                     actual: this.errorProperty( code, 'actualValue' ),
+                }
+            case 'incompatibleReason':
+                return {
+                    ...this.translationArgs(),
+                    reason: this.errorProperty( code, 'reason' ),
                 }
             default:
                 return this.translationArgs()

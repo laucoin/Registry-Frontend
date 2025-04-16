@@ -1,7 +1,7 @@
 <app-element-card [element]='vehicle()'
                   [actions]='actions()'
                   [actionMenuVisible]='actionMenuVisible()'
-                  (action)='handleAction($event)'
+                  (action)='showDialogIfNeeded($event)'
                   icon='pi pi-car'>
     <div class='element-card'>
         <div class='vehicle-info d-flex flex-column justify-content-center'>
@@ -43,3 +43,9 @@
         </div>
     </div>
 </app-element-card>
+
+<app-confirmation-dialog
+        [loading]='facade.vehicleLoading()'
+        [element]='vehicle()'
+        [action]='action()'
+        (handleAction)='handleAction($event)' />

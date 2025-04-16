@@ -23,7 +23,7 @@
                                       translationPrefix='event-profiles.form.error.role' />
             </div>
             <div class='d-flex flex-wrap'>
-                <div class='begin-date-time field'>
+                <div class='left-field field'>
                     <label for='begin-date-time'>{{ 'event-profiles.form.begin-datetime' | translate }}</label>
                     <app-date-time-field [formControl]='beginDateTime'
                                          [invalid]='FormUtil.invalid(beginDateTime)'
@@ -39,7 +39,7 @@
                                           [invalid]='FormUtil.invalid(beginDateTime)'
                                           translationPrefix='event-profiles.form.error.begin-datetime' />
                 </div>
-                <div class='end-date-time field'>
+                <div class='right-field field'>
                     <label for='end-date-time'>{{ 'event-profiles.form.end-datetime' | translate }}</label>
                     <app-date-time-field [formControl]='endDateTime'
                                          [invalid]='FormUtil.invalid(endDateTime)'

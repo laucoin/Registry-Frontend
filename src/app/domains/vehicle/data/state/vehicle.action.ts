@@ -1,5 +1,7 @@
 import { VehicleDto } from '../dto/vehicle.dto'
 import { VehicleModel } from '../../../../shared/util-model/model/vehicle.model'
+import { MovementPageParamsModel } from '../../../../shared/util-model/model/movement-page-params.model'
+import { VehiclePageParamsModel } from '../model/vehicle-page-params.model'
 
 export enum VehicleActionEnum {
     FETCH_VEHICLE_PRESENCES_STATUS = '[Backend] Fetching vehicle presences status',
@@ -8,20 +10,14 @@ export enum VehicleActionEnum {
     STOP_VEHICLES_PAGE_LOADER = '[Local] Stopping vehicles\' page loader',
 
     FETCH_VEHICLES_PAGE = '[Backend] Fetching vehicles\' page',
-    INPUT_VEHICLES_PAGE_TEXT_SEARCH = '[Local] Inputting vehicles\' page text search',
-    INPUT_VEHICLES_PAGE_DATE_TIME_SEARCH = '[Local] Inputting vehicles\' page date time search',
-    SELECT_VEHICLES_PAGE_AVAILABILITY_SEARCH = '[Local] Selecting vehicles\' page availability search',
-    SELECT_VEHICLES_PAGE_VISIBILITY_SEARCH = '[Local] Selecting vehicles\' page visibility search',
+    UPDATE_VEHICLES_PAGE_SEARCH_PARAMS = '[Local] Updating vehicles\' page search params',
 
     START_VEHICLE_MOVEMENTS_PAGE_LOADER = '[Local] Starting vehicle movements\' page loader',
     STOP_VEHICLE_MOVEMENTS_PAGE_LOADER = '[Local] Stopping vehicle movements\' page loader',
 
     FETCH_VEHICLE_MOVEMENTS_PAGE = '[Backend] Fetching vehicle movements\' page',
     FETCH_VEHICLE_MOVEMENTS_CONTENTS = '[Backend] Fetching vehicle movements\' contents',
-    INPUT_VEHICLE_MOVEMENTS_PAGE_TYPE_SEARCH = '[Local] Inputting vehicle movements\' page type search',
-    INPUT_VEHICLE_MOVEMENTS_PAGE_START_DATE_TIME_SEARCH = '[Local] Inputting vehicle movements\' page start date time search',
-    INPUT_VEHICLE_MOVEMENTS_PAGE_END_DATE_TIME_SEARCH = '[Local] Inputting vehicle movements\' page end date time search',
-    SELECT_VEHICLE_MOVEMENTS_PAGE_VISIBILITY_SEARCH = '[Local] Selecting vehicle movements\' page visibility search',
+    UPDATE_VEHICLE_MOVEMENTS_PAGE_SEARCH_PARAMS = '[Local] Updating vehicle movements\' page search params',
 
     START_VEHICLE_LOADER = '[Local] Starting vehicle\'s loader',
     STOP_VEHICLE_LOADER = '[Local] Stopping vehicle\'s loader',
@@ -58,28 +54,10 @@ export class FetchVehiclesPage {
     ) {}
 }
 
-export class InputVehiclesPageTextSearched {
-    public static readonly type: VehicleActionEnum = VehicleActionEnum.INPUT_VEHICLES_PAGE_TEXT_SEARCH
+export class UpdateVehiclesPageSearchParams {
+    public static readonly type: VehicleActionEnum = VehicleActionEnum.UPDATE_VEHICLES_PAGE_SEARCH_PARAMS
 
-    public constructor (public readonly textSearched: string | undefined) {}
-}
-
-export class InputVehiclesPageDateTimeSearched {
-    public static readonly type: VehicleActionEnum = VehicleActionEnum.INPUT_VEHICLES_PAGE_DATE_TIME_SEARCH
-
-    public constructor (public readonly dateTimeSearched: Date | undefined) {}
-}
-
-export class SelectVehiclesPageAvailabilitySearched {
-    public static readonly type: VehicleActionEnum = VehicleActionEnum.SELECT_VEHICLES_PAGE_AVAILABILITY_SEARCH
-
-    public constructor (public readonly availabilitySearched: boolean | undefined) {}
-}
-
-export class SelectVehiclesPageVisibilitySearched {
-    public static readonly type: VehicleActionEnum = VehicleActionEnum.SELECT_VEHICLES_PAGE_VISIBILITY_SEARCH
-
-    public constructor (public readonly visibilitySearched: boolean | undefined) {}
+    public constructor (public readonly params: VehiclePageParamsModel) {}
 }
 
 export class StartVehicleMovementsPageLoader {
@@ -111,28 +89,10 @@ export class FetchVehicleMovementsContents {
     ) {}
 }
 
-export class SelectVehicleMovementsPageTypeSearched {
-    public static readonly type: VehicleActionEnum = VehicleActionEnum.INPUT_VEHICLE_MOVEMENTS_PAGE_TYPE_SEARCH
+export class UpdateVehicleMovementsPageSearchParams {
+    public static readonly type: VehicleActionEnum = VehicleActionEnum.UPDATE_VEHICLE_MOVEMENTS_PAGE_SEARCH_PARAMS
 
-    public constructor (public readonly typeSearched: string | undefined) {}
-}
-
-export class InputVehicleMovementsPageStartDateTimeSearched {
-    public static readonly type: VehicleActionEnum = VehicleActionEnum.INPUT_VEHICLE_MOVEMENTS_PAGE_START_DATE_TIME_SEARCH
-
-    public constructor (public readonly startDateTimeSearched: Date | undefined) {}
-}
-
-export class InputVehicleMovementsPageEndDateTimeSearched {
-    public static readonly type: VehicleActionEnum = VehicleActionEnum.INPUT_VEHICLE_MOVEMENTS_PAGE_END_DATE_TIME_SEARCH
-
-    public constructor (public readonly endDateTimeSearched: Date | undefined) {}
-}
-
-export class SelectVehicleMovementsPageVisibilitySearched {
-    public static readonly type: VehicleActionEnum = VehicleActionEnum.SELECT_VEHICLE_MOVEMENTS_PAGE_VISIBILITY_SEARCH
-
-    public constructor (public readonly visibilitySearched: boolean | undefined) {}
+    public constructor (public readonly params: MovementPageParamsModel) {}
 }
 
 export class StartVehicleLoader {

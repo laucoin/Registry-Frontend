@@ -1,5 +1,7 @@
 import { ParticipantModel } from '../../../../shared/util-model/model/participant.model'
 import { ParticipantDto } from '../dto/participant.dto'
+import { ParticipantPageParamsModel } from '../model/participant-page-params.model'
+import { MovementPageParamsModel } from '../../../../shared/util-model/model/movement-page-params.model'
 
 export enum ParticipantActionEnum {
     FETCH_PARTICIPANT_PRESENCES_STATUS = '[Backend] Fetching participant presences status',
@@ -8,19 +10,14 @@ export enum ParticipantActionEnum {
     STOP_PARTICIPANTS_PAGE_LOADER = '[Local] Stopping participants\' page loader',
 
     FETCH_PARTICIPANTS_PAGE = '[Backend] Fetching participants\' page',
-    INPUT_PARTICIPANTS_PAGE_TEXT_SEARCH = '[Local] Inputting participants\' page text search',
-    SELECT_PARTICIPANTS_PAGE_VISIBILITY_SEARCH = '[Local] Selecting participants\' page visibility search',
-    SELECT_PARTICIPANTS_PAGE_STATUS_SEARCH = '[Local] Selecting participants\' page status search',
+    UPDATE_PARTICIPANTS_PAGE_SEARCH_PARAMS = '[Local] Updating participants\' page search params',
 
     START_PARTICIPANT_MOVEMENTS_PAGE_LOADER = '[Local] Starting participant movements\' page loader',
     STOP_PARTICIPANT_MOVEMENTS_PAGE_LOADER = '[Local] Stopping participant movements\' page loader',
 
     FETCH_PARTICIPANT_MOVEMENTS_PAGE = '[Backend] Fetching participant movements\' page',
     FETCH_PARTICIPANT_MOVEMENTS_CONTENT = '[Backend] Fetching participant movements\' content',
-    INPUT_PARTICIPANT_MOVEMENTS_PAGE_TYPE_SEARCH = '[Local] Inputting participant movements\' page type search',
-    INPUT_PARTICIPANT_MOVEMENTS_PAGE_START_DATE_TIME_SEARCH = '[Local] Inputting participant movements\' page start date time search',
-    INPUT_PARTICIPANT_MOVEMENTS_PAGE_END_DATE_TIME_SEARCH = '[Local] Inputting participant movements\' page end date time search',
-    SELECT_PARTICIPANT_MOVEMENTS_PAGE_VISIBILITY_SEARCH = '[Local] Selecting participant movements\' page visibility search',
+    UPDATE_PARTICIPANT_MOVEMENTS_PAGE_SEARCH_PARAMS = '[Local] Updating participant movements\' page search params',
 
     START_PARTICIPANT_LOADER = '[Local] Starting participant\'s loader',
     STOP_PARTICIPANT_LOADER = '[Local] Stopping participant\'s loader',
@@ -59,22 +56,10 @@ export class FetchParticipantsPage {
     ) {}
 }
 
-export class InputParticipantsPageTextSearched {
-    public static readonly type: ParticipantActionEnum = ParticipantActionEnum.INPUT_PARTICIPANTS_PAGE_TEXT_SEARCH
+export class UpdateParticipantsPageSearchParams {
+    public static readonly type: ParticipantActionEnum = ParticipantActionEnum.UPDATE_PARTICIPANTS_PAGE_SEARCH_PARAMS
 
-    public constructor (public readonly textSearched: string | undefined) {}
-}
-
-export class SelectParticipantsPageStatusSearched {
-    public static readonly type: ParticipantActionEnum = ParticipantActionEnum.SELECT_PARTICIPANTS_PAGE_STATUS_SEARCH
-
-    public constructor (public readonly statusSearched: string | undefined) {}
-}
-
-export class SelectParticipantsPageVisibilitySearched {
-    public static readonly type: ParticipantActionEnum = ParticipantActionEnum.SELECT_PARTICIPANTS_PAGE_VISIBILITY_SEARCH
-
-    public constructor (public readonly visibilitySearched: boolean | undefined) {}
+    public constructor (public readonly params: ParticipantPageParamsModel) {}
 }
 
 export class StartParticipantMovementsPageLoader {
@@ -106,28 +91,10 @@ export class FetchParticipantMovementsContents {
     ) {}
 }
 
-export class SelectParticipantMovementsPageTypeSearched {
-    public static readonly type: ParticipantActionEnum = ParticipantActionEnum.INPUT_PARTICIPANT_MOVEMENTS_PAGE_TYPE_SEARCH
+export class UpdateParticipantMovementsPageSearchParams {
+    public static readonly type: ParticipantActionEnum = ParticipantActionEnum.UPDATE_PARTICIPANT_MOVEMENTS_PAGE_SEARCH_PARAMS
 
-    public constructor (public readonly typeSearched: string | undefined) {}
-}
-
-export class InputParticipantMovementsPageStartDateTimeSearched {
-    public static readonly type: ParticipantActionEnum = ParticipantActionEnum.INPUT_PARTICIPANT_MOVEMENTS_PAGE_START_DATE_TIME_SEARCH
-
-    public constructor (public readonly startDateTimeSearched: Date | undefined) {}
-}
-
-export class InputParticipantMovementsPageEndDateTimeSearched {
-    public static readonly type: ParticipantActionEnum = ParticipantActionEnum.INPUT_PARTICIPANT_MOVEMENTS_PAGE_END_DATE_TIME_SEARCH
-
-    public constructor (public readonly endDateTimeSearched: Date | undefined) {}
-}
-
-export class SelectParticipantMovementsPageVisibilitySearched {
-    public static readonly type: ParticipantActionEnum = ParticipantActionEnum.SELECT_PARTICIPANT_MOVEMENTS_PAGE_VISIBILITY_SEARCH
-
-    public constructor (public readonly visibilitySearched: boolean | undefined) {}
+    public constructor (public readonly params: MovementPageParamsModel) {}
 }
 
 export class StartParticipantLoader {

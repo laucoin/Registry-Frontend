@@ -14,15 +14,14 @@ import {
     FetchUser,
     FetchUsersPage,
     ImpersonateUser,
-    InputUsersPageTextSearched,
     ResetUser,
-    SelectUsersPageVisibilitySearched,
     StartUserLoader,
     StartUsersPageLoader,
     StopUserLoader,
     StopUsersPageLoader,
     UnblockUser,
     UpdateUserRole,
+    UpdateUsersPageSearchParams,
 } from './user.action'
 import { UserService } from './user.service'
 import { UserFacade } from './user.facade'
@@ -39,6 +38,7 @@ const defaultUserState: UserStateModel = {
     users: {
         element: undefined,
         params: {
+            resetSearch: false,
             textSearched: undefined,
             visibilitySearched: undefined,
         },
@@ -102,6 +102,11 @@ export class UserState extends GenericElementState<UserStateModel> {
     }
 
     @Selector()
+    public static usersPageResetSearch (state: UserStateModel): boolean {
+        return state.users.params.resetSearch
+    }
+
+    @Selector()
     public static usersPageTextSearchedParam (state: UserStateModel): string | undefined {
         return state.users.params.textSearched
     }
@@ -159,39 +164,24 @@ export class UserState extends GenericElementState<UserStateModel> {
         ctx.patchState( {
             users: {
                 ...ctx.getState().users,
+                params: {
+                    ...ctx.getState().users.params,
+                    resetSearch: false,
+                },
                 element: userPage,
             },
         } )
     }
 
-    @Action( InputUsersPageTextSearched )
+    @Action( UpdateUsersPageSearchParams )
     public inputUsersPageTextSearched (
         ctx: StateContext<UserStateModel>,
-        payload: InputUsersPageTextSearched,
+        payload: UpdateUsersPageSearchParams,
     ): void {
         ctx.patchState( {
             users: {
                 ...ctx.getState().users,
-                params: {
-                    ...ctx.getState().users.params,
-                    textSearched: payload.textSearched,
-                },
-            },
-        } )
-    }
-
-    @Action( SelectUsersPageVisibilitySearched )
-    public selectUsersPageVisibilitySearched (
-        ctx: StateContext<UserStateModel>,
-        payload: SelectUsersPageVisibilitySearched,
-    ): void {
-        ctx.patchState( {
-            users: {
-                ...ctx.getState().users,
-                params: {
-                    ...ctx.getState().users.params,
-                    visibilitySearched: payload.visibilitySearched,
-                },
+                params: payload.params,
             },
         } )
     }

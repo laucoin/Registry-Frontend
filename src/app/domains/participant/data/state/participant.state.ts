@@ -15,16 +15,9 @@ import {
     FetchParticipantMovementsPage,
     FetchParticipantPresencesStatus,
     FetchParticipantsPage,
-    InputParticipantMovementsPageEndDateTimeSearched,
-    InputParticipantMovementsPageStartDateTimeSearched,
-    InputParticipantsPageTextSearched,
     ResetParticipant,
     SearchGroups,
     SearchUsers,
-    SelectParticipantMovementsPageTypeSearched,
-    SelectParticipantMovementsPageVisibilitySearched,
-    SelectParticipantsPageStatusSearched,
-    SelectParticipantsPageVisibilitySearched,
     StartParticipantLoader,
     StartParticipantMovementsPageLoader,
     StartParticipantsPageLoader,
@@ -32,6 +25,8 @@ import {
     StopParticipantMovementsPageLoader,
     StopParticipantsPageLoader,
     UpdateParticipant,
+    UpdateParticipantMovementsPageSearchParams,
+    UpdateParticipantsPageSearchParams,
 } from './participant.action'
 import { ParticipantService } from './participant.service'
 import { ParticipantFacade } from './participant.facade'
@@ -60,6 +55,7 @@ const defaultParticipantState: ParticipantStateModel = {
     participants: {
         element: undefined,
         params: {
+            resetSearch: false,
             textSearched: undefined,
             visibilitySearched: undefined,
             statusSearched: undefined,
@@ -71,6 +67,7 @@ const defaultParticipantState: ParticipantStateModel = {
     movements: {
         element: undefined,
         params: {
+            resetSearch: false,
             visibilitySearched: undefined,
             typeSearched: undefined,
             startDateTimeSearched: undefined,
@@ -135,6 +132,11 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
     }
 
     @Selector()
+    public static participantsPageResetSearch (state: ParticipantStateModel): boolean {
+        return state.participants.params.resetSearch
+    }
+
+    @Selector()
     public static participantsPageTextSearchedParam (state: ParticipantStateModel): string | undefined {
         return state.participants.params.textSearched
     }
@@ -170,7 +172,12 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
     }
 
     @Selector()
-    public static participantMovementsPageMovementTypeSearchedParam (state: ParticipantStateModel): string | undefined {
+    public static participantMovementsPageResetSearch (state: ParticipantStateModel): boolean {
+        return state.movements.params.resetSearch
+    }
+
+    @Selector()
+    public static participantMovementsPageTypeSearchedParam (state: ParticipantStateModel): string | undefined {
         return state.movements.params.typeSearched
     }
 
@@ -283,55 +290,24 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
         ctx.patchState( {
             participants: {
                 ...ctx.getState().participants,
+                params: {
+                    ...ctx.getState().participants.params,
+                    resetSearch: false,
+                },
                 element: participantPage,
             },
         } )
     }
 
-    @Action( InputParticipantsPageTextSearched )
-    public inputParticipantsPageTextSearched (
+    @Action( UpdateParticipantsPageSearchParams )
+    public updateParticipantsPageSearchParams (
         ctx: StateContext<ParticipantStateModel>,
-        payload: InputParticipantsPageTextSearched,
+        payload: UpdateParticipantsPageSearchParams,
     ): void {
         ctx.patchState( {
             participants: {
                 ...ctx.getState().participants,
-                params: {
-                    ...ctx.getState().participants.params,
-                    textSearched: payload.textSearched,
-                },
-            },
-        } )
-    }
-
-    @Action( SelectParticipantsPageStatusSearched )
-    public selectParticipantsPageStatusSearched (
-        ctx: StateContext<ParticipantStateModel>,
-        payload: SelectParticipantsPageStatusSearched,
-    ): void {
-        ctx.patchState( {
-            participants: {
-                ...ctx.getState().participants,
-                params: {
-                    ...ctx.getState().participants.params,
-                    statusSearched: payload.statusSearched,
-                },
-            },
-        } )
-    }
-
-    @Action( SelectParticipantsPageVisibilitySearched )
-    public selectParticipantsPageVisibility (
-        ctx: StateContext<ParticipantStateModel>,
-        payload: SelectParticipantsPageVisibilitySearched,
-    ): void {
-        ctx.patchState( {
-            participants: {
-                ...ctx.getState().participants,
-                params: {
-                    ...ctx.getState().participants.params,
-                    visibilitySearched: payload.visibilitySearched,
-                },
+                params: payload.params,
             },
         } )
     }
@@ -381,6 +357,10 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
         ctx.patchState( {
             movements: {
                 ...ctx.getState().movements,
+                params: {
+                    ...ctx.getState().movements.params,
+                    resetSearch: false,
+                },
                 element: movementsPage,
             },
         } )
@@ -428,66 +408,15 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
         } )
     }
 
-    @Action( SelectParticipantMovementsPageTypeSearched )
-    public selectParticipantMovementsPageTypeSearched (
+    @Action( UpdateParticipantMovementsPageSearchParams )
+    public updateParticipantMovementsPageSearchParams (
         ctx: StateContext<ParticipantStateModel>,
-        payload: SelectParticipantMovementsPageTypeSearched,
+        payload: UpdateParticipantMovementsPageSearchParams,
     ): void {
         ctx.patchState( {
             movements: {
                 ...ctx.getState().movements,
-                params: {
-                    ...ctx.getState().movements.params,
-                    typeSearched: payload.typeSearched,
-                },
-            },
-        } )
-    }
-
-    @Action( InputParticipantMovementsPageStartDateTimeSearched )
-    public inputParticipantMovementsPageStartDateTimeSearched (
-        ctx: StateContext<ParticipantStateModel>,
-        payload: InputParticipantMovementsPageStartDateTimeSearched,
-    ): void {
-        ctx.patchState( {
-            movements: {
-                ...ctx.getState().movements,
-                params: {
-                    ...ctx.getState().movements.params,
-                    startDateTimeSearched: payload.startDateTimeSearched?.toISOString(),
-                },
-            },
-        } )
-    }
-
-    @Action( InputParticipantMovementsPageEndDateTimeSearched )
-    public inputParticipantMovementsPageEndDateTimeSearched (
-        ctx: StateContext<ParticipantStateModel>,
-        payload: InputParticipantMovementsPageEndDateTimeSearched,
-    ): void {
-        ctx.patchState( {
-            movements: {
-                ...ctx.getState().movements,
-                params: {
-                    ...ctx.getState().movements.params,
-                    endDateTimeSearched: payload.endDateTimeSearched?.toISOString(),
-                },
-            },
-        } )
-    }
-
-    @Action( SelectParticipantMovementsPageVisibilitySearched )
-    public selectParticipantMovementsPageVisibilitySearched (
-        ctx: StateContext<ParticipantStateModel>,
-        payload: SelectParticipantMovementsPageVisibilitySearched,
-    ): void {
-        ctx.patchState( {
-            movements: {
-                ...ctx.getState().movements,
-                params: {
-                    ...ctx.getState().movements.params,
-                    visibilitySearched: payload.visibilitySearched,
-                },
+                params: payload.params,
             },
         } )
     }

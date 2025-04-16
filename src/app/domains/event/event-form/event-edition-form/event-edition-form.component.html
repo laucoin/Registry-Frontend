@@ -13,7 +13,7 @@
                                   translationPrefix='events.form.error.name' />
         </div>
         <div class='d-flex flex-wrap'>
-            <div class='begin-date-time field'>
+            <div class='left-field field'>
                 <label for='begin-date-time'>{{ 'events.form.begin-datetime' | translate }}</label>
                 <app-date-time-field [formControl]='beginDateTime'
                                      [invalid]='FormUtil.invalid(beginDateTime)'
@@ -28,7 +28,7 @@
                                       [invalid]='FormUtil.invalid(beginDateTime)'
                                       translationPrefix='events.form.error.begin-datetime' />
             </div>
-            <div class='end-date-time field'>
+            <div class='right-field field'>
                 <label for='end-date-time'>{{ 'events.form.end-datetime' | translate }}</label>
                 <app-date-time-field [formControl]='endDateTime'
                                      [invalid]='FormUtil.invalid(endDateTime)'
@@ -50,28 +50,39 @@
     </p-card>
     @if (facade.eventOptionsMetadata()) {
         <p-divider />
-        <p-card [formGroup]='optionsForm'
-                [header]='"events.form.subtitle.option" | pluralTranslation: facade.eventOptionsMetadata() | translate'>
-            @for (option of facade.eventOptionsMetadata(); track option.value) {
-                @let control = getOptionControl(option.value);
-                <div class='field'>
-                    <div class='switch-field'>
-                        <label [for]='option.value'>
-                            <i [class]='option.value | optionIcon'></i>
-                            {{ option.ask }}
-                            <b> ({{ option.label }})</b>
-                        </label>
-                        <p-toggle-switch [formControl]='control'
-                                         id='ticketing' />
+        <p-card [header]='"events.form.subtitle.option" | pluralTranslation: facade.eventOptionsMetadata() | translate'>
+            <div class='switch-field select-all-field'>
+                <label for='select-all'>{{ 'events.options.select-all' | translate }}</label>
+                <p-checkbox [binary]='true'
+                            (onChange)='selectAll($event)'
+                            [(ngModel)]='allSelected'
+                            [indeterminate]='allSelected === undefined'
+                            inputId='select-all' />
+            </div>
+            <p-divider />
+            <div [formGroup]='optionsForm'>
+                @for (option of facade.eventOptionsMetadata(); track option.value) {
+                    @let control = getOptionControl(option.value);
+                    <div class='field'>
+                        <div class='switch-field option-field'>
+                            <label [for]='option.value'>
+                                <i [class]='option.value | optionIcon'></i>
+                                {{ option.ask }}
+                                <b> ({{ option.label }})</b>
+                            </label>
+                            <p-checkbox [formControl]='control'
+                                        [binary]='true'
+                                        [inputId]='option.value' />
+                        </div>
+                        <app-form-field-error [errors]='control.errors'
+                                              [invalid]='FormUtil.invalid(control)'
+                                              translationPrefix='events.form.error.options' />
                     </div>
-                    <app-form-field-error [errors]='control.errors'
-                                          [invalid]='FormUtil.invalid(control)'
-                                          translationPrefix='events.form.error.options' />
-                </div>
-                @if (!$last) {
-                    <p-divider />
+                    @if (!$last) {
+                        <p-divider />
+                    }
                 }
-            }
+            </div>
             @if (optionsForm.hasError('preRequiredOptions')) {
                 <p-message severity='error'
                            variant='simple'>{{

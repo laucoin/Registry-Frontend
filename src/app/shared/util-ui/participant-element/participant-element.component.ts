@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input, InputSignal, Signal } from '@angular/core'
+import {
+    ChangeDetectionStrategy,
+    Component,
+    computed,
+    inject,
+    input,
+    InputSignal,
+    OnDestroy,
+    Signal,
+} from '@angular/core'
 import { ParticipantModel } from '../../util-model/model/participant.model'
 import { ParticipantActionEnum } from '../../../domains/participant/data/state/participant.action'
 import { ActionModel } from '../../util-model/model/action.model'
@@ -22,6 +31,8 @@ import { VisibilityNamePipe } from '../../util-tool/pipe/visibility.pipe'
 import { CustomDateFormatPipe } from '../../util-tool/pipe/custom-date-format.pipe'
 import { IntervalFormatPipe } from '../../util-tool/pipe/interval-format.pipe'
 import { GenericUtil } from '../../util-tool/util/generic.util'
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component'
+import { tap } from 'rxjs'
 
 @Component( {
     selector: 'app-participant-element',
@@ -39,14 +50,15 @@ import { GenericUtil } from '../../util-tool/util/generic.util'
         VisibilityNamePipe,
         CustomDateFormatPipe,
         IntervalFormatPipe,
+        ConfirmationDialogComponent,
     ],
     providers: [ GroupFacade ],
     templateUrl: './participant-element.component.html',
     styleUrl: './participant-element.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
 } )
-export class ParticipantElementComponent extends GenericElementComponent<ParticipantModel, ParticipantActionEnum | GroupActionEnum> {
-    private readonly facade: ParticipantFacade = inject( ParticipantFacade )
+export class ParticipantElementComponent extends GenericElementComponent<ParticipantModel, ParticipantActionEnum | GroupActionEnum> implements OnDestroy {
+    protected readonly facade: ParticipantFacade = inject( ParticipantFacade )
     private readonly groupFacade: GroupFacade = inject( GroupFacade )
 
     protected layerOpened: boolean = false
@@ -87,6 +99,10 @@ export class ParticipantElementComponent extends GenericElementComponent<Partici
         this.additionalTotal = computed( (): number => this.participant().groups.length - 1 )
     }
 
+    public ngOnDestroy (): void {
+        this.subscriptions.unsubscribe()
+    }
+
     protected isActionVisible (
         element: ParticipantModel,
         action: ActionModel<ParticipantActionEnum | GroupActionEnum>,
@@ -122,20 +138,34 @@ export class ParticipantElementComponent extends GenericElementComponent<Partici
                 ).catch( console.error )
                 break
             case GroupActionEnum.REMOVE_MEMBER_FROM_GROUP:
-                this.groupFacade.removeMemberFromGroup(
-                    this.groupIdToRemove()!,
-                    this.participant(),
-                    this.contextEventId(),
+                this.subscriptions.add(
+                    this.groupFacade.removeMemberFromGroup(
+                        this.groupIdToRemove()!,
+                        this.participant(),
+                        this.contextEventId(),
+                    ).pipe( tap( (): void => this.action.set( undefined ) ) ).subscribe(),
                 )
                 break
             case ParticipantActionEnum.DISABLE_PARTICIPANT:
-                this.facade.disableParticipant( this.participant().id, this.contextEventId() )
+                this.subscriptions.add(
+                    this.facade.disableParticipant( this.participant().id ).pipe(
+                        tap( (): void => this.action.set( undefined ) ),
+                    ).subscribe(),
+                )
                 break
             case ParticipantActionEnum.ENABLE_PARTICIPANT:
-                this.facade.enableParticipant( this.participant().id, this.contextEventId() )
+                this.subscriptions.add(
+                    this.facade.enableParticipant( this.participant().id ).pipe(
+                        tap( (): void => this.action.set( undefined ) ),
+                    ).subscribe(),
+                )
                 break
             case ParticipantActionEnum.DELETE_PARTICIPANT:
-                this.facade.deleteParticipant( this.participant(), this.contextEventId() )
+                this.subscriptions.add(
+                    this.facade.deleteParticipant( this.participant() ).pipe(
+                        tap( (): void => this.action.set( undefined ) ),
+                    ).subscribe(),
+                )
                 break
             default:
                 console.warn( this.translateService.instant( 'global.messages.invalid-action' ) )

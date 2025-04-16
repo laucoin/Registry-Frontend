@@ -15,6 +15,8 @@ import { VehicleModel } from '../../../../shared/util-model/model/vehicle.model'
 import { MovementContentModel } from '../../../../shared/util-model/model/movement-content.model'
 import { PairModel } from '../../../../shared/util-model/model/pair.model'
 import { GenericUtil } from '../../../../shared/util-tool/util/generic.util'
+import { StringUtil } from '../../../../shared/util-tool/util/string.util'
+import { MovementReasonModel } from '../model/movement-reason.model'
 
 @Injectable( {
     providedIn: 'root',
@@ -57,6 +59,22 @@ export class MovementService extends GenericEventService {
 
     public findMovementById (eventId: string | undefined, id: string): Observable<MovementModel> {
         return this.http.get<MovementModel>( `${this.buildRequestBaseUrl( eventId )}/${id}` )
+    }
+
+    public searchReasonsAndActivities (
+        eventId: string | undefined,
+        textSearched: string | undefined,
+        typeSearched: string | undefined,
+    ): Observable<MovementReasonModel[]> {
+        let params: HttpParams = new HttpParams()
+        if (GenericUtil.nonNull( textSearched ) && StringUtil.isNotBlank( textSearched )) params = params.set(
+            'textSearched',
+            textSearched!,
+        )
+        if (GenericUtil.nonNull( typeSearched )) params = params.set( 'typeSearched', typeSearched! )
+        return this.http.get<MovementReasonModel[]>(
+            `${this.buildRequestBaseUrl( eventId )}/search/reasons?${params.toString()}`,
+        )
     }
 
     public searchParticipantsAndGroups (

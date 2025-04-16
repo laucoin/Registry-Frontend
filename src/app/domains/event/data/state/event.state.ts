@@ -11,15 +11,13 @@ import {
     FetchEvent,
     FetchEventOptions,
     FetchEventsPage,
-    InputEventsPageDateTimeSearched,
-    InputEventsPageTextSearched,
     ResetEvent,
-    SelectEventsPageVisibilitySearched,
     StartEventLoader,
     StartEventsPageLoader,
     StopEventLoader,
     StopEventsPageLoader,
     UpdateEvent,
+    UpdateEventsPageSearchParams,
 } from './event.action'
 import { EventService } from './event.service'
 import { EventFacade } from './event.facade'
@@ -41,6 +39,7 @@ const defaultEventState: EventStateModel = {
     events: {
         element: undefined,
         params: {
+            resetSearch: false,
             textSearched: undefined,
             visibilitySearched: undefined,
             dateTimeSearched: undefined,
@@ -102,6 +101,11 @@ export class EventState extends GenericElementState<EventStateModel> {
     @Selector()
     public static eventsPageSilentLoading (state: EventStateModel): boolean {
         return state.events.silentLoading
+    }
+
+    @Selector()
+    public static eventsPageResetSearch (state: EventStateModel): boolean {
+        return state.events.params.resetSearch
     }
 
     @Selector()
@@ -183,55 +187,24 @@ export class EventState extends GenericElementState<EventStateModel> {
         ctx.patchState( {
             events: {
                 ...ctx.getState().events,
+                params: {
+                    ...ctx.getState().events.params,
+                    resetSearch: false,
+                },
                 element: eventPage,
             },
         } )
     }
 
-    @Action( InputEventsPageTextSearched )
-    public inputEventsPageTextSearched (
+    @Action( UpdateEventsPageSearchParams )
+    public updateEventsPageSearchParams (
         ctx: StateContext<EventStateModel>,
-        payload: InputEventsPageTextSearched,
+        payload: UpdateEventsPageSearchParams,
     ): void {
         ctx.patchState( {
             events: {
                 ...ctx.getState().events,
-                params: {
-                    ...ctx.getState().events.params,
-                    textSearched: payload.textSearched,
-                },
-            },
-        } )
-    }
-
-    @Action( InputEventsPageDateTimeSearched )
-    public inputEventsPageDateTimeSearched (
-        ctx: StateContext<EventStateModel>,
-        payload: InputEventsPageDateTimeSearched,
-    ): void {
-        ctx.patchState( {
-            events: {
-                ...ctx.getState().events,
-                params: {
-                    ...ctx.getState().events.params,
-                    dateTimeSearched: payload.dateTime?.toISOString(),
-                },
-            },
-        } )
-    }
-
-    @Action( SelectEventsPageVisibilitySearched )
-    public selectEventsPageVisibilitySearched (
-        ctx: StateContext<EventStateModel>,
-        payload: SelectEventsPageVisibilitySearched,
-    ): void {
-        ctx.patchState( {
-            events: {
-                ...ctx.getState().events,
-                params: {
-                    ...ctx.getState().events.params,
-                    visibilitySearched: payload.visibilitySearched,
-                },
+                params: payload.params,
             },
         } )
     }

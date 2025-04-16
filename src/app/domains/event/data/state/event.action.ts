@@ -1,5 +1,6 @@
 import { EventModel } from '../../../../shared/util-model/model/event.model'
 import { EventDto } from '../dto/event.dto'
+import { EventPageParamsModel } from '../model/event-page-params.model'
 
 export enum EventActionEnum {
     FETCH_EVENT_OPTIONS = '[Backend] Fetching event\'s options',
@@ -8,9 +9,7 @@ export enum EventActionEnum {
     STOP_EVENTS_PAGE_LOADER = '[Local] Stopping events\' page loader',
 
     FETCH_EVENTS_PAGE = '[Backend] Fetching events\' page',
-    INPUT_EVENTS_PAGE_TEXT_SEARCH = '[Local] Inputting events\' page text search',
-    INPUT_EVENTS_PAGE_DATE_TIME_SEARCH = '[Local] Inputting events\' page date time search',
-    SELECT_EVENTS_PAGE_VISIBILITY_SEARCH = '[Local] Selecting events\' page visibility search',
+    UPDATE_EVENTS_PAGE_SEARCH_PARAMS = '[Local] Updating events\' page search params',
 
     START_EVENT_LOADER = '[Local] Starting event loader',
     STOP_EVENT_LOADER = '[Local] Stopping event loader',
@@ -46,22 +45,10 @@ export class FetchEventsPage {
     ) {}
 }
 
-export class InputEventsPageTextSearched {
-    public static readonly type: EventActionEnum = EventActionEnum.INPUT_EVENTS_PAGE_TEXT_SEARCH
+export class UpdateEventsPageSearchParams {
+    public static readonly type: EventActionEnum = EventActionEnum.UPDATE_EVENTS_PAGE_SEARCH_PARAMS
 
-    public constructor (public readonly textSearched: string | undefined) {}
-}
-
-export class InputEventsPageDateTimeSearched {
-    public static readonly type: EventActionEnum = EventActionEnum.INPUT_EVENTS_PAGE_DATE_TIME_SEARCH
-
-    public constructor (public readonly dateTime: Date | undefined) {}
-}
-
-export class SelectEventsPageVisibilitySearched {
-    public static readonly type: EventActionEnum = EventActionEnum.SELECT_EVENTS_PAGE_VISIBILITY_SEARCH
-
-    public constructor (public readonly visibilitySearched: boolean | undefined) {}
+    public constructor (public readonly params: EventPageParamsModel) {}
 }
 
 export class StartEventLoader {

@@ -7,8 +7,16 @@ h4 {
 }
 
 .switch-field {
-    align-items:     center;
-    display:         flex;
-    flex-direction:  row;
+    display:        flex;
+    align-items:    center;
+    flex-direction: row;
+}
+
+.select-all-field {
+    justify-content: right;
+    gap:             1rem;
+}
+
+.option-field {
     justify-content: space-between;
 }

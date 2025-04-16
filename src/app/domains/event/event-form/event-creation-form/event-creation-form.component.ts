@@ -1,5 +1,5 @@
 import { Component, OnDestroy } from '@angular/core'
-import { ReactiveFormsModule } from '@angular/forms'
+import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { StepperModule } from 'primeng/stepper'
 import { TranslateModule } from '@ngx-translate/core'
 import { FormFieldErrorComponent } from '../../../../shared/util-ui/form-field-error/form-field-error.component'
@@ -9,13 +9,13 @@ import { GenericEventFormComponent } from '../generic-event-form.component'
 import { FormComponent } from '../../../../shared/util-ui/form/form.component'
 import { RegistryRequiredDirective } from '../../../../shared/util-tool/directive/registry-required.directive'
 import { Button } from 'primeng/button'
-import { ToggleSwitch } from 'primeng/toggleswitch'
 import { Card } from 'primeng/card'
 import { Message } from 'primeng/message'
 import { EventOptionIconPipe } from '../../../../shared/util-tool/pipe/event-option-icon.pipe'
 import { PluralTranslationPipe } from '../../../../shared/util-tool/pipe/plural-translation.pipe'
 import { DateFormatPipe } from '../../../../shared/util-tool/pipe/date-format.pipe'
 import { DateTimeFieldComponent } from '../../../../shared/util-ui/date-time-field/date-time-field.component'
+import { Checkbox } from 'primeng/checkbox'
 
 @Component( {
     selector: 'app-event-creation-form',
@@ -30,13 +30,14 @@ import { DateTimeFieldComponent } from '../../../../shared/util-ui/date-time-fie
         FormComponent,
         RegistryRequiredDirective,
         Button,
-        ToggleSwitch,
         Card,
         Message,
         EventOptionIconPipe,
         PluralTranslationPipe,
         DateFormatPipe,
         DateTimeFieldComponent,
+        Checkbox,
+        FormsModule,
     ],
     templateUrl: './event-creation-form.component.html',
     styleUrl: './event-creation-form.component.scss',

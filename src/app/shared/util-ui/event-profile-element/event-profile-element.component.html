@@ -3,7 +3,7 @@
     <app-element-card [element]='profile()'
                       [actionMenuVisible]='actionMenuVisible()'
                       [actions]='actions()'
-                      (action)='handleAction($event)'
+                      (action)='showDialogIfNeeded($event)'
                       [icon]='registryFacade.currentUser()!.preferences.selectedProfile?.id === profile().id ? "pi pi-verified" : "pi pi-user"'>
         <div class='element-card'>
             <div class='profile-info d-flex flex-column justify-content-center'>
@@ -66,4 +66,10 @@
             }
         </div>
     </app-element-card>
+
+    <app-confirmation-dialog
+            [loading]='facade.eventProfileLoading()'
+            [element]='profile()'
+            [action]='action()'
+            (handleAction)='handleAction($event)' />
 }

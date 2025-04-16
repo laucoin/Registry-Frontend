@@ -1,7 +1,7 @@
 <app-list (updateRequired)='loadPage($event, contextEventId())'
           [elementPage]='facade.groupsPage()'
           [error]='facade.groupsPageError()'
-          [loading]='facade.groupLoading()'>
+          [loading]='facade.groupsPageLoading()'>
     <ng-template appTemplate='search' [formGroup]='form' let-pageEvent>
         <div class='d-grid search-line g-2'>
             <div class='field'>
@@ -29,7 +29,7 @@
                 <label for='presence-search-field'>{{ 'groups.search-and-filter.presence' | translate }}</label>
                 <p-select inputId='presence-search-field'
                           fluid
-                          [options]='facade.presencesMetadata()'
+                          [options]='facade.availabilitiesMetadata()'
                           optionLabel='label'
                           optionValue='value'
                           (onChange)='loadPage(pageEvent, contextEventId())'
@@ -52,7 +52,7 @@
                       [outlined]='true'
                       [rounded]='true'
                       icon='pi pi-search'
-                      [loading]='facade.groupLoading() || facade.groupsPageSilentLoading()' />
+                      [loading]='facade.groupsPageLoading() || facade.groupsPageSilentLoading()' />
         </div>
     </ng-template>
     <ng-template appTemplate='element' let-layout='layout' let-group>

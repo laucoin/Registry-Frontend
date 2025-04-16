@@ -1,6 +1,8 @@
 import { GroupDto } from '../dto/group.dto'
 import { GroupModel } from '../../../../shared/util-model/model/group.model'
 import { ParticipantModel } from '../../../../shared/util-model/model/participant.model'
+import { ParticipantPageParamsModel } from '../../../participant/data/model/participant-page-params.model'
+import { GroupPageParamsModel } from '../model/group-page-params.model'
 
 export enum GroupActionEnum {
     START_GROUPS_PAGE_LOADER = '[Local] Starting groups\' page loader',
@@ -8,18 +10,13 @@ export enum GroupActionEnum {
 
     FETCH_GROUPS_PAGE = '[Backend] Fetching groups\' page',
     FETCH_GROUPS_MEMBERS = '[Backend] Fetching groups\' members',
-    INPUT_GROUPS_PAGE_TEXT_SEARCH = '[Local] Inputting groups\' page text search',
-    INPUT_GROUPS_PAGE_DATE_TIME_SEARCH = '[Local] Inputting groups\' page date time search',
-    SELECT_GROUPS_PAGE_PRESENCE_SEARCH = '[Local] Selecting groups\' page presence search',
-    SELECT_GROUPS_PAGE_VISIBILITY_SEARCH = '[Local] Selecting groups\' page visibility search',
+    UPDATE_GROUPS_PAGE_SEARCH_PARAMS = '[Local] Updating groups\' page search params',
 
     START_GROUP_MEMBERS_PAGE_LOADER = '[Local] Starting group members\' page loader',
     STOP_GROUP_MEMBERS_PAGE_LOADER = '[Local] Stopping group members\' page loader',
 
     FETCH_GROUP_MEMBERS_PAGE = '[Backend] Fetching group members\' page',
-    INPUT_GROUP_MEMBERS_PAGE_TEXT_SEARCH = '[Local] Inputting group members\' page text search',
-    SELECT_GROUP_MEMBERS_PAGE_STATUS_SEARCH = '[Local] Selecting group members\' page status search',
-    SELECT_GROUP_MEMBERS_PAGE_VISIBILITY_SEARCH = '[Local] Selecting group members\' page visibility search',
+    UPDATE_GROUP_MEMBERS_PAGE_SEARCH_PARAMS = '[Local] Updating group members\' page search params',
 
     START_GROUP_LOADER = '[Local] Starting group loader',
     STOP_GROUP_LOADER = '[Local] Stopping group loader',
@@ -64,28 +61,10 @@ export class FetchGroupsMembers {
     ) {}
 }
 
-export class InputGroupsPageTextSearched {
-    public static readonly type: GroupActionEnum = GroupActionEnum.INPUT_GROUPS_PAGE_TEXT_SEARCH
+export class UpdateGroupsPageSearchParams {
+    public static readonly type: GroupActionEnum = GroupActionEnum.UPDATE_GROUPS_PAGE_SEARCH_PARAMS
 
-    public constructor (public readonly searched: string | undefined) {}
-}
-
-export class InputGroupsPageDateTimeSearched {
-    public static readonly type: GroupActionEnum = GroupActionEnum.INPUT_GROUPS_PAGE_DATE_TIME_SEARCH
-
-    public constructor (public readonly dateTimeSearched: Date | undefined) {}
-}
-
-export class SelectGroupsPagePresenceSearched {
-    public static readonly type: GroupActionEnum = GroupActionEnum.SELECT_GROUPS_PAGE_PRESENCE_SEARCH
-
-    public constructor (public readonly presenceSearched: boolean | undefined) {}
-}
-
-export class SelectGroupsPageVisibilitySearched {
-    public static readonly type: GroupActionEnum = GroupActionEnum.SELECT_GROUPS_PAGE_VISIBILITY_SEARCH
-
-    public constructor (public readonly visibilitySearched: boolean | undefined) {}
+    public constructor (public readonly params: GroupPageParamsModel) {}
 }
 
 export class StartGroupMembersPageLoader {
@@ -108,22 +87,10 @@ export class FetchGroupMembersPage {
     ) {}
 }
 
-export class InputGroupMembersPageTextSearched {
-    public static readonly type: GroupActionEnum = GroupActionEnum.INPUT_GROUP_MEMBERS_PAGE_TEXT_SEARCH
+export class UpdateGroupMembersPageSearchParams {
+    public static readonly type: GroupActionEnum = GroupActionEnum.UPDATE_GROUP_MEMBERS_PAGE_SEARCH_PARAMS
 
-    public constructor (public readonly textSearched: string | undefined) {}
-}
-
-export class SelectGroupMembersPageStatusSearched {
-    public static readonly type: GroupActionEnum = GroupActionEnum.SELECT_GROUP_MEMBERS_PAGE_STATUS_SEARCH
-
-    public constructor (public readonly statusSearched: string | undefined) {}
-}
-
-export class SelectGroupMembersPageVisibilitySearched {
-    public static readonly type: GroupActionEnum = GroupActionEnum.SELECT_GROUP_MEMBERS_PAGE_VISIBILITY_SEARCH
-
-    public constructor (public readonly visibilitySearched: boolean | undefined) {}
+    public constructor (public readonly params: ParticipantPageParamsModel) {}
 }
 
 export class StartGroupLoader {

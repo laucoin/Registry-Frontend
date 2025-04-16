@@ -1,7 +1,7 @@
 <app-element-card [element]='group()'
                   [actionMenuVisible]='actionMenuVisible()'
                   [actions]='actions()'
-                  (action)='handleAction($event)'
+                  (action)='showDialogIfNeeded($event)'
                   icon='pi pi-users'>
     <div class='element-card'>
         <div class='group-info'>
@@ -136,3 +136,9 @@
         </p-tabpanels>
     </p-tabs>
 </app-layer>
+
+<app-confirmation-dialog
+        [loading]='facade.groupLoading()'
+        [element]='group()'
+        [action]='action()'
+        (handleAction)='handleAction($event)' />

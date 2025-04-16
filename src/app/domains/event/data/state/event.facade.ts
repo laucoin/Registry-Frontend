@@ -12,18 +12,16 @@ import {
     FetchEvent,
     FetchEventOptions,
     FetchEventsPage,
-    InputEventsPageDateTimeSearched,
-    InputEventsPageTextSearched,
     ResetEvent,
-    SelectEventsPageVisibilitySearched,
     StartEventLoader,
     StartEventsPageLoader,
     StopEventLoader,
     StopEventsPageLoader,
     UpdateEvent,
+    UpdateEventsPageSearchParams,
 } from './event.action'
 import { EventDto } from '../dto/event.dto'
-import { ofActionSuccessful } from '@ngxs/store'
+import { ActionCompletion, ofActionCompleted, ofActionSuccessful } from '@ngxs/store'
 import { EventModel } from '../../../../shared/util-model/model/event.model'
 import { EventOptionModel } from '../model/event-option.model'
 import { DateUtil } from '../../../../shared/util-tool/util/date.util'
@@ -44,6 +42,10 @@ export class EventFacade extends GenericFacade {
 
     public get eventsPageError (): Signal<ToastMessageOptions | undefined> {
         return this.ngStore.selectSignal( EventState.eventsPageError )
+    }
+
+    private get eventsPageResetSearch (): Signal<boolean> {
+        return this.ngStore.selectSignal( EventState.eventsPageResetSearch )
     }
 
     public get eventsPageTextSearchedParam (): Signal<string | undefined> {
@@ -104,7 +106,8 @@ export class EventFacade extends GenericFacade {
         pageSize: number | undefined,
         force: boolean,
     ): void {
-        this.ngStore.dispatch( new FetchEventsPage( pageNumber, pageSize, force ) )
+        const index: number | undefined = this.eventsPageResetSearch() ? 0 : pageNumber
+        this.ngStore.dispatch( new FetchEventsPage( index, pageSize, force ) )
     }
 
     public inputPageSearchParameters (
@@ -112,16 +115,17 @@ export class EventFacade extends GenericFacade {
         dateTimeSearched: Date | undefined,
         visibilitySearched: boolean | undefined,
     ): void {
-        if (textSearched !== this.eventsPageTextSearchedParam()) {
-            this.ngStore.dispatch( new InputEventsPageTextSearched( textSearched ) )
-        }
+        const resetSearch: boolean = this.eventsPageTextSearchedParam() != textSearched
+                                     || this.eventsPageDateTimeSearchedParam() != dateTimeSearched?.toISOString()
+                                     || this.eventsPageVisibilitySearchedParam() != visibilitySearched
 
-        if (dateTimeSearched !== this.eventsPageDateTimeSearchedParam()) {
-            this.ngStore.dispatch( new InputEventsPageDateTimeSearched( dateTimeSearched ) )
-        }
-
-        if (visibilitySearched !== this.eventsPageVisibilitySearchedParam()) {
-            this.ngStore.dispatch( new SelectEventsPageVisibilitySearched( visibilitySearched ) )
+        if (resetSearch) {
+            this.ngStore.dispatch( new UpdateEventsPageSearchParams( {
+                resetSearch: resetSearch,
+                visibilitySearched: visibilitySearched,
+                textSearched: textSearched,
+                dateTimeSearched: dateTimeSearched?.toISOString(),
+            } ) )
         }
     }
 
@@ -143,6 +147,7 @@ export class EventFacade extends GenericFacade {
 
     public createEvent (event: EventDto): Observable<CreateEvent> {
         this.ngStore.dispatch( new CreateEvent( event ) )
+
         return this.actions$.pipe( ofActionSuccessful( CreateEvent ) )
     }
 
@@ -151,18 +156,25 @@ export class EventFacade extends GenericFacade {
         event: EventDto,
     ): Observable<UpdateEvent> {
         this.ngStore.dispatch( new UpdateEvent( id, event ) )
+
         return this.actions$.pipe( ofActionSuccessful( UpdateEvent ) )
     }
 
-    public disableEvent (id: string): void {
+    public disableEvent (id: string): Observable<ActionCompletion<DisableEvent>> {
         this.ngStore.dispatch( new DisableEvent( id ) )
+
+        return this.actions$.pipe( ofActionCompleted( DisableEvent ) )
     }
 
-    public enableEvent (id: string): void {
+    public enableEvent (id: string): Observable<ActionCompletion<EnableEvent>> {
         this.ngStore.dispatch( new EnableEvent( id ) )
+
+        return this.actions$.pipe( ofActionCompleted( EnableEvent ) )
     }
 
-    public deleteEvent (element: EventModel): void {
+    public deleteEvent (element: EventModel): Observable<ActionCompletion<DeleteEvent>> {
         this.ngStore.dispatch( new DeleteEvent( element ) )
+
+        return this.actions$.pipe( ofActionCompleted( DeleteEvent ) )
     }
 }

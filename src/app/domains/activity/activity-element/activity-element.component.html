@@ -1,7 +1,7 @@
 <app-element-card [element]='activity()'
                   [actions]='actions()'
                   [actionMenuVisible]='actionMenuVisible()'
-                  (action)='handleAction($event)'
+                  (action)='showDialogIfNeeded($event)'
                   icon='pi pi-hammer'>
     <div class='element-card'>
         <div class='activity-info d-flex flex-column justify-content-center'>
@@ -51,3 +51,9 @@
         </div>
     }
 </app-element-card>
+
+<app-confirmation-dialog
+        [loading]='facade.activityLoading()'
+        [element]='activity()'
+        [action]='action()'
+        (handleAction)='handleAction($event)' />

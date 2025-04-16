@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input, InputSignal, Signal } from '@angular/core'
+import {
+    ChangeDetectionStrategy,
+    Component,
+    computed,
+    inject,
+    input,
+    InputSignal,
+    OnDestroy,
+    Signal,
+} from '@angular/core'
 import { EventProfileModel } from '../../util-model/model/event-profile.model'
 import { EventProfileActionEnum } from '../../util-model/enumeration/event-profile-action.enum'
 import { ChipModule } from 'primeng/chip'
@@ -20,6 +29,9 @@ import { DateUtil } from '../../util-tool/util/date.util'
 import { GenericElementComponent } from '../../util-tool/component/generic-element.component'
 import { IntervalFormatPipe } from '../../util-tool/pipe/interval-format.pipe'
 import { CustomDateFormatPipe } from '../../util-tool/pipe/custom-date-format.pipe'
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component'
+import { Observable, tap } from 'rxjs'
+import { ActionCompletion } from '@ngxs/store'
 
 @Component( {
     selector: 'app-event-profile-element',
@@ -36,14 +48,15 @@ import { CustomDateFormatPipe } from '../../util-tool/pipe/custom-date-format.pi
         SeverityTagComponent,
         IntervalFormatPipe,
         CustomDateFormatPipe,
+        ConfirmationDialogComponent,
     ],
     providers: [ ConfirmationService, EventProfileFacade ],
     templateUrl: './event-profile-element.component.html',
     styleUrl: './event-profile-element.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
 } )
-export class EventProfileElementComponent extends GenericElementComponent<EventProfileModel, EventProfileActionEnum> {
-    private readonly facade: EventProfileFacade = inject( EventProfileFacade )
+export class EventProfileElementComponent extends GenericElementComponent<EventProfileModel, EventProfileActionEnum> implements OnDestroy {
+    protected readonly facade: EventProfileFacade = inject( EventProfileFacade )
     private readonly confirmationService: ConfirmationService = inject( ConfirmationService )
 
     public readonly actionMenuVisible: InputSignal<boolean> = input( true )
@@ -65,6 +78,10 @@ export class EventProfileElementComponent extends GenericElementComponent<EventP
             this.profile(),
             AppConfig.config.profile.event.action,
         ) )
+    }
+
+    public ngOnDestroy (): void {
+        this.subscriptions.unsubscribe()
     }
 
     protected isActionVisible (element: EventProfileModel, action: ActionModel<EventProfileActionEnum>): boolean {
@@ -104,7 +121,11 @@ export class EventProfileElementComponent extends GenericElementComponent<EventP
     protected handleAction (action: EventProfileActionEnum): void {
         switch (action) {
             case EventProfileActionEnum.SELECT_EVENT_PROFILE:
-                this.registryFacade.selectUserEventProfile( this.profile() )
+                this.subscriptions.add(
+                    this.registryFacade.selectUserEventProfile( this.profile() ).pipe(
+                        tap( (): void => this.action.set( undefined ) ),
+                    ).subscribe(),
+                )
                 break
             case EventProfileActionEnum.UPDATE_EVENT_PROFILE:
                 this.router.navigateByUrl(
@@ -112,18 +133,31 @@ export class EventProfileElementComponent extends GenericElementComponent<EventP
                 ).catch( console.error )
                 break
             case EventProfileActionEnum.BLOCK_EVENT_PROFILE:
-                this.facade.blockEventProfile( this.profile() )
+                this.subscriptions.add(
+                    this.facade.blockEventProfile( this.profile() ).pipe(
+                        tap( (): void => this.action.set( undefined ) ),
+                    ).subscribe(),
+                )
                 break
             case EventProfileActionEnum.UNBLOCK_EVENT_PROFILE:
-                this.facade.unblockEventProfile( this.profile() )
+                this.subscriptions.add(
+                    this.facade.unblockEventProfile( this.profile() ).pipe(
+                        tap( (): void => this.action.set( undefined ) ),
+                    ).subscribe(),
+                )
                 break
-            case EventProfileActionEnum.DELETE_EVENT_PROFILE:
-                if (this.profile().user.id === this.registryFacade.currentUser()?.id) {
-                    this.registryFacade.deleteUserEventProfile( this.profile() )
-                } else {
-                    this.facade.deleteEventProfile( this.profile() )
-                }
+            case EventProfileActionEnum.DELETE_EVENT_PROFILE: {
+                const actionCompletion: Observable<ActionCompletion<unknown>> =
+                    this.profile().user.id === this.registryFacade.currentUser()?.id
+                    ? this.registryFacade.deleteUserEventProfile( this.profile() )
+                    : this.facade.deleteEventProfile( this.profile() )
+
+                this.subscriptions.add( actionCompletion.pipe(
+                        tap( (): void => this.action.set( undefined ) ),
+                    ).subscribe(),
+                )
                 break
+            }
             default:
                 console.warn( this.translateService.instant( 'global.messages.invalid-action' ) )
         }

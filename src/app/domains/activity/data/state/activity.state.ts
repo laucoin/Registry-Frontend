@@ -14,22 +14,16 @@ import {
     FetchActivity,
     FetchActivityMovementsContents,
     FetchActivityMovementsPage,
-    InputActivitiesPageDateTimeSearched,
-    InputActivitiesPageTextSearched,
-    InputActivityMovementsPageEndDateTimeSearched,
-    InputActivityMovementsPageStartDateTimeSearched,
     ResetActivity,
-    SelectActivitiesPageAvailabilitySearched,
-    SelectActivitiesPageVisibilitySearched,
-    SelectActivityMovementsPageTypeSearched,
-    SelectActivityMovementsPageVisibilitySearched,
     StartActivitiesPageLoader,
     StartActivityLoader,
     StartActivityMovementsPageLoader,
     StopActivitiesPageLoader,
     StopActivityLoader,
     StopActivityMovementsPageLoader,
+    UpdateActivitiesPageSearchParams,
     UpdateActivity,
+    UpdateActivityMovementsPageSearchParams,
 } from './activity.action'
 import { ActivityService } from './activity.service'
 import { ActivityFacade } from './activity.facade'
@@ -53,6 +47,7 @@ const defaultActivityState: ActivityStateModel = {
     activities: {
         element: undefined,
         params: {
+            resetSearch: false,
             textSearched: undefined,
             visibilitySearched: undefined,
             availabilitySearched: undefined,
@@ -65,6 +60,7 @@ const defaultActivityState: ActivityStateModel = {
     movements: {
         element: undefined,
         params: {
+            resetSearch: false,
             visibilitySearched: undefined,
             typeSearched: undefined,
             startDateTimeSearched: undefined,
@@ -126,6 +122,11 @@ export class ActivityState extends GenericEventElementState<ActivityStateModel> 
     }
 
     @Selector()
+    public static activitiesPageResetSearch (state: ActivityStateModel): boolean {
+        return state.activities.params.resetSearch
+    }
+
+    @Selector()
     public static activitiesPageTextSearchedParam (state: ActivityStateModel): string | undefined {
         return state.activities.params.textSearched
     }
@@ -166,7 +167,12 @@ export class ActivityState extends GenericEventElementState<ActivityStateModel> 
     }
 
     @Selector()
-    public static activityMovementsPageMovementTypeSearchedParam (state: ActivityStateModel): string | undefined {
+    public static activityMovementsPageResetSearch (state: ActivityStateModel): boolean {
+        return state.movements.params.resetSearch
+    }
+
+    @Selector()
+    public static activityMovementsPageTypeSearchedParam (state: ActivityStateModel): string | undefined {
         return state.movements.params.typeSearched
     }
 
@@ -247,71 +253,24 @@ export class ActivityState extends GenericEventElementState<ActivityStateModel> 
         ctx.patchState( {
             activities: {
                 ...ctx.getState().activities,
+                params: {
+                    ...ctx.getState().activities.params,
+                    resetSearch: false,
+                },
                 element: activityPage,
             },
         } )
     }
 
-    @Action( InputActivitiesPageTextSearched )
-    public inputActivitiesPageTextSearched (
+    @Action( UpdateActivitiesPageSearchParams )
+    public updateActivitiesPageSearchParams (
         ctx: StateContext<ActivityStateModel>,
-        payload: InputActivitiesPageTextSearched,
+        payload: UpdateActivitiesPageSearchParams,
     ): void {
         ctx.patchState( {
             activities: {
                 ...ctx.getState().activities,
-                params: {
-                    ...ctx.getState().activities.params,
-                    textSearched: payload.textSearched,
-                },
-            },
-        } )
-    }
-
-    @Action( InputActivitiesPageDateTimeSearched )
-    public inputActivitiesPageDateTimeSearched (
-        ctx: StateContext<ActivityStateModel>,
-        payload: InputActivitiesPageDateTimeSearched,
-    ): void {
-        ctx.patchState( {
-            activities: {
-                ...ctx.getState().activities,
-                params: {
-                    ...ctx.getState().activities.params,
-                    dateTimeSearched: payload.dateTimeSearched?.toISOString(),
-                },
-            },
-        } )
-    }
-
-    @Action( SelectActivitiesPageAvailabilitySearched )
-    public selectActivitiesPageAvailabilitySearched (
-        ctx: StateContext<ActivityStateModel>,
-        payload: SelectActivitiesPageAvailabilitySearched,
-    ): void {
-        ctx.patchState( {
-            activities: {
-                ...ctx.getState().activities,
-                params: {
-                    ...ctx.getState().activities.params,
-                    availabilitySearched: payload.availabilitySearched,
-                },
-            },
-        } )
-    }
-
-    @Action( SelectActivitiesPageVisibilitySearched )
-    public selectActivitiesPageVisibilitySearched (
-        ctx: StateContext<ActivityStateModel>,
-        payload: SelectActivitiesPageVisibilitySearched,
-    ): void {
-        ctx.patchState( {
-            activities: {
-                ...ctx.getState().activities,
-                params: {
-                    ...ctx.getState().activities.params,
-                    visibilitySearched: payload.visibilitySearched,
-                },
+                params: payload.params,
             },
         } )
     }
@@ -361,6 +320,10 @@ export class ActivityState extends GenericEventElementState<ActivityStateModel> 
         ctx.patchState( {
             movements: {
                 ...ctx.getState().movements,
+                params: {
+                    ...ctx.getState().movements.params,
+                    resetSearch: false,
+                },
                 element: movementsPage,
             },
         } )
@@ -408,66 +371,15 @@ export class ActivityState extends GenericEventElementState<ActivityStateModel> 
         } )
     }
 
-    @Action( SelectActivityMovementsPageTypeSearched )
-    public selectActivityMovementsPageTypeSearched (
+    @Action( UpdateActivityMovementsPageSearchParams )
+    public updateActivityMovementsPageSearchParams (
         ctx: StateContext<ActivityStateModel>,
-        payload: SelectActivityMovementsPageTypeSearched,
+        payload: UpdateActivityMovementsPageSearchParams,
     ): void {
         ctx.patchState( {
             movements: {
                 ...ctx.getState().movements,
-                params: {
-                    ...ctx.getState().movements.params,
-                    typeSearched: payload.typeSearched,
-                },
-            },
-        } )
-    }
-
-    @Action( InputActivityMovementsPageStartDateTimeSearched )
-    public inputActivityMovementsPageStartDateTimeSearched (
-        ctx: StateContext<ActivityStateModel>,
-        payload: InputActivityMovementsPageStartDateTimeSearched,
-    ): void {
-        ctx.patchState( {
-            movements: {
-                ...ctx.getState().movements,
-                params: {
-                    ...ctx.getState().movements.params,
-                    startDateTimeSearched: payload.startDateTimeSearched?.toISOString(),
-                },
-            },
-        } )
-    }
-
-    @Action( InputActivityMovementsPageEndDateTimeSearched )
-    public inputActivityMovementsPageEndDateTimeSearched (
-        ctx: StateContext<ActivityStateModel>,
-        payload: InputActivityMovementsPageEndDateTimeSearched,
-    ): void {
-        ctx.patchState( {
-            movements: {
-                ...ctx.getState().movements,
-                params: {
-                    ...ctx.getState().movements.params,
-                    endDateTimeSearched: payload.endDateTimeSearched?.toISOString(),
-                },
-            },
-        } )
-    }
-
-    @Action( SelectActivityMovementsPageVisibilitySearched )
-    public selectActivityMovementsPageVisibilitySearched (
-        ctx: StateContext<ActivityStateModel>,
-        payload: SelectActivityMovementsPageVisibilitySearched,
-    ): void {
-        ctx.patchState( {
-            movements: {
-                ...ctx.getState().movements,
-                params: {
-                    ...ctx.getState().movements.params,
-                    visibilitySearched: payload.visibilitySearched,
-                },
+                params: payload.params,
             },
         } )
     }
