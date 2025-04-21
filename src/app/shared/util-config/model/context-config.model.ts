@@ -18,7 +18,8 @@ export interface ContextConfigModel {
     }
     defaultLanguage: string
     maintainerEmail: string
-    menu: MenuItemModel[]
+    generalMenu: MenuItemModel[]
+    profileMenu: MenuItemModel[]
     event: {
         optionIcons: Map<string, string>
         action: ActionModel<EventActionEnum | RegistryActionEnum>[]

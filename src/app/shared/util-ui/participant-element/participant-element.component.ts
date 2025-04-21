@@ -33,6 +33,7 @@ import { IntervalFormatPipe } from '../../util-tool/pipe/interval-format.pipe'
 import { GenericUtil } from '../../util-tool/util/generic.util'
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component'
 import { tap } from 'rxjs'
+import { ParticipantTypeEnum } from '../../util-model/enumeration/participant-type.enum'
 
 @Component( {
     selector: 'app-participant-element',
@@ -60,6 +61,8 @@ import { tap } from 'rxjs'
 export class ParticipantElementComponent extends GenericElementComponent<ParticipantModel, ParticipantActionEnum | GroupActionEnum> implements OnDestroy {
     protected readonly facade: ParticipantFacade = inject( ParticipantFacade )
     private readonly groupFacade: GroupFacade = inject( GroupFacade )
+
+    protected ParticipantTypeEnum: typeof ParticipantTypeEnum = ParticipantTypeEnum
 
     protected layerOpened: boolean = false
 
@@ -123,18 +126,18 @@ export class ParticipantElementComponent extends GenericElementComponent<Partici
         switch (action) {
             case ParticipantActionEnum.FETCH_PARTICIPANT_MOVEMENTS_PAGE:
                 this.router.navigateByUrl(
-                    this.buildUri( AppRouteEnum.PARTICIPANTS_MOVEMENTS.replace(
+                    AppRouteEnum.PARTICIPANTS_MOVEMENTS.replace(
                         ':participantId',
                         this.participant().id,
-                    ) ),
+                    ),
                 ).catch( console.error )
                 break
             case ParticipantActionEnum.UPDATE_PARTICIPANT:
                 this.router.navigateByUrl(
-                    this.buildUri( AppRouteEnum.PARTICIPANTS_EDITION.replace(
+                    AppRouteEnum.PARTICIPANTS_EDITION.replace(
                         ':participantId',
                         this.participant().id,
-                    ) ),
+                    ),
                 ).catch( console.error )
                 break
             case GroupActionEnum.REMOVE_MEMBER_FROM_GROUP:
@@ -142,7 +145,6 @@ export class ParticipantElementComponent extends GenericElementComponent<Partici
                     this.groupFacade.removeMemberFromGroup(
                         this.groupIdToRemove()!,
                         this.participant(),
-                        this.contextEventId(),
                     ).pipe( tap( (): void => this.action.set( undefined ) ) ).subscribe(),
                 )
                 break

@@ -3,7 +3,6 @@ import { ParticipantModel } from '../../../shared/util-model/model/participant.m
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { PageEventModel } from '../../../shared/util-model/model/page-event.model'
 import { GroupFacade } from '../data/state/group.facade'
-import { AppRouteEnum } from '../../../app-route.enum'
 import { GroupElementComponent } from '../group-element/group-element.component'
 import { Button } from 'primeng/button'
 import { InputText } from 'primeng/inputtext'
@@ -86,12 +85,8 @@ export class GroupMemberListComponent extends GenericListComponent implements On
 
     protected loadData (): void {
         const id: string | undefined = this.route.snapshot.params['groupId']
-        const eventId: string | undefined = this.contextEventId()
-        if (!eventId || !id) {
-            this.router.navigateByUrl( AppRouteEnum.HOME ).catch( console.error )
-        }
-        this.facade.fetchGroup( id!, eventId )
-        this.facade.fetchGroupMembersPage( id!, undefined, undefined, false, eventId )
+        this.facade.fetchGroup( id! )
+        this.facade.fetchGroupMembersPage( id!, undefined, undefined, false )
     }
 
     private handleParticipantActions (): void {
@@ -104,7 +99,6 @@ export class GroupMemberListComponent extends GenericListComponent implements On
                         undefined,
                         undefined,
                         true,
-                        this.contextEventId(),
                     )
                 } ),
             ).subscribe(),
@@ -119,7 +113,6 @@ export class GroupMemberListComponent extends GenericListComponent implements On
                         this.facade.groupsPage()?.pageNumber,
                         this.facade.groupsPage()?.pageSize,
                         true,
-                        this.contextEventId(),
                     )
                 } ),
             ).subscribe(),
@@ -138,7 +131,7 @@ export class GroupMemberListComponent extends GenericListComponent implements On
         this.createMemberFormLayerOpened = true
     }
 
-    protected loadPage (pageEvent: PageEventModel, eventId: string | undefined): void {
+    protected loadPage (pageEvent: PageEventModel): void {
         this.facade.inputMembersPageSearchParameters(
             this.textSearched.value,
             this.statusSearched.value,
@@ -149,16 +142,12 @@ export class GroupMemberListComponent extends GenericListComponent implements On
             pageEvent.pageNumber,
             pageEvent.pageSize,
             false,
-            eventId,
         )
     }
 
     protected handleSearch (searched: string | undefined): void {
         this.addMembersParticipants?.markAsTouched()
-        this.facade.searchParticipants(
-            searched,
-            this.contextEventId(),
-        )
+        this.facade.searchParticipants( searched )
     }
 
     protected addMembers (): void {
@@ -166,15 +155,14 @@ export class GroupMemberListComponent extends GenericListComponent implements On
             return
         }
 
-        const eventId: string | undefined = this.contextEventId()
         const groupId: string = this.facade.group()!.id
         const newMemberIds: string[] = this.addMembersParticipants?.value?.map( (item: ParticipantModel): string => item.id ) ?? []
 
         this.subscriptions.add(
-            this.facade.addMembersToGroup( groupId, newMemberIds, eventId ).subscribe( (): void => {
+            this.facade.addMembersToGroup( groupId, newMemberIds ).subscribe( (): void => {
                 this.addMembersFormLayerOpened = false
-                this.facade.fetchGroup( groupId, eventId )
-                this.facade.fetchGroupMembersPage( groupId, undefined, undefined, true, eventId )
+                this.facade.fetchGroup( groupId )
+                this.facade.fetchGroupMembersPage( groupId, undefined, undefined, true )
             } ),
         )
     }

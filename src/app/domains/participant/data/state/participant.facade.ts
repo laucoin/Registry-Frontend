@@ -42,7 +42,7 @@ export class ParticipantFacade extends GenericEventElementFacade {
     }
 
     public get participantsPageLoading (): Signal<boolean> {
-        return computed( (): boolean => this.ngStore.selectSignal( ParticipantState.participantsPageLoading )() || this.registryFacade.contextEventLoading() )
+        return this.ngStore.selectSignal( ParticipantState.participantsPageLoading )
     }
 
     public get participantsPageSilentLoading (): Signal<boolean> {
@@ -74,9 +74,7 @@ export class ParticipantFacade extends GenericEventElementFacade {
     }
 
     public get participantMovementsPageLoading (): Signal<boolean> {
-        return computed( (): boolean =>
-            this.ngStore.selectSignal( ParticipantState.participantMovementsPageLoading )() || this.registryFacade.contextEventLoading(),
-        )
+        return this.ngStore.selectSignal( ParticipantState.participantMovementsPageLoading )
     }
 
     public get participantMovementsPageSilentLoading (): Signal<boolean> {
@@ -156,10 +154,9 @@ export class ParticipantFacade extends GenericEventElementFacade {
         pageNumber: number | undefined,
         pageSize: number | undefined,
         force: boolean,
-        eventId: string | undefined = this.actualSelectedEventId,
     ): void {
         const index: number | undefined = this.participantsPageResetSearch() ? 0 : pageNumber
-        this.ngStore.dispatch( new FetchParticipantsPage( eventId, index, pageSize, force ) )
+        this.ngStore.dispatch( new FetchParticipantsPage( this.selectedEventId(), index, pageSize, force ) )
     }
 
     public inputPageSearchParameters (
@@ -194,17 +191,13 @@ export class ParticipantFacade extends GenericEventElementFacade {
         pageNumber: number | undefined,
         pageSize: number | undefined,
         force: boolean,
-        eventId: string | undefined = this.actualSelectedEventId,
     ): void {
         const index: number | undefined = this.participantMovementsPageResetSearch() ? 0 : pageNumber
-        this.ngStore.dispatch( new FetchParticipantMovementsPage( eventId, id, index, pageSize, force ) )
+        this.ngStore.dispatch( new FetchParticipantMovementsPage( this.selectedEventId(), id, index, pageSize, force ) )
     }
 
-    public fetchParticipantMovementsContent (
-        movementIds: string[],
-        eventId: string | undefined,
-    ): void {
-        this.ngStore.dispatch( new FetchParticipantMovementsContents( eventId, movementIds ) )
+    public fetchParticipantMovementsContent (movementIds: string[]): void {
+        this.ngStore.dispatch( new FetchParticipantMovementsContents( this.selectedEventId(), movementIds ) )
     }
 
     public inputMovementsPageSearchParameters (
@@ -237,22 +230,20 @@ export class ParticipantFacade extends GenericEventElementFacade {
         this.ngStore.dispatch( StopParticipantLoader )
     }
 
-    public fetchParticipant (id: string, eventId: string | undefined = this.actualSelectedEventId): void {
-        this.ngStore.dispatch( new FetchParticipant( eventId, id ) )
+    public fetchParticipant (id: string): void {
+        this.ngStore.dispatch( new FetchParticipant( this.selectedEventId(), id ) )
     }
 
     public searchUsers (
         textSearched: string | undefined = undefined,
-        eventId: string | undefined = this.actualSelectedEventId,
     ): void {
-        this.ngStore.dispatch( new SearchUsers( eventId, textSearched ) )
+        this.ngStore.dispatch( new SearchUsers( this.selectedEventId(), textSearched ) )
     }
 
     public searchGroups (
         textSearched: string | undefined = undefined,
-        eventId: string | undefined = this.actualSelectedEventId,
     ): void {
-        this.ngStore.dispatch( new SearchGroups( eventId, textSearched ) )
+        this.ngStore.dispatch( new SearchGroups( this.selectedEventId(), textSearched ) )
     }
 
     public resetParticipant (): void {
@@ -273,44 +264,39 @@ export class ParticipantFacade extends GenericEventElementFacade {
 
     public createParticipant (
         participant: ParticipantDto,
-        eventId: string | undefined = this.actualSelectedEventId,
     ): Observable<CreateParticipant> {
-        this.ngStore.dispatch( new CreateParticipant( eventId, participant ) )
+        this.ngStore.dispatch( new CreateParticipant( this.selectedEventId(), participant ) )
         return this.actions$.pipe( ofActionSuccessful( CreateParticipant ) )
     }
 
     public updateParticipant (
         id: string,
         participant: ParticipantDto,
-        eventId: string | undefined = this.actualSelectedEventId,
     ): Observable<UpdateParticipant> {
-        this.ngStore.dispatch( new UpdateParticipant( eventId, id, participant ) )
+        this.ngStore.dispatch( new UpdateParticipant( this.selectedEventId(), id, participant ) )
         return this.actions$.pipe( ofActionSuccessful( UpdateParticipant ) )
     }
 
     public disableParticipant (
         id: string,
-        eventId: string | undefined = this.actualSelectedEventId,
     ): Observable<ActionCompletion<DisableParticipant>> {
-        this.ngStore.dispatch( new DisableParticipant( eventId, id ) )
+        this.ngStore.dispatch( new DisableParticipant( this.selectedEventId(), id ) )
 
         return this.actions$.pipe( ofActionCompleted( DisableParticipant ) )
     }
 
     public enableParticipant (
         id: string,
-        eventId: string | undefined = this.actualSelectedEventId,
     ): Observable<ActionCompletion<EnableParticipant>> {
-        this.ngStore.dispatch( new EnableParticipant( eventId, id ) )
+        this.ngStore.dispatch( new EnableParticipant( this.selectedEventId(), id ) )
 
         return this.actions$.pipe( ofActionCompleted( EnableParticipant ) )
     }
 
     public deleteParticipant (
         participant: ParticipantModel,
-        eventId: string | undefined = this.actualSelectedEventId,
     ): Observable<ActionCompletion<DeleteParticipant>> {
-        this.ngStore.dispatch( new DeleteParticipant( eventId, participant ) )
+        this.ngStore.dispatch( new DeleteParticipant( this.selectedEventId(), participant ) )
 
         return this.actions$.pipe( ofActionCompleted( DeleteParticipant ) )
     }

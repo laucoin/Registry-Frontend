@@ -4,6 +4,7 @@ import { PageModel } from '../../../../shared/util-model/model/page.model'
 import { GenericEventElementState } from '../../../../shared/util-tool/state/generic-event-element.state'
 import { initialize } from '../../../../shared/util-tool/util/rx.util'
 import {
+    CreateGuestsMovement,
     CreateMovement,
     DeleteMovement,
     DisableMovement,
@@ -12,6 +13,7 @@ import {
     FetchMovementsContent,
     FetchMovementsPage,
     FetchMovementTypes,
+    FetchParticipantTypes,
     ResetMovement,
     SearchParticipantsAndGroups,
     SearchReasonsAndActivities,
@@ -20,6 +22,7 @@ import {
     StartMovementsPageLoader,
     StopMovementLoader,
     StopMovementsPageLoader,
+    UpdateGuestsMovement,
     UpdateMovement,
     UpdateMovementsPageSearchParams,
 } from './movement.action'
@@ -71,6 +74,7 @@ const defaultMovementState: MovementStateModel = {
     movement: defaultMovement,
     _metadata: {
         types: [],
+        participantTypes: [],
         searchedReasonsAndActivities: [],
         searchedParticipantsAndGroups: [],
         searchedVehicles: [],
@@ -102,6 +106,7 @@ export class MovementState extends GenericEventElementState<MovementStateModel> 
 
     public ngxsOnInit (): void {
         this.facade.fetchMovementTypes()
+        this.facade.fetchParticipantTypes()
     }
 
     @Selector()
@@ -180,6 +185,11 @@ export class MovementState extends GenericEventElementState<MovementStateModel> 
     }
 
     @Selector()
+    public static participantTypesMetadata (state: MovementStateModel): SelectItem<string>[] {
+        return state._metadata.participantTypes
+    }
+
+    @Selector()
     public static visibilitiesMetadata (state: MovementStateModel): SelectItem<boolean | undefined>[] {
         return state._metadata.visibilities
     }
@@ -202,6 +212,25 @@ export class MovementState extends GenericEventElementState<MovementStateModel> 
                     { label: '-', value: undefined },
                     ...types,
                 ],
+            },
+        } )
+    }
+
+    @Action( FetchParticipantTypes )
+    public fetchParticipantTypes (ctx: StateContext<MovementStateModel>): Observable<void> {
+        return this.metadataService.getParticipantsTypes().pipe(
+            map( (types: SelectItem<string>[]): void => this.fetchParticipantTypesComplete( ctx, types ) ),
+        )
+    }
+
+    private fetchParticipantTypesComplete (
+        ctx: StateContext<MovementStateModel>,
+        types: SelectItem<string>[],
+    ): void {
+        ctx.patchState( {
+            _metadata: {
+                ...ctx.getState()._metadata,
+                participantTypes: types,
             },
         } )
     }
@@ -232,7 +261,6 @@ export class MovementState extends GenericEventElementState<MovementStateModel> 
             finalize( (): void => this.facade.stopMovementsPageLoader() ),
             map( (movementsPage: PageModel<MovementModel>): void => this.fetchMovementsPageComplete(
                 ctx,
-                payload.eventId,
                 movementsPage,
             ) ),
             catchError( (error: ErrorModel): Observable<void> => this.pageError( ctx, error ) ),
@@ -241,7 +269,6 @@ export class MovementState extends GenericEventElementState<MovementStateModel> 
 
     private fetchMovementsPageComplete (
         ctx: StateContext<MovementStateModel>,
-        eventId: string | undefined,
         movementsPage: PageModel<MovementModel>,
     ): void {
         ctx.patchState( {
@@ -258,7 +285,6 @@ export class MovementState extends GenericEventElementState<MovementStateModel> 
         if (movementsPage.content.length > 0) {
             this.facade.fetchMovementsContents(
                 movementsPage.content.map( (movement: MovementModel): string => movement.id ),
-                eventId,
             )
         }
     }
@@ -352,6 +378,7 @@ export class MovementState extends GenericEventElementState<MovementStateModel> 
             payload.eventId,
             payload.textSearched,
             payload.typeSearched,
+            payload.contentTypeSearched,
         ).pipe(
             map( (reasonsAndActivities: MovementReasonModel[]): void => this.searchReasonsAndActivitiesComplete(
                 ctx,
@@ -377,7 +404,11 @@ export class MovementState extends GenericEventElementState<MovementStateModel> 
         ctx: StateContext<MovementStateModel>,
         payload: SearchParticipantsAndGroups,
     ): Observable<void> {
-        return this.service.searchParticipantsAndGroups( payload.eventId, payload.textSearched ).pipe(
+        return this.service.searchParticipantsAndGroups(
+            payload.eventId,
+            payload.contentTypeSearched,
+            payload.textSearched,
+        ).pipe(
             map( (participantsAndGroups: MovementParticipantsAndGroupsModel): void => this.searchParticipantsAndGroupsComplete(
                 ctx,
                 participantsAndGroups,
@@ -394,7 +425,7 @@ export class MovementState extends GenericEventElementState<MovementStateModel> 
         if (participantsAndGroups.participants?.length > 0) {
             searched.push( {
                 label: this.translateService.instant( this.pluralTranslationPipe.transform(
-                    'movements.form.content.searched.participant',
+                    'movements.form.content.registered.searched.participant',
                     participantsAndGroups.participants,
                 ) ),
                 items: participantsAndGroups.participants.map(
@@ -407,7 +438,7 @@ export class MovementState extends GenericEventElementState<MovementStateModel> 
         if (participantsAndGroups.groups.length > 0) {
             searched.push( {
                 label: this.translateService.instant( this.pluralTranslationPipe.transform(
-                    'movements.form.content.searched.group',
+                    'movements.form.content.registered.searched.group',
                     participantsAndGroups.participants,
                 ) ),
                 items: participantsAndGroups.groups.map( (group: GroupModel): SelectItem<GroupModel> =>
@@ -463,13 +494,24 @@ export class MovementState extends GenericEventElementState<MovementStateModel> 
         return this.service.createMovement( payload.eventId, payload.movement ).pipe(
             initialize( (): void => this.facade.startMovementLoader() ),
             finalize( (): void => this.facade.stopMovementLoader() ),
-            map( (movement: MovementModel): void => this.createMovementComplete( ctx, payload.eventId, movement ) ),
+            map( (movement: MovementModel): void => this.createMovementComplete( ctx, movement ) ),
+        )
+    }
+
+    @Action( CreateGuestsMovement )
+    public createGuestsMovement (
+        ctx: StateContext<MovementStateModel>,
+        payload: CreateGuestsMovement,
+    ): Observable<void> {
+        return this.service.createGuestsMovement( payload.eventId, payload.movement ).pipe(
+            initialize( (): void => this.facade.startMovementLoader() ),
+            finalize( (): void => this.facade.stopMovementLoader() ),
+            map( (movement: MovementModel): void => this.createMovementComplete( ctx, movement ) ),
         )
     }
 
     private createMovementComplete (
         ctx: StateContext<MovementStateModel>,
-        eventId: string | undefined,
         movement: MovementModel,
     ): void {
         this.buildMessageAndNotify(
@@ -482,7 +524,7 @@ export class MovementState extends GenericEventElementState<MovementStateModel> 
             this.movementIcon,
             this.buildTranslationArgs( movement ),
         )
-        this.refreshPage( ctx, eventId )
+        this.refreshPage( ctx )
     }
 
     @Action( UpdateMovement )
@@ -490,13 +532,24 @@ export class MovementState extends GenericEventElementState<MovementStateModel> 
         return this.service.updateMovementById( payload.eventId, payload.id, payload.movement ).pipe(
             initialize( (): void => this.facade.startMovementLoader() ),
             finalize( (): void => this.facade.stopMovementLoader() ),
-            map( (movement: MovementModel): void => this.updateMovementComplete( ctx, payload.eventId, movement ) ),
+            map( (movement: MovementModel): void => this.updateMovementComplete( ctx, movement ) ),
+        )
+    }
+
+    @Action( UpdateGuestsMovement )
+    public updateGuestsMovement (
+        ctx: StateContext<MovementStateModel>,
+        payload: UpdateGuestsMovement,
+    ): Observable<void> {
+        return this.service.updateGuestsMovementById( payload.eventId, payload.id, payload.movement ).pipe(
+            initialize( (): void => this.facade.startMovementLoader() ),
+            finalize( (): void => this.facade.stopMovementLoader() ),
+            map( (movement: MovementModel): void => this.updateMovementComplete( ctx, movement ) ),
         )
     }
 
     private updateMovementComplete (
         ctx: StateContext<MovementStateModel>,
-        eventId: string | undefined,
         movement: MovementModel,
     ): void {
         this.buildMessageAndNotify(
@@ -506,7 +559,7 @@ export class MovementState extends GenericEventElementState<MovementStateModel> 
             this.movementIcon,
             this.buildTranslationArgs( movement ),
         )
-        this.refreshPage( ctx, eventId )
+        this.refreshPage( ctx )
     }
 
     @Action( DisableMovement )
@@ -514,13 +567,12 @@ export class MovementState extends GenericEventElementState<MovementStateModel> 
         return this.service.disableMovementById( payload.eventId, payload.id ).pipe(
             initialize( (): void => this.facade.startMovementLoader() ),
             finalize( (): void => this.facade.stopMovementLoader() ),
-            map( (movement: MovementModel): void => this.disableMovementComplete( ctx, payload.eventId, movement ) ),
+            map( (movement: MovementModel): void => this.disableMovementComplete( ctx, movement ) ),
         )
     }
 
     private disableMovementComplete (
         ctx: StateContext<MovementStateModel>,
-        eventId: string | undefined,
         movement: MovementModel,
     ): void {
         this.buildMessageAndNotify(
@@ -530,7 +582,7 @@ export class MovementState extends GenericEventElementState<MovementStateModel> 
             this.movementIcon,
             this.buildTranslationArgs( movement ),
         )
-        this.refreshPage( ctx, eventId )
+        this.refreshPage( ctx )
     }
 
     @Action( EnableMovement )
@@ -538,13 +590,12 @@ export class MovementState extends GenericEventElementState<MovementStateModel> 
         return this.service.enableMovementById( payload.eventId, payload.id ).pipe(
             initialize( (): void => this.facade.startMovementLoader() ),
             finalize( (): void => this.facade.stopMovementLoader() ),
-            map( (movement: MovementModel): void => this.enableMovementComplete( ctx, payload.eventId, movement ) ),
+            map( (movement: MovementModel): void => this.enableMovementComplete( ctx, movement ) ),
         )
     }
 
     private enableMovementComplete (
         ctx: StateContext<MovementStateModel>,
-        eventId: string | undefined,
         movement: MovementModel,
     ): void {
         this.buildMessageAndNotify(
@@ -554,7 +605,7 @@ export class MovementState extends GenericEventElementState<MovementStateModel> 
             this.movementIcon,
             this.buildTranslationArgs( movement ),
         )
-        this.refreshPage( ctx, eventId )
+        this.refreshPage( ctx )
     }
 
     @Action( DeleteMovement )
@@ -562,13 +613,12 @@ export class MovementState extends GenericEventElementState<MovementStateModel> 
         return this.service.deleteMovementById( undefined, payload.movement.id ).pipe(
             initialize( (): void => this.facade.startMovementLoader() ),
             finalize( (): void => this.facade.stopMovementLoader() ),
-            map( (): void => this.deleteMovementComplete( ctx, payload.eventId, payload.movement ) ),
+            map( (): void => this.deleteMovementComplete( ctx, payload.movement ) ),
         )
     }
 
     private deleteMovementComplete (
         ctx: StateContext<MovementStateModel>,
-        eventId: string | undefined,
         movement: MovementModel,
     ): void {
         this.buildMessageAndNotify(
@@ -578,18 +628,19 @@ export class MovementState extends GenericEventElementState<MovementStateModel> 
             this.movementIcon,
             this.buildTranslationArgs( movement ),
         )
-        this.refreshPage( ctx, eventId )
+        this.refreshPage( ctx )
     }
 
     private buildTranslationArgs (movement: MovementModel): object {
         return {
             datetime: this.datePipe.transform( movement?.dateTime, 'datetime' ),
+            participants: movement.content?.length ?? 0,
         }
     }
 
-    protected refreshPage (ctx: StateContext<MovementStateModel>, eventId: string | undefined): void {
+    protected refreshPage (ctx: StateContext<MovementStateModel>): void {
         const page: PageModel<MovementModel> | undefined = ctx.getState().movements.element
-        this.facade.fetchMovementsPage( page?.pageNumber, page?.pageSize, true, eventId )
+        this.facade.fetchMovementsPage( page?.pageNumber, page?.pageSize, true )
     }
 
     protected pageError (ctx: StateContext<MovementStateModel>, error: ErrorModel): Observable<void> {

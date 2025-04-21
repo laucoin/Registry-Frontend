@@ -14,7 +14,6 @@ import {
     AckNotification,
     CreateSupportEventProfile,
     DeleteUserEventProfile,
-    FetchContextEvent,
     FetchCurrentUser,
     FetchTokens,
     FetchUserEventProfileInvitationsPage,
@@ -29,12 +28,10 @@ import {
     SelectUserEventProfile,
     SelectUserEventProfileByEvent,
     SetGlobalError,
-    StartContextEventLoader,
     StartGlobalLoader,
     StartUserEventProfileInvitationsPageLoader,
     StartUserEventProfileLoader,
     StartUserEventProfilesPageLoader,
-    StopContextEventLoader,
     StopGlobalLoader,
     StopUserEventProfileInvitationsPageLoader,
     StopUserEventProfileLoader,
@@ -56,7 +53,6 @@ import { Router } from '@angular/router'
 import { ErrorModel } from '../../util-model/model/error.model'
 import { UserService } from '../../../domains/user/data/state/user.service'
 import { ToastMessageOptions } from 'primeng/api'
-import { ContextEventRequestInformationModel } from '../../util-model/model/context-event-request-information.model'
 import { CustomDateFormatPipe } from '../../util-tool/pipe/custom-date-format.pipe'
 
 const defaultRegistryState: RegistryStateModel = {
@@ -91,11 +87,6 @@ const defaultRegistryState: RegistryStateModel = {
         error: undefined,
     },
     profile: {
-        element: undefined,
-        loading: false,
-    },
-    event: {
-        id: undefined,
         element: undefined,
         loading: false,
     },
@@ -164,23 +155,13 @@ export class RegistryState extends GenericState {
     }
 
     @Selector()
-    public static contextEventLoading (state: RegistryStateModel): boolean {
-        return state.event.loading
-    }
-
-    @Selector()
-    public static contextEvent (state: RegistryStateModel): EventModel | undefined {
-        return state.event.element
-    }
-
-    @Selector()
-    public static contextEventId (state: RegistryStateModel): string | undefined {
-        return state.event.id
-    }
-
-    @Selector()
     public static currentUser (state: RegistryStateModel): CurrentUserModel | undefined {
         return state.authentication.currentUser
+    }
+
+    @Selector()
+    public static currentUserSelectedEvent (state: RegistryStateModel): EventModel | undefined {
+        return state.authentication.currentUser?.preferences?.selectedProfile?.event
     }
 
     @Selector()
@@ -344,7 +325,7 @@ export class RegistryState extends GenericState {
     @Action( Logout )
     public logout (ctx: StateContext<RegistryStateModel>): Observable<void> {
         SessionStorageUtils.delete( TOKEN )
-        return this.service.getLogoutUri( `${location.origin}/${AppRouteEnum.LOGOUT_CALLBACK}` ).pipe(
+        return this.service.getLogoutUri( location.origin ).pipe(
             initialize( (): void => this.registryFacade.startGlobalLoader() ),
             finalize( (): void => this.registryFacade.stopGlobalLoader() ),
             map( (uri: AuthenticationUriModel): void => { window.location.href = uri.uri } ),
@@ -433,64 +414,6 @@ export class RegistryState extends GenericState {
             finalize( (): void => this.registryFacade.stopGlobalLoader() ),
             map( (): void => this.registryFacade.logout() ),
         )
-    }
-
-    @Action( StartContextEventLoader )
-    public startContextEventLoader (ctx: StateContext<RegistryStateModel>): void {
-        this.updateContextEventLoader( ctx, true )
-    }
-
-    @Action( StopContextEventLoader )
-    public stopContextEventLoader (ctx: StateContext<RegistryStateModel>): void {
-        this.updateContextEventLoader( ctx, false )
-    }
-
-    private updateContextEventLoader (ctx: StateContext<RegistryStateModel>, loading: boolean): void {
-        ctx.patchState( {
-            event: {
-                ...ctx.getState().event,
-                loading: loading,
-            },
-        } )
-    }
-
-    @Action( FetchContextEvent )
-    public fetchContextEvent (
-        ctx: StateContext<RegistryStateModel>,
-        payload: FetchContextEvent,
-    ): Observable<void> {
-        const newEventId: string | undefined = payload.eventId
-        const context: ContextEventRequestInformationModel = ctx.getState().event
-
-        if (!payload.force && context.element?.id === newEventId && context.id === newEventId) {
-            return of()
-        }
-
-        ctx.patchState( {
-            event: {
-                ...ctx.getState().event,
-                id: newEventId,
-                element: context.element?.id === newEventId ? context.element : undefined,
-            },
-        } )
-
-        return this.eventService.findEventById( newEventId ).pipe(
-            initialize( (): void => this.registryFacade.startContextEventLoader() ),
-            finalize( (): void => this.registryFacade.stopContextEventLoader() ),
-            map( (event: EventModel): void => this.fetchContextEventComplete( ctx, event ) ),
-        )
-    }
-
-    private fetchContextEventComplete (
-        ctx: StateContext<RegistryStateModel>,
-        profile: EventModel,
-    ): void {
-        ctx.patchState( {
-            event: {
-                ...ctx.getState().event,
-                element: profile,
-            },
-        } )
     }
 
     @Action( StartUserEventProfilesPageLoader )
@@ -714,8 +637,8 @@ export class RegistryState extends GenericState {
     ): void {
         this.buildMessageAndNotify(
             'success',
-            `event-profiles.notifications.acceptance.${profile.status}.title`,
-            `event-profiles.notifications.acceptance.${profile.status}.message`,
+            `event-profiles.notifications.acceptance.${profile.status.value}.title`,
+            `event-profiles.notifications.acceptance.${profile.status.value}.message`,
             'pi pi-user',
         )
 

@@ -87,16 +87,17 @@
     </p-card>
     <div class='d-flex mt-2 justify-content-center'>
         <p-button
-                (click)='navigateToRedirectUri(AppRouteEnum.ACTIVITIES)'
+                (onClick)='navigateToRedirectUri(AppRouteEnum.ACTIVITIES)'
                 [label]='"global.actions.cancel" | translate'
-                [outlined]='true'
-                [rounded]='true' />
+                text
+                rounded />
         <p-button
                 class='ms-2'
-                (click)='submit()'
+                (onClick)='submit()'
                 [label]='facade.activity() | formButton | translate'
-                [rounded]='true'
-                icon='pi pi-pen-to-square'
+                rounded
+                outlined
+                [icon]='facade.activity() | formIcon'
                 severity='success' />
     </div>
 </app-form>

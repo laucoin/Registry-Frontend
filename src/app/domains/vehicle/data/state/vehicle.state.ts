@@ -340,7 +340,6 @@ export class VehicleState extends GenericEventElementState<VehicleStateModel> im
             finalize( (): void => this.facade.stopVehicleMovementsPageLoader() ),
             map( (movementsPage: PageModel<MovementModel>): void => this.fetchVehicleMovementsPageComplete(
                 ctx,
-                payload.eventId,
                 movementsPage,
             ) ),
             catchError( (error: ErrorModel): Observable<void> => this.movementsPageError( ctx, error ) ),
@@ -349,7 +348,6 @@ export class VehicleState extends GenericEventElementState<VehicleStateModel> im
 
     private fetchVehicleMovementsPageComplete (
         ctx: StateContext<VehicleStateModel>,
-        eventId: string | undefined,
         movementsPage: PageModel<MovementModel>,
     ): void {
         ctx.patchState( {
@@ -366,7 +364,6 @@ export class VehicleState extends GenericEventElementState<VehicleStateModel> im
         if (movementsPage.content.length > 0) {
             this.facade.fetchVehicleMovementsContent(
                 movementsPage.content.map( (movement: MovementModel): string => movement.id ),
-                eventId,
             )
         }
     }
@@ -468,7 +465,6 @@ export class VehicleState extends GenericEventElementState<VehicleStateModel> im
             finalize( (): void => this.facade.stopVehicleLoader() ),
             map( (vehicle: VehicleModel): void => this.createVehicleComplete(
                 ctx,
-                payload.eventId,
                 vehicle,
             ) ),
         )
@@ -476,7 +472,6 @@ export class VehicleState extends GenericEventElementState<VehicleStateModel> im
 
     private createVehicleComplete (
         ctx: StateContext<VehicleStateModel>,
-        eventId: string | undefined,
         vehicle: VehicleModel,
     ): void {
         this.buildMessageAndNotify(
@@ -486,7 +481,7 @@ export class VehicleState extends GenericEventElementState<VehicleStateModel> im
             this.vehicleIcon,
             this.buildTranslationArgs( vehicle ),
         )
-        this.refreshPage( ctx, eventId )
+        this.refreshPage( ctx )
     }
 
     @Action( UpdateVehicle )
@@ -496,7 +491,6 @@ export class VehicleState extends GenericEventElementState<VehicleStateModel> im
             finalize( (): void => this.facade.stopVehicleLoader() ),
             map( (vehicle: VehicleModel): void => this.updateVehicleComplete(
                 ctx,
-                payload.eventId,
                 vehicle,
             ) ),
         )
@@ -504,7 +498,6 @@ export class VehicleState extends GenericEventElementState<VehicleStateModel> im
 
     private updateVehicleComplete (
         ctx: StateContext<VehicleStateModel>,
-        eventId: string | undefined,
         vehicle: VehicleModel,
     ): void {
         this.buildMessageAndNotify(
@@ -514,7 +507,7 @@ export class VehicleState extends GenericEventElementState<VehicleStateModel> im
             this.vehicleIcon,
             this.buildTranslationArgs( vehicle ),
         )
-        this.refreshPage( ctx, eventId )
+        this.refreshPage( ctx )
     }
 
     @Action( DisableVehicle )
@@ -527,7 +520,6 @@ export class VehicleState extends GenericEventElementState<VehicleStateModel> im
             finalize( (): void => this.facade.stopVehicleLoader() ),
             map( (vehicle: VehicleModel): void => this.disableVehicleComplete(
                 ctx,
-                payload.eventId,
                 vehicle,
             ) ),
         )
@@ -535,7 +527,6 @@ export class VehicleState extends GenericEventElementState<VehicleStateModel> im
 
     private disableVehicleComplete (
         ctx: StateContext<VehicleStateModel>,
-        eventId: string | undefined,
         vehicle: VehicleModel,
     ): void {
         this.buildMessageAndNotify(
@@ -545,7 +536,7 @@ export class VehicleState extends GenericEventElementState<VehicleStateModel> im
             this.vehicleIcon,
             this.buildTranslationArgs( vehicle ),
         )
-        this.refreshPage( ctx, eventId )
+        this.refreshPage( ctx )
     }
 
     @Action( EnableVehicle )
@@ -555,7 +546,6 @@ export class VehicleState extends GenericEventElementState<VehicleStateModel> im
             finalize( (): void => this.facade.stopVehicleLoader() ),
             map( (vehicle: VehicleModel): void => this.enableVehicleComplete(
                 ctx,
-                payload.eventId,
                 vehicle,
             ) ),
         )
@@ -563,7 +553,6 @@ export class VehicleState extends GenericEventElementState<VehicleStateModel> im
 
     private enableVehicleComplete (
         ctx: StateContext<VehicleStateModel>,
-        eventId: string | undefined,
         vehicle: VehicleModel,
     ): void {
         this.buildMessageAndNotify(
@@ -573,7 +562,7 @@ export class VehicleState extends GenericEventElementState<VehicleStateModel> im
             this.vehicleIcon,
             this.buildTranslationArgs( vehicle ),
         )
-        this.refreshPage( ctx, eventId )
+        this.refreshPage( ctx )
     }
 
     @Action( DeleteVehicle )
@@ -583,7 +572,6 @@ export class VehicleState extends GenericEventElementState<VehicleStateModel> im
             finalize( (): void => this.facade.stopVehicleLoader() ),
             map( (): void => this.deleteVehicleComplete(
                 ctx,
-                payload.eventId,
                 payload.vehicle,
             ) ),
         )
@@ -591,7 +579,6 @@ export class VehicleState extends GenericEventElementState<VehicleStateModel> im
 
     private deleteVehicleComplete (
         ctx: StateContext<VehicleStateModel>,
-        eventId: string | undefined,
         vehicle: VehicleModel,
     ): void {
         this.buildMessageAndNotify(
@@ -601,7 +588,7 @@ export class VehicleState extends GenericEventElementState<VehicleStateModel> im
             this.vehicleIcon,
             this.buildTranslationArgs( vehicle ),
         )
-        this.refreshPage( ctx, eventId )
+        this.refreshPage( ctx )
     }
 
     private buildTranslationArgs (vehicle: VehicleModel): object {
@@ -612,9 +599,9 @@ export class VehicleState extends GenericEventElementState<VehicleStateModel> im
         }
     }
 
-    protected refreshPage (ctx: StateContext<VehicleStateModel>, eventId: string | undefined): void {
+    protected refreshPage (ctx: StateContext<VehicleStateModel>): void {
         const page: PageModel<VehicleModel> | undefined = ctx.getState().vehicles.element
-        this.facade.fetchVehiclesPage( page?.pageNumber, page?.pageSize, true, eventId )
+        this.facade.fetchVehiclesPage( page?.pageNumber, page?.pageSize, true )
     }
 
     protected pageError (ctx: StateContext<VehicleStateModel>, error: ErrorModel): Observable<void> {

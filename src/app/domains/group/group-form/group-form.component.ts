@@ -22,13 +22,14 @@ import { ParticipantUtil } from '../../../shared/util-tool/util/participant.util
 import { EventModel } from '../../../shared/util-model/model/event.model'
 import { DateFormatPipe } from '../../../shared/util-tool/pipe/date-format.pipe'
 import { GenericFormComponent } from '../../../shared/util-tool/component/generic-form.component'
-import { combineLatest, map, Observable } from 'rxjs'
+import { map, Observable } from 'rxjs'
 import { CreateGroup, UpdateGroup } from '../data/state/group.action'
 import { FormTitlePipe } from '../../../shared/util-tool/pipe/form-title.pipe'
 import { FormButtonPipe } from '../../../shared/util-tool/pipe/form-button.pipe'
 import { PluralTranslationPipe } from '../../../shared/util-tool/pipe/plural-translation.pipe'
 import { DateTimeFieldComponent } from '../../../shared/util-ui/date-time-field/date-time-field.component'
 import { GenericUtil } from '../../../shared/util-tool/util/generic.util'
+import { FormIconPipe } from '../../../shared/util-tool/pipe/form-icon.pipe'
 
 @Component( {
     selector: 'app-group-form',
@@ -48,6 +49,7 @@ import { GenericUtil } from '../../../shared/util-tool/util/generic.util'
         FormButtonPipe,
         PluralTranslationPipe,
         DateTimeFieldComponent,
+        FormIconPipe,
 
     ],
     templateUrl: './group-form.component.html',
@@ -73,9 +75,7 @@ export class GroupFormComponent extends GenericFormComponent<GroupModel, GroupDt
         this.facade.resetGroup()
 
         if (GenericUtil.nonNull( this.idParam )) {
-            this.facade.fetchGroup( this.idParam!, this.contextEventId() )
-        } else {
-            super.loadData()
+            this.facade.fetchGroup( this.idParam! )
         }
     }
 
@@ -95,9 +95,9 @@ export class GroupFormComponent extends GenericFormComponent<GroupModel, GroupDt
 
     protected handleLoadedElement (): void {
         this.subscriptions.add(
-            combineLatest( [ this.facade.group$, this.registryFacade.contextEvent$ ] ).pipe(
-                map( ([ group, event ]: [ GroupModel | undefined, EventModel | undefined ]): void => {
-                    const contextEvent: EventModel | undefined = group?.event || event
+            this.facade.group$.pipe(
+                map( (group: GroupModel | undefined): void => {
+                    const contextEvent: EventModel | undefined = group?.event || this.registryFacade.selectedEvent()
                     this.addEventDateValidators( contextEvent, this.beginDateTime )
                     this.addEventDateValidators( contextEvent, this.endDateTime )
                     this.fillForm( group )
@@ -124,8 +124,8 @@ export class GroupFormComponent extends GenericFormComponent<GroupModel, GroupDt
         const dto: GroupDto = this.buildDto()
         const observable: Observable<CreateGroup | UpdateGroup> =
             this.facade.group()
-            ? this.facade.updateGroup( this.facade.group()!.id!, dto, this.contextEventId() )
-            : this.facade.createGroup( dto, this.contextEventId() )
+            ? this.facade.updateGroup( this.facade.group()!.id!, dto )
+            : this.facade.createGroup( dto )
 
         this.subscriptions.add(
             observable.pipe(
@@ -144,10 +144,7 @@ export class GroupFormComponent extends GenericFormComponent<GroupModel, GroupDt
     }
 
     protected handleSearch (searched: string | undefined): void {
-        this.facade.searchParticipants(
-            searched,
-            this.contextEventId(),
-        )
+        this.facade.searchParticipants( searched )
     }
 
     protected get idParam (): string | undefined {

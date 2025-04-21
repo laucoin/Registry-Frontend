@@ -51,7 +51,7 @@
 
 <app-layer [(visible)]='layerOpened'
            [header]='"movements.content-layer-title" | pluralTranslation: movement().content | translate'>
-    <p-tabs [(value)]='activeTab' [scrollable]='true' class='max-panel-height'>
+    <p-tabs [(value)]='activeTab' scrollable class='max-panel-height'>
         <p-tablist>
             <p-tab [value]='1'>
                 <p-tag [value]='movement().content.length.toString()' class='me-1' />
@@ -82,7 +82,7 @@
                         styleClass='max-list-box-height'
                         scrollHeight='100%'
                         [options]='movement().content'
-                        [readonly]='true'
+                        readonly
                         optionLabel='name'>
                     <ng-template #item let-content>
                         <p-avatar [icon]='content.vehicle ? "pi pi-car" : "pi pi-user"' class='me-2' shape='circle' />
@@ -107,7 +107,7 @@
                             styleClass='max-list-box-height'
                             scrollHeight='100%'
                             [options]='adults()'
-                            [readonly]='true'
+                            readonly
                             optionLabel='name'>
                         <ng-template #item let-adult>
                             <p-avatar [icon]='adult.vehicle ? "pi pi-car" : "pi pi-user"' class='me-2' shape='circle' />
@@ -133,7 +133,7 @@
                             styleClass='max-list-box-height'
                             scrollHeight='100%'
                             [options]='children()'
-                            [readonly]='true'
+                            readonly
                             optionLabel='name'>
                         <ng-template #item let-child>
                             <p-avatar [icon]='child.vehicle ? "pi pi-car" : "pi pi-user"' class='me-2' shape='circle' />
@@ -150,7 +150,7 @@
                             styleClass='max-list-box-height'
                             scrollHeight='100%'
                             [options]='pool.value'
-                            [readonly]='true'
+                            readonly
                             optionLabel='name'>
                         <ng-template #item let-content>
                             <p-avatar [icon]='content.vehicle ? "pi pi-car" : "pi pi-user"' class='me-2' shape='circle' />

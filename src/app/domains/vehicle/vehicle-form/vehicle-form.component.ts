@@ -18,12 +18,13 @@ import { EventModel } from '../../../shared/util-model/model/event.model'
 import { InputMask } from 'primeng/inputmask'
 import { DateFormatPipe } from '../../../shared/util-tool/pipe/date-format.pipe'
 import { GenericFormComponent } from '../../../shared/util-tool/component/generic-form.component'
-import { combineLatest, map, Observable } from 'rxjs'
+import { map, Observable } from 'rxjs'
 import { CreateVehicle, UpdateVehicle } from '../data/state/vehicle.action'
 import { FormTitlePipe } from '../../../shared/util-tool/pipe/form-title.pipe'
 import { FormButtonPipe } from '../../../shared/util-tool/pipe/form-button.pipe'
 import { GenericUtil } from '../../../shared/util-tool/util/generic.util'
 import { DateTimeFieldComponent } from '../../../shared/util-ui/date-time-field/date-time-field.component'
+import { FormIconPipe } from '../../../shared/util-tool/pipe/form-icon.pipe'
 
 @Component( {
     selector: 'app-vehicle-form',
@@ -44,6 +45,7 @@ import { DateTimeFieldComponent } from '../../../shared/util-ui/date-time-field/
         FormTitlePipe,
         FormButtonPipe,
         DateTimeFieldComponent,
+        FormIconPipe,
     ],
     templateUrl: './vehicle-form.component.html',
 } )
@@ -66,9 +68,7 @@ export class VehicleFormComponent extends GenericFormComponent<VehicleModel, Veh
         this.facade.resetVehicle()
 
         if (GenericUtil.nonNull( this.idParam )) {
-            this.facade.fetchVehicle( this.idParam!, this.contextEventId() )
-        } else {
-            super.loadData()
+            this.facade.fetchVehicle( this.idParam! )
         }
     }
 
@@ -95,9 +95,9 @@ export class VehicleFormComponent extends GenericFormComponent<VehicleModel, Veh
 
     protected handleLoadedElement (): void {
         this.subscriptions.add(
-            combineLatest( [ this.facade.vehicle$, this.registryFacade.contextEvent$ ] ).pipe(
-                map( ([ vehicle, event ]: [ VehicleModel | undefined, EventModel | undefined ]): void => {
-                    const contextEvent: EventModel | undefined = vehicle?.event || event
+            this.facade.vehicle$.pipe(
+                map( (vehicle: VehicleModel | undefined): void => {
+                    const contextEvent: EventModel | undefined = vehicle?.event || this.registryFacade.selectedEvent()
                     this.addEventDateValidators( contextEvent, this.beginDateTime )
                     this.addEventDateValidators( contextEvent, this.endDateTime )
                     this.fillForm( vehicle )
@@ -125,8 +125,8 @@ export class VehicleFormComponent extends GenericFormComponent<VehicleModel, Veh
         const dto: VehicleDto = this.buildDto()
         const observable: Observable<CreateVehicle | UpdateVehicle> =
             this.facade.vehicle()
-            ? this.facade.updateVehicle( this.facade.vehicle()!.id!, dto, this.contextEventId() )
-            : this.facade.createVehicle( dto, this.contextEventId() )
+            ? this.facade.updateVehicle( this.facade.vehicle()!.id!, dto )
+            : this.facade.createVehicle( dto )
 
         this.subscriptions.add(
             observable.pipe(

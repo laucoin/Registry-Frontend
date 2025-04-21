@@ -7,5 +7,5 @@ export abstract class GenericListComponent extends GenericComponent {
 
     protected abstract initForm (): FormGroup
 
-    protected abstract loadPage (pageEvent: PageEventModel, eventId: string | undefined): void
+    protected abstract loadPage (pageEvent: PageEventModel): void
 }

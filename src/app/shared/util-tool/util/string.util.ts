@@ -7,9 +7,10 @@ export class StringUtil {
         return `${url}${separator}cache-bust=${Math.random()}`
     }
 
-    public static truncate (text: string, maxLength: number, tail?: string): string {
-        if (text.length > maxLength) return text.substring( 0, maxLength ) + (tail ?? '')
-        return text
+    public static truncate (text: string | undefined, maxLength: number, tail?: string): string {
+        if (GenericUtil.isNull( text )) return ''
+        if (text!.length > maxLength) return text!.substring( 0, maxLength ) + (tail ?? '')
+        return text!
     }
 
     public static isBlank (text: string | undefined): boolean {

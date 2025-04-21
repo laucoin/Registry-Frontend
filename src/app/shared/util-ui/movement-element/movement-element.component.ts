@@ -123,7 +123,7 @@ export class MovementElementComponent extends GenericElementComponent<MovementMo
         switch (action) {
             case MovementActionEnum.UPDATE_MOVEMENT:
                 this.router.navigateByUrl(
-                    this.buildUri( AppRouteEnum.MOVEMENTS_EDITION.replace( ':movementId', this.movement().id ) ),
+                    AppRouteEnum.MOVEMENTS_EDITION.replace( ':movementId', this.movement().id ),
                 ).catch( console.error )
                 break
             case MovementActionEnum.DISABLE_MOVEMENT:

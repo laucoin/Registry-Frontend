@@ -7,7 +7,6 @@ import { ElementRequestInformationModel } from '../../util-model/model/element-r
 import {
     UserEventProfilePageParamsModel,
 } from '../../../domains/event-profile/data/model/user-event-profile-page-params.model'
-import { ContextEventRequestInformationModel } from '../../util-model/model/context-event-request-information.model'
 
 export interface RegistryStateModel {
     authentication: {
@@ -17,7 +16,6 @@ export interface RegistryStateModel {
     profiles: PageRequestInformationModel<UserEventProfilePageParamsModel, EventProfileModel>,
     invitations: PageRequestInformationModel<UserEventProfilePageParamsModel, EventProfileModel>,
     profile: ElementRequestInformationModel<EventProfileModel>,
-    event: ContextEventRequestInformationModel,
     _util: {
         theme: 'light' | 'dark'
         screenWidth: number

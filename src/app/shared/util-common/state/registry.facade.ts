@@ -1,7 +1,7 @@
 import { computed, Injectable, Signal } from '@angular/core'
 import { ActionCompletion, ofActionCompleted, ofActionSuccessful } from '@ngxs/store'
 import { ToastMessageOptions } from 'primeng/api'
-import { combineLatest, map, Observable } from 'rxjs'
+import { Observable } from 'rxjs'
 import { TokenModel } from '../../util-authentication/model/token.model'
 import { CurrentUserModel } from '../../util-model/model/current-user.model'
 import { EventProfileModel } from '../../util-model/model/event-profile.model'
@@ -10,7 +10,6 @@ import {
     AckNotification,
     CreateSupportEventProfile,
     DeleteUserEventProfile,
-    FetchContextEvent,
     FetchCurrentUser,
     FetchTokens,
     FetchUserEventProfileInvitationsPage,
@@ -25,12 +24,10 @@ import {
     SelectUserEventProfile,
     SelectUserEventProfileByEvent,
     SetGlobalError,
-    StartContextEventLoader,
     StartGlobalLoader,
     StartUserEventProfileInvitationsPageLoader,
     StartUserEventProfileLoader,
     StartUserEventProfilesPageLoader,
-    StopContextEventLoader,
     StopGlobalLoader,
     StopUserEventProfileInvitationsPageLoader,
     StopUserEventProfileLoader,
@@ -100,26 +97,12 @@ export class RegistryFacade extends GenericFacade {
         return this.ngStore.selectSignal( RegistryState.tokens )
     }
 
-    public get contextEventLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( RegistryState.contextEventLoading )
-    }
-
-    public get contextEvent$ (): Observable<EventModel | undefined> {
-        return this.ngStore.select( RegistryState.contextEvent )
-    }
-
-    public get contextEventId (): Observable<string | undefined> {
-        return combineLatest( [ this.ngStore.select( RegistryState.contextEventId ), this.selectedEventId ] ).pipe(
-            map( (values: [ string | undefined, string | undefined ]): string | undefined => values[0] ?? values[1] ),
-        )
-    }
-
     public get currentUser (): Signal<CurrentUserModel | undefined> {
         return this.ngStore.selectSignal( RegistryState.currentUser )
     }
 
-    public get selectedEventId (): Observable<string | undefined> {
-        return this.ngStore.select( RegistryState.currentUserSelectedEventId )
+    public get selectedEvent (): Signal<EventModel | undefined> {
+        return this.ngStore.selectSignal( RegistryState.currentUserSelectedEvent )
     }
 
     public get userEventProfilesPage (): Signal<PageModel<EventProfileModel> | undefined> {
@@ -351,20 +334,6 @@ export class RegistryFacade extends GenericFacade {
         this.ngStore.dispatch( new DeleteUserEventProfile( profile ) )
 
         return this.actions$.pipe( ofActionCompleted( DeleteUserEventProfile ) )
-    }
-
-    public startContextEventLoader (): void {
-        this.ngStore.dispatch( StartContextEventLoader )
-    }
-
-    public stopContextEventLoader (): void {
-        this.ngStore.dispatch( StopContextEventLoader )
-    }
-
-    public fetchContextEvent (id: string, force: boolean = false): Observable<EventModel | undefined> {
-        this.ngStore.dispatch( new FetchContextEvent( id, force ) )
-
-        return this.contextEvent$
     }
 
     public createSupportEventProfile (eventId: string): Observable<ActionCompletion<CreateSupportEventProfile>> {

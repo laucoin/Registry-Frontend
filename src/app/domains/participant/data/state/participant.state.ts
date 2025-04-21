@@ -342,7 +342,6 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
             finalize( (): void => this.facade.stopParticipantMovementsPageLoader() ),
             map( (movementsPage: PageModel<MovementModel>): void => this.fetchParticipantMovementsPageComplete(
                 ctx,
-                payload.eventId,
                 movementsPage,
             ) ),
             catchError( (error: ErrorModel): Observable<void> => this.movementsPageError( ctx, error ) ),
@@ -351,7 +350,6 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
 
     private fetchParticipantMovementsPageComplete (
         ctx: StateContext<ParticipantStateModel>,
-        eventId: string | undefined,
         movementsPage: PageModel<MovementModel>,
     ): void {
         ctx.patchState( {
@@ -368,7 +366,6 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
         if (movementsPage.content.length > 0) {
             this.facade.fetchParticipantMovementsContent(
                 movementsPage.content.map( (movement: MovementModel): string => movement.id ),
-                eventId,
             )
         }
     }
@@ -526,7 +523,6 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
             finalize( (): void => this.facade.stopParticipantLoader() ),
             map( (participant: ParticipantModel): void => this.createParticipantComplete(
                 ctx,
-                payload.eventId,
                 participant,
             ) ),
         )
@@ -534,7 +530,6 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
 
     private createParticipantComplete (
         ctx: StateContext<ParticipantStateModel>,
-        eventId: string | undefined,
         participant: ParticipantModel,
     ): void {
         this.buildMessageAndNotify(
@@ -544,7 +539,7 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
             this.participantIcon,
             this.buildTranslationArgs( participant ),
         )
-        this.refreshPage( ctx, eventId )
+        this.refreshPage( ctx )
     }
 
     @Action( UpdateParticipant )
@@ -554,7 +549,6 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
             finalize( (): void => this.facade.stopParticipantLoader() ),
             map( (participant: ParticipantModel): void => this.updateParticipantComplete(
                 ctx,
-                payload.eventId,
                 participant,
             ) ),
         )
@@ -562,7 +556,6 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
 
     private updateParticipantComplete (
         ctx: StateContext<ParticipantStateModel>,
-        eventId: string | undefined,
         participant: ParticipantModel,
     ): void {
         this.buildMessageAndNotify(
@@ -572,7 +565,7 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
             this.participantIcon,
             this.buildTranslationArgs( participant ),
         )
-        this.refreshPage( ctx, eventId )
+        this.refreshPage( ctx )
     }
 
     @Action( DisableParticipant )
@@ -585,7 +578,6 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
             finalize( (): void => this.facade.stopParticipantLoader() ),
             map( (participant: ParticipantModel): void => this.disableParticipantComplete(
                 ctx,
-                payload.eventId,
                 participant,
             ) ),
         )
@@ -593,7 +585,6 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
 
     private disableParticipantComplete (
         ctx: StateContext<ParticipantStateModel>,
-        eventId: string | undefined,
         participant: ParticipantModel,
     ): void {
         this.buildMessageAndNotify(
@@ -603,7 +594,7 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
             this.participantIcon,
             this.buildTranslationArgs( participant ),
         )
-        this.refreshPage( ctx, eventId )
+        this.refreshPage( ctx )
     }
 
     @Action( EnableParticipant )
@@ -613,7 +604,6 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
             finalize( (): void => this.facade.stopParticipantLoader() ),
             map( (participant: ParticipantModel): void => this.enableParticipantComplete(
                 ctx,
-                payload.eventId,
                 participant,
             ) ),
         )
@@ -621,7 +611,6 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
 
     private enableParticipantComplete (
         ctx: StateContext<ParticipantStateModel>,
-        eventId: string | undefined,
         participant: ParticipantModel,
     ): void {
         this.buildMessageAndNotify(
@@ -631,7 +620,7 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
             this.participantIcon,
             this.buildTranslationArgs( participant ),
         )
-        this.refreshPage( ctx, eventId )
+        this.refreshPage( ctx )
     }
 
     @Action( DeleteParticipant )
@@ -641,7 +630,6 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
             finalize( (): void => this.facade.stopParticipantLoader() ),
             map( (): void => this.deleteParticipantComplete(
                 ctx,
-                payload.eventId,
                 payload.participant,
             ) ),
         )
@@ -649,7 +637,6 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
 
     private deleteParticipantComplete (
         ctx: StateContext<ParticipantStateModel>,
-        eventId: string | undefined,
         participant: ParticipantModel,
     ): void {
         this.buildMessageAndNotify(
@@ -659,7 +646,7 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
             this.participantIcon,
             this.buildTranslationArgs( participant ),
         )
-        this.refreshPage( ctx, eventId )
+        this.refreshPage( ctx )
     }
 
     private buildTranslationArgs (participant: ParticipantModel): object {
@@ -669,9 +656,9 @@ export class ParticipantState extends GenericEventElementState<ParticipantStateM
         }
     }
 
-    protected refreshPage (ctx: StateContext<ParticipantStateModel>, eventId: string | undefined): void {
+    protected refreshPage (ctx: StateContext<ParticipantStateModel>): void {
         const page: PageModel<ParticipantModel> | undefined = ctx.getState().participants.element
-        this.facade.fetchParticipantsPage( page?.pageNumber, page?.pageSize, true, eventId )
+        this.facade.fetchParticipantsPage( page?.pageNumber, page?.pageSize, true )
     }
 
     protected pageError (ctx: StateContext<ParticipantStateModel>, error: ErrorModel): Observable<void> {

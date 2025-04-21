@@ -12,7 +12,6 @@ import { Select } from 'primeng/select'
 import { Button } from 'primeng/button'
 import { DatePicker } from 'primeng/datepicker'
 import { VehicleFacade } from '../data/state/vehicle.facade'
-import { AppRouteEnum } from '../../../app-route.enum'
 import { VehicleElementComponent } from '../vehicle-element/vehicle-element.component'
 import { GenericListComponent } from '../../../shared/util-tool/component/generic-list.component'
 import { MovementFacade } from '../../movement/data/state/movement.facade'
@@ -68,12 +67,8 @@ export class VehicleMovementsListComponent extends GenericListComponent implemen
 
     protected loadData (): void {
         const id: string | undefined = this.route.snapshot.params['vehicleId']
-        const eventId: string | undefined = this.contextEventId()
-        if (!eventId || !id) {
-            this.router.navigateByUrl( AppRouteEnum.HOME ).catch( console.error )
-        }
-        this.facade.fetchVehicle( id!, eventId )
-        this.facade.fetchVehicleMovementsPage( id!, undefined, undefined, false, eventId )
+        this.facade.fetchVehicle( id! )
+        this.facade.fetchVehicleMovementsPage( id!, undefined, undefined, false )
     }
 
     private handleMovementActions (): void {
@@ -85,7 +80,6 @@ export class VehicleMovementsListComponent extends GenericListComponent implemen
                         undefined,
                         undefined,
                         true,
-                        this.contextEventId(),
                     )
                 } ),
             ).subscribe(),
@@ -99,14 +93,13 @@ export class VehicleMovementsListComponent extends GenericListComponent implemen
                         this.facade.vehicleMovementsPage()?.pageNumber,
                         this.facade.vehicleMovementsPage()?.pageSize,
                         true,
-                        this.contextEventId(),
                     )
                 } ),
             ).subscribe(),
         )
     }
 
-    protected loadPage (pageEvent: PageEventModel, eventId: string | undefined): void {
+    protected loadPage (pageEvent: PageEventModel): void {
         this.facade.inputMovementsPageSearchParameters(
             this.typeSearched.value,
             this.startDateTimeSearched.value,
@@ -114,7 +107,7 @@ export class VehicleMovementsListComponent extends GenericListComponent implemen
             this.visibilitySearched.value,
         )
         this.facade.fetchVehicleMovementsPage(
-            this.facade.vehicle()!.id, pageEvent.pageNumber, pageEvent.pageSize, false, eventId,
+            this.facade.vehicle()!.id, pageEvent.pageNumber, pageEvent.pageSize, false,
         )
     }
 

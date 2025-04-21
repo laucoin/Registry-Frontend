@@ -13,6 +13,7 @@ export interface MovementStateModel {
     movement: ElementRequestInformationModel<MovementModel>
     _metadata: {
         types: SelectItem<string | undefined>[]
+        participantTypes: SelectItem<string>[]
         searchedReasonsAndActivities: MovementReasonModel[]
         searchedParticipantsAndGroups: SelectItemGroup<ParticipantModel | GroupModel>[]
         searchedVehicles: SelectItem<VehicleModel>[]

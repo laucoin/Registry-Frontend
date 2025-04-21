@@ -11,6 +11,7 @@ import { ActionModel } from '../../shared/util-model/model/action.model'
 import { AppConfig } from '../../app.config'
 import { RegistryActionEnum } from '../../shared/util-common/state/registry.action'
 import { GenericComponent } from '../../shared/util-tool/component/generic.component'
+import { Skeleton } from 'primeng/skeleton'
 
 @Component( {
     selector: 'app-preferences',
@@ -26,6 +27,7 @@ import { GenericComponent } from '../../shared/util-tool/component/generic.compo
         Tabs,
         TabList,
         Tab,
+        Skeleton,
     ],
     templateUrl: './preferences.component.html',
     styleUrl: './preferences.component.scss',

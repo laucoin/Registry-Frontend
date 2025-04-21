@@ -1,6 +1,5 @@
 import { Component, computed, inject, OnDestroy, Signal, signal, WritableSignal } from '@angular/core'
-import { AppRouteEnum } from '../../../app-route.enum'
-import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
+import { FormArray, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { FormUtil } from '../../../shared/util-tool/util/form.util'
 import { MovementFacade } from '../data/state/movement.facade'
 import { MovementModel } from '../../../shared/util-model/model/movement.model'
@@ -8,7 +7,6 @@ import { MovementDto } from '../data/dto/movement.dto'
 import { Button } from 'primeng/button'
 import { CardModule } from 'primeng/card'
 import { DividerModule } from 'primeng/divider'
-import { FormComponent } from '../../../shared/util-ui/form/form.component'
 import { FormFieldErrorComponent } from '../../../shared/util-ui/form-field-error/form-field-error.component'
 import { InputTextModule } from 'primeng/inputtext'
 import { TranslateModule, TranslatePipe } from '@ngx-translate/core'
@@ -16,7 +14,7 @@ import { DropdownModule } from 'primeng/dropdown'
 import { MovementContentDto } from '../data/dto/movement-content.dto'
 import { Select } from 'primeng/select'
 import { DatePicker } from 'primeng/datepicker'
-import { combineLatest, map, Observable, tap } from 'rxjs'
+import { map, Observable, tap } from 'rxjs'
 import { SelectItem } from 'primeng/api'
 import { ParticipantModel } from '../../../shared/util-model/model/participant.model'
 import { RegistryRequiredDirective } from '../../../shared/util-tool/directive/registry-required.directive'
@@ -26,7 +24,6 @@ import { VehicleModel } from '../../../shared/util-model/model/vehicle.model'
 import { EventUtil } from '../../../shared/util-tool/util/event.util'
 import { DateFormatPipe } from '../../../shared/util-tool/pipe/date-format.pipe'
 import { GenericFormComponent } from '../../../shared/util-tool/component/generic-form.component'
-import { CreateMovement, UpdateMovement } from '../data/state/movement.action'
 import { ParticipantUtil } from '../../../shared/util-tool/util/participant.util'
 import { MovementContentFieldComponent } from './movement-content-field/movement-content-field.component'
 import { PluralTranslationPipe } from '../../../shared/util-tool/pipe/plural-translation.pipe'
@@ -38,7 +35,20 @@ import { InputGroupAddon } from 'primeng/inputgroupaddon'
 import { VehicleUtil } from '../../../shared/util-tool/util/vehicle.util'
 import { GenericUtil } from '../../../shared/util-tool/util/generic.util'
 import { MovementReasonModel } from '../data/model/movement-reason.model'
-import { toObservable } from '@angular/core/rxjs-interop'
+import { ProgressSpinner } from 'primeng/progressspinner'
+import { Step, StepItem, StepPanel, Stepper } from 'primeng/stepper'
+import { FormIconPipe } from '../../../shared/util-tool/pipe/form-icon.pipe'
+import { RadioButton } from 'primeng/radiobutton'
+import { ParticipantTypeEnum } from '../../../shared/util-model/enumeration/participant-type.enum'
+import { ParticipantDto } from '../../participant/data/dto/participant.dto'
+import { DateUtil } from '../../../shared/util-tool/util/date.util'
+import {
+    CreateGuestsMovement,
+    CreateMovement,
+    UpdateGuestsMovement,
+    UpdateMovement,
+} from '../data/state/movement.action'
+import { AppRouteEnum } from '../../../app-route.enum'
 
 @Component( {
     selector: 'app-movement-form',
@@ -47,7 +57,6 @@ import { toObservable } from '@angular/core/rxjs-interop'
         Button,
         CardModule,
         DividerModule,
-        FormComponent,
         FormFieldErrorComponent,
         InputTextModule,
         ReactiveFormsModule,
@@ -66,6 +75,15 @@ import { toObservable } from '@angular/core/rxjs-interop'
         AutoComplete,
         InputGroup,
         InputGroupAddon,
+        ProgressSpinner,
+        Stepper,
+        StepItem,
+        Step,
+        StepPanel,
+        FormIconPipe,
+        RadioButton,
+        FormsModule,
+
     ],
     templateUrl: './movement-form.component.html',
     styleUrl: './movement-form.component.scss',
@@ -76,21 +94,32 @@ export class MovementFormComponent extends GenericFormComponent<MovementModel, M
     protected readonly VehicleUtil: typeof VehicleUtil = VehicleUtil
 
     protected readonly now: Date = new Date()
-    protected readonly form: FormGroup
+    protected readonly informationForm: FormGroup
+    protected readonly contentForm: FormGroup
+    protected readonly vehicleForm: FormGroup
 
-    protected readonly selectedReason: WritableSignal<MovementReasonModel | undefined> = signal(
-        undefined )
+    protected readonly reasonRequired: WritableSignal<boolean> = signal( true )
+    protected readonly isContentSelection: WritableSignal<boolean> = signal( true )
+    protected readonly selectedReason: WritableSignal<MovementReasonModel | undefined> = signal( undefined )
     protected readonly hasVehicleOption: Signal<boolean> = computed( (): boolean => EventUtil.hasOption(
-        this.contextEvent(),
+        this.registryFacade.selectedEvent(),
         'VEHICLE',
     ) )
+    protected readonly hasThirdStep: Signal<boolean> = computed( (): boolean =>
+        (this.facade.movement()?.contentType === ParticipantTypeEnum.REGISTERED && this.hasVehicleOption())
+        || (this.facade.movement()?.content.some( (content: MovementContentModel): boolean => GenericUtil.nonNull(
+            content.vehicle ) ) ?? false),
+    )
     protected readonly drivers: WritableSignal<SelectItem<ParticipantModel>[]> = signal( [] )
+
+    protected activeTab: number = 1
 
     public constructor () {
         super()
 
-        this.form = this.initForm()
-        this.handleFormChange()
+        this.informationForm = this.initForm()
+        this.contentForm = this.initContentForm()
+        this.vehicleForm = this.initVehicleForm()
 
         this.loadData()
 
@@ -98,13 +127,15 @@ export class MovementFormComponent extends GenericFormComponent<MovementModel, M
         this.handleContentChange()
     }
 
+    public ngOnDestroy (): void {
+        this.subscriptions.unsubscribe()
+    }
+
     protected override loadData (): void {
         this.facade.resetMovement()
 
         if (GenericUtil.nonNull( this.idParam )) {
-            this.facade.fetchMovement( this.idParam!, this.contextEventId() )
-        } else {
-            super.loadData()
+            this.facade.fetchMovement( this.idParam! )
         }
     }
 
@@ -112,34 +143,65 @@ export class MovementFormComponent extends GenericFormComponent<MovementModel, M
         return this.formBuilder.group( {
             dateTime: this.formBuilder.control( this.now, [ Validators.required ] ),
             type: this.formBuilder.control( undefined, [ Validators.required ] ),
+            contentType: this.formBuilder.control( ParticipantTypeEnum.REGISTERED, [ Validators.required ] ),
+        } )
+    }
+
+    private initContentForm (): FormGroup {
+        return this.formBuilder.group( {
             reason: this.formBuilder.control( undefined, [] ),
-            content: this.formBuilder.control( [], [ Validators.required ] ),
+            participantContent: this.formBuilder.control( [], [] ),
+            guestContent: this.formBuilder.array( [], [] ),
+        } )
+    }
+
+    private initVehicleForm (): FormGroup {
+        return this.formBuilder.group( {
             vehiclesWithDrivers: this.formBuilder.array( [], [] ),
         } )
     }
 
-    protected handleFormChange (): void {
-        this.subscriptions.add(
-            combineLatest( [ this.type.valueChanges, toObservable( this.selectedReason ) ] ).pipe(
-                tap( (): void => {
-                    if (
-                        GenericUtil.nonNull( this.selectedReason()?.type )
-                        && GenericUtil.nonNull( this.type.value )
-                        && this.selectedReason()?.type !== this.type.value) {
-                        this.reason.setErrors( { incompatibleReason: { reason: this.selectedReason()?.label } } )
-                    } else {
-                        this.reason.setErrors( null )
-                    }
-                } ),
-            ).subscribe(),
+    protected handleTypeChange (type: string | undefined): void {
+        this.updateContentAndReasonRules( type, this.contentType.value )
+    }
+
+    protected handleContentTypeChange (contentType: string): void {
+        this.updateContentAndReasonRules( this.type.value, contentType )
+    }
+
+    private updateContentAndReasonRules (type: string | undefined, contentType: string): void {
+        this.selectedReason.set( undefined )
+        this.reason.patchValue( undefined )
+
+        this.isContentSelection.set( contentType == ParticipantTypeEnum.REGISTERED || type == 'OUT' )
+
+        if (this.isContentSelection()) {
+            this.guestContent.clear()
+            this.guestContent.clearValidators()
+            this.participantContent.addValidators( [ Validators.required ] )
+        } else {
+            this.participantContent.clearValidators()
+            this.guestContent.addValidators( [ Validators.required ] )
+            if (this.guestContent.length == 0) this.addGuest()
+        }
+
+        this.reasonRequired.set(
+            type == 'OUT' && contentType == ParticipantTypeEnum.REGISTERED ||
+            type == 'IN' && contentType == ParticipantTypeEnum.GUEST,
         )
+
+        if (this.reasonRequired()) {
+            this.reason.addValidators( [ Validators.required ] )
+        } else {
+            this.reason.clearValidators()
+        }
     }
 
     protected handleLoadedElement (): void {
         this.subscriptions.add(
-            combineLatest( [ this.facade.movement$, this.registryFacade.contextEvent$ ] ).pipe(
-                map( ([ movement, event ]: [ MovementModel | undefined, EventModel | undefined ]): void => {
-                    const contextEvent: EventModel | undefined = movement?.event || event
+            this.facade.movement$.pipe(
+                tap( (movement: MovementModel | undefined): void => {
+                    const contextEvent: EventModel | undefined = movement?.event || this.registryFacade.selectedEvent()
                     this.addEventDateValidators( contextEvent, this.dateTime )
                     this.fillForm( movement )
                 } ),
@@ -149,7 +211,7 @@ export class MovementFormComponent extends GenericFormComponent<MovementModel, M
 
     private handleContentChange (): void {
         this.subscriptions.add(
-            this.content.valueChanges.pipe(
+            this.participantContent.valueChanges.pipe(
                 map( (item: MovementContentModel[]): void => this.drivers.set(
                     item.map( (element: MovementContentModel): SelectItem<ParticipantModel> => ParticipantUtil.toSelectItem(
                         element.participant ) ),
@@ -163,23 +225,38 @@ export class MovementFormComponent extends GenericFormComponent<MovementModel, M
 
         this.dateTime.patchValue( new Date( element?.dateTime ) )
         this.type.patchValue( element.type.value )
+        this.type.disable()
+        this.contentType.patchValue( element.contentType )
+        this.contentType.disable()
+        if (element.type.value == 'IN' && element.contentType == ParticipantTypeEnum.GUEST) {
+            element.content.forEach( (content: MovementContentModel): void => this.addGuest( content.participant ) )
+        } else {
+            this.participantContent.patchValue( element.content )
+        }
+        this.updateContentAndReasonRules( element.type.value, element.contentType )
         this.selectedReason.set( element.reason )
         this.reason.patchValue( element.reason )
-        this.content.patchValue( element.content )
         this.buildVehiclesFromLoadedMovement()
     }
 
     protected submit (): void {
-        if (!FormUtil.isFormValid( this.form )) {
-            console.warn( this.invalidFormMessage, this.form.value )
-            return
+        switch (true) {
+            case !FormUtil.isFormValid( this.informationForm ):
+                console.warn( this.invalidFormMessage, this.informationForm.value )
+                return
+            case !FormUtil.isFormValid( this.contentForm ):
+                console.warn( this.invalidFormMessage, this.contentForm.value )
+                return
+            case !FormUtil.isFormValid( this.vehicleForm ):
+                console.warn( this.invalidFormMessage, this.vehicleForm.value )
+                return
         }
 
         const dto: MovementDto = this.buildDto()
-        const observable: Observable<CreateMovement | UpdateMovement> =
+        const observable: Observable<CreateMovement | CreateGuestsMovement | UpdateMovement | UpdateGuestsMovement> =
             this.facade.movement()
-            ? this.facade.updateMovement( this.facade.movement()!.id!, dto, this.contextEventId() )
-            : this.facade.createMovement( dto, this.contextEventId() )
+            ? this.facade.updateMovement( this.facade.movement()!.id!, dto )
+            : this.facade.createMovement( dto )
 
         this.subscriptions.add(
             observable.pipe(
@@ -194,10 +271,17 @@ export class MovementFormComponent extends GenericFormComponent<MovementModel, M
             type: this.type.value,
             reason: this.selectedReason()?.kind === 'REASON' ? this.selectedReason()?.value : undefined,
             activityId: this.selectedReason()?.kind === 'ACTIVITY' ? this.selectedReason()?.value : undefined,
-            content: this.content.value?.map( (content: MovementContentModel): MovementContentDto => ({
+            contentType: this.contentType.value,
+            content: this.participantContent.value?.map( (content: MovementContentModel): MovementContentDto => ({
                 poolName: content.poolName,
                 participantId: content.participant.id,
                 vehicleId: this.getVehicleFromDriver( content.participant.id ),
+            }) ),
+            guests: this.guestContent.value.map( (guest: ParticipantDto): ParticipantDto => ({
+                id: guest.id,
+                firstName: guest.firstName,
+                lastName: guest.lastName,
+                birthday: DateUtil.getDate( new Date( guest.birthday ) ),
             }) ),
         }
     }
@@ -226,22 +310,55 @@ export class MovementFormComponent extends GenericFormComponent<MovementModel, M
         this.facade.searchReasonsAndActivities(
             textSearched,
             this.type.value,
-            this.contextEventId(),
+            this.contentType.value,
         )
     }
 
     protected handleParticipantsAndGroupsSearch (textSearched: string | undefined): void {
         this.facade.searchParticipantsAndGroups(
+            this.contentType.value,
             textSearched,
-            this.contextEventId(),
         )
     }
 
     protected handleVehiclesSearch (searched: string | undefined): void {
-        this.facade.searchVehicles(
-            searched,
-            this.contextEventId(),
-        )
+        this.facade.searchVehicles( searched )
+    }
+
+    protected addGuest (participant: ParticipantModel | undefined = undefined): void {
+        this.guestContent.push( this.formBuilder.group( {
+            id: this.formBuilder.control( participant?.id, [] ),
+            firstName: this.formBuilder.control( participant?.firstName, [ Validators.required ] ),
+            lastName: this.formBuilder.control( participant?.lastName, [ Validators.required ] ),
+            birthday: this.formBuilder.control(
+                participant?.birthday ? new Date( participant?.birthday ) : undefined,
+                [ Validators.required ],
+            ),
+        } ) )
+    }
+
+    protected removeGuest (index: number): void {
+        this.guestContent.removeAt( index )
+    }
+
+    protected guestFormGroup (index: number): FormGroup {
+        return this.guestContent.at( index ) as FormGroup
+    }
+
+    protected participantId (index: number): FormControl {
+        return this.guestFormGroup( index ).get( 'id' ) as FormControl
+    }
+
+    protected firstName (index: number): FormControl {
+        return this.guestFormGroup( index ).get( 'firstName' ) as FormControl
+    }
+
+    protected lastName (index: number): FormControl {
+        return this.guestFormGroup( index ).get( 'lastName' ) as FormControl
+    }
+
+    protected birthday (index: number): FormControl {
+        return this.guestFormGroup( index ).get( 'birthday' ) as FormControl
     }
 
     protected addVehicle (vehicle: VehicleModel): void {
@@ -271,27 +388,31 @@ export class MovementFormComponent extends GenericFormComponent<MovementModel, M
         return this.route.snapshot.params['movementId']
     }
 
-    public ngOnDestroy (): void {
-        this.subscriptions.unsubscribe()
-    }
-
     protected get dateTime (): FormControl {
-        return this.form.get( 'dateTime' ) as FormControl
+        return this.informationForm.get( 'dateTime' ) as FormControl
     }
 
     protected get type (): FormControl {
-        return this.form.get( 'type' ) as FormControl
+        return this.informationForm.get( 'type' ) as FormControl
+    }
+
+    protected get contentType (): FormControl {
+        return this.informationForm.get( 'contentType' ) as FormControl
     }
 
     protected get reason (): FormControl {
-        return this.form.get( 'reason' ) as FormControl
+        return this.contentForm.get( 'reason' ) as FormControl
     }
 
-    protected get content (): FormControl {
-        return this.form.get( 'content' ) as FormControl
+    protected get participantContent (): FormControl {
+        return this.contentForm.get( 'participantContent' ) as FormControl
+    }
+
+    protected get guestContent (): FormArray {
+        return this.contentForm.get( 'guestContent' ) as FormArray
     }
 
     protected get vehiclesWithDrivers (): FormArray {
-        return this.form.get( 'vehiclesWithDrivers' ) as FormArray
+        return this.vehicleForm.get( 'vehiclesWithDrivers' ) as FormArray
     }
 }

@@ -149,10 +149,10 @@ export class DateUtil {
         const [ seconds, milliseconds ]: string[] = secondsWithMs.split( '.' )
 
         formattedValue.setUTCHours(
-            parseInt( hours ),
-            parseInt( minutes ),
-            parseInt( seconds ),
-            parseInt( StringUtil.truncate( milliseconds, 3 ) ),
+            parseInt( hours ?? '0' ),
+            parseInt( minutes ?? '0' ),
+            parseInt( seconds ?? '0' ),
+            parseInt( StringUtil.truncate( milliseconds ?? '0', 3 ) ),
         )
 
         return formattedValue

@@ -2,7 +2,7 @@
                   [actions]='actions()'
                   [actionMenuVisible]='actionMenuVisible()'
                   (action)='showDialogIfNeeded($event)'
-                  icon='pi pi-user'>
+                  [icon]='participant().type.value === ParticipantTypeEnum.REGISTERED ? "pi pi-user" : "pi pi-user-plus"'>
     <div class='element-card'>
         <div class='participant-info'>
             <div class='participant-name d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
@@ -65,7 +65,7 @@
             styleClass='max-list-box-height'
             scrollHeight='100%'
             [options]='participant().groups'
-            [readonly]='true'
+            readonly
             optionLabel='name'>
         <ng-template #item let-group>
             <div class='d-flex align-items-center'>

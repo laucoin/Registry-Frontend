@@ -1,7 +1,8 @@
 <p-auto-complete multiple
+                 group
                  class='no-autocomplete-item'
+                 appendTo='body'
                  [inputId]='inputId()'
-                 [group]='true'
                  [fluid]='fluid()'
                  [suggestions]='suggestions()'
                  (onSelect)='handleElementSelection($event.value)'
@@ -20,9 +21,10 @@
             <div class='ms-3'>{{ ParticipantUtil.toSelectItem(participant).label }}</div>
             <p-button icon='pi pi-times'
                       size='small'
-                      [rounded]='true'
-                      [text]='true'
-                      (click)='handleParticipantRemoving(participant.id)' />
+                      severity='danger'
+                      rounded
+                      text
+                      (onClick)='handleParticipantRemoving(participant.id)' />
         </li>
     } @empty {
         <li class='item empty-message'>
@@ -35,13 +37,14 @@
 @for (groupName of Object.keys(groups()); track groupName) {
     <div class='full-w d-flex align-items-center justify-content-between'>
         <div>
-            {{ 'movements.form.content.group' | translate: { name: groupName } }}
+            {{ 'movements.form.content.registered.group' | translate: { name: groupName } }}
         </div>
         <p-button icon='pi pi-times'
                   size='small'
-                  [rounded]='true'
-                  [text]='true'
-                  (click)='handleGroupRemoving(groupName)' />
+                  severity='danger'
+                  rounded
+                  text
+                  (onClick)='handleGroupRemoving(groupName)' />
     </div>
     <ul class='list-box'>
         @for (member of groups()[groupName]; track member.id) {
@@ -49,9 +52,10 @@
                 <div class='ms-3'>{{ ParticipantUtil.toSelectItem(member).label }}</div>
                 <p-button icon='pi pi-times'
                           size='small'
-                          [rounded]='true'
-                          [text]='true'
-                          (click)='handleParticipantRemoving(member.id)' />
+                          severity='danger'
+                          rounded
+                          text
+                          (onClick)='handleParticipantRemoving(member.id)' />
             </li>
         }
     </ul>

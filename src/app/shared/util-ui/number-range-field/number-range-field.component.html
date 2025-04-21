@@ -4,7 +4,7 @@
     <p-inputgroup-addon>{{ maxLabel() }}</p-inputgroup-addon>
     <p-input-number inputId='max' [(ngModel)]='maxValue' (onInput)='onInputMax($event.value)' [placeholder]='maxPlaceholder()' />
     <p-inputgroup-addon>
-        <p-button icon='pi pi-times' severity='secondary' (click)='onInputChange(undefined, undefined); minValue = undefined;
+        <p-button icon='pi pi-times' severity='secondary' (onClick)='onInputChange(undefined, undefined); minValue = undefined;
         maxValue = undefined' />
     </p-inputgroup-addon>
 </p-inputgroup>

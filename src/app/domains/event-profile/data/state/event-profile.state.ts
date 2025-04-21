@@ -359,7 +359,6 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
             finalize( (): void => this.facade.stopEventProfileLoader() ),
             map( (creationStatus: CreatedEventProfiles): void => this.createEventProfilesComplete(
                 ctx,
-                payload.eventId,
                 creationStatus,
             ) ),
         )
@@ -367,7 +366,6 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
 
     private createEventProfilesComplete (
         ctx: StateContext<EventProfileStateModel>,
-        eventId: string | undefined,
         creationStatus: CreatedEventProfiles,
     ): void {
         if (creationStatus?.notCreatedUserIds.length > 0) {
@@ -405,7 +403,7 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
                 },
             )
         }
-        this.refreshPage( ctx, eventId )
+        this.refreshPage( ctx )
     }
 
     @Action( UpdateEventProfile )
@@ -416,13 +414,12 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
         return this.service.updateEventProfileById( payload.eventId, payload.id, payload.profile ).pipe(
             initialize( (): void => this.facade.startEventProfileLoader() ),
             finalize( (): void => this.facade.stopEventProfileLoader() ),
-            map( (): void => this.updateEventProfileComplete( ctx, payload.eventId ) ),
+            map( (): void => this.updateEventProfileComplete( ctx ) ),
         )
     }
 
     private updateEventProfileComplete (
         ctx: StateContext<EventProfileStateModel>,
-        eventId: string | undefined,
     ): void {
         this.buildMessageAndNotify(
             'success',
@@ -431,7 +428,7 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
             this.eventProfileIcon,
             this.buildTranslationArgs( ctx.getState().eventProfile.element! ),
         )
-        this.refreshPage( ctx, eventId )
+        this.refreshPage( ctx )
     }
 
     @Action( BlockEventProfile )
@@ -442,13 +439,12 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
         return this.service.blockEventProfileById( payload.eventId, payload.profile.id ).pipe(
             initialize( (): void => this.facade.startEventProfileLoader() ),
             finalize( (): void => this.facade.stopEventProfileLoader() ),
-            map( (): void => this.blockEventProfileComplete( ctx, payload.eventId, payload.profile ) ),
+            map( (): void => this.blockEventProfileComplete( ctx, payload.profile ) ),
         )
     }
 
     private blockEventProfileComplete (
         ctx: StateContext<EventProfileStateModel>,
-        eventId: string | undefined,
         profile: EventProfileModel,
     ): void {
         this.buildMessageAndNotify(
@@ -458,7 +454,7 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
             this.eventProfileIcon,
             this.buildTranslationArgs( profile ),
         )
-        this.refreshPage( ctx, eventId )
+        this.refreshPage( ctx )
     }
 
     @Action( UnblockEventProfile )
@@ -469,13 +465,12 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
         return this.service.unblockEventProfileById( payload.eventId, payload.profile.id ).pipe(
             initialize( (): void => this.facade.startEventProfileLoader() ),
             finalize( (): void => this.facade.stopEventProfileLoader() ),
-            map( (): void => this.unblockEventProfileComplete( ctx, payload.eventId, payload.profile ) ),
+            map( (): void => this.unblockEventProfileComplete( ctx, payload.profile ) ),
         )
     }
 
     private unblockEventProfileComplete (
         ctx: StateContext<EventProfileStateModel>,
-        eventId: string | undefined,
         profile: EventProfileModel,
     ): void {
         this.buildMessageAndNotify(
@@ -485,7 +480,7 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
             this.eventProfileIcon,
             this.buildTranslationArgs( profile ),
         )
-        this.refreshPage( ctx, eventId )
+        this.refreshPage( ctx )
     }
 
     @Action( DeleteEventProfile )
@@ -496,13 +491,12 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
         return this.service.deleteEventProfileById( undefined, payload.profile.id ).pipe(
             initialize( (): void => this.facade.startEventProfileLoader() ),
             finalize( (): void => this.facade.stopEventProfileLoader() ),
-            map( (): void => this.deleteEventProfileComplete( ctx, payload.eventId, payload.profile ) ),
+            map( (): void => this.deleteEventProfileComplete( ctx, payload.profile ) ),
         )
     }
 
     private deleteEventProfileComplete (
         ctx: StateContext<EventProfileStateModel>,
-        eventId: string | undefined,
         profile: EventProfileModel,
     ): void {
         this.buildMessageAndNotify(
@@ -512,7 +506,7 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
             this.eventProfileIcon,
             this.buildTranslationArgs( profile ),
         )
-        this.refreshPage( ctx, eventId )
+        this.refreshPage( ctx )
     }
 
     private buildTranslationArgs (profile: EventProfileModel): object {
@@ -523,9 +517,9 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
         }
     }
 
-    protected refreshPage (ctx: StateContext<EventProfileStateModel>, eventId: string | undefined): void {
+    protected refreshPage (ctx: StateContext<EventProfileStateModel>): void {
         const page: PageModel<EventProfileModel> | undefined = ctx.getState().eventProfiles.element
-        this.facade.fetchEventProfilesPage( page?.pageNumber, page?.pageSize, true, eventId )
+        this.facade.fetchEventProfilesPage( page?.pageNumber, page?.pageSize, true )
     }
 
     protected pageError (ctx: StateContext<EventProfileStateModel>, error: ErrorModel): Observable<void> {

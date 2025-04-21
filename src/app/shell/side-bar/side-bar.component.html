@@ -9,30 +9,49 @@
                    [attr.href]='AppRouteEnum.HOME.toString()'>
                     <img
                             [alt]="'menu.home' | translate"
-                            [ngSrc]='registryFacade.logoPath()!'
+                            [src]='registryFacade.logoPath()!'
                             class='pointer'
-                            height='105'
-                            priority
                             width='248' />
                 </a>
             </ng-template>
         }
-        <menu>
-            @for (link of menuItems(); track link; let index = $index) {
-                <li>
-                    <a pRipple
-                       (click)='onNavigate()'
-                       (keydown.enter)='onNavigate()'
-                       [class.router-active-card]='StringUtil.isRouteActive(link.route)'
-                       [routerLink]='buildUri(link.route.toString())'
-                       [attr.href]='buildUri(link.route.toString())'
-                       class='menu-item card clickable-card pointer'>
-                        <i [class]='link.icon'></i>
-                        <span>{{ link.name | translate | truncate: maxMenuTextLength }}</span>
-                    </a>
-                </li>
+        <div class='d-flex flex-column gap-2'>
+            <menu class='first-menu'>
+                @for (link of generalMenuItems(); track link; ) {
+                    <li>
+                        <a pRipple
+                           (click)='onNavigate()'
+                           (keydown.enter)='onNavigate()'
+                           [class.router-active-card]='StringUtil.isRouteActive(link.route)'
+                           [routerLink]='link.route.toString()'
+                           [attr.href]='link.route.toString()'
+                           class='menu-item card clickable-card pointer'>
+                            <i [class]='link.icon'></i>
+                            <span>{{ link.name | translate | truncate: maxMenuTextLength }}</span>
+                        </a>
+                    </li>
+                }
+            </menu>
+            @if (profileMenuItems().length > 0) {
+                <menu class='bordered-box'>
+                    <span class='border-text'>{{ registryFacade.currentUser()!.preferences.selectedProfile!.event.name }}</span>
+                    @for (link of profileMenuItems(); track link; ) {
+                        <li>
+                            <a pRipple
+                               (click)='onNavigate()'
+                               (keydown.enter)='onNavigate()'
+                               [class.router-active-card]='StringUtil.isRouteActive(link.route)'
+                               [routerLink]='link.route.toString()'
+                               [attr.href]='link.route.toString()'
+                               class='menu-item card clickable-card pointer'>
+                                <i [class]='link.icon'></i>
+                                <span>{{ link.name | translate | truncate: maxMenuTextLength }}</span>
+                            </a>
+                        </li>
+                    }
+                </menu>
             }
-        </menu>
+        </div>
         <ng-template #footer>
             <hr class='mb-3 mx-3' />
             <a pRipple
@@ -46,10 +65,10 @@
             </a>
             <div class='center mt-2'>
                 <p-button
-                        (click)='signOut()'
+                        (onClick)='signOut()'
                         [label]='"global.actions.sign-out" | translate'
-                        [outlined]='true'
-                        [rounded]='true'
+                        outlined
+                        rounded
                         icon='pi pi-sign-out'
                         severity='secondary' />
             </div>
@@ -65,8 +84,8 @@
             <div class='menu-button'>
                 <p-button
                         [ariaLabel]='"menu.toggle" | translate'
-                        (click)='isSidebarOpen = !isSidebarOpen'
-                        [rounded]='true'
+                        (onClick)='isSidebarOpen = !isSidebarOpen'
+                        rounded
                         icon='pi pi-bars' />
             </div>
             <ng-content />

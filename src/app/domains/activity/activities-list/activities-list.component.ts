@@ -59,19 +59,17 @@ export class ActivitiesListComponent extends GenericListComponent {
     }
 
     protected loadData (): void {
-        const eventId: string | undefined = this.route.snapshot.params['eventId']
-        if (!eventId) return
-        this.facade.fetchActivitiesPage( undefined, undefined, false, eventId )
+        this.facade.fetchActivitiesPage( undefined, undefined, false )
     }
 
-    protected loadPage (pageEvent: PageEventModel, eventId: string | undefined): void {
+    protected loadPage (pageEvent: PageEventModel): void {
         this.facade.inputPageSearchParameters(
             this.textSearched.value,
             this.dateTimeSearched.value,
             this.availabilitySearched.value,
             this.visibilitySearched.value,
         )
-        this.facade.fetchActivitiesPage( pageEvent.pageNumber, pageEvent.pageSize, false, eventId )
+        this.facade.fetchActivitiesPage( pageEvent.pageNumber, pageEvent.pageSize, false )
     }
 
     protected get textSearched (): FormControl {

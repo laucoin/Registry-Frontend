@@ -1,9 +1,11 @@
 import { MovementDto } from '../dto/movement.dto'
 import { MovementModel } from '../../../../shared/util-model/model/movement.model'
 import { MovementPageParamsModel } from '../../../../shared/util-model/model/movement-page-params.model'
+import { ParticipantTypeEnum } from '../../../../shared/util-model/enumeration/participant-type.enum'
 
 export enum MovementActionEnum {
-    FETCH_MOVEMENT_TYPES = '[Backend] Fetching available movement types',
+    FETCH_MOVEMENT_TYPES = '[Backend] Fetching movement types',
+    FETCH_PARTICIPANT_TYPES = '[Backend] Fetching participant types',
 
     START_MOVEMENTS_PAGE_LOADER = '[Local] Starting movements\' page loader',
     STOP_MOVEMENTS_PAGE_LOADER = '[Local] Stopping movements\' page loader',
@@ -22,6 +24,8 @@ export enum MovementActionEnum {
     RESET_MOVEMENT = '[Local] Resetting movement',
     CREATE_MOVEMENT = '[Backend] Creating movement',
     UPDATE_MOVEMENT = '[Backend] Updating movement',
+    CREATE_GUESTS_MOVEMENT = '[Backend] Creating guests movement',
+    UPDATE_GUESTS_MOVEMENT = '[Backend] Updating guests movement',
     DISABLE_MOVEMENT = '[Backend] Disabling movement',
     ENABLE_MOVEMENT = '[Backend] Enabling movement',
     DELETE_MOVEMENT = '[Backend] Deleting movement',
@@ -29,6 +33,10 @@ export enum MovementActionEnum {
 
 export class FetchMovementTypes {
     public static readonly type: MovementActionEnum = MovementActionEnum.FETCH_MOVEMENT_TYPES
+}
+
+export class FetchParticipantTypes {
+    public static readonly type: MovementActionEnum = MovementActionEnum.FETCH_PARTICIPANT_TYPES
 }
 
 export class StartMovementsPageLoader {
@@ -85,7 +93,8 @@ export class SearchReasonsAndActivities {
     public constructor (
         public readonly eventId: string | undefined,
         public readonly textSearched: string | undefined,
-        public readonly typeSearched: string | undefined,
+        public readonly typeSearched: string,
+        public readonly contentTypeSearched: ParticipantTypeEnum,
     ) {}
 }
 
@@ -94,6 +103,7 @@ export class SearchParticipantsAndGroups {
 
     public constructor (
         public readonly eventId: string | undefined,
+        public readonly contentTypeSearched: ParticipantTypeEnum,
         public readonly textSearched: string | undefined,
     ) {}
 }
@@ -119,6 +129,22 @@ export class CreateMovement {
 
 export class UpdateMovement {
     public static readonly type: MovementActionEnum = MovementActionEnum.UPDATE_MOVEMENT
+
+    public constructor (
+        public readonly eventId: string | undefined,
+        public readonly id: string,
+        public readonly movement: MovementDto,
+    ) {}
+}
+
+export class CreateGuestsMovement {
+    public static readonly type: MovementActionEnum = MovementActionEnum.CREATE_GUESTS_MOVEMENT
+
+    public constructor (public readonly eventId: string | undefined, public readonly movement: MovementDto) {}
+}
+
+export class UpdateGuestsMovement {
+    public static readonly type: MovementActionEnum = MovementActionEnum.UPDATE_GUESTS_MOVEMENT
 
     public constructor (
         public readonly eventId: string | undefined,

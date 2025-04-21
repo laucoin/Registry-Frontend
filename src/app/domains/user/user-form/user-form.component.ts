@@ -48,9 +48,8 @@ export class UserFormComponent extends GenericFormComponent<UserModel, UserDto> 
         this.facade.resetUser()
 
         if (!this.idParam) {
-            this.router.navigateByUrl( this.buildUri( AppRouteEnum.USERS ) ).catch( console.error )
+            this.router.navigateByUrl( AppRouteEnum.USERS ).catch( console.error )
         } else {
-            super.loadData()
             this.facade.fetchAssignableRoles()
             this.facade.fetchUser( this.idParam! )
         }

@@ -28,13 +28,14 @@ import { GroupUtil } from '../../../shared/util-tool/util/group.util'
 import { EventModel } from '../../../shared/util-model/model/event.model'
 import { DateFormatPipe } from '../../../shared/util-tool/pipe/date-format.pipe'
 import { GenericFormComponent } from '../../../shared/util-tool/component/generic-form.component'
-import { combineLatest, map, Observable } from 'rxjs'
+import { map, Observable } from 'rxjs'
 import { CreateParticipant, UpdateParticipant } from '../data/state/participant.action'
 import { GenericUtil } from '../../../shared/util-tool/util/generic.util'
 import { FormTitlePipe } from '../../../shared/util-tool/pipe/form-title.pipe'
 import { FormButtonPipe } from '../../../shared/util-tool/pipe/form-button.pipe'
 import { DateTimeFieldComponent } from '../../../shared/util-ui/date-time-field/date-time-field.component'
 import { PluralTranslationPipe } from '../../../shared/util-tool/pipe/plural-translation.pipe'
+import { FormIconPipe } from '../../../shared/util-tool/pipe/form-icon.pipe'
 
 @Component( {
     selector: 'app-participant-form',
@@ -58,6 +59,7 @@ import { PluralTranslationPipe } from '../../../shared/util-tool/pipe/plural-tra
         FormButtonPipe,
         DateTimeFieldComponent,
         PluralTranslationPipe,
+        FormIconPipe,
     ],
     templateUrl: './participant-form.component.html',
 } )
@@ -90,9 +92,7 @@ export class ParticipantFormComponent extends GenericFormComponent<ParticipantMo
         this.facade.resetParticipant()
 
         if (GenericUtil.nonNull( this.idParam )) {
-            this.facade.fetchParticipant( this.idParam!, this.contextEventId() )
-        } else {
-            super.loadData()
+            this.facade.fetchParticipant( this.idParam! )
         }
     }
 
@@ -126,9 +126,9 @@ export class ParticipantFormComponent extends GenericFormComponent<ParticipantMo
 
     protected handleLoadedElement (): void {
         this.subscriptions.add(
-            combineLatest( [ this.facade.participant$, this.registryFacade.contextEvent$ ] ).pipe(
-                map( ([ participant, event ]: [ ParticipantModel | undefined, EventModel | undefined ]): void => {
-                    const contextEvent: EventModel | undefined = participant?.event || event
+            this.facade.participant$.pipe(
+                map( (participant: ParticipantModel | undefined): void => {
+                    const contextEvent: EventModel | undefined = participant?.event || this.registryFacade.selectedEvent()
                     this.addEventDateValidators( contextEvent, this.beginDateTime )
                     this.addEventDateValidators( contextEvent, this.endDateTime )
                     this.fillForm( participant )
@@ -162,8 +162,8 @@ export class ParticipantFormComponent extends GenericFormComponent<ParticipantMo
         const dto: ParticipantDto = this.buildDto()
         const observable: Observable<CreateParticipant | UpdateParticipant> =
             this.facade.participant()
-            ? this.facade.updateParticipant( this.facade.participant()!.id!, dto, this.contextEventId() )
-            : this.facade.createParticipant( dto, this.contextEventId() )
+            ? this.facade.updateParticipant( this.facade.participant()!.id!, dto )
+            : this.facade.createParticipant( dto )
 
         if (this.redirect()) {
             this.subscriptions.add(
@@ -191,11 +191,11 @@ export class ParticipantFormComponent extends GenericFormComponent<ParticipantMo
     }
 
     protected handleUserSearch (searched: AutoCompleteCompleteEvent): void {
-        this.facade.searchUsers( searched.query, this.contextEventId() )
+        this.facade.searchUsers( searched.query )
     }
 
     protected handleGroupSearch (searched: AutoCompleteCompleteEvent): void {
-        this.facade.searchGroups( searched.query, this.contextEventId() )
+        this.facade.searchGroups( searched.query )
     }
 
     protected handleUserSelection (selectedUser: SelectItem<UserDto> | undefined): void {

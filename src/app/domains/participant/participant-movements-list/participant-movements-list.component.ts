@@ -12,7 +12,6 @@ import { Select } from 'primeng/select'
 import { Button } from 'primeng/button'
 import { DatePicker } from 'primeng/datepicker'
 import { ParticipantFacade } from '../data/state/participant.facade'
-import { AppRouteEnum } from '../../../app-route.enum'
 import { ParticipantElementComponent } from '../../../shared/util-ui/participant-element/participant-element.component'
 import { GenericListComponent } from '../../../shared/util-tool/component/generic-list.component'
 import { MovementFacade } from '../../movement/data/state/movement.facade'
@@ -68,12 +67,8 @@ export class ParticipantMovementsListComponent extends GenericListComponent impl
 
     protected loadData (): void {
         const id: string | undefined = this.route.snapshot.params['participantId']
-        const eventId: string | undefined = this.contextEventId()
-        if (!eventId || !id) {
-            this.router.navigateByUrl( AppRouteEnum.HOME ).catch( console.error )
-        }
-        this.facade.fetchParticipant( id!, eventId )
-        this.facade.fetchParticipantMovementsPage( id!, undefined, undefined, false, eventId )
+        this.facade.fetchParticipant( id! )
+        this.facade.fetchParticipantMovementsPage( id!, undefined, undefined, false )
     }
 
     private handleMovementActions (): void {
@@ -85,7 +80,6 @@ export class ParticipantMovementsListComponent extends GenericListComponent impl
                         undefined,
                         undefined,
                         true,
-                        this.contextEventId(),
                     )
                 } ),
             ).subscribe(),
@@ -99,14 +93,13 @@ export class ParticipantMovementsListComponent extends GenericListComponent impl
                         this.facade.participantMovementsPage()?.pageNumber,
                         this.facade.participantMovementsPage()?.pageSize,
                         true,
-                        this.contextEventId(),
                     )
                 } ),
             ).subscribe(),
         )
     }
 
-    protected loadPage (pageEvent: PageEventModel, eventId: string | undefined): void {
+    protected loadPage (pageEvent: PageEventModel): void {
         this.facade.inputMovementsPageSearchParameters(
             this.typeSearched.value,
             this.startDateTimeSearched.value,
@@ -114,7 +107,7 @@ export class ParticipantMovementsListComponent extends GenericListComponent impl
             this.visibilitySearched.value,
         )
         this.facade.fetchParticipantMovementsPage(
-            this.facade.participant()!.id, pageEvent.pageNumber, pageEvent.pageSize, false, eventId,
+            this.facade.participant()!.id, pageEvent.pageNumber, pageEvent.pageSize, false,
         )
     }
 

@@ -248,7 +248,6 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
             finalize( (): void => this.facade.stopGroupsPageLoader() ),
             map( (groupsPage: PageModel<GroupModel>): void => this.fetchGroupsPageComplete(
                 ctx,
-                payload.eventId,
                 groupsPage,
             ) ),
             catchError( (error: ErrorModel): Observable<void> => this.pageError( ctx, error ) ),
@@ -257,7 +256,6 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
 
     private fetchGroupsPageComplete (
         ctx: StateContext<GroupStateModel>,
-        eventId: string | undefined,
         groupsPage: PageModel<GroupModel>,
     ): void {
         ctx.patchState( {
@@ -274,7 +272,6 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
         if (groupsPage.content.length > 0) {
             this.facade.fetchGroupMembers(
                 groupsPage.content.map( (group: GroupModel): string => group.id ),
-                eventId,
             )
         }
     }
@@ -498,7 +495,6 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
             finalize( (): void => this.facade.stopGroupLoader() ),
             map( (group: GroupModel): void => this.createGroupComplete(
                 ctx,
-                payload.eventId,
                 group,
             ) ),
         )
@@ -506,7 +502,6 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
 
     private createGroupComplete (
         ctx: StateContext<GroupStateModel>,
-        eventId: string | undefined,
         group: GroupModel,
     ): void {
         this.buildMessageAndNotify(
@@ -516,7 +511,7 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
             this.groupIcon,
             this.buildTranslationArgs( group ),
         )
-        this.refreshPage( ctx, eventId )
+        this.refreshPage( ctx )
     }
 
     @Action( UpdateGroup )
@@ -526,7 +521,6 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
             finalize( (): void => this.facade.stopGroupLoader() ),
             map( (group: GroupModel): void => this.updateGroupComplete(
                 ctx,
-                payload.eventId,
                 group,
             ) ),
         )
@@ -534,7 +528,6 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
 
     private updateGroupComplete (
         ctx: StateContext<GroupStateModel>,
-        eventId: string | undefined,
         group: GroupModel,
     ): void {
         this.buildMessageAndNotify(
@@ -544,7 +537,7 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
             this.groupIcon,
             this.buildTranslationArgs( group ),
         )
-        this.refreshPage( ctx, eventId )
+        this.refreshPage( ctx )
     }
 
     @Action( AddMembersToGroup )
@@ -554,7 +547,6 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
             finalize( (): void => this.facade.stopGroupLoader() ),
             map( (response: AddedGroupMembersDto): void => this.addMembersToGroupComplete(
                 ctx,
-                payload.eventId,
                 payload.memberIds.length,
                 response.members,
             ) ),
@@ -563,7 +555,6 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
 
     private addMembersToGroupComplete (
         ctx: StateContext<GroupStateModel>,
-        eventId: string | undefined,
         asked: number,
         members: string[],
     ): void {
@@ -603,7 +594,7 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
                 },
             )
         }
-        this.refreshGroupMembers( ctx, eventId )
+        this.refreshGroupMembers( ctx )
     }
 
     @Action( RemoveMemberFromGroup )
@@ -616,7 +607,6 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
             finalize( (): void => this.facade.stopGroupLoader() ),
             map( (group: GroupModel): void => this.removeMemberFromGroupComplete(
                 ctx,
-                payload.eventId,
                 group,
                 payload.participant,
             ) ),
@@ -625,7 +615,6 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
 
     private removeMemberFromGroupComplete (
         ctx: StateContext<GroupStateModel>,
-        eventId: string | undefined,
         group: GroupModel,
         participant: ParticipantModel,
     ): void {
@@ -640,7 +629,7 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
                 lastName: participant.lastName,
             },
         )
-        this.refreshGroupMembers( ctx, eventId )
+        this.refreshGroupMembers( ctx )
     }
 
     @Action( DisableGroup )
@@ -653,7 +642,6 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
             finalize( (): void => this.facade.stopGroupLoader() ),
             map( (group: GroupModel): void => this.disableGroupComplete(
                 ctx,
-                payload.eventId,
                 group,
             ) ),
         )
@@ -661,7 +649,6 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
 
     private disableGroupComplete (
         ctx: StateContext<GroupStateModel>,
-        eventId: string | undefined,
         group: GroupModel,
     ): void {
         this.buildMessageAndNotify(
@@ -671,7 +658,7 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
             this.groupIcon,
             this.buildTranslationArgs( group ),
         )
-        this.refreshPage( ctx, eventId )
+        this.refreshPage( ctx )
     }
 
     @Action( EnableGroup )
@@ -681,7 +668,6 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
             finalize( (): void => this.facade.stopGroupLoader() ),
             map( (group: GroupModel): void => this.enableGroupComplete(
                 ctx,
-                payload.eventId,
                 group,
             ) ),
         )
@@ -689,7 +675,6 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
 
     private enableGroupComplete (
         ctx: StateContext<GroupStateModel>,
-        eventId: string | undefined,
         group: GroupModel,
     ): void {
         this.buildMessageAndNotify(
@@ -699,7 +684,7 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
             this.groupIcon,
             this.buildTranslationArgs( group ),
         )
-        this.refreshPage( ctx, eventId )
+        this.refreshPage( ctx )
     }
 
     @Action( DeleteGroup )
@@ -709,7 +694,6 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
             finalize( (): void => this.facade.stopGroupLoader() ),
             map( (): void => this.deleteGroupComplete(
                 ctx,
-                payload.eventId,
                 payload.group,
             ) ),
         )
@@ -717,7 +701,6 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
 
     private deleteGroupComplete (
         ctx: StateContext<GroupStateModel>,
-        eventId: string | undefined,
         group: GroupModel,
     ): void {
         this.buildMessageAndNotify(
@@ -727,19 +710,19 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
             this.groupIcon,
             this.buildTranslationArgs( group ),
         )
-        this.refreshPage( ctx, eventId )
+        this.refreshPage( ctx )
     }
 
     private buildTranslationArgs (group: GroupModel): object {
         return { name: group?.name }
     }
 
-    protected refreshPage (ctx: StateContext<GroupStateModel>, eventId: string | undefined): void {
+    protected refreshPage (ctx: StateContext<GroupStateModel>): void {
         const page: PageModel<GroupModel> | undefined = ctx.getState().groups.element
-        this.facade.fetchGroupsPage( page?.pageNumber, page?.pageSize, true, eventId )
+        this.facade.fetchGroupsPage( page?.pageNumber, page?.pageSize, true )
     }
 
-    protected refreshGroupMembers (ctx: StateContext<GroupStateModel>, eventId: string | undefined): void {
+    protected refreshGroupMembers (ctx: StateContext<GroupStateModel>): void {
         const pageInformation: PageRequestInformationModel<ParticipantPageParamsModel, ParticipantModel> & {
             groupId: string | undefined
         } = ctx.getState().members
@@ -748,9 +731,8 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
             pageInformation.element?.pageNumber,
             pageInformation.element?.pageSize,
             true,
-            eventId,
         )
-        this.facade.fetchGroup( pageInformation.groupId!, eventId )
+        this.facade.fetchGroup( pageInformation.groupId! )
     }
 
     protected pageError (ctx: StateContext<GroupStateModel>, error: ErrorModel): Observable<void> {

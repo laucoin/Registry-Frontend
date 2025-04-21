@@ -38,7 +38,7 @@ export class VehicleFacade extends GenericEventElementFacade {
     }
 
     public get vehiclesPageLoading (): Signal<boolean> {
-        return computed( (): boolean => this.ngStore.selectSignal( VehicleState.vehiclesPageLoading )() || this.registryFacade.contextEventLoading() )
+        return this.ngStore.selectSignal( VehicleState.vehiclesPageLoading )
     }
 
     public get vehiclesPageSilentLoading (): Signal<boolean> {
@@ -76,9 +76,7 @@ export class VehicleFacade extends GenericEventElementFacade {
     }
 
     public get vehicleMovementsPageLoading (): Signal<boolean> {
-        return computed( (): boolean =>
-            this.ngStore.selectSignal( VehicleState.vehicleMovementsPageLoading )() || this.registryFacade.contextEventLoading(),
-        )
+        return this.ngStore.selectSignal( VehicleState.vehicleMovementsPageLoading )
     }
 
     public get vehicleMovementsPageSilentLoading (): Signal<boolean> {
@@ -152,10 +150,9 @@ export class VehicleFacade extends GenericEventElementFacade {
         pageNumber: number | undefined,
         pageSize: number | undefined,
         force: boolean,
-        eventId: string | undefined = this.actualSelectedEventId,
     ): void {
         const index: number | undefined = this.vehiclesPageResetSearch() ? 0 : pageNumber
-        this.ngStore.dispatch( new FetchVehiclesPage( eventId, index, pageSize, force ) )
+        this.ngStore.dispatch( new FetchVehiclesPage( this.selectedEventId(), index, pageSize, force ) )
     }
 
     public inputPageSearchParameters (
@@ -193,17 +190,13 @@ export class VehicleFacade extends GenericEventElementFacade {
         pageNumber: number | undefined,
         pageSize: number | undefined,
         force: boolean,
-        eventId: string | undefined = this.actualSelectedEventId,
     ): void {
         const index: number | undefined = this.vehicleMovementsPageResetSearch() ? 0 : pageNumber
-        this.ngStore.dispatch( new FetchVehicleMovementsPage( eventId, id, index, pageSize, force ) )
+        this.ngStore.dispatch( new FetchVehicleMovementsPage( this.selectedEventId(), id, index, pageSize, force ) )
     }
 
-    public fetchVehicleMovementsContent (
-        movementIds: string[],
-        eventId: string | undefined,
-    ): void {
-        this.ngStore.dispatch( new FetchVehicleMovementsContents( eventId, movementIds ) )
+    public fetchVehicleMovementsContent (movementIds: string[]): void {
+        this.ngStore.dispatch( new FetchVehicleMovementsContents( this.selectedEventId(), movementIds ) )
     }
 
     public inputMovementsPageSearchParameters (
@@ -236,8 +229,8 @@ export class VehicleFacade extends GenericEventElementFacade {
         this.ngStore.dispatch( StopVehicleLoader )
     }
 
-    public fetchVehicle (id: string, eventId: string | undefined = this.actualSelectedEventId): void {
-        this.ngStore.dispatch( new FetchVehicle( eventId, id ) )
+    public fetchVehicle (id: string): void {
+        this.ngStore.dispatch( new FetchVehicle( this.selectedEventId(), id ) )
     }
 
     public resetVehicle (): void {
@@ -246,44 +239,39 @@ export class VehicleFacade extends GenericEventElementFacade {
 
     public createVehicle (
         vehicle: VehicleDto,
-        eventId: string | undefined = this.actualSelectedEventId,
     ): Observable<CreateVehicle> {
-        this.ngStore.dispatch( new CreateVehicle( eventId, vehicle ) )
+        this.ngStore.dispatch( new CreateVehicle( this.selectedEventId(), vehicle ) )
         return this.actions$.pipe( ofActionSuccessful( CreateVehicle ) )
     }
 
     public updateVehicle (
         id: string,
         vehicle: VehicleDto,
-        eventId: string | undefined = this.actualSelectedEventId,
     ): Observable<UpdateVehicle> {
-        this.ngStore.dispatch( new UpdateVehicle( eventId, id, vehicle ) )
+        this.ngStore.dispatch( new UpdateVehicle( this.selectedEventId(), id, vehicle ) )
         return this.actions$.pipe( ofActionSuccessful( UpdateVehicle ) )
     }
 
     public disableVehicle (
         id: string,
-        eventId: string | undefined = this.actualSelectedEventId,
     ): Observable<ActionCompletion<DisableVehicle>> {
-        this.ngStore.dispatch( new DisableVehicle( eventId, id ) )
+        this.ngStore.dispatch( new DisableVehicle( this.selectedEventId(), id ) )
 
         return this.actions$.pipe( ofActionCompleted( DisableVehicle ) )
     }
 
     public enableVehicle (
         id: string,
-        eventId: string | undefined = this.actualSelectedEventId,
     ): Observable<ActionCompletion<EnableVehicle>> {
-        this.ngStore.dispatch( new EnableVehicle( eventId, id ) )
+        this.ngStore.dispatch( new EnableVehicle( this.selectedEventId(), id ) )
 
         return this.actions$.pipe( ofActionCompleted( EnableVehicle ) )
     }
 
     public deleteVehicle (
         vehicle: VehicleModel,
-        eventId: string | undefined = this.actualSelectedEventId,
     ): Observable<ActionCompletion<DeleteVehicle>> {
-        this.ngStore.dispatch( new DeleteVehicle( eventId, vehicle ) )
+        this.ngStore.dispatch( new DeleteVehicle( this.selectedEventId(), vehicle ) )
 
         return this.actions$.pipe( ofActionCompleted( DeleteVehicle ) )
     }

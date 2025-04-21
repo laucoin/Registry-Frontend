@@ -17,6 +17,7 @@ import { PairModel } from '../../../../shared/util-model/model/pair.model'
 import { GenericUtil } from '../../../../shared/util-tool/util/generic.util'
 import { StringUtil } from '../../../../shared/util-tool/util/string.util'
 import { MovementReasonModel } from '../model/movement-reason.model'
+import { ParticipantTypeEnum } from '../../../../shared/util-model/enumeration/participant-type.enum'
 
 @Injectable( {
     providedIn: 'root',
@@ -64,14 +65,18 @@ export class MovementService extends GenericEventService {
     public searchReasonsAndActivities (
         eventId: string | undefined,
         textSearched: string | undefined,
-        typeSearched: string | undefined,
+        typeSearched: string,
+        contentTypeSearched: ParticipantTypeEnum,
     ): Observable<MovementReasonModel[]> {
         let params: HttpParams = new HttpParams()
+            .set( 'typeSearched', typeSearched )
+            .set( 'contentTypeSearched', contentTypeSearched.toString() )
+
         if (GenericUtil.nonNull( textSearched ) && StringUtil.isNotBlank( textSearched )) params = params.set(
             'textSearched',
             textSearched!,
         )
-        if (GenericUtil.nonNull( typeSearched )) params = params.set( 'typeSearched', typeSearched! )
+
         return this.http.get<MovementReasonModel[]>(
             `${this.buildRequestBaseUrl( eventId )}/search/reasons?${params.toString()}`,
         )
@@ -79,13 +84,15 @@ export class MovementService extends GenericEventService {
 
     public searchParticipantsAndGroups (
         eventId: string | undefined,
+        typeSearched: ParticipantTypeEnum,
         textSearched: string | undefined,
     ): Observable<MovementParticipantsAndGroupsModel> {
+        let params: HttpParams = new HttpParams().set( 'contentTypeSearched', typeSearched.toString() )
+
+        if (GenericUtil.nonNull( textSearched )) params = params.set( 'textSearched', textSearched! )
+
         return this.http.get<MovementParticipantsAndGroupsModel>(
-            `${this.buildRequestBaseUrl( eventId )}/search/participants-and-groups${textSearched ? '?' + new HttpParams().set(
-                'textSearched',
-                textSearched,
-            ).toString() : ''}`,
+            `${this.buildRequestBaseUrl( eventId )}/search/participants-and-groups?${params.toString()}`,
         )
     }
 
@@ -111,6 +118,18 @@ export class MovementService extends GenericEventService {
         movement: MovementDto,
     ): Observable<MovementModel> {
         return this.http.patch<MovementModel>( `${this.buildRequestBaseUrl( eventId )}/${id}`, movement )
+    }
+
+    public createGuestsMovement (eventId: string | undefined, movement: MovementDto): Observable<MovementModel> {
+        return this.http.post<MovementModel>( `${this.buildRequestBaseUrl( eventId )}/guests`, movement )
+    }
+
+    public updateGuestsMovementById (
+        eventId: string | undefined,
+        id: string,
+        movement: MovementDto,
+    ): Observable<MovementModel> {
+        return this.http.patch<MovementModel>( `${this.buildRequestBaseUrl( eventId )}/guests/${id}`, movement )
     }
 
     public disableMovementById (eventId: string | undefined, id: string): Observable<MovementModel> {

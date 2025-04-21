@@ -31,45 +31,47 @@
             </div>
             <p-divider align='center' />
         }
-        <div class='field'>
-            <label for='first-name' appRequired>{{ 'participants.form.firstname' | translate }}</label>
-            <input [formControl]='firstName'
-                   [placeholder]='"participants.form.placeholder.firstname" | translate'
-                   (keydown.enter)='submit()'
-                   id='first-name'
-                   pInputText
-                   type='text' />
-            @if (previousFirstName() && previousFirstName() !== firstName.value) {
-                <small class='secondary-color'>
-                    {{ 'participants.form.previous-first-name' | translate: { firstName: previousFirstName() } }}
-                </small>
-            }
-            <app-form-field-error [errors]='firstName.errors'
-                                  [invalid]='FormUtil.invalid(firstName)'
-                                  translationPrefix='participants.form.error.firstname' />
-        </div>
-        <div class='field'>
-            <label for='last-name' appRequired>{{ 'participants.form.lastname' | translate }}</label>
-            <input [formControl]='lastName'
-                   [placeholder]='"participants.form.placeholder.lastname" | translate'
-                   (keydown.enter)='submit()'
-                   id='last-name'
-                   pInputText
-                   type='text' />
-            @if (previousLastName() && previousLastName() !== lastName.value) {
-                <small class='secondary-color'>
-                    {{ 'participants.form.previous-last-name' | translate: { lastName: previousLastName() } }}
-                </small>
-            }
-            <app-form-field-error [errors]='lastName.errors'
-                                  [invalid]='FormUtil.invalid(lastName)'
-                                  translationPrefix='participants.form.error.lastname' />
+        <div class='d-flex flex-wrap'>
+            <div class='left-field field'>
+                <label for='first-name' appRequired>{{ 'participants.form.firstname' | translate }}</label>
+                <input [formControl]='firstName'
+                       [placeholder]='"participants.form.placeholder.firstname" | translate'
+                       (keydown.enter)='submit()'
+                       id='first-name'
+                       pInputText
+                       type='text' />
+                @if (previousFirstName() && previousFirstName() !== firstName.value) {
+                    <small class='secondary-color'>
+                        {{ 'participants.form.previous-first-name' | translate: { firstName: previousFirstName() } }}
+                    </small>
+                }
+                <app-form-field-error [errors]='firstName.errors'
+                                      [invalid]='FormUtil.invalid(firstName)'
+                                      translationPrefix='participants.form.error.firstname' />
+            </div>
+            <div class='right-field field'>
+                <label for='last-name' appRequired>{{ 'participants.form.lastname' | translate }}</label>
+                <input [formControl]='lastName'
+                       [placeholder]='"participants.form.placeholder.lastname" | translate'
+                       (keydown.enter)='submit()'
+                       id='last-name'
+                       pInputText
+                       type='text' />
+                @if (previousLastName() && previousLastName() !== lastName.value) {
+                    <small class='secondary-color'>
+                        {{ 'participants.form.previous-last-name' | translate: { lastName: previousLastName() } }}
+                    </small>
+                }
+                <app-form-field-error [errors]='lastName.errors'
+                                      [invalid]='FormUtil.invalid(lastName)'
+                                      translationPrefix='participants.form.error.lastname' />
+            </div>
         </div>
         <div class='field'>
             <label for='birthday' appRequired>{{ 'participants.form.birthday' | translate }}</label>
             <p-date-picker [formControl]='birthday'
-                           [showButtonBar]='true'
-                           [showIcon]='true'
+                           showButtonBar
+                           showIcon
                            [showOnFocus]='false'
                            [placeholder]='"participants.form.placeholder.birthday" | translate'
                            [touchUI]='registryFacade.tinyScreen()'
@@ -137,16 +139,17 @@
     </p-card>
     <div class='d-flex mt-2 justify-content-center'>
         <p-button
-                (click)='navigateToRedirectUri(AppRouteEnum.PARTICIPANTS)'
+                (onClick)='navigateToRedirectUri(AppRouteEnum.PARTICIPANTS)'
                 [label]='"global.actions.cancel" | translate'
-                [outlined]='true'
-                [rounded]='true' />
+                text
+                rounded />
         <p-button
                 class='ms-2'
-                (click)='submit()'
+                (onClick)='submit()'
                 [label]='facade.participant() | formButton | translate'
-                [rounded]='true'
-                icon='pi pi-pen-to-square'
+                rounded
+                outlined
+                [icon]='facade.participant() | formIcon'
                 severity='success' />
     </div>
 </app-form>

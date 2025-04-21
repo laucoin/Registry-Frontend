@@ -15,6 +15,10 @@ export class MetadataService extends GenericService {
         return this.http.get<SelectItem<string>[]>( `${this.baseUrl}/movements/types` )
     }
 
+    public getParticipantsTypes (): Observable<SelectItem<string>[]> {
+        return this.http.get<SelectItem<string>[]>( `${this.baseUrl}/participants/types` )
+    }
+
     public getProfilesStatus (): Observable<SelectItem<string>[]> {
         return this.http.get<SelectItem<string>[]>( `${this.baseUrl}/profiles/status` )
     }

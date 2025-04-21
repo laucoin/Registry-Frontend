@@ -56,18 +56,16 @@ export class ParticipantsListComponent extends GenericListComponent {
     }
 
     protected loadData (): void {
-        const eventId: string | undefined = this.route.snapshot.params['eventId']
-        if (!eventId) return
-        this.facade.fetchParticipantsPage( undefined, undefined, false, eventId )
+        this.facade.fetchParticipantsPage( undefined, undefined, false )
     }
 
-    protected loadPage (pageEvent: PageEventModel, eventId: string | undefined): void {
+    protected loadPage (pageEvent: PageEventModel): void {
         this.facade.inputPageSearchParameters(
             this.textSearched.value,
             this.statusSearched.value,
             this.visibilitySearched.value,
         )
-        this.facade.fetchParticipantsPage( pageEvent.pageNumber, pageEvent.pageSize, false, eventId )
+        this.facade.fetchParticipantsPage( pageEvent.pageNumber, pageEvent.pageSize, false )
     }
 
     protected get textSearched (): FormControl {

@@ -1,26 +1,73 @@
-import { inject } from '@angular/core'
-import { EventFacade } from '../data/state/event.facade'
-import { FormControl, FormGroup, Validators } from '@angular/forms'
-import { RegistryValidators } from '../../../shared/util-tool/util/registry.validator'
-import { EventOptionModel } from '../data/model/event-option.model'
-import { FormUtil } from '../../../shared/util-tool/util/form.util'
+import { Component, inject, OnDestroy } from '@angular/core'
+import { GenericFormComponent } from '../../../shared/util-tool/component/generic-form.component'
 import { EventModel } from '../../../shared/util-model/model/event.model'
 import { EventDto } from '../data/dto/event.dto'
-import { GenericFormComponent } from '../../../shared/util-tool/component/generic-form.component'
+import { EventFacade } from '../data/state/event.facade'
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { AppRouteEnum } from '../../../app-route.enum'
+import { RegistryValidators } from '../../../shared/util-tool/util/registry.validator'
 import { combineLatest, filter, map, Observable, tap } from 'rxjs'
-import { SelectItem } from 'primeng/api'
-import { CreateEvent, UpdateEvent } from '../data/state/event.action'
+import { EventOptionModel } from '../data/model/event-option.model'
 import { ArrayUtil } from '../../../shared/util-tool/util/array.util'
-import { CheckboxChangeEvent } from 'primeng/checkbox'
+import { SelectItem } from 'primeng/api'
+import { FormUtil } from '../../../shared/util-tool/util/form.util'
+import { CreateEvent, UpdateEvent } from '../data/state/event.action'
+import { Checkbox, CheckboxChangeEvent } from 'primeng/checkbox'
+import { GenericUtil } from '../../../shared/util-tool/util/generic.util'
+import { Step, StepItem, StepPanel, Stepper } from 'primeng/stepper'
+import { Button } from 'primeng/button'
+import { TranslatePipe } from '@ngx-translate/core'
+import { PluralTranslationPipe } from '../../../shared/util-tool/pipe/plural-translation.pipe'
+import { FormFieldErrorComponent } from '../../../shared/util-ui/form-field-error/form-field-error.component'
+import { DateTimeFieldComponent } from '../../../shared/util-ui/date-time-field/date-time-field.component'
+import { RegistryRequiredDirective } from '../../../shared/util-tool/directive/registry-required.directive'
+import { DateFormatPipe } from '../../../shared/util-tool/pipe/date-format.pipe'
+import { InputText } from 'primeng/inputtext'
+import { Divider } from 'primeng/divider'
+import { EventOptionIconPipe } from '../../../shared/util-tool/pipe/event-option-icon.pipe'
+import { Message } from 'primeng/message'
+import { FormButtonPipe } from '../../../shared/util-tool/pipe/form-button.pipe'
+import { ProgressSpinner } from 'primeng/progressspinner'
+import { FormTitlePipe } from '../../../shared/util-tool/pipe/form-title.pipe'
+import { FormIconPipe } from '../../../shared/util-tool/pipe/form-icon.pipe'
 
-export abstract class GenericEventFormComponent extends GenericFormComponent<EventModel, EventDto> {
+@Component( {
+    selector: 'app-event-form',
+    imports: [
+        Stepper,
+        StepItem,
+        Step,
+        StepPanel,
+        Button,
+        TranslatePipe,
+        PluralTranslationPipe,
+        ReactiveFormsModule,
+        FormFieldErrorComponent,
+        DateTimeFieldComponent,
+        RegistryRequiredDirective,
+        DateFormatPipe,
+        InputText,
+        Checkbox,
+        Divider,
+        EventOptionIconPipe,
+        Message,
+        FormsModule,
+        FormButtonPipe,
+        ProgressSpinner,
+        FormTitlePipe,
+        FormIconPipe,
+    ],
+    templateUrl: './event-form.component.html',
+    styleUrl: './event-form.component.scss',
+} )
+export class EventFormComponent extends GenericFormComponent<EventModel, EventDto> implements OnDestroy {
     protected readonly facade: EventFacade = inject( EventFacade )
 
     protected readonly form: FormGroup
     protected readonly optionsForm: FormGroup = this.formBuilder.group( {} )
     protected readonly nextNavigation: AppRouteEnum = AppRouteEnum.EVENTS
     protected allSelected: boolean | undefined = false
+    protected activeTab: number = 1
 
     public constructor () {
         super()
@@ -33,9 +80,17 @@ export abstract class GenericEventFormComponent extends GenericFormComponent<Eve
         this.handleOptionsChange()
     }
 
+    public ngOnDestroy (): void {
+        this.subscriptions.unsubscribe()
+    }
+
     protected override loadData (): void {
         this.facade.resetEvent()
         this.facade.fetchEventOptions()
+
+        if (GenericUtil.nonNull( this.idParam )) {
+            this.facade.fetchEvent( this.idParam! )
+        }
     }
 
     protected initForm (): FormGroup {

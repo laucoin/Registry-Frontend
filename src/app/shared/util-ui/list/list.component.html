@@ -1,7 +1,7 @@
 <p-data-view #data
              [value]='elementPage()?.content'
-             [paginator]='true'
-             [lazy]='true'
+             paginator
+             lazy
              [alwaysShowPaginator]='false'
              [rows]='20'
              [totalRecords]='elementPage()?.totalElements'
@@ -32,7 +32,7 @@
             @if (GenericUtil.nonNull(getTemplate('search'))) {
                 <div class='col-12 order-2 order-sm-1'>
                     <p-panel [style]='{ "border": "none" }' [header]='"global.actions.search-and-filter" | translate'
-                             [toggleable]='true'
+                             toggleable
                              [collapsed]='registryFacade.tinyScreen()'>
                         <ng-container [ngTemplateOutlet]='getTemplate("search")'
                                       [ngTemplateOutletContext]='{ $implicit: pageEvent() }' />

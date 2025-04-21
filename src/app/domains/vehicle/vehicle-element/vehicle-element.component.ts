@@ -100,31 +100,31 @@ export class VehicleElementComponent extends GenericElementComponent<VehicleMode
         switch (action) {
             case VehicleActionEnum.FETCH_VEHICLE_MOVEMENTS_PAGE:
                 this.router.navigateByUrl(
-                    this.buildUri( AppRouteEnum.VEHICLES_MOVEMENTS.replace( ':vehicleId', this.vehicle().id ) ),
+                    AppRouteEnum.VEHICLES_MOVEMENTS.replace( ':vehicleId', this.vehicle().id ),
                 ).catch( console.error )
                 break
             case VehicleActionEnum.UPDATE_VEHICLE:
                 this.router.navigateByUrl(
-                    this.buildUri( AppRouteEnum.VEHICLES_EDITION.replace( ':vehicleId', this.vehicle().id ) ),
+                    AppRouteEnum.VEHICLES_EDITION.replace( ':vehicleId', this.vehicle().id ),
                 ).catch( console.error )
                 break
             case VehicleActionEnum.DISABLE_VEHICLE:
                 this.subscriptions.add(
-                    this.facade.disableVehicle( this.vehicle().id, this.contextEventId() ).pipe(
+                    this.facade.disableVehicle( this.vehicle().id ).pipe(
                         tap( (): void => this.action.set( undefined ) ),
                     ).subscribe(),
                 )
                 break
             case VehicleActionEnum.ENABLE_VEHICLE:
                 this.subscriptions.add(
-                    this.facade.enableVehicle( this.vehicle().id, this.contextEventId() ).pipe(
+                    this.facade.enableVehicle( this.vehicle().id ).pipe(
                         tap( (): void => this.action.set( undefined ) ),
                     ).subscribe(),
                 )
                 break
             case VehicleActionEnum.DELETE_VEHICLE:
                 this.subscriptions.add(
-                    this.facade.deleteVehicle( this.vehicle(), this.contextEventId() ).pipe(
+                    this.facade.deleteVehicle( this.vehicle() ).pipe(
                         tap( (): void => this.action.set( undefined ) ),
                     ).subscribe(),
                 )
