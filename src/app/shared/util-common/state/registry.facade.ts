@@ -1,5 +1,5 @@
 import { computed, Injectable, Signal } from '@angular/core'
-import { ofActionSuccessful } from '@ngxs/store'
+import { ActionCompletion, ofActionCompleted, ofActionSuccessful } from '@ngxs/store'
 import { ToastMessageOptions } from 'primeng/api'
 import { combineLatest, map, Observable } from 'rxjs'
 import { TokenModel } from '../../util-authentication/model/token.model'
@@ -16,10 +16,6 @@ import {
     FetchUserEventProfileInvitationsPage,
     FetchUserEventProfilesPage,
     ImpersonateCurrentUser,
-    InputUserEventProfileInvitationsPageDateTimeSearched,
-    InputUserEventProfileInvitationsPageTextSearched,
-    InputUserEventProfilesPageDateTimeSearched,
-    InputUserEventProfilesPageTextSearched,
     Login,
     Logout,
     ManageUserEventInvitationAcceptance,
@@ -42,6 +38,8 @@ import {
     UpdateNetwork,
     UpdateScreenWidth,
     UpdateTheme,
+    UpdateUserEventProfileInvitationsPageSearchParams,
+    UpdateUserEventProfilesPageSearchParams,
 } from './registry.action'
 import { StateUtil } from '../../util-tool/state/state.util'
 import { EventModel } from '../../util-model/model/event.model'
@@ -140,6 +138,10 @@ export class RegistryFacade extends GenericFacade {
         return this.ngStore.selectSignal( RegistryState.userEventProfilesPageError )
     }
 
+    public get userEventProfilesPageResetSearch (): Signal<boolean> {
+        return this.ngStore.selectSignal( RegistryState.userEventProfilesPageResetSearch )
+    }
+
     public get userEventProfilesPageTextSearchParam (): Signal<string | undefined> {
         return this.ngStore.selectSignal( RegistryState.userEventProfilesPageTextSearchParam )
     }
@@ -164,6 +166,10 @@ export class RegistryFacade extends GenericFacade {
 
     public get userEventProfileInvitationsPageError (): Signal<ToastMessageOptions | undefined> {
         return this.ngStore.selectSignal( RegistryState.userEventProfileInvitationsPageError )
+    }
+
+    public get userEventProfileInvitationsPageResetSearch (): Signal<boolean> {
+        return this.ngStore.selectSignal( RegistryState.userEventProfileInvitationsPageResetSearch )
     }
 
     public get userEventProfileInvitationsPageTextSearchParam (): Signal<string | undefined> {
@@ -264,19 +270,21 @@ export class RegistryFacade extends GenericFacade {
         pageSize: number | undefined,
         force: boolean,
     ): void {
-        this.ngStore.dispatch( new FetchUserEventProfilesPage( pageNumber, pageSize, force ) )
+        const index: number | undefined = this.userEventProfilesPageResetSearch() ? 0 : pageNumber
+        this.ngStore.dispatch( new FetchUserEventProfilesPage( index, pageSize, force ) )
     }
 
     public inputPageSearchParameters (
         textSearched: string | undefined,
         dateTimeSearched: Date | undefined,
     ): void {
-        if (textSearched !== this.userEventProfilesPageTextSearchParam()) {
-            this.ngStore.dispatch( new InputUserEventProfilesPageTextSearched( textSearched ) )
-        }
+        const resetSearch: boolean = this.userEventProfilesPageTextSearchParam() != textSearched
+                                     || this.userEventProfilesPageDateTimeSearchParam() != dateTimeSearched?.toISOString()
 
-        if (dateTimeSearched !== this.userEventProfilesPageDateTimeSearchParam()) {
-            this.ngStore.dispatch( new InputUserEventProfilesPageDateTimeSearched( dateTimeSearched ) )
+        if (resetSearch) {
+            this.ngStore.dispatch( new UpdateUserEventProfilesPageSearchParams(
+                resetSearch, textSearched, dateTimeSearched?.toISOString(),
+            ) )
         }
     }
 
@@ -293,19 +301,21 @@ export class RegistryFacade extends GenericFacade {
         pageSize: number | undefined,
         force: boolean,
     ): void {
-        this.ngStore.dispatch( new FetchUserEventProfileInvitationsPage( pageNumber, pageSize, force ) )
+        const index: number | undefined = this.userEventProfileInvitationsPageResetSearch() ? 0 : pageNumber
+        this.ngStore.dispatch( new FetchUserEventProfileInvitationsPage( index, pageSize, force ) )
     }
 
     public inputInvitationsPageSearchParameters (
         textSearched: string | undefined,
         dateTimeSearched: Date | undefined,
     ): void {
-        if (textSearched !== this.userEventProfileInvitationsPageTextSearchParam()) {
-            this.ngStore.dispatch( new InputUserEventProfileInvitationsPageTextSearched( textSearched ) )
-        }
+        const resetSearch: boolean = this.userEventProfileInvitationsPageTextSearchParam() != textSearched
+                                     || this.userEventProfileInvitationsPageDateTimeSearchParam() != dateTimeSearched?.toISOString()
 
-        if (dateTimeSearched !== this.userEventProfileInvitationsPageDateTimeSearchParam()) {
-            this.ngStore.dispatch( new InputUserEventProfileInvitationsPageDateTimeSearched( dateTimeSearched ) )
+        if (resetSearch) {
+            this.ngStore.dispatch( new UpdateUserEventProfileInvitationsPageSearchParams(
+                resetSearch, textSearched, dateTimeSearched?.toISOString(),
+            ) )
         }
     }
 
@@ -325,16 +335,22 @@ export class RegistryFacade extends GenericFacade {
         this.ngStore.dispatch( new ManageUserEventInvitationAcceptance( id, accepted ) )
     }
 
-    public selectUserEventProfile (profile: EventProfileModel): void {
+    public selectUserEventProfile (profile: EventProfileModel): Observable<ActionCompletion<SelectUserEventProfile>> {
         this.ngStore.dispatch( new SelectUserEventProfile( profile ) )
+
+        return this.actions$.pipe( ofActionCompleted( SelectUserEventProfile ) )
     }
 
-    public selectUserEventProfileByEvent (event: EventModel): void {
+    public selectUserEventProfileByEvent (event: EventModel): Observable<ActionCompletion<SelectUserEventProfileByEvent>> {
         this.ngStore.dispatch( new SelectUserEventProfileByEvent( event ) )
+
+        return this.actions$.pipe( ofActionCompleted( SelectUserEventProfileByEvent ) )
     }
 
-    public deleteUserEventProfile (profile: EventProfileModel): void {
+    public deleteUserEventProfile (profile: EventProfileModel): Observable<ActionCompletion<DeleteUserEventProfile>> {
         this.ngStore.dispatch( new DeleteUserEventProfile( profile ) )
+
+        return this.actions$.pipe( ofActionCompleted( DeleteUserEventProfile ) )
     }
 
     public startContextEventLoader (): void {
@@ -351,7 +367,9 @@ export class RegistryFacade extends GenericFacade {
         return this.contextEvent$
     }
 
-    public createSupportEventProfile (eventId: string): void {
+    public createSupportEventProfile (eventId: string): Observable<ActionCompletion<CreateSupportEventProfile>> {
         this.ngStore.dispatch( new CreateSupportEventProfile( eventId ) )
+
+        return this.actions$.pipe( ofActionCompleted( CreateSupportEventProfile ) )
     }
 }

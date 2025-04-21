@@ -51,7 +51,7 @@ export class MovementsListComponent extends GenericListComponent {
 
     protected initForm (): FormGroup {
         return this.formBuilder.group( {
-            typeSearched: this.formBuilder.control( this.facade.movementsPageMovementTypeSearchedParam() ),
+            typeSearched: this.formBuilder.control( this.facade.movementsPageTypeSearchedParam() ),
             startDateTimeSearched: this.formBuilder.control( this.facade.movementsPageStartDateTimeSearchedParam() ),
             endDateTimeSearched: this.formBuilder.control( this.facade.movementsPageEndDateTimeSearchedParam() ),
             visibilitySearched: this.formBuilder.control( this.facade.movementsPageVisibilitySearchedParam() ),

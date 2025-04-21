@@ -1,12 +1,12 @@
 import { UserModel } from '../../../../shared/util-model/model/user.model'
+import { UserPageParamsModel } from '../model/user-page-params.model'
 
 export enum UserActionEnum {
     START_USERS_PAGE_LOADER = '[Local] Starting users\' page loader',
     STOP_USERS_PAGE_LOADER = '[Local] Stopping users\' page loader',
 
     FETCH_USERS_PAGE = '[Backend] Fetching users\' page',
-    INPUT_USERS_PAGE_TEXT_SEARCH = '[Local] Inputting users\' page text searched',
-    SELECT_USERS_PAGE_VISIBILITY_SEARCH = '[Local] Selecting users\' page visibility searched',
+    UPDATE_USERS_PAGE_SEARCH_PARAMS = '[Local] Updating users\' page search params',
 
     START_USER_LOADER = '[Local] Starting user loader',
     STOP_USER_LOADER = '[Local] Stopping user loader',
@@ -39,16 +39,10 @@ export class FetchUsersPage {
     ) {}
 }
 
-export class InputUsersPageTextSearched {
-    public static readonly type: UserActionEnum = UserActionEnum.INPUT_USERS_PAGE_TEXT_SEARCH
+export class UpdateUsersPageSearchParams {
+    public static readonly type: UserActionEnum = UserActionEnum.UPDATE_USERS_PAGE_SEARCH_PARAMS
 
-    public constructor (public readonly textSearched: string | undefined) {}
-}
-
-export class SelectUsersPageVisibilitySearched {
-    public static readonly type: UserActionEnum = UserActionEnum.SELECT_USERS_PAGE_VISIBILITY_SEARCH
-
-    public constructor (public readonly visibilitySearched: boolean | undefined) {}
+    public constructor (public readonly params: UserPageParamsModel) {}
 }
 
 export class StartUserLoader {

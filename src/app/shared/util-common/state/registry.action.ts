@@ -36,15 +36,13 @@ export enum RegistryActionEnum {
     STOP_USER_EVENT_PROFILES_PAGE_LOADER = '[Local] Stopping user event profiles\' page loader',
 
     FETCH_USER_EVENT_PROFILES_PAGE = '[Backend] Fetching user event profiles\' page',
-    INPUT_USER_EVENT_PROFILES_PAGE_TEXT_SEARCH = '[Local] Inputting user event profiles\' page text search',
-    INPUT_USER_EVENT_PROFILES_PAGE_DATE_TIME_SEARCH = '[Local] Inputting user event profiles\' page date time search',
+    UPDATE_USER_EVENT_PROFILES_PAGE_SEARCH_PARAMS = '[Local] Updating user event profiles\' page search params',
 
     START_USER_EVENT_PROFILE_INVITATIONS_PAGE_LOADER = '[Local] Starting user event profile invitations\' page loader',
     STOP_USER_EVENT_PROFILE_INVITATIONS_PAGE_LOADER = '[Local] Stopping user event profile invitations\' page loader',
 
     FETCH_USER_EVENT_PROFILE_INVITATIONS_PAGE = '[Backend] Fetching user event profile invitations\' page',
-    INPUT_USER_EVENT_PROFILE_INVITATIONS_PAGE_TEXT_SEARCH = '[Local] Inputting user event profile invitations\' page text search',
-    INPUT_USER_EVENT_PROFILE_INVITATIONS_PAGE_DATE_TIME_SEARCH = '[Local] Inputting user event profile invitations\' page date time search',
+    UPDATE_USER_EVENT_PROFILE_INVITATIONS_PAGE_SEARCH_PARAMS = '[Local] Updating user event profile invitations\' page search params',
 
     START_USER_EVENT_PROFILE_LOADER = '[Local] Starting user event profile loader',
     STOP_USER_EVENT_PROFILE_LOADER = '[Local] Stopping user event profile loader',
@@ -163,16 +161,14 @@ export class FetchUserEventProfilesPage {
     ) {}
 }
 
-export class InputUserEventProfilesPageTextSearched {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.INPUT_USER_EVENT_PROFILES_PAGE_TEXT_SEARCH
+export class UpdateUserEventProfilesPageSearchParams {
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.UPDATE_USER_EVENT_PROFILES_PAGE_SEARCH_PARAMS
 
-    public constructor (public readonly textSearched: string | undefined) {}
-}
-
-export class InputUserEventProfilesPageDateTimeSearched {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.INPUT_USER_EVENT_PROFILES_PAGE_DATE_TIME_SEARCH
-
-    public constructor (public readonly dateTime: Date | undefined) {}
+    public constructor (
+        public readonly resetSearch: boolean,
+        public readonly textSearched: string | undefined,
+        public readonly dateTimeSearched: string | undefined,
+    ) {}
 }
 
 export class StartUserEventProfileInvitationsPageLoader {
@@ -193,16 +189,14 @@ export class FetchUserEventProfileInvitationsPage {
     ) {}
 }
 
-export class InputUserEventProfileInvitationsPageTextSearched {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.INPUT_USER_EVENT_PROFILE_INVITATIONS_PAGE_TEXT_SEARCH
+export class UpdateUserEventProfileInvitationsPageSearchParams {
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.UPDATE_USER_EVENT_PROFILE_INVITATIONS_PAGE_SEARCH_PARAMS
 
-    public constructor (public readonly textSearched: string | undefined) {}
-}
-
-export class InputUserEventProfileInvitationsPageDateTimeSearched {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.INPUT_USER_EVENT_PROFILE_INVITATIONS_PAGE_DATE_TIME_SEARCH
-
-    public constructor (public readonly dateTime: Date | undefined) {}
+    public constructor (
+        public readonly resetSearch: boolean,
+        public readonly textSearched: string | undefined,
+        public readonly dateTimeSearched: string | undefined,
+    ) {}
 }
 
 export class StartUserEventProfileLoader {

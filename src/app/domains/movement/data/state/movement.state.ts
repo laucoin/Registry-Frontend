@@ -12,18 +12,16 @@ import {
     FetchMovementsContent,
     FetchMovementsPage,
     FetchMovementTypes,
-    InputMovementsPageEndDateTimeSearched,
-    InputMovementsPageStartDateTimeSearched,
     ResetMovement,
     SearchParticipantsAndGroups,
+    SearchReasonsAndActivities,
     SearchVehicles,
-    SelectMovementsPageTypeSearched,
-    SelectMovementsPageVisibilitySearched,
     StartMovementLoader,
     StartMovementsPageLoader,
     StopMovementLoader,
     StopMovementsPageLoader,
     UpdateMovement,
+    UpdateMovementsPageSearchParams,
 } from './movement.action'
 import { MovementService } from './movement.service'
 import { MovementFacade } from './movement.facade'
@@ -49,6 +47,7 @@ import { MovementUtil } from '../../../../shared/util-tool/util/movement.util'
 import { DateFormatPipe } from '../../../../shared/util-tool/pipe/date-format.pipe'
 import { PluralTranslationPipe } from '../../../../shared/util-tool/pipe/plural-translation.pipe'
 import { MetadataService } from '../../../../shared/util-common/state/metadata.service'
+import { MovementReasonModel } from '../model/movement-reason.model'
 
 const defaultMovement: ElementRequestInformationModel<MovementModel> = {
     element: undefined,
@@ -59,6 +58,7 @@ const defaultMovementState: MovementStateModel = {
     movements: {
         element: undefined,
         params: {
+            resetSearch: false,
             visibilitySearched: undefined,
             typeSearched: undefined,
             startDateTimeSearched: undefined,
@@ -71,6 +71,7 @@ const defaultMovementState: MovementStateModel = {
     movement: defaultMovement,
     _metadata: {
         types: [],
+        searchedReasonsAndActivities: [],
         searchedParticipantsAndGroups: [],
         searchedVehicles: [],
         visibilities: [
@@ -124,7 +125,12 @@ export class MovementState extends GenericEventElementState<MovementStateModel> 
     }
 
     @Selector()
-    public static movementsPageMovementTypeSearchedParam (state: MovementStateModel): string | undefined {
+    public static movementsPageResetSearch (state: MovementStateModel): boolean {
+        return state.movements.params.resetSearch
+    }
+
+    @Selector()
+    public static movementsPageTypeSearchedParam (state: MovementStateModel): string | undefined {
         return state.movements.params.typeSearched
     }
 
@@ -151,6 +157,11 @@ export class MovementState extends GenericEventElementState<MovementStateModel> 
     @Selector()
     public static movementLoading (state: MovementStateModel): boolean {
         return state.movement.loading
+    }
+
+    @Selector()
+    public static searchedReasonAndActivityMetadata (state: MovementStateModel): MovementReasonModel[] {
+        return state._metadata.searchedReasonsAndActivities
     }
 
     @Selector()
@@ -236,6 +247,10 @@ export class MovementState extends GenericEventElementState<MovementStateModel> 
         ctx.patchState( {
             movements: {
                 ...ctx.getState().movements,
+                params: {
+                    ...ctx.getState().movements.params,
+                    resetSearch: false,
+                },
                 element: movementsPage,
             },
         } )
@@ -283,66 +298,15 @@ export class MovementState extends GenericEventElementState<MovementStateModel> 
         } )
     }
 
-    @Action( SelectMovementsPageTypeSearched )
-    public selectMovementsPageTypeSearched (
+    @Action( UpdateMovementsPageSearchParams )
+    public updateMovementsPageSearchParams (
         ctx: StateContext<MovementStateModel>,
-        payload: SelectMovementsPageTypeSearched,
+        payload: UpdateMovementsPageSearchParams,
     ): void {
         ctx.patchState( {
             movements: {
                 ...ctx.getState().movements,
-                params: {
-                    ...ctx.getState().movements.params,
-                    typeSearched: payload.typeSearched,
-                },
-            },
-        } )
-    }
-
-    @Action( InputMovementsPageStartDateTimeSearched )
-    public inputMovementsPageStartDateTimeSearched (
-        ctx: StateContext<MovementStateModel>,
-        payload: InputMovementsPageStartDateTimeSearched,
-    ): void {
-        ctx.patchState( {
-            movements: {
-                ...ctx.getState().movements,
-                params: {
-                    ...ctx.getState().movements.params,
-                    startDateTimeSearched: payload.startDateTimeSearched?.toISOString(),
-                },
-            },
-        } )
-    }
-
-    @Action( InputMovementsPageEndDateTimeSearched )
-    public inputMovementsPageEndDateTimeSearched (
-        ctx: StateContext<MovementStateModel>,
-        payload: InputMovementsPageEndDateTimeSearched,
-    ): void {
-        ctx.patchState( {
-            movements: {
-                ...ctx.getState().movements,
-                params: {
-                    ...ctx.getState().movements.params,
-                    endDateTimeSearched: payload.endDateTimeSearched?.toISOString(),
-                },
-            },
-        } )
-    }
-
-    @Action( SelectMovementsPageVisibilitySearched )
-    public selectMovementsPageVisibility (
-        ctx: StateContext<MovementStateModel>,
-        payload: SelectMovementsPageVisibilitySearched,
-    ): void {
-        ctx.patchState( {
-            movements: {
-                ...ctx.getState().movements,
-                params: {
-                    ...ctx.getState().movements.params,
-                    visibilitySearched: payload.visibilitySearched,
-                },
+                params: payload.params,
             },
         } )
     }
@@ -379,12 +343,41 @@ export class MovementState extends GenericEventElementState<MovementStateModel> 
         } )
     }
 
+    @Action( SearchReasonsAndActivities )
+    public searchReasonsAndActivities (
+        ctx: StateContext<MovementStateModel>,
+        payload: SearchReasonsAndActivities,
+    ): Observable<void> {
+        return this.service.searchReasonsAndActivities(
+            payload.eventId,
+            payload.textSearched,
+            payload.typeSearched,
+        ).pipe(
+            map( (reasonsAndActivities: MovementReasonModel[]): void => this.searchReasonsAndActivitiesComplete(
+                ctx,
+                reasonsAndActivities,
+            ) ),
+        )
+    }
+
+    private searchReasonsAndActivitiesComplete (
+        ctx: StateContext<MovementStateModel>,
+        reasonsAndActivities: MovementReasonModel[],
+    ): void {
+        ctx.patchState( {
+            _metadata: {
+                ...ctx.getState()._metadata,
+                searchedReasonsAndActivities: reasonsAndActivities,
+            },
+        } )
+    }
+
     @Action( SearchParticipantsAndGroups )
     public searchParticipantsAndGroups (
         ctx: StateContext<MovementStateModel>,
         payload: SearchParticipantsAndGroups,
     ): Observable<void> {
-        return this.service.searchParticipantsAndGroups( payload.eventId, payload.searched ).pipe(
+        return this.service.searchParticipantsAndGroups( payload.eventId, payload.textSearched ).pipe(
             map( (participantsAndGroups: MovementParticipantsAndGroupsModel): void => this.searchParticipantsAndGroupsComplete(
                 ctx,
                 participantsAndGroups,
@@ -436,7 +429,7 @@ export class MovementState extends GenericEventElementState<MovementStateModel> 
         ctx: StateContext<MovementStateModel>,
         payload: SearchVehicles,
     ): Observable<void> {
-        return this.service.searchVehicles( payload.eventId, payload.searched ).pipe(
+        return this.service.searchVehicles( payload.eventId, payload.textSearched ).pipe(
             map( (vehicles: VehicleModel[]): void => this.searchVehiclesComplete(
                 ctx,
                 vehicles,

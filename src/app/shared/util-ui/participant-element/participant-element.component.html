@@ -1,7 +1,7 @@
 <app-element-card [element]='participant()'
                   [actions]='actions()'
                   [actionMenuVisible]='actionMenuVisible()'
-                  (action)='handleAction($event)'
+                  (action)='showDialogIfNeeded($event)'
                   icon='pi pi-user'>
     <div class='element-card'>
         <div class='participant-info'>
@@ -75,3 +75,9 @@
         </ng-template>
     </p-listbox>
 </app-layer>
+
+<app-confirmation-dialog
+        [loading]='facade.participantLoading()'
+        [element]='participant()'
+        [action]='action()'
+        (handleAction)='handleAction($event)' />

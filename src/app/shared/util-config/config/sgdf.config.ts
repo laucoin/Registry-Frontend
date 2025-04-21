@@ -294,6 +294,7 @@ export const sgdfConfig: ContextConfigModel = {
                 confirmation: {
                     header: 'events.actions.confirmations.delete.title',
                     message: 'events.actions.confirmations.delete.message',
+                    hint: 'events.actions.confirmations.delete.hint',
                     icon: 'pi pi-exclamation-triangle',
                     acceptSeverity: 'danger',
                     rejectSeverity: 'secondary',

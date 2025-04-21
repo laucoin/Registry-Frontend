@@ -1,7 +1,7 @@
 @if (registryFacade.currentUser()) {
     <app-element-card [element]='registryFacade.currentUser()!'
                       [actions]='actions'
-                      (action)='handleAction($event)'
+                      (action)='handleAction($event.id)'
                       icon='pi pi-user'>
         <div class='current-user'>
             <div class='name-container'>

@@ -34,7 +34,7 @@ export const backendHandler: HttpInterceptorFn = (
     const translateService: TranslateService = inject( TranslateService )
 
     const currentUser: CurrentUserModel | undefined = registryFacade.currentUser()
-    const url: string = formatUrlIfNecessary( currentUser, req.url )
+    const url: string = formatUrlIfNeeded( currentUser, req.url )
 
     return next( req.clone( {
         url: url,
@@ -70,7 +70,7 @@ export const backendHandler: HttpInterceptorFn = (
         } ) )
 }
 
-function formatUrlIfNecessary (currentUser: CurrentUserModel | undefined, url: string): string {
+function formatUrlIfNeeded (currentUser: CurrentUserModel | undefined, url: string): string {
     let formattedUrl: string = url
 
     if (formattedUrl.includes( CURRENT_USER_ID )) {

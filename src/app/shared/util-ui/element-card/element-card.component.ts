@@ -7,9 +7,7 @@ import {
     InputSignal,
     output,
     OutputEmitterRef,
-    signal,
     Signal,
-    WritableSignal,
 } from '@angular/core'
 import { TranslateModule } from '@ngx-translate/core'
 import { MenuItem } from 'primeng/api'
@@ -23,13 +21,11 @@ import { GenericModel } from '../../util-model/model/generic.model'
 import { HistoryModel } from '../../util-model/model/history.model'
 import { ElementSkeletonComponent } from '../element-skeleton/element-skeleton.component'
 import { DialogModule } from 'primeng/dialog'
-import { FormFieldErrorComponent } from '../form-field-error/form-field-error.component'
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
+import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { InputTextModule } from 'primeng/inputtext'
 import { Popover } from 'primeng/popover'
 import { Ripple } from 'primeng/ripple'
 import { ContextMenu } from 'primeng/contextmenu'
-import { FormUtil } from '../../util-tool/util/form.util'
 import { GenericComponent } from '../../util-tool/component/generic.component'
 import { DateFormatPipe } from '../../util-tool/pipe/date-format.pipe'
 
@@ -44,7 +40,6 @@ import { DateFormatPipe } from '../../util-tool/pipe/date-format.pipe'
         MenuModule,
         TranslateModule,
         DialogModule,
-        FormFieldErrorComponent,
         FormsModule,
         InputTextModule,
         ReactiveFormsModule,
@@ -59,12 +54,6 @@ import { DateFormatPipe } from '../../util-tool/pipe/date-format.pipe'
 export class ElementCardComponent<T extends GenericModel, A> extends GenericComponent {
     private readonly datePipe: DateFormatPipe = inject( DateFormatPipe )
 
-    protected readonly FormUtil: typeof FormUtil = FormUtil
-
-    protected readonly form: FormGroup
-
-    protected showDialog: boolean = false
-
     public readonly element: InputSignal<T> = input.required()
     public readonly actions: InputSignal<ActionModel<A>[]> = input<ActionModel<A>[]>( [] )
     public readonly icon: InputSignal<string | undefined> = input()
@@ -74,14 +63,11 @@ export class ElementCardComponent<T extends GenericModel, A> extends GenericComp
     protected readonly items: Signal<MenuItem[]>
     protected readonly creationLabel: Signal<string>
     protected readonly lastEditionLabel: Signal<string>
-    protected readonly dialogContent: WritableSignal<ActionModel<A> | undefined> = signal( undefined )
 
-    public readonly action: OutputEmitterRef<A> = output()
+    public readonly action: OutputEmitterRef<ActionModel<A>> = output()
 
     public constructor () {
         super()
-
-        this.form = this.initForm()
 
         this.items = computed( (): MenuItem[] => this.definedMenuItems(
             this.registryFacade.currentUser(),
@@ -99,12 +85,6 @@ export class ElementCardComponent<T extends GenericModel, A> extends GenericComp
         ) )
     }
 
-    private initForm (): FormGroup {
-        return this.formBuilder.group( {
-            confirmationName: this.formBuilder.control( undefined, [] ),
-        } )
-    }
-
     private definedMenuItems (currentUser: CurrentUserModel | undefined, actions: ActionModel<A>[]): MenuItem[] {
         if (!currentUser) return []
         return actions
@@ -112,7 +92,7 @@ export class ElementCardComponent<T extends GenericModel, A> extends GenericComp
                 label: action.name,
                 icon: action.icon,
                 disabled: action.disabled,
-                command: (): void => this.showConfirmationIfNecessary( action ),
+                command: (): void => this.action.emit( action ),
             }) )
     }
 
@@ -125,54 +105,5 @@ export class ElementCardComponent<T extends GenericModel, A> extends GenericComp
                 user: history.user?.email,
             },
         )
-    }
-
-    private showConfirmationIfNecessary (action: ActionModel<A>): void {
-        if (action.confirmation) {
-            if (action.confirmation.confirmProperty) {
-                const value: string | undefined = this.propertyValue( action.confirmation.confirmProperty )
-                if (value) {
-                    this.confirmationName.addValidators( [ Validators.required, Validators.pattern( value ) ] )
-                }
-            }
-
-            this.showDialog = true
-            this.dialogContent.set( action )
-        } else {
-            this.action.emit( action.id )
-        }
-    }
-
-    protected cancelAction (): void {
-        this.confirmationName.reset()
-        this.confirmationName.clearValidators()
-        this.showDialog = false
-        this.dialogContent.set( undefined )
-    }
-
-    protected confirmAction (action: ActionModel<A> | undefined): void {
-        if (this.isConfirmationFormValid()) {
-            if (action) {
-                this.action.emit( action.id )
-            }
-
-            this.cancelAction()
-        } else {
-            console.warn( this.translateService.instant( 'global.messages.invalid-form' ) )
-        }
-    }
-
-    protected isConfirmationFormValid (): boolean {
-        FormUtil.markAllControlsAsDirty( this.form )
-        return !this.form.invalid
-    }
-
-    protected propertyValue (property: string | undefined): string {
-        if (!property) return ''
-        return Object( this.element() )[property]
-    }
-
-    protected get confirmationName (): FormControl {
-        return this.form.get( 'confirmationName' ) as FormControl
     }
 }

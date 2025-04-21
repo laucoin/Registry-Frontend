@@ -11,18 +11,15 @@ import {
     FetchEventProfile,
     FetchEventProfilesPage,
     FetchProfileStatus,
-    InputEventProfilesPageDateTimeSearched,
-    InputEventProfilesPageTextSearched,
     ResetEventProfile,
     SearchUsers,
-    SelectEventProfilesPageAvailabilitySearched,
-    SelectEventProfilesPageStatusSearched,
     StartEventProfileLoader,
     StartEventProfilesPageLoader,
     StopEventProfileLoader,
     StopEventProfilesPageLoader,
     UnblockEventProfile,
     UpdateEventProfile,
+    UpdateEventProfilesPageSearchParams,
 } from './event-profile.action'
 import { EventProfileService } from './event-profile.service'
 import { EventProfileFacade } from './event-profile.facade'
@@ -48,6 +45,7 @@ const defaultEventProfileState: EventProfileStateModel = {
     eventProfiles: {
         element: undefined,
         params: {
+            resetSearch: false,
             availabilitySearched: undefined,
             statusSearched: undefined,
             textSearched: undefined,
@@ -109,6 +107,11 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
     @Selector()
     public static eventProfilesPageSilentLoading (state: EventProfileStateModel): boolean {
         return state.eventProfiles.silentLoading
+    }
+
+    @Selector()
+    public static eventProfilesPageResetSearch (state: EventProfileStateModel): boolean {
+        return state.eventProfiles.params.resetSearch
     }
 
     @Selector()
@@ -203,71 +206,24 @@ export class EventProfileState extends GenericEventElementState<EventProfileStat
         ctx.patchState( {
             eventProfiles: {
                 ...ctx.getState().eventProfiles,
+                params: {
+                    ...ctx.getState().eventProfiles.params,
+                    resetSearch: false,
+                },
                 element: profilePage,
             },
         } )
     }
 
-    @Action( InputEventProfilesPageTextSearched )
-    public inputEventProfilesPageTextSearched (
+    @Action( UpdateEventProfilesPageSearchParams )
+    public updateEventProfilesPageSearchParams (
         ctx: StateContext<EventProfileStateModel>,
-        payload: InputEventProfilesPageTextSearched,
+        payload: UpdateEventProfilesPageSearchParams,
     ): void {
         ctx.patchState( {
             eventProfiles: {
                 ...ctx.getState().eventProfiles,
-                params: {
-                    ...ctx.getState().eventProfiles.params,
-                    textSearched: payload.textSearched,
-                },
-            },
-        } )
-    }
-
-    @Action( InputEventProfilesPageDateTimeSearched )
-    public inputEventProfilesPageDateTimeSearched (
-        ctx: StateContext<EventProfileStateModel>,
-        payload: InputEventProfilesPageDateTimeSearched,
-    ): void {
-        ctx.patchState( {
-            eventProfiles: {
-                ...ctx.getState().eventProfiles,
-                params: {
-                    ...ctx.getState().eventProfiles.params,
-                    dateTimeSearched: payload.dateTime?.toISOString(),
-                },
-            },
-        } )
-    }
-
-    @Action( SelectEventProfilesPageStatusSearched )
-    public selectEventProfilesPageStatusSearched (
-        ctx: StateContext<EventProfileStateModel>,
-        payload: SelectEventProfilesPageStatusSearched,
-    ): void {
-        ctx.patchState( {
-            eventProfiles: {
-                ...ctx.getState().eventProfiles,
-                params: {
-                    ...ctx.getState().eventProfiles.params,
-                    statusSearched: payload.statusSearched,
-                },
-            },
-        } )
-    }
-
-    @Action( SelectEventProfilesPageAvailabilitySearched )
-    public selectEventProfilesPageAvailabilitySearched (
-        ctx: StateContext<EventProfileStateModel>,
-        payload: SelectEventProfilesPageAvailabilitySearched,
-    ): void {
-        ctx.patchState( {
-            eventProfiles: {
-                ...ctx.getState().eventProfiles,
-                params: {
-                    ...ctx.getState().eventProfiles.params,
-                    availabilitySearched: payload.availabilitySearched,
-                },
+                params: payload.params,
             },
         } )
     }

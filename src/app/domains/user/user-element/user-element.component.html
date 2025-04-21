@@ -1,7 +1,7 @@
 <app-element-card [element]='user()'
                   [actions]='actions()'
                   [actionMenuVisible]='actionMenuVisible()'
-                  (action)='handleAction($event)'
+                  (action)='showDialogIfNeeded($event)'
                   icon='pi pi-user'>
     <div class='element-card'>
         <div class='user-info'>
@@ -36,3 +36,9 @@
         }
     </div>
 </app-element-card>
+
+<app-confirmation-dialog
+        [loading]='facade.userLoading()'
+        [element]='user()'
+        [action]='action()'
+        (handleAction)='handleAction($event)' />

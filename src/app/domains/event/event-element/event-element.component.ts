@@ -1,4 +1,14 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input, InputSignal, Signal } from '@angular/core'
+import {
+    ChangeDetectionStrategy,
+    Component,
+    computed,
+    inject,
+    input,
+    InputSignal,
+    signal,
+    Signal,
+    WritableSignal,
+} from '@angular/core'
 import { EventModel } from '../../../shared/util-model/model/event.model'
 import { ElementCardComponent } from '../../../shared/util-ui/element-card/element-card.component'
 import { TagModule } from 'primeng/tag'
@@ -21,6 +31,8 @@ import { IntervalFormatPipe } from '../../../shared/util-tool/pipe/interval-form
 import { CustomDateFormatPipe } from '../../../shared/util-tool/pipe/custom-date-format.pipe'
 import { RegistryActionEnum } from '../../../shared/util-common/state/registry.action'
 import { CurrentUserUtil } from '../../../shared/util-authentication/tool/current-user.util'
+import { ConfirmationDialogComponent } from '../../../shared/util-ui/confirmation-dialog/confirmation-dialog.component'
+import { tap } from 'rxjs'
 
 @Component( {
     selector: 'app-event-element',
@@ -37,19 +49,21 @@ import { CurrentUserUtil } from '../../../shared/util-authentication/tool/curren
         PluralTranslationPipe,
         IntervalFormatPipe,
         CustomDateFormatPipe,
+        ConfirmationDialogComponent,
     ],
     templateUrl: './event-element.component.html',
     styleUrl: './event-element.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
 } )
 export class EventElementComponent extends GenericElementComponent<EventModel, EventActionEnum | RegistryActionEnum> {
-    private readonly facade: EventFacade = inject( EventFacade )
+    protected readonly facade: EventFacade = inject( EventFacade )
 
     protected layerOpened: boolean = false
 
     public readonly actionMenuVisible: InputSignal<boolean> = input( true )
     public readonly event: InputSignal<EventModel> = input.required()
 
+    protected readonly hintMessage: WritableSignal<string | undefined> = signal( undefined )
     protected readonly actions: Signal<ActionModel<EventActionEnum | RegistryActionEnum>[]>
     protected readonly intervalStatus: Signal<DateIntervalStatusModel | undefined>
 
@@ -92,16 +106,26 @@ export class EventElementComponent extends GenericElementComponent<EventModel, E
         element: EventModel,
         action: ActionModel<EventActionEnum | RegistryActionEnum>,
     ): boolean {
-        return !CurrentUserUtil.isFeasible( this.registryFacade.currentUser(), element, action )
+        return action.id === RegistryActionEnum.SELECT_USER_EVENT_PROFILE_BY_EVENT
+               && this.registryFacade.currentUser()?.preferences?.selectedProfile?.event?.id === element.id
+               ? true : !CurrentUserUtil.isFeasible( this.registryFacade.currentUser(), element, action )
     }
 
     protected handleAction (action: EventActionEnum | RegistryActionEnum): void {
         switch (action) {
             case RegistryActionEnum.SELECT_USER_EVENT_PROFILE_BY_EVENT:
-                this.registryFacade.selectUserEventProfileByEvent( this.event() )
+                this.subscriptions.add(
+                    this.registryFacade.selectUserEventProfileByEvent( this.event() ).pipe(
+                        tap( () => this.action.set( undefined ) ),
+                    ).subscribe(),
+                )
                 break
             case RegistryActionEnum.CREATE_SUPPORT_EVENT_PROFILE:
-                this.registryFacade.createSupportEventProfile( this.event().id )
+                this.subscriptions.add(
+                    this.registryFacade.createSupportEventProfile( this.event().id ).pipe(
+                        tap( () => this.action.set( undefined ) ),
+                    ).subscribe(),
+                )
                 break
             case EventActionEnum.UPDATE_EVENT:
                 this.router.navigateByUrl(
@@ -109,13 +133,25 @@ export class EventElementComponent extends GenericElementComponent<EventModel, E
                 ).catch( console.error )
                 break
             case EventActionEnum.DISABLE_EVENT:
-                this.facade.disableEvent( this.event().id )
+                this.subscriptions.add(
+                    this.facade.disableEvent( this.event().id ).pipe(
+                        tap( () => this.action.set( undefined ) ),
+                    ).subscribe(),
+                )
                 break
             case EventActionEnum.ENABLE_EVENT:
-                this.facade.enableEvent( this.event().id )
+                this.subscriptions.add(
+                    this.facade.enableEvent( this.event().id ).pipe(
+                        tap( () => this.action.set( undefined ) ),
+                    ).subscribe(),
+                )
                 break
             case EventActionEnum.DELETE_EVENT:
-                this.facade.deleteEvent( this.event() )
+                this.subscriptions.add(
+                    this.facade.deleteEvent( this.event() ).pipe(
+                        tap( () => this.action.set( undefined ) ),
+                    ).subscribe(),
+                )
                 break
             default:
                 console.warn( this.translateService.instant( 'global.messages.invalid-action' ) )

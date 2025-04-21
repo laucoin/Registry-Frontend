@@ -1,25 +1,21 @@
 import { ActivityDto } from '../dto/activity.dto'
 import { ActivityModel } from '../../../../shared/util-model/model/activity.model'
+import { ActivityPageParamsModel } from '../model/activity-page-params.model'
+import { MovementPageParamsModel } from '../../../../shared/util-model/model/movement-page-params.model'
 
 export enum ActivityActionEnum {
     START_ACTIVITIES_PAGE_LOADER = '[Local] Starting activities\' page loader',
     STOP_ACTIVITIES_PAGE_LOADER = '[Local] Stopping activities\' page loader',
 
     FETCH_ACTIVITIES_PAGE = '[Backend] Fetching activities\' page',
-    INPUT_ACTIVITIES_PAGE_TEXT_SEARCH = '[Local] Inputting activities\' page text search',
-    INPUT_ACTIVITIES_PAGE_DATE_TIME_SEARCH = '[Local] Inputting activities\' page date time search',
-    SELECT_ACTIVITIES_PAGE_AVAILABILITY_SEARCH = '[Local] Selecting activities\' page availability search',
-    SELECT_ACTIVITIES_PAGE_VISIBILITY_SEARCH = '[Local] Selecting activities\' page visibility search',
+    UPDATE_ACTIVITIES_PAGE_SEARCH_PARAMS = '[Local] Updating activities\' page search params',
 
     START_ACTIVITY_MOVEMENTS_PAGE_LOADER = '[Local] Starting activity movements\' page loader',
     STOP_ACTIVITY_MOVEMENTS_PAGE_LOADER = '[Local] Stopping activity movements\' page loader',
 
     FETCH_ACTIVITY_MOVEMENTS_PAGE = '[Backend] Fetching activity movements\' page',
     FETCH_ACTIVITY_MOVEMENTS_CONTENTS = '[Backend] Fetching activity movements\' contents',
-    INPUT_ACTIVITY_MOVEMENTS_PAGE_TYPE_SEARCH = '[Local] Inputting activity movements\' page type search',
-    INPUT_ACTIVITY_MOVEMENTS_PAGE_START_DATE_TIME_SEARCH = '[Local] Inputting activity movements\' page start date time search',
-    INPUT_ACTIVITY_MOVEMENTS_PAGE_END_DATE_TIME_SEARCH = '[Local] Inputting activity movements\' page end date time search',
-    SELECT_ACTIVITY_MOVEMENTS_PAGE_VISIBILITY_SEARCH = '[Local] Selecting activity movements\' page visibility search',
+    UPDATE_ACTIVITY_MOVEMENTS_PAGE_SEARCH_PARAMS = '[Local] Updating activity movements\' page searched params',
 
     START_ACTIVITY_LOADER = '[Local] Starting activity\'s loader',
     STOP_ACTIVITY_LOADER = '[Local] Stopping activity\'s loader',
@@ -52,28 +48,10 @@ export class FetchActivitiesPage {
     ) {}
 }
 
-export class InputActivitiesPageTextSearched {
-    public static readonly type: ActivityActionEnum = ActivityActionEnum.INPUT_ACTIVITIES_PAGE_TEXT_SEARCH
+export class UpdateActivitiesPageSearchParams {
+    public static readonly type: ActivityActionEnum = ActivityActionEnum.UPDATE_ACTIVITIES_PAGE_SEARCH_PARAMS
 
-    public constructor (public readonly textSearched: string | undefined) {}
-}
-
-export class InputActivitiesPageDateTimeSearched {
-    public static readonly type: ActivityActionEnum = ActivityActionEnum.INPUT_ACTIVITIES_PAGE_DATE_TIME_SEARCH
-
-    public constructor (public readonly dateTimeSearched: Date | undefined) {}
-}
-
-export class SelectActivitiesPageAvailabilitySearched {
-    public static readonly type: ActivityActionEnum = ActivityActionEnum.SELECT_ACTIVITIES_PAGE_AVAILABILITY_SEARCH
-
-    public constructor (public readonly availabilitySearched: boolean | undefined) {}
-}
-
-export class SelectActivitiesPageVisibilitySearched {
-    public static readonly type: ActivityActionEnum = ActivityActionEnum.SELECT_ACTIVITIES_PAGE_VISIBILITY_SEARCH
-
-    public constructor (public readonly visibilitySearched: boolean | undefined) {}
+    public constructor (public readonly params: ActivityPageParamsModel) {}
 }
 
 export class StartActivityMovementsPageLoader {
@@ -105,28 +83,10 @@ export class FetchActivityMovementsContents {
     ) {}
 }
 
-export class SelectActivityMovementsPageTypeSearched {
-    public static readonly type: ActivityActionEnum = ActivityActionEnum.INPUT_ACTIVITY_MOVEMENTS_PAGE_TYPE_SEARCH
+export class UpdateActivityMovementsPageSearchParams {
+    public static readonly type: ActivityActionEnum = ActivityActionEnum.UPDATE_ACTIVITY_MOVEMENTS_PAGE_SEARCH_PARAMS
 
-    public constructor (public readonly typeSearched: string | undefined) {}
-}
-
-export class InputActivityMovementsPageStartDateTimeSearched {
-    public static readonly type: ActivityActionEnum = ActivityActionEnum.INPUT_ACTIVITY_MOVEMENTS_PAGE_START_DATE_TIME_SEARCH
-
-    public constructor (public readonly startDateTimeSearched: Date | undefined) {}
-}
-
-export class InputActivityMovementsPageEndDateTimeSearched {
-    public static readonly type: ActivityActionEnum = ActivityActionEnum.INPUT_ACTIVITY_MOVEMENTS_PAGE_END_DATE_TIME_SEARCH
-
-    public constructor (public readonly endDateTimeSearched: Date | undefined) {}
-}
-
-export class SelectActivityMovementsPageVisibilitySearched {
-    public static readonly type: ActivityActionEnum = ActivityActionEnum.SELECT_ACTIVITY_MOVEMENTS_PAGE_VISIBILITY_SEARCH
-
-    public constructor (public readonly visibilitySearched: boolean | undefined) {}
+    public constructor (public readonly params: MovementPageParamsModel) {}
 }
 
 export class StartActivityLoader {

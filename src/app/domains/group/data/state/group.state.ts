@@ -14,16 +14,9 @@ import {
     FetchGroupMembersPage,
     FetchGroupsMembers,
     FetchGroupsPage,
-    InputGroupMembersPageTextSearched,
-    InputGroupsPageDateTimeSearched,
-    InputGroupsPageTextSearched,
     RemoveMemberFromGroup,
     ResetGroup,
     SearchParticipants,
-    SelectGroupMembersPageStatusSearched,
-    SelectGroupMembersPageVisibilitySearched,
-    SelectGroupsPagePresenceSearched,
-    SelectGroupsPageVisibilitySearched,
     StartGroupLoader,
     StartGroupMembersPageLoader,
     StartGroupsPageLoader,
@@ -31,6 +24,8 @@ import {
     StopGroupMembersPageLoader,
     StopGroupsPageLoader,
     UpdateGroup,
+    UpdateGroupMembersPageSearchParams,
+    UpdateGroupsPageSearchParams,
 } from './group.action'
 import { GroupService } from './group.service'
 import { GroupFacade } from './group.facade'
@@ -59,6 +54,7 @@ const defaultGroupState: GroupStateModel = {
     groups: {
         element: undefined,
         params: {
+            resetSearch: false,
             textSearched: undefined,
             visibilitySearched: undefined,
             presenceSearched: undefined,
@@ -72,6 +68,7 @@ const defaultGroupState: GroupStateModel = {
         element: undefined,
         groupId: undefined,
         params: {
+            resetSearch: false,
             visibilitySearched: undefined,
             statusSearched: undefined,
             textSearched: undefined,
@@ -133,6 +130,11 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
     }
 
     @Selector()
+    public static groupsPageResetSearch (state: GroupStateModel): boolean {
+        return state.groups.params.resetSearch
+    }
+
+    @Selector()
     public static groupsPageTextSearchedParam (state: GroupStateModel): string | undefined {
         return state.groups.params.textSearched
     }
@@ -170,6 +172,11 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
     @Selector()
     public static groupMembersPageSilentLoading (state: GroupStateModel): boolean {
         return state.members.silentLoading
+    }
+
+    @Selector()
+    public static groupMembersPageResetSearch (state: GroupStateModel): boolean {
+        return state.members.params.resetSearch
     }
 
     @Selector()
@@ -256,6 +263,10 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
         ctx.patchState( {
             groups: {
                 ...ctx.getState().groups,
+                params: {
+                    ...ctx.getState().groups.params,
+                    resetSearch: false,
+                },
                 element: groupsPage,
             },
         } )
@@ -303,66 +314,15 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
         } )
     }
 
-    @Action( InputGroupsPageTextSearched )
-    public inputGroupsPageTextSearched (
+    @Action( UpdateGroupsPageSearchParams )
+    public updateGroupsPageSearchParams (
         ctx: StateContext<GroupStateModel>,
-        payload: InputGroupsPageTextSearched,
+        payload: UpdateGroupsPageSearchParams,
     ): void {
         ctx.patchState( {
             groups: {
                 ...ctx.getState().groups,
-                params: {
-                    ...ctx.getState().groups.params,
-                    textSearched: payload.searched,
-                },
-            },
-        } )
-    }
-
-    @Action( InputGroupsPageDateTimeSearched )
-    public inputGroupsPageDateTimeSearched (
-        ctx: StateContext<GroupStateModel>,
-        payload: InputGroupsPageDateTimeSearched,
-    ): void {
-        ctx.patchState( {
-            groups: {
-                ...ctx.getState().groups,
-                params: {
-                    ...ctx.getState().groups.params,
-                    dateTimeSearched: payload.dateTimeSearched?.toISOString(),
-                },
-            },
-        } )
-    }
-
-    @Action( SelectGroupsPagePresenceSearched )
-    public selectGroupsPagePresenceSearched (
-        ctx: StateContext<GroupStateModel>,
-        payload: SelectGroupsPagePresenceSearched,
-    ): void {
-        ctx.patchState( {
-            groups: {
-                ...ctx.getState().groups,
-                params: {
-                    ...ctx.getState().groups.params,
-                    presenceSearched: payload.presenceSearched,
-                },
-            },
-        } )
-    }
-
-    @Action( SelectGroupsPageVisibilitySearched )
-    public selectGroupsPageVisibilitySearched (
-        ctx: StateContext<GroupStateModel>,
-        payload: SelectGroupsPageVisibilitySearched,
-    ): void {
-        ctx.patchState( {
-            groups: {
-                ...ctx.getState().groups,
-                params: {
-                    ...ctx.getState().groups.params,
-                    visibilitySearched: payload.visibilitySearched,
-                },
+                params: payload.params,
             },
         } )
     }
@@ -437,55 +397,24 @@ export class GroupState extends GenericEventElementState<GroupStateModel> {
         ctx.patchState( {
             members: {
                 ...ctx.getState().members,
+                params: {
+                    ...ctx.getState().members.params,
+                    resetSearch: false,
+                },
                 element: membersPage,
             },
         } )
     }
 
-    @Action( InputGroupMembersPageTextSearched )
-    public inputGroupMembersPageTextSearched (
+    @Action( UpdateGroupMembersPageSearchParams )
+    public updateGroupMembersPageSearchParams (
         ctx: StateContext<GroupStateModel>,
-        payload: InputGroupMembersPageTextSearched,
+        payload: UpdateGroupMembersPageSearchParams,
     ): void {
         ctx.patchState( {
             members: {
                 ...ctx.getState().members,
-                params: {
-                    ...ctx.getState().members.params,
-                    textSearched: payload.textSearched,
-                },
-            },
-        } )
-    }
-
-    @Action( SelectGroupMembersPageStatusSearched )
-    public selectGroupMembersPageStatusSearched (
-        ctx: StateContext<GroupStateModel>,
-        payload: SelectGroupMembersPageStatusSearched,
-    ): void {
-        ctx.patchState( {
-            members: {
-                ...ctx.getState().members,
-                params: {
-                    ...ctx.getState().members.params,
-                    statusSearched: payload.statusSearched,
-                },
-            },
-        } )
-    }
-
-    @Action( SelectGroupMembersPageVisibilitySearched )
-    public selectGroupMembersPageVisibilitySearched (
-        ctx: StateContext<GroupStateModel>,
-        payload: SelectGroupMembersPageVisibilitySearched,
-    ): void {
-        ctx.patchState( {
-            members: {
-                ...ctx.getState().members,
-                params: {
-                    ...ctx.getState().members.params,
-                    visibilitySearched: payload.visibilitySearched,
-                },
+                params: payload.params,
             },
         } )
     }

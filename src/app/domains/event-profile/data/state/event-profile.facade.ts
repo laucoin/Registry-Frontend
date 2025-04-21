@@ -3,7 +3,7 @@ import { Observable } from 'rxjs'
 import { PageModel } from '../../../../shared/util-model/model/page.model'
 import { GenericEventElementFacade } from '../../../../shared/util-tool/facade/generic-event-element.facade'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
-import { ofActionSuccessful } from '@ngxs/store'
+import { ActionCompletion, ofActionCompleted, ofActionSuccessful } from '@ngxs/store'
 import { EventProfileModel } from '../../../../shared/util-model/model/event-profile.model'
 import { EventProfileState } from './event-profile.state'
 import {
@@ -14,18 +14,15 @@ import {
     FetchEventProfile,
     FetchEventProfilesPage,
     FetchProfileStatus,
-    InputEventProfilesPageDateTimeSearched,
-    InputEventProfilesPageTextSearched,
     ResetEventProfile,
     SearchUsers,
-    SelectEventProfilesPageAvailabilitySearched,
-    SelectEventProfilesPageStatusSearched,
     StartEventProfileLoader,
     StartEventProfilesPageLoader,
     StopEventProfileLoader,
     StopEventProfilesPageLoader,
     UnblockEventProfile,
     UpdateEventProfile,
+    UpdateEventProfilesPageSearchParams,
 } from './event-profile.action'
 import { EventProfileDto } from '../dto/event-profile.dto'
 import { EventProfilesDto } from '../dto/event-profiles.dto'
@@ -48,6 +45,10 @@ export class EventProfileFacade extends GenericEventElementFacade {
 
     public get eventProfilesPageError (): Signal<ToastMessageOptions | undefined> {
         return this.ngStore.selectSignal( EventProfileState.eventProfilesPageError )
+    }
+
+    private get eventProfilesPageResetSearch (): Signal<boolean> {
+        return this.ngStore.selectSignal( EventProfileState.eventProfilesPageResetSearch )
     }
 
     public get eventProfilesPageTextSearchedParam (): Signal<string | undefined> {
@@ -117,7 +118,8 @@ export class EventProfileFacade extends GenericEventElementFacade {
         force: boolean,
         eventId: string | undefined = this.actualSelectedEventId,
     ): void {
-        this.ngStore.dispatch( new FetchEventProfilesPage( eventId, pageNumber, pageSize, force ) )
+        const index: number | undefined = this.eventProfilesPageResetSearch() ? 0 : pageNumber
+        this.ngStore.dispatch( new FetchEventProfilesPage( eventId, index, pageSize, force ) )
     }
 
     public inputPageSearchParameters (
@@ -126,20 +128,19 @@ export class EventProfileFacade extends GenericEventElementFacade {
         statusSearched: string | undefined,
         availabilitySearched: boolean | undefined,
     ): void {
-        if (textSearched !== this.eventProfilesPageTextSearchedParam()) {
-            this.ngStore.dispatch( new InputEventProfilesPageTextSearched( textSearched ) )
-        }
+        const resetSearch: boolean = this.eventProfilesPageTextSearchedParam() != textSearched
+                                     || this.eventProfilesPageDateTimeSearchedParam() != dateTimeSearched?.toISOString()
+                                     || this.eventProfilesPageStatusSearchedParam() != statusSearched
+                                     || this.eventProfilesPageAvailabilitySearchedParam() != availabilitySearched
 
-        if (dateTimeSearched !== this.eventProfilesPageDateTimeSearchedParam()) {
-            this.ngStore.dispatch( new InputEventProfilesPageDateTimeSearched( dateTimeSearched ) )
-        }
-
-        if (statusSearched !== this.eventProfilesPageStatusSearchedParam()) {
-            this.ngStore.dispatch( new SelectEventProfilesPageStatusSearched( statusSearched ) )
-        }
-
-        if (availabilitySearched !== this.eventProfilesPageAvailabilitySearchedParam()) {
-            this.ngStore.dispatch( new SelectEventProfilesPageAvailabilitySearched( availabilitySearched ) )
+        if (resetSearch) {
+            this.ngStore.dispatch( new UpdateEventProfilesPageSearchParams( {
+                resetSearch: resetSearch,
+                statusSearched: statusSearched,
+                availabilitySearched: availabilitySearched,
+                textSearched: textSearched,
+                dateTimeSearched: dateTimeSearched?.toISOString(),
+            } ) )
         }
     }
 
@@ -196,21 +197,27 @@ export class EventProfileFacade extends GenericEventElementFacade {
     public blockEventProfile (
         profile: EventProfileModel,
         eventId: string | undefined = this.actualSelectedEventId,
-    ): void {
+    ): Observable<ActionCompletion<BlockEventProfile>> {
         this.ngStore.dispatch( new BlockEventProfile( eventId, profile ) )
+
+        return this.actions$.pipe( ofActionCompleted( BlockEventProfile ) )
     }
 
     public unblockEventProfile (
         profile: EventProfileModel,
         eventId: string | undefined = this.actualSelectedEventId,
-    ): void {
+    ): Observable<ActionCompletion<UnblockEventProfile>> {
         this.ngStore.dispatch( new UnblockEventProfile( eventId, profile ) )
+
+        return this.actions$.pipe( ofActionCompleted( UnblockEventProfile ) )
     }
 
     public deleteEventProfile (
         eventProfile: EventProfileModel,
         eventId: string | undefined = this.actualSelectedEventId,
-    ): void {
+    ): Observable<ActionCompletion<DeleteEventProfile>> {
         this.ngStore.dispatch( new DeleteEventProfile( eventId, eventProfile ) )
+
+        return this.actions$.pipe( ofActionCompleted( DeleteEventProfile ) )
     }
 }

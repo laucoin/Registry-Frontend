@@ -22,20 +22,47 @@
                                   [invalid]='FormUtil.invalid(dateTime)'
                                   translationPrefix='movements.form.error.datetime' />
         </div>
-        <div class='field'>
-            <label for='type' appRequired>{{ 'movements.form.type' | translate }}</label>
-            <p-select
-                    fluid
-                    inputId='type'
-                    [options]='facade.movementTypesMetadata()'
-                    [placeholder]='"movements.form.placeholder.type" | translate'
-                    [formControl]='type'
-                    (keydown.enter)='submit()'
-                    optionLabel='label'
-                    optionValue='value' />
-            <app-form-field-error [errors]='type.errors'
-                                  [invalid]='FormUtil.invalid(type)'
-                                  translationPrefix='movements.form.error.type' />
+        <div class='d-flex flex-wrap'>
+            <div class='left-field field'>
+                <label for='type' appRequired>{{ 'movements.form.type' | translate }}</label>
+                <p-select
+                        fluid
+                        inputId='type'
+                        [options]='facade.movementTypesMetadata()'
+                        [placeholder]='"movements.form.placeholder.type" | translate'
+                        [formControl]='type'
+                        (keydown.enter)='submit()'
+                        optionLabel='label'
+                        optionValue='value' />
+                <app-form-field-error [errors]='type.errors'
+                                      [invalid]='FormUtil.invalid(type)'
+                                      translationPrefix='movements.form.error.type' />
+            </div>
+            <div class='right-field field'>
+                <label for='reason'>{{ 'movements.form.reason.name' | translate }}</label>
+                <p-auto-complete inputId='reason'
+                                 fluid
+                                 completeOnFocus
+                                 forceSelection
+                                 showClear
+                                 optionLabel='label'
+                                 optionValue='value'
+                                 [placeholder]='"movements.form.placeholder.reason" | translate'
+                                 [formControl]='reason'
+                                 [suggestions]='facade.searchedReasonAndActivityMetadata()'
+                                 (keydown.enter)='submit()'
+                                 (onClear)='selectedReason.set(undefined)'
+                                 (onUnselect)='selectedReason.set(undefined)'
+                                 (onSelect)='selectedReason.set($event.value)'
+                                 (completeMethod)='handleReasonsAndActivitiesSearch($event.query)'>
+                    <ng-template #empty>
+                        <span>{{ 'movements.form.reason.empty-search' | translate }}</span>
+                    </ng-template>
+                </p-auto-complete>
+                <app-form-field-error [errors]='reason.errors'
+                                      [invalid]='FormUtil.invalid(reason)'
+                                      translationPrefix='movements.form.error.reason' />
+            </div>
         </div>
         <p-divider />
         <div class='field'>

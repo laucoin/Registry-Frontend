@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input, InputSignal, Signal } from '@angular/core'
+import {
+    ChangeDetectionStrategy,
+    Component,
+    computed,
+    inject,
+    input,
+    InputSignal,
+    OnDestroy,
+    Signal,
+} from '@angular/core'
 import { UserModel } from '../../../shared/util-model/model/user.model'
 import { UserActionEnum } from '../data/state/user.action'
 import { ChipModule } from 'primeng/chip'
@@ -22,6 +31,8 @@ import { GenericElementComponent } from '../../../shared/util-tool/component/gen
 import { AppConfig } from '../../../app.config'
 import { DateFormatPipe } from '../../../shared/util-tool/pipe/date-format.pipe'
 import { VisibilityNamePipe } from '../../../shared/util-tool/pipe/visibility.pipe'
+import { ConfirmationDialogComponent } from '../../../shared/util-ui/confirmation-dialog/confirmation-dialog.component'
+import { tap } from 'rxjs'
 
 @Component( {
     selector: 'app-user-element',
@@ -43,13 +54,14 @@ import { VisibilityNamePipe } from '../../../shared/util-tool/pipe/visibility.pi
         SeverityTagComponent,
         DateFormatPipe,
         VisibilityNamePipe,
+        ConfirmationDialogComponent,
     ],
     templateUrl: './user-element.component.html',
     styleUrl: './user-element.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
 } )
-export class UserElementComponent extends GenericElementComponent<UserModel, UserActionEnum> {
-    private readonly facade: UserFacade = inject( UserFacade )
+export class UserElementComponent extends GenericElementComponent<UserModel, UserActionEnum> implements OnDestroy {
+    protected readonly facade: UserFacade = inject( UserFacade )
 
     public readonly actionMenuVisible: InputSignal<boolean> = input( true )
     public readonly user: InputSignal<UserModel> = input.required()
@@ -63,6 +75,10 @@ export class UserElementComponent extends GenericElementComponent<UserModel, Use
             this.user(),
             AppConfig.config.user.action,
         ) )
+    }
+
+    public ngOnDestroy (): void {
+        this.subscriptions.unsubscribe()
     }
 
     protected isActionVisible (element: UserModel, action: ActionModel<UserActionEnum>): boolean {
@@ -92,16 +108,32 @@ export class UserElementComponent extends GenericElementComponent<UserModel, Use
                 ).catch( console.error )
                 break
             case UserActionEnum.BLOCK_USER:
-                this.facade.bockUser( this.user().id )
+                this.subscriptions.add(
+                    this.facade.bockUser( this.user().id ).pipe(
+                        tap( () => this.action.set( undefined ) ),
+                    ).subscribe(),
+                )
                 break
             case UserActionEnum.UNBLOCK_USER:
-                this.facade.unblockUser( this.user().id )
+                this.subscriptions.add(
+                    this.facade.unblockUser( this.user().id ).pipe(
+                        tap( () => this.action.set( undefined ) ),
+                    ).subscribe(),
+                )
                 break
             case UserActionEnum.IMPERSONATE_USER:
-                this.facade.impersonateUser( this.user() )
+                this.subscriptions.add(
+                    this.facade.impersonateUser( this.user() ).pipe(
+                        tap( () => this.action.set( undefined ) ),
+                    ).subscribe(),
+                )
                 break
             case UserActionEnum.DELETE_USER:
-                this.facade.deleteUser( this.user() )
+                this.subscriptions.add(
+                    this.facade.deleteUser( this.user() ).pipe(
+                        tap( () => this.action.set( undefined ) ),
+                    ).subscribe(),
+                )
                 break
             default:
                 console.warn( this.translateService.instant( 'global.messages.invalid-action' ) )

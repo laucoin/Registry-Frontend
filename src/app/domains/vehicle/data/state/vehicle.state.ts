@@ -15,15 +15,7 @@ import {
     FetchVehicleMovementsPage,
     FetchVehiclePresencesStatus,
     FetchVehiclesPage,
-    InputVehicleMovementsPageEndDateTimeSearched,
-    InputVehicleMovementsPageStartDateTimeSearched,
-    InputVehiclesPageDateTimeSearched,
-    InputVehiclesPageTextSearched,
     ResetVehicle,
-    SelectVehicleMovementsPageTypeSearched,
-    SelectVehicleMovementsPageVisibilitySearched,
-    SelectVehiclesPageAvailabilitySearched,
-    SelectVehiclesPageVisibilitySearched,
     StartVehicleLoader,
     StartVehicleMovementsPageLoader,
     StartVehiclesPageLoader,
@@ -31,6 +23,8 @@ import {
     StopVehicleMovementsPageLoader,
     StopVehiclesPageLoader,
     UpdateVehicle,
+    UpdateVehicleMovementsPageSearchParams,
+    UpdateVehiclesPageSearchParams,
 } from './vehicle.action'
 import { VehicleService } from './vehicle.service'
 import { VehicleFacade } from './vehicle.facade'
@@ -55,6 +49,7 @@ const defaultVehicleState: VehicleStateModel = {
     vehicles: {
         element: undefined,
         params: {
+            resetSearch: false,
             visibilitySearched: undefined,
             textSearched: undefined,
             statusSearched: undefined,
@@ -67,6 +62,7 @@ const defaultVehicleState: VehicleStateModel = {
     movements: {
         element: undefined,
         params: {
+            resetSearch: false,
             visibilitySearched: undefined,
             typeSearched: undefined,
             startDateTimeSearched: undefined,
@@ -134,6 +130,11 @@ export class VehicleState extends GenericEventElementState<VehicleStateModel> im
     }
 
     @Selector()
+    public static vehiclesPageResetSearch (state: VehicleStateModel): boolean {
+        return state.vehicles.params.resetSearch
+    }
+
+    @Selector()
     public static vehiclesPageTextSearchedParam (state: VehicleStateModel): string | undefined {
         return state.vehicles.params.textSearched
     }
@@ -174,7 +175,12 @@ export class VehicleState extends GenericEventElementState<VehicleStateModel> im
     }
 
     @Selector()
-    public static vehicleMovementsPageMovementTypeSearchedParam (state: VehicleStateModel): string | undefined {
+    public static vehicleMovementsPageResetSearch (state: VehicleStateModel): boolean {
+        return state.movements.params.resetSearch
+    }
+
+    @Selector()
+    public static vehicleMovementsPageTypeSearchedParam (state: VehicleStateModel): string | undefined {
         return state.movements.params.typeSearched
     }
 
@@ -282,71 +288,24 @@ export class VehicleState extends GenericEventElementState<VehicleStateModel> im
         ctx.patchState( {
             vehicles: {
                 ...ctx.getState().vehicles,
+                params: {
+                    ...ctx.getState().vehicles.params,
+                    resetSearch: false,
+                },
                 element: vehiclePage,
             },
         } )
     }
 
-    @Action( InputVehiclesPageTextSearched )
-    public inputVehiclesPageTextSearched (
+    @Action( UpdateVehiclesPageSearchParams )
+    public updateVehiclesPageSearchParams (
         ctx: StateContext<VehicleStateModel>,
-        payload: InputVehiclesPageTextSearched,
+        payload: UpdateVehiclesPageSearchParams,
     ): void {
         ctx.patchState( {
             vehicles: {
                 ...ctx.getState().vehicles,
-                params: {
-                    ...ctx.getState().vehicles.params,
-                    textSearched: payload.textSearched,
-                },
-            },
-        } )
-    }
-
-    @Action( InputVehiclesPageDateTimeSearched )
-    public inputVehiclesPageDateTimeSearched (
-        ctx: StateContext<VehicleStateModel>,
-        payload: InputVehiclesPageDateTimeSearched,
-    ): void {
-        ctx.patchState( {
-            vehicles: {
-                ...ctx.getState().vehicles,
-                params: {
-                    ...ctx.getState().vehicles.params,
-                    dateTimeSearched: payload.dateTimeSearched?.toISOString(),
-                },
-            },
-        } )
-    }
-
-    @Action( SelectVehiclesPageAvailabilitySearched )
-    public selectVehiclesPageAvailabilitySearched (
-        ctx: StateContext<VehicleStateModel>,
-        payload: SelectVehiclesPageAvailabilitySearched,
-    ): void {
-        ctx.patchState( {
-            vehicles: {
-                ...ctx.getState().vehicles,
-                params: {
-                    ...ctx.getState().vehicles.params,
-                    statusSearched: payload.availabilitySearched,
-                },
-            },
-        } )
-    }
-
-    @Action( SelectVehiclesPageVisibilitySearched )
-    public selectVehiclesPageVisibilitySearched (
-        ctx: StateContext<VehicleStateModel>,
-        payload: SelectVehiclesPageVisibilitySearched,
-    ): void {
-        ctx.patchState( {
-            vehicles: {
-                ...ctx.getState().vehicles,
-                params: {
-                    ...ctx.getState().vehicles.params,
-                    visibilitySearched: payload.visibilitySearched,
-                },
+                params: payload.params,
             },
         } )
     }
@@ -396,6 +355,10 @@ export class VehicleState extends GenericEventElementState<VehicleStateModel> im
         ctx.patchState( {
             movements: {
                 ...ctx.getState().movements,
+                params: {
+                    ...ctx.getState().movements.params,
+                    resetSearch: false,
+                },
                 element: movementsPage,
             },
         } )
@@ -443,66 +406,15 @@ export class VehicleState extends GenericEventElementState<VehicleStateModel> im
         } )
     }
 
-    @Action( SelectVehicleMovementsPageTypeSearched )
-    public selectVehicleMovementsPageTypeSearched (
+    @Action( UpdateVehicleMovementsPageSearchParams )
+    public updateVehicleMovementsPageSearchParams (
         ctx: StateContext<VehicleStateModel>,
-        payload: SelectVehicleMovementsPageTypeSearched,
+        payload: UpdateVehicleMovementsPageSearchParams,
     ): void {
         ctx.patchState( {
             movements: {
                 ...ctx.getState().movements,
-                params: {
-                    ...ctx.getState().movements.params,
-                    typeSearched: payload.typeSearched,
-                },
-            },
-        } )
-    }
-
-    @Action( InputVehicleMovementsPageStartDateTimeSearched )
-    public inputVehicleMovementsPageStartDateTimeSearched (
-        ctx: StateContext<VehicleStateModel>,
-        payload: InputVehicleMovementsPageStartDateTimeSearched,
-    ): void {
-        ctx.patchState( {
-            movements: {
-                ...ctx.getState().movements,
-                params: {
-                    ...ctx.getState().movements.params,
-                    startDateTimeSearched: payload.startDateTimeSearched?.toISOString(),
-                },
-            },
-        } )
-    }
-
-    @Action( InputVehicleMovementsPageEndDateTimeSearched )
-    public inputVehicleMovementsPageEndDateTimeSearched (
-        ctx: StateContext<VehicleStateModel>,
-        payload: InputVehicleMovementsPageEndDateTimeSearched,
-    ): void {
-        ctx.patchState( {
-            movements: {
-                ...ctx.getState().movements,
-                params: {
-                    ...ctx.getState().movements.params,
-                    endDateTimeSearched: payload.endDateTimeSearched?.toISOString(),
-                },
-            },
-        } )
-    }
-
-    @Action( SelectVehicleMovementsPageVisibilitySearched )
-    public selectVehicleMovementsPageVisibilitySearched (
-        ctx: StateContext<VehicleStateModel>,
-        payload: SelectVehicleMovementsPageVisibilitySearched,
-    ): void {
-        ctx.patchState( {
-            movements: {
-                ...ctx.getState().movements,
-                params: {
-                    ...ctx.getState().movements.params,
-                    visibilitySearched: payload.visibilitySearched,
-                },
+                params: payload.params,
             },
         } )
     }

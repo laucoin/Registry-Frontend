@@ -53,7 +53,7 @@ export class VehiclesListComponent extends GenericListComponent {
         return this.formBuilder.group( {
             textSearched: this.formBuilder.control( this.facade.vehiclesPageTextSearchedParam() ),
             dateTimeSearched: this.formBuilder.control( this.facade.vehiclesPageDateTimeSearchedParam() ),
-            availabilitySearched: this.formBuilder.control( this.facade.vehiclesPageAvailabilitySearchedParam() ),
+            statusSearched: this.formBuilder.control( this.facade.vehiclesPageStatusSearchedParam() ),
             visibilitySearched: this.formBuilder.control( this.facade.vehiclesPageVisibilitySearchedParam() ),
         } )
     }
@@ -68,7 +68,7 @@ export class VehiclesListComponent extends GenericListComponent {
         this.facade.inputPageSearchParameters(
             this.textSearched.value,
             this.dateTimeSearched.value,
-            this.availabilitySearched.value,
+            this.statusSearched.value,
             this.visibilitySearched.value,
         )
         this.facade.fetchVehiclesPage( pageEvent.pageNumber, pageEvent.pageSize, false, eventId )
@@ -82,8 +82,8 @@ export class VehiclesListComponent extends GenericListComponent {
         return this.form.get( 'dateTimeSearched' ) as FormControl
     }
 
-    protected get availabilitySearched (): FormControl {
-        return this.form.get( 'availabilitySearched' ) as FormControl
+    protected get statusSearched (): FormControl {
+        return this.form.get( 'statusSearched' ) as FormControl
     }
 
     protected get visibilitySearched (): FormControl {

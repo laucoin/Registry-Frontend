@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input, InputSignal, Signal } from '@angular/core'
+import {
+    ChangeDetectionStrategy,
+    Component,
+    computed,
+    inject,
+    input,
+    InputSignal,
+    OnDestroy,
+    Signal,
+} from '@angular/core'
 import { MovementModel } from '../../util-model/model/movement.model'
 import { MovementActionEnum } from '../../../domains/movement/data/state/movement.action'
 import { ActionModel } from '../../util-model/model/action.model'
@@ -22,6 +31,8 @@ import { VehicleUtil } from '../../util-tool/util/vehicle.util'
 import { PluralTranslationPipe } from '../../util-tool/pipe/plural-translation.pipe'
 import { DateFormatPipe } from '../../util-tool/pipe/date-format.pipe'
 import { VisibilityNamePipe } from '../../util-tool/pipe/visibility.pipe'
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component'
+import { tap } from 'rxjs'
 
 @Component( {
     selector: 'app-movement-element',
@@ -46,13 +57,14 @@ import { VisibilityNamePipe } from '../../util-tool/pipe/visibility.pipe'
         PluralTranslationPipe,
         DateFormatPipe,
         VisibilityNamePipe,
+        ConfirmationDialogComponent,
     ],
     templateUrl: './movement-element.component.html',
     styleUrl: './movement-element.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
 } )
-export class MovementElementComponent extends GenericElementComponent<MovementModel, MovementActionEnum> {
-    private readonly facade: MovementFacade = inject( MovementFacade )
+export class MovementElementComponent extends GenericElementComponent<MovementModel, MovementActionEnum> implements OnDestroy {
+    protected readonly facade: MovementFacade = inject( MovementFacade )
 
     protected readonly VehicleUtil: typeof VehicleUtil = VehicleUtil
 
@@ -92,6 +104,10 @@ export class MovementElementComponent extends GenericElementComponent<MovementMo
         } )
     }
 
+    public ngOnDestroy (): void {
+        this.subscriptions.unsubscribe()
+    }
+
     protected isActionVisible (element: MovementModel, action: ActionModel<MovementActionEnum>): boolean {
         switch (action.id) {
             case MovementActionEnum.DISABLE_MOVEMENT:
@@ -111,13 +127,25 @@ export class MovementElementComponent extends GenericElementComponent<MovementMo
                 ).catch( console.error )
                 break
             case MovementActionEnum.DISABLE_MOVEMENT:
-                this.facade.disableMovement( this.movement().id, this.contextEventId() )
+                this.subscriptions.add(
+                    this.facade.disableMovement( this.movement().id ).pipe(
+                        tap( (): void => this.action.set( undefined ) ),
+                    ).subscribe(),
+                )
                 break
             case MovementActionEnum.ENABLE_MOVEMENT:
-                this.facade.enableMovement( this.movement().id, this.contextEventId() )
+                this.subscriptions.add(
+                    this.facade.enableMovement( this.movement().id ).pipe(
+                        tap( (): void => this.action.set( undefined ) ),
+                    ).subscribe(),
+                )
                 break
             case MovementActionEnum.DELETE_MOVEMENT:
-                this.facade.deleteMovement( this.movement(), this.contextEventId() )
+                this.subscriptions.add(
+                    this.facade.deleteMovement( this.movement() ).pipe(
+                        tap( (): void => this.action.set( undefined ) ),
+                    ).subscribe(),
+                )
                 break
             default:
                 console.warn( this.translateService.instant( 'global.messages.invalid-action' ) )

@@ -412,7 +412,8 @@
             "one": "{{name}}",
             "two": "{{name}} et 1 autre option",
             "few": "{{name}} et {{others}} autres options",
-            "list": "Options"
+            "list": "Options",
+            "select-all": "Tout sélectionner"
         },
         "status": {
             "IN_PROGRESS": "En cours",
@@ -492,7 +493,8 @@
                 },
                 "delete": {
                     "title": "Supprimer l'évènement",
-                    "message": "Attention ! Tu vas définitivement supprimer l'évènement \"{{element.name}}\" ainsi que tous les élements qui lui sont liés (profils, mouvements, participants, etc.)."
+                    "message": "Attention ! Tu vas définitivement supprimer l'évènement \"{{element.name}}\" ainsi que tous les élements qui lui sont liés (profils, mouvements, participants, etc.).",
+                    "hint": "La suppression de l'évènement peut prendre un certain temps en fonction de sa taille. Tu peux continuer à utiliser l'application, mais il est préférable de ne pas quitter cette page avant que la suppression soit terminée."
                 }
             }
         },
@@ -705,6 +707,7 @@
             "one": "Participant",
             "few": "Participants"
         },
+        "reason": "pour \"{{reason}}\"",
         "content": {
             "one": "{{name}}",
             "two": "{{name}} et 1 autre personne",
@@ -728,6 +731,10 @@
             },
             "datetime": "Date & Heure",
             "type": "Type",
+            "reason": {
+                "name": "Motif",
+                "empty-search": "Aucune raison trouvée"
+            },
             "content": {
                 "empty": "Aucune personne selectionnée",
                 "search": "Ajouter des personnes et des groupes",
@@ -768,7 +775,8 @@
             },
             "placeholder": {
                 "datetime": "Ex : {{date}}",
-                "type": "Ex : Entrée"
+                "type": "Ex : Entrée",
+                "reason": "Ex : Logistique"
             },
             "error": {
                 "datetime": {
@@ -778,6 +786,9 @@
                 },
                 "type": {
                     "required": "Le type de mouvement doit être défini. Sinon je risque d'avoir du mal à te dire s'il s'agit d'une entrée ou d'une sortie la prochaine fois que tu me demandes."
+                },
+                "reason": {
+                    "incompatibleReason": "La raison \"{{reason}}\" n'est pas compatible avec le type de mouvement sélectionné. Choisis une autre raison ou un autre type de mouvement."
                 },
                 "content": {
                     "required": "Impossible de créer un mouvement sans participants. Reviens avec une équipe !"

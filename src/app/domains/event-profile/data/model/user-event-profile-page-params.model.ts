@@ -1,5 +1,5 @@
 export interface UserEventProfilePageParamsModel {
-    visibilitySearched: boolean | undefined
+    resetSearch: boolean
     textSearched: string | undefined
     availabilitySearched: boolean | undefined
     statusSearched: string | undefined

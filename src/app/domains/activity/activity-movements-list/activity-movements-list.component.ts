@@ -59,7 +59,7 @@ export class ActivityMovementsListComponent extends GenericListComponent impleme
 
     protected initForm (): FormGroup {
         return this.formBuilder.group( {
-            typeSearched: this.formBuilder.control( this.facade.activityMovementsPageMovementTypeSearchedParam() ),
+            typeSearched: this.formBuilder.control( this.facade.activityMovementsPageTypeSearchedParam() ),
             startDateTimeSearched: this.formBuilder.control( this.facade.activityMovementsPageStartDateTimeSearchedParam() ),
             endDateTimeSearched: this.formBuilder.control( this.facade.activityMovementsPageEndDateTimeSearchedParam() ),
             visibilitySearched: this.formBuilder.control( this.facade.activityMovementsPageVisibilitySearchedParam() ),

@@ -16,7 +16,7 @@ import { DropdownModule } from 'primeng/dropdown'
 import { MovementContentDto } from '../data/dto/movement-content.dto'
 import { Select } from 'primeng/select'
 import { DatePicker } from 'primeng/datepicker'
-import { combineLatest, map, Observable } from 'rxjs'
+import { combineLatest, map, Observable, tap } from 'rxjs'
 import { SelectItem } from 'primeng/api'
 import { ParticipantModel } from '../../../shared/util-model/model/participant.model'
 import { RegistryRequiredDirective } from '../../../shared/util-tool/directive/registry-required.directive'
@@ -37,6 +37,8 @@ import { InputGroup } from 'primeng/inputgroup'
 import { InputGroupAddon } from 'primeng/inputgroupaddon'
 import { VehicleUtil } from '../../../shared/util-tool/util/vehicle.util'
 import { GenericUtil } from '../../../shared/util-tool/util/generic.util'
+import { MovementReasonModel } from '../data/model/movement-reason.model'
+import { toObservable } from '@angular/core/rxjs-interop'
 
 @Component( {
     selector: 'app-movement-form',
@@ -64,7 +66,6 @@ import { GenericUtil } from '../../../shared/util-tool/util/generic.util'
         AutoComplete,
         InputGroup,
         InputGroupAddon,
-
     ],
     templateUrl: './movement-form.component.html',
     styleUrl: './movement-form.component.scss',
@@ -77,6 +78,8 @@ export class MovementFormComponent extends GenericFormComponent<MovementModel, M
     protected readonly now: Date = new Date()
     protected readonly form: FormGroup
 
+    protected readonly selectedReason: WritableSignal<MovementReasonModel | undefined> = signal(
+        undefined )
     protected readonly hasVehicleOption: Signal<boolean> = computed( (): boolean => EventUtil.hasOption(
         this.contextEvent(),
         'VEHICLE',
@@ -87,6 +90,7 @@ export class MovementFormComponent extends GenericFormComponent<MovementModel, M
         super()
 
         this.form = this.initForm()
+        this.handleFormChange()
 
         this.loadData()
 
@@ -108,9 +112,27 @@ export class MovementFormComponent extends GenericFormComponent<MovementModel, M
         return this.formBuilder.group( {
             dateTime: this.formBuilder.control( this.now, [ Validators.required ] ),
             type: this.formBuilder.control( undefined, [ Validators.required ] ),
+            reason: this.formBuilder.control( undefined, [] ),
             content: this.formBuilder.control( [], [ Validators.required ] ),
             vehiclesWithDrivers: this.formBuilder.array( [], [] ),
         } )
+    }
+
+    protected handleFormChange (): void {
+        this.subscriptions.add(
+            combineLatest( [ this.type.valueChanges, toObservable( this.selectedReason ) ] ).pipe(
+                tap( (): void => {
+                    if (
+                        GenericUtil.nonNull( this.selectedReason()?.type )
+                        && GenericUtil.nonNull( this.type.value )
+                        && this.selectedReason()?.type !== this.type.value) {
+                        this.reason.setErrors( { incompatibleReason: { reason: this.selectedReason()?.label } } )
+                    } else {
+                        this.reason.setErrors( null )
+                    }
+                } ),
+            ).subscribe(),
+        )
     }
 
     protected handleLoadedElement (): void {
@@ -141,6 +163,8 @@ export class MovementFormComponent extends GenericFormComponent<MovementModel, M
 
         this.dateTime.patchValue( new Date( element?.dateTime ) )
         this.type.patchValue( element.type.value )
+        this.selectedReason.set( element.reason )
+        this.reason.patchValue( element.reason )
         this.content.patchValue( element.content )
         this.buildVehiclesFromLoadedMovement()
     }
@@ -168,6 +192,8 @@ export class MovementFormComponent extends GenericFormComponent<MovementModel, M
         return {
             dateTime: this.dateTime.value,
             type: this.type.value,
+            reason: this.selectedReason()?.kind === 'REASON' ? this.selectedReason()?.value : undefined,
+            activityId: this.selectedReason()?.kind === 'ACTIVITY' ? this.selectedReason()?.value : undefined,
             content: this.content.value?.map( (content: MovementContentModel): MovementContentDto => ({
                 poolName: content.poolName,
                 participantId: content.participant.id,
@@ -196,9 +222,17 @@ export class MovementFormComponent extends GenericFormComponent<MovementModel, M
             } )
     }
 
-    protected handleParticipantsAndGroupsSearch (searched: string | undefined): void {
+    protected handleReasonsAndActivitiesSearch (textSearched: string | undefined): void {
+        this.facade.searchReasonsAndActivities(
+            textSearched,
+            this.type.value,
+            this.contextEventId(),
+        )
+    }
+
+    protected handleParticipantsAndGroupsSearch (textSearched: string | undefined): void {
         this.facade.searchParticipantsAndGroups(
-            searched,
+            textSearched,
             this.contextEventId(),
         )
     }
@@ -247,6 +281,10 @@ export class MovementFormComponent extends GenericFormComponent<MovementModel, M
 
     protected get type (): FormControl {
         return this.form.get( 'type' ) as FormControl
+    }
+
+    protected get reason (): FormControl {
+        return this.form.get( 'reason' ) as FormControl
     }
 
     protected get content (): FormControl {

@@ -12,25 +12,19 @@ import {
     FetchActivity,
     FetchActivityMovementsContents,
     FetchActivityMovementsPage,
-    InputActivitiesPageDateTimeSearched,
-    InputActivitiesPageTextSearched,
-    InputActivityMovementsPageEndDateTimeSearched,
-    InputActivityMovementsPageStartDateTimeSearched,
     ResetActivity,
-    SelectActivitiesPageAvailabilitySearched,
-    SelectActivitiesPageVisibilitySearched,
-    SelectActivityMovementsPageTypeSearched,
-    SelectActivityMovementsPageVisibilitySearched,
     StartActivitiesPageLoader,
     StartActivityLoader,
     StartActivityMovementsPageLoader,
     StopActivitiesPageLoader,
     StopActivityLoader,
     StopActivityMovementsPageLoader,
+    UpdateActivitiesPageSearchParams,
     UpdateActivity,
+    UpdateActivityMovementsPageSearchParams,
 } from './activity.action'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
-import { ofActionSuccessful } from '@ngxs/store'
+import { ActionCompletion, ofActionCompleted, ofActionSuccessful } from '@ngxs/store'
 import { ActivityState } from './activity.state'
 import { GenericEventElementFacade } from '../../../../shared/util-tool/facade/generic-event-element.facade'
 import { MovementModel } from '../../../../shared/util-model/model/movement.model'
@@ -52,6 +46,10 @@ export class ActivityFacade extends GenericEventElementFacade {
 
     public get activitiesPageError (): Signal<ToastMessageOptions | undefined> {
         return this.ngStore.selectSignal( ActivityState.activitiesPageError )
+    }
+
+    private get activitiesPageResetSearch (): Signal<boolean> {
+        return this.ngStore.selectSignal( ActivityState.activitiesPageResetSearch )
     }
 
     public get activitiesPageTextSearchedParam (): Signal<string | undefined> {
@@ -90,8 +88,12 @@ export class ActivityFacade extends GenericEventElementFacade {
         return this.ngStore.selectSignal( ActivityState.activityMovementsPageError )
     }
 
-    public get activityMovementsPageMovementTypeSearchedParam (): Signal<string | undefined> {
-        return this.ngStore.selectSignal( ActivityState.activityMovementsPageMovementTypeSearchedParam )
+    public get activityMovementsPageResetSearch (): Signal<boolean> {
+        return this.ngStore.selectSignal( ActivityState.activityMovementsPageResetSearch )
+    }
+
+    public get activityMovementsPageTypeSearchedParam (): Signal<string | undefined> {
+        return this.ngStore.selectSignal( ActivityState.activityMovementsPageTypeSearchedParam )
     }
 
     public get activityMovementsPageStartDateTimeSearchedParam (): Signal<Date | undefined> {
@@ -158,7 +160,8 @@ export class ActivityFacade extends GenericEventElementFacade {
         force: boolean,
         eventId: string | undefined = this.actualSelectedEventId,
     ): void {
-        this.ngStore.dispatch( new FetchActivitiesPage( eventId, pageNumber, pageSize, force ) )
+        const index: number | undefined = this.activitiesPageResetSearch() ? 0 : pageNumber
+        this.ngStore.dispatch( new FetchActivitiesPage( eventId, index, pageSize, force ) )
     }
 
     public inputPageSearchParameters (
@@ -167,20 +170,19 @@ export class ActivityFacade extends GenericEventElementFacade {
         availabilitySearched: boolean | undefined,
         visibilitySearched: boolean | undefined,
     ): void {
-        if (textSearched !== this.activitiesPageTextSearchedParam()) {
-            this.ngStore.dispatch( new InputActivitiesPageTextSearched( textSearched ) )
-        }
+        const resetSearch: boolean = this.activitiesPageTextSearchedParam() != textSearched
+                                     || this.activitiesPageDateTimeSearchedParam() != dateTimeSearched?.toISOString()
+                                     || this.activitiesPageAvailabilitySearchedParam() != availabilitySearched
+                                     || this.activitiesPageVisibilitySearchedParam() != visibilitySearched
 
-        if (dateTimeSearched !== this.activitiesPageDateTimeSearchedParam()) {
-            this.ngStore.dispatch( new InputActivitiesPageDateTimeSearched( dateTimeSearched ) )
-        }
-
-        if (availabilitySearched !== this.activitiesPageAvailabilitySearchedParam()) {
-            this.ngStore.dispatch( new SelectActivitiesPageAvailabilitySearched( availabilitySearched ) )
-        }
-
-        if (visibilitySearched !== this.activitiesPageVisibilitySearchedParam()) {
-            this.ngStore.dispatch( new SelectActivitiesPageVisibilitySearched( visibilitySearched ) )
+        if (resetSearch) {
+            this.ngStore.dispatch( new UpdateActivitiesPageSearchParams( {
+                resetSearch: resetSearch,
+                visibilitySearched: visibilitySearched,
+                textSearched: textSearched,
+                availabilitySearched: availabilitySearched,
+                dateTimeSearched: dateTimeSearched?.toISOString(),
+            } ) )
         }
     }
 
@@ -199,7 +201,8 @@ export class ActivityFacade extends GenericEventElementFacade {
         force: boolean,
         eventId: string | undefined = this.actualSelectedEventId,
     ): void {
-        this.ngStore.dispatch( new FetchActivityMovementsPage( eventId, id, pageNumber, pageSize, force ) )
+        const index: number | undefined = this.activityMovementsPageResetSearch() ? 0 : pageNumber
+        this.ngStore.dispatch( new FetchActivityMovementsPage( eventId, id, index, pageSize, force ) )
     }
 
     public fetchActivityMovementsContent (
@@ -215,20 +218,19 @@ export class ActivityFacade extends GenericEventElementFacade {
         endDateTimeSearched: Date | undefined,
         visibilitySearched: boolean | undefined,
     ): void {
-        if (typeSearched !== this.activityMovementsPageMovementTypeSearchedParam()) {
-            this.ngStore.dispatch( new SelectActivityMovementsPageTypeSearched( typeSearched ) )
-        }
+        const resetSearch: boolean = this.activityMovementsPageTypeSearchedParam() != typeSearched
+                                     || this.activityMovementsPageStartDateTimeSearchedParam() != startDateTimeSearched?.toISOString()
+                                     || this.activityMovementsPageEndDateTimeSearchedParam() != endDateTimeSearched?.toISOString()
+                                     || this.activityMovementsPageVisibilitySearchedParam() != visibilitySearched
 
-        if (startDateTimeSearched !== this.activityMovementsPageStartDateTimeSearchedParam()) {
-            this.ngStore.dispatch( new InputActivityMovementsPageStartDateTimeSearched( startDateTimeSearched ) )
-        }
-
-        if (endDateTimeSearched !== this.activityMovementsPageEndDateTimeSearchedParam()) {
-            this.ngStore.dispatch( new InputActivityMovementsPageEndDateTimeSearched( endDateTimeSearched ) )
-        }
-
-        if (visibilitySearched !== this.activityMovementsPageVisibilitySearchedParam()) {
-            this.ngStore.dispatch( new SelectActivityMovementsPageVisibilitySearched( visibilitySearched ) )
+        if (resetSearch) {
+            this.ngStore.dispatch( new UpdateActivityMovementsPageSearchParams( {
+                resetSearch: resetSearch,
+                visibilitySearched: visibilitySearched,
+                typeSearched: typeSearched,
+                startDateTimeSearched: startDateTimeSearched?.toISOString(),
+                endDateTimeSearched: endDateTimeSearched?.toISOString(),
+            } ) )
         }
     }
 
@@ -265,18 +267,30 @@ export class ActivityFacade extends GenericEventElementFacade {
         return this.actions$.pipe( ofActionSuccessful( UpdateActivity ) )
     }
 
-    public disableActivity (id: string, eventId: string | undefined = this.actualSelectedEventId): void {
+    public disableActivity (
+        id: string,
+        eventId: string | undefined = this.actualSelectedEventId,
+    ): Observable<ActionCompletion<DisableActivity>> {
         this.ngStore.dispatch( new DisableActivity( eventId, id ) )
+
+        return this.actions$.pipe( ofActionCompleted( DisableActivity ) )
     }
 
-    public enableActivity (id: string, eventId: string | undefined = this.actualSelectedEventId): void {
+    public enableActivity (
+        id: string,
+        eventId: string | undefined = this.actualSelectedEventId,
+    ): Observable<ActionCompletion<EnableActivity>> {
         this.ngStore.dispatch( new EnableActivity( eventId, id ) )
+
+        return this.actions$.pipe( ofActionCompleted( EnableActivity ) )
     }
 
     public deleteActivity (
         activity: ActivityModel,
         eventId: string | undefined = this.actualSelectedEventId,
-    ): void {
+    ): Observable<ActionCompletion<DeleteActivity>> {
         this.ngStore.dispatch( new DeleteActivity( eventId, activity ) )
+
+        return this.actions$.pipe( ofActionCompleted( DeleteActivity ) )
     }
 }

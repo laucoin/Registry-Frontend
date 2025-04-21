@@ -59,7 +59,7 @@ export class VehicleMovementsListComponent extends GenericListComponent implemen
 
     protected initForm (): FormGroup {
         return this.formBuilder.group( {
-            typeSearched: this.formBuilder.control( this.facade.vehicleMovementsPageMovementTypeSearchedParam() ),
+            typeSearched: this.formBuilder.control( this.facade.vehicleMovementsPageTypeSearchedParam() ),
             startDateTimeSearched: this.formBuilder.control( this.facade.vehicleMovementsPageStartDateTimeSearchedParam() ),
             endDateTimeSearched: this.formBuilder.control( this.facade.vehicleMovementsPageEndDateTimeSearchedParam() ),
             visibilitySearched: this.formBuilder.control( this.facade.vehicleMovementsPageVisibilitySearchedParam() ),
