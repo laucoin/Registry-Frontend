@@ -59,19 +59,17 @@ export class MovementsListComponent extends GenericListComponent {
     }
 
     protected loadData (): void {
-        const eventId: string | undefined = this.route.snapshot.params['eventId']
-        if (!eventId) return
-        this.facade.fetchMovementsPage( undefined, undefined, false, eventId )
+        this.facade.fetchMovementsPage( undefined, undefined, false )
     }
 
-    protected loadPage (pageEvent: PageEventModel, eventId: string | undefined): void {
+    protected loadPage (pageEvent: PageEventModel): void {
         this.facade.inputPageSearchParameters(
             this.typeSearched.value,
             this.startDateTimeSearched.value,
             this.endDateTimeSearched.value,
             this.visibilitySearched.value,
         )
-        this.facade.fetchMovementsPage( pageEvent.pageNumber, pageEvent.pageSize, false, eventId )
+        this.facade.fetchMovementsPage( pageEvent.pageNumber, pageEvent.pageSize, false )
     }
 
     protected get typeSearched (): FormControl {

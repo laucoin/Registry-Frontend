@@ -59,19 +59,17 @@ export class VehiclesListComponent extends GenericListComponent {
     }
 
     protected loadData (): void {
-        const eventId: string | undefined = this.route.snapshot.params['eventId']
-        if (!eventId) return
-        this.facade.fetchVehiclesPage( undefined, undefined, false, eventId )
+        this.facade.fetchVehiclesPage( undefined, undefined, false )
     }
 
-    protected loadPage (pageEvent: PageEventModel, eventId: string | undefined): void {
+    protected loadPage (pageEvent: PageEventModel): void {
         this.facade.inputPageSearchParameters(
             this.textSearched.value,
             this.dateTimeSearched.value,
             this.statusSearched.value,
             this.visibilitySearched.value,
         )
-        this.facade.fetchVehiclesPage( pageEvent.pageNumber, pageEvent.pageSize, false, eventId )
+        this.facade.fetchVehiclesPage( pageEvent.pageNumber, pageEvent.pageSize, false )
     }
 
     protected get textSearched (): FormControl {

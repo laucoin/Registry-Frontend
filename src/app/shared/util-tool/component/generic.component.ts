@@ -1,7 +1,6 @@
 import { RegistryFacade } from '../../util-common/state/registry.facade'
-import { inject, Signal } from '@angular/core'
+import { inject } from '@angular/core'
 import { TranslateService } from '@ngx-translate/core'
-import { toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, Router } from '@angular/router'
 import { FormBuilder } from '@angular/forms'
 import { UserAuthorityEnum } from '../../util-model/enumeration/user-authority.enum'
@@ -29,13 +28,4 @@ export abstract class GenericComponent {
     protected readonly translateService: TranslateService = inject( TranslateService )
 
     protected readonly breakpoint: object = breakPoint
-
-    protected readonly contextEventId: Signal<string | undefined> = toSignal( this.registryFacade.contextEventId )
-
-    protected buildUri (route: string): string {
-        return route.includes( ':eventId' ) && this.contextEventId() ? route.replace(
-            ':eventId',
-            this.contextEventId()!,
-        ) : route
-    }
 }

@@ -1,16 +1,15 @@
 import { inject } from '@angular/core'
 import { CanActivateFn, Router } from '@angular/router'
 import { AppConfig } from '../../../app.config'
-import { AppRouteEnum } from '../../../app-route.enum'
 import { RegistryFacade } from '../../util-common/state/registry.facade'
-import { CurrentUserModel } from '../../util-model/model/current-user.model'
+import { GenericUtil } from '../../util-tool/util/generic.util'
+import { AppRouteEnum } from '../../../app-route.enum'
 
 export const selectedProfileGuard: CanActivateFn = (): Promise<boolean> | boolean => {
     const registryFacade: RegistryFacade = inject( RegistryFacade )
     const router: Router = inject( Router )
 
-    const currentUser: CurrentUserModel | undefined = registryFacade.currentUser()
-    if (currentUser && !currentUser.preferences.selectedProfile) {
+    if (GenericUtil.isNull( registryFacade.selectedEvent() )) {
         registryFacade.notify( {
             severity: 'warn',
             summary: 'preferences.notifications.NO_SELECTED_PROFILE.title',
@@ -19,7 +18,8 @@ export const selectedProfileGuard: CanActivateFn = (): Promise<boolean> | boolea
             icon: 'pi pi-sort-alt-slash',
             life: AppConfig.config.notification.duration.warn,
         } )
-        router.navigateByUrl( AppRouteEnum.PREFERENCES_PROFILES ).then()
+
+        return router.navigateByUrl( AppRouteEnum.PREFERENCES_PROFILES ).then( () => false )
     }
 
     return true

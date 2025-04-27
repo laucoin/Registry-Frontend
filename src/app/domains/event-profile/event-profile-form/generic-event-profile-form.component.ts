@@ -27,12 +27,10 @@ export abstract class GenericEventProfileFormComponent extends GenericFormCompon
 
     protected override loadData (): void {
         this.facade.resetEventProfile()
-        this.facade.fetchAssignableRoles( this.contextEventId() )
+        this.facade.fetchAssignableRoles()
 
         if (GenericUtil.nonNull( this.idParam )) {
-            this.facade.fetchEventProfile( this.idParam!, this.contextEventId() )
-        } else {
-            super.loadData()
+            this.facade.fetchEventProfile( this.idParam! )
         }
     }
 

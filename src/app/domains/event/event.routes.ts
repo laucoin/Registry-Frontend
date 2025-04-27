@@ -2,8 +2,7 @@ import { Routes } from '@angular/router'
 import { EventComponent } from './event.component'
 import { EventsListComponent } from './events-list/events-list.component'
 import { EventRoutesEnum } from './event-routes.enum'
-import { EventCreationFormComponent } from './event-form/event-creation-form/event-creation-form.component'
-import { EventEditionFormComponent } from './event-form/event-edition-form/event-edition-form.component'
+import { EventFormComponent } from './event-form/event-form.component'
 
 export const eventRoutes: Routes = [
     {
@@ -12,10 +11,10 @@ export const eventRoutes: Routes = [
                 path: '', component: EventsListComponent,
             },
             {
-                path: EventRoutesEnum.CREATE, component: EventCreationFormComponent,
+                path: EventRoutesEnum.CREATE, component: EventFormComponent,
             },
             {
-                path: EventRoutesEnum.EDIT, component: EventEditionFormComponent,
+                path: EventRoutesEnum.EDIT, component: EventFormComponent,
             },
         ],
     },

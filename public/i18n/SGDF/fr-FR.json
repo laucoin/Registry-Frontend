@@ -229,7 +229,7 @@
         "menu": {
             "home": "Accueil",
             "users": "Utilisateurs",
-            "events": "Événements",
+            "events": "Projets",
             "event-profiles": "Profiles d'accès",
             "movements": "Mouvements",
             "participants": "Participants",
@@ -301,6 +301,8 @@
             "create": "Créer",
             "edit": "Modifier",
             "cancel": "Annuler",
+            "previous": "Précédent",
+            "next": "Suivant",
             "search-and-filter": "Rechercher & Filtrer",
             "sign-out": "Déconnexion"
         },
@@ -360,7 +362,7 @@
                 "impersonate": {
                     "myself": {
                         "title": "Anonymiser mon compte",
-                        "message": "Attention ! Tu vas anonymiser ton compte. Cette action irréversible entrainera ta déconnexion et t'empêcheras de te connecter à nouveau. À titre informatif, ton utilisateur sera anonmysé immédiatement, les participants a qui tu es liés seront anonymisés à la fin de l'évènement. Cependant, si tu as conduit des véhicules dans le cadre de cet évènement, ton participant sera anonymisé 1 an après la fin de l'évènement."
+                        "message": "Attention ! Tu vas anonymiser ton compte. Cette action irréversible entrainera ta déconnexion et t'empêcheras de te connecter à nouveau. À titre informatif, ton utilisateur sera anonmysé immédiatement, les participants a qui tu es liés seront anonymisés à la fin du projet. Cependant, si tu as conduit des véhicules dans le cadre de ce projet, ton participant sera anonymisé 1 an après la fin du projet."
                     },
                     "other": {
                         "title": "Anonymiser l'utilisateur",
@@ -425,8 +427,8 @@
         },
         "form": {
             "title": {
-                "create": "Créer un évènement",
-                "edit": "Modifier l'évènement \"{{name}}\""
+                "create": "Créer un projet",
+                "edit": "Modifier le projet \"{{name}}\""
             },
             "subtitle": {
                 "information": "Informations",
@@ -435,16 +437,12 @@
                     "few": "Options"
                 }
             },
-            "navigation": {
-                "next-option": "Choisir les options",
-                "previous-information": "Information générale"
-            },
             "name": "Nom",
             "begin-datetime": "Date & Heure de début",
             "end-datetime": "Date & Heure de fin",
             "error": {
                 "name": {
-                    "required": "Un événement sans nom ? Sérieusement, donne-lui un nom !",
+                    "required": "Un projet sans nom ? Sérieusement, donne-lui un nom !",
                     "blank": "Non, non, non ! tu ne m'auras pas. Un nom vide ça ne fonctionne pas !",
                     "maxlength": "T'as vu la longueur du nom 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c'est {{requiredLength}}."
                 },
@@ -452,13 +450,13 @@
                     "preRequiredOptions": "Activer l'option \"{{for}}\" sans \"{{missing}}\" ça risque d''être complexe."
                 },
                 "begin-datetime": {
-                    "dateRequiredForTime": "L'évènement commence à une certaine heure ok ! Mais quel jour ? 📆"
+                    "dateRequiredForTime": "Le projet commence à une certaine heure ok ! Mais quel jour ? 📆"
                 },
                 "end-datetime": {
-                    "dateRequiredForTime": "L'évènement termine à une certaine heure ok ! Mais quel jour ? 📆"
+                    "dateRequiredForTime": "Le projet termine à une certaine heure ok ! Mais quel jour ? 📆"
                 },
                 "date-range": {
-                    "beginDateBeforeEndDate": "Ton évènement finit avant d'avoir commencé ! Ça c'est de l'ambition."
+                    "beginDateBeforeEndDate": "Ton projet finit avant d'avoir commencé ! Ça c'est de l'ambition."
                 }
             },
             "placeholder": {
@@ -469,7 +467,7 @@
         },
         "actions": {
             "create-support": "Profil support",
-            "select": "Entrer",
+            "select": "Rejoindre",
             "edit": "Modifier",
             "enable": "Démasquer",
             "disable": "Masquer",
@@ -477,55 +475,55 @@
             "confirmations": {
                 "create-support": {
                     "title": "Créer un profil de support",
-                    "message": "En poursuivant, tu crées un profil support ayant une validatité de 1 heure pour venir en soutien à l'évènement \"{{element.name}}\"."
+                    "message": "En poursuivant, tu crées un profil support ayant une validatité de 1 heure pour venir en soutien au projet \"{{element.name}}\"."
                 },
                 "select": {
                     "title": "Sélectionner le profil",
-                    "message": "Tu vas sélectionner ton profil pour l'événement \"{{element.name}}\". Tant qu'il est sélectionné, toutes les actions que tu feras lui seront liées."
+                    "message": "Tu vas sélectionner ton profil pour le projet \"{{element.name}}\". Tant qu'il est sélectionné, toutes les actions que tu feras lui seront liées."
                 },
                 "disable": {
-                    "title": "Masquer l'évènement",
-                    "message": "Attention ! Tu vas masquer l'évènement \"{{element.name}}\". Tant qu'il est masqué, il ne sera plus possible d'y créer des profils, mouvements, participants, etc."
+                    "title": "Masquer le projet",
+                    "message": "Attention ! Tu vas masquer le projet \"{{element.name}}\". Tant qu'il est masqué, il ne sera plus possible d'y créer des profils, mouvements, participants, etc."
                 },
                 "enable": {
-                    "title": "Afficher à nouveau l'évènement",
-                    "message": "Attention ! Tu vas à nouveau rendre l'évènement \"{{element.name}}\" visible. Il sera de nouveau possible d'y créer des profils, mouvements, participant, etc."
+                    "title": "Afficher à nouveau le projet",
+                    "message": "Attention ! Tu vas à nouveau rendre le projet \"{{element.name}}\" visible. Il sera de nouveau possible d'y créer des profils, mouvements, participant, etc."
                 },
                 "delete": {
-                    "title": "Supprimer l'évènement",
-                    "message": "Attention ! Tu vas définitivement supprimer l'évènement \"{{element.name}}\" ainsi que tous les élements qui lui sont liés (profils, mouvements, participants, etc.).",
-                    "hint": "La suppression de l'évènement peut prendre un certain temps en fonction de sa taille. Tu peux continuer à utiliser l'application, mais il est préférable de ne pas quitter cette page avant que la suppression soit terminée."
+                    "title": "Supprimer le projet",
+                    "message": "Attention ! Tu vas définitivement supprimer le projet \"{{element.name}}\" ainsi que tous les élements qui lui sont liés (profils, mouvements, participants, etc.).",
+                    "hint": "La suppression du projet peut prendre un certain temps en fonction de sa taille. Tu peux continuer à utiliser l'application, mais il est préférable de ne pas quitter cette page avant que la suppression soit terminée."
                 }
             }
         },
         "notifications": {
             "create-support": {
                 "title": "+ Profil support créé",
-                "message": "Le profil support a été créé pour l'évènement, il est disponible jusqu'à {{end}}."
+                "message": "Le profil support a été créé pour le projet, il est disponible jusqu'à {{end}}."
             },
             "select": {
                 "title": "👤 Profil sélectionné",
-                "message": "Toutes les actions que tu fais à partir de maintenant seront liées à l'évènement \"{{name}}\" tant qu'il est sélectionné."
+                "message": "Toutes les actions que tu fais à partir de maintenant seront liées au projet \"{{name}}\" tant qu'il est sélectionné."
             },
             "create": {
-                "title": "+ Évènement créé",
-                "message": "L'évènement \"{{name}}\" a été créé."
+                "title": "+ Projet créé",
+                "message": "Le projet \"{{name}}\" a été créé."
             },
             "edit": {
-                "title": "✏️ Évènement modifié",
-                "message": "L'évènement \"{{name}}\" a été modifié."
+                "title": "✏️ Projet modifié",
+                "message": "Le projet \"{{name}}\" a été modifié."
             },
             "disable": {
-                "title": "🙈 Évènement masqué",
-                "message": "L'évènement \"{{name}}\" a été masqué."
+                "title": "🙈 Projet masqué",
+                "message": "Le projet \"{{name}}\" a été masqué."
             },
             "enable": {
-                "title": "👀 Évènement visible",
-                "message": "L'évènement \"{{name}}\" est à nouveau visible."
+                "title": "👀 Projet visible",
+                "message": "Le projet \"{{name}}\" est à nouveau visible."
             },
             "delete": {
-                "title": "🗑️ Évènement supprimé",
-                "message": "L'évènement \"{{name}}\" a été supprimé."
+                "title": "🗑️ Projet supprimé",
+                "message": "Le projet \"{{name}}\" a été supprimé."
             }
         }
     },
@@ -551,9 +549,10 @@
             "true": "Utilisable actuellement",
             "false": "Non-utilisable actuellement"
         },
+        "manage-acceptance": "Veux-tu accepter cette invitation ?",
         "form": {
             "title": {
-                "create": "Inviter à l'évènement \"{{name}}\"",
+                "create": "Inviter au projet \"{{name}}\"",
                 "edit": "Modifier le profil d'accès de {{firstName}} {{lastName}}"
             },
             "role": "Rôle",
@@ -581,24 +580,24 @@
             },
             "error": {
                 "role": {
-                    "required": "Pas de rôle de profile ! Le rôle du profil de l'événement ne peut pas être vide."
+                    "required": "Pas de rôle de profile ! Le rôle du profil du projet ne peut pas être vide."
                 },
                 "users": {
                     "required": "Impossible de créer des profils sans utilisateur. Il en faut au moins un !"
                 },
                 "begin-datetime": {
-                    "dateRequiredForTime": "L'accès à l'évènement commence à une certaine heure ok ! Mais quel jour ? 📆"
+                    "dateRequiredForTime": "L'accès au projet commence à une certaine heure ok ! Mais quel jour ? 📆"
                 },
                 "end-datetime": {
-                    "dateRequiredForTime": "L'accès à l'évènement termine à une certaine heure ok ! Mais quel jour ? 📆"
+                    "dateRequiredForTime": "L'accès au projet termine à une certaine heure ok ! Mais quel jour ? 📆"
                 },
                 "date-range": {
-                    "beginDateBeforeEndDate": "L'accès à l'évènement finit avant d'avoir commencé ! Ça c'est de l'ambition."
+                    "beginDateBeforeEndDate": "L'accès au projet finit avant d'avoir commencé ! Ça c'est de l'ambition."
                 }
             }
         },
         "actions": {
-            "select": "Entrer",
+            "select": "Rejoindre",
             "invite-user": {
                 "one": "Inviter un utilisateur",
                 "few": "Inviter des utilisateurs"
@@ -616,30 +615,30 @@
                 },
                 "REJECTED": {
                     "title": "Refuser l'invitation",
-                    "message": "En refusant définitivement l'invitation, tu ne pourras pas utiliser ce profil. Tu devras te faire réinviter pour accéder à l'évènement \"{{element.event.name}}\""
+                    "message": "En refusant définitivement l'invitation, tu ne pourras pas utiliser ce profil. Tu devras te faire réinviter pour accéder au projet \"{{element.event.name}}\""
                 },
                 "select": {
                     "title": "Sélectionner le profil",
-                    "message": "Tu vas sélectionner un profil pour l'événement \"{{element.event.name}}\". Tant qu'il est sélectionné, toutes les actions que tu feras lui seront liées."
+                    "message": "Tu vas sélectionner un profil pour le projet \"{{element.event.name}}\". Tant qu'il est sélectionné, toutes les actions que tu feras lui seront liées."
                 },
                 "disable": {
                     "title": "Bloquer le profil",
-                    "message": "Attention ! Tu vas bloquer un profil pour l'évènement \"{{element.event.name}}\". Tant qu'il est bloqué, {{element.user.firstName}} {{element.user.lastName}} ne pourra plus l'utiliser."
+                    "message": "Attention ! Tu vas bloquer un profil pour le projet \"{{element.event.name}}\". Tant qu'il est bloqué, {{element.user.firstName}} {{element.user.lastName}} ne pourra plus l'utiliser."
                 },
                 "enable": {
                     "title": "Débloquer le profil",
-                    "message": "Attention ! Tu vas débloquer un profil pour l'évènement \"{{element.event.name}}\". {{element.user.firstName}} {{element.user.lastName}} pourra à nouveau l'utiliser s'il est toujours valable."
+                    "message": "Attention ! Tu vas débloquer un profil pour le projet \"{{element.event.name}}\". {{element.user.firstName}} {{element.user.lastName}} pourra à nouveau l'utiliser s'il est toujours valable."
                 },
                 "delete": {
                     "title": "Supprimer le profil",
-                    "message": "Attention ! Tu vas supprimer un profil pour l'évènement \"{{element.event.name}}\". {{element.user.firstName}} {{element.user.lastName}} ne pourra plus l'utiliser."
+                    "message": "Attention ! Tu vas supprimer un profil pour le projet \"{{element.event.name}}\". {{element.user.firstName}} {{element.user.lastName}} ne pourra plus l'utiliser."
                 }
             }
         },
         "notifications": {
             "EMPTY_USER_EVENT_PROFILE": {
                 "title": "🕵️‍♀️ Aucun profil",
-                "message": "Aucun profil pour ta recherche 🥺. Tu peux inviter des personnes à rejoindre l'évènement."
+                "message": "Aucun profil pour ta recherche 🥺. Tu peux inviter des personnes à rejoindre le projet."
             },
             "partial-invitation": {
                 "title": {
@@ -658,40 +657,40 @@
                 },
                 "message": {
                     "one": "Le profil a été créé.",
-                    "few": "{{created}} Profils ont été créés pour l'évènement."
+                    "few": "{{created}} Profils ont été créés pour le projet."
                 }
             },
             "acceptance": {
                 "ACCEPTED": {
                     "title": "✅ Invitation acceptée",
-                    "message": "Tu as accepté l'invitation pour l'évènement, tu peux désormais le sélectionner."
+                    "message": "Tu as accepté l'invitation pour le projet, tu peux désormais le sélectionner."
                 },
                 "REJECTED": {
                     "title": "✅ Invitation refusée",
-                    "message": "Tu as refusé l'invitation pour l'évènement."
+                    "message": "Tu as refusé l'invitation pour le projet."
                 }
             },
             "select": {
                 "title": "👤 Profil sélectionné",
-                "message": "Toutes les actions que tu fais à partir de maintenant seront liées à l'évènement \"{{name}}\" tant qu'il est sélectionné."
+                "message": "Toutes les actions que tu fais à partir de maintenant seront liées au projet \"{{name}}\" tant qu'il est sélectionné."
             },
             "edit": {
                 "title": "✏️ Profil modifié",
-                "message": "Le profil de {{firstName}} {{lastName}} pour l'évènement {{name}} a été modifié."
+                "message": "Le profil de {{firstName}} {{lastName}} pour le projet {{name}} a été modifié."
             },
             "disable": {
                 "title": "⛔️ Profil bloqué",
-                "message": "Le profil de {{firstName}} {{lastName}} pour l'évènement {{name}} a été bloqué."
+                "message": "Le profil de {{firstName}} {{lastName}} pour le projet {{name}} a été bloqué."
             },
             "enable": {
                 "title": "⛓️‍💥 Profil débloqué",
-                "message": "Le profil de {{firstName}} {{lastName}} pour l'évènement {{name}} a été débloqué."
+                "message": "Le profil de {{firstName}} {{lastName}} pour le projet {{name}} a été débloqué."
             },
             "delete": {
                 "title": "🗑️ Profil supprimé",
                 "message": {
-                    "myself": "Ton profil pour l'évènement {{name}} a été supprimé",
-                    "other": "Le profil de {{firstName}} {{lastName}} pour l'évènement {{name}} a été supprimé."
+                    "myself": "Ton profil pour le projet {{name}} a été supprimé",
+                    "other": "Le profil de {{firstName}} {{lastName}} pour le projet {{name}} a été supprimé."
                 }
             }
         }
@@ -727,33 +726,44 @@
                 "edit": {
                     "IN": "Modifier l'entrée du {{datetime}}",
                     "OUT": "Modifier la sortie du {{datetime}}"
-                }
+                },
+                "information": "Informations",
+                "content": "Parties prenantes",
+                "vehicle": "Véhicules"
             },
             "datetime": "Date & Heure",
             "type": "Type",
+            "content-kind": "Type de participant",
             "reason": {
                 "name": "Motif",
                 "empty-search": "Aucune raison trouvée"
             },
             "content": {
-                "empty": "Aucune personne selectionnée",
-                "search": "Ajouter des personnes et des groupes",
-                "empty-search": "Aucune personne ou groupe trouvé",
-                "one": "Participant",
-                "few": "Participants",
-                "group": "Groupe \"{{name}}\"",
-                "selected": {
-                    "one": "Personne selectionné",
-                    "few": "Personnes selectionnés"
+                "guest": {
+                    "one": "Nouvel invité",
+                    "few": "Nouveaux invités",
+                    "add": "Ajouter un invité"
                 },
-                "searched": {
-                    "participant": {
-                        "one": "Personne",
-                        "few": "Personnes"
+                "registered": {
+                    "empty": "Aucune personne selectionnée",
+                    "search": "Ajouter des personnes et des groupes",
+                    "empty-search": "Aucune personne ou groupe trouvé",
+                    "one": "Participant",
+                    "few": "Participants",
+                    "group": "Groupe \"{{name}}\"",
+                    "selected": {
+                        "one": "Personne selectionné",
+                        "few": "Personnes selectionnés"
                     },
-                    "group": {
-                        "one": "Groupe",
-                        "few": "Groupes"
+                    "searched": {
+                        "participant": {
+                            "one": "Personne",
+                            "few": "Personnes"
+                        },
+                        "group": {
+                            "one": "Groupe",
+                            "few": "Groupes"
+                        }
                     }
                 }
             },
@@ -781,17 +791,21 @@
             "error": {
                 "datetime": {
                     "required": "L'horodatage du mouvement doivent être définies. Sinon, comment savoir quand ça se passe ?",
-                    "minDate": "L'horodatage du mouvement est plus tôt que la fin de l'événement ({{min}}). Restons dans les clous !",
-                    "maxDate": "L'horodatage du mouvement est plus tard que la fin de l'événement ({{max}}). Restons dans les clous !"
+                    "minDate": "L'horodatage du mouvement est plus tôt que la fin du projet ({{min}}). Restons dans les clous !",
+                    "maxDate": "L'horodatage du mouvement est plus tard que la fin du projet ({{max}}). Restons dans les clous !"
                 },
                 "type": {
                     "required": "Le type de mouvement doit être défini. Sinon je risque d'avoir du mal à te dire s'il s'agit d'une entrée ou d'une sortie la prochaine fois que tu me demandes."
                 },
                 "reason": {
+                    "required": "Pas de raison de mouvement ? Ça va être compliqué de savoir pourquoi tu fais ça.",
                     "incompatibleReason": "La raison \"{{reason}}\" n'est pas compatible avec le type de mouvement sélectionné. Choisis une autre raison ou un autre type de mouvement."
                 },
-                "content": {
-                    "required": "Impossible de créer un mouvement sans participants. Reviens avec une équipe !"
+                "participantContent": {
+                    "required": "Impossible de créer ce mouvement sans participant. Reviens avec une équipe !"
+                },
+                "guestContent": {
+                    "required": "Impossible de créer ce mouvement sans invité. Reviens avec une équipe !"
                 },
                 "driver": {
                     "required": "Un véhicule sans responsable ? Désolé, les voitures complètement autonomes c'est pas encore ici."
@@ -902,6 +916,10 @@
             "true": "Visible",
             "false": "Masqué"
         },
+        "type": {
+            "REGISTERED": "Inscrit",
+            "GUEST": "Invité"
+        },
         "form": {
             "title": {
                 "create": "Ajouter une personne",
@@ -912,7 +930,9 @@
                 "empty-search": "Aucun utilisateur trouvé"
             },
             "firstname": "Prénom",
+            "previous-first-name": "L'ancien prénom \"{{firstName}}\" a été remplacé par celui de l'utilisateur lié.",
             "lastname": "Nom",
+            "previous-last-name": "L'ancien nom \"{{lastName}}\" a été remplacé par celui de l'utilisateur lié.",
             "birthday": "Date de naissance",
             "begin-datetime": "Date & Heure d'arrivée",
             "end-datetime": "Date & Heure de départ",
@@ -943,13 +963,13 @@
                     "maxDate": "Naître dans le futur ? Pas dans ce monde, désolé !"
                 },
                 "begin-datetime": {
-                    "minDate": "Une personne ne peut pas arriver avant le début de l'événement ({{min}}).",
-                    "maxDate": "Une personne ne peut pas partir après la fin de l'événement ({{max}}).",
+                    "minDate": "Une personne ne peut pas arriver avant le début du projet ({{min}}).",
+                    "maxDate": "Une personne ne peut pas partir après la fin du projet ({{max}}).",
                     "dateRequiredForTime": "Cette personne arrive à une certaine heure ok ! Mais quel jour ? 📆"
                 },
                 "end-datetime": {
-                    "minDate": "Une personne ne peut pas arriver avant le début de l'événement ({{min}}).",
-                    "maxDate": "Une personne ne peut pas partir après la fin de l'événement ({{max}}).",
+                    "minDate": "Une personne ne peut pas arriver avant le début du projet ({{min}}).",
+                    "maxDate": "Une personne ne peut pas partir après la fin du projet ({{max}}).",
                     "dateRequiredForTime": "Cette personne termine à une certaine heure ok ! Mais quel jour ? 📆"
                 },
                 "date-range": {
@@ -957,8 +977,8 @@
                 }
             },
             "hint": {
-                "begin-date-time": "Par défaut une personne arrive avec son groupe. Faute de groupe, la personne arrive au début de l'évènement.",
-                "end-date-time": "Par défaut une personne part avec son groupe. Faute de groupe, la personne part à la fin de l'évènement."
+                "begin-date-time": "Par défaut une personne arrive avec son groupe. Faute de groupe, la personne arrive au début du projet.",
+                "end-date-time": "Par défaut une personne part avec son groupe. Faute de groupe, la personne part à la fin du projet."
             },
             "placeholder": {
                 "user": "Ex : robert.baden-powell@exemple.fr (Robert BADEN-POWELL)",
@@ -1087,8 +1107,8 @@
                 }
             },
             "hint": {
-                "begin-date-time": "Par défaut un groupe arrive au début de l'évènement.",
-                "end-date-time": "Par défaut un groupe part à la fin de l'évènement."
+                "begin-date-time": "Par défaut un groupe arrive au début du projet.",
+                "end-date-time": "Par défaut un groupe part à la fin du projet."
             },
             "error": {
                 "name": {
@@ -1097,13 +1117,13 @@
                     "maxlength": "T'as vu la longueur du nom 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c'est {{requiredLength}}."
                 },
                 "begin-datetime": {
-                    "minDate": "Un groupe ne peut pas arriver avant le début de l'événement ({{min}}).",
-                    "maxDate": "Un groupe ne peut pas partir après la fin de l'événement ({{max}}).",
+                    "minDate": "Un groupe ne peut pas arriver avant le début du projet ({{min}}).",
+                    "maxDate": "Un groupe ne peut pas partir après la fin du projet ({{max}}).",
                     "dateRequiredForTime": "Ce groupe arrive à une certaine heure ok ! Mais quel jour ? 📆"
                 },
                 "end-datetime": {
-                    "minDate": "Un groupe ne peut pas arriver avant le début de l'événement ({{min}}).",
-                    "maxDate": "Un groupe ne peut pas partir après la fin de l'événement ({{max}}).",
+                    "minDate": "Un groupe ne peut pas arriver avant le début du projet ({{min}}).",
+                    "maxDate": "Un groupe ne peut pas partir après la fin du projet ({{max}}).",
                     "dateRequiredForTime": "Ce groupe termine à une certaine heure ok ! Mais quel jour ? 📆"
                 },
                 "date-range": {
@@ -1111,6 +1131,9 @@
                 },
                 "members": {
                     "required": "Impossible de créer un groupe sans membres. Ce groupe a besoin de renforts !"
+                },
+                "add-members": {
+                    "required": "Ajouter des membres sans membres, on tient quelque-chose là !"
                 }
             },
             "placeholder": {
@@ -1222,8 +1245,8 @@
             "begin-datetime": "Date & Heure de début de disponibilité",
             "end-datetime": "Date & Heure de fin de disponibilité",
             "hint": {
-                "begin-date-time": "Par défaut un véhicule est disponible dès le début de l'évènement.",
-                "end-date-time": "Par défaut un véhicule est disponible jusqu'à la fin de l'évènement."
+                "begin-date-time": "Par défaut un véhicule est disponible dès le début du projet.",
+                "end-date-time": "Par défaut un véhicule est disponible jusqu'à la fin du projet."
             },
             "error": {
                 "license-plate": {
@@ -1242,13 +1265,13 @@
                     "maxlength": "T'as vu la longueur du modèle 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c'est {{requiredLength}}."
                 },
                 "begin-datetime": {
-                    "minDate": "Le véhicule ne peut pas arriver avant le début de l'événement ({{min}}).",
-                    "maxDate": "Le véhicule ne peut pas partir après la fin de l'événement ({{max}}).",
+                    "minDate": "Le véhicule ne peut pas arriver avant le début du projet ({{min}}).",
+                    "maxDate": "Le véhicule ne peut pas partir après la fin du projet ({{max}}).",
                     "dateRequiredForTime": "Ce véhicule arrive à une certaine heure ok ! Mais quel jour ? 📆"
                 },
                 "end-datetime": {
-                    "minDate": "Le véhicule ne peut pas arriver avant le début de l'événement ({{min}}).",
-                    "maxDate": "Le véhicule ne peut pas partir après la fin de l'événement ({{max}}).",
+                    "minDate": "Le véhicule ne peut pas arriver avant le début du projet ({{min}}).",
+                    "maxDate": "Le véhicule ne peut pas partir après la fin du projet ({{max}}).",
                     "dateRequiredForTime": "Ce véhicule part à une certaine heure ok ! Mais quel jour ? 📆"
                 },
                 "date-range": {
@@ -1344,8 +1367,8 @@
             "begin-datetime": "Date & Heure de début de disponibilité",
             "end-datetime": "Date & Heure de fin de disponibilité",
             "hint": {
-                "begin-date-time": "Par défaut une activité est disponible dès le début de l'évènement.",
-                "end-date-time": "Par défaut une activité est disponible jusqu'à la fin de l'évènement."
+                "begin-date-time": "Par défaut une activité est disponible dès le début du projet.",
+                "end-date-time": "Par défaut une activité est disponible jusqu'à la fin du projet."
             },
             "error": {
                 "name": {
@@ -1375,13 +1398,13 @@
                     "rangeBothDefined": "Tu ne peux pas saisir que le minimum ou le maximum."
                 },
                 "begin-datetime": {
-                    "minDate": "L'activité ne peut pas être disponible avant le début de l'événement ({{min}}).",
-                    "maxDate": "L'activité ne peut pas être disponible après la fin de l'événement ({{max}}).",
+                    "minDate": "L'activité ne peut pas être disponible avant le début du projet ({{min}}).",
+                    "maxDate": "L'activité ne peut pas être disponible après la fin du projet ({{max}}).",
                     "dateRequiredForTime": "Cette activité est disponible à une certaine heure ok ! Mais quel jour ? 📆"
                 },
                 "end-datetime": {
-                    "minDate": "L'activité ne peut pas être disponible avant le début de l'événement ({{min}}).",
-                    "maxDate": "L'activité ne peut pas être disponible après la fin de l'événement ({{max}}).",
+                    "minDate": "L'activité ne peut pas être disponible avant le début du projet ({{min}}).",
+                    "maxDate": "L'activité ne peut pas être disponible après la fin du projet ({{max}}).",
                     "dateRequiredForTime": "Cette activité n'est plus disponible à une certaine heure ok ! Mais quel jour ? 📆"
                 },
                 "date-range": {
@@ -1444,7 +1467,7 @@
     },
     "preferences": {
         "search-and-filter": {
-            "text": "Évènement",
+            "text": "Projet",
             "datetime": "Date & Heure"
         },
         "profiles-tab": {
@@ -1458,7 +1481,7 @@
             }
         },
         "actions": {
-            "create-event": "Créer un évènement",
+            "create-event": "Créer un projet",
             "invitation": {
                 "one": "Invitation reçue",
                 "few": "Invitations reçues"
@@ -1467,7 +1490,7 @@
         "notifications": {
             "NO_SELECTED_PROFILE": {
                 "title": "Aucun profil sélectionné",
-                "message": "Sélectionnes un profil lié à un évènement pour effectuer cette action."
+                "message": "Sélectionnes un profil lié à un projet pour effectuer cette action."
             }
         }
     }

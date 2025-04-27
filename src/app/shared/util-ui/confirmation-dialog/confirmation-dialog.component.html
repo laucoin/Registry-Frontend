@@ -32,17 +32,17 @@
     <ng-template #footer>
         <p-button
                 [label]='"global.actions.cancel" | translate'
-                [text]='true'
-                [rounded]='true'
+                text
+                rounded
                 [disabled]='loading()'
                 [severity]='rejectSeverity()'
-                (click)='closeDialog()' />
+                (onClick)='closeDialog()' />
         <p-button
                 [label]='"global.actions.confirm" | translate'
-                [rounded]='true'
-                [outlined]='true'
+                rounded
+                outlined
                 [loading]='loading()'
                 [severity]='acceptSeverity()'
-                (click)='submit()' />
+                (onClick)='submit()' />
     </ng-template>
 </p-dialog>

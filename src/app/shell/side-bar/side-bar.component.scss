@@ -64,6 +64,26 @@ li {
     color:            #fff;
 }
 
+.first-menu {
+    margin-top: 0;
+}
+
+.bordered-box {
+    border:        1px solid #fff;
+    border-radius: var(--basic-rounder);
+    padding:       var(--min-spacer);
+    position:      relative;
+}
+
+.border-text {
+    position:    absolute;
+    top:         -0.7em;
+    left:        1em;
+    background:  var(--p-drawer-background);
+    padding:     0 var(--min-spacer);
+    font-weight: bold;
+}
+
 ::ng-deep {
     @include greater-than(md) {
         .p-overlay-mask {

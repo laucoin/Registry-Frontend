@@ -110,7 +110,7 @@ export const sgdfConfig: ContextConfigModel = {
     },
     defaultLanguage: 'fr-FR',
     maintainerEmail: 'laucoin@sgdf.fr',
-    menu: [
+    generalMenu: [
         {
             name: 'global.menu.home',
             icon: 'pi pi-home',
@@ -138,6 +138,9 @@ export const sgdfConfig: ContextConfigModel = {
             requiredEventOption: undefined,
             enabled: true,
         },
+    ],
+    profileMenu: [
+
         {
             name: 'global.menu.event-profiles',
             icon: 'pi pi-user',

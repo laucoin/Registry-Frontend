@@ -39,8 +39,8 @@ export class NumberRangeFieldComponent implements ControlValueAccessor {
     public readonly minLabel: InputSignal<string> = input( this.translateService.instant( 'global.form.range.min' ) )
     public readonly maxLabel: InputSignal<string> = input( this.translateService.instant( 'global.form.range.max' ) )
 
-    protected minValue: number | undefined
-    protected maxValue: number | undefined
+    protected minValue: number | undefined | null
+    protected maxValue: number | undefined | null
     protected readonly value: WritableSignal<NumericRangeModel | undefined> = signal( undefined )
     protected readonly disabled: WritableSignal<boolean> = signal( false )
 
@@ -78,7 +78,7 @@ export class NumberRangeFieldComponent implements ControlValueAccessor {
 
     public writeValue (value: NumericRangeModel | undefined): void {
         this.value.set( value )
-        this.minValue = value?.lower
-        this.maxValue = value?.upper
+        this.minValue = value?.lower ?? null
+        this.maxValue = value?.upper ?? null
     }
 }

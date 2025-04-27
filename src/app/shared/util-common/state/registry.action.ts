@@ -27,11 +27,6 @@ export enum RegistryActionEnum {
     FETCH_CURRENT_USER = '[Backend] Fetching current user',
     IMPERSONATE_CURRENT_USER = '[Backend] Impersonating current user',
 
-    START_CONTEXT_EVENT_LOADER = '[Local] Starting context event loader',
-    STOP_CONTEXT_EVENT_LOADER = '[Local] Stopping context loader',
-
-    FETCH_CONTEXT_EVENT = '[Backend] Fetching context event',
-
     START_USER_EVENT_PROFILES_PAGE_LOADER = '[Local] Starting user event profiles\' page loader',
     STOP_USER_EVENT_PROFILES_PAGE_LOADER = '[Local] Stopping user event profiles\' page loader',
 
@@ -127,20 +122,6 @@ export class FetchCurrentUser {
 
 export class ImpersonateCurrentUser {
     public static readonly type: RegistryActionEnum = RegistryActionEnum.IMPERSONATE_CURRENT_USER
-}
-
-export class StartContextEventLoader {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.START_CONTEXT_EVENT_LOADER
-}
-
-export class StopContextEventLoader {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.STOP_CONTEXT_EVENT_LOADER
-}
-
-export class FetchContextEvent {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.FETCH_CONTEXT_EVENT
-
-    public constructor (public readonly eventId: string, public readonly force: boolean) {}
 }
 
 export class StartUserEventProfilesPageLoader {

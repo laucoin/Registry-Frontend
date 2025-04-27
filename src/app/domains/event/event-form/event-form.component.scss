@@ -14,9 +14,15 @@ h4 {
 
 .select-all-field {
     justify-content: right;
-    gap:             1rem;
+    gap:             var(--basic-spacer);;
 }
 
 .option-field {
     justify-content: space-between;
+}
+
+::ng-deep {
+    .p-stepitem:last-of-type .p-steppanel {
+        padding-inline-start: 0;
+    }
 }

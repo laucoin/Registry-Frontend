@@ -5,9 +5,9 @@
         <div class='m-auto'>
             <app-message [message]='registryFacade.globalError()'>
                 <p-button
-                        (click)='logout()'
+                        (onClick)='logout()'
                         [label]="'global.actions.sign-out' | translate"
-                        [rounded]='true'
+                        rounded
                         icon='pi pi-sign-out'
                         severity='danger' />
             </app-message>
@@ -60,10 +60,10 @@
 
 <p-dialog
         class='text-align-justify'
+        modal
         [breakpoints]='breakPoint'
         [header]='"global.legal.information.about" | translate'
         [(visible)]='showInformationDialog'
-        [modal]='true'
         [draggable]='false'
         [resizable]='false'>
     <p>{{ 'global.legal.information.summary' | translate }}</p>
@@ -82,10 +82,10 @@
 
 <p-dialog
         class='text-align-justify'
+        modal
         [header]='"global.legal.terms-of-use.name" | translate'
         [breakpoints]='breakPoint'
         [(visible)]='showTermsOfUserDialog'
-        [modal]='true'
         [draggable]='false'
         [resizable]='false'>
     <p>{{ 'global.legal.terms-of-use.summary' | translate: { url: currentHost } }}</p>

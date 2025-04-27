@@ -104,7 +104,7 @@ export class UserElementComponent extends GenericElementComponent<UserModel, Use
         switch (action) {
             case UserActionEnum.UPDATE_USER_ROLE:
                 this.router.navigateByUrl(
-                    this.buildUri( AppRouteEnum.USERS_EDITION.replace( ':userId', this.user().id ) ),
+                    AppRouteEnum.USERS_EDITION.replace( ':userId', this.user().id ),
                 ).catch( console.error )
                 break
             case UserActionEnum.BLOCK_USER:

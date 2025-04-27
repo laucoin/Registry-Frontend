@@ -66,15 +66,16 @@
     </p-card>
     <div class='mt-2 d-flex justify-content-center'>
         <p-button
-                (click)='navigateToRedirectUri(nextNavigation)'
+                (onClick)='navigateToRedirectUri(nextNavigation)'
                 [label]='"global.actions.cancel" | translate'
-                [outlined]='true'
-                [rounded]='true' />
+                text
+                rounded />
         <p-button
                 class='ms-2'
-                (click)='submit()'
+                (onClick)='submit()'
                 [label]='"global.actions.edit" | translate'
-                [rounded]='true'
+                rounded
+                outlined
                 icon='pi pi-pen-to-square'
                 severity='success' />
     </div>

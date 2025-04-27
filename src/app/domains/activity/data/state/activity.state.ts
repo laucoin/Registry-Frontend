@@ -305,7 +305,6 @@ export class ActivityState extends GenericEventElementState<ActivityStateModel> 
             finalize( (): void => this.facade.stopActivityMovementsPageLoader() ),
             map( (movementsPage: PageModel<MovementModel>): void => this.fetchActivityMovementsPageComplete(
                 ctx,
-                payload.eventId,
                 movementsPage,
             ) ),
             catchError( (error: ErrorModel): Observable<void> => this.movementsPageError( ctx, error ) ),
@@ -314,7 +313,6 @@ export class ActivityState extends GenericEventElementState<ActivityStateModel> 
 
     private fetchActivityMovementsPageComplete (
         ctx: StateContext<ActivityStateModel>,
-        eventId: string | undefined,
         movementsPage: PageModel<MovementModel>,
     ): void {
         ctx.patchState( {
@@ -331,7 +329,6 @@ export class ActivityState extends GenericEventElementState<ActivityStateModel> 
         if (movementsPage.content.length > 0) {
             this.facade.fetchActivityMovementsContent(
                 movementsPage.content.map( (movement: MovementModel): string => movement.id ),
-                eventId,
             )
         }
     }
@@ -433,7 +430,6 @@ export class ActivityState extends GenericEventElementState<ActivityStateModel> 
             finalize( (): void => this.facade.stopActivityLoader() ),
             map( (activity: ActivityModel): void => this.createActivityComplete(
                 ctx,
-                payload.eventId,
                 activity,
             ) ),
         )
@@ -441,7 +437,6 @@ export class ActivityState extends GenericEventElementState<ActivityStateModel> 
 
     private createActivityComplete (
         ctx: StateContext<ActivityStateModel>,
-        eventId: string | undefined,
         activity: ActivityModel,
     ): void {
         this.buildMessageAndNotify(
@@ -451,7 +446,7 @@ export class ActivityState extends GenericEventElementState<ActivityStateModel> 
             this.activityIcon,
             this.buildTranslationArgs( activity ),
         )
-        this.refreshPage( ctx, eventId )
+        this.refreshPage( ctx )
     }
 
     @Action( UpdateActivity )
@@ -461,7 +456,6 @@ export class ActivityState extends GenericEventElementState<ActivityStateModel> 
             finalize( (): void => this.facade.stopActivityLoader() ),
             map( (activity: ActivityModel): void => this.updateActivityComplete(
                 ctx,
-                payload.eventId,
                 activity,
             ) ),
         )
@@ -469,7 +463,6 @@ export class ActivityState extends GenericEventElementState<ActivityStateModel> 
 
     private updateActivityComplete (
         ctx: StateContext<ActivityStateModel>,
-        eventId: string | undefined,
         activity: ActivityModel,
     ): void {
         this.buildMessageAndNotify(
@@ -479,7 +472,7 @@ export class ActivityState extends GenericEventElementState<ActivityStateModel> 
             this.activityIcon,
             this.buildTranslationArgs( activity ),
         )
-        this.refreshPage( ctx, eventId )
+        this.refreshPage( ctx )
     }
 
     @Action( DisableActivity )
@@ -492,7 +485,6 @@ export class ActivityState extends GenericEventElementState<ActivityStateModel> 
             finalize( (): void => this.facade.stopActivityLoader() ),
             map( (activity: ActivityModel): void => this.disableActivityComplete(
                 ctx,
-                payload.eventId,
                 activity,
             ) ),
         )
@@ -500,7 +492,6 @@ export class ActivityState extends GenericEventElementState<ActivityStateModel> 
 
     private disableActivityComplete (
         ctx: StateContext<ActivityStateModel>,
-        eventId: string | undefined,
         activity: ActivityModel,
     ): void {
         this.buildMessageAndNotify(
@@ -510,7 +501,7 @@ export class ActivityState extends GenericEventElementState<ActivityStateModel> 
             this.activityIcon,
             this.buildTranslationArgs( activity ),
         )
-        this.refreshPage( ctx, eventId )
+        this.refreshPage( ctx )
     }
 
     @Action( EnableActivity )
@@ -520,7 +511,6 @@ export class ActivityState extends GenericEventElementState<ActivityStateModel> 
             finalize( (): void => this.facade.stopActivityLoader() ),
             map( (activity: ActivityModel): void => this.enableActivityComplete(
                 ctx,
-                payload.eventId,
                 activity,
             ) ),
         )
@@ -528,7 +518,6 @@ export class ActivityState extends GenericEventElementState<ActivityStateModel> 
 
     private enableActivityComplete (
         ctx: StateContext<ActivityStateModel>,
-        eventId: string | undefined,
         activity: ActivityModel,
     ): void {
         this.buildMessageAndNotify(
@@ -538,7 +527,7 @@ export class ActivityState extends GenericEventElementState<ActivityStateModel> 
             this.activityIcon,
             this.buildTranslationArgs( activity ),
         )
-        this.refreshPage( ctx, eventId )
+        this.refreshPage( ctx )
     }
 
     @Action( DeleteActivity )
@@ -548,7 +537,6 @@ export class ActivityState extends GenericEventElementState<ActivityStateModel> 
             finalize( (): void => this.facade.stopActivityLoader() ),
             map( (): void => this.deleteActivityComplete(
                 ctx,
-                payload.eventId,
                 payload.activity,
             ) ),
         )
@@ -556,7 +544,6 @@ export class ActivityState extends GenericEventElementState<ActivityStateModel> 
 
     private deleteActivityComplete (
         ctx: StateContext<ActivityStateModel>,
-        eventId: string | undefined,
         activity: ActivityModel,
     ): void {
         this.buildMessageAndNotify(
@@ -566,7 +553,7 @@ export class ActivityState extends GenericEventElementState<ActivityStateModel> 
             this.activityIcon,
             this.buildTranslationArgs( activity ),
         )
-        this.refreshPage( ctx, eventId )
+        this.refreshPage( ctx )
     }
 
     private buildTranslationArgs (activity: ActivityModel): object {
@@ -575,9 +562,9 @@ export class ActivityState extends GenericEventElementState<ActivityStateModel> 
         }
     }
 
-    protected refreshPage (ctx: StateContext<ActivityStateModel>, eventId: string | undefined): void {
+    protected refreshPage (ctx: StateContext<ActivityStateModel>): void {
         const page: PageModel<ActivityModel> | undefined = ctx.getState().activities.element
-        this.facade.fetchActivitiesPage( page?.pageNumber, page?.pageSize, true, eventId )
+        this.facade.fetchActivitiesPage( page?.pageNumber, page?.pageSize, true )
     }
 
     protected pageError (ctx: StateContext<ActivityStateModel>, error: ErrorModel): Observable<void> {

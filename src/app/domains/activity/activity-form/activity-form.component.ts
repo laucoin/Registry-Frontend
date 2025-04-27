@@ -18,7 +18,7 @@ import { EventModel } from '../../../shared/util-model/model/event.model'
 import { DateUtil } from '../../../shared/util-tool/util/date.util'
 import { Textarea } from 'primeng/textarea'
 import { GenericFormComponent } from '../../../shared/util-tool/component/generic-form.component'
-import { combineLatest, map, Observable } from 'rxjs'
+import { map, Observable } from 'rxjs'
 import { CreateActivity, UpdateActivity } from '../data/state/activity.action'
 import { DurationFieldComponent } from '../../../shared/util-ui/duration-field/duration-field.component'
 import { NumberRangeFieldComponent } from '../../../shared/util-ui/number-range-field/number-range-field.component'
@@ -27,6 +27,7 @@ import { FormTitlePipe } from '../../../shared/util-tool/pipe/form-title.pipe'
 import { FormButtonPipe } from '../../../shared/util-tool/pipe/form-button.pipe'
 import { GenericUtil } from '../../../shared/util-tool/util/generic.util'
 import { DateTimeFieldComponent } from '../../../shared/util-ui/date-time-field/date-time-field.component'
+import { FormIconPipe } from '../../../shared/util-tool/pipe/form-icon.pipe'
 
 @Component( {
     selector: 'app-activity-form',
@@ -49,6 +50,7 @@ import { DateTimeFieldComponent } from '../../../shared/util-ui/date-time-field/
         FormTitlePipe,
         FormButtonPipe,
         DateTimeFieldComponent,
+        FormIconPipe,
     ],
     templateUrl: './activity-form.component.html',
     styleUrl: './activity-form.component.scss',
@@ -72,9 +74,7 @@ export class ActivityFormComponent extends GenericFormComponent<ActivityModel, A
         this.facade.resetActivity()
 
         if (GenericUtil.nonNull( this.idParam )) {
-            this.facade.fetchActivity( this.idParam!, this.contextEventId() )
-        } else {
-            super.loadData()
+            this.facade.fetchActivity( this.idParam! )
         }
     }
 
@@ -107,9 +107,9 @@ export class ActivityFormComponent extends GenericFormComponent<ActivityModel, A
 
     protected handleLoadedElement (): void {
         this.subscriptions.add(
-            combineLatest( [ this.facade.activity$, this.registryFacade.contextEvent$ ] ).pipe(
-                map( ([ activity, event ]: [ ActivityModel | undefined, EventModel | undefined ]): void => {
-                    const contextEvent: EventModel | undefined = activity?.event || event
+            this.facade.activity$.pipe(
+                map( (activity: ActivityModel | undefined): void => {
+                    const contextEvent: EventModel | undefined = activity?.event || this.registryFacade.selectedEvent()
                     this.addEventDateValidators( contextEvent, this.beginDateTime )
                     this.addEventDateValidators( contextEvent, this.endDateTime )
                     this.fillForm( activity )
@@ -141,8 +141,8 @@ export class ActivityFormComponent extends GenericFormComponent<ActivityModel, A
         const dto: ActivityDto = this.buildDto()
         const observable: Observable<CreateActivity | UpdateActivity> =
             this.facade.activity()
-            ? this.facade.updateActivity( this.facade.activity()!.id!, dto, this.contextEventId() )
-            : this.facade.createActivity( dto, this.contextEventId() )
+            ? this.facade.updateActivity( this.facade.activity()!.id!, dto )
+            : this.facade.createActivity( dto )
 
         this.subscriptions.add(
             observable.pipe(

@@ -1,4 +1,3 @@
-import { NgOptimizedImage } from '@angular/common'
 import { Component, computed, HostListener, Signal } from '@angular/core'
 import { TranslateModule } from '@ngx-translate/core'
 import { AppConfig } from '../../app.config'
@@ -20,7 +19,6 @@ import { GenericComponent } from '../../shared/util-tool/component/generic.compo
         Button,
         Drawer,
         RouterLink,
-        NgOptimizedImage,
         TruncatePipe,
         Ripple,
     ],
@@ -30,9 +28,13 @@ import { GenericComponent } from '../../shared/util-tool/component/generic.compo
 export class SideBarComponent extends GenericComponent {
     protected readonly maxMenuTextLength: number = 26
 
-    protected menuItems: Signal<MenuItemModel[]> = computed( (): MenuItemModel[] => this.filterMenuItems(
+    protected generalMenuItems: Signal<MenuItemModel[]> = computed( (): MenuItemModel[] => this.filterMenuItems(
         this.registryFacade.currentUser(),
-        AppConfig.config.menu,
+        AppConfig.config.generalMenu,
+    ) )
+    protected profileMenuItems: Signal<MenuItemModel[]> = computed( (): MenuItemModel[] => this.filterMenuItems(
+        this.registryFacade.currentUser(),
+        AppConfig.config.profileMenu,
     ) )
     protected isSidebarOpen: boolean = !this.registryFacade.tinyScreen()
 

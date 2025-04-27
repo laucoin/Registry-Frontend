@@ -78,9 +78,7 @@ export class EventProfileFacade extends GenericEventElementFacade {
     }
 
     public get eventProfileLoading (): Signal<boolean> {
-        return computed( (): boolean =>
-            this.ngStore.selectSignal( EventProfileState.eventProfileLoading )() || this.registryFacade.contextEventLoading(),
-        )
+        return this.ngStore.selectSignal( EventProfileState.eventProfileLoading )
     }
 
     public get searchedUsersMetadata (): Signal<SelectItem<UserModel>[]> {
@@ -116,10 +114,9 @@ export class EventProfileFacade extends GenericEventElementFacade {
         pageNumber: number | undefined,
         pageSize: number | undefined,
         force: boolean,
-        eventId: string | undefined = this.actualSelectedEventId,
     ): void {
         const index: number | undefined = this.eventProfilesPageResetSearch() ? 0 : pageNumber
-        this.ngStore.dispatch( new FetchEventProfilesPage( eventId, index, pageSize, force ) )
+        this.ngStore.dispatch( new FetchEventProfilesPage( this.selectedEventId(), index, pageSize, force ) )
     }
 
     public inputPageSearchParameters (
@@ -152,23 +149,20 @@ export class EventProfileFacade extends GenericEventElementFacade {
         this.ngStore.dispatch( StopEventProfileLoader )
     }
 
-    public fetchEventProfile (id: string, eventId: string | undefined = this.actualSelectedEventId): void {
-        this.ngStore.dispatch( new FetchEventProfile( eventId, id ) )
+    public fetchEventProfile (id: string): void {
+        this.ngStore.dispatch( new FetchEventProfile( this.selectedEventId(), id ) )
     }
 
     public resetEventProfile (): void {
         this.ngStore.dispatch( ResetEventProfile )
     }
 
-    public searchUsers (
-        textSearched: string | undefined = undefined,
-        eventId: string | undefined = this.actualSelectedEventId,
-    ): void {
-        this.ngStore.dispatch( new SearchUsers( eventId, textSearched ) )
+    public searchUsers (textSearched: string | undefined = undefined): void {
+        this.ngStore.dispatch( new SearchUsers( this.selectedEventId(), textSearched ) )
     }
 
-    public fetchAssignableRoles (eventId: string | undefined = this.actualSelectedEventId): void {
-        this.ngStore.dispatch( new FetchAssignableEventProfileRoles( eventId ) )
+    public fetchAssignableRoles (): void {
+        this.ngStore.dispatch( new FetchAssignableEventProfileRoles( this.selectedEventId() ) )
     }
 
     public fetchProfileStatus (): void {
@@ -179,44 +173,39 @@ export class EventProfileFacade extends GenericEventElementFacade {
 
     public createEventProfiles (
         eventProfiles: EventProfilesDto,
-        eventId: string | undefined = this.actualSelectedEventId,
     ): Observable<CreateEventProfiles> {
-        this.ngStore.dispatch( new CreateEventProfiles( eventId, eventProfiles ) )
+        this.ngStore.dispatch( new CreateEventProfiles( this.selectedEventId(), eventProfiles ) )
         return this.actions$.pipe( ofActionSuccessful( CreateEventProfiles ) )
     }
 
     public updateEventProfile (
         id: string,
         eventProfile: EventProfileDto,
-        eventId: string | undefined = this.actualSelectedEventId,
     ): Observable<UpdateEventProfile> {
-        this.ngStore.dispatch( new UpdateEventProfile( eventId, id, eventProfile ) )
+        this.ngStore.dispatch( new UpdateEventProfile( this.selectedEventId(), id, eventProfile ) )
         return this.actions$.pipe( ofActionSuccessful( UpdateEventProfile ) )
     }
 
     public blockEventProfile (
         profile: EventProfileModel,
-        eventId: string | undefined = this.actualSelectedEventId,
     ): Observable<ActionCompletion<BlockEventProfile>> {
-        this.ngStore.dispatch( new BlockEventProfile( eventId, profile ) )
+        this.ngStore.dispatch( new BlockEventProfile( this.selectedEventId(), profile ) )
 
         return this.actions$.pipe( ofActionCompleted( BlockEventProfile ) )
     }
 
     public unblockEventProfile (
         profile: EventProfileModel,
-        eventId: string | undefined = this.actualSelectedEventId,
     ): Observable<ActionCompletion<UnblockEventProfile>> {
-        this.ngStore.dispatch( new UnblockEventProfile( eventId, profile ) )
+        this.ngStore.dispatch( new UnblockEventProfile( this.selectedEventId(), profile ) )
 
         return this.actions$.pipe( ofActionCompleted( UnblockEventProfile ) )
     }
 
     public deleteEventProfile (
         eventProfile: EventProfileModel,
-        eventId: string | undefined = this.actualSelectedEventId,
     ): Observable<ActionCompletion<DeleteEventProfile>> {
-        this.ngStore.dispatch( new DeleteEventProfile( eventId, eventProfile ) )
+        this.ngStore.dispatch( new DeleteEventProfile( this.selectedEventId(), eventProfile ) )
 
         return this.actions$.pipe( ofActionCompleted( DeleteEventProfile ) )
     }

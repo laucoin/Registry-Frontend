@@ -55,19 +55,17 @@ export class GroupsListComponent extends GenericListComponent {
     }
 
     protected loadData (): void {
-        const eventId: string | undefined = this.route.snapshot.params['eventId']
-        if (!eventId) return
-        this.facade.fetchGroupsPage( undefined, undefined, false, eventId )
+        this.facade.fetchGroupsPage( undefined, undefined, false )
     }
 
-    protected loadPage (pageEvent: PageEventModel, eventId: string | undefined): void {
+    protected loadPage (pageEvent: PageEventModel): void {
         this.facade.inputPageSearchParameters(
             this.textSearched.value,
             this.dateTimeSearched.value,
             this.presenceSearched.value,
             this.visibilitySearched.value,
         )
-        this.facade.fetchGroupsPage( pageEvent.pageNumber, pageEvent.pageSize, false, eventId )
+        this.facade.fetchGroupsPage( pageEvent.pageNumber, pageEvent.pageSize, false )
     }
 
     protected get textSearched (): FormControl {

@@ -117,12 +117,12 @@ export class GroupElementComponent extends GenericElementComponent<GroupModel, G
         switch (action) {
             case GroupActionEnum.FETCH_GROUP_MEMBERS_PAGE:
                 this.router.navigateByUrl(
-                    this.buildUri( AppRouteEnum.GROUP_MEMBERS.replace( ':groupId', this.group().id ) ),
+                    AppRouteEnum.GROUP_MEMBERS.replace( ':groupId', this.group().id ),
                 ).catch( console.error )
                 break
             case GroupActionEnum.UPDATE_GROUP:
                 this.router.navigateByUrl(
-                    this.buildUri( AppRouteEnum.GROUPS_EDITION.replace( ':groupId', this.group().id ) ),
+                    AppRouteEnum.GROUPS_EDITION.replace( ':groupId', this.group().id ),
                 ).catch( console.error )
                 break
             case GroupActionEnum.DISABLE_GROUP:

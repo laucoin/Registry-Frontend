@@ -47,19 +47,21 @@
             } @else {
                 <div class='invitation-form d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
                     <div class='d-flex flex-column'>
-                        <div>{{ 'profile.action.manage-acceptance' | translate }}</div>
-                        <div class='d-flex justify-content-center'>
+                        <div>{{ 'event-profiles.manage-acceptance' | translate }}</div>
+                        <div class='d-flex justify-content-center mt-2'>
                             <p-button
-                                    [label]='"profile.action.reject" | translate'
-                                    [rounded]='true'
+                                    [label]='"event-profiles.actions.reject" | translate'
+                                    rounded
+                                    text
                                     severity='danger'
-                                    (click)='confirmManageAcceptance("REJECTED")' />
+                                    (onClick)='confirmManageAcceptance("REJECTED")' />
                             <p-button
                                     class='ms-2'
-                                    [label]='"profile.action.accept" | translate'
-                                    [rounded]='true'
+                                    [label]='"event-profiles.actions.accept" | translate'
+                                    rounded
+                                    text
                                     severity='success'
-                                    (click)='confirmManageAcceptance("ACCEPTED")' />
+                                    (onClick)='confirmManageAcceptance("ACCEPTED")' />
                         </div>
                     </div>
                 </div>

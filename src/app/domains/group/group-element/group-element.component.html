@@ -64,7 +64,7 @@
 
 <app-layer [(visible)]='layerOpened'
            [header]='"groups.content.list" | translate'>
-    <p-tabs [(value)]='activeTab' [scrollable]='true' class='max-panel-height'>
+    <p-tabs [(value)]='activeTab' scrollable class='max-panel-height'>
         <p-tablist>
             <p-tab [value]='1'>
                 <p-tag [value]='group().members.length.toString()' class='me-1' />
@@ -89,7 +89,7 @@
                         styleClass='max-list-box-height'
                         scrollHeight='100%'
                         [options]='group().members'
-                        [readonly]='true'
+                        readonly
                         optionLabel='name'>
                     <ng-template #item let-content>
                         <div class='d-flex align-items-center'>
@@ -105,7 +105,7 @@
                             styleClass='max-list-box-height'
                             scrollHeight='100%'
                             [options]='adults()'
-                            [readonly]='true'
+                            readonly
                             optionLabel='name'>
                         <ng-template #item let-adult>
                             <div class='d-flex align-items-center'>
@@ -122,7 +122,7 @@
                             styleClass='max-list-box-height'
                             scrollHeight='100%'
                             [options]='children()'
-                            [readonly]='true'
+                            readonly
                             optionLabel='name'>
                         <ng-template #item let-child>
                             <div class='d-flex align-items-center'>

@@ -1,4 +1,4 @@
-<app-list (updateRequired)='loadPage($event, contextEventId())'
+<app-list (updateRequired)='loadPage($event)'
           [elementPage]='facade.participantsPage()'
           [error]='facade.participantsPageError()'
           [loading]='facade.participantsPageLoading()'>
@@ -9,7 +9,7 @@
                    type='text'
                    fluid
                    pInputText
-                   (keydown.enter)='loadPage(pageEvent, contextEventId())'
+                   (keydown.enter)='loadPage(pageEvent)'
                    [formControl]='textSearched' />
         </div>
         <div class='d-grid search-line g-2'>
@@ -20,7 +20,7 @@
                           [options]='facade.presencesStatusMetadata()'
                           optionLabel='label'
                           optionValue='value'
-                          (onChange)='loadPage(pageEvent, contextEventId())'
+                          (onChange)='loadPage(pageEvent)'
                           [formControl]='statusSearched' />
             </div>
             <div class='field'>
@@ -30,15 +30,15 @@
                           [options]='facade.visibilitiesMetadata()'
                           optionLabel='label'
                           optionValue='value'
-                          (onChange)='loadPage(pageEvent, contextEventId())'
+                          (onChange)='loadPage(pageEvent)'
                           [formControl]='visibilitySearched' />
             </div>
         </div>
         <div class='d-flex justify-content-center'>
-            <p-button (click)='loadPage(pageEvent, contextEventId())'
+            <p-button (onClick)='loadPage(pageEvent)'
                       [label]='"global.actions.search-and-filter" | translate'
-                      [outlined]='true'
-                      [rounded]='true'
+                      outlined
+                      rounded
                       icon='pi pi-search'
                       [loading]='facade.participantsPageLoading() || facade.participantsPageSilentLoading()' />
         </div>
@@ -47,11 +47,11 @@
         <app-participant-element [participant]='participant' />
     </ng-template>
     <ng-template appTemplate='creation'>
-        @if (CurrentUserUtil.hasEventAuthority(registryFacade.currentUser(), contextEventId(), EventAuthority.REGISTRY_EVENT_PARTICIPANT_C)) {
+        @if (CurrentUserUtil.hasEventAuthority(registryFacade.currentUser(), facade.selectedEventId(), EventAuthority.REGISTRY_EVENT_PARTICIPANT_C)) {
             <p-button class='m-1'
                       severity='success'
-                      [outlined]='true'
-                      [rounded]='true'
+                      outlined
+                      rounded
                       [label]='registryFacade.tinyScreen() ? "" : "global.actions.create" | translate'
                       icon='pi pi-plus'
                       [routerLink]='ParticipantRoutesEnum.CREATE' />

@@ -95,7 +95,7 @@ export class EventProfileInvitationFormComponent extends GenericEventProfileForm
     }
 
     protected handleSearch (searched: string | undefined): void {
-        this.facade.searchUsers( searched, this.contextEventId() )
+        this.facade.searchUsers( searched )
     }
 
     public ngOnDestroy (): void {

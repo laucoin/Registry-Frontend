@@ -90,31 +90,31 @@ export class ActivityElementComponent extends GenericElementComponent<ActivityMo
         switch (action) {
             case ActivityActionEnum.FETCH_ACTIVITY_MOVEMENTS_PAGE:
                 this.router.navigateByUrl(
-                    this.buildUri( AppRouteEnum.ACTIVITIES_MOVEMENTS.replace( ':activityId', this.activity().id ) ),
+                    AppRouteEnum.ACTIVITIES_MOVEMENTS.replace( ':activityId', this.activity().id ),
                 ).catch( console.error )
                 break
             case ActivityActionEnum.UPDATE_ACTIVITY:
                 this.router.navigateByUrl(
-                    this.buildUri( AppRouteEnum.ACTIVITIES_EDITION.replace( ':activityId', this.activity().id ) ),
+                    AppRouteEnum.ACTIVITIES_EDITION.replace( ':activityId', this.activity().id ),
                 ).catch( console.error )
                 break
             case ActivityActionEnum.DISABLE_ACTIVITY:
                 this.subscriptions.add(
-                    this.facade.disableActivity( this.activity().id, this.contextEventId() ).pipe(
+                    this.facade.disableActivity( this.activity().id ).pipe(
                         tap( (): void => this.action.set( undefined ) ),
                     ).subscribe(),
                 )
                 break
             case ActivityActionEnum.ENABLE_ACTIVITY:
                 this.subscriptions.add(
-                    this.facade.enableActivity( this.activity().id, this.contextEventId() ).pipe(
+                    this.facade.enableActivity( this.activity().id ).pipe(
                         tap( (): void => this.action.set( undefined ) ),
                     ).subscribe(),
                 )
                 break
             case ActivityActionEnum.DELETE_ACTIVITY:
                 this.subscriptions.add(
-                    this.facade.deleteActivity( this.activity(), this.contextEventId() ).pipe(
+                    this.facade.deleteActivity( this.activity() ).pipe(
                         tap( (): void => this.action.set( undefined ) ),
                     ).subscribe(),
                 )

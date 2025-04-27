@@ -78,9 +78,7 @@ export class GroupFacade extends GenericEventElementFacade {
     }
 
     public get groupMembersPageLoading (): Signal<boolean> {
-        return computed( (): boolean =>
-            this.ngStore.selectSignal( GroupState.groupMembersPageLoading )() || this.registryFacade.contextEventLoading(),
-        )
+        return this.ngStore.selectSignal( GroupState.groupMembersPageLoading )
     }
 
     public get groupMembersPageSilentLoading (): Signal<boolean> {
@@ -116,9 +114,7 @@ export class GroupFacade extends GenericEventElementFacade {
     }
 
     public get groupLoading (): Signal<boolean> {
-        return computed( () =>
-            this.ngStore.selectSignal( GroupState.groupLoading )() || this.registryFacade.contextEventLoading(),
-        )
+        return this.ngStore.selectSignal( GroupState.groupLoading )
     }
 
     public get searchedParticipantsMetadata (): Signal<SelectItem<ParticipantModel>[]> {
@@ -155,17 +151,15 @@ export class GroupFacade extends GenericEventElementFacade {
         pageNumber: number | undefined,
         pageSize: number | undefined,
         force: boolean,
-        eventId: string | undefined = this.actualSelectedEventId,
     ): void {
         const index: number | undefined = this.groupsPageResetSearch() ? 0 : pageNumber
-        this.ngStore.dispatch( new FetchGroupsPage( eventId, index, pageSize, force ) )
+        this.ngStore.dispatch( new FetchGroupsPage( this.selectedEventId(), index, pageSize, force ) )
     }
 
     public fetchGroupMembers (
         groupIds: string[],
-        eventId: string | undefined = this.actualSelectedEventId,
     ): void {
-        this.ngStore.dispatch( new FetchGroupsMembers( eventId, groupIds ) )
+        this.ngStore.dispatch( new FetchGroupsMembers( this.selectedEventId(), groupIds ) )
     }
 
     public inputPageSearchParameters (
@@ -203,10 +197,9 @@ export class GroupFacade extends GenericEventElementFacade {
         pageNumber: number | undefined,
         pageSize: number | undefined,
         force: boolean,
-        eventId: string | undefined = this.actualSelectedEventId,
     ): void {
         const index: number | undefined = this.groupMembersPageResetSearch() ? 0 : pageNumber
-        this.ngStore.dispatch( new FetchGroupMembersPage( eventId, id, index, pageSize, force ) )
+        this.ngStore.dispatch( new FetchGroupMembersPage( this.selectedEventId(), id, index, pageSize, force ) )
     }
 
     public inputMembersPageSearchParameters (
@@ -231,9 +224,8 @@ export class GroupFacade extends GenericEventElementFacade {
     public addMembersToGroup (
         id: string,
         memberIds: string[],
-        eventId: string | undefined = this.actualSelectedEventId,
     ): Observable<AddMembersToGroup> {
-        this.ngStore.dispatch( new AddMembersToGroup( eventId, id, memberIds ) )
+        this.ngStore.dispatch( new AddMembersToGroup( this.selectedEventId(), id, memberIds ) )
 
         return this.actions$.pipe( ofActionSuccessful( AddMembersToGroup ) )
     }
@@ -241,9 +233,8 @@ export class GroupFacade extends GenericEventElementFacade {
     public removeMemberFromGroup (
         id: string,
         participant: ParticipantModel,
-        eventId: string | undefined = this.actualSelectedEventId,
     ): Observable<RemoveMemberFromGroup> {
-        this.ngStore.dispatch( new RemoveMemberFromGroup( eventId, id, participant ) )
+        this.ngStore.dispatch( new RemoveMemberFromGroup( this.selectedEventId(), id, participant ) )
 
         return this.actions$.pipe( ofActionSuccessful( RemoveMemberFromGroup ) )
     }
@@ -256,15 +247,14 @@ export class GroupFacade extends GenericEventElementFacade {
         this.ngStore.dispatch( StopGroupLoader )
     }
 
-    public fetchGroup (id: string, eventId: string | undefined = this.actualSelectedEventId): void {
-        this.ngStore.dispatch( new FetchGroup( eventId, id ) )
+    public fetchGroup (id: string): void {
+        this.ngStore.dispatch( new FetchGroup( this.selectedEventId(), id ) )
     }
 
     public searchParticipants (
         textSearched: string | undefined = undefined,
-        eventId: string | undefined = this.actualSelectedEventId,
     ): void {
-        this.ngStore.dispatch( new SearchParticipants( eventId, textSearched ) )
+        this.ngStore.dispatch( new SearchParticipants( this.selectedEventId(), textSearched ) )
     }
 
     public resetGroup (): void {
@@ -273,44 +263,39 @@ export class GroupFacade extends GenericEventElementFacade {
 
     public createGroup (
         group: GroupDto,
-        eventId: string | undefined = this.actualSelectedEventId,
     ): Observable<CreateGroup> {
-        this.ngStore.dispatch( new CreateGroup( eventId, group ) )
+        this.ngStore.dispatch( new CreateGroup( this.selectedEventId(), group ) )
         return this.actions$.pipe( ofActionSuccessful( CreateGroup ) )
     }
 
     public updateGroup (
         id: string,
         group: GroupDto,
-        eventId: string | undefined = this.actualSelectedEventId,
     ): Observable<UpdateGroup> {
-        this.ngStore.dispatch( new UpdateGroup( eventId, id, group ) )
+        this.ngStore.dispatch( new UpdateGroup( this.selectedEventId(), id, group ) )
         return this.actions$.pipe( ofActionSuccessful( UpdateGroup ) )
     }
 
     public disableGroup (
         id: string,
-        eventId: string | undefined = this.actualSelectedEventId,
     ): Observable<ActionCompletion<DisableGroup>> {
-        this.ngStore.dispatch( new DisableGroup( eventId, id ) )
+        this.ngStore.dispatch( new DisableGroup( this.selectedEventId(), id ) )
 
         return this.actions$.pipe( ofActionCompleted( DisableGroup ) )
     }
 
     public enableGroup (
         id: string,
-        eventId: string | undefined = this.actualSelectedEventId,
     ): Observable<ActionCompletion<EnableGroup>> {
-        this.ngStore.dispatch( new EnableGroup( eventId, id ) )
+        this.ngStore.dispatch( new EnableGroup( this.selectedEventId(), id ) )
 
         return this.actions$.pipe( ofActionCompleted( EnableGroup ) )
     }
 
     public deleteGroup (
         group: GroupModel,
-        eventId: string | undefined = this.actualSelectedEventId,
     ): Observable<ActionCompletion<DeleteGroup>> {
-        this.ngStore.dispatch( new DeleteGroup( eventId, group ) )
+        this.ngStore.dispatch( new DeleteGroup( this.selectedEventId(), group ) )
 
         return this.actions$.pipe( ofActionCompleted( DeleteGroup ) )
     }

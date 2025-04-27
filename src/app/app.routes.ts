@@ -14,7 +14,6 @@ import { EventFacade } from './domains/event/data/state/event.facade'
 import { EventProfileFacade } from './domains/event-profile/data/state/event-profile.facade'
 import { ParticipantFacade } from './domains/participant/data/state/participant.facade'
 import { MovementFacade } from './domains/movement/data/state/movement.facade'
-import { SignOutCallbackComponent } from './shell/sign-out-callback/sign-out-callback.component'
 import { GroupFacade } from './domains/group/data/state/group.facade'
 import { GroupState } from './domains/group/data/state/group.state'
 import { VehicleFacade } from './domains/vehicle/data/state/vehicle.facade'
@@ -35,10 +34,6 @@ export const routes: Routes = [
         component: AuthCallbackComponent,
     },
     {
-        path: AppRouteEnum.LOGOUT_CALLBACK,
-        component: SignOutCallbackComponent,
-    },
-    {
         path: AppRouteEnum.USERS,
         loadChildren: () => import('./domains/user/user.routes').then( (m: typeof import('./domains/user/user.routes')) => m.userRoutes ),
         canActivate: [ authGuard ],
@@ -47,6 +42,7 @@ export const routes: Routes = [
         path: AppRouteEnum.PREFERENCES,
         loadChildren: () => import('./domains/preferences/preferences.routes').then( (m: typeof import('./domains/preferences/preferences.routes')) => m.preferencesRoutes ),
         canActivate: [ authGuard ],
+        providers: [ EventProfileFacade, importProvidersFrom( NgxsModule.forFeature( [ EventProfileState ] ) ) ],
     },
     {
         path: AppRouteEnum.EVENTS,

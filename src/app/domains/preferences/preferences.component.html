@@ -38,9 +38,14 @@
         <p-tab [value]='AppRouteEnum.PREFERENCES_INVITATIONS'>
             {{
                 'preferences.profiles-tab.invitation' | pluralTranslation:
-                    (registryFacade.userEventProfileInvitationsPage()?.content?.length ?? 0)
-                    | translate
+                    (registryFacade.userEventProfileInvitationsPage()?.totalElements ?? 0) | translate
             }}
+            @if (registryFacade.userEventProfileInvitationsPageLoading()) {
+                <p-skeleton width='1rem' borderRadius='1rem' />
+            } @else {
+                <p-tag severity='secondary'
+                       [value]='registryFacade.userEventProfileInvitationsPage()?.totalElements?.toString() ?? "0"' />
+            }
         </p-tab>
     </p-tablist>
 </p-tabs>

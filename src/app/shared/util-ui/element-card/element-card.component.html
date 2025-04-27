@@ -44,9 +44,9 @@
                 </p-popover>
                 <p-button
                         [ariaLabel]='"menu.options" | translate'
-                        (click)='$event.stopPropagation(); menu.toggle($event)'
-                        [rounded]='true'
-                        [text]='true'
+                        (onClick)='$event.stopPropagation(); menu.toggle($event)'
+                        rounded
+                        text
                         icon='pi pi-ellipsis-v' />
             </div>
         }

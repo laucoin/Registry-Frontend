@@ -129,7 +129,7 @@ export class EventProfileElementComponent extends GenericElementComponent<EventP
                 break
             case EventProfileActionEnum.UPDATE_EVENT_PROFILE:
                 this.router.navigateByUrl(
-                    this.buildUri( AppRouteEnum.PROFILES_EDITION ).replace( ':profileId', this.profile().id ),
+                    AppRouteEnum.PROFILES_EDITION.replace( ':profileId', this.profile().id ),
                 ).catch( console.error )
                 break
             case EventProfileActionEnum.BLOCK_EVENT_PROFILE:
@@ -178,14 +178,14 @@ export class EventProfileElementComponent extends GenericElementComponent<EventP
 
     protected confirmManageAcceptance (status: string): void {
         this.confirmationService.confirm( {
-            header: this.translateService.instant( `profile.action.confirmation.title.${status}` ),
+            header: this.translateService.instant( `event-profiles.actions.confirmations.${status}.title` ),
             message: this.translateService.instant(
-                `profile.action.confirmation.message.${status}`,
+                `event-profiles.actions.confirmations.${status}.message`,
                 { element: this.profile() },
             ),
             icon: status === 'ACCEPTED' ? 'pi pi-info-circle' : 'pi pi-exclamation-triangle',
-            acceptLabel: this.translateService.instant( 'confirmation.confirm' ),
-            rejectLabel: this.translateService.instant( 'confirmation.cancel' ),
+            acceptLabel: this.translateService.instant( 'global.actions.confirm' ),
+            rejectLabel: this.translateService.instant( 'global.actions.cancel' ),
             acceptButtonStyleClass: `p-button p-button-rounded p-button-outlined ${status === 'ACCEPTED' ? 'p-button-success' : 'p-button-danger'}`,
             rejectButtonStyleClass: 'p-button p-button-rounded p-button-text p-button-secondary',
             accept: (): void => this.manageAcceptance( status === 'ACCEPTED' ),

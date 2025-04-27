@@ -24,9 +24,9 @@
             <div class='ms-3'>{{ selectItemBuilder()(element!).label }}</div>
             <p-button icon='pi pi-times'
                       size='small'
-                      [rounded]='true'
-                      [text]='true'
-                      (click)='handleElementRemoving(element!.id)' />
+                      rounded
+                      text
+                      (onClick)='handleElementRemoving(element!.id)' />
         </li>
     } @empty {
         <li class='item empty-message'>

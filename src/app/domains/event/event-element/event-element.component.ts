@@ -129,7 +129,7 @@ export class EventElementComponent extends GenericElementComponent<EventModel, E
                 break
             case EventActionEnum.UPDATE_EVENT:
                 this.router.navigateByUrl(
-                    this.buildUri( AppRouteEnum.EVENTS_EDITION.replace( ':eventId', this.event().id ) ),
+                    AppRouteEnum.EVENTS_EDITION.replace( ':eventId', this.event().id ),
                 ).catch( console.error )
                 break
             case EventActionEnum.DISABLE_EVENT:

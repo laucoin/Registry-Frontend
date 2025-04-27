@@ -37,7 +37,7 @@ export class ActivityFacade extends GenericEventElementFacade {
     }
 
     public get activitiesPageLoading (): Signal<boolean> {
-        return computed( (): boolean => this.ngStore.selectSignal( ActivityState.activitiesPageLoading )() || this.registryFacade.contextEventLoading() )
+        return this.ngStore.selectSignal( ActivityState.activitiesPageLoading )
     }
 
     public get activitiesPageSilentLoading (): Signal<boolean> {
@@ -75,9 +75,7 @@ export class ActivityFacade extends GenericEventElementFacade {
     }
 
     public get activityMovementsPageLoading (): Signal<boolean> {
-        return computed( (): boolean =>
-            this.ngStore.selectSignal( ActivityState.activityMovementsPageLoading )() || this.registryFacade.contextEventLoading(),
-        )
+        return this.ngStore.selectSignal( ActivityState.activityMovementsPageLoading )
     }
 
     public get activityMovementsPageSilentLoading (): Signal<boolean> {
@@ -121,7 +119,7 @@ export class ActivityFacade extends GenericEventElementFacade {
     }
 
     public get activityLoading (): Signal<boolean> {
-        return computed( (): boolean => this.ngStore.selectSignal( ActivityState.activityLoading )() || this.registryFacade.contextEventLoading() )
+        return this.ngStore.selectSignal( ActivityState.activityLoading )
     }
 
     public get availabilitiesMetadata (): Signal<SelectItem<boolean | undefined>[]> {
@@ -158,10 +156,9 @@ export class ActivityFacade extends GenericEventElementFacade {
         pageNumber: number | undefined,
         pageSize: number | undefined,
         force: boolean,
-        eventId: string | undefined = this.actualSelectedEventId,
     ): void {
         const index: number | undefined = this.activitiesPageResetSearch() ? 0 : pageNumber
-        this.ngStore.dispatch( new FetchActivitiesPage( eventId, index, pageSize, force ) )
+        this.ngStore.dispatch( new FetchActivitiesPage( this.selectedEventId(), index, pageSize, force ) )
     }
 
     public inputPageSearchParameters (
@@ -199,17 +196,13 @@ export class ActivityFacade extends GenericEventElementFacade {
         pageNumber: number | undefined,
         pageSize: number | undefined,
         force: boolean,
-        eventId: string | undefined = this.actualSelectedEventId,
     ): void {
         const index: number | undefined = this.activityMovementsPageResetSearch() ? 0 : pageNumber
-        this.ngStore.dispatch( new FetchActivityMovementsPage( eventId, id, index, pageSize, force ) )
+        this.ngStore.dispatch( new FetchActivityMovementsPage( this.selectedEventId(), id, index, pageSize, force ) )
     }
 
-    public fetchActivityMovementsContent (
-        movementIds: string[],
-        eventId: string | undefined,
-    ): void {
-        this.ngStore.dispatch( new FetchActivityMovementsContents( eventId, movementIds ) )
+    public fetchActivityMovementsContent (movementIds: string[]): void {
+        this.ngStore.dispatch( new FetchActivityMovementsContents( this.selectedEventId(), movementIds ) )
     }
 
     public inputMovementsPageSearchParameters (
@@ -242,54 +235,41 @@ export class ActivityFacade extends GenericEventElementFacade {
         this.ngStore.dispatch( StopActivityLoader )
     }
 
-    public fetchActivity (id: string, eventId: string | undefined = this.actualSelectedEventId): void {
-        this.ngStore.dispatch( new FetchActivity( eventId, id ) )
+    public fetchActivity (id: string): void {
+        this.ngStore.dispatch( new FetchActivity( this.selectedEventId(), id ) )
     }
 
     public resetActivity (): void {
         this.ngStore.dispatch( ResetActivity )
     }
 
-    public createActivity (
-        activity: ActivityDto,
-        eventId: string | undefined = this.actualSelectedEventId,
-    ): Observable<CreateActivity> {
-        this.ngStore.dispatch( new CreateActivity( eventId, activity ) )
+    public createActivity (activity: ActivityDto): Observable<CreateActivity> {
+        this.ngStore.dispatch( new CreateActivity( this.selectedEventId(), activity ) )
         return this.actions$.pipe( ofActionSuccessful( CreateActivity ) )
     }
 
     public updateActivity (
         id: string,
         activity: ActivityDto,
-        eventId: string | undefined = this.actualSelectedEventId,
     ): Observable<UpdateActivity> {
-        this.ngStore.dispatch( new UpdateActivity( eventId, id, activity ) )
+        this.ngStore.dispatch( new UpdateActivity( this.selectedEventId(), id, activity ) )
         return this.actions$.pipe( ofActionSuccessful( UpdateActivity ) )
     }
 
-    public disableActivity (
-        id: string,
-        eventId: string | undefined = this.actualSelectedEventId,
-    ): Observable<ActionCompletion<DisableActivity>> {
-        this.ngStore.dispatch( new DisableActivity( eventId, id ) )
+    public disableActivity (id: string): Observable<ActionCompletion<DisableActivity>> {
+        this.ngStore.dispatch( new DisableActivity( this.selectedEventId(), id ) )
 
         return this.actions$.pipe( ofActionCompleted( DisableActivity ) )
     }
 
-    public enableActivity (
-        id: string,
-        eventId: string | undefined = this.actualSelectedEventId,
-    ): Observable<ActionCompletion<EnableActivity>> {
-        this.ngStore.dispatch( new EnableActivity( eventId, id ) )
+    public enableActivity (id: string): Observable<ActionCompletion<EnableActivity>> {
+        this.ngStore.dispatch( new EnableActivity( this.selectedEventId(), id ) )
 
         return this.actions$.pipe( ofActionCompleted( EnableActivity ) )
     }
 
-    public deleteActivity (
-        activity: ActivityModel,
-        eventId: string | undefined = this.actualSelectedEventId,
-    ): Observable<ActionCompletion<DeleteActivity>> {
-        this.ngStore.dispatch( new DeleteActivity( eventId, activity ) )
+    public deleteActivity (activity: ActivityModel): Observable<ActionCompletion<DeleteActivity>> {
+        this.ngStore.dispatch( new DeleteActivity( this.selectedEventId(), activity ) )
 
         return this.actions$.pipe( ofActionCompleted( DeleteActivity ) )
     }

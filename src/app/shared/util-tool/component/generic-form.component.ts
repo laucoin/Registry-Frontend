@@ -4,9 +4,8 @@ import { AppRouteEnum } from '../../../app-route.enum'
 import { Subscription } from 'rxjs'
 import { EventModel } from '../../util-model/model/event.model'
 import { RegistryValidators } from '../util/registry.validator'
-import { inject, Signal } from '@angular/core'
+import { inject } from '@angular/core'
 import { FormUtil } from '../util/form.util'
-import { toSignal } from '@angular/core/rxjs-interop'
 import { CustomDateFormatPipe } from '../pipe/custom-date-format.pipe'
 
 export abstract class GenericFormComponent<M, D> extends GenericComponent {
@@ -20,12 +19,8 @@ export abstract class GenericFormComponent<M, D> extends GenericComponent {
     protected readonly startDateExample: Date = GenericFormComponent.startDateExample
     protected readonly endDateExample: Date = GenericFormComponent.endDateExample
 
-    protected readonly contextEvent: Signal<EventModel | undefined>
-
     protected constructor () {
         super()
-
-        this.contextEvent = toSignal( this.registryFacade.contextEvent$ )
     }
 
     private static get startDateExample (): Date {
@@ -53,13 +48,7 @@ export abstract class GenericFormComponent<M, D> extends GenericComponent {
         return now
     }
 
-    protected loadData (): void {
-        const eventId: string | undefined = this.contextEventId()
-        if (!eventId) {
-            this.router.navigateByUrl( AppRouteEnum.HOME ).catch( console.error )
-        }
-        this.registryFacade.fetchContextEvent( eventId!, false )
-    }
+    protected abstract loadData (): void
 
     protected abstract initForm (): FormGroup
 
@@ -90,7 +79,7 @@ export abstract class GenericFormComponent<M, D> extends GenericComponent {
     protected abstract buildDto (): D
 
     protected navigateToRedirectUri (route: AppRouteEnum): void {
-        this.router.navigateByUrl( this.buildUri( route ) ).catch( console.error )
+        this.router.navigateByUrl( route ).catch( console.error )
     }
 
     protected abstract get idParam (): string | undefined
