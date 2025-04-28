@@ -5,6 +5,7 @@ import { ElementRequestInformationModel } from '../../util-model/model/element-r
 import { ToastMessageOptions } from 'primeng/api'
 import { AppConfig } from '../../../app.config'
 import { GenericUtil } from '../util/generic.util'
+import { SeverityEnum } from '../../util-model/enumeration/severity.enum'
 
 export class StateUtil {
     public static updatePageLoader<P, M extends GenericModel> (
@@ -44,7 +45,7 @@ export class StateUtil {
     }
 
     public static buildNotificationMessage (
-        severity: 'info' | 'success' | 'warn' | 'error' | 'secondary' | 'contrast',
+        severity: SeverityEnum,
         summary: string | undefined,
         detail: string,
         icon: string | undefined = undefined,
@@ -63,7 +64,7 @@ export class StateUtil {
         }
     }
 
-    private static notificationLife (severity: 'info' | 'success' | 'warn' | 'error' | 'secondary' | 'contrast'): number | undefined {
+    private static notificationLife (severity: SeverityEnum): number | undefined {
         const index: number = Object.keys( AppConfig.config.notification.duration ).findIndex( (key: string): boolean => key === severity )
         return Object.values( AppConfig.config.notification.duration )[index]
     }

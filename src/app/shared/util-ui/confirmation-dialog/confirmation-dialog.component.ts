@@ -19,8 +19,9 @@ import { GenericUtil } from '../../util-tool/util/generic.util'
 import { FormFieldErrorComponent } from '../form-field-error/form-field-error.component'
 import { InputText } from 'primeng/inputtext'
 import { FormUtil } from '../../util-tool/util/form.util'
-import { Button } from 'primeng/button'
+import { Button, ButtonSeverity } from 'primeng/button'
 import { ConfirmationModel } from '../../util-model/model/confirmation.model'
+import { ElementActionEnum } from '../../util-model/enumeration/element-action.enum'
 
 @Component( {
     selector: 'app-confirmation-dialog',
@@ -35,7 +36,7 @@ import { ConfirmationModel } from '../../util-model/model/confirmation.model'
     templateUrl: './confirmation-dialog.component.html',
     styleUrl: './confirmation-dialog.component.scss',
 } )
-export class ConfirmationDialogComponent<M extends GenericModel, A> {
+export class ConfirmationDialogComponent<M extends GenericModel> {
     protected readonly FormUtil: typeof FormUtil = FormUtil
     protected readonly breakpoint: object = breakPoint
 
@@ -47,7 +48,7 @@ export class ConfirmationDialogComponent<M extends GenericModel, A> {
 
     public loading: InputSignal<boolean> = input.required()
     public element: InputSignal<M> = input.required()
-    public action: InputSignal<ActionModel<A> | undefined> = input<ActionModel<A> | undefined>( undefined )
+    public action: InputSignal<ActionModel | undefined> = input<ActionModel | undefined>( undefined )
     protected confirmation: Signal<ConfirmationModel | undefined> = computed( (): ConfirmationModel | undefined => this.action()?.confirmation )
     protected header: Signal<string> = computed( (): string => this.confirmation()?.header ?? '' )
     protected message: Signal<string> = computed( (): string => this.confirmation()?.message ?? '' )
@@ -55,12 +56,11 @@ export class ConfirmationDialogComponent<M extends GenericModel, A> {
     protected propertyValue: Signal<string | undefined> = computed(
         (): string | undefined => this.extractPropertyValue( this.element(), this.action() ),
     )
-    protected rejectSeverity: Signal<'success' | 'info' | 'warn' | 'danger' | 'help' | 'primary' | 'secondary' | 'contrast' | null | undefined> = computed(
-        (): 'success' | 'info' | 'warn' | 'danger' | 'help' | 'primary' | 'secondary' | 'contrast' | null | undefined => this.action()?.confirmation?.rejectSeverity )
-    protected acceptSeverity: Signal<'success' | 'info' | 'warn' | 'danger' | 'help' | 'primary' | 'secondary' | 'contrast' | null | undefined> = computed(
-        (): 'success' | 'info' | 'warn' | 'danger' | 'help' | 'primary' | 'secondary' | 'contrast' | null | undefined => this.action()?.confirmation?.acceptSeverity )
+    protected rejectSeverity: Signal<ButtonSeverity> = computed( (): ButtonSeverity => this.action()?.confirmation?.rejectSeverity )
+    protected acceptSeverity: Signal<ButtonSeverity> = computed( (): ButtonSeverity => this.action()?.confirmation?.acceptSeverity )
 
-    public handleAction: OutputEmitterRef<A> = output()
+    public hide: OutputEmitterRef<void> = output()
+    public handleAction: OutputEmitterRef<ElementActionEnum> = output()
 
     public constructor () {
         this.form = this.initForm()
@@ -74,7 +74,7 @@ export class ConfirmationDialogComponent<M extends GenericModel, A> {
         } )
     }
 
-    protected extractPropertyValue (element: M, action: ActionModel<A> | undefined): string | undefined {
+    protected extractPropertyValue (element: M, action: ActionModel | undefined): string | undefined {
         const property: string | undefined = action?.confirmation?.confirmProperty
         if (GenericUtil.isNull( property )) return ''
         return Object( element )[property!]
@@ -83,6 +83,7 @@ export class ConfirmationDialogComponent<M extends GenericModel, A> {
     protected submit (): void {
         if (FormUtil.isFormValid( this.form )) {
             this.handleAction.emit( this.action()!.id )
+            this.hide.emit()
         } else {
             console.warn( this.translateService.instant( 'global.messages.invalid-form' ) )
         }
@@ -92,6 +93,7 @@ export class ConfirmationDialogComponent<M extends GenericModel, A> {
         this.confirmationName.reset()
         this.confirmationName.clearValidators()
         this.showDialog = false
+        this.hide.emit()
     }
 
     protected get confirmationName (): FormControl {

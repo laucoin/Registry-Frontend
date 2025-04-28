@@ -1,0 +1,103 @@
+<app-form [form]='form'
+          [loading]='facade.activityLoading()'
+          [title]='"activities.form.title" | formTitle: facade.activity() | translate : { name: facade.activity()?.name }'>
+    <p-card>
+        <div class='field'>
+            <label for='name' appRequired>{{ 'activities.form.name' | translate }}</label>
+            <input [formControl]='name'
+                   [placeholder]='"activities.form.placeholder.name" | translate'
+                   (keydown.enter)='submit()'
+                   id='name'
+                   pInputText
+                   type='text' />
+            <app-form-field-error [errors]='name.errors'
+                                  [invalid]='FormUtil.invalid(name)'
+                                  translationPrefix='activities.form.error.name' />
+        </div>
+        <div class='field'>
+            <label for='description'>{{ 'activities.form.description' | translate }}</label>
+            <textarea rows='5'
+                      pTextarea
+                      fluid
+                      id='description'
+                      [formControl]='description'
+                      (keydown.enter)='submit()'
+                      [placeholder]='"activities.form.placeholder.description" | translate'></textarea>
+            <app-form-field-error [errors]='description.errors'
+                                  [invalid]='FormUtil.invalid(description)'
+                                  translationPrefix='activities.form.error.description' />
+        </div>
+        <div class='d-flex flex-wrap'>
+            <div class='duration field'>
+                <label for='duration'>{{ 'activities.form.duration' | translate }}</label>
+                <app-duration-field [formControl]='duration'
+                                    inputId='duration'
+                                    [fluid]='true'
+                                    [placeholder]='"activities.form.placeholder.duration" | translate' />
+            </div>
+            <div class='allowed-participants field'>
+                <label for='allowed-participants'>{{ 'activities.form.allowed-participants' | translate }}</label>
+                <app-number-range-field [formControl]='allowedParticipants'
+                                        [invalid]='FormUtil.invalid(allowedParticipants)'
+                                        [minPlaceholder]='"activities.form.placeholder.allowed-min-participants" | translate'
+                                        [maxPlaceholder]='"activities.form.placeholder.allowed-max-participants" | translate'
+                                        inputId='allowed-participants' />
+                <app-form-field-error [errors]='allowedParticipants.errors'
+                                      [invalid]='FormUtil.invalid(allowedParticipants)'
+                                      translationPrefix='activities.form.error.allowed-participants' />
+            </div>
+        </div>
+        <div class='d-flex flex-wrap'>
+            <div class='left-field field'>
+                <label for='begin-date-time'>{{ 'activities.form.begin-datetime' | translate }}</label>
+                <app-date-time-field [formControl]='beginDateTime'
+                                     [invalid]='FormUtil.invalid(beginDateTime)'
+                                     inputId='begin-date-time'
+                                     [datePlaceholder]='"activities.form.placeholder.date" | translate: {
+                                                            date: startDateExample | dateFormat: "date"
+                                                         }'
+                                     [timePlaceholder]='"activities.form.placeholder.time" | translate: {
+                                                            date: startDateExample | dateFormat: "time"
+                                                         }' />
+                <small class='secondary-color'>{{ 'activities.form.hint.begin-date-time' | translate }}</small>
+                <app-form-field-error [errors]='beginDateTime.errors'
+                                      [invalid]='FormUtil.invalid(beginDateTime)'
+                                      translationPrefix='activities.form.error.begin-datetime' />
+            </div>
+            <div class='right-field field'>
+                <label for='end-date-time'>{{ 'activities.form.end-datetime' | translate }}</label>
+                <app-date-time-field [formControl]='endDateTime'
+                                     [invalid]='FormUtil.invalid(endDateTime)'
+                                     inputId='end-date-time'
+                                     [datePlaceholder]='"activities.form.placeholder.date" | translate: {
+                                                            date: endDateExample | dateFormat: "date"
+                                                         }'
+                                     [timePlaceholder]='"activities.form.placeholder.time" | translate: {
+                                                            date: endDateExample | dateFormat: "time"
+                                                         }' />
+                <small class='secondary-color'>{{ 'activities.form.hint.end-date-time' | translate }}</small>
+                <app-form-field-error [errors]='endDateTime.errors'
+                                      [invalid]='FormUtil.invalid(endDateTime)'
+                                      translationPrefix='activities.form.error.end-datetime' />
+            </div>
+        </div>
+        <app-form-field-error [errors]='form.errors'
+                              [invalid]='FormUtil.invalid(form) && beginDateTime.valid && endDateTime.valid'
+                              translationPrefix='activities.form.error.date-range' />
+    </p-card>
+    <div class='d-flex mt-2 justify-content-center'>
+        <p-button
+                (onClick)='navigateToRedirectUri()'
+                [label]='"global.actions.cancel" | translate'
+                text
+                rounded />
+        <p-button
+                class='ms-2'
+                (onClick)='submit()'
+                [label]='facade.activity() | formButton | translate'
+                rounded
+                outlined
+                [icon]='facade.activity() | formIcon'
+                severity='success' />
+    </div>
+</app-form>

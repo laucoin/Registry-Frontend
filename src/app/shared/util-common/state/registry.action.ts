@@ -1,8 +1,8 @@
 import { ToastMessageOptions } from 'primeng/api'
-import { EventProfileModel } from '../../util-model/model/event-profile.model'
+import { ProjectProfileModel } from '../../util-model/model/project-profile.model'
 import { TokenModel } from '../../util-authentication/model/token.model'
 import { ErrorModel } from '../../util-model/model/error.model'
-import { EventModel } from '../../util-model/model/event.model'
+import { ProjectModel } from '../../util-model/model/project.model'
 
 export enum RegistryActionEnum {
     START_GLOBAL_LOADER = '[Local] Starting global loader',
@@ -27,27 +27,27 @@ export enum RegistryActionEnum {
     FETCH_CURRENT_USER = '[Backend] Fetching current user',
     IMPERSONATE_CURRENT_USER = '[Backend] Impersonating current user',
 
-    START_USER_EVENT_PROFILES_PAGE_LOADER = '[Local] Starting user event profiles\' page loader',
-    STOP_USER_EVENT_PROFILES_PAGE_LOADER = '[Local] Stopping user event profiles\' page loader',
+    START_USER_PROJECT_PROFILES_PAGE_LOADER = '[Local] Starting user project profiles\' page loader',
+    STOP_USER_PROJECT_PROFILES_PAGE_LOADER = '[Local] Stopping user project profiles\' page loader',
 
-    FETCH_USER_EVENT_PROFILES_PAGE = '[Backend] Fetching user event profiles\' page',
-    UPDATE_USER_EVENT_PROFILES_PAGE_SEARCH_PARAMS = '[Local] Updating user event profiles\' page search params',
+    FETCH_USER_PROJECT_PROFILES_PAGE = '[Backend] Fetching user project profiles\' page',
+    UPDATE_USER_PROJECT_PROFILES_PAGE_SEARCH_PARAMS = '[Local] Updating user project profiles\' page search params',
 
-    START_USER_EVENT_PROFILE_INVITATIONS_PAGE_LOADER = '[Local] Starting user event profile invitations\' page loader',
-    STOP_USER_EVENT_PROFILE_INVITATIONS_PAGE_LOADER = '[Local] Stopping user event profile invitations\' page loader',
+    START_USER_PROJECT_PROFILE_INVITATIONS_PAGE_LOADER = '[Local] Starting user project profile invitations\' page loader',
+    STOP_USER_PROJECT_PROFILE_INVITATIONS_PAGE_LOADER = '[Local] Stopping user project profile invitations\' page loader',
 
-    FETCH_USER_EVENT_PROFILE_INVITATIONS_PAGE = '[Backend] Fetching user event profile invitations\' page',
-    UPDATE_USER_EVENT_PROFILE_INVITATIONS_PAGE_SEARCH_PARAMS = '[Local] Updating user event profile invitations\' page search params',
+    FETCH_USER_PROJECT_PROFILE_INVITATIONS_PAGE = '[Backend] Fetching user project profile invitations\' page',
+    UPDATE_USER_PROJECT_PROFILE_INVITATIONS_PAGE_SEARCH_PARAMS = '[Local] Updating user project profile invitations\' page search params',
 
-    START_USER_EVENT_PROFILE_LOADER = '[Local] Starting user event profile loader',
-    STOP_USER_EVENT_PROFILE_LOADER = '[Local] Stopping user event profile loader',
+    START_USER_PROJECT_PROFILE_LOADER = '[Local] Starting user project profile loader',
+    STOP_USER_PROJECT_PROFILE_LOADER = '[Local] Stopping user project profile loader',
 
-    MANAGE_USER_EVENT_INVITATION_ACCEPTANCE = '[Backend] Managing user event invitation acceptance',
-    SELECT_USER_EVENT_PROFILE = '[Backend] Selecting user event profile',
-    SELECT_USER_EVENT_PROFILE_BY_EVENT = '[Backend] Selecting user event profile by event',
-    DELETE_USER_EVENT_PROFILE = '[Backend] Deleting user event profile',
+    MANAGE_USER_PROJECT_INVITATION_ACCEPTANCE = '[Backend] Managing user project invitation acceptance',
+    SELECT_USER_PROJECT_PROFILE = '[Backend] Selecting user project profile',
+    SELECT_USER_PROJECT_PROFILE_BY_PROJECT = '[Backend] Selecting user project profile by project',
+    DELETE_USER_PROJECT_PROFILE = '[Backend] Deleting user project profile',
 
-    CREATE_SUPPORT_EVENT_PROFILE = '[Backend] Creating event profiles',
+    CREATE_SUPPORT_PROJECT_PROFILE = '[Backend] Creating project profiles',
 }
 
 export class StartGlobalLoader {
@@ -124,16 +124,16 @@ export class ImpersonateCurrentUser {
     public static readonly type: RegistryActionEnum = RegistryActionEnum.IMPERSONATE_CURRENT_USER
 }
 
-export class StartUserEventProfilesPageLoader {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.START_USER_EVENT_PROFILES_PAGE_LOADER
+export class StartUserProjectProfilesPageLoader {
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.START_USER_PROJECT_PROFILES_PAGE_LOADER
 }
 
-export class StopUserEventProfilesPageLoader {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.STOP_USER_EVENT_PROFILES_PAGE_LOADER
+export class StopUserProjectProfilesPageLoader {
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.STOP_USER_PROJECT_PROFILES_PAGE_LOADER
 }
 
-export class FetchUserEventProfilesPage {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.FETCH_USER_EVENT_PROFILES_PAGE
+export class FetchUserProjectProfilesPage {
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.FETCH_USER_PROJECT_PROFILES_PAGE
 
     public constructor (
         public readonly pageNumber: number | undefined,
@@ -142,8 +142,8 @@ export class FetchUserEventProfilesPage {
     ) {}
 }
 
-export class UpdateUserEventProfilesPageSearchParams {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.UPDATE_USER_EVENT_PROFILES_PAGE_SEARCH_PARAMS
+export class UpdateUserProjectProfilesPageSearchParams {
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.UPDATE_USER_PROJECT_PROFILES_PAGE_SEARCH_PARAMS
 
     public constructor (
         public readonly resetSearch: boolean,
@@ -152,16 +152,16 @@ export class UpdateUserEventProfilesPageSearchParams {
     ) {}
 }
 
-export class StartUserEventProfileInvitationsPageLoader {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.START_USER_EVENT_PROFILE_INVITATIONS_PAGE_LOADER
+export class StartUserProjectProfileInvitationsPageLoader {
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.START_USER_PROJECT_PROFILE_INVITATIONS_PAGE_LOADER
 }
 
-export class StopUserEventProfileInvitationsPageLoader {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.STOP_USER_EVENT_PROFILE_INVITATIONS_PAGE_LOADER
+export class StopUserProjectProfileInvitationsPageLoader {
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.STOP_USER_PROJECT_PROFILE_INVITATIONS_PAGE_LOADER
 }
 
-export class FetchUserEventProfileInvitationsPage {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.FETCH_USER_EVENT_PROFILE_INVITATIONS_PAGE
+export class FetchUserProjectProfileInvitationsPage {
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.FETCH_USER_PROJECT_PROFILE_INVITATIONS_PAGE
 
     public constructor (
         public readonly pageNumber: number | undefined,
@@ -170,8 +170,8 @@ export class FetchUserEventProfileInvitationsPage {
     ) {}
 }
 
-export class UpdateUserEventProfileInvitationsPageSearchParams {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.UPDATE_USER_EVENT_PROFILE_INVITATIONS_PAGE_SEARCH_PARAMS
+export class UpdateUserProjectProfileInvitationsPageSearchParams {
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.UPDATE_USER_PROJECT_PROFILE_INVITATIONS_PAGE_SEARCH_PARAMS
 
     public constructor (
         public readonly resetSearch: boolean,
@@ -180,40 +180,40 @@ export class UpdateUserEventProfileInvitationsPageSearchParams {
     ) {}
 }
 
-export class StartUserEventProfileLoader {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.START_USER_EVENT_PROFILE_LOADER
+export class StartUserProjectProfileLoader {
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.START_USER_PROJECT_PROFILE_LOADER
 }
 
-export class StopUserEventProfileLoader {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.STOP_USER_EVENT_PROFILE_LOADER
+export class StopUserProjectProfileLoader {
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.STOP_USER_PROJECT_PROFILE_LOADER
 }
 
-export class ManageUserEventInvitationAcceptance {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.MANAGE_USER_EVENT_INVITATION_ACCEPTANCE
+export class ManageUserProjectInvitationAcceptance {
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.MANAGE_USER_PROJECT_INVITATION_ACCEPTANCE
 
     public constructor (public readonly profileId: string, public readonly accepted: boolean) {}
 }
 
-export class SelectUserEventProfile {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.SELECT_USER_EVENT_PROFILE
+export class SelectUserProjectProfile {
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.SELECT_USER_PROJECT_PROFILE
 
-    public constructor (public readonly profile: EventProfileModel) {}
+    public constructor (public readonly profile: ProjectProfileModel) {}
 }
 
-export class SelectUserEventProfileByEvent {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.SELECT_USER_EVENT_PROFILE_BY_EVENT
+export class SelectUserProjectProfileByProject {
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.SELECT_USER_PROJECT_PROFILE_BY_PROJECT
 
-    public constructor (public readonly event: EventModel) {}
+    public constructor (public readonly project: ProjectModel) {}
 }
 
-export class DeleteUserEventProfile {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.DELETE_USER_EVENT_PROFILE
+export class DeleteUserProjectProfile {
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.DELETE_USER_PROJECT_PROFILE
 
-    public constructor (public readonly profile: EventProfileModel) {}
+    public constructor (public readonly profile: ProjectProfileModel) {}
 }
 
-export class CreateSupportEventProfile {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.CREATE_SUPPORT_EVENT_PROFILE
+export class CreateSupportProjectProfile {
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.CREATE_SUPPORT_PROJECT_PROFILE
 
-    public constructor (public readonly eventId: string) {}
+    public constructor (public readonly projectId: string) {}
 }

@@ -1,12 +1,7 @@
 @if (registryFacade.theme()) {
     <p-tag [severity]='registryFacade.theme() === "dark" ? undefined : "secondary"'>
         @if (severity()) {
-            <div class='circle'
-                 [class.secondary]='severity() === "secondary"'
-                 [class.success]='severity() === "success"'
-                 [class.info]='severity() === "info"'
-                 [class.warn]='severity() === "warn"'
-                 [class.danger]='severity() === "danger"'></div>
+            <app-severity-circle [severity]='severity()' />
         }
         @if (value()) {
             <span>{{ value() }}</span>

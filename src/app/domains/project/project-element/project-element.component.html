@@ -1,0 +1,82 @@
+<app-element-card [element]='project()'
+                  [actionMenuVisible]='actionMenuVisible()'
+                  [actions]='actions()'
+                  (action)='showDialogIfNeeded($event)'
+                  icon='pi pi-calendar'>
+    <div class='element-card'>
+        <div class='project-info d-flex flex-column justify-content-center'>
+            <div class='project-name d-flex mb-2' [class.justify-content-center]='registryFacade.tinyScreen()'>
+                <app-severity-circle class='me-2' [severity]='project().visible ? SeverityEnum.SUCCESS : SeverityEnum.DANGER' />
+                {{ project().name }}
+            </div>
+            @if (project().begin) {
+                <div class='d-flex mt-1 align-items-center' [class.justify-content-center]='registryFacade.tinyScreen()'>
+                    <i class='pi pi-play-circle'></i>
+                    <span class='ms-1'>{{ project().begin | customDateFormat }}</span>
+                </div>
+            }
+            @if (project().end) {
+                <div class='d-flex align-items-center'
+                     [class.justify-content-center]='registryFacade.tinyScreen()'
+                     [class.mt-1]='!project().begin'>
+                    <i class='pi pi-stop-circle'></i>
+                    <span class='ms-1'>{{ project().end | customDateFormat }}</span>
+                </div>
+            }
+        </div>
+        <div class='options d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
+            @let nbOfOptions = project().options.length;
+            <app-severity-tag
+                    (click)='nbOfOptions > 1 ? layerOpened = true : undefined'
+                    (keydown.enter)='nbOfOptions > 1 ? layerOpened = true : undefined'>
+                <span [class.pointer]='nbOfOptions > 1'
+                      [class.hover-underline]='nbOfOptions > 1'>
+                    {{
+                        'projects.options' | pluralTranslation: project().options | translate: {
+                            name: project().options[0]?.label,
+                            others: nbOfOptions - 1
+                        }
+                    }}
+
+                </span>
+            </app-severity-tag>
+        </div>
+        <div class='status d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
+            @if (intervalStatus()) {
+                <app-severity-tag [severity]='intervalStatus()?.status === IntervalStatusEnum.IN_PROGRESS ? SeverityEnum.SUCCESS : intervalStatus()?.status ===
+                IntervalStatusEnum.FINISHED ? SeverityEnum.WARNING : SeverityEnum.INFO'
+                                  [value]='intervalStatus() | intervalFormat:"projects.status" | translate: { interval:
+                                  buildInterval(intervalStatus()!.interval!) }' />
+            }
+        </div>
+        <div class='action-button d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
+            @if (buttonAction()) {
+                <p-button [icon]='buttonAction()!.icon'
+                          [label]='buttonAction()!.label | translate'
+                          [disabled]='buttonAction()!.disabled'
+                          severity='info'
+                          size='small'
+                          outlined
+                          rounded
+                          (onClick)='showDialogIfNeeded(buttonAction()!)' />
+            }
+        </div>
+    </div>
+</app-element-card>
+
+<app-layer [(visible)]='layerOpened'
+           [header]='"projects.options.list" | translate'>
+    <p-listbox
+            styleClass='max-list-box-height'
+            readonly
+            [options]='project().options'
+            scrollHeight='100%'
+            optionLabel='label' />
+</app-layer>
+
+<app-confirmation-dialog
+        [loading]='facade.projectLoading()'
+        [element]='project()'
+        [action]='action()'
+        (hide)='action.set(undefined)'
+        (handleAction)='handleAction($event)' />

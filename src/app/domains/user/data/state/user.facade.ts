@@ -19,7 +19,7 @@ import {
     UpdateUsersPageSearchParams,
 } from './user.action'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
-import { ActionCompletion, ofActionCompleted, ofActionSuccessful } from '@ngxs/store'
+import { ofActionSuccessful } from '@ngxs/store'
 import { GenericFacade } from '../../../../shared/util-tool/facade/generic.facade'
 import { UserState } from './user.state'
 
@@ -137,27 +137,19 @@ export class UserFacade extends GenericFacade {
         return this.actions$.pipe( ofActionSuccessful( UpdateUserRole ) )
     }
 
-    public bockUser (id: string): Observable<ActionCompletion<BlockUser>> {
+    public bockUser (id: string): void {
         this.ngStore.dispatch( new BlockUser( id ) )
-
-        return this.actions$.pipe( ofActionCompleted( BlockUser ) )
     }
 
-    public unblockUser (id: string): Observable<ActionCompletion<UnblockUser>> {
+    public unblockUser (id: string): void {
         this.ngStore.dispatch( new UnblockUser( id ) )
-
-        return this.actions$.pipe( ofActionCompleted( UnblockUser ) )
     }
 
-    public impersonateUser (user: UserModel): Observable<ActionCompletion<ImpersonateUser>> {
+    public impersonateUser (user: UserModel): void {
         this.ngStore.dispatch( new ImpersonateUser( user ) )
-
-        return this.actions$.pipe( ofActionCompleted( ImpersonateUser ) )
     }
 
-    public deleteUser (user: UserModel): Observable<ActionCompletion<DeleteUser>> {
+    public deleteUser (user: UserModel): void {
         this.ngStore.dispatch( new DeleteUser( user ) )
-
-        return this.actions$.pipe( ofActionCompleted( DeleteUser ) )
     }
 }

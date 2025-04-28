@@ -4,42 +4,42 @@ import { ToastMessageOptions } from 'primeng/api'
 import { Observable } from 'rxjs'
 import { TokenModel } from '../../util-authentication/model/token.model'
 import { CurrentUserModel } from '../../util-model/model/current-user.model'
-import { EventProfileModel } from '../../util-model/model/event-profile.model'
+import { ProjectProfileModel } from '../../util-model/model/project-profile.model'
 import { PageModel } from '../../util-model/model/page.model'
 import {
     AckNotification,
-    CreateSupportEventProfile,
-    DeleteUserEventProfile,
+    CreateSupportProjectProfile,
+    DeleteUserProjectProfile,
     FetchCurrentUser,
     FetchTokens,
-    FetchUserEventProfileInvitationsPage,
-    FetchUserEventProfilesPage,
+    FetchUserProjectProfileInvitationsPage,
+    FetchUserProjectProfilesPage,
     ImpersonateCurrentUser,
     Login,
     Logout,
-    ManageUserEventInvitationAcceptance,
+    ManageUserProjectInvitationAcceptance,
     Notify,
     RefreshTokens,
     RestoreTokens,
-    SelectUserEventProfile,
-    SelectUserEventProfileByEvent,
+    SelectUserProjectProfile,
+    SelectUserProjectProfileByProject,
     SetGlobalError,
     StartGlobalLoader,
-    StartUserEventProfileInvitationsPageLoader,
-    StartUserEventProfileLoader,
-    StartUserEventProfilesPageLoader,
+    StartUserProjectProfileInvitationsPageLoader,
+    StartUserProjectProfileLoader,
+    StartUserProjectProfilesPageLoader,
     StopGlobalLoader,
-    StopUserEventProfileInvitationsPageLoader,
-    StopUserEventProfileLoader,
-    StopUserEventProfilesPageLoader,
+    StopUserProjectProfileInvitationsPageLoader,
+    StopUserProjectProfileLoader,
+    StopUserProjectProfilesPageLoader,
     UpdateNetwork,
     UpdateScreenWidth,
     UpdateTheme,
-    UpdateUserEventProfileInvitationsPageSearchParams,
-    UpdateUserEventProfilesPageSearchParams,
+    UpdateUserProjectProfileInvitationsPageSearchParams,
+    UpdateUserProjectProfilesPageSearchParams,
 } from './registry.action'
 import { StateUtil } from '../../util-tool/state/state.util'
-import { EventModel } from '../../util-model/model/event.model'
+import { ProjectModel } from '../../util-model/model/project.model'
 import { AppConfig } from '../../../app.config'
 import { ErrorModel } from '../../util-model/model/error.model'
 import { SessionStorageUtils } from '../../util-tool/util/session-storage.util'
@@ -48,18 +48,19 @@ import { GenericFacade } from '../../util-tool/facade/generic.facade'
 import { RegistryState } from './registry.state'
 import { DateUtil } from '../../util-tool/util/date.util'
 import { StringUtil } from '../../util-tool/util/string.util'
+import { SeverityEnum } from '../../util-model/enumeration/severity.enum'
 
 @Injectable()
 export class RegistryFacade extends GenericFacade {
     private readonly onlineMessage: ToastMessageOptions = StateUtil.buildNotificationMessage(
-        'success',
+        SeverityEnum.SUCCESS,
         'global.notifications.ONLINE.title',
         'global.notifications.ONLINE.message',
         'pi pi-sort-alt',
     )
 
     private readonly offlineMessage: ToastMessageOptions = StateUtil.buildNotificationMessage(
-        'warn',
+        SeverityEnum.WARNING,
         'global.notifications.OFFLINE.title',
         'global.notifications.OFFLINE.message',
         'pi pi-sort-alt-slash',
@@ -101,67 +102,67 @@ export class RegistryFacade extends GenericFacade {
         return this.ngStore.selectSignal( RegistryState.currentUser )
     }
 
-    public get selectedEvent (): Signal<EventModel | undefined> {
-        return this.ngStore.selectSignal( RegistryState.currentUserSelectedEvent )
+    public get selectedProject (): Signal<ProjectModel | undefined> {
+        return this.ngStore.selectSignal( RegistryState.currentUserSelectedProject )
     }
 
-    public get userEventProfilesPage (): Signal<PageModel<EventProfileModel> | undefined> {
-        return this.ngStore.selectSignal( RegistryState.userEventProfilesPage )
+    public get userProjectProfilesPage (): Signal<PageModel<ProjectProfileModel> | undefined> {
+        return this.ngStore.selectSignal( RegistryState.userProjectProfilesPage )
     }
 
-    public get userEventProfilesPageLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( RegistryState.userEventProfilesPageLoading )
+    public get userProjectProfilesPageLoading (): Signal<boolean> {
+        return this.ngStore.selectSignal( RegistryState.userProjectProfilesPageLoading )
     }
 
-    public get userEventProfilesPageSilentLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( RegistryState.userEventProfilesPageSilentLoading )
+    public get userProjectProfilesPageSilentLoading (): Signal<boolean> {
+        return this.ngStore.selectSignal( RegistryState.userProjectProfilesPageSilentLoading )
     }
 
-    public get userEventProfilesPageError (): Signal<ToastMessageOptions | undefined> {
-        return this.ngStore.selectSignal( RegistryState.userEventProfilesPageError )
+    public get userProjectProfilesPageError (): Signal<ToastMessageOptions | undefined> {
+        return this.ngStore.selectSignal( RegistryState.userProjectProfilesPageError )
     }
 
-    public get userEventProfilesPageResetSearch (): Signal<boolean> {
-        return this.ngStore.selectSignal( RegistryState.userEventProfilesPageResetSearch )
+    public get userProjectProfilesPageResetSearch (): Signal<boolean> {
+        return this.ngStore.selectSignal( RegistryState.userProjectProfilesPageResetSearch )
     }
 
-    public get userEventProfilesPageTextSearchParam (): Signal<string | undefined> {
-        return this.ngStore.selectSignal( RegistryState.userEventProfilesPageTextSearchParam )
+    public get userProjectProfilesPageTextSearchParam (): Signal<string | undefined> {
+        return this.ngStore.selectSignal( RegistryState.userProjectProfilesPageTextSearchParam )
     }
 
-    public get userEventProfilesPageDateTimeSearchParam (): Signal<Date | undefined> {
+    public get userProjectProfilesPageDateTimeSearchParam (): Signal<Date | undefined> {
         return computed( (): Date | undefined =>
-            DateUtil.buildDate( this.ngStore.selectSignal( RegistryState.userEventProfilesPageDateTimeSearchParam )() ),
+            DateUtil.buildDate( this.ngStore.selectSignal( RegistryState.userProjectProfilesPageDateTimeSearchParam )() ),
         )
     }
 
-    public get userEventProfileInvitationsPage (): Signal<PageModel<EventProfileModel> | undefined> {
-        return this.ngStore.selectSignal( RegistryState.userEventProfileInvitationsPage )
+    public get userProjectProfileInvitationsPage (): Signal<PageModel<ProjectProfileModel> | undefined> {
+        return this.ngStore.selectSignal( RegistryState.userProjectProfileInvitationsPage )
     }
 
-    public get userEventProfileInvitationsPageLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( RegistryState.userEventProfileInvitationsPageLoading )
+    public get userProjectProfileInvitationsPageLoading (): Signal<boolean> {
+        return this.ngStore.selectSignal( RegistryState.userProjectProfileInvitationsPageLoading )
     }
 
-    public get userEventProfileInvitationsPageSilentLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( RegistryState.userEventProfileInvitationsPageSilentLoading )
+    public get userProjectProfileInvitationsPageSilentLoading (): Signal<boolean> {
+        return this.ngStore.selectSignal( RegistryState.userProjectProfileInvitationsPageSilentLoading )
     }
 
-    public get userEventProfileInvitationsPageError (): Signal<ToastMessageOptions | undefined> {
-        return this.ngStore.selectSignal( RegistryState.userEventProfileInvitationsPageError )
+    public get userProjectProfileInvitationsPageError (): Signal<ToastMessageOptions | undefined> {
+        return this.ngStore.selectSignal( RegistryState.userProjectProfileInvitationsPageError )
     }
 
-    public get userEventProfileInvitationsPageResetSearch (): Signal<boolean> {
-        return this.ngStore.selectSignal( RegistryState.userEventProfileInvitationsPageResetSearch )
+    public get userProjectProfileInvitationsPageResetSearch (): Signal<boolean> {
+        return this.ngStore.selectSignal( RegistryState.userProjectProfileInvitationsPageResetSearch )
     }
 
-    public get userEventProfileInvitationsPageTextSearchParam (): Signal<string | undefined> {
-        return this.ngStore.selectSignal( RegistryState.userEventProfileInvitationsPageTextSearchParam )
+    public get userProjectProfileInvitationsPageTextSearchParam (): Signal<string | undefined> {
+        return this.ngStore.selectSignal( RegistryState.userProjectProfileInvitationsPageTextSearchParam )
     }
 
-    public get userEventProfileInvitationsPageDateTimeSearchParam (): Signal<Date | undefined> {
+    public get userProjectProfileInvitationsPageDateTimeSearchParam (): Signal<Date | undefined> {
         return computed( (): Date | undefined =>
-            DateUtil.buildDate( this.ngStore.selectSignal( RegistryState.userEventProfileInvitationsPageDateTimeParam )() ),
+            DateUtil.buildDate( this.ngStore.selectSignal( RegistryState.userProjectProfileInvitationsPageDateTimeParam )() ),
         )
     }
 
@@ -241,104 +242,102 @@ export class RegistryFacade extends GenericFacade {
     }
 
     public startProfilesPageLoader (): void {
-        this.ngStore.dispatch( StartUserEventProfilesPageLoader )
+        this.ngStore.dispatch( StartUserProjectProfilesPageLoader )
     }
 
     public stopProfilesPageLoader (): void {
-        this.ngStore.dispatch( StopUserEventProfilesPageLoader )
+        this.ngStore.dispatch( StopUserProjectProfilesPageLoader )
     }
 
-    public fetchEventProfilePage (
+    public fetchProjectProfilePage (
         pageNumber: number | undefined,
         pageSize: number | undefined,
         force: boolean,
     ): void {
-        const index: number | undefined = this.userEventProfilesPageResetSearch() ? 0 : pageNumber
-        this.ngStore.dispatch( new FetchUserEventProfilesPage( index, pageSize, force ) )
+        const index: number | undefined = this.userProjectProfilesPageResetSearch() ? 0 : pageNumber
+        this.ngStore.dispatch( new FetchUserProjectProfilesPage( index, pageSize, force ) )
     }
 
     public inputPageSearchParameters (
         textSearched: string | undefined,
         dateTimeSearched: Date | undefined,
     ): void {
-        const resetSearch: boolean = this.userEventProfilesPageTextSearchParam() != textSearched
-                                     || this.userEventProfilesPageDateTimeSearchParam() != dateTimeSearched?.toISOString()
+        const resetSearch: boolean = this.userProjectProfilesPageTextSearchParam() != textSearched
+                                     || this.userProjectProfilesPageDateTimeSearchParam() != dateTimeSearched?.toISOString()
 
         if (resetSearch) {
-            this.ngStore.dispatch( new UpdateUserEventProfilesPageSearchParams(
+            this.ngStore.dispatch( new UpdateUserProjectProfilesPageSearchParams(
                 resetSearch, textSearched, dateTimeSearched?.toISOString(),
             ) )
         }
     }
 
     public startInvitationsPageLoader (): void {
-        this.ngStore.dispatch( StartUserEventProfileInvitationsPageLoader )
+        this.ngStore.dispatch( StartUserProjectProfileInvitationsPageLoader )
     }
 
     public stopInvitationsPageLoader (): void {
-        this.ngStore.dispatch( StopUserEventProfileInvitationsPageLoader )
+        this.ngStore.dispatch( StopUserProjectProfileInvitationsPageLoader )
     }
 
-    public fetchEventProfileInvitationPage (
+    public fetchProjectProfileInvitationPage (
         pageNumber: number | undefined,
         pageSize: number | undefined,
         force: boolean,
     ): void {
-        const index: number | undefined = this.userEventProfileInvitationsPageResetSearch() ? 0 : pageNumber
-        this.ngStore.dispatch( new FetchUserEventProfileInvitationsPage( index, pageSize, force ) )
+        const index: number | undefined = this.userProjectProfileInvitationsPageResetSearch() ? 0 : pageNumber
+        this.ngStore.dispatch( new FetchUserProjectProfileInvitationsPage( index, pageSize, force ) )
     }
 
     public inputInvitationsPageSearchParameters (
         textSearched: string | undefined,
         dateTimeSearched: Date | undefined,
     ): void {
-        const resetSearch: boolean = this.userEventProfileInvitationsPageTextSearchParam() != textSearched
-                                     || this.userEventProfileInvitationsPageDateTimeSearchParam() != dateTimeSearched?.toISOString()
+        const resetSearch: boolean = this.userProjectProfileInvitationsPageTextSearchParam() != textSearched
+                                     || this.userProjectProfileInvitationsPageDateTimeSearchParam() != dateTimeSearched?.toISOString()
 
         if (resetSearch) {
-            this.ngStore.dispatch( new UpdateUserEventProfileInvitationsPageSearchParams(
+            this.ngStore.dispatch( new UpdateUserProjectProfileInvitationsPageSearchParams(
                 resetSearch, textSearched, dateTimeSearched?.toISOString(),
             ) )
         }
     }
 
     public startProfileLoader (): void {
-        this.ngStore.dispatch( StartUserEventProfileLoader )
+        this.ngStore.dispatch( StartUserProjectProfileLoader )
     }
 
     public stopProfileLoader (): void {
-        this.ngStore.dispatch( StopUserEventProfileLoader )
+        this.ngStore.dispatch( StopUserProjectProfileLoader )
     }
 
     public updateTheme (theme: 'light' | 'dark'): void {
         this.ngStore.dispatch( new UpdateTheme( theme ) )
     }
 
-    public manageEventInvitationAcceptance (id: string, accepted: boolean): void {
-        this.ngStore.dispatch( new ManageUserEventInvitationAcceptance( id, accepted ) )
+    public manageProjectInvitationAcceptance (id: string, accepted: boolean): void {
+        this.ngStore.dispatch( new ManageUserProjectInvitationAcceptance( id, accepted ) )
     }
 
-    public selectUserEventProfile (profile: EventProfileModel): Observable<ActionCompletion<SelectUserEventProfile>> {
-        this.ngStore.dispatch( new SelectUserEventProfile( profile ) )
+    public selectUserProjectProfile (profile: ProjectProfileModel): Observable<ActionCompletion<SelectUserProjectProfile>> {
+        this.ngStore.dispatch( new SelectUserProjectProfile( profile ) )
 
-        return this.actions$.pipe( ofActionCompleted( SelectUserEventProfile ) )
+        return this.actions$.pipe( ofActionCompleted( SelectUserProjectProfile ) )
     }
 
-    public selectUserEventProfileByEvent (event: EventModel): Observable<ActionCompletion<SelectUserEventProfileByEvent>> {
-        this.ngStore.dispatch( new SelectUserEventProfileByEvent( event ) )
+    public selectUserProjectProfileByProject (project: ProjectModel): Observable<ActionCompletion<SelectUserProjectProfileByProject>> {
+        this.ngStore.dispatch( new SelectUserProjectProfileByProject( project ) )
 
-        return this.actions$.pipe( ofActionCompleted( SelectUserEventProfileByEvent ) )
+        return this.actions$.pipe( ofActionCompleted( SelectUserProjectProfileByProject ) )
     }
 
-    public deleteUserEventProfile (profile: EventProfileModel): Observable<ActionCompletion<DeleteUserEventProfile>> {
-        this.ngStore.dispatch( new DeleteUserEventProfile( profile ) )
+    public deleteUserProjectProfile (profile: ProjectProfileModel): Observable<ActionCompletion<DeleteUserProjectProfile>> {
+        this.ngStore.dispatch( new DeleteUserProjectProfile( profile ) )
 
-        return this.actions$.pipe( ofActionCompleted( DeleteUserEventProfile ) )
+        return this.actions$.pipe( ofActionCompleted( DeleteUserProjectProfile ) )
     }
 
-    public createSupportEventProfile (eventId: string): Observable<ActionCompletion<CreateSupportEventProfile>> {
-        this.ngStore.dispatch( new CreateSupportEventProfile( eventId ) )
-
-        return this.actions$.pipe( ofActionCompleted( CreateSupportEventProfile ) )
+    public createSupportProjectProfile (projectId: string): void {
+        this.ngStore.dispatch( new CreateSupportProjectProfile( projectId ) )
     }
 }

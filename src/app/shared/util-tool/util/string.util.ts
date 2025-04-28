@@ -39,20 +39,19 @@ export class StringUtil {
     public static isRouteActive (route: AppRouteEnum): boolean {
         const castedRoute: string = StringUtil.sanitizeRoute( route )
         const currentUri: string = StringUtil.sanitizeRoute( location.pathname )
-        const isEventRoute: boolean = [
-            AppRouteEnum.EVENTS.toString(),
-            AppRouteEnum.EVENTS_CREATION.toString(),
-            AppRouteEnum.EVENTS_EDITION.toString(),
+        const isProjectRoute: boolean = [
+            AppRouteEnum.PROJECTS.toString(),
+            AppRouteEnum.PROJECTS_CREATION.toString(),
+            AppRouteEnum.PROJECTS_EDITION.toString(),
         ].includes( castedRoute )
 
         switch (true) {
-            case currentUri.includes( AppRouteEnum.PREFERENCES ) && route == AppRouteEnum.USERS:
-            case currentUri.includes( AppRouteEnum.PROFILES ) && isEventRoute:
-            case currentUri.includes( AppRouteEnum.PARTICIPANTS ) && isEventRoute:
-            case currentUri.includes( AppRouteEnum.VEHICLES ) && isEventRoute:
-            case currentUri.includes( AppRouteEnum.ACTIVITIES ) && isEventRoute:
-            case currentUri.includes( AppRouteEnum.GROUPS ) && isEventRoute:
-            case currentUri.includes( AppRouteEnum.MOVEMENTS ) && isEventRoute:
+            case currentUri.includes( AppRouteEnum.PROJECTS_CONFIGURATION_PROFILES ) && isProjectRoute:
+            case currentUri.includes( AppRouteEnum.PROJECTS_CONFIGURATION_PARTICIPANTS ) && isProjectRoute:
+            case currentUri.includes( AppRouteEnum.PROJECTS_CONFIGURATION_VEHICLES ) && isProjectRoute:
+            case currentUri.includes( AppRouteEnum.PROJECTS_CONFIGURATION_ACTIVITIES ) && isProjectRoute:
+            case currentUri.includes( AppRouteEnum.PROJECTS_CONFIGURATION_GROUPS ) && isProjectRoute:
+            case currentUri.includes( AppRouteEnum.PROJECTS_MOVEMENTS ) && isProjectRoute:
                 return false
             default:
                 return currentUri.includes( route )
@@ -61,8 +60,15 @@ export class StringUtil {
 
     private static sanitizeRoute (route: string): string {
         return route.replace(
-            /events\/[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}/,
-            'events/:eventId',
+            /projects\/[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}/,
+            'projects/:projectId',
         )
+    }
+
+    public static toTitleCase (str: string | undefined): string {
+        if (this.isBlank( str )) return ''
+        return str!.toLowerCase().split( ' ' ).map( (word: string): string => {
+            return (word.charAt( 0 ).toUpperCase() + word.slice( 1 ))
+        } ).join( ' ' )
     }
 }

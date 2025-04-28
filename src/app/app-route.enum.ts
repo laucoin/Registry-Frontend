@@ -1,44 +1,48 @@
-import { EventRoutesEnum } from './domains/event/event-routes.enum'
-import { EventProfileRoutesEnum } from './domains/event-profile/event-profile-routes.enum'
-import { PreferencesRoutesEnum } from './domains/preferences/preferences-routes.enum'
-import { ParticipantRoutesEnum } from './domains/participant/participant-routes.enum'
-import { MovementRoutesEnum } from './domains/movement/movement-routes.enum'
-import { GroupRoutesEnum } from './domains/group/group-routes.enum'
+import { ProjectRoutesEnum } from './domains/project/project-routes.enum'
+import { ProjectProfileRoutesEnum } from './domains/project/configuration/project-profile/project-profile-routes.enum'
+import { ParticipantRoutesEnum } from './domains/project/configuration/participant/participant-routes.enum'
+import { MovementRoutesEnum } from './domains/project/movement/movement-routes.enum'
+import { GroupRoutesEnum } from './domains/project/configuration/group/group-routes.enum'
 import { UserRoutesEnum } from './domains/user/user-routes.enum'
-import { VehicleRoutesEnum } from './domains/vehicle/vehicle-routes.enum'
-import { ActivityRoutesEnum } from './domains/activity/activity-routes.enum'
+import { VehicleRoutesEnum } from './domains/project/configuration/vehicle/vehicle-routes.enum'
+import { ActivityRoutesEnum } from './domains/project/configuration/activity/activity-routes.enum'
+import { ConfigurationRoutesEnum } from './domains/project/configuration/configuration-routes.enum'
 
 export enum AppRouteEnum {
-    HOME = 'home',
     AUTH_CALLBACK = 'auth/callback',
+
     USERS = 'users',
     USERS_EDITION = `${USERS}/${UserRoutesEnum.EDIT}`,
-    PREFERENCES = `${USERS}/preferences`,
-    PREFERENCES_PROFILES = `${PREFERENCES}/${PreferencesRoutesEnum.PROFILES}`,
-    PREFERENCES_INVITATIONS = `${PREFERENCES}/${PreferencesRoutesEnum.INVITATIONS}`,
-    EVENTS = 'events',
-    EVENTS_CREATION = `${EVENTS}/${EventRoutesEnum.CREATE}`,
-    EVENTS_EDITION = `${EVENTS}/${EventRoutesEnum.EDIT}`,
-    PROFILES = `profiles`,
-    PROFILES_INVITATION = `${PROFILES}/${EventProfileRoutesEnum.INVITE}`,
-    PROFILES_EDITION = `${PROFILES}/${EventProfileRoutesEnum.EDIT}`,
-    PARTICIPANTS = `participants`,
-    PARTICIPANTS_CREATION = `${PARTICIPANTS}/${ParticipantRoutesEnum.CREATE}`,
-    PARTICIPANTS_EDITION = `${PARTICIPANTS}/${ParticipantRoutesEnum.EDIT}`,
-    PARTICIPANTS_MOVEMENTS = `${PARTICIPANTS}/${ParticipantRoutesEnum.MOVEMENTS}`,
-    MOVEMENTS = `movements`,
-    MOVEMENTS_CREATION = `${MOVEMENTS}/${MovementRoutesEnum.CREATE}`,
-    MOVEMENTS_EDITION = `${MOVEMENTS}/${MovementRoutesEnum.EDIT}`,
-    GROUPS = `groups`,
-    GROUPS_CREATION = `${GROUPS}/${GroupRoutesEnum.CREATE}`,
-    GROUPS_EDITION = `${GROUPS}/${GroupRoutesEnum.EDIT}`,
-    GROUP_MEMBERS = `${GROUPS}/${GroupRoutesEnum.MEMBERS}`,
-    VEHICLES = `vehicles`,
-    VEHICLES_CREATION = `${VEHICLES}/${VehicleRoutesEnum.CREATE}`,
-    VEHICLES_EDITION = `${VEHICLES}/${VehicleRoutesEnum.EDIT}`,
-    VEHICLES_MOVEMENTS = `${VEHICLES}/${VehicleRoutesEnum.MOVEMENTS}`,
-    ACTIVITIES = `activities`,
-    ACTIVITIES_CREATION = `${ACTIVITIES}/${ActivityRoutesEnum.CREATE}`,
-    ACTIVITIES_EDITION = `${ACTIVITIES}/${ActivityRoutesEnum.EDIT}`,
-    ACTIVITIES_MOVEMENTS = `${ACTIVITIES}/${ActivityRoutesEnum.MOVEMENTS}`,
+    USERS_INVITATION = `${USERS}/${UserRoutesEnum.INVITATIONS}`,
+    USERS_SETTING = `${USERS}/${UserRoutesEnum.SETTINGS}`,
+
+    PROJECTS = 'projects',
+    PROJECTS_CREATION = `${PROJECTS}/${ProjectRoutesEnum.CREATE}`,
+    PROJECTS_EDITION = `${PROJECTS}/${ProjectRoutesEnum.EDIT}`,
+
+    PROJECTS_SELECTED = `${PROJECTS}/${ProjectRoutesEnum.SELECTED}`,
+
+    PROJECTS_MOVEMENTS = `${PROJECTS}/${ProjectRoutesEnum.MOVEMENTS}`,
+    PROJECTS_MOVEMENTS_EDITION = `${PROJECTS}/${ProjectRoutesEnum.MOVEMENTS}/${MovementRoutesEnum.EDIT}`,
+
+    PROJECTS_CONFIGURATION = `${PROJECTS}/${ProjectRoutesEnum.CONFIGURATION}`,
+
+    PROJECTS_CONFIGURATION_PROFILES = `${PROJECTS_CONFIGURATION}/${ConfigurationRoutesEnum.PROFILES}`,
+    PROJECTS_CONFIGURATION_PROFILES_EDITION = `${PROJECTS_CONFIGURATION}/${ConfigurationRoutesEnum.PROFILES}/${ProjectProfileRoutesEnum.EDIT}`,
+
+    PROJECTS_CONFIGURATION_PARTICIPANTS = `${PROJECTS_CONFIGURATION}/${ConfigurationRoutesEnum.PARTICIPANTS}`,
+    PROJECTS_CONFIGURATION_PARTICIPANTS_EDITION = `${PROJECTS_CONFIGURATION}/${ConfigurationRoutesEnum.PARTICIPANTS}/${ParticipantRoutesEnum.EDIT}`,
+    PROJECTS_CONFIGURATION_PARTICIPANTS_MOVEMENTS = `${PROJECTS_CONFIGURATION}/${ConfigurationRoutesEnum.PARTICIPANTS}/${ParticipantRoutesEnum.MOVEMENTS}`,
+
+    PROJECTS_CONFIGURATION_GROUPS = `${PROJECTS_CONFIGURATION}/${ConfigurationRoutesEnum.GROUPS}`,
+    PROJECTS_CONFIGURATION_GROUPS_EDITION = `${PROJECTS_CONFIGURATION}/${ConfigurationRoutesEnum.GROUPS}/${GroupRoutesEnum.EDIT}`,
+    PROJECTS_CONFIGURATION_GROUPS_MEMBERS = `${PROJECTS_CONFIGURATION}/${ConfigurationRoutesEnum.GROUPS}/${GroupRoutesEnum.MEMBERS}`,
+
+    PROJECTS_CONFIGURATION_VEHICLES = `${PROJECTS_CONFIGURATION}/${ConfigurationRoutesEnum.VEHICLES}`,
+    PROJECTS_CONFIGURATION_VEHICLES_EDITION = `${PROJECTS_CONFIGURATION}/${ConfigurationRoutesEnum.VEHICLES}/${VehicleRoutesEnum.EDIT}`,
+    PROJECTS_CONFIGURATION_VEHICLES_MOVEMENTS = `${PROJECTS_CONFIGURATION}/${ConfigurationRoutesEnum.VEHICLES}/${VehicleRoutesEnum.MOVEMENTS}`,
+
+    PROJECTS_CONFIGURATION_ACTIVITIES = `${PROJECTS_CONFIGURATION}/${ConfigurationRoutesEnum.ACTIVITIES}`,
+    PROJECTS_CONFIGURATION_ACTIVITIES_EDITION = `${PROJECTS_CONFIGURATION}/${ConfigurationRoutesEnum.ACTIVITIES}/${ActivityRoutesEnum.EDIT}`,
+    PROJECTS_CONFIGURATION_ACTIVITIES_MOVEMENTS = `${PROJECTS_CONFIGURATION}/${ConfigurationRoutesEnum.ACTIVITIES}/${ActivityRoutesEnum.MOVEMENTS}`,
 }

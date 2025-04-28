@@ -4,7 +4,7 @@ import { TranslateService } from '@ngx-translate/core'
 import { ActivatedRoute, Router } from '@angular/router'
 import { FormBuilder } from '@angular/forms'
 import { UserAuthorityEnum } from '../../util-model/enumeration/user-authority.enum'
-import { EventAuthorityEnum } from '../../util-model/enumeration/event-authority.enum'
+import { ProjectAuthorityEnum } from '../../util-model/enumeration/project-authority.enum'
 import { CurrentUserUtil } from '../../util-authentication/tool/current-user.util'
 import { GenericUtil } from '../util/generic.util'
 import { StringUtil } from '../util/string.util'
@@ -19,7 +19,7 @@ export abstract class GenericComponent {
 
     protected readonly CurrentUserUtil: typeof CurrentUserUtil = CurrentUserUtil
     protected readonly UserAuthority: typeof UserAuthorityEnum = UserAuthorityEnum
-    protected readonly EventAuthority: typeof EventAuthorityEnum = EventAuthorityEnum
+    protected readonly ProjectAuthority: typeof ProjectAuthorityEnum = ProjectAuthorityEnum
 
     protected readonly formBuilder: FormBuilder = inject( FormBuilder )
     protected readonly registryFacade: RegistryFacade = inject( RegistryFacade )

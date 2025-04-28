@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core'
-import { Action, Selector, State, StateContext } from '@ngxs/store'
+import { Action, NgxsOnInit, Selector, State, StateContext } from '@ngxs/store'
 import { catchError, finalize, map, mergeMap, Observable, of } from 'rxjs'
 import { SecurityService } from '../../util-authentication/service/security.service'
 import { CurrentUserModel } from '../../util-model/model/current-user.model'
-import { EventProfileModel } from '../../util-model/model/event-profile.model'
+import { ProjectProfileModel } from '../../util-model/model/project-profile.model'
 import { PageModel } from '../../util-model/model/page.model'
 import { GenericState } from '../../util-tool/state/generic.state'
 import { REDIRECT_URI, TOKEN } from '../../util-tool/util/request.util'
@@ -12,40 +12,39 @@ import { SessionStorageUtils } from '../../util-tool/util/session-storage.util'
 import { RegistryStateModel } from '../model/registry-state.model'
 import {
     AckNotification,
-    CreateSupportEventProfile,
-    DeleteUserEventProfile,
+    CreateSupportProjectProfile,
+    DeleteUserProjectProfile,
     FetchCurrentUser,
     FetchTokens,
-    FetchUserEventProfileInvitationsPage,
-    FetchUserEventProfilesPage,
+    FetchUserProjectProfileInvitationsPage,
+    FetchUserProjectProfilesPage,
     ImpersonateCurrentUser,
     Login,
     Logout,
-    ManageUserEventInvitationAcceptance,
+    ManageUserProjectInvitationAcceptance,
     Notify,
     RefreshTokens,
     RestoreTokens,
-    SelectUserEventProfile,
-    SelectUserEventProfileByEvent,
+    SelectUserProjectProfile,
+    SelectUserProjectProfileByProject,
     SetGlobalError,
     StartGlobalLoader,
-    StartUserEventProfileInvitationsPageLoader,
-    StartUserEventProfileLoader,
-    StartUserEventProfilesPageLoader,
+    StartUserProjectProfileInvitationsPageLoader,
+    StartUserProjectProfileLoader,
+    StartUserProjectProfilesPageLoader,
     StopGlobalLoader,
-    StopUserEventProfileInvitationsPageLoader,
-    StopUserEventProfileLoader,
-    StopUserEventProfilesPageLoader,
+    StopUserProjectProfileInvitationsPageLoader,
+    StopUserProjectProfileLoader,
+    StopUserProjectProfilesPageLoader,
     UpdateNetwork,
     UpdateScreenWidth,
     UpdateTheme,
-    UpdateUserEventProfileInvitationsPageSearchParams,
-    UpdateUserEventProfilesPageSearchParams,
+    UpdateUserProjectProfileInvitationsPageSearchParams,
+    UpdateUserProjectProfilesPageSearchParams,
 } from './registry.action'
-import { UserEventProfileService } from './user-event-profile.service'
+import { UserProjectProfileService } from './user-project-profile.service'
 import { PreferencesService } from './preferences.service'
-import { EventService } from '../../../domains/event/data/state/event.service'
-import { EventModel } from '../../util-model/model/event.model'
+import { ProjectModel } from '../../util-model/model/project.model'
 import { TokenModel } from '../../util-authentication/model/token.model'
 import { AppRouteEnum } from '../../../app-route.enum'
 import { AuthenticationUriModel } from '../../util-model/model/authentication-uri.model'
@@ -54,6 +53,8 @@ import { ErrorModel } from '../../util-model/model/error.model'
 import { UserService } from '../../../domains/user/data/state/user.service'
 import { ToastMessageOptions } from 'primeng/api'
 import { CustomDateFormatPipe } from '../../util-tool/pipe/custom-date-format.pipe'
+import { ProfileStatusEnum } from '../../util-model/enumeration/profile-status.enum'
+import { SeverityEnum } from '../../util-model/enumeration/severity.enum'
 
 const defaultRegistryState: RegistryStateModel = {
     authentication: {
@@ -64,7 +65,7 @@ const defaultRegistryState: RegistryStateModel = {
         params: {
             resetSearch: false,
             availabilitySearched: undefined,
-            statusSearched: 'ACCEPTED',
+            statusSearched: ProfileStatusEnum.ACCEPTED,
             textSearched: undefined,
             dateTimeSearched: undefined,
         },
@@ -77,7 +78,7 @@ const defaultRegistryState: RegistryStateModel = {
         params: {
             resetSearch: false,
             availabilitySearched: undefined,
-            statusSearched: 'INVITED',
+            statusSearched: ProfileStatusEnum.INVITED,
             textSearched: undefined,
             dateTimeSearched: undefined,
         },
@@ -105,19 +106,23 @@ const defaultRegistryState: RegistryStateModel = {
     defaults: defaultRegistryState,
 } )
 @Injectable()
-export class RegistryState extends GenericState {
+export class RegistryState extends GenericState implements NgxsOnInit {
     private readonly darkModeClass: string = 'dark-mod'
     private readonly htmlElement: HTMLHtmlElement = document.querySelector( 'html' ) as HTMLHtmlElement
 
     public constructor (
         private readonly service: SecurityService,
-        private readonly eventService: EventService,
-        private readonly userEventProfileService: UserEventProfileService,
+        private readonly userProjectProfileService: UserProjectProfileService,
         private readonly preferencesService: PreferencesService,
         private readonly userService: UserService,
         private readonly router: Router,
         private readonly datePipe: CustomDateFormatPipe,
     ) { super() }
+
+    public ngxsOnInit (): void {
+        this.registryFacade.restoreTokensFromSessionStorage()
+        this.registryFacade.fetchCurrentUser()
+    }
 
     @Selector()
     public static globalLoading (state: RegistryStateModel): boolean {
@@ -160,82 +165,82 @@ export class RegistryState extends GenericState {
     }
 
     @Selector()
-    public static currentUserSelectedEvent (state: RegistryStateModel): EventModel | undefined {
-        return state.authentication.currentUser?.preferences?.selectedProfile?.event
+    public static currentUserSelectedProject (state: RegistryStateModel): ProjectModel | undefined {
+        return state.authentication.currentUser?.preferences?.selectedProfile?.project
     }
 
     @Selector()
-    public static currentUserSelectedEventId (state: RegistryStateModel): string | undefined {
-        return state.authentication.currentUser?.preferences?.selectedProfile?.event?.id
+    public static currentUserSelectedProjectId (state: RegistryStateModel): string | undefined {
+        return state.authentication.currentUser?.preferences?.selectedProfile?.project?.id
     }
 
     @Selector()
-    public static userEventProfilesPage (state: RegistryStateModel): PageModel<EventProfileModel> | undefined {
+    public static userProjectProfilesPage (state: RegistryStateModel): PageModel<ProjectProfileModel> | undefined {
         return state.profiles.element
     }
 
     @Selector()
-    public static userEventProfilesPageLoading (state: RegistryStateModel): boolean {
+    public static userProjectProfilesPageLoading (state: RegistryStateModel): boolean {
         return state.profiles.loading
     }
 
     @Selector()
-    public static userEventProfilesPageError (state: RegistryStateModel): ToastMessageOptions | undefined {
+    public static userProjectProfilesPageError (state: RegistryStateModel): ToastMessageOptions | undefined {
         return state.profiles.error
     }
 
     @Selector()
-    public static userEventProfilesPageSilentLoading (state: RegistryStateModel): boolean {
+    public static userProjectProfilesPageSilentLoading (state: RegistryStateModel): boolean {
         return state.profiles.silentLoading
     }
 
     @Selector()
-    public static userEventProfilesPageResetSearch (state: RegistryStateModel): boolean {
+    public static userProjectProfilesPageResetSearch (state: RegistryStateModel): boolean {
         return state.profiles.params.resetSearch
     }
 
     @Selector()
-    public static userEventProfilesPageTextSearchParam (state: RegistryStateModel): string | undefined {
+    public static userProjectProfilesPageTextSearchParam (state: RegistryStateModel): string | undefined {
         return state.profiles.params.textSearched
     }
 
     @Selector()
-    public static userEventProfilesPageDateTimeSearchParam (state: RegistryStateModel): string | undefined {
+    public static userProjectProfilesPageDateTimeSearchParam (state: RegistryStateModel): string | undefined {
         return state.profiles.params.dateTimeSearched
     }
 
     @Selector()
-    public static userEventProfileInvitationsPage (state: RegistryStateModel): PageModel<EventProfileModel> | undefined {
+    public static userProjectProfileInvitationsPage (state: RegistryStateModel): PageModel<ProjectProfileModel> | undefined {
         return state.invitations.element
     }
 
     @Selector()
-    public static userEventProfileInvitationsPageLoading (state: RegistryStateModel): boolean {
+    public static userProjectProfileInvitationsPageLoading (state: RegistryStateModel): boolean {
         return state.invitations.loading
     }
 
     @Selector()
-    public static userEventProfileInvitationsPageError (state: RegistryStateModel): ToastMessageOptions | undefined {
+    public static userProjectProfileInvitationsPageError (state: RegistryStateModel): ToastMessageOptions | undefined {
         return state.invitations.error
     }
 
     @Selector()
-    public static userEventProfileInvitationsPageSilentLoading (state: RegistryStateModel): boolean {
+    public static userProjectProfileInvitationsPageSilentLoading (state: RegistryStateModel): boolean {
         return state.invitations.silentLoading
     }
 
     @Selector()
-    public static userEventProfileInvitationsPageResetSearch (state: RegistryStateModel): boolean {
+    public static userProjectProfileInvitationsPageResetSearch (state: RegistryStateModel): boolean {
         return state.invitations.params.resetSearch
     }
 
     @Selector()
-    public static userEventProfileInvitationsPageTextSearchParam (state: RegistryStateModel): string | undefined {
+    public static userProjectProfileInvitationsPageTextSearchParam (state: RegistryStateModel): string | undefined {
         return state.invitations.params.textSearched
     }
 
     @Selector()
-    public static userEventProfileInvitationsPageDateTimeParam (state: RegistryStateModel): string | undefined {
+    public static userProjectProfileInvitationsPageDateTimeParam (state: RegistryStateModel): string | undefined {
         return state.invitations.params.dateTimeSearched
     }
 
@@ -357,7 +362,7 @@ export class RegistryState extends GenericState {
             map( (): void => {
                 const redirectUri: string = SessionStorageUtils.check( REDIRECT_URI ) ?
                                             SessionStorageUtils.get( REDIRECT_URI ) as string
-                                                                                      : AppRouteEnum.HOME
+                                                                                      : AppRouteEnum.PROJECTS
                 this.router.navigateByUrl( redirectUri ).then( (): void => SessionStorageUtils.delete( REDIRECT_URI ) )
             } ),
             catchError( (error: ErrorModel): Observable<void> => this.globalError( ctx, error ) ),
@@ -369,6 +374,8 @@ export class RegistryState extends GenericState {
         if (!ctx.getState().authentication.token) return of()
         return this.service.refreshToken( ctx.getState().authentication.token! ).pipe(
             map( (token: TokenModel): void => this.fetchTokensComplete( ctx, token ) ),
+            mergeMap( (): Observable<CurrentUserModel> => this.service.fetchCurrentUser() ),
+            map( (currentUser: CurrentUserModel): void => this.fetchCurrentUserComplete( ctx, currentUser ) ),
             catchError( (error: ErrorModel): Observable<void> => {
                 if (error.status === 401) {
                     this.registryFacade.login()
@@ -416,17 +423,17 @@ export class RegistryState extends GenericState {
         )
     }
 
-    @Action( StartUserEventProfilesPageLoader )
-    public startUserEventProfilesPageLoader (ctx: StateContext<RegistryStateModel>): void {
-        this.updateUserEventProfilesLoader( ctx, true )
+    @Action( StartUserProjectProfilesPageLoader )
+    public startUserProjectProfilesPageLoader (ctx: StateContext<RegistryStateModel>): void {
+        this.updateUserProjectProfilesLoader( ctx, true )
     }
 
-    @Action( StopUserEventProfilesPageLoader )
-    public stopUserEventProfilesPageLoader (ctx: StateContext<RegistryStateModel>): void {
-        this.updateUserEventProfilesLoader( ctx, false )
+    @Action( StopUserProjectProfilesPageLoader )
+    public stopUserProjectProfilesPageLoader (ctx: StateContext<RegistryStateModel>): void {
+        this.updateUserProjectProfilesLoader( ctx, false )
     }
 
-    private updateUserEventProfilesLoader (ctx: StateContext<RegistryStateModel>, loading: boolean): void {
+    private updateUserProjectProfilesLoader (ctx: StateContext<RegistryStateModel>, loading: boolean): void {
         ctx.patchState( {
             profiles: {
                 ...ctx.getState().profiles, loading: loading,
@@ -434,32 +441,32 @@ export class RegistryState extends GenericState {
         } )
     }
 
-    @Action( FetchUserEventProfilesPage )
-    public fetchUserEventProfilesPage (
+    @Action( FetchUserProjectProfilesPage )
+    public fetchUserProjectProfilesPage (
         ctx: StateContext<RegistryStateModel>,
-        payload: FetchUserEventProfilesPage,
+        payload: FetchUserProjectProfilesPage,
     ): Observable<void> {
-        return this.userEventProfileService.findUserEventProfiles(
+        return this.userProjectProfileService.findUserProjectProfiles(
             payload.pageNumber,
             payload.pageSize,
             ctx.getState().profiles.params,
         ).pipe(
             initialize( (): void => this.registryFacade.startProfilesPageLoader() ),
             finalize( (): void => this.registryFacade.stopProfilesPageLoader() ),
-            map( (profilePage: PageModel<EventProfileModel>): void => this.fetchUserEventProfilesPageComplete(
+            map( (profilePage: PageModel<ProjectProfileModel>): void => this.fetchUserProjectProfilesPageComplete(
                 ctx,
                 profilePage,
             ) ),
-            catchError( (error: ErrorModel): Observable<void> => this.fetchUserEventProfilesPageError(
+            catchError( (error: ErrorModel): Observable<void> => this.fetchUserProjectProfilesPageError(
                 ctx,
                 error,
             ) ),
         )
     }
 
-    private fetchUserEventProfilesPageComplete (
+    private fetchUserProjectProfilesPageComplete (
         ctx: StateContext<RegistryStateModel>,
-        profilePage: PageModel<EventProfileModel>,
+        profilePage: PageModel<ProjectProfileModel>,
     ): void {
         ctx.patchState( {
             profiles: {
@@ -473,7 +480,7 @@ export class RegistryState extends GenericState {
         } )
     }
 
-    private fetchUserEventProfilesPageError (
+    private fetchUserProjectProfilesPageError (
         ctx: StateContext<RegistryStateModel>,
         error: ErrorModel,
     ): Observable<void> {
@@ -488,10 +495,10 @@ export class RegistryState extends GenericState {
         return of()
     }
 
-    @Action( UpdateUserEventProfilesPageSearchParams )
-    public updateUserEventProfilesPageSearchParams (
+    @Action( UpdateUserProjectProfilesPageSearchParams )
+    public updateUserProjectProfilesPageSearchParams (
         ctx: StateContext<RegistryStateModel>,
-        payload: UpdateUserEventProfilesPageSearchParams,
+        payload: UpdateUserProjectProfilesPageSearchParams,
     ): void {
         ctx.patchState( {
             profiles: {
@@ -506,17 +513,17 @@ export class RegistryState extends GenericState {
         } )
     }
 
-    @Action( StartUserEventProfileInvitationsPageLoader )
-    public startUserEventProfileInvitationsPageLoader (ctx: StateContext<RegistryStateModel>): void {
-        this.updateUserEventProfileInvitationsLoader( ctx, true )
+    @Action( StartUserProjectProfileInvitationsPageLoader )
+    public startUserProjectProfileInvitationsPageLoader (ctx: StateContext<RegistryStateModel>): void {
+        this.updateUserProjectProfileInvitationsLoader( ctx, true )
     }
 
-    @Action( StopUserEventProfileInvitationsPageLoader )
-    public stopUserEventProfileInvitationsPageLoader (ctx: StateContext<RegistryStateModel>): void {
-        this.updateUserEventProfileInvitationsLoader( ctx, false )
+    @Action( StopUserProjectProfileInvitationsPageLoader )
+    public stopUserProjectProfileInvitationsPageLoader (ctx: StateContext<RegistryStateModel>): void {
+        this.updateUserProjectProfileInvitationsLoader( ctx, false )
     }
 
-    private updateUserEventProfileInvitationsLoader (ctx: StateContext<RegistryStateModel>, loading: boolean): void {
+    private updateUserProjectProfileInvitationsLoader (ctx: StateContext<RegistryStateModel>, loading: boolean): void {
         ctx.patchState( {
             invitations: {
                 ...ctx.getState().invitations,
@@ -525,32 +532,32 @@ export class RegistryState extends GenericState {
         } )
     }
 
-    @Action( FetchUserEventProfileInvitationsPage )
-    public fetchUserEventProfileInvitationsPage (
+    @Action( FetchUserProjectProfileInvitationsPage )
+    public fetchUserProjectProfileInvitationsPage (
         ctx: StateContext<RegistryStateModel>,
-        payload: FetchUserEventProfileInvitationsPage,
+        payload: FetchUserProjectProfileInvitationsPage,
     ): Observable<void> {
-        return this.userEventProfileService.findUserEventProfiles(
+        return this.userProjectProfileService.findUserProjectProfiles(
             payload.pageNumber,
             payload.pageSize,
             ctx.getState().invitations.params,
         ).pipe(
             initialize( (): void => this.registryFacade.startInvitationsPageLoader() ),
             finalize( (): void => this.registryFacade.stopInvitationsPageLoader() ),
-            map( (invitationPage: PageModel<EventProfileModel>): void => this.fetchUserEventProfileInvitationsPageComplete(
+            map( (invitationPage: PageModel<ProjectProfileModel>): void => this.fetchUserProjectProfileInvitationsPageComplete(
                 ctx,
                 invitationPage,
             ) ),
-            catchError( (error: ErrorModel): Observable<void> => this.fetchUserEventProfileInvitationsPageError(
+            catchError( (error: ErrorModel): Observable<void> => this.fetchUserProjectProfileInvitationsPageError(
                 ctx,
                 error,
             ) ),
         )
     }
 
-    private fetchUserEventProfileInvitationsPageComplete (
+    private fetchUserProjectProfileInvitationsPageComplete (
         ctx: StateContext<RegistryStateModel>,
-        invitationPage: PageModel<EventProfileModel>,
+        invitationPage: PageModel<ProjectProfileModel>,
     ): void {
         ctx.patchState( {
             invitations: {
@@ -564,7 +571,7 @@ export class RegistryState extends GenericState {
         } )
     }
 
-    private fetchUserEventProfileInvitationsPageError (
+    private fetchUserProjectProfileInvitationsPageError (
         ctx: StateContext<RegistryStateModel>,
         error: ErrorModel,
     ): Observable<void> {
@@ -579,10 +586,10 @@ export class RegistryState extends GenericState {
         return of()
     }
 
-    @Action( UpdateUserEventProfileInvitationsPageSearchParams )
-    public updateUserEventProfileInvitationsPageSearchParams (
+    @Action( UpdateUserProjectProfileInvitationsPageSearchParams )
+    public updateUserProjectProfileInvitationsPageSearchParams (
         ctx: StateContext<RegistryStateModel>,
-        payload: UpdateUserEventProfileInvitationsPageSearchParams,
+        payload: UpdateUserProjectProfileInvitationsPageSearchParams,
     ): void {
         ctx.patchState( {
             invitations: {
@@ -597,17 +604,17 @@ export class RegistryState extends GenericState {
         } )
     }
 
-    @Action( StartUserEventProfileLoader )
-    public startUserEventProfileLoader (ctx: StateContext<RegistryStateModel>): void {
-        this.updateUserEventProfileLoader( ctx, true )
+    @Action( StartUserProjectProfileLoader )
+    public startUserProjectProfileLoader (ctx: StateContext<RegistryStateModel>): void {
+        this.updateUserProjectProfileLoader( ctx, true )
     }
 
-    @Action( StopUserEventProfileLoader )
-    public stopUserEventProfileLoader (ctx: StateContext<RegistryStateModel>): void {
-        this.updateUserEventProfileLoader( ctx, false )
+    @Action( StopUserProjectProfileLoader )
+    public stopUserProjectProfileLoader (ctx: StateContext<RegistryStateModel>): void {
+        this.updateUserProjectProfileLoader( ctx, false )
     }
 
-    private updateUserEventProfileLoader (ctx: StateContext<RegistryStateModel>, loading: boolean): void {
+    private updateUserProjectProfileLoader (ctx: StateContext<RegistryStateModel>, loading: boolean): void {
         ctx.patchState( {
             profile: {
                 ...ctx.getState().profile,
@@ -616,29 +623,32 @@ export class RegistryState extends GenericState {
         } )
     }
 
-    @Action( ManageUserEventInvitationAcceptance )
-    public manageEventInvitationAcceptance (
+    @Action( ManageUserProjectInvitationAcceptance )
+    public manageProjectInvitationAcceptance (
         ctx: StateContext<RegistryStateModel>,
-        payload: ManageUserEventInvitationAcceptance,
+        payload: ManageUserProjectInvitationAcceptance,
     ): Observable<void> {
-        return this.userEventProfileService.manageUserEventProfileAcceptance(
+        return this.userProjectProfileService.manageUserProjectProfileAcceptance(
             payload.profileId,
             payload.accepted,
         ).pipe(
             initialize( (): void => this.registryFacade.startProfileLoader() ),
             finalize( (): void => this.registryFacade.stopProfileLoader() ),
-            map( (profile: EventProfileModel): void => this.manageEventInvitationAcceptanceComplete( ctx, profile ) ),
+            map( (profile: ProjectProfileModel): void => this.manageProjectInvitationAcceptanceComplete(
+                ctx,
+                profile,
+            ) ),
         )
     }
 
-    private manageEventInvitationAcceptanceComplete (
+    private manageProjectInvitationAcceptanceComplete (
         ctx: StateContext<RegistryStateModel>,
-        profile: EventProfileModel,
+        profile: ProjectProfileModel,
     ): void {
         this.buildMessageAndNotify(
-            'success',
-            `event-profiles.notifications.acceptance.${profile.status.value}.title`,
-            `event-profiles.notifications.acceptance.${profile.status.value}.message`,
+            SeverityEnum.SUCCESS,
+            `project-profiles.notifications.acceptance.${profile.status.value}.title`,
+            `project-profiles.notifications.acceptance.${profile.status.value}.message`,
             'pi pi-user',
         )
 
@@ -647,98 +657,101 @@ export class RegistryState extends GenericState {
         this.refreshInvitationsPage( ctx )
     }
 
-    @Action( SelectUserEventProfile )
-    public selectEventProfile (
+    @Action( SelectUserProjectProfile )
+    public selectProjectProfile (
         _: StateContext<RegistryStateModel>,
-        payload: SelectUserEventProfile,
+        payload: SelectUserProjectProfile,
     ): Observable<void> {
-        return this.preferencesService.selectUserEventProfile( payload.profile.id ).pipe(
+        return this.preferencesService.selectUserProjectProfile( payload.profile.id ).pipe(
             initialize( (): void => this.registryFacade.startProfileLoader() ),
             finalize( (): void => this.registryFacade.stopProfileLoader() ),
-            map( (): void => this.selectEventProfileComplete( payload.profile ) ),
+            map( (): void => this.selectProjectProfileComplete( payload.profile ) ),
         )
     }
 
-    private selectEventProfileComplete (profile: EventProfileModel): void {
+    private selectProjectProfileComplete (profile: ProjectProfileModel): void {
         this.buildMessageAndNotify(
-            'success',
-            'event-profiles.notifications.select.title',
-            'event-profiles.notifications.select.message',
+            SeverityEnum.SUCCESS,
+            'project-profiles.notifications.select.title',
+            'project-profiles.notifications.select.message',
             'pi pi-verified',
-            { name: profile.event.name },
+            { name: profile.project.name },
         )
 
         this.registryFacade.fetchCurrentUser()
     }
 
-    @Action( SelectUserEventProfileByEvent )
-    public selectUserEventProfileByEvent (
+    @Action( SelectUserProjectProfileByProject )
+    public selectUserProjectProfileByProject (
         _: StateContext<RegistryStateModel>,
-        payload: SelectUserEventProfileByEvent,
+        payload: SelectUserProjectProfileByProject,
     ): Observable<void> {
-        return this.preferencesService.selectUserEventProfileByEventId( payload.event.id ).pipe(
+        return this.preferencesService.selectUserProjectProfileByProjectId( payload.project.id ).pipe(
             initialize( (): void => this.registryFacade.startProfileLoader() ),
             finalize( (): void => this.registryFacade.stopProfileLoader() ),
-            map( (): void => this.selectUserEventProfileByEventComplete( payload.event ) ),
+            map( (): void => this.selectUserProjectProfileByProjectComplete( payload.project ) ),
         )
     }
 
-    private selectUserEventProfileByEventComplete (event: EventModel): void {
+    private selectUserProjectProfileByProjectComplete (project: ProjectModel): void {
         this.buildMessageAndNotify(
-            'success',
-            'events.notifications.select.title',
-            'events.notifications.select.message',
+            SeverityEnum.SUCCESS,
+            'projects.notifications.select.title',
+            'projects.notifications.select.message',
             'pi pi-verified',
-            { name: event.name },
+            { name: project.name },
         )
 
         this.registryFacade.fetchCurrentUser()
     }
 
-    @Action( DeleteUserEventProfile )
-    public deleteUserEventProfile (
+    @Action( DeleteUserProjectProfile )
+    public deleteUserProjectProfile (
         ctx: StateContext<RegistryStateModel>,
-        payload: DeleteUserEventProfile,
+        payload: DeleteUserProjectProfile,
     ): Observable<void> {
-        return this.userEventProfileService.deleteUserProfileById( payload.profile.id ).pipe(
+        return this.userProjectProfileService.deleteUserProfileById( payload.profile.id ).pipe(
             initialize( (): void => this.registryFacade.startProfileLoader() ),
             finalize( (): void => this.registryFacade.stopProfileLoader() ),
-            map( (): void => this.deleteUserEventProfileComplete( ctx, payload.profile ) ),
+            map( (): void => this.deleteUserProjectProfileComplete( ctx, payload.profile ) ),
         )
     }
 
-    private deleteUserEventProfileComplete (ctx: StateContext<RegistryStateModel>, profile: EventProfileModel): void {
+    private deleteUserProjectProfileComplete (
+        ctx: StateContext<RegistryStateModel>,
+        profile: ProjectProfileModel,
+    ): void {
         this.buildMessageAndNotify(
-            'success',
-            'event-profiles.notifications.delete.title',
-            'event-profiles.notifications.delete.message.myself',
+            SeverityEnum.SUCCESS,
+            'project-profiles.notifications.delete.title',
+            'project-profiles.notifications.delete.message.myself',
             'pi pi-user',
-            { name: profile.event.name },
+            { name: profile.project.name },
         )
         this.registryFacade.fetchCurrentUser()
         this.refreshProfilesPage( ctx )
     }
 
-    @Action( CreateSupportEventProfile )
-    public createSupportEventProfile (
+    @Action( CreateSupportProjectProfile )
+    public createSupportProjectProfile (
         _: StateContext<RegistryStateModel>,
-        payload: CreateSupportEventProfile,
+        payload: CreateSupportProjectProfile,
     ): Observable<void> {
-        return this.userEventProfileService.createSupportEventProfile( payload.eventId ).pipe(
-            map( (profile: EventProfileModel): void => this.createSupportEventProfileComplete( profile ) ),
+        return this.userProjectProfileService.createSupportProjectProfile( payload.projectId ).pipe(
+            map( (profile: ProjectProfileModel): void => this.createSupportProjectProfileComplete( profile ) ),
         )
     }
 
-    private createSupportEventProfileComplete (
-        profile: EventProfileModel,
+    private createSupportProjectProfileComplete (
+        profile: ProjectProfileModel,
     ): void {
         this.buildMessageAndNotify(
-            'success',
-            'events.notifications.create-support.title',
-            'events.notifications.create-support.message',
+            SeverityEnum.SUCCESS,
+            'projects.notifications.create-support.title',
+            'projects.notifications.create-support.message',
             'pi pi-user-plus',
             {
-                name: profile?.event?.name,
+                name: profile?.project?.name,
                 end: this.datePipe.transform( profile?.endAccess ),
             },
         )
@@ -771,12 +784,12 @@ export class RegistryState extends GenericState {
     }
 
     protected refreshProfilesPage (ctx: StateContext<RegistryStateModel>): void {
-        const page: PageModel<EventProfileModel> | undefined = ctx.getState().profiles.element
-        this.registryFacade.fetchEventProfilePage( page?.pageNumber, page?.pageSize, true )
+        const page: PageModel<ProjectProfileModel> | undefined = ctx.getState().profiles.element
+        this.registryFacade.fetchProjectProfilePage( page?.pageNumber, page?.pageSize, true )
     }
 
     protected refreshInvitationsPage (ctx: StateContext<RegistryStateModel>): void {
-        const page: PageModel<EventProfileModel> | undefined = ctx.getState().invitations.element
-        this.registryFacade.fetchEventProfileInvitationPage( page?.pageNumber, page?.pageSize, true )
+        const page: PageModel<ProjectProfileModel> | undefined = ctx.getState().invitations.element
+        this.registryFacade.fetchProjectProfileInvitationPage( page?.pageNumber, page?.pageSize, true )
     }
 }

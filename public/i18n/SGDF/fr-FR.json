@@ -229,13 +229,18 @@
         "menu": {
             "home": "Accueil",
             "users": "Utilisateurs",
-            "events": "Projets",
-            "event-profiles": "Profiles d'accès",
+            "projects": "Projets",
+            "edit-project": "Modifier le projet",
+            "project-home": "Accueil du projet",
+            "configuration": "Configuration",
+            "project-profiles": "Profiles d'accès",
             "movements": "Mouvements",
             "participants": "Participants",
             "groups": "Groupes",
             "vehicles": "Véhicules",
-            "activities": "Activités"
+            "activities": "Activités",
+            "invitations": "Invitations",
+            "settings": "Paramètres"
         },
         "date-and-time-format": {
             "date": "dd/MM/yyyy",
@@ -399,11 +404,12 @@
             }
         }
     },
-    "events": {
+    "projects": {
         "search-and-filter": {
             "text": "Nom",
             "datetime": "Date & Heure",
-            "visibility": "Visibilité"
+            "visibility": "Visibilité",
+            "with-profile": "Avec un profil"
         },
         "visible": {
             "true": "Visible",
@@ -527,10 +533,10 @@
             }
         }
     },
-    "event-profiles": {
+    "project-profiles": {
         "search-and-filter": {
             "text": {
-                "event": "Nom",
+                "project": "Nom",
                 "user": "Prénom, nom, email"
             },
             "datetime": "Date & Heure",
@@ -611,32 +617,32 @@
             "confirmations": {
                 "ACCEPTED": {
                     "title": "Accepter l'invitation",
-                    "message": "En acceptant l'invitation à \"{{element.event.name}}\", le profil sera automatiquement sélectionné et apparaitra dans la liste des profils liés à ton compte (dans le premier onglet)."
+                    "message": "En acceptant l'invitation à \"{{element.project.name}}\", le profil sera automatiquement sélectionné et apparaitra dans la liste des profils liés à ton compte (dans le premier onglet)."
                 },
                 "REJECTED": {
                     "title": "Refuser l'invitation",
-                    "message": "En refusant définitivement l'invitation, tu ne pourras pas utiliser ce profil. Tu devras te faire réinviter pour accéder au projet \"{{element.event.name}}\""
+                    "message": "En refusant définitivement l'invitation, tu ne pourras pas utiliser ce profil. Tu devras te faire réinviter pour accéder au projet \"{{element.project.name}}\""
                 },
                 "select": {
                     "title": "Sélectionner le profil",
-                    "message": "Tu vas sélectionner un profil pour le projet \"{{element.event.name}}\". Tant qu'il est sélectionné, toutes les actions que tu feras lui seront liées."
+                    "message": "Tu vas sélectionner un profil pour le projet \"{{element.project.name}}\". Tant qu'il est sélectionné, toutes les actions que tu feras lui seront liées."
                 },
                 "disable": {
                     "title": "Bloquer le profil",
-                    "message": "Attention ! Tu vas bloquer un profil pour le projet \"{{element.event.name}}\". Tant qu'il est bloqué, {{element.user.firstName}} {{element.user.lastName}} ne pourra plus l'utiliser."
+                    "message": "Attention ! Tu vas bloquer un profil pour le projet \"{{element.project.name}}\". Tant qu'il est bloqué, {{element.user.firstName}} {{element.user.lastName}} ne pourra plus l'utiliser."
                 },
                 "enable": {
                     "title": "Débloquer le profil",
-                    "message": "Attention ! Tu vas débloquer un profil pour le projet \"{{element.event.name}}\". {{element.user.firstName}} {{element.user.lastName}} pourra à nouveau l'utiliser s'il est toujours valable."
+                    "message": "Attention ! Tu vas débloquer un profil pour le projet \"{{element.project.name}}\". {{element.user.firstName}} {{element.user.lastName}} pourra à nouveau l'utiliser s'il est toujours valable."
                 },
                 "delete": {
                     "title": "Supprimer le profil",
-                    "message": "Attention ! Tu vas supprimer un profil pour le projet \"{{element.event.name}}\". {{element.user.firstName}} {{element.user.lastName}} ne pourra plus l'utiliser."
+                    "message": "Attention ! Tu vas supprimer un profil pour le projet \"{{element.project.name}}\". {{element.user.firstName}} {{element.user.lastName}} ne pourra plus l'utiliser."
                 }
             }
         },
         "notifications": {
-            "EMPTY_USER_EVENT_PROFILE": {
+            "EMPTY_USER_PROJECT_PROFILE": {
                 "title": "🕵️‍♀️ Aucun profil",
                 "message": "Aucun profil pour ta recherche 🥺. Tu peux inviter des personnes à rejoindre le projet."
             },
@@ -1481,7 +1487,7 @@
             }
         },
         "actions": {
-            "create-event": "Créer un projet",
+            "create-project": "Créer un projet",
             "invitation": {
                 "one": "Invitation reçue",
                 "few": "Invitations reçues"

@@ -1,0 +1,18 @@
+.vehicle-license-plate {
+    font-size:   16px;
+    font-weight: 700;
+}
+
+.vehicle-info,
+.vehicle-detail,
+.availability {
+    flex-basis: 100%;
+}
+
+@media (min-width: 768px) {
+    .vehicle-info,
+    .vehicle-detail,
+    .availability {
+        flex-basis: 33%;
+    }
+}

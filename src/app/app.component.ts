@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, HostListener, OnDestroy } from '@angular/core'
-import { RouterOutlet } from '@angular/router'
 import { TranslateModule } from '@ngx-translate/core'
 import { ConfirmationService, MessageService, ToastMessageOptions } from 'primeng/api'
 import { BlockUIModule } from 'primeng/blockui'
@@ -9,13 +8,14 @@ import { ToastModule } from 'primeng/toast'
 import { map, Subscription } from 'rxjs'
 import { AppConfig } from './app.config'
 import { MessageComponent } from './shared/util-ui/message/message.component'
-import { SideBarComponent } from './shell/side-bar/side-bar.component'
 import { breakPoint } from './shared/util-tool/util/breakpoint.const'
 import { PrimeNG } from 'primeng/config'
 import { Button } from 'primeng/button'
 import { Dialog } from 'primeng/dialog'
 import { Divider } from 'primeng/divider'
 import { GenericComponent } from './shared/util-tool/component/generic.component'
+import { NavbarComponent } from './shell/navbar/navbar.component'
+import { RouterOutlet } from '@angular/router'
 
 @Component( {
     selector: 'app-root',
@@ -23,15 +23,15 @@ import { GenericComponent } from './shared/util-tool/component/generic.component
     imports: [
         TranslateModule,
         ConfirmDialogModule,
-        SideBarComponent,
         ToastModule,
-        RouterOutlet,
         BlockUIModule,
         ProgressSpinnerModule,
         MessageComponent,
         Button,
         Dialog,
         Divider,
+        NavbarComponent,
+        RouterOutlet,
     ],
     providers: [ ConfirmationService, MessageService ],
     templateUrl: './app.component.html',
@@ -58,9 +58,6 @@ export class AppComponent extends GenericComponent implements OnDestroy {
         this.initTranslation()
         this.handleThemeChanges()
         this.handleNotification()
-
-        this.registryFacade.restoreTokensFromSessionStorage()
-        this.registryFacade.fetchCurrentUser()
     }
 
     private initTranslation (): void {
@@ -84,6 +81,11 @@ export class AppComponent extends GenericComponent implements OnDestroy {
     @HostListener( 'window:offline', [ '$event' ] )
     public handleNetwork (): void {
         this.registryFacade.updateNetwork( navigator.onLine )
+    }
+
+    @HostListener( 'window:resize', [ '$event' ] )
+    public handleResize (): void {
+        this.registryFacade.updateScreenWidth( window.innerWidth )
     }
 
     protected logout (): void {

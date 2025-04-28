@@ -2,12 +2,14 @@
                   [actions]='actions()'
                   [actionMenuVisible]='actionMenuVisible()'
                   (action)='showDialogIfNeeded($event)'
-                  [icon]='movement().type.value === "OUT" ? "pi pi-arrow-up" : "pi pi-arrow-down"'>
+                  [icon]='movement().type.value === MovementTypeEnum.OUT ? "pi pi-arrow-up" : "pi pi-arrow-down"'>
     <div class='element-card'>
         <div class='type d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
-            <app-severity-tag [severity]='movement().type.value === "OUT" ? "warn" : "success"' [value]='movement().type.label!' />
+            <app-severity-tag [severity]='movement().type.value === MovementTypeEnum.OUT ? SeverityEnum.WARNING : SeverityEnum.SUCCESS'
+                              [value]='movement().type.label!' />
         </div>
         <div class='datetime d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
+            <app-severity-circle class='me-2' [severity]='movement().visible ? SeverityEnum.SUCCESS : SeverityEnum.DANGER' />
             <b>{{ movement().dateTime | dateFormat: 'datetime' }}</b>
         </div>
         <div class='content d-flex flex-column' [class.justify-content-center]='registryFacade.tinyScreen()'>
@@ -40,11 +42,6 @@
             @if (movement().reason) {
                 <div>{{ 'movements.reason' | translate: { reason: movement().reason!.label } }}</div>
             }
-        </div>
-        <div class='visibility-status d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
-            <app-severity-tag
-                    [severity]='movement().visible ? "success" : "danger"'
-                    [value]='movement() | visibilityName: "movements" | translate' />
         </div>
     </div>
 </app-element-card>
@@ -178,4 +175,5 @@
         [loading]='facade.movementLoading()'
         [element]='movement()'
         [action]='action()'
+        (hide)='action.set(undefined)'
         (handleAction)='handleAction($event)' />

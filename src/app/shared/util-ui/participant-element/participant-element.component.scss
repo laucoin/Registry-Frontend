@@ -10,13 +10,9 @@
 }
 
 .participant-info,
-.groups {
+.groups,
+.status {
     flex-basis: 100%;
-}
-
-.status,
-.visibility {
-    flex-basis: 50%;
 }
 
 @media (min-width: 1400px) {
@@ -24,15 +20,8 @@
         flex-basis: 30%;
     }
 
-    .groups {
-        flex-basis: 35%;
-    }
-
+    .groups,
     .status {
-        flex-basis: 20%;
-    }
-
-    .visibility {
-        flex-basis: 15%;
+        flex-basis: 35%;
     }
 }

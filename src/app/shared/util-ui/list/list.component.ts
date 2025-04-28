@@ -29,6 +29,7 @@ import { FormsModule } from '@angular/forms'
 import { GenericComponent } from '../../util-tool/component/generic.component'
 import { Skeleton } from 'primeng/skeleton'
 import { DateFormatPipe } from '../../util-tool/pipe/date-format.pipe'
+import { SeverityEnum } from '../../util-model/enumeration/severity.enum'
 
 @Component( {
     selector: 'app-list',
@@ -68,7 +69,7 @@ export class ListComponent<T extends GenericModel> extends GenericComponent {
         super()
 
         this.message = computed( () => ({
-            severity: 'warn',
+            severity: SeverityEnum.WARNING,
             summary: this.warningTitle() ?? 'global.notifications.EMPTY.title',
             detail: this.warningMessage() ?? 'global.notifications.EMPTY.message',
         }) )
