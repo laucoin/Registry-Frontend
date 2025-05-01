@@ -1,8 +1,8 @@
-import { GenericEventModel } from './generic-event.model'
+import { GenericProjectModel } from './generic-project.model'
 import { ParticipantModel } from './participant.model'
 import { CustomDatetimeModel } from './custom-datetime.model'
 
-export interface GroupModel extends GenericEventModel {
+export interface GroupModel extends GenericProjectModel {
     name: string
     startAvailability: CustomDatetimeModel | undefined
     endAvailability: CustomDatetimeModel | undefined

@@ -1,0 +1,61 @@
+:host {
+    --p-menubar-border-radius:         0;
+    --p-menubar-padding:               var(--min-spacer);
+    --p-menubar-item-focus-background: var(--p-highlight-focus-background);
+}
+
+:host #main-menu {
+    --p-menubar-background: #003a5d;
+}
+
+.menu-item {
+    padding: 0 var(--basic-spacer) 0;
+    height:  3em;
+    margin:  calc(var(--min-spacer) / 2) 0 calc(var(--min-spacer) / 2) 0;
+}
+
+.context-menu-item {
+    padding: 0 var(--basic-spacer) 0;
+    height:  2em;
+    margin:  calc(var(--min-spacer) / 2) 0 calc(var(--min-spacer) / 2) 0;
+}
+
+.card {
+    border-radius:       var(--basic-rounder);
+    border:              transparent 2px solid;
+    color:               #fff;
+    display:             flex;
+    align-items:         center;
+    justify-content:     left;
+    transition-duration: 150ms;
+
+    span {
+        margin-left: var(--min-spacer);
+    }
+}
+
+.clickable-card:hover {
+    border-color: var(--p-highlight-focus-background);
+}
+
+.clickable-card:active {
+    background-color: var(--p-highlight-focus-background);
+    color:            #fff;
+}
+
+.router-active-card {
+    background-color: var(--p-highlight-focus-background);
+    color:            #fff;
+}
+
+:host .navbar {
+    position:   fixed;
+    top:        0;
+    width:      100%;
+    z-index:    1000;
+    transition: transform 0.3s ease-in-out;
+}
+
+:host .hidden {
+    transform: translateY(-100%);
+}

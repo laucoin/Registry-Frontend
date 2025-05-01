@@ -84,7 +84,7 @@ export class UserFormComponent extends GenericFormComponent<UserModel, UserDto> 
             this.facade.updateUserRole(
                 this.facade.user()!.id,
                 this.role.value,
-            ).subscribe( (): void => this.navigateToRedirectUri( AppRouteEnum.USERS ) ),
+            ).subscribe( (): void => this.navigateToRedirectUri() ),
         )
     }
 

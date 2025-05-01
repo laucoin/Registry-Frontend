@@ -1,0 +1,88 @@
+<app-form [form]='form'
+          [loading]='facade.groupLoading()'
+          [title]='"groups.form.title" | formTitle: facade.group() | translate: { name: facade.group()?.name }'>
+    <p-card>
+        <div class='field'>
+            <label for='name' appRequired>{{ 'groups.form.name' | translate }}</label>
+            <input [formControl]='name'
+                   [placeholder]='"groups.form.placeholder.name" | translate'
+                   (keydown.enter)='submit()'
+                   id='name'
+                   pInputText
+                   type='text' />
+            <app-form-field-error [errors]='name.errors'
+                                  [invalid]='FormUtil.invalid(name)'
+                                  translationPrefix='groups.form.error.name' />
+        </div>
+        <div class='d-flex flex-wrap'>
+            <div class='left-field field'>
+                <label for='begin-date-time'>{{ 'groups.form.begin-datetime' | translate }}</label>
+                <app-date-time-field [formControl]='beginDateTime'
+                                     [invalid]='FormUtil.invalid(beginDateTime)'
+                                     inputId='begin-date-time'
+                                     [datePlaceholder]='"groups.form.placeholder.date" | translate: {
+                                                            date: startDateExample | dateFormat: "date"
+                                                         }'
+                                     [timePlaceholder]='"groups.form.placeholder.time" | translate: {
+                                                            date: startDateExample | dateFormat: "time"
+                                                         }' />
+                <small class='secondary-color'>{{ 'groups.form.hint.begin-date-time' | translate }}</small>
+                <app-form-field-error [errors]='beginDateTime.errors'
+                                      [invalid]='FormUtil.invalid(beginDateTime)'
+                                      translationPrefix='groups.form.error.begin-datetime' />
+            </div>
+            <div class='right-field field'>
+                <label for='end-date-time'>{{ 'groups.form.end-datetime' | translate }}</label>
+                <app-date-time-field [formControl]='endDateTime'
+                                     [invalid]='FormUtil.invalid(endDateTime)'
+                                     inputId='end-date-time'
+                                     [datePlaceholder]='"groups.form.placeholder.date" | translate: {
+                                                            date: endDateExample | dateFormat: "date"
+                                                         }'
+                                     [timePlaceholder]='"groups.form.placeholder.time" | translate: {
+                                                            date: endDateExample | dateFormat: "time"
+                                                         }' />
+                <small class='secondary-color'>{{ 'groups.form.hint.end-date-time' | translate }}</small>
+                <app-form-field-error [errors]='endDateTime.errors'
+                                      [invalid]='FormUtil.invalid(endDateTime)'
+                                      translationPrefix='groups.form.error.end-datetime' />
+            </div>
+        </div>
+        <app-form-field-error [errors]='form.errors'
+                              [invalid]='FormUtil.invalid(form) && beginDateTime.valid && endDateTime.valid'
+                              translationPrefix='groups.form.error.date-range' />
+        <p-divider />
+        <div class='field'>
+            <span class='label' appRequired>{{ 'groups.form.members' | pluralTranslation: participants.value | translate }}</span>
+            <label for='members' class='secondary-color'>{{ 'groups.form.members.search' | translate }}</label>
+            <app-select-elements-field [formControl]='participants'
+                                       [suggestions]='facade.searchedParticipantsMetadata()'
+                                       [fluid]='true'
+                                       [multiple]='true'
+                                       [selectItemBuilder]='ParticipantUtil.toSelectItem'
+                                       [selectionLabel]='"groups.form.members.selected" | pluralTranslation: participants.value |
+                                       translate'
+                                       [emptyMessage]='"groups.form.members.empty" | translate'
+                                       inputId='members'
+                                       (handleSearch)='handleSearch($event.query)' />
+            <app-form-field-error [errors]='name.errors'
+                                  [invalid]='FormUtil.invalid(name)'
+                                  translationPrefix='groups.form.error.members' />
+        </div>
+    </p-card>
+    <div class='d-flex mt-2 justify-content-center'>
+        <p-button
+                (onClick)='navigateToRedirectUri()'
+                [label]='"global.actions.cancel" | translate'
+                text
+                rounded />
+        <p-button
+                class='ms-2'
+                (onClick)='submit()'
+                [label]='facade.group() | formButton | translate'
+                rounded
+                outlined
+                [icon]='facade.group() | formIcon'
+                severity='success' />
+    </div>
+</app-form>

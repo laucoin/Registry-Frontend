@@ -6,6 +6,7 @@ import { StateUtil } from './state.util'
 import { PageRequestInformationModel } from '../../util-model/model/page-request-information.model'
 import { GenericModel } from '../../util-model/model/generic.model'
 import { TranslateService } from '@ngx-translate/core'
+import { SeverityEnum } from '../../util-model/enumeration/severity.enum'
 
 export abstract class GenericState {
     protected readonly registryFacade: RegistryFacade = inject( RegistryFacade )
@@ -28,7 +29,7 @@ export abstract class GenericState {
     }
 
     protected buildMessageAndNotify (
-        severity: 'info' | 'success' | 'warn' | 'error' | 'secondary' | 'contrast',
+        severity: SeverityEnum,
         summary: string,
         detail: string,
         icon: string | undefined = undefined,

@@ -1,6 +1,6 @@
-import { EventProfileModel } from './event-profile.model'
+import { ProjectProfileModel } from './project-profile.model'
 
 export interface PreferencesModel {
     userId: string
-    selectedProfile: EventProfileModel | undefined
+    selectedProfile: ProjectProfileModel | undefined
 }

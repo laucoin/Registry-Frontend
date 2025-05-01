@@ -32,30 +32,29 @@
             </div>
         </ng-template>
     </p-toast>
-    <app-side-bar>
-        <main class='main'>
-            <div class='container pt-3 pb-3'>
-                <router-outlet />
-            </div>
-        </main>
-        <footer>
-            <p class='d-flex flex-wrap justify-content-center secondary-color'>
-                © Luc AUCOIN {{ currentYear }} | 
-                <span class='pointer hover-underline'
-                      tabindex='1'
-                      (click)='showInformationDialog = true'
-                      (keydown.enter)='showInformationDialog = true'>
-                    {{ 'global.legal.information.name' | translate }}
-                </span> | 
-                <span class='pointer hover-underline'
-                      tabindex='2'
-                      (click)='showTermsOfUserDialog = true'
-                      (keydown.enter)='showTermsOfUserDialog = true'>
-                    {{ 'global.legal.terms-of-use.name' | translate }}
-                </span>
-            </p>
-        </footer>
-    </app-side-bar>
+    <app-navbar />
+    <main class='main'>
+        <div class='container pt-3 pb-3'>
+            <router-outlet />
+        </div>
+    </main>
+    <footer>
+        <p class='d-flex flex-wrap justify-content-center secondary-color'>
+            © Luc AUCOIN {{ currentYear }} | 
+            <span class='pointer hover-underline'
+                  tabindex='1'
+                  (click)='showInformationDialog = true'
+                  (keydown.enter)='showInformationDialog = true'>
+                                {{ 'global.legal.information.name' | translate }}
+                            </span> | 
+            <span class='pointer hover-underline'
+                  tabindex='2'
+                  (click)='showTermsOfUserDialog = true'
+                  (keydown.enter)='showTermsOfUserDialog = true'>
+                                {{ 'global.legal.terms-of-use.name' | translate }}
+                            </span>
+        </p>
+    </footer>
 }
 
 <p-dialog

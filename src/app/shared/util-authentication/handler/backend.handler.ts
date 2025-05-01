@@ -14,7 +14,7 @@ import {
     AUTHORIZATION,
     CURRENT_USER_ID,
     REDIRECT_URI,
-    SELECT_PROFILE_EVENT_ID,
+    SELECT_PROFILE_PROJECT_ID,
 } from '../../util-tool/util/request.util'
 import { TokenModel } from '../model/token.model'
 import { SessionStorageUtils } from '../../util-tool/util/session-storage.util'
@@ -77,10 +77,10 @@ function formatUrlIfNeeded (currentUser: CurrentUserModel | undefined, url: stri
         formattedUrl = formattedUrl.replace( CURRENT_USER_ID, currentUser?.id ?? '' )
     }
 
-    if (formattedUrl.includes( SELECT_PROFILE_EVENT_ID )) {
+    if (formattedUrl.includes( SELECT_PROFILE_PROJECT_ID )) {
         formattedUrl = formattedUrl.replace(
-            SELECT_PROFILE_EVENT_ID,
-            currentUser?.preferences?.selectedProfile?.event.id ?? '',
+            SELECT_PROFILE_PROJECT_ID,
+            currentUser?.preferences?.selectedProfile?.project.id ?? '',
         )
     }
 

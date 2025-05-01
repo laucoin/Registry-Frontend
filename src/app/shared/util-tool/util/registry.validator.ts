@@ -1,11 +1,12 @@
 import { AbstractControl, FormGroup, ValidationErrors, ValidatorFn } from '@angular/forms'
-import { EventOptionModel } from '../../../domains/event/data/model/event-option.model'
+import { ProjectOptionModel } from '../../../domains/project/data/model/project-option.model'
 import { SelectItem } from 'primeng/api'
-import { NumericRangeModel } from '../../../domains/activity/data/model/numeric-range.model'
+import { NumericRangeModel } from '../../../domains/project/configuration/activity/data/model/numeric-range.model'
 import { GenericUtil } from './generic.util'
 import { CustomDatetimeModel } from '../../util-model/model/custom-datetime.model'
 import { DateUtil } from './date.util'
 import { StringUtil } from './string.util'
+import { ProjectOptionEnum } from '../../util-model/enumeration/project-option.enum'
 
 export class RegistryValidators {
     public static nonBlank (): ValidatorFn {
@@ -44,7 +45,7 @@ export class RegistryValidators {
         }
     }
 
-    public static preRequiredOptions (options: EventOptionModel[]): ValidatorFn {
+    public static preRequiredOptions (options: ProjectOptionModel[]): ValidatorFn {
         return (control: AbstractControl): ValidationErrors | null => {
             const form: FormGroup = control as FormGroup
             let missingFor: string | undefined = undefined
@@ -53,11 +54,11 @@ export class RegistryValidators {
             Object.keys( form.controls )
                   .filter( (option: string): boolean => form.get( option )?.value )
                   .forEach( (option: string): void => {
-                      const eventOption: EventOptionModel | undefined = options.find( (opt: EventOptionModel): boolean => opt.value === option )
-                      if (!eventOption) return
-                      eventOption.preRequired.forEach( (preRequired: SelectItem<string>): void => {
+                      const projectOption: ProjectOptionModel | undefined = options.find( (opt: ProjectOptionModel): boolean => opt.value === option )
+                      if (!projectOption) return
+                      projectOption.preRequired.forEach( (preRequired: SelectItem<ProjectOptionEnum>): void => {
                           if (!form.get( preRequired.value )?.value) {
-                              missingFor = eventOption.label
+                              missingFor = projectOption.label
                               missing = preRequired.label
                               return
                           }

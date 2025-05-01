@@ -1,37 +1,18 @@
 import { Routes } from '@angular/router'
 import { AppRouteEnum } from './app-route.enum'
 import { authGuard } from './shared/util-authentication/guard/auth.guard'
-import { selectedProfileGuard } from './shared/util-authentication/guard/selected-profile.guard'
-import { HomeComponent } from './shell/home/home.component'
 import { AuthCallbackComponent } from './shell/auth-callback/auth-callback.component'
 import { importProvidersFrom } from '@angular/core'
 import { NgxsModule } from '@ngxs/store'
-import { EventState } from './domains/event/data/state/event.state'
-import { EventProfileState } from './domains/event-profile/data/state/event-profile.state'
-import { ParticipantState } from './domains/participant/data/state/participant.state'
-import { MovementState } from './domains/movement/data/state/movement.state'
-import { EventFacade } from './domains/event/data/state/event.facade'
-import { EventProfileFacade } from './domains/event-profile/data/state/event-profile.facade'
-import { ParticipantFacade } from './domains/participant/data/state/participant.facade'
-import { MovementFacade } from './domains/movement/data/state/movement.facade'
-import { GroupFacade } from './domains/group/data/state/group.facade'
-import { GroupState } from './domains/group/data/state/group.state'
-import { VehicleFacade } from './domains/vehicle/data/state/vehicle.facade'
-import { VehicleState } from './domains/vehicle/data/state/vehicle.state'
-import { vehicleOptionGuard } from './shared/util-authentication/guard/vehicle-option.guard'
-import { activityOptionGuard } from './shared/util-authentication/guard/activity-option.guard'
-import { ActivityFacade } from './domains/activity/data/state/activity.facade'
-import { ActivityState } from './domains/activity/data/state/activity.state'
+import { ProjectState } from './domains/project/data/state/project.state'
+import { ProjectFacade } from './domains/project/data/state/project.facade'
 
 export const routes: Routes = [
     {
-        path: AppRouteEnum.HOME,
-        component: HomeComponent,
+        path: AppRouteEnum.PROJECTS,
+        loadChildren: () => import('./domains/project/project.routes').then( (m: typeof import('./domains/project/project.routes')) => m.projectRoutes ),
         canActivate: [ authGuard ],
-    },
-    {
-        path: AppRouteEnum.AUTH_CALLBACK,
-        component: AuthCallbackComponent,
+        providers: [ ProjectFacade, importProvidersFrom( NgxsModule.forFeature( [ ProjectState ] ) ) ],
     },
     {
         path: AppRouteEnum.USERS,
@@ -39,54 +20,10 @@ export const routes: Routes = [
         canActivate: [ authGuard ],
     },
     {
-        path: AppRouteEnum.PREFERENCES,
-        loadChildren: () => import('./domains/preferences/preferences.routes').then( (m: typeof import('./domains/preferences/preferences.routes')) => m.preferencesRoutes ),
-        canActivate: [ authGuard ],
-        providers: [ EventProfileFacade, importProvidersFrom( NgxsModule.forFeature( [ EventProfileState ] ) ) ],
+        path: AppRouteEnum.AUTH_CALLBACK,
+        component: AuthCallbackComponent,
     },
     {
-        path: AppRouteEnum.EVENTS,
-        loadChildren: () => import('./domains/event/event.routes').then( (m: typeof import('./domains/event/event.routes')) => m.eventRoutes ),
-        canActivate: [ authGuard ],
-        providers: [ EventFacade, importProvidersFrom( NgxsModule.forFeature( [ EventState ] ) ) ],
-    },
-    {
-        path: AppRouteEnum.MOVEMENTS,
-        loadChildren: () => import('./domains/movement/movement.routes').then( (m: typeof import('./domains/movement/movement.routes')) => m.movementRoutes ),
-        canActivate: [ authGuard, selectedProfileGuard ],
-        providers: [ MovementFacade, importProvidersFrom( NgxsModule.forFeature( [ MovementState ] ) ) ],
-    },
-    {
-        path: AppRouteEnum.PROFILES,
-        loadChildren: () => import('./domains/event-profile/event-profile.routes').then( (m: typeof import('./domains/event-profile/event-profile.routes')) => m.eventProfileRoutes ),
-        canActivate: [ authGuard, selectedProfileGuard ],
-        providers: [ EventProfileFacade, importProvidersFrom( NgxsModule.forFeature( [ EventProfileState ] ) ) ],
-    },
-    {
-        path: AppRouteEnum.VEHICLES,
-        loadChildren: () => import('./domains/vehicle/vehicle.routes').then( (m: typeof import('./domains/vehicle/vehicle.routes')) => m.vehicleRoutes ),
-        canActivate: [ authGuard, selectedProfileGuard, vehicleOptionGuard ],
-        providers: [ MovementFacade, VehicleFacade, importProvidersFrom( NgxsModule.forFeature( [ MovementState, VehicleState ] ) ) ],
-    },
-    {
-        path: AppRouteEnum.ACTIVITIES,
-        loadChildren: () => import('./domains/activity/activity.routes').then( (m: typeof import('./domains/activity/activity.routes')) => m.activityRoutes ),
-        canActivate: [ authGuard, selectedProfileGuard, activityOptionGuard ],
-        providers: [ MovementFacade, ActivityFacade, importProvidersFrom( NgxsModule.forFeature( [ MovementState, ActivityState ] ) ) ],
-    },
-    {
-        path: AppRouteEnum.PARTICIPANTS,
-        loadChildren: () => import('./domains/participant/participant.routes').then( (m: typeof import('./domains/participant/participant.routes')) => m.participantRoutes ),
-        canActivate: [ authGuard, selectedProfileGuard ],
-        providers: [ MovementFacade, ParticipantFacade, importProvidersFrom( NgxsModule.forFeature( [ MovementState, ParticipantState ] ) ) ],
-    },
-    {
-        path: AppRouteEnum.GROUPS,
-        loadChildren: () => import('./domains/group/group.routes').then( (m: typeof import('./domains/group/group.routes')) => m.groupRoutes ),
-        canActivate: [ authGuard, selectedProfileGuard ],
-        providers: [ GroupFacade, ParticipantFacade, importProvidersFrom( NgxsModule.forFeature( [ GroupState, ParticipantState ] ) ) ],
-    },
-    {
-        path: '**', pathMatch: 'full', redirectTo: AppRouteEnum.HOME,
+        path: '**', pathMatch: 'full', redirectTo: AppRouteEnum.PROJECTS,
     },
 ]

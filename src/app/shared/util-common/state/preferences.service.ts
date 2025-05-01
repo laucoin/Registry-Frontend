@@ -11,16 +11,16 @@ export class PreferencesService extends GenericService {
         super( '/api/users/preferences' )
     }
 
-    public selectUserEventProfile (profileId: string): Observable<PreferencesModel> {
+    public selectUserProjectProfile (profileId: string): Observable<PreferencesModel> {
         return this.http.patch<PreferencesModel>(
             `${this.baseUrl}/profile/${profileId}/select`,
             null,
         )
     }
 
-    public selectUserEventProfileByEventId (eventId: string): Observable<PreferencesModel> {
+    public selectUserProjectProfileByProjectId (projectId: string): Observable<PreferencesModel> {
         return this.http.patch<PreferencesModel>(
-            `${this.baseUrl}/events/${eventId}/profile/select`,
+            `${this.baseUrl}/projects/${projectId}/profile/select`,
             null,
         )
     }

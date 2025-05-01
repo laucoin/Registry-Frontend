@@ -1,9 +1,11 @@
+import { ButtonSeverity } from 'primeng/button'
+
 export interface ConfirmationModel {
     header: string
     message: string
-    hint?: string
-    icon: string | undefined
-    acceptSeverity: 'success' | 'info' | 'warn' | 'danger' | 'help' | 'primary' | 'secondary' | 'contrast' | null | undefined
-    rejectSeverity: 'success' | 'info' | 'warn' | 'danger' | 'help' | 'primary' | 'secondary' | 'contrast' | null | undefined
-    confirmProperty: string | undefined
+    hint?: string | undefined
+    icon?: string | undefined
+    acceptSeverity: ButtonSeverity
+    rejectSeverity: ButtonSeverity
+    confirmProperty?: string | undefined
 }

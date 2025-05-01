@@ -5,14 +5,12 @@ import {
     inject,
     input,
     InputSignal,
-    OnDestroy,
+    signal,
     Signal,
 } from '@angular/core'
 import { ParticipantModel } from '../../util-model/model/participant.model'
-import { ParticipantActionEnum } from '../../../domains/participant/data/state/participant.action'
 import { ActionModel } from '../../util-model/model/action.model'
-import { ParticipantFacade } from '../../../domains/participant/data/state/participant.facade'
-import { AppConfig } from '../../../app.config'
+import { ParticipantFacade } from '../../../domains/project/configuration/participant/data/state/participant.facade'
 import { ElementCardComponent } from '../element-card/element-card.component'
 import { TitleCasePipe, UpperCasePipe } from '@angular/common'
 import { TranslateModule } from '@ngx-translate/core'
@@ -20,20 +18,23 @@ import { AppRouteEnum } from '../../../app-route.enum'
 import { Avatar } from 'primeng/avatar'
 import { LayerComponent } from '../layer/layer.component'
 import { Listbox } from 'primeng/listbox'
-import { GroupActionEnum } from '../../../domains/group/data/state/group.action'
-import { GroupFacade } from '../../../domains/group/data/state/group.facade'
+import { GroupFacade } from '../../../domains/project/configuration/group/data/state/group.facade'
 import { SeverityTagComponent } from '../severity-tag/severity-tag.component'
 import { GenericElementComponent } from '../../util-tool/component/generic-element.component'
 import { DateIntervalStatusModel } from '../../util-model/model/date-interval-status.model'
 import { DateUtil } from '../../util-tool/util/date.util'
 import { PluralTranslationPipe } from '../../util-tool/pipe/plural-translation.pipe'
-import { VisibilityNamePipe } from '../../util-tool/pipe/visibility.pipe'
 import { CustomDateFormatPipe } from '../../util-tool/pipe/custom-date-format.pipe'
 import { IntervalFormatPipe } from '../../util-tool/pipe/interval-format.pipe'
 import { GenericUtil } from '../../util-tool/util/generic.util'
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component'
-import { tap } from 'rxjs'
 import { ParticipantTypeEnum } from '../../util-model/enumeration/participant-type.enum'
+import { SeverityCircleComponent } from '../severity-circle/severity-circle.component'
+import { SeverityEnum } from '../../util-model/enumeration/severity.enum'
+import { PresenceStatusEnum } from '../../util-model/enumeration/presence-status.enum'
+import { ProjectAuthorityEnum } from '../../util-model/enumeration/project-authority.enum'
+import { ElementActionEnum } from '../../util-model/enumeration/element-action.enum'
+import { AppConfig } from '../../../app.config'
 
 @Component( {
     selector: 'app-participant-element',
@@ -48,17 +49,17 @@ import { ParticipantTypeEnum } from '../../util-model/enumeration/participant-ty
         Listbox,
         SeverityTagComponent,
         PluralTranslationPipe,
-        VisibilityNamePipe,
         CustomDateFormatPipe,
         IntervalFormatPipe,
         ConfirmationDialogComponent,
+        SeverityCircleComponent,
     ],
     providers: [ GroupFacade ],
     templateUrl: './participant-element.component.html',
     styleUrl: './participant-element.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
 } )
-export class ParticipantElementComponent extends GenericElementComponent<ParticipantModel, ParticipantActionEnum | GroupActionEnum> implements OnDestroy {
+export class ParticipantElementComponent extends GenericElementComponent<ParticipantModel> {
     protected readonly facade: ParticipantFacade = inject( ParticipantFacade )
     private readonly groupFacade: GroupFacade = inject( GroupFacade )
 
@@ -70,8 +71,99 @@ export class ParticipantElementComponent extends GenericElementComponent<Partici
     public readonly groupIdToRemove: InputSignal<string | undefined> = input()
     public readonly participant: InputSignal<ParticipantModel> = input.required()
 
-    protected readonly participantStatusSeverity: Signal<'success' | 'warn' | 'secondary'>
-    protected readonly actions: Signal<ActionModel<ParticipantActionEnum | GroupActionEnum>[]>
+    private readonly allActions: Signal<ActionModel[]> = signal( [
+        {
+            id: ElementActionEnum.PARTICIPANT_CONSULT_MOVEMENTS,
+            label: 'participants.actions.movements-history',
+            icon: 'pi pi-history',
+            disabled: false,
+            requiredUserAuthority: undefined,
+            requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_HISTORY_R,
+            requiredProjectOption: undefined,
+            confirmation: undefined,
+        },
+        {
+            id: ElementActionEnum.PARTICIPANT_UPDATE,
+            label: 'participants.actions.edit',
+            icon: 'pi pi-pen-to-square',
+            disabled: false,
+            requiredUserAuthority: undefined,
+            requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_U,
+            requiredProjectOption: undefined,
+            confirmation: undefined,
+        },
+        {
+            id: ElementActionEnum.PARTICIPANT_DISABLE,
+            label: 'participants.actions.disable',
+            icon: 'pi pi-eye-slash',
+            disabled: false,
+            requiredUserAuthority: undefined,
+            requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_U,
+            requiredProjectOption: undefined,
+            confirmation: {
+                header: 'participants.actions.confirmations.disable.title',
+                message: 'participants.actions.confirmations.disable.message',
+                icon: 'pi pi-exclamation-triangle',
+                acceptSeverity: SeverityEnum.WARNING,
+                rejectSeverity: SeverityEnum.SECONDARY,
+                confirmProperty: undefined,
+            },
+        },
+        {
+            id: ElementActionEnum.PARTICIPANT_ENABLE,
+            label: 'participants.actions.enable',
+            icon: 'pi pi-replay',
+            disabled: true,
+            requiredUserAuthority: undefined,
+            requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_U,
+            requiredProjectOption: undefined,
+            confirmation: {
+                header: 'participants.actions.confirmations.enable.title',
+                message: 'participants.actions.confirmations.enable.message',
+                icon: 'pi pi-exclamation-triangle',
+                acceptSeverity: SeverityEnum.WARNING,
+                rejectSeverity: SeverityEnum.SECONDARY,
+                confirmProperty: undefined,
+            },
+        },
+        {
+            id: ElementActionEnum.PARTICIPANT_REMOVE_FROM_GROUP,
+            label: 'participants.actions.remove-member',
+            icon: 'pi pi-user-minus',
+            disabled: false,
+            requiredUserAuthority: undefined,
+            requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_U,
+            requiredProjectOption: undefined,
+            confirmation: {
+                header: 'participants.actions.confirmations.remove-member.title',
+                message: 'participants.actions.confirmations.remove-member.message',
+                icon: 'pi pi-exclamation-triangle',
+                acceptSeverity: SeverityEnum.WARNING,
+                rejectSeverity: SeverityEnum.SECONDARY,
+                confirmProperty: undefined,
+            },
+        },
+        {
+            id: ElementActionEnum.PARTICIPANT_DELETE,
+            label: 'participants.actions.delete',
+            icon: 'pi pi-trash',
+            disabled: false,
+            requiredUserAuthority: undefined,
+            requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_D,
+            requiredProjectOption: undefined,
+            confirmation: {
+                header: 'participants.actions.confirmations.delete.title',
+                message: 'participants.actions.confirmations.delete.message',
+                icon: 'pi pi-exclamation-triangle',
+                acceptSeverity: SeverityEnum.DANGER,
+                rejectSeverity: SeverityEnum.SECONDARY,
+                confirmProperty: 'firstName',
+            },
+        },
+    ] )
+
+    protected readonly participantStatusSeverity: Signal<SeverityEnum>
+    protected readonly actions: Signal<ActionModel[]>
     protected readonly intervalStatus: Signal<DateIntervalStatusModel | undefined>
     protected readonly additionalTotal: Signal<number>
 
@@ -83,91 +175,75 @@ export class ParticipantElementComponent extends GenericElementComponent<Partici
             this.participant().endAvailability,
         ) )
 
-        this.participantStatusSeverity = computed( (): 'success' | 'warn' | 'secondary' => {
+        this.participantStatusSeverity = computed( (): SeverityEnum => {
             switch (this.participant().status.value) {
-                case 'IN':
-                    return 'success'
-                case 'OUT':
-                    return 'warn'
+                case PresenceStatusEnum.IN:
+                    return SeverityEnum.SUCCESS
+                case PresenceStatusEnum.OUT:
+                    return SeverityEnum.WARNING
                 default:
-                    return 'secondary'
+                    return SeverityEnum.SECONDARY
             }
         } )
 
-        this.actions = computed( (): ActionModel<ParticipantActionEnum | GroupActionEnum>[] => this.buildActions(
+        this.actions = computed( (): ActionModel[] => this.buildActions(
             this.participant(),
-            AppConfig.config.participant.action,
+            this.allActions(),
         ) )
 
         this.additionalTotal = computed( (): number => this.participant().groups.length - 1 )
     }
 
-    public ngOnDestroy (): void {
-        this.subscriptions.unsubscribe()
-    }
-
     protected isActionVisible (
         element: ParticipantModel,
-        action: ActionModel<ParticipantActionEnum | GroupActionEnum>,
+        action: ActionModel,
     ): boolean {
+        if (!AppConfig.config.participant.actions.includes( action.id )) return false
+
         switch (action.id) {
-            case GroupActionEnum.REMOVE_MEMBER_FROM_GROUP:
+            case ElementActionEnum.PARTICIPANT_REMOVE_FROM_GROUP:
                 return GenericUtil.nonNull( this.groupIdToRemove() )
-            case ParticipantActionEnum.DISABLE_PARTICIPANT:
+            case ElementActionEnum.PARTICIPANT_DISABLE:
                 return element.visible
-            case ParticipantActionEnum.ENABLE_PARTICIPANT:
+            case ElementActionEnum.PARTICIPANT_ENABLE:
                 return !element.visible
             default:
                 return true
         }
     }
 
-    protected handleAction (action: ParticipantActionEnum | GroupActionEnum): void {
+    protected handleAction (action: ElementActionEnum): void {
         switch (action) {
-            case ParticipantActionEnum.FETCH_PARTICIPANT_MOVEMENTS_PAGE:
+            case ElementActionEnum.PARTICIPANT_CONSULT_MOVEMENTS:
                 this.router.navigateByUrl(
-                    AppRouteEnum.PARTICIPANTS_MOVEMENTS.replace(
+                    AppRouteEnum.PROJECTS_CONFIGURATION_PARTICIPANTS_MOVEMENTS.replace(
                         ':participantId',
                         this.participant().id,
                     ),
                 ).catch( console.error )
                 break
-            case ParticipantActionEnum.UPDATE_PARTICIPANT:
+            case ElementActionEnum.PARTICIPANT_UPDATE:
                 this.router.navigateByUrl(
-                    AppRouteEnum.PARTICIPANTS_EDITION.replace(
+                    AppRouteEnum.PROJECTS_CONFIGURATION_PARTICIPANTS_EDITION.replace(
                         ':participantId',
                         this.participant().id,
                     ),
                 ).catch( console.error )
                 break
-            case GroupActionEnum.REMOVE_MEMBER_FROM_GROUP:
-                this.subscriptions.add(
-                    this.groupFacade.removeMemberFromGroup(
-                        this.groupIdToRemove()!,
-                        this.participant(),
-                    ).pipe( tap( (): void => this.action.set( undefined ) ) ).subscribe(),
+            case ElementActionEnum.PARTICIPANT_REMOVE_FROM_GROUP:
+                this.groupFacade.removeMemberFromGroup(
+                    this.groupIdToRemove()!,
+                    this.participant(),
                 )
                 break
-            case ParticipantActionEnum.DISABLE_PARTICIPANT:
-                this.subscriptions.add(
-                    this.facade.disableParticipant( this.participant().id ).pipe(
-                        tap( (): void => this.action.set( undefined ) ),
-                    ).subscribe(),
-                )
+            case ElementActionEnum.PARTICIPANT_DISABLE:
+                this.facade.disableParticipant( this.participant().id )
                 break
-            case ParticipantActionEnum.ENABLE_PARTICIPANT:
-                this.subscriptions.add(
-                    this.facade.enableParticipant( this.participant().id ).pipe(
-                        tap( (): void => this.action.set( undefined ) ),
-                    ).subscribe(),
-                )
+            case ElementActionEnum.PARTICIPANT_ENABLE:
+                this.facade.enableParticipant( this.participant().id )
                 break
-            case ParticipantActionEnum.DELETE_PARTICIPANT:
-                this.subscriptions.add(
-                    this.facade.deleteParticipant( this.participant() ).pipe(
-                        tap( (): void => this.action.set( undefined ) ),
-                    ).subscribe(),
-                )
+            case ElementActionEnum.PARTICIPANT_DELETE:
+                this.facade.deleteParticipant( this.participant() )
                 break
             default:
                 console.warn( this.translateService.instant( 'global.messages.invalid-action' ) )

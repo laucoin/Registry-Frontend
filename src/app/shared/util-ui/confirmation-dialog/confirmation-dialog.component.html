@@ -3,6 +3,7 @@
         [header]='header() | translate'
         [(visible)]='showDialog'
         [formGroup]='form'
+        (onHide)='closeDialog()'
         [modal]='true'>
     <div class='mb-3'>{{ message() | translate: { element: element() } }}</div>
     @if (propertyValue()) {

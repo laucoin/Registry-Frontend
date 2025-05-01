@@ -5,7 +5,7 @@ import { InputGroup } from 'primeng/inputgroup'
 import { InputGroupAddon } from 'primeng/inputgroupaddon'
 import { InputNumber } from 'primeng/inputnumber'
 import { TranslateService } from '@ngx-translate/core'
-import { NumericRangeModel } from '../../../domains/activity/data/model/numeric-range.model'
+import { NumericRangeModel } from '../../../domains/project/configuration/activity/data/model/numeric-range.model'
 import { GenericUtil } from '../../util-tool/util/generic.util'
 import { StringUtil } from '../../util-tool/util/string.util'
 

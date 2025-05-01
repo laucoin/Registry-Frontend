@@ -51,11 +51,11 @@ import { DateFormatPipe } from '../../util-tool/pipe/date-format.pipe'
     styleUrl: './element-card.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
 } )
-export class ElementCardComponent<T extends GenericModel, A> extends GenericComponent {
+export class ElementCardComponent<T extends GenericModel> extends GenericComponent {
     private readonly datePipe: DateFormatPipe = inject( DateFormatPipe )
 
     public readonly element: InputSignal<T> = input.required()
-    public readonly actions: InputSignal<ActionModel<A>[]> = input<ActionModel<A>[]>( [] )
+    public readonly actions: InputSignal<ActionModel[]> = input<ActionModel[]>( [] )
     public readonly icon: InputSignal<string | undefined> = input()
     public readonly loading: InputSignal<boolean> = input( false )
     public readonly actionMenuVisible: InputSignal<boolean> = input( true )
@@ -64,7 +64,7 @@ export class ElementCardComponent<T extends GenericModel, A> extends GenericComp
     protected readonly creationLabel: Signal<string>
     protected readonly lastEditionLabel: Signal<string>
 
-    public readonly action: OutputEmitterRef<ActionModel<A>> = output()
+    public readonly action: OutputEmitterRef<ActionModel> = output()
 
     public constructor () {
         super()
@@ -85,11 +85,11 @@ export class ElementCardComponent<T extends GenericModel, A> extends GenericComp
         ) )
     }
 
-    private definedMenuItems (currentUser: CurrentUserModel | undefined, actions: ActionModel<A>[]): MenuItem[] {
+    private definedMenuItems (currentUser: CurrentUserModel | undefined, actions: ActionModel[]): MenuItem[] {
         if (!currentUser) return []
         return actions
-            .map( (action: ActionModel<A>): MenuItem => ({
-                label: action.name,
+            .map( (action: ActionModel): MenuItem => ({
+                label: action.label,
                 icon: action.icon,
                 disabled: action.disabled,
                 command: (): void => this.action.emit( action ),

@@ -3,28 +3,32 @@ import { DateIntervalModel } from '../../util-model/model/date-interval.model'
 import { GenericComponent } from './generic.component'
 import { GenericModel } from '../../util-model/model/generic.model'
 import { CurrentUserUtil } from '../../util-authentication/tool/current-user.util'
-import { EventModel } from '../../util-model/model/event.model'
+import { ProjectModel } from '../../util-model/model/project.model'
 import { FormUtil } from '../util/form.util'
-import { Subscription } from 'rxjs'
 import { signal, WritableSignal } from '@angular/core'
+import { IntervalStatusEnum } from '../../util-model/enumeration/interval-status.enum'
+import { SeverityEnum } from '../../util-model/enumeration/severity.enum'
+import { ElementActionEnum } from '../../util-model/enumeration/element-action.enum'
 
-export abstract class GenericElementComponent<M extends GenericModel, A> extends GenericComponent {
+export abstract class GenericElementComponent<M extends GenericModel> extends GenericComponent {
     protected readonly FormUtil: typeof FormUtil = FormUtil
 
-    protected readonly subscriptions: Subscription = new Subscription()
-    public readonly action: WritableSignal<ActionModel<A> | undefined> = signal( undefined )
+    protected readonly SeverityEnum: typeof SeverityEnum = SeverityEnum
+    protected readonly IntervalStatusEnum: typeof IntervalStatusEnum = IntervalStatusEnum
 
-    protected buildActions (element: M, actions: ActionModel<A>[]): ActionModel<A>[] {
+    public readonly action: WritableSignal<ActionModel | undefined> = signal( undefined )
+
+    protected buildActions (element: M, actions: ActionModel[]): ActionModel[] {
         return actions
-            .filter( (action: ActionModel<A>): boolean => this.isActionVisible( element, action ) )
-            .map( (action: ActionModel<A>): ActionModel<A> => ({
+            .filter( (action: ActionModel): boolean => this.isActionVisible( element, action ) )
+            .map( (action: ActionModel): ActionModel => ({
                     ...action,
                     disabled: this.disabledAction( element, action ),
                 }),
             )
     }
 
-    protected showDialogIfNeeded (action: ActionModel<A>): void {
+    protected showDialogIfNeeded (action: ActionModel): void {
         if (action?.confirmation) {
             this.action.set( action )
         } else {
@@ -32,17 +36,17 @@ export abstract class GenericElementComponent<M extends GenericModel, A> extends
         }
     }
 
-    protected abstract isActionVisible (element: M, action: ActionModel<A>): boolean
+    protected abstract isActionVisible (element: M, action: ActionModel): boolean
 
-    protected disabledAction (element: M, action: ActionModel<A>): boolean {
+    protected disabledAction (element: M, action: ActionModel): boolean {
         return !CurrentUserUtil.isFeasible(
             this.registryFacade.currentUser(),
-            'event' in element ? (element.event as EventModel) : undefined,
+            'project' in element ? (element.project as ProjectModel) : undefined,
             action,
         )
     }
 
-    protected abstract handleAction (action: A): void
+    protected abstract handleAction (action: ElementActionEnum): void
 
     protected buildInterval (interval: DateIntervalModel | undefined): string {
         let result: string = ''

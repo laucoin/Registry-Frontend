@@ -4,6 +4,7 @@ import { DateIntervalModel } from '../../util-model/model/date-interval.model'
 import { SplitTimeModel } from '../../util-model/model/split-time.model'
 import { CustomDatetimeModel } from '../../util-model/model/custom-datetime.model'
 import { GenericUtil } from './generic.util'
+import { IntervalStatusEnum } from '../../util-model/enumeration/interval-status.enum'
 
 export class DateUtil {
     public static getDate (date: Date): string {
@@ -30,17 +31,17 @@ export class DateUtil {
         switch (true) {
             case startDate && this.isBefore( now, startDate ):
                 return {
-                    status: 'PLANNED',
+                    status: IntervalStatusEnum.PLANNED,
                     interval: DateUtil.interval( now, startDate ),
                 }
             case endDate && this.isAfter( now, endDate ):
                 return {
-                    status: 'FINISHED',
+                    status: IntervalStatusEnum.FINISHED,
                     interval: DateUtil.interval( endDate, now ),
                 }
             default:
                 return {
-                    status: 'IN_PROGRESS',
+                    status: IntervalStatusEnum.IN_PROGRESS,
                     interval: startDate ? DateUtil.interval( startDate, now ) : undefined,
                 }
         }

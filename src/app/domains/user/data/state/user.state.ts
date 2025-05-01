@@ -28,6 +28,7 @@ import { UserFacade } from './user.facade'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { ElementRequestInformationModel } from '../../../../shared/util-model/model/element-request-information.model'
 import { StateUtil } from '../../../../shared/util-tool/state/state.util'
+import { SeverityEnum } from '../../../../shared/util-model/enumeration/severity.enum'
 
 const defaultUser: ElementRequestInformationModel<UserModel> = {
     element: undefined,
@@ -257,7 +258,7 @@ export class UserState extends GenericElementState<UserStateModel> {
 
     private updateUserRoleComplete (ctx: StateContext<UserStateModel>, user: UserModel): void {
         this.buildMessageAndNotify(
-            'success',
+            SeverityEnum.SUCCESS,
             'users.notifications.update-role.title',
             'users.notifications.update-role.message',
             this.userIcon,
@@ -277,7 +278,7 @@ export class UserState extends GenericElementState<UserStateModel> {
 
     private blockUserComplete (ctx: StateContext<UserStateModel>, user: UserModel): void {
         this.buildMessageAndNotify(
-            'success',
+            SeverityEnum.SUCCESS,
             'users.notifications.disable.title',
             'users.notifications.disable.message',
             this.userIcon,
@@ -297,7 +298,7 @@ export class UserState extends GenericElementState<UserStateModel> {
 
     private unblockUserComplete (ctx: StateContext<UserStateModel>, user: UserModel): void {
         this.buildMessageAndNotify(
-            'success',
+            SeverityEnum.SUCCESS,
             'users.notifications.enable.title',
             'users.notifications.enable.message',
             this.userIcon,
@@ -317,7 +318,7 @@ export class UserState extends GenericElementState<UserStateModel> {
 
     private impersonateUserComplete (ctx: StateContext<UserStateModel>, user: UserModel): void {
         this.buildMessageAndNotify(
-            'success',
+            SeverityEnum.SUCCESS,
             'users.notifications.impersonate.title',
             'users.notifications.impersonate.message',
             this.userIcon,
@@ -338,7 +339,7 @@ export class UserState extends GenericElementState<UserStateModel> {
 
     private deleteUserComplete (ctx: StateContext<UserStateModel>, user: UserModel): void {
         this.buildMessageAndNotify(
-            'success',
+            SeverityEnum.SUCCESS,
             'users.notifications.delete.title',
             'users.notifications.delete.message',
             this.userIcon,

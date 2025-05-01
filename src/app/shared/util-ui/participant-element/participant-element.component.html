@@ -6,6 +6,7 @@
     <div class='element-card'>
         <div class='participant-info'>
             <div class='participant-name d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
+                <app-severity-circle class='me-2' [severity]='participant().visible ? SeverityEnum.SUCCESS : SeverityEnum.DANGER' />
                 {{ (participant().firstName | titlecase) + ' ' + (participant().lastName | uppercase) }}
             </div>
             @if (participant().startAvailability) {
@@ -51,11 +52,6 @@
                                   [value]='participant().status.label' />
             }
         </div>
-        <div class='visibility d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
-            <app-severity-tag
-                    [severity]='participant().visible ? "success" : "danger"'
-                    [value]='participant() | visibilityName: "participants" | translate' />
-        </div>
     </div>
 </app-element-card>
 
@@ -80,4 +76,5 @@
         [loading]='facade.participantLoading()'
         [element]='participant()'
         [action]='action()'
+        (hide)='action.set(undefined)'
         (handleAction)='handleAction($event)' />

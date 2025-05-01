@@ -30,7 +30,7 @@
         @if (GenericUtil.nonNull(user().visible)) {
             <div class='status d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
                 <app-severity-tag
-                        [severity]='user().visible ? "success" : "danger"'
+                        [severity]='user().visible ? SeverityEnum.SUCCESS : SeverityEnum.DANGER'
                         [value]='user() | visibilityName: "users" | translate' />
             </div>
         }
@@ -41,4 +41,5 @@
         [loading]='facade.userLoading()'
         [element]='user()'
         [action]='action()'
+        (hide)='action.set(undefined)'
         (handleAction)='handleAction($event)' />

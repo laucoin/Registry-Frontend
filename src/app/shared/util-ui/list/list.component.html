@@ -44,7 +44,7 @@
     <ng-template #list let-elements>
         <div class='layout list m-1'>
             @if (loading()) {
-                @for (i of counterArray(6); track $index) {
+                @for (_ of counterArray(6); track $index) {
                     <p-card>
                         <app-element-skeleton [withIcon]='true' [layout]='registryFacade.tinyScreen() ? "grid" : "list"' />
                     </p-card>

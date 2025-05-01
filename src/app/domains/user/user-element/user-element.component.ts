@@ -5,11 +5,10 @@ import {
     inject,
     input,
     InputSignal,
-    OnDestroy,
+    signal,
     Signal,
 } from '@angular/core'
 import { UserModel } from '../../../shared/util-model/model/user.model'
-import { UserActionEnum } from '../data/state/user.action'
 import { ChipModule } from 'primeng/chip'
 import { TitleCasePipe, UpperCasePipe } from '@angular/common'
 import { ElementCardComponent } from '../../../shared/util-ui/element-card/element-card.component'
@@ -28,11 +27,13 @@ import { ReactiveFormsModule } from '@angular/forms'
 import { AppRouteEnum } from '../../../app-route.enum'
 import { SeverityTagComponent } from '../../../shared/util-ui/severity-tag/severity-tag.component'
 import { GenericElementComponent } from '../../../shared/util-tool/component/generic-element.component'
-import { AppConfig } from '../../../app.config'
 import { DateFormatPipe } from '../../../shared/util-tool/pipe/date-format.pipe'
 import { VisibilityNamePipe } from '../../../shared/util-tool/pipe/visibility.pipe'
 import { ConfirmationDialogComponent } from '../../../shared/util-ui/confirmation-dialog/confirmation-dialog.component'
-import { tap } from 'rxjs'
+import { SeverityEnum } from '../../../shared/util-model/enumeration/severity.enum'
+import { UserAuthorityEnum } from '../../../shared/util-model/enumeration/user-authority.enum'
+import { ElementActionEnum } from '../../../shared/util-model/enumeration/element-action.enum'
+import { AppConfig } from '../../../app.config'
 
 @Component( {
     selector: 'app-user-element',
@@ -60,80 +61,141 @@ import { tap } from 'rxjs'
     styleUrl: './user-element.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
 } )
-export class UserElementComponent extends GenericElementComponent<UserModel, UserActionEnum> implements OnDestroy {
+export class UserElementComponent extends GenericElementComponent<UserModel> {
     protected readonly facade: UserFacade = inject( UserFacade )
 
     public readonly actionMenuVisible: InputSignal<boolean> = input( true )
     public readonly user: InputSignal<UserModel> = input.required()
 
-    protected readonly actions: Signal<ActionModel<UserActionEnum>[]>
+    private readonly allActions: Signal<ActionModel[]> = signal( [
+        {
+            id: ElementActionEnum.USER_UPDATE,
+            label: 'users.actions.update-role',
+            icon: 'pi pi-user-edit',
+            disabled: false,
+            requiredUserAuthority: UserAuthorityEnum.REGISTRY_USER_U,
+            requiredProjectAuthority: undefined,
+            requiredProjectOption: undefined,
+            confirmation: undefined,
+        },
+        {
+            id: ElementActionEnum.USER_BLOCK,
+            label: 'users.actions.disable',
+            icon: 'pi pi-ban',
+            disabled: false,
+            requiredUserAuthority: UserAuthorityEnum.REGISTRY_USER_U,
+            requiredProjectAuthority: undefined,
+            requiredProjectOption: undefined,
+            confirmation: {
+                header: 'users.actions.confirmations.disable.title',
+                message: 'users.actions.confirmations.disable.message',
+                icon: 'pi pi-exclamation-triangle',
+                acceptSeverity: SeverityEnum.WARNING,
+                rejectSeverity: SeverityEnum.SECONDARY,
+                confirmProperty: undefined,
+            },
+        },
+        {
+            id: ElementActionEnum.USER_UNBLOCK,
+            label: 'users.actions.enable',
+            icon: 'pi pi-replay',
+            disabled: true,
+            requiredUserAuthority: UserAuthorityEnum.REGISTRY_USER_U,
+            requiredProjectAuthority: undefined,
+            requiredProjectOption: undefined,
+            confirmation: {
+                header: 'users.actions.confirmations.enable.title',
+                message: 'users.actions.confirmations.enable.message',
+                icon: 'pi pi-exclamation-triangle',
+                acceptSeverity: SeverityEnum.WARNING,
+                rejectSeverity: SeverityEnum.SECONDARY,
+                confirmProperty: undefined,
+            },
+        },
+        {
+            id: ElementActionEnum.USER_IMPERSONATE,
+            label: 'users.actions.impersonate',
+            icon: 'pi pi-eraser',
+            disabled: false,
+            requiredUserAuthority: UserAuthorityEnum.REGISTRY_USER_D,
+            requiredProjectAuthority: undefined,
+            requiredProjectOption: undefined,
+            confirmation: {
+                header: 'users.actions.confirmations.impersonate.other.title',
+                message: 'users.actions.confirmations.impersonate.other.message',
+                icon: 'pi pi-exclamation-triangle',
+                acceptSeverity: SeverityEnum.DANGER,
+                rejectSeverity: SeverityEnum.SECONDARY,
+                confirmProperty: 'firstName',
+            },
+        },
+        {
+            id: ElementActionEnum.USER_DELETE,
+            label: 'users.actions.delete',
+            icon: 'pi pi-trash',
+            disabled: false,
+            requiredUserAuthority: UserAuthorityEnum.REGISTRY_USER_D,
+            requiredProjectAuthority: undefined,
+            requiredProjectOption: undefined,
+            confirmation: {
+                header: 'users.actions.confirmations.delete.title',
+                message: 'users.actions.confirmations.delete.message',
+                icon: 'pi pi-exclamation-triangle',
+                acceptSeverity: SeverityEnum.DANGER,
+                rejectSeverity: SeverityEnum.SECONDARY,
+                confirmProperty: 'firstName',
+            },
+        },
+    ] )
+    protected readonly actions: Signal<ActionModel[]>
 
     public constructor () {
         super()
 
-        this.actions = computed( (): ActionModel<UserActionEnum>[] => this.buildActions(
+        this.actions = computed( (): ActionModel[] => this.buildActions(
             this.user(),
-            AppConfig.config.user.action,
+            this.allActions(),
         ) )
     }
 
-    public ngOnDestroy (): void {
-        this.subscriptions.unsubscribe()
-    }
-
-    protected isActionVisible (element: UserModel, action: ActionModel<UserActionEnum>): boolean {
+    protected isActionVisible (element: UserModel, action: ActionModel): boolean {
+        if (!AppConfig.config.user.actions.includes( action.id )) return false
         const isCurrentUser: boolean = this.registryFacade.currentUser()?.id == element.id
 
         switch (action.id) {
-            case UserActionEnum.UPDATE_USER_ROLE:
+            case ElementActionEnum.USER_UPDATE:
                 return !isCurrentUser
-            case UserActionEnum.BLOCK_USER:
+            case ElementActionEnum.USER_BLOCK:
                 return !isCurrentUser && element.visible
-            case UserActionEnum.UNBLOCK_USER:
+            case ElementActionEnum.USER_UNBLOCK:
                 return !isCurrentUser && !element.visible
-            case UserActionEnum.IMPERSONATE_USER:
+            case ElementActionEnum.USER_IMPERSONATE:
                 return !isCurrentUser
-            case UserActionEnum.DELETE_USER:
+            case ElementActionEnum.USER_DELETE:
                 return !isCurrentUser
             default:
                 return true
         }
     }
 
-    protected handleAction (action: UserActionEnum): void {
+    protected handleAction (action: ElementActionEnum): void {
         switch (action) {
-            case UserActionEnum.UPDATE_USER_ROLE:
+            case ElementActionEnum.USER_UPDATE:
                 this.router.navigateByUrl(
                     AppRouteEnum.USERS_EDITION.replace( ':userId', this.user().id ),
                 ).catch( console.error )
                 break
-            case UserActionEnum.BLOCK_USER:
-                this.subscriptions.add(
-                    this.facade.bockUser( this.user().id ).pipe(
-                        tap( () => this.action.set( undefined ) ),
-                    ).subscribe(),
-                )
+            case ElementActionEnum.USER_BLOCK:
+                this.facade.bockUser( this.user().id )
                 break
-            case UserActionEnum.UNBLOCK_USER:
-                this.subscriptions.add(
-                    this.facade.unblockUser( this.user().id ).pipe(
-                        tap( () => this.action.set( undefined ) ),
-                    ).subscribe(),
-                )
+            case ElementActionEnum.USER_UNBLOCK:
+                this.facade.unblockUser( this.user().id )
                 break
-            case UserActionEnum.IMPERSONATE_USER:
-                this.subscriptions.add(
-                    this.facade.impersonateUser( this.user() ).pipe(
-                        tap( () => this.action.set( undefined ) ),
-                    ).subscribe(),
-                )
+            case ElementActionEnum.USER_IMPERSONATE:
+                this.facade.impersonateUser( this.user() )
                 break
-            case UserActionEnum.DELETE_USER:
-                this.subscriptions.add(
-                    this.facade.deleteUser( this.user() ).pipe(
-                        tap( () => this.action.set( undefined ) ),
-                    ).subscribe(),
-                )
+            case ElementActionEnum.USER_DELETE:
+                this.facade.deleteUser( this.user() )
                 break
             default:
                 console.warn( this.translateService.instant( 'global.messages.invalid-action' ) )
@@ -142,7 +204,7 @@ export class UserElementComponent extends GenericElementComponent<UserModel, Use
 
     protected copied (): void {
         this.registryFacade.notify( StateUtil.buildNotificationMessage(
-            'info',
+            SeverityEnum.INFO,
             undefined,
             'user.notifications.email-copied',
             undefined,

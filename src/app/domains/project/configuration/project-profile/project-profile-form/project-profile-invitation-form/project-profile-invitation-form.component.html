@@ -1,0 +1,99 @@
+<app-form [form]='form' [loading]='facade.projectProfileLoading()'>
+    <h2>{{ 'project-profiles.form.title.create' | translate : { name: registryFacade.selectedProject()?.name } }}</h2>
+    <p-card>
+        <form [formGroup]='form'>
+            <div class='field'>
+                <label for='role' appRequired>{{ 'project-profiles.form.role' | translate }}</label>
+                <p-select
+                        inputId='role'
+                        fluid
+                        [loading]='!facade.projectProfileAssignableRolesMetadata()'
+                        [options]='facade.projectProfileAssignableRolesMetadata()'
+                        [formControl]='role'
+                        [placeholder]='"project-profiles.form.placeholder.role" | translate: {
+                            role: facade.projectProfileAssignableRolesMetadata().length > 0
+                                ? facade.projectProfileAssignableRolesMetadata()?.[0]?.label
+                                : ""
+                        }'
+                        (keydown.enter)='submit()'
+                        optionLabel='label'
+                        optionValue='value' />
+                <app-form-field-error [errors]='role.errors'
+                                      [invalid]='FormUtil.invalid(role)'
+                                      translationPrefix='project-profiles.form.error.role' />
+            </div>
+            <div class='d-flex flex-wrap'>
+                <div class='left-field field'>
+                    <label for='begin-date-time'>{{ 'project-profiles.form.begin-datetime' | translate }}</label>
+                    <app-date-time-field [formControl]='beginDateTime'
+                                         [invalid]='FormUtil.invalid(beginDateTime)'
+                                         inputId='begin-date-time'
+                                         [datePlaceholder]='"project-profiles.form.placeholder.date" | translate: {
+                                                            date: startDateExample | dateFormat: "date"
+                                                         }'
+                                         [timePlaceholder]='"project-profiles.form.placeholder.time" | translate: {
+                                                            date: startDateExample | dateFormat: "time"
+                                                         }' />
+                    <small class='secondary-color'>{{ 'project-profiles.form.hint.begin-date-time' | translate }}</small>
+                    <app-form-field-error [errors]='beginDateTime.errors'
+                                          [invalid]='FormUtil.invalid(beginDateTime)'
+                                          translationPrefix='project-profiles.form.error.begin-datetime' />
+                </div>
+                <div class='right-field field'>
+                    <label for='end-date-time'>{{ 'project-profiles.form.end-datetime' | translate }}</label>
+                    <app-date-time-field [formControl]='endDateTime'
+                                         [invalid]='FormUtil.invalid(endDateTime)'
+                                         inputId='end-date-time'
+                                         [datePlaceholder]='"project-profiles.form.placeholder.date" | translate: {
+                                                            date: startDateExample | dateFormat: "date"
+                                                         }'
+                                         [timePlaceholder]='"project-profiles.form.placeholder.time" | translate: {
+                                                            date: startDateExample | dateFormat: "time"
+                                                         }' />
+                    <small class='secondary-color'>{{ 'project-profiles.form.hint.end-date-time' | translate }}</small>
+                    <app-form-field-error [errors]='endDateTime.errors'
+                                          [invalid]='FormUtil.invalid(endDateTime)'
+                                          translationPrefix='project-profiles.form.error.end-datetime' />
+                </div>
+            </div>
+            <app-form-field-error [errors]='form.errors'
+                                  [invalid]='FormUtil.invalid(form) && beginDateTime.valid && endDateTime.valid'
+                                  translationPrefix='project-profiles.form.error.date-range' />
+            <p-divider />
+            <div class='field'>
+                <span class='label'
+                      appRequired>{{ 'project-profiles.form.users' | pluralTranslation: users.value | translate }}</span>
+                <label for='users' class='secondary-color'>{{ 'project-profiles.form.users.search' | translate }}</label>
+                <app-select-elements-field [formControl]='users'
+                                           [fluid]='true'
+                                           [multiple]='true'
+                                           [invalid]='FormUtil.invalid(users)'
+                                           [selectionLabel]='"project-profiles.form.users.selected" | pluralTranslation:
+                                           (users.value?.length ?? 0) | translate'
+                                           [emptyMessage]='"project-profiles.form.users.empty" | translate'
+                                           [suggestions]='facade.searchedUsersMetadata()'
+                                           [selectItemBuilder]='UserUtil.toSelectItem'
+                                           inputId='users'
+                                           (handleSearch)='handleSearch($event.query)' />
+                <app-form-field-error [errors]='users.errors'
+                                      [invalid]='FormUtil.invalid(users)'
+                                      translationPrefix='project-profiles.form.error.users' />
+            </div>
+        </form>
+    </p-card>
+    <div class='d-flex pt-4 justify-content-center align-items-center'>
+        <p-button
+                (onClick)='navigateToRedirectUri()'
+                [label]='"global.actions.cancel" | translate'
+                text
+                rounded />
+        <p-button
+                class='ms-2'
+                (onClick)='submit()'
+                [label]='"project-profiles.actions.invite-user" | pluralTranslation: users.value?.length | translate'
+                rounded
+                outlined
+                icon='pi pi-user-plus'
+                severity='success' />
+    </div>
+</app-form>

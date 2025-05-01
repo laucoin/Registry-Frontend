@@ -1,14 +1,4 @@
-import { MenuItemModel } from '../../../shell/data/model/menu-item.model'
-import { ActionModel } from '../../util-model/model/action.model'
-import { EventActionEnum } from '../../../domains/event/data/state/event.action'
-import { EventProfileActionEnum } from '../../util-model/enumeration/event-profile-action.enum'
-import { UserActionEnum } from '../../../domains/user/data/state/user.action'
-import { ParticipantActionEnum } from '../../../domains/participant/data/state/participant.action'
-import { MovementActionEnum } from '../../../domains/movement/data/state/movement.action'
-import { GroupActionEnum } from '../../../domains/group/data/state/group.action'
-import { RegistryActionEnum } from '../../util-common/state/registry.action'
-import { VehicleActionEnum } from '../../../domains/vehicle/data/state/vehicle.action'
-import { ActivityActionEnum } from '../../../domains/activity/data/state/activity.action'
+import { ElementActionEnum } from '../../util-model/enumeration/element-action.enum'
 
 export interface ContextConfigModel {
     theme: unknown
@@ -18,36 +8,30 @@ export interface ContextConfigModel {
     }
     defaultLanguage: string
     maintainerEmail: string
-    generalMenu: MenuItemModel[]
-    profileMenu: MenuItemModel[]
-    event: {
-        optionIcons: Map<string, string>
-        action: ActionModel<EventActionEnum | RegistryActionEnum>[]
-    }
-    profile: {
-        event: {
-            action: ActionModel<EventProfileActionEnum>[]
-        }
-    }
     user: {
-        myAction: ActionModel<RegistryActionEnum>[]
-        action: ActionModel<UserActionEnum>[]
+        actions: ElementActionEnum[]
     }
-    vehicle: {
-        action: ActionModel<VehicleActionEnum>[]
+    project: {
+        actions: ElementActionEnum[]
     }
-    activity: {
-        action: ActionModel<ActivityActionEnum>[]
+    projectProfile: {
+        actions: ElementActionEnum[]
     }
     participant: {
-        action: ActionModel<ParticipantActionEnum | GroupActionEnum>[]
-    }
-    group: {
-        action: ActionModel<GroupActionEnum>[]
+        actions: ElementActionEnum[]
     }
     movement: {
-        action: ActionModel<MovementActionEnum>[]
+        actions: ElementActionEnum[]
     },
+    group: {
+        actions: ElementActionEnum[]
+    }
+    vehicle: {
+        actions: ElementActionEnum[]
+    }
+    activity: {
+        actions: ElementActionEnum[]
+    }
     notification: {
         duration: {
             info: number

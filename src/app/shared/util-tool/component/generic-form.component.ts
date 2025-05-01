@@ -2,16 +2,19 @@ import { FormControl, FormGroup } from '@angular/forms'
 import { GenericComponent } from './generic.component'
 import { AppRouteEnum } from '../../../app-route.enum'
 import { Subscription } from 'rxjs'
-import { EventModel } from '../../util-model/model/event.model'
+import { ProjectModel } from '../../util-model/model/project.model'
 import { RegistryValidators } from '../util/registry.validator'
 import { inject } from '@angular/core'
 import { FormUtil } from '../util/form.util'
 import { CustomDateFormatPipe } from '../pipe/custom-date-format.pipe'
+import { Location } from '@angular/common'
+import { GenericUtil } from '../util/generic.util'
 
 export abstract class GenericFormComponent<M, D> extends GenericComponent {
     protected readonly FormUtil: typeof FormUtil = FormUtil
 
     private readonly datePipe: CustomDateFormatPipe = inject( CustomDateFormatPipe )
+    private readonly location: Location = inject( Location )
 
     protected readonly subscriptions: Subscription = new Subscription()
 
@@ -54,20 +57,20 @@ export abstract class GenericFormComponent<M, D> extends GenericComponent {
 
     protected abstract handleLoadedElement (): void
 
-    protected addEventDateValidators (
-        event: EventModel | undefined,
+    protected addProjectDateValidators (
+        project: ProjectModel | undefined,
         control: FormControl,
     ): void {
-        if (event?.begin) {
+        if (project?.begin) {
             control.addValidators( RegistryValidators.minDateTime(
-                event?.begin,
-                this.datePipe.transform( event?.begin ),
+                project?.begin,
+                this.datePipe.transform( project?.begin ),
             ) )
         }
-        if (event?.end) {
+        if (project?.end) {
             control.addValidators( RegistryValidators.maxDateTime(
-                event?.end,
-                this.datePipe.transform( event?.end ),
+                project?.end,
+                this.datePipe.transform( project?.end ),
             ) )
         }
     }
@@ -78,8 +81,9 @@ export abstract class GenericFormComponent<M, D> extends GenericComponent {
 
     protected abstract buildDto (): D
 
-    protected navigateToRedirectUri (route: AppRouteEnum): void {
-        this.router.navigateByUrl( route ).catch( console.error )
+    protected navigateToRedirectUri (route: AppRouteEnum | undefined = undefined): void {
+        if (GenericUtil.nonNull( route )) this.router.navigateByUrl( route! ).catch( (): void => this.location.back() )
+        this.location.back()
     }
 
     protected abstract get idParam (): string | undefined

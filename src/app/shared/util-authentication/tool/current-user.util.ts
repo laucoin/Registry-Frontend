@@ -1,25 +1,25 @@
-import { EventAuthorityEnum } from '../../util-model/enumeration/event-authority.enum'
+import { ProjectAuthorityEnum } from '../../util-model/enumeration/project-authority.enum'
 import { UserAuthorityEnum } from '../../util-model/enumeration/user-authority.enum'
 import { CurrentUserModel } from '../../util-model/model/current-user.model'
 import { ArrayUtil } from '../../util-tool/util/array.util'
-import { EventUtil } from '../../util-tool/util/event.util'
+import { ProjectUtil } from '../../util-tool/util/project.util'
 import { GenericUtil } from '../../util-tool/util/generic.util'
-import { EventModel } from '../../util-model/model/event.model'
+import { ProjectModel } from '../../util-model/model/project.model'
 import { ActionableItemModel } from '../../util-model/model/actionable-item.model'
 
 export class CurrentUserUtil {
     public static isFeasible (
         currentUser: CurrentUserModel | undefined,
-        event: EventModel | undefined,
+        project: ProjectModel | undefined,
         actionableItem: ActionableItemModel,
     ): boolean {
-        if (GenericUtil.isNull( currentUser ) || (!event && (actionableItem.requiredEventOption || actionableItem.requiredEventAuthority))) return false
+        if (GenericUtil.isNull( currentUser ) || (!project && (actionableItem.requiredProjectOption || actionableItem.requiredProjectAuthority))) return false
 
-        return EventUtil.hasOption( event, actionableItem.requiredEventOption ) &&
+        return ProjectUtil.hasOption( project, actionableItem.requiredProjectOption ) &&
                CurrentUserUtil.hasAuthority( currentUser!, actionableItem.requiredUserAuthority ) &&
                CurrentUserUtil.hasAuthority(
                    currentUser!,
-                   this.buildAuthority( actionableItem.requiredEventAuthority, event?.id ),
+                   this.buildAuthority( actionableItem.requiredProjectAuthority, project?.id ),
                )
     }
 
@@ -32,20 +32,20 @@ export class CurrentUserUtil {
         return CurrentUserUtil.hasAuthority( currentUser!, authority )
     }
 
-    public static hasEventAuthority (
+    public static hasProjectAuthority (
         currentUser: CurrentUserModel | undefined,
         id: string | undefined,
-        authority: EventAuthorityEnum,
+        authority: ProjectAuthorityEnum,
     ): boolean {
-        const eventId: string | undefined = id ?? currentUser?.preferences?.selectedProfile?.event?.id
+        const projectId: string | undefined = id ?? currentUser?.preferences?.selectedProfile?.project?.id
 
-        if (GenericUtil.isNull( currentUser ) || !eventId) return false
+        if (GenericUtil.isNull( currentUser ) || !projectId) return false
 
         return CurrentUserUtil.hasAuthority( currentUser!, this.buildAuthority( authority, id ) )
     }
 
     private static buildAuthority (
-        requiredAuthority: EventAuthorityEnum | undefined,
+        requiredAuthority: ProjectAuthorityEnum | undefined,
         id: string | undefined,
     ): UserAuthorityEnum | string | undefined {
         if (GenericUtil.isNull( requiredAuthority )) return undefined
