@@ -14,3 +14,29 @@
 main {
     min-height: 90%;
 }
+
+:host {
+    --p-toast-success-background:     var(--p-card-background);
+    --p-toast-success-border-color:   var(--p-button-success-border-color);
+    --p-toast-success-color:          none;
+
+    --p-toast-info-background:        var(--p-card-background);
+    --p-toast-info-border-color:      var(--p-button-info-border-color);
+    --p-toast-info-color:             none;
+
+    --p-toast-warn-background:        var(--p-card-background);
+    --p-toast-warn-border-color:      var(--p-button-warn-border-color);
+    --p-toast-warn-color:             none;
+
+    --p-toast-error-background:       var(--p-card-background);
+    --p-toast-error-border-color:     var(--p-button-error-border-color);
+    --p-toast-error-color:            none;
+
+    --p-toast-secondary-background:   var(--p-card-background);
+    --p-toast-secondary-border-color: var(--p-button-secondary-border-color);
+    --p-toast-secondary-color:        none;
+
+    --p-toast-contrast-background:    var(--p-card-background);
+    --p-toast-contrast-border-color:  var(--p-button-contrast-border-color);
+    --p-toast-contrast-color:         none;
+}

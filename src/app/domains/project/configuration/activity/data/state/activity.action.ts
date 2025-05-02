@@ -3,7 +3,7 @@ import { ActivityModel } from '../../../../../../shared/util-model/model/activit
 import { ActivityPageParamsModel } from '../model/activity-page-params.model'
 import { MovementPageParamsModel } from '../../../../../../shared/util-model/model/movement-page-params.model'
 
-export enum ActivityActionEnum {
+enum ActivityActionEnum {
     START_ACTIVITIES_PAGE_LOADER = '[Local] Starting activities\' page loader',
     STOP_ACTIVITIES_PAGE_LOADER = '[Local] Stopping activities\' page loader',
 

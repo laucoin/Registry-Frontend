@@ -22,7 +22,7 @@
                         <p-skeleton width='10rem' borderRadius='1rem' />
                     }
                     @case (!!driver()) {
-                        <p-tag icon='pi pi-car' [value]="(driver()?.participant?.firstName | titlecase) + ' ' +
+                        <p-tag [icon]='ProjectOptionEnum.VEHICLE | optionIcon' [value]="(driver()?.participant?.firstName | titlecase) + ' ' +
                                             (driver()?.participant?.lastName | uppercase)" />
                     }
                     @case (total() === 1) {
@@ -82,7 +82,9 @@
                         readonly
                         optionLabel='name'>
                     <ng-template #item let-content>
-                        <p-avatar [icon]='content.vehicle ? "pi pi-car" : "pi pi-user"' class='me-2' shape='circle' />
+                        <p-avatar [icon]='content.vehicle ? (ProjectOptionEnum.VEHICLE | optionIcon) : "pi pi-user"'
+                                  class='me-2'
+                                  shape='circle' />
                         <div>
                             <div class='d-flex align-items-center'>
                                 <div>
@@ -107,7 +109,9 @@
                             readonly
                             optionLabel='name'>
                         <ng-template #item let-adult>
-                            <p-avatar [icon]='adult.vehicle ? "pi pi-car" : "pi pi-user"' class='me-2' shape='circle' />
+                            <p-avatar [icon]='adult.vehicle ? (ProjectOptionEnum.VEHICLE | optionIcon) : "pi pi-user"'
+                                      class='me-2'
+                                      shape='circle' />
                             <div>
                                 <div class='d-flex align-items-center'>
                                     <div>
@@ -133,7 +137,9 @@
                             readonly
                             optionLabel='name'>
                         <ng-template #item let-child>
-                            <p-avatar [icon]='child.vehicle ? "pi pi-car" : "pi pi-user"' class='me-2' shape='circle' />
+                            <p-avatar [icon]='child.vehicle ? (ProjectOptionEnum.VEHICLE | optionIcon) : "pi pi-user"'
+                                      class='me-2'
+                                      shape='circle' />
                             <div class='d-flex align-items-center'>
                                 {{ (child.participant.firstName | titlecase) + ' ' + (child.participant.lastName | uppercase) }}
                             </div>
@@ -150,7 +156,9 @@
                             readonly
                             optionLabel='name'>
                         <ng-template #item let-content>
-                            <p-avatar [icon]='content.vehicle ? "pi pi-car" : "pi pi-user"' class='me-2' shape='circle' />
+                            <p-avatar [icon]='content.vehicle ? (ProjectOptionEnum.VEHICLE | optionIcon) : "pi pi-user"'
+                                      class='me-2'
+                                      shape='circle' />
                             <div>
                                 <div class='d-flex align-items-center'>
                                     <div>

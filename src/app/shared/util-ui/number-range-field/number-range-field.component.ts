@@ -11,6 +11,7 @@ import { StringUtil } from '../../util-tool/util/string.util'
 
 @Component( {
     selector: 'app-number-range-field',
+    standalone: true,
     imports: [
         FormsModule,
         ReactiveFormsModule,

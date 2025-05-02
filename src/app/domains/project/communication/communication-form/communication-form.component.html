@@ -1,0 +1,80 @@
+<app-form [form]='form'
+          [loading]='facade.communicationLoading()'
+          [title]='"communications.form.title" | formTitle: facade.communication() | translate : {
+              dateTime: facade.communication()?.dateTime | dateFormat: "datetime",
+          }'>
+    <p-card>
+        <div class='field'>
+            <label for='movement'>{{ 'communications.form.movement' | translate }}</label>
+            <p-auto-complete inputId='movement'
+                             fluid
+                             completeOnFocus
+                             forceSelection
+                             showClear
+                             optionValue='value.id'
+                             optionLabel='label'
+                             [placeholder]='"communications.form.placeholder.movement" | translate: { date: now | dateFormat: "datetime"}'
+                             [formControl]='movement'
+                             [suggestions]='facade.searchedMovementsMetadata()'
+                             (keydown.enter)='submit()'
+                             (onClear)='handleMovementSelection(undefined)'
+                             (onUnselect)='handleMovementSelection(undefined)'
+                             (onSelect)='handleMovementSelection($event.value)'
+                             (completeMethod)='handleMovementSearch($event)'>
+                <ng-template #empty>
+                    <span>{{ 'participants.form.user.empty-search' | translate }}</span>
+                </ng-template>
+            </p-auto-complete>
+            <app-form-field-error [errors]='movement.errors'
+                                  [invalid]='FormUtil.invalid(movement)'
+                                  translationPrefix='communications.form.error.movement' />
+        </div>
+        <p-divider />
+        <div class='field'>
+            <label for='datetime' appRequired>{{ 'communications.form.datetime' | translate }}</label>
+            <p-date-picker [formControl]='dateTime'
+                           showButtonBar
+                           readonlyInput
+                           appendTo='body'
+                           [placeholder]='"communications.form.placeholder.datetime" | translate: {
+                                                   date: now | dateFormat: "date",
+                                                   time: now | dateFormat: "time",
+                                               }'
+                           [touchUI]='registryFacade.tinyScreen()'
+                           [showTime]='true'
+                           (keydown.enter)='submit()'
+                           inputId='datetime'
+                           fluid />
+            <app-form-field-error [errors]='dateTime.errors'
+                                  [invalid]='FormUtil.invalid(dateTime)'
+                                  translationPrefix='communications.form.error.datetime' />
+        </div>
+        <div class='field'>
+            <label for='message' appRequired>{{ 'communications.form.message' | translate }}</label>
+            <textarea id='message'
+                      rows='5'
+                      pTextarea
+                      [placeholder]='"communications.form.placeholder.message" | translate'
+                      [formControl]='message'
+                      (keydown.enter)='submit()'></textarea>
+            <app-form-field-error [errors]='message.errors'
+                                  [invalid]='FormUtil.invalid(message)'
+                                  translationPrefix='communications.form.error.message' />
+        </div>
+    </p-card>
+    <div class='d-flex mt-2 justify-content-center'>
+        <p-button
+                (onClick)='navigateToRedirectUri()'
+                [label]='"global.actions.cancel" | translate'
+                text
+                rounded />
+        <p-button
+                class='ms-2'
+                (onClick)='submit()'
+                [label]='facade.communication() | formButton | translate'
+                rounded
+                outlined
+                [icon]='facade.communication() | formIcon'
+                severity='success' />
+    </div>
+</app-form>

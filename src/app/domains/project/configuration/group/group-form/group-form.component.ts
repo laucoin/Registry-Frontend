@@ -32,6 +32,7 @@ import { FormIconPipe } from '../../../../../shared/util-tool/pipe/form-icon.pip
 
 @Component( {
     selector: 'app-group-form',
+    standalone: true,
     imports: [
         Button,
         Card,

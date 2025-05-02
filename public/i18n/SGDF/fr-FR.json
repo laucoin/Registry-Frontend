@@ -235,6 +235,7 @@
             "configuration": "Configuration",
             "project-profiles": "Profiles d'accès",
             "movements": "Mouvements",
+            "communications": "Communications",
             "participants": "Participants",
             "groups": "Groupes",
             "vehicles": "Véhicules",
@@ -483,10 +484,6 @@
                     "title": "Créer un profil de support",
                     "message": "En poursuivant, tu crées un profil support ayant une validatité de 1 heure pour venir en soutien au projet \"{{element.name}}\"."
                 },
-                "select": {
-                    "title": "Sélectionner le profil",
-                    "message": "Tu vas sélectionner ton profil pour le projet \"{{element.name}}\". Tant qu'il est sélectionné, toutes les actions que tu feras lui seront liées."
-                },
                 "disable": {
                     "title": "Masquer le projet",
                     "message": "Attention ! Tu vas masquer le projet \"{{element.name}}\". Tant qu'il est masqué, il ne sera plus possible d'y créer des profils, mouvements, participants, etc."
@@ -506,10 +503,6 @@
             "create-support": {
                 "title": "+ Profil support créé",
                 "message": "Le profil support a été créé pour le projet, il est disponible jusqu'à {{end}}."
-            },
-            "select": {
-                "title": "👤 Profil sélectionné",
-                "message": "Toutes les actions que tu fais à partir de maintenant seront liées au projet \"{{name}}\" tant qu'il est sélectionné."
             },
             "create": {
                 "title": "+ Projet créé",
@@ -576,8 +569,8 @@
                 }
             },
             "hint": {
-                "begin-date-time": "Par défaut se sera le profil sera disponible dès sa création.",
-                "end-date-time": "Par défaut se sera la profile n'a pas de fin de validité."
+                "begin-date-time": "Par défaut, le profil sera disponible dès sa création.",
+                "end-date-time": "Par défaut, le profil n'a pas de fin de validité."
             },
             "placeholder": {
                 "role": "Ex : {{role}}",
@@ -622,10 +615,6 @@
                 "REJECTED": {
                     "title": "Refuser l'invitation",
                     "message": "En refusant définitivement l'invitation, tu ne pourras pas utiliser ce profil. Tu devras te faire réinviter pour accéder au projet \"{{element.project.name}}\""
-                },
-                "select": {
-                    "title": "Sélectionner le profil",
-                    "message": "Tu vas sélectionner un profil pour le projet \"{{element.project.name}}\". Tant qu'il est sélectionné, toutes les actions que tu feras lui seront liées."
                 },
                 "disable": {
                     "title": "Bloquer le profil",
@@ -675,10 +664,6 @@
                     "title": "✅ Invitation refusée",
                     "message": "Tu as refusé l'invitation pour le projet."
                 }
-            },
-            "select": {
-                "title": "👤 Profil sélectionné",
-                "message": "Toutes les actions que tu fais à partir de maintenant seront liées au projet \"{{name}}\" tant qu'il est sélectionné."
             },
             "edit": {
                 "title": "✏️ Profil modifié",
@@ -819,6 +804,7 @@
             }
         },
         "actions": {
+            "communications-history": "Historique des communications",
             "edit": "Modifier",
             "disable": "Masquer",
             "enable": "Démasquer",
@@ -1468,6 +1454,95 @@
             "delete": {
                 "title": "🗑️ Activité supprimée",
                 "message": "L'activité {{name}} a été supprimée."
+            }
+        }
+    },
+    "communications": {
+        "search-and-filter": {
+            "start-datetime": "Après le",
+            "end-datetime": "Avant le",
+            "text": "Message",
+            "visibility": "Visibilité"
+        },
+        "movement-activity": "{{activity}} sortie le {{datetime}}",
+        "visible": {
+            "true": "Visible",
+            "false": "Masqué"
+        },
+        "form": {
+            "title": {
+                "create": "Créer une communication",
+                "edit": "Modifier la communication du \"{{dateTime}}\""
+            },
+            "movement": "Activité",
+            "datetime": "Date & Heure",
+            "message": "Message",
+            "duration": "Durée",
+            "hint": {
+                "begin-date-time": "Par défaut une activité est disponible dès le début du projet.",
+                "end-date-time": "Par défaut une activité est disponible jusqu'à la fin du projet."
+            },
+            "error": {
+                "movement": {
+                    "required": "Pour communiquer il faut communiquer avec quelqu'un. Choisis une activité avec qui communiquer."
+                },
+                "datetime": {
+                    "required": "L'horodatage de la communication doit être défini. Sinon, comment savoir quand ça se passe ?",
+                    "minDate": "L'horodatage de la communication est plus tôt que le mouvement auquel elle est liée ({{min}}). Restons dans les clous !",
+                    "maxDate": "L'horodatage de la communication est plus tard que la fin du projet ({{max}}). Restons dans les clous !"
+                },
+                "message": {
+                    "required": "Une communication sans message ? À quoi elle sert ?",
+                    "blank": "Non, non, non ! tu ne m'auras pas. Un message vide ça ne fonctionne pas !",
+                    "maxlength": "T'as vu la longueur du nom 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c'est {{requiredLength}}."
+                }
+            },
+            "placeholder": {
+                "movement": "Ex : Sortie plage ({{date}})",
+                "datetime": "Ex : {{date}}",
+                "message": "Ex : Ils vont bien et se situent dans la rue Henri Cochet à Marseille (13009)."
+            }
+        },
+        "actions": {
+            "edit": "Modifier",
+            "disable": "Masquer",
+            "enable": "Démasquer",
+            "delete": "Supprimer",
+            "confirmations": {
+                "disable": {
+                    "title": "Masquer la communication",
+                    "message": "Attention ! Tu vas masquer la communication. Tant qu'elle est masquée, elle ne pourra plus être consultée via les éléments qui pourrait lui être liée."
+                },
+                "enable": {
+                    "title": "Afficher à nouveau la communication",
+                    "message": "Attention ! Tu vas à nouveau rendre  la communication visible. Elle sera de nouveau possible de la consulter via les éléments qui pourrait lui être liée."
+                },
+                "delete": {
+                    "title": "Supprimer la communication",
+                    "message": "Attention ! Tu vas définitivement supprimer la communication. Elle sera donc définitivement dissociée des mouvements et autres éléments."
+                }
+            }
+        },
+        "notifications": {
+            "create": {
+                "title": "+ Communication créée",
+                "message": "Une communication a été crée le {{datetime}}."
+            },
+            "edit": {
+                "title": "✏️ Communication modifiée",
+                "message": "La communication du {{datetime}} a été modifiée."
+            },
+            "disable": {
+                "title": "🙈 Communication masquée",
+                "message": "La communication du {{datetime}} a été masquée."
+            },
+            "enable": {
+                "title": "👀 Communication visible",
+                "message": "La communication du {{datetime}} est à nouveau visible."
+            },
+            "delete": {
+                "title": "🗑️ Communication supprimée",
+                "message": "La communication du {{datetime}} a été supprimée."
             }
         }
     },

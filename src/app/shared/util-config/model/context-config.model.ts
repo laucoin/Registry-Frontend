@@ -32,13 +32,17 @@ export interface ContextConfigModel {
     activity: {
         actions: ElementActionEnum[]
     }
+    communication: {
+        actions: ElementActionEnum[]
+    }
     notification: {
         duration: {
-            info: number
-            success: number
-            warn: number
-            secondary: number
-            contrast: number
+            info: number | undefined
+            success: number | undefined
+            warn: number | undefined
+            error: number | undefined
+            secondary: number | undefined
+            contrast: number | undefined
         }
     }
 }

@@ -11,9 +11,12 @@ import { VehicleModel } from '../../../../../shared/util-model/model/vehicle.mod
 import { MovementReasonModel } from './movement-reason.model'
 import { ParticipantTypeEnum } from '../../../../../shared/util-model/enumeration/participant-type.enum'
 import { MovementTypeEnum } from '../../../../../shared/util-model/enumeration/movement-type.enum'
+import { CommunicationPageParamsModel } from '../../../communication/data/model/communication-page-params.model'
+import { CommunicationModel } from '../../../communication/data/model/communication.model'
 
 export interface MovementStateModel {
     movements: PageRequestInformationModel<MovementPageParamsModel, MovementModel>
+    movementCommunications: PageRequestInformationModel<CommunicationPageParamsModel, CommunicationModel>
     movement: ElementRequestInformationModel<MovementModel>
     _metadata: {
         types: SelectItem<MovementTypeEnum | undefined>[]

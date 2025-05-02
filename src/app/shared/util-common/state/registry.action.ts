@@ -2,9 +2,8 @@ import { ToastMessageOptions } from 'primeng/api'
 import { ProjectProfileModel } from '../../util-model/model/project-profile.model'
 import { TokenModel } from '../../util-authentication/model/token.model'
 import { ErrorModel } from '../../util-model/model/error.model'
-import { ProjectModel } from '../../util-model/model/project.model'
 
-export enum RegistryActionEnum {
+enum RegistryActionEnum {
     START_GLOBAL_LOADER = '[Local] Starting global loader',
     STOP_GLOBAL_LOADER = '[Local] Stopping global loader',
 
@@ -22,7 +21,6 @@ export enum RegistryActionEnum {
 
     RESTORE_TOKENS = '[Local] Restoring tokens',
     FETCH_TOKENS = '[Backend] Fetching tokens',
-    REFRESH_TOKENS = '[Backend] Refreshing tokens',
 
     FETCH_CURRENT_USER = '[Backend] Fetching current user',
     IMPERSONATE_CURRENT_USER = '[Backend] Impersonating current user',
@@ -112,10 +110,6 @@ export class FetchTokens {
     public constructor (public readonly authorizationCode: string) {}
 }
 
-export class RefreshTokens {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.REFRESH_TOKENS
-}
-
 export class FetchCurrentUser {
     public static readonly type: RegistryActionEnum = RegistryActionEnum.FETCH_CURRENT_USER
 }
@@ -197,13 +191,13 @@ export class ManageUserProjectInvitationAcceptance {
 export class SelectUserProjectProfile {
     public static readonly type: RegistryActionEnum = RegistryActionEnum.SELECT_USER_PROJECT_PROFILE
 
-    public constructor (public readonly profile: ProjectProfileModel) {}
+    public constructor (public readonly profileId: string | undefined) {}
 }
 
 export class SelectUserProjectProfileByProject {
     public static readonly type: RegistryActionEnum = RegistryActionEnum.SELECT_USER_PROJECT_PROFILE_BY_PROJECT
 
-    public constructor (public readonly project: ProjectModel) {}
+    public constructor (public readonly projectId: string) {}
 }
 
 export class DeleteUserProjectProfile {

@@ -24,6 +24,7 @@ import { ParticipantUtil } from '../../../../../shared/util-tool/util/participan
 
 @Component( {
     selector: 'app-movement-content-field',
+    standalone: true,
     imports: [
         AutoComplete,
         TranslatePipe,

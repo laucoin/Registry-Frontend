@@ -120,9 +120,10 @@ export class DateUtil {
 
     public static toCustomDateTime (date: Date | undefined): CustomDatetimeModel | undefined {
         if (!date) return undefined
+        const formattedDate: Date = new Date( date )
         return {
-            date: DateUtil.toIsoDate( date ),
-            time: DateUtil.toIsoTime( date ),
+            date: DateUtil.toIsoDate( formattedDate ),
+            time: DateUtil.toIsoTime( formattedDate ),
         }
     }
 

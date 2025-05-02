@@ -12,6 +12,7 @@ import {
     DisableMovement,
     EnableMovement,
     FetchMovement,
+    FetchMovementCommunicationsPage,
     FetchMovementsContent,
     FetchMovementsPage,
     FetchMovementTypes,
@@ -20,12 +21,15 @@ import {
     SearchParticipantsAndGroups,
     SearchReasonsAndActivities,
     SearchVehicles,
+    StartMovementCommunicationsPageLoader,
     StartMovementLoader,
     StartMovementsPageLoader,
+    StopMovementCommunicationsPageLoader,
     StopMovementLoader,
     StopMovementsPageLoader,
     UpdateGuestsMovement,
     UpdateMovement,
+    UpdateMovementCommunicationsPageSearchParams,
     UpdateMovementsPageSearchParams,
 } from './movement.action'
 import { MovementDto } from '../dto/movement.dto'
@@ -37,6 +41,7 @@ import { DateUtil } from '../../../../../shared/util-tool/util/date.util'
 import { MovementReasonModel } from '../model/movement-reason.model'
 import { ParticipantTypeEnum } from '../../../../../shared/util-model/enumeration/participant-type.enum'
 import { MovementTypeEnum } from '../../../../../shared/util-model/enumeration/movement-type.enum'
+import { CommunicationModel } from '../../../communication/data/model/communication.model'
 
 @Injectable()
 export class MovementFacade extends GenericProjectElementFacade {
@@ -78,6 +83,46 @@ export class MovementFacade extends GenericProjectElementFacade {
 
     public get movementsPageVisibilitySearchedParam (): Signal<boolean | undefined> {
         return this.ngStore.selectSignal( MovementState.movementsPageVisibilitySearchedParam )
+    }
+
+    public get movementCommunicationsPage (): Signal<PageModel<CommunicationModel> | undefined> {
+        return this.ngStore.selectSignal( MovementState.movementCommunicationsPage )
+    }
+
+    public get movementCommunicationsPageLoading (): Signal<boolean> {
+        return this.ngStore.selectSignal( MovementState.movementCommunicationsPageLoading )
+    }
+
+    public get movementCommunicationsPageSilentLoading (): Signal<boolean> {
+        return this.ngStore.selectSignal( MovementState.movementCommunicationsPageSilentLoading )
+    }
+
+    public get movementCommunicationsPageError (): Signal<ToastMessageOptions | undefined> {
+        return this.ngStore.selectSignal( MovementState.movementCommunicationsPageError )
+    }
+
+    private get movementCommunicationsPageResetSearch (): Signal<boolean> {
+        return this.ngStore.selectSignal( MovementState.movementCommunicationsPageResetSearch )
+    }
+
+    public get movementCommunicationsPageTextSearchedParam (): Signal<string | undefined> {
+        return this.ngStore.selectSignal( MovementState.movementCommunicationsPageTextSearchedParam )
+    }
+
+    public get movementCommunicationsPageVisibilitySearchedParam (): Signal<boolean | undefined> {
+        return this.ngStore.selectSignal( MovementState.movementCommunicationsPageVisibilitySearchedParam )
+    }
+
+    public get movementCommunicationsPageStartDateTimeSearchedParam (): Signal<Date | undefined> {
+        return computed( (): Date | undefined =>
+            DateUtil.buildDate( this.ngStore.selectSignal( MovementState.movementCommunicationsPageStartDateTimeSearchedParam )() ),
+        )
+    }
+
+    public get movementCommunicationsPageEndDateTimeSearchedParam (): Signal<Date | undefined> {
+        return computed( (): Date | undefined =>
+            DateUtil.buildDate( this.ngStore.selectSignal( MovementState.movementCommunicationsPageEndDateTimeSearchedParam )() ),
+        )
     }
 
     public get movement (): Signal<MovementModel | undefined> {
@@ -158,6 +203,52 @@ export class MovementFacade extends GenericProjectElementFacade {
                 resetSearch: resetSearch,
                 visibilitySearched: visibilitySearched,
                 typeSearched: typeSearched,
+                startDateTimeSearched: startDateTimeSearched?.toISOString(),
+                endDateTimeSearched: endDateTimeSearched?.toISOString(),
+            } ) )
+        }
+    }
+
+    public startMovementCommunicationsPageLoader (): void {
+        this.ngStore.dispatch( StartMovementCommunicationsPageLoader )
+    }
+
+    public stopMovementCommunicationsPageLoader (): void {
+        this.ngStore.dispatch( StopMovementCommunicationsPageLoader )
+    }
+
+    public fetchMovementCommunicationsPage (
+        id: string,
+        pageNumber: number | undefined,
+        pageSize: number | undefined,
+        force: boolean,
+    ): void {
+        const index: number | undefined = this.movementCommunicationsPageResetSearch() ? 0 : pageNumber
+        this.ngStore.dispatch( new FetchMovementCommunicationsPage(
+            this.selectedProjectId(),
+            id,
+            index,
+            pageSize,
+            force,
+        ) )
+    }
+
+    public inputMovementCommunicationsPageSearchParameters (
+        textSearched: string | undefined,
+        visibilitySearched: boolean | undefined,
+        startDateTimeSearched: Date | undefined,
+        endDateTimeSearched: Date | undefined,
+    ): void {
+        const resetSearch: boolean = this.movementCommunicationsPageTextSearchedParam() != textSearched
+                                     || this.movementCommunicationsPageVisibilitySearchedParam() != visibilitySearched
+                                     || this.movementCommunicationsPageStartDateTimeSearchedParam() != startDateTimeSearched?.toISOString()
+                                     || this.movementCommunicationsPageEndDateTimeSearchedParam() != endDateTimeSearched?.toISOString()
+
+        if (resetSearch) {
+            this.ngStore.dispatch( new UpdateMovementCommunicationsPageSearchParams( {
+                resetSearch: resetSearch,
+                visibilitySearched: visibilitySearched,
+                textSearched: textSearched,
                 startDateTimeSearched: startDateTimeSearched?.toISOString(),
                 endDateTimeSearched: endDateTimeSearched?.toISOString(),
             } ) )

@@ -13,7 +13,7 @@ import { GenericUtil } from '../util/generic.util'
 export abstract class GenericFormComponent<M, D> extends GenericComponent {
     protected readonly FormUtil: typeof FormUtil = FormUtil
 
-    private readonly datePipe: CustomDateFormatPipe = inject( CustomDateFormatPipe )
+    protected readonly datePipe: CustomDateFormatPipe = inject( CustomDateFormatPipe )
     private readonly location: Location = inject( Location )
 
     protected readonly subscriptions: Subscription = new Subscription()

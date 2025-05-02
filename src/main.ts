@@ -18,6 +18,7 @@ import { DatePipe } from '@angular/common'
 import { DateFormatPipe } from './app/shared/util-tool/pipe/date-format.pipe'
 import { PluralTranslationPipe } from './app/shared/util-tool/pipe/plural-translation.pipe'
 import { CustomDateFormatPipe } from './app/shared/util-tool/pipe/custom-date-format.pipe'
+import { ProjectOptionIconPipe } from './app/shared/util-tool/pipe/project-option-icon.pipe'
 
 (async (): Promise<void> => {
     await AppConfig.load()
@@ -38,6 +39,7 @@ import { CustomDateFormatPipe } from './app/shared/util-tool/pipe/custom-date-fo
             UserFacade,
             DatePipe,
             DateFormatPipe,
+            ProjectOptionIconPipe,
             CustomDateFormatPipe,
             AppConfig,
             AppConfig.providePrimeNg(),

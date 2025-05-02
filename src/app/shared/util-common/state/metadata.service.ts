@@ -15,19 +15,19 @@ export class MetadataService extends GenericService {
         super( '/api/metadata' )
     }
 
-    public getMovementsTypes (): Observable<SelectItem<MovementTypeEnum>[]> {
-        return this.http.get<SelectItem<MovementTypeEnum>[]>( `${this.baseUrl}/movements/types` )
-    }
-
-    public getParticipantsTypes (): Observable<SelectItem<ParticipantTypeEnum>[]> {
-        return this.http.get<SelectItem<ParticipantTypeEnum>[]>( `${this.baseUrl}/participants/types` )
+    public getPresencesStatus (): Observable<SelectItem<PresenceStatusEnum>[]> {
+        return this.http.get<SelectItem<PresenceStatusEnum>[]>( `${this.baseUrl}/presences/status` )
     }
 
     public getProfilesStatus (): Observable<SelectItem<ProfileStatusEnum>[]> {
         return this.http.get<SelectItem<ProfileStatusEnum>[]>( `${this.baseUrl}/profiles/status` )
     }
 
-    public getPresencesStatus (): Observable<SelectItem<PresenceStatusEnum>[]> {
-        return this.http.get<SelectItem<PresenceStatusEnum>[]>( `${this.baseUrl}/presences/status` )
+    public getMovementsTypes (): Observable<SelectItem<MovementTypeEnum>[]> {
+        return this.http.get<SelectItem<MovementTypeEnum>[]>( `${this.baseUrl}/movements/types` )
+    }
+
+    public getParticipantsTypes (): Observable<SelectItem<ParticipantTypeEnum>[]> {
+        return this.http.get<SelectItem<ParticipantTypeEnum>[]>( `${this.baseUrl}/participants/types` )
     }
 }

@@ -33,9 +33,9 @@ export class SecurityService extends GenericService {
         return this.http.post<TokenModel>( `${this.baseUrl}/token`, credentials )
     }
 
-    public refreshToken (credentials: TokenModel): Observable<TokenModel> {
+    public refreshToken (refreshToken: string): Observable<TokenModel> {
         return this.http.post<TokenModel>( `${this.baseUrl}/token/refresh`, {
-            refreshToken: credentials.refreshToken,
+            refreshToken: refreshToken,
         } )
     }
 

@@ -1,7 +1,7 @@
 import { UserModel } from '../../../../shared/util-model/model/user.model'
 import { UserPageParamsModel } from '../model/user-page-params.model'
 
-export enum UserActionEnum {
+enum UserActionEnum {
     START_USERS_PAGE_LOADER = '[Local] Starting users\' page loader',
     STOP_USERS_PAGE_LOADER = '[Local] Stopping users\' page loader',
 

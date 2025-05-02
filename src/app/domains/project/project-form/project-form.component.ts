@@ -34,6 +34,7 @@ import { ProjectOptionEnum } from '../../../shared/util-model/enumeration/projec
 
 @Component( {
     selector: 'app-project-form',
+    standalone: true,
     imports: [
         Stepper,
         StepItem,

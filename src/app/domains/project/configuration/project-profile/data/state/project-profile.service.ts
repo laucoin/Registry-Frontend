@@ -36,6 +36,10 @@ export class ProjectProfileService extends GenericProjectService {
         )
     }
 
+    public findProjectProfileById (projectId: string | undefined, id: string): Observable<ProjectProfileModel> {
+        return this.http.get<ProjectProfileModel>( `${this.buildRequestBaseUrl( projectId )}/${id}` )
+    }
+
     public searchUsers (
         projectId: string | undefined,
         textSearched: string | undefined,
@@ -50,10 +54,6 @@ export class ProjectProfileService extends GenericProjectService {
 
     public getAssignableProjectProfileRoles (projectId: string | undefined): Observable<SelectItem<string>[]> {
         return this.http.get<SelectItem<string>[]>( `${this.buildRequestBaseUrl( projectId )}/roles` )
-    }
-
-    public findProjectProfileById (projectId: string | undefined, id: string): Observable<ProjectProfileModel> {
-        return this.http.get<ProjectProfileModel>( `${this.buildRequestBaseUrl( projectId )}/${id}` )
     }
 
     public createProjectProfiles (

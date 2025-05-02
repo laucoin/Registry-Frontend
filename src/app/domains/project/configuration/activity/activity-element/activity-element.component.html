@@ -2,7 +2,7 @@
                   [actions]='actions()'
                   [actionMenuVisible]='actionMenuVisible()'
                   (action)='showDialogIfNeeded($event)'
-                  icon='pi pi-hammer'>
+                  [icon]='ProjectOptionEnum.ACTIVITY | optionIcon'>
     <div class='element-card'>
         <div class='activity-info d-flex flex-column justify-content-center'>
             <div class='activity-name d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>

@@ -3,7 +3,7 @@ import { ParticipantDto } from '../dto/participant.dto'
 import { ParticipantPageParamsModel } from '../model/participant-page-params.model'
 import { MovementPageParamsModel } from '../../../../../../shared/util-model/model/movement-page-params.model'
 
-export enum ParticipantActionEnum {
+enum ParticipantActionEnum {
     FETCH_PARTICIPANT_PRESENCES_STATUS = '[Backend] Fetching participant presences status',
 
     START_PARTICIPANTS_PAGE_LOADER = '[Local] Starting participants\' page loader',

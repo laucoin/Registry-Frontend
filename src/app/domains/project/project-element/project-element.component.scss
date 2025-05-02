@@ -4,19 +4,18 @@
 }
 
 .project-info,
-.options,
-.status,
+.options-and-status,
 .action-button {
+    gap:        var(--min-spacer);
     flex-basis: 100%;
 }
 
 @media (min-width: 992px) {
-    .project-info,
-    .options {
+    .project-info {
         flex-basis: 100%;
     }
 
-    .status {
+    .options-and-status {
         flex-basis: 70%;
     }
 
@@ -30,12 +29,8 @@
         flex-basis: 30%;
     }
 
-    .options {
-        flex-basis: 25%;
-    }
-
-    .status {
-        flex-basis: 30%;
+    .options-and-status {
+        flex-basis: 55%;
     }
 
     .action-button {

@@ -380,7 +380,7 @@ export class VehicleState extends GenericProjectElementState<VehicleStateModel> 
         ctx: StateContext<VehicleStateModel>,
         payload: FetchVehicleMovementsContents,
     ): Observable<void> {
-        return this.movementService.findMovementsContent(
+        return this.movementService.findMovementsContents(
             payload.projectId,
             payload.movementIds,
         ).pipe(

@@ -6,6 +6,7 @@ import { SeverityEnum } from '../../util-model/enumeration/severity.enum'
 
 @Component( {
     selector: 'app-severity-tag',
+    standalone: true,
     imports: [ Tag, SeverityCircleComponent ],
     templateUrl: './severity-tag.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,

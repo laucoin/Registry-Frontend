@@ -23,6 +23,7 @@ import { PresenceStatusEnum } from '../../../../../shared/util-model/enumeration
 import { ProjectAuthorityEnum } from '../../../../../shared/util-model/enumeration/project-authority.enum'
 import { ElementActionEnum } from '../../../../../shared/util-model/enumeration/element-action.enum'
 import { ProjectOptionEnum } from '../../../../../shared/util-model/enumeration/project-option.enum'
+import { ProjectOptionIconPipe } from '../../../../../shared/util-tool/pipe/project-option-icon.pipe'
 
 @Component( {
     selector: 'app-vehicle-element',
@@ -37,6 +38,7 @@ import { ProjectOptionEnum } from '../../../../../shared/util-model/enumeration/
         CustomDateFormatPipe,
         ConfirmationDialogComponent,
         SeverityCircleComponent,
+        ProjectOptionIconPipe,
     ],
     templateUrl: './vehicle-element.component.html',
     styleUrl: './vehicle-element.component.scss',

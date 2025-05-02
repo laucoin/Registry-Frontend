@@ -10,6 +10,7 @@ import {
     DisableMovement,
     EnableMovement,
     FetchMovement,
+    FetchMovementCommunicationsPage,
     FetchMovementsContent,
     FetchMovementsPage,
     FetchMovementTypes,
@@ -18,12 +19,15 @@ import {
     SearchParticipantsAndGroups,
     SearchReasonsAndActivities,
     SearchVehicles,
+    StartMovementCommunicationsPageLoader,
     StartMovementLoader,
     StartMovementsPageLoader,
+    StopMovementCommunicationsPageLoader,
     StopMovementLoader,
     StopMovementsPageLoader,
     UpdateGuestsMovement,
     UpdateMovement,
+    UpdateMovementCommunicationsPageSearchParams,
     UpdateMovementsPageSearchParams,
 } from './movement.action'
 import { MovementService } from './movement.service'
@@ -56,6 +60,7 @@ import { MovementReasonModel } from '../model/movement-reason.model'
 import { MovementTypeEnum } from '../../../../../shared/util-model/enumeration/movement-type.enum'
 import { ParticipantTypeEnum } from '../../../../../shared/util-model/enumeration/participant-type.enum'
 import { SeverityEnum } from '../../../../../shared/util-model/enumeration/severity.enum'
+import { CommunicationModel } from '../../../communication/data/model/communication.model'
 
 const defaultMovement: ElementRequestInformationModel<MovementModel> = {
     element: undefined,
@@ -69,6 +74,19 @@ const defaultMovementState: MovementStateModel = {
             resetSearch: false,
             visibilitySearched: undefined,
             typeSearched: undefined,
+            startDateTimeSearched: undefined,
+            endDateTimeSearched: undefined,
+        },
+        loading: false,
+        silentLoading: false,
+        error: undefined,
+    },
+    movementCommunications: {
+        element: undefined,
+        params: {
+            resetSearch: false,
+            visibilitySearched: undefined,
+            textSearched: undefined,
             startDateTimeSearched: undefined,
             endDateTimeSearched: undefined,
         },
@@ -147,6 +165,51 @@ export class MovementState extends GenericProjectElementState<MovementStateModel
     @Selector()
     public static movementsPageVisibilitySearchedParam (state: MovementStateModel): boolean | undefined {
         return state.movements.params.visibilitySearched
+    }
+
+    @Selector()
+    public static movementCommunicationsPage (state: MovementStateModel): PageModel<CommunicationModel> | undefined {
+        return state.movementCommunications.element
+    }
+
+    @Selector()
+    public static movementCommunicationsPageLoading (state: MovementStateModel): boolean {
+        return state.movementCommunications.loading
+    }
+
+    @Selector()
+    public static movementCommunicationsPageError (state: MovementStateModel): ToastMessageOptions | undefined {
+        return state.movementCommunications.error
+    }
+
+    @Selector()
+    public static movementCommunicationsPageSilentLoading (state: MovementStateModel): boolean {
+        return state.movementCommunications.silentLoading
+    }
+
+    @Selector()
+    public static movementCommunicationsPageResetSearch (state: MovementStateModel): boolean {
+        return state.movementCommunications.params.resetSearch
+    }
+
+    @Selector()
+    public static movementCommunicationsPageTextSearchedParam (state: MovementStateModel): string | undefined {
+        return state.movementCommunications.params.textSearched
+    }
+
+    @Selector()
+    public static movementCommunicationsPageVisibilitySearchedParam (state: MovementStateModel): boolean | undefined {
+        return state.movementCommunications.params.visibilitySearched
+    }
+
+    @Selector()
+    public static movementCommunicationsPageStartDateTimeSearchedParam (state: MovementStateModel): string | undefined {
+        return state.movementCommunications.params.startDateTimeSearched
+    }
+
+    @Selector()
+    public static movementCommunicationsPageEndDateTimeSearchedParam (state: MovementStateModel): string | undefined {
+        return state.movementCommunications.params.endDateTimeSearched
     }
 
     @Selector()
@@ -299,7 +362,7 @@ export class MovementState extends GenericProjectElementState<MovementStateModel
         ctx: StateContext<MovementStateModel>,
         payload: FetchMovementsContent,
     ): Observable<void> {
-        return this.service.findMovementsContent(
+        return this.service.findMovementsContents(
             payload.projectId,
             payload.movementIds,
         ).pipe(
@@ -337,6 +400,71 @@ export class MovementState extends GenericProjectElementState<MovementStateModel
         ctx.patchState( {
             movements: {
                 ...ctx.getState().movements,
+                params: payload.params,
+            },
+        } )
+    }
+
+    @Action( StartMovementCommunicationsPageLoader )
+    public startMovementCommunicationsPageLoader (ctx: StateContext<MovementStateModel>): void {
+        ctx.patchState( {
+            movementCommunications: StateUtil.updatePageLoader( ctx.getState().movementCommunications, true ),
+        } )
+    }
+
+    @Action( StopMovementCommunicationsPageLoader )
+    public stopMovementCommunicationsPageLoader (ctx: StateContext<MovementStateModel>): void {
+        ctx.patchState( {
+            movementCommunications: StateUtil.updatePageLoader( ctx.getState().movementCommunications, false ),
+        } )
+    }
+
+    @Action( FetchMovementCommunicationsPage )
+    public fetchMovementCommunicationsPage (
+        ctx: StateContext<MovementStateModel>,
+        payload: FetchMovementCommunicationsPage,
+    ): Observable<void> {
+        return this.service.findMovementCommunications(
+            payload.projectId,
+            payload.id,
+            payload.pageNumber,
+            payload.pageSize,
+            ctx.getState().movementCommunications.params,
+        ).pipe(
+            initialize( (): void => this.facade.startMovementCommunicationsPageLoader() ),
+            finalize( (): void => this.facade.stopMovementCommunicationsPageLoader() ),
+            map( (communicationsPage: PageModel<CommunicationModel>): void => this.fetchMovementCommunicationsPageComplete(
+                ctx,
+                communicationsPage,
+            ) ),
+            catchError( (error: ErrorModel): Observable<void> => this.communicationsPageError( ctx, error ) ),
+        )
+    }
+
+    private fetchMovementCommunicationsPageComplete (
+        ctx: StateContext<MovementStateModel>,
+        communicationsPage: PageModel<CommunicationModel>,
+    ): void {
+        ctx.patchState( {
+            movementCommunications: {
+                ...ctx.getState().movementCommunications,
+                params: {
+                    ...ctx.getState().movementCommunications.params,
+                    resetSearch: false,
+                },
+                element: communicationsPage,
+            },
+        } )
+    }
+
+    @Action( UpdateMovementCommunicationsPageSearchParams )
+    public updateMovementCommunicationsPageSearchParams (
+        ctx: StateContext<MovementStateModel>,
+        payload: UpdateMovementCommunicationsPageSearchParams,
+    ): void {
+        ctx.patchState( {
+            movementCommunications: {
+                ...ctx.getState().movementCommunications,
                 params: payload.params,
             },
         } )
@@ -646,6 +774,18 @@ export class MovementState extends GenericProjectElementState<MovementStateModel
     protected refreshPage (ctx: StateContext<MovementStateModel>): void {
         const page: PageModel<MovementModel> | undefined = ctx.getState().movements.element
         this.facade.fetchMovementsPage( page?.pageNumber, page?.pageSize, true )
+    }
+
+    protected communicationsPageError (ctx: StateContext<MovementStateModel>, error: ErrorModel): Observable<void> {
+        if (error.status == 503) {
+            throw error
+        } else {
+            ctx.patchState( {
+                movementCommunications: this.buildErrorMessage( ctx.getState().movementCommunications, error ),
+            } )
+        }
+
+        return of()
     }
 
     protected pageError (ctx: StateContext<MovementStateModel>, error: ErrorModel): Observable<void> {

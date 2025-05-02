@@ -4,7 +4,7 @@ import { ParticipantModel } from '../../../../../../shared/util-model/model/part
 import { ParticipantPageParamsModel } from '../../../participant/data/model/participant-page-params.model'
 import { GroupPageParamsModel } from '../model/group-page-params.model'
 
-export enum GroupActionEnum {
+enum GroupActionEnum {
     START_GROUPS_PAGE_LOADER = '[Local] Starting groups\' page loader',
     STOP_GROUPS_PAGE_LOADER = '[Local] Stopping groups\' page loader',
 

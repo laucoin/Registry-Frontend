@@ -341,7 +341,7 @@ export class ActivityState extends GenericProjectElementState<ActivityStateModel
         ctx: StateContext<ActivityStateModel>,
         payload: FetchActivityMovementsContents,
     ): Observable<void> {
-        return this.movementService.findMovementsContent(
+        return this.movementService.findMovementsContents(
             payload.projectId,
             payload.movementIds,
         ).pipe(

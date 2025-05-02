@@ -25,6 +25,7 @@ import { ElementActionEnum } from '../../util-model/enumeration/element-action.e
 
 @Component( {
     selector: 'app-confirmation-dialog',
+    standalone: true,
     imports: [
         Dialog,
         TranslatePipe,
