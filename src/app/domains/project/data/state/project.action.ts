@@ -2,7 +2,7 @@ import { ProjectModel } from '../../../../shared/util-model/model/project.model'
 import { ProjectDto } from '../dto/project.dto'
 import { ProjectPageParamsModel } from '../model/project-page-params.model'
 
-export enum ProjectActionEnum {
+enum ProjectActionEnum {
     FETCH_PROJECT_OPTIONS = '[Backend] Fetching project\'s options',
 
     START_PROJECTS_PAGE_LOADER = '[Local] Starting projects\' page loader',

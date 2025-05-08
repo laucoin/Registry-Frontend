@@ -6,6 +6,7 @@ import { Select } from 'primeng/select'
 
 @Component( {
     selector: 'app-duration-field',
+    standalone: true,
     imports: [
         Select,
         ReactiveFormsModule,

@@ -2,7 +2,7 @@
                   [actions]='actions()'
                   [actionMenuVisible]='actionMenuVisible()'
                   (action)='showDialogIfNeeded($event)'
-                  icon='pi pi-car'>
+                  [icon]='ProjectOptionEnum.VEHICLE | optionIcon'>
     <div class='element-card'>
         <div class='vehicle-info d-flex flex-column justify-content-center'>
             <div class='vehicle-license-plate d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>

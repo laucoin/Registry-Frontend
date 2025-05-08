@@ -129,13 +129,6 @@ export class ProjectElementComponent extends GenericElementComponent<ProjectMode
                 label: 'projects.actions.select',
                 icon: 'pi pi-arrow-right',
                 disabled: false,
-                confirmation: {
-                    header: 'projects.actions.confirmations.select.title',
-                    message: 'projects.actions.confirmations.select.message',
-                    icon: 'pi pi-info-circle',
-                    acceptSeverity: SeverityEnum.SUCCESS,
-                    rejectSeverity: SeverityEnum.SECONDARY,
-                },
             } : AppConfig.config.project.actions.includes( ElementActionEnum.PROJECT_CREATE_SUPPORT_PROFILE ) ? {
             id: ElementActionEnum.PROJECT_CREATE_SUPPORT_PROFILE,
             label: 'projects.actions.create-support',
@@ -212,7 +205,7 @@ export class ProjectElementComponent extends GenericElementComponent<ProjectMode
         switch (action) {
             case ElementActionEnum.PROJECT_SELECT_PROFILE:
                 this.subscriptions.add(
-                    this.registryFacade.selectUserProjectProfileByProject( this.project() ).pipe(
+                    this.registryFacade.selectUserProjectProfileByProject( this.project().id ).pipe(
                         tap( () => this.router.navigateByUrl( AppRouteEnum.PROJECTS_SELECTED ).catch( console.error ) ),
                     ).subscribe(),
                 )

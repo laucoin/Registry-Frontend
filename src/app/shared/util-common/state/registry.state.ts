@@ -23,7 +23,6 @@ import {
     Logout,
     ManageUserProjectInvitationAcceptance,
     Notify,
-    RefreshTokens,
     RestoreTokens,
     SelectUserProjectProfile,
     SelectUserProjectProfileByProject,
@@ -369,22 +368,6 @@ export class RegistryState extends GenericState implements NgxsOnInit {
         )
     }
 
-    @Action( RefreshTokens )
-    public refreshTokens (ctx: StateContext<RegistryStateModel>): Observable<void> {
-        if (!ctx.getState().authentication.token) return of()
-        return this.service.refreshToken( ctx.getState().authentication.token! ).pipe(
-            map( (token: TokenModel): void => this.fetchTokensComplete( ctx, token ) ),
-            mergeMap( (): Observable<CurrentUserModel> => this.service.fetchCurrentUser() ),
-            map( (currentUser: CurrentUserModel): void => this.fetchCurrentUserComplete( ctx, currentUser ) ),
-            catchError( (error: ErrorModel): Observable<void> => {
-                if (error.status === 401) {
-                    this.registryFacade.login()
-                }
-                return this.globalError( ctx, error )
-            } ),
-        )
-    }
-
     private fetchTokensComplete (ctx: StateContext<RegistryStateModel>, token: TokenModel): void {
         SessionStorageUtils.set( TOKEN, token )
         ctx.patchState( {
@@ -662,22 +645,14 @@ export class RegistryState extends GenericState implements NgxsOnInit {
         _: StateContext<RegistryStateModel>,
         payload: SelectUserProjectProfile,
     ): Observable<void> {
-        return this.preferencesService.selectUserProjectProfile( payload.profile.id ).pipe(
+        return this.preferencesService.selectUserProjectProfile( payload.profileId ).pipe(
             initialize( (): void => this.registryFacade.startProfileLoader() ),
             finalize( (): void => this.registryFacade.stopProfileLoader() ),
-            map( (): void => this.selectProjectProfileComplete( payload.profile ) ),
+            map( (): void => this.selectProjectProfileComplete() ),
         )
     }
 
-    private selectProjectProfileComplete (profile: ProjectProfileModel): void {
-        this.buildMessageAndNotify(
-            SeverityEnum.SUCCESS,
-            'project-profiles.notifications.select.title',
-            'project-profiles.notifications.select.message',
-            'pi pi-verified',
-            { name: profile.project.name },
-        )
-
+    private selectProjectProfileComplete (): void {
         this.registryFacade.fetchCurrentUser()
     }
 
@@ -686,22 +661,14 @@ export class RegistryState extends GenericState implements NgxsOnInit {
         _: StateContext<RegistryStateModel>,
         payload: SelectUserProjectProfileByProject,
     ): Observable<void> {
-        return this.preferencesService.selectUserProjectProfileByProjectId( payload.project.id ).pipe(
+        return this.preferencesService.selectUserProjectProfileByProjectId( payload.projectId ).pipe(
             initialize( (): void => this.registryFacade.startProfileLoader() ),
             finalize( (): void => this.registryFacade.stopProfileLoader() ),
-            map( (): void => this.selectUserProjectProfileByProjectComplete( payload.project ) ),
+            map( (): void => this.selectUserProjectProfileByProjectComplete() ),
         )
     }
 
-    private selectUserProjectProfileByProjectComplete (project: ProjectModel): void {
-        this.buildMessageAndNotify(
-            SeverityEnum.SUCCESS,
-            'projects.notifications.select.title',
-            'projects.notifications.select.message',
-            'pi pi-verified',
-            { name: project.name },
-        )
-
+    private selectUserProjectProfileByProjectComplete (): void {
         this.registryFacade.fetchCurrentUser()
     }
 

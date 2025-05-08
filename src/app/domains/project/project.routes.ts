@@ -9,6 +9,9 @@ import { importProvidersFrom } from '@angular/core'
 import { NgxsModule } from '@ngxs/store'
 import { MovementState } from './movement/data/state/movement.state'
 import { ProjectDetailComponent } from './project-detail/project-detail.component'
+import { CommunicationFacade } from './communication/data/state/communication.facade'
+import { CommunicationState } from './communication/data/state/communication.state'
+import { communicationOptionGuard } from '../../shared/util-authentication/guard/activity-communication-option.guard'
 
 export const projectRoutes: Routes = [
     {
@@ -29,7 +32,13 @@ export const projectRoutes: Routes = [
                 path: ProjectRoutesEnum.MOVEMENTS,
                 loadChildren: () => import('./movement/movement.routes').then( (m: typeof import('./movement/movement.routes')) => m.movementRoutes ),
                 canActivate: [ selectedProfileGuard ],
-                providers: [ MovementFacade, importProvidersFrom( NgxsModule.forFeature( [ MovementState ] ) ) ],
+                providers: [ CommunicationFacade, MovementFacade, importProvidersFrom( NgxsModule.forFeature( [ MovementState, CommunicationState ] ) ) ],
+            },
+            {
+                path: ProjectRoutesEnum.COMMUNICATIONS,
+                loadChildren: () => import('./communication/communication.routes').then( (m: typeof import('./communication/communication.routes')) => m.communicationRoutes ),
+                canActivate: [ selectedProfileGuard, communicationOptionGuard ],
+                providers: [ CommunicationFacade, importProvidersFrom( NgxsModule.forFeature( [ CommunicationState ] ) ) ],
             },
             {
                 path: ProjectRoutesEnum.CONFIGURATION,

@@ -40,22 +40,6 @@ export class ParticipantService extends GenericProjectService {
         return this.http.get<ParticipantModel>( `${this.buildRequestBaseUrl( projectId )}/${id}` )
     }
 
-    public findParticipantMovements (
-        projectId: string | undefined,
-        id: string,
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
-        params: MovementPageParamsModel,
-    ): Observable<PageModel<MovementModel>> {
-        return this.http.get<PageModel<MovementModel>>(
-            `${this.buildRequestBaseUrl( projectId )}/${id}/movements?${QueryUtil.buildQueryParams(
-                pageNumber,
-                pageSize,
-                params,
-            ).toString()}`,
-        )
-    }
-
     public searchUsers (
         projectId: string | undefined,
         textSearched: string | undefined,
@@ -80,6 +64,22 @@ export class ParticipantService extends GenericProjectService {
         )
     }
 
+    public findParticipantMovements (
+        projectId: string | undefined,
+        id: string,
+        pageNumber: number | undefined,
+        pageSize: number | undefined,
+        params: MovementPageParamsModel,
+    ): Observable<PageModel<MovementModel>> {
+        return this.http.get<PageModel<MovementModel>>(
+            `${this.buildRequestBaseUrl( projectId )}/${id}/movements?${QueryUtil.buildQueryParams(
+                pageNumber,
+                pageSize,
+                params,
+            ).toString()}`,
+        )
+    }
+
     public createParticipant (
         projectId: string | undefined,
         participant: ParticipantDto,
@@ -101,10 +101,6 @@ export class ParticipantService extends GenericProjectService {
 
     public enableParticipantById (projectId: string | undefined, id: string): Observable<ParticipantModel> {
         return this.http.patch<ParticipantModel>( `${this.buildRequestBaseUrl( projectId )}/${id}/enable`, null )
-    }
-
-    public impersonateParticipantById (projectId: string | undefined, id: string): Observable<void> {
-        return this.http.patch<void>( `${this.buildRequestBaseUrl( projectId )}/${id}/impersonate`, null )
     }
 
     public deleteParticipantById (projectId: string | undefined, id: string): Observable<void> {

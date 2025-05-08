@@ -1,6 +1,8 @@
 import { MovementModel } from '../../util-model/model/movement.model'
 import { PairModel } from '../../util-model/model/pair.model'
 import { MovementContentModel } from '../../util-model/model/movement-content.model'
+import { SelectItem } from 'primeng/api'
+import { DateFormatPipe } from '../pipe/date-format.pipe'
 
 export class MovementUtil {
     public static rebuildPageWithContent (
@@ -11,6 +13,13 @@ export class MovementUtil {
             ...movement,
             content: contents.find( (content: PairModel<MovementContentModel[]>): boolean => content.first === movement.id )?.second ?? [],
         }) )
+    }
+
+    public static toActivitySelectItem (movement: MovementModel, datePipe: DateFormatPipe): SelectItem<MovementModel> {
+        return {
+            label: `${movement.reason?.label} (${datePipe.transform( movement.dateTime, 'datetime' )})`,
+            value: movement,
+        }
     }
 
     public static getAdults (movement: MovementModel): MovementContentModel[] {

@@ -23,6 +23,7 @@ import { ProjectAuthorityEnum } from '../../../../../shared/util-model/enumerati
 import { SeverityEnum } from '../../../../../shared/util-model/enumeration/severity.enum'
 import { ElementActionEnum } from '../../../../../shared/util-model/enumeration/element-action.enum'
 import { ProjectOptionEnum } from '../../../../../shared/util-model/enumeration/project-option.enum'
+import { ProjectOptionIconPipe } from '../../../../../shared/util-tool/pipe/project-option-icon.pipe'
 
 @Component( {
     selector: 'app-activity-element',
@@ -38,6 +39,7 @@ import { ProjectOptionEnum } from '../../../../../shared/util-model/enumeration/
         ReactiveFormsModule,
         ConfirmationDialogComponent,
         SeverityCircleComponent,
+        ProjectOptionIconPipe,
     ],
     templateUrl: './activity-element.component.html',
     styleUrl: './activity-element.component.scss',

@@ -382,7 +382,7 @@ export class ParticipantState extends GenericProjectElementState<ParticipantStat
         ctx: StateContext<ParticipantStateModel>,
         payload: FetchParticipantMovementsContents,
     ): Observable<void> {
-        return this.movementService.findMovementsContent(
+        return this.movementService.findMovementsContents(
             payload.projectId,
             payload.movementIds,
         ).pipe(

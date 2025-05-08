@@ -139,6 +139,7 @@ export const sgdfConfig: ContextConfigModel = {
     },
     movement: {
         actions: [
+            ElementActionEnum.MOVEMENT_CONSULT_COMMUNICATIONS,
             ElementActionEnum.MOVEMENT_UPDATE,
             ElementActionEnum.MOVEMENT_DISABLE,
             ElementActionEnum.MOVEMENT_ENABLE,
@@ -172,11 +173,20 @@ export const sgdfConfig: ContextConfigModel = {
             ElementActionEnum.ACTIVITY_DELETE,
         ],
     },
+    communication: {
+        actions: [
+            ElementActionEnum.COMMUNICATION_UPDATE,
+            ElementActionEnum.COMMUNICATION_DISABLE,
+            ElementActionEnum.COMMUNICATION_ENABLE,
+            ElementActionEnum.COMMUNICATION_DELETE,
+        ],
+    },
     notification: {
         duration: {
             info: 5000,
             success: 3000,
             warn: 8000,
+            error: 15000,
             secondary: 5000,
             contrast: 5000,
         },

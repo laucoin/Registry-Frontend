@@ -24,11 +24,12 @@
                 </div>
             }
         </div>
-        <div class='options d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
-            @let nbOfOptions = project().options.length;
-            <app-severity-tag
-                    (click)='nbOfOptions > 1 ? layerOpened = true : undefined'
-                    (keydown.enter)='nbOfOptions > 1 ? layerOpened = true : undefined'>
+        <div class='options-and-status d-flex flex-column' [class.justify-content-center]='registryFacade.tinyScreen()'>
+            <div class='d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
+                @let nbOfOptions = project().options.length;
+                <app-severity-tag
+                        (click)='nbOfOptions > 1 ? layerOpened = true : undefined'
+                        (keydown.enter)='nbOfOptions > 1 ? layerOpened = true : undefined'>
                 <span [class.pointer]='nbOfOptions > 1'
                       [class.hover-underline]='nbOfOptions > 1'>
                     {{
@@ -39,15 +40,16 @@
                     }}
 
                 </span>
-            </app-severity-tag>
-        </div>
-        <div class='status d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
-            @if (intervalStatus()) {
-                <app-severity-tag [severity]='intervalStatus()?.status === IntervalStatusEnum.IN_PROGRESS ? SeverityEnum.SUCCESS : intervalStatus()?.status ===
+                </app-severity-tag>
+            </div>
+            <div class='d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
+                @if (intervalStatus()) {
+                    <app-severity-tag [severity]='intervalStatus()?.status === IntervalStatusEnum.IN_PROGRESS ? SeverityEnum.SUCCESS : intervalStatus()?.status ===
                 IntervalStatusEnum.FINISHED ? SeverityEnum.WARNING : SeverityEnum.INFO'
-                                  [value]='intervalStatus() | intervalFormat:"projects.status" | translate: { interval:
+                                      [value]='intervalStatus() | intervalFormat:"projects.status" | translate: { interval:
                                   buildInterval(intervalStatus()!.interval!) }' />
-            }
+                }
+            </div>
         </div>
         <div class='action-button d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
             @if (buttonAction()) {

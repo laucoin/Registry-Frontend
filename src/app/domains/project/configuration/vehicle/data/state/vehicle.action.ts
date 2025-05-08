@@ -3,7 +3,7 @@ import { VehicleModel } from '../../../../../../shared/util-model/model/vehicle.
 import { MovementPageParamsModel } from '../../../../../../shared/util-model/model/movement-page-params.model'
 import { VehiclePageParamsModel } from '../model/vehicle-page-params.model'
 
-export enum VehicleActionEnum {
+enum VehicleActionEnum {
     FETCH_VEHICLE_PRESENCES_STATUS = '[Backend] Fetching vehicle presences status',
 
     START_VEHICLES_PAGE_LOADER = '[Local] Starting vehicles\' page loader',

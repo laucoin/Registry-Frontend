@@ -23,6 +23,7 @@ import { GenericUtil } from '../../util-tool/util/generic.util'
 
 @Component( {
     selector: 'app-select-elements-field',
+    standalone: true,
     imports: [
         ReactiveFormsModule,
         Button,

@@ -17,6 +17,7 @@ import { FormUtil } from '../../../shared/util-tool/util/form.util'
 
 @Component( {
     selector: 'app-user-form',
+    standalone: true,
     imports: [
         Button,
         Card,

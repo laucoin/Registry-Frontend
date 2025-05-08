@@ -1,5 +1,5 @@
 import { computed, Injectable, Signal } from '@angular/core'
-import { ActionCompletion, ofActionCompleted, ofActionSuccessful } from '@ngxs/store'
+import { ActionCompletion, ofActionCompleted } from '@ngxs/store'
 import { ToastMessageOptions } from 'primeng/api'
 import { Observable } from 'rxjs'
 import { TokenModel } from '../../util-authentication/model/token.model'
@@ -19,7 +19,6 @@ import {
     Logout,
     ManageUserProjectInvitationAcceptance,
     Notify,
-    RefreshTokens,
     RestoreTokens,
     SelectUserProjectProfile,
     SelectUserProjectProfileByProject,
@@ -236,11 +235,6 @@ export class RegistryFacade extends GenericFacade {
         this.ngStore.dispatch( new FetchTokens( authorizationCode ) )
     }
 
-    public refreshToken (): Observable<RefreshTokens> {
-        this.ngStore.dispatch( RefreshTokens )
-        return this.actions$.pipe( ofActionSuccessful( RefreshTokens ) )
-    }
-
     public startProfilesPageLoader (): void {
         this.ngStore.dispatch( StartUserProjectProfilesPageLoader )
     }
@@ -319,14 +313,14 @@ export class RegistryFacade extends GenericFacade {
         this.ngStore.dispatch( new ManageUserProjectInvitationAcceptance( id, accepted ) )
     }
 
-    public selectUserProjectProfile (profile: ProjectProfileModel): Observable<ActionCompletion<SelectUserProjectProfile>> {
-        this.ngStore.dispatch( new SelectUserProjectProfile( profile ) )
+    public selectUserProjectProfile (id: string | undefined): Observable<ActionCompletion<SelectUserProjectProfile>> {
+        this.ngStore.dispatch( new SelectUserProjectProfile( id ) )
 
         return this.actions$.pipe( ofActionCompleted( SelectUserProjectProfile ) )
     }
 
-    public selectUserProjectProfileByProject (project: ProjectModel): Observable<ActionCompletion<SelectUserProjectProfileByProject>> {
-        this.ngStore.dispatch( new SelectUserProjectProfileByProject( project ) )
+    public selectUserProjectProfileByProject (projectId: string): Observable<ActionCompletion<SelectUserProjectProfileByProject>> {
+        this.ngStore.dispatch( new SelectUserProjectProfileByProject( projectId ) )
 
         return this.actions$.pipe( ofActionCompleted( SelectUserProjectProfileByProject ) )
     }

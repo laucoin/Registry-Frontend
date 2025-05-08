@@ -51,7 +51,7 @@
                 <label for='visibility-search-field'>{{ 'movements.search-and-filter.visibility' | translate }}</label>
                 <p-select inputId='visibility-search-field'
                           fluid
-                          [options]='facade.visibilitiesMetadata()'
+                          [options]='movementFacade.visibilitiesMetadata()'
                           optionLabel='label'
                           optionValue='value'
                           (onChange)='loadPage(pageEvent)'

@@ -26,16 +26,12 @@ export class UserProjectProfileService extends GenericService {
         )
     }
 
-    public findUserProjectProfileById (id: string): Observable<ProjectProfileModel> {
-        return this.http.get<ProjectProfileModel>( `${this.baseUrl}/${id}` )
+    public manageUserProjectProfileAcceptance (id: string, accepted: boolean): Observable<ProjectProfileModel> {
+        return this.http.post<ProjectProfileModel>( `${this.baseUrl}/${id}/accept/${accepted}`, null )
     }
 
     public createSupportProjectProfile (projectId: string): Observable<ProjectProfileModel> {
         return this.http.post<ProjectProfileModel>( `${this.baseUrl}/${projectId}/support`, null )
-    }
-
-    public manageUserProjectProfileAcceptance (id: string, accepted: boolean): Observable<ProjectProfileModel> {
-        return this.http.post<ProjectProfileModel>( `${this.baseUrl}/${id}/accept/${accepted}`, null )
     }
 
     public deleteUserProfileById (id: string): Observable<void> {

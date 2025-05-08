@@ -18,6 +18,8 @@ import { GenericUtil } from '../../../../../shared/util-tool/util/generic.util'
 import { StringUtil } from '../../../../../shared/util-tool/util/string.util'
 import { MovementReasonModel } from '../model/movement-reason.model'
 import { ParticipantTypeEnum } from '../../../../../shared/util-model/enumeration/participant-type.enum'
+import { CommunicationModel } from '../../../communication/data/model/communication.model'
+import { CommunicationPageParamsModel } from '../../../communication/data/model/communication-page-params.model'
 
 @Injectable( {
     providedIn: 'root',
@@ -42,7 +44,7 @@ export class MovementService extends GenericProjectService {
         )
     }
 
-    public findMovementsContent (
+    public findMovementsContents (
         projectId: string | undefined,
         movementIds: string[],
     ): Observable<PairModel<MovementContentModel[]>[]> {
@@ -55,6 +57,22 @@ export class MovementService extends GenericProjectService {
 
         return this.http.get<PairModel<MovementContentModel[]>[]>(
             `${this.buildRequestBaseUrl( projectId )}/contents?${builtParams.toString()}`,
+        )
+    }
+
+    public findMovementCommunications (
+        projectId: string | undefined,
+        id: string,
+        pageNumber: number | undefined,
+        pageSize: number | undefined,
+        params: CommunicationPageParamsModel,
+    ): Observable<PageModel<CommunicationModel>> {
+        return this.http.get<PageModel<CommunicationModel>>(
+            `${this.buildRequestBaseUrl( projectId )}/${id}/communications?${QueryUtil.buildQueryParams(
+                pageNumber,
+                pageSize,
+                params,
+            ).toString()}`,
         )
     }
 

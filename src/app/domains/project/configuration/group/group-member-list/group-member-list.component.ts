@@ -31,6 +31,7 @@ import { Card } from 'primeng/card'
 
 @Component( {
     selector: 'app-group-member-list',
+    standalone: true,
     imports: [
         GroupElementComponent,
         Button,

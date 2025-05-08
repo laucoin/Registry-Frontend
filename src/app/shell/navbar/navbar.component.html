@@ -3,7 +3,7 @@
         <ng-template #start>
             <div class='d-flex align-items-center'>
                 @if (showContextMenu()) {
-                    <p-button text rounded [routerLink]='AppRouteEnum.PROJECTS' icon='pi pi-arrow-left'
+                    <p-button text rounded (onClick)='backToProjects()' (keydown.enter)='backToProjects()' icon='pi pi-arrow-left'
                               [label]='registryFacade.tinyScreen() ? "" : registryFacade.selectedProject()?.name'></p-button>
                 } @else {
                     <a [tabIndex]='-1'

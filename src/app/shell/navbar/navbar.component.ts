@@ -1,4 +1,4 @@
-import { Component, computed, HostListener, signal, Signal, WritableSignal } from '@angular/core'
+import { Component, computed, HostListener, inject, signal, Signal, WritableSignal } from '@angular/core'
 import { Menubar } from 'primeng/menubar'
 import { GenericComponent } from '../../shared/util-tool/component/generic.component'
 import { Avatar } from 'primeng/avatar'
@@ -19,6 +19,7 @@ import { CurrentUserModel } from '../../shared/util-model/model/current-user.mod
 import { CurrentUserUtil } from '../../shared/util-authentication/tool/current-user.util'
 import { TruncatePipe } from '../../shared/util-tool/pipe/truncate.pipe'
 import { toSignal } from '@angular/core/rxjs-interop'
+import { ProjectOptionIconPipe } from '../../shared/util-tool/pipe/project-option-icon.pipe'
 
 @Component( {
     selector: 'app-navbar',
@@ -33,13 +34,13 @@ import { toSignal } from '@angular/core/rxjs-interop'
         Ripple,
         Button,
         TruncatePipe,
-
-
     ],
     templateUrl: './navbar.component.html',
     styleUrl: './navbar.component.scss',
 } )
 export class NavbarComponent extends GenericComponent {
+    private readonly iconOption: ProjectOptionIconPipe = inject( ProjectOptionIconPipe )
+
     protected readonly maxMenuTextLength: number = 26
     protected readonly userMenuItems: MenuItem[] = [
         {
@@ -83,6 +84,13 @@ export class NavbarComponent extends GenericComponent {
             requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_MOVEMENT_R,
         },
         {
+            label: 'global.menu.communications',
+            icon: this.iconOption.transform( ProjectOptionEnum.COMMUNICATION ),
+            url: AppRouteEnum.PROJECTS_COMMUNICATIONS,
+            requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_COMMUNICATION_R,
+            requiredProjectOption: ProjectOptionEnum.COMMUNICATION,
+        },
+        {
             label: 'global.menu.configuration',
             icon: 'pi pi-cog',
             requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_R,
@@ -116,14 +124,14 @@ export class NavbarComponent extends GenericComponent {
                 },
                 {
                     label: 'global.menu.vehicles',
-                    icon: 'pi pi-car',
+                    icon: this.iconOption.transform( ProjectOptionEnum.VEHICLE ),
                     url: AppRouteEnum.PROJECTS_CONFIGURATION_VEHICLES,
                     requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_VEHICLE_R,
                     requiredProjectOption: ProjectOptionEnum.VEHICLE,
                 },
                 {
                     label: 'global.menu.activities',
-                    icon: 'pi pi-hammer',
+                    icon: this.iconOption.transform( ProjectOptionEnum.ACTIVITY ),
                     url: AppRouteEnum.PROJECTS_CONFIGURATION_ACTIVITIES,
                     requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_ACTIVITY_R,
                     requiredProjectOption: ProjectOptionEnum.ACTIVITY,
@@ -188,7 +196,7 @@ export class NavbarComponent extends GenericComponent {
     public handleWindowScroll (): void {
         const currentScrollPosition: number = window.pageYOffset || document.documentElement.scrollTop
 
-        if (currentScrollPosition > this.lastScrollPosition()) {
+        if (currentScrollPosition > this.lastScrollPosition() && currentScrollPosition > 0) {
             // Scrolling DOWN
             this.showNavbar.set( false )
         } else {
@@ -197,6 +205,11 @@ export class NavbarComponent extends GenericComponent {
         }
 
         this.lastScrollPosition.set( currentScrollPosition )
+    }
+
+    protected backToProjects (): void {
+        this.registryFacade.selectUserProjectProfile( undefined )
+        this.router.navigateByUrl( AppRouteEnum.PROJECTS ).catch( console.error )
     }
 
     protected logout (): void {

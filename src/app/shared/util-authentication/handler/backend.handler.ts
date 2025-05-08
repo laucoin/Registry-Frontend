@@ -7,7 +7,7 @@ import {
     HttpRequest,
 } from '@angular/common/http'
 import { inject } from '@angular/core'
-import { catchError, map, mergeMap, Observable, throwError } from 'rxjs'
+import { catchError, mergeMap, Observable, tap, throwError } from 'rxjs'
 import { RegistryFacade } from '../../util-common/state/registry.facade'
 import { CurrentUserModel } from '../../util-model/model/current-user.model'
 import {
@@ -15,12 +15,15 @@ import {
     CURRENT_USER_ID,
     REDIRECT_URI,
     SELECT_PROFILE_PROJECT_ID,
+    TOKEN,
 } from '../../util-tool/util/request.util'
 import { TokenModel } from '../model/token.model'
 import { SessionStorageUtils } from '../../util-tool/util/session-storage.util'
 import { AppConfig } from '../../../app.config'
 import { ErrorModel } from '../../util-model/model/error.model'
 import { TranslateService } from '@ngx-translate/core'
+import { SecurityService } from '../service/security.service'
+import { GenericUtil } from '../../util-tool/util/generic.util'
 
 export const backendHandler: HttpInterceptorFn = (
     req: HttpRequest<unknown>,
@@ -31,6 +34,7 @@ export const backendHandler: HttpInterceptorFn = (
     }
 
     const registryFacade: RegistryFacade = inject( RegistryFacade )
+    const securityService: SecurityService = inject( SecurityService )
     const translateService: TranslateService = inject( TranslateService )
 
     const currentUser: CurrentUserModel | undefined = registryFacade.currentUser()
@@ -57,8 +61,14 @@ export const backendHandler: HttpInterceptorFn = (
                         message: translateService.instant( 'global.notifications.503.message' ),
                     }) )
                 case 401:
-                    return registryFacade.refreshToken().pipe(
-                        map( (): TokenModel => registryFacade.token()! ),
+                    if (GenericUtil.isNull( registryFacade.token() )) {
+                        registryFacade.login()
+                    }
+                    return securityService.refreshToken( registryFacade.token()!.refreshToken ).pipe(
+                        tap( (token: TokenModel): void => {
+                            SessionStorageUtils.set( TOKEN, token )
+                            registryFacade.restoreTokensFromSessionStorage()
+                        } ),
                         mergeMap( (newToken: TokenModel): Observable<HttpEvent<unknown>> => {
                             const retryHeaders: HttpHeaders = buildHeaders( req.url, newToken, req.headers )
                             return next( req.clone( { url: url, headers: retryHeaders } ) )

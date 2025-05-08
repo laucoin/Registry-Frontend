@@ -26,12 +26,12 @@ export class ProjectService extends GenericService {
         )
     }
 
-    public getAvailableProjectOptions (): Observable<ProjectOptionModel[]> {
-        return this.http.get<ProjectOptionModel[]>( `${this.baseUrl}/options` )
-    }
-
     public findProjectById (id: string): Observable<ProjectModel> {
         return this.http.get<ProjectModel>( `${this.baseUrl}/${id}` )
+    }
+
+    public getAvailableProjectOptions (): Observable<ProjectOptionModel[]> {
+        return this.http.get<ProjectOptionModel[]>( `${this.baseUrl}/options` )
     }
 
     public createProject (project: ProjectDto): Observable<ProjectModel> {

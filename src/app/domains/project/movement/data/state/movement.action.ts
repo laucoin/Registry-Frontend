@@ -2,8 +2,9 @@ import { MovementDto } from '../dto/movement.dto'
 import { MovementModel } from '../../../../../shared/util-model/model/movement.model'
 import { MovementPageParamsModel } from '../../../../../shared/util-model/model/movement-page-params.model'
 import { ParticipantTypeEnum } from '../../../../../shared/util-model/enumeration/participant-type.enum'
+import { CommunicationPageParamsModel } from '../../../communication/data/model/communication-page-params.model'
 
-export enum MovementActionEnum {
+enum MovementActionEnum {
     FETCH_MOVEMENT_TYPES = '[Backend] Fetching movement types',
     FETCH_PARTICIPANT_TYPES = '[Backend] Fetching participant types',
 
@@ -13,6 +14,12 @@ export enum MovementActionEnum {
     FETCH_MOVEMENTS_PAGE = '[Backend] Fetching movements\' page',
     FETCH_MOVEMENTS_CONTENT = '[Backend] Fetching movements\' content',
     UPDATE_MOVEMENTS_PAGE_SEARCH_PARAMS = '[Local] Updating movements\' page search params',
+
+    START_MOVEMENT_COMMUNICATIONS_PAGE_LOADER = '[Local] Starting movement communications\' page loader',
+    STOP_MOVEMENT_COMMUNICATIONS_PAGE_LOADER = '[Local] Stopping movement communications\' page loader',
+
+    FETCH_MOVEMENT_COMMUNICATIONS_PAGE = '[Backend] Fetching movement communications\' page',
+    UPDATE_MOVEMENT_COMMUNICATIONS_PAGE_SEARCH_PARAMS = '[Local] Updating movement communications\' page search params',
 
     START_MOVEMENT_LOADER = '[Local] Starting movement loader',
     STOP_MOVEMENT_LOADER = '[Local] Stopping movement loader',
@@ -71,6 +78,32 @@ export class UpdateMovementsPageSearchParams {
     public static readonly type: MovementActionEnum = MovementActionEnum.UPDATE_MOVEMENTS_PAGE_SEARCH_PARAMS
 
     public constructor (public readonly params: MovementPageParamsModel) {}
+}
+
+export class StartMovementCommunicationsPageLoader {
+    public static readonly type: MovementActionEnum = MovementActionEnum.START_MOVEMENT_COMMUNICATIONS_PAGE_LOADER
+}
+
+export class StopMovementCommunicationsPageLoader {
+    public static readonly type: MovementActionEnum = MovementActionEnum.STOP_MOVEMENT_COMMUNICATIONS_PAGE_LOADER
+}
+
+export class FetchMovementCommunicationsPage {
+    public static readonly type: MovementActionEnum = MovementActionEnum.FETCH_MOVEMENT_COMMUNICATIONS_PAGE
+
+    public constructor (
+        public readonly projectId: string | undefined,
+        public readonly id: string,
+        public readonly pageNumber: number | undefined,
+        public readonly pageSize: number | undefined,
+        public readonly force: boolean = false,
+    ) {}
+}
+
+export class UpdateMovementCommunicationsPageSearchParams {
+    public static readonly type: MovementActionEnum = MovementActionEnum.UPDATE_MOVEMENT_COMMUNICATIONS_PAGE_SEARCH_PARAMS
+
+    public constructor (public readonly params: CommunicationPageParamsModel) {}
 }
 
 export class StartMovementLoader {

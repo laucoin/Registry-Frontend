@@ -79,14 +79,6 @@ export class ProjectProfileElementComponent extends GenericElementComponent<Proj
             requiredUserAuthority: undefined,
             requiredProjectAuthority: undefined,
             requiredProjectOption: undefined,
-            confirmation: {
-                header: 'project-profiles.actions.confirmations.select.title',
-                message: 'project-profiles.actions.confirmations.select.message',
-                icon: 'pi pi-info-circle',
-                acceptSeverity: SeverityEnum.SUCCESS,
-                rejectSeverity: SeverityEnum.SECONDARY,
-                confirmProperty: undefined,
-            },
         },
         {
             id: ElementActionEnum.PROJECT_PROFILE_UPDATE,
@@ -211,7 +203,7 @@ export class ProjectProfileElementComponent extends GenericElementComponent<Proj
         switch (action) {
             case ElementActionEnum.PROJECT_PROFILE_SELECT:
                 this.subscriptions.add(
-                    this.registryFacade.selectUserProjectProfile( this.profile() ).pipe(
+                    this.registryFacade.selectUserProjectProfile( this.profile().id ).pipe(
                         tap( () => this.router.navigateByUrl( AppRouteEnum.PROJECTS_SELECTED ).catch( console.error ) ),
                     ).subscribe(),
                 )

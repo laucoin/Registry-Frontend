@@ -26,6 +26,8 @@ import { MovementTypeEnum } from '../../util-model/enumeration/movement-type.enu
 import { ProjectAuthorityEnum } from '../../util-model/enumeration/project-authority.enum'
 import { SeverityEnum } from '../../util-model/enumeration/severity.enum'
 import { ElementActionEnum } from '../../util-model/enumeration/element-action.enum'
+import { ProjectOptionIconPipe } from '../../util-tool/pipe/project-option-icon.pipe'
+import { ProjectOptionEnum } from '../../util-model/enumeration/project-option.enum'
 
 @Component( {
     selector: 'app-movement-element',
@@ -51,6 +53,7 @@ import { ElementActionEnum } from '../../util-model/enumeration/element-action.e
         DateFormatPipe,
         ConfirmationDialogComponent,
         SeverityCircleComponent,
+        ProjectOptionIconPipe,
     ],
     templateUrl: './movement-element.component.html',
     styleUrl: './movement-element.component.scss',
@@ -58,6 +61,7 @@ import { ElementActionEnum } from '../../util-model/enumeration/element-action.e
 } )
 export class MovementElementComponent extends GenericElementComponent<MovementModel> {
     protected readonly facade: MovementFacade = inject( MovementFacade )
+    protected readonly optionPipe: ProjectOptionIconPipe = inject( ProjectOptionIconPipe )
 
     protected readonly VehicleUtil: typeof VehicleUtil = VehicleUtil
     protected readonly MovementTypeEnum: typeof MovementTypeEnum = MovementTypeEnum
@@ -70,6 +74,16 @@ export class MovementElementComponent extends GenericElementComponent<MovementMo
     public readonly vehicleId: InputSignal<string | undefined> = input()
 
     private readonly allActions: Signal<ActionModel[]> = signal( [
+        {
+            id: ElementActionEnum.MOVEMENT_CONSULT_COMMUNICATIONS,
+            label: 'movements.actions.communications-history',
+            icon: this.optionPipe.transform( ProjectOptionEnum.COMMUNICATION ),
+            disabled: false,
+            requiredUserAuthority: undefined,
+            requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_MOVEMENT_COMMUNICATION_R,
+            requiredProjectOption: ProjectOptionEnum.COMMUNICATION,
+            confirmation: undefined,
+        },
         {
             id: ElementActionEnum.MOVEMENT_UPDATE,
             label: 'movements.actions.edit',
@@ -177,6 +191,11 @@ export class MovementElementComponent extends GenericElementComponent<MovementMo
 
     protected handleAction (action: ElementActionEnum): void {
         switch (action) {
+            case ElementActionEnum.MOVEMENT_CONSULT_COMMUNICATIONS:
+                this.router.navigateByUrl(
+                    AppRouteEnum.PROJECTS_MOVEMENTS_COMMUNICATIONS.replace( ':movementId', this.movement().id ),
+                ).catch( console.error )
+                break
             case ElementActionEnum.MOVEMENT_UPDATE:
                 this.router.navigateByUrl(
                     AppRouteEnum.PROJECTS_MOVEMENTS_EDITION.replace( ':movementId', this.movement().id ),
