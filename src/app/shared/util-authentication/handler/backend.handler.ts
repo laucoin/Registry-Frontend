@@ -10,13 +10,7 @@ import { inject } from '@angular/core'
 import { catchError, mergeMap, Observable, tap, throwError } from 'rxjs'
 import { RegistryFacade } from '../../util-common/state/registry.facade'
 import { CurrentUserModel } from '../../util-model/model/current-user.model'
-import {
-    AUTHORIZATION,
-    CURRENT_USER_ID,
-    REDIRECT_URI,
-    SELECT_PROFILE_PROJECT_ID,
-    TOKEN,
-} from '../../util-tool/util/request.util'
+import { AUTHORIZATION, CURRENT_USER_ID, SELECT_PROFILE_PROJECT_ID, TOKEN } from '../../util-tool/util/request.util'
 import { TokenModel } from '../model/token.model'
 import { SessionStorageUtils } from '../../util-tool/util/session-storage.util'
 import { AppConfig } from '../../../app.config'
@@ -46,7 +40,6 @@ export const backendHandler: HttpInterceptorFn = (
     } ) )
         .pipe( catchError( (error: HttpErrorResponse) => {
             if (AppConfig.config.backend.noAuthPaths.some( (permitAll: string): boolean => req.url.includes( permitAll ) ) && error.status === 401) {
-                SessionStorageUtils.set( REDIRECT_URI, location.pathname )
                 registryFacade.login()
             }
 
@@ -67,7 +60,7 @@ export const backendHandler: HttpInterceptorFn = (
                     return securityService.refreshToken( registryFacade.token()!.refreshToken ).pipe(
                         tap( (token: TokenModel): void => {
                             SessionStorageUtils.set( TOKEN, token )
-                            registryFacade.restoreTokensFromSessionStorage()
+                            registryFacade.restoreSessionFromStorage()
                         } ),
                         mergeMap( (newToken: TokenModel): Observable<HttpEvent<unknown>> => {
                             const retryHeaders: HttpHeaders = buildHeaders( req.url, newToken, req.headers )

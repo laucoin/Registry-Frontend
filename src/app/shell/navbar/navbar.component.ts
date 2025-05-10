@@ -44,14 +44,19 @@ export class NavbarComponent extends GenericComponent {
     protected readonly maxMenuTextLength: number = 26
     protected readonly userMenuItems: MenuItem[] = [
         {
+            label: this.translateService.instant( 'global.menu.profiles' ),
+            icon: 'pi pi-unlock',
+            url: AppRouteEnum.USERS_PROFILES,
+        },
+        {
             label: this.translateService.instant( 'global.menu.invitations' ),
             icon: 'pi pi-envelope',
-            url: AppRouteEnum.USERS_INVITATION,
+            url: AppRouteEnum.USERS_INVITATIONS,
         },
         {
             label: this.translateService.instant( 'global.menu.settings' ),
             icon: 'pi pi-cog',
-            url: AppRouteEnum.USERS_SETTING,
+            url: AppRouteEnum.USERS_SETTINGS,
         },
     ]
 
@@ -157,7 +162,7 @@ export class NavbarComponent extends GenericComponent {
     private readonly activeRoute: Signal<unknown> = toSignal( this.router.events )
     protected readonly showContextMenu: Signal<boolean> = computed( (): boolean => {
         const routeProject: RouterEvent | undefined = this.activeRoute() as RouterEvent | undefined
-        return routeProject?.url?.startsWith( `/${AppRouteEnum.PROJECTS}/` ) ?? false
+        return (routeProject?.url?.startsWith( `/${AppRouteEnum.PROJECTS}/` ) && !routeProject?.url?.startsWith( `/${AppRouteEnum.PROJECTS_CREATION}` )) ?? false
     } )
 
     private readonly lastScrollPosition: WritableSignal<number> = signal( 0 )

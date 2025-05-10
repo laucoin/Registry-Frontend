@@ -7,7 +7,9 @@ import { ParticipantMovementsListComponent } from './participant-movements-list/
 
 export const participantRoutes: Routes = [
     {
-        path: '', component: ParticipantComponent, children: [
+        path: '',
+        component: ParticipantComponent,
+        children: [
             {
                 path: '', component: ParticipantsListComponent,
             },

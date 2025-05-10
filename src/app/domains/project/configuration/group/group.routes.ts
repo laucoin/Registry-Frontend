@@ -7,7 +7,9 @@ import { GroupMemberListComponent } from './group-member-list/group-member-list.
 
 export const groupRoutes: Routes = [
     {
-        path: '', component: GroupComponent, children: [
+        path: '',
+        component: GroupComponent,
+        children: [
             {
                 path: '', component: GroupsListComponent,
             },

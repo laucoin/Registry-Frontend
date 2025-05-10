@@ -3,7 +3,7 @@
           [error]='facade.groupsPageError()'
           [loading]='facade.groupsPageLoading()'>
     <ng-template appTemplate='search' [formGroup]='form' let-pageEvent>
-        <div class='d-grid search-line g-2'>
+        <div class='d-grid search-line'>
             <div class='field'>
                 <label for='text-search-field'>{{ 'groups.search-and-filter.text' | translate }}</label>
                 <input id='text-search-field'
@@ -24,7 +24,7 @@
                                [formControl]='dateTimeSearched' />
             </div>
         </div>
-        <div class='d-grid search-line g-2'>
+        <div class='d-grid search-line'>
             <div class='field'>
                 <label for='presence-search-field'>{{ 'groups.search-and-filter.presence' | translate }}</label>
                 <p-select inputId='presence-search-field'

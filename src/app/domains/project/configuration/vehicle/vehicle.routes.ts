@@ -7,7 +7,9 @@ import { VehicleMovementsListComponent } from './vehicle-movements-list/vehicle-
 
 export const vehicleRoutes: Routes = [
     {
-        path: '', component: VehicleComponent, children: [
+        path: '',
+        component: VehicleComponent,
+        children: [
             {
                 path: '', component: VehiclesListComponent,
             },

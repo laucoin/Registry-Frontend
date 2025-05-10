@@ -1,11 +1,11 @@
 import { Routes } from '@angular/router'
 import { AppRouteEnum } from './app-route.enum'
-import { authGuard } from './shared/util-authentication/guard/auth.guard'
 import { AuthCallbackComponent } from './shell/auth-callback/auth-callback.component'
 import { importProvidersFrom } from '@angular/core'
 import { NgxsModule } from '@ngxs/store'
 import { ProjectState } from './domains/project/data/state/project.state'
 import { ProjectFacade } from './domains/project/data/state/project.facade'
+import { authGuard } from './shared/util-authentication/guard/auth.guard'
 
 export const routes: Routes = [
     {

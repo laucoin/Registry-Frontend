@@ -15,7 +15,9 @@ import { communicationOptionGuard } from '../../shared/util-authentication/guard
 
 export const projectRoutes: Routes = [
     {
-        path: '', component: ProjectComponent, children: [
+        path: '',
+        component: ProjectComponent,
+        children: [
             {
                 path: '', component: ProjectsListComponent,
             },

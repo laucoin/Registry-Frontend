@@ -28,14 +28,7 @@
             {{ vehicle().brand }} {{ vehicle().model }}
         </div>
         <div class='availability d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
-            @if (vehicle().status.value === 'UNAVAILABLE') {
-                <app-severity-tag [severity]='vehicleStatusSeverity()'
-                                  [value]='intervalStatus() | intervalFormat: "vehicles.status" | translate: { interval:
-                                  buildInterval(intervalStatus()!.interval!) }' />
-            } @else {
-                <app-severity-tag [severity]='vehicleStatusSeverity()'
-                                  [value]='vehicle().status.label' />
-            }
+            <app-severity-tag [severity]='vehicleStatusSeverity()' [value]='vehicle().status.label' />
         </div>
     </div>
 </app-element-card>

@@ -7,7 +7,9 @@ import { ActivityMovementsListComponent } from './activity-movements-list/activi
 
 export const activityRoutes: Routes = [
     {
-        path: '', component: ActivityComponent, children: [
+        path: '',
+        component: ActivityComponent,
+        children: [
             {
                 path: '', component: ActivitiesListComponent,
             },

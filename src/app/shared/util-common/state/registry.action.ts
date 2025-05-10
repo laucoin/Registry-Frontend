@@ -2,6 +2,7 @@ import { ToastMessageOptions } from 'primeng/api'
 import { ProjectProfileModel } from '../../util-model/model/project-profile.model'
 import { TokenModel } from '../../util-authentication/model/token.model'
 import { ErrorModel } from '../../util-model/model/error.model'
+import { ThemeEnum } from '../../util-model/enumeration/theme.enum'
 
 enum RegistryActionEnum {
     START_GLOBAL_LOADER = '[Local] Starting global loader',
@@ -16,10 +17,13 @@ enum RegistryActionEnum {
     NOTIFY = '[Local] Notifying',
     ACK_NOTIFICATION = '[Local] Acknowledging notification',
 
+    START_CURRENT_USER_ACTION_LOADER = '[Local] Starting current user action loader',
+    STOP_CURRENT_USER_ACTION_LOADER = '[Local] Stopping current user action loader',
+
     LOGIN = '[Backend] Logging in',
     LOGOUT = '[Backend] Logging out',
 
-    RESTORE_TOKENS = '[Local] Restoring tokens',
+    RESTORE_SESSION_FROM_STORAGE = '[Local] Restoring session from storage',
     FETCH_TOKENS = '[Backend] Fetching tokens',
 
     FETCH_CURRENT_USER = '[Backend] Fetching current user',
@@ -77,7 +81,7 @@ export class UpdateScreenWidth {
 export class UpdateTheme {
     public static readonly type: RegistryActionEnum = RegistryActionEnum.UPDATE_THEME
 
-    public constructor (public readonly theme: 'light' | 'dark') {}
+    public constructor (public readonly theme: ThemeEnum) {}
 }
 
 export class Notify {
@@ -90,6 +94,14 @@ export class AckNotification {
     public static readonly type: RegistryActionEnum = RegistryActionEnum.ACK_NOTIFICATION
 }
 
+export class StartCurrentUserActionLoader {
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.START_CURRENT_USER_ACTION_LOADER
+}
+
+export class StopCurrentUserActionLoader {
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.STOP_CURRENT_USER_ACTION_LOADER
+}
+
 export class Login {
     public static readonly type: RegistryActionEnum = RegistryActionEnum.LOGIN
 }
@@ -98,8 +110,8 @@ export class Logout {
     public static readonly type: RegistryActionEnum = RegistryActionEnum.LOGOUT
 }
 
-export class RestoreTokens {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.RESTORE_TOKENS
+export class RestoreSessionFromStorage {
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.RESTORE_SESSION_FROM_STORAGE
 
     public constructor (public readonly token: TokenModel) {}
 }
@@ -142,6 +154,7 @@ export class UpdateUserProjectProfilesPageSearchParams {
     public constructor (
         public readonly resetSearch: boolean,
         public readonly textSearched: string | undefined,
+        public readonly availabilitySearched: boolean | undefined,
         public readonly dateTimeSearched: string | undefined,
     ) {}
 }

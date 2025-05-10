@@ -11,8 +11,6 @@ import { HttpParams } from '@angular/common/http'
 import { ParticipantModel } from '../../../../../../shared/util-model/model/participant.model'
 import { ParticipantPageParamsModel } from '../../../participant/data/model/participant-page-params.model'
 import { AddedGroupMembersDto } from '../../../../../../shared/util-model/dto/added-group-members.dto'
-import { PairModel } from '../../../../../../shared/util-model/model/pair.model'
-import { GenericUtil } from '../../../../../../shared/util-tool/util/generic.util'
 
 @Injectable( {
     providedIn: 'root',
@@ -34,22 +32,6 @@ export class GroupService extends GenericProjectService {
                 pageSize,
                 params,
             ).toString()}`,
-        )
-    }
-
-    public findGroupsMembers (
-        projectId: string | undefined,
-        groupIds: string[],
-    ): Observable<PairModel<ParticipantModel[]>[]> {
-        let builtParams: HttpParams = new HttpParams()
-        if (GenericUtil.nonNull( groupIds )) {
-            groupIds.forEach( (movementId: string): void => {
-                builtParams = builtParams.append( 'groupIds', movementId )
-            } )
-        }
-
-        return this.http.get<PairModel<ParticipantModel[]>[]>(
-            `${this.buildRequestBaseUrl( projectId )}/members?${builtParams.toString()}`,
         )
     }
 

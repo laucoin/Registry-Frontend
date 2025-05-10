@@ -9,7 +9,6 @@ enum GroupActionEnum {
     STOP_GROUPS_PAGE_LOADER = '[Local] Stopping groups\' page loader',
 
     FETCH_GROUPS_PAGE = '[Backend] Fetching groups\' page',
-    FETCH_GROUPS_MEMBERS = '[Backend] Fetching groups\' members',
     UPDATE_GROUPS_PAGE_SEARCH_PARAMS = '[Local] Updating groups\' page search params',
 
     START_GROUP_MEMBERS_PAGE_LOADER = '[Local] Starting group members\' page loader',
@@ -49,15 +48,6 @@ export class FetchGroupsPage {
         public readonly pageNumber: number | undefined,
         public readonly pageSize: number | undefined,
         public readonly force: boolean = false,
-    ) {}
-}
-
-export class FetchGroupsMembers {
-    public static readonly type: GroupActionEnum = GroupActionEnum.FETCH_GROUPS_MEMBERS
-
-    public constructor (
-        public readonly projectId: string | undefined,
-        public readonly groupIds: string[],
     ) {}
 }
 

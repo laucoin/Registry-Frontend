@@ -23,14 +23,16 @@ import {
     Logout,
     ManageUserProjectInvitationAcceptance,
     Notify,
-    RestoreTokens,
+    RestoreSessionFromStorage,
     SelectUserProjectProfile,
     SelectUserProjectProfileByProject,
     SetGlobalError,
+    StartCurrentUserActionLoader,
     StartGlobalLoader,
     StartUserProjectProfileInvitationsPageLoader,
     StartUserProjectProfileLoader,
     StartUserProjectProfilesPageLoader,
+    StopCurrentUserActionLoader,
     StopGlobalLoader,
     StopUserProjectProfileInvitationsPageLoader,
     StopUserProjectProfileLoader,
@@ -50,15 +52,18 @@ import { AuthenticationUriModel } from '../../util-model/model/authentication-ur
 import { Router } from '@angular/router'
 import { ErrorModel } from '../../util-model/model/error.model'
 import { UserService } from '../../../domains/user/data/state/user.service'
-import { ToastMessageOptions } from 'primeng/api'
+import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { CustomDateFormatPipe } from '../../util-tool/pipe/custom-date-format.pipe'
 import { ProfileStatusEnum } from '../../util-model/enumeration/profile-status.enum'
 import { SeverityEnum } from '../../util-model/enumeration/severity.enum'
+import { ThemeEnum } from '../../util-model/enumeration/theme.enum'
+import { AppConfig } from '../../../app.config'
 
 const defaultRegistryState: RegistryStateModel = {
     authentication: {
         token: undefined,
         currentUser: undefined,
+        loading: false,
     },
     profiles: {
         params: {
@@ -91,12 +96,29 @@ const defaultRegistryState: RegistryStateModel = {
         loading: false,
     },
     _util: {
-        theme: (!window.matchMedia || window.matchMedia( '(prefers-color-scheme: light)' ).matches) ? 'light' : 'dark',
+        theme: (!window.matchMedia || window.matchMedia( '(prefers-color-scheme: light)' ).matches) ? ThemeEnum.LIGHT : ThemeEnum.DARK,
         screenWidth: window.innerWidth,
         online: undefined,
         notification: undefined,
         loading: false,
         error: undefined,
+    },
+    _metadata: {
+        themes: [
+            {
+                icon: 'pi pi-desktop',
+                value: ThemeEnum.SYSTEM,
+            },
+            {
+                icon: 'pi pi-sun',
+                value: ThemeEnum.LIGHT,
+            },
+            {
+                icon: 'pi pi-moon',
+                value: ThemeEnum.DARK,
+            },
+        ],
+        languages: [],
     },
 }
 
@@ -118,14 +140,26 @@ export class RegistryState extends GenericState implements NgxsOnInit {
         private readonly datePipe: CustomDateFormatPipe,
     ) { super() }
 
-    public ngxsOnInit (): void {
-        this.registryFacade.restoreTokensFromSessionStorage()
-        this.registryFacade.fetchCurrentUser()
+    public ngxsOnInit (ctx: StateContext<RegistryStateModel>): void {
+        ctx.patchState( {
+            _metadata: {
+                themes: defaultRegistryState._metadata.themes,
+                languages: AppConfig.config.languages.map( (lang: string): SelectItem<string> => ({
+                    label: 'global.language.' + lang,
+                    value: lang,
+                }) ),
+            },
+        } )
     }
 
     @Selector()
     public static globalLoading (state: RegistryStateModel): boolean {
         return state._util.loading
+    }
+
+    @Selector()
+    public static currentUserActionLoading (state: RegistryStateModel): boolean {
+        return state.authentication.loading
     }
 
     @Selector()
@@ -144,7 +178,7 @@ export class RegistryState extends GenericState implements NgxsOnInit {
     }
 
     @Selector()
-    public static theme (state: RegistryStateModel): 'light' | 'dark' {
+    public static theme (state: RegistryStateModel): ThemeEnum {
         return state._util.theme
     }
 
@@ -209,6 +243,11 @@ export class RegistryState extends GenericState implements NgxsOnInit {
     }
 
     @Selector()
+    public static userProjectProfilesPageAvailabilitySearchParam (state: RegistryStateModel): boolean | undefined {
+        return state.profiles.params.availabilitySearched
+    }
+
+    @Selector()
     public static userProjectProfileInvitationsPage (state: RegistryStateModel): PageModel<ProjectProfileModel> | undefined {
         return state.invitations.element
     }
@@ -241,6 +280,16 @@ export class RegistryState extends GenericState implements NgxsOnInit {
     @Selector()
     public static userProjectProfileInvitationsPageDateTimeParam (state: RegistryStateModel): string | undefined {
         return state.invitations.params.dateTimeSearched
+    }
+
+    @Selector()
+    public static themesMetadata (state: RegistryStateModel): SelectItem<ThemeEnum>[] {
+        return state._metadata.themes
+    }
+
+    @Selector()
+    public static languagesMetadata (state: RegistryStateModel): SelectItem<string>[] {
+        return state._metadata.languages
     }
 
     @Action( StartGlobalLoader )
@@ -280,7 +329,7 @@ export class RegistryState extends GenericState implements NgxsOnInit {
 
     @Action( UpdateTheme )
     public updateTheme (ctx: StateContext<RegistryStateModel>, payload: UpdateTheme): void {
-        if (payload.theme == 'light') {
+        if (payload.theme == ThemeEnum.LIGHT) {
             this.htmlElement?.classList.remove( this.darkModeClass )
         } else {
             this.htmlElement?.classList.add( this.darkModeClass )
@@ -314,9 +363,27 @@ export class RegistryState extends GenericState implements NgxsOnInit {
         } )
     }
 
+    @Action( StartCurrentUserActionLoader )
+    public startCurrentUserActionLoader (ctx: StateContext<RegistryStateModel>): void {
+        this.updateCurrentUserActionLoader( ctx, true )
+    }
+
+    @Action( StopCurrentUserActionLoader )
+    public stopCurrentUserActionLoader (ctx: StateContext<RegistryStateModel>): void {
+        this.updateCurrentUserActionLoader( ctx, false )
+    }
+
+    private updateCurrentUserActionLoader (ctx: StateContext<RegistryStateModel>, loading: boolean): void {
+        ctx.patchState( {
+            authentication: {
+                ...ctx.getState().authentication,
+                loading: loading,
+            },
+        } )
+    }
+
     @Action( Login )
     public login (ctx: StateContext<RegistryStateModel>): Observable<void> {
-        SessionStorageUtils.clear()
         ctx.setState( defaultRegistryState )
         return this.service.getLoginUri( `${location.origin}/${AppRouteEnum.AUTH_CALLBACK}` ).pipe(
             initialize( (): void => this.registryFacade.startGlobalLoader() ),
@@ -337,8 +404,8 @@ export class RegistryState extends GenericState implements NgxsOnInit {
         )
     }
 
-    @Action( RestoreTokens )
-    public restoreTokens (ctx: StateContext<RegistryStateModel>, payload: RestoreTokens): void {
+    @Action( RestoreSessionFromStorage )
+    public restoreTokens (ctx: StateContext<RegistryStateModel>, payload: RestoreSessionFromStorage): void {
         ctx.patchState( {
             authentication: {
                 ...ctx.getState().authentication,
@@ -359,10 +426,9 @@ export class RegistryState extends GenericState implements NgxsOnInit {
             mergeMap( (): Observable<CurrentUserModel> => this.service.fetchCurrentUser() ),
             map( (currentUser: CurrentUserModel): void => this.fetchCurrentUserComplete( ctx, currentUser ) ),
             map( (): void => {
-                const redirectUri: string = SessionStorageUtils.check( REDIRECT_URI ) ?
-                                            SessionStorageUtils.get( REDIRECT_URI ) as string
-                                                                                      : AppRouteEnum.PROJECTS
-                this.router.navigateByUrl( redirectUri ).then( (): void => SessionStorageUtils.delete( REDIRECT_URI ) )
+                const redirectUri: string = (SessionStorageUtils.get( REDIRECT_URI ) as string | undefined) ?? AppRouteEnum.PROJECTS
+                this.router.navigateByUrl( !redirectUri.includes( AppRouteEnum.AUTH_CALLBACK ) ? redirectUri : AppRouteEnum.PROJECTS )
+                    .then( (): void => SessionStorageUtils.delete( REDIRECT_URI ) )
             } ),
             catchError( (error: ErrorModel): Observable<void> => this.globalError( ctx, error ) ),
         )
@@ -400,8 +466,8 @@ export class RegistryState extends GenericState implements NgxsOnInit {
     @Action( ImpersonateCurrentUser )
     public impersonateCurrentUser (): Observable<void> {
         return this.userService.impersonateCurrentUser().pipe(
-            initialize( (): void => this.registryFacade.startGlobalLoader() ),
-            finalize( (): void => this.registryFacade.stopGlobalLoader() ),
+            initialize( (): void => this.registryFacade.startCurrentUserActionLoader() ),
+            finalize( (): void => this.registryFacade.stopCurrentUserActionLoader() ),
             map( (): void => this.registryFacade.logout() ),
         )
     }
@@ -487,9 +553,10 @@ export class RegistryState extends GenericState implements NgxsOnInit {
             profiles: {
                 ...ctx.getState().profiles,
                 params: {
-                    ...ctx.getState().invitations.params,
+                    ...ctx.getState().profiles.params,
                     resetSearch: payload.resetSearch,
                     textSearched: payload.textSearched,
+                    availabilitySearched: payload.availabilitySearched,
                     dateTimeSearched: payload.dateTimeSearched,
                 },
             },
@@ -752,7 +819,7 @@ export class RegistryState extends GenericState implements NgxsOnInit {
 
     protected refreshProfilesPage (ctx: StateContext<RegistryStateModel>): void {
         const page: PageModel<ProjectProfileModel> | undefined = ctx.getState().profiles.element
-        this.registryFacade.fetchProjectProfilePage( page?.pageNumber, page?.pageSize, true )
+        this.registryFacade.fetchProjectProfilesPage( page?.pageNumber, page?.pageSize, true )
     }
 
     protected refreshInvitationsPage (ctx: StateContext<RegistryStateModel>): void {

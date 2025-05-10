@@ -9,7 +9,9 @@ import {
 
 export const movementRoutes: Routes = [
     {
-        path: '', component: MovementComponent, children: [
+        path: '',
+        component: MovementComponent,
+        children: [
             {
                 path: '', component: MovementsListComponent,
             },

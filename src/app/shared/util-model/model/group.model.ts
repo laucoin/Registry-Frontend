@@ -6,5 +6,8 @@ export interface GroupModel extends GenericProjectModel {
     name: string
     startAvailability: CustomDatetimeModel | undefined
     endAvailability: CustomDatetimeModel | undefined
-    members: ParticipantModel[]
+    membersCount: number
+    insideMembersCount: number
+    outsideMembersCount: number
+    members: ParticipantModel[] | undefined
 }

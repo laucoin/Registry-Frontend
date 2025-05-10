@@ -3,7 +3,7 @@
           [error]='facade.communicationsPageError()'
           [loading]='facade.communicationsPageLoading()'>
     <ng-template appTemplate='search' [formGroup]='form' let-pageEvent>
-        <div class='d-grid search-line g-2'>
+        <div class='d-grid search-line'>
             <div class='field'>
                 <label for='start-date-time-search-field'>{{ 'communications.search-and-filter.start-datetime' | translate }}</label>
                 <p-date-picker inputId='start-date-time-search-field'
@@ -25,7 +25,7 @@
                                [formControl]='endDateTimeSearched' />
             </div>
         </div>
-        <div class='d-grid search-line g-2'>
+        <div class='d-grid search-line'>
             <div class='field'>
                 <label for='text-search-field'>{{ 'communications.search-and-filter.text' | translate }}</label>
                 <input id='text-search-field'

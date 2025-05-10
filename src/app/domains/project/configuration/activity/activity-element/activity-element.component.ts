@@ -57,27 +57,22 @@ export class ActivityElementComponent extends GenericElementComponent<ActivityMo
             label: 'activities.actions.movements-history',
             icon: 'pi pi-history',
             disabled: false,
-            requiredUserAuthority: undefined,
             requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_ACTIVITY_HISTORY_R,
             requiredProjectOption: ProjectOptionEnum.ACTIVITY,
-            confirmation: undefined,
         },
         {
             id: ElementActionEnum.ACTIVITY_UPDATE,
             label: 'activities.actions.edit',
             icon: 'pi pi-pen-to-square',
             disabled: false,
-            requiredUserAuthority: undefined,
             requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_ACTIVITY_U,
             requiredProjectOption: ProjectOptionEnum.ACTIVITY,
-            confirmation: undefined,
         },
         {
             id: ElementActionEnum.ACTIVITY_DISABLE,
             label: 'activities.actions.disable',
             icon: 'pi pi-eye-slash',
             disabled: false,
-            requiredUserAuthority: undefined,
             requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_ACTIVITY_U,
             requiredProjectOption: ProjectOptionEnum.ACTIVITY,
             confirmation: {
@@ -86,7 +81,6 @@ export class ActivityElementComponent extends GenericElementComponent<ActivityMo
                 icon: 'pi pi-exclamation-triangle',
                 acceptSeverity: SeverityEnum.WARNING,
                 rejectSeverity: SeverityEnum.SECONDARY,
-                confirmProperty: undefined,
             },
         },
         {
@@ -94,7 +88,6 @@ export class ActivityElementComponent extends GenericElementComponent<ActivityMo
             label: 'activities.actions.enable',
             icon: 'pi pi-replay',
             disabled: true,
-            requiredUserAuthority: undefined,
             requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_ACTIVITY_U,
             requiredProjectOption: ProjectOptionEnum.ACTIVITY,
             confirmation: {
@@ -103,7 +96,6 @@ export class ActivityElementComponent extends GenericElementComponent<ActivityMo
                 icon: 'pi pi-exclamation-triangle',
                 acceptSeverity: SeverityEnum.WARNING,
                 rejectSeverity: SeverityEnum.SECONDARY,
-                confirmProperty: undefined,
             },
         },
         {
@@ -111,7 +103,6 @@ export class ActivityElementComponent extends GenericElementComponent<ActivityMo
             label: 'activities.actions.delete',
             icon: 'pi pi-trash',
             disabled: false,
-            requiredUserAuthority: undefined,
             requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_ACTIVITY_D,
             requiredProjectOption: ProjectOptionEnum.ACTIVITY,
             confirmation: {

@@ -43,14 +43,7 @@
             </div>
         </div>
         <div class='status d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
-            @if (participant().status.value === 'UNAVAILABLE') {
-                <app-severity-tag [severity]='participantStatusSeverity()'
-                                  [value]='intervalStatus() | intervalFormat: "participants.status" | translate: { interval:
-                                  buildInterval(intervalStatus()!.interval!) }' />
-            } @else {
-                <app-severity-tag [severity]='participantStatusSeverity()'
-                                  [value]='participant().status.label' />
-            }
+            <app-severity-tag [severity]='participantStatusSeverity()' [value]='participant().status.label' />
         </div>
     </div>
 </app-element-card>

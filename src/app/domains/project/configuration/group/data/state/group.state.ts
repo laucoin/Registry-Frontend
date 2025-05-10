@@ -12,7 +12,6 @@ import {
     EnableGroup,
     FetchGroup,
     FetchGroupMembersPage,
-    FetchGroupsMembers,
     FetchGroupsPage,
     RemoveMemberFromGroup,
     ResetGroup,
@@ -43,8 +42,6 @@ import { PageRequestInformationModel } from '../../../../../../shared/util-model
 import { ParticipantPageParamsModel } from '../../../participant/data/model/participant-page-params.model'
 import { ErrorModel } from '../../../../../../shared/util-model/model/error.model'
 import { GroupStateModel } from '../model/group-state.model'
-import { PairModel } from '../../../../../../shared/util-model/model/pair.model'
-import { GroupUtil } from '../../../../../../shared/util-tool/util/group.util'
 import { PluralTranslationPipe } from '../../../../../../shared/util-tool/pipe/plural-translation.pipe'
 import { SeverityEnum } from '../../../../../../shared/util-model/enumeration/severity.enum'
 
@@ -269,47 +266,6 @@ export class GroupState extends GenericProjectElementState<GroupStateModel> {
                     resetSearch: false,
                 },
                 element: groupsPage,
-            },
-        } )
-
-        if (groupsPage.content.length > 0) {
-            this.facade.fetchGroupMembers(
-                groupsPage.content.map( (group: GroupModel): string => group.id ),
-            )
-        }
-    }
-
-    @Action( FetchGroupsMembers )
-    public fetchGroupsMembers (
-        ctx: StateContext<GroupStateModel>,
-        payload: FetchGroupsMembers,
-    ): Observable<void> {
-        return this.service.findGroupsMembers(
-            payload.projectId,
-            payload.groupIds,
-        ).pipe(
-            map( (contents: PairModel<ParticipantModel[]>[]): void => this.fetchGroupsMembersComplete(
-                ctx,
-                contents,
-            ) ),
-        )
-    }
-
-    private fetchGroupsMembersComplete (
-        ctx: StateContext<GroupStateModel>,
-        members: PairModel<ParticipantModel[]>[],
-    ): void {
-        if (!ctx.getState().groups.element) {
-            return
-        }
-
-        ctx.patchState( {
-            groups: {
-                ...ctx.getState().groups,
-                element: {
-                    ...ctx.getState().groups.element!,
-                    content: GroupUtil.rebuildPageWithMembers( ctx.getState().groups.element!.content, members ),
-                },
             },
         } )
     }
