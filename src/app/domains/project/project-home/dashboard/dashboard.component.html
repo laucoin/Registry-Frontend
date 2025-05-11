@@ -1,0 +1,91 @@
+<p-panel [header]='"project-home.dashboard.title" | translate' [toggleable]='true' [collapsed]='registryFacade.tinyScreen()'>
+    <div class='dashboard'>
+        <p-card class='total-participant'>
+            @if (GenericUtil.nonNull(projectFacade.participantsStatusError())) {
+                <app-message [message]='projectFacade.participantsStatusError()' />
+            } @else {
+                <div class='d-flex flex-column align-items-center'>
+                    <b>{{ 'project-home.dashboard.participants.total' | pluralTranslation: totalParticipants() | translate }}</b>
+                    @if (projectFacade.participantsStatusLoading()) {
+                        <p-skeleton class='mt-2 mb-3' width='5rem' height='1.5rem' borderRadius='1rem' />
+                    } @else {
+                        <h2>{{ totalParticipants() }}</h2>
+                    }
+                </div>
+                <div class='d-flex'>
+                    <div class='sub-count d-flex flex-column align-items-center'>
+                        <b>
+                            {{
+                                'project-home.dashboard.participants.present' | pluralTranslation:
+                                (totalPresentRegistered() ?? 0) + (totalGuests() ?? 0) | translate
+                            }}
+                        </b>
+                        <div class='d-flex'>
+                            <div class='sub-count d-flex flex-column align-items-center'>
+                                @if (projectFacade.participantsStatusLoading()) {
+                                    <p-skeleton class='mt-2 mb-1' width='5rem' height='1.5rem' borderRadius='1rem' />
+                                } @else {
+                                    <h3>{{ totalPresentRegistered() }}</h3>
+                                }
+                                <small class='mt-1 secondary-color'>{{ 'project-home.dashboard.participants.registered' | pluralTranslation: totalPresentRegistered() | translate }}</small>
+                            </div>
+                            <p-divider layout='vertical' />
+                            <div class='sub-count d-flex flex-column align-items-center'>
+                                @if (projectFacade.participantsStatusLoading()) {
+                                    <p-skeleton class='mt-2 mb-1' width='5rem' height='1.5rem' borderRadius='1rem' />
+                                } @else {
+                                    <h3>{{ totalGuests() }}</h3>
+                                }
+                                <small class='mt-1 secondary-color'>{{ 'project-home.dashboard.participants.guest' | pluralTranslation: totalGuests() | translate }}</small>
+                            </div>
+                        </div>
+                    </div>
+                    <p-divider layout='vertical' />
+                    <div class='sub-count d-flex flex-column align-items-center'>
+                        <b>{{ 'project-home.dashboard.participants.absent' | pluralTranslation: totalAbsentRegistered() | translate }}</b>
+                        @if (projectFacade.participantsStatusLoading()) {
+                            <p-skeleton class='mt-2 mb-1' width='5rem' height='1.5rem' borderRadius='1rem' />
+                        } @else {
+                            <h3>{{ totalAbsentRegistered() }}</h3>
+                        }
+                    </div>
+                </div>
+            }
+        </p-card>
+        @if (ProjectUtil.hasOption(registryFacade.selectedProject(), ProjectOptionEnum.VEHICLE)) {
+            <p-card class='total-vehicle'>
+                @if (GenericUtil.nonNull(projectFacade.vehiclesStatusError())) {
+                    <app-message [message]='projectFacade.participantsStatusError()' />
+                } @else {
+                    <div class='d-flex flex-column align-items-center'>
+                        <b>{{ 'project-home.dashboard.vehicles.total' | pluralTranslation: totalVehicles() | translate }}</b>
+                        @if (projectFacade.vehiclesStatusLoading()) {
+                            <p-skeleton class='mt-2 mb-3' width='5rem' height='1.5rem' borderRadius='1rem' />
+                        } @else {
+                            <h2>{{ totalVehicles() }}</h2>
+                        }
+                    </div>
+                    <div class='d-flex'>
+                        <div class='sub-count d-flex flex-column align-items-center'>
+                            <b>{{ 'project-home.dashboard.vehicles.present' | pluralTranslation: totalPresentVehicles() | translate }}</b>
+                            @if (projectFacade.vehiclesStatusLoading()) {
+                                <p-skeleton class='mt-2 mb-1' width='5rem' height='1.5rem' borderRadius='1rem' />
+                            } @else {
+                                <h3>{{ totalPresentVehicles() }}</h3>
+                            }
+                        </div>
+                        <p-divider layout='vertical' />
+                        <div class='sub-count d-flex flex-column align-items-center'>
+                            <b>{{ 'project-home.dashboard.vehicles.absent' | pluralTranslation: totalAbsentVehicles() | translate }}</b>
+                            @if (projectFacade.vehiclesStatusLoading()) {
+                                <p-skeleton class='mt-2 mb-1' width='5rem' height='1.5rem' borderRadius='1rem' />
+                            } @else {
+                                <h3>{{ totalAbsentVehicles() }}</h3>
+                            }
+                        </div>
+                    </div>
+                }
+            </p-card>
+        }
+    </div>
+</p-panel>

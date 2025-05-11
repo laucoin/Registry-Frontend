@@ -20,6 +20,8 @@ import { MovementReasonModel } from '../model/movement-reason.model'
 import { ParticipantTypeEnum } from '../../../../../shared/util-model/enumeration/participant-type.enum'
 import { CommunicationModel } from '../../../communication/data/model/communication.model'
 import { CommunicationPageParamsModel } from '../../../communication/data/model/communication-page-params.model'
+import { ParticipantStatusModel } from '../../../data/model/participant-status.model'
+import { VehicleStatusModel } from '../../../data/model/vehicle-status.model'
 
 @Injectable( {
     providedIn: 'root',
@@ -74,6 +76,14 @@ export class MovementService extends GenericProjectService {
                 params,
             ).toString()}`,
         )
+    }
+
+    public findParticipantsStatus (projectId: string | undefined): Observable<ParticipantStatusModel> {
+        return this.http.get<ParticipantStatusModel>( `${this.buildRequestBaseUrl( projectId )}/participants/status` )
+    }
+
+    public findVehiclesStatus (projectId: string | undefined): Observable<VehicleStatusModel> {
+        return this.http.get<VehicleStatusModel>( `${this.buildRequestBaseUrl( projectId )}/vehicles/status` )
     }
 
     public findMovementById (projectId: string | undefined, id: string): Observable<MovementModel> {

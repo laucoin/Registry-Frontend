@@ -1,0 +1,31 @@
+.dashboard {
+    display:   flex;
+    flex-wrap: wrap;
+    gap:       var(--min-spacer);
+}
+
+.total-participant {
+    flex-grow: 1;
+}
+
+.total-vehicle {
+    flex-basis: 100%;
+}
+
+@media (min-width: 768px) {
+    .total-vehicle {
+        flex-basis: 50%;
+    }
+}
+
+.sub-count {
+    flex-basis: 50%;
+}
+
+h2, h3 {
+    margin: var(--min-spacer);
+}
+
+::ng-deep .p-card {
+    height: 100%;
+}
