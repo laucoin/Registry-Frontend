@@ -3,7 +3,7 @@
           [error]='facade.vehiclesPageError()'
           [loading]='facade.vehiclesPageLoading()'>
     <ng-template appTemplate='search' [formGroup]='form' let-pageEvent>
-        <div class='d-grid search-line g-2'>
+        <div class='d-grid search-line'>
             <div class='field'>
                 <label for='text-search-field'>{{ 'vehicles.search-and-filter.text' | translate }}</label>
                 <input id='text-search-field'
@@ -24,7 +24,7 @@
                                [formControl]='dateTimeSearched' />
             </div>
         </div>
-        <div class='d-grid search-line g-2'>
+        <div class='d-grid search-line'>
             <div class='field'>
                 <label for='availability-search-field'>{{ 'vehicles.search-and-filter.availability' | translate }}</label>
                 <p-select inputId='availability-search-field'

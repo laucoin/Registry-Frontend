@@ -21,11 +21,8 @@ import { Listbox } from 'primeng/listbox'
 import { GroupFacade } from '../../../domains/project/configuration/group/data/state/group.facade'
 import { SeverityTagComponent } from '../severity-tag/severity-tag.component'
 import { GenericElementComponent } from '../../util-tool/component/generic-element.component'
-import { DateIntervalStatusModel } from '../../util-model/model/date-interval-status.model'
-import { DateUtil } from '../../util-tool/util/date.util'
 import { PluralTranslationPipe } from '../../util-tool/pipe/plural-translation.pipe'
 import { CustomDateFormatPipe } from '../../util-tool/pipe/custom-date-format.pipe'
-import { IntervalFormatPipe } from '../../util-tool/pipe/interval-format.pipe'
 import { GenericUtil } from '../../util-tool/util/generic.util'
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component'
 import { ParticipantTypeEnum } from '../../util-model/enumeration/participant-type.enum'
@@ -50,7 +47,6 @@ import { AppConfig } from '../../../app.config'
         SeverityTagComponent,
         PluralTranslationPipe,
         CustomDateFormatPipe,
-        IntervalFormatPipe,
         ConfirmationDialogComponent,
         SeverityCircleComponent,
     ],
@@ -77,36 +73,27 @@ export class ParticipantElementComponent extends GenericElementComponent<Partici
             label: 'participants.actions.movements-history',
             icon: 'pi pi-history',
             disabled: false,
-            requiredUserAuthority: undefined,
             requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_HISTORY_R,
-            requiredProjectOption: undefined,
-            confirmation: undefined,
         },
         {
             id: ElementActionEnum.PARTICIPANT_UPDATE,
             label: 'participants.actions.edit',
             icon: 'pi pi-pen-to-square',
             disabled: false,
-            requiredUserAuthority: undefined,
             requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_U,
-            requiredProjectOption: undefined,
-            confirmation: undefined,
         },
         {
             id: ElementActionEnum.PARTICIPANT_DISABLE,
             label: 'participants.actions.disable',
             icon: 'pi pi-eye-slash',
             disabled: false,
-            requiredUserAuthority: undefined,
             requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_U,
-            requiredProjectOption: undefined,
             confirmation: {
                 header: 'participants.actions.confirmations.disable.title',
                 message: 'participants.actions.confirmations.disable.message',
                 icon: 'pi pi-exclamation-triangle',
                 acceptSeverity: SeverityEnum.WARNING,
                 rejectSeverity: SeverityEnum.SECONDARY,
-                confirmProperty: undefined,
             },
         },
         {
@@ -114,16 +101,13 @@ export class ParticipantElementComponent extends GenericElementComponent<Partici
             label: 'participants.actions.enable',
             icon: 'pi pi-replay',
             disabled: true,
-            requiredUserAuthority: undefined,
             requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_U,
-            requiredProjectOption: undefined,
             confirmation: {
                 header: 'participants.actions.confirmations.enable.title',
                 message: 'participants.actions.confirmations.enable.message',
                 icon: 'pi pi-exclamation-triangle',
                 acceptSeverity: SeverityEnum.WARNING,
                 rejectSeverity: SeverityEnum.SECONDARY,
-                confirmProperty: undefined,
             },
         },
         {
@@ -131,16 +115,13 @@ export class ParticipantElementComponent extends GenericElementComponent<Partici
             label: 'participants.actions.remove-member',
             icon: 'pi pi-user-minus',
             disabled: false,
-            requiredUserAuthority: undefined,
             requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_U,
-            requiredProjectOption: undefined,
             confirmation: {
                 header: 'participants.actions.confirmations.remove-member.title',
                 message: 'participants.actions.confirmations.remove-member.message',
                 icon: 'pi pi-exclamation-triangle',
                 acceptSeverity: SeverityEnum.WARNING,
                 rejectSeverity: SeverityEnum.SECONDARY,
-                confirmProperty: undefined,
             },
         },
         {
@@ -148,9 +129,7 @@ export class ParticipantElementComponent extends GenericElementComponent<Partici
             label: 'participants.actions.delete',
             icon: 'pi pi-trash',
             disabled: false,
-            requiredUserAuthority: undefined,
             requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_D,
-            requiredProjectOption: undefined,
             confirmation: {
                 header: 'participants.actions.confirmations.delete.title',
                 message: 'participants.actions.confirmations.delete.message',
@@ -164,17 +143,10 @@ export class ParticipantElementComponent extends GenericElementComponent<Partici
 
     protected readonly participantStatusSeverity: Signal<SeverityEnum>
     protected readonly actions: Signal<ActionModel[]>
-    protected readonly intervalStatus: Signal<DateIntervalStatusModel | undefined>
     protected readonly additionalTotal: Signal<number>
 
     public constructor () {
         super()
-
-        this.intervalStatus = computed( (): DateIntervalStatusModel => DateUtil.dateRangeStatus(
-            this.participant().startAvailability,
-            this.participant().endAvailability,
-        ) )
-
         this.participantStatusSeverity = computed( (): SeverityEnum => {
             switch (this.participant().status.value) {
                 case PresenceStatusEnum.IN:

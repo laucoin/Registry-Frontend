@@ -39,19 +39,12 @@ export class StringUtil {
     public static isRouteActive (route: AppRouteEnum): boolean {
         const castedRoute: string = StringUtil.sanitizeRoute( route )
         const currentUri: string = StringUtil.sanitizeRoute( location.pathname )
-        const isProjectRoute: boolean = [
-            AppRouteEnum.PROJECTS.toString(),
-            AppRouteEnum.PROJECTS_CREATION.toString(),
-            AppRouteEnum.PROJECTS_EDITION.toString(),
-        ].includes( castedRoute )
+        const isUserRoute: boolean = AppRouteEnum.USERS.includes( castedRoute )
 
         switch (true) {
-            case currentUri.includes( AppRouteEnum.PROJECTS_CONFIGURATION_PROFILES ) && isProjectRoute:
-            case currentUri.includes( AppRouteEnum.PROJECTS_CONFIGURATION_PARTICIPANTS ) && isProjectRoute:
-            case currentUri.includes( AppRouteEnum.PROJECTS_CONFIGURATION_VEHICLES ) && isProjectRoute:
-            case currentUri.includes( AppRouteEnum.PROJECTS_CONFIGURATION_ACTIVITIES ) && isProjectRoute:
-            case currentUri.includes( AppRouteEnum.PROJECTS_CONFIGURATION_GROUPS ) && isProjectRoute:
-            case currentUri.includes( AppRouteEnum.PROJECTS_MOVEMENTS ) && isProjectRoute:
+            case currentUri.includes( AppRouteEnum.USERS_PROFILES ) && isUserRoute:
+            case currentUri.includes( AppRouteEnum.USERS_INVITATIONS ) && isUserRoute:
+            case currentUri.includes( AppRouteEnum.USERS_SETTINGS ) && isUserRoute:
                 return false
             default:
                 return currentUri.includes( route )

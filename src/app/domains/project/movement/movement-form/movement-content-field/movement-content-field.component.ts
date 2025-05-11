@@ -123,13 +123,13 @@ export class MovementContentFieldComponent implements ControlValueAccessor {
     private buildContent (element: ParticipantModel | GroupModel): MovementContentModel[] {
         if (this.isGroup( element )) {
             const group: GroupModel = element as GroupModel
-            return group.members.map(
+            return group.members?.map(
                 (member: ParticipantModel): MovementContentModel => ({
                     poolName: group.name,
                     participant: member,
                     vehicle: undefined,
                 }),
-            )
+            ) ?? []
         } else {
             return [
                 {

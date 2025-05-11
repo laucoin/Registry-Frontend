@@ -16,6 +16,7 @@ import { Divider } from 'primeng/divider'
 import { GenericComponent } from './shared/util-tool/component/generic.component'
 import { NavbarComponent } from './shell/navbar/navbar.component'
 import { RouterOutlet } from '@angular/router'
+import { ThemeEnum } from './shared/util-model/enumeration/theme.enum'
 
 @Component( {
     selector: 'app-root',
@@ -73,8 +74,8 @@ export class AppComponent extends GenericComponent implements OnDestroy {
         this.themeMediaQuery.addEventListener( 'change', (): void => this.registryFacade.updateTheme( this.theme ) )
     }
 
-    private get theme (): 'light' | 'dark' {
-        return (!window.matchMedia || this.themeMediaQuery.matches) ? 'light' : 'dark'
+    private get theme (): ThemeEnum {
+        return (!window.matchMedia || this.themeMediaQuery.matches) ? ThemeEnum.LIGHT : ThemeEnum.DARK
     }
 
     @HostListener( 'window:online', [ '$event' ] )

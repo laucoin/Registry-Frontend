@@ -20,7 +20,9 @@ import { ActivityState } from './activity/data/state/activity.state'
 
 export const configurationRoutes: Routes = [
     {
-        path: '', component: ConfigurationComponent, children: [
+        path: '',
+        component: ConfigurationComponent,
+        children: [
             {
                 path: '', component: ConfigurationComponent,
             },

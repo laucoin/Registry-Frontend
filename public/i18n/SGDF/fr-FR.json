@@ -173,6 +173,10 @@
         }
     },
     "global": {
+        "language": {
+            "fr-FR": "Français (FR)",
+            "en-US": "Anglais (US)"
+        },
         "legal": {
             "information": {
                 "name": "Informations",
@@ -240,6 +244,7 @@
             "groups": "Groupes",
             "vehicles": "Véhicules",
             "activities": "Activités",
+            "profiles": "Profiles d'accès",
             "invitations": "Invitations",
             "settings": "Paramètres"
         },
@@ -335,6 +340,28 @@
                 "title": "🕵️‍♀️ Aucune donnée",
                 "message": "Aucune donnée n'a été trouvée."
             }
+        },
+        "not-set": "Non défini"
+    },
+    "settings": {
+        "birthday": "Date de naissance :",
+        "role": "Rôle :",
+        "configuration": {
+            "title": "Configuration",
+            "form": {
+                "theme": "Thème :",
+                "language": "Langue :"
+            }
+        },
+        "danger": "Actions irreversibles",
+        "actions": {
+            "impersonate": "Demande d'anonymisation",
+            "confirmations": {
+                "impersonate": {
+                    "title": "Anonymiser mon compte",
+                    "message": "Attention ! Tu vas anonymiser ton compte. Cette action irréversible entrainera ta déconnexion et t'empêcheras de te connecter à nouveau. À titre informatif, ton utilisateur sera anonmysé immédiatement, les participants a qui tu es liés seront anonymisés à la fin du projet. Cependant, si tu as conduit des véhicules dans le cadre d'un projet, ton participant sera anonymisé 1 an après la fin du projet."
+                }
+            }
         }
     },
     "users": {
@@ -366,14 +393,8 @@
                     "message": "Attention ! Tu vas débloquer un utilisateur. {{element.firstName}} {{element.lastName}} pourra à nouveau se connecter."
                 },
                 "impersonate": {
-                    "myself": {
-                        "title": "Anonymiser mon compte",
-                        "message": "Attention ! Tu vas anonymiser ton compte. Cette action irréversible entrainera ta déconnexion et t'empêcheras de te connecter à nouveau. À titre informatif, ton utilisateur sera anonmysé immédiatement, les participants a qui tu es liés seront anonymisés à la fin du projet. Cependant, si tu as conduit des véhicules dans le cadre de ce projet, ton participant sera anonymisé 1 an après la fin du projet."
-                    },
-                    "other": {
-                        "title": "Anonymiser l'utilisateur",
-                        "message": "Attention ! Tu vas anonymiser un utilisateur. Tous les profils et participants associés à {{element.firstName}} {{element.lastName}} seront également anonymisé."
-                    }
+                    "title": "Anonymiser l'utilisateur",
+                    "message": "Attention ! Tu vas anonymiser un utilisateur. Tous les profils et participants associés à {{element.firstName}} {{element.lastName}} seront également anonymisé."
                 },
                 "delete": {
                     "title": "Supprimer l'utilisateur",
@@ -427,9 +448,9 @@
         "status": {
             "IN_PROGRESS": "En cours",
             "interval": {
-                "PLANNED": "Commence dans {{interval}}",
-                "IN_PROGRESS": "En cours depuis {{interval}}",
-                "FINISHED": "Terminée depuis {{interval}}"
+                "PLANNED": "Commence (dans {{interval}})",
+                "IN_PROGRESS": "En cours (depuis {{interval}})",
+                "FINISHED": "Terminée (depuis {{interval}})"
             }
         },
         "form": {
@@ -539,14 +560,14 @@
         "status": {
             "IN_PROGRESS": "En cours",
             "interval": {
-                "PLANNED": "Commence dans {{interval}}",
-                "IN_PROGRESS": "En cours depuis {{interval}}",
-                "FINISHED": "Terminée depuis {{interval}}"
+                "PLANNED": "Accessible (dans {{interval}})",
+                "IN_PROGRESS": "Accessible (depuis {{interval}})",
+                "FINISHED": "Expiré (depuis {{interval}})"
             }
         },
         "visible": {
-            "true": "Utilisable actuellement",
-            "false": "Non-utilisable actuellement"
+            "true": "En cours de validité",
+            "false": "Expiré"
         },
         "manage-acceptance": "Veux-tu accepter cette invitation ?",
         "form": {
@@ -898,12 +919,6 @@
             "two": "{{name}} et 1 autre groupe",
             "few": "{{name}} et {{others}} autres groupes"
         },
-        "status": {
-            "interval": {
-                "PLANNED": "Arrive dans {{interval}}",
-                "FINISHED": "Parti depuis {{interval}}"
-            }
-        },
         "visible": {
             "true": "Visible",
             "false": "Masqué"
@@ -1041,35 +1056,21 @@
             "true": "Disponible",
             "false": "Non disponible"
         },
+        "status": {
+            "IN_PROGRESS": "Présent",
+            "interval": {
+                "PLANNED": "Arrive (dans {{interval}})",
+                "IN_PROGRESS": "Présent (depuis {{interval}})",
+                "FINISHED": "Parti (depuis {{interval}})"
+            }
+        },
         "member-layer-title": {
             "one": "Membre",
             "few": "Membres"
         },
-        "content": {
-            "list": "Membres",
-            "all": "Tous les membres",
-            "adult": {
-                "one": "Majeur",
-                "few": "Majeurs"
-            },
-            "child": {
-                "one": "Mineur",
-                "few": "Mineurs"
-            }
-        },
         "member": {
-            "zero": "Aucun membre",
-            "one": "{{name}}",
-            "two": "{{name}} et 1 autre membre",
-            "few": "{{name}} et {{others}} autres membres"
-        },
-        "status": {
-            "IN_PROGRESS": "Présent",
-            "interval": {
-                "PLANNED": "Arrive dans {{interval}}",
-                "IN_PROGRESS": "Présent depuis {{interval}}",
-                "FINISHED": "Parti depuis {{interval}}"
-            }
+            "one": "Un membre",
+            "few": "{{count}} membres"
         },
         "presence": {
             "true": "Présent",
@@ -1212,12 +1213,6 @@
             "availability": "Disponibilité",
             "visibility": "Visibilité"
         },
-        "status": {
-            "interval": {
-                "PLANNED": "Disponible dans {{interval}}",
-                "FINISHED": "Non-Disponible depuis {{interval}}"
-            }
-        },
         "available": {
             "true": "Disponible",
             "false": "Non-Disponible"
@@ -1334,9 +1329,9 @@
         "status": {
             "IN_PROGRESS": "Disponible",
             "interval": {
-                "PLANNED": "Disponible dans {{interval}}",
-                "IN_PROGRESS": "Disponible depuis {{interval}}",
-                "FINISHED": "Non-Disponible depuis {{interval}}"
+                "PLANNED": "Disponible (dans {{interval}})",
+                "IN_PROGRESS": "Disponible (depuis {{interval}})",
+                "FINISHED": "Non-Disponible (depuis {{interval}})"
             }
         },
         "available": {

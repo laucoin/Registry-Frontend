@@ -3,7 +3,7 @@
           [error]='facade.projectProfilesPageError()'
           [loading]='facade.projectProfilesPageLoading()'>
     <ng-template appTemplate='search' [formGroup]='form' let-pageEvent>
-        <div class='d-grid search-line g-2'>
+        <div class='d-grid search-line'>
             <div class='field'>
                 <label for='text-search-field'>{{ 'project-profiles.search-and-filter.text.user' | translate }}</label>
                 <input id='text-search-field'
@@ -24,7 +24,7 @@
                                [formControl]='dateTimeSearched' />
             </div>
         </div>
-        <div class='d-grid search-line g-2'>
+        <div class='d-grid search-line'>
             <div class='field'>
                 <label for='status-search-field'>{{ 'project-profiles.search-and-filter.status' | translate }}</label>
                 <p-select inputId='status-search-field'

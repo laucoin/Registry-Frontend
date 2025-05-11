@@ -14,8 +14,9 @@ export enum AppRouteEnum {
 
     USERS = 'users',
     USERS_EDITION = `${USERS}/${UserRoutesEnum.EDIT}`,
-    USERS_INVITATION = `${USERS}/${UserRoutesEnum.INVITATIONS}`,
-    USERS_SETTING = `${USERS}/${UserRoutesEnum.SETTINGS}`,
+    USERS_PROFILES = `${USERS}/${UserRoutesEnum.PROFILES}`,
+    USERS_INVITATIONS = `${USERS}/${UserRoutesEnum.INVITATIONS}`,
+    USERS_SETTINGS = `${USERS}/${UserRoutesEnum.SETTINGS}`,
 
     PROJECTS = 'projects',
     PROJECTS_CREATION = `${PROJECTS}/${ProjectRoutesEnum.CREATE}`,

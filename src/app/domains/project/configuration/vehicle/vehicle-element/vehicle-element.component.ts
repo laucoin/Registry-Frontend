@@ -9,10 +9,7 @@ import { AppRouteEnum } from '../../../../../app-route.enum'
 import { VehicleModel } from '../../../../../shared/util-model/model/vehicle.model'
 import { VehicleFacade } from '../data/state/vehicle.facade'
 import { SeverityTagComponent } from '../../../../../shared/util-ui/severity-tag/severity-tag.component'
-import { DateIntervalStatusModel } from '../../../../../shared/util-model/model/date-interval-status.model'
-import { DateUtil } from '../../../../../shared/util-tool/util/date.util'
 import { GenericElementComponent } from '../../../../../shared/util-tool/component/generic-element.component'
-import { IntervalFormatPipe } from '../../../../../shared/util-tool/pipe/interval-format.pipe'
 import { CustomDateFormatPipe } from '../../../../../shared/util-tool/pipe/custom-date-format.pipe'
 import {
     ConfirmationDialogComponent,
@@ -34,7 +31,6 @@ import { ProjectOptionIconPipe } from '../../../../../shared/util-tool/pipe/proj
         TranslateModule,
         ChipModule,
         SeverityTagComponent,
-        IntervalFormatPipe,
         CustomDateFormatPipe,
         ConfirmationDialogComponent,
         SeverityCircleComponent,
@@ -56,27 +52,22 @@ export class VehicleElementComponent extends GenericElementComponent<VehicleMode
             label: 'vehicles.actions.movements-history',
             icon: 'pi pi-history',
             disabled: false,
-            requiredUserAuthority: undefined,
             requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_VEHICLE_HISTORY_R,
             requiredProjectOption: ProjectOptionEnum.VEHICLE,
-            confirmation: undefined,
         },
         {
             id: ElementActionEnum.VEHICLE_UPDATE,
             label: 'vehicles.actions.edit',
             icon: 'pi pi-pen-to-square',
             disabled: false,
-            requiredUserAuthority: undefined,
             requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_VEHICLE_U,
             requiredProjectOption: ProjectOptionEnum.VEHICLE,
-            confirmation: undefined,
         },
         {
             id: ElementActionEnum.VEHICLE_DISABLE,
             label: 'vehicles.actions.disable',
             icon: 'pi pi-eye-slash',
             disabled: false,
-            requiredUserAuthority: undefined,
             requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_VEHICLE_U,
             requiredProjectOption: ProjectOptionEnum.VEHICLE,
             confirmation: {
@@ -85,7 +76,6 @@ export class VehicleElementComponent extends GenericElementComponent<VehicleMode
                 icon: 'pi pi-exclamation-triangle',
                 acceptSeverity: SeverityEnum.WARNING,
                 rejectSeverity: SeverityEnum.SECONDARY,
-                confirmProperty: undefined,
             },
         },
         {
@@ -93,7 +83,6 @@ export class VehicleElementComponent extends GenericElementComponent<VehicleMode
             label: 'vehicles.actions.enable',
             icon: 'pi pi-replay',
             disabled: true,
-            requiredUserAuthority: undefined,
             requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_VEHICLE_U,
             requiredProjectOption: ProjectOptionEnum.VEHICLE,
             confirmation: {
@@ -102,7 +91,6 @@ export class VehicleElementComponent extends GenericElementComponent<VehicleMode
                 icon: 'pi pi-exclamation-triangle',
                 acceptSeverity: SeverityEnum.WARNING,
                 rejectSeverity: SeverityEnum.SECONDARY,
-                confirmProperty: undefined,
             },
         },
         {
@@ -110,7 +98,6 @@ export class VehicleElementComponent extends GenericElementComponent<VehicleMode
             label: 'vehicles.actions.delete',
             icon: 'pi pi-trash',
             disabled: false,
-            requiredUserAuthority: undefined,
             requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_VEHICLE_D,
             requiredProjectOption: ProjectOptionEnum.VEHICLE,
             confirmation: {
@@ -125,15 +112,9 @@ export class VehicleElementComponent extends GenericElementComponent<VehicleMode
     ] )
     protected readonly vehicleStatusSeverity: Signal<SeverityEnum>
     protected readonly actions: Signal<ActionModel[]>
-    protected readonly intervalStatus: Signal<DateIntervalStatusModel>
 
     public constructor () {
         super()
-
-        this.intervalStatus = computed( (): DateIntervalStatusModel => DateUtil.dateRangeStatus(
-            this.vehicle().startAvailability,
-            this.vehicle().endAvailability,
-        ) )
 
         this.vehicleStatusSeverity = computed( (): SeverityEnum => {
             switch (this.vehicle().status.value) {

@@ -13,7 +13,6 @@ import {
     EnableGroup,
     FetchGroup,
     FetchGroupMembersPage,
-    FetchGroupsMembers,
     FetchGroupsPage,
     RemoveMemberFromGroup,
     ResetGroup,
@@ -154,12 +153,6 @@ export class GroupFacade extends GenericProjectElementFacade {
     ): void {
         const index: number | undefined = this.groupsPageResetSearch() ? 0 : pageNumber
         this.ngStore.dispatch( new FetchGroupsPage( this.selectedProjectId(), index, pageSize, force ) )
-    }
-
-    public fetchGroupMembers (
-        groupIds: string[],
-    ): void {
-        this.ngStore.dispatch( new FetchGroupsMembers( this.selectedProjectId(), groupIds ) )
     }
 
     public inputPageSearchParameters (

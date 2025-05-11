@@ -11,7 +11,9 @@ import {
 
 export const projectProfileRoutes: Routes = [
     {
-        path: '', component: ProjectProfileComponent, children: [
+        path: '',
+        component: ProjectProfileComponent,
+        children: [
             {
                 path: '', component: ProjectProfilesListComponent,
             },

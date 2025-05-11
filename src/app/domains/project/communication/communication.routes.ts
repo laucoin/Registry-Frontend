@@ -6,7 +6,9 @@ import { CommunicationComponent } from './communication.component'
 
 export const communicationRoutes: Routes = [
     {
-        path: '', component: CommunicationComponent, children: [
+        path: '',
+        component: CommunicationComponent,
+        children: [
             {
                 path: '', component: CommunicationsListComponent,
             },

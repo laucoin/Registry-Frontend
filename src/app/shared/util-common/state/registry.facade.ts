@@ -1,7 +1,7 @@
 import { computed, Injectable, Signal } from '@angular/core'
 import { ActionCompletion, ofActionCompleted } from '@ngxs/store'
-import { ToastMessageOptions } from 'primeng/api'
-import { Observable } from 'rxjs'
+import { SelectItem, ToastMessageOptions } from 'primeng/api'
+import { filter, map, Observable } from 'rxjs'
 import { TokenModel } from '../../util-authentication/model/token.model'
 import { CurrentUserModel } from '../../util-model/model/current-user.model'
 import { ProjectProfileModel } from '../../util-model/model/project-profile.model'
@@ -19,14 +19,16 @@ import {
     Logout,
     ManageUserProjectInvitationAcceptance,
     Notify,
-    RestoreTokens,
+    RestoreSessionFromStorage,
     SelectUserProjectProfile,
     SelectUserProjectProfileByProject,
     SetGlobalError,
+    StartCurrentUserActionLoader,
     StartGlobalLoader,
     StartUserProjectProfileInvitationsPageLoader,
     StartUserProjectProfileLoader,
     StartUserProjectProfilesPageLoader,
+    StopCurrentUserActionLoader,
     StopGlobalLoader,
     StopUserProjectProfileInvitationsPageLoader,
     StopUserProjectProfileLoader,
@@ -42,12 +44,14 @@ import { ProjectModel } from '../../util-model/model/project.model'
 import { AppConfig } from '../../../app.config'
 import { ErrorModel } from '../../util-model/model/error.model'
 import { SessionStorageUtils } from '../../util-tool/util/session-storage.util'
-import { TOKEN } from '../../util-tool/util/request.util'
+import { REDIRECT_URI, TOKEN } from '../../util-tool/util/request.util'
 import { GenericFacade } from '../../util-tool/facade/generic.facade'
 import { RegistryState } from './registry.state'
 import { DateUtil } from '../../util-tool/util/date.util'
 import { StringUtil } from '../../util-tool/util/string.util'
 import { SeverityEnum } from '../../util-model/enumeration/severity.enum'
+import { GenericUtil } from '../../util-tool/util/generic.util'
+import { ThemeEnum } from '../../util-model/enumeration/theme.enum'
 
 @Injectable()
 export class RegistryFacade extends GenericFacade {
@@ -65,7 +69,7 @@ export class RegistryFacade extends GenericFacade {
         'pi pi-sort-alt-slash',
     )
 
-    public get theme (): Signal<'light' | 'dark'> {
+    public get theme (): Signal<ThemeEnum> {
         return this.ngStore.selectSignal( RegistryState.theme )
     }
 
@@ -86,15 +90,26 @@ export class RegistryFacade extends GenericFacade {
     }
 
     public get logoPath (): Signal<string> {
-        return computed( (): string => this.theme() === 'light' ? AppConfig.config.logo.light : AppConfig.config.logo.dark )
+        return computed( (): string => this.theme() === ThemeEnum.LIGHT ? AppConfig.config.logo.light : AppConfig.config.logo.dark )
     }
 
     public get notification (): Observable<ToastMessageOptions | undefined> {
         return this.ngStore.select( RegistryState.notification )
     }
 
+    public get currentUserActionLoading (): Signal<boolean> {
+        return this.ngStore.selectSignal( RegistryState.currentUserActionLoading )
+    }
+
     public get token (): Signal<TokenModel | undefined> {
         return this.ngStore.selectSignal( RegistryState.tokens )
+    }
+
+    public get currentUser$ (): Observable<CurrentUserModel> {
+        return this.ngStore.select( RegistryState.currentUser ).pipe(
+            filter( (user: CurrentUserModel | undefined): boolean => GenericUtil.nonNull( user ) ),
+            map( (user: CurrentUserModel | undefined): CurrentUserModel => user! ),
+        )
     }
 
     public get currentUser (): Signal<CurrentUserModel | undefined> {
@@ -135,6 +150,10 @@ export class RegistryFacade extends GenericFacade {
         )
     }
 
+    public get userProjectProfilesPageAvailabilitySearchParam (): Signal<boolean | undefined> {
+        return this.ngStore.selectSignal( RegistryState.userProjectProfilesPageAvailabilitySearchParam )
+    }
+
     public get userProjectProfileInvitationsPage (): Signal<PageModel<ProjectProfileModel> | undefined> {
         return this.ngStore.selectSignal( RegistryState.userProjectProfileInvitationsPage )
     }
@@ -162,6 +181,19 @@ export class RegistryFacade extends GenericFacade {
     public get userProjectProfileInvitationsPageDateTimeSearchParam (): Signal<Date | undefined> {
         return computed( (): Date | undefined =>
             DateUtil.buildDate( this.ngStore.selectSignal( RegistryState.userProjectProfileInvitationsPageDateTimeParam )() ),
+        )
+    }
+
+    public get themesMetadata (): Signal<SelectItem<ThemeEnum>[]> {
+        return this.ngStore.selectSignal( RegistryState.themesMetadata )
+    }
+
+    public get languagesMetadata (): Signal<SelectItem<string>[]> {
+        return computed( () =>
+            this.ngStore.selectSignal( RegistryState.languagesMetadata )().map( (lang: SelectItem<string>): SelectItem<string> => ({
+                ...lang,
+                label: this.translateService.instant( lang.label! ),
+            }) ),
         )
     }
 
@@ -209,7 +241,16 @@ export class RegistryFacade extends GenericFacade {
         this.ngStore.dispatch( AckNotification )
     }
 
+    public startCurrentUserActionLoader (): void {
+        this.ngStore.dispatch( StartCurrentUserActionLoader )
+    }
+
+    public stopCurrentUserActionLoader (): void {
+        this.ngStore.dispatch( StopCurrentUserActionLoader )
+    }
+
     public login (): void {
+        SessionStorageUtils.set( REDIRECT_URI, location.pathname )
         this.ngStore.dispatch( Login )
     }
 
@@ -225,9 +266,9 @@ export class RegistryFacade extends GenericFacade {
         this.ngStore.dispatch( ImpersonateCurrentUser )
     }
 
-    public restoreTokensFromSessionStorage (): void {
+    public restoreSessionFromStorage (): void {
         if (SessionStorageUtils.check( TOKEN )) {
-            this.ngStore.dispatch( new RestoreTokens( SessionStorageUtils.get( TOKEN ) as TokenModel ) )
+            this.ngStore.dispatch( new RestoreSessionFromStorage( SessionStorageUtils.get( TOKEN ) as TokenModel ) )
         }
     }
 
@@ -243,7 +284,7 @@ export class RegistryFacade extends GenericFacade {
         this.ngStore.dispatch( StopUserProjectProfilesPageLoader )
     }
 
-    public fetchProjectProfilePage (
+    public fetchProjectProfilesPage (
         pageNumber: number | undefined,
         pageSize: number | undefined,
         force: boolean,
@@ -252,16 +293,18 @@ export class RegistryFacade extends GenericFacade {
         this.ngStore.dispatch( new FetchUserProjectProfilesPage( index, pageSize, force ) )
     }
 
-    public inputPageSearchParameters (
+    public inputProfilesPageSearchParameters (
         textSearched: string | undefined,
+        availabilitySearched: boolean | undefined,
         dateTimeSearched: Date | undefined,
     ): void {
         const resetSearch: boolean = this.userProjectProfilesPageTextSearchParam() != textSearched
+                                     || this.userProjectProfilesPageAvailabilitySearchParam() != availabilitySearched
                                      || this.userProjectProfilesPageDateTimeSearchParam() != dateTimeSearched?.toISOString()
 
         if (resetSearch) {
             this.ngStore.dispatch( new UpdateUserProjectProfilesPageSearchParams(
-                resetSearch, textSearched, dateTimeSearched?.toISOString(),
+                resetSearch, textSearched, availabilitySearched, dateTimeSearched?.toISOString(),
             ) )
         }
     }
@@ -305,7 +348,7 @@ export class RegistryFacade extends GenericFacade {
         this.ngStore.dispatch( StopUserProjectProfileLoader )
     }
 
-    public updateTheme (theme: 'light' | 'dark'): void {
+    public updateTheme (theme: ThemeEnum): void {
         this.ngStore.dispatch( new UpdateTheme( theme ) )
     }
 
