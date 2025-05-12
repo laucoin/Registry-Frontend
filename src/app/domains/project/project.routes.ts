@@ -8,10 +8,10 @@ import { MovementFacade } from './movement/data/state/movement.facade'
 import { importProvidersFrom } from '@angular/core'
 import { NgxsModule } from '@ngxs/store'
 import { MovementState } from './movement/data/state/movement.state'
-import { ProjectDetailComponent } from './project-detail/project-detail.component'
 import { CommunicationFacade } from './communication/data/state/communication.facade'
 import { CommunicationState } from './communication/data/state/communication.state'
 import { communicationOptionGuard } from '../../shared/util-authentication/guard/activity-communication-option.guard'
+import { ProjectHomeComponent } from './project-home/project-home.component'
 
 export const projectRoutes: Routes = [
     {
@@ -22,7 +22,7 @@ export const projectRoutes: Routes = [
                 path: '', component: ProjectsListComponent,
             },
             {
-                path: ProjectRoutesEnum.SELECTED, component: ProjectDetailComponent,
+                path: ProjectRoutesEnum.SELECTED, component: ProjectHomeComponent,
             },
             {
                 path: ProjectRoutesEnum.CREATE, component: ProjectFormComponent,

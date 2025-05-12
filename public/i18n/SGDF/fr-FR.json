@@ -231,7 +231,6 @@
             }
         },
         "menu": {
-            "home": "Accueil",
             "users": "Utilisateurs",
             "projects": "Projets",
             "edit-project": "Modifier le projet",
@@ -362,6 +361,53 @@
                     "message": "Attention ! Tu vas anonymiser ton compte. Cette action irréversible entrainera ta déconnexion et t'empêcheras de te connecter à nouveau. À titre informatif, ton utilisateur sera anonmysé immédiatement, les participants a qui tu es liés seront anonymisés à la fin du projet. Cependant, si tu as conduit des véhicules dans le cadre d'un projet, ton participant sera anonymisé 1 an après la fin du projet."
                 }
             }
+        }
+    },
+    "project-home": {
+        "dashboard": {
+            "title": "Tableau de bord",
+            "participants": {
+                "total": {
+                    "one": "Nombre de participant",
+                    "few": "Nombre de participants"
+                },
+                "present": {
+                    "one": "Présent",
+                    "few": "Présents"
+                },
+                "registered": {
+                    "one": "Inscrit",
+                    "few": "Inscrits"
+                },
+                "guest": {
+                    "one": "Invité",
+                    "few": "Invités"
+                },
+                "absent": {
+                    "one": "Absent",
+                    "few": "Absents"
+                }
+            },
+            "vehicles": {
+                "total": {
+                    "one": "Nombre de vehicule",
+                    "few": "Nombre de vehicules"
+                },
+                "present": {
+                    "one": "Présent",
+                    "few": "Présents"
+                },
+                "absent": {
+                    "one": "Absent",
+                    "few": "Absents"
+                }
+            }
+        },
+        "activity-in-progress": {
+            "title": "Activité en cours"
+        },
+        "movements-in-progress": {
+            "title": "Mouvements en cours"
         }
     },
     "users": {

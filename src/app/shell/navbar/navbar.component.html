@@ -3,14 +3,15 @@
         <ng-template #start>
             <div class='d-flex align-items-center'>
                 @if (showContextMenu()) {
-                    <p-button text rounded (onClick)='backToProjects()' (keydown.enter)='backToProjects()' icon='pi pi-arrow-left'
+                    <p-button text rounded class='return-project' (onClick)='backToProjects()' (keydown.enter)='backToProjects()'
+                              icon='pi pi-arrow-left'
                               [label]='registryFacade.tinyScreen() ? "" : registryFacade.selectedProject()?.name'></p-button>
                 } @else {
                     <a [tabIndex]='-1'
                        [routerLink]='AppRouteEnum.PROJECTS.toString()'
                        [attr.href]='AppRouteEnum.PROJECTS.toString()'>
                         <img
-                                [alt]="'menu.home' | translate"
+                                [alt]="'menu.project' | translate"
                                 [src]='registryFacade.logoPath()!'
                                 class='pointer'
                                 height='60' />
@@ -19,7 +20,7 @@
             </div>
         </ng-template>
         <ng-template #item let-item>
-            <a class='menu-item card clickable-card pointer'
+            <a class='menu-item card main-bar-card clickable-card pointer'
                [class.router-active-card]='StringUtil.isRouteActive(item.url)'
                [routerLink]='item.url'
                [attr.href]='item.url'>
@@ -29,7 +30,7 @@
         </ng-template>
         <ng-template #end>
             @if (registryFacade.currentUser()) {
-                <p-button (onClick)='userMenu.toggle($event)' [text]='registryFacade.tinyScreen()'>
+                <p-button (onClick)='userMenu.toggle($event)' severity='secondary' [text]='registryFacade.tinyScreen()'>
                     <p-avatar [textContent]='initials()' shape='circle' />
                     @if (!registryFacade.tinyScreen()) {
                         <div>

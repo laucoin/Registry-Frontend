@@ -8,6 +8,10 @@
     --p-menubar-background: #003a5d;
 }
 
+:host .return-project {
+    --p-button-text-primary-color: white;
+}
+
 .menu-item {
     padding: 0 var(--basic-spacer) 0;
     height:  3em;
@@ -20,10 +24,13 @@
     margin:  calc(var(--min-spacer) / 2) 0 calc(var(--min-spacer) / 2) 0;
 }
 
+.main-bar-card {
+    color: white;
+}
+
 .card {
     border-radius:       var(--basic-rounder);
     border:              transparent 2px solid;
-    color:               #fff;
     display:             flex;
     align-items:         center;
     justify-content:     left;

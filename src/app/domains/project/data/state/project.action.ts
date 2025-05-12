@@ -5,6 +5,14 @@ import { ProjectPageParamsModel } from '../model/project-page-params.model'
 enum ProjectActionEnum {
     FETCH_PROJECT_OPTIONS = '[Backend] Fetching project\'s options',
 
+    START_PARTICIPANTS_STATUS_LOADER = '[Local] Starting participants\' status loader',
+    STOP_PARTICIPANTS_STATUS_LOADER = '[Local] Stopping participants\' status loader',
+    FETCH_PARTICIPANTS_STATUS = '[Backend] Fetching participants status',
+
+    START_VEHICLES_STATUS_LOADER = '[Local] Starting vehicles\' status loader',
+    STOP_VEHICLES_STATUS_LOADER = '[Local] Stopping vehicles\' status loader',
+    FETCH_VEHICLES_STATUS = '[Backend] Fetching vehicles status',
+
     START_PROJECTS_PAGE_LOADER = '[Local] Starting projects\' page loader',
     STOP_PROJECTS_PAGE_LOADER = '[Local] Stopping projects\' page loader',
 
@@ -25,6 +33,40 @@ enum ProjectActionEnum {
 
 export class FetchProjectOptions {
     public static readonly type: ProjectActionEnum = ProjectActionEnum.FETCH_PROJECT_OPTIONS
+}
+
+export class StartParticipantsStatusLoader {
+    public static readonly type: ProjectActionEnum = ProjectActionEnum.START_PARTICIPANTS_STATUS_LOADER
+}
+
+export class StopParticipantsStatusLoader {
+    public static readonly type: ProjectActionEnum = ProjectActionEnum.STOP_PARTICIPANTS_STATUS_LOADER
+}
+
+export class FetchParticipantsStatus {
+    public static readonly type: ProjectActionEnum = ProjectActionEnum.FETCH_PARTICIPANTS_STATUS
+
+    public constructor (
+        public readonly projectId: string | undefined,
+        public readonly force: boolean | undefined,
+    ) {}
+}
+
+export class StartVehiclesStatusLoader {
+    public static readonly type: ProjectActionEnum = ProjectActionEnum.START_VEHICLES_STATUS_LOADER
+}
+
+export class StopVehiclesStatusLoader {
+    public static readonly type: ProjectActionEnum = ProjectActionEnum.STOP_VEHICLES_STATUS_LOADER
+}
+
+export class FetchVehiclesStatus {
+    public static readonly type: ProjectActionEnum = ProjectActionEnum.FETCH_VEHICLES_STATUS
+
+    public constructor (
+        public readonly projectId: string | undefined,
+        public readonly force: boolean | undefined,
+    ) {}
 }
 
 export class StartProjectsPageLoader {

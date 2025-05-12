@@ -8,14 +8,20 @@ import {
     DeleteProject,
     DisableProject,
     EnableProject,
+    FetchParticipantsStatus,
     FetchProject,
     FetchProjectOptions,
     FetchProjectsPage,
+    FetchVehiclesStatus,
     ResetProject,
+    StartParticipantsStatusLoader,
     StartProjectLoader,
     StartProjectsPageLoader,
+    StartVehiclesStatusLoader,
+    StopParticipantsStatusLoader,
     StopProjectLoader,
     StopProjectsPageLoader,
+    StopVehiclesStatusLoader,
     UpdateProject,
     UpdateProjectsPageSearchParams,
 } from './project.action'
@@ -30,6 +36,9 @@ import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { ProjectModel } from '../../../../shared/util-model/model/project.model'
 import { ProjectStateModel } from '../model/project-state.model'
 import { SeverityEnum } from '../../../../shared/util-model/enumeration/severity.enum'
+import { ParticipantStatusModel } from '../model/participant-status.model'
+import { VehicleStatusModel } from '../model/vehicle-status.model'
+import { MovementService } from '../../movement/data/state/movement.service'
 
 const defaultProject: ElementRequestInformationModel<ProjectModel> = {
     element: undefined,
@@ -37,6 +46,18 @@ const defaultProject: ElementRequestInformationModel<ProjectModel> = {
 }
 
 const defaultProjectState: ProjectStateModel = {
+    status: {
+        participants: {
+            element: undefined,
+            loading: false,
+            error: undefined,
+        },
+        vehicles: {
+            element: undefined,
+            loading: false,
+            error: undefined,
+        },
+    },
     projects: {
         element: undefined,
         params: {
@@ -80,9 +101,40 @@ export class ProjectState extends GenericElementState<ProjectStateModel> {
 
     public constructor (
         private readonly service: ProjectService,
+        private readonly movementService: MovementService,
         private readonly facade: ProjectFacade,
     ) {
         super()
+    }
+
+    @Selector()
+    public static participantsStatus (state: ProjectStateModel): ParticipantStatusModel | undefined {
+        return state.status.participants.element
+    }
+
+    @Selector()
+    public static participantsStatusLoading (state: ProjectStateModel): boolean {
+        return state.status.participants.loading
+    }
+
+    @Selector()
+    public static participantsStatusError (state: ProjectStateModel): ToastMessageOptions | undefined {
+        return state.status.participants.error
+    }
+
+    @Selector()
+    public static vehiclesStatus (state: ProjectStateModel): VehicleStatusModel | undefined {
+        return state.status.vehicles.element
+    }
+
+    @Selector()
+    public static vehiclesStatusLoading (state: ProjectStateModel): boolean {
+        return state.status.vehicles.loading
+    }
+
+    @Selector()
+    public static vehiclesStatusError (state: ProjectStateModel): ToastMessageOptions | undefined {
+        return state.status.vehicles.error
     }
 
     @Selector()
@@ -148,6 +200,152 @@ export class ProjectState extends GenericElementState<ProjectStateModel> {
     @Selector()
     public static visibilitiesMetadata (state: ProjectStateModel): SelectItem<boolean | undefined>[] {
         return state._metadata.visibilities
+    }
+
+    @Action( StartParticipantsStatusLoader )
+    public startParticipantsStatusLoader (ctx: StateContext<ProjectStateModel>): void {
+        this.updateParticipantsStatusLoader( ctx, true )
+    }
+
+    @Action( StopParticipantsStatusLoader )
+    public stopParticipantsStatusLoader (ctx: StateContext<ProjectStateModel>): void {
+        this.updateParticipantsStatusLoader( ctx, false )
+    }
+
+    private updateParticipantsStatusLoader (ctx: StateContext<ProjectStateModel>, loading: boolean): void {
+        ctx.patchState( {
+            status: {
+                ...ctx.getState().status,
+                participants: {
+                    ...ctx.getState().status.participants,
+                    loading: loading,
+                },
+            },
+        } )
+    }
+
+    @Action( FetchParticipantsStatus )
+    public fetchParticipantsStatus (
+        ctx: StateContext<ProjectStateModel>,
+        payload: FetchParticipantsStatus,
+    ): Observable<void> {
+        return this.movementService.findParticipantsStatus( payload.projectId ).pipe(
+            initialize( (): void => this.facade.startParticipantsStatusLoader() ),
+            finalize( (): void => this.facade.stopParticipantsStatusLoader() ),
+            map( (status: ParticipantStatusModel): void => this.fetchParticipantsStatusComplete( ctx, status ) ),
+            catchError( (error: ErrorModel): Observable<void> => this.fetchParticipantsStatusError( ctx, error ) ),
+        )
+    }
+
+    private fetchParticipantsStatusComplete (
+        ctx: StateContext<ProjectStateModel>,
+        status: ParticipantStatusModel,
+    ): void {
+        ctx.patchState( {
+            status: {
+                ...ctx.getState().status,
+                participants: {
+                    ...ctx.getState().status.participants,
+                    element: status,
+                },
+            },
+        } )
+    }
+
+    private fetchParticipantsStatusError (
+        ctx: StateContext<ProjectStateModel>,
+        error: ErrorModel,
+    ): Observable<void> {
+        ctx.patchState( {
+            status: {
+                ...ctx.getState().status,
+                participants: {
+                    ...ctx.getState().status.participants,
+                    error: {
+                        severity: 'error',
+                        summary: error.title,
+                        detail: error.message,
+                        icon: 'pi pi-exclamation-triangle',
+                        closable: true,
+                    },
+                },
+            },
+        } )
+
+        return of()
+    }
+
+    @Action( StartVehiclesStatusLoader )
+    public startVehiclesStatusLoader (ctx: StateContext<ProjectStateModel>): void {
+        this.updateVehiclesStatusLoader( ctx, true )
+    }
+
+    @Action( StopVehiclesStatusLoader )
+    public stopVehiclesStatusLoader (ctx: StateContext<ProjectStateModel>): void {
+        this.updateVehiclesStatusLoader( ctx, false )
+    }
+
+    private updateVehiclesStatusLoader (ctx: StateContext<ProjectStateModel>, loading: boolean): void {
+        ctx.patchState( {
+            status: {
+                ...ctx.getState().status,
+                participants: {
+                    ...ctx.getState().status.participants,
+                    loading: loading,
+                },
+            },
+        } )
+    }
+
+    @Action( FetchVehiclesStatus )
+    public fetchVehiclesStatus (
+        ctx: StateContext<ProjectStateModel>,
+        payload: FetchParticipantsStatus,
+    ): Observable<void> {
+        return this.movementService.findVehiclesStatus( payload.projectId ).pipe(
+            initialize( (): void => this.facade.startVehiclesStatusLoader() ),
+            finalize( (): void => this.facade.stopVehiclesStatusLoader() ),
+            map( (status: VehicleStatusModel): void => this.fetchVehiclesStatusComplete( ctx, status ) ),
+            catchError( (error: ErrorModel): Observable<void> => this.fetchVehiclesStatusError( ctx, error ) ),
+        )
+    }
+
+    private fetchVehiclesStatusComplete (
+        ctx: StateContext<ProjectStateModel>,
+        status: VehicleStatusModel,
+    ): void {
+        ctx.patchState( {
+            status: {
+                ...ctx.getState().status,
+                vehicles: {
+                    ...ctx.getState().status.vehicles,
+                    element: status,
+                },
+            },
+        } )
+    }
+
+    private fetchVehiclesStatusError (
+        ctx: StateContext<ProjectStateModel>,
+        error: ErrorModel,
+    ): Observable<void> {
+        ctx.patchState( {
+            status: {
+                ...ctx.getState().status,
+                vehicles: {
+                    ...ctx.getState().status.vehicles,
+                    error: {
+                        severity: 'error',
+                        summary: error.title,
+                        detail: error.message,
+                        icon: 'pi pi-exclamation-triangle',
+                        closable: true,
+                    },
+                },
+            },
+        } )
+
+        return of()
     }
 
     @Action( FetchProjectOptions )
