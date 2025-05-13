@@ -57,6 +57,7 @@
                       [placeholder]='"communications.form.placeholder.message" | translate'
                       [formControl]='message'
                       (keydown.enter)='submit()'></textarea>
+            <small class='secondary-color'>{{ 'communications.form.hint.message' | translate }}</small>
             <app-form-field-error [errors]='message.errors'
                                   [invalid]='FormUtil.invalid(message)'
                                   translationPrefix='communications.form.error.message' />

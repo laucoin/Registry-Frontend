@@ -1,4 +1,5 @@
 export interface VehicleStatusModel {
-    present: number,
+    present: number
     absent: number
+    lastRefresh: Date
 }

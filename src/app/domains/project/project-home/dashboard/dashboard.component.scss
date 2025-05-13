@@ -29,3 +29,19 @@ h2, h3 {
 ::ng-deep .p-card {
     height: 100%;
 }
+
+:host {
+    --p-card-title-font-size:  1rem;
+    --p-panel-content-padding: var(--min-spacer);
+}
+
+.header-title {
+    font-size:   var(--p-card-title-font-size);
+    font-weight: var(--p-card-title-font-weight);
+}
+
+.birthdays {
+    display:        flex;
+    flex-direction: column;
+    gap:            var(--min-spacer);
+}

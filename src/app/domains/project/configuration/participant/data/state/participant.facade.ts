@@ -222,6 +222,8 @@ export class ParticipantFacade extends GenericProjectElementFacade {
             this.ngStore.dispatch( new UpdateParticipantMovementsPageSearchParams( {
                 resetSearch: resetSearch,
                 visibilitySearched: visibilitySearched,
+                currentMovements: false,
+                linkedToActivity: undefined,
                 typeSearched: typeSearched,
                 startDateTimeSearched: startDateTimeSearched?.toISOString(),
                 endDateTimeSearched: endDateTimeSearched?.toISOString(),

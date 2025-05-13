@@ -67,7 +67,9 @@ const defaultVehicleState: VehicleStateModel = {
         element: undefined,
         params: {
             resetSearch: false,
+            currentMovements: false,
             visibilitySearched: undefined,
+            linkedToActivity: undefined,
             typeSearched: undefined,
             startDateTimeSearched: undefined,
             endDateTimeSearched: undefined,
@@ -383,6 +385,7 @@ export class VehicleState extends GenericProjectElementState<VehicleStateModel> 
         return this.movementService.findMovementsContents(
             payload.projectId,
             payload.movementIds,
+            ctx.getState().movements.params.currentMovements,
         ).pipe(
             map( (contents: PairModel<MovementContentModel[]>[]): void => this.fetchVehicleMovementsContentsComplete(
                 ctx,

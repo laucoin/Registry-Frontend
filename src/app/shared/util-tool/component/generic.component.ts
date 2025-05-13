@@ -10,6 +10,8 @@ import { GenericUtil } from '../util/generic.util'
 import { StringUtil } from '../util/string.util'
 import { breakPoint } from '../util/breakpoint.const'
 import { AppRouteEnum } from '../../../app-route.enum'
+import { ProjectUtil } from '../util/project.util'
+import { ProjectOptionEnum } from '../../util-model/enumeration/project-option.enum'
 
 export abstract class GenericComponent {
     protected readonly AppRouteEnum: typeof AppRouteEnum = AppRouteEnum
@@ -20,6 +22,8 @@ export abstract class GenericComponent {
     protected readonly CurrentUserUtil: typeof CurrentUserUtil = CurrentUserUtil
     protected readonly UserAuthority: typeof UserAuthorityEnum = UserAuthorityEnum
     protected readonly ProjectAuthority: typeof ProjectAuthorityEnum = ProjectAuthorityEnum
+    protected readonly ProjectOptionEnum: typeof ProjectOptionEnum = ProjectOptionEnum
+    protected readonly ProjectUtil: typeof ProjectUtil = ProjectUtil
 
     protected readonly formBuilder: FormBuilder = inject( FormBuilder )
     protected readonly registryFacade: RegistryFacade = inject( RegistryFacade )

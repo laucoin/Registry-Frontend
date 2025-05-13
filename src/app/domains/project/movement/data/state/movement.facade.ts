@@ -202,6 +202,8 @@ export class MovementFacade extends GenericProjectElementFacade {
             this.ngStore.dispatch( new UpdateMovementsPageSearchParams( {
                 resetSearch: resetSearch,
                 visibilitySearched: visibilitySearched,
+                currentMovements: false,
+                linkedToActivity: undefined,
                 typeSearched: typeSearched,
                 startDateTimeSearched: startDateTimeSearched?.toISOString(),
                 endDateTimeSearched: endDateTimeSearched?.toISOString(),

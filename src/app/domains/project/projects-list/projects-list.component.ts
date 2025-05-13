@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { PageEventModel } from '../../../shared/util-model/model/page-event.model'
-import { ProjectFacade } from '../data/state/project.facade'
+import { ProjectFacade } from '../data/state/project/project.facade'
 import { ListComponent } from '../../../shared/util-ui/list/list.component'
 import { RegistryTemplateDirective } from '../../../shared/util-tool/directive/registry-template.directive'
 import { ProjectElementComponent } from '../project-element/project-element.component'

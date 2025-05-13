@@ -2,11 +2,9 @@ import { Component } from '@angular/core'
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs'
 import { TranslatePipe } from '@ngx-translate/core'
 import { DashboardComponent } from './dashboard/dashboard.component'
-import { Card } from 'primeng/card'
-import { Divider } from 'primeng/divider'
-import { MessageComponent } from '../../../shared/util-ui/message/message.component'
-import { PluralTranslationPipe } from '../../../shared/util-tool/pipe/plural-translation.pipe'
-import { Skeleton } from 'primeng/skeleton'
+import { CurrentActivitiesComponent } from './current-activities/current-activities.component'
+import { CurrentMovementsComponent } from './current-movements/current-movements.component'
+import { GenericComponent } from '../../../shared/util-tool/component/generic.component'
 
 @Component( {
     selector: 'app-project-home',
@@ -18,13 +16,9 @@ import { Skeleton } from 'primeng/skeleton'
         TabPanel,
         TranslatePipe,
         DashboardComponent,
-        Card,
-        Divider,
-        MessageComponent,
-        PluralTranslationPipe,
-        Skeleton,
+        CurrentActivitiesComponent,
+        CurrentMovementsComponent,
     ],
     templateUrl: './project-home.component.html',
-    styleUrl: './project-home.component.scss',
 } )
-export class ProjectHomeComponent {}
+export class ProjectHomeComponent extends GenericComponent {}

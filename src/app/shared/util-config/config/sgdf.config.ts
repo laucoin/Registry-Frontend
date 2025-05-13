@@ -140,6 +140,7 @@ export const sgdfConfig: ContextConfigModel = {
     movement: {
         actions: [
             ElementActionEnum.MOVEMENT_CONSULT_COMMUNICATIONS,
+            ElementActionEnum.MOVEMENT_REVERSE,
             ElementActionEnum.MOVEMENT_UPDATE,
             ElementActionEnum.MOVEMENT_DISABLE,
             ElementActionEnum.MOVEMENT_ENABLE,

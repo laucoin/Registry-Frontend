@@ -72,6 +72,8 @@ const defaultMovementState: MovementStateModel = {
         element: undefined,
         params: {
             resetSearch: false,
+            currentMovements: false,
+            linkedToActivity: undefined,
             visibilitySearched: undefined,
             typeSearched: undefined,
             startDateTimeSearched: undefined,
@@ -168,6 +170,16 @@ export class MovementState extends GenericProjectElementState<MovementStateModel
     }
 
     @Selector()
+    public static movementsPageStartDateTimeSearchedParam (state: MovementStateModel): string | undefined {
+        return state.movements.params.startDateTimeSearched
+    }
+
+    @Selector()
+    public static movementsPageEndDateTimeSearchedParam (state: MovementStateModel): string | undefined {
+        return state.movements.params.endDateTimeSearched
+    }
+
+    @Selector()
     public static movementCommunicationsPage (state: MovementStateModel): PageModel<CommunicationModel> | undefined {
         return state.movementCommunications.element
     }
@@ -210,16 +222,6 @@ export class MovementState extends GenericProjectElementState<MovementStateModel
     @Selector()
     public static movementCommunicationsPageEndDateTimeSearchedParam (state: MovementStateModel): string | undefined {
         return state.movementCommunications.params.endDateTimeSearched
-    }
-
-    @Selector()
-    public static movementsPageStartDateTimeSearchedParam (state: MovementStateModel): string | undefined {
-        return state.movements.params.startDateTimeSearched
-    }
-
-    @Selector()
-    public static movementsPageEndDateTimeSearchedParam (state: MovementStateModel): string | undefined {
-        return state.movements.params.endDateTimeSearched
     }
 
     @Selector()
@@ -365,6 +367,7 @@ export class MovementState extends GenericProjectElementState<MovementStateModel
         return this.service.findMovementsContents(
             payload.projectId,
             payload.movementIds,
+            ctx.getState().movements.params.currentMovements,
         ).pipe(
             map( (contents: PairModel<MovementContentModel[]>[]): void => this.fetchMovementsContentComplete(
                 ctx,

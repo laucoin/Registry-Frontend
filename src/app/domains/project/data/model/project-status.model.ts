@@ -1,4 +1,4 @@
-export interface ParticipantStatusModel {
+export interface ProjectStatusModel {
     registered: {
         presentMinors: number,
         presentMajors: number,
@@ -6,4 +6,5 @@ export interface ParticipantStatusModel {
         absentMajors: number,
     },
     guests: number
+    lastRefresh: Date
 }
