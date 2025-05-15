@@ -13,6 +13,7 @@ import { Message } from 'primeng/message'
     changeDetection: ChangeDetectionStrategy.OnPush,
 } )
 export class MessageComponent {
+    public readonly showImage: InputSignal<boolean> = input( true )
     public readonly message: InputSignal<ToastMessageOptions | undefined> = input.required()
 
     protected get isError (): boolean {

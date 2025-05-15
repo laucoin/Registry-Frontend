@@ -12,6 +12,10 @@ import { CommunicationFacade } from './communication/data/state/communication.fa
 import { CommunicationState } from './communication/data/state/communication.state'
 import { communicationOptionGuard } from '../../shared/util-authentication/guard/activity-communication-option.guard'
 import { ProjectHomeComponent } from './project-home/project-home.component'
+import { SelectedProjectFacade } from './data/state/selected-project/selected-project.facade'
+import { SelectedProjectState } from './data/state/selected-project/selected-project.state'
+import { ParticipantFacade } from './configuration/participant/data/state/participant.facade'
+import { ParticipantState } from './configuration/participant/data/state/participant.state'
 
 export const projectRoutes: Routes = [
     {
@@ -23,6 +27,10 @@ export const projectRoutes: Routes = [
             },
             {
                 path: ProjectRoutesEnum.SELECTED, component: ProjectHomeComponent,
+                providers: [
+                    SelectedProjectFacade, ParticipantFacade, MovementFacade, importProvidersFrom( NgxsModule.forFeature(
+                        [ SelectedProjectState, ParticipantState, MovementState ] ) ),
+                ],
             },
             {
                 path: ProjectRoutesEnum.CREATE, component: ProjectFormComponent,

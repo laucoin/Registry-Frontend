@@ -9,7 +9,7 @@ import { TranslateModule } from '@ngx-translate/core'
 import { TagModule } from 'primeng/tag'
 import { MovementContentModel } from '../../util-model/model/movement-content.model'
 import { LayerComponent } from '../layer/layer.component'
-import { ListboxModule } from 'primeng/listbox'
+import { ListboxClickEvent, ListboxModule } from 'primeng/listbox'
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs'
 import { Avatar } from 'primeng/avatar'
 import { AppRouteEnum } from '../../../app-route.enum'
@@ -28,6 +28,11 @@ import { SeverityEnum } from '../../util-model/enumeration/severity.enum'
 import { ElementActionEnum } from '../../util-model/enumeration/element-action.enum'
 import { ProjectOptionIconPipe } from '../../util-tool/pipe/project-option-icon.pipe'
 import { ProjectOptionEnum } from '../../util-model/enumeration/project-option.enum'
+import { TruncatePipe } from '../../util-tool/pipe/truncate.pipe'
+import { Button } from 'primeng/button'
+import { ConfirmationService } from 'primeng/api'
+import { MovementDto } from '../../../domains/project/movement/data/dto/movement.dto'
+import { MovementContentDto } from '../../../domains/project/movement/data/dto/movement-content.dto'
 
 @Component( {
     selector: 'app-movement-element',
@@ -54,6 +59,9 @@ import { ProjectOptionEnum } from '../../util-model/enumeration/project-option.e
         ConfirmationDialogComponent,
         SeverityCircleComponent,
         ProjectOptionIconPipe,
+        TruncatePipe,
+        Button,
+
     ],
     templateUrl: './movement-element.component.html',
     styleUrl: './movement-element.component.scss',
@@ -62,6 +70,8 @@ import { ProjectOptionEnum } from '../../util-model/enumeration/project-option.e
 export class MovementElementComponent extends GenericElementComponent<MovementModel> {
     protected readonly facade: MovementFacade = inject( MovementFacade )
     protected readonly optionPipe: ProjectOptionIconPipe = inject( ProjectOptionIconPipe )
+    private readonly confirmationService: ConfirmationService = inject( ConfirmationService )
+    private readonly pluralTranslation: PluralTranslationPipe = inject( PluralTranslationPipe )
 
     protected readonly VehicleUtil: typeof VehicleUtil = VehicleUtil
     protected readonly MovementTypeEnum: typeof MovementTypeEnum = MovementTypeEnum
@@ -71,6 +81,7 @@ export class MovementElementComponent extends GenericElementComponent<MovementMo
 
     public readonly actionMenuVisible: InputSignal<boolean> = input( true )
     public readonly movement: InputSignal<MovementModel> = input.required()
+    public readonly reversible: InputSignal<boolean> = input( false )
     public readonly vehicleId: InputSignal<string | undefined> = input()
 
     private readonly allActions: Signal<ActionModel[]> = signal( [
@@ -133,12 +144,27 @@ export class MovementElementComponent extends GenericElementComponent<MovementMo
         },
     ] )
 
+    private readonly allButtonActions: Signal<ActionModel[]> = computed( (): ActionModel[] => [
+        {
+            id: ElementActionEnum.MOVEMENT_REVERSE,
+            label: `movements.actions.reverse.${this.movement().type.value}`,
+            icon: this.movement().type.value === MovementTypeEnum.IN ? 'pi pi-arrow-up' : 'pi pi-arrow-down',
+            disabled: false,
+            requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_MOVEMENT_C,
+        },
+    ] )
+
+    protected readonly buttonAction: Signal<ActionModel | undefined> = computed( (): ActionModel | undefined =>
+        this.reversible() ? this.buildActions( this.movement(), this.allButtonActions() )[0] : undefined,
+    )
+
     protected readonly actions: Signal<ActionModel[]>
     protected readonly total: Signal<number>
     protected readonly adults: Signal<MovementContentModel[]>
     protected readonly children: Signal<MovementContentModel[]>
     protected readonly pools: Signal<Record<string, MovementContentModel[]>>
     protected readonly driver: Signal<MovementContentModel | undefined>
+    protected readonly driverName: Signal<string | undefined>
 
     public constructor () {
         super()
@@ -160,6 +186,7 @@ export class MovementElementComponent extends GenericElementComponent<MovementMo
             }
             return undefined
         } )
+        this.driverName = computed( (): string => `${this.driver()?.participant?.firstName} ${this.driver()?.participant?.lastName?.toUpperCase()}` )
     }
 
     protected isActionVisible (element: MovementModel, action: ActionModel): boolean {
@@ -199,5 +226,56 @@ export class MovementElementComponent extends GenericElementComponent<MovementMo
             default:
                 console.warn( this.translateService.instant( 'global.messages.invalid-action' ) )
         }
+    }
+
+    protected showDialogIfNeededForMovementReverse (content: MovementContentModel[]): void {
+        this.confirmationService.confirm( {
+            ...this.buttonAction()!.confirmation!,
+            header: this.translateService.instant( `movements.actions.confirmations.reverse.${this.movement().type.value}.title` ),
+            message: this.translateService.instant(
+                this.pluralTranslation.transform(
+                    `movements.actions.confirmations.reverse.${this.movement().type.value}.message`,
+                    content,
+                ),
+                { size: content.length },
+            ),
+            closable: true,
+            closeOnEscape: true,
+            rejectButtonProps: {
+                severity: 'secondary',
+                outlined: true,
+                rounded: true,
+            },
+            acceptButtonProps: {
+                severity: 'success',
+                outlined: true,
+                rounded: true,
+            },
+            accept: (): void => this.handleMovementReverse( content ),
+        } )
+    }
+
+    protected onClickParticipant (event: ListboxClickEvent): void {
+        if (this.reversible()) {
+            this.layerOpened = false
+            this.showDialogIfNeededForMovementReverse( [ event.option ] )
+        }
+    }
+
+    protected handleMovementReverse (content: MovementContentModel[]): void {
+        const reverseMovement: MovementDto = {
+            dateTime: new Date(),
+            type: this.movement().type.value === MovementTypeEnum.IN ? MovementTypeEnum.OUT : MovementTypeEnum.IN,
+            reason: undefined,
+            activityId: undefined,
+            contentType: this.movement().contentType,
+            content: content.map( (c: MovementContentModel): MovementContentDto => ({
+                poolName: c.poolName,
+                participantId: c.participant?.id,
+                vehicleId: c.vehicle?.id,
+            }) ),
+            guests: [],
+        }
+        this.facade.createMovement( reverseMovement )
     }
 }

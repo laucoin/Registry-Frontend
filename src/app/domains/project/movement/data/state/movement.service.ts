@@ -20,7 +20,7 @@ import { MovementReasonModel } from '../model/movement-reason.model'
 import { ParticipantTypeEnum } from '../../../../../shared/util-model/enumeration/participant-type.enum'
 import { CommunicationModel } from '../../../communication/data/model/communication.model'
 import { CommunicationPageParamsModel } from '../../../communication/data/model/communication-page-params.model'
-import { ParticipantStatusModel } from '../../../data/model/participant-status.model'
+import { ProjectStatusModel } from '../../../data/model/project-status.model'
 import { VehicleStatusModel } from '../../../data/model/vehicle-status.model'
 
 @Injectable( {
@@ -49,8 +49,9 @@ export class MovementService extends GenericProjectService {
     public findMovementsContents (
         projectId: string | undefined,
         movementIds: string[],
+        currentMovements: boolean,
     ): Observable<PairModel<MovementContentModel[]>[]> {
-        let builtParams: HttpParams = new HttpParams()
+        let builtParams: HttpParams = new HttpParams().set( 'currentMovements', currentMovements )
         if (GenericUtil.nonNull( movementIds )) {
             movementIds.forEach( (movementId: string): void => {
                 builtParams = builtParams.append( 'movementIds', movementId )
@@ -78,8 +79,8 @@ export class MovementService extends GenericProjectService {
         )
     }
 
-    public findParticipantsStatus (projectId: string | undefined): Observable<ParticipantStatusModel> {
-        return this.http.get<ParticipantStatusModel>( `${this.buildRequestBaseUrl( projectId )}/participants/status` )
+    public findParticipantsStatus (projectId: string | undefined): Observable<ProjectStatusModel> {
+        return this.http.get<ProjectStatusModel>( `${this.buildRequestBaseUrl( projectId )}/participants/status` )
     }
 
     public findVehiclesStatus (projectId: string | undefined): Observable<VehicleStatusModel> {

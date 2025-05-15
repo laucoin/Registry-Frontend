@@ -215,6 +215,8 @@ export class VehicleFacade extends GenericProjectElementFacade {
             this.ngStore.dispatch( new UpdateVehicleMovementsPageSearchParams( {
                 resetSearch: resetSearch,
                 visibilitySearched: visibilitySearched,
+                currentMovements: false,
+                linkedToActivity: undefined,
                 typeSearched: typeSearched,
                 startDateTimeSearched: startDateTimeSearched?.toISOString(),
                 endDateTimeSearched: endDateTimeSearched?.toISOString(),

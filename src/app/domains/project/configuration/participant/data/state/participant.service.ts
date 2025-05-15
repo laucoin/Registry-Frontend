@@ -80,6 +80,12 @@ export class ParticipantService extends GenericProjectService {
         )
     }
 
+    public findParticipantsBirthdays (projectId: string | undefined): Observable<ParticipantModel[]> {
+        return this.http.get<ParticipantModel[]>(
+            `${this.buildRequestBaseUrl( projectId )}/birthday`,
+        )
+    }
+
     public createParticipant (
         projectId: string | undefined,
         participant: ParticipantDto,

@@ -9,14 +9,12 @@ import { signal, WritableSignal } from '@angular/core'
 import { IntervalStatusEnum } from '../../util-model/enumeration/interval-status.enum'
 import { SeverityEnum } from '../../util-model/enumeration/severity.enum'
 import { ElementActionEnum } from '../../util-model/enumeration/element-action.enum'
-import { ProjectOptionEnum } from '../../util-model/enumeration/project-option.enum'
 
 export abstract class GenericElementComponent<M extends GenericModel> extends GenericComponent {
     protected readonly FormUtil: typeof FormUtil = FormUtil
 
     protected readonly SeverityEnum: typeof SeverityEnum = SeverityEnum
     protected readonly IntervalStatusEnum: typeof IntervalStatusEnum = IntervalStatusEnum
-    protected readonly ProjectOptionEnum: typeof ProjectOptionEnum = ProjectOptionEnum
 
     public readonly action: WritableSignal<ActionModel | undefined> = signal( undefined )
 

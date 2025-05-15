@@ -58,19 +58,17 @@
         </div>
     </ng-template>
     <ng-template #emptymessage>
-        @if (error()) {
+        @if (GenericUtil.nonNull(error())) {
             @if (GenericUtil.nonNull(getTemplate('error'))) {
                 <ng-container [ngTemplateOutlet]='getTemplate("error")' />
             } @else {
                 <app-message [message]='error()!' />
             }
-        } @else {
-            @if (!loading() && !error()) {
-                @if (getTemplate('empty')) {
-                    <ng-container [ngTemplateOutlet]='getTemplate("empty")' />
-                } @else {
-                    <app-message [message]='message()' />
-                }
+        } @else if (!loading()) {
+            @if (getTemplate('empty')) {
+                <ng-container [ngTemplateOutlet]='getTemplate("empty")' />
+            } @else {
+                <app-message [message]='message()' />
             }
         }
     </ng-template>

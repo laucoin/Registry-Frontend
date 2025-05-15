@@ -220,6 +220,8 @@ export class ActivityFacade extends GenericProjectElementFacade {
             this.ngStore.dispatch( new UpdateActivityMovementsPageSearchParams( {
                 resetSearch: resetSearch,
                 visibilitySearched: visibilitySearched,
+                currentMovements: false,
+                linkedToActivity: true,
                 typeSearched: typeSearched,
                 startDateTimeSearched: startDateTimeSearched?.toISOString(),
                 endDateTimeSearched: endDateTimeSearched?.toISOString(),

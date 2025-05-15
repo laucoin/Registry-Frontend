@@ -25,11 +25,11 @@
             }
         </div>
         <div class='groups d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
-            <div [class.pointer]='additionalTotal() > 0'
-                 [class.hover-underline]='additionalTotal() > 0'
+            <div [class.pointer]='additionalTotal() >= 0'
+                 [class.hover-underline]='additionalTotal() >= 0'
                  tabindex='1'
-                 (click)='additionalTotal() > 0 ? layerOpened = true : ""'
-                 (keydown.enter)='additionalTotal()> 0 ? layerOpened = true : ""'>
+                 (click)='additionalTotal() >= 0 ? layerOpened = true : ""'
+                 (keydown.enter)='additionalTotal() >= 0 ? layerOpened = true : ""'>
                 @if (additionalTotal() === 0) {
                     {{ participant().groups[0].name }}
                 } @else {

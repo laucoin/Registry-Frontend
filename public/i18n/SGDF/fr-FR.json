@@ -366,6 +366,11 @@
     "project-home": {
         "dashboard": {
             "title": "Tableau de bord",
+            "birthday": {
+                "one": "Anniversaire",
+                "few": "Anniversaires"
+            },
+            "no-birthday": "Pas d'anniversaire aujourd'hui",
             "participants": {
                 "total": {
                     "one": "Nombre de participant",
@@ -764,11 +769,10 @@
             "one": "Participant",
             "few": "Participants"
         },
-        "reason": "pour \"{{reason}}\"",
+        "for": "pour",
         "content": {
             "one": "{{name}}",
-            "two": "{{name}} et 1 autre personne",
-            "few": "{{name}} et {{others}} autres personnes"
+            "few": "{{total}} personnes"
         },
         "visible": {
             "true": "Visible",
@@ -872,11 +876,31 @@
         },
         "actions": {
             "communications-history": "Historique des communications",
+            "reverse": {
+                "IN": "Faire sortir",
+                "OUT": "Faire entrer"
+            },
             "edit": "Modifier",
             "disable": "Masquer",
             "enable": "Démasquer",
             "delete": "Supprimer",
             "confirmations": {
+                "reverse": {
+                    "IN": {
+                        "title": "Faire sortir",
+                        "message": {
+                            "one": "Attention ! Tu vas faire sortir un participant. Il sera considéré comme sorti à partir de maintenant.",
+                            "few": "Attention ! Tu vas faire sortir {{size}} participants. Ils seront considérés comme sortis à partir de maintenant."
+                        }
+                    },
+                    "OUT": {
+                        "title": "Faire Entrer",
+                        "message": {
+                            "one": "Attention ! Tu vas faire entrer un participant. Il sera considéré comme présent à partir de maintenant.",
+                            "few": "Attention ! Tu vas faire entrer {{size}} participants. Ils seront considérés comme présents à partir de maintenant."
+                        }
+                    }
+                },
                 "disable": {
                     "title": "Masquer le mouvement",
                     "message": "Attention ! Tu vas masquer le mouvement. Tant qu'il est masqué, c'est comme si il n'avait jamais eu lieu."
@@ -1518,10 +1542,8 @@
             "movement": "Activité",
             "datetime": "Date & Heure",
             "message": "Message",
-            "duration": "Durée",
             "hint": {
-                "begin-date-time": "Par défaut une activité est disponible dès le début du projet.",
-                "end-date-time": "Par défaut une activité est disponible jusqu'à la fin du projet."
+                "message": "Merci de ne pas mettre de données à caractère personnel dans ce message (ex : nom, prénom, numéro de téléphone, etc.)."
             },
             "error": {
                 "movement": {

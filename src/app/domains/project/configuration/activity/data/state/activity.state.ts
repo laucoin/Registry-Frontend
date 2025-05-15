@@ -64,7 +64,9 @@ const defaultActivityState: ActivityStateModel = {
         element: undefined,
         params: {
             resetSearch: false,
+            currentMovements: false,
             visibilitySearched: undefined,
+            linkedToActivity: undefined,
             typeSearched: undefined,
             startDateTimeSearched: undefined,
             endDateTimeSearched: undefined,
@@ -344,6 +346,7 @@ export class ActivityState extends GenericProjectElementState<ActivityStateModel
         return this.movementService.findMovementsContents(
             payload.projectId,
             payload.movementIds,
+            ctx.getState().movements.params.currentMovements,
         ).pipe(
             map( (contents: PairModel<MovementContentModel[]>[]): void => this.fetchActivityMovementsContentsComplete(
                 ctx,

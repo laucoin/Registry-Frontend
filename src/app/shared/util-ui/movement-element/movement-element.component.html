@@ -12,35 +12,52 @@
             <app-severity-circle class='me-2' [severity]='movement().visible ? SeverityEnum.SUCCESS : SeverityEnum.DANGER' />
             <b>{{ movement().dateTime | dateFormat: 'datetime' }}</b>
         </div>
-        <div class='content d-flex flex-column' [class.justify-content-center]='registryFacade.tinyScreen()'>
-            <div class='pointer hover-underline'
-                 tabindex='1'
-                 (click)='layerOpened = true'
-                 (keydown.enter)='layerOpened = true'>
-                @switch (true) {
-                    @case (total() <= 0) {
-                        <p-skeleton width='10rem' borderRadius='1rem' />
+        <div class='content d-flex flex-column' [class.align-items-center]='registryFacade.tinyScreen()'>
+            <div class='d-flex'
+                 [class.justify-content-center]='registryFacade.tinyScreen()'>
+                <div class='pointer hover-underline d-flex align-items-center'
+                     tabindex='1'
+                     (click)='layerOpened = true'
+                     (keydown.enter)='layerOpened = true'>
+                    @switch (true) {
+                        @case (total() <= 0) {
+                            <p-skeleton width='10rem' borderRadius='1rem' />
+                        }
+                        @case (!!driver()) {
+                            <p-tag [icon]='ProjectOptionEnum.VEHICLE | optionIcon'
+                                   [value]='driverName()! | truncate: 30' />
+                        }
+                        @default {
+                            {{
+                                'movements.content' | pluralTranslation: total() |
+                                    translate: {
+                                    name: (movement().content[0].participant!.firstName | titlecase) + " " + (movement().content[0].participant!.lastName | uppercase),
+                                    total: total()
+                                }
+                            }}
+                        }
                     }
-                    @case (!!driver()) {
-                        <p-tag [icon]='ProjectOptionEnum.VEHICLE | optionIcon' [value]="(driver()?.participant?.firstName | titlecase) + ' ' +
-                                            (driver()?.participant?.lastName | uppercase)" />
-                    }
-                    @case (total() === 1) {
-                        {{ (movement().content[0].participant!.firstName | titlecase) + " " + (movement().content[0].participant!.lastName | uppercase) }}
-                    }
-                    @default {
-                        {{
-                            'movements.content' | pluralTranslation: total() |
-                                translate: {
-                                name: (movement().content[0].participant!.firstName | titlecase) + " " + (movement().content[0].participant!.lastName | uppercase),
-                                others: total()
-                            }
-                        }}
-                    }
+                </div>
+                @if (movement().reason) {
+                    <div> {{ 'movements.for' | translate }} 
+                        <p-tag [value]='movement().reason?.label' />
+                    </div>
                 }
             </div>
-            @if (movement().reason) {
-                <div>{{ 'movements.reason' | translate: { reason: movement().reason!.label } }}</div>
+            @if (!!buttonAction()) {
+                @if (total() <= 0) {
+                    <p-skeleton width='10rem' borderRadius='1rem' />
+                } @else {
+                    <p-button [icon]='buttonAction()!.icon'
+                              [label]='buttonAction()!.label | translate'
+                              [disabled]='buttonAction()!.disabled'
+                              styleClass='mt-2'
+                              severity='info'
+                              size='small'
+                              outlined
+                              rounded
+                              (onClick)='showDialogIfNeededForMovementReverse(movement().content)' />
+                }
             }
         </div>
     </div>
@@ -79,7 +96,7 @@
                         styleClass='max-list-box-height'
                         scrollHeight='100%'
                         [options]='movement().content'
-                        readonly
+                        (onClick)='onClickParticipant($event)'
                         optionLabel='name'>
                     <ng-template #item let-content>
                         <p-avatar [icon]='content.vehicle ? (ProjectOptionEnum.VEHICLE | optionIcon) : "pi pi-user"'

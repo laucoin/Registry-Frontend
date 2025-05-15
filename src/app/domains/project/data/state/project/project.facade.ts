@@ -1,66 +1,33 @@
 import { computed, Injectable, Signal } from '@angular/core'
 import { Observable } from 'rxjs'
-import { PageModel } from '../../../../shared/util-model/model/page.model'
+import { PageModel } from '../../../../../shared/util-model/model/page.model'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
-import { GenericFacade } from '../../../../shared/util-tool/facade/generic.facade'
+import { GenericFacade } from '../../../../../shared/util-tool/facade/generic.facade'
 import { ProjectState } from './project.state'
 import {
     CreateProject,
     DeleteProject,
     DisableProject,
     EnableProject,
-    FetchParticipantsStatus,
     FetchProject,
     FetchProjectOptions,
     FetchProjectsPage,
-    FetchVehiclesStatus,
     ResetProject,
-    StartParticipantsStatusLoader,
     StartProjectLoader,
     StartProjectsPageLoader,
-    StartVehiclesStatusLoader,
-    StopParticipantsStatusLoader,
     StopProjectLoader,
     StopProjectsPageLoader,
-    StopVehiclesStatusLoader,
     UpdateProject,
     UpdateProjectsPageSearchParams,
 } from './project.action'
-import { ProjectDto } from '../dto/project.dto'
+import { ProjectDto } from '../../dto/project.dto'
 import { ofActionSuccessful } from '@ngxs/store'
-import { ProjectModel } from '../../../../shared/util-model/model/project.model'
-import { ProjectOptionModel } from '../model/project-option.model'
-import { DateUtil } from '../../../../shared/util-tool/util/date.util'
-import { ParticipantStatusModel } from '../model/participant-status.model'
-import { VehicleStatusModel } from '../model/vehicle-status.model'
-import { RegistryState } from '../../../../shared/util-common/state/registry.state'
+import { ProjectModel } from '../../../../../shared/util-model/model/project.model'
+import { ProjectOptionModel } from '../../model/project-option.model'
+import { DateUtil } from '../../../../../shared/util-tool/util/date.util'
 
 @Injectable()
 export class ProjectFacade extends GenericFacade {
-    public get participantsStatus (): Signal<ParticipantStatusModel | undefined> {
-        return this.ngStore.selectSignal( ProjectState.participantsStatus )
-    }
-
-    public get participantsStatusLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( ProjectState.participantsStatusLoading )
-    }
-
-    public get participantsStatusError (): Signal<ToastMessageOptions | undefined> {
-        return this.ngStore.selectSignal( ProjectState.participantsStatusError )
-    }
-
-    public get vehiclesStatus (): Signal<VehicleStatusModel | undefined> {
-        return this.ngStore.selectSignal( ProjectState.vehiclesStatus )
-    }
-
-    public get vehiclesStatusLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( ProjectState.vehiclesStatusLoading )
-    }
-
-    public get vehiclesStatusError (): Signal<ToastMessageOptions | undefined> {
-        return this.ngStore.selectSignal( ProjectState.vehiclesStatusError )
-    }
-
     public get projectsPage (): Signal<PageModel<ProjectModel> | undefined> {
         return this.ngStore.selectSignal( ProjectState.projectsPage )
     }
@@ -128,36 +95,6 @@ export class ProjectFacade extends GenericFacade {
 
     public fetchProjectOptions (): void {
         this.ngStore.dispatch( FetchProjectOptions )
-    }
-
-    public startParticipantsStatusLoader (): void {
-        this.ngStore.dispatch( StartParticipantsStatusLoader )
-    }
-
-    public stopParticipantsStatusLoader (): void {
-        this.ngStore.dispatch( StopParticipantsStatusLoader )
-    }
-
-    public fetchParticipantsStatus (force: boolean): void {
-        this.ngStore.dispatch( new FetchParticipantsStatus(
-            this.ngStore.selectSignal( RegistryState.currentUserSelectedProjectId )(),
-            force,
-        ) )
-    }
-
-    public startVehiclesStatusLoader (): void {
-        this.ngStore.dispatch( StartVehiclesStatusLoader )
-    }
-
-    public stopVehiclesStatusLoader (): void {
-        this.ngStore.dispatch( StopVehiclesStatusLoader )
-    }
-
-    public fetchVehiclesStatus (force: boolean): void {
-        this.ngStore.dispatch( new FetchVehiclesStatus(
-            this.ngStore.selectSignal( RegistryState.currentUserSelectedProjectId )(),
-            force,
-        ) )
     }
 
     public startProjectsPageLoader (): void {
