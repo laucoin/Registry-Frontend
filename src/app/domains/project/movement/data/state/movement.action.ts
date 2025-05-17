@@ -5,6 +5,8 @@ import { ParticipantTypeEnum } from '../../../../../shared/util-model/enumeratio
 import { CommunicationPageParamsModel } from '../../../communication/data/model/communication-page-params.model'
 
 enum MovementActionEnum {
+    RESET_MOVEMENT_STATE = '[Local] Resetting movement state',
+
     FETCH_MOVEMENT_TYPES = '[Backend] Fetching movement types',
     FETCH_PARTICIPANT_TYPES = '[Backend] Fetching participant types',
 
@@ -36,6 +38,10 @@ enum MovementActionEnum {
     DISABLE_MOVEMENT = '[Backend] Disabling movement',
     ENABLE_MOVEMENT = '[Backend] Enabling movement',
     DELETE_MOVEMENT = '[Backend] Deleting movement',
+}
+
+export class ResetMovementState {
+    public static readonly type: MovementActionEnum = MovementActionEnum.RESET_MOVEMENT_STATE
 }
 
 export class FetchMovementTypes {

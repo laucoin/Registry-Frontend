@@ -12,6 +12,7 @@ import {
     FetchProjectProfile,
     FetchProjectProfilesPage,
     ResetProjectProfile,
+    ResetProjectProfileState,
     SearchUsers,
     StartProjectProfileLoader,
     StartProjectProfilesPageLoader,
@@ -166,6 +167,11 @@ export class ProjectProfileState extends GenericProjectElementState<ProjectProfi
     @Selector()
     public static projectProfilesAvailabilitiesMetadata (state: ProjectProfileStateModel): SelectItem<boolean | undefined>[] {
         return state._metadata.availabilities
+    }
+
+    @Action( ResetProjectProfileState )
+    public resetProjectProfileState (ctx: StateContext<ProjectProfileStateModel>): void {
+        ctx.setState( defaultProjectProfileState )
     }
 
     @Action( StartProjectProfilesPageLoader )

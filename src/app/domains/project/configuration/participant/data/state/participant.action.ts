@@ -4,6 +4,8 @@ import { ParticipantPageParamsModel } from '../model/participant-page-params.mod
 import { MovementPageParamsModel } from '../../../../../../shared/util-model/model/movement-page-params.model'
 
 enum ParticipantActionEnum {
+    RESET_PARTICIPANT_STATE = '[Local] Resetting participant state',
+
     FETCH_PARTICIPANT_PRESENCES_STATUS = '[Backend] Fetching participant presences status',
 
     START_PARTICIPANTS_PAGE_LOADER = '[Local] Starting participants\' page loader',
@@ -31,6 +33,10 @@ enum ParticipantActionEnum {
     DISABLE_PARTICIPANT = '[Backend] Disabling participant',
     ENABLE_PARTICIPANT = '[Backend] Enabling participant',
     DELETE_PARTICIPANT = '[Backend] Deleting participant',
+}
+
+export class ResetParticipantState {
+    public static readonly type: ParticipantActionEnum = ParticipantActionEnum.RESET_PARTICIPANT_STATE
 }
 
 export class FetchParticipantPresencesStatus {

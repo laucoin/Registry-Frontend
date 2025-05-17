@@ -15,6 +15,7 @@ import {
     FetchActivityMovementsContents,
     FetchActivityMovementsPage,
     ResetActivity,
+    ResetActivityState,
     StartActivitiesPageLoader,
     StartActivityLoader,
     StartActivityMovementsPageLoader,
@@ -214,6 +215,11 @@ export class ActivityState extends GenericProjectElementState<ActivityStateModel
     @Selector()
     public static visibilitiesMetadata (state: ActivityStateModel): SelectItem<boolean | undefined>[] {
         return state._metadata.availabilities
+    }
+
+    @Action( ResetActivityState )
+    public resetActivityState (ctx: StateContext<ActivityStateModel>): void {
+        ctx.setState( defaultActivityState )
     }
 
     @Action( StartActivitiesPageLoader )

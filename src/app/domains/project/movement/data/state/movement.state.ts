@@ -16,6 +16,7 @@ import {
     FetchMovementTypes,
     FetchParticipantTypes,
     ResetMovement,
+    ResetMovementState,
     SearchParticipantsAndGroups,
     SearchReasonsAndActivities,
     SearchVehicles,
@@ -262,6 +263,11 @@ export class MovementState extends GenericProjectElementState<MovementStateModel
     @Selector()
     public static visibilitiesMetadata (state: MovementStateModel): SelectItem<boolean | undefined>[] {
         return state._metadata.visibilities
+    }
+
+    @Action( ResetMovementState )
+    public resetMovementState (ctx: StateContext<MovementStateModel>): void {
+        ctx.setState( defaultMovementState )
     }
 
     @Action( FetchMovementTypes )

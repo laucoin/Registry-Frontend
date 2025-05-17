@@ -24,6 +24,7 @@ import {
     FetchCommunication,
     FetchCommunicationsPage,
     ResetCommunication,
+    ResetCommunicationState,
     SearchMovements,
     StartCommunicationLoader,
     StartCommunicationsPageLoader,
@@ -144,6 +145,11 @@ export class CommunicationState extends GenericProjectElementState<Communication
     @Selector()
     public static visibilitiesMetadata (state: CommunicationStateModel): SelectItem<boolean | undefined>[] {
         return state._metadata.visibilities
+    }
+
+    @Action( ResetCommunicationState )
+    public resetCommunicationState (ctx: StateContext<CommunicationStateModel>): void {
+        ctx.setState( defaultCommunicationState )
     }
 
     @Action( StartCommunicationsPageLoader )

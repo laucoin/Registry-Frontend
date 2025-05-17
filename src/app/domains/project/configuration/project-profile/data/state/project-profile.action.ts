@@ -4,6 +4,8 @@ import { ProjectProfilesDto } from '../dto/project-profiles.dto'
 import { ProjectProfilePageParamsModel } from '../model/project-profile-page-params.model'
 
 enum ProjectProfileActionEnum {
+    RESET_PROJECT_PROFILE_STATE = '[Local] Resetting project profile state',
+
     START_PROJECT_PROFILES_PAGE_LOADER = '[Local] Starting project profiles\' page loader',
     STOP_PROJECT_PROFILES_PAGE_LOADER = '[Local] Stopping project profiles\' page loader',
 
@@ -23,6 +25,10 @@ enum ProjectProfileActionEnum {
     BLOCK_PROJECT_PROFILE = '[Backend] Blocking project profile',
     UNBLOCK_PROJECT_PROFILE = '[Backend] Unblocking project profile',
     DELETE_PROJECT_PROFILE = '[Backend] Deleting project profile',
+}
+
+export class ResetProjectProfileState {
+    public static readonly type: ProjectProfileActionEnum = ProjectProfileActionEnum.RESET_PROJECT_PROFILE_STATE
 }
 
 export class StartProjectProfilesPageLoader {

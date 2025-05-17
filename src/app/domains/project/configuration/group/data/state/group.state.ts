@@ -15,6 +15,7 @@ import {
     FetchGroupsPage,
     RemoveMemberFromGroup,
     ResetGroup,
+    ResetGroupState,
     SearchParticipants,
     StartGroupLoader,
     StartGroupMembersPageLoader,
@@ -217,6 +218,11 @@ export class GroupState extends GenericProjectElementState<GroupStateModel> {
     @Selector()
     public static visibilitiesMetadata (state: GroupStateModel): SelectItem<boolean | undefined>[] {
         return state._metadata.visibilities
+    }
+
+    @Action( ResetGroupState )
+    public resetGroupState (ctx: StateContext<GroupStateModel>): void {
+        ctx.setState( defaultGroupState )
     }
 
     @Action( StartGroupsPageLoader )
