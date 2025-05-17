@@ -26,17 +26,11 @@
         </div>
         <div class='members d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
             {{ 'groups.member' | pluralTranslation: group().membersCount | translate: { count: group().membersCount } }}
-            @if (group().membersCount === 1) {
-                (
-                <app-severity-circle class='me-2'
-                                     [severity]='group().insideMembersCount === 1 ? SeverityEnum.SUCCESS : SeverityEnum.WARNING' />)
-            } @else {
-                (
-                <app-severity-circle [severity]='SeverityEnum.SUCCESS' />
-                 {{ group().insideMembersCount }}, 
-                <app-severity-circle [severity]='SeverityEnum.WARNING' />
-                 {{ group().outsideMembersCount }})
-            }
+            (
+            <app-severity-circle [severity]='SeverityEnum.SUCCESS' />
+             {{ group().insideMembersCount }}, 
+            <app-severity-circle [severity]='SeverityEnum.WARNING' />
+             {{ group().outsideMembersCount }})
         </div>
         <div class='status d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
             @if (intervalStatus()) {

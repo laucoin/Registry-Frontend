@@ -4,6 +4,8 @@ import { ActivityPageParamsModel } from '../model/activity-page-params.model'
 import { MovementPageParamsModel } from '../../../../../../shared/util-model/model/movement-page-params.model'
 
 enum ActivityActionEnum {
+    RESET_ACTIVITY_STATE = '[Local] Resetting activity state',
+
     START_ACTIVITIES_PAGE_LOADER = '[Local] Starting activities\' page loader',
     STOP_ACTIVITIES_PAGE_LOADER = '[Local] Stopping activities\' page loader',
 
@@ -27,6 +29,10 @@ enum ActivityActionEnum {
     DISABLE_ACTIVITY = '[Backend] Disabling activity',
     ENABLE_ACTIVITY = '[Backend] Enabling activity',
     DELETE_ACTIVITY = '[Backend] Deleting activity',
+}
+
+export class ResetActivityState {
+    public static readonly type: ActivityActionEnum = ActivityActionEnum.RESET_ACTIVITY_STATE
 }
 
 export class StartActivitiesPageLoader {

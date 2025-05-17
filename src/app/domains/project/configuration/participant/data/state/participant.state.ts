@@ -16,6 +16,7 @@ import {
     FetchParticipantPresencesStatus,
     FetchParticipantsPage,
     ResetParticipant,
+    ResetParticipantState,
     SearchGroups,
     SearchUsers,
     StartParticipantLoader,
@@ -230,6 +231,11 @@ export class ParticipantState extends GenericProjectElementState<ParticipantStat
     @Selector()
     public static visibilitiesMetadata (state: ParticipantStateModel): SelectItem<boolean | undefined>[] {
         return state._metadata.visibilities
+    }
+
+    @Action( ResetParticipantState )
+    public resetParticipantState (ctx: StateContext<ParticipantStateModel>): void {
+        ctx.setState( defaultParticipantState )
     }
 
     @Action( FetchParticipantPresencesStatus )

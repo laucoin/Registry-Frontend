@@ -713,8 +713,8 @@ export class RegistryState extends GenericState implements NgxsOnInit {
         payload: SelectUserProjectProfile,
     ): Observable<void> {
         return this.preferencesService.selectUserProjectProfile( payload.profileId ).pipe(
-            initialize( (): void => this.registryFacade.startProfileLoader() ),
-            finalize( (): void => this.registryFacade.stopProfileLoader() ),
+            initialize( (): void => this.registryFacade.startGlobalLoader() ),
+            finalize( (): void => this.registryFacade.stopGlobalLoader() ),
             map( (): void => this.selectProjectProfileComplete() ),
         )
     }
@@ -729,8 +729,8 @@ export class RegistryState extends GenericState implements NgxsOnInit {
         payload: SelectUserProjectProfileByProject,
     ): Observable<void> {
         return this.preferencesService.selectUserProjectProfileByProjectId( payload.projectId ).pipe(
-            initialize( (): void => this.registryFacade.startProfileLoader() ),
-            finalize( (): void => this.registryFacade.stopProfileLoader() ),
+            initialize( (): void => this.registryFacade.startGlobalLoader() ),
+            finalize( (): void => this.registryFacade.stopGlobalLoader() ),
             map( (): void => this.selectUserProjectProfileByProjectComplete() ),
         )
     }

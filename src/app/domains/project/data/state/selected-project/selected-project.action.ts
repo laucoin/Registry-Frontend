@@ -1,4 +1,6 @@
 enum SelectedProjectActionEnum {
+    RESET_SELECTED_PROJECT_STATE = '[Local] Resetting selected project state',
+
     START_PARTICIPANTS_STATUS_LOADER = '[Local] Starting participants\' status loader',
     STOP_PARTICIPANTS_STATUS_LOADER = '[Local] Stopping participants\' status loader',
     FETCH_PARTICIPANTS_STATUS = '[Backend] Fetching participants status',
@@ -18,6 +20,10 @@ enum SelectedProjectActionEnum {
     STOP_CURRENT_MOVEMENTS_PAGE_WITH_ACTIVITY_LOADER = '[Local] Stopping current movements\' page with activity loader',
     FETCH_CURRENT_MOVEMENTS_PAGE_WITH_ACTIVITY = '[Backend] Fetching current movements\' page (with activity)',
     FETCH_CURRENT_MOVEMENTS_WITH_ACTIVITY_CONTENTS = '[Backend] Fetching current movements\' (with activity) contents',
+}
+
+export class ResetSelectedProjectState {
+    public static readonly type: SelectedProjectActionEnum = SelectedProjectActionEnum.RESET_SELECTED_PROJECT_STATE
 }
 
 export class StartParticipantsStatusLoader {

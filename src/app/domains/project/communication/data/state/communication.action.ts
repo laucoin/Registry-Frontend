@@ -3,6 +3,8 @@ import { CommunicationDto } from '../dto/communication.dto'
 import { CommunicationModel } from '../model/communication.model'
 
 enum CommunicationAction {
+    RESET_COMMUNICATION_STATE = '[Local] Resetting communication state',
+
     START_COMMUNICATIONS_PAGE_LOADER = '[Local] Starting communications\' page loader',
     STOP_COMMUNICATIONS_PAGE_LOADER = '[Local] Stopping communications\' page loader',
 
@@ -20,6 +22,10 @@ enum CommunicationAction {
     DISABLE_COMMUNICATION = '[Backend] Disabling communication',
     ENABLE_COMMUNICATION = '[Backend] Enabling communication',
     DELETE_COMMUNICATION = '[Backend] Deleting communication',
+}
+
+export class ResetCommunicationState {
+    public static readonly type: CommunicationAction = CommunicationAction.RESET_COMMUNICATION_STATE
 }
 
 export class StartCommunicationsPageLoader {

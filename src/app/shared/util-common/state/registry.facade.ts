@@ -52,6 +52,12 @@ import { StringUtil } from '../../util-tool/util/string.util'
 import { SeverityEnum } from '../../util-model/enumeration/severity.enum'
 import { GenericUtil } from '../../util-tool/util/generic.util'
 import { ThemeEnum } from '../../util-model/enumeration/theme.enum'
+import { ResetSelectedProjectState } from '../../../domains/project/data/state/selected-project/selected-project.action'
+import { ResetMovementState } from '../../../domains/project/movement/data/state/movement.action'
+import { ResetActivityState } from '../../../domains/project/configuration/activity/data/state/activity.action'
+import { ResetCommunicationState } from '../../../domains/project/communication/data/state/communication.action'
+import { ResetParticipantState } from '../../../domains/project/configuration/participant/data/state/participant.action'
+import { ResetVehicleState } from '../../../domains/project/configuration/vehicle/data/state/vehicle.action'
 
 @Injectable()
 export class RegistryFacade extends GenericFacade {
@@ -356,16 +362,24 @@ export class RegistryFacade extends GenericFacade {
         this.ngStore.dispatch( new ManageUserProjectInvitationAcceptance( id, accepted ) )
     }
 
-    public selectUserProjectProfile (id: string | undefined): Observable<ActionCompletion<SelectUserProjectProfile>> {
-        this.ngStore.dispatch( new SelectUserProjectProfile( id ) )
+    public selectUserProjectProfile (id: string | undefined): Observable<ActionCompletion<FetchCurrentUser>> {
+        this.ngStore.dispatch( [
+            new ResetSelectedProjectState(),
+            new ResetMovementState(),
+            new ResetActivityState(),
+            new ResetCommunicationState(),
+            new ResetParticipantState(),
+            new ResetVehicleState(),
+            new SelectUserProjectProfile( id ),
+        ] )
 
-        return this.actions$.pipe( ofActionCompleted( SelectUserProjectProfile ) )
+        return this.actions$.pipe( ofActionCompleted( FetchCurrentUser ) )
     }
 
-    public selectUserProjectProfileByProject (projectId: string): Observable<ActionCompletion<SelectUserProjectProfileByProject>> {
+    public selectUserProjectProfileByProject (projectId: string): Observable<ActionCompletion<FetchCurrentUser>> {
         this.ngStore.dispatch( new SelectUserProjectProfileByProject( projectId ) )
 
-        return this.actions$.pipe( ofActionCompleted( SelectUserProjectProfileByProject ) )
+        return this.actions$.pipe( ofActionCompleted( FetchCurrentUser ) )
     }
 
     public deleteUserProjectProfile (profile: ProjectProfileModel): Observable<ActionCompletion<DeleteUserProjectProfile>> {

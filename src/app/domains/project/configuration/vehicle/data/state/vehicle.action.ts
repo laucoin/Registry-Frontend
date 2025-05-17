@@ -4,6 +4,8 @@ import { MovementPageParamsModel } from '../../../../../../shared/util-model/mod
 import { VehiclePageParamsModel } from '../model/vehicle-page-params.model'
 
 enum VehicleActionEnum {
+    RESET_VEHICLE_STATE = '[Local] Resetting vehicle state',
+
     FETCH_VEHICLE_PRESENCES_STATUS = '[Backend] Fetching vehicle presences status',
 
     START_VEHICLES_PAGE_LOADER = '[Local] Starting vehicles\' page loader',
@@ -29,6 +31,10 @@ enum VehicleActionEnum {
     DISABLE_VEHICLE = '[Backend] Disabling vehicle',
     ENABLE_VEHICLE = '[Backend] Enabling vehicle',
     DELETE_VEHICLE = '[Backend] Deleting vehicle',
+}
+
+export class ResetVehicleState {
+    public static readonly type: VehicleActionEnum = VehicleActionEnum.RESET_VEHICLE_STATE
 }
 
 export class FetchVehiclePresencesStatus {

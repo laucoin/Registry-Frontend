@@ -16,6 +16,7 @@ import {
     FetchVehiclePresencesStatus,
     FetchVehiclesPage,
     ResetVehicle,
+    ResetVehicleState,
     StartVehicleLoader,
     StartVehicleMovementsPageLoader,
     StartVehiclesPageLoader,
@@ -228,6 +229,11 @@ export class VehicleState extends GenericProjectElementState<VehicleStateModel> 
     @Selector()
     public static presencesStatusMetadata (state: VehicleStateModel): SelectItem<PresenceStatusEnum | undefined>[] {
         return state._metadata.presencesStatus
+    }
+
+    @Action( ResetVehicleState )
+    public resetVehicleState (ctx: StateContext<VehicleStateModel>): void {
+        ctx.setState( defaultVehicleState )
     }
 
     @Action( FetchVehiclePresencesStatus )

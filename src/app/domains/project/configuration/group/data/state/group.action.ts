@@ -5,6 +5,8 @@ import { ParticipantPageParamsModel } from '../../../participant/data/model/part
 import { GroupPageParamsModel } from '../model/group-page-params.model'
 
 enum GroupActionEnum {
+    RESET_GROUP_STATE = '[Local] Resetting group state',
+
     START_GROUPS_PAGE_LOADER = '[Local] Starting groups\' page loader',
     STOP_GROUPS_PAGE_LOADER = '[Local] Stopping groups\' page loader',
 
@@ -30,6 +32,10 @@ enum GroupActionEnum {
     DISABLE_GROUP = '[Backend] Disabling Group',
     ENABLE_GROUP = '[Backend] Enabling Group',
     DELETE_GROUP = '[Backend] Deleting Group',
+}
+
+export class ResetGroupState {
+    public static readonly type: GroupActionEnum = GroupActionEnum.RESET_GROUP_STATE
 }
 
 export class StartGroupsPageLoader {

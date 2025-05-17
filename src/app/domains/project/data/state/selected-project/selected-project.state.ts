@@ -17,6 +17,7 @@ import {
     FetchParticipantsBirthdays,
     FetchParticipantsStatus,
     FetchVehiclesStatus,
+    ResetSelectedProjectState,
     StartCurrentMovementsPageWithActivityLoader,
     StartCurrentMovementsPageWithoutActivityLoader,
     StartParticipantsStatusLoader,
@@ -195,6 +196,11 @@ export class SelectedProjectState {
     @Selector()
     public static currentMovementsPageWithActivityEndDateTimeSearchedParam (state: SelectedProjectStateModel): string | undefined {
         return state.currentMovements.withActivity.params.endDateTimeSearched
+    }
+
+    @Action( ResetSelectedProjectState )
+    public resetSelectedProjectState (ctx: StateContext<SelectedProjectStateModel>): void {
+        ctx.setState( defaultSelectedProjectState )
     }
 
     @Action( StartParticipantsStatusLoader )
