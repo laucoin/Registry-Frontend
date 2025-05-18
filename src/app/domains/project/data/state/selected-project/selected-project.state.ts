@@ -13,7 +13,9 @@ import {
     FetchCurrentMovementsPageWithActivity,
     FetchCurrentMovementsPageWithoutActivity,
     FetchCurrentMovementsWithActivityContents,
+    FetchCurrentMovementsWithActivityLastCommunications,
     FetchCurrentMovementsWithoutActivityContents,
+    FetchCurrentMovementsWithoutActivityLastCommunications,
     FetchParticipantsBirthdays,
     FetchParticipantsStatus,
     FetchVehiclesStatus,
@@ -34,6 +36,8 @@ import { ParticipantService } from '../../../configuration/participant/data/stat
 import { PairModel } from '../../../../../shared/util-model/model/pair.model'
 import { MovementContentModel } from '../../../../../shared/util-model/model/movement-content.model'
 import { MovementUtil } from '../../../../../shared/util-tool/util/movement.util'
+import { CommunicationService } from '../../../communication/data/state/communication.service'
+import { CommunicationModel } from '../../../communication/data/model/communication.model'
 
 const defaultSelectedProjectState: SelectedProjectStateModel = {
     status: {
@@ -92,6 +96,7 @@ export class SelectedProjectState {
     private readonly facade: SelectedProjectFacade = inject( SelectedProjectFacade )
     private readonly movementService: MovementService = inject( MovementService )
     private readonly participantService: ParticipantService = inject( ParticipantService )
+    private readonly communicationService: CommunicationService = inject( CommunicationService )
 
     @Selector()
     public static participantsStatus (state: SelectedProjectStateModel): ProjectStatusModel | undefined {
@@ -443,8 +448,9 @@ export class SelectedProjectState {
         } )
 
         if (movementsPage.content.length > 0) {
-            this.facade.fetchCurrentMovementsWithoutActivityContents(
+            this.facade.fetchCurrentMovementsWithoutActivityDetails(
                 movementsPage.content.map( (movement: MovementModel): string => movement.id ),
+                false,
             )
         }
     }
@@ -518,6 +524,47 @@ export class SelectedProjectState {
         } )
     }
 
+    @Action( FetchCurrentMovementsWithoutActivityLastCommunications )
+    public fetchCurrentMovementsWithoutActivityLastCommunications (
+        ctx: StateContext<SelectedProjectStateModel>,
+        payload: FetchCurrentMovementsWithActivityContents,
+    ): Observable<void> {
+        return this.communicationService.findCommunicationsByMovementIds(
+            payload.projectId,
+            payload.movementIds,
+        ).pipe(
+            map( (communications: PairModel<CommunicationModel[]>[]): void => this.fetchCurrentMovementsWithoutActivityLastCommunicationsComplete(
+                ctx,
+                communications,
+            ) ),
+        )
+    }
+
+    private fetchCurrentMovementsWithoutActivityLastCommunicationsComplete (
+        ctx: StateContext<SelectedProjectStateModel>,
+        communications: PairModel<CommunicationModel[]>[],
+    ): void {
+        if (!ctx.getState().currentMovements.withoutActivity.element) {
+            return
+        }
+
+        ctx.patchState( {
+            currentMovements: {
+                ...ctx.getState().currentMovements,
+                withoutActivity: {
+                    ...ctx.getState().currentMovements.withoutActivity,
+                    element: {
+                        ...ctx.getState().currentMovements.withoutActivity.element!,
+                        content: MovementUtil.rebuildPageWithCommunications(
+                            ctx.getState().currentMovements.withoutActivity.element!.content,
+                            communications,
+                        ),
+                    },
+                },
+            },
+        } )
+    }
+
     @Action( StartCurrentMovementsPageWithActivityLoader )
     public startCurrentMovementsPageWithActivityLoader (ctx: StateContext<SelectedProjectStateModel>): void {
         this.updateCurrentMovementsWithActivityLoader( ctx, true )
@@ -582,8 +629,9 @@ export class SelectedProjectState {
         } )
 
         if (movementsPage.content.length > 0) {
-            this.facade.fetchCurrentMovementsWithActivityContents(
+            this.facade.fetchCurrentMovementsWithActivityDetails(
                 movementsPage.content.map( (movement: MovementModel): string => movement.id ),
+                true,
             )
         }
     }
@@ -650,6 +698,47 @@ export class SelectedProjectState {
                         content: MovementUtil.rebuildPageWithContent(
                             ctx.getState().currentMovements.withActivity.element!.content,
                             contents,
+                        ),
+                    },
+                },
+            },
+        } )
+    }
+
+    @Action( FetchCurrentMovementsWithActivityLastCommunications )
+    public fetchCurrentMovementsWithActivityLastCommunications (
+        ctx: StateContext<SelectedProjectStateModel>,
+        payload: FetchCurrentMovementsWithActivityContents,
+    ): Observable<void> {
+        return this.communicationService.findCommunicationsByMovementIds(
+            payload.projectId,
+            payload.movementIds,
+        ).pipe(
+            map( (communications: PairModel<CommunicationModel[]>[]): void => this.fetchCurrentMovementsWithActivityLastCommunicationsComplete(
+                ctx,
+                communications,
+            ) ),
+        )
+    }
+
+    private fetchCurrentMovementsWithActivityLastCommunicationsComplete (
+        ctx: StateContext<SelectedProjectStateModel>,
+        communications: PairModel<CommunicationModel[]>[],
+    ): void {
+        if (!ctx.getState().currentMovements.withActivity.element) {
+            return
+        }
+
+        ctx.patchState( {
+            currentMovements: {
+                ...ctx.getState().currentMovements,
+                withActivity: {
+                    ...ctx.getState().currentMovements.withActivity,
+                    element: {
+                        ...ctx.getState().currentMovements.withActivity.element!,
+                        content: MovementUtil.rebuildPageWithCommunications(
+                            ctx.getState().currentMovements.withActivity.element!.content,
+                            communications,
                         ),
                     },
                 },

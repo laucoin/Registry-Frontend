@@ -101,7 +101,7 @@ export class MovementService extends GenericProjectService {
             .set( 'typeSearched', typeSearched )
             .set( 'contentTypeSearched', contentTypeSearched.toString() )
 
-        if (GenericUtil.nonNull( textSearched ) && StringUtil.isNotBlank( textSearched )) params = params.set(
+        if (StringUtil.isNotNullNorBlank( textSearched )) params = params.set(
             'textSearched',
             textSearched!,
         )

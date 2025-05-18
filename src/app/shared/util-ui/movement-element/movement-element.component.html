@@ -6,45 +6,43 @@
     <div class='element-card'>
         <div class='type d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
             <app-severity-tag [severity]='movement().type.value === MovementTypeEnum.OUT ? SeverityEnum.WARNING : SeverityEnum.SUCCESS'
-                              [value]='movement().type.label!' />
+                              [value]='typeAndReason()' />
         </div>
         <div class='datetime d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
             <app-severity-circle class='me-2' [severity]='movement().visible ? SeverityEnum.SUCCESS : SeverityEnum.DANGER' />
             <b>{{ movement().dateTime | dateFormat: 'datetime' }}</b>
         </div>
-        <div class='content d-flex flex-column' [class.align-items-center]='registryFacade.tinyScreen()'>
-            <div class='d-flex'
-                 [class.justify-content-center]='registryFacade.tinyScreen()'>
-                <div class='pointer hover-underline d-flex align-items-center'
-                     tabindex='1'
-                     (click)='layerOpened = true'
-                     (keydown.enter)='layerOpened = true'>
-                    @switch (true) {
-                        @case (total() <= 0) {
-                            <p-skeleton width='10rem' borderRadius='1rem' />
-                        }
-                        @case (!!driver()) {
-                            <p-tag [icon]='ProjectOptionEnum.VEHICLE | optionIcon'
-                                   [value]='driverName()! | truncate: 30' />
-                        }
-                        @default {
-                            {{
-                                'movements.content' | pluralTranslation: total() |
-                                    translate: {
-                                    name: (movement().content[0].participant!.firstName | titlecase) + " " + (movement().content[0].participant!.lastName | uppercase),
-                                    total: total()
-                                }
-                            }}
-                        }
+        <div class='content d-flex'
+             [class.justify-content-center]='registryFacade.tinyScreen()'>
+            <div class='d-flex align-items-center'>
+                @switch (true) {
+                    @case (total() <= 0) {
+                        <p-skeleton width='10rem' borderRadius='1rem' />
                     }
-                </div>
-                @if (movement().reason) {
-                    <div> {{ 'movements.for' | translate }} 
-                        <p-tag [value]='movement().reason?.label' />
-                    </div>
+                    @case (!!driver()) {
+                        <p-button [icon]='ProjectOptionEnum.VEHICLE | optionIcon'
+                                  (onClick)='participantsLayerOpened = true'
+                                  (keydown.enter)='participantsLayerOpened = true'
+                                  text
+                                  rounded
+                                  [label]='driverName()! | truncate: 30' />
+                    }
+                    @default {
+                        <p-button text
+                                  rounded
+                                  (onClick)='participantsLayerOpened = true'
+                                  (keydown.enter)='participantsLayerOpened = true'
+                                  [label]='"movements.content" | pluralTranslation: total() |
+                                    translate: {
+                                    name: (movement().content[0].participant!.firstName | titlecase) + " " + (movement().content[0].participant!.lastName | uppercase) | truncate: 30,
+                                    total: total()
+                                  }' />
+                    }
                 }
             </div>
-            @if (!!buttonAction()) {
+        </div>
+        @if (!!buttonAction()) {
+            <div class='d-flex reverse-action' [class.justify-content-center]='registryFacade.tinyScreen()'>
                 @if (total() <= 0) {
                     <p-skeleton width='10rem' borderRadius='1rem' />
                 } @else {
@@ -58,14 +56,59 @@
                               rounded
                               (onClick)='showDialogIfNeededForMovementReverse(movement().content)' />
                 }
-            }
-        </div>
+            </div>
+        }
     </div>
+    @if (communication()) {
+        <p-divider />
+        <div class='d-flex flex-wrap'>
+            <div class='field message'>
+                <label for='message'>{{ 'communications.form.message' | translate }}</label>
+                <textarea id='message'
+                          rows='3'
+                          pTextarea
+                          [placeholder]='"communications.form.placeholder.message" | translate'
+                          [formControl]='message'
+                          (keydown.enter)='submitCommunication()'></textarea>
+                <small class='secondary-color'>{{ 'communications.form.hint.message' | translate }}</small>
+                <app-form-field-error [errors]='message.errors'
+                                      [invalid]='FormUtil.invalid(message)'
+                                      translationPrefix='communications.form.error.message' />
+            </div>
+            <div class='communication-actions d-flex flex-wrap align-items-center justify-content-center'>
+                <div class='last-communications d-flex align-items-center justify-content-center'>
+                    <p-button [label]='"movements.communication.last-button" | pluralTranslation: movement().communications | translate'
+                              (onClick)='communicationsLayerOpened = true'
+                              (keydown.enter)='participantsLayerOpened = true'
+                              [disabled]='(movement().communications?.length ?? 0) === 0'
+                              icon='pi pi-history'
+                              size='small'
+                              rounded
+                              outlined
+                              severity='secondary' />
+                </div>
+                <div class='new-communication d-flex align-items-center justify-content-center'>
+                    <p-button (onClick)='submitCommunication()'
+                              [loading]='communicationFacade.communicationLoading()'
+                              rounded
+                              outlined
+                              size='small'
+                              severity='success'>
+                        <i [class]='ProjectOptionEnum.COMMUNICATION | optionIcon'></i>
+                        {{ 'movements.communication.contact-button' | translate }}
+                        @if (lastCommunication()) {
+                            <span class='last-communication-interval'>{{ lastCommunication() }}</span>
+                        }
+                    </p-button>
+                </div>
+            </div>
+        </div>
+    }
 </app-element-card>
 
-<app-layer [(visible)]='layerOpened'
+<app-layer [(visible)]='participantsLayerOpened'
            [header]='"movements.content-layer-title" | pluralTranslation: movement().content | translate'>
-    <p-tabs [(value)]='activeTab' scrollable class='max-panel-height'>
+    <p-tabs [(value)]='participantLayerActiveTab' scrollable class='max-panel-height'>
         <p-tablist>
             <p-tab [value]='1'>
                 <p-tag [value]='movement().content.length.toString()' class='me-1' />
@@ -95,22 +138,38 @@
                 <p-listbox
                         styleClass='max-list-box-height'
                         scrollHeight='100%'
+                        [readonly]='!buttonAction()'
                         [options]='movement().content'
                         (onClick)='onClickParticipant($event)'
                         optionLabel='name'>
                     <ng-template #item let-content>
-                        <p-avatar [icon]='content.vehicle ? (ProjectOptionEnum.VEHICLE | optionIcon) : "pi pi-user"'
-                                  class='me-2'
-                                  shape='circle' />
-                        <div>
+                        <div class='d-flex align-items-center justify-content-between full-w'>
                             <div class='d-flex align-items-center'>
+                                <p-avatar [icon]='content.vehicle ? (ProjectOptionEnum.VEHICLE | optionIcon) : "pi pi-user"'
+                                          class='me-2'
+                                          shape='circle' />
                                 <div>
-                                    {{ (content.participant.firstName | titlecase) + ' ' + (content.participant.lastName | uppercase) }}
+                                    <div class='d-flex align-items-center'>
+                                        <div>
+                                            {{ (content.participant.firstName | titlecase) + ' ' + (content.participant.lastName | uppercase) }}
+                                        </div>
+                                    </div>
+                                    @if (content.vehicle) {
+                                        <div class='mt-2'>
+                                            <p-tag [value]='VehicleUtil.toSelectItem(content.vehicle).label' />
+                                        </div>
+                                    }
                                 </div>
                             </div>
-                            @if (content.vehicle) {
-                                <div class='mt-2'>
-                                    <p-tag [value]='VehicleUtil.toSelectItem(content.vehicle).label' />
+                            @if (!!buttonAction()) {
+                                <div>
+                                    <p-button [icon]='buttonAction()!.icon'
+                                              [disabled]='buttonAction()!.disabled'
+                                              styleClass='mt-2'
+                                              severity='info'
+                                              size='small'
+                                              outlined
+                                              rounded />
                                 </div>
                             }
                         </div>
@@ -194,6 +253,43 @@
             }
         </p-tabpanels>
     </p-tabs>
+</app-layer>
+
+<app-layer [(visible)]='communicationsLayerOpened'
+           [header]='
+           "movements.communication.layer.title" | pluralTranslation: movement().communications | translate: {
+               movement: movement().reason?.label
+           }'>
+    @if (GenericUtil.nonNull(movement().reason)) {
+        <small class='secondary-color'>
+            {{
+                'movements.communication.layer.subtitle' | pluralTranslation: movement().communications | translate: {
+                    movement:
+                    movement().reason?.label
+                }
+            }}
+        </small>
+    }
+    <p-timeline [value]='movement().communications' styleClass='mt-3'>
+        <ng-template #marker let-event>
+            <div class='circle d-flex align-items-center justify-content-center'
+                 [class.secondary]='true'>
+                <i [class]='ProjectOptionEnum.COMMUNICATION | optionIcon'></i>
+            </div>
+        </ng-template>
+        <ng-template #content let-communication>
+            <div class='ps-3'>
+                <b>{{ communication.dateTime | dateFormat: 'datetime' }}</b>
+                <p>
+                    @if (StringUtil.isNotNullNorBlank(communication.message)) {
+                        {{ communication.message }}
+                    } @else {
+                        <small class='secondary-color'>{{ 'movements.communication.no-message' | translate }}</small>
+                    }
+                </p>
+            </div>
+        </ng-template>
+    </p-timeline>
 </app-layer>
 
 <app-confirmation-dialog

@@ -7,6 +7,8 @@ import { RegistryTemplateDirective } from '../../../../shared/util-tool/directiv
 import { MovementElementComponent } from '../../../../shared/util-ui/movement-element/movement-element.component'
 import { Subscription, tap } from 'rxjs'
 import { MovementFacade } from '../../movement/data/state/movement.facade'
+import { MovementModel } from '../../../../shared/util-model/model/movement.model'
+import { CommunicationFacade } from '../../communication/data/state/communication.facade'
 
 @Component( {
     selector: 'app-current-movements',
@@ -16,11 +18,11 @@ import { MovementFacade } from '../../movement/data/state/movement.facade'
         MovementElementComponent,
     ],
     templateUrl: './current-movements.component.html',
-    styleUrl: './current-movements.component.scss',
 } )
 export class CurrentMovementsComponent extends GenericComponent implements OnDestroy {
     protected readonly facade: SelectedProjectFacade = inject( SelectedProjectFacade )
     protected readonly movementFacade: MovementFacade = inject( MovementFacade )
+    protected readonly communicationFacade: CommunicationFacade = inject( CommunicationFacade )
 
     private readonly subscriptions: Subscription = new Subscription()
 
@@ -29,6 +31,7 @@ export class CurrentMovementsComponent extends GenericComponent implements OnDes
 
         this.loadData()
         this.handleMovementActions()
+        this.handleCommunicationsActions()
     }
 
     protected loadData (): void {
@@ -60,6 +63,21 @@ export class CurrentMovementsComponent extends GenericComponent implements OnDes
                         this.facade.currentMovementsPageWithoutActivity()?.pageSize,
                         true,
                     )
+                } ),
+            ).subscribe(),
+        )
+    }
+
+    private handleCommunicationsActions (): void {
+        this.subscriptions.add(
+            this.communicationFacade.handleCommunicationChange().pipe(
+                tap( (): void => {
+                    if ((this.facade.currentMovementsPageWithActivity()?.content ?? []).length > 0) {
+                        this.facade.fetchCurrentMovementsPageWithoutActivityCommunicationsIfNecessary(
+                            this.facade.currentMovementsPageWithActivity()!.content!.map( (movement: MovementModel): string => movement.id ),
+                            false,
+                        )
+                    }
                 } ),
             ).subscribe(),
         )

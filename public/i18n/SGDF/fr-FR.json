@@ -12,7 +12,7 @@
         "gt": "Plus grand que",
         "gte": "Plus grand ou égal à",
         "dateIs": "Est",
-        "dateIsNot": "N'est pas",
+        "dateIsNot": "N’est pas",
         "dateBefore": "Avant",
         "dateAfter": "Après",
         "clear": "Effacer",
@@ -107,7 +107,7 @@
         "nextSecond": "Seconde suivante",
         "am": "am",
         "pm": "pm",
-        "today": "Aujourd'hui",
+        "today": "Aujourd’hui",
         "weekHeader": "Sem",
         "firstDayOfWeek": "1",
         "dateFormat": "dd/mm/yy",
@@ -165,7 +165,7 @@
             "gridView": "Vue grille",
             "slide": "Diapositive",
             "slideNumber": "{slideNumber}",
-            "zoomImage": "Zoomer sur l'image",
+            "zoomImage": "Zoomer sur l’image",
             "zoomIn": "Agrandir",
             "zoomOut": "Réduire",
             "rotateRight": "Tourner à droite",
@@ -181,14 +181,14 @@
             "information": {
                 "name": "Informations",
                 "about": "À propos de Registry",
-                "summary": "Bienvenue sur Registry ! Un outil de gestion d'évènements. Il permet notamment la tenue de registres de présences.",
+                "summary": "Bienvenue sur Registry ! Un outil de gestion d’évènements. Il permet notamment la tenue de registres de présences.",
                 "who": {
                     "title": "Qui sommes-nous ?",
-                    "content": "Registry a débuté sur un camp des Scouts et Guides de France en août 2019. Il a été créé par Luc AUCOIN avec l'aide d'Alexandre D'HONT et Louis VICAINNE (Ils ont du mérite car je les ai bien saoulé avec mes idées.)."
+                    "content": "Registry a débuté sur un camp des Scouts et Guides de France en août 2019. Il a été créé par Luc AUCOIN avec l’aide d’Alexandre D’HONT et Louis VICAINNE (Ils ont du mérite car je les ai bien saoulé avec mes idées.)."
                 }
             },
             "terms-of-use": {
-                "name": "Conditions générales d'utilisation",
+                "name": "Conditions générales d’utilisation",
                 "summary": "Bienvenue sur Registry ({{url}}), une plateforme de type SaaS exploitée par Luc AUCOIN. En utilisant le Site et ses services, vous acceptez les Conditions d’utilisation suivantes. Si vous n’êtes pas d’accord avec ces conditions, vous ne devez pas utiliser le Site.",
                 "conclusion": "En utilisant le Site, vous reconnaissez avoir lu et compris ces Conditions d’utilisation, et vous acceptez de les respecter.",
                 "service": {
@@ -206,7 +206,7 @@
                 },
                 "data-usage": {
                     "title": "3. Utilisation des données",
-                    "content": "Les données saisies dans l’application peuvent être utilisées dans les conditions suivantes :<ul><li><b>Monitoring</b> : Pour surveiller les performances et la stabilité de l’application.</li><li><b>Débogage</b> : Pour identifier et corriger les anomalies.</li><li><b>Amélioration des services</b> : Pour optimiser les fonctionnalités et l’expérience utilisateur.</li><li><b>Analyse et Enquête</b> : L'utilisateur qui créé ou modifie une donnée est affiché avec celle-ci et pourra être consulté dans ce cadre.</li></ul>Ces données ne seront jamais volontairement utilisées à des fins commerciales ou partagées avec des tiers à des fins de marketing."
+                    "content": "Les données saisies dans l’application peuvent être utilisées dans les conditions suivantes :<ul><li><b>Monitoring</b> : Pour surveiller les performances et la stabilité de l’application.</li><li><b>Débogage</b> : Pour identifier et corriger les anomalies.</li><li><b>Amélioration des services</b> : Pour optimiser les fonctionnalités et l’expérience utilisateur.</li><li><b>Analyse et Enquête</b> : L’utilisateur qui créé ou modifie une donnée est affiché avec celle-ci et pourra être consulté dans ce cadre.</li></ul>Ces données ne seront jamais volontairement utilisées à des fins commerciales ou partagées avec des tiers à des fins de marketing."
                 },
                 "intellectual-ownership": {
                     "title": "4. Propriété intellectuelle",
@@ -236,14 +236,14 @@
             "edit-project": "Modifier le projet",
             "project-home": "Accueil du projet",
             "configuration": "Configuration",
-            "project-profiles": "Profiles d'accès",
+            "project-profiles": "Profiles d’accès",
             "movements": "Mouvements",
             "communications": "Communications",
             "participants": "Participants",
             "groups": "Groupes",
             "vehicles": "Véhicules",
             "activities": "Activités",
-            "profiles": "Profiles d'accès",
+            "profiles": "Profiles d’accès",
             "invitations": "Invitations",
             "settings": "Paramètres"
         },
@@ -293,7 +293,7 @@
             }
         },
         "form": {
-            "confirmation": "Entres \"{{name}}\" pour confirmer",
+            "confirmation": "Entres “{{name}}” pour confirmer",
             "required": "Obligatoire",
             "range": {
                 "min": "Min",
@@ -301,8 +301,8 @@
             },
             "error": {
                 "confirmation": {
-                    "required": "Ne rien écrire n'est pas un consentement. Si tu confirmes rien, aucune action sera effectuée !",
-                    "pattern": "Il faut que tu recopies exactement \"{{toConfirm}}\". Pour l'instant tu as écris \"{{actual}}\" par conséquent aucune peut-être confirmée !"
+                    "required": "Ne rien écrire n’est pas un consentement. Si tu confirmes rien, aucune action sera effectuée !",
+                    "pattern": "Il faut que tu recopies exactement “{{toConfirm}}”. Pour l’instant tu as écris “{{actual}}” par conséquent aucune peut-être confirmée !"
                 }
             }
         },
@@ -317,27 +317,27 @@
             "sign-out": "Déconnexion"
         },
         "messages": {
-            "not-implemented": "🙅‍♂️ La fonctionnalité n'est pas implémentée.",
-            "invalid-form": "🙅‍♂️ Le formulaire n'est pas valide.",
-            "invalid-action": "🙅‍♂️ L'action choisie n'est pas prise en charge."
+            "not-implemented": "🙅‍♂️ La fonctionnalité n’est pas implémentée.",
+            "invalid-form": "🙅‍♂️ Le formulaire n’est pas valide.",
+            "invalid-action": "🙅‍♂️ L’action choisie n’est pas prise en charge."
         },
         "notifications": {
             "503": {
                 "title": "🥴 Serveur indisponible",
-                "message": "Ça sent le roussi, le serveur est indisponible. Réessaies plus tard. Si le problème persiste contactes l'administrateur."
+                "message": "Ça sent le roussi, le serveur est indisponible. Réessaies plus tard. Si le problème persiste contactes l’administrateur."
             },
-            "UNKNOWN_ERROR": "Une erreur inconnue est survenue. Désolé, je ne peux pas te donner plus d'information ! 🤷",
+            "UNKNOWN_ERROR": "Une erreur inconnue est survenue. Désolé, je ne peux pas te donner plus d’information ! 🤷",
             "OFFLINE": {
                 "title": "📡 Hors ligne",
-                "message": "Tu es hors ligne. Si tu es utilise le Wi-Fi, essaies de te rapprocher de la box. Si tu es en 4G, essaies de te rapprocher d'une fenêtre. Si tu es en 3G, essaies de te rapprocher d'un autre siècle."
+                "message": "Tu es hors ligne. Si tu es utilise le Wi-Fi, essaies de te rapprocher de la box. Si tu es en 4G, essaies de te rapprocher d’une fenêtre. Si tu es en 3G, essaies de te rapprocher d’un autre siècle."
             },
             "ONLINE": {
                 "title": "⚡️ Connexion rétablie",
-                "message": "Ta connexion internet est de retour. Tu peux de nouveau utiliser l'application normalement."
+                "message": "Ta connexion internet est de retour. Tu peux de nouveau utiliser l’application normalement."
             },
             "EMPTY": {
                 "title": "🕵️‍♀️ Aucune donnée",
-                "message": "Aucune donnée n'a été trouvée."
+                "message": "Aucune donnée n’a été trouvée."
             }
         },
         "not-set": "Non défini"
@@ -354,11 +354,11 @@
         },
         "danger": "Actions irreversibles",
         "actions": {
-            "impersonate": "Demande d'anonymisation",
+            "impersonate": "Demande d’anonymisation",
             "confirmations": {
                 "impersonate": {
                     "title": "Anonymiser mon compte",
-                    "message": "Attention ! Tu vas anonymiser ton compte. Cette action irréversible entrainera ta déconnexion et t'empêcheras de te connecter à nouveau. À titre informatif, ton utilisateur sera anonmysé immédiatement, les participants a qui tu es liés seront anonymisés à la fin du projet. Cependant, si tu as conduit des véhicules dans le cadre d'un projet, ton participant sera anonymisé 1 an après la fin du projet."
+                    "message": "Attention ! Tu vas anonymiser ton compte. Cette action irréversible entrainera ta déconnexion et t’empêcheras de te connecter à nouveau. À titre informatif, ton utilisateur sera anonmysé immédiatement, les participants a qui tu es liés seront anonymisés à la fin du projet. Cependant, si tu as conduit des véhicules dans le cadre d’un projet, ton participant sera anonymisé 1 an après la fin du projet."
                 }
             }
         }
@@ -370,7 +370,7 @@
                 "one": "Anniversaire",
                 "few": "Anniversaires"
             },
-            "no-birthday": "Pas d'anniversaire aujourd'hui",
+            "no-birthday": "Pas d’anniversaire aujourd’hui",
             "participants": {
                 "total": {
                     "one": "Nombre de participant",
@@ -425,7 +425,7 @@
             "false": "Bloqué"
         },
         "form": {
-            "title": "Mettre à jour le rôle de \"{{firstName}} {{lastName}}\"",
+            "title": "Mettre à jour le rôle de “{{firstName}} {{lastName}}”",
             "role": "Rôle"
         },
         "actions": {
@@ -436,25 +436,25 @@
             "delete": "Supprimer",
             "confirmations": {
                 "disable": {
-                    "title": "Bloquer l'utilisateur",
-                    "message": "Attention ! Tu vas bloquer un utilisateur. Tant qu'il est bloqué, {{element.firstName}} {{element.lastName}} ne pourra plus se connecter."
+                    "title": "Bloquer l’utilisateur",
+                    "message": "Attention ! Tu vas bloquer un utilisateur. Tant qu’il est bloqué, {{element.firstName}} {{element.lastName}} ne pourra plus se connecter."
                 },
                 "enable": {
-                    "title": "Débloquer l'utilisateur",
+                    "title": "Débloquer l’utilisateur",
                     "message": "Attention ! Tu vas débloquer un utilisateur. {{element.firstName}} {{element.lastName}} pourra à nouveau se connecter."
                 },
                 "impersonate": {
-                    "title": "Anonymiser l'utilisateur",
+                    "title": "Anonymiser l’utilisateur",
                     "message": "Attention ! Tu vas anonymiser un utilisateur. Tous les profils et participants associés à {{element.firstName}} {{element.lastName}} seront également anonymisé."
                 },
                 "delete": {
-                    "title": "Supprimer l'utilisateur",
+                    "title": "Supprimer l’utilisateur",
                     "message": "Attention ! Tu vas supprimer un utilisateur. Tous les profils associés à {{element.firstName}} {{element.lastName}} seront également supprimés."
                 }
             }
         },
         "notifications": {
-            "email-copied": "L'adresse email de {{element.firstName}} {{element.lastName}} copiée.",
+            "email-copied": "L’adresse email de {{element.firstName}} {{element.lastName}} copiée.",
             "update-role": {
                 "title": "✏️ Role modifié",
                 "message": "Le rôle de {{firstName}} {{lastName}} a été modifié."
@@ -507,7 +507,7 @@
         "form": {
             "title": {
                 "create": "Créer un projet",
-                "edit": "Modifier le projet \"{{name}}\""
+                "edit": "Modifier le projet “{{name}}”"
             },
             "subtitle": {
                 "information": "Informations",
@@ -522,11 +522,11 @@
             "error": {
                 "name": {
                     "required": "Un projet sans nom ? Sérieusement, donne-lui un nom !",
-                    "blank": "Non, non, non ! tu ne m'auras pas. Un nom vide ça ne fonctionne pas !",
-                    "maxlength": "T'as vu la longueur du nom 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c'est {{requiredLength}}."
+                    "blank": "Non, non, non ! tu ne m’auras pas. Un nom vide ça ne fonctionne pas !",
+                    "maxlength": "T’as vu la longueur du nom 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c’est {{requiredLength}}."
                 },
                 "options": {
-                    "preRequiredOptions": "Activer l'option \"{{for}}\" sans \"{{missing}}\" ça risque d''être complexe."
+                    "preRequiredOptions": "Activer l’option “{{for}}” sans “{{missing}}” ça risque d’’être complexe."
                 },
                 "begin-datetime": {
                     "dateRequiredForTime": "Le projet commence à une certaine heure ok ! Mais quel jour ? 📆"
@@ -535,7 +535,7 @@
                     "dateRequiredForTime": "Le projet termine à une certaine heure ok ! Mais quel jour ? 📆"
                 },
                 "date-range": {
-                    "beginDateBeforeEndDate": "Ton projet finit avant d'avoir commencé ! Ça c'est de l'ambition."
+                    "beginDateBeforeEndDate": "Ton projet finit avant d’avoir commencé ! Ça c’est de l’ambition."
                 }
             },
             "placeholder": {
@@ -554,47 +554,47 @@
             "confirmations": {
                 "create-support": {
                     "title": "Créer un profil de support",
-                    "message": "En poursuivant, tu crées un profil support ayant une validatité de 1 heure pour venir en soutien au projet \"{{element.name}}\"."
+                    "message": "En poursuivant, tu crées un profil support ayant une validatité de 1 heure pour venir en soutien au projet “{{element.name}}”."
                 },
                 "disable": {
                     "title": "Masquer le projet",
-                    "message": "Attention ! Tu vas masquer le projet \"{{element.name}}\". Tant qu'il est masqué, il ne sera plus possible d'y créer des profils, mouvements, participants, etc."
+                    "message": "Attention ! Tu vas masquer le projet “{{element.name}}”. Tant qu’il est masqué, il ne sera plus possible d’y créer des profils, mouvements, participants, etc."
                 },
                 "enable": {
                     "title": "Afficher à nouveau le projet",
-                    "message": "Attention ! Tu vas à nouveau rendre le projet \"{{element.name}}\" visible. Il sera de nouveau possible d'y créer des profils, mouvements, participant, etc."
+                    "message": "Attention ! Tu vas à nouveau rendre le projet “{{element.name}}” visible. Il sera de nouveau possible d’y créer des profils, mouvements, participant, etc."
                 },
                 "delete": {
                     "title": "Supprimer le projet",
-                    "message": "Attention ! Tu vas définitivement supprimer le projet \"{{element.name}}\" ainsi que tous les élements qui lui sont liés (profils, mouvements, participants, etc.).",
-                    "hint": "La suppression du projet peut prendre un certain temps en fonction de sa taille. Tu peux continuer à utiliser l'application, mais il est préférable de ne pas quitter cette page avant que la suppression soit terminée."
+                    "message": "Attention ! Tu vas définitivement supprimer le projet “{{element.name}}” ainsi que tous les élements qui lui sont liés (profils, mouvements, participants, etc.).",
+                    "hint": "La suppression du projet peut prendre un certain temps en fonction de sa taille. Tu peux continuer à utiliser l’application, mais il est préférable de ne pas quitter cette page avant que la suppression soit terminée."
                 }
             }
         },
         "notifications": {
             "create-support": {
                 "title": "+ Profil support créé",
-                "message": "Le profil support a été créé pour le projet, il est disponible jusqu'à {{end}}."
+                "message": "Le profil support a été créé pour le projet, il est disponible jusqu’à {{end}}."
             },
             "create": {
                 "title": "+ Projet créé",
-                "message": "Le projet \"{{name}}\" a été créé."
+                "message": "Le projet “{{name}}” a été créé."
             },
             "edit": {
                 "title": "✏️ Projet modifié",
-                "message": "Le projet \"{{name}}\" a été modifié."
+                "message": "Le projet “{{name}}” a été modifié."
             },
             "disable": {
                 "title": "🙈 Projet masqué",
-                "message": "Le projet \"{{name}}\" a été masqué."
+                "message": "Le projet “{{name}}” a été masqué."
             },
             "enable": {
                 "title": "👀 Projet visible",
-                "message": "Le projet \"{{name}}\" est à nouveau visible."
+                "message": "Le projet “{{name}}” est à nouveau visible."
             },
             "delete": {
                 "title": "🗑️ Projet supprimé",
-                "message": "Le projet \"{{name}}\" a été supprimé."
+                "message": "Le projet “{{name}}” a été supprimé."
             }
         }
     },
@@ -623,12 +623,12 @@
         "manage-acceptance": "Veux-tu accepter cette invitation ?",
         "form": {
             "title": {
-                "create": "Inviter au projet \"{{name}}\"",
-                "edit": "Modifier le profil d'accès de {{firstName}} {{lastName}}"
+                "create": "Inviter au projet “{{name}}”",
+                "edit": "Modifier le profil d’accès de {{firstName}} {{lastName}}"
             },
             "role": "Rôle",
-            "begin-datetime": "Date & Heure de début d'accès",
-            "end-datetime": "Date & Heure de fin d'accès",
+            "begin-datetime": "Date & Heure de début d’accès",
+            "end-datetime": "Date & Heure de fin d’accès",
             "users": {
                 "empty": "Aucun utilisateur selectionnée",
                 "search": "Inviter des utilisateurs",
@@ -642,7 +642,7 @@
             },
             "hint": {
                 "begin-date-time": "Par défaut, le profil sera disponible dès sa création.",
-                "end-date-time": "Par défaut, le profil n'a pas de fin de validité."
+                "end-date-time": "Par défaut, le profil n’a pas de fin de validité."
             },
             "placeholder": {
                 "role": "Ex : {{role}}",
@@ -657,13 +657,13 @@
                     "required": "Impossible de créer des profils sans utilisateur. Il en faut au moins un !"
                 },
                 "begin-datetime": {
-                    "dateRequiredForTime": "L'accès au projet commence à une certaine heure ok ! Mais quel jour ? 📆"
+                    "dateRequiredForTime": "L’accès au projet commence à une certaine heure ok ! Mais quel jour ? 📆"
                 },
                 "end-datetime": {
-                    "dateRequiredForTime": "L'accès au projet termine à une certaine heure ok ! Mais quel jour ? 📆"
+                    "dateRequiredForTime": "L’accès au projet termine à une certaine heure ok ! Mais quel jour ? 📆"
                 },
                 "date-range": {
-                    "beginDateBeforeEndDate": "L'accès au projet finit avant d'avoir commencé ! Ça c'est de l'ambition."
+                    "beginDateBeforeEndDate": "L’accès au projet finit avant d’avoir commencé ! Ça c’est de l’ambition."
                 }
             }
         },
@@ -681,24 +681,24 @@
             "delete": "Supprimer",
             "confirmations": {
                 "ACCEPTED": {
-                    "title": "Accepter l'invitation",
-                    "message": "En acceptant l'invitation à \"{{element.project.name}}\", le profil sera automatiquement sélectionné et apparaitra dans la liste des profils liés à ton compte (dans le premier onglet)."
+                    "title": "Accepter l’invitation",
+                    "message": "En acceptant l’invitation à “{{element.project.name}}”, le profil sera automatiquement sélectionné et apparaitra dans la liste des profils liés à ton compte (dans le premier onglet)."
                 },
                 "REJECTED": {
-                    "title": "Refuser l'invitation",
-                    "message": "En refusant définitivement l'invitation, tu ne pourras pas utiliser ce profil. Tu devras te faire réinviter pour accéder au projet \"{{element.project.name}}\""
+                    "title": "Refuser l’invitation",
+                    "message": "En refusant définitivement l’invitation, tu ne pourras pas utiliser ce profil. Tu devras te faire réinviter pour accéder au projet “{{element.project.name}}”"
                 },
                 "disable": {
                     "title": "Bloquer le profil",
-                    "message": "Attention ! Tu vas bloquer un profil pour le projet \"{{element.project.name}}\". Tant qu'il est bloqué, {{element.user.firstName}} {{element.user.lastName}} ne pourra plus l'utiliser."
+                    "message": "Attention ! Tu vas bloquer un profil pour le projet “{{element.project.name}}”. Tant qu’il est bloqué, {{element.user.firstName}} {{element.user.lastName}} ne pourra plus l’utiliser."
                 },
                 "enable": {
                     "title": "Débloquer le profil",
-                    "message": "Attention ! Tu vas débloquer un profil pour le projet \"{{element.project.name}}\". {{element.user.firstName}} {{element.user.lastName}} pourra à nouveau l'utiliser s'il est toujours valable."
+                    "message": "Attention ! Tu vas débloquer un profil pour le projet “{{element.project.name}}”. {{element.user.firstName}} {{element.user.lastName}} pourra à nouveau l’utiliser s’il est toujours valable."
                 },
                 "delete": {
                     "title": "Supprimer le profil",
-                    "message": "Attention ! Tu vas supprimer un profil pour le projet \"{{element.project.name}}\". {{element.user.firstName}} {{element.user.lastName}} ne pourra plus l'utiliser."
+                    "message": "Attention ! Tu vas supprimer un profil pour le projet “{{element.project.name}}”. {{element.user.firstName}} {{element.user.lastName}} ne pourra plus l’utiliser."
                 }
             }
         },
@@ -730,11 +730,11 @@
             "acceptance": {
                 "ACCEPTED": {
                     "title": "✅ Invitation acceptée",
-                    "message": "Tu as accepté l'invitation pour le projet, tu peux désormais le sélectionner."
+                    "message": "Tu as accepté l’invitation pour le projet, tu peux désormais le sélectionner."
                 },
                 "REJECTED": {
                     "title": "✅ Invitation refusée",
-                    "message": "Tu as refusé l'invitation pour le projet."
+                    "message": "Tu as refusé l’invitation pour le projet."
                 }
             },
             "edit": {
@@ -765,11 +765,40 @@
             "type": "Type",
             "visibility": "Visibilité"
         },
+        "communication": {
+            "layer": {
+                "title": {
+                    "one": "Communication",
+                    "few": "Communications"
+                },
+                "subtitle": {
+                    "one": "Dernière communication avec {{movement}}",
+                    "few": "Dernières communications avec {{movement}}"
+                }
+            },
+            "contact-button": "Contact",
+            "no-message": "Aucun message",
+            "last-communication": {
+                "interval": "{{days}} et {{hours}}",
+                "day": {
+                    "one": "Un jour",
+                    "few": "{{days}} jours"
+                },
+                "hour": {
+                    "one": "un heure",
+                    "few": "{{hours}} heures"
+                }
+            },
+            "last-button": {
+                "zero": "Aucune communication",
+                "one": "Dernière communication",
+                "few": "Dernières communications"
+            }
+        },
         "content-layer-title": {
             "one": "Participant",
             "few": "Participants"
         },
-        "for": "pour",
         "content": {
             "one": "{{name}}",
             "few": "{{total}} personnes"
@@ -786,7 +815,7 @@
                     "OUT": "Créer une sortie"
                 },
                 "edit": {
-                    "IN": "Modifier l'entrée du {{datetime}}",
+                    "IN": "Modifier l’entrée du {{datetime}}",
                     "OUT": "Modifier la sortie du {{datetime}}"
                 },
                 "information": "Informations",
@@ -812,7 +841,7 @@
                     "empty-search": "Aucune personne ou groupe trouvé",
                     "one": "Participant",
                     "few": "Participants",
-                    "group": "Groupe \"{{name}}\"",
+                    "group": "Groupe “{{name}}”",
                     "selected": {
                         "one": "Personne selectionné",
                         "few": "Personnes selectionnés"
@@ -852,16 +881,16 @@
             },
             "error": {
                 "datetime": {
-                    "required": "L'horodatage du mouvement doivent être définies. Sinon, comment savoir quand ça se passe ?",
-                    "minDate": "L'horodatage du mouvement est plus tôt que la fin du projet ({{min}}). Restons dans les clous !",
-                    "maxDate": "L'horodatage du mouvement est plus tard que la fin du projet ({{max}}). Restons dans les clous !"
+                    "required": "L’horodatage du mouvement doivent être définies. Sinon, comment savoir quand ça se passe ?",
+                    "minDate": "L’horodatage du mouvement est plus tôt que la fin du projet ({{min}}). Restons dans les clous !",
+                    "maxDate": "L’horodatage du mouvement est plus tard que la fin du projet ({{max}}). Restons dans les clous !"
                 },
                 "type": {
-                    "required": "Le type de mouvement doit être défini. Sinon je risque d'avoir du mal à te dire s'il s'agit d'une entrée ou d'une sortie la prochaine fois que tu me demandes."
+                    "required": "Le type de mouvement doit être défini. Sinon je risque d’avoir du mal à te dire s’il s’agit d’une entrée ou d’une sortie la prochaine fois que tu me demandes."
                 },
                 "reason": {
                     "required": "Pas de raison de mouvement ? Ça va être compliqué de savoir pourquoi tu fais ça.",
-                    "incompatibleReason": "La raison \"{{reason}}\" n'est pas compatible avec le type de mouvement sélectionné. Choisis une autre raison ou un autre type de mouvement."
+                    "incompatibleReason": "La raison “{{reason}}” n’est pas compatible avec le type de mouvement sélectionné. Choisis une autre raison ou un autre type de mouvement."
                 },
                 "participantContent": {
                     "required": "Impossible de créer ce mouvement sans participant. Reviens avec une équipe !"
@@ -870,7 +899,7 @@
                     "required": "Impossible de créer ce mouvement sans invité. Reviens avec une équipe !"
                 },
                 "driver": {
-                    "required": "Un véhicule sans responsable ? Désolé, les voitures complètement autonomes c'est pas encore ici."
+                    "required": "Un véhicule sans responsable ? Désolé, les voitures complètement autonomes c’est pas encore ici."
                 }
             }
         },
@@ -903,11 +932,11 @@
                 },
                 "disable": {
                     "title": "Masquer le mouvement",
-                    "message": "Attention ! Tu vas masquer le mouvement. Tant qu'il est masqué, c'est comme si il n'avait jamais eu lieu."
+                    "message": "Attention ! Tu vas masquer le mouvement. Tant qu’il est masqué, c’est comme si il n’avait jamais eu lieu."
                 },
                 "enable": {
                     "title": "Afficher à nouveau le mouvement",
-                    "message": "Attention ! Tu vas à nouveau rendre le mouvement visible. Il sera de nouveau considéré dans l'historique."
+                    "message": "Attention ! Tu vas à nouveau rendre le mouvement visible. Il sera de nouveau considéré dans l’historique."
                 },
                 "delete": {
                     "title": "Supprimer le mouvement",
@@ -935,7 +964,7 @@
             "edit": {
                 "IN": {
                     "title": "✏️ Entrée modifiée",
-                    "message": "L'entrée du {{datetime}} a été modifiée."
+                    "message": "L’entrée du {{datetime}} a été modifiée."
                 },
                 "OUT": {
                     "title": "✏️ Sortie modifiée",
@@ -945,7 +974,7 @@
             "disable": {
                 "IN": {
                     "title": "🙈 Entrée masquée",
-                    "message": "L'entrée du {{datetime}} a été masquée."
+                    "message": "L’entrée du {{datetime}} a été masquée."
                 },
                 "OUT": {
                     "title": "🙈 Sortie masquée",
@@ -955,7 +984,7 @@
             "enable": {
                 "IN": {
                     "title": "👀 Entrée visible",
-                    "message": "L'entrée du {{datetime}} est à nouveau visible."
+                    "message": "L’entrée du {{datetime}} est à nouveau visible."
                 },
                 "OUT": {
                     "title": "👀 Sortie masquée",
@@ -965,7 +994,7 @@
             "delete": {
                 "IN": {
                     "title": "🗑️ Entrée supprimée",
-                    "message": "L'entrée du {{datetime}} a été supprimée."
+                    "message": "L’entrée du {{datetime}} a été supprimée."
                 },
                 "OUT": {
                     "title": "🗑️ Sortie supprimée",
@@ -1000,18 +1029,18 @@
         "form": {
             "title": {
                 "create": "Ajouter une personne",
-                "edit": "Modifier les informations de \"{{firstName}} {{lastName}}\""
+                "edit": "Modifier les informations de “{{firstName}} {{lastName}}”"
             },
             "user": {
                 "title": "Utilisateur",
                 "empty-search": "Aucun utilisateur trouvé"
             },
             "firstname": "Prénom",
-            "previous-first-name": "L'ancien prénom \"{{firstName}}\" a été remplacé par celui de l'utilisateur lié.",
+            "previous-first-name": "L’ancien prénom “{{firstName}}” a été remplacé par celui de l’utilisateur lié.",
             "lastname": "Nom",
-            "previous-last-name": "L'ancien nom \"{{lastName}}\" a été remplacé par celui de l'utilisateur lié.",
+            "previous-last-name": "L’ancien nom “{{lastName}}” a été remplacé par celui de l’utilisateur lié.",
             "birthday": "Date de naissance",
-            "begin-datetime": "Date & Heure d'arrivée",
+            "begin-datetime": "Date & Heure d’arrivée",
             "end-datetime": "Date & Heure de départ",
             "groups": {
                 "empty": "Aucun groupe selectionné",
@@ -1026,14 +1055,14 @@
             },
             "error": {
                 "firstname": {
-                    "required": "Une personne participante sans prénom ? Moins pratique pour l'identifier !",
-                    "blank": "Non, non, non ! tu ne m'auras pas. Un prénom vide ça ne fonctionne pas !",
-                    "maxlength": "T'as vu la longueur du prénom 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c'est {{requiredLength}}."
+                    "required": "Une personne participante sans prénom ? Moins pratique pour l’identifier !",
+                    "blank": "Non, non, non ! tu ne m’auras pas. Un prénom vide ça ne fonctionne pas !",
+                    "maxlength": "T’as vu la longueur du prénom 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c’est {{requiredLength}}."
                 },
                 "lastname": {
-                    "required": "Une personne participante sans nom ? Moins pratique pour l'identifier !",
-                    "blank": "Non, non, non ! tu ne m'auras pas. Un nom vide ça ne fonctionne pas !",
-                    "maxlength": "T'as vu la longueur du nom 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c'est {{requiredLength}}."
+                    "required": "Une personne participante sans nom ? Moins pratique pour l’identifier !",
+                    "blank": "Non, non, non ! tu ne m’auras pas. Un nom vide ça ne fonctionne pas !",
+                    "maxlength": "T’as vu la longueur du nom 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c’est {{requiredLength}}."
                 },
                 "birthday": {
                     "required": "À priori les gens naissent un jour. Merci de me fournir cette date !",
@@ -1050,7 +1079,7 @@
                     "dateRequiredForTime": "Cette personne termine à une certaine heure ok ! Mais quel jour ? 📆"
                 },
                 "date-range": {
-                    "beginDateBeforeEndDate": "Cette personne part avant d'être arrivé ! Ça c'est de l'ambition."
+                    "beginDateBeforeEndDate": "Cette personne part avant d’être arrivé ! Ça c’est de l’ambition."
                 }
             },
             "hint": {
@@ -1076,42 +1105,42 @@
             "confirmations": {
                 "remove-member": {
                     "title": "Retirer du groupe",
-                    "message": "Attention ! Tu vas retirer \"{{element.firstName}} {{element.lastName}}\" du groupe."
+                    "message": "Attention ! Tu vas retirer “{{element.firstName}} {{element.lastName}}” du groupe."
                 },
                 "disable": {
                     "title": "Masquer la personne",
-                    "message": "Attention ! Tu vas masquer \"{{element.firstName}} {{element.lastName}}\". Tant qu'elle est masquée, la personne ne pourra plus être intégrée dans les entrées/sorties."
+                    "message": "Attention ! Tu vas masquer “{{element.firstName}} {{element.lastName}}”. Tant qu’elle est masquée, la personne ne pourra plus être intégrée dans les entrées/sorties."
                 },
                 "enable": {
                     "title": "Afficher à nouveau la personne",
-                    "message": "Attention ! Tu vas à nouveau rendre \"{{element.firstName}} {{element.lastName}}\" visible. Il sera de nouveau possible de l'intégrer dans les entrées/sorties."
+                    "message": "Attention ! Tu vas à nouveau rendre “{{element.firstName}} {{element.lastName}}” visible. Il sera de nouveau possible de l’intégrer dans les entrées/sorties."
                 },
                 "delete": {
                     "title": "Supprimer la personne",
-                    "message": "Attention ! Tu vas définitivement supprimer \"{{element.firstName}} {{element.lastName}}\". Cette suppression est possible uniquement si aucun mouvement lui est associé."
+                    "message": "Attention ! Tu vas définitivement supprimer “{{element.firstName}} {{element.lastName}}”. Cette suppression est possible uniquement si aucun mouvement lui est associé."
                 }
             }
         },
         "notifications": {
             "create": {
                 "title": "+ Personne ajoutée",
-                "message": "\"{{firstName}} {{lastName}}\" a été ajouté."
+                "message": "“{{firstName}} {{lastName}}” a été ajouté."
             },
             "edit": {
-                "title": "✏️ Informations d'une personne modifiées",
-                "message": "Les informations de \"{{firstName}} {{lastName}}\" ont été modifiées."
+                "title": "✏️ Informations d’une personne modifiées",
+                "message": "Les informations de “{{firstName}} {{lastName}}” ont été modifiées."
             },
             "disable": {
                 "title": "🙈 Personne masqué",
-                "message": "\"{{firstName}} {{lastName}}\" a été masqué."
+                "message": "“{{firstName}} {{lastName}}” a été masqué."
             },
             "enable": {
                 "title": "👀 Personne visible",
-                "message": "\"{{firstName}} {{lastName}}\" est à nouveau visible."
+                "message": "“{{firstName}} {{lastName}}” est à nouveau visible."
             },
             "delete": {
                 "title": "🗑️ Personne supprimé",
-                "message": "\"{{firstName}} {{lastName}}\" a été supprimé."
+                "message": "“{{firstName}} {{lastName}}” a été supprimé."
             }
         }
     },
@@ -1153,10 +1182,10 @@
         "form": {
             "title": {
                 "create": "Créer un groupe",
-                "edit": "Modifier le groupe \"{{name}}\""
+                "edit": "Modifier le groupe “{{name}}”"
             },
             "name": "Nom",
-            "begin-datetime": "Date & Heure d'arrivée",
+            "begin-datetime": "Date & Heure d’arrivée",
             "end-datetime": "Date & Heure de départ",
             "members": {
                 "empty": "Aucune personne selectionnée",
@@ -1176,8 +1205,8 @@
             "error": {
                 "name": {
                     "required": "Un groupe sans nom ? Sérieusement, donne-lui un nom !",
-                    "blank": "Non, non, non ! tu ne m'auras pas. Un nom vide ça ne fonctionne pas !",
-                    "maxlength": "T'as vu la longueur du nom 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c'est {{requiredLength}}."
+                    "blank": "Non, non, non ! tu ne m’auras pas. Un nom vide ça ne fonctionne pas !",
+                    "maxlength": "T’as vu la longueur du nom 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c’est {{requiredLength}}."
                 },
                 "begin-datetime": {
                     "minDate": "Un groupe ne peut pas arriver avant le début du projet ({{min}}).",
@@ -1190,7 +1219,7 @@
                     "dateRequiredForTime": "Ce groupe termine à une certaine heure ok ! Mais quel jour ? 📆"
                 },
                 "date-range": {
-                    "beginDateBeforeEndDate": "Ce groupe part avant d'être arrivé ! Ça c'est de l'ambition."
+                    "beginDateBeforeEndDate": "Ce groupe part avant d’être arrivé ! Ça c’est de l’ambition."
                 },
                 "members": {
                     "required": "Impossible de créer un groupe sans membres. Ce groupe a besoin de renforts !"
@@ -1217,15 +1246,15 @@
             "confirmations": {
                 "disable": {
                     "title": "Masquer le groupe",
-                    "message": "Attention ! Tu vas masquer le groupe \"{{element.name}}\". Tant qu'il est masqué, le groupe ne pourra plus être intégré dans les entrées/sorties."
+                    "message": "Attention ! Tu vas masquer le groupe “{{element.name}}”. Tant qu’il est masqué, le groupe ne pourra plus être intégré dans les entrées/sorties."
                 },
                 "enable": {
                     "title": "Afficher à nouveau le groupe",
-                    "message": "Attention ! Tu vas à nouveau rendre le groupe \"{{element.name}}\" visible. Il sera de nouveau possible de l'intégrer dans les entrées/sorties."
+                    "message": "Attention ! Tu vas à nouveau rendre le groupe “{{element.name}}” visible. Il sera de nouveau possible de l’intégrer dans les entrées/sorties."
                 },
                 "delete": {
                     "title": "Supprimer le groupe",
-                    "message": "Attention ! Tu vas définitivement supprimer le groupe \"{{element.name}}\". Elle sera donc définitivement dissocié des mouvements et autres éléments."
+                    "message": "Attention ! Tu vas définitivement supprimer le groupe “{{element.name}}”. Elle sera donc définitivement dissocié des mouvements et autres éléments."
                 }
             }
         },
@@ -1252,27 +1281,27 @@
             },
             "remove-member": {
                 "title": "- Membre retiré",
-                "message": "Le membre \"{{firstName}} {{lastName}}\" a été retiré du groupe."
+                "message": "Le membre “{{firstName}} {{lastName}}” a été retiré du groupe."
             },
             "create": {
                 "title": "+ Groupe créé",
-                "message": "Le groupe \"{{name}}\" a été créé."
+                "message": "Le groupe “{{name}}” a été créé."
             },
             "edit": {
                 "title": "✏️ Groupe modifié",
-                "message": "Le groupe \"{{name}}\" a été modifié."
+                "message": "Le groupe “{{name}}” a été modifié."
             },
             "disable": {
                 "title": "🙈 Groupe masqué",
-                "message": "Le groupe \"{{name}}\" a été masqué."
+                "message": "Le groupe “{{name}}” a été masqué."
             },
             "enable": {
                 "title": "👀 Groupe visible",
-                "message": "Le groupe \"{{name}}\" est à nouveau visible."
+                "message": "Le groupe “{{name}}” est à nouveau visible."
             },
             "delete": {
                 "title": "🗑️ Groupe supprimé",
-                "message": "Le groupe \"{{name}}\" a été supprimé."
+                "message": "Le groupe “{{name}}” a été supprimé."
             }
         }
     },
@@ -1294,7 +1323,7 @@
         "form": {
             "title": {
                 "create": "Ajouter un véhicule",
-                "edit": "Modifier les informations du véhicule \"{{brand}} {{model}} ({{registration}})\""
+                "edit": "Modifier les informations du véhicule “{{brand}} {{model}} ({{registration}})”"
             },
             "license-plate": "Immatriulation",
             "brand": "Marque",
@@ -1303,23 +1332,23 @@
             "end-datetime": "Date & Heure de fin de disponibilité",
             "hint": {
                 "begin-date-time": "Par défaut un véhicule est disponible dès le début du projet.",
-                "end-date-time": "Par défaut un véhicule est disponible jusqu'à la fin du projet."
+                "end-date-time": "Par défaut un véhicule est disponible jusqu’à la fin du projet."
             },
             "error": {
                 "license-plate": {
-                    "required": "Un véhicule sans immatriculation ? Moins pratique pour l'identifier !",
-                    "blank": "Non, non, non ! tu ne m'auras pas. Une immatriculation vide ça ne fonctionne pas !",
-                    "maxlength": "T'as vu la longueur de l'immatriculation 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c'est {{requiredLength}}."
+                    "required": "Un véhicule sans immatriculation ? Moins pratique pour l’identifier !",
+                    "blank": "Non, non, non ! tu ne m’auras pas. Une immatriculation vide ça ne fonctionne pas !",
+                    "maxlength": "T’as vu la longueur de l’immatriculation 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c’est {{requiredLength}}."
                 },
                 "brand": {
-                    "required": "Un véhicule sans marque ? T'es pas obligé de l'aimer mais il a forcément une marque !",
-                    "blank": "Non, non, non ! tu ne m'auras pas. Une marque vide ça ne fonctionne pas !",
-                    "maxlength": "T'as vu la longueur de la marque 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c'est {{requiredLength}}."
+                    "required": "Un véhicule sans marque ? T’es pas obligé de l’aimer mais il a forcément une marque !",
+                    "blank": "Non, non, non ! tu ne m’auras pas. Une marque vide ça ne fonctionne pas !",
+                    "maxlength": "T’as vu la longueur de la marque 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c’est {{requiredLength}}."
                 },
                 "model": {
-                    "required": "Un véhicule sans nom de modèle ? T'es pas obligé de l'aimer mais il a forcément un nom de modèle !",
-                    "blank": "Non, non, non ! tu ne m'auras pas. Un nom de modèle vide ça ne fonctionne pas !",
-                    "maxlength": "T'as vu la longueur du modèle 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c'est {{requiredLength}}."
+                    "required": "Un véhicule sans nom de modèle ? T’es pas obligé de l’aimer mais il a forcément un nom de modèle !",
+                    "blank": "Non, non, non ! tu ne m’auras pas. Un nom de modèle vide ça ne fonctionne pas !",
+                    "maxlength": "T’as vu la longueur du modèle 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c’est {{requiredLength}}."
                 },
                 "begin-datetime": {
                     "minDate": "Le véhicule ne peut pas arriver avant le début du projet ({{min}}).",
@@ -1332,7 +1361,7 @@
                     "dateRequiredForTime": "Ce véhicule part à une certaine heure ok ! Mais quel jour ? 📆"
                 },
                 "date-range": {
-                    "beginDateBeforeEndDate": "Ce véhicule part avant d'être arrivé ! Ça c'est de l'ambition."
+                    "beginDateBeforeEndDate": "Ce véhicule part avant d’être arrivé ! Ça c’est de l’ambition."
                 }
             },
             "placeholder": {
@@ -1352,15 +1381,15 @@
             "confirmations": {
                 "disable": {
                     "title": "Masquer le véhicule",
-                    "message": "Attention ! Tu vas masquer le véhicule \"{{element.brand}} {{element.model}} ({{element.licensePlate}})\". Tant qu'il est masqué, il ne sera plus possible de l'utiliser."
+                    "message": "Attention ! Tu vas masquer le véhicule “{{element.brand}} {{element.model}} ({{element.licensePlate}})”. Tant qu’il est masqué, il ne sera plus possible de l’utiliser."
                 },
                 "enable": {
                     "title": "Afficher à nouveau le véhicule",
-                    "message": "Attention ! Tu vas à nouveau rendre le véhicule \"{{element.brand}} {{element.model}} ({{element.licensePlate}})\" visible. Il sera de nouveau possible de l'utiliser."
+                    "message": "Attention ! Tu vas à nouveau rendre le véhicule “{{element.brand}} {{element.model}} ({{element.licensePlate}})” visible. Il sera de nouveau possible de l’utiliser."
                 },
                 "delete": {
                     "title": "Supprimer le véhicule",
-                    "message": "Attention ! Tu vas définitivement supprimer le véhicle \"{{element.brand}} {{element.model}} ({{element.licensePlate}})\". Cette suppression est possible uniquement si aucun mouvement lui est associé."
+                    "message": "Attention ! Tu vas définitivement supprimer le véhicle “{{element.brand}} {{element.model}} ({{element.licensePlate}})”. Cette suppression est possible uniquement si aucun mouvement lui est associé."
                 }
             }
         },
@@ -1370,7 +1399,7 @@
                 "message": "Le véhicule {{brand}} {{model}} ({{registration}}) a été ajouté."
             },
             "edit": {
-                "title": "✏️ Informations d'un véhicule modifiées",
+                "title": "✏️ Informations d’un véhicule modifiées",
                 "message": "Les informations du véhicule {{brand}} {{model}} ({{registration}}) ont été modifiées."
             },
             "disable": {
@@ -1415,7 +1444,7 @@
         "form": {
             "title": {
                 "create": "Créer une activité",
-                "edit": "Modifier l'activité \"{{name}}\""
+                "edit": "Modifier l’activité “{{name}}”"
             },
             "name": "Nom",
             "description": "Description",
@@ -1425,47 +1454,47 @@
             "end-datetime": "Date & Heure de fin de disponibilité",
             "hint": {
                 "begin-date-time": "Par défaut une activité est disponible dès le début du projet.",
-                "end-date-time": "Par défaut une activité est disponible jusqu'à la fin du projet."
+                "end-date-time": "Par défaut une activité est disponible jusqu’à la fin du projet."
             },
             "error": {
                 "name": {
-                    "required": "Une activité sans nom ? Moins pratique pour l'identifier !",
-                    "blank": "Non, non, non ! tu ne m'auras pas. Un nom vide ça ne fonctionne pas !",
-                    "maxlength": "T'as vu la longueur du nom 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c'est {{requiredLength}}."
+                    "required": "Une activité sans nom ? Moins pratique pour l’identifier !",
+                    "blank": "Non, non, non ! tu ne m’auras pas. Un nom vide ça ne fonctionne pas !",
+                    "maxlength": "T’as vu la longueur du nom 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c’est {{requiredLength}}."
                 },
                 "description": {
-                    "maxlength": "T'as vu la longueur de la marque 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c'est {{requiredLength}}."
+                    "maxlength": "T’as vu la longueur de la marque 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c’est {{requiredLength}}."
                 },
                 "duration": {
                     "hour": {
-                        "min": "Tu as déjà vu des heures négatives ? Moi non plus. Je sais pas comment on remonte le temps mais c'est pas comme ça.",
-                        "max": "Désolé, j'ai eu la flemme de gérer les activités de plus de {{max}} heures. Tu peux pas faire plus court ?",
-                        "mustBeHigher": "Une activité doit durer au moins une minute. Tu n'es pas obligé de spécifier la durée donc vide le champ plutôt que de mettre 0."
+                        "min": "Tu as déjà vu des heures négatives ? Moi non plus. Je sais pas comment on remonte le temps mais c’est pas comme ça.",
+                        "max": "Désolé, j’ai eu la flemme de gérer les activités de plus de {{max}} heures. Tu peux pas faire plus court ?",
+                        "mustBeHigher": "Une activité doit durer au moins une minute. Tu n’es pas obligé de spécifier la durée donc vide le champ plutôt que de mettre 0."
                     },
                     "minute": {
-                        "min": "Tu as déjà vu des minutes négatives ? Moi non plus. Je sais pas comment on remonte le temps mais c'est pas comme ça.",
-                        "max": "Ça fait au moins une retenue ça ! Faut passer ça en heure, désolé, j'ai eu la flemme de gérer la conversion automatique.",
-                        "mustBeHigher": "Une activité doit durer au moins une minute. Tu n'es pas obligé de spécifier la durée donc vide le champ plutôt que de mettre 0."
+                        "min": "Tu as déjà vu des minutes négatives ? Moi non plus. Je sais pas comment on remonte le temps mais c’est pas comme ça.",
+                        "max": "Ça fait au moins une retenue ça ! Faut passer ça en heure, désolé, j’ai eu la flemme de gérer la conversion automatique.",
+                        "mustBeHigher": "Une activité doit durer au moins une minute. Tu n’es pas obligé de spécifier la durée donc vide le champ plutôt que de mettre 0."
                     }
                 },
                 "allowed-participants": {
                     "min": "On va se faire chier à {{actual}}, il faut au moins {{min}} participant(s) pour une activité.",
-                    "rangeMin": "Tu vas rire mais ici, c'est comme partout ailleurs, le minimum doit être inférieur ou égal au maximum.",
-                    "max": "“Vous voyez ce que ça fait déjà {{actual}} Larmina ?” Et bien c'est trop ! Le max c'est {{max}} après c'est relou à gérer.",
+                    "rangeMin": "Tu vas rire mais ici, c’est comme partout ailleurs, le minimum doit être inférieur ou égal au maximum.",
+                    "max": "“Vous voyez ce que ça fait déjà {{actual}} Larmina ?” Et bien c’est trop ! Le max c’est {{max}} après c’est relou à gérer.",
                     "rangeBothDefined": "Tu ne peux pas saisir que le minimum ou le maximum."
                 },
                 "begin-datetime": {
-                    "minDate": "L'activité ne peut pas être disponible avant le début du projet ({{min}}).",
-                    "maxDate": "L'activité ne peut pas être disponible après la fin du projet ({{max}}).",
+                    "minDate": "L’activité ne peut pas être disponible avant le début du projet ({{min}}).",
+                    "maxDate": "L’activité ne peut pas être disponible après la fin du projet ({{max}}).",
                     "dateRequiredForTime": "Cette activité est disponible à une certaine heure ok ! Mais quel jour ? 📆"
                 },
                 "end-datetime": {
-                    "minDate": "L'activité ne peut pas être disponible avant le début du projet ({{min}}).",
-                    "maxDate": "L'activité ne peut pas être disponible après la fin du projet ({{max}}).",
-                    "dateRequiredForTime": "Cette activité n'est plus disponible à une certaine heure ok ! Mais quel jour ? 📆"
+                    "minDate": "L’activité ne peut pas être disponible avant le début du projet ({{min}}).",
+                    "maxDate": "L’activité ne peut pas être disponible après la fin du projet ({{max}}).",
+                    "dateRequiredForTime": "Cette activité n’est plus disponible à une certaine heure ok ! Mais quel jour ? 📆"
                 },
                 "date-range": {
-                    "beginDateBeforeEndDate": "Cette activité n'est plus disponible avant de l'être ! Ça c'est de l'ambition."
+                    "beginDateBeforeEndDate": "Cette activité n’est plus disponible avant de l’être ! Ça c’est de l’ambition."
                 }
             },
             "placeholder": {
@@ -1486,39 +1515,39 @@
             "delete": "Supprimer",
             "confirmations": {
                 "disable": {
-                    "title": "Masquer l'activité",
-                    "message": "Attention ! Tu vas masquer l'activité \"{{element.name}}\". Tant qu'elle est masquée, elle ne pourra plus être utilisé."
+                    "title": "Masquer l’activité",
+                    "message": "Attention ! Tu vas masquer l’activité “{{element.name}}”. Tant qu’elle est masquée, elle ne pourra plus être utilisé."
                 },
                 "enable": {
-                    "title": "Afficher à nouveau l'activité",
-                    "message": "Attention ! Tu vas à nouveau rendre l'activité \"{{element.name}}\" visible. Elle sera de nouveau possible de l'utiliser."
+                    "title": "Afficher à nouveau l’activité",
+                    "message": "Attention ! Tu vas à nouveau rendre l’activité “{{element.name}}” visible. Elle sera de nouveau possible de l’utiliser."
                 },
                 "delete": {
-                    "title": "Supprimer l'activité",
-                    "message": "Attention ! Tu vas définitivement supprimer l'activité \"{{element.name}}\". Elle sera donc définitivement dissociée des mouvements et autres éléments."
+                    "title": "Supprimer l’activité",
+                    "message": "Attention ! Tu vas définitivement supprimer l’activité “{{element.name}}”. Elle sera donc définitivement dissociée des mouvements et autres éléments."
                 }
             }
         },
         "notifications": {
             "create": {
                 "title": "+ Activité créée",
-                "message": "L'activité {{name}} a été créée."
+                "message": "L’activité {{name}} a été créée."
             },
             "edit": {
                 "title": "✏️ Activité modifiée",
-                "message": "L'activité {{name}} a été modifiée."
+                "message": "L’activité {{name}} a été modifiée."
             },
             "disable": {
                 "title": "🙈 Activité masquée",
-                "message": "L'activité {{name}} a été masquée."
+                "message": "L’activité {{name}} a été masquée."
             },
             "enable": {
                 "title": "👀 Activité visible",
-                "message": "L'activité {{name}} est à nouveau visible."
+                "message": "L’activité {{name}} est à nouveau visible."
             },
             "delete": {
                 "title": "🗑️ Activité supprimée",
-                "message": "L'activité {{name}} a été supprimée."
+                "message": "L’activité {{name}} a été supprimée."
             }
         }
     },
@@ -1537,7 +1566,7 @@
         "form": {
             "title": {
                 "create": "Créer une communication",
-                "edit": "Modifier la communication du \"{{dateTime}}\""
+                "edit": "Modifier la communication du “{{dateTime}}”"
             },
             "movement": "Activité",
             "datetime": "Date & Heure",
@@ -1547,17 +1576,17 @@
             },
             "error": {
                 "movement": {
-                    "required": "Pour communiquer il faut communiquer avec quelqu'un. Choisis une activité avec qui communiquer."
+                    "required": "Pour communiquer il faut communiquer avec quelqu’un. Choisis une activité avec qui communiquer."
                 },
                 "datetime": {
-                    "required": "L'horodatage de la communication doit être défini. Sinon, comment savoir quand ça se passe ?",
-                    "minDate": "L'horodatage de la communication est plus tôt que le mouvement auquel elle est liée ({{min}}). Restons dans les clous !",
-                    "maxDate": "L'horodatage de la communication est plus tard que la fin du projet ({{max}}). Restons dans les clous !"
+                    "required": "L’horodatage de la communication doit être défini. Sinon, comment savoir quand ça se passe ?",
+                    "minDate": "L’horodatage de la communication est plus tôt que le mouvement auquel elle est liée ({{min}}). Restons dans les clous !",
+                    "maxDate": "L’horodatage de la communication est plus tard que la fin du projet ({{max}}). Restons dans les clous !"
                 },
                 "message": {
                     "required": "Une communication sans message ? À quoi elle sert ?",
-                    "blank": "Non, non, non ! tu ne m'auras pas. Un message vide ça ne fonctionne pas !",
-                    "maxlength": "T'as vu la longueur du nom 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c'est {{requiredLength}}."
+                    "blank": "Non, non, non ! tu ne m’auras pas. Un message vide ça ne fonctionne pas !",
+                    "maxlength": "T’as vu la longueur du nom 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c’est {{requiredLength}}."
                 }
             },
             "placeholder": {
@@ -1574,7 +1603,7 @@
             "confirmations": {
                 "disable": {
                     "title": "Masquer la communication",
-                    "message": "Attention ! Tu vas masquer la communication. Tant qu'elle est masquée, elle ne pourra plus être consultée via les éléments qui pourrait lui être liée."
+                    "message": "Attention ! Tu vas masquer la communication. Tant qu’elle est masquée, elle ne pourra plus être consultée via les éléments qui pourrait lui être liée."
                 },
                 "enable": {
                     "title": "Afficher à nouveau la communication",

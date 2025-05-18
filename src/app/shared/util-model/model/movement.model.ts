@@ -5,12 +5,14 @@ import { ActivityModel } from './activity.model'
 import { MovementReasonModel } from '../../../domains/project/movement/data/model/movement-reason.model'
 import { ParticipantTypeEnum } from '../enumeration/participant-type.enum'
 import { MovementTypeEnum } from '../enumeration/movement-type.enum'
+import { CommunicationModel } from '../../../domains/project/communication/data/model/communication.model'
 
 export interface MovementModel extends GenericProjectModel {
     dateTime: Date
     type: SelectItem<MovementTypeEnum>
     reason: MovementReasonModel | undefined
     activity: SelectItem<ActivityModel> | undefined
-    contentType: ParticipantTypeEnum,
+    contentType: ParticipantTypeEnum
     content: MovementContentModel[]
+    communications: CommunicationModel[] | undefined
 }

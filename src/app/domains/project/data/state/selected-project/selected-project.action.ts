@@ -15,11 +15,13 @@ enum SelectedProjectActionEnum {
     STOP_CURRENT_MOVEMENTS_WITHOUT_ACTIVITY_PAGE_LOADER = '[Local] Stopping current movements\' page without activity loader',
     FETCH_CURRENT_MOVEMENTS_PAGE_WITHOUT_ACTIVITY = '[Backend] Fetching current movements\' page (without activity)',
     FETCH_CURRENT_MOVEMENTS_WITHOUT_ACTIVITY_CONTENTS = '[Backend] Fetching current movements\' (without activity) contents',
+    FETCH_CURRENT_MOVEMENTS_WITHOUT_ACTIVITY_LAST_COMMUNICATIONS = '[Backend] Fetching current movements\' (without activity) last communications',
 
     START_CURRENT_MOVEMENTS_PAGE_WITH_ACTIVITY_LOADER = '[Local] Starting current movements\' page with activity loader',
     STOP_CURRENT_MOVEMENTS_PAGE_WITH_ACTIVITY_LOADER = '[Local] Stopping current movements\' page with activity loader',
     FETCH_CURRENT_MOVEMENTS_PAGE_WITH_ACTIVITY = '[Backend] Fetching current movements\' page (with activity)',
     FETCH_CURRENT_MOVEMENTS_WITH_ACTIVITY_CONTENTS = '[Backend] Fetching current movements\' (with activity) contents',
+    FETCH_CURRENT_MOVEMENTS_WITH_ACTIVITY_LAST_COMMUNICATIONS = '[Backend] Fetching current movements\' (with activity) last communications',
 }
 
 export class ResetSelectedProjectState {
@@ -97,6 +99,15 @@ export class FetchCurrentMovementsWithoutActivityContents {
     ) {}
 }
 
+export class FetchCurrentMovementsWithoutActivityLastCommunications {
+    public static readonly type: SelectedProjectActionEnum = SelectedProjectActionEnum.FETCH_CURRENT_MOVEMENTS_WITHOUT_ACTIVITY_LAST_COMMUNICATIONS
+
+    public constructor (
+        public readonly projectId: string | undefined,
+        public readonly movementIds: string[],
+    ) {}
+}
+
 export class StartCurrentMovementsPageWithActivityLoader {
     public static readonly type: SelectedProjectActionEnum = SelectedProjectActionEnum.START_CURRENT_MOVEMENTS_PAGE_WITH_ACTIVITY_LOADER
 }
@@ -118,6 +129,15 @@ export class FetchCurrentMovementsPageWithActivity {
 
 export class FetchCurrentMovementsWithActivityContents {
     public static readonly type: SelectedProjectActionEnum = SelectedProjectActionEnum.FETCH_CURRENT_MOVEMENTS_WITH_ACTIVITY_CONTENTS
+
+    public constructor (
+        public readonly projectId: string | undefined,
+        public readonly movementIds: string[],
+    ) {}
+}
+
+export class FetchCurrentMovementsWithActivityLastCommunications {
+    public static readonly type: SelectedProjectActionEnum = SelectedProjectActionEnum.FETCH_CURRENT_MOVEMENTS_WITH_ACTIVITY_LAST_COMMUNICATIONS
 
     public constructor (
         public readonly projectId: string | undefined,

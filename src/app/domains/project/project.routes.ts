@@ -28,8 +28,8 @@ export const projectRoutes: Routes = [
             {
                 path: ProjectRoutesEnum.SELECTED, component: ProjectHomeComponent,
                 providers: [
-                    SelectedProjectFacade, ParticipantFacade, MovementFacade, importProvidersFrom( NgxsModule.forFeature(
-                        [ SelectedProjectState, ParticipantState, MovementState ] ) ),
+                    SelectedProjectFacade, ParticipantFacade, MovementFacade, CommunicationFacade,
+                    importProvidersFrom( NgxsModule.forFeature( [ SelectedProjectState, ParticipantState, MovementState, CommunicationState ] ) ),
                 ],
             },
             {

@@ -129,7 +129,7 @@ export class RegistryValidators {
             const value: CustomDatetimeModel | undefined = control.value
             if (!value) return null
 
-            if (StringUtil.isBlank( value.date ) && StringUtil.isNotBlank( value.time )) {
+            if (StringUtil.isNullOrBlank( value.date ) && StringUtil.isNullOrBlank( value.time )) {
                 return { dateRequiredForTime: true }
             }
 

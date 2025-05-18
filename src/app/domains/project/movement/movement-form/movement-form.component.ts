@@ -49,6 +49,7 @@ import {
     UpdateMovement,
 } from '../data/state/movement.action'
 import { MovementTypeEnum } from '../../../../shared/util-model/enumeration/movement-type.enum'
+import { ProjectOptionEnum } from '../../../../shared/util-model/enumeration/project-option.enum'
 
 @Component( {
     selector: 'app-movement-form',
@@ -102,7 +103,7 @@ export class MovementFormComponent extends GenericFormComponent<MovementModel, M
     protected readonly selectedReason: WritableSignal<MovementReasonModel | undefined> = signal( undefined )
     protected readonly hasVehicleOption: Signal<boolean> = computed( (): boolean => ProjectUtil.hasOption(
         this.registryFacade.selectedProject(),
-        'VEHICLE',
+        ProjectOptionEnum.VEHICLE,
     ) )
     protected readonly hasThirdStep: Signal<boolean> = computed( (): boolean =>
         (this.facade.movement()?.contentType === ParticipantTypeEnum.REGISTERED && this.hasVehicleOption())
