@@ -229,7 +229,7 @@
                                     icon='pi pi-arrow-up'
                                     text
                                     rounded />
-                            @if (hasThirdStep()) {
+                            @if (isEligibleToVehicle() && contentType.value === ParticipantTypeEnum.REGISTERED) {
                                 <p-button
                                         (onClick)='FormUtil.isFormValid(contentForm) ? activateCallback(3) : undefined'
                                         [label]='registryFacade.tinyScreen() ? "" : "global.actions.next" | translate'
@@ -252,7 +252,7 @@
             </p-step-panel>
         </p-step-item>
 
-        @if (hasThirdStep()) {
+        @if (isEligibleToVehicle() && contentType.value === ParticipantTypeEnum.REGISTERED) {
             <p-step-item [value]='3'>
                 <p-step>{{ 'movements.form.title.vehicle' | translate }}</p-step>
                 <p-step-panel>

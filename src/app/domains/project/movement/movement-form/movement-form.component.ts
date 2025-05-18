@@ -92,6 +92,7 @@ export class MovementFormComponent extends GenericFormComponent<MovementModel, M
     protected readonly facade: MovementFacade = inject( MovementFacade )
 
     protected readonly VehicleUtil: typeof VehicleUtil = VehicleUtil
+    protected readonly ParticipantTypeEnum: typeof ParticipantTypeEnum = ParticipantTypeEnum
 
     protected readonly now: Date = new Date()
     protected readonly informationForm: FormGroup
@@ -101,12 +102,12 @@ export class MovementFormComponent extends GenericFormComponent<MovementModel, M
     protected readonly reasonRequired: WritableSignal<boolean> = signal( true )
     protected readonly isContentSelection: WritableSignal<boolean> = signal( true )
     protected readonly selectedReason: WritableSignal<MovementReasonModel | undefined> = signal( undefined )
-    protected readonly hasVehicleOption: Signal<boolean> = computed( (): boolean => ProjectUtil.hasOption(
+    private readonly hasVehicleOption: Signal<boolean> = computed( (): boolean => ProjectUtil.hasOption(
         this.registryFacade.selectedProject(),
         ProjectOptionEnum.VEHICLE,
     ) )
-    protected readonly hasThirdStep: Signal<boolean> = computed( (): boolean =>
-        (this.facade.movement()?.contentType === ParticipantTypeEnum.REGISTERED && this.hasVehicleOption())
+    protected readonly isEligibleToVehicle: Signal<boolean> = computed( (): boolean =>
+        this.hasVehicleOption()
         || (this.facade.movement()?.content.some( (content: MovementContentModel): boolean => GenericUtil.nonNull(
             content.vehicle ) ) ?? false),
     )
