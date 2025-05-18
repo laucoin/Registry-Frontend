@@ -9,6 +9,8 @@ import { CommunicationModel } from '../model/communication.model'
 import { CommunicationDto } from '../dto/communication.dto'
 import { HttpParams } from '@angular/common/http'
 import { MovementModel } from '../../../../../shared/util-model/model/movement.model'
+import { PairModel } from '../../../../../shared/util-model/model/pair.model'
+import { GenericUtil } from '../../../../../shared/util-tool/util/generic.util'
 
 @Injectable( {
     providedIn: 'root',
@@ -30,6 +32,22 @@ export class CommunicationService extends GenericProjectService {
                 pageSize,
                 params,
             ).toString()}`,
+        )
+    }
+
+    public findCommunicationsByMovementIds (
+        projectId: string | undefined,
+        movementIds: string[],
+    ): Observable<PairModel<CommunicationModel[]>[]> {
+        let builtParams: HttpParams = new HttpParams()
+        if (GenericUtil.nonNull( movementIds )) {
+            movementIds.forEach( (movementId: string): void => {
+                builtParams = builtParams.append( 'movementIds', movementId )
+            } )
+        }
+
+        return this.http.get<PairModel<CommunicationModel[]>[]>(
+            `${this.buildRequestBaseUrl( projectId )}/movements${movementIds?.length > 0 ? '?' + builtParams.toString() : ''}`,
         )
     }
 

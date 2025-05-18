@@ -14,11 +14,16 @@ export class StringUtil {
     }
 
     public static isBlank (text: string | undefined): boolean {
+        if (GenericUtil.isNull( text )) return false
+        return text!.trim().length === 0
+    }
+
+    public static isNullOrBlank (text: string | undefined): boolean {
         return GenericUtil.isNull( text ) || text!.trim().length === 0
     }
 
-    public static isNotBlank (text: string | undefined): boolean {
-        return !this.isBlank( text )
+    public static isNotNullNorBlank (text: string | undefined): boolean {
+        return !this.isNullOrBlank( text )
     }
 
     public static toNumber (value: number | string | null | undefined): number | undefined {
@@ -59,9 +64,19 @@ export class StringUtil {
     }
 
     public static toTitleCase (str: string | undefined): string {
-        if (this.isBlank( str )) return ''
+        if (this.isNullOrBlank( str )) return ''
         return str!.toLowerCase().split( ' ' ).map( (word: string): string => {
             return (word.charAt( 0 ).toUpperCase() + word.slice( 1 ))
         } ).join( ' ' )
+    }
+
+    public static formatAtLeastOnTwoDigits (num: number | undefined): string {
+        switch (true) {
+            case GenericUtil.isNull( num ):
+            case num! >= 100:
+                return num?.toString() ?? ''
+            default:
+                return ('0' + num).slice( -2 )
+        }
     }
 }

@@ -4,6 +4,7 @@ import { catchError, ObservableInput } from 'rxjs'
 import { NgxsNextPluginFn } from '@ngxs/store/plugins'
 import { ErrorModel } from '../../util-model/model/error.model'
 import { RegistryFacade } from '../../util-common/state/registry.facade'
+import { SeverityEnum } from '../../util-model/enumeration/severity.enum'
 
 @Injectable()
 export class RegistryNgxsUnhandledErrorHandler implements NgxsPlugin {
@@ -19,7 +20,7 @@ export class RegistryNgxsUnhandledErrorHandler implements NgxsPlugin {
                     this.registryFacade?.setGlobalError( error )
                 } else {
                     this.registryFacade!.notify( {
-                        severity: 'error',
+                        severity: SeverityEnum.ERROR,
                         summary: error.title,
                         detail: error.message,
                         icon: 'pi pi-exclamation-triangle',

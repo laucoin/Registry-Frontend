@@ -233,7 +233,7 @@ export class RegistryFacade extends GenericFacade {
         }
 
         let formattedMessage: ToastMessageOptions = message
-        if (StringUtil.isBlank( message.detail ) && StringUtil.isBlank( message.summary )) {
+        if (StringUtil.isNullOrBlank( message.detail ) && StringUtil.isNullOrBlank( message.summary )) {
             formattedMessage = {
                 ...message,
                 detail: this.translateService.instant( 'global.notifications.UNKNOWN_ERROR' ),

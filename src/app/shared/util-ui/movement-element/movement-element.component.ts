@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input, InputSignal, signal, Signal } from '@angular/core'
+import { Component, computed, inject, input, InputSignal, OnDestroy, signal, Signal } from '@angular/core'
 import { MovementModel } from '../../util-model/model/movement.model'
 import { ActionModel } from '../../util-model/model/action.model'
 import { MovementFacade } from '../../../domains/project/movement/data/state/movement.facade'
@@ -33,6 +33,20 @@ import { Button } from 'primeng/button'
 import { ConfirmationService } from 'primeng/api'
 import { MovementDto } from '../../../domains/project/movement/data/dto/movement.dto'
 import { MovementContentDto } from '../../../domains/project/movement/data/dto/movement-content.dto'
+import { GenericUtil } from '../../util-tool/util/generic.util'
+import { ProjectUtil } from '../../util-tool/util/project.util'
+import { Divider } from 'primeng/divider'
+import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
+import { RegistryValidators } from '../../util-tool/util/registry.validator'
+import { FormFieldErrorComponent } from '../form-field-error/form-field-error.component'
+import { Textarea } from 'primeng/textarea'
+import { Timeline } from 'primeng/timeline'
+import { toSignal } from '@angular/core/rxjs-interop'
+import { interval, map, Subscription, tap } from 'rxjs'
+import { StringUtil } from '../../util-tool/util/string.util'
+import { CommunicationDto } from '../../../domains/project/communication/data/dto/communication.dto'
+import { FormUtil } from '../../util-tool/util/form.util'
+import { CommunicationFacade } from '../../../domains/project/communication/data/state/communication.facade'
 
 @Component( {
     selector: 'app-movement-element',
@@ -61,14 +75,21 @@ import { MovementContentDto } from '../../../domains/project/movement/data/dto/m
         ProjectOptionIconPipe,
         TruncatePipe,
         Button,
+        Divider,
+        FormFieldErrorComponent,
+        FormsModule,
+        Textarea,
+        ReactiveFormsModule,
+        Timeline,
+
 
     ],
     templateUrl: './movement-element.component.html',
     styleUrl: './movement-element.component.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush,
 } )
-export class MovementElementComponent extends GenericElementComponent<MovementModel> {
+export class MovementElementComponent extends GenericElementComponent<MovementModel> implements OnDestroy {
     protected readonly facade: MovementFacade = inject( MovementFacade )
+    protected readonly communicationFacade: CommunicationFacade = inject( CommunicationFacade )
     protected readonly optionPipe: ProjectOptionIconPipe = inject( ProjectOptionIconPipe )
     private readonly confirmationService: ConfirmationService = inject( ConfirmationService )
     private readonly pluralTranslation: PluralTranslationPipe = inject( PluralTranslationPipe )
@@ -76,12 +97,21 @@ export class MovementElementComponent extends GenericElementComponent<MovementMo
     protected readonly VehicleUtil: typeof VehicleUtil = VehicleUtil
     protected readonly MovementTypeEnum: typeof MovementTypeEnum = MovementTypeEnum
 
-    protected layerOpened: boolean = false
-    protected activeTab: number = 1
+    protected readonly subscriptions: Subscription = new Subscription()
+
+    protected participantLayerActiveTab: number = 1
+    protected participantsLayerOpened: boolean = false
+    protected communicationsLayerOpened: boolean = false
+
+    protected readonly message: FormControl = new FormControl( undefined, [
+        RegistryValidators.nonBlank(),
+        Validators.maxLength( 250 ),
+    ] )
 
     public readonly actionMenuVisible: InputSignal<boolean> = input( true )
     public readonly movement: InputSignal<MovementModel> = input.required()
     public readonly reversible: InputSignal<boolean> = input( false )
+    public readonly communicable: InputSignal<boolean> = input( false )
     public readonly vehicleId: InputSignal<string | undefined> = input()
 
     private readonly allActions: Signal<ActionModel[]> = signal( [
@@ -158,7 +188,16 @@ export class MovementElementComponent extends GenericElementComponent<MovementMo
         this.reversible() ? this.buildActions( this.movement(), this.allButtonActions() )[0] : undefined,
     )
 
+    protected readonly communication: Signal<boolean> = computed( (): boolean =>
+            this.communicable() && ProjectUtil.hasOption(
+                                    this.registryFacade.selectedProject(),
+                                    ProjectOptionEnum.COMMUNICATION,
+                                ),
+    )
+
     protected readonly actions: Signal<ActionModel[]>
+    protected readonly typeAndReason: Signal<string>
+    protected readonly lastCommunication: Signal<string | undefined>
     protected readonly total: Signal<number>
     protected readonly adults: Signal<MovementContentModel[]>
     protected readonly children: Signal<MovementContentModel[]>
@@ -174,6 +213,14 @@ export class MovementElementComponent extends GenericElementComponent<MovementMo
             this.allActions(),
         ) )
 
+        this.typeAndReason = computed( (): string => {
+            let text: string = this.movement().type.label ?? ''
+            if (GenericUtil.nonNull( this.movement().reason )) {
+                text += ` - ${this.movement().reason!.label}`
+            }
+            return text
+        } )
+        this.lastCommunication = toSignal( interval( 1000 ).pipe( map( (): string | undefined => this.getLastCommunicationInterval() ) ) )
         this.total = computed( (): number => this.movement().content.length )
         this.adults = computed( (): MovementContentModel[] => MovementUtil.getAdults( this.movement() ) )
         this.children = computed( (): MovementContentModel[] => MovementUtil.getChildren( this.movement() ) )
@@ -257,7 +304,7 @@ export class MovementElementComponent extends GenericElementComponent<MovementMo
 
     protected onClickParticipant (event: ListboxClickEvent): void {
         if (this.reversible()) {
-            this.layerOpened = false
+            this.participantsLayerOpened = false
             this.showDialogIfNeededForMovementReverse( [ event.option ] )
         }
     }
@@ -277,5 +324,63 @@ export class MovementElementComponent extends GenericElementComponent<MovementMo
             guests: [],
         }
         this.facade.createMovement( reverseMovement )
+    }
+
+    private getLastCommunicationInterval (): string | undefined {
+        if ((this.movement().communications?.length ?? 0) === 0) return undefined
+        const lastCommunication: Date = new Date( this.movement().communications![0].dateTime )
+        const difference: Date = new Date( new Date().getTime() - lastCommunication.getTime() )
+        const hours: number = ~~(difference.getTime() / (1000 * 60 * 60))
+        const minutes: number = difference.getUTCMinutes()
+        const seconds: string = StringUtil.formatAtLeastOnTwoDigits( difference.getUTCSeconds() )
+        const days: number = Math.floor( hours / 24 )
+
+        switch (true) {
+            case days >= 1: {
+                const dayTranslation: string = this.translateService.instant( this.pluralTranslation.transform(
+                    'movements.communication.last-communication.day',
+                    days,
+                ), { days: days } )
+                const remainingHours: number = hours - (days * 24)
+                const hourTranslation: string = this.translateService.instant( this.pluralTranslation.transform(
+                    'movements.communication.last-communication.hour',
+                    remainingHours,
+                ), { hours: remainingHours } )
+                return this.translateService.instant(
+                    'movements.communication.last-communication.interval',
+                    { days: dayTranslation, hours: hourTranslation },
+                )
+            }
+            case hours > 0:
+                return `${StringUtil.formatAtLeastOnTwoDigits( hours )}:${StringUtil.formatAtLeastOnTwoDigits( minutes )}:${seconds}`
+            default:
+                return `${StringUtil.formatAtLeastOnTwoDigits( minutes )}:${seconds}`
+        }
+    }
+
+    protected submitCommunication (): void {
+        if (FormUtil.invalid( this.message )) {
+            console.warn( this.translateService.instant( 'global.messages.invalid-form' ), this.message.value )
+            return
+        }
+
+        const dto: CommunicationDto = this.buildCommunicationDto()
+        this.subscriptions.add(
+            this.communicationFacade.createCommunication( dto ).pipe(
+                tap( (): void => this.message.patchValue( undefined ) ),
+            ).subscribe(),
+        )
+    }
+
+    private buildCommunicationDto (): CommunicationDto {
+        return {
+            dateTime: new Date().toISOString(),
+            message: this.message.value,
+            movementId: this.movement().id,
+        }
+    }
+
+    public ngOnDestroy (): void {
+        this.subscriptions.unsubscribe()
     }
 }

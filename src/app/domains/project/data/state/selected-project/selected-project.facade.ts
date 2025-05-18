@@ -12,7 +12,9 @@ import {
     FetchCurrentMovementsPageWithActivity,
     FetchCurrentMovementsPageWithoutActivity,
     FetchCurrentMovementsWithActivityContents,
+    FetchCurrentMovementsWithActivityLastCommunications,
     FetchCurrentMovementsWithoutActivityContents,
+    FetchCurrentMovementsWithoutActivityLastCommunications,
     FetchParticipantsBirthdays,
     FetchParticipantsStatus,
     FetchVehiclesStatus,
@@ -28,6 +30,7 @@ import {
 import { ParticipantModel } from '../../../../../shared/util-model/model/participant.model'
 import { ProjectUtil } from '../../../../../shared/util-tool/util/project.util'
 import { ProjectOptionEnum } from '../../../../../shared/util-model/enumeration/project-option.enum'
+import { ProjectModel } from '../../../../../shared/util-model/model/project.model'
 
 @Injectable()
 export class SelectedProjectFacade extends GenericFacade {
@@ -192,9 +195,30 @@ export class SelectedProjectFacade extends GenericFacade {
         ) )
     }
 
-    public fetchCurrentMovementsWithoutActivityContents (movementIds: string[]): void {
-        this.ngStore.dispatch( new FetchCurrentMovementsWithoutActivityContents( this.ngStore.selectSignal(
-            RegistryState.currentUserSelectedProjectId )(), movementIds ) )
+    public fetchCurrentMovementsWithoutActivityDetails (movementIds: string[], communicable: boolean): void {
+        const project: ProjectModel | undefined = this.ngStore.selectSignal( RegistryState.currentUserSelectedProject )()
+        const actions: object[] = [
+            new FetchCurrentMovementsWithoutActivityContents( project?.id, movementIds ),
+        ]
+
+        if (ProjectUtil.hasOption( project, ProjectOptionEnum.COMMUNICATION ) && communicable) {
+            actions.push( new FetchCurrentMovementsWithoutActivityLastCommunications( project?.id, movementIds ) )
+        }
+
+        this.ngStore.dispatch( actions )
+    }
+
+    public fetchCurrentMovementsPageWithoutActivityCommunicationsIfNecessary (
+        movementIds: string[],
+        communicable: boolean,
+    ): void {
+        const project: ProjectModel | undefined = this.ngStore.selectSignal( RegistryState.currentUserSelectedProject )()
+        if (ProjectUtil.hasOption( project, ProjectOptionEnum.COMMUNICATION ) && communicable) {
+            this.ngStore.dispatch( new FetchCurrentMovementsWithoutActivityLastCommunications(
+                project?.id,
+                movementIds,
+            ) )
+        }
     }
 
     public startCurrentMovementsPageWithActivityLoader (): void {
@@ -218,10 +242,26 @@ export class SelectedProjectFacade extends GenericFacade {
         ) )
     }
 
-    public fetchCurrentMovementsWithActivityContents (movementIds: string[]): void {
-        this.ngStore.dispatch( new FetchCurrentMovementsWithActivityContents(
-            this.ngStore.selectSignal( RegistryState.currentUserSelectedProjectId )(),
-            movementIds,
-        ) )
+    public fetchCurrentMovementsWithActivityDetails (movementIds: string[], communicable: boolean): void {
+        const project: ProjectModel | undefined = this.ngStore.selectSignal( RegistryState.currentUserSelectedProject )()
+        const actions: object[] = [
+            new FetchCurrentMovementsWithActivityContents( project?.id, movementIds ),
+        ]
+
+        if (ProjectUtil.hasOption( project, ProjectOptionEnum.COMMUNICATION ) && communicable) {
+            actions.push( new FetchCurrentMovementsWithActivityLastCommunications( project?.id, movementIds ) )
+        }
+
+        this.ngStore.dispatch( actions )
+    }
+
+    public fetchCurrentMovementsPageWithActivityCommunicationsIfNecessary (
+        movementIds: string[],
+        communicable: boolean,
+    ): void {
+        const project: ProjectModel | undefined = this.ngStore.selectSignal( RegistryState.currentUserSelectedProject )()
+        if (ProjectUtil.hasOption( project, ProjectOptionEnum.COMMUNICATION ) && communicable) {
+            this.ngStore.dispatch( new FetchCurrentMovementsWithActivityLastCommunications( project?.id, movementIds ) )
+        }
     }
 }

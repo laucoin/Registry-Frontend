@@ -173,6 +173,16 @@ export class CommunicationFacade extends GenericProjectElementFacade {
         return this.actions$.pipe( ofActionSuccessful( CreateCommunication ) )
     }
 
+    public handleCommunicationChange (): Observable<CreateCommunication | UpdateCommunication | DisableCommunication | EnableCommunication | DeleteCommunication> {
+        return this.actions$.pipe( ofActionSuccessful(
+            CreateCommunication,
+            UpdateCommunication,
+            DisableCommunication,
+            EnableCommunication,
+            DeleteCommunication,
+        ) )
+    }
+
     public updateCommunication (
         id: string,
         communication: CommunicationDto,
