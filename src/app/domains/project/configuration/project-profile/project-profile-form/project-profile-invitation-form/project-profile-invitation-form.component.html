@@ -12,7 +12,7 @@
                         [formControl]='role'
                         [placeholder]='"project-profiles.form.placeholder.role" | translate: {
                             role: facade.projectProfileAssignableRolesMetadata().length > 0
-                                ? facade.projectProfileAssignableRolesMetadata()?.[0]?.label
+                                ? facade.projectProfileAssignableRolesMetadata()[0].label
                                 : ""
                         }'
                         (keydown.enter)='submit()'

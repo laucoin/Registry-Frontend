@@ -3,14 +3,14 @@
         <p-progressSpinner class='m-auto'></p-progressSpinner>
     } @else {
         <div class='m-auto'>
-            <app-message [message]='registryFacade.globalError()'>
+            <app-severity-information [message]='registryFacade.globalError()'>
                 <p-button
                         (onClick)='logout()'
                         [label]="'global.actions.sign-out' | translate"
                         rounded
                         icon='pi pi-sign-out'
                         severity='danger' />
-            </app-message>
+            </app-severity-information>
         </div>
     }
 </p-blockUI>
@@ -18,7 +18,7 @@
     <p-confirmDialog [breakpoints]='breakPoint' />
     <p-toast [breakpoints]="{ '576px': { width: '95%', right: '2.5%', left: '2.5%' } }">
         <ng-template #message let-message>
-            <div class='d-flex flex-column align-items-start full-w'>
+            <div class='d-flex flex-column align-items-start w-100'>
                 @if (message.summary) {
                     <div class='toast-title'>
                         {{ message.summary | translate }}

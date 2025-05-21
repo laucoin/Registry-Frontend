@@ -13,6 +13,6 @@ import { SeverityEnum } from '../../util-model/enumeration/severity.enum'
 } )
 export class SeverityTagComponent {
     protected readonly registryFacade: RegistryFacade = inject( RegistryFacade )
-    public readonly value: InputSignal<string | undefined> = input<string | undefined>( undefined )
-    public readonly severity: InputSignal<SeverityEnum | undefined> = input<SeverityEnum | undefined>( undefined )
+    public readonly value: InputSignal<string | undefined> = input<string | undefined>()
+    public readonly severity: InputSignal<SeverityEnum | undefined> = input<SeverityEnum | undefined>()
 }

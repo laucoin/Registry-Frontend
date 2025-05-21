@@ -23,7 +23,7 @@ export const backendHandler: HttpInterceptorFn = (
     req: HttpRequest<unknown>,
     next: HttpHandlerFn,
 ): Observable<HttpEvent<unknown>> => {
-    if (!req.url.startsWith( AppConfig.config.backend.url )) {
+    if (!req.url.startsWith( AppConfig.settings.backend.url )) {
         return next( req )
     }
 
@@ -39,7 +39,7 @@ export const backendHandler: HttpInterceptorFn = (
         headers: buildHeaders( req.url, registryFacade.token(), req.headers ),
     } ) )
         .pipe( catchError( (error: HttpErrorResponse) => {
-            if (AppConfig.config.backend.noAuthPaths.some( (permitAll: string): boolean => req.url.includes( permitAll ) ) && error.status === 401) {
+            if (AppConfig.settings.backend.noAuthPaths.some( (permitAll: string): boolean => req.url.includes( permitAll ) ) && error.status === 401) {
                 registryFacade.login()
             }
 
@@ -93,7 +93,7 @@ function formatUrlIfNeeded (currentUser: CurrentUserModel | undefined, url: stri
 function buildHeaders (url: string, token: TokenModel | undefined, headers: HttpHeaders | undefined): HttpHeaders {
     let filledHeaders: HttpHeaders = headers ?? new HttpHeaders()
 
-    if (AppConfig.config.backend.noAuthPaths.some( (permitAll: string): boolean => url.includes( permitAll ) )) {
+    if (AppConfig.settings.backend.noAuthPaths.some( (permitAll: string): boolean => url.includes( permitAll ) )) {
         return filledHeaders
     }
 

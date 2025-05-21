@@ -10,7 +10,7 @@
                             <p-avatar [icon]='icon()' size='large' shape='circle' />
                         </div>
                     }
-                    <div class='full-w'
+                    <div class='w-100'
                          [class.mt-2]='registryFacade.tinyScreen()'>
                         <ng-content />
                     </div>
@@ -21,7 +21,7 @@
         @if ((actions().length > 0 || element().creation || element().lastEdition) && actionMenuVisible()) {
             <div class='option-button'>
                 <p-popover #menu appendTo='body'>
-                    @if (items()!.length > 0) {
+                    @if (actions()!.length > 0) {
                         <p-menu [style]='{
                                         "border-radius": "0",
                                         "border-top": "none",
@@ -29,7 +29,7 @@
                                         "border-right": "none"
                                     }'
                                 (click)='menu.toggle($event)'
-                                [model]='items()'>
+                                [model]='actions()'>
                             <ng-template #item let-item>
                                 <a pRipple class='d-flex align-items-center py-2 px-3 pointer'>
                                     <span [class]='item.icon'></span>&nbsp;
@@ -53,10 +53,9 @@
     </div>
 </p-card>
 
-
 @if (!registryFacade.tinyScreen()) {
-    @if (items.length > 0 && actionMenuVisible()) {
-        <p-context-menu [target]='elementCard' [model]='items()'>
+    @if (actions().length > 0 && actionMenuVisible()) {
+        <p-context-menu [target]='elementCard' [model]='actions()'>
             <ng-template #item let-item>
                 <a pRipple class='d-flex align-items-center p-2 pointer'>
                     <span [class]='item.icon'></span>&nbsp;

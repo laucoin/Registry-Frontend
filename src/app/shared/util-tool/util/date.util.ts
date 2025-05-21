@@ -1,10 +1,8 @@
 import { StringUtil } from './string.util'
-import { DateIntervalStatusModel } from '../../util-model/model/date-interval-status.model'
-import { DateIntervalModel } from '../../util-model/model/date-interval.model'
 import { SplitTimeModel } from '../../util-model/model/split-time.model'
 import { CustomDatetimeModel } from '../../util-model/model/custom-datetime.model'
 import { GenericUtil } from './generic.util'
-import { IntervalStatusEnum } from '../../util-model/enumeration/interval-status.enum'
+import { IntervalModel } from '../../util-model/model/interval.model'
 
 export class DateUtil {
     public static getDate (date: Date): string {
@@ -23,41 +21,24 @@ export class DateUtil {
         return new Date( date )
     }
 
-    public static dateRangeStatus (
-        startDate: CustomDatetimeModel | undefined,
-        endDate: CustomDatetimeModel | undefined,
-    ): DateIntervalStatusModel {
-        const now: CustomDatetimeModel = this.toCustomDateTime( new Date() )!
-        switch (true) {
-            case startDate && this.isBefore( now, startDate ):
-                return {
-                    status: IntervalStatusEnum.PLANNED,
-                    interval: DateUtil.interval( now, startDate ),
-                }
-            case endDate && this.isAfter( now, endDate ):
-                return {
-                    status: IntervalStatusEnum.FINISHED,
-                    interval: DateUtil.interval( endDate, now ),
-                }
-            default:
-                return {
-                    status: IntervalStatusEnum.IN_PROGRESS,
-                    interval: startDate ? DateUtil.interval( startDate, now ) : undefined,
-                }
-        }
-    }
+    public static sortDate (
+        dates: (CustomDatetimeModel | undefined)[],
+        ascending: boolean = true,
+        ignoreNull: boolean = false,
+    ): (CustomDatetimeModel | undefined)[] {
+        const toSort: (CustomDatetimeModel | undefined)[] = dates.filter( (date: CustomDatetimeModel | undefined): boolean =>
+            ignoreNull ? GenericUtil.nonNull( date?.date ) : true,
+        )
 
-    private static interval (begin: CustomDatetimeModel, end: CustomDatetimeModel): DateIntervalModel {
-        const formattedBegin: Date = DateUtil.toDate( begin, 'min' )!
-        const formattedEnd: Date = DateUtil.toDate( end, 'max' )!
-        return {
-            year: formattedEnd.getFullYear() - formattedBegin.getFullYear(),
-            month: formattedEnd.getMonth() - formattedBegin.getMonth(),
-            day: formattedEnd.getDate() - formattedBegin.getDate(),
-            hour: formattedEnd.getHours() - formattedBegin.getHours(),
-            minute: formattedEnd.getMinutes() - formattedBegin.getMinutes(),
-            second: formattedEnd.getSeconds() - formattedBegin.getSeconds(),
-        }
+        return toSort.sort( (a: CustomDatetimeModel | undefined, b: CustomDatetimeModel | undefined): 1 | -1 | 0 => {
+            if (DateUtil.isBefore( a, b )) {
+                return ascending ? -1 : 1
+            } else if (DateUtil.isCustomDateAfter( a, b )) {
+                return ascending ? 1 : -1
+            } else {
+                return 0
+            }
+        } )
     }
 
     public static isBefore (actual: CustomDatetimeModel | undefined, other: CustomDatetimeModel | undefined): boolean {
@@ -89,9 +70,18 @@ export class DateUtil {
         }
     }
 
-    public static isAfter (actual: CustomDatetimeModel | undefined, other: CustomDatetimeModel | undefined): boolean {
-        const actualDate: number | undefined = DateUtil.toDate( actual )?.getTime()
-        const otherDate: number | undefined = DateUtil.toDate( other )?.getTime()
+    public static isCustomDateAfter (
+        actual: CustomDatetimeModel | undefined,
+        other: CustomDatetimeModel | undefined,
+    ): boolean {
+        return this.isAfter( DateUtil.toDate( actual ), DateUtil.toDate( other ) )
+    }
+
+    public static isAfter (actual: Date | undefined, other: Date | undefined): boolean {
+        if (GenericUtil.isNull( actual ) || GenericUtil.isNull( other )) return false
+        const actualDate: number | undefined = new Date( actual! ).getTime()
+        const otherDate: number | undefined = new Date( other! ).getTime()
+
         switch (true) {
             case GenericUtil.isNull( other ):
                 return false
@@ -217,6 +207,52 @@ export class DateUtil {
         return {
             hours: match[2] ? parseInt( match[2] ) : 0,
             minutes: match[3] ? parseInt( match[3] ) : 0,
+        }
+    }
+
+    public static buildDateInterval (
+        start: Date | undefined,
+        end: Date | undefined,
+    ): IntervalModel | undefined {
+        if (GenericUtil.isNull( start ) || GenericUtil.isNull( end )) return undefined
+
+        const startTime: number = new Date( start! ).getTime()
+        const endTime: number = new Date( end! ).getTime()
+        if (startTime > endTime) return undefined
+
+        const difference: number = new Date( (endTime < 1e12 ? endTime * 1000 : endTime) - (startTime < 1e12 ? startTime * 1000 : startTime) ).getTime()
+        const secondCount: number = Math.floor( difference / 1000 ) % 60
+        const minuteCount: number = Math.floor( difference / (1000 * 60) ) % 60
+        const hourCount: number = Math.floor( difference / (1000 * 60 * 60) ) % 24
+        const dayCount: number = Math.floor( difference / (1000 * 60 * 60 * 24) ) % 30
+        const monthCount: number = Math.floor( difference / (1000 * 60 * 60 * 24 * 30) ) % 12
+        const yearCount: number = Math.floor( difference / (1000 * 60 * 60 * 24 * 30 * 12) )
+
+        return {
+            yearCount: {
+                value: yearCount,
+                label: 'year',
+            },
+            monthCount: {
+                value: monthCount,
+                label: 'month',
+            },
+            dayCount: {
+                value: dayCount,
+                label: 'day',
+            },
+            hourCount: {
+                value: hourCount,
+                label: 'hour',
+            },
+            minuteCount: {
+                value: minuteCount,
+                label: 'minute',
+            },
+            secondCount: {
+                value: secondCount,
+                label: 'second',
+            },
         }
     }
 }

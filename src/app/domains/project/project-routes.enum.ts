@@ -3,6 +3,6 @@ export enum ProjectRoutesEnum {
     EDIT = ':projectId/edit',
     SELECTED = 'selected',
     MOVEMENTS = 'movements',
-    COMMUNICATIONS = 'communications',
+    ALERTS = 'alerts',
     CONFIGURATION = 'configuration',
 }

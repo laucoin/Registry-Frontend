@@ -10,7 +10,7 @@
             <label for='license-plate' appRequired>{{ 'vehicles.form.license-plate' | translate }}</label>
             <p-inputmask mask='aa-999-aa'
                          inputId='license-plate'
-                         styleClass='full-w'
+                         styleClass='w-100'
                          [formControl]='licensePlate'
                          [placeholder]='"vehicles.form.placeholder.license-plate" | translate'
                          (keydown.enter)='submit()' />

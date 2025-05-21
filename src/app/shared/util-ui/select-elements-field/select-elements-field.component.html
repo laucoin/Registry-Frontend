@@ -20,7 +20,7 @@
 <ul class='list-box mt-2 d-flex flex-column justify-content-center'
     [class.invalid]='invalid()'>
     @for (element of (multiple() ? multipleValue() : GenericUtil.nonNull(simpleValue()) ? [ simpleValue() ] : []); track element!.id) {
-        <li class='item list-item full-w d-flex align-items-center justify-content-between' [attr.data-value]='element!.id'>
+        <li class='item list-item w-100 d-flex align-items-center justify-content-between' [attr.data-value]='element!.id'>
             <div class='ms-3'>{{ selectItemBuilder()(element!).label }}</div>
             <p-button icon='pi pi-times'
                       size='small'

@@ -89,11 +89,11 @@ export class NavbarComponent extends GenericComponent {
             requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_MOVEMENT_R,
         },
         {
-            label: 'global.menu.communications',
-            icon: this.iconOption.transform( ProjectOptionEnum.COMMUNICATION ),
-            url: AppRouteEnum.PROJECTS_COMMUNICATIONS,
-            requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_COMMUNICATION_R,
-            requiredProjectOption: ProjectOptionEnum.COMMUNICATION,
+            label: 'global.menu.alerts',
+            icon: this.iconOption.transform( ProjectOptionEnum.ALERT ),
+            url: AppRouteEnum.PROJECTS_ALERTS,
+            requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_ALERT_R,
+            requiredProjectOption: ProjectOptionEnum.ALERT,
         },
         {
             label: 'global.menu.configuration',

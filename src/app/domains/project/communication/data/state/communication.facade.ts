@@ -13,6 +13,7 @@ import {
     FetchCommunication,
     FetchCommunicationsPage,
     ResetCommunication,
+    SearchAlerts,
     SearchMovements,
     StartCommunicationLoader,
     StartCommunicationsPageLoader,
@@ -25,6 +26,7 @@ import { GenericProjectElementFacade } from '../../../../../shared/util-tool/fac
 import { ofActionSuccessful } from '@ngxs/store'
 import { CommunicationDto } from '../dto/communication.dto'
 import { MovementModel } from '../../../../../shared/util-model/model/movement.model'
+import { AlertModel } from '../../../../../shared/util-model/model/alert.model'
 
 
 @Injectable()
@@ -94,6 +96,10 @@ export class CommunicationFacade extends GenericProjectElementFacade {
         return this.ngStore.selectSignal( CommunicationState.searchedMovementsMetadata )
     }
 
+    public get searchedAlertsMetadata (): Signal<SelectItem<AlertModel>[]> {
+        return this.ngStore.selectSignal( CommunicationState.searchedAlertsMetadata )
+    }
+
     public startCommunicationsPageLoader (): void {
         this.ngStore.dispatch( StartCommunicationsPageLoader )
     }
@@ -151,6 +157,12 @@ export class CommunicationFacade extends GenericProjectElementFacade {
         this.ngStore.dispatch( new SearchMovements( this.selectedProjectId(), textSearched ) )
     }
 
+    public searchAlerts (
+        textSearched: string | undefined = undefined,
+    ): void {
+        this.ngStore.dispatch( new SearchAlerts( this.selectedProjectId(), textSearched ) )
+    }
+
     public resetCommunication (): void {
         this.ngStore.dispatch( ResetCommunication )
     }
@@ -171,16 +183,6 @@ export class CommunicationFacade extends GenericProjectElementFacade {
         this.ngStore.dispatch( new CreateCommunication( this.selectedProjectId(), communication ) )
 
         return this.actions$.pipe( ofActionSuccessful( CreateCommunication ) )
-    }
-
-    public handleCommunicationChange (): Observable<CreateCommunication | UpdateCommunication | DisableCommunication | EnableCommunication | DeleteCommunication> {
-        return this.actions$.pipe( ofActionSuccessful(
-            CreateCommunication,
-            UpdateCommunication,
-            DisableCommunication,
-            EnableCommunication,
-            DeleteCommunication,
-        ) )
     }
 
     public updateCommunication (

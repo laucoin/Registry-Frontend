@@ -23,13 +23,13 @@ import { PageEventModel } from '../../util-model/model/page-event.model'
 import { PageModel } from '../../util-model/model/page.model'
 import { RegistryTemplateDirective } from '../../util-tool/directive/registry-template.directive'
 import { ElementSkeletonComponent } from '../element-skeleton/element-skeleton.component'
-import { MessageComponent } from '../message/message.component'
 import { Panel } from 'primeng/panel'
 import { FormsModule } from '@angular/forms'
 import { GenericComponent } from '../../util-tool/component/generic.component'
 import { Skeleton } from 'primeng/skeleton'
 import { DateFormatPipe } from '../../util-tool/pipe/date-format.pipe'
 import { SeverityEnum } from '../../util-model/enumeration/severity.enum'
+import { SeverityInformationComponent } from '../severity-information/severity-information.component'
 
 @Component( {
     selector: 'app-list',
@@ -41,11 +41,11 @@ import { SeverityEnum } from '../../util-model/enumeration/severity.enum'
         NgTemplateOutlet,
         CardModule,
         ElementSkeletonComponent,
-        MessageComponent,
         Panel,
         FormsModule,
         Skeleton,
         DateFormatPipe,
+        SeverityInformationComponent,
     ],
     templateUrl: './list.component.html',
     styleUrl: './list.component.scss',

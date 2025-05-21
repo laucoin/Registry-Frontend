@@ -1,7 +1,6 @@
 <app-element-card [element]='movement()'
                   [actions]='actions()'
                   [actionMenuVisible]='actionMenuVisible()'
-                  (action)='showDialogIfNeeded($event)'
                   [icon]='movement().type.value === MovementTypeEnum.OUT ? "pi pi-arrow-up" : "pi pi-arrow-down"'>
     <div class='element-card'>
         <div class='type d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
@@ -41,73 +40,47 @@
                 }
             </div>
         </div>
-        @if (!!buttonAction()) {
+        @if (reversibleAuthorized()) {
             <div class='d-flex reverse-action' [class.justify-content-center]='registryFacade.tinyScreen()'>
                 @if (total() <= 0) {
                     <p-skeleton width='10rem' borderRadius='1rem' />
                 } @else {
-                    <p-button [icon]='buttonAction()!.icon'
-                              [label]='buttonAction()!.label | translate'
-                              [disabled]='buttonAction()!.disabled'
+                    <p-button [icon]='reversedIcon()'
+                              [label]='("movements.actions.reverse." + movement().type.value) | translate'
                               styleClass='mt-2'
                               severity='info'
                               size='small'
                               outlined
                               rounded
-                              (onClick)='showDialogIfNeededForMovementReverse(movement().content)' />
+                              (onClick)='confirmMovementReversion(movement().content)' />
                 }
             </div>
         }
     </div>
     @if (communication()) {
-        <p-divider />
-        <div class='d-flex flex-wrap'>
-            <div class='field message'>
-                <label for='message'>{{ 'communications.form.message' | translate }}</label>
-                <textarea id='message'
-                          rows='3'
-                          pTextarea
-                          [placeholder]='"communications.form.placeholder.message" | translate'
-                          [formControl]='message'
-                          (keydown.enter)='submitCommunication()'></textarea>
-                <small class='secondary-color'>{{ 'communications.form.hint.message' | translate }}</small>
-                <app-form-field-error [errors]='message.errors'
-                                      [invalid]='FormUtil.invalid(message)'
-                                      translationPrefix='communications.form.error.message' />
-            </div>
-            <div class='communication-actions d-flex flex-wrap align-items-center justify-content-center'>
-                <div class='last-communications d-flex align-items-center justify-content-center'>
-                    <p-button [label]='"movements.communication.last-button" | pluralTranslation: movement().communications | translate'
-                              (onClick)='communicationsLayerOpened = true'
-                              (keydown.enter)='participantsLayerOpened = true'
-                              [disabled]='(movement().communications?.length ?? 0) === 0'
-                              icon='pi pi-history'
-                              size='small'
-                              rounded
-                              outlined
-                              severity='secondary' />
-                </div>
-                <div class='new-communication d-flex align-items-center justify-content-center'>
-                    <p-button (onClick)='submitCommunication()'
-                              [loading]='communicationFacade.communicationLoading()'
-                              rounded
-                              outlined
-                              size='small'
-                              severity='success'>
-                        <i [class]='ProjectOptionEnum.COMMUNICATION | optionIcon'></i>
-                        {{ 'movements.communication.contact-button' | translate }}
-                        @if (lastCommunication()) {
-                            <span class='last-communication-interval'>{{ lastCommunication() }}</span>
+        <div class='mt-3 d-flex align-items-center' [class.justify-content-center]='registryFacade.tinyScreen()'>
+            @if (GenericUtil.nonNull(lastCommunication())) {
+                <div class='me-3 last-communication-interval'>
+                    {{
+                        'movements.last-communication' | translate: {
+                            duration: lastCommunication() | intervalFormat
                         }
-                    </p-button>
+                    }}
                 </div>
-            </div>
+            }
+            <p-button (onClick)='communicationsLayerOpened = true'
+                      [icon]='ProjectOptionEnum.COMMUNICATION | optionIcon'
+                      [label]='"movements.communication.see-communication" | pluralTranslation: movement().communicationsCount | translate'
+                      rounded
+                      outlined
+                      size='small'
+                      severity='info' />
         </div>
     }
 </app-element-card>
 
 <app-layer [(visible)]='participantsLayerOpened'
-           [header]='"movements.content-layer-title" | pluralTranslation: movement().content | translate'>
+           [title]='"movements.content-layer-title" | pluralTranslation: movement().content | translate'>
     <p-tabs [(value)]='participantLayerActiveTab' scrollable class='max-panel-height'>
         <p-tablist>
             <p-tab [value]='1'>
@@ -138,12 +111,12 @@
                 <p-listbox
                         styleClass='max-list-box-height'
                         scrollHeight='100%'
-                        [readonly]='!buttonAction()'
+                        [readonly]='!reversibleAuthorized()'
                         [options]='movement().content'
                         (onClick)='onClickParticipant($event)'
                         optionLabel='name'>
                     <ng-template #item let-content>
-                        <div class='d-flex align-items-center justify-content-between full-w'>
+                        <div class='d-flex align-items-center justify-content-between w-100'>
                             <div class='d-flex align-items-center'>
                                 <p-avatar [icon]='content.vehicle ? (ProjectOptionEnum.VEHICLE | optionIcon) : "pi pi-user"'
                                           class='me-2'
@@ -161,10 +134,10 @@
                                     }
                                 </div>
                             </div>
-                            @if (!!buttonAction()) {
+                            @if (reversibleAuthorized()) {
                                 <div>
-                                    <p-button [icon]='buttonAction()!.icon'
-                                              [disabled]='buttonAction()!.disabled'
+                                    <p-button [icon]='reversedIcon()'
+                                              [label]='("movements.actions.reverse." + movement().type.value) | translate'
                                               styleClass='mt-2'
                                               severity='info'
                                               size='small'
@@ -255,46 +228,72 @@
     </p-tabs>
 </app-layer>
 
-<app-layer [(visible)]='communicationsLayerOpened'
-           [header]='
-           "movements.communication.layer.title" | pluralTranslation: movement().communications | translate: {
-               movement: movement().reason?.label
-           }'>
-    @if (GenericUtil.nonNull(movement().reason)) {
-        <small class='secondary-color'>
-            {{
-                'movements.communication.layer.subtitle' | pluralTranslation: movement().communications | translate: {
-                    movement:
-                    movement().reason?.label
-                }
-            }}
-        </small>
-    }
-    <p-timeline [value]='movement().communications' styleClass='mt-3'>
-        <ng-template #marker let-event>
-            <div class='circle d-flex align-items-center justify-content-center'
-                 [class.secondary]='true'>
-                <i [class]='ProjectOptionEnum.COMMUNICATION | optionIcon'></i>
-            </div>
-        </ng-template>
-        <ng-template #content let-communication>
-            <div class='ps-3'>
-                <b>{{ communication.dateTime | dateFormat: 'datetime' }}</b>
-                <p>
-                    @if (StringUtil.isNotNullNorBlank(communication.message)) {
-                        {{ communication.message }}
-                    } @else {
-                        <small class='secondary-color'>{{ 'movements.communication.no-message' | translate }}</small>
+<p-dialog #dialog
+          modal
+          maximizable
+          appendTo='body'
+          (onShow)='registryFacade.tinyScreen() ? dialog.maximized = true : null'
+          [breakpoints]='breakpoint'
+          [(visible)]='communicationsLayerOpened'>
+    <ng-template #header>
+        <div class='w-100 d-flex align-items-center justify-content-between'>
+            <div class='d-flex flex-column'>
+                <div class='layer-title'>
+                    {{
+                        'movements.communication.layer.title' | pluralTranslation: movement().communicationsCount |
+                            translate: { movement: movement().reason?.label }
+                    }}
+                    @if (lastCommunication()) {
+                        <span class='last-communication-interval'>
+                            ({{
+                                'movements.last-communication' | translate: {
+                                    duration: lastCommunication() | intervalFormat
+                                }
+                            }})
+                        </span>
                     }
-                </p>
+                </div>
+                @if (GenericUtil.nonNull(movement().reason)) {
+                    <small class='mt-2 secondary-color'>
+                        {{
+                            'movements.communication.layer.subtitle' | pluralTranslation: movement().communicationsCount |
+                                translate: {
+                                movement:
+                                movement().reason?.label
+                            }
+                        }}
+                    </small>
+                }
             </div>
-        </ng-template>
-    </p-timeline>
-</app-layer>
+            <p-button
+                    [ariaLabel]='"menu.options" | translate'
+                    (onClick)='$event.stopPropagation(); menu.toggle($event)'
+                    rounded
+                    text
+                    icon='pi pi-ellipsis-v' />
+        </div>
+    </ng-template>
+    @if (communicationsLayerOpened) {
+        <app-movement-communications-list [movement]='movement()' />
+    }
+</p-dialog>
 
-<app-confirmation-dialog
-        [loading]='facade.movementLoading()'
-        [element]='movement()'
-        [action]='action()'
-        (hide)='action.set(undefined)'
-        (handleAction)='handleAction($event)' />
+<p-popover #menu appendTo='body'>
+    @if (actions()!.length > 0) {
+        <p-menu [style]='{
+                    "border-radius": "0",
+                    "border-top": "none",
+                    "border-left": "none",
+                    "border-right": "none"
+                }'
+                (click)='menu.toggle($event)'
+                [model]='actions()'>
+            <ng-template #item let-item>
+                <a pRipple class='d-flex align-items-center py-2 px-3 pointer'>
+                    <span [class]='item.icon'></span>&nbsp;
+                    <span class='ms-2'>{{ item.label | translate }}</span>
+                </a>
+            </ng-template>
+        </p-menu>
+    }
+</p-popover>

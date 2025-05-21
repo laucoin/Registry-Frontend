@@ -7,7 +7,6 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner'
 import { ToastModule } from 'primeng/toast'
 import { map, Subscription } from 'rxjs'
 import { AppConfig } from './app.config'
-import { MessageComponent } from './shared/util-ui/message/message.component'
 import { breakPoint } from './shared/util-tool/util/breakpoint.const'
 import { PrimeNG } from 'primeng/config'
 import { Button } from 'primeng/button'
@@ -17,6 +16,7 @@ import { GenericComponent } from './shared/util-tool/component/generic.component
 import { NavbarComponent } from './shell/navbar/navbar.component'
 import { RouterOutlet } from '@angular/router'
 import { ThemeEnum } from './shared/util-model/enumeration/theme.enum'
+import { SeverityInformationComponent } from './shared/util-ui/severity-information/severity-information.component'
 
 @Component( {
     selector: 'app-root',
@@ -27,12 +27,12 @@ import { ThemeEnum } from './shared/util-model/enumeration/theme.enum'
         ToastModule,
         BlockUIModule,
         ProgressSpinnerModule,
-        MessageComponent,
         Button,
         Dialog,
         Divider,
         NavbarComponent,
         RouterOutlet,
+        SeverityInformationComponent,
     ],
     providers: [ ConfirmationService, MessageService ],
     templateUrl: './app.component.html',
@@ -62,8 +62,8 @@ export class AppComponent extends GenericComponent implements OnDestroy {
     }
 
     private initTranslation (): void {
-        this.translateService.addLangs( AppConfig.config.languages )
-        this.translateService.setDefaultLang( AppConfig.config.defaultLanguage )
+        this.translateService.addLangs( AppConfig.settings.languages )
+        this.translateService.setDefaultLang( AppConfig.settings.defaultLanguage )
         this.translateService.get( 'prime-ng' ).pipe(
             map( (lang: object): void => this.primeConfig.setTranslation( lang ) ),
         ).subscribe()

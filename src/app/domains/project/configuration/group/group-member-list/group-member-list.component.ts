@@ -22,7 +22,6 @@ import { FormFieldErrorComponent } from '../../../../../shared/util-ui/form-fiel
 import { Select } from 'primeng/select'
 import { GenericListComponent } from '../../../../../shared/util-tool/component/generic-list.component'
 import { ParticipantUtil } from '../../../../../shared/util-tool/util/participant.util'
-import { FormUtil } from '../../../../../shared/util-tool/util/form.util'
 import { ParticipantFacade } from '../../participant/data/state/participant.facade'
 import { PluralTranslationPipe } from '../../../../../shared/util-tool/pipe/plural-translation.pipe'
 import { ParticipantFormComponent } from '../../participant/participant-form/participant-form.component'
@@ -59,7 +58,6 @@ export class GroupMemberListComponent extends GenericListComponent implements On
     protected readonly facade: GroupFacade = inject( GroupFacade )
     protected readonly participantFacade: ParticipantFacade = inject( ParticipantFacade )
 
-    protected readonly FormUtil: typeof FormUtil = FormUtil
     protected readonly ParticipantUtil: typeof ParticipantUtil = ParticipantUtil
 
     private readonly subscriptions: Subscription = new Subscription()

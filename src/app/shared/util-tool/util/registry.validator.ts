@@ -37,7 +37,7 @@ export class RegistryValidators {
                                                            ? control.value
                                                            : DateUtil.toCustomDateTime( control.value )
 
-            if (DateUtil.isAfter( value, max )) {
+            if (DateUtil.isCustomDateAfter( value, max )) {
                 return { maxDate: { max: formatedMaxDate } }
             }
 
@@ -144,6 +144,19 @@ export class RegistryValidators {
 
             if (DateUtil.isAfterOrEqual( begin, end )) {
                 return { beginDateBeforeEndDate: true }
+            }
+
+            return null
+        }
+    }
+
+    public static atLeastOneRequired (firstKey: string, secondKey: string): ValidatorFn {
+        return (group: AbstractControl): ValidationErrors | null => {
+            const first: unknown | undefined = group.get( firstKey )?.value
+            const second: unknown | undefined = group.get( secondKey )?.value
+
+            if (GenericUtil.isNull( first ) && GenericUtil.isNull( second )) {
+                return { atLeastOneRequired: true }
             }
 
             return null

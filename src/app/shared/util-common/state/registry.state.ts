@@ -144,7 +144,7 @@ export class RegistryState extends GenericState implements NgxsOnInit {
         ctx.patchState( {
             _metadata: {
                 themes: defaultRegistryState._metadata.themes,
-                languages: AppConfig.config.languages.map( (lang: string): SelectItem<string> => ({
+                languages: AppConfig.settings.languages.map( (lang: string): SelectItem<string> => ({
                     label: 'global.language.' + lang,
                     value: lang,
                 }) ),
@@ -779,6 +779,8 @@ export class RegistryState extends GenericState implements NgxsOnInit {
     private createSupportProjectProfileComplete (
         profile: ProjectProfileModel,
     ): void {
+        this.registryFacade.fetchCurrentUser()
+
         this.buildMessageAndNotify(
             SeverityEnum.SUCCESS,
             'projects.notifications.create-support.title',

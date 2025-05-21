@@ -1,9 +1,7 @@
-<p-confirmDialog [breakpoints]='breakpoint' />
 @if (registryFacade.currentUser()) {
     <app-element-card [element]='profile()'
                       [actionMenuVisible]='actionMenuVisible()'
                       [actions]='actions()'
-                      (action)='showDialogIfNeeded($event)'
                       [icon]='registryFacade.currentUser()!.preferences.selectedProfile?.id === profile().id ? "pi pi-verified" : "pi pi-user"'>
         <div class='element-card'>
             <div class='profile-info d-flex flex-column justify-content-center'>
@@ -34,15 +32,12 @@
             </div>
             @if (profile().status.value !== ProfileStatusEnum.INVITED || profile().user.id !== registryFacade.currentUser()!.id) {
                 <div class='status d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
-                    @if (intervalStatus()) {
-                        <app-severity-tag [severity]='intervalStatus()?.status === IntervalStatusEnum.IN_PROGRESS ? SeverityEnum.SUCCESS : intervalStatus()?.status ===
-                IntervalStatusEnum.FINISHED ? SeverityEnum.WARNING : SeverityEnum.INFO'
-                                          [value]='intervalStatus() | intervalFormat:"project-profiles.status" | translate: { interval:
-                                  buildInterval(intervalStatus()!.interval!) }' />
+                    @if (profile().availabilityStatus) {
+                        <app-severity-tag [severity]='availabilityStatusSeverity()' [value]='profile().availabilityStatus.label' />
                     }
                 </div>
                 <div class='invitation-status d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
-                    <app-severity-tag [severity]='severityFromStatus(profile().status.value)' [value]='profile().status.label!' />
+                    <app-severity-tag [severity]='statusSeverity()' [value]='profile().status.label!' />
                 </div>
             } @else {
                 <div class='invitation-form d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
@@ -68,11 +63,4 @@
             }
         </div>
     </app-element-card>
-
-    <app-confirmation-dialog
-            [loading]='facade.projectProfileLoading()'
-            [element]='profile()'
-            [action]='action()'
-            (hide)='action.set(undefined)'
-            (handleAction)='handleAction($event)' />
 }

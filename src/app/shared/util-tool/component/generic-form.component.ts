@@ -5,14 +5,11 @@ import { Subscription } from 'rxjs'
 import { ProjectModel } from '../../util-model/model/project.model'
 import { RegistryValidators } from '../util/registry.validator'
 import { inject } from '@angular/core'
-import { FormUtil } from '../util/form.util'
 import { CustomDateFormatPipe } from '../pipe/custom-date-format.pipe'
 import { Location } from '@angular/common'
 import { GenericUtil } from '../util/generic.util'
 
 export abstract class GenericFormComponent<M, D> extends GenericComponent {
-    protected readonly FormUtil: typeof FormUtil = FormUtil
-
     protected readonly datePipe: CustomDateFormatPipe = inject( CustomDateFormatPipe )
     private readonly location: Location = inject( Location )
 

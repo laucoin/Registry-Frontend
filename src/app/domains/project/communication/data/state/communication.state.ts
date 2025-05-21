@@ -25,6 +25,7 @@ import {
     FetchCommunicationsPage,
     ResetCommunication,
     ResetCommunicationState,
+    SearchAlerts,
     SearchMovements,
     StartCommunicationLoader,
     StartCommunicationsPageLoader,
@@ -35,6 +36,8 @@ import {
 } from './communication.action'
 import { MovementModel } from '../../../../../shared/util-model/model/movement.model'
 import { MovementUtil } from '../../../../../shared/util-tool/util/movement.util'
+import { AlertModel } from '../../../../../shared/util-model/model/alert.model'
+import { AlertUtil } from '../../../../../shared/util-tool/util/alert.util'
 
 const defaultCommunication: ElementRequestInformationModel<CommunicationModel> = {
     element: undefined,
@@ -58,6 +61,7 @@ const defaultCommunicationState: CommunicationStateModel = {
     communication: defaultCommunication,
     _metadata: {
         searchedMovements: [],
+        searchedAlerts: [],
         visibilities: [
             { label: '-', value: undefined },
             { label: 'communications.visible.true', value: true },
@@ -140,6 +144,11 @@ export class CommunicationState extends GenericProjectElementState<Communication
     @Selector()
     public static searchedMovementsMetadata (state: CommunicationStateModel): SelectItem<MovementModel>[] {
         return state._metadata.searchedMovements
+    }
+
+    @Selector()
+    public static searchedAlertsMetadata (state: CommunicationStateModel): SelectItem<AlertModel>[] {
+        return state._metadata.searchedAlerts
     }
 
     @Selector()
@@ -280,6 +289,32 @@ export class CommunicationState extends GenericProjectElementState<Communication
         } )
     }
 
+    @Action( SearchAlerts )
+    public searchAlerts (
+        ctx: StateContext<CommunicationStateModel>,
+        payload: SearchAlerts,
+    ): Observable<void> {
+        return this.service.searchAlerts( payload.projectId, payload.textSearched ).pipe(
+            initialize( (): void => this.facade.startCommunicationLoader() ),
+            finalize( (): void => this.facade.stopCommunicationLoader() ),
+            map( (alerts: AlertModel[]): void => this.searchAlertsComplete( ctx, alerts ) ),
+        )
+    }
+
+    private searchAlertsComplete (
+        ctx: StateContext<CommunicationStateModel>,
+        alerts: AlertModel[],
+    ): void {
+        ctx.patchState( {
+            _metadata: {
+                ...ctx.getState()._metadata,
+                searchedAlerts: alerts.map( (alert: AlertModel): SelectItem<AlertModel> =>
+                    AlertUtil.toSelectItem( alert, this.datePipe ),
+                ),
+            },
+        } )
+    }
+
     @Action( ResetCommunication )
     public resetCommunication (ctx: StateContext<CommunicationStateModel>): void {
         ctx.patchState( {
@@ -295,21 +330,13 @@ export class CommunicationState extends GenericProjectElementState<Communication
         return this.service.createCommunication( payload.projectId, payload.communication ).pipe(
             initialize( (): void => this.facade.startCommunicationLoader() ),
             finalize( (): void => this.facade.stopCommunicationLoader() ),
-            map( (communication: CommunicationModel): void => this.createCommunicationComplete( ctx, communication ) ),
+            map( (): void => this.createCommunicationComplete( ctx ) ),
         )
     }
 
     private createCommunicationComplete (
         ctx: StateContext<CommunicationStateModel>,
-        communication: CommunicationModel,
     ): void {
-        this.buildMessageAndNotify(
-            SeverityEnum.SUCCESS,
-            `communications.notifications.create.title`,
-            `communications.notifications.create.message`,
-            this.communicationIcon,
-            this.buildTranslationArgs( communication ),
-        )
         this.refreshPage( ctx )
     }
 
@@ -321,21 +348,13 @@ export class CommunicationState extends GenericProjectElementState<Communication
         return this.service.updateCommunicationById( payload.projectId, payload.id, payload.communication ).pipe(
             initialize( (): void => this.facade.startCommunicationLoader() ),
             finalize( (): void => this.facade.stopCommunicationLoader() ),
-            map( (communication: CommunicationModel): void => this.updateCommunicationComplete( ctx, communication ) ),
+            map( (): void => this.updateCommunicationComplete( ctx ) ),
         )
     }
 
     private updateCommunicationComplete (
         ctx: StateContext<CommunicationStateModel>,
-        communication: CommunicationModel,
     ): void {
-        this.buildMessageAndNotify(
-            SeverityEnum.SUCCESS,
-            `communications.notifications.edit.title`,
-            `communications.notifications.edit.message`,
-            this.communicationIcon,
-            this.buildTranslationArgs( communication ),
-        )
         this.refreshPage( ctx )
     }
 

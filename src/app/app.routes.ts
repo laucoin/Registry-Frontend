@@ -24,6 +24,7 @@ export const routes: Routes = [
         component: AuthCallbackComponent,
     },
     {
-        path: '**', pathMatch: 'full', redirectTo: AppRouteEnum.PROJECTS,
+        path: '**',
+        redirectTo: AppRouteEnum.PROJECTS,
     },
 ]

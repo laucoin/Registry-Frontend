@@ -1,64 +1,67 @@
-import { ActionModel } from '../../util-model/model/action.model'
-import { DateIntervalModel } from '../../util-model/model/date-interval.model'
 import { GenericComponent } from './generic.component'
-import { GenericModel } from '../../util-model/model/generic.model'
 import { CurrentUserUtil } from '../../util-authentication/tool/current-user.util'
 import { ProjectModel } from '../../util-model/model/project.model'
-import { FormUtil } from '../util/form.util'
-import { signal, WritableSignal } from '@angular/core'
-import { IntervalStatusEnum } from '../../util-model/enumeration/interval-status.enum'
-import { SeverityEnum } from '../../util-model/enumeration/severity.enum'
+import { inject } from '@angular/core'
 import { ElementActionEnum } from '../../util-model/enumeration/element-action.enum'
+import { Confirmation, ConfirmationService } from 'primeng/api'
+import { ProjectAuthorityEnum } from '../../util-model/enumeration/project-authority.enum'
+import { UserAuthorityEnum } from '../../util-model/enumeration/user-authority.enum'
+import { ProjectOptionEnum } from '../../util-model/enumeration/project-option.enum'
+import { ProjectUtil } from '../util/project.util'
+import { AppConfig } from '../../../app.config'
+import { SeverityEnum } from '../../util-model/enumeration/severity.enum'
 
-export abstract class GenericElementComponent<M extends GenericModel> extends GenericComponent {
-    protected readonly FormUtil: typeof FormUtil = FormUtil
+export abstract class GenericElementComponent extends GenericComponent {
+    protected readonly confirmationService: ConfirmationService = inject( ConfirmationService )
 
-    protected readonly SeverityEnum: typeof SeverityEnum = SeverityEnum
-    protected readonly IntervalStatusEnum: typeof IntervalStatusEnum = IntervalStatusEnum
-
-    public readonly action: WritableSignal<ActionModel | undefined> = signal( undefined )
-
-    protected buildActions (element: M, actions: ActionModel[]): ActionModel[] {
-        return actions
-            .filter( (action: ActionModel): boolean => this.isActionVisible( element, action ) )
-            .map( (action: ActionModel): ActionModel => ({
-                    ...action,
-                    disabled: this.disabledAction( element, action ),
-                }),
-            )
-    }
-
-    protected showDialogIfNeeded (action: ActionModel): void {
-        if (action?.confirmation) {
-            this.action.set( action )
-        } else {
-            this.handleAction( action!.id )
-        }
-    }
-
-    protected abstract isActionVisible (element: M, action: ActionModel): boolean
-
-    protected disabledAction (element: M, action: ActionModel): boolean {
-        return !CurrentUserUtil.isFeasible(
+    protected hasProjectAuthority (
+        authority: ProjectAuthorityEnum,
+        projectId: string | undefined = this.registryFacade.selectedProject()?.id,
+    ): boolean {
+        return CurrentUserUtil.hasProjectAuthority(
             this.registryFacade.currentUser(),
-            'project' in element ? (element.project as ProjectModel) : undefined,
-            action,
+            projectId,
+            authority,
         )
     }
 
-    protected abstract handleAction (action: ElementActionEnum): void
+    protected hasAuthority (authority: UserAuthorityEnum): boolean {
+        return CurrentUserUtil.hasUserAuthority( this.registryFacade.currentUser(), authority )
+    }
 
-    protected buildInterval (interval: DateIntervalModel | undefined): string {
-        let result: string = ''
-        if (!interval) return result
-        Object.entries( interval ).reverse().forEach( ([ key, value ]: [ string, number ]): void => {
-            if (value !== 0) {
-                result = this.translateService.instant(
-                    'global.date-and-time-format.' + key + (value > 1 ? '.few' : '.one'),
-                    { count: value },
-                )
-            }
-        } )
-        return result
+    protected actionIsEnable (action: ElementActionEnum): boolean {
+        return AppConfig.settings.enabledActions.includes( action )
+    }
+
+    protected projectHasOption (
+        option: ProjectOptionEnum,
+        project: ProjectModel | undefined = this.registryFacade.selectedProject(),
+    ): boolean {
+        return ProjectUtil.hasOption( project, option )
+    }
+
+    protected buildConfirmation (
+        translationPrefix: string,
+        icon: string,
+        element: unknown,
+        acceptSeverity: SeverityEnum,
+        accept: () => void,
+    ): Confirmation {
+        return {
+            header: this.translateService.instant( `${translationPrefix}.title`, { element: element } ),
+            message: this.translateService.instant( `${translationPrefix}.message`, { element: element } ),
+            icon: icon,
+            rejectButtonProps: {
+                severity: SeverityEnum.SECONDARY,
+                outlined: true,
+                rounded: true,
+            },
+            acceptButtonProps: {
+                severity: acceptSeverity,
+                outlined: true,
+                rounded: true,
+            },
+            accept: accept,
+        }
     }
 }

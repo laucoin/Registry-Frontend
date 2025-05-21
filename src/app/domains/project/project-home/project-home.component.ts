@@ -8,6 +8,7 @@ import { GenericComponent } from '../../../shared/util-tool/component/generic.co
 import { GenericUtil } from '../../../shared/util-tool/util/generic.util'
 import { ParamMap } from '@angular/router'
 import { toSignal } from '@angular/core/rxjs-interop'
+import { CurrentAlertsComponent } from './current-alerts/current-alerts.component'
 
 @Component( {
     selector: 'app-project-home',
@@ -21,6 +22,7 @@ import { toSignal } from '@angular/core/rxjs-interop'
         DashboardComponent,
         CurrentActivitiesComponent,
         CurrentMovementsComponent,
+        CurrentAlertsComponent,
     ],
     templateUrl: './project-home.component.html',
 } )

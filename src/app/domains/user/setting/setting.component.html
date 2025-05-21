@@ -53,21 +53,14 @@
     <div class='ps-4 pe-4 pt-2 pb-2'>
         <h3>{{ 'settings.danger' | translate }}</h3>
         <div class='field'>
-            <p-button size='small'
+            <p-button id='impersonate'
+                      size='small'
                       severity='danger'
+                      icon='pi pi-eraser'
                       outlined
                       rounded
-                      id='impersonate'
-                      (onClick)='showDialogIfNeeded(impersonate)'
-                      [label]='impersonate.label | translate'
-                      [icon]='impersonate.icon' />
+                      (onClick)='confirmImpersonate()'
+                      [label]='"settings.actions.impersonate" | translate' />
         </div>
     </div>
 </p-card>
-
-<app-confirmation-dialog
-        [loading]='registryFacade.currentUserActionLoading()'
-        [element]='registryFacade.currentUser()!'
-        [action]='action()'
-        (hide)='action.set(undefined)'
-        (handleAction)='handleAction($event)' />

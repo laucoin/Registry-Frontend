@@ -54,8 +54,8 @@ export class SelectElementsFieldComponent<T extends BaseModel> implements Contro
     public readonly invalid: InputSignal<boolean> = input( false )
     public readonly fluid: InputSignal<boolean> = input( false )
     public readonly placeholder: InputSignal<string | undefined> = input()
-    public readonly selectionLabel: InputSignal<string | undefined> = input<string | undefined>( undefined )
-    public readonly emptyMessage: InputSignal<string | undefined> = input<string | undefined>( undefined )
+    public readonly selectionLabel: InputSignal<string | undefined> = input<string | undefined>()
+    public readonly emptyMessage: InputSignal<string | undefined> = input<string | undefined>()
 
     protected readonly value: WritableSignal<T | T[] | undefined> = signal( undefined )
     protected readonly multipleValue: Signal<T[]> = computed( (): T[] => {

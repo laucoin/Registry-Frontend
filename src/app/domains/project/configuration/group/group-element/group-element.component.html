@@ -1,7 +1,6 @@
 <app-element-card [element]='group()'
                   [actionMenuVisible]='actionMenuVisible()'
                   [actions]='actions()'
-                  (action)='showDialogIfNeeded($event)'
                   icon='pi pi-users'>
     <div class='element-card'>
         <div class='group-info'>
@@ -33,19 +32,9 @@
              {{ group().outsideMembersCount }})
         </div>
         <div class='status d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
-            @if (intervalStatus()) {
-                <app-severity-tag [severity]='intervalStatus()?.status === IntervalStatusEnum.IN_PROGRESS ? SeverityEnum.SUCCESS : intervalStatus()?.status ===
-                IntervalStatusEnum.FINISHED ? SeverityEnum.WARNING : SeverityEnum.INFO'
-                                  [value]='intervalStatus() | intervalFormat:"groups.status" | translate: { interval:
-                                  buildInterval(intervalStatus()!.interval!) }' />
+            @if (group().status) {
+                <app-severity-tag [severity]='statusSeverity()' [value]='group().status!.label' />
             }
         </div>
     </div>
 </app-element-card>
-
-<app-confirmation-dialog
-        [loading]='facade.groupLoading()'
-        [element]='group()'
-        [action]='action()'
-        (hide)='action.set(undefined)'
-        (handleAction)='handleAction($event)' />

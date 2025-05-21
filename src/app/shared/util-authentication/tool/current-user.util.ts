@@ -16,20 +16,11 @@ export class CurrentUserUtil {
         if (GenericUtil.isNull( currentUser ) || (!project && (actionableItem.requiredProjectOption || actionableItem.requiredProjectAuthority))) return false
 
         return ProjectUtil.hasOption( project, actionableItem.requiredProjectOption ) &&
-               CurrentUserUtil.hasAuthority( currentUser!, actionableItem.requiredUserAuthority ) &&
-               CurrentUserUtil.hasAuthority(
+               this.hasAuthority( currentUser!, actionableItem.requiredUserAuthority ) &&
+               this.hasAuthority(
                    currentUser!,
                    this.buildAuthority( actionableItem.requiredProjectAuthority, project?.id ),
                )
-    }
-
-    public static hasUserAuthority (
-        currentUser: CurrentUserModel | undefined,
-        authority: UserAuthorityEnum,
-    ): boolean {
-        if (GenericUtil.isNull( currentUser )) return false
-
-        return CurrentUserUtil.hasAuthority( currentUser!, authority )
     }
 
     public static hasProjectAuthority (
@@ -41,7 +32,7 @@ export class CurrentUserUtil {
 
         if (GenericUtil.isNull( currentUser ) || !projectId) return false
 
-        return CurrentUserUtil.hasAuthority( currentUser!, this.buildAuthority( authority, id ) )
+        return this.hasAuthority( currentUser!, this.buildAuthority( authority, id ) )
     }
 
     private static buildAuthority (
@@ -53,7 +44,16 @@ export class CurrentUserUtil {
         return `${id}_${requiredAuthority}`
     }
 
-    public static hasAuthority (
+    public static hasUserAuthority (
+        currentUser: CurrentUserModel | undefined,
+        authority: UserAuthorityEnum,
+    ): boolean {
+        if (GenericUtil.isNull( currentUser )) return false
+
+        return this.hasAuthority( currentUser!, authority )
+    }
+
+    private static hasAuthority (
         currentUser: CurrentUserModel | undefined,
         authority: UserAuthorityEnum | string | undefined,
     ): boolean {

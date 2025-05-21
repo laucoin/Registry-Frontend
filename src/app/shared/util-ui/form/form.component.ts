@@ -15,5 +15,5 @@ export class FormComponent {
     public readonly loading: InputSignal<boolean> = input.required()
     public readonly form: InputSignal<FormGroup> = input.required()
     public readonly showTitle: InputSignal<boolean> = input<boolean>( true )
-    public readonly title: InputSignal<string | undefined> = input<string | undefined>( undefined )
+    public readonly title: InputSignal<string | undefined> = input<string | undefined>()
 }

@@ -9,12 +9,11 @@ import { GenericFacade } from '../../../../../shared/util-tool/facade/generic.fa
 import { SelectedProjectState } from './selected-project.state'
 import { RegistryState } from '../../../../../shared/util-common/state/registry.state'
 import {
+    FetchCurrentAlertsPage,
     FetchCurrentMovementsPageWithActivity,
     FetchCurrentMovementsPageWithoutActivity,
     FetchCurrentMovementsWithActivityContents,
-    FetchCurrentMovementsWithActivityLastCommunications,
     FetchCurrentMovementsWithoutActivityContents,
-    FetchCurrentMovementsWithoutActivityLastCommunications,
     FetchParticipantsBirthdays,
     FetchParticipantsStatus,
     FetchVehiclesStatus,
@@ -31,6 +30,7 @@ import { ParticipantModel } from '../../../../../shared/util-model/model/partici
 import { ProjectUtil } from '../../../../../shared/util-tool/util/project.util'
 import { ProjectOptionEnum } from '../../../../../shared/util-model/enumeration/project-option.enum'
 import { ProjectModel } from '../../../../../shared/util-model/model/project.model'
+import { AlertModel } from '../../../../../shared/util-model/model/alert.model'
 
 @Injectable()
 export class SelectedProjectFacade extends GenericFacade {
@@ -126,6 +126,14 @@ export class SelectedProjectFacade extends GenericFacade {
         )
     }
 
+    public get currentAlertsPageError (): Signal<ToastMessageOptions | undefined> {
+        return this.ngStore.selectSignal( SelectedProjectState.currentAlertsPageError )
+    }
+
+    public get currentAlertsPage (): Signal<PageModel<AlertModel> | undefined> {
+        return this.ngStore.selectSignal( SelectedProjectState.currentAlertsPage )
+    }
+
     public startParticipantsStatusLoader (): void {
         this.ngStore.dispatch( StartParticipantsStatusLoader )
     }
@@ -195,30 +203,9 @@ export class SelectedProjectFacade extends GenericFacade {
         ) )
     }
 
-    public fetchCurrentMovementsWithoutActivityDetails (movementIds: string[], communicable: boolean): void {
+    public fetchCurrentMovementsWithoutActivityDetails (movementIds: string[]): void {
         const project: ProjectModel | undefined = this.ngStore.selectSignal( RegistryState.currentUserSelectedProject )()
-        const actions: object[] = [
-            new FetchCurrentMovementsWithoutActivityContents( project?.id, movementIds ),
-        ]
-
-        if (ProjectUtil.hasOption( project, ProjectOptionEnum.COMMUNICATION ) && communicable) {
-            actions.push( new FetchCurrentMovementsWithoutActivityLastCommunications( project?.id, movementIds ) )
-        }
-
-        this.ngStore.dispatch( actions )
-    }
-
-    public fetchCurrentMovementsPageWithoutActivityCommunicationsIfNecessary (
-        movementIds: string[],
-        communicable: boolean,
-    ): void {
-        const project: ProjectModel | undefined = this.ngStore.selectSignal( RegistryState.currentUserSelectedProject )()
-        if (ProjectUtil.hasOption( project, ProjectOptionEnum.COMMUNICATION ) && communicable) {
-            this.ngStore.dispatch( new FetchCurrentMovementsWithoutActivityLastCommunications(
-                project?.id,
-                movementIds,
-            ) )
-        }
+        this.ngStore.dispatch( new FetchCurrentMovementsWithoutActivityContents( project?.id, movementIds ) )
     }
 
     public startCurrentMovementsPageWithActivityLoader (): void {
@@ -242,26 +229,21 @@ export class SelectedProjectFacade extends GenericFacade {
         ) )
     }
 
-    public fetchCurrentMovementsWithActivityDetails (movementIds: string[], communicable: boolean): void {
+    public fetchCurrentMovementsWithActivityDetails (movementIds: string[]): void {
         const project: ProjectModel | undefined = this.ngStore.selectSignal( RegistryState.currentUserSelectedProject )()
-        const actions: object[] = [
-            new FetchCurrentMovementsWithActivityContents( project?.id, movementIds ),
-        ]
-
-        if (ProjectUtil.hasOption( project, ProjectOptionEnum.COMMUNICATION ) && communicable) {
-            actions.push( new FetchCurrentMovementsWithActivityLastCommunications( project?.id, movementIds ) )
-        }
-
-        this.ngStore.dispatch( actions )
+        this.ngStore.dispatch( new FetchCurrentMovementsWithActivityContents( project?.id, movementIds ) )
     }
 
-    public fetchCurrentMovementsPageWithActivityCommunicationsIfNecessary (
-        movementIds: string[],
-        communicable: boolean,
+    public fetchCurrentAlertsPage (
+        pageNumber: number | undefined,
+        pageSize: number | undefined,
+        force: boolean,
     ): void {
-        const project: ProjectModel | undefined = this.ngStore.selectSignal( RegistryState.currentUserSelectedProject )()
-        if (ProjectUtil.hasOption( project, ProjectOptionEnum.COMMUNICATION ) && communicable) {
-            this.ngStore.dispatch( new FetchCurrentMovementsWithActivityLastCommunications( project?.id, movementIds ) )
-        }
+        this.ngStore.dispatch( new FetchCurrentAlertsPage(
+            this.ngStore.selectSignal( RegistryState.currentUserSelectedProjectId )(),
+            pageNumber,
+            pageSize,
+            force,
+        ) )
     }
 }

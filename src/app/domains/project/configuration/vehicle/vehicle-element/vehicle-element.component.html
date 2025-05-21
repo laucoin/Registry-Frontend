@@ -1,7 +1,6 @@
 <app-element-card [element]='vehicle()'
                   [actions]='actions()'
                   [actionMenuVisible]='actionMenuVisible()'
-                  (action)='showDialogIfNeeded($event)'
                   [icon]='ProjectOptionEnum.VEHICLE | optionIcon'>
     <div class='element-card'>
         <div class='vehicle-info d-flex flex-column justify-content-center'>
@@ -32,10 +31,3 @@
         </div>
     </div>
 </app-element-card>
-
-<app-confirmation-dialog
-        [loading]='facade.vehicleLoading()'
-        [element]='vehicle()'
-        [action]='action()'
-        (hide)='action.set(undefined)'
-        (handleAction)='handleAction($event)' />
