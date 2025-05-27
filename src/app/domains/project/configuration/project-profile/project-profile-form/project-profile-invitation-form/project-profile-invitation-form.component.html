@@ -71,6 +71,7 @@
                                            [selectionLabel]='"project-profiles.form.users.selected" | pluralTranslation:
                                            (users.value?.length ?? 0) | translate'
                                            [emptyMessage]='"project-profiles.form.users.empty" | translate'
+                                           [emptySelectionMessage]='"project-profiles.form.users.empty-search" | translate'
                                            [suggestions]='facade.searchedUsersMetadata()'
                                            [selectItemBuilder]='UserUtil.toSelectItem'
                                            inputId='users'

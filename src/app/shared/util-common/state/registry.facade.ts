@@ -96,7 +96,18 @@ export class RegistryFacade extends GenericFacade {
     }
 
     public get logoPath (): Signal<string> {
-        return computed( (): string => this.theme() === ThemeEnum.LIGHT ? AppConfig.settings.logo.light : AppConfig.settings.logo.dark )
+        return computed( (): string => {
+            switch (true) {
+                case this.theme() === ThemeEnum.DARK && this.tinyScreen():
+                    return AppConfig.settings.logo.small.dark
+                case this.theme() === ThemeEnum.DARK && !this.tinyScreen():
+                    return AppConfig.settings.logo.normal.dark
+                case this.theme() === ThemeEnum.LIGHT && this.tinyScreen():
+                    return AppConfig.settings.logo.small.light
+                default:
+                    return AppConfig.settings.logo.normal.light
+            }
+        } )
     }
 
     public get notification (): Observable<ToastMessageOptions | undefined> {

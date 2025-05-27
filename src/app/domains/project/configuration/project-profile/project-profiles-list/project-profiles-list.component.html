@@ -1,7 +1,8 @@
 <app-list (updateRequired)='loadPage($event)'
           [elementPage]='facade.projectProfilesPage()'
           [error]='facade.projectProfilesPageError()'
-          [loading]='facade.projectProfilesPageLoading()'>
+          [loading]='facade.projectProfilesPageLoading()'
+          emptyMessagePrefix='project-profiles.notifications.EMPTY'>
     <ng-template appTemplate='search' [formGroup]='form' let-pageEvent>
         <div class='d-grid search-line'>
             <div class='field'>

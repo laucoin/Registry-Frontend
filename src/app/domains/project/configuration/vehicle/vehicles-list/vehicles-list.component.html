@@ -1,7 +1,8 @@
 <app-list (updateRequired)='loadPage($event)'
           [elementPage]='facade.vehiclesPage()'
           [error]='facade.vehiclesPageError()'
-          [loading]='facade.vehiclesPageLoading()'>
+          [loading]='facade.vehiclesPageLoading()'
+          emptyMessagePrefix='vehicles.notifications.EMPTY'>
     <ng-template appTemplate='search' [formGroup]='form' let-pageEvent>
         <div class='d-grid search-line'>
             <div class='field'>

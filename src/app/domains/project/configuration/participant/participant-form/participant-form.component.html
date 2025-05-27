@@ -130,7 +130,8 @@
                                            [selectItemBuilder]='GroupUtil.toSelectItem'
                                            [selectionLabel]='"participants.form.groups.selected" | pluralTranslation:
                                            (groups.value?.length ?? 0) | translate'
-                                           [emptyMessage]='"participants.form.groups.empty" | translate'
+                                           [emptyMessage]='"participants.form.groups.empty-search" | translate'
+                                           [emptySelectionMessage]='"participants.form.groups.empty" | translate'
                                            [suggestions]='facade.searchedGroupsMetadata()'
                                            inputId='groups'
                                            (handleSearch)='handleGroupSearch($event)' />

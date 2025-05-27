@@ -56,7 +56,7 @@ export class ProjectFacade extends GenericFacade {
         return computed( (): Date | undefined => DateUtil.buildDate( this.ngStore.selectSignal( ProjectState.projectsPageDateTimeSearchedParam )() ) )
     }
 
-    public get projectsPageWithParamSearchedParam (): Signal<boolean | undefined> {
+    public get projectsPageWithProfileSearchedParam (): Signal<boolean | undefined> {
         return this.ngStore.selectSignal( ProjectState.projectsPageWithProfileSearchedParam )
     }
 
@@ -122,7 +122,7 @@ export class ProjectFacade extends GenericFacade {
     ): void {
         const resetSearch: boolean = this.projectsPageTextSearchedParam() != textSearched
                                      || this.projectsPageDateTimeSearchedParam() != dateTimeSearched?.toISOString()
-                                     || this.projectsPageWithParamSearchedParam() != withProfile
+                                     || this.projectsPageWithProfileSearchedParam() != withProfile
                                      || this.projectsPageVisibilitySearchedParam() != visibilitySearched
 
         if (resetSearch) {

@@ -40,7 +40,6 @@
     .datetime,
     .content,
     .reverse-action,
-    .last-communications,
     .new-communication {
         flex-basis: 50%;
     }
@@ -70,7 +69,6 @@
     .communication-actions {
         flex-basis: 30%;
 
-        .last-communications,
         .new-communication {
             flex-basis: 100%;
         }
@@ -83,11 +81,6 @@
 
 ::ng-deep .p-timeline-left .p-timeline-event-opposite {
     flex: 0;
-}
-
-.last-communication-interval {
-    font-weight: bolder;
-    font-size:   1rem;
 }
 
 .circle {

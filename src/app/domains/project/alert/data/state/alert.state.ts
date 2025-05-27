@@ -10,7 +10,6 @@ import {
 } from '../../../../../shared/util-model/model/element-request-information.model'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { ErrorModel } from '../../../../../shared/util-model/model/error.model'
-import { DateFormatPipe } from '../../../../../shared/util-tool/pipe/date-format.pipe'
 import { SeverityEnum } from '../../../../../shared/util-model/enumeration/severity.enum'
 import { AlertFacade } from './alert.facade'
 import { AlertModel } from '../../../../../shared/util-model/model/alert.model'
@@ -40,7 +39,6 @@ import {
     UpdateAlertStatus,
 } from './alert.action'
 import { MetadataService } from '../../../../../shared/util-common/state/metadata.service'
-import { CommunicationService } from '../../../communication/data/state/communication.service'
 import { CommunicationModel } from '../../../communication/data/model/communication.model'
 
 const defaultAlert: ElementRequestInformationModel<AlertModel> = {
@@ -97,10 +95,8 @@ export class AlertState extends GenericProjectElementState<AlertStateModel> impl
 
     public constructor (
         private readonly service: AlertService,
-        private readonly communicationService: CommunicationService,
         private readonly metadataService: MetadataService,
         private readonly facade: AlertFacade,
-        private readonly datePipe: DateFormatPipe,
     ) {
         super()
     }
@@ -226,7 +222,13 @@ export class AlertState extends GenericProjectElementState<AlertStateModel> impl
 
     @Action( ResetAlertState )
     public resetAlertState (ctx: StateContext<AlertStateModel>): void {
-        ctx.setState( defaultAlertState )
+        ctx.setState( {
+            ...defaultAlertState,
+            _metadata: {
+                ...defaultAlertState._metadata,
+                status: ctx.getState()._metadata.status,
+            },
+        } )
     }
 
     @Action( FetchAlertStatus )
@@ -598,7 +600,8 @@ export class AlertState extends GenericProjectElementState<AlertStateModel> impl
 
     private buildTranslationArgs (alert: AlertModel): object {
         return {
-            datetime: this.datePipe.transform( alert?.dateTime, 'datetime' ),
+            title: alert?.title,
+            status: alert?.status?.label,
         }
     }
 

@@ -1,7 +1,8 @@
 <app-list (updateRequired)='loadPage($event)'
           [elementPage]='facade.alertsPage()'
           [error]='facade.alertsPageError()'
-          [loading]='facade.alertsPageLoading()'>
+          [loading]='facade.alertsPageLoading()'
+          emptyMessagePrefix='alerts.notifications.EMPTY'>
     <ng-template appTemplate='search' [formGroup]='form' let-pageEvent>
         <div class='field'>
             <label for='text-search-field'>{{ 'alerts.search-and-filter.text' | translate }}</label>

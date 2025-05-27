@@ -267,7 +267,14 @@ export class MovementState extends GenericProjectElementState<MovementStateModel
 
     @Action( ResetMovementState )
     public resetMovementState (ctx: StateContext<MovementStateModel>): void {
-        ctx.setState( defaultMovementState )
+        ctx.setState( {
+            ...defaultMovementState,
+            _metadata: {
+                ...defaultMovementState._metadata,
+                participantTypes: ctx.getState()._metadata.participantTypes,
+                types: ctx.getState()._metadata.types,
+            },
+        } )
     }
 
     @Action( FetchMovementTypes )

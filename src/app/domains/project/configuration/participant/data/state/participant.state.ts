@@ -235,7 +235,13 @@ export class ParticipantState extends GenericProjectElementState<ParticipantStat
 
     @Action( ResetParticipantState )
     public resetParticipantState (ctx: StateContext<ParticipantStateModel>): void {
-        ctx.setState( defaultParticipantState )
+        ctx.setState( {
+            ...defaultParticipantState,
+            _metadata: {
+                ...defaultParticipantState._metadata,
+                presencesStatus: ctx.getState()._metadata.presencesStatus,
+            },
+        } )
     }
 
     @Action( FetchParticipantPresencesStatus )

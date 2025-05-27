@@ -20,6 +20,8 @@ import { CurrentUserUtil } from '../../shared/util-authentication/tool/current-u
 import { TruncatePipe } from '../../shared/util-tool/pipe/truncate.pipe'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { ProjectOptionIconPipe } from '../../shared/util-tool/pipe/project-option-icon.pipe'
+import { Dialog } from 'primeng/dialog'
+import { InfoComponent } from '../info/info.component'
 
 @Component( {
     selector: 'app-navbar',
@@ -34,6 +36,8 @@ import { ProjectOptionIconPipe } from '../../shared/util-tool/pipe/project-optio
         Ripple,
         Button,
         TruncatePipe,
+        Dialog,
+        InfoComponent,
     ],
     templateUrl: './navbar.component.html',
     styleUrl: './navbar.component.scss',
@@ -42,7 +46,7 @@ export class NavbarComponent extends GenericComponent {
     private readonly iconOption: ProjectOptionIconPipe = inject( ProjectOptionIconPipe )
 
     protected readonly maxMenuTextLength: number = 26
-    protected readonly userMenuItems: MenuItem[] = [
+    protected readonly userMenuItems: Signal<MenuItem[]> = computed( (): MenuItem[] => [
         {
             label: this.translateService.instant( 'global.menu.profiles' ),
             icon: 'pi pi-unlock',
@@ -58,7 +62,17 @@ export class NavbarComponent extends GenericComponent {
             icon: 'pi pi-cog',
             url: AppRouteEnum.USERS_SETTINGS,
         },
-    ]
+        {
+            label: this.translateService.instant( 'global.menu.help' ),
+            icon: 'pi pi-question-circle',
+            visible: this.registryFacade.tinyScreen(),
+            command: (): void => {
+                this.helpDialogOpened = true
+            },
+        },
+    ] )
+
+    protected helpDialogOpened: boolean = false
 
     private readonly allMenuItems: Signal<MenuItemModel[]> = signal( [
         {
@@ -201,7 +215,7 @@ export class NavbarComponent extends GenericComponent {
     public handleWindowScroll (): void {
         const currentScrollPosition: number = window.pageYOffset || document.documentElement.scrollTop
 
-        if (currentScrollPosition > this.lastScrollPosition() && currentScrollPosition > 0) {
+        if (currentScrollPosition > this.lastScrollPosition() && currentScrollPosition > 25) {
             // Scrolling DOWN
             this.showNavbar.set( false )
         } else {

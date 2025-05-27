@@ -29,7 +29,6 @@ import { GenericComponent } from '../../util-tool/component/generic.component'
 import { Skeleton } from 'primeng/skeleton'
 import { DateFormatPipe } from '../../util-tool/pipe/date-format.pipe'
 import { SeverityEnum } from '../../util-model/enumeration/severity.enum'
-import { SeverityInformationComponent } from '../severity-information/severity-information.component'
 
 @Component( {
     selector: 'app-list',
@@ -45,7 +44,7 @@ import { SeverityInformationComponent } from '../severity-information/severity-i
         FormsModule,
         Skeleton,
         DateFormatPipe,
-        SeverityInformationComponent,
+
     ],
     templateUrl: './list.component.html',
     styleUrl: './list.component.scss',
@@ -60,8 +59,7 @@ export class ListComponent<T extends GenericModel> extends GenericComponent {
     public readonly elementPage: InputSignal<PageModel<T> | undefined> = input.required()
     public readonly loading: InputSignal<boolean> = input.required()
     public readonly error: InputSignal<ToastMessageOptions | undefined> = input.required()
-    public readonly warningTitle: InputSignal<string | undefined> = input()
-    public readonly warningMessage: InputSignal<string | undefined> = input()
+    public readonly emptyMessagePrefix: InputSignal<string> = input( 'global.notifications.EMPTY' )
 
     public readonly updateRequired: OutputEmitterRef<PageEventModel> = output()
 
@@ -70,8 +68,8 @@ export class ListComponent<T extends GenericModel> extends GenericComponent {
 
         this.message = computed( () => ({
             severity: SeverityEnum.WARNING,
-            summary: this.warningTitle() ?? 'global.notifications.EMPTY.title',
-            detail: this.warningMessage() ?? 'global.notifications.EMPTY.message',
+            summary: `${this.emptyMessagePrefix()}.title`,
+            detail: `${this.emptyMessagePrefix()}.message`,
         }) )
     }
 

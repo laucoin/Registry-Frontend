@@ -131,6 +131,7 @@
                                 <app-movement-content-field [formControl]='participantContent'
                                                             [invalid]='FormUtil.invalid(participantContent)'
                                                             [suggestions]='facade.searchedParticipantAndGroupMetadata()'
+                                                            [interpretedMovementType]='interpretedMovementType()'
                                                             [selectionLabel]='"movements.form.content.registered.selected" | pluralTranslation: participantContent.value | translate'
                                                             [emptyMessage]='"movements.form.content.registered.empty" | translate'
                                                             [fluid]='true'
@@ -284,7 +285,21 @@
                                     <div class='mt-2' [formGroup]='vehicleDriverFormGroup($index)'>
                                         <div class='field'>
                                             <p-inputgroup>
-                                                <p-inputgroup-addon>{{ VehicleUtil.toSelectItem(vehicle($index).value).label }}</p-inputgroup-addon>
+                                                <p-inputgroup-addon>
+                                                    {{ VehicleUtil.toSelectItem(vehicle($index).value).label }}
+                                                    @if (interpretedMovementType().includes(vehicle($index).value?.status.value)) {
+                                                        <div class='warning-tips'>
+                                                            <i class='pi pi-exclamation-triangle'></i>
+                                                            @if (!registryFacade.tinyScreen()) {
+                                                                <span class='ms-2'>{{
+                                                                        ('movements.form.warning.vehicle.' +
+                                                                         vehicle($index).value.status.value) |
+                                                                            translate
+                                                                    }}</span>
+                                                            }
+                                                        </div>
+                                                    }
+                                                </p-inputgroup-addon>
                                                 <p-select [inputId]='"driver_" + $index' fluid
                                                           [options]='drivers()'
                                                           [formControl]='control'

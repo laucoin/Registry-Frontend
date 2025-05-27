@@ -59,18 +59,9 @@
     </div>
     @if (communication()) {
         <div class='mt-3 d-flex align-items-center' [class.justify-content-center]='registryFacade.tinyScreen()'>
-            @if (GenericUtil.nonNull(lastCommunication())) {
-                <div class='me-3 last-communication-interval'>
-                    {{
-                        'movements.last-communication' | translate: {
-                            duration: lastCommunication() | intervalFormat
-                        }
-                    }}
-                </div>
-            }
             <p-button (onClick)='communicationsLayerOpened = true'
                       [icon]='ProjectOptionEnum.COMMUNICATION | optionIcon'
-                      [label]='"movements.communication.see-communication" | pluralTranslation: movement().communicationsCount | translate'
+                      [label]='"movements.communication.see-communication" | translate'
                       rounded
                       outlined
                       size='small'
@@ -240,24 +231,13 @@
             <div class='d-flex flex-column'>
                 <div class='layer-title'>
                     {{
-                        'movements.communication.layer.title' | pluralTranslation: movement().communicationsCount |
-                            translate: { movement: movement().reason?.label }
+                        'movements.communication.layer.title' | translate: { movement: movement().reason?.label }
                     }}
-                    @if (lastCommunication()) {
-                        <span class='last-communication-interval'>
-                            ({{
-                                'movements.last-communication' | translate: {
-                                    duration: lastCommunication() | intervalFormat
-                                }
-                            }})
-                        </span>
-                    }
                 </div>
                 @if (GenericUtil.nonNull(movement().reason)) {
                     <small class='mt-2 secondary-color'>
                         {{
-                            'movements.communication.layer.subtitle' | pluralTranslation: movement().communicationsCount |
-                                translate: {
+                            'movements.communication.layer.subtitle' | translate: {
                                 movement:
                                 movement().reason?.label
                             }

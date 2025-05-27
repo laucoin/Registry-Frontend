@@ -361,28 +361,6 @@ export class SelectedProjectState extends GenericState {
         } )
     }
 
-    @Action( FetchParticipantsBirthdays )
-    public fetchParticipantsBirthdays (
-        ctx: StateContext<SelectedProjectStateModel>,
-        payload: FetchParticipantsStatus,
-    ): Observable<void> {
-        return this.participantService.findParticipantsBirthdays( payload.projectId ).pipe(
-            map( (participants: ParticipantModel[]): void => this.fetchParticipantsBirthdaysComplete(
-                ctx,
-                participants,
-            ) ),
-        )
-    }
-
-    private fetchParticipantsBirthdaysComplete (
-        ctx: StateContext<SelectedProjectStateModel>,
-        participants: ParticipantModel[],
-    ): void {
-        ctx.patchState( {
-            birthdays: participants,
-        } )
-    }
-
     private fetchVehiclesStatusError (
         ctx: StateContext<SelectedProjectStateModel>,
         error: ErrorModel,
@@ -408,6 +386,28 @@ export class SelectedProjectState extends GenericState {
         }
 
         return of()
+    }
+
+    @Action( FetchParticipantsBirthdays )
+    public fetchParticipantsBirthdays (
+        ctx: StateContext<SelectedProjectStateModel>,
+        payload: FetchParticipantsStatus,
+    ): Observable<void> {
+        return this.participantService.findParticipantsBirthdays( payload.projectId ).pipe(
+            map( (participants: ParticipantModel[]): void => this.fetchParticipantsBirthdaysComplete(
+                ctx,
+                participants,
+            ) ),
+        )
+    }
+
+    private fetchParticipantsBirthdaysComplete (
+        ctx: StateContext<SelectedProjectStateModel>,
+        participants: ParticipantModel[],
+    ): void {
+        ctx.patchState( {
+            birthdays: participants,
+        } )
     }
 
     @Action( StartCurrentMovementsPageWithoutActivityLoader )

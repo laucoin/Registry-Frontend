@@ -3,8 +3,14 @@ import { ElementActionEnum } from '../../util-model/enumeration/element-action.e
 export interface ContextConfigModel {
     theme: unknown
     logo: {
-        light: string
-        dark: string
+        normal: {
+            light: string
+            dark: string
+        }
+        small: {
+            light: string
+            dark: string
+        }
     }
     defaultLanguage: string
     maintainerEmail: string

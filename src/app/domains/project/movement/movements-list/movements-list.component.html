@@ -1,7 +1,8 @@
 <app-list (updateRequired)='loadPage($event)'
           [elementPage]='facade.movementsPage()'
           [error]='facade.movementsPageError()'
-          [loading]='facade.movementsPageLoading()'>
+          [loading]='facade.movementsPageLoading()'
+          emptyMessagePrefix='movements.notifications.EMPTY'>
     <ng-template appTemplate='search' [formGroup]='form' let-pageEvent>
         <div class='d-grid search-line'>
             <div class='field'>

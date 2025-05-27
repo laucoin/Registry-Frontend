@@ -32,8 +32,6 @@ import { MovementContentDto } from '../../../domains/project/movement/data/dto/m
 import { GenericUtil } from '../../util-tool/util/generic.util'
 import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { RegistryValidators } from '../../util-tool/util/registry.validator'
-import { toSignal } from '@angular/core/rxjs-interop'
-import { interval, map } from 'rxjs'
 import { MenuItem } from 'primeng/api'
 import { Dialog } from 'primeng/dialog'
 import { Menu } from 'primeng/menu'
@@ -42,9 +40,6 @@ import { Ripple } from 'primeng/ripple'
 import {
     MovementCommunicationsListComponent,
 } from '../../../domains/project/movement/movement-communications-list/movement-communications-list.component'
-import { IntervalModel } from '../../util-model/model/interval.model'
-import { DateUtil } from '../../util-tool/util/date.util'
-import { IntervalPipe } from '../../util-tool/pipe/interval.pipe'
 
 @Component( {
     selector: 'app-movement-element',
@@ -79,7 +74,6 @@ import { IntervalPipe } from '../../util-tool/pipe/interval.pipe'
         Popover,
         Ripple,
         MovementCommunicationsListComponent,
-        IntervalPipe,
     ],
     templateUrl: './movement-element.component.html',
     styleUrl: './movement-element.component.scss',
@@ -191,7 +185,6 @@ export class MovementElementComponent extends GenericElementComponent {
         }
         return text
     } )
-    protected readonly lastCommunication: Signal<IntervalModel | undefined> = toSignal( interval( 1000 ).pipe( map( (): IntervalModel | undefined => this.getLastCommunicationInterval() ) ) )
     protected readonly total: Signal<number> = computed( (): number => this.movement().content.length )
     protected readonly adults: Signal<MovementContentModel[]> = computed( (): MovementContentModel[] => MovementUtil.getAdults(
         this.movement() ) )
@@ -243,10 +236,5 @@ export class MovementElementComponent extends GenericElementComponent {
             guests: [],
         }
         this.facade.createMovement( reverseMovement )
-    }
-
-    private getLastCommunicationInterval (): IntervalModel | undefined {
-        if (GenericUtil.isNull( this.movement().lastCommunicationDateTime )) return undefined
-        return DateUtil.buildDateInterval( this.movement().lastCommunicationDateTime!, new Date() )
     }
 }

@@ -77,14 +77,27 @@ function formatUrlIfNeeded (currentUser: CurrentUserModel | undefined, url: stri
     let formattedUrl: string = url
 
     if (formattedUrl.includes( CURRENT_USER_ID )) {
-        formattedUrl = formattedUrl.replace( CURRENT_USER_ID, currentUser?.id ?? '' )
+        const userId: string | undefined = currentUser?.id
+        if (GenericUtil.isNull( userId )) {
+            throw {
+                title: 'global.notifications.NO_USER_ID.title',
+                message: 'global.notifications.NO_USER_ID.message',
+            } as ErrorModel
+        } else {
+            formattedUrl = formattedUrl.replace( CURRENT_USER_ID, userId! )
+        }
     }
 
     if (formattedUrl.includes( SELECT_PROFILE_PROJECT_ID )) {
-        formattedUrl = formattedUrl.replace(
-            SELECT_PROFILE_PROJECT_ID,
-            currentUser?.preferences?.selectedProfile?.project.id ?? '',
-        )
+        const selectedProjectId: string | undefined = currentUser?.preferences?.selectedProfile?.project?.id
+        if (GenericUtil.isNull( selectedProjectId )) {
+            throw {
+                title: 'global.notifications.NO_SELECTED_PROJECT.title',
+                message: 'global.notifications.NO_SELECTED_PROJECT.message',
+            } as ErrorModel
+        } else {
+            formattedUrl = formattedUrl.replace( SELECT_PROFILE_PROJECT_ID, selectedProjectId! )
+        }
     }
 
     return formattedUrl

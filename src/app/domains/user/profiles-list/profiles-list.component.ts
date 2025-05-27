@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject, Signal } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { TranslateModule } from '@ngx-translate/core'
 import { PageEventModel } from '../../../shared/util-model/model/page-event.model'
@@ -14,6 +14,9 @@ import {
 import { RegistryTemplateDirective } from '../../../shared/util-tool/directive/registry-template.directive'
 import { ProjectProfileFacade } from '../../project/configuration/project-profile/data/state/project-profile.facade'
 import { Select } from 'primeng/select'
+import { GenericUtil } from '../../../shared/util-tool/util/generic.util'
+import { StringUtil } from '../../../shared/util-tool/util/string.util'
+import { RouterLink } from '@angular/router'
 
 @Component( {
     selector: 'app-profiles-list',
@@ -30,12 +33,20 @@ import { Select } from 'primeng/select'
         ProjectProfileElementComponent,
         RegistryTemplateDirective,
         Select,
+        RouterLink,
+
     ],
     templateUrl: './profiles-list.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
 } )
 export class ProfilesListComponent extends GenericListComponent {
     protected readonly facade: ProjectProfileFacade = inject( ProjectProfileFacade )
+
+    protected readonly hasFilters: Signal<boolean> = computed( (): boolean =>
+        StringUtil.isNotNullNorBlank( this.registryFacade.userProjectProfilesPageTextSearchParam() )
+        || GenericUtil.nonNull( this.registryFacade.userProjectProfilesPageDateTimeSearchParam() )
+        || GenericUtil.nonNull( this.registryFacade.userProjectProfilesPageAvailabilitySearchParam() ),
+    )
 
     public constructor () {
         super()
