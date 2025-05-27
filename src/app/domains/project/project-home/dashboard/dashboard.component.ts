@@ -1,7 +1,6 @@
-import { Component, computed, inject, Signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject, Signal } from '@angular/core'
 import { Card } from 'primeng/card'
 import { Divider } from 'primeng/divider'
-import { MessageComponent } from '../../../../shared/util-ui/message/message.component'
 import { PluralTranslationPipe } from '../../../../shared/util-tool/pipe/plural-translation.pipe'
 import { Skeleton } from 'primeng/skeleton'
 import { TranslatePipe } from '@ngx-translate/core'
@@ -15,15 +14,17 @@ import { SeverityTagComponent } from '../../../../shared/util-ui/severity-tag/se
 import { TitleCasePipe, UpperCasePipe } from '@angular/common'
 import { DateFormatPipe } from '../../../../shared/util-tool/pipe/date-format.pipe'
 import { ParticipantTypeEnum } from '../../../../shared/util-model/enumeration/participant-type.enum'
-import { SeverityEnum } from '../../../../shared/util-model/enumeration/severity.enum'
 import { PresenceStatusEnum } from '../../../../shared/util-model/enumeration/presence-status.enum'
+import {
+    SeverityInformationComponent,
+} from '../../../../shared/util-ui/severity-information/severity-information.component'
 
 @Component( {
     selector: 'app-dashboard',
+    standalone: true,
     imports: [
         Card,
         Divider,
-        MessageComponent,
         PluralTranslationPipe,
         Skeleton,
         TranslatePipe,
@@ -34,15 +35,16 @@ import { PresenceStatusEnum } from '../../../../shared/util-model/enumeration/pr
         TitleCasePipe,
         UpperCasePipe,
         DateFormatPipe,
+        SeverityInformationComponent,
     ],
     templateUrl: './dashboard.component.html',
     styleUrl: './dashboard.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush,
 } )
 export class DashboardComponent extends GenericComponent {
     protected readonly facade: SelectedProjectFacade = inject( SelectedProjectFacade )
 
     protected readonly ParticipantTypeEnum: typeof ParticipantTypeEnum = ParticipantTypeEnum
-    protected readonly SeverityEnum: typeof SeverityEnum = SeverityEnum
     protected readonly PresenceStatusEnum: typeof PresenceStatusEnum = PresenceStatusEnum
 
     protected readonly totalParticipants: Signal<number | undefined>

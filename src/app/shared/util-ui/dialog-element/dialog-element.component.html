@@ -1,0 +1,48 @@
+<div class='message-container justify-content-start mb-1' [class.flex-row-reverse]='authorIsCurrentUser()'
+     [class.mb-3]='lastAuthorMessage()'>
+    <div class='avatar d-flex' [class.flex-row-reverse]='authorIsCurrentUser()'>
+        @if (lastAuthorMessage()) {
+            <p-avatar icon='pi pi-user' shape='circle' />
+        }
+    </div>
+    <div #message class='message chat-bubble' [class.left-chat-bubble]='lastAuthorMessage() && !authorIsCurrentUser()'
+         [class.right-chat-bubble]='lastAuthorMessage() && authorIsCurrentUser()'>
+        <p-card>
+            @if (firstAuthorMessage() && !authorIsCurrentUser()) {
+                <ng-template #title>
+                    <div class='mb-2'>
+                        {{ authorName() }}
+                    </div>
+                </ng-template>
+            }
+            @if (GenericUtil.nonNull(communication().alert) && alertVisible()) {
+                <div class='mb-2'>
+                    <app-message [severity]='alertSeverity()' [reverseBackground]='true'>
+                        <div class='response-title mb-2'>{{ communication().alert!.title }}</div>
+                        <app-severity-tag [value]='communication().alert!.status!.label' />
+                    </app-message>
+                </div>
+            }
+            <div class='content'>{{ communication().message }}</div>
+            <ng-template #footer>
+                <div class='d-flex justify-content-end'>
+                    <small class='secondary-color'>
+                        @if (updated()) {
+                            ({{ 'global.updated' | translate }})
+                        }
+                        {{ communication().dateTime | dateFormat: 'datetime' }}
+                    </small>
+                </div>
+            </ng-template>
+        </p-card>
+    </div>
+</div>
+
+<p-context-menu [target]='message' appendTo='body' [model]='actions()'>
+    <ng-template #item let-item>
+        <a pRipple class='d-flex align-items-center p-2 pointer'>
+            <span [class]='item.icon'></span>&nbsp;
+            <span class='ms-2'>{{ item.label | translate }}</span>
+        </a>
+    </ng-template>
+</p-context-menu>

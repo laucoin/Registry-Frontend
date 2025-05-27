@@ -30,7 +30,7 @@ import { GenericComponent } from '../../util-tool/component/generic.component'
 export class LayerComponent extends GenericComponent {
     @ContentChildren( RegistryTemplateDirective ) public templates: QueryList<RegistryTemplateDirective> | undefined
 
-    public readonly header: InputSignal<string | undefined> = input()
+    public readonly title: InputSignal<string | undefined> = input()
 
     @Input()
     public get visible (): boolean {

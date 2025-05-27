@@ -96,7 +96,7 @@ export class RegistryFacade extends GenericFacade {
     }
 
     public get logoPath (): Signal<string> {
-        return computed( (): string => this.theme() === ThemeEnum.LIGHT ? AppConfig.config.logo.light : AppConfig.config.logo.dark )
+        return computed( (): string => this.theme() === ThemeEnum.LIGHT ? AppConfig.settings.logo.light : AppConfig.settings.logo.dark )
     }
 
     public get notification (): Observable<ToastMessageOptions | undefined> {
@@ -377,7 +377,15 @@ export class RegistryFacade extends GenericFacade {
     }
 
     public selectUserProjectProfileByProject (projectId: string): Observable<ActionCompletion<FetchCurrentUser>> {
-        this.ngStore.dispatch( new SelectUserProjectProfileByProject( projectId ) )
+        this.ngStore.dispatch( [
+            new ResetSelectedProjectState(),
+            new ResetMovementState(),
+            new ResetActivityState(),
+            new ResetCommunicationState(),
+            new ResetParticipantState(),
+            new ResetVehicleState(),
+            new SelectUserProjectProfileByProject( projectId ),
+        ] )
 
         return this.actions$.pipe( ofActionCompleted( FetchCurrentUser ) )
     }
@@ -388,7 +396,17 @@ export class RegistryFacade extends GenericFacade {
         return this.actions$.pipe( ofActionCompleted( DeleteUserProjectProfile ) )
     }
 
-    public createSupportProjectProfile (projectId: string): void {
-        this.ngStore.dispatch( new CreateSupportProjectProfile( projectId ) )
+    public createSupportProjectProfile (projectId: string): Observable<ActionCompletion<FetchCurrentUser>> {
+        this.ngStore.dispatch( [
+            new ResetSelectedProjectState(),
+            new ResetMovementState(),
+            new ResetActivityState(),
+            new ResetCommunicationState(),
+            new ResetParticipantState(),
+            new ResetVehicleState(),
+            new CreateSupportProjectProfile( projectId ),
+        ] )
+
+        return this.actions$.pipe( ofActionCompleted( FetchCurrentUser ) )
     }
 }

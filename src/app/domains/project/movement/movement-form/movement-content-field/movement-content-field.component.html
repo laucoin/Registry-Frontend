@@ -17,7 +17,7 @@
 </div>
 <ul class='list-box mt-2' [class.invalid]='invalid()'>
     @for (participant of orphanParticipants(); track participant.id) {
-        <li class='item list-item full-w d-flex align-items-center justify-content-between' [attr.data-value]='participant.id'>
+        <li class='item list-item w-100 d-flex align-items-center justify-content-between' [attr.data-value]='participant.id'>
             <div class='ms-3'>{{ ParticipantUtil.toSelectItem(participant).label }}</div>
             <p-button icon='pi pi-times'
                       size='small'
@@ -35,7 +35,7 @@
     }
 </ul>
 @for (groupName of Object.keys(groups()); track groupName) {
-    <div class='full-w d-flex align-items-center justify-content-between'>
+    <div class='w-100 d-flex align-items-center justify-content-between'>
         <div>
             {{ 'movements.form.content.registered.group' | translate: { name: groupName } }}
         </div>
@@ -48,7 +48,7 @@
     </div>
     <ul class='list-box'>
         @for (member of groups()[groupName]; track member.id) {
-            <li class='item list-item full-w d-flex align-items-center justify-content-between' [attr.data-value]='member.id'>
+            <li class='item list-item w-100 d-flex align-items-center justify-content-between' [attr.data-value]='member.id'>
                 <div class='ms-3'>{{ ParticipantUtil.toSelectItem(member).label }}</div>
                 <p-button icon='pi pi-times'
                           size='small'

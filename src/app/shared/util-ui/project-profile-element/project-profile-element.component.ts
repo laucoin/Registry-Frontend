@@ -6,7 +6,6 @@ import {
     input,
     InputSignal,
     OnDestroy,
-    signal,
     Signal,
 } from '@angular/core'
 import { ProjectProfileModel } from '../../util-model/model/project-profile.model'
@@ -15,9 +14,8 @@ import { TitleCasePipe, UpperCasePipe } from '@angular/common'
 import { ElementCardComponent } from '../element-card/element-card.component'
 import { TranslateModule } from '@ngx-translate/core'
 import { BadgeModule } from 'primeng/badge'
-import { ActionModel } from '../../util-model/model/action.model'
 import { Button } from 'primeng/button'
-import { ConfirmationService } from 'primeng/api'
+import { ConfirmationService, MenuItem } from 'primeng/api'
 import { ConfirmDialogModule } from 'primeng/confirmdialog'
 import {
     ProjectProfileFacade,
@@ -25,18 +23,14 @@ import {
 import { AppRouteEnum } from '../../../app-route.enum'
 import { CurrentUserModel } from '../../util-model/model/current-user.model'
 import { SeverityTagComponent } from '../severity-tag/severity-tag.component'
-import { DateIntervalStatusModel } from '../../util-model/model/date-interval-status.model'
-import { DateUtil } from '../../util-tool/util/date.util'
 import { GenericElementComponent } from '../../util-tool/component/generic-element.component'
-import { IntervalFormatPipe } from '../../util-tool/pipe/interval-format.pipe'
 import { CustomDateFormatPipe } from '../../util-tool/pipe/custom-date-format.pipe'
-import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component'
 import { Subscription, tap } from 'rxjs'
 import { ProfileStatusEnum } from '../../util-model/enumeration/profile-status.enum'
 import { SeverityEnum } from '../../util-model/enumeration/severity.enum'
 import { ProjectAuthorityEnum } from '../../util-model/enumeration/project-authority.enum'
 import { ElementActionEnum } from '../../util-model/enumeration/element-action.enum'
-import { AppConfig } from '../../../app.config'
+import { AvailabilityStatusEnum } from '../../util-model/enumeration/availability-status.enum'
 
 @Component( {
     selector: 'app-project-profile-element',
@@ -51,18 +45,15 @@ import { AppConfig } from '../../../app.config'
         TitleCasePipe,
         UpperCasePipe,
         SeverityTagComponent,
-        IntervalFormatPipe,
         CustomDateFormatPipe,
-        ConfirmationDialogComponent,
     ],
     providers: [ ConfirmationService, ProjectProfileFacade ],
     templateUrl: './project-profile-element.component.html',
     styleUrl: './project-profile-element.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
 } )
-export class ProjectProfileElementComponent extends GenericElementComponent<ProjectProfileModel> implements OnDestroy {
+export class ProjectProfileElementComponent extends GenericElementComponent implements OnDestroy {
     protected readonly facade: ProjectProfileFacade = inject( ProjectProfileFacade )
-    private readonly confirmationService: ConfirmationService = inject( ConfirmationService )
     protected readonly ProfileStatusEnum: typeof ProfileStatusEnum = ProfileStatusEnum
     protected readonly subscriptions: Subscription = new Subscription()
 
@@ -70,154 +61,100 @@ export class ProjectProfileElementComponent extends GenericElementComponent<Proj
     public readonly view: InputSignal<'user' | 'project'> = input.required()
     public readonly profile: InputSignal<ProjectProfileModel> = input.required()
 
-    private readonly allActions: Signal<ActionModel[]> = signal( [
-        {
-            id: ElementActionEnum.PROJECT_PROFILE_SELECT,
-            label: 'project-profiles.actions.select',
-            icon: 'pi pi-arrow-right',
-            disabled: false,
-        },
-        {
-            id: ElementActionEnum.PROJECT_PROFILE_UPDATE,
-            label: 'project-profiles.actions.edit',
-            icon: 'pi pi-pen-to-square',
-            disabled: false,
-            requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_U,
-        },
-        {
-            id: ElementActionEnum.PROJECT_PROFILE_BLOCK,
-            label: 'project-profiles.actions.disable',
-            icon: 'pi pi-ban',
-            disabled: false,
-            requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_U,
-            confirmation: {
-                header: 'project-profiles.actions.confirmations.disable.title',
-                message: 'project-profiles.actions.confirmations.disable.message',
-                icon: 'pi pi-exclamation-triangle',
-                acceptSeverity: SeverityEnum.WARNING,
-                rejectSeverity: SeverityEnum.SECONDARY,
-            },
-        },
-        {
-            id: ElementActionEnum.PROJECT_PROFILE_UNBLOCK,
-            label: 'project-profiles.actions.enable',
-            icon: 'pi pi-replay',
-            disabled: false,
-            requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_U,
-            confirmation: {
-                header: 'project-profiles.actions.confirmations.enable.title',
-                message: 'project-profiles.actions.confirmations.enable.message',
-                icon: 'pi pi-exclamation-triangle',
-                acceptSeverity: SeverityEnum.SUCCESS,
-                rejectSeverity: SeverityEnum.SECONDARY,
-            },
-        },
-        {
-            id: ElementActionEnum.PROJECT_PROFILE_DELETE,
-            label: 'project-profiles.actions.delete',
-            icon: 'pi pi-trash',
-            disabled: false,
-            requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_D,
-            confirmation: {
-                header: 'project-profiles.actions.confirmations.delete.title',
-                message: 'project-profiles.actions.confirmations.delete.message',
-                icon: 'pi pi-exclamation-triangle',
-                acceptSeverity: SeverityEnum.DANGER,
-                rejectSeverity: SeverityEnum.SECONDARY,
-            },
-        },
-    ] )
-    protected readonly actions: Signal<ActionModel[]>
-    protected readonly intervalStatus: Signal<DateIntervalStatusModel | undefined>
+    protected readonly actions: Signal<MenuItem[]> = computed( (): MenuItem[] => {
+        const currentUser: CurrentUserModel | undefined = this.registryFacade.currentUser()
+        const isCurrentUserProfile: boolean = currentUser?.id === this.profile().user.id
 
-    public constructor () {
-        super()
+        return [
+            {
+                label: 'project-profiles.actions.select',
+                icon: 'pi pi-arrow-right',
+                visible: isCurrentUserProfile && this.actionIsEnable( ElementActionEnum.PROJECT_PROFILE_SELECT ),
+                command: (): void => {
+                    this.subscriptions.add(
+                        this.registryFacade.selectUserProjectProfile( this.profile().id ).pipe(
+                            tap( () => this.router.navigateByUrl( AppRouteEnum.PROJECTS_SELECTED ).catch( console.error ) ),
+                        ).subscribe(),
+                    )
+                },
+            },
+            {
+                label: 'project-profiles.actions.edit',
+                icon: 'pi pi-pen-to-square',
+                disabled: this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_U ),
+                visible: !isCurrentUserProfile && this.actionIsEnable( ElementActionEnum.PROJECT_PROFILE_UPDATE ),
+                command: (): void => {
+                    this.router.navigateByUrl(
+                        AppRouteEnum.PROJECTS_CONFIGURATION_PROFILES_EDITION.replace( ':profileId', this.profile().id ),
+                    ).catch( console.error )
+                },
+            },
+            {
+                label: 'project-profiles.actions.disable',
+                icon: 'pi pi-ban',
+                disabled: this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_U ),
+                visible: !isCurrentUserProfile && this.actionIsEnable( ElementActionEnum.PROJECT_PROFILE_BLOCK ) && this.profile().visible,
+                command: (): void => {
+                    this.confirmationService.confirm(
+                        this.buildConfirmation(
+                            'project-profiles.actions.confirmations.disable',
+                            'pi pi-exclamation-triangle',
+                            this.profile(),
+                            SeverityEnum.WARNING,
+                            (): void => this.facade.blockProjectProfile( this.profile() ),
+                        ),
+                    )
+                },
+            },
+            {
+                label: 'project-profiles.actions.enable',
+                icon: 'pi pi-replay',
+                disabled: this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_U ),
+                visible: !isCurrentUserProfile && this.actionIsEnable( ElementActionEnum.PROJECT_PROFILE_UNBLOCK ) && !this.profile().visible,
+                command: (): void => {
+                    this.confirmationService.confirm(
+                        this.buildConfirmation(
+                            'project-profiles.actions.confirmations.enable',
+                            'pi pi-info-circle',
+                            this.profile(),
+                            SeverityEnum.INFO,
+                            (): void => this.facade.unblockProjectProfile( this.profile() ),
+                        ),
+                    )
+                },
+            },
+            {
+                label: 'project-profiles.actions.delete',
+                icon: 'pi pi-trash',
+                disabled: this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_D ),
+                visible: this.actionIsEnable( ElementActionEnum.PROJECT_PROFILE_DELETE ),
+                command: (): void => {
+                    this.confirmationService.confirm(
+                        this.buildConfirmation(
+                            'project-profiles.actions.confirmations.delete',
+                            'pi pi-exclamation-triangle',
+                            this.profile(),
+                            SeverityEnum.DANGER,
+                            (): void => this.facade.deleteProjectProfile( this.profile() ),
+                        ),
+                    )
+                },
+            },
+        ]
+    } )
 
-        this.intervalStatus = computed( (): DateIntervalStatusModel => DateUtil.dateRangeStatus(
-            this.profile().startAccess,
-            this.profile().endAccess,
-        ) )
+    protected readonly availabilityStatusSeverity: Signal<SeverityEnum> = computed( (): SeverityEnum =>
+        this.profile().availabilityStatus?.value === AvailabilityStatusEnum.AVAILABLE ? SeverityEnum.SUCCESS : SeverityEnum.INFO,
+    )
 
-        this.actions = computed( (): ActionModel[] => this.buildActions(
-            this.profile(),
-            this.allActions(),
-        ) )
-    }
+    protected readonly statusSeverity: Signal<SeverityEnum> = computed( (): SeverityEnum => this.severityFromStatus(
+        this.profile().status.value ) )
 
     public ngOnDestroy (): void {
         this.subscriptions.unsubscribe()
     }
 
-    protected isActionVisible (element: ProjectProfileModel, action: ActionModel): boolean {
-        if (!AppConfig.config.projectProfile.actions.includes( action.id )) return false
-
-        const currentUser: CurrentUserModel | undefined = this.registryFacade.currentUser()
-        const isCurrentUserProfile: boolean = currentUser?.id === element.user.id
-
-        switch (action.id) {
-            case ElementActionEnum.PROJECT_PROFILE_SELECT:
-                return isCurrentUserProfile
-            case ElementActionEnum.PROJECT_PROFILE_UPDATE:
-                return !isCurrentUserProfile
-            case ElementActionEnum.PROJECT_PROFILE_BLOCK:
-                return !isCurrentUserProfile && element.visible
-            case ElementActionEnum.PROJECT_PROFILE_UNBLOCK:
-                return !isCurrentUserProfile && !element.visible
-            default:
-                return true
-        }
-    }
-
-    protected override disabledAction (
-        element: ProjectProfileModel,
-        action: ActionModel,
-    ): boolean {
-        const isNotFeasible: boolean = super.disabledAction( element, action )
-
-        if (action.id === ElementActionEnum.PROJECT_PROFILE_SELECT) {
-            const currentUser: CurrentUserModel | undefined = this.registryFacade.currentUser()
-            const isCurrentUserSelectedProfile: boolean = currentUser?.preferences?.selectedProfile?.id === element.id
-
-            return isCurrentUserSelectedProfile || isNotFeasible
-        }
-
-        return isNotFeasible
-    }
-
-    protected handleAction (action: ElementActionEnum): void {
-        switch (action) {
-            case ElementActionEnum.PROJECT_PROFILE_SELECT:
-                this.subscriptions.add(
-                    this.registryFacade.selectUserProjectProfile( this.profile().id ).pipe(
-                        tap( () => this.router.navigateByUrl( AppRouteEnum.PROJECTS_SELECTED ).catch( console.error ) ),
-                    ).subscribe(),
-                )
-                break
-            case ElementActionEnum.PROJECT_PROFILE_UPDATE:
-                this.router.navigateByUrl(
-                    AppRouteEnum.PROJECTS_CONFIGURATION_PROFILES_EDITION.replace( ':profileId', this.profile().id ),
-                ).catch( console.error )
-                break
-            case ElementActionEnum.PROJECT_PROFILE_BLOCK:
-                this.facade.blockProjectProfile( this.profile() )
-                break
-            case ElementActionEnum.PROJECT_PROFILE_UNBLOCK:
-                this.facade.unblockProjectProfile( this.profile() )
-                break
-            case ElementActionEnum.PROJECT_PROFILE_DELETE: {
-                if (this.profile().user.id === this.registryFacade.currentUser()?.id) {
-                    this.registryFacade.deleteUserProjectProfile( this.profile() )
-                } else {
-                    this.facade.deleteProjectProfile( this.profile() )
-                }
-                break
-            }
-            default:
-                console.warn( this.translateService.instant( 'global.messages.invalid-action' ) )
-        }
-    }
-
-    protected severityFromStatus (status: ProfileStatusEnum): SeverityEnum {
+    private severityFromStatus (status: ProfileStatusEnum): SeverityEnum {
         switch (status) {
             case ProfileStatusEnum.ACCEPTED:
                 return SeverityEnum.SUCCESS

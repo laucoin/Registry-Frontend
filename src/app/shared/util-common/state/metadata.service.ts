@@ -6,6 +6,7 @@ import { MovementTypeEnum } from '../../util-model/enumeration/movement-type.enu
 import { ParticipantTypeEnum } from '../../util-model/enumeration/participant-type.enum'
 import { ProfileStatusEnum } from '../../util-model/enumeration/profile-status.enum'
 import { PresenceStatusEnum } from '../../util-model/enumeration/presence-status.enum'
+import { AlertStatusEnum } from '../../util-model/enumeration/alert-status.enum'
 
 @Injectable( {
     providedIn: 'root',
@@ -29,5 +30,9 @@ export class MetadataService extends GenericService {
 
     public getParticipantsTypes (): Observable<SelectItem<ParticipantTypeEnum>[]> {
         return this.http.get<SelectItem<ParticipantTypeEnum>[]>( `${this.baseUrl}/participants/types` )
+    }
+
+    public getAlertsStatus (): Observable<SelectItem<AlertStatusEnum>[]> {
+        return this.http.get<SelectItem<AlertStatusEnum>[]>( `${this.baseUrl}/alerts/status` )
     }
 }

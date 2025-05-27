@@ -1,15 +1,5 @@
-import {
-    ChangeDetectionStrategy,
-    Component,
-    computed,
-    inject,
-    input,
-    InputSignal,
-    signal,
-    Signal,
-} from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject, input, InputSignal, Signal } from '@angular/core'
 import { ParticipantModel } from '../../util-model/model/participant.model'
-import { ActionModel } from '../../util-model/model/action.model'
 import { ParticipantFacade } from '../../../domains/project/configuration/participant/data/state/participant.facade'
 import { ElementCardComponent } from '../element-card/element-card.component'
 import { TitleCasePipe, UpperCasePipe } from '@angular/common'
@@ -24,14 +14,13 @@ import { GenericElementComponent } from '../../util-tool/component/generic-eleme
 import { PluralTranslationPipe } from '../../util-tool/pipe/plural-translation.pipe'
 import { CustomDateFormatPipe } from '../../util-tool/pipe/custom-date-format.pipe'
 import { GenericUtil } from '../../util-tool/util/generic.util'
-import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component'
 import { ParticipantTypeEnum } from '../../util-model/enumeration/participant-type.enum'
 import { SeverityCircleComponent } from '../severity-circle/severity-circle.component'
 import { SeverityEnum } from '../../util-model/enumeration/severity.enum'
 import { PresenceStatusEnum } from '../../util-model/enumeration/presence-status.enum'
 import { ProjectAuthorityEnum } from '../../util-model/enumeration/project-authority.enum'
 import { ElementActionEnum } from '../../util-model/enumeration/element-action.enum'
-import { AppConfig } from '../../../app.config'
+import { MenuItem } from 'primeng/api'
 
 @Component( {
     selector: 'app-participant-element',
@@ -47,7 +36,6 @@ import { AppConfig } from '../../../app.config'
         SeverityTagComponent,
         PluralTranslationPipe,
         CustomDateFormatPipe,
-        ConfirmationDialogComponent,
         SeverityCircleComponent,
     ],
     providers: [ GroupFacade ],
@@ -55,7 +43,7 @@ import { AppConfig } from '../../../app.config'
     styleUrl: './participant-element.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
 } )
-export class ParticipantElementComponent extends GenericElementComponent<ParticipantModel> {
+export class ParticipantElementComponent extends GenericElementComponent {
     protected readonly facade: ParticipantFacade = inject( ParticipantFacade )
     private readonly groupFacade: GroupFacade = inject( GroupFacade )
 
@@ -67,158 +55,118 @@ export class ParticipantElementComponent extends GenericElementComponent<Partici
     public readonly groupIdToRemove: InputSignal<string | undefined> = input()
     public readonly participant: InputSignal<ParticipantModel> = input.required()
 
-    private readonly allActions: Signal<ActionModel[]> = signal( [
+    protected readonly actions: Signal<MenuItem[]> = computed( (): MenuItem[] => [
         {
-            id: ElementActionEnum.PARTICIPANT_CONSULT_MOVEMENTS,
             label: 'participants.actions.movements-history',
             icon: 'pi pi-history',
-            disabled: false,
-            requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_HISTORY_R,
-        },
-        {
-            id: ElementActionEnum.PARTICIPANT_UPDATE,
-            label: 'participants.actions.edit',
-            icon: 'pi pi-pen-to-square',
-            disabled: false,
-            requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_U,
-        },
-        {
-            id: ElementActionEnum.PARTICIPANT_DISABLE,
-            label: 'participants.actions.disable',
-            icon: 'pi pi-eye-slash',
-            disabled: false,
-            requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_U,
-            confirmation: {
-                header: 'participants.actions.confirmations.disable.title',
-                message: 'participants.actions.confirmations.disable.message',
-                icon: 'pi pi-exclamation-triangle',
-                acceptSeverity: SeverityEnum.WARNING,
-                rejectSeverity: SeverityEnum.SECONDARY,
-            },
-        },
-        {
-            id: ElementActionEnum.PARTICIPANT_ENABLE,
-            label: 'participants.actions.enable',
-            icon: 'pi pi-replay',
-            disabled: true,
-            requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_U,
-            confirmation: {
-                header: 'participants.actions.confirmations.enable.title',
-                message: 'participants.actions.confirmations.enable.message',
-                icon: 'pi pi-exclamation-triangle',
-                acceptSeverity: SeverityEnum.WARNING,
-                rejectSeverity: SeverityEnum.SECONDARY,
-            },
-        },
-        {
-            id: ElementActionEnum.PARTICIPANT_REMOVE_FROM_GROUP,
-            label: 'participants.actions.remove-member',
-            icon: 'pi pi-user-minus',
-            disabled: false,
-            requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_U,
-            confirmation: {
-                header: 'participants.actions.confirmations.remove-member.title',
-                message: 'participants.actions.confirmations.remove-member.message',
-                icon: 'pi pi-exclamation-triangle',
-                acceptSeverity: SeverityEnum.WARNING,
-                rejectSeverity: SeverityEnum.SECONDARY,
-            },
-        },
-        {
-            id: ElementActionEnum.PARTICIPANT_DELETE,
-            label: 'participants.actions.delete',
-            icon: 'pi pi-trash',
-            disabled: false,
-            requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_D,
-            confirmation: {
-                header: 'participants.actions.confirmations.delete.title',
-                message: 'participants.actions.confirmations.delete.message',
-                icon: 'pi pi-exclamation-triangle',
-                acceptSeverity: SeverityEnum.DANGER,
-                rejectSeverity: SeverityEnum.SECONDARY,
-                confirmProperty: 'firstName',
-            },
-        },
-    ] )
-
-    protected readonly participantStatusSeverity: Signal<SeverityEnum>
-    protected readonly actions: Signal<ActionModel[]>
-    protected readonly additionalTotal: Signal<number>
-
-    public constructor () {
-        super()
-        this.participantStatusSeverity = computed( (): SeverityEnum => {
-            switch (this.participant().status.value) {
-                case PresenceStatusEnum.IN:
-                    return SeverityEnum.SUCCESS
-                case PresenceStatusEnum.OUT:
-                    return SeverityEnum.WARNING
-                default:
-                    return SeverityEnum.SECONDARY
-            }
-        } )
-
-        this.actions = computed( (): ActionModel[] => this.buildActions(
-            this.participant(),
-            this.allActions(),
-        ) )
-
-        this.additionalTotal = computed( (): number => this.participant().groups.length - 1 )
-    }
-
-    protected isActionVisible (
-        element: ParticipantModel,
-        action: ActionModel,
-    ): boolean {
-        if (!AppConfig.config.participant.actions.includes( action.id )) return false
-
-        switch (action.id) {
-            case ElementActionEnum.PARTICIPANT_REMOVE_FROM_GROUP:
-                return GenericUtil.nonNull( this.groupIdToRemove() )
-            case ElementActionEnum.PARTICIPANT_DISABLE:
-                return element.visible
-            case ElementActionEnum.PARTICIPANT_ENABLE:
-                return !element.visible
-            default:
-                return true
-        }
-    }
-
-    protected handleAction (action: ElementActionEnum): void {
-        switch (action) {
-            case ElementActionEnum.PARTICIPANT_CONSULT_MOVEMENTS:
+            disabled: !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_HISTORY_R ),
+            visible: this.actionIsEnable( ElementActionEnum.PARTICIPANT_CONSULT_MOVEMENTS ),
+            command: (): void => {
                 this.router.navigateByUrl(
                     AppRouteEnum.PROJECTS_CONFIGURATION_PARTICIPANTS_MOVEMENTS.replace(
                         ':participantId',
                         this.participant().id,
                     ),
                 ).catch( console.error )
-                break
-            case ElementActionEnum.PARTICIPANT_UPDATE:
+            },
+        },
+        {
+            label: 'participants.actions.edit',
+            icon: 'pi pi-pen-to-square',
+            disabled: !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_U ),
+            visible: this.actionIsEnable( ElementActionEnum.PARTICIPANT_UPDATE ),
+            command: (): void => {
                 this.router.navigateByUrl(
                     AppRouteEnum.PROJECTS_CONFIGURATION_PARTICIPANTS_EDITION.replace(
                         ':participantId',
                         this.participant().id,
                     ),
                 ).catch( console.error )
-                break
-            case ElementActionEnum.PARTICIPANT_REMOVE_FROM_GROUP:
-                this.groupFacade.removeMemberFromGroup(
-                    this.groupIdToRemove()!,
-                    this.participant(),
+            },
+        },
+        {
+            label: 'participants.actions.disable',
+            icon: 'pi pi-eye-slash',
+            disabled: !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_U ),
+            visible: this.actionIsEnable( ElementActionEnum.PARTICIPANT_DISABLE ) && this.participant().visible,
+            command: (): void => {
+                this.confirmationService.confirm(
+                    this.buildConfirmation(
+                        'participants.actions.confirmations.disable',
+                        'pi pi-exclamation-triangle',
+                        this.participant(),
+                        SeverityEnum.WARNING,
+                        (): void => this.facade.disableParticipant( this.participant().id ),
+                    ),
                 )
-                break
-            case ElementActionEnum.PARTICIPANT_DISABLE:
-                this.facade.disableParticipant( this.participant().id )
-                break
-            case ElementActionEnum.PARTICIPANT_ENABLE:
-                this.facade.enableParticipant( this.participant().id )
-                break
-            case ElementActionEnum.PARTICIPANT_DELETE:
-                this.facade.deleteParticipant( this.participant() )
-                break
+            },
+        },
+        {
+            label: 'participants.actions.enable',
+            icon: 'pi pi-replay',
+            disabled: !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_U ),
+            visible: this.actionIsEnable( ElementActionEnum.PARTICIPANT_ENABLE ) && !this.participant().visible,
+            command: (): void => {
+                this.confirmationService.confirm(
+                    this.buildConfirmation(
+                        'participants.actions.confirmations.enable',
+                        'pi pi-info-circle',
+                        this.participant(),
+                        SeverityEnum.INFO,
+                        (): void => this.facade.enableParticipant( this.participant().id ),
+                    ),
+                )
+            },
+        },
+        {
+            label: 'participants.actions.remove-member',
+            icon: 'pi pi-user-minus',
+            disabled: !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_U ),
+            visible: this.actionIsEnable( ElementActionEnum.PARTICIPANT_REMOVE_FROM_GROUP ) && GenericUtil.nonNull( this.groupIdToRemove() ),
+            command: (): void => {
+                this.confirmationService.confirm(
+                    this.buildConfirmation(
+                        'participants.actions.confirmations.remove-member',
+                        'pi pi-exclamation-triangle',
+                        this.participant(),
+                        SeverityEnum.WARNING,
+                        (): void => this.groupFacade.removeMemberFromGroup(
+                            this.groupIdToRemove()!,
+                            this.participant(),
+                        ),
+                    ),
+                )
+            },
+        },
+        {
+            label: 'participants.actions.delete',
+            icon: 'pi pi-trash',
+            disabled: !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_D ),
+            visible: this.actionIsEnable( ElementActionEnum.PARTICIPANT_DELETE ) && this.participant().visible,
+            command: (): void => {
+                this.confirmationService.confirm(
+                    this.buildConfirmation(
+                        'participants.actions.confirmations.delete',
+                        'pi pi-exclamation-triangle',
+                        this.participant(),
+                        SeverityEnum.DANGER,
+                        (): void => this.facade.deleteParticipant( this.participant() ),
+                    ),
+                )
+            },
+        },
+    ] )
+
+    protected readonly participantStatusSeverity: Signal<SeverityEnum> = computed( (): SeverityEnum => {
+        switch (this.participant().status.value) {
+            case PresenceStatusEnum.IN:
+                return SeverityEnum.SUCCESS
+            case PresenceStatusEnum.OUT:
+                return SeverityEnum.WARNING
             default:
-                console.warn( this.translateService.instant( 'global.messages.invalid-action' ) )
+                return SeverityEnum.SECONDARY
         }
-    }
+    } )
+
+    protected readonly additionalTotal: Signal<number> = computed( (): number => (this.participant().groups?.length ?? 0) - 1 )
 }

@@ -81,7 +81,7 @@
 </app-list>
 
 <app-layer [(visible)]='addMembersFormLayerOpened'
-           [header]='"groups.actions.add-members" | translate'>
+           [title]='"groups.actions.add-members" | translate'>
     @if (addMembersParticipants) {
         <form>
             <div class='field'>
@@ -122,6 +122,6 @@
 </app-layer>
 
 <app-layer [(visible)]='createMemberFormLayerOpened'
-           [header]='"groups.actions.create-member" | translate'>
+           [title]='"groups.actions.create-member" | translate'>
     <app-participant-form [defaultGroup]='facade.group()' [showTitle]='false' [redirect]='false' />
 </app-layer>

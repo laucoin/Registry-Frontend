@@ -33,6 +33,6 @@ function notifyNoProfile (registryFacade: RegistryFacade): void {
         detail: 'preferences.notifications.NO_SELECTED_PROFILE.message',
         closable: true,
         icon: 'pi pi-sort-alt-slash',
-        life: AppConfig.config.notification.duration.warn,
+        life: AppConfig.settings.notification.duration.warn,
     } )
 }

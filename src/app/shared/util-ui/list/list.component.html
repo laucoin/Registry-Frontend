@@ -62,13 +62,13 @@
             @if (GenericUtil.nonNull(getTemplate('error'))) {
                 <ng-container [ngTemplateOutlet]='getTemplate("error")' />
             } @else {
-                <app-message [message]='error()!' />
+                <app-severity-information [message]='error()!' />
             }
         } @else if (!loading()) {
             @if (getTemplate('empty')) {
                 <ng-container [ngTemplateOutlet]='getTemplate("empty")' />
             } @else {
-                <app-message [message]='message()' />
+                <app-severity-information [message]='message()' />
             }
         }
     </ng-template>

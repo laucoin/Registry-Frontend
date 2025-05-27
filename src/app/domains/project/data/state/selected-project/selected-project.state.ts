@@ -10,12 +10,11 @@ import { catchError, finalize, map, Observable, of } from 'rxjs'
 import { initialize } from '../../../../../shared/util-tool/util/rx.util'
 import { ErrorModel } from '../../../../../shared/util-model/model/error.model'
 import {
+    FetchCurrentAlertsPage,
     FetchCurrentMovementsPageWithActivity,
     FetchCurrentMovementsPageWithoutActivity,
     FetchCurrentMovementsWithActivityContents,
-    FetchCurrentMovementsWithActivityLastCommunications,
     FetchCurrentMovementsWithoutActivityContents,
-    FetchCurrentMovementsWithoutActivityLastCommunications,
     FetchParticipantsBirthdays,
     FetchParticipantsStatus,
     FetchVehiclesStatus,
@@ -36,8 +35,11 @@ import { ParticipantService } from '../../../configuration/participant/data/stat
 import { PairModel } from '../../../../../shared/util-model/model/pair.model'
 import { MovementContentModel } from '../../../../../shared/util-model/model/movement-content.model'
 import { MovementUtil } from '../../../../../shared/util-tool/util/movement.util'
-import { CommunicationService } from '../../../communication/data/state/communication.service'
-import { CommunicationModel } from '../../../communication/data/model/communication.model'
+import { AlertStatusEnum } from '../../../../../shared/util-model/enumeration/alert-status.enum'
+import { AlertService } from '../../../movement/data/state/alert.service'
+import { AlertModel } from '../../../../../shared/util-model/model/alert.model'
+import { StateUtil } from '../../../../../shared/util-tool/state/state.util'
+import { GenericState } from '../../../../../shared/util-tool/state/generic.state'
 
 const defaultSelectedProjectState: SelectedProjectStateModel = {
     status: {
@@ -51,6 +53,20 @@ const defaultSelectedProjectState: SelectedProjectStateModel = {
             loading: false,
             error: undefined,
         },
+    },
+    alerts: {
+        element: undefined,
+        params: {
+            resetSearch: false,
+            textSearched: undefined,
+            statusSearched: AlertStatusEnum.IN_PROGRESS,
+            visibilitySearched: true,
+            startDateTimeSearched: undefined,
+            endDateTimeSearched: undefined,
+        },
+        loading: false,
+        silentLoading: false,
+        error: undefined,
     },
     birthdays: [],
     currentMovements: {
@@ -92,11 +108,11 @@ const defaultSelectedProjectState: SelectedProjectStateModel = {
     defaults: defaultSelectedProjectState,
 } )
 @Injectable()
-export class SelectedProjectState {
+export class SelectedProjectState extends GenericState {
     private readonly facade: SelectedProjectFacade = inject( SelectedProjectFacade )
     private readonly movementService: MovementService = inject( MovementService )
+    private readonly alertService: AlertService = inject( AlertService )
     private readonly participantService: ParticipantService = inject( ParticipantService )
-    private readonly communicationService: CommunicationService = inject( CommunicationService )
 
     @Selector()
     public static participantsStatus (state: SelectedProjectStateModel): ProjectStatusModel | undefined {
@@ -201,6 +217,16 @@ export class SelectedProjectState {
     @Selector()
     public static currentMovementsPageWithActivityEndDateTimeSearchedParam (state: SelectedProjectStateModel): string | undefined {
         return state.currentMovements.withActivity.params.endDateTimeSearched
+    }
+
+    @Selector()
+    public static currentAlertsPageError (state: SelectedProjectStateModel): ToastMessageOptions | undefined {
+        return state.alerts.error
+    }
+
+    @Selector()
+    public static currentAlertsPage (state: SelectedProjectStateModel): PageModel<AlertModel> | undefined {
+        return state.alerts.element
     }
 
     @Action( ResetSelectedProjectState )
@@ -386,25 +412,20 @@ export class SelectedProjectState {
 
     @Action( StartCurrentMovementsPageWithoutActivityLoader )
     public startCurrentMovementsPageWithoutActivityLoader (ctx: StateContext<SelectedProjectStateModel>): void {
-        this.updateCurrentMovementsWithoutActivityLoader( ctx, true )
+        ctx.patchState( {
+            currentMovements: {
+                ...ctx.getState().currentMovements,
+                withoutActivity: StateUtil.updatePageLoader( ctx.getState().currentMovements.withoutActivity, true ),
+            },
+        } )
     }
 
     @Action( StopCurrentMovementsPageWithoutActivityLoader )
     public stopCurrentMovementsPageWithoutActivityLoader (ctx: StateContext<SelectedProjectStateModel>): void {
-        this.updateCurrentMovementsWithoutActivityLoader( ctx, false )
-    }
-
-    private updateCurrentMovementsWithoutActivityLoader (
-        ctx: StateContext<SelectedProjectStateModel>,
-        loading: boolean,
-    ): void {
         ctx.patchState( {
             currentMovements: {
                 ...ctx.getState().currentMovements,
-                withoutActivity: {
-                    ...ctx.getState().currentMovements.withoutActivity,
-                    loading: loading,
-                },
+                withoutActivity: StateUtil.updatePageLoader( ctx.getState().currentMovements.withoutActivity, false ),
             },
         } )
     }
@@ -420,8 +441,8 @@ export class SelectedProjectState {
             payload.pageSize,
             ctx.getState().currentMovements.withoutActivity.params,
         ).pipe(
-            initialize( (): void => this.facade.startVehiclesStatusLoader() ),
-            finalize( (): void => this.facade.stopVehiclesStatusLoader() ),
+            initialize( (): void => this.facade.startCurrentMovementsPageWithoutActivityLoader() ),
+            finalize( (): void => this.facade.stopCurrentMovementsPageWithoutActivityLoader() ),
             map( (page: PageModel<MovementModel>): void => this.fetchCurrentMovementsPageWithoutActivityComplete(
                 ctx,
                 page,
@@ -450,7 +471,6 @@ export class SelectedProjectState {
         if (movementsPage.content.length > 0) {
             this.facade.fetchCurrentMovementsWithoutActivityDetails(
                 movementsPage.content.map( (movement: MovementModel): string => movement.id ),
-                false,
             )
         }
     }
@@ -465,16 +485,7 @@ export class SelectedProjectState {
             ctx.patchState( {
                 currentMovements: {
                     ...ctx.getState().currentMovements,
-                    withoutActivity: {
-                        ...ctx.getState().currentMovements.withoutActivity,
-                        error: {
-                            severity: 'error',
-                            summary: error.title,
-                            detail: error.message,
-                            icon: 'pi pi-exclamation-triangle',
-                            closable: true,
-                        },
-                    },
+                    withoutActivity: this.buildErrorMessage( ctx.getState().currentMovements.withoutActivity, error ),
                 },
             } )
         }
@@ -524,68 +535,22 @@ export class SelectedProjectState {
         } )
     }
 
-    @Action( FetchCurrentMovementsWithoutActivityLastCommunications )
-    public fetchCurrentMovementsWithoutActivityLastCommunications (
-        ctx: StateContext<SelectedProjectStateModel>,
-        payload: FetchCurrentMovementsWithActivityContents,
-    ): Observable<void> {
-        return this.communicationService.findCommunicationsByMovementIds(
-            payload.projectId,
-            payload.movementIds,
-        ).pipe(
-            map( (communications: PairModel<CommunicationModel[]>[]): void => this.fetchCurrentMovementsWithoutActivityLastCommunicationsComplete(
-                ctx,
-                communications,
-            ) ),
-        )
-    }
-
-    private fetchCurrentMovementsWithoutActivityLastCommunicationsComplete (
-        ctx: StateContext<SelectedProjectStateModel>,
-        communications: PairModel<CommunicationModel[]>[],
-    ): void {
-        if (!ctx.getState().currentMovements.withoutActivity.element) {
-            return
-        }
-
+    @Action( StartCurrentMovementsPageWithActivityLoader )
+    public startCurrentMovementsPageWithActivityLoader (ctx: StateContext<SelectedProjectStateModel>): void {
         ctx.patchState( {
             currentMovements: {
                 ...ctx.getState().currentMovements,
-                withoutActivity: {
-                    ...ctx.getState().currentMovements.withoutActivity,
-                    element: {
-                        ...ctx.getState().currentMovements.withoutActivity.element!,
-                        content: MovementUtil.rebuildPageWithCommunications(
-                            ctx.getState().currentMovements.withoutActivity.element!.content,
-                            communications,
-                        ),
-                    },
-                },
+                withActivity: StateUtil.updatePageLoader( ctx.getState().currentMovements.withActivity, true ),
             },
         } )
     }
 
-    @Action( StartCurrentMovementsPageWithActivityLoader )
-    public startCurrentMovementsPageWithActivityLoader (ctx: StateContext<SelectedProjectStateModel>): void {
-        this.updateCurrentMovementsWithActivityLoader( ctx, true )
-    }
-
     @Action( StopCurrentMovementsPageWithActivityLoader )
     public stopCurrentMovementsPageWithActivityLoader (ctx: StateContext<SelectedProjectStateModel>): void {
-        this.updateCurrentMovementsWithActivityLoader( ctx, false )
-    }
-
-    private updateCurrentMovementsWithActivityLoader (
-        ctx: StateContext<SelectedProjectStateModel>,
-        loading: boolean,
-    ): void {
         ctx.patchState( {
             currentMovements: {
                 ...ctx.getState().currentMovements,
-                withActivity: {
-                    ...ctx.getState().currentMovements.withActivity,
-                    loading: loading,
-                },
+                withActivity: StateUtil.updatePageLoader( ctx.getState().currentMovements.withActivity, false ),
             },
         } )
     }
@@ -601,8 +566,8 @@ export class SelectedProjectState {
             payload.pageSize,
             ctx.getState().currentMovements.withActivity.params,
         ).pipe(
-            initialize( (): void => this.facade.startVehiclesStatusLoader() ),
-            finalize( (): void => this.facade.stopVehiclesStatusLoader() ),
+            initialize( (): void => this.facade.startCurrentMovementsPageWithActivityLoader() ),
+            finalize( (): void => this.facade.stopCurrentMovementsPageWithActivityLoader() ),
             map( (page: PageModel<MovementModel>): void => this.fetchCurrentMovementsPageWithActivityComplete(
                 ctx,
                 page,
@@ -631,7 +596,6 @@ export class SelectedProjectState {
         if (movementsPage.content.length > 0) {
             this.facade.fetchCurrentMovementsWithActivityDetails(
                 movementsPage.content.map( (movement: MovementModel): string => movement.id ),
-                true,
             )
         }
     }
@@ -646,16 +610,7 @@ export class SelectedProjectState {
             ctx.patchState( {
                 currentMovements: {
                     ...ctx.getState().currentMovements,
-                    withActivity: {
-                        ...ctx.getState().currentMovements.withActivity,
-                        error: {
-                            severity: 'error',
-                            summary: error.title,
-                            detail: error.message,
-                            icon: 'pi pi-exclamation-triangle',
-                            closable: true,
-                        },
-                    },
+                    withActivity: this.buildErrorMessage( ctx.getState().currentMovements.withActivity, error ),
                 },
             } )
         }
@@ -705,44 +660,52 @@ export class SelectedProjectState {
         } )
     }
 
-    @Action( FetchCurrentMovementsWithActivityLastCommunications )
-    public fetchCurrentMovementsWithActivityLastCommunications (
+    @Action( FetchCurrentAlertsPage )
+    public fetchCurrentAlertsPage (
         ctx: StateContext<SelectedProjectStateModel>,
-        payload: FetchCurrentMovementsWithActivityContents,
+        payload: FetchCurrentAlertsPage,
     ): Observable<void> {
-        return this.communicationService.findCommunicationsByMovementIds(
+        return this.alertService.findAlerts(
             payload.projectId,
-            payload.movementIds,
+            payload.pageNumber,
+            payload.pageSize,
+            ctx.getState().alerts.params,
         ).pipe(
-            map( (communications: PairModel<CommunicationModel[]>[]): void => this.fetchCurrentMovementsWithActivityLastCommunicationsComplete(
+            map( (page: PageModel<AlertModel>): void => this.fetchCurrentAlertsPageComplete(
                 ctx,
-                communications,
+                page,
+            ) ),
+            catchError( (error: ErrorModel): Observable<void> => this.fetchCurrentAlertsPageError(
+                ctx,
+                error,
             ) ),
         )
     }
 
-    private fetchCurrentMovementsWithActivityLastCommunicationsComplete (
+    private fetchCurrentAlertsPageComplete (
         ctx: StateContext<SelectedProjectStateModel>,
-        communications: PairModel<CommunicationModel[]>[],
+        alertsPage: PageModel<AlertModel>,
     ): void {
-        if (!ctx.getState().currentMovements.withActivity.element) {
-            return
-        }
-
         ctx.patchState( {
-            currentMovements: {
-                ...ctx.getState().currentMovements,
-                withActivity: {
-                    ...ctx.getState().currentMovements.withActivity,
-                    element: {
-                        ...ctx.getState().currentMovements.withActivity.element!,
-                        content: MovementUtil.rebuildPageWithCommunications(
-                            ctx.getState().currentMovements.withActivity.element!.content,
-                            communications,
-                        ),
-                    },
-                },
+            alerts: {
+                ...ctx.getState().alerts,
+                element: alertsPage,
             },
         } )
+    }
+
+    private fetchCurrentAlertsPageError (
+        ctx: StateContext<SelectedProjectStateModel>,
+        error: ErrorModel,
+    ): Observable<void> {
+        if (error.status == 503) {
+            throw error
+        } else {
+            ctx.patchState( {
+                alerts: this.buildErrorMessage( ctx.getState().alerts, error ),
+            } )
+        }
+
+        return of()
     }
 }

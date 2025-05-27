@@ -15,6 +15,7 @@ enum CommunicationAction {
     STOP_COMMUNICATION_LOADER = '[Local] Stopping communication loader',
 
     SEARCH_MOVEMENTS = '[Backend] Searching movements to link communication',
+    SEARCH_ALERTS = '[Backend] Searching alerts to link communication',
     FETCH_COMMUNICATION = '[Backend] Fetching communication',
     RESET_COMMUNICATION = '[Local] Resetting communication',
     CREATE_COMMUNICATION = '[Backend] Creating communication',
@@ -69,6 +70,15 @@ export class FetchCommunication {
 
 export class SearchMovements {
     public static readonly type: CommunicationAction = CommunicationAction.SEARCH_MOVEMENTS
+
+    public constructor (
+        public readonly projectId: string | undefined,
+        public readonly textSearched: string | undefined,
+    ) {}
+}
+
+export class SearchAlerts {
+    public static readonly type: CommunicationAction = CommunicationAction.SEARCH_ALERTS
 
     public constructor (
         public readonly projectId: string | undefined,

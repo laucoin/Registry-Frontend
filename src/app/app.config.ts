@@ -20,7 +20,7 @@ import { LOCALE } from './shared/util-tool/util/request.util'
     providedIn: 'root',
 } )
 export class AppConfig {
-    public static config: ConfigModel
+    public static settings: ConfigModel
     private static readonly _jsonURL: string = 'config/config.json'
 
     public static load (): Promise<AppConfig> {
@@ -35,12 +35,12 @@ export class AppConfig {
 
                     switch (res.executionContext) {
                         case ExecutionContextEnum.SGDF:
-                            AppConfig.config = {
+                            AppConfig.settings = {
                                 ...sgdfConfig, ...tempConfig,
                             }
                             break
                         default:
-                            AppConfig.config = tempConfig as ConfigModel
+                            AppConfig.settings = tempConfig as ConfigModel
                             break
                     }
                 } )
@@ -56,7 +56,7 @@ export class AppConfig {
         return importProvidersFrom( NgxsModule.forRoot(
             [ RegistryState, UserState ],
             {
-                developmentMode: !AppConfig.config.production,
+                developmentMode: !AppConfig.settings.production,
             },
         ) )
     }
@@ -65,7 +65,7 @@ export class AppConfig {
         return providePrimeNG( {
             ripple: true,
             theme: {
-                preset: AppConfig.config.theme,
+                preset: AppConfig.settings.theme,
                 options: {
                     darkModeSelector: `.dark-mod`,
                 },
@@ -75,22 +75,22 @@ export class AppConfig {
 
     public static provideNgxsReduxDevtools (): Provider | EnvironmentProviders {
         return importProvidersFrom( NgxsReduxDevtoolsPluginModule.forRoot( {
-            disabled: AppConfig.config.production,
+            disabled: AppConfig.settings.production,
         } ) )
     }
 
     private static get locale (): string {
         let lang: string | undefined = LocalStorageUtils.get( LOCALE )?.toString()
 
-        if (GenericUtil.isNull( lang ) || !AppConfig.config.languages.includes( lang! )) {
+        if (GenericUtil.isNull( lang ) || !AppConfig.settings.languages.includes( lang! )) {
             navigator.languages.forEach( (nextLang: string): void => {
-                if (AppConfig.config.languages.includes( nextLang ) && !lang) {
+                if (AppConfig.settings.languages.includes( nextLang ) && !lang) {
                     lang = nextLang
                 }
             } )
         }
 
-        lang = lang ?? AppConfig.config.defaultLanguage
+        lang = lang ?? AppConfig.settings.defaultLanguage
         LocalStorageUtils.set( LOCALE, lang )
         return lang
     }
@@ -101,7 +101,7 @@ export class AppConfig {
                 provide: TranslateLoader,
                 useFactory: (http: HttpClient) => new TranslateHttpLoader(
                     http,
-                    `i18n/${AppConfig.config.executionContext}/`,
+                    `i18n/${AppConfig.settings.executionContext}/`,
                     '.json',
                 ),
                 deps: [ HttpClient ],

@@ -1,7 +1,6 @@
 <app-element-card [element]='participant()'
                   [actions]='actions()'
                   [actionMenuVisible]='actionMenuVisible()'
-                  (action)='showDialogIfNeeded($event)'
                   [icon]='participant().type.value === ParticipantTypeEnum.REGISTERED ? "pi pi-user" : "pi pi-user-plus"'>
     <div class='element-card'>
         <div class='participant-info'>
@@ -31,11 +30,11 @@
                  (click)='additionalTotal() >= 0 ? layerOpened = true : ""'
                  (keydown.enter)='additionalTotal() >= 0 ? layerOpened = true : ""'>
                 @if (additionalTotal() === 0) {
-                    {{ participant().groups[0].name }}
+                    {{ participant().groups?.[0]?.name }}
                 } @else {
                     {{
                         'participants.group' | pluralTranslation: additionalTotal() + 1 | translate: {
-                            name: participant().groups[0]?.name,
+                            name: participant().groups?.[0]?.name,
                             others: additionalTotal(),
                         }
                     }}
@@ -49,11 +48,11 @@
 </app-element-card>
 
 <app-layer [(visible)]='layerOpened'
-           [header]='"participants.group-layer-title" | pluralTranslation: participant().groups | translate'>
+           [title]='"participants.group-layer-title" | pluralTranslation: participant().groups | translate'>
     <p-listbox
             styleClass='max-list-box-height'
             scrollHeight='100%'
-            [options]='participant().groups'
+            [options]='participant().groups ?? []'
             readonly
             optionLabel='name'>
         <ng-template #item let-group>
@@ -64,10 +63,3 @@
         </ng-template>
     </p-listbox>
 </app-layer>
-
-<app-confirmation-dialog
-        [loading]='facade.participantLoading()'
-        [element]='participant()'
-        [action]='action()'
-        (hide)='action.set(undefined)'
-        (handleAction)='handleAction($event)' />

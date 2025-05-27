@@ -19,11 +19,12 @@ import { DateFormatPipe } from './app/shared/util-tool/pipe/date-format.pipe'
 import { PluralTranslationPipe } from './app/shared/util-tool/pipe/plural-translation.pipe'
 import { CustomDateFormatPipe } from './app/shared/util-tool/pipe/custom-date-format.pipe'
 import { ProjectOptionIconPipe } from './app/shared/util-tool/pipe/project-option-icon.pipe'
+import { IntervalPipe } from './app/shared/util-tool/pipe/interval.pipe'
 
 (async (): Promise<void> => {
     await AppConfig.load()
 
-    if (AppConfig.config.production) {
+    if (AppConfig.settings.production) {
         enableProdMode()
     }
 
@@ -39,6 +40,7 @@ import { ProjectOptionIconPipe } from './app/shared/util-tool/pipe/project-optio
             UserFacade,
             DatePipe,
             DateFormatPipe,
+            IntervalPipe,
             ProjectOptionIconPipe,
             CustomDateFormatPipe,
             AppConfig,

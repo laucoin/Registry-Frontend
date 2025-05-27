@@ -99,89 +99,70 @@ export const sgdfConfig: ContextConfigModel = {
     },
     defaultLanguage: 'fr-FR',
     maintainerEmail: 'laucoin@sgdf.fr',
-    user: {
-        actions: [
-            ElementActionEnum.USER_UPDATE,
-            ElementActionEnum.USER_BLOCK,
-            ElementActionEnum.USER_UNBLOCK,
-            ElementActionEnum.USER_IMPERSONATE,
-            ElementActionEnum.USER_DELETE,
-        ],
-    },
-    project: {
-        actions: [
-            ElementActionEnum.PROJECT_SELECT_PROFILE,
-            ElementActionEnum.PROJECT_CREATE_SUPPORT_PROFILE,
-            ElementActionEnum.PROJECT_UPDATE,
-            ElementActionEnum.PROJECT_DISABLE,
-            ElementActionEnum.PROJECT_ENABLE,
-            ElementActionEnum.PROJECT_DELETE,
-        ],
-    },
-    projectProfile: {
-        actions: [
-            ElementActionEnum.PROJECT_PROFILE_SELECT,
-            ElementActionEnum.PROJECT_PROFILE_UPDATE,
-            ElementActionEnum.PROJECT_PROFILE_BLOCK,
-            ElementActionEnum.PROJECT_PROFILE_UNBLOCK,
-            ElementActionEnum.PROJECT_PROFILE_DELETE,
-        ],
-    },
-    participant: {
-        actions: [
-            ElementActionEnum.PARTICIPANT_CONSULT_MOVEMENTS,
-            ElementActionEnum.PARTICIPANT_UPDATE,
-            ElementActionEnum.PARTICIPANT_DELETE,
-            ElementActionEnum.PARTICIPANT_ENABLE,
-            ElementActionEnum.PARTICIPANT_REMOVE_FROM_GROUP,
-            ElementActionEnum.PARTICIPANT_DELETE,
-        ],
-    },
-    movement: {
-        actions: [
-            ElementActionEnum.MOVEMENT_CONSULT_COMMUNICATIONS,
-            ElementActionEnum.MOVEMENT_REVERSE,
-            ElementActionEnum.MOVEMENT_UPDATE,
-            ElementActionEnum.MOVEMENT_DISABLE,
-            ElementActionEnum.MOVEMENT_ENABLE,
-            ElementActionEnum.MOVEMENT_DELETE,
-        ],
-    },
-    group: {
-        actions: [
-            ElementActionEnum.GROUP_CONSULT_MEMBERS,
-            ElementActionEnum.GROUP_UPDATE,
-            ElementActionEnum.GROUP_DISABLE,
-            ElementActionEnum.GROUP_ENABLE,
-            ElementActionEnum.GROUP_DELETE,
-        ],
-    },
-    vehicle: {
-        actions: [
-            ElementActionEnum.VEHICLE_CONSULT_MOVEMENTS,
-            ElementActionEnum.VEHICLE_UPDATE,
-            ElementActionEnum.VEHICLE_DISABLE,
-            ElementActionEnum.VEHICLE_ENABLE,
-            ElementActionEnum.VEHICLE_DELETE,
-        ],
-    },
-    activity: {
-        actions: [
-            ElementActionEnum.ACTIVITY_CONSULT_MOVEMENTS,
-            ElementActionEnum.ACTIVITY_UPDATE,
-            ElementActionEnum.ACTIVITY_DISABLE,
-            ElementActionEnum.ACTIVITY_ENABLE,
-            ElementActionEnum.ACTIVITY_DELETE,
-        ],
-    },
-    communication: {
-        actions: [
-            ElementActionEnum.COMMUNICATION_UPDATE,
-            ElementActionEnum.COMMUNICATION_DISABLE,
-            ElementActionEnum.COMMUNICATION_ENABLE,
-            ElementActionEnum.COMMUNICATION_DELETE,
-        ],
-    },
+    enabledActions: [
+        ElementActionEnum.USER_UPDATE,
+        ElementActionEnum.USER_BLOCK,
+        ElementActionEnum.USER_UNBLOCK,
+        ElementActionEnum.USER_IMPERSONATE,
+        ElementActionEnum.USER_DELETE,
+
+        ElementActionEnum.PROJECT_SELECT_PROFILE,
+        ElementActionEnum.PROJECT_CREATE_SUPPORT_PROFILE,
+        ElementActionEnum.PROJECT_UPDATE,
+        ElementActionEnum.PROJECT_DISABLE,
+        ElementActionEnum.PROJECT_ENABLE,
+        ElementActionEnum.PROJECT_DELETE,
+
+        ElementActionEnum.PROJECT_PROFILE_SELECT,
+        ElementActionEnum.PROJECT_PROFILE_UPDATE,
+        ElementActionEnum.PROJECT_PROFILE_BLOCK,
+        ElementActionEnum.PROJECT_PROFILE_UNBLOCK,
+        ElementActionEnum.PROJECT_PROFILE_DELETE,
+
+        ElementActionEnum.PARTICIPANT_CONSULT_MOVEMENTS,
+        ElementActionEnum.PARTICIPANT_UPDATE,
+        ElementActionEnum.PARTICIPANT_DELETE,
+        ElementActionEnum.PARTICIPANT_ENABLE,
+        ElementActionEnum.PARTICIPANT_REMOVE_FROM_GROUP,
+        ElementActionEnum.PARTICIPANT_DELETE,
+
+        ElementActionEnum.MOVEMENT_REVERSE,
+        ElementActionEnum.MOVEMENT_UPDATE,
+        ElementActionEnum.MOVEMENT_DISABLE,
+        ElementActionEnum.MOVEMENT_ENABLE,
+        ElementActionEnum.MOVEMENT_DELETE,
+
+        ElementActionEnum.GROUP_CONSULT_MEMBERS,
+        ElementActionEnum.GROUP_UPDATE,
+        ElementActionEnum.GROUP_DISABLE,
+        ElementActionEnum.GROUP_ENABLE,
+        ElementActionEnum.GROUP_DELETE,
+
+        ElementActionEnum.VEHICLE_CONSULT_MOVEMENTS,
+        ElementActionEnum.VEHICLE_UPDATE,
+        ElementActionEnum.VEHICLE_DISABLE,
+        ElementActionEnum.VEHICLE_ENABLE,
+        ElementActionEnum.VEHICLE_DELETE,
+
+        ElementActionEnum.ACTIVITY_CONSULT_MOVEMENTS,
+        ElementActionEnum.ACTIVITY_UPDATE,
+        ElementActionEnum.ACTIVITY_DISABLE,
+        ElementActionEnum.ACTIVITY_ENABLE,
+        ElementActionEnum.ACTIVITY_DELETE,
+
+        ElementActionEnum.COMMUNICATION_UPDATE,
+        ElementActionEnum.COMMUNICATION_DISABLE,
+        ElementActionEnum.COMMUNICATION_ENABLE,
+        ElementActionEnum.COMMUNICATION_DELETE,
+
+        ElementActionEnum.ALERT_RESOLVE,
+        ElementActionEnum.ALERT_CANCEL,
+        ElementActionEnum.ALERT_REOPEN,
+        ElementActionEnum.ALERT_UPDATE,
+        ElementActionEnum.ALERT_DISABLE,
+        ElementActionEnum.ALERT_ENABLE,
+        ElementActionEnum.ALERT_DELETE,
+    ],
     notification: {
         duration: {
             info: 5000,

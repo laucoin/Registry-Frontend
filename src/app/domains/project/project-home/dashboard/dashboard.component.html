@@ -1,9 +1,9 @@
 <div class='dashboard'>
     @if (GenericUtil.nonNull(facade.participantsStatusError())) {
-        <app-message [showImage]='false' [message]='facade.participantsStatusError()' />
+        <app-severity-information [showImage]='false' [message]='facade.participantsStatusError()' />
     }
     @if (GenericUtil.nonNull(facade.vehiclesStatusError())) {
-        <app-message [showImage]='false' [message]='facade.vehiclesStatusError()' />
+        <app-severity-information [showImage]='false' [message]='facade.vehiclesStatusError()' />
     }
     @if (GenericUtil.isNull(facade.participantsStatusError())) {
         <p-card class='total-participant'>

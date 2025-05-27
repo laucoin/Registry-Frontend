@@ -177,6 +177,7 @@
             "fr-FR": "Français (FR)",
             "en-US": "Anglais (US)"
         },
+        "updated": "Modifié",
         "legal": {
             "information": {
                 "name": "Informations",
@@ -238,7 +239,7 @@
             "configuration": "Configuration",
             "project-profiles": "Profiles d’accès",
             "movements": "Mouvements",
-            "communications": "Communications",
+            "alerts": "Alertes",
             "participants": "Participants",
             "groups": "Groupes",
             "vehicles": "Véhicules",
@@ -251,28 +252,29 @@
             "date": "dd/MM/yyyy",
             "time": "HH:mm",
             "datetime": "dd/MM/yyyy à HH:mm",
+            "interval": "{{first}} et {{second}}",
             "year": {
-                "one": "{{count}} année",
-                "few": "{{count}} années"
+                "one": "un an",
+                "few": "{{count}} ans"
             },
             "month": {
-                "one": "{{count}} mois",
+                "one": "1 mois",
                 "few": "{{count}} mois"
             },
             "day": {
-                "one": "{{count}} jour",
+                "one": "1 jour",
                 "few": "{{count}} jours"
             },
             "hour": {
-                "one": "{{count}} heure",
+                "one": "1 heure",
                 "few": "{{count}} heures"
             },
             "minute": {
-                "one": "{{count}} minute",
+                "one": "1 minute",
                 "few": "{{count}} minutes"
             },
             "second": {
-                "one": "{{count}} seconde",
+                "one": "1 seconde",
                 "few": "{{count}} secondes"
             },
             "last-refresh": "Dernière actualisation le {{datetime}}",
@@ -280,6 +282,10 @@
             "element-created-user": "Créé le {{datetime}} par {{user}}",
             "element-last-update": "Modifié le {{datetime}}",
             "element-last-update-user": "Modifié le {{datetime}} par {{user}}"
+        },
+        "img": {
+            "console_someone": "Image d’une personne consolée",
+            "no_data": "Image d’un virevoltant dans le désert"
         },
         "people": {
             "all": "Tous",
@@ -364,6 +370,10 @@
         }
     },
     "project-home": {
+        "alerts": {
+            "title": "Alertes en cours",
+            "see-more": "Voir plus"
+        },
         "dashboard": {
             "title": "Tableau de bord",
             "birthday": {
@@ -496,14 +506,6 @@
             "list": "Options",
             "select-all": "Tout sélectionner"
         },
-        "status": {
-            "IN_PROGRESS": "En cours",
-            "interval": {
-                "PLANNED": "Commence (dans {{interval}})",
-                "IN_PROGRESS": "En cours (depuis {{interval}})",
-                "FINISHED": "Terminée (depuis {{interval}})"
-            }
-        },
         "form": {
             "title": {
                 "create": "Créer un projet",
@@ -566,8 +568,7 @@
                 },
                 "delete": {
                     "title": "Supprimer le projet",
-                    "message": "Attention ! Tu vas définitivement supprimer le projet “{{element.name}}” ainsi que tous les élements qui lui sont liés (profils, mouvements, participants, etc.).",
-                    "hint": "La suppression du projet peut prendre un certain temps en fonction de sa taille. Tu peux continuer à utiliser l’application, mais il est préférable de ne pas quitter cette page avant que la suppression soit terminée."
+                    "message": "Attention ! Tu vas définitivement supprimer le projet “{{element.name}}” ainsi que tous les élements qui lui sont liés (profils, mouvements, participants, etc.). La suppression du projet peut prendre un certain temps en fonction de sa taille. Tu peux continuer à utiliser l’application, mais il est préférable de ne pas quitter cette page avant que la suppression soit terminée."
                 }
             }
         },
@@ -607,14 +608,6 @@
             "datetime": "Date & Heure",
             "status": "Statut",
             "visibility": "Disponibilité"
-        },
-        "status": {
-            "IN_PROGRESS": "En cours",
-            "interval": {
-                "PLANNED": "Accessible (dans {{interval}})",
-                "IN_PROGRESS": "Accessible (depuis {{interval}})",
-                "FINISHED": "Expiré (depuis {{interval}})"
-            }
         },
         "visible": {
             "true": "En cours de validité",
@@ -765,6 +758,7 @@
             "type": "Type",
             "visibility": "Visibilité"
         },
+        "last-communication": "Aucun contact depuis : {{duration}}",
         "communication": {
             "layer": {
                 "title": {
@@ -776,23 +770,10 @@
                     "few": "Dernières communications avec {{movement}}"
                 }
             },
-            "contact-button": "Contact",
             "no-message": "Aucun message",
-            "last-communication": {
-                "interval": "{{days}} et {{hours}}",
-                "day": {
-                    "one": "Un jour",
-                    "few": "{{days}} jours"
-                },
-                "hour": {
-                    "one": "un heure",
-                    "few": "{{hours}} heures"
-                }
-            },
-            "last-button": {
-                "zero": "Aucune communication",
-                "one": "Dernière communication",
-                "few": "Dernières communications"
+            "see-communication": {
+                "one": "Communication",
+                "few": "Communications"
             }
         },
         "content-layer-title": {
@@ -904,7 +885,7 @@
             }
         },
         "actions": {
-            "communications-history": "Historique des communications",
+            "communications": "Communications",
             "reverse": {
                 "IN": "Faire sortir",
                 "OUT": "Faire entrer"
@@ -1154,14 +1135,6 @@
         "available": {
             "true": "Disponible",
             "false": "Non disponible"
-        },
-        "status": {
-            "IN_PROGRESS": "Présent",
-            "interval": {
-                "PLANNED": "Arrive (dans {{interval}})",
-                "IN_PROGRESS": "Présent (depuis {{interval}})",
-                "FINISHED": "Parti (depuis {{interval}})"
-            }
         },
         "member-layer-title": {
             "one": "Membre",
@@ -1425,14 +1398,6 @@
         },
         "participant.zero": "Aucun participant",
         "description": "Description : ",
-        "status": {
-            "IN_PROGRESS": "Disponible",
-            "interval": {
-                "PLANNED": "Disponible (dans {{interval}})",
-                "IN_PROGRESS": "Disponible (depuis {{interval}})",
-                "FINISHED": "Non-Disponible (depuis {{interval}})"
-            }
-        },
         "available": {
             "true": "Disponible",
             "false": "Non-Disponible"
@@ -1552,13 +1517,14 @@
         }
     },
     "communications": {
+        "limited-feature": "Pour le moment l'affichage des communications est limité à un certain nombre. Merci de patienter pendant que nous travaillons à améliorer cette fonctionnalité.",
         "search-and-filter": {
             "start-datetime": "Après le",
             "end-datetime": "Avant le",
             "text": "Message",
             "visibility": "Visibilité"
         },
-        "movement-activity": "{{activity}} sortie le {{datetime}}",
+        "no-author": "Auteur inconnu ou supprimé",
         "visible": {
             "true": "Visible",
             "false": "Masqué"
@@ -1568,11 +1534,24 @@
                 "create": "Créer une communication",
                 "edit": "Modifier la communication du “{{dateTime}}”"
             },
-            "movement": "Activité",
+            "alert": {
+                "title": "Alerte",
+                "empty-search": "Aucune alerte trouvée",
+                "create": "Créer une alerte"
+            },
+            "movement": {
+                "title": "Activité",
+                "empty-search": "Aucune activité trouvée"
+            },
             "datetime": "Date & Heure",
             "message": "Message",
             "hint": {
                 "message": "Merci de ne pas mettre de données à caractère personnel dans ce message (ex : nom, prénom, numéro de téléphone, etc.)."
+            },
+            "actions": {
+                "add-movement": "Lier une activité",
+                "add-alert": "Créer une alerte",
+                "link-alert": "Lier une alerte"
             },
             "error": {
                 "movement": {
@@ -1587,9 +1566,13 @@
                     "required": "Une communication sans message ? À quoi elle sert ?",
                     "blank": "Non, non, non ! tu ne m’auras pas. Un message vide ça ne fonctionne pas !",
                     "maxlength": "T’as vu la longueur du nom 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c’est {{requiredLength}}."
+                },
+                "link": {
+                    "atLeastOneRequired": "Ton message doit être lié à une activité ou une alerte. Sinon, à quoi bon ?"
                 }
             },
             "placeholder": {
+                "alert": "Ex : Alerte incendie ({{date}})",
                 "movement": "Ex : Sortie plage ({{date}})",
                 "datetime": "Ex : {{date}}",
                 "message": "Ex : Ils vont bien et se situent dans la rue Henri Cochet à Marseille (13009)."
@@ -1607,7 +1590,7 @@
                 },
                 "enable": {
                     "title": "Afficher à nouveau la communication",
-                    "message": "Attention ! Tu vas à nouveau rendre  la communication visible. Elle sera de nouveau possible de la consulter via les éléments qui pourrait lui être liée."
+                    "message": "Attention ! Tu vas à nouveau rendre la communication visible. Il sera de nouveau possible de la consulter via les éléments qui pourrait lui être liée."
                 },
                 "delete": {
                     "title": "Supprimer la communication",
@@ -1616,14 +1599,6 @@
             }
         },
         "notifications": {
-            "create": {
-                "title": "+ Communication créée",
-                "message": "Une communication a été crée le {{datetime}}."
-            },
-            "edit": {
-                "title": "✏️ Communication modifiée",
-                "message": "La communication du {{datetime}} a été modifiée."
-            },
             "disable": {
                 "title": "🙈 Communication masquée",
                 "message": "La communication du {{datetime}} a été masquée."
@@ -1664,6 +1639,66 @@
             "NO_SELECTED_PROFILE": {
                 "title": "Aucun profil sélectionné",
                 "message": "Sélectionnes un profil lié à un projet pour effectuer cette action."
+            }
+        }
+    },
+    "alerts": {
+        "search-and-filter": {
+            "text": "Titre",
+            "start-datetime": "Après le",
+            "end-datetime": "Avant le",
+            "status": "Statut",
+            "visibility": "Visibilité"
+        },
+        "form": {
+            "title": "Titre de l'alerte",
+            "placeholder": {
+                "title": "Ex : Alerte incendie"
+            },
+            "error": {
+                "title": {
+                    "required": "Une alerte sans titre ? Sérieusement, donne-lui un nom !",
+                    "blank": "Non, non, non ! tu ne m’auras pas. Un titre vide ça ne fonctionne pas !",
+                    "maxlength": "T’as vu la longueur du titre 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c’est {{requiredLength}}."
+                }
+            }
+        },
+        "actions": {
+            "resolve": "Fermer/Résoudre",
+            "cancel": "Annuler",
+            "reopen": "Rouvrir",
+            "add-communication": "Ajouter du détail",
+            "communications": "Communications",
+            "disable": "Masquer",
+            "enable": "Démasquer",
+            "delete": "Supprimer",
+            "confirmations": {
+                "status": {
+                    "IN_PROGRESS": {
+                        "title": "Rouvrir l'alerte",
+                        "message": "L'alerte qui était fermée va être rouverte. Elle sera de nouveau visible sur l'écran d'accueil du projet."
+                    },
+                    "RESOLVED": {
+                        "title": "Fermer/Résoudre l'alerte",
+                        "message": "Tu vas fermer/résoudre l'alerte. Elle ne sera plus visible sur l'écran d'accueil du projet. Aucune communication ne pourra être ajoutée à l'alerte une fois fermée/résolue."
+                    },
+                    "CANCELED": {
+                        "title": "Annuler l'alerte",
+                        "message": "Tu vas annuler l'alerte. Elle ne sera plus visible sur l'écran d'accueil du projet."
+                    }
+                },
+                "disable": {
+                    "title": "Masquer l'alerte",
+                    "message": "Attention ! Tu vas masquer l'alerte. Tant qu’elle est masquée, elle ne pourra plus être consultée notamment sur l'écran d'accueil du projet."
+                },
+                "enable": {
+                    "title": "Afficher à nouveau l'alerte",
+                    "message": "Attention ! Tu vas à nouveau rendre l'alerte à nouveau visible. Il sera de nouveau possible de la consulter notamment via l'écran d'accueil si elle est en cours."
+                },
+                "delete": {
+                    "title": "Supprimer l'alerte",
+                    "message": "Attention ! Tu vas définitivement supprimer l'alerte. Elle sera donc définitivement supprimée et irrécupérable."
+                }
             }
         }
     }

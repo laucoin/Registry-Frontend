@@ -1,22 +1,14 @@
 import { ChangeDetectionStrategy, Component, input, InputSignal } from '@angular/core'
-import { TranslateModule } from '@ngx-translate/core'
-import { ToastMessageOptions } from 'primeng/api'
-import { MessagesModule } from 'primeng/messages'
-import { Message } from 'primeng/message'
+import { SeverityEnum } from '../../util-model/enumeration/severity.enum'
 
 @Component( {
     selector: 'app-message',
     standalone: true,
-    imports: [ TranslateModule, MessagesModule, Message ],
-    templateUrl: './message.component.html',
+    template: '<div class="message" [class]="severity()" [class.normal]="!reverseBackground()" [class.reversed]="reverseBackground()"><ng-content/></div>',
     styleUrl: './message.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
 } )
 export class MessageComponent {
-    public readonly showImage: InputSignal<boolean> = input( true )
-    public readonly message: InputSignal<ToastMessageOptions | undefined> = input.required()
-
-    protected get isError (): boolean {
-        return this.message()?.severity === 'error'
-    }
+    public readonly severity: InputSignal<SeverityEnum | string | undefined> = input()
+    public readonly reverseBackground: InputSignal<boolean> = input( false )
 }

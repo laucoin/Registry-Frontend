@@ -1,3 +1,6 @@
+@if (ProjectUtil.hasOption(registryFacade.selectedProject(), ProjectOptionEnum.ALERT)) {
+    <app-current-alerts />
+}
 <p-tabs [value]='currentTab()' (valueChange)='navigate($event)' scrollable>
     <p-tablist>
         <p-tab value='dashboard'>{{ 'project-home.dashboard.title' | translate }}</p-tab>

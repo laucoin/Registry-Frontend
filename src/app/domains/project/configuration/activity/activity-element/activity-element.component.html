@@ -1,7 +1,6 @@
 <app-element-card [element]='activity()'
                   [actions]='actions()'
                   [actionMenuVisible]='actionMenuVisible()'
-                  (action)='showDialogIfNeeded($event)'
                   [icon]='ProjectOptionEnum.ACTIVITY | optionIcon'>
     <div class='element-card'>
         <div class='activity-info d-flex flex-column justify-content-center'>
@@ -33,24 +32,16 @@
                    activity().allowedParticipants!.upper : "activities.participant.zero" | translate' />
         </div>
         <div class='status d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
-            @if (intervalStatus()) {
-                <app-severity-tag [severity]='intervalStatus()?.status === IntervalStatusEnum.IN_PROGRESS ? SeverityEnum.SUCCESS : intervalStatus()?.status ===
-                IntervalStatusEnum.FINISHED ? SeverityEnum.WARNING : SeverityEnum.INFO'
-                                  [value]='intervalStatus() | intervalFormat:"activities.status" | translate: { interval:
-                                  buildInterval(intervalStatus()!.interval!) }' />
+            @if (activity().status) {
+                <app-severity-tag [severity]='statusSeverity()' [value]='activity().status!.label' />
             }
         </div>
     </div>
     @if (activity().description) {
-        <div class='description mt-3'>
-            <b>{{ 'activities.description' | translate }}</b>{{ activity().description }}
+        <div class='mt-2'>
+            <app-message [severity]='SeverityEnum.SECONDARY' [reverseBackground]='true'>
+                <b>{{ 'activities.description' | translate }}</b>{{ activity().description }}
+            </app-message>
         </div>
     }
 </app-element-card>
-
-<app-confirmation-dialog
-        [loading]='facade.activityLoading()'
-        [element]='activity()'
-        [action]='action()'
-        (hide)='action.set(undefined)'
-        (handleAction)='handleAction($event)' />

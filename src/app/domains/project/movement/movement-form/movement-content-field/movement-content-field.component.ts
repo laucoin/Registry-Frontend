@@ -49,7 +49,7 @@ export class MovementContentFieldComponent implements ControlValueAccessor {
     public readonly inputId: InputSignal<string | undefined> = input()
     public readonly fluid: InputSignal<boolean> = input( false )
     public readonly invalid: InputSignal<boolean> = input( false )
-    public readonly emptyMessage: InputSignal<string | undefined> = input<string | undefined>( undefined )
+    public readonly emptyMessage: InputSignal<string | undefined> = input<string | undefined>()
     public readonly selectionLabel: InputSignal<string | undefined> = input.required()
 
     public readonly handleSearch: OutputEmitterRef<AutoCompleteCompleteEvent> = output()

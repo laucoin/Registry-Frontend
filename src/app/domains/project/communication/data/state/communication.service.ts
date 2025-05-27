@@ -9,8 +9,7 @@ import { CommunicationModel } from '../model/communication.model'
 import { CommunicationDto } from '../dto/communication.dto'
 import { HttpParams } from '@angular/common/http'
 import { MovementModel } from '../../../../../shared/util-model/model/movement.model'
-import { PairModel } from '../../../../../shared/util-model/model/pair.model'
-import { GenericUtil } from '../../../../../shared/util-tool/util/generic.util'
+import { AlertModel } from '../../../../../shared/util-model/model/alert.model'
 
 @Injectable( {
     providedIn: 'root',
@@ -35,22 +34,6 @@ export class CommunicationService extends GenericProjectService {
         )
     }
 
-    public findCommunicationsByMovementIds (
-        projectId: string | undefined,
-        movementIds: string[],
-    ): Observable<PairModel<CommunicationModel[]>[]> {
-        let builtParams: HttpParams = new HttpParams()
-        if (GenericUtil.nonNull( movementIds )) {
-            movementIds.forEach( (movementId: string): void => {
-                builtParams = builtParams.append( 'movementIds', movementId )
-            } )
-        }
-
-        return this.http.get<PairModel<CommunicationModel[]>[]>(
-            `${this.buildRequestBaseUrl( projectId )}/movements${movementIds?.length > 0 ? '?' + builtParams.toString() : ''}`,
-        )
-    }
-
     public findCommunicationById (projectId: string | undefined, id: string): Observable<CommunicationModel> {
         return this.http.get<CommunicationModel>( `${this.buildRequestBaseUrl( projectId )}/${id}` )
     }
@@ -61,6 +44,18 @@ export class CommunicationService extends GenericProjectService {
     ): Observable<MovementModel[]> {
         return this.http.get<MovementModel[]>(
             `${this.buildRequestBaseUrl( projectId )}/search/movements${textSearched ? '?' + new HttpParams().set(
+                'textSearched',
+                textSearched,
+            ).toString() : ''}`,
+        )
+    }
+
+    public searchAlerts (
+        projectId: string | undefined,
+        textSearched: string | undefined,
+    ): Observable<AlertModel[]> {
+        return this.http.get<AlertModel[]>(
+            `${this.buildRequestBaseUrl( projectId )}/search/alerts${textSearched ? '?' + new HttpParams().set(
                 'textSearched',
                 textSearched,
             ).toString() : ''}`,

@@ -12,7 +12,7 @@ export interface ParticipantModel extends GenericProjectModel {
     birthday: string
     major: boolean
     type: SelectItem<ParticipantTypeEnum>
-    groups: GroupModel[]
+    groups: GroupModel[] | undefined
     status: SelectItem<PresenceStatusEnum>
     startAvailability: CustomDatetimeModel | undefined
     endAvailability: CustomDatetimeModel | undefined

@@ -8,33 +8,7 @@ export interface ContextConfigModel {
     }
     defaultLanguage: string
     maintainerEmail: string
-    user: {
-        actions: ElementActionEnum[]
-    }
-    project: {
-        actions: ElementActionEnum[]
-    }
-    projectProfile: {
-        actions: ElementActionEnum[]
-    }
-    participant: {
-        actions: ElementActionEnum[]
-    }
-    movement: {
-        actions: ElementActionEnum[]
-    },
-    group: {
-        actions: ElementActionEnum[]
-    }
-    vehicle: {
-        actions: ElementActionEnum[]
-    }
-    activity: {
-        actions: ElementActionEnum[]
-    }
-    communication: {
-        actions: ElementActionEnum[]
-    }
+    enabledActions: ElementActionEnum[]
     notification: {
         duration: {
             info: number | undefined

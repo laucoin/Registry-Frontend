@@ -1,6 +1,5 @@
 <p-dialog
         (close)='closeLayer.emit($event)'
-        [header]='header()'
         modal
         dismissableMask
         [draggable]='false'
@@ -8,6 +7,13 @@
         [(visible)]='visible'
         [position]='registryFacade.tinyScreen() ? "bottom" : "right"'
         [style]='dialogStyle'>
+    <ng-template #header>
+        @if (getTemplate('header')) {
+            <ng-container [ngTemplateOutlet]='getTemplate("header")' />
+        } @else {
+            <div class='layer-title'>{{ title() }}</div>
+        }
+    </ng-template>
     <ng-content />
     <ng-template #footer>
         <ng-container [ngTemplateOutlet]='getTemplate("footer")' />

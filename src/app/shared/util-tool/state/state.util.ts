@@ -65,7 +65,7 @@ export class StateUtil {
     }
 
     private static notificationLife (severity: SeverityEnum): number | undefined {
-        const index: number = Object.keys( AppConfig.config.notification.duration ).findIndex( (key: string): boolean => key === severity )
-        return Object.values( AppConfig.config.notification.duration )[index]
+        const index: number = Object.keys( AppConfig.settings.notification.duration ).findIndex( (key: string): boolean => key === severity )
+        return Object.values( AppConfig.settings.notification.duration )[index]
     }
 }

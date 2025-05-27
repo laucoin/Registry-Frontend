@@ -1,0 +1,17 @@
+<div>
+    <app-communication-form [initialAlert]='alert()' [redirect]='false' />
+</div>
+
+<div>
+    @for (communication of facade.alertCommunicationsPage()?.content; track communication.id; ) {
+        <app-dialog-element [communication]='communication'
+                            [previousAuthorId]='getPreviousAuthorId($index)'
+                            [nextAuthorId]='getNextAuthorId($index, $last)' />
+    }
+</div>
+
+@if ((facade.alertCommunicationsPage()?.content?.length ?? -1) < (facade.alertCommunicationsPage()?.totalElements ?? 0)) {
+    <div class='d-flex justify-content-center'>
+        <p class='secondary-color'>{{ 'communications.limited-feature' | translate }}</p>
+    </div>
+}

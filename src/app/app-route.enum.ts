@@ -7,7 +7,6 @@ import { UserRoutesEnum } from './domains/user/user-routes.enum'
 import { VehicleRoutesEnum } from './domains/project/configuration/vehicle/vehicle-routes.enum'
 import { ActivityRoutesEnum } from './domains/project/configuration/activity/activity-routes.enum'
 import { ConfigurationRoutesEnum } from './domains/project/configuration/configuration-routes.enum'
-import { CommunicationRoutesEnum } from './domains/project/communication/communication-routes.enum'
 
 export enum AppRouteEnum {
     AUTH_CALLBACK = 'auth/callback',
@@ -26,10 +25,8 @@ export enum AppRouteEnum {
 
     PROJECTS_MOVEMENTS = `${PROJECTS}/${ProjectRoutesEnum.MOVEMENTS}`,
     PROJECTS_MOVEMENTS_EDITION = `${PROJECTS_MOVEMENTS}/${MovementRoutesEnum.EDIT}`,
-    PROJECTS_MOVEMENTS_COMMUNICATIONS = `${PROJECTS_MOVEMENTS}/${MovementRoutesEnum.COMMUNICATIONS}`,
 
-    PROJECTS_COMMUNICATIONS = `${PROJECTS}/${ProjectRoutesEnum.COMMUNICATIONS}`,
-    PROJECTS_COMMUNICATIONS_EDITION = `${PROJECTS_COMMUNICATIONS}/${CommunicationRoutesEnum.EDIT}`,
+    PROJECTS_ALERTS = `${PROJECTS}/${ProjectRoutesEnum.ALERTS}`,
 
     PROJECTS_CONFIGURATION = `${PROJECTS}/${ProjectRoutesEnum.CONFIGURATION}`,
 

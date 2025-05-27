@@ -148,7 +148,7 @@ export class ProjectFormComponent extends GenericFormComponent<ProjectModel, Pro
         this.name.patchValue( element.name )
         this.beginDateTime.patchValue( element.begin )
         this.endDateTime.patchValue( element.end )
-        element.options.forEach( (option: SelectItem<ProjectOptionEnum>): void =>
+        element.options?.forEach( (option: SelectItem<ProjectOptionEnum>): void =>
             this.getOptionControl( option.value ).patchValue( true ),
         )
     }

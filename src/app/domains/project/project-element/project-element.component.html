@@ -1,7 +1,6 @@
 <app-element-card [element]='project()'
                   [actionMenuVisible]='actionMenuVisible()'
                   [actions]='actions()'
-                  (action)='showDialogIfNeeded($event)'
                   icon='pi pi-calendar'>
     <div class='element-card'>
         <div class='project-info d-flex flex-column justify-content-center'>
@@ -26,7 +25,7 @@
         </div>
         <div class='options-and-status d-flex flex-column' [class.justify-content-center]='registryFacade.tinyScreen()'>
             <div class='d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
-                @let nbOfOptions = project().options.length;
+                @let nbOfOptions = project().options?.length ?? 0;
                 <app-severity-tag
                         (click)='nbOfOptions > 1 ? layerOpened = true : undefined'
                         (keydown.enter)='nbOfOptions > 1 ? layerOpened = true : undefined'>
@@ -34,7 +33,7 @@
                       [class.hover-underline]='nbOfOptions > 1'>
                     {{
                         'projects.options' | pluralTranslation: project().options | translate: {
-                            name: project().options[0]?.label,
+                            name: project().options?.[0]?.label,
                             others: nbOfOptions - 1
                         }
                     }}
@@ -43,42 +42,41 @@
                 </app-severity-tag>
             </div>
             <div class='d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
-                @if (intervalStatus()) {
-                    <app-severity-tag [severity]='intervalStatus()?.status === IntervalStatusEnum.IN_PROGRESS ? SeverityEnum.SUCCESS : intervalStatus()?.status ===
-                IntervalStatusEnum.FINISHED ? SeverityEnum.WARNING : SeverityEnum.INFO'
-                                      [value]='intervalStatus() | intervalFormat:"projects.status" | translate: { interval:
-                                  buildInterval(intervalStatus()!.interval!) }' />
+                @if (project().status) {
+                    <app-severity-tag [severity]='statusSeverity()' [value]='project().status!.label' />
                 }
             </div>
         </div>
         <div class='action-button d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
-            @if (buttonAction()) {
-                <p-button [icon]='buttonAction()!.icon'
-                          [label]='buttonAction()!.label | translate'
-                          [disabled]='buttonAction()!.disabled'
+            @if (joinable()) {
+                <p-button icon='pi pi-arrow-right'
+                          [label]='"projects.actions.select" | translate'
+                          [disabled]='!project().visible'
                           severity='info'
                           size='small'
                           outlined
                           rounded
-                          (onClick)='showDialogIfNeeded(buttonAction()!)' />
+                          (onClick)='selectProject()' />
+            } @else if (supportable()) {
+                <p-button icon='pi pi-user-plus'
+                          [label]='"projects.actions.create-support" | translate'
+                          [disabled]='!project().visible'
+                          severity='info'
+                          size='small'
+                          outlined
+                          rounded
+                          (onClick)='confirmSupportProfileCreation()' />
             }
         </div>
     </div>
 </app-element-card>
 
 <app-layer [(visible)]='layerOpened'
-           [header]='"projects.options.list" | translate'>
+           [title]='"projects.options.list" | translate'>
     <p-listbox
             styleClass='max-list-box-height'
             readonly
-            [options]='project().options'
+            [options]='project().options ?? []'
             scrollHeight='100%'
             optionLabel='label' />
 </app-layer>
-
-<app-confirmation-dialog
-        [loading]='facade.projectLoading()'
-        [element]='project()'
-        [action]='action()'
-        (hide)='action.set(undefined)'
-        (handleAction)='handleAction($event)' />
