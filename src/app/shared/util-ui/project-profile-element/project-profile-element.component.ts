@@ -64,12 +64,13 @@ export class ProjectProfileElementComponent extends GenericElementComponent impl
     protected readonly actions: Signal<MenuItem[]> = computed( (): MenuItem[] => {
         const currentUser: CurrentUserModel | undefined = this.registryFacade.currentUser()
         const isCurrentUserProfile: boolean = currentUser?.id === this.profile().user.id
+        const isSelectedProfile: boolean = this.registryFacade.selectedProject()?.id === this.profile().project.id
 
         return [
             {
                 label: 'project-profiles.actions.select',
                 icon: 'pi pi-arrow-right',
-                visible: isCurrentUserProfile && this.actionIsEnable( ElementActionEnum.PROJECT_PROFILE_SELECT ),
+                visible: isCurrentUserProfile && !isSelectedProfile && this.actionIsEnable( ElementActionEnum.PROJECT_PROFILE_SELECT ),
                 command: (): void => {
                     this.subscriptions.add(
                         this.registryFacade.selectUserProjectProfile( this.profile().id ).pipe(
@@ -81,7 +82,7 @@ export class ProjectProfileElementComponent extends GenericElementComponent impl
             {
                 label: 'project-profiles.actions.edit',
                 icon: 'pi pi-pen-to-square',
-                disabled: this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_U ),
+                disabled: !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_U ),
                 visible: !isCurrentUserProfile && this.actionIsEnable( ElementActionEnum.PROJECT_PROFILE_UPDATE ),
                 command: (): void => {
                     this.router.navigateByUrl(
@@ -92,8 +93,8 @@ export class ProjectProfileElementComponent extends GenericElementComponent impl
             {
                 label: 'project-profiles.actions.disable',
                 icon: 'pi pi-ban',
-                disabled: this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_U ),
-                visible: !isCurrentUserProfile && this.actionIsEnable( ElementActionEnum.PROJECT_PROFILE_BLOCK ) && this.profile().visible,
+                disabled: !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_U ),
+                visible: !isCurrentUserProfile && this.actionIsEnable( ElementActionEnum.PROJECT_PROFILE_BLOCK ) && this.profile().visible && this.profile().status?.value === ProfileStatusEnum.ACCEPTED,
                 command: (): void => {
                     this.confirmationService.confirm(
                         this.buildConfirmation(
@@ -109,7 +110,7 @@ export class ProjectProfileElementComponent extends GenericElementComponent impl
             {
                 label: 'project-profiles.actions.enable',
                 icon: 'pi pi-replay',
-                disabled: this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_U ),
+                disabled: !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_U ),
                 visible: !isCurrentUserProfile && this.actionIsEnable( ElementActionEnum.PROJECT_PROFILE_UNBLOCK ) && !this.profile().visible,
                 command: (): void => {
                     this.confirmationService.confirm(
@@ -126,7 +127,7 @@ export class ProjectProfileElementComponent extends GenericElementComponent impl
             {
                 label: 'project-profiles.actions.delete',
                 icon: 'pi pi-trash',
-                disabled: this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_D ),
+                disabled: !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_D ),
                 visible: this.actionIsEnable( ElementActionEnum.PROJECT_PROFILE_DELETE ),
                 command: (): void => {
                     this.confirmationService.confirm(

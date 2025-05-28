@@ -1,7 +1,8 @@
 <app-list (updateRequired)='loadPage($event)'
           [elementPage]='facade.projectsPage()'
           [error]='facade.projectsPageError()'
-          [loading]='facade.projectsPageLoading()'>
+          [loading]='facade.projectsPageLoading()'
+          emptyMessagePrefix='projects.notifications.EMPTY'>
     <ng-template appTemplate='search' [formGroup]='form' let-pageEvent>
         <div class='field'>
             <label for='text-search-field'>{{ 'projects.search-and-filter.text' | translate }}</label>
@@ -66,4 +67,22 @@
     <ng-template appTemplate='element' let-project>
         <app-project-element [project]='project' />
     </ng-template>
+    @if (!hasFilters()) {
+        <ng-template appTemplate='empty'>
+            <div class='p-4'>
+                <h2>{{ 'global.welcome.title' | translate }}</h2>
+                <app-info />
+                <div class='d-flex flex-column justify-content-center align-items-center'>
+                    <p>{{ 'global.welcome.begin' | translate }}</p>
+                    <p-button class='m-1'
+                              severity='success'
+                              outlined
+                              rounded
+                              [label]='"global.welcome.create-project" | translate'
+                              icon='pi pi-plus'
+                              [routerLink]='ProjectRoutesEnum.CREATE' />
+                </div>
+            </div>
+        </ng-template>
+    }
 </app-list>

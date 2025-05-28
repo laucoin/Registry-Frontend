@@ -63,6 +63,7 @@
                                        [selectionLabel]='"groups.form.members.selected" | pluralTranslation: participants.value |
                                        translate'
                                        [emptyMessage]='"groups.form.members.empty" | translate'
+                                       [emptySelectionMessage]='"groups.form.members.empty-search" | translate'
                                        inputId='members'
                                        (handleSearch)='handleSearch($event.query)' />
             <app-form-field-error [errors]='name.errors'

@@ -32,8 +32,7 @@
             @if (GenericUtil.nonNull(getTemplate('search'))) {
                 <div class='col-12 order-2 order-sm-1'>
                     <p-panel [style]='{ "border": "none" }' [header]='"global.actions.search-and-filter" | translate'
-                             toggleable
-                             [collapsed]='registryFacade.tinyScreen()'>
+                             toggleable collapsed>
                         <ng-container [ngTemplateOutlet]='getTemplate("search")'
                                       [ngTemplateOutletContext]='{ $implicit: pageEvent() }' />
                     </p-panel>
@@ -62,14 +61,22 @@
             @if (GenericUtil.nonNull(getTemplate('error'))) {
                 <ng-container [ngTemplateOutlet]='getTemplate("error")' />
             } @else {
-                <app-severity-information [message]='error()!' />
+                <div class='d-flex flex-column justify-content-center align-items-center'>
+                    <h2>{{ error()!.summary! | translate }}</h2>
+                    <p class='error'>{{ error()!.detail! | translate }}</p>
+                </div>
             }
         } @else if (!loading()) {
-            @if (getTemplate('empty')) {
-                <ng-container [ngTemplateOutlet]='getTemplate("empty")' />
-            } @else {
-                <app-severity-information [message]='message()' />
-            }
+            <div class='p-4'>
+                @if (getTemplate('empty')) {
+                    <ng-container [ngTemplateOutlet]='getTemplate("empty")' />
+                } @else {
+                    <div class='d-flex flex-column justify-content-center align-items-center'>
+                        <h2>{{ message().summary! | translate }}</h2>
+                        <p>{{ message().detail! | translate }}</p>
+                    </div>
+                }
+            </div>
         }
     </ng-template>
 </p-data-view>

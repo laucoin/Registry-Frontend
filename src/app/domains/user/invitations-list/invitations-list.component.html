@@ -1,7 +1,8 @@
 <app-list (updateRequired)='loadPage($event)'
           [elementPage]='registryFacade.userProjectProfileInvitationsPage()'
           [error]='registryFacade.userProjectProfileInvitationsPageError()'
-          [loading]='registryFacade.userProjectProfileInvitationsPageLoading()'>
+          [loading]='registryFacade.userProjectProfileInvitationsPageLoading()'
+          emptyMessagePrefix='project-profiles.notifications.EMPTY'>
     <ng-template appTemplate='search' [formGroup]='form' let-pageEvent>
         <div class='row'>
             <div class='col-12 col-sm-6 col-md-12 col-lg-6 search-field'>
@@ -36,4 +37,30 @@
     <ng-template appTemplate='element' let-profile>
         <app-project-profile-element [profile]='profile' view='user' />
     </ng-template>
+    @if (!hasFilters()) {
+        <ng-template appTemplate='empty'>
+            <div class='p-4'>
+                <div class='d-flex flex-column justify-content-center align-items-center'>
+                    <h2>{{ 'project-profiles.notifications.EMPTY-INVITATION.message' | translate }}</h2>
+                    <p>{{ 'project-profiles.empty-invitation' | translate }}</p>
+                    <div class='d-flex justify-content-around'>
+                        <p-button class='m-1'
+                                  severity='success'
+                                  outlined
+                                  rounded
+                                  [label]='"project-profiles.actions.create-project" | translate'
+                                  icon='pi pi-plus'
+                                  [routerLink]='"/" + AppRouteEnum.PROJECTS_CREATION' />
+                        <p-button class='m-1'
+                                  severity='info'
+                                  outlined
+                                  rounded
+                                  [label]='"project-profiles.actions.profiles" | translate'
+                                  icon='pi pi-unlock'
+                                  [routerLink]='"/" + AppRouteEnum.USERS_PROFILES' />
+                    </div>
+                </div>
+            </div>
+        </ng-template>
+    }
 </app-list>

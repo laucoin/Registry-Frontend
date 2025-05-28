@@ -50,6 +50,7 @@ import {
 } from '../data/state/movement.action'
 import { MovementTypeEnum } from '../../../../shared/util-model/enumeration/movement-type.enum'
 import { ProjectOptionEnum } from '../../../../shared/util-model/enumeration/project-option.enum'
+import { PresenceStatusEnum } from '../../../../shared/util-model/enumeration/presence-status.enum'
 
 @Component( {
     selector: 'app-movement-form',
@@ -113,6 +114,8 @@ export class MovementFormComponent extends GenericFormComponent<MovementModel, M
     )
     protected readonly drivers: WritableSignal<SelectItem<ParticipantModel>[]> = signal( [] )
 
+    protected readonly interpretedMovementType: WritableSignal<PresenceStatusEnum[]> = signal( [] )
+
     protected activeTab: number = 1
 
     public constructor () {
@@ -164,6 +167,10 @@ export class MovementFormComponent extends GenericFormComponent<MovementModel, M
 
     protected handleTypeChange (type: string | undefined): void {
         this.updateContentAndReasonRules( type, this.contentType.value )
+
+        if (type == MovementTypeEnum.IN) this.interpretedMovementType.set( [ PresenceStatusEnum.IN ] )
+        else if (type == MovementTypeEnum.OUT) this.interpretedMovementType.set( [ PresenceStatusEnum.UNAVAILABLE, PresenceStatusEnum.OUT ] )
+        else this.interpretedMovementType.set( [] )
     }
 
     protected handleContentTypeChange (contentType: string): void {
@@ -213,7 +220,8 @@ export class MovementFormComponent extends GenericFormComponent<MovementModel, M
     private handleContentChange (): void {
         this.subscriptions.add(
             this.participantContent.valueChanges.pipe(
-                map( (item: MovementContentModel[]): void => this.drivers.set(
+                map( (content: MovementContentModel[]): MovementContentModel[] => content.filter( (element: MovementContentModel): boolean => element.participant?.major ?? true ) ),
+                tap( (item: MovementContentModel[]): void => this.drivers.set(
                     item.map( (element: MovementContentModel): SelectItem<ParticipantModel> => ParticipantUtil.toSelectItem(
                         element.participant ) ),
                 ) ),

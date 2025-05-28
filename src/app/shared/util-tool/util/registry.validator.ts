@@ -22,7 +22,7 @@ export class RegistryValidators {
             const value: CustomDatetimeModel | undefined = 'date' in control.value
                                                            ? control.value
                                                            : DateUtil.toCustomDateTime( control.value )
-            if (DateUtil.isBefore( value, min )) {
+            if (DateUtil.isCustomBefore( value, min )) {
                 return { minDate: { min: formatedMinDate } }
             }
 
@@ -129,7 +129,7 @@ export class RegistryValidators {
             const value: CustomDatetimeModel | undefined = control.value
             if (!value) return null
 
-            if (StringUtil.isNullOrBlank( value.date ) && StringUtil.isNullOrBlank( value.time )) {
+            if (StringUtil.isNullOrBlank( value.date ) && !StringUtil.isNullOrBlank( value.time )) {
                 return { dateRequiredForTime: true }
             }
 

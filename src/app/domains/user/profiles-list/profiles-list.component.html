@@ -1,7 +1,8 @@
 <app-list (updateRequired)='loadPage($event)'
           [elementPage]='registryFacade.userProjectProfilesPage()'
           [error]='registryFacade.userProjectProfilesPageError()'
-          [loading]='registryFacade.userProjectProfilesPageLoading()'>
+          [loading]='registryFacade.userProjectProfilesPageLoading()'
+          emptyMessagePrefix='project-profiles.notifications.EMPTY'>
     <ng-template appTemplate='search' [formGroup]='form' let-pageEvent>
         <div class='field'>
             <label for='profile-text-search-field'>{{ 'preferences.search-and-filter.text' | translate }}</label>
@@ -46,4 +47,30 @@
     <ng-template appTemplate='element' let-profile>
         <app-project-profile-element [profile]='profile' view='user' />
     </ng-template>
+    @if (!hasFilters()) {
+        <ng-template appTemplate='empty'>
+            <div class='p-4'>
+                <div class='d-flex flex-column justify-content-center align-items-center'>
+                    <h2>{{ 'project-profiles.notifications.EMPTY.message' | translate }}</h2>
+                    <p>{{ 'project-profiles.empty' | translate }}</p>
+                    <div class='d-flex justify-content-around'>
+                        <p-button class='m-1'
+                                  severity='success'
+                                  outlined
+                                  rounded
+                                  [label]='"project-profiles.actions.create-project" | translate'
+                                  icon='pi pi-plus'
+                                  [routerLink]='"/" + AppRouteEnum.PROJECTS_CREATION' />
+                        <p-button class='m-1'
+                                  severity='info'
+                                  outlined
+                                  rounded
+                                  [label]='"project-profiles.actions.invitations" | translate'
+                                  icon='pi pi-envelope'
+                                  [routerLink]='"/" + AppRouteEnum.USERS_INVITATIONS' />
+                    </div>
+                </div>
+            </div>
+        </ng-template>
+    }
 </app-list>

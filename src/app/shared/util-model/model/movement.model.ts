@@ -13,6 +13,4 @@ export interface MovementModel extends GenericProjectModel {
     activity: SelectItem<ActivityModel> | undefined
     contentType: ParticipantTypeEnum
     content: MovementContentModel[]
-    lastCommunicationDateTime: Date | undefined
-    communicationsCount: number
 }

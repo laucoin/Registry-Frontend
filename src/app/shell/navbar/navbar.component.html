@@ -29,6 +29,10 @@
             </a>
         </ng-template>
         <ng-template #end>
+            @if (!registryFacade.tinyScreen()) {
+                <p-button (onClick)='helpDialogOpened = true' text rounded icon='pi pi-question-circle' size='large'
+                          styleClass='me-3' />
+            }
             @if (registryFacade.currentUser()) {
                 <p-button (onClick)='userMenu.toggle($event)' severity='secondary' [text]='registryFacade.tinyScreen()'>
                     <p-avatar [textContent]='initials()' shape='circle' />
@@ -68,8 +72,19 @@
 
 <div [style]='{ "height": showContextMenu() ? "140px" : "82px" }'></div>
 
+<p-dialog
+        class='text-align-justify'
+        modal
+        [header]='"global.welcome.title" | translate'
+        [breakpoints]='breakpoint'
+        [(visible)]='helpDialogOpened'
+        [draggable]='false'
+        [resizable]='false'>
+    <app-info />
+</p-dialog>
+
 <p-popover #userMenu appendTo='body'>
-    <p-menu [model]='userMenuItems'
+    <p-menu [model]='userMenuItems()'
             [style]='{
                 "border": "none",
             }'>

@@ -94,8 +94,14 @@ export const sgdfConfig: ContextConfigModel = {
         },
     } ),
     logo: {
-        light: 'img/SGDF/logo-white.svg',
-        dark: 'img/SGDF/logo-white.svg',
+        normal: {
+            light: 'img/SGDF/logo-white.svg',
+            dark: 'img/SGDF/logo-white.svg',
+        },
+        small: {
+            light: 'img/SGDF/small-logo-white.svg',
+            dark: 'img/SGDF/small-logo-white.svg',
+        },
     },
     defaultLanguage: 'fr-FR',
     maintainerEmail: 'laucoin@sgdf.fr',
@@ -122,6 +128,7 @@ export const sgdfConfig: ContextConfigModel = {
         ElementActionEnum.PARTICIPANT_CONSULT_MOVEMENTS,
         ElementActionEnum.PARTICIPANT_UPDATE,
         ElementActionEnum.PARTICIPANT_DELETE,
+        ElementActionEnum.PARTICIPANT_DISABLE,
         ElementActionEnum.PARTICIPANT_ENABLE,
         ElementActionEnum.PARTICIPANT_REMOVE_FROM_GROUP,
         ElementActionEnum.PARTICIPANT_DELETE,

@@ -171,7 +171,13 @@ export class ProjectProfileState extends GenericProjectElementState<ProjectProfi
 
     @Action( ResetProjectProfileState )
     public resetProjectProfileState (ctx: StateContext<ProjectProfileStateModel>): void {
-        ctx.setState( defaultProjectProfileState )
+        ctx.setState( {
+            ...defaultProjectProfileState,
+            _metadata: {
+                ...defaultProjectProfileState._metadata,
+                status: ctx.getState()._metadata.status,
+            },
+        } )
     }
 
     @Action( StartProjectProfilesPageLoader )

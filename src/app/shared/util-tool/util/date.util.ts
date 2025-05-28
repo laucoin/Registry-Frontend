@@ -31,7 +31,7 @@ export class DateUtil {
         )
 
         return toSort.sort( (a: CustomDatetimeModel | undefined, b: CustomDatetimeModel | undefined): 1 | -1 | 0 => {
-            if (DateUtil.isBefore( a, b )) {
+            if (DateUtil.isCustomBefore( a, b )) {
                 return ascending ? -1 : 1
             } else if (DateUtil.isCustomDateAfter( a, b )) {
                 return ascending ? 1 : -1
@@ -41,13 +41,18 @@ export class DateUtil {
         } )
     }
 
-    public static isBefore (actual: CustomDatetimeModel | undefined, other: CustomDatetimeModel | undefined): boolean {
-        const actualDate: number | undefined = DateUtil.toDate( actual )?.getTime()
-        const otherDate: number | undefined = DateUtil.toDate( other )?.getTime()
+    public static isCustomBefore (
+        actual: CustomDatetimeModel | undefined,
+        other: CustomDatetimeModel | undefined,
+    ): boolean {
+        return this.isBefore( DateUtil.toDate( actual ), DateUtil.toDate( other ) )
+    }
+
+    public static isBefore (actual: Date | undefined, other: Date | undefined): boolean {
         switch (true) {
             case GenericUtil.isNull( other ):
                 return false
-            case GenericUtil.isNull( actual ) || actualDate! < otherDate!:
+            case GenericUtil.isNull( actual ) || new Date( actual! ).getTime() < new Date( other! ).getTime():
                 return true
             default:
                 return false
@@ -78,14 +83,10 @@ export class DateUtil {
     }
 
     public static isAfter (actual: Date | undefined, other: Date | undefined): boolean {
-        if (GenericUtil.isNull( actual ) || GenericUtil.isNull( other )) return false
-        const actualDate: number | undefined = new Date( actual! ).getTime()
-        const otherDate: number | undefined = new Date( other! ).getTime()
-
         switch (true) {
             case GenericUtil.isNull( other ):
                 return false
-            case GenericUtil.isNull( actual ) || actualDate! > otherDate!:
+            case GenericUtil.isNull( actual ) || new Date( actual! ).getTime()! > new Date( other! ).getTime()!:
                 return true
             default:
                 return false
@@ -125,7 +126,7 @@ export class DateUtil {
     public static toIsoTime (time: Date | undefined): string | undefined {
         if (!time) return undefined
         const dateString: string = new Date( time ).toISOString()
-        return dateString.slice( 11, dateString.length - 1 )
+        return dateString.slice( 11, dateString.length )
     }
 
     public static fromIsoDate (date: string | undefined): Date | undefined {

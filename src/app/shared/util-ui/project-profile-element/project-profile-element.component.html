@@ -1,66 +1,66 @@
-@if (registryFacade.currentUser()) {
-    <app-element-card [element]='profile()'
-                      [actionMenuVisible]='actionMenuVisible()'
-                      [actions]='actions()'
-                      [icon]='registryFacade.currentUser()!.preferences.selectedProfile?.id === profile().id ? "pi pi-verified" : "pi pi-user"'>
-        <div class='element-card'>
-            <div class='profile-info d-flex flex-column justify-content-center'>
-                <div class='profile-name d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
-                    @if (view() === 'user') {
-                        {{ profile().project.name }}
-                    } @else {
-                        {{ (profile().user.firstName | titlecase) + ' ' + (profile().user.lastName | uppercase) }}
-                    }
-                </div>
-                @if (profile().startAccess) {
-                    <div class='d-flex mt-1 align-content-center' [class.justify-content-center]='registryFacade.tinyScreen()'>
-                        <i class='pi pi-play-circle'></i>
-                        <span class='ms-1'>{{ profile().startAccess | customDateFormat }}</span>
-                    </div>
-                }
-                @if (profile().endAccess) {
-                    <div class='d-flex align-content-center'
-                         [class.justify-content-center]='registryFacade.tinyScreen()'
-                         [class.mt-1]='!profile().startAccess'>
-                        <i class='pi pi-stop-circle'></i>
-                        <span class='ms-1'>{{ profile().endAccess | customDateFormat }}</span>
-                    </div>
+<app-element-card [element]='profile()'
+                  [actionMenuVisible]='actionMenuVisible()'
+                  [actions]='actions()'
+                  [icon]='registryFacade.currentUser()!.preferences.selectedProfile?.id === profile().id ? "pi pi-verified" : "pi pi-user"'>
+    <div class='element-card'>
+        <div class='profile-info d-flex flex-column justify-content-center'>
+            <div class='profile-name d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
+                @if (view() === 'user') {
+                    {{ profile().project.name }}
+                } @else {
+                    {{ (profile().user.firstName | titlecase) + ' ' + (profile().user.lastName | uppercase) }}
                 }
             </div>
-            <div class='role d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
-                <app-severity-tag [value]='profile().role.label!' />
-            </div>
-            @if (profile().status.value !== ProfileStatusEnum.INVITED || profile().user.id !== registryFacade.currentUser()!.id) {
-                <div class='status d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
-                    @if (profile().availabilityStatus) {
-                        <app-severity-tag [severity]='availabilityStatusSeverity()' [value]='profile().availabilityStatus.label' />
-                    }
+            @if (profile().startAccess) {
+                <div class='d-flex mt-1 align-content-center' [class.justify-content-center]='registryFacade.tinyScreen()'>
+                    <i class='pi pi-play-circle'></i>
+                    <span class='ms-1'>{{ profile().startAccess | customDateFormat }}</span>
                 </div>
-                <div class='invitation-status d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
-                    <app-severity-tag [severity]='statusSeverity()' [value]='profile().status.label!' />
-                </div>
-            } @else {
-                <div class='invitation-form d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
-                    <div class='d-flex flex-column'>
-                        <div>{{ 'project-profiles.manage-acceptance' | translate }}</div>
-                        <div class='d-flex justify-content-center mt-2'>
-                            <p-button
-                                    [label]='"project-profiles.actions.reject" | translate'
-                                    rounded
-                                    text
-                                    severity='danger'
-                                    (onClick)='confirmManageAcceptance(ProfileStatusEnum.REJECTED)' />
-                            <p-button
-                                    class='ms-2'
-                                    [label]='"project-profiles.actions.accept" | translate'
-                                    rounded
-                                    text
-                                    severity='success'
-                                    (onClick)='confirmManageAcceptance(ProfileStatusEnum.ACCEPTED)' />
-                        </div>
-                    </div>
+            }
+            @if (profile().endAccess) {
+                <div class='d-flex align-content-center'
+                     [class.justify-content-center]='registryFacade.tinyScreen()'
+                     [class.mt-1]='!profile().startAccess'>
+                    <i class='pi pi-stop-circle'></i>
+                    <span class='ms-1'>{{ profile().endAccess | customDateFormat }}</span>
                 </div>
             }
         </div>
-    </app-element-card>
-}
+        <div class='role d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
+            <app-severity-tag [value]='profile().role.label!' />
+        </div>
+        @if (profile().status.value !== ProfileStatusEnum.INVITED || profile().user.id !== registryFacade.currentUser()!.id) {
+            <div class='status d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
+                @if (profile().availabilityStatus) {
+                    <app-severity-tag [severity]='availabilityStatusSeverity()' [value]='profile().availabilityStatus.label' />
+                }
+            </div>
+            <div class='invitation-status d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
+                <app-severity-tag [severity]='statusSeverity()' [value]='profile().status.label!' />
+            </div>
+        } @else {
+            <div class='invitation-form d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
+                <div class='d-flex flex-column'>
+                    <div>{{ 'project-profiles.manage-acceptance' | translate }}</div>
+                    <div class='d-flex justify-content-center mt-2'>
+                        <p-button
+                                [label]='"project-profiles.actions.reject" | translate'
+                                rounded
+                                text
+                                severity='danger'
+                                (onClick)='confirmManageAcceptance(ProfileStatusEnum.REJECTED)' />
+                        <p-button
+                                class='ms-2'
+                                [label]='"project-profiles.actions.accept" | translate'
+                                rounded
+                                text
+                                severity='success'
+                                (onClick)='confirmManageAcceptance(ProfileStatusEnum.ACCEPTED)' />
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</app-element-card>
+
+<p-confirm-dialog [breakpoints]='breakpoint' />

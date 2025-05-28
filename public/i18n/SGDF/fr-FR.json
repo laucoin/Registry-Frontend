@@ -231,6 +231,15 @@
                 }
             }
         },
+        "welcome": {
+            "title": "🚀 Bienvenue sur Registry !",
+            "introduction": "Je suis ravi de t’accueillir ici. Ce site a été conçu pour t’aider à gérer facilement les entrées et sorties de tes participants à un accueil collectif de mineurs.",
+            "option": "Pour chacun des projets, tu peux créer des profils d’accès pour donner l'accès à ton projet à d'autres utilisateurs, gérer leurs mouvements, suivre leurs activités et bien d'autres options.",
+            "invitations": "Tu retrouveras tes invitations à des projets en cliquant sur ton nom en haut à droit de l'écran. tu peux accepter ou refuser ces invitations. Si tu acceptes, tu pourras utiliser le profil d'accès associé à l'invitation pour accéder au projet.",
+            "conclusion": "Bonne utilisation !",
+            "begin": "C'est parti ! Pour commencer, si tu veux créer ton propre projet, tu peux le faire en cliquant sur le bouton “Créer un projet” ci-dessous. Si tu veux rejoindre un projet existant, tu peux le faire en cliquant sur le bouton ci-dessous.",
+            "create-project": "Créer mon premier projet"
+        },
         "menu": {
             "users": "Utilisateurs",
             "projects": "Projets",
@@ -246,7 +255,8 @@
             "activities": "Activités",
             "profiles": "Profiles d’accès",
             "invitations": "Invitations",
-            "settings": "Paramètres"
+            "settings": "Paramètres",
+            "help": "Aide"
         },
         "date-and-time-format": {
             "date": "dd/MM/yyyy",
@@ -299,17 +309,10 @@
             }
         },
         "form": {
-            "confirmation": "Entres “{{name}}” pour confirmer",
             "required": "Obligatoire",
             "range": {
                 "min": "Min",
                 "max": "Max"
-            },
-            "error": {
-                "confirmation": {
-                    "required": "Ne rien écrire n’est pas un consentement. Si tu confirmes rien, aucune action sera effectuée !",
-                    "pattern": "Il faut que tu recopies exactement “{{toConfirm}}”. Pour l’instant tu as écris “{{actual}}” par conséquent aucune peut-être confirmée !"
-                }
             }
         },
         "actions": {
@@ -330,12 +333,12 @@
         "notifications": {
             "503": {
                 "title": "🥴 Serveur indisponible",
-                "message": "Ça sent le roussi, le serveur est indisponible. Réessaies plus tard. Si le problème persiste contactes l’administrateur."
+                "message": "Fichtre ! Le serveur semble être indisponible 😭. Recharges la page, réessayes plus tard ou contactes l’administrateur."
             },
-            "UNKNOWN_ERROR": "Une erreur inconnue est survenue. Désolé, je ne peux pas te donner plus d’information ! 🤷",
+            "UNKNOWN_ERROR": "Une erreur inattendue est survenue, nous travaillons à la résoudre 🛠️. Si l’erreur persiste n’hésites pas à nous remonter cette erreur.",
             "OFFLINE": {
-                "title": "📡 Hors ligne",
-                "message": "Tu es hors ligne. Si tu es utilise le Wi-Fi, essaies de te rapprocher de la box. Si tu es en 4G, essaies de te rapprocher d’une fenêtre. Si tu es en 3G, essaies de te rapprocher d’un autre siècle."
+                "title": "📡 Hors-ligne",
+                "message": "Ta connexion est peut-être faible 🐢, rapproches de la box. Si tu es en 4G, rapproches toi d’une fenêtre. Si tu es en 3G, rapproches toi d’un autre siècle."
             },
             "ONLINE": {
                 "title": "⚡️ Connexion rétablie",
@@ -344,6 +347,14 @@
             "EMPTY": {
                 "title": "🕵️‍♀️ Aucune donnée",
                 "message": "Aucune donnée n’a été trouvée."
+            },
+            "NO_USER_ID": {
+                "title": "🕵️‍♂️ Aucun utilisateur",
+                "message": "Aucun utilisateur n’a été trouvé. Tu dois te connecter pour utiliser l’application."
+            },
+            "NO_SELECTED_PROJECT": {
+                "title": "🕵️‍♂️ Aucun projet sélectionné",
+                "message": "Aucun projet n’a été sélectionné. Tu dois sélectionner un projet pour effectuer cette action."
             }
         },
         "not-set": "Non défini"
@@ -436,7 +447,12 @@
         },
         "form": {
             "title": "Mettre à jour le rôle de “{{firstName}} {{lastName}}”",
-            "role": "Rôle"
+            "role": "Rôle",
+            "error": {
+                "role": {
+                    "required": "Le rôle de l’utilisateur ne peut pas être vide."
+                }
+            }
         },
         "actions": {
             "update-role": "Changer son rôle",
@@ -484,6 +500,10 @@
             "delete": {
                 "title": "🗑️ Utilisateur supprimé",
                 "message": "{{firstName}} {{lastName}} a été supprimé, il peut toujours se connecter mais toutes ses informations ont été supprimée."
+            },
+            "EMPTY": {
+                "title": "🕵️‍♀️ Aucun utilisateur",
+                "message": "Aucun utilisateur n’a été trouvé."
             }
         }
     },
@@ -596,6 +616,10 @@
             "delete": {
                 "title": "🗑️ Projet supprimé",
                 "message": "Le projet “{{name}}” a été supprimé."
+            },
+            "EMPTY": {
+                "title": "🕵️‍♀️ Aucun projet",
+                "message": "Aucun projet n’a été trouvé."
             }
         }
     },
@@ -609,6 +633,8 @@
             "status": "Statut",
             "visibility": "Disponibilité"
         },
+        "empty": "Tu ne sembles pas avoir de profil d'accès pour le moment. Tu peux en obtenir un en acceptant une invitation que tu as reçue ou en créant un projet.",
+        "empty-invitation": "Tu ne sembles pas avoir d'invitation en attente de réponse. Tu peux en obtenir un en acceptant une invitation que tu as reçue ou en créant un projet.",
         "visible": {
             "true": "En cours de validité",
             "false": "Expiré"
@@ -644,7 +670,7 @@
             },
             "error": {
                 "role": {
-                    "required": "Pas de rôle de profile ! Le rôle du profil du projet ne peut pas être vide."
+                    "required": "Pas de rôle de profil ! Le rôle du profil du projet ne peut pas être vide."
                 },
                 "users": {
                     "required": "Impossible de créer des profils sans utilisateur. Il en faut au moins un !"
@@ -666,6 +692,9 @@
                 "one": "Inviter un utilisateur",
                 "few": "Inviter des utilisateurs"
             },
+            "create-project": "Créer un projet",
+            "profiles": "Voir mes profils d'accès",
+            "invitations": "Voir mes invitations",
             "edit": "Modifier",
             "enable": "Débloquer",
             "disable": "Bloquer",
@@ -675,7 +704,7 @@
             "confirmations": {
                 "ACCEPTED": {
                     "title": "Accepter l’invitation",
-                    "message": "En acceptant l’invitation à “{{element.project.name}}”, le profil sera automatiquement sélectionné et apparaitra dans la liste des profils liés à ton compte (dans le premier onglet)."
+                    "message": "En acceptant l’invitation à “{{element.project.name}}”, le profil apparaitra dans la liste des profils liés à ton compte sur l'accueil général."
                 },
                 "REJECTED": {
                     "title": "Refuser l’invitation",
@@ -748,6 +777,14 @@
                     "myself": "Ton profil pour le projet {{name}} a été supprimé",
                     "other": "Le profil de {{firstName}} {{lastName}} pour le projet {{name}} a été supprimé."
                 }
+            },
+            "EMPTY": {
+                "title": "🕵️‍♀️ Aucun profil",
+                "message": "Aucun profil n’a été trouvé."
+            },
+            "EMPTY-INVITATION": {
+                "title": "🕵️‍♀️ Aucune invitation",
+                "message": "Aucune invitation n’a été trouvée."
             }
         }
     },
@@ -758,23 +795,13 @@
             "type": "Type",
             "visibility": "Visibilité"
         },
-        "last-communication": "Aucun contact depuis : {{duration}}",
         "communication": {
             "layer": {
-                "title": {
-                    "one": "Communication",
-                    "few": "Communications"
-                },
-                "subtitle": {
-                    "one": "Dernière communication avec {{movement}}",
-                    "few": "Dernières communications avec {{movement}}"
-                }
+                "title": "Communications",
+                "subtitle": "Détail des communications avec {{movement}}"
             },
             "no-message": "Aucun message",
-            "see-communication": {
-                "one": "Communication",
-                "few": "Communications"
-            }
+            "see-communication": "Détail des communications"
         },
         "content-layer-title": {
             "one": "Participant",
@@ -809,6 +836,18 @@
             "reason": {
                 "name": "Motif",
                 "empty-search": "Aucune raison trouvée"
+            },
+            "warning": {
+                "participant": {
+                    "IN": "Participant déjà présent",
+                    "OUT": "Participant déjà sorti",
+                    "UNAVAILABLE": "Participant déjà sorti"
+                },
+                "vehicle": {
+                    "IN": "Véhicule déjà présent",
+                    "OUT": "Véhicule déjà sorti",
+                    "UNAVAILABLE": "Véhicule déjà sorti"
+                }
             },
             "content": {
                 "guest": {
@@ -981,6 +1020,10 @@
                     "title": "🗑️ Sortie supprimée",
                     "message": "La sortie du {{datetime}} a été supprimée."
                 }
+            },
+            "EMPTY": {
+                "title": "🕵️‍♀️ Aucun mouvement",
+                "message": "Aucun mouvement n’a été trouvé."
             }
         }
     },
@@ -1104,7 +1147,7 @@
         },
         "notifications": {
             "create": {
-                "title": "+ Personne ajoutée",
+                "title": "+ Participant ajoutée",
                 "message": "“{{firstName}} {{lastName}}” a été ajouté."
             },
             "edit": {
@@ -1112,16 +1155,20 @@
                 "message": "Les informations de “{{firstName}} {{lastName}}” ont été modifiées."
             },
             "disable": {
-                "title": "🙈 Personne masqué",
+                "title": "🙈 Participant masqué",
                 "message": "“{{firstName}} {{lastName}}” a été masqué."
             },
             "enable": {
-                "title": "👀 Personne visible",
+                "title": "👀 Participant visible",
                 "message": "“{{firstName}} {{lastName}}” est à nouveau visible."
             },
             "delete": {
-                "title": "🗑️ Personne supprimé",
+                "title": "🗑️ Participant supprimé",
                 "message": "“{{firstName}} {{lastName}}” a été supprimé."
+            },
+            "EMPTY": {
+                "title": "🕵️‍♀️ Aucun participant",
+                "message": "Aucun participant n’a été trouvé."
             }
         }
     },
@@ -1275,6 +1322,10 @@
             "delete": {
                 "title": "🗑️ Groupe supprimé",
                 "message": "Le groupe “{{name}}” a été supprimé."
+            },
+            "EMPTY": {
+                "title": "🕵️‍♀️ Aucun groupe",
+                "message": "Aucun groupe n’a été trouvé."
             }
         }
     },
@@ -1386,6 +1437,10 @@
             "delete": {
                 "title": "🗑️ Véhicule supprimé",
                 "message": "Le véhicule {{brand}} {{model}} ({{registration}}) a été supprimé."
+            },
+            "EMPTY": {
+                "title": "🕵️‍♀️ Aucun véhicule",
+                "message": "Aucun véhicule n’a été trouvé."
             }
         }
     },
@@ -1513,6 +1568,10 @@
             "delete": {
                 "title": "🗑️ Activité supprimée",
                 "message": "L’activité {{name}} a été supprimée."
+            },
+            "EMPTY": {
+                "title": "🕵️‍♀️ Aucune activité",
+                "message": "Aucune activité n’a été trouvée."
             }
         }
     },
@@ -1610,6 +1669,10 @@
             "delete": {
                 "title": "🗑️ Communication supprimée",
                 "message": "La communication du {{datetime}} a été supprimée."
+            },
+            "EMPTY": {
+                "title": "🕵️‍♀️ Aucune communication",
+                "message": "Aucune communication n’a été trouvée."
             }
         }
     },
@@ -1699,6 +1762,36 @@
                     "title": "Supprimer l'alerte",
                     "message": "Attention ! Tu vas définitivement supprimer l'alerte. Elle sera donc définitivement supprimée et irrécupérable."
                 }
+            }
+        },
+        "notifications": {
+            "create": {
+                "title": "+ Alerte créé",
+                "message": "L'alerte “{{title}}” a été créé."
+            },
+            "edit": {
+                "title": "✏️ Alerte modifiée",
+                "message": "L'alerte “{{title}}” a été modifiée."
+            },
+            "edit-status": {
+                "title": "✏️ Statut de l'alerte modifié",
+                "message": "Le statut de l'alerte “{{title}}” est maintenant “{{status}}”."
+            },
+            "disable": {
+                "title": "🙈 Alerte masquée",
+                "message": "L'alerte “{{title}}” a été masquée."
+            },
+            "enable": {
+                "title": "👀 Alerte visible",
+                "message": "L'alerte “{{title}}” est à nouveau visible."
+            },
+            "delete": {
+                "title": "🗑️ Alerte supprimée",
+                "message": "L'alerte “{{name}}” a été supprimée."
+            },
+            "EMPTY": {
+                "title": "🕵️‍♀️ Aucune alerte",
+                "message": "Aucune alerte n’a été trouvée."
             }
         }
     }

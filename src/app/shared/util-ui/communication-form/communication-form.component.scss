@@ -5,13 +5,15 @@
 .field-container {
     min-width: calc(100% - (var(--icon-button-width) * 2));
     max-width: calc(100% - (var(--icon-button-width) * 2));
-
-    .message-field {
-        min-width: 100%;
-        max-width: 100%;
-    }
 }
 
 .other-field-container {
+    min-width:   calc(100% - var(--icon-button-width));
+    max-width:   calc(100% - var(--icon-button-width));
     margin-left: var(--icon-button-width);
+}
+
+.message-field {
+    min-width: 100%;
+    max-width: 100%;
 }

@@ -18,7 +18,17 @@
 <ul class='list-box mt-2' [class.invalid]='invalid()'>
     @for (participant of orphanParticipants(); track participant.id) {
         <li class='item list-item w-100 d-flex align-items-center justify-content-between' [attr.data-value]='participant.id'>
-            <div class='ms-3'>{{ ParticipantUtil.toSelectItem(participant).label }}</div>
+            <div class='ms-3 d-flex align-items-center'>
+                {{ ParticipantUtil.toSelectItem(participant).label }}
+                @if (interpretedMovementType().includes(participant.status.value)) {
+                    <div class='warning-tips'>
+                        <i class='pi pi-exclamation-triangle'></i>
+                        @if (!registryFacade.tinyScreen()) {
+                            <span class='ms-2'>{{ ('movements.form.warning.participant.' + participant.status.value) | translate }}</span>
+                        }
+                    </div>
+                }
+            </div>
             <p-button icon='pi pi-times'
                       size='small'
                       severity='danger'

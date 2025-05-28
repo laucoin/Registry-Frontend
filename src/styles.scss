@@ -10,6 +10,14 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
+.warning-tips {
+    margin-left: var(--basic-spacer);
+    color:       var(--p-yellow-500);
+    font-size:   0.8rem;
+    display:     flex;
+    align-items: center;
+}
+
 .layer-title {
     font-size:   var(--p-dialog-title-font-size);
     font-weight: var(--p-dialog-title-font-weight);

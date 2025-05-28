@@ -1,5 +1,5 @@
 import { Component, inject, OnDestroy } from '@angular/core'
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms'
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { UserModel } from '../../../shared/util-model/model/user.model'
 import { AppRouteEnum } from '../../../app-route.enum'
 import { UserFacade } from '../data/state/user.facade'
@@ -14,6 +14,7 @@ import { GenericFormComponent } from '../../../shared/util-tool/component/generi
 import { UserDto } from '../../../shared/util-model/dto/user.dto'
 import { filter, map } from 'rxjs'
 import { FormUtil } from '../../../shared/util-tool/util/form.util'
+import { FormFieldErrorComponent } from '../../../shared/util-ui/form-field-error/form-field-error.component'
 
 @Component( {
     selector: 'app-user-form',
@@ -27,6 +28,7 @@ import { FormUtil } from '../../../shared/util-tool/util/form.util'
         TranslatePipe,
         Select,
         ReactiveFormsModule,
+        FormFieldErrorComponent,
     ],
     templateUrl: './user-form.component.html',
 } )
@@ -58,7 +60,7 @@ export class UserFormComponent extends GenericFormComponent<UserModel, UserDto> 
 
     protected initForm (): FormGroup {
         return this.formBuilder.group( {
-            role: this.formBuilder.control( {} ),
+            role: this.formBuilder.control( undefined, [ Validators.required ] ),
         } )
     }
 
@@ -72,7 +74,7 @@ export class UserFormComponent extends GenericFormComponent<UserModel, UserDto> 
     }
 
     protected fillForm (element: UserModel): void {
-        this.role.patchValue( element.role )
+        this.role.patchValue( element.role?.value )
     }
 
     protected submit (): void {

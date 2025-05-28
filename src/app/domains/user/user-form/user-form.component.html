@@ -12,6 +12,9 @@
                     (keydown.enter)='submit()'
                     optionLabel='label'
                     optionValue='value' />
+            <app-form-field-error [errors]='role.errors'
+                                  [invalid]='FormUtil.invalid(role)'
+                                  translationPrefix='users.form.error.role' />
         </div>
     </p-card>
     <div class='d-flex mt-2 justify-content-center'>

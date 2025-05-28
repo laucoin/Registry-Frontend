@@ -12,7 +12,8 @@
 <app-list (updateRequired)='loadPage($event)'
           [elementPage]='facade.groupMembersPage()'
           [error]='facade.groupMembersPageError()'
-          [loading]='facade.groupMembersPageLoading()'>
+          [loading]='facade.groupMembersPageLoading()'
+          emptyMessagePrefix='participants.notifications.EMPTY'>
     <ng-template appTemplate='search' [formGroup]='form' let-pageEvent>
         <div class='field'>
             <label for='text-search-field'>{{ 'participants.search-and-filter.text' | translate }}</label>
@@ -95,6 +96,7 @@
                                            [selectionLabel]='"groups.form.members.selected" | pluralTranslation: addMembersParticipants.value |
                                        translate'
                                            [emptyMessage]='"groups.form.members.empty" | translate'
+                                           [emptySelectionMessage]='"groups.form.members.empty-search" | translate'
                                            inputId='members'
                                            (handleSearch)='handleSearch($event.query)' />
                 <app-form-field-error [errors]='addMembersParticipants.errors'

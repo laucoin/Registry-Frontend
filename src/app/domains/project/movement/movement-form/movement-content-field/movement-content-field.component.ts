@@ -3,6 +3,7 @@ import {
     Component,
     computed,
     forwardRef,
+    inject,
     input,
     InputSignal,
     output,
@@ -18,17 +19,19 @@ import { SelectItem, SelectItemGroup } from 'primeng/api'
 import { ParticipantModel } from '../../../../../shared/util-model/model/participant.model'
 import { GroupModel } from '../../../../../shared/util-model/model/group.model'
 import { GenericUtil } from '../../../../../shared/util-tool/util/generic.util'
-import { TranslatePipe } from '@ngx-translate/core'
 import { Button } from 'primeng/button'
 import { ParticipantUtil } from '../../../../../shared/util-tool/util/participant.util'
+import { PresenceStatusEnum } from '../../../../../shared/util-model/enumeration/presence-status.enum'
+import { TranslatePipe } from '@ngx-translate/core'
+import { RegistryFacade } from '../../../../../shared/util-common/state/registry.facade'
 
 @Component( {
     selector: 'app-movement-content-field',
     standalone: true,
     imports: [
         AutoComplete,
-        TranslatePipe,
         Button,
+        TranslatePipe,
     ],
     providers: [
         {
@@ -42,6 +45,7 @@ import { ParticipantUtil } from '../../../../../shared/util-tool/util/participan
     changeDetection: ChangeDetectionStrategy.OnPush,
 } )
 export class MovementContentFieldComponent implements ControlValueAccessor {
+    protected readonly registryFacade: RegistryFacade = inject( RegistryFacade )
     protected readonly ParticipantUtil: typeof ParticipantUtil = ParticipantUtil
     protected readonly Object: typeof Object = Object
 
@@ -51,6 +55,7 @@ export class MovementContentFieldComponent implements ControlValueAccessor {
     public readonly invalid: InputSignal<boolean> = input( false )
     public readonly emptyMessage: InputSignal<string | undefined> = input<string | undefined>()
     public readonly selectionLabel: InputSignal<string | undefined> = input.required()
+    public readonly interpretedMovementType: InputSignal<PresenceStatusEnum[]> = input.required()
 
     public readonly handleSearch: OutputEmitterRef<AutoCompleteCompleteEvent> = output()
 

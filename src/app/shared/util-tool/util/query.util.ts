@@ -14,7 +14,7 @@ export class QueryUtil {
         if (GenericUtil.isNull( params )) return builtParams
 
         Object.entries( params! ).forEach( ([ key, value ]: [ string, string | number | boolean | undefined ]): void => {
-            if (GenericUtil.nonNull( value )) builtParams = builtParams.set( key, value! )
+            if (GenericUtil.nonNull( value ) && key !== 'resetSearch') builtParams = builtParams.set( key, value! )
         } )
 
         return builtParams

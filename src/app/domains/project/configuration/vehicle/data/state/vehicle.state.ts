@@ -233,7 +233,13 @@ export class VehicleState extends GenericProjectElementState<VehicleStateModel> 
 
     @Action( ResetVehicleState )
     public resetVehicleState (ctx: StateContext<VehicleStateModel>): void {
-        ctx.setState( defaultVehicleState )
+        ctx.setState( {
+            ...defaultVehicleState,
+            _metadata: {
+                ...defaultVehicleState._metadata,
+                presencesStatus: ctx.getState()._metadata.presencesStatus,
+            },
+        } )
     }
 
     @Action( FetchVehiclePresencesStatus )

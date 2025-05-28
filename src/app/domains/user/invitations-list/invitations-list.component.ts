@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, Signal } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { TranslateModule } from '@ngx-translate/core'
 import { PageEventModel } from '../../../shared/util-model/model/page-event.model'
@@ -12,6 +12,9 @@ import {
     ProjectProfileElementComponent,
 } from '../../../shared/util-ui/project-profile-element/project-profile-element.component'
 import { RegistryTemplateDirective } from '../../../shared/util-tool/directive/registry-template.directive'
+import { StringUtil } from '../../../shared/util-tool/util/string.util'
+import { GenericUtil } from '../../../shared/util-tool/util/generic.util'
+import { RouterLink } from '@angular/router'
 
 @Component( {
     selector: 'app-invitations-list',
@@ -27,11 +30,17 @@ import { RegistryTemplateDirective } from '../../../shared/util-tool/directive/r
         Button,
         ProjectProfileElementComponent,
         RegistryTemplateDirective,
+        RouterLink,
     ],
     templateUrl: './invitations-list.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
 } )
 export class InvitationsListComponent extends GenericListComponent {
+    protected readonly hasFilters: Signal<boolean> = computed( (): boolean =>
+        StringUtil.isNotNullNorBlank( this.registryFacade.userProjectProfileInvitationsPageTextSearchParam() )
+        || GenericUtil.nonNull( this.registryFacade.userProjectProfileInvitationsPageDateTimeSearchParam() ),
+    )
+
     public constructor () {
         super()
 

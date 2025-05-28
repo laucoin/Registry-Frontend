@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject, Signal } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { PageEventModel } from '../../../shared/util-model/model/page-event.model'
 import { ProjectFacade } from '../data/state/project/project.facade'
@@ -15,6 +15,9 @@ import { Select } from 'primeng/select'
 import { DatePicker } from 'primeng/datepicker'
 import { GenericListComponent } from '../../../shared/util-tool/component/generic-list.component'
 import { ToggleSwitch } from 'primeng/toggleswitch'
+import { GenericUtil } from '../../../shared/util-tool/util/generic.util'
+import { InfoComponent } from '../../../shell/info/info.component'
+import { StringUtil } from '../../../shared/util-tool/util/string.util'
 
 @Component( {
     selector: 'app-projects-list',
@@ -33,6 +36,7 @@ import { ToggleSwitch } from 'primeng/toggleswitch'
         Select,
         DatePicker,
         ToggleSwitch,
+        InfoComponent,
     ],
     templateUrl: './projects-list.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -41,6 +45,12 @@ export class ProjectsListComponent extends GenericListComponent {
     protected readonly facade: ProjectFacade = inject( ProjectFacade )
 
     protected readonly ProjectRoutesEnum: typeof ProjectRoutesEnum = ProjectRoutesEnum
+
+    protected readonly hasFilters: Signal<boolean> = computed( (): boolean =>
+        StringUtil.isNotNullNorBlank( this.facade.projectsPageTextSearchedParam() )
+        || GenericUtil.nonNull( this.facade.projectsPageDateTimeSearchedParam() )
+        || GenericUtil.nonNull( this.facade.projectsPageVisibilitySearchedParam() ),
+    )
 
     public constructor () {
         super()
@@ -54,7 +64,7 @@ export class ProjectsListComponent extends GenericListComponent {
         return this.formBuilder.group( {
             textSearched: this.formBuilder.control( this.facade.projectsPageTextSearchedParam() ),
             dateTimeSearched: this.formBuilder.control( this.facade.projectsPageDateTimeSearchedParam() ),
-            withProfile: this.formBuilder.control( this.facade.projectsPageWithParamSearchedParam() ),
+            withProfile: this.formBuilder.control( this.facade.projectsPageWithProfileSearchedParam() ),
             visibilitySearched: this.formBuilder.control( this.facade.projectsPageVisibilitySearchedParam() ),
         } )
     }
@@ -63,7 +73,7 @@ export class ProjectsListComponent extends GenericListComponent {
         this.facade.inputPageSearchParameters(
             this.textSearched.value,
             this.dateTimeSearched.value,
-            this.dateTimeSearched.value,
+            this.withProfile.value,
             this.visibilitySearched.value,
         )
         this.facade.fetchProjectsPage( pageEvent.pageNumber, pageEvent.pageSize, false )

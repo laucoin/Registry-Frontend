@@ -153,7 +153,10 @@ export class ProjectElementComponent extends GenericElementComponent implements 
     protected confirmSupportProfileCreation (): void {
         this.confirmationService.confirm( {
             header: this.translateService.instant( 'projects.actions.confirmations.create-support.title' ),
-            message: this.translateService.instant( 'projects.actions.confirmations.create-support.message' ),
+            message: this.translateService.instant(
+                'projects.actions.confirmations.create-support.message',
+                { element: this.project() },
+            ),
             icon: 'pi pi-exclamation-triangle',
             rejectButtonProps: {
                 severity: SeverityEnum.SECONDARY,

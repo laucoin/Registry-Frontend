@@ -214,7 +214,7 @@ export class ActivityState extends GenericProjectElementState<ActivityStateModel
 
     @Selector()
     public static visibilitiesMetadata (state: ActivityStateModel): SelectItem<boolean | undefined>[] {
-        return state._metadata.availabilities
+        return state._metadata.visibilities
     }
 
     @Action( ResetActivityState )
