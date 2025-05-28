@@ -16,7 +16,7 @@ import { DatePicker } from 'primeng/datepicker'
 import { GenericListComponent } from '../../../shared/util-tool/component/generic-list.component'
 import { ToggleSwitch } from 'primeng/toggleswitch'
 import { GenericUtil } from '../../../shared/util-tool/util/generic.util'
-import { InfoComponent } from '../../../shell/info/info.component'
+import { InfoComponent } from '../../../shared/util-ui/info/info.component'
 import { StringUtil } from '../../../shared/util-tool/util/string.util'
 
 @Component( {
