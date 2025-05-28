@@ -106,7 +106,8 @@
         @if (GenericUtil.nonNull(facade.communication())) {
             <p-button (onClick)='resetForm()' class='me-2' icon='pi pi-times' rounded text />
         } @else {
-            <p-button (onClick)='menu.toggle($event)' class='me-2' icon='pi pi-plus' rounded text />
+            <p-button [disabled]='actions().length === 0' (onClick)='menu.toggle($event)' class='me-2' icon='pi pi-plus' rounded
+                      text />
         }
         <div class='field-container'>
                 <textarea pTextarea
