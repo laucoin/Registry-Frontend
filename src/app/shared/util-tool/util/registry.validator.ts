@@ -142,7 +142,7 @@ export class RegistryValidators {
             const begin: CustomDatetimeModel | undefined = group.get( beginKey )?.value
             const end: CustomDatetimeModel | undefined = group.get( endKey )?.value
 
-            if (DateUtil.isAfterOrEqual( begin, end )) {
+            if (GenericUtil.nonNull( begin ) && GenericUtil.nonNull( end ) && DateUtil.isAfterOrEqual( begin, end )) {
                 return { beginDateBeforeEndDate: true }
             }
 
