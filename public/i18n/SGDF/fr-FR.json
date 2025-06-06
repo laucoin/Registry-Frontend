@@ -1713,6 +1713,10 @@
             "status": "Statut",
             "visibility": "Visibilité"
         },
+        "visible": {
+            "true": "Visible",
+            "false": "Masqué"
+        },
         "form": {
             "title": "Titre de l'alerte",
             "placeholder": {

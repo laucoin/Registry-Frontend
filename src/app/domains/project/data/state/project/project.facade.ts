@@ -25,6 +25,7 @@ import { ofActionSuccessful } from '@ngxs/store'
 import { ProjectModel } from '../../../../../shared/util-model/model/project.model'
 import { ProjectOptionModel } from '../../model/project-option.model'
 import { DateUtil } from '../../../../../shared/util-tool/util/date.util'
+import { FetchCurrentUser } from '../../../../../shared/util-common/state/registry.action'
 
 @Injectable()
 export class ProjectFacade extends GenericFacade {
@@ -152,10 +153,10 @@ export class ProjectFacade extends GenericFacade {
         this.ngStore.dispatch( ResetProject )
     }
 
-    public createProject (project: ProjectDto): Observable<CreateProject> {
+    public createProject (project: ProjectDto): Observable<FetchCurrentUser> {
         this.ngStore.dispatch( new CreateProject( project ) )
 
-        return this.actions$.pipe( ofActionSuccessful( CreateProject ) )
+        return this.actions$.pipe( ofActionSuccessful( FetchCurrentUser ) )
     }
 
     public updateProject (

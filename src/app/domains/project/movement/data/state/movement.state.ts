@@ -88,7 +88,7 @@ const defaultMovementState: MovementStateModel = {
         element: undefined,
         params: {
             resetSearch: false,
-            visibilitySearched: undefined,
+            visibilitySearched: true,
             textSearched: undefined,
             startDateTimeSearched: undefined,
             endDateTimeSearched: undefined,

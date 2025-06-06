@@ -11,7 +11,7 @@ import { ProjectOptionModel } from '../data/model/project-option.model'
 import { ArrayUtil } from '../../../shared/util-tool/util/array.util'
 import { SelectItem } from 'primeng/api'
 import { FormUtil } from '../../../shared/util-tool/util/form.util'
-import { CreateProject, UpdateProject } from '../data/state/project/project.action'
+import { UpdateProject } from '../data/state/project/project.action'
 import { Checkbox, CheckboxChangeEvent } from 'primeng/checkbox'
 import { GenericUtil } from '../../../shared/util-tool/util/generic.util'
 import { Step, StepItem, StepPanel, Stepper } from 'primeng/stepper'
@@ -31,6 +31,7 @@ import { ProgressSpinner } from 'primeng/progressspinner'
 import { FormTitlePipe } from '../../../shared/util-tool/pipe/form-title.pipe'
 import { FormIconPipe } from '../../../shared/util-tool/pipe/form-icon.pipe'
 import { ProjectOptionEnum } from '../../../shared/util-model/enumeration/project-option.enum'
+import { FetchCurrentUser } from '../../../shared/util-common/state/registry.action'
 
 @Component( {
     selector: 'app-project-form',
@@ -163,14 +164,14 @@ export class ProjectFormComponent extends GenericFormComponent<ProjectModel, Pro
         }
 
         const dto: ProjectDto = this.buildDto()
-        const observable: Observable<CreateProject | UpdateProject> =
+        const observable: Observable<FetchCurrentUser | UpdateProject> =
             this.facade.project()
             ? this.facade.updateProject( this.facade.project()!.id!, dto )
             : this.facade.createProject( dto )
 
         this.subscriptions.add(
             observable.pipe(
-                map( (): void => this.navigateToRedirectUri() ),
+                tap( (): void => this.navigateToRedirectUri( GenericUtil.isNull( this.facade.project() ) ? AppRouteEnum.PROJECTS_SELECTED : undefined ) ),
             ).subscribe(),
         )
     }

@@ -80,6 +80,7 @@ import {
 } )
 export class MovementElementComponent extends GenericElementComponent {
     protected readonly facade: MovementFacade = inject( MovementFacade )
+    protected readonly pluralTranslation: PluralTranslationPipe = inject( PluralTranslationPipe )
 
     protected readonly VehicleUtil: typeof VehicleUtil = VehicleUtil
     protected readonly MovementTypeEnum: typeof MovementTypeEnum = MovementTypeEnum
@@ -203,9 +204,11 @@ export class MovementElementComponent extends GenericElementComponent {
     protected readonly driverName: Signal<string | undefined> = computed( (): string => `${this.driver()?.participant?.firstName} ${this.driver()?.participant?.lastName?.toUpperCase()}` )
 
     protected confirmMovementReversion (content: MovementContentModel[]): void {
+        const translationKey: string = `movements.actions.confirmations.reverse.${this.movement().type.value}`
         this.confirmationService.confirm(
-            this.buildConfirmation(
-                `movements.actions.confirmations.reverse.${this.movement().type.value}`,
+            this.buildCustomConfirmation(
+                `${translationKey}.title`,
+                this.pluralTranslation.transform( `${translationKey}.message`, content.length ),
                 this.reversedIcon(),
                 this.movement(),
                 SeverityEnum.SUCCESS,

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, Signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject, OnDestroy, Signal } from '@angular/core'
 import { Card } from 'primeng/card'
 import { Divider } from 'primeng/divider'
 import { PluralTranslationPipe } from '../../../../shared/util-tool/pipe/plural-translation.pipe'
@@ -18,6 +18,8 @@ import { PresenceStatusEnum } from '../../../../shared/util-model/enumeration/pr
 import {
     SeverityInformationComponent,
 } from '../../../../shared/util-ui/severity-information/severity-information.component'
+import { MovementFacade } from '../../movement/data/state/movement.facade'
+import { Subscription, tap } from 'rxjs'
 
 @Component( {
     selector: 'app-dashboard',
@@ -41,8 +43,11 @@ import {
     styleUrl: './dashboard.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
 } )
-export class DashboardComponent extends GenericComponent {
+export class DashboardComponent extends GenericComponent implements OnDestroy {
     protected readonly facade: SelectedProjectFacade = inject( SelectedProjectFacade )
+    protected readonly movementFacade: MovementFacade = inject( MovementFacade )
+
+    private readonly subscriptions: Subscription = new Subscription()
 
     protected readonly ParticipantTypeEnum: typeof ParticipantTypeEnum = ParticipantTypeEnum
     protected readonly PresenceStatusEnum: typeof PresenceStatusEnum = PresenceStatusEnum
@@ -101,5 +106,19 @@ export class DashboardComponent extends GenericComponent {
             if (GenericUtil.isNull( this.facade.vehiclesStatus() )) return undefined
             return this.facade.vehiclesStatus()!.absent
         } )
+
+        this.handleMovementActions()
+    }
+
+    public ngOnDestroy (): void {
+        this.subscriptions.unsubscribe()
+    }
+
+    private handleMovementActions (): void {
+        this.subscriptions.add(
+            this.movementFacade.handleMovementChanges().pipe(
+                tap( (): void => this.facade.loadProjectHomeInformation( true ) ),
+            ).subscribe(),
+        )
     }
 }

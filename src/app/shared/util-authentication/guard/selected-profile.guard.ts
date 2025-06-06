@@ -12,8 +12,8 @@ export const selectedProfileGuard: CanActivateFn = (): Promise<boolean> | Observ
     if (GenericUtil.isNull( registryFacade.currentUser() )) {
         return registryFacade.currentUser$.pipe(
             map( (): boolean => GenericUtil.isNull( registryFacade.selectedProject() ) ),
-            tap( (hasSelectedProfile: boolean): void => {
-                if (hasSelectedProfile) {
+            tap( (hasNoSelectedProfile: boolean): void => {
+                if (hasNoSelectedProfile) {
                     notifyNoProfile( registryFacade )
                 }
             } ),
