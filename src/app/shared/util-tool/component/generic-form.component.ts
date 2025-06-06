@@ -80,7 +80,7 @@ export abstract class GenericFormComponent<M, D> extends GenericComponent {
 
     protected navigateToRedirectUri (route: AppRouteEnum | undefined = undefined): void {
         if (GenericUtil.nonNull( route )) this.router.navigateByUrl( route! ).catch( (): void => this.location.back() )
-        this.location.back()
+        else this.location.back()
     }
 
     protected abstract get idParam (): string | undefined

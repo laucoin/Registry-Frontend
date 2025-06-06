@@ -221,7 +221,7 @@ export class DateUtil {
         const endTime: number = new Date( end! ).getTime()
         if (startTime > endTime) return undefined
 
-        const difference: number = new Date( (endTime < 1e12 ? endTime * 1000 : endTime) - (startTime < 1e12 ? startTime * 1000 : startTime) ).getTime()
+        const difference: number = endTime - startTime
         const secondCount: number = Math.floor( difference / 1000 ) % 60
         const minuteCount: number = Math.floor( difference / (1000 * 60) ) % 60
         const hourCount: number = Math.floor( difference / (1000 * 60 * 60) ) % 24

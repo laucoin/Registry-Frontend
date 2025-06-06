@@ -47,9 +47,27 @@ export abstract class GenericElementComponent extends GenericComponent {
         acceptSeverity: SeverityEnum,
         accept: () => void,
     ): Confirmation {
+        return this.buildCustomConfirmation(
+            `${translationPrefix}.title`,
+            `${translationPrefix}.message`,
+            icon,
+            element,
+            acceptSeverity,
+            accept,
+        )
+    }
+
+    protected buildCustomConfirmation (
+        titleTranslationKey: string,
+        messageTranslationKey: string,
+        icon: string,
+        element: unknown,
+        acceptSeverity: SeverityEnum,
+        accept: () => void,
+    ): Confirmation {
         return {
-            header: this.translateService.instant( `${translationPrefix}.title`, { element: element } ),
-            message: this.translateService.instant( `${translationPrefix}.message`, { element: element } ),
+            header: this.translateService.instant( titleTranslationKey, { element: element } ),
+            message: this.translateService.instant( messageTranslationKey, { element: element } ),
             icon: icon,
             rejectButtonProps: {
                 severity: SeverityEnum.SECONDARY,

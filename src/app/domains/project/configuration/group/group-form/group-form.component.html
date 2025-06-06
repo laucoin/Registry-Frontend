@@ -66,8 +66,8 @@
                                        [emptySelectionMessage]='"groups.form.members.empty-search" | translate'
                                        inputId='members'
                                        (handleSearch)='handleSearch($event.query)' />
-            <app-form-field-error [errors]='name.errors'
-                                  [invalid]='FormUtil.invalid(name)'
+            <app-form-field-error [errors]='participants.errors'
+                                  [invalid]='FormUtil.invalid(participants)'
                                   translationPrefix='groups.form.error.members' />
         </div>
     </p-card>

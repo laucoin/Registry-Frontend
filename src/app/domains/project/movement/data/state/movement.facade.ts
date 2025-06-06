@@ -313,6 +313,12 @@ export class MovementFacade extends GenericProjectElementFacade {
         )
     }
 
+    public handleMovementChanges (): Observable<CreateMovement | UpdateMovement | DeleteMovement | DisableMovement | EnableMovement> {
+        return this.actions$.pipe(
+            ofActionSuccessful( CreateMovement, UpdateMovement, DeleteMovement, DisableMovement, EnableMovement ),
+        )
+    }
+
     public createMovement (movement: MovementDto): Observable<CreateMovement | CreateGuestsMovement> {
         if (movement.contentType === ParticipantTypeEnum.REGISTERED) {
             this.ngStore.dispatch( new CreateMovement( this.selectedProjectId(), movement ) )

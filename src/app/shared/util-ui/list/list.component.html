@@ -61,7 +61,7 @@
             @if (GenericUtil.nonNull(getTemplate('error'))) {
                 <ng-container [ngTemplateOutlet]='getTemplate("error")' />
             } @else {
-                <div class='d-flex flex-column justify-content-center align-items-center'>
+                <div class='p-3 d-flex flex-column justify-content-center align-items-center'>
                     <h2>{{ error()!.summary! | translate }}</h2>
                     <p class='error'>{{ error()!.detail! | translate }}</p>
                 </div>
@@ -71,7 +71,7 @@
                 @if (getTemplate('empty')) {
                     <ng-container [ngTemplateOutlet]='getTemplate("empty")' />
                 } @else {
-                    <div class='d-flex flex-column justify-content-center align-items-center'>
+                    <div class='p-3 d-flex flex-column justify-content-center align-items-center'>
                         <h2>{{ message().summary! | translate }}</h2>
                         <p>{{ message().detail! | translate }}</p>
                     </div>
