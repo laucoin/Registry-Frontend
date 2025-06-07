@@ -6,6 +6,7 @@ import { ProjectUtil } from '../../util-tool/util/project.util'
 import { GenericUtil } from '../../util-tool/util/generic.util'
 import { ProjectModel } from '../../util-model/model/project.model'
 import { ActionableItemModel } from '../../util-model/model/actionable-item.model'
+import { ThemeEnum } from '../../util-model/enumeration/theme.enum'
 
 export class CurrentUserUtil {
     public static isFeasible (
@@ -59,5 +60,27 @@ export class CurrentUserUtil {
     ): boolean {
         if (!currentUser) return false
         return ArrayUtil.includes( currentUser.authorities, authority )
+    }
+
+    public static mapThemeToEnum (theme: string): ThemeEnum {
+        switch (theme) {
+            case 'DARK':
+                return ThemeEnum.DARK
+            case 'LIGHT':
+                return ThemeEnum.LIGHT
+            default:
+                return ThemeEnum.SYSTEM
+        }
+    }
+
+    public static mapThemeToString (theme: ThemeEnum): string {
+        switch (theme) {
+            case ThemeEnum.DARK:
+                return 'DARK'
+            case ThemeEnum.LIGHT:
+                return 'LIGHT'
+            default:
+                return ThemeEnum.SYSTEM
+        }
     }
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core'
+import { inject, Injectable } from '@angular/core'
 import { Action, NgxsOnInit, Selector, State, StateContext } from '@ngxs/store'
 import { catchError, finalize, map, mergeMap, Observable, of } from 'rxjs'
 import { SecurityService } from '../../util-authentication/service/security.service'
@@ -37,6 +37,8 @@ import {
     StopUserProjectProfileInvitationsPageLoader,
     StopUserProjectProfileLoader,
     StopUserProjectProfilesPageLoader,
+    UpdateCurrentUserLanguage,
+    UpdateCurrentUserTheme,
     UpdateNetwork,
     UpdateScreenWidth,
     UpdateTheme,
@@ -58,6 +60,10 @@ import { ProfileStatusEnum } from '../../util-model/enumeration/profile-status.e
 import { SeverityEnum } from '../../util-model/enumeration/severity.enum'
 import { ThemeEnum } from '../../util-model/enumeration/theme.enum'
 import { AppConfig } from '../../../app.config'
+import { GenericUtil } from '../../util-tool/util/generic.util'
+import { PreferencesModel } from '../../util-model/model/preferences.model'
+import { CurrentUserUtil } from '../../util-authentication/tool/current-user.util'
+import { PrimeNG } from 'primeng/config'
 
 const defaultRegistryState: RegistryStateModel = {
     authentication: {
@@ -128,6 +134,8 @@ const defaultRegistryState: RegistryStateModel = {
 } )
 @Injectable()
 export class RegistryState extends GenericState implements NgxsOnInit {
+    private readonly primeConfig: PrimeNG = inject( PrimeNG )
+
     private readonly darkModeClass: string = 'dark-mod'
     private readonly htmlElement: HTMLHtmlElement = document.querySelector( 'html' ) as HTMLHtmlElement
 
@@ -155,11 +163,6 @@ export class RegistryState extends GenericState implements NgxsOnInit {
     @Selector()
     public static globalLoading (state: RegistryStateModel): boolean {
         return state._util.loading
-    }
-
-    @Selector()
-    public static currentUserActionLoading (state: RegistryStateModel): boolean {
-        return state.authentication.loading
     }
 
     @Selector()
@@ -195,6 +198,17 @@ export class RegistryState extends GenericState implements NgxsOnInit {
     @Selector()
     public static currentUser (state: RegistryStateModel): CurrentUserModel | undefined {
         return state.authentication.currentUser
+    }
+
+    @Selector()
+    public static currentUserTheme (state: RegistryStateModel): ThemeEnum | undefined {
+        const currentUserTheme: string | undefined = state.authentication.currentUser?.preferences?.theme
+        return GenericUtil.nonNull( currentUserTheme ) ? CurrentUserUtil.mapThemeToEnum( currentUserTheme! ) : state._util.theme
+    }
+
+    @Selector()
+    public static currentUserLanguage (state: RegistryStateModel): string {
+        return state.authentication.currentUser?.preferences?.language ?? AppConfig.settings.defaultLanguage
     }
 
     @Selector()
@@ -329,10 +343,19 @@ export class RegistryState extends GenericState implements NgxsOnInit {
 
     @Action( UpdateTheme )
     public updateTheme (ctx: StateContext<RegistryStateModel>, payload: UpdateTheme): void {
-        if (payload.theme == ThemeEnum.LIGHT) {
-            this.htmlElement?.classList.remove( this.darkModeClass )
-        } else {
-            this.htmlElement?.classList.add( this.darkModeClass )
+        switch (payload.theme) {
+            case ThemeEnum.DARK:
+                this.htmlElement?.classList.add( this.darkModeClass )
+                break
+            case ThemeEnum.LIGHT:
+                this.htmlElement?.classList.remove( this.darkModeClass )
+                break
+            default:
+                if (GenericUtil.navigatorTheme === ThemeEnum.DARK) {
+                    this.htmlElement?.classList.add( this.darkModeClass )
+                } else {
+                    this.htmlElement?.classList.remove( this.darkModeClass )
+                }
         }
 
         ctx.patchState( {
@@ -461,6 +484,16 @@ export class RegistryState extends GenericState implements NgxsOnInit {
                 currentUser: currentUser,
             },
         } )
+        const userTheme: ThemeEnum = CurrentUserUtil.mapThemeToEnum( currentUser.preferences.theme )
+        if (userTheme !== ctx.getState()._util.theme) {
+            ctx.dispatch( new UpdateTheme( userTheme ) )
+        }
+        const userLanguage: string | undefined = currentUser.preferences.language
+        if (GenericUtil.nonNull( userLanguage ) && userLanguage !== this.translateService.currentLang) {
+            this.translateService.use( currentUser.preferences.language )
+            this.primeConfig.setTranslation( this.translateService.instant( 'prime-ng' ) )
+            this.registryFacade.reloadTranslatedData()
+        }
     }
 
     @Action( ImpersonateCurrentUser )
@@ -671,6 +704,42 @@ export class RegistryState extends GenericState implements NgxsOnInit {
                 loading: loading,
             },
         } )
+    }
+
+    @Action( UpdateCurrentUserTheme )
+    public updateCurrentUserTheme (
+        ctx: StateContext<RegistryStateModel>,
+        payload: UpdateCurrentUserTheme,
+    ): Observable<void> {
+        return this.preferencesService.updateTheme( CurrentUserUtil.mapThemeToString( payload.theme ) ).pipe(
+            map( (preferences: PreferencesModel): void => this.updateCurrentUserThemeComplete( ctx, preferences ) ),
+        )
+    }
+
+    private updateCurrentUserThemeComplete (
+        ctx: StateContext<RegistryStateModel>,
+        preferences: PreferencesModel,
+    ): void {
+        ctx.patchState( {
+            authentication: {
+                ...ctx.getState().authentication,
+                currentUser: {
+                    ...ctx.getState().authentication.currentUser!,
+                    preferences: {
+                        ...ctx.getState().authentication.currentUser!.preferences,
+                        theme: preferences.theme,
+                    },
+                },
+            },
+        } )
+    }
+
+    @Action( UpdateCurrentUserLanguage )
+    public updateCurrentUserLanguage (
+        _: StateContext<RegistryStateModel>,
+        payload: UpdateCurrentUserLanguage,
+    ): Observable<PreferencesModel> {
+        return this.preferencesService.updateLanguage( payload.language )
     }
 
     @Action( ManageUserProjectInvitationAcceptance )

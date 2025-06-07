@@ -274,8 +274,6 @@ export class VehicleFacade extends GenericProjectElementFacade {
     }
 
     public fetchPresencesStatus (): void {
-        if (this.presencesStatusMetadata().length === 0) {
-            this.ngStore.dispatch( FetchVehiclePresencesStatus )
-        }
+        this.ngStore.dispatch( FetchVehiclePresencesStatus )
     }
 }

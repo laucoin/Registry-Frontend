@@ -1,4 +1,4 @@
-import { computed, Injectable, Signal } from '@angular/core'
+import { computed, inject, Injectable, Signal } from '@angular/core'
 import { ActionCompletion, ofActionCompleted } from '@ngxs/store'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { filter, map, Observable } from 'rxjs'
@@ -33,6 +33,8 @@ import {
     StopUserProjectProfileInvitationsPageLoader,
     StopUserProjectProfileLoader,
     StopUserProjectProfilesPageLoader,
+    UpdateCurrentUserLanguage,
+    UpdateCurrentUserTheme,
     UpdateNetwork,
     UpdateScreenWidth,
     UpdateTheme,
@@ -53,14 +55,31 @@ import { SeverityEnum } from '../../util-model/enumeration/severity.enum'
 import { GenericUtil } from '../../util-tool/util/generic.util'
 import { ThemeEnum } from '../../util-model/enumeration/theme.enum'
 import { ResetSelectedProjectState } from '../../../domains/project/data/state/selected-project/selected-project.action'
-import { ResetMovementState } from '../../../domains/project/movement/data/state/movement.action'
+import {
+    FetchMovementTypes,
+    FetchParticipantTypes,
+    ResetMovementState,
+} from '../../../domains/project/movement/data/state/movement.action'
 import { ResetActivityState } from '../../../domains/project/configuration/activity/data/state/activity.action'
 import { ResetCommunicationState } from '../../../domains/project/communication/data/state/communication.action'
-import { ResetParticipantState } from '../../../domains/project/configuration/participant/data/state/participant.action'
-import { ResetVehicleState } from '../../../domains/project/configuration/vehicle/data/state/vehicle.action'
+import {
+    FetchParticipantPresencesStatus,
+    ResetParticipantState,
+} from '../../../domains/project/configuration/participant/data/state/participant.action'
+import {
+    FetchVehiclePresencesStatus,
+    ResetVehicleState,
+} from '../../../domains/project/configuration/vehicle/data/state/vehicle.action'
+import { FetchAlertStatus } from '../../../domains/project/alert/data/state/alert.action'
+import {
+    FetchProfileStatus,
+} from '../../../domains/project/configuration/project-profile/data/state/project-profile.action'
+import { PrimeNG } from 'primeng/config'
 
 @Injectable()
 export class RegistryFacade extends GenericFacade {
+    private readonly primeConfig: PrimeNG = inject( PrimeNG )
+
     private readonly onlineMessage: ToastMessageOptions = StateUtil.buildNotificationMessage(
         SeverityEnum.SUCCESS,
         'global.notifications.ONLINE.title',
@@ -114,10 +133,6 @@ export class RegistryFacade extends GenericFacade {
         return this.ngStore.select( RegistryState.notification )
     }
 
-    public get currentUserActionLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( RegistryState.currentUserActionLoading )
-    }
-
     public get token (): Signal<TokenModel | undefined> {
         return this.ngStore.selectSignal( RegistryState.tokens )
     }
@@ -131,6 +146,14 @@ export class RegistryFacade extends GenericFacade {
 
     public get currentUser (): Signal<CurrentUserModel | undefined> {
         return this.ngStore.selectSignal( RegistryState.currentUser )
+    }
+
+    public get currentUserTheme (): Signal<ThemeEnum | undefined> {
+        return this.ngStore.selectSignal( RegistryState.currentUserTheme )
+    }
+
+    public get currentUserLanguage (): Signal<string> {
+        return this.ngStore.selectSignal( RegistryState.currentUserLanguage )
     }
 
     public get selectedProject (): Signal<ProjectModel | undefined> {
@@ -365,8 +388,34 @@ export class RegistryFacade extends GenericFacade {
         this.ngStore.dispatch( StopUserProjectProfileLoader )
     }
 
-    public updateTheme (theme: ThemeEnum): void {
-        this.ngStore.dispatch( new UpdateTheme( theme ) )
+    public updateTheme (theme: ThemeEnum | undefined): void {
+        if (GenericUtil.nonNull( theme )) {
+            this.ngStore.dispatch( new UpdateTheme( theme! ) )
+        }
+    }
+
+    public updateCurrentUserTheme (theme: ThemeEnum | undefined): void {
+        if (GenericUtil.isNull( theme )) return
+        this.ngStore.dispatch( [ new UpdateCurrentUserTheme( theme! ), new UpdateTheme( theme! ) ] )
+    }
+
+    public reloadTranslatedData (): void {
+        this.ngStore.dispatch( [
+            FetchCurrentUser,
+            FetchMovementTypes,
+            FetchParticipantTypes,
+            FetchParticipantPresencesStatus,
+            FetchVehiclePresencesStatus,
+            FetchAlertStatus,
+            FetchProfileStatus,
+        ] )
+    }
+
+    public updateCurrentUserLanguage (language: string): void {
+        this.translateService.use( language )
+        this.primeConfig.setTranslation( this.translateService.instant( 'prime-ng' ) )
+        this.reloadTranslatedData()
+        this.ngStore.dispatch( new UpdateCurrentUserLanguage( language ) )
     }
 
     public manageProjectInvitationAcceptance (id: string, accepted: boolean): void {

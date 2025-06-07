@@ -36,59 +36,59 @@
             "To"
         ],
         "dayNames": [
-            "dimanche",
-            "lundi",
-            "mardi",
-            "mercredi",
-            "jeudi",
-            "vendredi",
-            "samedi"
+            "Dimanche",
+            "Lundi",
+            "Mardi",
+            "Mercredi",
+            "Jeudi",
+            "Vendredi",
+            "Samedi"
         ],
         "dayNamesShort": [
-            "dim",
-            "lun",
-            "mar",
-            "mer",
-            "jeu",
-            "ven",
-            "sam"
+            "Dim",
+            "Lun",
+            "Mar",
+            "Mer",
+            "Jeu",
+            "Ven",
+            "Sam"
         ],
         "dayNamesMin": [
-            "di",
-            "lu",
-            "ma",
-            "me",
-            "je",
-            "ve",
-            "sa"
+            "Di",
+            "Lu",
+            "Ma",
+            "Me",
+            "Je",
+            "Ve",
+            "Sa"
         ],
         "monthNames": [
-            "janvier",
-            "février",
-            "mars",
-            "avril",
-            "mai",
-            "juin",
-            "juillet",
-            "août",
-            "septembre",
-            "octobre",
-            "novembre",
-            "décembre"
+            "Janvier",
+            "Février",
+            "Mars",
+            "Avril",
+            "Mai",
+            "Juin",
+            "Juillet",
+            "Août",
+            "Septembre",
+            "Octobre",
+            "Novembre",
+            "Décembre"
         ],
         "monthNamesShort": [
-            "jan",
-            "fev",
-            "mar",
-            "avr",
-            "mai",
-            "jui",
-            "jui",
-            "aoû",
-            "sep",
-            "oct",
-            "nov",
-            "déc"
+            "Jan",
+            "Fev",
+            "Mar",
+            "Avr",
+            "Mai",
+            "Jui",
+            "Jui",
+            "Aoû",
+            "Sep",
+            "Oct",
+            "Nov",
+            "Déc"
         ],
         "chooseYear": "Choisir une année",
         "chooseMonth": "Choisir un mois",
@@ -175,7 +175,7 @@
     "global": {
         "language": {
             "fr-FR": "Français (FR)",
-            "en-US": "Anglais (US)"
+            "en-US": "English (US)"
         },
         "updated": "Modifié",
         "legal": {
@@ -213,20 +213,20 @@
                     "title": "4. Propriété intellectuelle",
                     "content": "Tout le contenu du Site, y compris mais sans s’y pageSizeer, le code source, les textes, les graphiques, les logos et les images, est protégé par le droit d’auteur et est la propriété exclusive de Luc AUCOIN. Cependant, si le Site est utilisé dans un contexte de marque blanche, les droits liés à l’apparence personnalisée et aux éléments de marque blanche appartiennent au client qui en fait usage, tandis que la propriété intellectuelle sur la technologie sous-jacente et les fonctionnalités demeure celle de Luc AUCOIN. Toute reproduction, modification, distribution ou exploitation non autorisée de ce contenu est strictement interdite."
                 },
-                "liability-pageSizeation": {
-                    "title": "5. pageSizeation de responsabilité",
+                "liability-responsibilities": {
+                    "title": "5. Responsabilités",
                     "content": "Luc AUCOIN s’efforce de garantir le bon fonctionnement du Site, mais ne peut être tenu responsable des dommages directs ou indirects résultant de l’utilisation ou de l’impossibilité d’utiliser le Site, notamment en cas de perte de données, de panne technique ou de violation de la sécurité des données."
                 },
                 "cancellation": {
-                    "title": "6. Résiliation",
+                    "title": "6. Résiliation",
                     "content": "Luc AUCOIN se réserve le droit de suspendre ou de résilier l’accès au Site en cas de violation des présentes Conditions d’utilisation ou pour toute autre raison jugée nécessaire."
                 },
                 "terms-of-use-modification": {
-                    "title": "7. Modifications des conditions d’utilisation",
+                    "title": "7. Modifications des conditions d’utilisation",
                     "content": "Ces Conditions d’utilisation peuvent être modifiées à tout moment. Les utilisateurs seront informés des modifications importantes via un avis sur le Site ou par tout autre moyen approprié. La poursuite de l’utilisation du Site après modification vaut acceptation des nouvelles conditions."
                 },
                 "contact": {
-                    "title": "8. Contact",
+                    "title": "8. Contact",
                     "content": "Pour toute question ou demande d’information relative à ces Conditions d’utilisation, veuillez contacter :<ul><li><b>Nom</b> : Luc AUCOIN</li><li><b>Email</b> : luc.aucoin1998@gmail.com</li></ul>"
                 }
             }
@@ -1111,7 +1111,7 @@
                 "end-date-time": "Par défaut une personne part avec son groupe. Faute de groupe, la personne part à la fin du projet."
             },
             "placeholder": {
-                "user": "Ex : robert.baden-powell@exemple.fr (Robert BADEN-POWELL)",
+                "user": "Ex : robert.baden-powell@exemple.com (Robert BADEN-POWELL)",
                 "firstname": "Ex : Robert",
                 "lastname": "Ex : BADEN-POWELL",
                 "birthday": "Ex : 22/02/1857",

@@ -32,15 +32,14 @@
                           optionLabel='label'
                           optionValue='value'
                           inputId='app-language'
-                          [disabled]='true'
                           fluid
-                          [(ngModel)]='currentLanguage' />
+                          (onChange)='registryFacade.updateCurrentUserLanguage($event.value)'
+                          [formControl]='languageControl' />
             </div>
             <div class='field'>
                 <label for='app-theme'><b>{{ 'settings.configuration.form.theme' | translate }}</b></label>
-                <p-select-button [options]='registryFacade.themesMetadata()' id='app-theme' [(ngModel)]='currentTheme'
-                                 optionValue='value'
-                                 disabled>
+                <p-select-button [options]='registryFacade.themesMetadata()' id='app-theme' [formControl]='themeControl'
+                                 optionValue='value' (onChange)='registryFacade.updateCurrentUserTheme($event.value)'>
                     <ng-template #item let-item>
                         <i [class]='item.icon'></i>
                     </ng-template>

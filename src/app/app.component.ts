@@ -17,6 +17,7 @@ import { NavbarComponent } from './shell/navbar/navbar.component'
 import { RouterOutlet } from '@angular/router'
 import { ThemeEnum } from './shared/util-model/enumeration/theme.enum'
 import { SeverityInformationComponent } from './shared/util-ui/severity-information/severity-information.component'
+import { GenericUtil } from './shared/util-tool/util/generic.util'
 
 @Component( {
     selector: 'app-root',
@@ -42,7 +43,6 @@ import { SeverityInformationComponent } from './shared/util-ui/severity-informat
 export class AppComponent extends GenericComponent implements OnDestroy {
     protected readonly breakPoint: object = breakPoint
     private readonly subscriptions: Subscription = new Subscription()
-    private readonly themeMediaQuery: MediaQueryList = window.matchMedia( '(prefers-color-scheme: light)' )
 
     protected readonly currentYear: number = new Date().getFullYear()
     protected readonly currentHost: string = location.host
@@ -64,18 +64,19 @@ export class AppComponent extends GenericComponent implements OnDestroy {
     private initTranslation (): void {
         this.translateService.addLangs( AppConfig.settings.languages )
         this.translateService.setDefaultLang( AppConfig.settings.defaultLanguage )
+        this.translateService.use( AppConfig.settings.defaultLanguage )
         this.translateService.get( 'prime-ng' ).pipe(
             map( (lang: object): void => this.primeConfig.setTranslation( lang ) ),
         ).subscribe()
     }
 
     private handleThemeChanges (): void {
-        this.registryFacade.updateTheme( this.theme )
-        this.themeMediaQuery.addEventListener( 'change', (): void => this.registryFacade.updateTheme( this.theme ) )
-    }
-
-    private get theme (): ThemeEnum {
-        return (!window.matchMedia || this.themeMediaQuery.matches) ? ThemeEnum.LIGHT : ThemeEnum.DARK
+        this.registryFacade.updateTheme( GenericUtil.navigatorTheme )
+        GenericUtil.themeMediaQuery.addEventListener( 'change', (): void => {
+            if (GenericUtil.isNull( this.registryFacade.currentUserTheme() ) || this.registryFacade.currentUserTheme() === ThemeEnum.SYSTEM) {
+                this.registryFacade.updateTheme( GenericUtil.navigatorTheme )
+            }
+        } )
     }
 
     @HostListener( 'window:online', [ '$event' ] )

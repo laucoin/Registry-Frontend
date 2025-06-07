@@ -44,6 +44,9 @@ enum RegistryActionEnum {
     START_USER_PROJECT_PROFILE_LOADER = '[Local] Starting user project profile loader',
     STOP_USER_PROJECT_PROFILE_LOADER = '[Local] Stopping user project profile loader',
 
+    UPDATE_CURRENT_USER_THEME = '[Backend] Updating current user theme',
+    UPDATE_CURRENT_USER_LANGUAGE = '[Backend] Updating current user language',
+
     MANAGE_USER_PROJECT_INVITATION_ACCEPTANCE = '[Backend] Managing user project invitation acceptance',
     SELECT_USER_PROJECT_PROFILE = '[Backend] Selecting user project profile',
     SELECT_USER_PROJECT_PROFILE_BY_PROJECT = '[Backend] Selecting user project profile by project',
@@ -193,6 +196,18 @@ export class StartUserProjectProfileLoader {
 
 export class StopUserProjectProfileLoader {
     public static readonly type: RegistryActionEnum = RegistryActionEnum.STOP_USER_PROJECT_PROFILE_LOADER
+}
+
+export class UpdateCurrentUserTheme {
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.UPDATE_CURRENT_USER_THEME
+
+    public constructor (public readonly theme: ThemeEnum) {}
+}
+
+export class UpdateCurrentUserLanguage {
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.UPDATE_CURRENT_USER_LANGUAGE
+
+    public constructor (public readonly language: string) {}
 }
 
 export class ManageUserProjectInvitationAcceptance {

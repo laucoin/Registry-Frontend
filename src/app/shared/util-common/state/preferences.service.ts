@@ -12,8 +12,22 @@ export class PreferencesService extends GenericService {
         super( '/api/users/preferences' )
     }
 
+    public updateTheme (theme: string): Observable<PreferencesModel> {
+        return this.http.post<PreferencesModel>(
+            `${this.baseUrl}/theme?theme=${theme}`,
+            null,
+        )
+    }
+
+    public updateLanguage (language: string): Observable<PreferencesModel> {
+        return this.http.post<PreferencesModel>(
+            `${this.baseUrl}/language?language=${language}`,
+            null,
+        )
+    }
+
     public selectUserProjectProfile (profileId: string | undefined): Observable<PreferencesModel> {
-        return this.http.patch<PreferencesModel>(
+        return this.http.post<PreferencesModel>(
             `${this.baseUrl}/profile/select${profileId ? '?' + new HttpParams().set(
                 'profileId',
                 profileId,
@@ -23,7 +37,7 @@ export class PreferencesService extends GenericService {
     }
 
     public selectUserProjectProfileByProjectId (projectId: string): Observable<PreferencesModel> {
-        return this.http.patch<PreferencesModel>(
+        return this.http.post<PreferencesModel>(
             `${this.baseUrl}/projects/${projectId}/profile/select`,
             null,
         )
