@@ -10,7 +10,13 @@ import { inject } from '@angular/core'
 import { catchError, mergeMap, Observable, tap, throwError } from 'rxjs'
 import { RegistryFacade } from '../../util-common/state/registry.facade'
 import { CurrentUserModel } from '../../util-model/model/current-user.model'
-import { AUTHORIZATION, CURRENT_USER_ID, SELECT_PROFILE_PROJECT_ID, TOKEN } from '../../util-tool/util/request.util'
+import {
+    ACCEPT_LANGUAGE,
+    AUTHORIZATION,
+    CURRENT_USER_ID,
+    SELECT_PROFILE_PROJECT_ID,
+    TOKEN,
+} from '../../util-tool/util/request.util'
 import { TokenModel } from '../model/token.model'
 import { SessionStorageUtils } from '../../util-tool/util/session-storage.util'
 import { AppConfig } from '../../../app.config'
@@ -36,7 +42,7 @@ export const backendHandler: HttpInterceptorFn = (
 
     return next( req.clone( {
         url: url,
-        headers: buildHeaders( req.url, registryFacade.token(), req.headers ),
+        headers: buildHeaders( req.url, registryFacade.token(), registryFacade.currentUserLanguage(), req.headers ),
     } ) )
         .pipe( catchError( (error: HttpErrorResponse) => {
             if (AppConfig.settings.backend.noAuthPaths.some( (permitAll: string): boolean => req.url.includes( permitAll ) ) && error.status === 401) {
@@ -63,7 +69,12 @@ export const backendHandler: HttpInterceptorFn = (
                             registryFacade.restoreSessionFromStorage()
                         } ),
                         mergeMap( (newToken: TokenModel): Observable<HttpEvent<unknown>> => {
-                            const retryHeaders: HttpHeaders = buildHeaders( req.url, newToken, req.headers )
+                            const retryHeaders: HttpHeaders = buildHeaders(
+                                req.url,
+                                newToken,
+                                registryFacade.currentUserLanguage(),
+                                req.headers,
+                            )
                             return next( req.clone( { url: url, headers: retryHeaders } ) )
                         } ),
                     )
@@ -103,7 +114,12 @@ function formatUrlIfNeeded (currentUser: CurrentUserModel | undefined, url: stri
     return formattedUrl
 }
 
-function buildHeaders (url: string, token: TokenModel | undefined, headers: HttpHeaders | undefined): HttpHeaders {
+function buildHeaders (
+    url: string,
+    token: TokenModel | undefined,
+    language: string,
+    headers: HttpHeaders | undefined,
+): HttpHeaders {
     let filledHeaders: HttpHeaders = headers ?? new HttpHeaders()
 
     if (AppConfig.settings.backend.noAuthPaths.some( (permitAll: string): boolean => url.includes( permitAll ) )) {
@@ -111,5 +127,6 @@ function buildHeaders (url: string, token: TokenModel | undefined, headers: Http
     }
 
     filledHeaders = filledHeaders.set( AUTHORIZATION, `${token?.tokenType} ${token?.accessToken}` )
+    filledHeaders = filledHeaders.set( ACCEPT_LANGUAGE, language )
     return filledHeaders
 }

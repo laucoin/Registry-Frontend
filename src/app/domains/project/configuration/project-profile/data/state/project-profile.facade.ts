@@ -167,9 +167,7 @@ export class ProjectProfileFacade extends GenericProjectElementFacade {
     }
 
     public fetchProfileStatus (): void {
-        if (this.projectProfilesStatusMetadata().length === 0) {
-            this.ngStore.dispatch( FetchProfileStatus )
-        }
+        this.ngStore.dispatch( FetchProfileStatus )
     }
 
     public createProjectProfiles (

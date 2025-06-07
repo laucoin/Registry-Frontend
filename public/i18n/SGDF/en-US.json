@@ -1,0 +1,1798 @@
+{
+    "prime-ng": {
+        "startsWith": "Starts with",
+        "contains": "Contains",
+        "notContains": "Not contains",
+        "endsWith": "Ends with",
+        "equals": "Equals",
+        "notEquals": "Not equals",
+        "noFilter": "No Filter",
+        "lt": "Less than",
+        "lte": "Less than or equal to",
+        "gt": "Greater than",
+        "gte": "Greater than or equal to",
+        "dateIs": "Date is",
+        "dateIsNot": "Date is not",
+        "dateBefore": "Date is before",
+        "dateAfter": "Date is after",
+        "clear": "Clear",
+        "apply": "Apply",
+        "matchAll": "Match All",
+        "matchAny": "Match Any",
+        "addRule": "Add Rule",
+        "removeRule": "Remove Rule",
+        "accept": "Yes",
+        "reject": "No",
+        "choose": "Choose",
+        "upload": "Upload",
+        "cancel": "Cancel",
+        "completed": "Completed",
+        "pending": "Pending",
+        "fileSizeTypes": [
+            "B",
+            "KB",
+            "MB",
+            "GB",
+            "TB"
+        ],
+        "dayNames": [
+            "Sunday",
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday"
+        ],
+        "dayNamesShort": [
+            "Sun",
+            "Mon",
+            "Tue",
+            "Wed",
+            "Thu",
+            "Fri",
+            "Sat"
+        ],
+        "dayNamesMin": [
+            "Su",
+            "Mo",
+            "Tu",
+            "We",
+            "Th",
+            "Fr",
+            "Sa"
+        ],
+        "monthNames": [
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December"
+        ],
+        "monthNamesShort": [
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May",
+            "Jun",
+            "Jul",
+            "Aug",
+            "Sep",
+            "Oct",
+            "Nov",
+            "Dec"
+        ],
+        "chooseYear": "Choose Year",
+        "chooseMonth": "Choose Month",
+        "chooseDate": "Choose Date",
+        "prevDecade": "Previous Decade",
+        "nextDecade": "Next Decade",
+        "prevYear": "Previous Year",
+        "nextYear": "Next Year",
+        "prevMonth": "Previous Month",
+        "nextMonth": "Next Month",
+        "prevHour": "Previous Hour",
+        "nextHour": "Next Hour",
+        "prevMinute": "Previous Minute",
+        "nextMinute": "Next Minute",
+        "prevSecond": "Previous Second",
+        "nextSecond": "Next Second",
+        "am": "am",
+        "pm": "pm",
+        "today": "Today",
+        "weekHeader": "Wk",
+        "firstDayOfWeek": "0",
+        "dateFormat": "mm/dd/yy",
+        "weak": "Weak",
+        "medium": "Medium",
+        "strong": "Strong",
+        "passwordPrompt": "Enter a password",
+        "emptyFilterMessage": "No results found",
+        "searchMessage": "{0} results are available",
+        "selectionMessage": "{0} items selected",
+        "emptySelectionMessage": "No selected item",
+        "emptySearchMessage": "No results found",
+        "emptyMessage": "No available options",
+        "aria": {
+            "trueLabel": "True",
+            "falseLabel": "False",
+            "nullLabel": "Not Selected",
+            "star": "1 star",
+            "stars": "{star} stars",
+            "selectAll": "All items selected",
+            "unselectAll": "All items unselected",
+            "close": "Close",
+            "previous": "Previous",
+            "next": "Next",
+            "navigation": "Navigation",
+            "scrollTop": "Scroll Top",
+            "moveTop": "Move Top",
+            "moveUp": "Move Up",
+            "moveDown": "Move Down",
+            "moveBottom": "Move Bottom",
+            "moveToTarget": "Move to Target",
+            "moveToSource": "Move to Source",
+            "moveAllToTarget": "Move All to Target",
+            "moveAllToSource": "Move All to Source",
+            "pageLabel": "{page}",
+            "firstPageLabel": "First Page",
+            "lastPageLabel": "Last Page",
+            "nextPageLabel": "Next Page",
+            "prevPageLabel": "Previous Page",
+            "rowsPerPageLabel": "Rows per page",
+            "jumpToPageDropdownLabel": "Jump to Page Dropdown",
+            "jumpToPageInputLabel": "Jump to Page Input",
+            "selectRow": "Row Selected",
+            "unselectRow": "Row Unselected",
+            "expandRow": "Row Expanded",
+            "collapseRow": "Row Collapsed",
+            "showFilterMenu": "Show Filter Menu",
+            "hideFilterMenu": "Hide Filter Menu",
+            "filterOperator": "Filter Operator",
+            "filterConstraint": "Filter Constraint",
+            "editRow": "Row Edit",
+            "saveEdit": "Save Edit",
+            "cancelEdit": "Cancel Edit",
+            "listView": "List View",
+            "gridView": "Grid View",
+            "slide": "Slide",
+            "slideNumber": "{slideNumber}",
+            "zoomImage": "Zoom Image",
+            "zoomIn": "Zoom In",
+            "zoomOut": "Zoom Out",
+            "rotateRight": "Rotate Right",
+            "rotateLeft": "Rotate Left"
+        }
+    },
+    "global": {
+        "updated": "Amended",
+        "legal": {
+            "information": {
+                "name": "Information",
+                "about": "About Registry",
+                "summary": "Welcome to Registry! An event management tool. It allows in particular the holding of presence registers.",
+                "who": {
+                    "title": "Who are we ?",
+                    "content": "Registry started on a Camp of Scouts and Guides of France in August 2019. It was created by Luc Aucoin with the help of Alexandre d'Hont and Louis Vicainne (they have merit because I got them well with my ideas.)."
+                }
+            },
+            "terms-of-use": {
+                "name": "General conditions of use",
+                "summary": "Welcome to Registry ({{url}}), a SaaS type platform operated by Luc Aucoin. By using the site and its services, you accept the following conditions of use. If you do not agree with these conditions, you should not use the site.",
+                "conclusion": "Using the site, you acknowledge having read and understood these conditions of use, and you agree to respect them.",
+                "service": {
+                    "title": "1. Object of the service",
+                    "content": "The site provides a platform allowing users to enter, manage and process data. Users are fully responsible for the data they enter, in particular concerning legal obligations relating to the consent of the persons concerned. This under the General Data Protection Regulations (GDPR)."
+                },
+                "liability": {
+                    "title": "2. User responsibility",
+                    "subtitle1": "2.1 Respect for GDPR law",
+                    "content1": "Users guarantee that they collect, process and enter persons in accordance with the provisions of the GDPR. In particular, they are committed to: <ul><li>Obtain the explicit consent of the persons concerned before any data collection;</li><li>provide persons concerned with the necessary information on the use of their data;</li><li>Respect people's rights (right of access, rectification, erasure, etc.).</li></ul>",
+                    "subtitle2": "2.2 Data accuracy and security",
+                    "content2": "Users are committed to: <ul><li>Provide exact, complete and up -to -date information;</li><li>Protect data entered against unauthorized access.</li></ul>",
+                    "subtitle3": "2.3 Prohibited content",
+                    "content3": "Users are committed not to enter illicit, incorrect or contrary to the law in the context of the use of the site. This includes, without the page on it: <ul><li>Abusive, defamatory or hateful remarks;</li><li>Discriminatory content or encouraging violence;</li><li>Any data violating the rights of third parties or breaking the laws in force.</li></ul> Luc Aucoin reserves the right to delete any non -compliant content or to suspend access to the site. non-compliance with these rules."
+                },
+                "data-usage": {
+                    "title": "3. Use of data",
+                    "content": "The data entered in the application can be used under the following conditions: <ul><li><b>monitoring</b>: to monitor the performance and stability of the application.</li><li><b>debug</b>: to identify and correct anomalies.</li><li><b>Improvement of services</b>: to optimize features and experience User.</li><li><b>Analysis and survey</b>: The user who created or modified data is displayed with it and can be consulted in this context.</li></ul> These data will never be voluntarily used for commercial purposes or shared with third parties for marketing purposes."
+                },
+                "intellectual-ownership": {
+                    "title": "4. Intellectual property",
+                    "content": "All the content of the site, including but without the page on, the source code, the texts, the graphics, the logos and the images, is protected by copyright and is the exclusive property of Luc Aucoin. However, if the site is used in a white marque context, the rights related to personalized appearance and the elements of white marque belongs to the customer who uses it, while intellectual property on underlying technology and features remains that of Luc Aucoin. Any reproduction, modification, distribution or unauthorized exploitation of this content is strictly prohibited."
+                },
+                "liability-responsibilities": {
+                    "title": "5. Responsibilities",
+                    "content": "Luc Aucoin strives to guarantee the proper functioning of the site, but cannot be held responsible for direct or indirect damage resulting from the use or impossibility of using the Site, in particular in the event of data loss, technical failure or data security violation."
+                },
+                "cancellation": {
+                    "title": "6.",
+                    "content": "Luc Aucoin reserves the right to suspend or terminate access to the Site in the event of a violation of these conditions of use or for any other reason deemed necessary."
+                },
+                "terms-of-use-modification": {
+                    "title": "7. Changes in the conditions of use",
+                    "content": "These conditions of use can be modified at any time. Users will be informed of important changes via a site review or by any other appropriate means. Continuation of the use of the site after modification is appropriate for new conditions."
+                },
+                "contact": {
+                    "title": "8. Contact",
+                    "content": "For any questions or requests for information relating to these conditions of use, please contact:<ul><li><b>Name</b>: Luc Aucoin</li><li><b>email</b>: luc.aucoin1998@gmail.com</li></ul>"
+                }
+            }
+        },
+        "welcome": {
+            "title": "🚀 Welcome to Registry!",
+            "introduction": "I'm delighted to welcome you here. This site was designed to help you easily manage the entries and outputs of your participants in a collective reception of minors.",
+            "option": "For each of the projects, you can create access profiles to give access to your project to other users, manage their movements, follow their activities and many other options.",
+            "invitations": "You will find your invitations to projects by clicking on your name at the top of the screen. You can accept or refuse these invitations. If you accept, you can use the associated access profile with the invitation to access the project.",
+            "conclusion": "Good use!",
+            "begin": "Let's go! To start, if you want to create your own project, you can do it by clicking on the “Create a project” button below. If you want to join an existing project, you can do it by clicking on the button below.",
+            "create-project": "Create my first project"
+        },
+        "menu": {
+            "users": "Users",
+            "projects": "Projects",
+            "edit-project": "Modify the project",
+            "project-home": "Project reception",
+            "configuration": "Configuration",
+            "project-profiles": "Access profiles",
+            "movements": "Movements",
+            "alerts": "Alert",
+            "participants": "Participants",
+            "groups": "Groups",
+            "vehicles": "Vehicles",
+            "activities": "Activities",
+            "profiles": "Access profiles",
+            "invitations": "Invitations",
+            "settings": "Parameters",
+            "help": "Help"
+        },
+        "date-and-time-format": {
+            "date": "DD/MM/Yyyy",
+            "time": "HH: MM",
+            "datetime": "DD/mm/yyyy at HH: mm",
+            "interval": "{{first}} and {{second}}",
+            "year": {
+                "one": "one year old",
+                "few": "{{count}} years"
+            },
+            "month": {
+                "one": "1 month",
+                "few": "{{count}} month"
+            },
+            "day": {
+                "one": "1 day",
+                "few": "{{count}} days"
+            },
+            "hour": {
+                "one": "1 hour",
+                "few": "{{count}} hours"
+            },
+            "minute": {
+                "one": "1 minute",
+                "few": "{{count}} minutes"
+            },
+            "second": {
+                "one": "1 second",
+                "few": "{{count}} seconds"
+            },
+            "last-refresh": "Last update the {{datetime}}",
+            "element-created": "Created on {{datetime}}",
+            "element-created-user": "Created on {{datetime}} by {{user}}",
+            "element-last-update": "Modified the {{datetime}}",
+            "element-last-update-user": "Modified the {{datetime}} by {{user}}"
+        },
+        "img": {
+            "console_someone": "Image of a console",
+            "no_data": "Image of a twirling in the desert"
+        },
+        "people": {
+            "all": "All",
+            "major": {
+                "one": "Major",
+                "few": "Adults"
+            },
+            "minor": {
+                "one": "Minor",
+                "few": "Minors"
+            }
+        },
+        "form": {
+            "required": "Mandatory",
+            "range": {
+                "min": "Min",
+                "max": "Max"
+            }
+        },
+        "actions": {
+            "confirm": "Confirm",
+            "create": "Create",
+            "edit": "To modify",
+            "cancel": "Cancel",
+            "previous": "Previous",
+            "next": "Following",
+            "search-and-filter": "Search & filter",
+            "sign-out": "Sign out"
+        },
+        "messages": {
+            "not-implemented": "🙅‍♂️ Functionality is not implemented.",
+            "invalid-form": "🙅‍♂️ The form is not valid.",
+            "invalid-action": "🙅‍♂️ The chosen action is not taken care of."
+        },
+        "notifications": {
+            "503": {
+                "title": "🥴 Unavailable server",
+                "message": "Wow! The server seems to be down 😭. Reload the page, try again later, or contact the administrator."
+            },
+            "UNKNOWN_ERROR": "An unexpected error occurred, we work to resolve it 🛠️. If the error persists does not hesitate to bring us this error.",
+            "OFFLINE": {
+                "title": "📡 Off-line",
+                "message": "Your connection may be low 🐢, brought together the box. If you're in 4G, get closer to a window. If you are in 3G, get closer to another century."
+            },
+            "ONLINE": {
+                "title": "⚡️ Connection restored",
+                "message": "Your internet connection is back. You can use the application again normally."
+            },
+            "EMPTY": {
+                "title": "🕵️‍♀️ No data",
+                "message": "No data has been found."
+            },
+            "NO_USER_ID": {
+                "title": "🕵️‍♂️ No user",
+                "message": "No user was found. You have to connect to use the application."
+            },
+            "NO_SELECTED_PROJECT": {
+                "title": "🕵️‍♂️ No selected project",
+                "message": "No project has been selected. You have to select a project to carry out this action."
+            }
+        },
+        "not-set": "Undefined"
+    },
+    "settings": {
+        "birthday": "Date of birth :",
+        "role": "Role :",
+        "configuration": {
+            "title": "Configuration",
+            "form": {
+                "theme": "Theme :",
+                "language": "Language :"
+            }
+        },
+        "danger": "Irreversible actions",
+        "actions": {
+            "impersonate": "Anonymization request",
+            "confirmations": {
+                "impersonate": {
+                    "title": "Anonymize my account",
+                    "message": "Attention ! You will anonymize your account. This irreversible action will cause your disconnection and prevent you from connecting yourself again. For your information, your user will be anonymized immediately, and the participants you are linked to will be anonymized at the end of the project. However, if you drove vehicles as part of a project, your participant will be anonymized 1 year after the end of the project."
+                }
+            }
+        }
+    },
+    "project-home": {
+        "alerts": {
+            "title": "Current alerts",
+            "see-more": "See more"
+        },
+        "dashboard": {
+            "title": "Dashboard",
+            "birthday": {
+                "one": "Birthday",
+                "few": "Birthdays"
+            },
+            "no-birthday": "No birthday today",
+            "participants": {
+                "total": {
+                    "one": "Number of participants",
+                    "few": "Number of participants"
+                },
+                "present": {
+                    "one": "Here",
+                    "few": "Present"
+                },
+                "registered": {
+                    "one": "Registered",
+                    "few": "Registered"
+                },
+                "guest": {
+                    "one": "Guest",
+                    "few": "Guests"
+                },
+                "absent": {
+                    "one": "Absent",
+                    "few": "Absent"
+                }
+            },
+            "vehicles": {
+                "total": {
+                    "one": "Vehicle number",
+                    "few": "Number of vehicles"
+                },
+                "present": {
+                    "one": "Here",
+                    "few": "Present"
+                },
+                "absent": {
+                    "one": "Absent",
+                    "few": "Absent"
+                }
+            }
+        },
+        "activity-in-progress": {
+            "title": "Current activity"
+        },
+        "movements-in-progress": {
+            "title": "Movement in progress"
+        }
+    },
+    "users": {
+        "search-and-filter": {
+            "text": "First name, last name, email",
+            "visibility": "Status"
+        },
+        "visible": {
+            "true": "Active",
+            "false": "Blocked"
+        },
+        "form": {
+            "title": "Update the role of “{{firstname}} {{lastname}}”",
+            "role": "Role",
+            "error": {
+                "role": {
+                    "required": "The role of the user cannot be empty."
+                }
+            }
+        },
+        "actions": {
+            "update-role": "Change your role",
+            "enable": "Unlock",
+            "disable": "To block",
+            "impersonate": "Anonymize",
+            "delete": "DELETE",
+            "confirmations": {
+                "disable": {
+                    "title": "Block the user",
+                    "message": "Attention ! You will block a user. As long as it is blocked, {{element.firstname}} {{element.lastname}} will no longer be able to connect."
+                },
+                "enable": {
+                    "title": "Unlock the user",
+                    "message": "Attention ! You will unlock a user. {{element.firstname}} {{element.lastname}} may again connect."
+                },
+                "impersonate": {
+                    "title": "Anonymize the user",
+                    "message": "Attention ! You will anonymize a user. All profiles and participants associated with {{element.firstname}} {{element.lastname}} will also be anonymized."
+                },
+                "delete": {
+                    "title": "Delete the user",
+                    "message": "Attention ! You will delete a user. All profiles associated with {{element.firstname}} {{element.lastname}} will also be deleted."
+                }
+            }
+        },
+        "notifications": {
+            "email-copied": "The email address of {{element.firstname}} {{element.lastname}} copied.",
+            "update-role": {
+                "title": "✏️ Modified role",
+                "message": "The role of {{firstname}} {{lastname}} has been modified."
+            },
+            "disable": {
+                "title": "⛔️ Blocked user",
+                "message": "{{firstname}} {{lastname}} was blocked"
+            },
+            "enable": {
+                "title": "⛓️‍💥 User unlocked",
+                "message": "{{firstname}} {{lastname}} has been unlocked, he can connect again."
+            },
+            "impersonate": {
+                "title": "🕵️‍♂️ Anonymized user",
+                "message": "{{firstName}} {{lastName}} has been anonymized, he can no longer log in and his information has been hashed."
+            },
+            "delete": {
+                "title": "🗑️ User deleted",
+                "message": "{{firstname}} {{lastname}} has been deleted, he can always connect but all its information has been deleted."
+            },
+            "EMPTY": {
+                "title": "🕵️‍♀️ No user",
+                "message": "No user was found."
+            }
+        }
+    },
+    "projects": {
+        "search-and-filter": {
+            "text": "Name",
+            "datetime": "Date & time",
+            "visibility": "Visibility",
+            "with-profile": "With a profile"
+        },
+        "visible": {
+            "true": "Visible",
+            "false": "Mask"
+        },
+        "options": {
+            "zero": "No option",
+            "one": "{{name}}",
+            "two": "{{name}} and 1 other option",
+            "few": "{{name}} and {{others}} other options",
+            "list": "Options",
+            "select-all": "Select everything"
+        },
+        "form": {
+            "title": {
+                "create": "Create a project",
+                "edit": "Modify the project “{{name}}”"
+            },
+            "subtitle": {
+                "information": "Information",
+                "option": {
+                    "one": "Option",
+                    "few": "Options"
+                }
+            },
+            "name": "Name",
+            "begin-datetime": "Start date & time",
+            "end-datetime": "End date & time",
+            "error": {
+                "name": {
+                    "required": "An unnamed project? Seriously, give it a name!",
+                    "blank": "No, no, no! You won't have me. An empty name does not work!",
+                    "maxlength": "Have you seen the length of the name 🤯? Not abuse with your {{actualLength}} characters! Here the max is {{requiredLength}}."
+                },
+                "options": {
+                    "preRequiredOptions": "Activating the option \"{{for}}\" without \"{{missing}}\" that may be complex."
+                },
+                "begin-datetime": {
+                    "dateRequiredForTime": "The project begins at a certain hour ok! But what day? 📆"
+                },
+                "end-datetime": {
+                    "dateRequiredForTime": "The project ends at a certain time ok! But what day? 📆"
+                },
+                "date-range": {
+                    "beginDateBeforeEndDate": "Your project ends before you have started! This is ambition."
+                }
+            },
+            "placeholder": {
+                "name": "Ex: Scout camp",
+                "date": "Ex: {{date}}",
+                "time": "Ex: {{date}}"
+            }
+        },
+        "actions": {
+            "create-support": "Support profile",
+            "select": "Join",
+            "edit": "To modify",
+            "enable": "Unmask",
+            "disable": "Hide",
+            "delete": "DELETE",
+            "confirmations": {
+                "create-support": {
+                    "title": "Create a support profile",
+                    "message": "By continuing, you create a support profile with a validity of 1 hour to support the project “{{element.name}}”."
+                },
+                "disable": {
+                    "title": "Hide the project",
+                    "message": "Attention ! You will hide the project “{{element.name}}”. As long as it is masked, it will no longer be possible to create profiles, movements, participants, etc."
+                },
+                "enable": {
+                    "title": "Display the project again",
+                    "message": "Attention ! You will make the project again “{{element.name}}» visible. It will be possible again to create profiles, movements, participant, etc."
+                },
+                "delete": {
+                    "title": "Delete the project",
+                    "message": "Attention ! You will definitively delete the project “{{element.name}}” as well as all the elements linked to it (profiles, movements, participants, etc.). The deletion of the project can take some time depending on its size. You can continue to use the application, but it is best not to leave this page before the deletion is finished."
+                }
+            }
+        },
+        "notifications": {
+            "create-support": {
+                "title": "+Support profile created",
+                "message": "The support profile has been created for the project, it is available to {{end}}."
+            },
+            "create": {
+                "title": "+Project created",
+                "message": "The project “{{name}}” was created."
+            },
+            "edit": {
+                "title": "✏️ Modified project",
+                "message": "The “{{name}}” project has been changed."
+            },
+            "disable": {
+                "title": "🙈 Masked project",
+                "message": "The “{{name}}” project has been masked."
+            },
+            "enable": {
+                "title": "👀 Visible project",
+                "message": "The “{{name}}” project is visible again."
+            },
+            "delete": {
+                "title": "🗑️ Deleted project",
+                "message": "The “{{name}}” project has been deleted."
+            },
+            "EMPTY": {
+                "title": "🕵️‍♀️ No project",
+                "message": "No project was found."
+            }
+        }
+    },
+    "project-profiles": {
+        "search-and-filter": {
+            "text": {
+                "project": "Name",
+                "user": "First name, last name, email"
+            },
+            "datetime": "Date & time",
+            "status": "Status",
+            "visibility": "Availability"
+        },
+        "empty": "You don't seem to have an access profile for the moment. You can get one by accepting an invitation that you received or by creating a project.",
+        "empty-invitation": "You do not seem to have an invitation awaiting response. You can get one by accepting an invitation that you received or by creating a project.",
+        "visible": {
+            "true": "Valid",
+            "false": "Expired"
+        },
+        "manage-acceptance": "Do you want to accept this invitation?",
+        "form": {
+            "title": {
+                "create": "Invite the project “{{name}}”",
+                "edit": "Modify the access profile of {{firstname}} {{lastname}}"
+            },
+            "role": "Role",
+            "begin-datetime": "Access date & time",
+            "end-datetime": "Date & end of access",
+            "users": {
+                "empty": "No selected user",
+                "search": "Invite users",
+                "empty-search": "No user found",
+                "one": "User",
+                "few": "Users",
+                "selected": {
+                    "one": "Selected user",
+                    "few": "Selected users"
+                }
+            },
+            "hint": {
+                "begin-date-time": "By default, the profile will be available from its creation.",
+                "end-date-time": "By default, the profile has no end of validity."
+            },
+            "placeholder": {
+                "role": "Ex: {{role}}",
+                "date": "Ex: {{date}}",
+                "time": "Ex: {{date}}"
+            },
+            "error": {
+                "role": {
+                    "required": "No profile role! The role of the project profile cannot be empty."
+                },
+                "users": {
+                    "required": "Unable to create profiles without user. It takes at least one!"
+                },
+                "begin-datetime": {
+                    "dateRequiredForTime": "Access to the project begins at a certain time OK! But what day? 📆"
+                },
+                "end-datetime": {
+                    "dateRequiredForTime": "Access to the project ends at a certain hour OK! But what day? 📆"
+                },
+                "date-range": {
+                    "beginDateBeforeEndDate": "Access to the project ends before having started! This is ambition."
+                }
+            }
+        },
+        "actions": {
+            "select": "Join",
+            "invite-user": {
+                "one": "Invite a user",
+                "few": "Invite users"
+            },
+            "create-project": "Create a project",
+            "profiles": "See my access profiles",
+            "invitations": "See my invitations",
+            "edit": "To modify",
+            "enable": "Unlock",
+            "disable": "To block",
+            "accept": "Accept",
+            "reject": "Refuse",
+            "delete": "DELETE",
+            "confirmations": {
+                "ACCEPTED": {
+                    "title": "Accept the invitation",
+                    "message": "By accepting the invitation to \"{{element.project.name}}\", the profile will appear in the list of profiles linked to your account on the general reception."
+                },
+                "REJECTED": {
+                    "title": "Refuse the invitation",
+                    "message": "By definitively refusing the invitation, you will not be able to use this profile. You will have to be reinvited to access the project “{{element.project.name}}”"
+                },
+                "disable": {
+                    "title": "Lock the profile",
+                    "message": "Attention ! You will block a profile for the project “{{element.project.name}}”. As long as it is blocked, {{element.use.firstname}} {{element.user.lastname}} can no longer use it."
+                },
+                "enable": {
+                    "title": "Unlock the profile",
+                    "message": "Attention ! You will unlock a profile for the project “{{element.project.name}}”. {{element.user.firstname}} {{element.user.lastname}} may again use it if it is always valid."
+                },
+                "delete": {
+                    "title": "Delete profile",
+                    "message": "Attention ! You will delete a profile for the project “{{element.project.name}}”. {{element.user.firstname}} {{element.user.lastname}} will no longer be able to use it."
+                }
+            }
+        },
+        "notifications": {
+            "EMPTY_USER_PROJECT_PROFILE": {
+                "title": "🕵️‍♀️ No profile",
+                "message": "No profile for your research 🥺. You can invite people to join the project."
+            },
+            "partial-invitation": {
+                "title": {
+                    "one": "📧 Partially sent invitation",
+                    "few": "📧 Invitations partially sent"
+                },
+                "message": {
+                    "one": "A profile has been created on {{asked}} requested.",
+                    "few": "{{created}} profiles were created on the {{asked}} requested."
+                }
+            },
+            "create": {
+                "title": {
+                    "one": "+Profile created",
+                    "few": "+Profiles created"
+                },
+                "message": {
+                    "one": "The profile was created.",
+                    "few": "{{created}} profiles were created for the project."
+                }
+            },
+            "acceptance": {
+                "ACCEPTED": {
+                    "title": "✅ Invitation accepted",
+                    "message": "You have accepted the invitation to the project, you can now select it."
+                },
+                "REJECTED": {
+                    "title": "✅ Invitation refused",
+                    "message": "You refused the invitation to the project."
+                }
+            },
+            "edit": {
+                "title": "✏️ Modified profile",
+                "message": "The profile of {{firstname}} {{lastname}} for the project {{name}} has been modified."
+            },
+            "disable": {
+                "title": "⛔️ Blocked profile",
+                "message": "The profile of {{firstname}} {{lastname}} for the project {{name}} was blocked."
+            },
+            "enable": {
+                "title": "⛓️‍💥 Unlocked profile",
+                "message": "The profile of {{firstname}} {{lastname}} for the project {{name}} was unlocked."
+            },
+            "delete": {
+                "title": "🗑️ Deleted profile",
+                "message": {
+                    "myself": "Your profile for the project {{name}} has been deleted",
+                    "other": "The profile of {{firstname}} {{lastname}} for the project {{name}} was deleted."
+                }
+            },
+            "EMPTY": {
+                "title": "🕵️‍♀️ No profile",
+                "message": "No profile was found."
+            },
+            "EMPTY-INVITATION": {
+                "title": "🕵️‍♀️ No invitation",
+                "message": "No invitation was found."
+            }
+        }
+    },
+    "movements": {
+        "search-and-filter": {
+            "start-datetime": "After the",
+            "end-datetime": "Before the",
+            "type": "Kind",
+            "visibility": "Visibility"
+        },
+        "communication": {
+            "layer": {
+                "title": "Communications",
+                "subtitle": "Detail of communications with {{movement}}"
+            },
+            "no-message": "No message",
+            "see-communication": "Communications detail"
+        },
+        "content-layer-title": {
+            "one": "Participant",
+            "few": "Participants"
+        },
+        "content": {
+            "one": "{{name}}",
+            "few": "{{total}} people"
+        },
+        "visible": {
+            "true": "Visible",
+            "false": "Mask"
+        },
+        "form": {
+            "title": {
+                "create": {
+                    "none": "Create a movement",
+                    "IN": "Create an entry",
+                    "OUT": "Create an outing"
+                },
+                "edit": {
+                    "IN": "Modify the entry of {{datetime}}",
+                    "OUT": "Modify the output of {{datetime}}"
+                },
+                "information": "Information",
+                "content": "Stakeholders",
+                "vehicle": "Vehicles"
+            },
+            "datetime": "Date & time",
+            "type": "Kind",
+            "content-kind": "Participant type",
+            "reason": {
+                "name": "Pattern",
+                "empty-search": "No reason found"
+            },
+            "warning": {
+                "participant": {
+                    "IN": "Participant already present",
+                    "OUT": "Participant already released",
+                    "UNAVAILABLE": "Participant already released"
+                },
+                "vehicle": {
+                    "IN": "Vehicle already present",
+                    "OUT": "Vehicle already released",
+                    "UNAVAILABLE": "Vehicle already released"
+                }
+            },
+            "content": {
+                "guest": {
+                    "one": "New guest",
+                    "few": "New guests",
+                    "add": "Add a guest"
+                },
+                "registered": {
+                    "empty": "No person selected",
+                    "search": "Add people and groups",
+                    "empty-search": "No person or group found",
+                    "one": "Participant",
+                    "few": "Participants",
+                    "group": "Group “{{name}}”",
+                    "selected": {
+                        "one": "Selected person",
+                        "few": "Selected people"
+                    },
+                    "searched": {
+                        "participant": {
+                            "one": "Person",
+                            "few": "People"
+                        },
+                        "group": {
+                            "one": "Band",
+                            "few": "Groups"
+                        }
+                    }
+                }
+            },
+            "vehicles": {
+                "empty": "No selected vehicle",
+                "search": "Add vehicles",
+                "empty-search": "No vehicle found",
+                "one": "Vehicle",
+                "few": "Vehicles",
+                "selected": {
+                    "one": "Selected vehicle",
+                    "few": "Selected vehicles"
+                }
+            },
+            "driver": {
+                "title": "Vehicle manager and offenses",
+                "empty": "No potential driver in movement",
+                "empty-search": "No vehicle found"
+            },
+            "placeholder": {
+                "datetime": "Ex: {{date}}",
+                "type": "Ex: Entry",
+                "reason": "Ex: Logistics"
+            },
+            "error": {
+                "datetime": {
+                    "required": "Movement timeing must be defined. If not, how do you know when it goes?",
+                    "minDate": "The exploitation of the movement is earlier than the end of the project ({{min}}). Let's stay in the nails!",
+                    "maxDate": "The exploitation of the movement is later than the end of the project ({{max}}}). Let's stay in the nails!"
+                },
+                "type": {
+                    "required": "The type of movement must be defined. Otherwise I risk having trouble telling you if it is an entry or an exit the next time you ask me."
+                },
+                "reason": {
+                    "required": "No reason for movement? It's going to be complicated to know why you are doing this.",
+                    "incompatibleReason": "The reason \"{{reason}}\" is not compatible with the type of movement selected. Choose another reason or another type of movement."
+                },
+                "participantContent": {
+                    "required": "Impossible to create this movement without participant. Come back with a team!"
+                },
+                "guestContent": {
+                    "required": "Impossible to create this movement without guest. Come back with a team!"
+                },
+                "driver": {
+                    "required": "A vehicle without manager? Sorry, completely independent cars are not yet here."
+                }
+            }
+        },
+        "actions": {
+            "communications": "Communications",
+            "reverse": {
+                "IN": "Get out",
+                "OUT": "Bring in"
+            },
+            "edit": "To modify",
+            "disable": "Hide",
+            "enable": "Unmask",
+            "delete": "DELETE",
+            "confirmations": {
+                "reverse": {
+                    "IN": {
+                        "title": "Get out",
+                        "message": {
+                            "one": "Attention ! You will get a participant out. He will be considered out from now on.",
+                            "few": "Attention ! You will get out of {{size}} participants. They will be considered out from now on."
+                        }
+                    },
+                    "OUT": {
+                        "title": "Bring in",
+                        "message": {
+                            "one": "Attention ! You will bring a participant to enter. He will be considered present from now on.",
+                            "few": "Attention ! You will bring in {{size}} participants. They will be considered present from now on."
+                        }
+                    }
+                },
+                "disable": {
+                    "title": "Hide the movement",
+                    "message": "Attention ! You will hide the movement. As long as he is masked, it is as if he had never taken place."
+                },
+                "enable": {
+                    "title": "Display the movement again",
+                    "message": "Attention ! You will make the movement visible again. He will be considered again in the history."
+                },
+                "delete": {
+                    "title": "Delete movement",
+                    "message": "Attention ! You will definitively delete the movement. It will no longer be recoverable or traced."
+                }
+            }
+        },
+        "notifications": {
+            "create": {
+                "IN": {
+                    "title": "+Entry created",
+                    "message": {
+                        "one": "1 person returned to {{datetime}}.",
+                        "few": "{{participants}} people returned to {{datetime}}."
+                    }
+                },
+                "OUT": {
+                    "title": "+Outing created",
+                    "message": {
+                        "one": "1 person came out at {{datetime}}.",
+                        "few": "{{participants}} people came out at {{datetime}}."
+                    }
+                }
+            },
+            "edit": {
+                "IN": {
+                    "title": "✏️ Modified input",
+                    "message": "The entry of {{datetime}} has been modified."
+                },
+                "OUT": {
+                    "title": "✏️ Modified output",
+                    "message": "The release of {{datetime}} has been modified."
+                }
+            },
+            "disable": {
+                "IN": {
+                    "title": "🙈 Masked entrance",
+                    "message": "The entry of {{datetime}} was masked."
+                },
+                "OUT": {
+                    "title": "🙈 Masked outing",
+                    "message": "The release of {{datetime}} was masked."
+                }
+            },
+            "enable": {
+                "IN": {
+                    "title": "👀 Visible entry",
+                    "message": "The entry of {{datetime}} is again visible."
+                },
+                "OUT": {
+                    "title": "👀 Masked outing",
+                    "message": "The release of {{datetime}} is again visible."
+                }
+            },
+            "delete": {
+                "IN": {
+                    "title": "🗑️ Entrance deleted",
+                    "message": "The entry of {{datetime}} has been deleted."
+                },
+                "OUT": {
+                    "title": "🗑️ Removed output",
+                    "message": "The release of {{datetime}} has been deleted."
+                }
+            },
+            "EMPTY": {
+                "title": "🕵️‍♀️ No movement",
+                "message": "No movement was found."
+            }
+        }
+    },
+    "participants": {
+        "search-and-filter": {
+            "text": "First name, last name, email",
+            "status": "Status",
+            "visibility": "Visibility"
+        },
+        "group-layer-title": {
+            "one": "Band",
+            "few": "Groups"
+        },
+        "group": {
+            "zero": "No group",
+            "two": "{{name}} and 1 other group",
+            "few": "{{name}} and {{others}} other groups"
+        },
+        "visible": {
+            "true": "Visible",
+            "false": "Mask"
+        },
+        "type": {
+            "REGISTERED": "Registered",
+            "GUEST": "Guest"
+        },
+        "form": {
+            "title": {
+                "create": "Add a person",
+                "edit": "Modify the information of “{{firstname}} {{lastname}}”"
+            },
+            "user": {
+                "title": "User",
+                "empty-search": "No user found"
+            },
+            "firstname": "First name",
+            "previous-first-name": "The old first name \"{{firstname}}\" was replaced by that of the linked user.",
+            "lastname": "Name",
+            "previous-last-name": "The old name \"{{lastname}}\" has been replaced by that of the linked user.",
+            "birthday": "Date of birth",
+            "begin-datetime": "Date & arrival time",
+            "end-datetime": "Date & time of departure",
+            "groups": {
+                "empty": "No selected group",
+                "search": "Add groups",
+                "empty-search": "No group found",
+                "one": "Band",
+                "few": "Groups",
+                "selected": {
+                    "one": "Selected group",
+                    "few": "Selected groups"
+                }
+            },
+            "error": {
+                "firstname": {
+                    "required": "A participating person without first name? Less practical to identify it!",
+                    "blank": "No, no, no! You won't have me. An empty first name does not work!",
+                    "maxlength": "Have you seen the length of the first name 🤯? Not abuse with your {{actualLength}} characters! Here the max is {{requiredLength}}."
+                },
+                "lastname": {
+                    "required": "An unnamed participating person? Less practical to identify it!",
+                    "blank": "No, no, no! You won't have me. An empty name does not work!",
+                    "maxlength": "Have you seen the length of the name 🤯? Not abuse with your {{actualLength}} characters! Here the max is {{requiredLength}}."
+                },
+                "birthday": {
+                    "required": "A priori people are born one day. Please provide me with this date!",
+                    "maxDate": "Born in the future? Not in this world, sorry!"
+                },
+                "begin-datetime": {
+                    "minDate": "A person cannot arrive before the start of the project ({{min}}).",
+                    "maxDate": "A person cannot leave after the end of the project ({{max}}).",
+                    "dateRequiredForTime": "This person arrives at a certain hour ok! But what day? 📆"
+                },
+                "end-datetime": {
+                    "minDate": "A person cannot arrive before the start of the project ({{min}}).",
+                    "maxDate": "A person cannot leave after the end of the project ({{max}}).",
+                    "dateRequiredForTime": "This person ends at a certain time ok! But what day? 📆"
+                },
+                "date-range": {
+                    "beginDateBeforeEndDate": "This person leaves before arriving! This is ambition."
+                }
+            },
+            "hint": {
+                "begin-date-time": "By default a person arrives with his group. In the absence of a group, the person arrives at the start of the project.",
+                "end-date-time": "By default a person leaves with his group. In the absence of a group, the person goes at the end of the project."
+            },
+            "placeholder": {
+                "user": "Ex: robert.baden-powell@example.com (Robert Baden-Powell)",
+                "firstname": "Ex: Robert",
+                "lastname": "Ex: Baden-Powell",
+                "birthday": "Ex: 22/02/1857",
+                "date": "Ex: {{date}}",
+                "time": "Ex: {{date}}"
+            }
+        },
+        "actions": {
+            "movements-history": "History of movements",
+            "remove-member": "Withdraw from the group",
+            "edit": "To modify",
+            "disable": "Hide",
+            "enable": "Unmask",
+            "delete": "DELETE",
+            "confirmations": {
+                "remove-member": {
+                    "title": "Withdraw from the group",
+                    "message": "Attention ! You will remove “{{element.firstname}} {{element.lastname}}” from the group."
+                },
+                "disable": {
+                    "title": "Hide the person",
+                    "message": "Attention ! You will mask “{{element.firstname}} {{element.lastname}}”. As long as they are masked, the person can no longer be integrated into the inputs/outputs."
+                },
+                "enable": {
+                    "title": "Display the person again",
+                    "message": "Attention ! You will again return “{{element.firstname}} {{element.lastname}}” visible. It will be possible again to integrate it into the entries/outputs."
+                },
+                "delete": {
+                    "title": "Delete the person",
+                    "message": "Attention ! You will definitively delete “{{element.firstname}} {{element.lastname}}”. This deletion is possible only if no movement is associated with him."
+                }
+            }
+        },
+        "notifications": {
+            "create": {
+                "title": "+Participant added",
+                "message": "“{{firstname}} {{lastname}}\" was added."
+            },
+            "edit": {
+                "title": "✏️ Information from a modified person",
+                "message": "The information of “{{firstname}} {{lastname}}” was modified."
+            },
+            "disable": {
+                "title": "🙈 Masked participant",
+                "message": "“{{firstname}} {{lastname}}\" was masked."
+            },
+            "enable": {
+                "title": "👀 Visible participant",
+                "message": "“{{firstname}} {{lastname}}” is again visible."
+            },
+            "delete": {
+                "title": "🗑️ Participant deleted",
+                "message": "“{{firstname}} {{lastname}}\" has been deleted."
+            },
+            "EMPTY": {
+                "title": "🕵️‍♀️ No participant",
+                "message": "No participant was found."
+            }
+        }
+    },
+    "groups": {
+        "search-and-filter": {
+            "text": "Name",
+            "datetime": "Date & time",
+            "presence": "Presence",
+            "visibility": "Visibility"
+        },
+        "available": {
+            "true": "Available",
+            "false": "Not available"
+        },
+        "member-layer-title": {
+            "one": "Member",
+            "few": "Members"
+        },
+        "member": {
+            "one": "A member",
+            "few": "{{count}} members"
+        },
+        "presence": {
+            "true": "Here",
+            "false": "Absent"
+        },
+        "visible": {
+            "true": "Visible",
+            "false": "Mask"
+        },
+        "form": {
+            "title": {
+                "create": "Create a group",
+                "edit": "Modify the group “{{name}}”"
+            },
+            "name": "Name",
+            "begin-datetime": "Date & arrival time",
+            "end-datetime": "Date & time of departure",
+            "members": {
+                "empty": "No person selected",
+                "search": "Add people",
+                "empty-search": "No person found",
+                "one": "Participant",
+                "few": "Participants",
+                "selected": {
+                    "one": "Selected participant",
+                    "few": "Selected participants"
+                }
+            },
+            "hint": {
+                "begin-date-time": "By default, a group arrives at the start of the project.",
+                "end-date-time": "By default, a group leaves at the end of the project."
+            },
+            "error": {
+                "name": {
+                    "required": "An unnamed group? Seriously, give it a name!",
+                    "blank": "No, no, no! You won't have me. An empty name does not work!",
+                    "maxlength": "Have you seen the length of the name 🤯? Not abuse with your {{actualLength}} characters! Here the max is {{requiredLength}}."
+                },
+                "begin-datetime": {
+                    "minDate": "A group cannot arrive before the start of the project ({{min}}).",
+                    "maxDate": "A group cannot leave after the end of the project ({{max}}).",
+                    "dateRequiredForTime": "This group arrives at a certain hour ok! But what day? 📆"
+                },
+                "end-datetime": {
+                    "minDate": "A group cannot arrive before the start of the project ({{min}}).",
+                    "maxDate": "A group cannot leave after the end of the project ({{max}}).",
+                    "dateRequiredForTime": "This group ends at a certain time ok! But what day? 📆"
+                },
+                "date-range": {
+                    "beginDateBeforeEndDate": "This group leaves before arriving! This is ambition."
+                },
+                "members": {
+                    "required": "Impossible to create a group without members. This group needs reinforcements!"
+                },
+                "add-members": {
+                    "required": "Add members without members, we hold something there!"
+                }
+            },
+            "placeholder": {
+                "name": "Ex: Scout of America",
+                "date": "Ex: {{date}}",
+                "time": "Ex: {{date}}"
+            }
+        },
+        "actions": {
+            "add-members": "Add members",
+            "create-member": "Create a member",
+            "members": "Member management",
+            "edit": "To modify",
+            "add": "Add",
+            "disable": "Hide",
+            "enable": "Unmask",
+            "delete": "DELETE",
+            "confirmations": {
+                "disable": {
+                    "title": "Hide the group",
+                    "message": "Attention ! You will hide the group “{{element.name}}”. As long as it is hidden, the group can no longer be integrated into the entries/outputs."
+                },
+                "enable": {
+                    "title": "Display the group again",
+                    "message": "Attention ! You will make the group again “{{element.name}}» visible. It will be possible again to integrate it into the entries/outputs."
+                },
+                "delete": {
+                    "title": "Delete the group",
+                    "message": "Attention ! You will definitively delete the group “{{element.name}}”. It will therefore be definitively dissociated from movements and other elements."
+                }
+            }
+        },
+        "notifications": {
+            "partial-add-member": {
+                "title": {
+                    "one": "+Partially added member",
+                    "few": "+Partially added members"
+                },
+                "message": {
+                    "one": "A member has been added to the {{asked}} requested.",
+                    "few": "{{added}} members were added to the {{asked}} requested."
+                }
+            },
+            "add-member": {
+                "title": {
+                    "one": "+Member added",
+                    "few": "+Members added"
+                },
+                "message": {
+                    "one": "A member was added to the group.",
+                    "few": "{{Added}} members were added to the group."
+                }
+            },
+            "remove-member": {
+                "title": "-Retired member",
+                "message": "The member “{{firstname}} {{lastname}}” was removed from the group."
+            },
+            "create": {
+                "title": "+Group created",
+                "message": "The group “{{name}}” was created."
+            },
+            "edit": {
+                "title": "✏️ Modified group",
+                "message": "The group “{{name}}” has been changed."
+            },
+            "disable": {
+                "title": "🙈 Masked group",
+                "message": "The group “{{name}}” was masked."
+            },
+            "enable": {
+                "title": "👀 Visible group",
+                "message": "The group “{{name}}” is again visible."
+            },
+            "delete": {
+                "title": "🗑️ Group deleted",
+                "message": "The group “{{name}}” has been deleted."
+            },
+            "EMPTY": {
+                "title": "🕵️‍♀️ No group",
+                "message": "No group was found."
+            }
+        }
+    },
+    "vehicles": {
+        "search-and-filter": {
+            "text": "Registration, model, brand",
+            "datetime": "Date & time",
+            "availability": "Availability",
+            "visibility": "Visibility"
+        },
+        "available": {
+            "true": "Available",
+            "false": "Unconstruable"
+        },
+        "visible": {
+            "true": "Visible",
+            "false": "Mask"
+        },
+        "form": {
+            "title": {
+                "create": "Add a vehicle",
+                "edit": "Modify vehicle information “{{brand}} {{model}} ({{registration}})”"
+            },
+            "license-plate": "Registration",
+            "brand": "Brand",
+            "model": "Model",
+            "begin-datetime": "Date & time start of availability",
+            "end-datetime": "End of availability date & time",
+            "hint": {
+                "begin-date-time": "By default a vehicle is available from the start of the project.",
+                "end-date-time": "By default a vehicle is available until the end of the project."
+            },
+            "error": {
+                "license-plate": {
+                    "required": "A vehicle without registration? Less practical to identify it!",
+                    "blank": "No, no, no! You won't have me. An empty registration does not work!",
+                    "maxlength": "Have you seen the length of the registration 🤯? Not abuse with your {{actualLength}} characters! Here the max is {{requiredLength}}."
+                },
+                "brand": {
+                    "required": "A brand -free vehicle? You don't have to love him but he necessarily has a brand!",
+                    "blank": "No, no, no! You won't have me. An empty brand does not work!",
+                    "maxlength": "Have you seen the length of the brand 🤯? Not abuse with your {{actualLength}} characters! Here the max is {{requiredLength}}."
+                },
+                "model": {
+                    "required": "A vehicle without model name? You don't have to love him but he necessarily has a model name!",
+                    "blank": "No, no, no! You won't have me. An empty model name does not work!",
+                    "maxlength": "Have you seen the length of the model 🤯? Not abuse with your {{actualLength}} characters! Here the max is {{requiredLength}}."
+                },
+                "begin-datetime": {
+                    "minDate": "The vehicle cannot arrive before the start of the project ({{min}}).",
+                    "maxDate": "The vehicle cannot leave after the end of the project ({{max}}).",
+                    "dateRequiredForTime": "This vehicle arrives at a certain hour ok! But what day? 📆"
+                },
+                "end-datetime": {
+                    "minDate": "The vehicle cannot arrive before the start of the project ({{min}}).",
+                    "maxDate": "The vehicle cannot leave after the end of the project ({{max}}).",
+                    "dateRequiredForTime": "This vehicle leaves at a certain time ok! But what day? 📆"
+                },
+                "date-range": {
+                    "beginDateBeforeEndDate": "This vehicle leaves before arriving! This is ambition."
+                }
+            },
+            "placeholder": {
+                "license-plate": "Ex: AB-123-CD",
+                "brand": "Ex: Toyota",
+                "model": "Ex: Yaris",
+                "date": "Ex: {{date}}",
+                "time": "Ex: {{date}}"
+            }
+        },
+        "actions": {
+            "movements-history": "Use history",
+            "edit": "To modify",
+            "disable": "Hide",
+            "enable": "Unmask",
+            "delete": "DELETE",
+            "confirmations": {
+                "disable": {
+                    "title": "Hide the vehicle",
+                    "message": "Attention ! You will hide the vehicle “{{element.brand}} {{element.model}} ({{element.licensePlate}})”. As long as it is masked, it will no longer be possible to use it."
+                },
+                "enable": {
+                    "title": "Display the vehicle again",
+                    "message": "Attention ! You are going to return the vehicle again “{{element.brand}} {{element.model}} ({{element.licensePlate}})” visible. It will be possible again to use it."
+                },
+                "delete": {
+                    "title": "Delete the vehicle",
+                    "message": "Attention ! You will definitively delete the vehicle “{{element.brand}} {{element.model}} ({{element.licensePlate}})”. This deletion is possible only if no movement is associated with him."
+                }
+            }
+        },
+        "notifications": {
+            "create": {
+                "title": "+Added vehicle",
+                "message": "The vehicle {{brand}} {{model}} ({{registration}}) has been added."
+            },
+            "edit": {
+                "title": "✏️ Information from a modified vehicle",
+                "message": "Vehicle information {{brand}} {{model}} ({{registration}}) was modified."
+            },
+            "disable": {
+                "title": "🙈 Masked vehicle",
+                "message": "The vehicle {{brand}} {{model}} ({{registration}}) was masked."
+            },
+            "enable": {
+                "title": "👀 Visible vehicle",
+                "message": "The vehicle {{brand}} {{Model}} ({{registration}}) is again visible."
+            },
+            "delete": {
+                "title": "🗑️ Deleted vehicle",
+                "message": "The vehicle {{brand}} {{Model}} ({{registration}}) has been deleted."
+            },
+            "EMPTY": {
+                "title": "🕵️‍♀️ No vehicle",
+                "message": "No vehicle was found."
+            }
+        }
+    },
+    "activities": {
+        "search-and-filter": {
+            "text": "Name",
+            "datetime": "Date & time",
+            "availability": "Availability",
+            "visibility": "Visibility"
+        },
+        "participant.zero": "No participant",
+        "description": "Description :",
+        "available": {
+            "true": "Available",
+            "false": "Unconstruable"
+        },
+        "visible": {
+            "true": "Visible",
+            "false": "Mask"
+        },
+        "form": {
+            "title": {
+                "create": "Create an activity",
+                "edit": "Modify the activity \"{{name}}\""
+            },
+            "name": "Name",
+            "description": "Description",
+            "duration": "Duration",
+            "allowed-participants": "Participants fork",
+            "begin-datetime": "Date & time start of availability",
+            "end-datetime": "End of availability date & time",
+            "hint": {
+                "begin-date-time": "By default an activity is available from the start of the project.",
+                "end-date-time": "By default an activity is available until the end of the project."
+            },
+            "error": {
+                "name": {
+                    "required": "An unnamed activity? Less practical to identify it!",
+                    "blank": "No, no, no! You won't have me. An empty name does not work!",
+                    "maxlength": "Have you seen the length of the name 🤯? Not abuse with your {{actualLength}} characters! Here the max is {{requiredLength}}."
+                },
+                "description": {
+                    "maxlength": "Have you seen the length of the brand 🤯? Not abuse with your {{actualLength}} characters! Here the max is {{requiredLength}}."
+                },
+                "duration": {
+                    "hour": {
+                        "min": "Have you ever seen negative hours? Me neither. I don't know how we go back in time but it's not like that.",
+                        "max": "Sorry, I was lazy to manage activities more than {{max}} hours. Can't you be shorter?",
+                        "mustBeHigher": "An activity must last at least a minute. You do not have to specify the duration so empty the field rather than put 0."
+                    },
+                    "minute": {
+                        "min": "Have you ever seen negative minutes? Me neither. I don't know how we go back in time but it's not like that.",
+                        "max": "That's at least a restraint that! You have to pass that on time, sorry, I was lazy to manage automatic conversion.",
+                        "mustBeHigher": "An activity must last at least a minute. You do not have to specify the duration so empty the field rather than put 0."
+                    }
+                },
+                "allowed-participants": {
+                    "min": "We will be boring at {{actual}}, you need at least {{min}} participant for an activity.",
+                    "rangeMin": "You will laugh but here it is like everywhere else, the minimum must be less than or equal to the maximum.",
+                    "max": "“Well that's too much! The max is {{max}} after that is pain to manage.",
+                    "rangeBothDefined": "You cannot enter that the minimum or the maximum."
+                },
+                "begin-datetime": {
+                    "minDate": "The activity cannot be available before the start of the project ({{min}}).",
+                    "maxDate": "The activity cannot be available after the end of the project ({{max}}).",
+                    "dateRequiredForTime": "This activity is available at a certain time ok! But what day? 📆"
+                },
+                "end-datetime": {
+                    "minDate": "The activity cannot be available before the start of the project ({{min}}).",
+                    "maxDate": "The activity cannot be available after the end of the project ({{max}}).",
+                    "dateRequiredForTime": "This activity is no longer available at a certain time OK! But what day? 📆"
+                },
+                "date-range": {
+                    "beginDateBeforeEndDate": "This activity is no longer available before it is! This is ambition."
+                }
+            },
+            "placeholder": {
+                "name": "Ex: hike in the creeks",
+                "description": "Ex: This hike in the forest is a 3-hour activity. During this activity, participants will be able to ...",
+                "duration": "Ex: 3:45 am",
+                "allowed-min-participants": "Ex: 5",
+                "allowed-max-participants": "Ex: 15",
+                "date": "Ex: {{date}}",
+                "time": "Ex: {{date}}"
+            }
+        },
+        "actions": {
+            "movements-history": "History of movements",
+            "edit": "To modify",
+            "disable": "Hide",
+            "enable": "Unmask",
+            "delete": "DELETE",
+            "confirmations": {
+                "disable": {
+                    "title": "Hide the activity",
+                    "message": "Attention ! You will hide the activity \"{{element.name}}\". As long as it is masked, it can no longer be used."
+                },
+                "enable": {
+                    "title": "Display the activity again",
+                    "message": "Attention ! You will make the activity again \"{{element.name}}\" visible. It will be possible again to use it."
+                },
+                "delete": {
+                    "title": "Delete activity",
+                    "message": "Attention ! You will definitively delete the activity \"{{element.name}}\". It will therefore be definitively dissociated from movements and other elements."
+                }
+            }
+        },
+        "notifications": {
+            "create": {
+                "title": "+Activity created",
+                "message": "The activity {{name}} has been created."
+            },
+            "edit": {
+                "title": "✏️ Modified activity",
+                "message": "The activity {{name}} has been modified."
+            },
+            "disable": {
+                "title": "🙈 Masked activity",
+                "message": "The activity {{name}} was masked."
+            },
+            "enable": {
+                "title": "👀 Visible activity",
+                "message": "The activity {{name}} is again visible."
+            },
+            "delete": {
+                "title": "🗑️ Deleted activity",
+                "message": "The activity {{name}} has been deleted."
+            },
+            "EMPTY": {
+                "title": "🕵️‍♀️ No activity",
+                "message": "No activity has been found."
+            }
+        }
+    },
+    "communications": {
+        "limited-feature": "For the moment the display of communications is limited to a certain number. Please wait while we are working to improve this feature.",
+        "search-and-filter": {
+            "start-datetime": "After the",
+            "end-datetime": "Before the",
+            "text": "Message",
+            "visibility": "Visibility"
+        },
+        "no-author": "Unknown or deleted author",
+        "visible": {
+            "true": "Visible",
+            "false": "Mask"
+        },
+        "form": {
+            "title": {
+                "create": "Create communication",
+                "edit": "Modify the communication of “{{datetime}}”"
+            },
+            "alert": {
+                "title": "Alert",
+                "empty-search": "No alert found",
+                "create": "Create an alert"
+            },
+            "movement": {
+                "title": "Activity",
+                "empty-search": "No activity found"
+            },
+            "datetime": "Date & time",
+            "message": "Message",
+            "hint": {
+                "message": "Please do not put personal data in this message (ex: name, first name, telephone number, etc.)."
+            },
+            "actions": {
+                "add-movement": "Link an activity",
+                "add-alert": "Create an alert",
+                "link-alert": "Alert"
+            },
+            "error": {
+                "movement": {
+                    "required": "To communicate you have to communicate with someone. Choose an activity with whom to communicate."
+                },
+                "datetime": {
+                    "required": "Communication timestamp must be defined. If not, how do you know when it goes?",
+                    "minDate": "The timestamp of communication is earlier than the movement to which it is linked ({{min}}). Let's stay in the nails!",
+                    "maxDate": "The communication of the communication is later than the end of the project ({{max}}). Let's stay in the nails!"
+                },
+                "message": {
+                    "required": "Communication without message? What is it for?",
+                    "blank": "No, no, no! You won't have me. An empty message does not work!",
+                    "maxlength": "Have you seen the length of the name 🤯? Not abuse with your {{actualLength}} characters! Here the max is {{requiredLength}}."
+                },
+                "link": {
+                    "atLeastOneRequired": "Your message must be linked to an activity or an alert. If not, what good?"
+                }
+            },
+            "placeholder": {
+                "alert": "Ex: fire alert ({{date}})",
+                "movement": "Ex: beach outing ({{date}})",
+                "datetime": "Ex: {{date}}",
+                "message": "Ex: They are fine and are located in 969 Cox Rd Gastonia in NC (28054-3455)."
+            }
+        },
+        "actions": {
+            "edit": "To modify",
+            "disable": "Hide",
+            "enable": "Unmask",
+            "delete": "DELETE",
+            "confirmations": {
+                "disable": {
+                    "title": "Hide communication",
+                    "message": "Attention ! You will hide communication. As long as it is masked, it can no longer be consulted via the elements that could be linked to it."
+                },
+                "enable": {
+                    "title": "Show communication again",
+                    "message": "Attention ! You will make communication visible again. It will be possible again to consult it via the elements that could be linked to it."
+                },
+                "delete": {
+                    "title": "Delete communication",
+                    "message": "Attention ! You will definitely delete communication. It will therefore be definitively dissociated from movements and other elements."
+                }
+            }
+        },
+        "notifications": {
+            "disable": {
+                "title": "🙈 Masked communication",
+                "message": "The communication of {{datetime}} was masked."
+            },
+            "enable": {
+                "title": "👀 Visible communication",
+                "message": "The communication of {{datetime}} is again visible."
+            },
+            "delete": {
+                "title": "🗑️ Deleted communication",
+                "message": "The communication of {{datetime}} has been deleted."
+            },
+            "EMPTY": {
+                "title": "🕵️‍♀️ No communication",
+                "message": "No communication has been found."
+            }
+        }
+    },
+    "preferences": {
+        "search-and-filter": {
+            "text": "Project",
+            "datetime": "Date & time"
+        },
+        "profiles-tab": {
+            "profile": {
+                "one": "My profile",
+                "few": "My profiles"
+            },
+            "invitation": {
+                "one": "Invitation",
+                "few": "Invitations"
+            }
+        },
+        "actions": {
+            "create-project": "Create a project",
+            "invitation": {
+                "one": "Invitation received",
+                "few": "Invitations received"
+            }
+        },
+        "notifications": {
+            "NO_SELECTED_PROFILE": {
+                "title": "No selected profile",
+                "message": "Selecting a profile linked to a project to carry out this action."
+            }
+        }
+    },
+    "alerts": {
+        "search-and-filter": {
+            "text": "Title",
+            "start-datetime": "After the",
+            "end-datetime": "Before the",
+            "status": "Status",
+            "visibility": "Visibility"
+        },
+        "visible": {
+            "true": "Visible",
+            "false": "Mask"
+        },
+        "form": {
+            "title": "Alert title",
+            "placeholder": {
+                "title": "Ex: fire alert"
+            },
+            "error": {
+                "title": {
+                    "required": "A title alert? Seriously, give it a name!",
+                    "blank": "No, no, no! You won't have me. An empty title does not work!",
+                    "maxlength": "Have you seen the length of the title 🤯? Not abuse with your {{actualLength}} characters! Here the max is {{requiredLength}}."
+                }
+            }
+        },
+        "actions": {
+            "resolve": "Close/solve",
+            "cancel": "Cancel",
+            "reopen": "Reopen",
+            "add-communication": "Add detail",
+            "communications": "Communications",
+            "disable": "Hide",
+            "enable": "Unmask",
+            "delete": "DELETE",
+            "confirmations": {
+                "status": {
+                    "IN_PROGRESS": {
+                        "title": "Reopen",
+                        "message": "The alert that was closed will be reopened. She will be visible again on the project home screen."
+                    },
+                    "RESOLVED": {
+                        "title": "Close/resolve the alert",
+                        "message": "You will close/solve the alert. It will no longer be visible on the project's home screen. No communication can be added to the alert once closed/resolved."
+                    },
+                    "CANCELED": {
+                        "title": "Cancel the alert",
+                        "message": "You will cancel the alert. It will no longer be visible on the project's home screen."
+                    }
+                },
+                "disable": {
+                    "title": "Hide the alert",
+                    "message": "Attention ! You will hide the alert. As long as she is masked, she can no longer be consulted in particular on the project home screen."
+                },
+                "enable": {
+                    "title": "Show the alert",
+                    "message": "Attention ! You will make the alert again visible. It will be possible again to consult it in particular via the home screen if it is underway."
+                },
+                "delete": {
+                    "title": "Delete the alert",
+                    "message": "Attention ! You will definitely delete the alert. It will therefore be definitively deleted and irrecoverable."
+                }
+            }
+        },
+        "notifications": {
+            "create": {
+                "title": "+Alert created",
+                "message": "The alert “{{title}}” was created."
+            },
+            "edit": {
+                "title": "✏️ Modified alert",
+                "message": "The alert “{{title}}” has been modified."
+            },
+            "edit-status": {
+                "title": "✏️ Status of the modified alert",
+                "message": "The status of the alert “{{title}}” is now “{{status}}”."
+            },
+            "disable": {
+                "title": "🙈 Masked alert",
+                "message": "The alert “{{title}}” was masked."
+            },
+            "enable": {
+                "title": "👀 Visible alert",
+                "message": "The alert “{{title}}” is again visible."
+            },
+            "delete": {
+                "title": "🗑️ Deleted alert",
+                "message": "The alert “{{name}}” has been deleted."
+            },
+            "EMPTY": {
+                "title": "🕵️‍♀️ No alert",
+                "message": "No alert was found."
+            }
+        }
+    }
+}

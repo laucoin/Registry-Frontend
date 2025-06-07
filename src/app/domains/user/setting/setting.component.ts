@@ -6,10 +6,8 @@ import { TranslatePipe } from '@ngx-translate/core'
 import { DateFormatPipe } from '../../../shared/util-tool/pipe/date-format.pipe'
 import { SeverityTagComponent } from '../../../shared/util-ui/severity-tag/severity-tag.component'
 import { SelectButton } from 'primeng/selectbutton'
-import { FormsModule } from '@angular/forms'
-import { ThemeEnum } from '../../../shared/util-model/enumeration/theme.enum'
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { Select } from 'primeng/select'
-import { AppConfig } from '../../../app.config'
 import { Button } from 'primeng/button'
 import { SeverityEnum } from '../../../shared/util-model/enumeration/severity.enum'
 import { GenericElementComponent } from '../../../shared/util-tool/component/generic-element.component'
@@ -29,12 +27,13 @@ import { GenericElementComponent } from '../../../shared/util-tool/component/gen
         FormsModule,
         Select,
         Button,
+        ReactiveFormsModule,
     ],
     templateUrl: './setting.component.html',
 } )
 export class SettingComponent extends GenericElementComponent {
-    protected currentTheme: ThemeEnum = ThemeEnum.SYSTEM
-    protected currentLanguage: string = AppConfig.settings.defaultLanguage
+    protected themeControl: FormControl = new FormControl( this.registryFacade.currentUserTheme() )
+    protected languageControl: FormControl = new FormControl( this.registryFacade.currentUserLanguage() )
 
     protected confirmImpersonate (): void {
         this.confirmationService.confirm(
