@@ -20,7 +20,7 @@
             </div>
         </ng-template>
         <ng-template #item let-item>
-            <a class='menu-item card main-bar-card clickable-card pointer'
+            <a class='menu-item card clickable-card pointer'
                [class.router-active-card]='StringUtil.isRouteActive(item.url)'
                [routerLink]='item.url'
                [attr.href]='item.url'>
@@ -30,7 +30,13 @@
         </ng-template>
         <ng-template #end>
             @if (!registryFacade.tinyScreen()) {
-                <p-button (onClick)='helpDialogOpened = true' text rounded icon='pi pi-question-circle' size='large'
+                <p-button (onClick)='helpDialogOpened = true'
+                          class='information-button'
+                          text
+                          rounded
+                          severity='secondary'
+                          icon='pi pi-question-circle'
+                          size='small'
                           styleClass='me-3' />
             }
             @if (registryFacade.currentUser()) {
