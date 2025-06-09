@@ -38,8 +38,12 @@
             </div>
             <div class='field'>
                 <label for='app-theme'><b>{{ 'settings.configuration.form.theme' | translate }}</b></label>
-                <p-select-button [options]='registryFacade.themesMetadata()' id='app-theme' [formControl]='themeControl'
-                                 optionValue='value' (onChange)='registryFacade.updateCurrentUserTheme($event.value)'>
+                <p-select-button [options]='registryFacade.themesMetadata()'
+                                 id='app-theme'
+                                 [formControl]='themeControl'
+                                 optionValue='value'
+                                 [allowEmpty]='false'
+                                 (onChange)='registryFacade.updateCurrentUserTheme($event.value)'>
                     <ng-template #item let-item>
                         <i [class]='item.icon'></i>
                     </ng-template>

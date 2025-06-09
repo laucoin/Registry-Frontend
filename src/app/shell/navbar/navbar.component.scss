@@ -21,6 +21,12 @@
     --p-button-text-secondary-color: white;
 }
 
+@media (min-width: 960px) {
+    .main-bar-card {
+        color: white;
+    }
+}
+
 .menu-item {
     padding: 0 var(--basic-spacer) 0;
     height:  3em;

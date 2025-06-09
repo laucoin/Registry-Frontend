@@ -20,7 +20,7 @@
             </div>
         </ng-template>
         <ng-template #item let-item>
-            <a class='menu-item card clickable-card pointer'
+            <a class='menu-item card main-bar-card clickable-card pointer'
                [class.router-active-card]='StringUtil.isRouteActive(item.url)'
                [routerLink]='item.url'
                [attr.href]='item.url'>
