@@ -255,9 +255,9 @@
             "help": "Help"
         },
         "date-and-time-format": {
-            "date": "DD/MM/Yyyy",
-            "time": "HH: MM",
-            "datetime": "DD/mm/yyyy at HH: mm",
+            "date": "dd/mm/yyyy",
+            "time": "hh:mm a",
+            "datetime": "dd/mm/yyyy hh:mm a",
             "interval": "{{first}} and {{second}}",
             "year": {
                 "one": "one year old",
