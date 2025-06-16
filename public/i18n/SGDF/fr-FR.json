@@ -495,7 +495,7 @@
             },
             "impersonate": {
                 "title": "🕵️‍♂️ Utilisateur anonymisé",
-                "message": "{{firstName}} {{lastName}} a été anonymisé, il ne peut plus se connecter et les informations le concernant ont été hashées."
+                "message": "{{firstName}} {{lastName}} a été anonymisé, il ne peut plus se connecter et les informations le concernant ont été anonymisées."
             },
             "delete": {
                 "title": "🗑️ Utilisateur supprimé",
@@ -545,7 +545,7 @@
                 "name": {
                     "required": "Un projet sans nom ? Sérieusement, donne-lui un nom !",
                     "blank": "Non, non, non ! tu ne m’auras pas. Un nom vide ça ne fonctionne pas !",
-                    "maxlength": "T’as vu la longueur du nom 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c’est {{requiredLength}}."
+                    "maxlength": "T’as vu la longueur du nom 🤯 ? N'abuse pas avec tes {{actualLength}} caractères ! Ici le max c’est {{requiredLength}}."
                 },
                 "options": {
                     "preRequiredOptions": "Activer l’option “{{for}}” sans “{{missing}}” ça risque d’’être complexe."
@@ -576,7 +576,7 @@
             "confirmations": {
                 "create-support": {
                     "title": "Créer un profil de support",
-                    "message": "En poursuivant, tu crées un profil support ayant une validatité de 1 heure pour venir en soutien au projet “{{element.name}}”."
+                    "message": "En poursuivant, tu crées un profil support ayant une validité de 1 heure pour venir en soutien au projet “{{element.name}}”."
                 },
                 "disable": {
                     "title": "Masquer le projet",
@@ -588,7 +588,7 @@
                 },
                 "delete": {
                     "title": "Supprimer le projet",
-                    "message": "Attention ! Tu vas définitivement supprimer le projet “{{element.name}}” ainsi que tous les élements qui lui sont liés (profils, mouvements, participants, etc.). La suppression du projet peut prendre un certain temps en fonction de sa taille. Tu peux continuer à utiliser l’application, mais il est préférable de ne pas quitter cette page avant que la suppression soit terminée."
+                    "message": "Attention ! Tu vas définitivement supprimer le projet “{{element.name}}” ainsi que tous les éléments qui lui sont liés (profils, mouvements, participants, etc.). La suppression du projet peut prendre un certain temps en fonction de sa taille. Tu peux continuer à utiliser l’application, mais il est préférable de ne pas quitter cette page avant que la suppression soit terminée."
                 }
             }
         },
@@ -649,14 +649,14 @@
             "begin-datetime": "Date & Heure de début d’accès",
             "end-datetime": "Date & Heure de fin d’accès",
             "users": {
-                "empty": "Aucun utilisateur selectionnée",
+                "empty": "Aucun utilisateur sélectionné",
                 "search": "Inviter des utilisateurs",
                 "empty-search": "Aucun utilisateur trouvé",
                 "one": "Utilisateur",
                 "few": "Utilisateurs",
                 "selected": {
-                    "one": "Utilisateur selectionné",
-                    "few": "Utilisateurs selectionnés"
+                    "one": "Utilisateur sélectionné",
+                    "few": "Utilisateurs sélectionnés"
                 }
             },
             "hint": {
@@ -856,15 +856,15 @@
                     "add": "Ajouter un invité"
                 },
                 "registered": {
-                    "empty": "Aucune personne selectionnée",
+                    "empty": "Aucune personne sélectionnée",
                     "search": "Ajouter des personnes et des groupes",
                     "empty-search": "Aucune personne ou groupe trouvé",
                     "one": "Participant",
                     "few": "Participants",
                     "group": "Groupe “{{name}}”",
                     "selected": {
-                        "one": "Personne selectionné",
-                        "few": "Personnes selectionnés"
+                        "one": "Personne sélectionnée",
+                        "few": "Personnes sélectionnées"
                     },
                     "searched": {
                         "participant": {
@@ -879,14 +879,14 @@
                 }
             },
             "vehicles": {
-                "empty": "Aucune véhicule selectionné",
+                "empty": "Aucune véhicule sélectionné",
                 "search": "Ajouter des véhicules",
                 "empty-search": "Aucun véhicule trouvé",
                 "one": "Véhicule",
                 "few": "Véhicules",
                 "selected": {
-                    "one": "Véhicle selectionné",
-                    "few": "Véhicles selectionnés"
+                    "one": "Véhicule sélectionné",
+                    "few": "Véhicules sélectionnés"
                 }
             },
             "driver": {
@@ -919,7 +919,7 @@
                     "required": "Impossible de créer ce mouvement sans invité. Reviens avec une équipe !"
                 },
                 "driver": {
-                    "required": "Un véhicule sans responsable ? Désolé, les voitures complètement autonomes c’est pas encore ici."
+                    "required": "Un véhicule sans responsable ? Désolé, les voitures complètement autonomes ce n'est pas encore ici."
                 }
             }
         },
@@ -952,7 +952,7 @@
                 },
                 "disable": {
                     "title": "Masquer le mouvement",
-                    "message": "Attention ! Tu vas masquer le mouvement. Tant qu’il est masqué, c’est comme si il n’avait jamais eu lieu."
+                    "message": "Attention ! Tu vas masquer le mouvement. Tant qu’il est masqué, c’est comme s'il n’avait jamais eu lieu."
                 },
                 "enable": {
                     "title": "Afficher à nouveau le mouvement",
@@ -1067,26 +1067,26 @@
             "begin-datetime": "Date & Heure d’arrivée",
             "end-datetime": "Date & Heure de départ",
             "groups": {
-                "empty": "Aucun groupe selectionné",
+                "empty": "Aucun groupe sélectionné",
                 "search": "Ajouter des groupes",
                 "empty-search": "Aucun groupe trouvé",
                 "one": "Groupe",
                 "few": "Groupes",
                 "selected": {
-                    "one": "Groupe selectionné",
-                    "few": "Groupes selectionnés"
+                    "one": "Groupe sélectionné",
+                    "few": "Groupes sélectionnés"
                 }
             },
             "error": {
                 "firstname": {
                     "required": "Une personne participante sans prénom ? Moins pratique pour l’identifier !",
                     "blank": "Non, non, non ! tu ne m’auras pas. Un prénom vide ça ne fonctionne pas !",
-                    "maxlength": "T’as vu la longueur du prénom 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c’est {{requiredLength}}."
+                    "maxlength": "T’as vu la longueur du prénom 🤯 ? N'abuse pas avec tes {{actualLength}} caractères ! Ici le max c’est {{requiredLength}}."
                 },
                 "lastname": {
                     "required": "Une personne participante sans nom ? Moins pratique pour l’identifier !",
                     "blank": "Non, non, non ! tu ne m’auras pas. Un nom vide ça ne fonctionne pas !",
-                    "maxlength": "T’as vu la longueur du nom 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c’est {{requiredLength}}."
+                    "maxlength": "T’as vu la longueur du nom 🤯 ? N'abuse pas avec tes {{actualLength}} caractères ! Ici le max c’est {{requiredLength}}."
                 },
                 "birthday": {
                     "required": "À priori les gens naissent un jour. Merci de me fournir cette date !",
@@ -1208,14 +1208,14 @@
             "begin-datetime": "Date & Heure d’arrivée",
             "end-datetime": "Date & Heure de départ",
             "members": {
-                "empty": "Aucune personne selectionnée",
+                "empty": "Aucune personne sélectionnée",
                 "search": "Ajouter des personnes",
                 "empty-search": "Aucune personne trouvée",
                 "one": "Participant",
                 "few": "Participants",
                 "selected": {
-                    "one": "Participant selectionné",
-                    "few": "Participants selectionnés"
+                    "one": "Participant sélectionné",
+                    "few": "Participants sélectionnés"
                 }
             },
             "hint": {
@@ -1226,7 +1226,7 @@
                 "name": {
                     "required": "Un groupe sans nom ? Sérieusement, donne-lui un nom !",
                     "blank": "Non, non, non ! tu ne m’auras pas. Un nom vide ça ne fonctionne pas !",
-                    "maxlength": "T’as vu la longueur du nom 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c’est {{requiredLength}}."
+                    "maxlength": "T’as vu la longueur du nom 🤯 ? N'abuse pas avec tes {{actualLength}} caractères ! Ici le max c’est {{requiredLength}}."
                 },
                 "begin-datetime": {
                     "minDate": "Un groupe ne peut pas arriver avant le début du projet ({{min}}).",
@@ -1274,7 +1274,7 @@
                 },
                 "delete": {
                     "title": "Supprimer le groupe",
-                    "message": "Attention ! Tu vas définitivement supprimer le groupe “{{element.name}}”. Elle sera donc définitivement dissocié des mouvements et autres éléments."
+                    "message": "Attention ! Tu vas définitivement supprimer le groupe “{{element.name}}”. Elle sera donc définitivement dissociée des mouvements et autres éléments."
                 }
             }
         },
@@ -1282,7 +1282,7 @@
             "partial-add-member": {
                 "title": {
                     "one": "+ Membre partiellement ajouté",
-                    "few": "+ Membres partiellements ajoutés"
+                    "few": "+ Membres partiellement ajoutés"
                 },
                 "message": {
                     "one": "Un membre a été ajouté sur les {{asked}} demandés.",
@@ -1349,7 +1349,7 @@
                 "create": "Ajouter un véhicule",
                 "edit": "Modifier les informations du véhicule “{{brand}} {{model}} ({{registration}})”"
             },
-            "license-plate": "Immatriulation",
+            "license-plate": "Immatriculation",
             "brand": "Marque",
             "model": "Modèle",
             "begin-datetime": "Date & Heure de début de disponibilité",
@@ -1362,17 +1362,17 @@
                 "license-plate": {
                     "required": "Un véhicule sans immatriculation ? Moins pratique pour l’identifier !",
                     "blank": "Non, non, non ! tu ne m’auras pas. Une immatriculation vide ça ne fonctionne pas !",
-                    "maxlength": "T’as vu la longueur de l’immatriculation 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c’est {{requiredLength}}."
+                    "maxlength": "T’as vu la longueur de l’immatriculation 🤯 ? N'abuse pas avec tes {{actualLength}} caractères ! Ici le max c’est {{requiredLength}}."
                 },
                 "brand": {
                     "required": "Un véhicule sans marque ? T’es pas obligé de l’aimer mais il a forcément une marque !",
                     "blank": "Non, non, non ! tu ne m’auras pas. Une marque vide ça ne fonctionne pas !",
-                    "maxlength": "T’as vu la longueur de la marque 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c’est {{requiredLength}}."
+                    "maxlength": "T’as vu la longueur de la marque 🤯 ? N'abuse pas avec tes {{actualLength}} caractères ! Ici le max c’est {{requiredLength}}."
                 },
                 "model": {
                     "required": "Un véhicule sans nom de modèle ? T’es pas obligé de l’aimer mais il a forcément un nom de modèle !",
                     "blank": "Non, non, non ! tu ne m’auras pas. Un nom de modèle vide ça ne fonctionne pas !",
-                    "maxlength": "T’as vu la longueur du modèle 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c’est {{requiredLength}}."
+                    "maxlength": "T’as vu la longueur du modèle 🤯 ? N'abuse pas avec tes {{actualLength}} caractères ! Ici le max c’est {{requiredLength}}."
                 },
                 "begin-datetime": {
                     "minDate": "Le véhicule ne peut pas arriver avant le début du projet ({{min}}).",
@@ -1413,7 +1413,7 @@
                 },
                 "delete": {
                     "title": "Supprimer le véhicule",
-                    "message": "Attention ! Tu vas définitivement supprimer le véhicle “{{element.brand}} {{element.model}} ({{element.licensePlate}})”. Cette suppression est possible uniquement si aucun mouvement lui est associé."
+                    "message": "Attention ! Tu vas définitivement supprimer le véhicule “{{element.brand}} {{element.model}} ({{element.licensePlate}})”. Cette suppression est possible uniquement si aucun mouvement lui est associé."
                 }
             }
         },
@@ -1480,19 +1480,19 @@
                 "name": {
                     "required": "Une activité sans nom ? Moins pratique pour l’identifier !",
                     "blank": "Non, non, non ! tu ne m’auras pas. Un nom vide ça ne fonctionne pas !",
-                    "maxlength": "T’as vu la longueur du nom 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c’est {{requiredLength}}."
+                    "maxlength": "T’as vu la longueur du nom 🤯 ? N'abuse pas avec tes {{actualLength}} caractères ! Ici le max c’est {{requiredLength}}."
                 },
                 "description": {
-                    "maxlength": "T’as vu la longueur de la marque 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c’est {{requiredLength}}."
+                    "maxlength": "T’as vu la longueur de la marque 🤯 ? N'abuse pas avec tes {{actualLength}} caractères ! Ici le max c’est {{requiredLength}}."
                 },
                 "duration": {
                     "hour": {
-                        "min": "Tu as déjà vu des heures négatives ? Moi non plus. Je sais pas comment on remonte le temps mais c’est pas comme ça.",
-                        "max": "Désolé, j’ai eu la flemme de gérer les activités de plus de {{max}} heures. Tu peux pas faire plus court ?",
+                        "min": "Tu as déjà vu des heures négatives ? Moi non plus. Je ne sais pas comment on remonte le temps mais c’est pas comme ça.",
+                        "max": "Désolé, j’ai eu la flemme de gérer les activités de plus de {{max}} heures. Tu ne peux pas faire plus court ?",
                         "mustBeHigher": "Une activité doit durer au moins une minute. Tu n’es pas obligé de spécifier la durée donc vide le champ plutôt que de mettre 0."
                     },
                     "minute": {
-                        "min": "Tu as déjà vu des minutes négatives ? Moi non plus. Je sais pas comment on remonte le temps mais c’est pas comme ça.",
+                        "min": "Tu as déjà vu des minutes négatives ? Moi non plus. Je ne sais pas comment on remonte le temps mais c’est pas comme ça.",
                         "max": "Ça fait au moins une retenue ça ! Faut passer ça en heure, désolé, j’ai eu la flemme de gérer la conversion automatique.",
                         "mustBeHigher": "Une activité doit durer au moins une minute. Tu n’es pas obligé de spécifier la durée donc vide le champ plutôt que de mettre 0."
                     }
@@ -1519,7 +1519,7 @@
             },
             "placeholder": {
                 "name": "Ex : Randonnée dans les calanques",
-                "description": "Ex : Cette randonnée dans les Calanques de Marseilles, est une activité de 3 heures. Durant cette activité, les participants pourront…",
+                "description": "Ex : Cette randonnée dans les Calanques de Marseille, est une activité de 3 heures. Durant cette activité, les participants pourront…",
                 "duration": "Ex : 3h45",
                 "allowed-min-participants": "Ex : 5",
                 "allowed-max-participants": "Ex : 15",
@@ -1624,7 +1624,7 @@
                 "message": {
                     "required": "Une communication sans message ? À quoi elle sert ?",
                     "blank": "Non, non, non ! tu ne m’auras pas. Un message vide ça ne fonctionne pas !",
-                    "maxlength": "T’as vu la longueur du nom 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c’est {{requiredLength}}."
+                    "maxlength": "T’as vu la longueur du nom 🤯 ? N'abuse pas avec tes {{actualLength}} caractères ! Ici le max c’est {{requiredLength}}."
                 },
                 "link": {
                     "atLeastOneRequired": "Ton message doit être lié à une activité ou une alerte. Sinon, à quoi bon ?"
@@ -1726,7 +1726,7 @@
                 "title": {
                     "required": "Une alerte sans titre ? Sérieusement, donne-lui un nom !",
                     "blank": "Non, non, non ! tu ne m’auras pas. Un titre vide ça ne fonctionne pas !",
-                    "maxlength": "T’as vu la longueur du titre 🤯 ? Abuses pas avec tes {{actualLength}} caractères ! Ici le max c’est {{requiredLength}}."
+                    "maxlength": "T’as vu la longueur du titre 🤯 ? N'abuse pas avec tes {{actualLength}} caractères ! Ici le max c’est {{requiredLength}}."
                 }
             }
         },
