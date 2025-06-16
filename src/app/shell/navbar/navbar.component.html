@@ -30,7 +30,13 @@
         </ng-template>
         <ng-template #end>
             @if (!registryFacade.tinyScreen()) {
-                <p-button (onClick)='helpDialogOpened = true' text rounded icon='pi pi-question-circle' size='large'
+                <p-button (onClick)='helpDialogOpened = true'
+                          class='information-button'
+                          text
+                          rounded
+                          severity='secondary'
+                          icon='pi pi-question-circle'
+                          size='small'
                           styleClass='me-3' />
             }
             @if (registryFacade.currentUser()) {
