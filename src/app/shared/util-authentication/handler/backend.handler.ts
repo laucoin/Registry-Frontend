@@ -47,6 +47,7 @@ export const backendHandler: HttpInterceptorFn = (
         .pipe( catchError( (error: HttpErrorResponse) => {
             if (AppConfig.settings.backend.noAuthPaths.some( (permitAll: string): boolean => req.url.includes( permitAll ) ) && error.status === 401) {
                 registryFacade.login()
+                return throwError( (): ErrorModel => new ErrorModel( error ) )
             }
 
             switch (error.status) {
@@ -62,6 +63,7 @@ export const backendHandler: HttpInterceptorFn = (
                 case 401:
                     if (GenericUtil.isNull( registryFacade.token() )) {
                         registryFacade.login()
+                        return throwError( (): ErrorModel => new ErrorModel( error ) )
                     }
                     return securityService.refreshToken( registryFacade.token()!.refreshToken ).pipe(
                         tap( (token: TokenModel): void => {

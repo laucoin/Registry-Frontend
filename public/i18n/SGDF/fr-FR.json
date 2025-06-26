@@ -480,7 +480,7 @@
             }
         },
         "notifications": {
-            "email-copied": "L’adresse email de {{element.firstName}} {{element.lastName}} copiée.",
+            "email-copied": "L’adresse email de {{element.firstName}} {{element.lastName}} a été copiée.",
             "update-role": {
                 "title": "✏️ Role modifié",
                 "message": "Le rôle de {{firstName}} {{lastName}} a été modifié."
