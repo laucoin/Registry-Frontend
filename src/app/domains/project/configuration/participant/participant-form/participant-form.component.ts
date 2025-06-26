@@ -59,6 +59,7 @@ import { FormIconPipe } from '../../../../../shared/util-tool/pipe/form-icon.pip
         DateTimeFieldComponent,
         PluralTranslationPipe,
         FormIconPipe,
+
     ],
     templateUrl: './participant-form.component.html',
 } )

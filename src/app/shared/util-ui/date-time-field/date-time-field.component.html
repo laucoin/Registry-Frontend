@@ -8,6 +8,8 @@
                        [(ngModel)]='date'
                        (onInput)='onDateChange()'
                        (onSelect)='onDateChange()'
+                       inputmode='numeric'
+                       type='text'
                        appendTo='body'
                        fluid
                        showIcon />
@@ -21,6 +23,8 @@
                        [(ngModel)]='time'
                        (onInput)='onTimeChange()'
                        (onSelect)='onTimeChange()'
+                       inputmode='numeric'
+                       type='text'
                        icon='pi pi-clock'
                        appendTo='body'
                        fluid
