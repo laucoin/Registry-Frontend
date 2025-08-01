@@ -571,6 +571,18 @@ export class MovementState extends GenericProjectElementState<MovementStateModel
     ): void {
         const searched: SelectItemGroup<ParticipantModel | GroupModel>[] = []
 
+        if (participantsAndGroups.groups.length > 0) {
+            searched.push( {
+                label: this.translateService.instant( this.pluralTranslationPipe.transform(
+                    'movements.form.content.registered.searched.group',
+                    participantsAndGroups.participants,
+                ) ),
+                items: participantsAndGroups.groups.map( (group: GroupModel): SelectItem<GroupModel> =>
+                    GroupUtil.toSelectItem( group ),
+                ),
+            } )
+        }
+
         if (participantsAndGroups.participants?.length > 0) {
             searched.push( {
                 label: this.translateService.instant( this.pluralTranslationPipe.transform(
@@ -580,18 +592,6 @@ export class MovementState extends GenericProjectElementState<MovementStateModel
                 items: participantsAndGroups.participants.map(
                     (participant: ParticipantModel): SelectItem<ParticipantModel> =>
                         ParticipantUtil.toSelectItem( participant ),
-                ),
-            } )
-        }
-
-        if (participantsAndGroups.groups.length > 0) {
-            searched.push( {
-                label: this.translateService.instant( this.pluralTranslationPipe.transform(
-                    'movements.form.content.registered.searched.group',
-                    participantsAndGroups.participants,
-                ) ),
-                items: participantsAndGroups.groups.map( (group: GroupModel): SelectItem<GroupModel> =>
-                    GroupUtil.toSelectItem( group ),
                 ),
             } )
         }
