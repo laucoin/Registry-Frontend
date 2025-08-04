@@ -1,8 +1,13 @@
 <p-inputgroup [id]='inputId()' [class.invalid]='invalid()'>
     <p-inputgroup-addon>{{ minLabel() }}</p-inputgroup-addon>
-    <p-input-number inputId='min' [(ngModel)]='minValue' (onInput)='onInputMin($event.value)' [placeholder]='minPlaceholder()' />
+    <p-input-number inputId='min' [(ngModel)]='minValue' inputmode='numeric' (onInput)='onInputMin($event.value)'
+                    [placeholder]='minPlaceholder()' />
     <p-inputgroup-addon>{{ maxLabel() }}</p-inputgroup-addon>
-    <p-input-number inputId='max' [(ngModel)]='maxValue' (onInput)='onInputMax($event.value)' [placeholder]='maxPlaceholder()' />
+    <p-input-number inputId='max'
+                    [(ngModel)]='maxValue'
+                    inputmode='numeric'
+                    (onInput)='onInputMax($event.value)'
+                    [placeholder]='maxPlaceholder()' />
     <p-inputgroup-addon>
         <p-button icon='pi pi-times' severity='secondary' (onClick)='onInputChange(undefined, undefined); minValue = undefined;
         maxValue = undefined' />

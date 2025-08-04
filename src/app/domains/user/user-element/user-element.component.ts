@@ -144,7 +144,7 @@ export class UserElementComponent extends GenericElementComponent {
         this.registryFacade.notify( StateUtil.buildNotificationMessage(
             SeverityEnum.INFO,
             undefined,
-            'user.notifications.email-copied',
+            'users.notifications.email-copied',
             undefined,
             { element: this.user() },
         ) )
