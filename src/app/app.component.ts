@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, HostListener, OnDestroy } from '@angular/core'
+import { ChangeDetectionStrategy, Component, HostListener, inject, OnDestroy } from '@angular/core'
 import { TranslateModule } from '@ngx-translate/core'
 import { ConfirmationService, MessageService, ToastMessageOptions } from 'primeng/api'
 import { BlockUIModule } from 'primeng/blockui'
@@ -47,13 +47,13 @@ export class AppComponent extends GenericComponent implements OnDestroy {
     protected readonly currentYear: number = new Date().getFullYear()
     protected readonly currentHost: string = location.host
 
+    private readonly primeConfig: PrimeNG = inject( PrimeNG )
+    private readonly notifyService: MessageService = inject( MessageService )
+
     protected showInformationDialog: boolean = false
     protected showTermsOfUserDialog: boolean = false
 
-    public constructor (
-        private readonly primeConfig: PrimeNG,
-        private readonly notifyService: MessageService,
-    ) {
+    public constructor () {
         super()
 
         this.initTranslation()
@@ -63,8 +63,6 @@ export class AppComponent extends GenericComponent implements OnDestroy {
 
     private initTranslation (): void {
         this.translateService.addLangs( AppConfig.settings.languages )
-        this.translateService.setDefaultLang( AppConfig.settings.defaultLanguage )
-        this.translateService.use( AppConfig.settings.defaultLanguage )
         this.translateService.get( 'prime-ng' ).pipe(
             map( (lang: object): void => this.primeConfig.setTranslation( lang ) ),
         ).subscribe()

@@ -1,7 +1,5 @@
-import { HttpClient } from '@angular/common/http'
 import { EnvironmentProviders, importProvidersFrom, Injectable, Provider } from '@angular/core'
-import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
-import { TranslateHttpLoader } from '@ngx-translate/http-loader'
+import { provideTranslateHttpLoader } from '@ngx-translate/http-loader'
 import { NgxsReduxDevtoolsPluginModule } from '@ngxs/devtools-plugin'
 import { NgxsModule } from '@ngxs/store'
 import { RegistryState } from './shared/util-common/state/registry.state'
@@ -15,6 +13,7 @@ import { providePrimeNG } from 'primeng/config'
 import { LocalStorageUtils } from './shared/util-tool/util/local-storage.util'
 import { GenericUtil } from './shared/util-tool/util/generic.util'
 import { LOCALE } from './shared/util-tool/util/request.util'
+import { provideTranslateService } from '@ngx-translate/core'
 
 @Injectable( {
     providedIn: 'root',
@@ -95,17 +94,17 @@ export class AppConfig {
         return lang
     }
 
-    public static provideTranslator (): Provider | EnvironmentProviders {
-        return importProvidersFrom( TranslateModule.forRoot( {
-            defaultLanguage: this.locale, loader: {
-                provide: TranslateLoader,
-                useFactory: (http: HttpClient) => new TranslateHttpLoader(
-                    http,
-                    `i18n/${AppConfig.settings.executionContext}/`,
-                    '.json',
-                ),
-                deps: [ HttpClient ],
-            },
-        } ) )
+    public static provideTranslatorService (): Provider | EnvironmentProviders {
+        return provideTranslateService( {
+            defaultLanguage: AppConfig.settings.defaultLanguage,
+            lang: AppConfig.locale,
+        } )
+    }
+
+    public static provideTranslatorHttpLoader (): Provider | EnvironmentProviders {
+        return provideTranslateHttpLoader( {
+            prefix: `i18n/${AppConfig.settings.executionContext}/`,
+            suffix: '.json',
+        } )
     }
 }

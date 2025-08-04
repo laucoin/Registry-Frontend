@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, computed, input, InputSignal, Signal } from '@angular/core'
 import { TranslateModule } from '@ngx-translate/core'
 import { ToastMessageOptions } from 'primeng/api'
-import { MessagesModule } from 'primeng/messages'
 import { SeverityEnum } from '../../util-model/enumeration/severity.enum'
 import { MessageComponent } from '../message/message.component'
+import { MessageModule } from 'primeng/message'
 
 enum InformationImageEnum {
     SAD = 'console_someone',
@@ -13,7 +13,7 @@ enum InformationImageEnum {
 @Component( {
     selector: 'app-severity-information',
     standalone: true,
-    imports: [ TranslateModule, MessagesModule, MessageComponent ],
+    imports: [ TranslateModule, MessageModule, MessageComponent ],
     templateUrl: './severity-information.component.html',
     styleUrl: './severity-information.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,

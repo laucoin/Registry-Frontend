@@ -1,4 +1,4 @@
-import { Directive, ElementRef, OnInit, Renderer2 } from '@angular/core'
+import { Directive, ElementRef, inject, OnInit, Renderer2 } from '@angular/core'
 import { TranslateService } from '@ngx-translate/core'
 
 @Directive( {
@@ -6,11 +6,9 @@ import { TranslateService } from '@ngx-translate/core'
     standalone: true,
 } )
 export class RegistryRequiredDirective implements OnInit {
-    public constructor (
-        private el: ElementRef,
-        private renderer: Renderer2,
-        private translateService: TranslateService,
-    ) {}
+    private el: ElementRef = inject( ElementRef )
+    private renderer: Renderer2 = inject( Renderer2 )
+    private translateService: TranslateService = inject( TranslateService )
 
     public ngOnInit (): void {
         this.addRequiredSpan()

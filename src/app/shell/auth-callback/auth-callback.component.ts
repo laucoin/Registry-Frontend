@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit } from '@angular/core'
 import { ActivatedRoute, Params } from '@angular/router'
 import { RegistryFacade } from '../../shared/util-common/state/registry.facade'
 import { Subscription } from 'rxjs'
@@ -12,10 +12,8 @@ import { Subscription } from 'rxjs'
 export class AuthCallbackComponent implements OnInit, OnDestroy {
     private readonly subscriptions: Subscription = new Subscription()
 
-    public constructor (
-        private readonly facade: RegistryFacade,
-        private readonly route: ActivatedRoute,
-    ) {}
+    private readonly facade: RegistryFacade = inject( RegistryFacade )
+    private readonly route: ActivatedRoute = inject( ActivatedRoute )
 
     public ngOnInit (): void {
         this.handleAuthorizationCode()

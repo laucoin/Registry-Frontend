@@ -139,14 +139,12 @@ export class RegistryState extends GenericState implements NgxsOnInit {
     private readonly darkModeClass: string = 'dark-mod'
     private readonly htmlElement: HTMLHtmlElement = document.querySelector( 'html' ) as HTMLHtmlElement
 
-    public constructor (
-        private readonly service: SecurityService,
-        private readonly userProjectProfileService: UserProjectProfileService,
-        private readonly preferencesService: PreferencesService,
-        private readonly userService: UserService,
-        private readonly router: Router,
-        private readonly datePipe: CustomDateFormatPipe,
-    ) { super() }
+    private readonly service: SecurityService = inject( SecurityService )
+    private readonly userProjectProfileService: UserProjectProfileService = inject( UserProjectProfileService )
+    private readonly preferencesService: PreferencesService = inject( PreferencesService )
+    private readonly userService: UserService = inject( UserService )
+    private readonly router: Router = inject( Router )
+    private readonly datePipe: CustomDateFormatPipe = inject( CustomDateFormatPipe )
 
     public ngxsOnInit (ctx: StateContext<RegistryStateModel>): void {
         ctx.patchState( {

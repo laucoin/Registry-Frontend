@@ -23,7 +23,7 @@ export const sgdfConfig: ContextConfigModel = {
                 light: {
                     primary: {
                         color: '#003a5d',
-                        inverseColor: '#eef9ff',
+                        contrastColor: '#eef9ff',
                         hoverColor: '#00507a',
                         activeColor: '#006295',
                     },
@@ -37,7 +37,7 @@ export const sgdfConfig: ContextConfigModel = {
                 dark: {
                     primary: {
                         color: '#eef9ff',
-                        inverseColor: '#003a5d',
+                        contrastColor: '#003a5d',
                         hoverColor: '#dcf4ff',
                         activeColor: '#b2ebff',
                     },
@@ -52,38 +52,23 @@ export const sgdfConfig: ContextConfigModel = {
         },
         components: {
             card: {
-                colorScheme: {
-                    light: {
-                        background: '#f8fafc',
-                    },
-                    dark: {
-                        background: '#27272a',
-                    },
-                },
                 body: {
                     padding: '1rem',
                 },
             },
             dataview: {
                 header: {
-                    padding: 0,
-                },
-            },
-            drawer: {
-                background: '#003a5d',
-                color: '#eef9ff',
-                border: {
-                    color: 'transparent',
+                    padding: '0',
                 },
             },
             menu: {
                 item: {
-                    padding: 0,
+                    padding: '0',
                 },
             },
             popover: {
                 content: {
-                    padding: 0,
+                    padding: '0',
                 },
             },
             tabs: {

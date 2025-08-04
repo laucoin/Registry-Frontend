@@ -5,14 +5,13 @@ import { ProjectProfileModel } from '../../../../../../shared/util-model/model/p
 import { FormUtil } from '../../../../../../shared/util-tool/util/form.util'
 import { TranslateModule } from '@ngx-translate/core'
 import { CardModule } from 'primeng/card'
-import { DropdownModule } from 'primeng/dropdown'
 import { FormFieldErrorComponent } from '../../../../../../shared/util-ui/form-field-error/form-field-error.component'
 import { UserElementComponent } from '../../../../../user/user-element/user-element.component'
 import { FormComponent } from '../../../../../../shared/util-ui/form/form.component'
 import { GenericProjectProfileFormComponent } from '../generic-project-profile-form.component'
 import { RegistryRequiredDirective } from '../../../../../../shared/util-tool/directive/registry-required.directive'
 import { Button } from 'primeng/button'
-import { Select } from 'primeng/select'
+import { Select, SelectModule } from 'primeng/select'
 import { map } from 'rxjs'
 import { DateFormatPipe } from '../../../../../../shared/util-tool/pipe/date-format.pipe'
 import { DateTimeFieldComponent } from '../../../../../../shared/util-ui/date-time-field/date-time-field.component'
@@ -25,7 +24,7 @@ import { RegistryValidators } from '../../../../../../shared/util-tool/util/regi
         TranslateModule,
         CardModule,
         ReactiveFormsModule,
-        DropdownModule,
+        SelectModule,
         FormFieldErrorComponent,
         UserElementComponent,
         FormComponent,

@@ -24,7 +24,7 @@ import {
 } from './project-profile.action'
 import { ProjectProfileService } from './project-profile.service'
 import { ProjectProfileFacade } from './project-profile.facade'
-import { Injectable } from '@angular/core'
+import { inject, Injectable } from '@angular/core'
 import { StateUtil } from '../../../../../../shared/util-tool/state/state.util'
 import { CreatedProjectProfiles } from '../dto/created-project-profiles.dto'
 import { UserUtil } from '../../../../../../shared/util-tool/util/user.util'
@@ -81,14 +81,10 @@ const defaultProjectProfileState: ProjectProfileStateModel = {
 export class ProjectProfileState extends GenericProjectElementState<ProjectProfileStateModel> implements NgxsOnInit {
     private readonly projectProfileIcon: string = 'pi pi-key'
 
-    public constructor (
-        private readonly service: ProjectProfileService,
-        private readonly serviceMetadata: MetadataService,
-        private readonly facade: ProjectProfileFacade,
-        private readonly pluralTranslationPipe: PluralTranslationPipe,
-    ) {
-        super()
-    }
+    private readonly service: ProjectProfileService = inject( ProjectProfileService )
+    private readonly serviceMetadata: MetadataService = inject( MetadataService )
+    private readonly facade: ProjectProfileFacade = inject( ProjectProfileFacade )
+    private readonly pluralTranslationPipe: PluralTranslationPipe = inject( PluralTranslationPipe )
 
     public ngxsOnInit (): void {
         this.facade.fetchProfileStatus()

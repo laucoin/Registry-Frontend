@@ -6,9 +6,8 @@ import { RegistryTemplateDirective } from '../../../../../shared/util-tool/direc
 import { TranslateModule } from '@ngx-translate/core'
 import { InputTextModule } from 'primeng/inputtext'
 import { ToggleButtonModule } from 'primeng/togglebutton'
-import { DropdownModule } from 'primeng/dropdown'
 import { MovementElementComponent } from '../../../../../shared/util-ui/movement-element/movement-element.component'
-import { Select } from 'primeng/select'
+import { Select, SelectModule } from 'primeng/select'
 import { Button } from 'primeng/button'
 import { DatePicker } from 'primeng/datepicker'
 import { ActivityFacade } from '../data/state/activity.facade'
@@ -30,7 +29,7 @@ import { Subscription, tap } from 'rxjs'
         TranslateModule,
         InputTextModule,
         ToggleButtonModule,
-        DropdownModule,
+        SelectModule,
         MovementElementComponent,
         Select,
         Button,

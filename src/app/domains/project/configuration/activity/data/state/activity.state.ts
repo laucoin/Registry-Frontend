@@ -29,7 +29,7 @@ import {
 import { ActivityService } from './activity.service'
 import { ActivityFacade } from './activity.facade'
 import { StateUtil } from '../../../../../../shared/util-tool/state/state.util'
-import { Injectable } from '@angular/core'
+import { inject, Injectable } from '@angular/core'
 import {
     ElementRequestInformationModel,
 } from '../../../../../../shared/util-model/model/element-request-information.model'
@@ -99,13 +99,9 @@ const defaultActivityState: ActivityStateModel = {
 export class ActivityState extends GenericProjectElementState<ActivityStateModel> {
     private readonly activityIcon: string = 'pi pi-users'
 
-    public constructor (
-        private readonly service: ActivityService,
-        private readonly movementService: MovementService,
-        private readonly facade: ActivityFacade,
-    ) {
-        super()
-    }
+    private readonly service: ActivityService = inject( ActivityService )
+    private readonly movementService: MovementService = inject( MovementService )
+    private readonly facade: ActivityFacade = inject( ActivityFacade )
 
     @Selector()
     public static activitiesPage (state: ActivityStateModel): PageModel<ActivityModel> | undefined {

@@ -32,7 +32,7 @@ import {
 import { ParticipantService } from './participant.service'
 import { ParticipantFacade } from './participant.facade'
 import { StateUtil } from '../../../../../../shared/util-tool/state/state.util'
-import { Injectable } from '@angular/core'
+import { inject, Injectable } from '@angular/core'
 import {
     ElementRequestInformationModel,
 } from '../../../../../../shared/util-model/model/element-request-information.model'
@@ -105,14 +105,10 @@ const defaultParticipantState: ParticipantStateModel = {
 export class ParticipantState extends GenericProjectElementState<ParticipantStateModel> implements NgxsOnInit {
     private readonly participantIcon: string = 'pi pi-users'
 
-    public constructor (
-        private readonly service: ParticipantService,
-        private readonly metadataService: MetadataService,
-        private readonly movementService: MovementService,
-        private readonly facade: ParticipantFacade,
-    ) {
-        super()
-    }
+    private readonly service: ParticipantService = inject( ParticipantService )
+    private readonly metadataService: MetadataService = inject( MetadataService )
+    private readonly movementService: MovementService = inject( MovementService )
+    private readonly facade: ParticipantFacade = inject( ParticipantFacade )
 
     public ngxsOnInit (): void {
         this.facade.fetchPresencesStatus()

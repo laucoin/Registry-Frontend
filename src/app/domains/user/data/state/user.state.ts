@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http'
-import { Injectable } from '@angular/core'
+import { inject, Injectable } from '@angular/core'
 import { Action, Selector, State, StateContext } from '@ngxs/store'
 import { catchError, finalize, map, Observable, of } from 'rxjs'
 import { PageModel } from '../../../../shared/util-model/model/page.model'
@@ -75,12 +75,8 @@ const defaultUserState: UserStateModel = {
 export class UserState extends GenericElementState<UserStateModel> {
     private readonly userIcon: string = 'pi pi-users'
 
-    public constructor (
-        private readonly service: UserService,
-        private readonly facade: UserFacade,
-    ) {
-        super()
-    }
+    private readonly service: UserService = inject( UserService )
+    private readonly facade: UserFacade = inject( UserFacade )
 
     @Selector()
     public static usersPage (state: UserStateModel): PageModel<UserModel> | undefined {
