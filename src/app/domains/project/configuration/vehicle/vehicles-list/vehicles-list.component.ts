@@ -6,14 +6,13 @@ import { ListComponent } from '../../../../../shared/util-ui/list/list.component
 import { RegistryTemplateDirective } from '../../../../../shared/util-tool/directive/registry-template.directive'
 import { TranslateModule } from '@ngx-translate/core'
 import { InputTextModule } from 'primeng/inputtext'
-import { DropdownModule } from 'primeng/dropdown'
 import { ToggleButtonModule } from 'primeng/togglebutton'
 import { RouterLink } from '@angular/router'
 import { VehicleRoutesEnum } from '../vehicle-routes.enum'
 import { Button } from 'primeng/button'
 import { DatePicker } from 'primeng/datepicker'
 import { VehicleElementComponent } from '../vehicle-element/vehicle-element.component'
-import { Select } from 'primeng/select'
+import { Select, SelectModule } from 'primeng/select'
 import { GenericListComponent } from '../../../../../shared/util-tool/component/generic-list.component'
 
 @Component( {
@@ -26,7 +25,7 @@ import { GenericListComponent } from '../../../../../shared/util-tool/component/
         ReactiveFormsModule,
         TranslateModule,
         InputTextModule,
-        DropdownModule,
+        SelectModule,
         ToggleButtonModule,
         RouterLink,
         Button,

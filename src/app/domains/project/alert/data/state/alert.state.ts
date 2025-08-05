@@ -4,7 +4,7 @@ import { PageModel } from '../../../../../shared/util-model/model/page.model'
 import { GenericProjectElementState } from '../../../../../shared/util-tool/state/generic-project-element.state'
 import { initialize } from '../../../../../shared/util-tool/util/rx.util'
 import { StateUtil } from '../../../../../shared/util-tool/state/state.util'
-import { Injectable } from '@angular/core'
+import { inject, Injectable } from '@angular/core'
 import {
     ElementRequestInformationModel,
 } from '../../../../../shared/util-model/model/element-request-information.model'
@@ -93,13 +93,9 @@ const defaultAlertState: AlertStateModel = {
 export class AlertState extends GenericProjectElementState<AlertStateModel> implements NgxsOnInit {
     private readonly alertIcon: string = 'pi pi-sort-alt'
 
-    public constructor (
-        private readonly service: AlertService,
-        private readonly metadataService: MetadataService,
-        private readonly facade: AlertFacade,
-    ) {
-        super()
-    }
+    private readonly service: AlertService = inject( AlertService )
+    private readonly metadataService: MetadataService = inject( MetadataService )
+    private readonly facade: AlertFacade = inject( AlertFacade )
 
     public ngxsOnInit (): void {
         this.facade.fetchAlertStatus()

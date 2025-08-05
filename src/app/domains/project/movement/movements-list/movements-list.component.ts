@@ -7,11 +7,10 @@ import { RegistryTemplateDirective } from '../../../../shared/util-tool/directiv
 import { TranslateModule } from '@ngx-translate/core'
 import { InputTextModule } from 'primeng/inputtext'
 import { ToggleButtonModule } from 'primeng/togglebutton'
-import { DropdownModule } from 'primeng/dropdown'
 import { MovementElementComponent } from '../../../../shared/util-ui/movement-element/movement-element.component'
 import { RouterLink } from '@angular/router'
 import { MovementRoutesEnum } from '../movement-routes.enum'
-import { Select } from 'primeng/select'
+import { Select, SelectModule } from 'primeng/select'
 import { Button } from 'primeng/button'
 import { DatePicker } from 'primeng/datepicker'
 import { GenericListComponent } from '../../../../shared/util-tool/component/generic-list.component'
@@ -27,7 +26,7 @@ import { GenericListComponent } from '../../../../shared/util-tool/component/gen
         TranslateModule,
         InputTextModule,
         ToggleButtonModule,
-        DropdownModule,
+        SelectModule,
         MovementElementComponent,
         RouterLink,
         Select,

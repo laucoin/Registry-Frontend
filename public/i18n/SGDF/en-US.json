@@ -173,6 +173,10 @@
         }
     },
     "global": {
+        "language": {
+            "fr-FR": "Français (FR)",
+            "en-US": "English (US)"
+        },
         "updated": "Amended",
         "legal": {
             "information": {

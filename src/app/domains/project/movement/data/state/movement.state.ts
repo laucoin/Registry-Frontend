@@ -34,7 +34,7 @@ import {
 import { MovementService } from './movement.service'
 import { MovementFacade } from './movement.facade'
 import { StateUtil } from '../../../../../shared/util-tool/state/state.util'
-import { Injectable } from '@angular/core'
+import { inject, Injectable } from '@angular/core'
 import {
     ElementRequestInformationModel,
 } from '../../../../../shared/util-model/model/element-request-information.model'
@@ -120,15 +120,11 @@ const defaultMovementState: MovementStateModel = {
 export class MovementState extends GenericProjectElementState<MovementStateModel> implements NgxsOnInit {
     private readonly movementIcon: string = 'pi pi-sort-alt'
 
-    public constructor (
-        private readonly service: MovementService,
-        private readonly metadataService: MetadataService,
-        private readonly facade: MovementFacade,
-        private readonly pluralTranslationPipe: PluralTranslationPipe,
-        private readonly datePipe: DateFormatPipe,
-    ) {
-        super()
-    }
+    private readonly service: MovementService = inject( MovementService )
+    private readonly metadataService: MetadataService = inject( MetadataService )
+    private readonly facade: MovementFacade = inject( MovementFacade )
+    private readonly pluralTranslationPipe: PluralTranslationPipe = inject( PluralTranslationPipe )
+    private readonly datePipe: DateFormatPipe = inject( DateFormatPipe )
 
     public ngxsOnInit (): void {
         this.facade.fetchMovementTypes()

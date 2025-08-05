@@ -10,9 +10,8 @@ import { DividerModule } from 'primeng/divider'
 import { FormFieldErrorComponent } from '../../../../shared/util-ui/form-field-error/form-field-error.component'
 import { InputTextModule } from 'primeng/inputtext'
 import { TranslateModule, TranslatePipe } from '@ngx-translate/core'
-import { DropdownModule } from 'primeng/dropdown'
 import { MovementContentDto } from '../data/dto/movement-content.dto'
-import { Select } from 'primeng/select'
+import { Select, SelectModule } from 'primeng/select'
 import { DatePicker } from 'primeng/datepicker'
 import { map, Observable, tap } from 'rxjs'
 import { SelectItem } from 'primeng/api'
@@ -63,7 +62,7 @@ import { PresenceStatusEnum } from '../../../../shared/util-model/enumeration/pr
         InputTextModule,
         ReactiveFormsModule,
         TranslateModule,
-        DropdownModule,
+        SelectModule,
         Select,
         DatePicker,
         RegistryRequiredDirective,

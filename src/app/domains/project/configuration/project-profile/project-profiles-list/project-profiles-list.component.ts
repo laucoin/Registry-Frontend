@@ -11,9 +11,8 @@ import {
     ProjectProfileElementComponent,
 } from '../../../../../shared/util-ui/project-profile-element/project-profile-element.component'
 import { RouterLink } from '@angular/router'
-import { DropdownModule } from 'primeng/dropdown'
 import { ProjectProfileRoutesEnum } from '../project-profile-routes.enum'
-import { Select } from 'primeng/select'
+import { Select, SelectModule } from 'primeng/select'
 import { Button } from 'primeng/button'
 import { DatePicker } from 'primeng/datepicker'
 import { GenericListComponent } from '../../../../../shared/util-tool/component/generic-list.component'
@@ -30,7 +29,7 @@ import { GenericListComponent } from '../../../../../shared/util-tool/component/
         InputTextModule,
         ToggleButtonModule,
         ProjectProfileElementComponent,
-        DropdownModule,
+        SelectModule,
         RouterLink,
         Select,
         Button,

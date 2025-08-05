@@ -30,7 +30,7 @@ import {
 import { GroupService } from './group.service'
 import { GroupFacade } from './group.facade'
 import { StateUtil } from '../../../../../../shared/util-tool/state/state.util'
-import { Injectable } from '@angular/core'
+import { inject, Injectable } from '@angular/core'
 import {
     ElementRequestInformationModel,
 } from '../../../../../../shared/util-model/model/element-request-information.model'
@@ -102,13 +102,9 @@ const defaultGroupState: GroupStateModel = {
 export class GroupState extends GenericProjectElementState<GroupStateModel> {
     private readonly groupIcon: string = 'pi pi-users'
 
-    public constructor (
-        private readonly service: GroupService,
-        private readonly facade: GroupFacade,
-        private readonly pluralTranslationPipe: PluralTranslationPipe,
-    ) {
-        super()
-    }
+    private readonly service: GroupService = inject( GroupService )
+    private readonly facade: GroupFacade = inject( GroupFacade )
+    private readonly pluralTranslationPipe: PluralTranslationPipe = inject( PluralTranslationPipe )
 
     @Selector()
     public static groupsPage (state: GroupStateModel): PageModel<GroupModel> | undefined {

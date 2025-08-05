@@ -1,4 +1,4 @@
-import { Injectable, Injector } from '@angular/core'
+import { inject, Injectable, Injector } from '@angular/core'
 import { ActionType, NgxsPlugin } from '@ngxs/store'
 import { catchError, ObservableInput } from 'rxjs'
 import { NgxsNextPluginFn } from '@ngxs/store/plugins'
@@ -10,7 +10,7 @@ import { SeverityEnum } from '../../util-model/enumeration/severity.enum'
 export class RegistryNgxsUnhandledErrorHandler implements NgxsPlugin {
     private registryFacade: RegistryFacade | undefined = undefined
 
-    public constructor (private readonly injector: Injector) {}
+    private readonly injector: Injector = inject( Injector )
 
     public handle (state: unknown, action: ActionType, next: NgxsNextPluginFn): void {
         return next( state, action ).pipe(

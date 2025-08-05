@@ -48,7 +48,8 @@ import { IntervalPipe } from './app/shared/util-tool/pipe/interval.pipe'
             AppConfig.provideNgxs(),
             AppConfig.provideNgxsReduxDevtools(),
             withNgxsPlugin( RegistryNgxsUnhandledErrorHandler ),
-            AppConfig.provideTranslator(),
+            AppConfig.provideTranslatorService(),
+            AppConfig.provideTranslatorHttpLoader(),
             PluralTranslationPipe,
         ],
     } ).catch( (error: Error) => console.error( error ) )

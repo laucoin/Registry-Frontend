@@ -4,7 +4,7 @@ import { PageModel } from '../../../../../shared/util-model/model/page.model'
 import { GenericProjectElementState } from '../../../../../shared/util-tool/state/generic-project-element.state'
 import { initialize } from '../../../../../shared/util-tool/util/rx.util'
 import { StateUtil } from '../../../../../shared/util-tool/state/state.util'
-import { Injectable } from '@angular/core'
+import { inject, Injectable } from '@angular/core'
 import {
     ElementRequestInformationModel,
 } from '../../../../../shared/util-model/model/element-request-information.model'
@@ -78,13 +78,9 @@ const defaultCommunicationState: CommunicationStateModel = {
 export class CommunicationState extends GenericProjectElementState<CommunicationStateModel> {
     private readonly communicationIcon: string = 'pi pi-sort-alt'
 
-    public constructor (
-        private readonly service: CommunicationService,
-        private readonly facade: CommunicationFacade,
-        private readonly datePipe: DateFormatPipe,
-    ) {
-        super()
-    }
+    private readonly service: CommunicationService = inject( CommunicationService )
+    private readonly facade: CommunicationFacade = inject( CommunicationFacade )
+    private readonly datePipe: DateFormatPipe = inject( DateFormatPipe )
 
     @Selector()
     public static communicationsPage (state: CommunicationStateModel): PageModel<CommunicationModel> | undefined {

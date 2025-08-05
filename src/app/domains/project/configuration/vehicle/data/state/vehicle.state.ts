@@ -30,7 +30,7 @@ import {
 import { VehicleService } from './vehicle.service'
 import { VehicleFacade } from './vehicle.facade'
 import { StateUtil } from '../../../../../../shared/util-tool/state/state.util'
-import { Injectable } from '@angular/core'
+import { inject, Injectable } from '@angular/core'
 import {
     ElementRequestInformationModel,
 } from '../../../../../../shared/util-model/model/element-request-information.model'
@@ -103,14 +103,10 @@ const defaultVehicleState: VehicleStateModel = {
 export class VehicleState extends GenericProjectElementState<VehicleStateModel> implements NgxsOnInit {
     private readonly vehicleIcon: string = 'pi pi-users'
 
-    public constructor (
-        private readonly service: VehicleService,
-        private readonly metadataService: MetadataService,
-        private readonly movementService: MovementService,
-        private readonly facade: VehicleFacade,
-    ) {
-        super()
-    }
+    private readonly service: VehicleService = inject( VehicleService )
+    private readonly metadataService: MetadataService = inject( MetadataService )
+    private readonly movementService: MovementService = inject( MovementService )
+    private readonly facade: VehicleFacade = inject( VehicleFacade )
 
     public ngxsOnInit (): void {
         this.facade.fetchPresencesStatus()
