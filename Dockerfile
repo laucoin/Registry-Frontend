@@ -1,3 +1,6 @@
-FROM nginx:latest
-COPY dist/browser /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/nginx.conf
+FROM nginxinc/nginx-unprivileged:stable-alpine
+
+ARG DOCROOT=/usr/share/nginx/html
+COPY --chown=nobody:nobody dist/browser ${DOCROOT}
+
+USER nginx
