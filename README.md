@@ -11,6 +11,8 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 This application allows virtual registry management. This is a frontend which call the
 backend (https://gitlab.com/laucoin/registry-backend.git).
 
+Checkout the full documentation [here](https://gitlab.com/laucoin/registry-backend/-/blob/main/documentation/README.md?ref_type=heads).
+
 ## How to install and use it? ⚙️
 
 ### Prerequisites
@@ -132,4 +134,3 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification.
 Contributions of any kind welcome!
-
