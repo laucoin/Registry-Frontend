@@ -1,14 +1,14 @@
-import { GenericModel } from '../../util-model/model/generic.model'
-import { PageRequestInformationModel } from '../../util-model/model/page-request-information.model'
-import { PageModel } from '../../util-model/model/page.model'
-import { ElementRequestInformationModel } from '../../util-model/model/element-request-information.model'
-import { ToastMessageOptions } from 'primeng/api'
-import { AppConfig } from '../../../app.config'
-import { GenericUtil } from '../util/generic.util'
-import { SeverityEnum } from '../../util-model/enumeration/severity.enum'
+import {GenericModel} from '../../util-model/model/generic.model'
+import {PageRequestInformationModel} from '../../util-model/model/page-request-information.model'
+import {PageModel} from '../../util-model/model/page.model'
+import {ElementRequestInformationModel} from '../../util-model/model/element-request-information.model'
+import {ToastMessageOptions} from 'primeng/api'
+import {AppConfig} from '../../../app.config'
+import {GenericUtil} from '../util/generic.util'
+import {SeverityEnum} from '../../util-model/enumeration/severity.enum'
 
 export class StateUtil {
-    public static updatePageLoader<P, M extends GenericModel> (
+    public static updatePageLoader<P, M extends GenericModel>(
         requestInformation: PageRequestInformationModel<P, M>,
         loading: boolean,
     ): PageRequestInformationModel<P, M> {
@@ -21,7 +21,7 @@ export class StateUtil {
         }
 
         const page: PageModel<M> | undefined = requestInformation.element
-        if (GenericUtil.isNull( page ) || page!.content?.length == 0) {
+        if (GenericUtil.isNull(page) || page!.content?.length == 0) {
             return {
                 ...requestInformation,
                 loading: loading,
@@ -34,7 +34,7 @@ export class StateUtil {
         }
     }
 
-    public static updateElementLoader<M extends GenericModel> (
+    public static updateElementLoader<M extends GenericModel>(
         requestInformation: ElementRequestInformationModel<M>,
         loading: boolean,
     ): ElementRequestInformationModel<M> {
@@ -44,14 +44,14 @@ export class StateUtil {
         }
     }
 
-    public static buildNotificationMessage (
+    public static buildNotificationMessage(
         severity: SeverityEnum,
         summary: string | undefined,
         detail: string,
         icon: string | undefined = undefined,
         data: object | undefined = undefined,
     ): ToastMessageOptions {
-        const life: number | undefined = this.notificationLife( severity )
+        const life: number | undefined = this.notificationLife(severity)
         return {
             severity: severity,
             summary: summary,
@@ -64,8 +64,8 @@ export class StateUtil {
         }
     }
 
-    private static notificationLife (severity: SeverityEnum): number | undefined {
-        const index: number = Object.keys( AppConfig.settings.notification.duration ).findIndex( (key: string): boolean => key === severity )
-        return Object.values( AppConfig.settings.notification.duration )[index]
+    private static notificationLife(severity: SeverityEnum): number | undefined {
+        const index: number = Object.keys(AppConfig.config.notification.duration).findIndex((key: string): boolean => key === severity)
+        return Object.values(AppConfig.config.notification.duration)[index]
     }
 }

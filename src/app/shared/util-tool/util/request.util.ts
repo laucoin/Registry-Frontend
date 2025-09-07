@@ -1,6 +1,5 @@
 export const CURRENT_USER_ID: string = '{{currentUserId}}'
 export const SELECT_PROFILE_PROJECT_ID: string = '{{defaultProfileProjectId}}'
-export const ACCEPT_LANGUAGE: string = 'Accept-Language'
 export const AUTHORIZATION: string = 'Authorization'
 export const REDIRECT_URI: string = 'redirect_uri'
 export const TOKEN: string = 'token'

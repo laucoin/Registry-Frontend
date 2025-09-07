@@ -11,7 +11,8 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 This application allows virtual registry management. This is a frontend which call the
 backend (https://gitlab.com/laucoin/registry-backend.git).
 
-Checkout the full documentation [here](https://gitlab.com/laucoin/registry-backend/-/blob/main/documentation/README.md?ref_type=heads).
+Checkout the full
+documentation [here](https://gitlab.com/laucoin/registry-backend/-/blob/main/documentation/README.md?ref_type=heads).
 
 ## How to install and use it? ⚙️
 
@@ -54,18 +55,131 @@ You need to install a Node environment. To do that there are 2 possibilities.
     ```shell
     npm i
     ```
-4. Create [config.json](public/config/config.json) and setup your environment config
+4. Create [config.json](public/settings/config.json) your configuration
     ```json
     {
-        "production": false,
+        "defaultLanguage": "fr",
         "languages": [
-            "fr-FR"
+            "fr",
+            "en"
         ],
-        "executionContext": "SGDF",
-        "backendUrl": "http://localhost:8081"
+        "primeNg": {
+            "semantic": {
+                "primary": {
+                    "50": "#eef9ff",
+                    "100": "#dcf4ff",
+                    "200": "#b2ebff",
+                    "300": "#6ddcff",
+                    "400": "#20cbff",
+                    "500": "#00b5ff",
+                    "600": "#0091df",
+                    "700": "#0073b4",
+                    "800": "#006295",
+                    "900": "#00507a",
+                    "950": "#003a5d"
+                },
+            "colorScheme": {
+                "light": {
+                    "primary": {
+                        "color": "#003a5d",
+                        "contrastColor": "#eef9ff",
+                        "hoverColor": "#00507a",
+                        "activeColor": "#006295"
+                    },
+                    "highlight": {
+                        "background": "#003a5d",
+                        "focusBackground": "#0073b4",
+                        "color": "#ffffff",
+                        "focusColor": "#ffffff"
+                    }
+                },
+                "dark": {
+                    "primary": {
+                        "color": "#eef9ff",
+                        "contrastColor": "#003a5d",
+                        "hoverColor": "#dcf4ff",
+                        "activeColor": "#b2ebff"
+                    },
+                    "highlight": {
+                        "background": "rgba(250, 250, 250, .16)",
+                        "focusBackground": "rgba(250, 250, 250, .24)",
+                        "color": "rgba(255,255,255,.87)",
+                        "focusColor": "rgba(255,255,255,.87)"
+                    }
+                }
+            }
+            },
+            "components": {
+                "card": {
+                    "body": {
+                        "padding": "1rem"
+                    }
+                },
+                "dataview": {
+                    "root": {
+                        "borderWidth": "0"
+                    },
+                    "header": {
+                        "padding": "0"
+                    }
+                },
+                "menu": {
+                    "item": {
+                        "padding": "0"
+                    }
+                },
+                "popover": {
+                    "content": {
+                        "padding": "0"
+                    }
+                },
+                "tabs": {
+                    "tabpanel": {
+                        "padding": "1rem 0"
+                    }
+                }
+            }
+        },
+        "logo": {
+            "normal": {
+                "light": "img/SGDF/logo-white.svg",
+                "dark": "img/SGDF/logo-white.svg"
+            },
+            "small": {
+                "light": "img/SGDF/small-logo-white.svg",
+                "dark": "img/SGDF/small-logo-white.svg"
+            }
+        },
+        "enabledActions": [ "<element-action.enum.ts>" ],
+        "notification": {
+            "duration": {
+                "info": 5000,
+                "success": 3000,
+                "warn": 8000,
+                "error": 15000,
+                "secondary": 5000,
+                "contrast": 5000
+            }
+        }
     }
     ```
-5. Now, you can use the following scripts. Enjoy !
+5. Create [env.json](public/settings/env.json) your environment
+    ```json
+    {
+        "production": "<true-for-non-local>",
+        "backend": {
+        "url": "<backend-url>",
+        "noAuthPaths": [
+            "/api/authentication/login/uri",
+            "/api/authentication/logout/uri",
+            "/api/authentication/token",
+            "/api/authentication/token/refresh"
+        ]
+        }
+    }
+    ```
+
+6Now, you can use the following scripts. Enjoy !
 
 > To use the frontend properly, you need to start the backend too. To do that refer to
 > the [backend readme](https://gitlab.com/laucoin/registry-backend.git).
