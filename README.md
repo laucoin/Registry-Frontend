@@ -168,13 +168,13 @@ You need to install a Node environment. To do that there are 2 possibilities.
     {
         "production": "<true-for-non-local>",
         "backend": {
-        "url": "<backend-url>",
-        "noAuthPaths": [
-            "/api/authentication/login/uri",
-            "/api/authentication/logout/uri",
-            "/api/authentication/token",
-            "/api/authentication/token/refresh"
-        ]
+            "url": "<backend-url>",
+            "noAuthPaths": [
+                "/api/v1/authentication/login/uri",
+                "/api/v1/authentication/logout/uri",
+                "/api/v1/authentication/token",
+                "/api/v1/authentication/token/refresh"
+            ]
         }
     }
     ```
