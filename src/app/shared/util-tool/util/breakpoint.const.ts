@@ -1,4 +1,4 @@
-export const breakPoint: object = {
+export const breakPoint: Record<string, string> = {
     '99999px': '50vw',
     '1200px': '60vw',
     '992px': '70vw',

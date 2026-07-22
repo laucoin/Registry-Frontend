@@ -491,7 +491,7 @@ export class RegistryState extends GenericState implements NgxsOnInit {
             ctx.dispatch(new UpdateTheme(userTheme))
         }
         const userLanguage: string | undefined = currentUser.preferences.language
-        if (GenericUtil.nonNull(userLanguage) && userLanguage !== this.translateService.currentLang) {
+        if (GenericUtil.nonNull(userLanguage) && userLanguage !== this.translateService.currentLang()) {
             this.translateService.use(currentUser.preferences.language)
             this.primeConfig.setTranslation(this.translateService.instant('prime-ng'))
             this.registryFacade.reloadTranslatedData()

@@ -3,8 +3,10 @@
                   [actionMenuVisible]='actionMenuVisible()'
                   [icon]='statusIcon()'>
     <div class='element-card' [class.flex-column]='carouselView()'>
-        <div class='d-flex' [class.title]='!carouselView()' [class.justify-content-center]='registryFacade.tinyScreen()'>
-            <app-severity-circle class='me-2' [severity]='alert().visible ? SeverityEnum.SUCCESS : SeverityEnum.DANGER' />
+        <div class='d-flex' [class.title]='!carouselView()'
+             [class.justify-content-center]='registryFacade.tinyScreen()'>
+            <app-severity-circle class='me-2'
+                                 [severity]='alert().visible ? SeverityEnum.SUCCESS : SeverityEnum.DANGER'/>
             {{ alert().title | titlecase }}
         </div>
         <div class='d-flex'
@@ -19,11 +21,13 @@
                           outlined
                           [severity]='isInProgress() ? "info" : "secondary"' [label]='(isInProgress() ?"alerts.actions.add-communication"
                        : "alerts.actions.communications") | translate'
-                          [icon]='ProjectOptionEnum.COMMUNICATION | optionIcon' (onClick)='communicationsLayerOpened = true' />
+                          [icon]='ProjectOptionEnum.COMMUNICATION | optionIcon'
+                          (onClick)='communicationsLayerOpened = true'/>
             </div>
         }
-        <div class='d-flex' [class.status]='!carouselView()' [class.justify-content-center]='registryFacade.tinyScreen()'>
-            <app-severity-tag [value]='statusLabel()' [severity]='statusSeverity()' />
+        <div class='d-flex' [class.status]='!carouselView()'
+             [class.justify-content-center]='registryFacade.tinyScreen()'>
+            <app-severity-tag [value]='statusLabel()' [severity]='statusSeverity()'/>
         </div>
     </div>
     @if (carouselView() && addButtonVisible()) {
@@ -33,7 +37,8 @@
                       outlined
                       [severity]='isInProgress() ? "info" : "secondary"' [label]='(isInProgress() ?"alerts.actions.add-communication"
                        : "alerts.actions.communications") | translate'
-                      [icon]='ProjectOptionEnum.COMMUNICATION | optionIcon' (onClick)='communicationsLayerOpened = true' />
+                      [icon]='ProjectOptionEnum.COMMUNICATION | optionIcon'
+                      (onClick)='communicationsLayerOpened = true'/>
         </div>
     }
 </app-element-card>
@@ -42,25 +47,25 @@
           modal
           maximizable
           appendTo='body'
-          (onShow)='registryFacade.tinyScreen() ? dialog.maximized = true : null'
+          (onShow)='registryFacade.tinyScreen() ? dialog.maximized.set(true) : null'
           [breakpoints]='breakpoint'
           [(visible)]='communicationsLayerOpened'>
     <ng-template #header>
         <div class='w-100 d-flex align-items-center justify-content-between'>
             <div>
                 <div class='layer-title mb-2'>{{ alert().title }}</div>
-                <app-severity-tag [value]='statusLabel()' [severity]='statusSeverity()' />
+                <app-severity-tag [value]='statusLabel()' [severity]='statusSeverity()'/>
             </div>
             <p-button
                     [ariaLabel]='"menu.options" | translate'
                     (onClick)='$event.stopPropagation(); menu.toggle($event)'
                     rounded
                     text
-                    icon='pi pi-ellipsis-v' />
+                    icon='pi pi-ellipsis-v'/>
         </div>
     </ng-template>
     @if (communicationsLayerOpened) {
-        <app-alert-communications-list [alert]='alert()' />
+        <app-alert-communications-list [alert]='alert()'/>
     }
 </p-dialog>
 

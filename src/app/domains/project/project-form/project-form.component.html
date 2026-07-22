@@ -1,9 +1,9 @@
 @if (form.untouched && facade.projectLoading()) {
     <div class='d-flex justify-content-center'>
-        <p-progressSpinner></p-progressSpinner>
+        <p-progress-spinner></p-progress-spinner>
     </div>
 } @else {
-    <h2>{{ 'projects.form.title' | formTitle: facade.project() | translate : { name: facade.project()?.name } }}</h2>
+    <h2>{{ 'projects.form.title' | formTitle: facade.project() | translate : {name: facade.project()?.name} }}</h2>
     <p-stepper [(value)]='activeTab' [value]='1' [linear]='true'>
         <p-step-item [value]='1'>
             <p-step>{{ 'projects.form.subtitle.information' | translate }}</p-step>
@@ -16,10 +16,10 @@
                                    [placeholder]='"projects.form.placeholder.name" | translate'
                                    id='name'
                                    pInputText
-                                   type='text' />
+                                   type='text'/>
                             <app-form-field-error [errors]='name.errors'
                                                   [invalid]='FormUtil.invalid(name)'
-                                                  translationPrefix='projects.form.error.name' />
+                                                  translationPrefix='projects.form.error.name'/>
                         </div>
                         <div class='d-flex flex-wrap'>
                             <div class='left-field field'>
@@ -32,10 +32,10 @@
                                                          }'
                                                      [timePlaceholder]='"projects.form.placeholder.time" | translate: {
                                                             date: startDateExample | dateFormat: "time"
-                                                         }' />
+                                                         }'/>
                                 <app-form-field-error [errors]='beginDateTime.errors'
                                                       [invalid]='FormUtil.invalid(beginDateTime)'
-                                                      translationPrefix='projects.form.error.begin-datetime' />
+                                                      translationPrefix='projects.form.error.begin-datetime'/>
                             </div>
                             <div class='right-field field'>
                                 <label for='end-date-time'>{{ 'projects.form.end-datetime' | translate }}</label>
@@ -47,28 +47,28 @@
                                                          }'
                                                      [timePlaceholder]='"projects.form.placeholder.time" | translate: {
                                                             date: endDateExample | dateFormat: "time"
-                                                         }' />
+                                                         }'/>
                                 <app-form-field-error [errors]='endDateTime.errors'
                                                       [invalid]='FormUtil.invalid(endDateTime)'
-                                                      translationPrefix='projects.form.error.end-datetime' />
+                                                      translationPrefix='projects.form.error.end-datetime'/>
                             </div>
                         </div>
                         <app-form-field-error [errors]='form.errors'
                                               [invalid]='FormUtil.invalid(form) && beginDateTime.valid && endDateTime.valid'
-                                              translationPrefix='projects.form.error.date-range' />
+                                              translationPrefix='projects.form.error.date-range'/>
                         <div class='d-flex pt-4 justify-content-between'>
                             <p-button
                                     (onClick)='navigateToRedirectUri()'
                                     [label]='"global.actions.cancel" | translate'
                                     text
-                                    rounded />
+                                    rounded/>
                             <p-button
                                     (onClick)='FormUtil.isFormValid(form) ? activateCallback(2) : undefined'
                                     [label]='registryFacade.tinyScreen() ? "" : "global.actions.next" | translate'
                                     rounded
                                     outlined
                                     icon='pi pi-arrow-down'
-                                    iconPos='right' />
+                                    iconPos='right'/>
                         </div>
                     </div>
                 </ng-template>
@@ -88,9 +88,9 @@
                                         (onChange)='selectAll($event)'
                                         [(ngModel)]='allSelected'
                                         [indeterminate]='allSelected === undefined'
-                                        inputId='select-all' />
+                                        inputId='select-all'/>
                         </div>
-                        <p-divider />
+                        <p-divider/>
                         <div [formGroup]='optionsForm'>
                             @for (option of facade.projectOptionsMetadata(); track option.value) {
                                 @let control = getOptionControl(option.value);
@@ -103,14 +103,14 @@
                                         </label>
                                         <p-checkbox [formControl]='control'
                                                     binary
-                                                    [inputId]='option.value' />
+                                                    [inputId]='option.value'/>
                                     </div>
                                     <app-form-field-error [errors]='control.errors'
                                                           [invalid]='FormUtil.invalid(control)'
-                                                          translationPrefix='projects.form.error.options' />
+                                                          translationPrefix='projects.form.error.options'/>
                                 </div>
                                 @if (!$last) {
-                                    <p-divider />
+                                    <p-divider/>
                                 }
                             }
                         </div>
@@ -128,7 +128,7 @@
                                     [label]='registryFacade.tinyScreen() ? "" :"global.actions.previous" | translate'
                                     icon='pi pi-arrow-up'
                                     text
-                                    rounded />
+                                    rounded/>
                             <p-button
                                     class='ms-2'
                                     (onClick)='submit()'
@@ -136,7 +136,7 @@
                                     rounded
                                     outlined
                                     [icon]='facade.project() | formIcon'
-                                    severity='success' />
+                                    severity='success'/>
                         </div>
                     </div>
                 </ng-template>

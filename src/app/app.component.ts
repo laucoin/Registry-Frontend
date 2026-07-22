@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, HostListener, inject, OnDestroy} from '@angular/core'
-import {TranslateModule} from '@ngx-translate/core'
+import {TranslatePipe} from '@ngx-translate/core'
 import {ConfirmationService, MessageService, ToastMessageOptions} from 'primeng/api'
 import {BlockUIModule} from 'primeng/blockui'
 import {ConfirmDialogModule} from 'primeng/confirmdialog'
@@ -23,7 +23,7 @@ import {GenericUtil} from './shared/util-tool/util/generic.util'
     selector: 'app-root',
     standalone: true,
     imports: [
-        TranslateModule,
+        TranslatePipe,
         ConfirmDialogModule,
         ToastModule,
         BlockUIModule,
@@ -41,7 +41,7 @@ import {GenericUtil} from './shared/util-tool/util/generic.util'
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent extends GenericComponent implements OnDestroy {
-    protected readonly breakPoint: object = breakPoint
+    protected readonly breakPoint: Record<string, string> = breakPoint
     private readonly subscriptions: Subscription = new Subscription()
 
     protected readonly currentYear: number = new Date().getFullYear()
@@ -77,13 +77,13 @@ export class AppComponent extends GenericComponent implements OnDestroy {
         })
     }
 
-    @HostListener('window:online', ['$event'])
-    @HostListener('window:offline', ['$event'])
+    @HostListener('window:online')
+    @HostListener('window:offline')
     public handleNetwork(): void {
         this.registryFacade.updateNetwork(navigator.onLine)
     }
 
-    @HostListener('window:resize', ['$event'])
+    @HostListener('window:resize')
     public handleResize(): void {
         this.registryFacade.updateScreenWidth(window.innerWidth)
     }
