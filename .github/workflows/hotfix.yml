@@ -1,0 +1,50 @@
+name: Hotfix
+
+# Fully isolated from Semantic Release. Branch off an existing release tag, commit
+# the fix, and push a tag like 1.0.0-hotfix-1 to drive this workflow.
+on:
+  push:
+    tags:
+      - "*-hotfix-*"
+
+env:
+  REGISTRY: ${{ vars.REGISTRY }}
+  IMAGE_NAME: ${{ vars.IMAGE_NAME }}
+
+jobs:
+  hotfix-image:
+    name: Build & push hotfix image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      # Tag == the exact hotfix tag name, e.g. 1.0.0-hotfix-1.
+      - uses: ./.github/actions/docker-publish
+        with:
+          registry: ${{ env.REGISTRY }}
+          image: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}
+          tag: ${{ github.ref_name }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+  retention:
+    name: Apply retention policy
+    runs-on: ubuntu-latest
+    needs: hotfix-image
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/registry-retention
+        with:
+          package-name: ${{ env.IMAGE_NAME }}
+          owner: ${{ github.repository_owner }}
+          keep-releases: "5"
+          token: ${{ secrets.GHCR_PAT }}

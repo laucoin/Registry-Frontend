@@ -1,0 +1,8 @@
+# The image only needs nginx.conf and dist/browser — keep the context small.
+.git
+.github
+node_modules
+.angular
+src
+public
+*.md
