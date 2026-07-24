@@ -1,6 +1,6 @@
 @if (informationForm.untouched && facade.movementLoading()) {
     <div class='d-flex justify-content-center'>
-        <p-progressSpinner></p-progressSpinner>
+        <p-progress-spinner></p-progress-spinner>
     </div>
 } @else {
     <h2>
@@ -31,10 +31,10 @@
                                                [showTime]='true'
                                                (keydown.enter)='submit()'
                                                inputId='datetime'
-                                               fluid />
+                                               fluid/>
                                 <app-form-field-error [errors]='dateTime.errors'
                                                       [invalid]='FormUtil.invalid(dateTime)'
-                                                      translationPrefix='movements.form.error.datetime' />
+                                                      translationPrefix='movements.form.error.datetime'/>
                             </div>
                             <div class='right-field field'>
                                 <label for='type' appRequired>{{ 'movements.form.type' | translate }}</label>
@@ -48,10 +48,10 @@
                                         (onChange)='handleTypeChange($event.value)'
                                         (keydown.enter)='submit()'
                                         optionLabel='label'
-                                        optionValue='value' />
+                                        optionValue='value'/>
                                 <app-form-field-error [errors]='type.errors'
                                                       [invalid]='FormUtil.invalid(type)'
-                                                      translationPrefix='movements.form.error.type' />
+                                                      translationPrefix='movements.form.error.type'/>
                             </div>
                         </div>
                         <div class='field'>
@@ -62,9 +62,10 @@
                                         <p-radio-button [inputId]='"contentType_" + type.value'
                                                         [value]='type.value'
                                                         (onClick)='handleContentTypeChange(type.value)'
-                                                        formControlName='contentType' />
+                                                        formControlName='contentType'/>
                                         <div>
-                                            <label [for]='"contentType_" + type.value' class='ml-2'>{{ type.label }}</label>
+                                            <label [for]='"contentType_" + type.value'
+                                                   class='ml-2'>{{ type.label }}</label>
                                         </div>
                                     </div>
                                 }
@@ -75,13 +76,13 @@
                                     (onClick)='navigateToRedirectUri()'
                                     [label]='"global.actions.cancel" | translate'
                                     text
-                                    rounded />
+                                    rounded/>
                             <p-button
                                     (onClick)='FormUtil.isFormValid(informationForm) ? activateCallback(2) : undefined'
                                     [label]='registryFacade.tinyScreen() ? "" : "global.actions.next" | translate'
                                     rounded
                                     icon='pi pi-arrow-down'
-                                    iconPos='right' />
+                                    iconPos='right'/>
                         </div>
                     </div>
                 </ng-template>
@@ -118,118 +119,117 @@
                                 </p-auto-complete>
                                 <app-form-field-error [errors]='reason.errors'
                                                       [invalid]='FormUtil.invalid(reason)'
-                                                      translationPrefix='movements.form.error.reason' />
+                                                      translationPrefix='movements.form.error.reason'/>
                             </div>
-                            <p-divider />
-                        }
-                        @if (isContentSelection()) {
-                            <div class='field'>
+                            <p-divider/>
+                        } @if (isContentSelection()) {
+                        <div class='field'>
                             <span class='label'
                                   appRequired>{{ 'movements.form.content.registered' | pluralTranslation: participantContent.value | translate }}</span>
-                                <label for='content'
-                                       class='secondary-color'>{{ 'movements.form.content.registered.search' | translate }}</label>
-                                <app-movement-content-field [formControl]='participantContent'
-                                                            [invalid]='FormUtil.invalid(participantContent)'
-                                                            [suggestions]='facade.searchedParticipantAndGroupMetadata()'
-                                                            [interpretedMovementType]='interpretedMovementType()'
-                                                            [selectionLabel]='"movements.form.content.registered.selected" | pluralTranslation: participantContent.value | translate'
-                                                            [emptyMessage]='"movements.form.content.registered.empty" | translate'
-                                                            [fluid]='true'
-                                                            inputId='content'
-                                                            (handleSearch)='handleParticipantsAndGroupsSearch($event.query)' />
-                                <app-form-field-error [errors]='participantContent.errors'
-                                                      [invalid]='FormUtil.invalid(participantContent)'
-                                                      translationPrefix='movements.form.error.participantContent' />
-                            </div>
-                        } @else {
-                            <div class='field'>
+                            <label for='content'
+                                   class='secondary-color'>{{ 'movements.form.content.registered.search' | translate }}</label>
+                            <app-movement-content-field [formControl]='participantContent'
+                                                        [invalid]='FormUtil.invalid(participantContent)'
+                                                        [suggestions]='facade.searchedParticipantAndGroupMetadata()'
+                                                        [interpretedMovementType]='interpretedMovementType()'
+                                                        [selectionLabel]='"movements.form.content.registered.selected" | pluralTranslation: participantContent.value | translate'
+                                                        [emptyMessage]='"movements.form.content.registered.empty" | translate'
+                                                        [fluid]='true'
+                                                        inputId='content'
+                                                        (handleSearch)='handleParticipantsAndGroupsSearch($event.query)'/>
+                            <app-form-field-error [errors]='participantContent.errors'
+                                                  [invalid]='FormUtil.invalid(participantContent)'
+                                                  translationPrefix='movements.form.error.participantContent'/>
+                        </div>
+                    } @else {
+                        <div class='field'>
                                 <span class='label'>{{
                                         'movements.form.content.guest' | pluralTranslation: guestContent.length |
                                             translate
                                     }}</span>
-                                @for (_ of guestContent.controls; track $index) {
-                                    <div class='d-flex flex-row align-items-center'>
-                                        <p-button size='small' [disabled]='participantId($index).value'
-                                                  (onClick)='removeGuest($index)'
-                                                  icon='pi pi-times' text rounded
-                                                  severity='danger'></p-button>
-                                        <div class='participant-form'>
-                                            <div class='d-flex flex-wrap'>
-                                                <div class='left-field field'>
-                                                    <label [for]='"first-name_" + $index'
-                                                           appRequired>{{ 'participants.form.firstname' | translate }}</label>
-                                                    <input [formControl]='firstName($index)'
-                                                           [placeholder]='"participants.form.placeholder.firstname" | translate'
-                                                           (keydown.enter)='submit()'
-                                                           [id]='"first-name_" + $index'
-                                                           pSize='small'
-                                                           pInputText
-                                                           type='text' />
-                                                    <app-form-field-error [errors]='firstName($index).errors'
-                                                                          [invalid]='FormUtil.invalid(firstName($index))'
-                                                                          translationPrefix='participants.form.error.firstname' />
-                                                </div>
-                                                <div class='right-field field'>
-                                                    <label [for]='"last-name_" + $index' appRequired>{{
-                                                            'participants.form.lastname' |
-                                                                translate
-                                                        }}</label>
-                                                    <input [formControl]='lastName($index)'
-                                                           [placeholder]='"participants.form.placeholder.lastname" | translate'
-                                                           (keydown.enter)='submit()'
-                                                           [id]='"last-name_" + $index'
-                                                           pSize='small'
-                                                           pInputText
-                                                           type='text' />
-                                                    <app-form-field-error [errors]='lastName($index).errors'
-                                                                          [invalid]='FormUtil.invalid(lastName($index))'
-                                                                          translationPrefix='participants.form.error.lastname' />
-                                                </div>
+                            @for (_ of guestContent.controls; track $index) {
+                                <div class='d-flex flex-row align-items-center'>
+                                    <p-button size='small' [disabled]='participantId($index).value'
+                                              (onClick)='removeGuest($index)'
+                                              icon='pi pi-times' text rounded
+                                              severity='danger'></p-button>
+                                    <div class='participant-form'>
+                                        <div class='d-flex flex-wrap'>
+                                            <div class='left-field field'>
+                                                <label [for]='"first-name_" + $index'
+                                                       appRequired>{{ 'participants.form.firstname' | translate }}</label>
+                                                <input [formControl]='firstName($index)'
+                                                       [placeholder]='"participants.form.placeholder.firstname" | translate'
+                                                       (keydown.enter)='submit()'
+                                                       [id]='"first-name_" + $index'
+                                                       pSize='small'
+                                                       pInputText
+                                                       type='text'/>
+                                                <app-form-field-error [errors]='firstName($index).errors'
+                                                                      [invalid]='FormUtil.invalid(firstName($index))'
+                                                                      translationPrefix='participants.form.error.firstname'/>
                                             </div>
-                                            <div class='field'>
-                                                <label [for]='"birthday_" + $index'
-                                                       appRequired>{{ 'participants.form.birthday' | translate }}</label>
-                                                <p-date-picker [formControl]='birthday($index)'
-                                                               showButtonBar
-                                                               showIcon
-                                                               size='small'
-                                                               appendTo='body'
-                                                               [showOnFocus]='false'
-                                                               [placeholder]='"participants.form.placeholder.birthday" | translate'
-                                                               [touchUI]='registryFacade.tinyScreen()'
-                                                               (keydown.enter)='submit()'
-                                                               [id]='"birthday_" + $index'
-                                                               fluid />
-                                                <app-form-field-error [errors]='birthday($index).errors'
-                                                                      [invalid]='FormUtil.invalid(birthday($index))'
-                                                                      translationPrefix='participants.form.error.birthday' />
+                                            <div class='right-field field'>
+                                                <label [for]='"last-name_" + $index' appRequired>{{
+                                                        'participants.form.lastname' |
+                                                            translate
+                                                    }}</label>
+                                                <input [formControl]='lastName($index)'
+                                                       [placeholder]='"participants.form.placeholder.lastname" | translate'
+                                                       (keydown.enter)='submit()'
+                                                       [id]='"last-name_" + $index'
+                                                       pSize='small'
+                                                       pInputText
+                                                       type='text'/>
+                                                <app-form-field-error [errors]='lastName($index).errors'
+                                                                      [invalid]='FormUtil.invalid(lastName($index))'
+                                                                      translationPrefix='participants.form.error.lastname'/>
                                             </div>
                                         </div>
+                                        <div class='field'>
+                                            <label [for]='"birthday_" + $index'
+                                                   appRequired>{{ 'participants.form.birthday' | translate }}</label>
+                                            <p-date-picker [formControl]='birthday($index)'
+                                                           showButtonBar
+                                                           showIcon
+                                                           size='small'
+                                                           appendTo='body'
+                                                           [showOnFocus]='false'
+                                                           [placeholder]='"participants.form.placeholder.birthday" | translate'
+                                                           [touchUI]='registryFacade.tinyScreen()'
+                                                           (keydown.enter)='submit()'
+                                                           [id]='"birthday_" + $index'
+                                                           fluid/>
+                                            <app-form-field-error [errors]='birthday($index).errors'
+                                                                  [invalid]='FormUtil.invalid(birthday($index))'
+                                                                  translationPrefix='participants.form.error.birthday'/>
+                                        </div>
                                     </div>
-                                    @if (!$last) {
-                                        <p-divider />
-                                    }
+                                </div>
+                                @if (!$last) {
+                                    <p-divider/>
                                 }
-                            </div>
-                            <div class='d-flex justify-content-center'>
-                                <p-button (onClick)='addGuest()'
-                                          icon='pi pi-plus'
-                                          rounded
-                                          size='small'
-                                          [label]='"movements.form.content.guest.add" | translate'
-                                          severity='secondary' />
-                            </div>
-                            <app-form-field-error [errors]='guestContent.errors'
-                                                  [invalid]='FormUtil.invalid(guestContent)'
-                                                  translationPrefix='movements.form.error.guestContent' />
-                        }
+                            }
+                        </div>
+                        <div class='d-flex justify-content-center'>
+                            <p-button (onClick)='addGuest()'
+                                      icon='pi pi-plus'
+                                      rounded
+                                      size='small'
+                                      [label]='"movements.form.content.guest.add" | translate'
+                                      severity='secondary'/>
+                        </div>
+                        <app-form-field-error [errors]='guestContent.errors'
+                                              [invalid]='FormUtil.invalid(guestContent)'
+                                              translationPrefix='movements.form.error.guestContent'/>
+                    }
                         <div class='d-flex pt-4 justify-content-between'>
                             <p-button
                                     (onClick)='activateCallback(1)'
                                     [label]='"global.actions.previous" | translate'
                                     icon='pi pi-arrow-up'
                                     text
-                                    rounded />
+                                    rounded/>
                             @if (isEligibleToVehicle() && contentType.value === ParticipantTypeEnum.REGISTERED) {
                                 <p-button
                                         (onClick)='FormUtil.isFormValid(contentForm) ? activateCallback(3) : undefined'
@@ -237,16 +237,16 @@
                                         rounded
                                         outlined
                                         icon='pi pi-arrow-down'
-                                        iconPos='right' />
+                                        iconPos='right'/>
                             } @else {
-                                <p-button
-                                        (onClick)='submit()'
-                                        [label]='registryFacade.tinyScreen() ? "" : facade.movement() | formButton | translate'
-                                        rounded
-                                        outlined
-                                        [icon]='facade.movement() | formIcon'
-                                        severity='success' />
-                            }
+                            <p-button
+                                    (onClick)='submit()'
+                                    [label]='registryFacade.tinyScreen() ? "" : facade.movement() | formButton | translate'
+                                    rounded
+                                    outlined
+                                    [icon]='facade.movement() | formIcon'
+                                    severity='success'/>
+                        }
                         </div>
                     </div>
                 </ng-template>
@@ -270,7 +270,7 @@
                                                  [suggestions]='facade.searchedVehicleMetadata()'
                                                  (onSelect)='addVehicle($event.value.value)'
                                                  (completeMethod)='handleVehiclesSearch($event.query)'>
-                                    <ng-template #selecteditem />
+                                    <ng-template #selecteditem/>
                                     <ng-template #empty>
                                         <div class='secondary-color'>{{ 'movements.form.vehicles.empty-search' | translate }}</div>
                                     </ng-template>
@@ -293,7 +293,7 @@
                                                             @if (!registryFacade.tinyScreen()) {
                                                                 <span class='ms-2'>{{
                                                                         ('movements.form.warning.vehicle.' +
-                                                                         vehicle($index).value.status.value) |
+                                                                            vehicle($index).value.status.value) |
                                                                             translate
                                                                     }}</span>
                                                             }
@@ -315,22 +315,22 @@
                                                     <p-button icon='pi pi-times'
                                                               (onClick)='removeVehicle($index)'
                                                               text
-                                                              severity='danger' />
+                                                              severity='danger'/>
                                                 </p-inputgroup-addon>
                                             </p-inputgroup>
                                             <app-form-field-error [errors]='control.errors'
                                                                   [invalid]='FormUtil.invalid(control)'
-                                                                  translationPrefix='movements.form.error.driver' />
+                                                                  translationPrefix='movements.form.error.driver'/>
                                         </div>
                                     </div>
                                 } @empty {
-                                    <div class='list-box mt-2'>
-                                        <div class='item empty-message'>
-                                            <div class='ms-2 secondary-color'>{{ 'movements.form.vehicles.empty' | translate }}
-                                            </div>
+                                <div class='list-box mt-2'>
+                                    <div class='item empty-message'>
+                                        <div class='ms-2 secondary-color'>{{ 'movements.form.vehicles.empty' | translate }}
                                         </div>
                                     </div>
-                                }
+                                </div>
+                            }
                             </div>
                             <div class='d-flex pt-4 justify-content-between'>
                                 <p-button
@@ -338,7 +338,7 @@
                                         [label]='"global.actions.previous" | translate'
                                         icon='pi pi-arrow-up'
                                         text
-                                        rounded />
+                                        rounded/>
                                 <p-button
                                         class='ms-2'
                                         (onClick)='FormUtil.isFormValid(vehicleForm) ? submit() : undefined'
@@ -346,7 +346,7 @@
                                         rounded
                                         outlined
                                         [icon]='facade.movement() | formIcon'
-                                        severity='success' />
+                                        severity='success'/>
                             </div>
                         </div>
                     </ng-template>

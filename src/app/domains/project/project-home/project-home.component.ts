@@ -42,7 +42,11 @@ export class ProjectHomeComponent extends GenericComponent {
         return param!
     } )
 
-    protected navigate (tab: string | number): void {
+    protected navigate (tab: string | number | undefined): void {
+        if (!tab) {
+            return
+        }
+
         this.router.navigate( [], {
             relativeTo: this.route,
             queryParams: { [this.tabParam]: tab },

@@ -12,8 +12,8 @@ import {GenericUtil} from './shared/util-tool/util/generic.util'
 import {LOCALE} from './shared/util-tool/util/request.util'
 import {provideTranslateService} from '@ngx-translate/core'
 import {ConfigModel} from "./shared/util-config/model/config.model";
-import {definePreset} from '@primeng/themes'
-import Lara from "@primeng/themes/lara";
+import {definePreset} from "@primeuix/themes";
+import Lara from '@primeuix/themes/lara';
 
 @Injectable({
     providedIn: 'root',
@@ -89,7 +89,7 @@ export class AppConfig {
 
     public static provideTranslatorService(): Provider | EnvironmentProviders {
         return provideTranslateService({
-            defaultLanguage: AppConfig.config.defaultLanguage,
+            fallbackLang: AppConfig.config.defaultLanguage,
             lang: AppConfig.locale,
         })
     }

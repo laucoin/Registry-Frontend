@@ -1,22 +1,22 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms'
-import { PageEventModel } from '../../../../../shared/util-model/model/page-event.model'
-import { ParticipantFacade } from '../data/state/participant.facade'
-import { ListComponent } from '../../../../../shared/util-ui/list/list.component'
-import { RegistryTemplateDirective } from '../../../../../shared/util-tool/directive/registry-template.directive'
-import { TranslateModule } from '@ngx-translate/core'
-import { InputTextModule } from 'primeng/inputtext'
-import { ToggleButtonModule } from 'primeng/togglebutton'
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core'
+import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms'
+import {PageEventModel} from '../../../../../shared/util-model/model/page-event.model'
+import {ParticipantFacade} from '../data/state/participant.facade'
+import {ListComponent} from '../../../../../shared/util-ui/list/list.component'
+import {RegistryTemplateDirective} from '../../../../../shared/util-tool/directive/registry-template.directive'
+import {TranslatePipe} from '@ngx-translate/core'
+import {InputTextModule} from 'primeng/inputtext'
+import {ToggleButtonModule} from 'primeng/togglebutton'
 import {
     ParticipantElementComponent,
 } from '../../../../../shared/util-ui/participant-element/participant-element.component'
-import { RouterLink } from '@angular/router'
-import { ParticipantRoutesEnum } from '../participant-routes.enum'
-import { Button } from 'primeng/button'
-import { Select, SelectModule } from 'primeng/select'
-import { GenericListComponent } from '../../../../../shared/util-tool/component/generic-list.component'
+import {RouterLink} from '@angular/router'
+import {ParticipantRoutesEnum} from '../participant-routes.enum'
+import {Button} from 'primeng/button'
+import {Select, SelectModule} from 'primeng/select'
+import {GenericListComponent} from '../../../../../shared/util-tool/component/generic-list.component'
 
-@Component( {
+@Component({
     selector: 'app-participants-list',
     standalone: true,
     templateUrl: './participants-list.component.html',
@@ -24,7 +24,7 @@ import { GenericListComponent } from '../../../../../shared/util-tool/component/
         ListComponent,
         RegistryTemplateDirective,
         ReactiveFormsModule,
-        TranslateModule,
+        TranslatePipe,
         InputTextModule,
         SelectModule,
         ToggleButtonModule,
@@ -34,13 +34,13 @@ import { GenericListComponent } from '../../../../../shared/util-tool/component/
         Select,
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
-} )
+})
 export class ParticipantsListComponent extends GenericListComponent {
-    protected readonly facade: ParticipantFacade = inject( ParticipantFacade )
+    protected readonly facade: ParticipantFacade = inject(ParticipantFacade)
 
     protected readonly ParticipantRoutesEnum: typeof ParticipantRoutesEnum = ParticipantRoutesEnum
 
-    public constructor () {
+    public constructor() {
         super()
 
         this.form = this.initForm()
@@ -48,36 +48,36 @@ export class ParticipantsListComponent extends GenericListComponent {
         this.loadData()
     }
 
-    protected initForm (): FormGroup {
-        return this.formBuilder.group( {
-            textSearched: this.formBuilder.control( this.facade.participantsPageTextSearchedParam() ),
-            statusSearched: this.formBuilder.control( this.facade.participantsPageStatusSearchedParam() ),
-            visibilitySearched: this.formBuilder.control( this.facade.participantsPageVisibilitySearchedParam() ),
-        } )
+    protected initForm(): FormGroup {
+        return this.formBuilder.group({
+            textSearched: this.formBuilder.control(this.facade.participantsPageTextSearchedParam()),
+            statusSearched: this.formBuilder.control(this.facade.participantsPageStatusSearchedParam()),
+            visibilitySearched: this.formBuilder.control(this.facade.participantsPageVisibilitySearchedParam()),
+        })
     }
 
-    protected loadData (): void {
-        this.facade.fetchParticipantsPage( undefined, undefined, false )
+    protected loadData(): void {
+        this.facade.fetchParticipantsPage(undefined, undefined, false)
     }
 
-    protected loadPage (pageEvent: PageEventModel): void {
+    protected loadPage(pageEvent: PageEventModel): void {
         this.facade.inputPageSearchParameters(
             this.textSearched.value,
             this.statusSearched.value,
             this.visibilitySearched.value,
         )
-        this.facade.fetchParticipantsPage( pageEvent.pageNumber, pageEvent.pageSize, false )
+        this.facade.fetchParticipantsPage(pageEvent.pageNumber, pageEvent.pageSize, false)
     }
 
-    protected get textSearched (): FormControl {
-        return this.form.get( 'textSearched' ) as FormControl
+    protected get textSearched(): FormControl {
+        return this.form.get('textSearched') as FormControl
     }
 
-    protected get statusSearched (): FormControl {
-        return this.form.get( 'statusSearched' ) as FormControl
+    protected get statusSearched(): FormControl {
+        return this.form.get('statusSearched') as FormControl
     }
 
-    protected get visibilitySearched (): FormControl {
-        return this.form.get( 'visibilitySearched' ) as FormControl
+    protected get visibilitySearched(): FormControl {
+        return this.form.get('visibilitySearched') as FormControl
     }
 }

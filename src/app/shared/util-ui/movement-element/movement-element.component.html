@@ -4,11 +4,13 @@
                   [icon]='movement().type.value === MovementTypeEnum.OUT ? "pi pi-arrow-up" : "pi pi-arrow-down"'>
     <div class='element-card'>
         <div class='type d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
-            <app-severity-tag [severity]='movement().type.value === MovementTypeEnum.OUT ? SeverityEnum.WARNING : SeverityEnum.SUCCESS'
-                              [value]='typeAndReason()' />
+            <app-severity-tag
+                    [severity]='movement().type.value === MovementTypeEnum.OUT ? SeverityEnum.WARNING : SeverityEnum.SUCCESS'
+                    [value]='typeAndReason()'/>
         </div>
         <div class='datetime d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
-            <app-severity-circle class='me-2' [severity]='movement().visible ? SeverityEnum.SUCCESS : SeverityEnum.DANGER' />
+            <app-severity-circle class='me-2'
+                                 [severity]='movement().visible ? SeverityEnum.SUCCESS : SeverityEnum.DANGER'/>
             <b>{{ movement().dateTime | dateFormat: 'datetime' }}</b>
         </div>
         <div class='content d-flex'
@@ -16,17 +18,15 @@
             <div class='d-flex align-items-center'>
                 @switch (true) {
                     @case (total() <= 0) {
-                        <p-skeleton width='10rem' borderRadius='1rem' />
-                    }
-                    @case (!!driver()) {
+                        <p-skeleton width='10rem' borderRadius='1rem'/>
+                    } @case (!!driver()) {
                         <p-button [icon]='ProjectOptionEnum.VEHICLE | optionIcon'
                                   (onClick)='participantsLayerOpened = true'
                                   (keydown.enter)='participantsLayerOpened = true'
                                   text
                                   rounded
-                                  [label]='driverName()! | truncate: 30' />
-                    }
-                    @default {
+                                  [label]='driverName()! | truncate: 30'/>
+                    } @default {
                         <p-button text
                                   rounded
                                   (onClick)='participantsLayerOpened = true'
@@ -35,7 +35,7 @@
                                     translate: {
                                     name: (movement().content[0].participant!.firstName | titlecase) + " " + (movement().content[0].participant!.lastName | uppercase) | truncate: 30,
                                     total: total()
-                                  }' />
+                                  }'/>
                     }
                 }
             </div>
@@ -43,17 +43,17 @@
         @if (reversibleAuthorized()) {
             <div class='d-flex reverse-action' [class.justify-content-center]='registryFacade.tinyScreen()'>
                 @if (total() <= 0) {
-                    <p-skeleton width='10rem' borderRadius='1rem' />
+                    <p-skeleton width='10rem' borderRadius='1rem'/>
                 } @else {
-                    <p-button [icon]='reversedIcon()'
-                              [label]='("movements.actions.reverse." + movement().type.value) | translate'
-                              styleClass='mt-2'
-                              severity='info'
-                              size='small'
-                              outlined
-                              rounded
-                              (onClick)='confirmMovementReversion(movement().content)' />
-                }
+                <p-button [icon]='reversedIcon()'
+                          [label]='("movements.actions.reverse." + movement().type.value) | translate'
+                          styleClass='mt-2'
+                          severity='info'
+                          size='small'
+                          outlined
+                          rounded
+                          (onClick)='confirmMovementReversion(movement().content)'/>
+            }
             </div>
         }
     </div>
@@ -65,7 +65,7 @@
                       rounded
                       outlined
                       size='small'
-                      severity='info' />
+                      severity='info'/>
         </div>
     }
 </app-element-card>
@@ -75,27 +75,25 @@
     <p-tabs [(value)]='participantLayerActiveTab' scrollable class='max-panel-height'>
         <p-tablist>
             <p-tab [value]='1'>
-                <p-tag [value]='movement().content.length.toString()' class='me-1' />
+                <p-tag [value]='movement().content.length.toString()' class='me-1'/>
                 {{ 'global.people.all' | translate }}
             </p-tab>
             @if (adults().length > 0) {
                 <p-tab [value]='2'>
-                    <p-tag [value]='adults().length.toString()' severity='info' class='me-1' />
+                    <p-tag [value]='adults().length.toString()' severity='info' class='me-1'/>
                     {{ 'global.people.major' | pluralTranslation: adults() | translate }}
                 </p-tab>
-            }
-            @if (children().length > 0) {
-                <p-tab [value]='3'>
-                    <p-tag [value]='children().length.toString()' severity='info' class='me-1' />
-                    {{ 'global.people.minor' | pluralTranslation: children() | translate }}
-                </p-tab>
-            }
-            @for (pool of pools() | keyvalue; track pool.key; let i = $index) {
-                <p-tab [value]='4 + i'>
-                    <p-tag [value]='pool.value.length.toString()' severity='info' class='me-1' />
-                    {{ pool.key }}
-                </p-tab>
-            }
+            } @if (children().length > 0) {
+            <p-tab [value]='3'>
+                <p-tag [value]='children().length.toString()' severity='info' class='me-1'/>
+                {{ 'global.people.minor' | pluralTranslation: children() | translate }}
+            </p-tab>
+        } @for (pool of pools() | keyvalue; track pool.key; let i = $index) {
+            <p-tab [value]='4 + i'>
+                <p-tag [value]='pool.value.length.toString()' severity='info' class='me-1'/>
+                {{ pool.key }}
+            </p-tab>
+        }
         </p-tablist>
         <p-tabpanels>
             <p-tabpanel [value]='1'>
@@ -109,9 +107,10 @@
                     <ng-template #item let-content>
                         <div class='d-flex align-items-center justify-content-between w-100'>
                             <div class='d-flex align-items-center'>
-                                <p-avatar [icon]='content.vehicle ? (ProjectOptionEnum.VEHICLE | optionIcon) : "pi pi-user"'
-                                          class='me-2'
-                                          shape='circle' />
+                                <p-avatar
+                                        [icon]='content.vehicle ? (ProjectOptionEnum.VEHICLE | optionIcon) : "pi pi-user"'
+                                        class='me-2'
+                                        shape='circle'/>
                                 <div>
                                     <div class='d-flex align-items-center'>
                                         <div>
@@ -120,7 +119,7 @@
                                     </div>
                                     @if (content.vehicle) {
                                         <div class='mt-2'>
-                                            <p-tag [value]='VehicleUtil.toSelectItem(content.vehicle).label' />
+                                            <p-tag [value]='VehicleUtil.toSelectItem(content.vehicle).label'/>
                                         </div>
                                     }
                                 </div>
@@ -133,7 +132,7 @@
                                               severity='info'
                                               size='small'
                                               outlined
-                                              rounded />
+                                              rounded/>
                                 </div>
                             }
                         </div>
@@ -151,7 +150,7 @@
                         <ng-template #item let-adult>
                             <p-avatar [icon]='adult.vehicle ? (ProjectOptionEnum.VEHICLE | optionIcon) : "pi pi-user"'
                                       class='me-2'
-                                      shape='circle' />
+                                      shape='circle'/>
                             <div>
                                 <div class='d-flex align-items-center'>
                                     <div>
@@ -160,61 +159,59 @@
                                 </div>
                                 @if (adult.vehicle) {
                                     <div class='mt-2'>
-                                        <p-tag [value]='VehicleUtil.toSelectItem(adult.vehicle).label' />
+                                        <p-tag [value]='VehicleUtil.toSelectItem(adult.vehicle).label'/>
                                     </div>
                                 }
                             </div>
                         </ng-template>
                     </p-listbox>
                 </p-tabpanel>
-            }
-            @if (children().length > 0) {
-                <p-tabpanel [value]='3'>
-                    <p-listbox
-                            styleClass='max-list-box-height'
-                            scrollHeight='100%'
-                            [options]='children()'
-                            readonly
-                            optionLabel='name'>
-                        <ng-template #item let-child>
-                            <p-avatar [icon]='child.vehicle ? (ProjectOptionEnum.VEHICLE | optionIcon) : "pi pi-user"'
-                                      class='me-2'
-                                      shape='circle' />
+            } @if (children().length > 0) {
+            <p-tabpanel [value]='3'>
+                <p-listbox
+                        styleClass='max-list-box-height'
+                        scrollHeight='100%'
+                        [options]='children()'
+                        readonly
+                        optionLabel='name'>
+                    <ng-template #item let-child>
+                        <p-avatar [icon]='child.vehicle ? (ProjectOptionEnum.VEHICLE | optionIcon) : "pi pi-user"'
+                                  class='me-2'
+                                  shape='circle'/>
+                        <div class='d-flex align-items-center'>
+                            {{ (child.participant.firstName | titlecase) + ' ' + (child.participant.lastName | uppercase) }}
+                        </div>
+                    </ng-template>
+                </p-listbox>
+            </p-tabpanel>
+        } @for (pool of pools() | keyvalue; track pool.key; let i = $index) {
+            <p-tabpanel [value]='4 + i'>
+                <p-listbox
+                        styleClass='max-list-box-height'
+                        scrollHeight='100%'
+                        [options]='pool.value'
+                        readonly
+                        optionLabel='name'>
+                    <ng-template #item let-content>
+                        <p-avatar [icon]='content.vehicle ? (ProjectOptionEnum.VEHICLE | optionIcon) : "pi pi-user"'
+                                  class='me-2'
+                                  shape='circle'/>
+                        <div>
                             <div class='d-flex align-items-center'>
-                                {{ (child.participant.firstName | titlecase) + ' ' + (child.participant.lastName | uppercase) }}
-                            </div>
-                        </ng-template>
-                    </p-listbox>
-                </p-tabpanel>
-            }
-            @for (pool of pools() | keyvalue; track pool.key; let i = $index) {
-                <p-tabpanel [value]='4 + i'>
-                    <p-listbox
-                            styleClass='max-list-box-height'
-                            scrollHeight='100%'
-                            [options]='pool.value'
-                            readonly
-                            optionLabel='name'>
-                        <ng-template #item let-content>
-                            <p-avatar [icon]='content.vehicle ? (ProjectOptionEnum.VEHICLE | optionIcon) : "pi pi-user"'
-                                      class='me-2'
-                                      shape='circle' />
-                            <div>
-                                <div class='d-flex align-items-center'>
-                                    <div>
-                                        {{ (content.participant.firstName | titlecase) + ' ' + (content.participant.lastName | uppercase) }}
-                                    </div>
+                                <div>
+                                    {{ (content.participant.firstName | titlecase) + ' ' + (content.participant.lastName | uppercase) }}
                                 </div>
-                                @if (content.vehicle) {
-                                    <div class='mt-2'>
-                                        <p-tag [value]='VehicleUtil.toSelectItem(content.vehicle).label' />
-                                    </div>
-                                }
                             </div>
-                        </ng-template>
-                    </p-listbox>
-                </p-tabpanel>
-            }
+                            @if (content.vehicle) {
+                                <div class='mt-2'>
+                                    <p-tag [value]='VehicleUtil.toSelectItem(content.vehicle).label'/>
+                                </div>
+                            }
+                        </div>
+                    </ng-template>
+                </p-listbox>
+            </p-tabpanel>
+        }
         </p-tabpanels>
     </p-tabs>
 </app-layer>
@@ -223,7 +220,7 @@
           modal
           maximizable
           appendTo='body'
-          (onShow)='registryFacade.tinyScreen() ? dialog.maximized = true : null'
+          (onShow)='registryFacade.tinyScreen() ? dialog.maximized.set(true) : null'
           [breakpoints]='breakpoint'
           [(visible)]='communicationsLayerOpened'>
     <ng-template #header>
@@ -231,7 +228,7 @@
             <div class='d-flex flex-column'>
                 <div class='layer-title'>
                     {{
-                        'movements.communication.layer.title' | translate: { movement: movement().reason?.label }
+                        'movements.communication.layer.title' | translate: {movement: movement().reason?.label}
                     }}
                 </div>
                 @if (GenericUtil.nonNull(movement().reason)) {
@@ -250,11 +247,11 @@
                     (onClick)='$event.stopPropagation(); menu.toggle($event)'
                     rounded
                     text
-                    icon='pi pi-ellipsis-v' />
+                    icon='pi pi-ellipsis-v'/>
         </div>
     </ng-template>
     @if (communicationsLayerOpened) {
-        <app-movement-communications-list [movement]='movement()' />
+        <app-movement-communications-list [movement]='movement()'/>
     }
 </p-dialog>
 
