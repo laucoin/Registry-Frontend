@@ -39,6 +39,9 @@ yarn-error.log
 testem.log
 /typings
 
+# Claude Code (local-only, thin skills referencing .github/prompts)
+.claude/
+
 # System files
 .DS_Store
 Thumbs.db

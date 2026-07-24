@@ -1,0 +1,110 @@
+name: Release
+
+# Runs on every merge to main (the DEV baseline). Tests are intentionally not
+# run here — branch protection guarantees the PR pipeline already validated it.
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: release-main
+  cancel-in-progress: false
+
+env:
+  REGISTRY: ${{ vars.REGISTRY }}
+  IMAGE_NAME: ${{ vars.IMAGE_NAME }}
+
+jobs:
+  dev-image:
+    name: Build & push DEV (main) image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - uses: ./.github/actions/docker-publish
+        with:
+          registry: ${{ env.REGISTRY }}
+          image: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}
+          tag: main
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+  release:
+    name: Semantic Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    outputs:
+      published: ${{ steps.semantic.outputs.new_release_published }}
+      version: ${{ steps.semantic.outputs.new_release_version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Semantic Release
+        id: semantic
+        uses: cycjimmy/semantic-release-action@v4
+        with:
+          semantic_version: "24"
+          extra_plugins: |
+            @semantic-release/changelog
+            @semantic-release/npm
+            @semantic-release/git
+            conventional-changelog-conventionalcommits
+        env:
+          GITHUB_TOKEN: ${{ secrets.SEMANTIC_RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
+
+  release-image:
+    name: Build & push release (x.y.z) image
+    runs-on: ubuntu-latest
+    needs: release
+    if: needs.release.outputs.published == 'true'
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main             # pick up the package.json version bump just pushed
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - uses: ./.github/actions/docker-publish
+        with:
+          registry: ${{ env.REGISTRY }}
+          image: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}
+          tag: ${{ needs.release.outputs.version }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+  retention:
+    name: Apply retention policy
+    runs-on: ubuntu-latest
+    needs: release-image
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/registry-retention
+        with:
+          package-name: ${{ env.IMAGE_NAME }}
+          owner: ${{ github.repository_owner }}
+          keep-releases: "5"
+          token: ${{ secrets.GHCR_PAT }}

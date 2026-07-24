@@ -9,7 +9,6 @@ import {routes} from './app/app.routes'
 import {backendHandler} from './app/shared/util-authentication/handler/backend.handler'
 import {RegistryFacade} from './app/shared/util-common/state/registry.facade'
 import {UserFacade} from './app/domains/user/data/state/user.facade'
-import {provideAnimationsAsync} from '@angular/platform-browser/animations/async'
 import {
     RegistryNgxsUnhandledErrorHandler,
 } from './app/shared/util-config/handler/registry-ngxs-unhandled-error.handler'
@@ -31,7 +30,6 @@ import {IntervalPipe} from './app/shared/util-tool/pipe/interval.pipe'
     bootstrapApplication(AppComponent, {
         providers: [
             provideZoneChangeDetection({eventCoalescing: true}),
-            provideAnimationsAsync(),
             provideHttpClient(),
             provideHttpClient(withInterceptors([backendHandler])),
             provideRouter(routes),
