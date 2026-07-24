@@ -36,7 +36,7 @@
     "@eslint/js": "^10.0.1",
     "@ngxs/devtools-plugin": "^22.0.0",
     "eslint": "^10.0.1",
-    "typescript": "~6.0.3",
+    "typescript": "~7.0.2",
     "typescript-eslint": "^8.65.0"
   }
 }
