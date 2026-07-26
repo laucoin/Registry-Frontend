@@ -1,10 +1,12 @@
 name: Release
 
-# Runs on every merge to main (the DEV baseline). Tests are intentionally not
-# run here — branch protection guarantees the PR pipeline already validated it.
+# Runs on every merge to main (the DEV baseline). Lint/tests are intentionally
+# not run here — branch protection guarantees the PR pipeline already validated
+# it. The Dockerfile is self-contained (pnpm install + nuxt build happen inside
+# the image), so image jobs need no Node setup on the runner.
 on:
   push:
-    branches: [main]
+    branches: [ main ]
 
 concurrency:
   group: release-main
@@ -23,13 +25,6 @@ jobs:
       packages: write
     steps:
       - uses: actions/checkout@v7
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm build
       - uses: ./.github/actions/docker-publish
         with:
           registry: ${{ env.REGISTRY }}
@@ -53,9 +48,9 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
-          node-version: "22"
+          node-version: "24"
       - name: Semantic Release
         id: semantic
         uses: cycjimmy/semantic-release-action@v6
@@ -81,13 +76,6 @@ jobs:
       - uses: actions/checkout@v7
         with:
           ref: main             # pick up the package.json version bump just pushed
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm build
       - uses: ./.github/actions/docker-publish
         with:
           registry: ${{ env.REGISTRY }}

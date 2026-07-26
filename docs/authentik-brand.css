@@ -1,0 +1,166 @@
+/*
+ * Registry — SGDF brand styling for the authentik login flow.
+ *
+ * Paste into: authentik Admin → System → Brands → <your brand> → Custom CSS.
+ * See authentik-branding.md for the settings that must be changed alongside it
+ * (the theme in particular — this sheet assumes LIGHT).
+ *
+ * Written against authentik 2026.5. Every selector below was read off the live
+ * DOM of the running instance, not guessed:
+ *   .pf-c-login__main / __header / __footer   the card and its chrome
+ *   .pf-c-login__main-header.pf-c-brand       the logo row
+ *   h1.pf-c-title.pf-m-3xl                    "Welcome to …"
+ *   .pf-c-form__label / __label-text          field labels
+ *   input.pf-c-form-control                   the text fields
+ *   button.pf-c-button.pf-m-primary           the submit button
+ *
+ * WHY CLASS SELECTORS: the flow UI is PatternFly inside nested shadow roots
+ * (ak-flow-executor → ak-stage-identification → ak-flow-card) styled through
+ * adoptedStyleSheets. CSS loaded into the document CANNOT reach those class
+ * names — that was verified. The Brand custom CSS field is a different delivery
+ * path: authentik injects it into the shadow roots, which is why the rules here
+ * are written as ordinary selectors rather than as custom properties.
+ *
+ * If after pasting NOTHING changes, that assumption is what broke: report back
+ * and the sheet gets rewritten against authentik's --ak-c-* token layer
+ * instead. Colour values below are the same ones the Nuxt app uses, so the two
+ * ends of the redirect stay in step (see app/assets/css/design.css).
+ */
+
+/* Brand seed. Only radius reliably inherits into the shadow roots on its own;
+   the rest is applied by rule below. */
+:root,
+:host {
+	--sgdf-navy: #003a5d;
+	--sgdf-navy-deep: #00293f;
+	--sgdf-mint-ink: #087b67;
+	--sgdf-surface: #ffffff;
+	--sgdf-surface-muted: #f4f7f9;
+	--sgdf-border: #c7d2d8;
+	--sgdf-text-muted: #526875;
+	--pf-global--BorderRadius--sm: 9px;
+}
+
+/* The card — white plate, soft navy-tinted shadow, 14px corners. Matches
+   `borderRadiusLG` and `--shadow-lg` in the app. */
+.pf-c-login__main {
+	background-color: var(--sgdf-surface);
+	border-radius: 14px;
+	box-shadow: 0 16px 40px rgb(0 58 93 / 14%);
+	border: 1px solid #d9e2e7;
+}
+
+.pf-c-login__main-header,
+.pf-c-login__main-body {
+	background-color: transparent;
+}
+
+/* The logo row. Give the mark room and keep it off the title. */
+.pf-c-login__main-header.pf-c-brand {
+	padding-block: 28px 8px;
+}
+
+.branding-logo {
+	max-height: 56px;
+	width: auto;
+}
+
+/* "Welcome to …" — the app's title treatment: heavy, tight, brand navy. */
+h1.pf-c-title,
+.pf-c-title.pf-m-3xl {
+	color: var(--sgdf-navy);
+	font-weight: 800;
+	letter-spacing: -0.03em;
+	line-height: 1.12;
+}
+
+/* Field labels sit close above their control, in navy at a heavy weight, so the
+   form reads as a stack of named slots. */
+.pf-c-form__label,
+.pf-c-form__label-text {
+	color: var(--sgdf-navy);
+	font-weight: 700;
+}
+
+.pf-c-form__group {
+	margin-block-end: 18px;
+}
+
+/* Fields — a real bordered box rather than authentik's underline, matching the
+   app's inputs so the two screens agree on what a text field looks like. */
+input.pf-c-form-control {
+	background-color: var(--sgdf-surface);
+	color: var(--sgdf-navy);
+	border: 1px solid var(--sgdf-border);
+	border-radius: 9px;
+	padding: 12px 14px;
+	min-height: 44px;
+	box-shadow: none;
+}
+
+input.pf-c-form-control:focus {
+	border-color: var(--sgdf-navy);
+	outline: 2px solid var(--sgdf-navy);
+	outline-offset: 2px;
+}
+
+input.pf-c-form-control::placeholder {
+	color: var(--sgdf-text-muted);
+	opacity: 1;
+}
+
+/* The submit button — flat navy plate, white text, 800 weight, no glow. */
+button.pf-c-button.pf-m-primary {
+	background-color: var(--sgdf-navy);
+	color: #ffffff;
+	border: 1px solid var(--sgdf-navy);
+	border-radius: 9px;
+	font-weight: 800;
+	min-height: 44px;
+	box-shadow: none;
+	transition: background-color 0.16s cubic-bezier(0.22, 1, 0.36, 1),
+	transform 0.16s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+button.pf-c-button.pf-m-primary:hover,
+button.pf-c-button.pf-m-primary:focus {
+	background-color: var(--sgdf-navy-deep);
+	border-color: var(--sgdf-navy-deep);
+	color: #ffffff;
+}
+
+button.pf-c-button.pf-m-primary:active {
+	transform: scale(0.98);
+}
+
+/* WCAG 2.4.7 — the focus ring must not be the same navy as the plate it lands
+   on, or it is a 1:1 indicator. White reads against the button. */
+button.pf-c-button.pf-m-primary:focus-visible {
+	outline: 2px solid #ffffff;
+	outline-offset: -4px;
+}
+
+/* Chrome around the card. The footer band picks up the app's second surface. */
+.pf-c-login__header {
+	padding-block-end: 20px;
+}
+
+.pf-c-login__footer {
+	color: var(--sgdf-text-muted);
+	background-color: transparent;
+}
+
+.pf-c-login__footer a {
+	color: var(--sgdf-mint-ink);
+}
+
+/* Reduced motion — the button transition is the only motion this sheet adds. */
+@media (prefers-reduced-motion: reduce) {
+	button.pf-c-button.pf-m-primary {
+		transition: none;
+	}
+
+	button.pf-c-button.pf-m-primary:active {
+		transform: none;
+	}
+}

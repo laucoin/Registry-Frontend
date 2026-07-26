@@ -1,0 +1,48 @@
+{
+  "defaultLanguage": "fr",
+  "languages": [
+    "fr",
+    "en"
+  ],
+  "theme": {
+    "colorPrimary": "#003a5d",
+    "colorInfo": "#0077b3",
+    "colorSuccess": "#087b67",
+    "colorError": "#b42318",
+    "colorTextDescription": "#526875",
+    "colorBgLayout": "#f4f7f9",
+    "borderRadius": 9,
+    "borderRadiusLG": 14,
+    "controlHeight": 44,
+    "fontSize": 16,
+    "fontFamily": "Sarabun, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif",
+    "dark": {
+      "colorPrimary": "#6ddcff",
+      "colorSuccess": "#65bc99",
+      "colorError": "#f97066",
+      "colorTextDescription": "rgba(255, 255, 255, 0.65)",
+      "colorLink": "#40a9ff",
+      "colorBgLayout": "#0f1013"
+    }
+  },
+  "enabledActions": [
+    "USER_UPDATE",
+    "USER_BLOCK",
+    "USER_UNBLOCK",
+    "USER_DELETE",
+    "PROJECT_SELECT_PROFILE",
+    "PROJECT_CREATE_SUPPORT_PROFILE",
+    "PROJECT_UPDATE",
+    "PROJECT_DISABLE",
+    "PROJECT_ENABLE",
+    "PROJECT_DELETE"
+  ],
+  "notification": {
+    "duration": {
+      "info": 5000,
+      "success": 3000,
+      "warn": 8000,
+      "error": 15000
+    }
+  }
+}

@@ -1,0 +1,106 @@
+diff --git a/es/tabs/src/TabNavList/index.js b/es/tabs/src/TabNavList/index.js
+index 30506c90e93e498ae6d2090e125e6c855576724c..1a2a2c8e7c17e7ba3b5ca03a843d6ace5c4401c1 100644
+--- a/es/tabs/src/TabNavList/index.js
++++ b/es/tabs/src/TabNavList/index.js
+@@ -482,7 +482,6 @@ export default defineComponent({
+         }, slots);
+       });
+       return _createVNode("div", {
+-        "role": "tablist",
+         "class": classNames(`${pre}-nav`, className),
+         "style": style,
+         "onKeydown": () => {
+@@ -509,6 +508,7 @@ export default defineComponent({
+         }, {
+           default: () => [_createVNode("div", {
+             "ref": tabListRef,
++            "role": "tablist",
+             "class": `${pre}-nav-list`,
+             "style": {
+               transform: `translate(${transformLeft.value}px, ${transformTop.value}px)`,
+diff --git a/es/vc-select/OptionList.js b/es/vc-select/OptionList.js
+index ac050a32e9d70a5f924f77c5450be348725add93..76d8f6f54015939dca1c8959fbd69a33e8e7a1e7 100644
+--- a/es/vc-select/OptionList.js
++++ b/es/vc-select/OptionList.js
+@@ -328,7 +328,6 @@ const OptionList = defineComponent({
+             optionTitle = title;
+           }
+           return _createVNode("div", _objectSpread(_objectSpread({}, passedProps), {}, {
+-            "aria-selected": selected,
+             "class": optionClassName,
+             "title": optionTitle,
+             "onMousemove": e => {
+diff --git a/es/vc-select/Selector/Input.js b/es/vc-select/Selector/Input.js
+index 64f547bc2943c4ecdca559dabff6226b2e31a0fb..0462eca659ce3f160e9784b926e8c58a8183ba62 100644
+--- a/es/vc-select/Selector/Input.js
++++ b/es/vc-select/Selector/Input.js
+@@ -116,12 +116,12 @@ const Input = defineComponent({
+         autofocus,
+         class: classNames(`${prefixCls}-selection-search-input`, (_a = inputNode === null || inputNode === void 0 ? void 0 : inputNode.props) === null || _a === void 0 ? void 0 : _a.class),
+         role: 'combobox',
+-        'aria-expanded': open,
++        'aria-expanded': !!open,
+         'aria-haspopup': 'listbox',
+-        'aria-owns': `${id}_list`,
++        'aria-owns': open ? `${id}_list` : null,
+         'aria-autocomplete': 'list',
+-        'aria-controls': `${id}_list`,
+-        'aria-activedescendant': activeDescendantId
++        'aria-controls': open ? `${id}_list` : null,
++        'aria-activedescendant': open ? activeDescendantId : null
+       }), attrs), {
+         value: editable ? value : '',
+         readonly: !editable,
+diff --git a/lib/tabs/src/TabNavList/index.js b/lib/tabs/src/TabNavList/index.js
+index e336b954d7b4d5f738f88616c7234b32da542fff..1376810e43c952df9fbb324de2e079ebae491439 100644
+--- a/lib/tabs/src/TabNavList/index.js
++++ b/lib/tabs/src/TabNavList/index.js
+@@ -489,7 +489,6 @@ var _default = exports.default = (0, _vue.defineComponent)({
+         }, slots);
+       });
+       return (0, _vue.createVNode)("div", {
+-        "role": "tablist",
+         "class": (0, _classNames.default)(`${pre}-nav`, className),
+         "style": style,
+         "onKeydown": () => {
+@@ -516,6 +515,7 @@ var _default = exports.default = (0, _vue.defineComponent)({
+         }, {
+           default: () => [(0, _vue.createVNode)("div", {
+             "ref": tabListRef,
++            "role": "tablist",
+             "class": `${pre}-nav-list`,
+             "style": {
+               transform: `translate(${transformLeft.value}px, ${transformTop.value}px)`,
+diff --git a/lib/vc-select/OptionList.js b/lib/vc-select/OptionList.js
+index 4909acdc5602196642ed563be5c6c519e5ef6255..cc5551eaec02f8add9222e7f1d4896aa86894ee9 100644
+--- a/lib/vc-select/OptionList.js
++++ b/lib/vc-select/OptionList.js
+@@ -334,7 +334,6 @@ const OptionList = (0, _vue.defineComponent)({
+             optionTitle = title;
+           }
+           return (0, _vue.createVNode)("div", (0, _objectSpread2.default)((0, _objectSpread2.default)({}, passedProps), {}, {
+-            "aria-selected": selected,
+             "class": optionClassName,
+             "title": optionTitle,
+             "onMousemove": e => {
+diff --git a/lib/vc-select/Selector/Input.js b/lib/vc-select/Selector/Input.js
+index a17dd83d5909fd21f5d311a384703963ddb1660d..8c82775d13b818e009723e2c684e9cb934197a87 100644
+--- a/lib/vc-select/Selector/Input.js
++++ b/lib/vc-select/Selector/Input.js
+@@ -122,12 +122,12 @@ const Input = (0, _vue.defineComponent)({
+         autofocus,
+         class: (0, _classNames.default)(`${prefixCls}-selection-search-input`, (_a = inputNode === null || inputNode === void 0 ? void 0 : inputNode.props) === null || _a === void 0 ? void 0 : _a.class),
+         role: 'combobox',
+-        'aria-expanded': open,
++        'aria-expanded': !!open,
+         'aria-haspopup': 'listbox',
+-        'aria-owns': `${id}_list`,
++        'aria-owns': open ? `${id}_list` : null,
+         'aria-autocomplete': 'list',
+-        'aria-controls': `${id}_list`,
+-        'aria-activedescendant': activeDescendantId
++        'aria-controls': open ? `${id}_list` : null,
++        'aria-activedescendant': open ? activeDescendantId : null
+       }), attrs), {
+         value: editable ? value : '',
+         readonly: !editable,

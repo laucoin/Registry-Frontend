@@ -1,8 +1,12 @@
-# The image only needs nginx.conf and dist/browser — keep the context small.
+# Never ship local state or secrets into the build context
 .git
-.github
+.env
+.env.*
 node_modules
-.angular
-src
-public
-*.md
+.nuxt
+.output
+coverage
+Dockerfile
+.dockerignore
+*.iml
+.idea

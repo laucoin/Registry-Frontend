@@ -1,0 +1,766 @@
+{
+  "app": {
+    "title": "Registry",
+    "skipToContent": "Skip to main content"
+  },
+  "nav": {
+    "home": "Home",
+    "account": "My account",
+    "main": "Main navigation",
+    "projects": "Projects",
+    "users": "Users",
+    "menu": "Menu",
+    "userMenu": "Account menu"
+  },
+  "auth": {
+    "login": "Log in",
+    "logout": "Log out",
+    "authenticatedAs": "Logged in as {name}"
+  },
+  "preferences": {
+    "theme": {
+      "label": "Theme",
+      "system": "System",
+      "light": "Light",
+      "dark": "Dark"
+    },
+    "language": {
+      "label": "Language"
+    }
+  },
+  "home": {
+    "welcome": "Welcome to Registry",
+    "description": "Virtual registry management — projects, participants, movements and communications.",
+    "loginPrompt": "Log in to access your registries.",
+    "eyebrow": "Presence registry",
+    "pillars": {
+      "projects": {
+        "title": "Projects",
+        "text": "Organise access and rosters by project."
+      },
+      "participants": {
+        "title": "Participants",
+        "text": "Keep track of who is expected on site."
+      },
+      "movements": {
+        "title": "Movements",
+        "text": "Log entries and exits as they happen."
+      },
+      "alerts": {
+        "title": "Alerts",
+        "text": "Flag incidents and follow them through."
+      }
+    },
+    "idpDown": {
+      "title": "Sign-in unavailable",
+      "text": "The identity provider is not responding, so Registry cannot sign you in right now. Registry itself is fine — try again in a few minutes or contact your administrator."
+    }
+  },
+  "account": {
+    "title": "My account",
+    "backendUser": "User profile (API)",
+    "refresh": "Refresh",
+    "loadError": "Could not load the user profile.",
+    "name": "Name",
+    "role": "Role",
+    "preferences": "Preferences",
+    "technical": "Technical details (developers)",
+    "languages": {
+      "fr": "Français",
+      "en": "English"
+    },
+    "delete": {
+      "title": "Delete my account",
+      "action": "Delete my account",
+      "explanation": "Deletion is permanent. Your account, your preferences and your project access all go. What you created inside projects stays, no longer naming an author. If you sign in again later, a new account is created, with none of your current access.",
+      "confirm": "This cannot be undone. Delete your account and sign out?",
+      "failed": "The account was not deleted"
+    }
+  },
+  "errorPage": {
+    "notFound": "Page not found.",
+    "forbidden": "Access denied.",
+    "generic": "Something went wrong.",
+    "backHome": "Back to home"
+  },
+  "common": {
+    "create": "Create",
+    "cancel": "Cancel",
+    "next": "Next",
+    "back": "Back",
+    "delete": "Delete",
+    "options": "Options",
+    "searchFilter": "Search & filter",
+    "lastRefresh": "Last refresh on {date} at {time}",
+    "list": {
+      "loadMore": "Load more",
+      "loaded": "{loaded} of {total} results shown",
+      "allLoaded": "All {total} results are shown"
+    },
+    "loadError": "Loading failed.",
+    "reconnect": "Sign in again",
+    "serviceUnavailable": "Service temporarily unavailable. Please try again shortly.",
+    "disable": "Disable",
+    "enable": "Enable",
+    "add": "Add",
+    "remove": "Remove",
+    "notFuture": "This date can’t be in the future.",
+    "edit": "Edit",
+    "save": "Save",
+    "date": "Date",
+    "time": "Time",
+    "fewSeconds": "a few seconds",
+    "sessionExpired": "Your session has expired. Signing you in again…",
+    "departureBeforeArrival": "The departure date cannot be earlier than the arrival date.",
+    "inDuration": "in {duration}",
+    "sinceDuration": "{duration} ago",
+    "search": "Search",
+    "searchBy": "Search by {fields}",
+    "sortBy": "Sort by",
+    "sortByRelevance": "Results are ordered by relevance while a search is active.",
+    "tooLong": "This field is limited to {limit} characters.",
+    "hours": "Hours",
+    "minutes": "Minutes",
+    "hourShort": "HH",
+    "minuteShort": "MM",
+    "longDelete": {
+      "warning": "Deleting can take a few minutes. Please leave this window open.",
+      "movements": "Deleting the movements…",
+      "communications": "Deleting the communications…",
+      "alerts": "Deleting the alerts…",
+      "participants": "Deleting the participants…",
+      "groups": "Deleting the groups…",
+      "vehicles": "Deleting the vehicles…",
+      "activities": "Deleting the activities…",
+      "members": "Deleting the access rights…",
+      "finishing": "Finishing up…"
+    },
+    "idCopied": "Identifier copied.",
+    "emailCopied": "Email copied.",
+    "copyIdHint": "Double-click (or long press) to copy the technical identifier",
+    "copyEmailHint": "Double-click (or long press) to copy the email address",
+    "viewAllParticipants": "View all participants",
+    "viewAllVehicles": "View all vehicles",
+    "noResult": "No result.",
+    "searchSort": "Search & sort",
+    "searchSortFilter": "Search, sort & filter",
+    "sortDirection": "Direction"
+  },
+  "projects": {
+    "title": "Projects",
+    "welcomeTitle": "🚀 Welcome to Registry!",
+    "welcomeText": "This site helps you manage your participants’ entries and exits. For each project you can create access profiles, manage movements, follow activities and more.",
+    "createFirst": "Create my first project",
+    "createTitle": "Create a project",
+    "step": {
+      "informations": "Informations",
+      "options": "Options"
+    },
+    "form": {
+      "name": "Name",
+      "namePlaceholder": "E.g.: Camp D.F.C.I. Pionniers-Caravelles",
+      "begin": "Start date & time",
+      "end": "End date & time",
+      "beginDate": "Start date (optional)",
+      "beginTime": "Start time (optional)",
+      "endDate": "End date (optional)",
+      "endTime": "End time (optional)",
+      "selectAll": "Select all",
+      "nameRequired": "The name is required.",
+      "dateOrder": "The end date must be after the start date.",
+      "dateRequiredForTime": "A start/end time also needs its date.",
+      "deselectAll": "Deselect all"
+    },
+    "option": {
+      "VEHICLE": "Does the project need to track vehicles (entry, exit, driver)? (Vehicles)",
+      "ACTIVITY": "Will the project offer off-site activities to follow? (Activities)",
+      "COMMUNICATION": "Does the project need to isolate activity-related communications? (Communications)",
+      "ALERT": "Does the project need to manage alerts? (Alerts)"
+    },
+    "deleteConfirm": "Delete project “{name}”? This cannot be undone.",
+    "disable": "Disable",
+    "enable": "Enable",
+    "disabled": "Disabled",
+    "disableConfirm": "Disable “{name}”? Members lose access until you re-enable it.",
+    "from": "From",
+    "to": "to",
+    "open": "Open",
+    "editTitle": "Edit project",
+    "disabledHint": "This project is disabled. An administrator must re-enable it before it can be opened."
+  },
+  "users": {
+    "title": "Users",
+    "status": {
+      "active": "Active",
+      "blocked": "Blocked"
+    },
+    "editRole": "Edit role",
+    "block": "Block",
+    "unblock": "Unblock",
+    "deleteConfirm": "Delete {name}? This cannot be undone.",
+    "form": {
+      "roleRequired": "A role is required.",
+      "rolePlaceholder": "Select a role"
+    },
+    "firstName": "First name",
+    "lastName": "Last name",
+    "email": "Email"
+  },
+  "projectNav": {
+    "dashboard": "Dashboard",
+    "current": "Currently out",
+    "participants": "Participants",
+    "groups": "Groups",
+    "movements": "Movements",
+    "vehicles": "Vehicles",
+    "activities": "Activities",
+    "alerts": "Alerts",
+    "breadcrumb": "Project breadcrumb",
+    "members": "Members",
+    "settings": "Settings",
+    "editProject": "Edit the project"
+  },
+  "participants": {
+    "empty": "No participants yet.",
+    "add": "Add participant",
+    "deleteConfirm": "Delete participant “{name}”? This cannot be undone.",
+    "form": {
+      "firstName": "First name",
+      "lastName": "Last name",
+      "birthday": "Date of birth",
+      "required": "First name, last name and date of birth are required.",
+      "user": "Linked user (optional)",
+      "userPlaceholder": "Search a user…",
+      "groups": "Groups (optional)",
+      "groupsPlaceholder": "Search groups…",
+      "startAvailability": "Available from (optional)",
+      "endAvailability": "Available until (optional)"
+    },
+    "edit": "Edit participant"
+  },
+  "groups": {
+    "empty": "No groups yet.",
+    "members": "{count} member(s)",
+    "add": "Add group",
+    "deleteConfirm": "Delete group “{name}”?",
+    "manageMembers": "Members",
+    "membersOf": "Members of “{name}”",
+    "addMembers": "Add participants",
+    "searchParticipants": "Search a participant…",
+    "noMembers": "No members yet.",
+    "removeMember": "Remove {name}",
+    "form": {
+      "name": "Name",
+      "required": "A name and at least one member are required.",
+      "loadFailed": "This group could not be loaded, so it cannot be edited right now. Close this panel and try again.",
+      "members": "Members",
+      "startAvailability": "Available from (optional)",
+      "endAvailability": "Available until (optional)"
+    },
+    "edit": "Edit group"
+  },
+  "movements": {
+    "empty": "No movements yet.",
+    "add": "Record a movement",
+    "deleteConfirm": "Delete this movement?",
+    "type": {
+      "in": "Entry",
+      "out": "Exit"
+    },
+    "form": {
+      "type": "Type",
+      "dateTime": "Date & time",
+      "participants": "Participants",
+      "participantsPlaceholder": "Search a participant…",
+      "required": "Date and at least one participant are required; an exit needs a reason or an activity.",
+      "motive": "Reason or activity",
+      "motivePlaceholder": "Choose a reason or an activity…",
+      "optional": "(optional)",
+      "contentDetails": "Per-participant details",
+      "vehiclePlaceholder": "Vehicle (optional)",
+      "vehicleFor": "Vehicle for {name}",
+      "addGroup": "Add a group",
+      "addGroupPlaceholder": "Add a group’s members…",
+      "activity": "Activity"
+    },
+    "guest": {
+      "add": "Guest movement",
+      "tag": "Guest",
+      "people": "Guests (new)",
+      "addPerson": "Add a guest",
+      "birthdayFor": "Birth date of guest {position}",
+      "existing": "Guests on site",
+      "existingPlaceholder": "Search a guest on site…",
+      "required": "Date is required; an entry needs a reason.",
+      "guestsRequired": "Add at least one guest (first name, last name and birth date).",
+      "contentRequired": "Select at least one guest on site."
+    },
+    "details": {
+      "title": "Movement details",
+      "view": "Details",
+      "empty": "No participants recorded in this movement.",
+      "loading": "Loading…",
+      "all": "All ({n})",
+      "adults": "Adults ({n})",
+      "minors": "Minors ({n})",
+      "driver": "Driver"
+    },
+    "warning": {
+      "capacity": {
+        "over": "This movement exceeds the activity capacity: {count} participants for a maximum of {limit}.",
+        "under": "This movement is below the activity minimum: {count} participants for a minimum of {limit}."
+      },
+      "alreadyThere": {
+        "IN": "Already on site: {names}. This entry will not change their presence.",
+        "OUT": "Already out: {names}. This exit will not change their presence."
+      }
+    },
+    "seed": {
+      "groupUnavailable": "This group has nobody to move in this direction right now. Fill the form in manually.",
+      "participantUnavailable": "This person cannot be moved in this direction right now. Fill the form in manually.",
+      "participantsUnavailable": "None of the {count} selected people can be moved that way right now. Fill the form in by hand.",
+      "participantsPartial": "{count} selected people cannot be moved that way and were left out of the form."
+    }
+  },
+  "vehicles": {
+    "empty": "No vehicles yet.",
+    "add": "Add vehicle",
+    "deleteConfirm": "Delete vehicle “{name}”?",
+    "form": {
+      "licensePlate": "License plate",
+      "brand": "Brand",
+      "model": "Model",
+      "required": "Plate, brand and model are required.",
+      "startAvailability": "Available from (optional)",
+      "endAvailability": "Available until (optional)"
+    },
+    "edit": "Edit vehicle"
+  },
+  "activities": {
+    "empty": "No activities yet.",
+    "add": "Add activity",
+    "deleteConfirm": "Delete activity “{name}”?",
+    "form": {
+      "name": "Name",
+      "description": "Description (optional)",
+      "required": "The name is required.",
+      "startAvailability": "Available from (optional)",
+      "endAvailability": "Available until (optional)",
+      "allowedParticipants": "Allowed participants (optional)",
+      "duration": "Planned duration",
+      "durationHours": "Hours",
+      "durationMinutes": "Minutes",
+      "minParticipants": "Minimum",
+      "maxParticipants": "Maximum",
+      "allowedParticipantsHint": "How many participants this activity expects (minimum and maximum)."
+    },
+    "edit": "Edit activity"
+  },
+  "alerts": {
+    "empty": "No alerts yet.",
+    "add": "Create alert",
+    "deleteConfirm": "Delete alert “{title}”?",
+    "action": {
+      "resolve": "Resolve",
+      "cancel": "Cancel alert",
+      "reopen": "Reopen"
+    },
+    "form": {
+      "title": "Title",
+      "message": "Message (optional)",
+      "required": "Title and date are required.",
+      "dateTime": "Date & time"
+    },
+    "edit": "Edit alert"
+  },
+  "dashboard": {
+    "favorite": {
+      "add": "Add to favorites",
+      "remove": "Remove from favorites"
+    },
+    "home": {
+      "favorites": {
+        "title": "Starred projects",
+        "empty": "Star a project to pin it here."
+      },
+      "openAlerts": {
+        "title": "Projects with open alerts",
+        "empty": "No open alerts across your projects.",
+        "count": "{count} open"
+      },
+      "invitationsReceived": {
+        "title": "Invitations received",
+        "empty": "No pending invitations.",
+        "accept": "Accept",
+        "reject": "Decline"
+      },
+      "invitationsSent": {
+        "title": "Invitations sent",
+        "empty": "No recent invitations sent."
+      }
+    },
+    "overview": {
+      "viewAll": "View all",
+      "presence": {
+        "title": "Participant presence",
+        "inside": "Inside",
+        "outside": "Outside",
+        "guests": "Guests",
+        "detail": "Presence in detail",
+        "guest": "Guest",
+        "guestCount": "{count} guest(s) in this list."
+      },
+      "vehicles": {
+        "title": "Vehicle presence",
+        "present": "Present",
+        "absent": "Absent",
+        "detail": "Vehicles"
+      },
+      "arrivals": {
+        "title": "Arriving today",
+        "empty": "No one scheduled to arrive today.",
+        "record": "Record {name}'s arrival"
+      },
+      "departures": {
+        "title": "Departing today",
+        "empty": "No one scheduled to leave today.",
+        "record": "Record {name}'s departure"
+      },
+      "birthdays": {
+        "title": "Birthdays today",
+        "empty": "No birthdays today."
+      },
+      "alerts": {
+        "title": "Active alerts",
+        "empty": "No active alerts."
+      },
+      "ongoing": {
+        "title": "Ongoing activity outings",
+        "activity": "Activity",
+        "lastContact": "since last contact",
+        "noContact": "no contact yet",
+        "hm": "{h}h {m}",
+        "m": "{m}m",
+        "overrun": "Over by {duration}"
+      },
+      "groupMembers": "{count} members",
+      "navigate": "Project sections",
+      "anomalies": {
+        "title": "Availability anomalies",
+        "lead": "Still engaged past their window",
+        "empty": "Nobody is engaged past their availability window.",
+        "review": "Review them"
+      }
+    }
+  },
+  "members": {
+    "empty": "No members yet.",
+    "invite": "Invite",
+    "editTitle": "Edit member",
+    "block": "Block",
+    "unblock": "Unblock",
+    "deleteConfirm": "Remove {name} from the project?",
+    "form": {
+      "users": "Users",
+      "usersPlaceholder": "Search users…",
+      "role": "Role",
+      "rolePlaceholder": "Select a role",
+      "startAccess": "Access from (optional)",
+      "endAccess": "Access until (optional)",
+      "required": "A user (or an email address) and a role are required.",
+      "emails": "Invite by email",
+      "emailsPlaceholder": "name{'@'}example.org",
+      "emailAdd": "Add this address",
+      "emailInvalid": "That email address is not valid.",
+      "emailsHint": "An unknown address creates an invitation: the person will find it on their first sign-in.",
+      "name": "Name",
+      "email": "Email"
+    }
+  },
+  "filters": {
+    "type": "Type",
+    "status": "Status",
+    "visibility": "Visibility",
+    "all": "All",
+    "visible": "Active",
+    "hidden": "Hidden",
+    "currentOnly": "In progress only",
+    "presence": {
+      "IN": "Present",
+      "OUT": "Away",
+      "UNAVAILABLE": "Unavailable",
+      "DEPARTED": "Departed"
+    },
+    "ptype": {
+      "REGISTERED": "Registered",
+      "GUEST": "Guest"
+    },
+    "alert": {
+      "IN_PROGRESS": "In progress",
+      "RESOLVED": "Resolved",
+      "CANCELED": "Canceled"
+    },
+    "profile": {
+      "INVITED": "Invited",
+      "ACCEPTED": "Accepted",
+      "REJECTED": "Rejected",
+      "BLOCKED": "Blocked"
+    }
+  },
+  "history": {
+    "action": "History",
+    "title": "Movement history — {name}",
+    "empty": "No movements yet",
+    "driver": "Driver: {name}"
+  },
+  "thread": {
+    "button": "Discussions",
+    "title": "Movement discussion",
+    "empty": "No messages yet.",
+    "compose": "New message",
+    "editing": "Editing message",
+    "placeholder": "Write a message…",
+    "at": "Date & time",
+    "send": "Send",
+    "edited": "edited",
+    "required": "A message and date are required.",
+    "deleteConfirm": "Delete this message?",
+    "loading": "Loading…",
+    "voice": {
+      "label": "Speak",
+      "own": "As myself",
+      "movement": "As the movement",
+      "attachMovement": "On behalf of a movement (ongoing activity) (optional)",
+      "attachMovementPlaceholder": "Search an ongoing outing…"
+    },
+    "beforeMovement": "A message cannot be earlier than the movement it concerns.",
+    "escalate": {
+      "label": "Alert",
+      "none": "None",
+      "existing": "Attach to an alert",
+      "new": "Raise an alert",
+      "pickAlert": "Alert to attach to",
+      "pickAlertPlaceholder": "Search for an alert…",
+      "alertTitle": "Alert title",
+      "alertTitlePlaceholder": "Describe the incident in a few words",
+      "titleRequired": "A title is required to raise the alert.",
+      "alertRequired": "Choose the alert to attach this message to."
+    }
+  },
+  "presenceBoard": {
+    "empty": "Nobody is expected on site right now.",
+    "ungrouped": "No group",
+    "select": "Select {name}",
+    "selected": "{count} selected",
+    "recordIn": "Record an entry",
+    "recordOut": "Record an exit",
+    "clear": "Clear the selection",
+    "summary": "{inside} in · {outside} out",
+    "view": {
+      "list": "List",
+      "groups": "Groups"
+    }
+  },
+  "projectHome": {
+    "emptyActivities": "No activity outing in progress.",
+    "sinceDeparture": "since departure",
+    "participantCount": "{count} out",
+    "moreParticipants": "+{count} more",
+    "lastContactBy": "last contact by {name}"
+  },
+  "footer": {
+    "label": "Legal information",
+    "legal": "Legal notice",
+    "privacy": "Privacy policy",
+    "accessibility": "Accessibility",
+    "copyright": "© 2026 Luc Aucoin"
+  },
+  "legal": {
+    "title": "Legal notice",
+    "intro": "Information provided under article 6 of French law no. 2004-575 of 21 June 2004 on confidence in the digital economy (LCEN).",
+    "editor": {
+      "title": "Site publisher",
+      "text": "Registry is a personal, non-commercial project published by Luc Aucoin.",
+      "contact": "Contact:",
+      "docs": "Documentation:"
+    },
+    "director": {
+      "title": "Publication director",
+      "text": "The publication director is Luc Aucoin."
+    },
+    "hosting": {
+      "title": "Hosting provider",
+      "phone": "Phone:",
+      "unavailable": "Hosting provider details are not configured on this instance. Contact the publisher to obtain them."
+    },
+    "ip": {
+      "title": "Intellectual property",
+      "text": "Unless stated otherwise, the contents of this site (texts, interface, logo) are the property of their author. Any reproduction or reuse without prior permission is prohibited."
+    },
+    "credits": {
+      "title": "Credits",
+      "intro": "Media used in this application, and who they belong to:",
+      "photography": "Home page photograph: Bastien LE CAER.",
+      "logo": "Scouts et Guides de France logo: property of the Scouts et Guides de France association.",
+      "defaultLogo": "Application default logo: image generated by artificial intelligence with Google Gemini (“Nano Banana”)."
+    }
+  },
+  "privacy": {
+    "title": "Privacy policy",
+    "updated": "Last updated: 4 August 2026",
+    "intro": "This policy describes the personal data processed by Registry, the purposes pursued, the retention periods and your rights, in accordance with Regulation (EU) 2016/679 (GDPR).",
+    "controller": {
+      "title": "Data controller",
+      "text": "Registry involves two distinct processing activities. For the account data of the people who use the application, the data controller is Luc Aucoin. For the data of participants recorded in the registers, the data controller is the project organiser who records them, the publisher acting solely as a processor: see the \"Participant data\" section below.",
+      "contact": "Contact:"
+    },
+    "participants": {
+      "title": "Participant data",
+      "intro": "A register holds data about people who do not use the application and have no account on it: participants. That data is entered by the project organiser. Registry processes the following on their behalf:",
+      "identity": "Identity: last name, first name, date of birth, and the resulting minor or adult status.",
+      "presence": "Presence: timestamped entries and exits, their reasons, and the groups and activities they are attached to.",
+      "vehicles": "Vehicles, where associated: licence plate, make and model.",
+      "communications": "Communications: free-text messages written by the organiser and attached to a movement.",
+      "roles": {
+        "title": "Roles and responsibilities",
+        "organiser": "The organiser who creates a project and records participants in it determines the purposes and means of that processing: they are the controller within the meaning of article 4(7) GDPR.",
+        "publisher": "The publisher of Registry acts as a processor within the meaning of article 28 GDPR: it processes that data only to provide the service, on the organiser's instructions, uses it for no other purpose, discloses it to no third party, and applies the security measures described in this policy. The hosting provider named in the legal notice is the only sub-processor."
+      },
+      "consent": {
+        "title": "Informing participants and obtaining their consent",
+        "text": "It is the organiser's responsibility, not the publisher's, to have a lawful basis for recording a participant, to inform that participant of the processing, and to obtain their prior consent where consent is the lawful basis relied upon. By creating a project and entering participants into it, the organiser declares that they have met these obligations.",
+        "noVerification": "The publisher has no contact with participants and is not in a position to verify that this information was given or that this consent was obtained.",
+        "minors": "Where the participant is a minor, consent must be obtained from the holder of parental authority, in accordance with article 8 GDPR and article 45 of the French Data Protection Act, which sets that threshold at 15 years of age in France."
+      },
+      "rights": {
+        "title": "How participants exercise their rights",
+        "text": "A participant wishing to exercise their rights of access, rectification, erasure, restriction or objection must contact the organiser of the project that recorded them, who is the sole controller of that processing. A request sent to the publisher will be directed to that organiser, as the publisher is not entitled to answer it itself."
+      }
+    },
+    "data": {
+      "title": "Data collected",
+      "intro": "For the people who use the application, Registry only processes the data needed for it to work (participant data is covered in the previous section):",
+      "identity": "Account data: name, email address, date of birth.",
+      "usage": "Usage data: last-login date and audit identifiers (created by, modified by) attached to records.",
+      "telemetry": "Technical telemetry, for signed-in users only: performance indicators (Core Web Vitals) and JavaScript errors, associated with the page path only — never with URL parameters or entered data. The IP address is used transiently for rate limiting and is not stored."
+    },
+    "purposes": {
+      "title": "Purposes and legal bases",
+      "intro": "Each processing activity relies on a legal basis from article 6 of the GDPR:",
+      "service": "Providing the service (account, authentication, registry management) — performance of a contract (art. 6.1.b).",
+      "security": "Securing the application (sessions, rate limiting, audit trail) — legitimate interest (art. 6.1.f).",
+      "telemetry": "Measuring technical performance and detecting errors — legitimate interest (art. 6.1.f).",
+      "preferences": "Remembering your display preferences (theme, language) — stored only at your explicit request."
+    },
+    "retention": {
+      "title": "Retention periods",
+      "text": "User accounts and project data are automatically purged after 12 months of inactivity. Participant data is kept for the lifetime of the project it belongs to and is deleted with it; it is for the organiser to keep it only as long as their own purpose requires and to delete the project once that purpose is met. Cookies have the lifetimes listed in the table below."
+    },
+    "rights": {
+      "title": "Your rights",
+      "intro": "You have the following rights over your personal data:",
+      "access": "right of access to your data;",
+      "rectification": "right to rectification;",
+      "erasure": "right to erasure: you can delete your account directly from the \"My account\" page;",
+      "restriction": "right to restriction of processing;",
+      "objection": "right to object;",
+      "portability": "right to data portability: no automated export is available yet, please send your request by email;",
+      "exercise": "To exercise these rights, write to:",
+      "complaint": "You may also lodge a complaint with the CNIL (the French data protection authority):"
+    },
+    "cookies": {
+      "title": "Cookies",
+      "intro": "Registry uses no third-party cookies, no advertising trackers and no external audience-measurement tool.",
+      "noBanner": "No consent banner is required: only cookies strictly necessary for the service are used, plus functional cookies set only after an explicit action on your part (choosing a theme or language) — all exempt from consent under the CNIL guidelines.",
+      "tableCaption": "Inventory of cookies used by Registry",
+      "colName": "Name",
+      "colPurpose": "Purpose",
+      "colDuration": "Lifetime",
+      "colType": "Type",
+      "typeEssential": "Essential",
+      "typeFunctional": "Functional",
+      "rows": {
+        "session": {
+          "purpose": "Authenticated session (sealed, httpOnly)",
+          "duration": "8 h maximum, expires after 30 min of inactivity"
+        },
+        "idt": {
+          "purpose": "Identity token tied to the session (sealed, httpOnly)",
+          "duration": "Same as the session"
+        },
+        "loginFlow": {
+          "purpose": "Temporary login-flow state (sealed, httpOnly)",
+          "duration": "10 minutes"
+        },
+        "loginRetry": {
+          "purpose": "Protection against login redirect loops (httpOnly)",
+          "duration": "2 minutes"
+        },
+        "preferences": {
+          "purpose": "Your theme and language preferences, stored at your request",
+          "duration": "1 year"
+        },
+        "systemDark": {
+          "purpose": "Remembers the system dark-mode hint for flicker-free rendering",
+          "duration": "1 year"
+        }
+      }
+    }
+  },
+  "accessibilityPage": {
+    "title": "Accessibility statement",
+    "intro": "Registry is committed to making its application accessible. The target standard is WCAG 2.2 (Web Content Accessibility Guidelines) level AA.",
+    "status": {
+      "title": "Conformance status",
+      "text": "Registry is partially compliant with WCAG 2.2 level AA. Every non-conformity identified so far has been fixed, including those originating in third-party components, and the automated tests now run with no rule disabled. Full conformance will only be declared once the manual audit described below has been carried out."
+    },
+    "exceptions": {
+      "title": "Known limitations",
+      "manualAudit": "the manual keyboard and screen-reader audit (NVDA, VoiceOver) of the critical journeys is still outstanding: automated tests cover only part of the criteria, so this audit is what full conformance depends on;",
+      "thirdParty": "third-party components (Ant Design Vue) are corrected by a patch maintained in the repository; a regression reintroduced by an upgrade would be caught by the automated tests before release."
+    },
+    "testing": {
+      "title": "Preparation of this statement",
+      "text": "This statement was prepared on 4 August 2026. It relies on automated tests (axe-core) run continuously across the full WCAG 2.2 A and AA rule set, with no waivers, blocking any serious or critical regression."
+    },
+    "feedback": {
+      "title": "Feedback and contact",
+      "text": "If you encounter an accessibility barrier on Registry, please report it by email:"
+    }
+  },
+  "sort": {
+    "name": "Name",
+    "lastName": "Last name",
+    "firstName": "First name",
+    "birthday": "Date of birth",
+    "dateTime": "Date",
+    "type": "Type",
+    "reason": "Reason",
+    "status": "Status",
+    "title": "Title",
+    "licensePlate": "Licence plate",
+    "brand": "Brand",
+    "model": "Model",
+    "duration": "Duration",
+    "startAvailability": "Availability start",
+    "endAvailability": "Availability end",
+    "email": "Email",
+    "role": "Role",
+    "lastLogin": "Last sign-in",
+    "beginDate": "Start date",
+    "endDate": "End date",
+    "direction": {
+      "asc": "Ascending",
+      "desc": "Descending"
+    }
+  },
+  "projectQuickActions": {
+    "label": "Quick actions"
+  },
+  "presence": {
+    "availabilityWarning": {
+      "label": "Window closed",
+      "hint": "Their availability window has ended but the register still shows them engaged. Record the missing movement, or correct the dates."
+    }
+  }
+}

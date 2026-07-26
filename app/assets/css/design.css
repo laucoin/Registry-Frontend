@@ -1,0 +1,876 @@
+/*
+ * Design layer — the SGDF material + motion system.
+ *
+ * The Registry tracks presence: projects, people, entries and exits. The UI
+ * should feel like a calm, precise instrument, and it should look like the rest
+ * of the SGDF estate: the brand navy on a cool off-white canvas, one soft
+ * navy-tinted shadow instead of a stack of neutral greys, small consistent
+ * radii, and mint as the single supporting accent. Motion stays physical —
+ * things settle, lift and respond — but the surfaces themselves are flatter and
+ * more matter-of-fact than a glassy consumer app.
+ *
+ * Global (not scoped) because it dresses AntD's own class names and its
+ * portal-rendered nodes. AntD tokens still own component internals;
+ * this layer adds material (shadow/border/radius) and motion on top.
+ */
+
+:root {
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+    --dur-1: 0.16s;
+    --dur-2: 0.3s;
+    --dur-3: 0.5s;
+
+    /* Type — Sarabun carries the text, Raleway the titles (faces in fonts.css).
+       The system stack stays behind both: it is what paints during `swap`, and
+       what a blocked/failed font request falls back to permanently. */
+    --font-body: 'Sarabun', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+    --font-title: 'Raleway', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+
+    /* Material — one soft shadow in three depths, tinted with the brand navy
+       rather than neutral black, so a raised surface reads as lit from the same
+       place as everything else on the canvas. The hairline is a real cool grey
+       (not a black alpha): it keeps its colour when it lands on the tinted
+       canvas as well as on white. */
+    --hairline: #d9e2e7;
+    --field-border: #c7d2d8;
+    --shadow-sm: 0 1px 2px rgb(0 58 93 / 6%);
+    --shadow-md: 0 8px 24px rgb(0 58 93 / 10%);
+    --shadow-lg: 0 16px 40px rgb(0 58 93 / 14%);
+
+    /* Mint — the one supporting accent, for eyebrows, success and "this is
+       live" marks. `--mint` is the brand tint (decoration only, it is well
+       under AA on white); `--mint-ink` is the darkened cut used for any mint
+       TEXT or glyph, and clears AA on both the white surface and the canvas. */
+    --mint: #65bc99;
+    --mint-ink: #087b67;
+
+    --header-bg: rgba(255, 255, 255, 0.72);
+    --surface: #ffffff;
+    --surface-muted: #f4f7f9;
+    /* Base text colour, matched to AntD's colorText. Set on <body> so bare
+       elements in PORTALED content (drawers, modals, dropdowns rendered under
+       <body>, outside the .ant-app wrapper that themes in-app text) stay legible
+       in both modes. AntD components still theme their own text. */
+    --ink: rgba(0, 0, 0, 0.88);
+    --accent: var(--primary);
+    --accent-ink: var(--primary);
+    --focus: var(--primary);
+    --primary-glow: color-mix(in srgb, var(--primary) 28%, transparent);
+    --nav-active: var(--primary);
+    --row-hover: rgba(0, 58, 93, 0.045);
+}
+
+:root[data-theme='dark'] {
+    --hairline: rgba(255, 255, 255, 0.09);
+    --field-border: rgba(255, 255, 255, 0.16);
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.45), 0 12px 32px rgba(0, 0, 0, 0.5);
+    --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.55), 0 24px 70px rgba(0, 0, 0, 0.6);
+    --header-bg: rgba(18, 19, 23, 0.62);
+    --surface: #17181c;
+    --surface-muted: #1c1e23;
+    --row-hover: rgba(255, 255, 255, 0.05);
+    --ink: rgba(255, 255, 255, 0.85);
+    /* The darkened mint cut is a ~4.3:1 hole on a near-black background; on dark
+       the brand tint itself is the legible one, so the two swap roles. */
+    --mint-ink: var(--mint);
+}
+
+/* AntD only styles its own `.ant-*` nodes, so bare elements in page/component
+   markup would fall back to the browser's serif default. Set the body face on
+   the root and smooth it. Mirrors the config `fontFamily` token. */
+html,
+body {
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+/* Titles wear Raleway, set tight and heavy. The size scale is deliberately
+   steep — a page title should announce the page, not blend into the first
+   paragraph — and negative tracking keeps the heavy weights from spreading:
+   the bigger the face, the more it is pulled back in.
+
+   `.ant-typography` and AntD's own heading classes are included so a <Typography.Title>
+   picks this up too; without them a page would carry two different title faces
+   depending on whether the heading came from markup or from a component. */
+h1,
+h2,
+h3,
+h4,
+.ant-typography h1,
+.ant-typography h2,
+.ant-typography h3,
+h1.ant-typography,
+h2.ant-typography,
+h3.ant-typography,
+h4.ant-typography,
+.ant-page-header-heading-title,
+.ant-drawer-title,
+.ant-modal-title,
+.ant-card-head-title {
+    font-family: var(--font-title);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+h1,
+.ant-typography h1,
+h1.ant-typography {
+    font-weight: 800;
+    font-size: clamp(1.75rem, 1.3rem + 1.8vw, 2.5rem);
+    line-height: 1.08;
+    letter-spacing: -0.035em;
+}
+
+h2,
+.ant-typography h2,
+h2.ant-typography {
+    font-size: clamp(1.35rem, 1.15rem + 0.9vw, 1.75rem);
+    line-height: 1.18;
+    letter-spacing: -0.03em;
+}
+
+/* The eyebrow — a small capitalised mint line that sits ABOVE a title and says
+   which part of the app the reader is in. It is decoration with words in it, so
+   it never carries meaning the title does not already carry; screen readers get
+   the title. Mint ink (not the tint) because it is text. */
+.eyebrow {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-family: var(--font-title);
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mint-ink);
+}
+
+/* Themed fallback text colour for bare elements in portaled overlays (drawers,
+   modals) that render outside AntD's .ant-app text context. */
+body {
+    color: var(--ink);
+}
+
+/* AntD's default placeholder token sits below WCAG AA on the form surfaces;
+   lift every placeholder to an AA-safe, theme-aware tint. */
+.ant-select-selection-placeholder,
+.ant-picker-input input::placeholder,
+.ant-input::placeholder,
+input::placeholder,
+textarea::placeholder {
+    /* !important: AntD's cssinjs sets the placeholder colour at higher
+       specificity, so the static rule alone is ignored. */
+    color: color-mix(in srgb, var(--ink) 66%, transparent) !important;
+    opacity: 1;
+}
+
+/* The header keeps its solid brand-navy bar in both light and dark themes.
+   `--app-header-h` is published so a full-height page (the signed-out entry
+   screen) can subtract the bar it sits under; it tracks the 32px logo plus the
+   bar's own padding and hairline. */
+:root {
+    --app-header-h: 69px;
+}
+
+.app-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--brand);
+    color: #fff;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* Light foreground for the whole bar + the mobile menu drawer (portal).
+   The drawer PANEL carries the colour, not just its links: the menu is
+   teleported to <body>, so anything inside it that resolves `color: inherit`
+   (the native theme/language selects) would otherwise walk past the bar
+   entirely and land on `body { color: var(--ink) }` — near-black on the navy
+   panel in light mode, and invisible. Setting it on the panel makes the drawer
+   inherit the same way the bar does. */
+.app-header,
+.app-header a,
+.app-header .header-nav nav a,
+.app-header__menu .ant-drawer-content,
+.app-header__menu .header-nav nav a {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.app-header .header-nav nav a:hover,
+.app-header .header-nav nav a.router-link-active,
+.app-header__menu .header-nav nav a:hover,
+.app-header__menu .header-nav nav a.router-link-active {
+    color: #fff;
+}
+
+.app-header .header-nav__select,
+.app-header__menu .header-nav__select {
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.35);
+}
+
+.app-header .header-nav__select option {
+    color: initial;
+}
+
+/* The avatar's navy plate IS the bar's own colour (both are the config
+   `colorPrimary`, and the bar keeps it in dark too), so in the header it was a
+   navy disc on navy — a trigger with no edge. It wears the same translucent
+   chip the identity tag does, with a light ring so its shape is legible: white
+   initials clear AA on the composited plate, and the ring clears the 3:1
+   non-text floor against the bar. */
+.app-header .header-nav__avatar .entity-avatar {
+    background-color: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    color: #fff;
+}
+
+/* Primary buttons (e.g. Login) invert to white-on-navy so they read on the bar;
+   danger (Logout) keeps its red. The burger button goes light too. */
+.app-header .ant-btn-primary:not(.ant-btn-dangerous),
+.app-header__menu .ant-btn-primary:not(.ant-btn-dangerous) {
+    background: #fff;
+    color: var(--brand);
+    border-color: #fff;
+}
+
+.app-header .ant-btn-primary:not(.ant-btn-dangerous):hover,
+.app-header__menu .ant-btn-primary:not(.ant-btn-dangerous):hover {
+    background: rgba(255, 255, 255, 0.88);
+    color: var(--brand);
+    border-color: rgba(255, 255, 255, 0.88);
+}
+
+.app-header__burger {
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.35);
+    background: transparent;
+}
+
+.app-header__menu .ant-drawer-content,
+.app-header__menu .ant-drawer-header,
+.app-header__menu .ant-drawer-footer {
+    background: var(--brand);
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+/* The footer pins the session pair — who is signed in, and signing out — to the
+   bottom of the drawer, so it stays put while the pages above it scroll. */
+.app-header__menu .ant-drawer-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px 24px;
+}
+
+/* A column so the nav can claim the free height and the theme/language pair can
+   be pushed to the foot of it (`margin-top: auto`, HeaderNav) — landing them
+   right above the footer's divider instead of trailing the list of pages. */
+.app-header__menu .ant-drawer-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.app-header__menu .header-preferences__field-label {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.app-header__menu .account-identity__role {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Navy on navy is a disc with no edge, so the footer avatar wears the same
+   translucent chip and light ring the bar's trigger does. */
+.app-header__menu .account-identity .entity-avatar {
+    background-color: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    color: #fff;
+}
+
+/* An outlined danger button fills itself with the page surface, which over the
+   navy paints a bright slab — the loudest thing in the drawer, and exactly what
+   the outline was chosen to avoid. It goes properly transparent here, in a red
+   lightened until it clears AA on the brand navy (#ff7875 on #003a5d ≈ 4.7:1);
+   AntD's own danger red does not. */
+.app-header__menu .ant-btn-dangerous {
+    background: transparent;
+    border-color: #ff7875;
+    color: #ff7875;
+}
+
+.app-header__menu .ant-btn-dangerous:hover {
+    background: rgba(255, 120, 117, 0.14);
+    border-color: #ff7875;
+    color: #ff7875;
+}
+
+.app-header__menu .ant-drawer-title,
+.app-header__menu .ant-drawer-close {
+    color: #fff;
+}
+
+.app-header .header-nav nav a::after,
+.app-header__menu .header-nav nav a::after {
+    background: #fff;
+}
+
+/* WCAG 2.4.7 Focus Visible + 1.4.11 Non-text Contrast. The global focus ring is
+   `--focus: var(--primary)`, and in LIGHT mode `--primary` and the bar's
+   `--brand` are the same navy (config `colorPrimary`) — so every header control
+   (brand, nav links, the native selects, login/logout, the burger) drew a navy
+   ring on navy: a 1:1 indicator, invisible. `outline-offset` puts the ring
+   outside the control, on the bar, so this applies to the white Login button
+   too. White reads on the navy in both themes. */
+.app-header :focus-visible,
+.app-header__menu :focus-visible {
+    outline-color: #fff;
+}
+
+.ant-card {
+    border-radius: var(--ant-border-radius-lg, 14px);
+    border: 1px solid var(--hairline);
+    box-shadow: var(--shadow-sm);
+    transition: background var(--dur-2) var(--ease-out),
+    transform var(--dur-2) var(--ease-out),
+    border-color var(--dur-2) var(--ease-out);
+}
+
+.ant-card:hover {
+    border-color: color-mix(in srgb, var(--accent) 24%, var(--hairline));
+}
+
+/* Opt-in hover for elements that are themselves a target (a project card, a
+   clickable tile). Surfaces do not rise to meet the cursor here: the material
+   is flat, so hover is a warmed edge and a faint wash of the brand over the
+   surface — the same vocabulary list rows use, one step stronger.
+
+   The press is the only transform left. A target the pointer is committing to
+   should give under it, and scale (rather than a lift) keeps the card in its
+   place in the grid while it answers. */
+.lift {
+    cursor: pointer;
+}
+
+.lift:hover {
+    background: color-mix(in srgb, var(--accent) 5%, var(--surface));
+    border-color: color-mix(in srgb, var(--accent) 32%, var(--hairline));
+}
+
+.lift:active {
+    transform: scale(0.99);
+    transition-duration: var(--dur-1);
+}
+
+.filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 16px;
+    width: 100%;
+}
+
+/* Buttons are flat: a solid navy plate with no glow under it. The weight does
+   the work instead — 700 across the board, 800 on the primary, which is what
+   separates "the action" from "an action" at a glance without a second colour. */
+.ant-btn {
+    font-weight: 700;
+    transition: transform var(--dur-1) var(--ease-out),
+    box-shadow var(--dur-1) var(--ease-out),
+    background var(--dur-1) var(--ease-out),
+    border-color var(--dur-1) var(--ease-out);
+}
+
+/* AntD 5 draws its own hard 2px plate under every solid button (the
+   `primaryShadow` / `defaultShadow` / `dangerShadow` component tokens). It is
+   the one piece of the old raised material the token layer cannot reach, and it
+   is what keeps a button looking pressed-out-of-metal next to these flat
+   surfaces — so it goes here.
+   !important: those shadows are injected by runtime cssinjs after this sheet,
+   at the same single-class specificity, so an equal rule would lose the cascade. */
+.ant-btn-primary,
+.ant-btn-default,
+.ant-btn-dangerous {
+    box-shadow: none !important;
+}
+
+.ant-btn-primary {
+    font-weight: 800;
+}
+
+/* The press is the whole button feedback now that the hover lift is gone: it
+   dips under the finger and comes back on the same spring as everything else. */
+.ant-btn:active {
+    transform: scale(0.97);
+}
+
+.ant-input,
+.ant-input-affix-wrapper,
+.ant-input-number,
+.ant-select .ant-select-selector,
+.ant-picker,
+.ant-input-number-group-addon {
+    border-color: var(--field-border);
+    transition: border-color var(--dur-1) var(--ease-out),
+    box-shadow var(--dur-1) var(--ease-out) !important;
+}
+
+.ant-form-item-label > label {
+    font-weight: 700;
+    letter-spacing: -0.005em;
+}
+
+.icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border: none;
+    border-radius: 10px;
+    background: transparent;
+    color: inherit;
+    opacity: 0.55;
+    cursor: pointer;
+    transition: background var(--dur-1) var(--ease-out),
+    opacity var(--dur-1) var(--ease-out),
+    transform var(--dur-1) var(--ease-out);
+}
+
+.icon-btn:hover {
+    background: var(--row-hover);
+    opacity: 1;
+}
+
+.icon-btn:active {
+    transform: scale(0.9);
+}
+
+/*
+ * Copy confirmation — the shared answer to "did that land?".
+ *
+ * A clipboard write is invisible: nothing on screen changes, the value goes
+ * somewhere the reader cannot see, and the toast appears at the bottom of the
+ * viewport, far from the control the pointer is on. So the control confirms for
+ * itself, in place: it pops once, and a mint ring leaves it like a drop hitting
+ * water. The ring is drawn on ::after and sits BEHIND the control (z-index -1)
+ * so it never covers the mark the reader is looking at.
+ *
+ * Mint rather than the brand navy: this is the app agreeing with a gesture, and
+ * the navy is already doing the work of every other affordance around it.
+ *
+ * Motion only — the toast carries the words, and the mark under `.just-copied`
+ * changes too, so nothing here is a colour-only or motion-only signal.
+ * Any control that writes to the clipboard should reach for this class rather
+ * than inventing a second confirmation vocabulary.
+ */
+.just-copied {
+    position: relative;
+    animation: copy-pop var(--dur-3) var(--ease-out);
+}
+
+.just-copied::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    z-index: -1;
+    border-radius: inherit;
+    border: 2px solid var(--mint);
+    animation: copy-ring var(--dur-3) var(--ease-out) forwards;
+    pointer-events: none;
+}
+
+@keyframes copy-pop {
+    0% {
+        transform: scale(1);
+    }
+    32% {
+        transform: scale(1.16);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* The spring curve is heavily front-loaded, so a straight opacity ramp is
+   already spent by the time the ring is wide enough to notice. Holding it near
+   full for the first half lets the expansion carry the fade instead. */
+@keyframes copy-ring {
+    0% {
+        opacity: 0.8;
+        transform: scale(1);
+    }
+    45% {
+        opacity: 0.6;
+    }
+    100% {
+        opacity: 0;
+        transform: scale(1.85);
+    }
+}
+
+.ant-drawer-content,
+.ant-modal-content {
+    border-radius: 14px 0 0 14px;
+    box-shadow: var(--shadow-lg);
+}
+
+.ant-modal-content {
+    border-radius: 14px;
+}
+
+.ant-drawer-header,
+.ant-modal-header {
+    border-bottom: 1px solid var(--hairline);
+}
+
+/*
+ * The second surface — a cool tint one step off the white, for the parts of a
+ * panel that are chrome rather than content: the row of column names above a
+ * table, and the strip of buttons under a drawer. It reads as the frame around
+ * the content instead of more content, which is the whole job.
+ *
+ * The MODAL footer is deliberately absent: AntD gives it a top margin and no
+ * padding of its own, so a background there paints a floating bar inset from
+ * the modal's edges rather than a strip across its foot.
+ *
+ * A field the reader cannot type into gets the tint too: a disabled input that
+ * stays white claims to be editable, and greyed text alone is a colour-only
+ * signal.
+ */
+.ant-table-thead > tr > th,
+.ant-drawer-footer {
+    background: var(--surface-muted);
+}
+
+.ant-table-thead > tr > th {
+    font-weight: 700;
+    letter-spacing: -0.005em;
+}
+
+.ant-drawer-footer {
+    border-top: 1px solid var(--hairline);
+}
+
+.ant-input[disabled],
+.ant-input-affix-wrapper-disabled,
+.ant-select-disabled .ant-select-selector,
+.ant-picker.ant-picker-disabled {
+    background: var(--surface-muted) !important;
+}
+
+.ant-drawer-title,
+.ant-modal-title {
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+@media (max-width: 575px) {
+    .ant-drawer-content {
+        border-radius: 0;
+    }
+}
+
+/* min-height/inline-flex, not extra padding: WCAG 2.2 2.5.8 Target Size asks for
+   24×24 CSS px, and a bare 15px nav link is ~22px tall. Growing the box keeps
+   the underline (::after, pinned to the box bottom) in the same relationship. */
+.header-nav nav a {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+    padding-bottom: 2px;
+    transition: color var(--dur-1) var(--ease-out);
+}
+
+.header-nav nav a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -2px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform var(--dur-2) var(--ease-out);
+}
+
+.header-nav nav a:hover::after,
+.header-nav nav a.router-link-active::after {
+    transform: scaleX(1);
+}
+
+.header-nav nav a.router-link-active {
+    color: var(--nav-active);
+    font-weight: 600;
+}
+
+/* The active tab label sits on the grey canvas, where the vivid accent is a
+   hair under 4.5:1 — use the deeper accent-ink for the text; the underline
+   ink-bar stays the bright accent (AntD colorPrimary). */
+/* !important: AntD injects the active colour via runtime cssinjs after this
+   sheet, so an equal-specificity rule would lose the cascade. */
+.ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+    color: var(--accent-ink) !important;
+}
+
+.page-enter-active,
+.page-leave-active {
+    transition: opacity var(--dur-2) var(--ease-out),
+    transform var(--dur-2) var(--ease-out);
+}
+
+.page-enter-from {
+    opacity: 0;
+    transform: translateY(10px);
+}
+
+.page-leave-to {
+    opacity: 0;
+    transform: translateY(-6px);
+}
+
+.ant-list-item {
+    background: var(--surface);
+    border: 1px solid var(--hairline);
+    border-radius: 14px;
+    padding: 16px 18px !important;
+    margin-bottom: 12px;
+    /* Anchor the row's content to the top: when the trailing cluster (tags +
+       actions) is taller than the meta, AntD's default `center` floats the
+       name/text into the vertical middle of the card. The avatar stays centered
+       against its own two-line meta via `.ant-list-item-meta`. */
+    align-items: flex-start;
+    box-shadow: var(--shadow-sm);
+    transition: background var(--dur-2) var(--ease-out),
+    transform var(--dur-2) var(--ease-out),
+    border-color var(--dur-2) var(--ease-out);
+    animation: rise var(--dur-3) var(--ease-out) both;
+}
+
+/* The avatar/chip is vertically centred against the two-line meta rather than
+   hugging the top line; min-width:0 lets the meta shrink so long text wraps
+   instead of overflowing. (The ≤575px full stack lives in responsive.css.) */
+.ant-list-item-meta {
+    /* !important: AntD's runtime cssinjs sets `align-items: flex-start` at a
+       higher specificity, top-aligning the avatar against the two-line meta.
+       Center it against the whole text block (participants, movements, users). */
+    align-items: center !important;
+    min-width: 0;
+}
+
+/* AntD renders the row title as a bare <h4> and never resets the UA heading
+   margin, so every row carried 1.33em (21px) of dead space above its name. That
+   pushed the title down inside its own block while the avatar stayed centred on
+   the block as a whole — the name read as sitting low against everything beside
+   it. The bottom margin is AntD's own and still separates title from
+   description. */
+.ant-list-item-meta-title {
+    margin-top: 0;
+}
+
+/* Row mode (≥576px): when the meta + trailing cluster (tags + row actions) no
+   longer fit, the trailing cluster wraps onto its own line instead of crowding
+   or overflowing. Scoped to ≥576px so it never fights the column stack below. */
+@media (min-width: 576px) {
+    .ant-list-item {
+        flex-wrap: wrap;
+        row-gap: 10px;
+    }
+
+    .ant-list-item-meta {
+        flex: 1 1 18rem;
+    }
+}
+
+/* AntD draws a divider border between split rows — the card border replaces it.
+   The :last-child override matters: AntD zeroes the final row's border-block-end,
+   which made the bottom border vanish on the last row (and on hover). */
+.ant-list-split .ant-list-item,
+.ant-list-split .ant-list-item:last-child {
+    border-block-end: 1px solid var(--hairline);
+}
+
+/* A hidden row is inert: dimmed and desaturated so it reads as out of play at a
+   glance, while its own status tag carries the meaning in text (never colour or
+   opacity alone). The row keeps its actions so it can be re-enabled
+   from where it sits, and the dimming stays mild enough to clear AA. */
+.ant-list-item.domain-row--disabled {
+    opacity: 0.62;
+    filter: grayscale(0.4);
+}
+
+.ant-list-item:hover {
+    background: color-mix(in srgb, var(--accent) 4%, var(--surface));
+    border-color: color-mix(in srgb, var(--accent) 28%, var(--hairline));
+}
+
+/* The hover tint is set through the `border-color` shorthand, which AntD's own
+   `:last-child { border-block-end-color: transparent }` outranks on the final
+   row — so every row lit up on hover except the last, which kept a grey edge.
+   Restate the bottom edge for that row alone, at a specificity that wins. */
+.ant-list-split .ant-list-item:last-child:hover {
+    border-block-end-color: color-mix(in srgb, var(--accent) 28%, var(--hairline));
+}
+
+.ant-list-item:nth-child(1) {
+    animation-delay: 0.02s;
+}
+
+.ant-list-item:nth-child(2) {
+    animation-delay: 0.06s;
+}
+
+.ant-list-item:nth-child(3) {
+    animation-delay: 0.10s;
+}
+
+.ant-list-item:nth-child(4) {
+    animation-delay: 0.14s;
+}
+
+.ant-list-item:nth-child(5) {
+    animation-delay: 0.18s;
+}
+
+.ant-list-item:nth-child(6) {
+    animation-delay: 0.22s;
+}
+
+.ant-list-item:nth-child(7) {
+    animation-delay: 0.26s;
+}
+
+.ant-list-item:nth-child(n + 8) {
+    animation-delay: 0.3s;
+}
+
+/* Transform-only (no opacity): a slide-up that never lowers text opacity, so
+   content keeps full colour contrast throughout the entrance — the whole-page
+   cross-fade already supplies the fade. (An opacity fade here creates transient
+   sub-AA snapshots that the a11y gate rightly catches.) */
+@keyframes rise {
+    from {
+        transform: translateY(10px);
+    }
+    to {
+        transform: none;
+    }
+}
+
+.reveal {
+    animation: rise var(--dur-3) var(--ease-out) both;
+}
+
+:where(a, button, .ant-btn, input, select, textarea, [tabindex]):focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+    border-radius: 8px;
+}
+
+/* WCAG 2.2 — 2.4.11 Focus Not Obscured (Minimum). `.app-header` is sticky, so
+   a browser scrolling a newly focused element to the top of the viewport would
+   slide it under the bar. Reserving the bar's height as scroll padding on the
+   scroll root makes every scroll-into-view (Tab, in-page anchor, focus on route
+   change) stop below it, so the focused control is never covered. Value = the
+   header's 32px logo + 2×12px padding + 1px hairline, plus breathing room. */
+html {
+    scroll-padding-top: 72px;
+}
+
+/* WCAG 2.2 — 2.5.8 Target Size (Minimum): 24×24 CSS px. AntD's inline clear
+   and tag-close affordances render as ~12px glyphs; widen their hit area
+   without changing the glyph. `.icon-btn` (34px) already clears the floor. */
+.ant-select-clear,
+.ant-picker-clear,
+.ant-tag-close-icon,
+.ant-modal-close,
+.ant-drawer-close {
+    min-width: 24px;
+    min-height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* AntD lays the pagination arrows out on the text baseline — a `display: block`
+   button holding an icon with a `vertical-align` nudge — so the mark rides ~1.5px
+   above the middle of the control. Centre it on both axes, the way every other
+   icon-only button in the app is centred. */
+.ant-pagination .ant-pagination-prev .ant-pagination-item-link,
+.ant-pagination .ant-pagination-next .ant-pagination-item-link {
+    /* !important: AntD's cssinjs sets `display: block` here at equal specificity
+       and is injected after this sheet, so the static rule alone is ignored. */
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Visually hidden, still exposed to assistive tech. Global: form controls that
+   need a programmatic name live in several components, and AntD's pickers drop
+   aria-* props (only `id` reaches the inner input), so a real <label for> is
+   the only channel — see CustomDateTimeField. */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--hairline) transparent;
+}
+
+*::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+*::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, currentColor 18%, transparent);
+    border-radius: 8px;
+    border: 3px solid transparent;
+    background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background: color-mix(in srgb, currentColor 30%, transparent);
+    background-clip: padding-box;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+    }
+
+    .page-enter-from,
+    .page-leave-to,
+    .ant-list-item,
+    .reveal,
+    .just-copied,
+    .just-copied::after {
+        transform: none !important;
+    }
+
+    /* The ring is pure motion — with the animation collapsed there is nothing
+       left to read, and a static mint outline round the avatar would be a mark
+       that never leaves. The changed glyph and the toast still confirm. */
+    .just-copied::after {
+        display: none;
+    }
+}
