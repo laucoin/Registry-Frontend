@@ -1,163 +1,163 @@
 {
-    "tagFormat": "${version}",
-    "repositoryUrl": "https://github.com/laucoin/Registry-Frontend.git",
-    "branches": [
-        {
-            "name": "main"
-        }
+  "tagFormat": "${version}",
+  "repositoryUrl": "https://github.com/laucoin/Registry-Frontend.git",
+  "branches": [
+    {
+      "name": "main"
+    }
+  ],
+  "plugins": [
+    [
+      "@semantic-release/commit-analyzer",
+      {
+        "preset": "conventionalcommits",
+        "releaseRules": [
+          {
+            "breaking": true,
+            "release": "major"
+          },
+          {
+            "revert": true,
+            "release": "minor"
+          },
+          {
+            "type": "BREAKING_CHANGE",
+            "release": "major"
+          },
+          {
+            "type": "build",
+            "release": "minor"
+          },
+          {
+            "type": "chore",
+            "release": "minor"
+          },
+          {
+            "type": "feat",
+            "release": "minor"
+          },
+          {
+            "type": "perf",
+            "release": "minor"
+          },
+          {
+            "type": "refactor",
+            "release": "minor"
+          },
+          {
+            "type": "revert",
+            "release": "minor"
+          },
+          {
+            "type": "style",
+            "release": "minor"
+          },
+          {
+            "type": "ci",
+            "release": "patch"
+          },
+          {
+            "type": "docs",
+            "release": "patch"
+          },
+          {
+            "type": "fix",
+            "release": "patch"
+          },
+          {
+            "type": "test",
+            "release": "patch"
+          }
+        ]
+      }
     ],
-    "plugins": [
-        [
-            "@semantic-release/commit-analyzer",
+    [
+      "@semantic-release/release-notes-generator",
+      {
+        "preset": "conventionalcommits",
+        "presetConfig": {
+          "types": [
             {
-                "preset": "conventionalcommits",
-                "releaseRules": [
-                    {
-                        "breaking": true,
-                        "release": "major"
-                    },
-                    {
-                        "revert": true,
-                        "release": "minor"
-                    },
-                    {
-                        "type": "BREAKING_CHANGE",
-                        "release": "major"
-                    },
-                    {
-                        "type": "build",
-                        "release": "minor"
-                    },
-                    {
-                        "type": "chore",
-                        "release": "minor"
-                    },
-                    {
-                        "type": "feat",
-                        "release": "minor"
-                    },
-                    {
-                        "type": "perf",
-                        "release": "minor"
-                    },
-                    {
-                        "type": "refactor",
-                        "release": "minor"
-                    },
-                    {
-                        "type": "revert",
-                        "release": "minor"
-                    },
-                    {
-                        "type": "style",
-                        "release": "minor"
-                    },
-                    {
-                        "type": "ci",
-                        "release": "patch"
-                    },
-                    {
-                        "type": "docs",
-                        "release": "patch"
-                    },
-                    {
-                        "type": "fix",
-                        "release": "patch"
-                    },
-                    {
-                        "type": "test",
-                        "release": "patch"
-                    }
-                ]
-            }
-        ],
-        [
-            "@semantic-release/release-notes-generator",
+              "type": "BREAKING_CHANGE",
+              "section": "💥 Breaking changes",
+              "hidden": false
+            },
             {
-                "preset": "conventionalcommits",
-                "presetConfig": {
-                    "types": [
-                        {
-                            "type": "BREAKING_CHANGE",
-                            "section": "💥 Breaking changes",
-                            "hidden": false
-                        },
-                        {
-                            "type": "build",
-                            "section": "👷 Automation",
-                            "hidden": true
-                        },
-                        {
-                            "type": "chore",
-                            "section": "📦️ Other",
-                            "hidden": false
-                        },
-                        {
-                            "type": "feat",
-                            "section": "🚀 Features",
-                            "hidden": false
-                        },
-                        {
-                            "type": "perf",
-                            "section": "🏎️ Improvements",
-                            "hidden": false
-                        },
-                        {
-                            "type": "refactor",
-                            "section": "🧹 Improvements",
-                            "hidden": false
-                        },
-                        {
-                            "type": "revert",
-                            "section": "⏪ Retore",
-                            "hidden": false
-                        },
-                        {
-                            "type": "style",
-                            "section": "💄 Improvements",
-                            "hidden": false
-                        },
-                        {
-                            "type": "ci",
-                            "section": "👷 Automation",
-                            "hidden": false
-                        },
-                        {
-                            "type": "docs",
-                            "section": "📝 Documentation",
-                            "hidden": false
-                        },
-                        {
-                            "type": "fix",
-                            "section": "🐛 Bug Fixes",
-                            "hidden": false
-                        },
-                        {
-                            "type": "test",
-                            "section": "🧪 Tests",
-                            "hidden": false
-                        }
-                    ]
-                }
-            }
-        ],
-        "@semantic-release/changelog",
-        [
-            "@semantic-release/npm",
+              "type": "build",
+              "section": "👷 Automation",
+              "hidden": true
+            },
             {
-                "npmPublish": false
-            }
-        ],
-        [
-            "@semantic-release/git",
+              "type": "chore",
+              "section": "📦️ Other",
+              "hidden": false
+            },
             {
-                "assets": [
-                    "CHANGELOG.md",
-                    "package.json"
-                ],
-                "message": "build(release): ${nextRelease.version}\n\n${nextRelease.notes}[skip ci]"
+              "type": "feat",
+              "section": "🚀 Features",
+              "hidden": false
+            },
+            {
+              "type": "perf",
+              "section": "🏎️ Improvements",
+              "hidden": false
+            },
+            {
+              "type": "refactor",
+              "section": "🧹 Improvements",
+              "hidden": false
+            },
+            {
+              "type": "revert",
+              "section": "⏪ Retore",
+              "hidden": false
+            },
+            {
+              "type": "style",
+              "section": "💄 Improvements",
+              "hidden": false
+            },
+            {
+              "type": "ci",
+              "section": "👷 Automation",
+              "hidden": false
+            },
+            {
+              "type": "docs",
+              "section": "📝 Documentation",
+              "hidden": false
+            },
+            {
+              "type": "fix",
+              "section": "🐛 Bug Fixes",
+              "hidden": false
+            },
+            {
+              "type": "test",
+              "section": "🧪 Tests",
+              "hidden": false
             }
+          ]
+        }
+      }
+    ],
+    "@semantic-release/changelog",
+    [
+      "@semantic-release/npm",
+      {
+        "npmPublish": false
+      }
+    ],
+    [
+      "@semantic-release/git",
+      {
+        "assets": [
+          "CHANGELOG.md",
+          "package.json"
         ],
-        "@semantic-release/github"
-    ]
+        "message": "build(release): ${nextRelease.version}\n\n${nextRelease.notes}[skip ci]"
+      }
+    ],
+    "@semantic-release/github"
+  ]
 }

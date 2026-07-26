@@ -1,49 +1,47 @@
-# See http://help.github.com/ignore-files/ for more about ignoring files.
+node_modules
+.nuxt
+.output
+.env
+dist
+*.log
 
-# Config
-public/settings/*.json
-
-# Compiled output
-/dist
-/tmp
-/out-tsc
-/bazel-out
-
-# Node
-/node_modules
-npm-debug.log
-yarn-error.log
-
-# IDEs and editors
-.idea/
-.project
+### STS ###
+.apt_generated
 .classpath
-.c9/
-*.launch
-.settings/
-*.sublime-workspace
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-.history/*
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+### IntelliJ IDEA ###
+.idea
+*.iws
 *.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
 
-# Miscellaneous
-/.angular/cache
-.sass-cache/
-/connect.lock
-/coverage
-/libpeerconnection.log
-testem.log
-/typings
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
 
-# Claude Code (local-only, thin skills referencing .github/prompts)
+### VS Code ###
+.vscode/
+
+### Claude Code (local-only, thin skills referencing .github/prompts) ###
 .claude/
 
-# System files
+# System Files
 .DS_Store
 Thumbs.db
-.nx/cache
-.nx/workspace-data
+
+### Test coverage ###
+coverage/

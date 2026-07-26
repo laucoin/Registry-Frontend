@@ -2,6 +2,8 @@ name: Hotfix
 
 # Fully isolated from Semantic Release. Branch off an existing release tag, commit
 # the fix, and push a tag like 1.0.0-hotfix-1 to drive this workflow.
+# The Dockerfile is self-contained (pnpm install + nuxt build inside the image),
+# so no Node setup is needed on the runner.
 on:
   push:
     tags:
@@ -20,13 +22,6 @@ jobs:
       packages: write
     steps:
       - uses: actions/checkout@v7
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm build
       # Tag == the exact hotfix tag name, e.g. 1.0.0-hotfix-1.
       - uses: ./.github/actions/docker-publish
         with:
