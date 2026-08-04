@@ -1,0 +1,75 @@
+/*
+ * Global responsive rules (mobile-first down to 320px). Kept global (not
+ * scoped) because they target AntD's portal-rendered nodes (drawers, list rows)
+ * that live outside any component's style scope.
+ */
+
+/* Minimal reset. Nuxt ships no global reset, so without these the browser's
+ * default body margin and content-box sizing make padded full-width elements
+ * (e.g. .app-main) overflow their viewport. */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+}
+
+/* Never render narrower than 320px — below that the page scrolls horizontally
+ * instead of the layout collapsing. */
+html,
+body {
+    min-width: 320px;
+}
+
+/* Small screens: the create/edit side drawers (and the mobile menu) cover the
+ * full width like a mobile sheet. */
+@media (max-width: 575px) {
+    .ant-drawer-right > .ant-drawer-content-wrapper,
+    .ant-drawer-left > .ant-drawer-content-wrapper {
+        width: 100vw !important;
+        max-width: 100vw;
+    }
+}
+
+/* Small screens: reflow list rows from a side-by-side row into a stacked card
+ * (meta on top, the actions/tags cluster below, wrapping). */
+@media (max-width: 575px) {
+    /* !important: AntD's runtime cssinjs sets `.ant-list-item { align-items:
+       center }` at a higher specificity than this static rule, so without it the
+       column-stacked children stay centred and shrink to content width — the
+       meta collapses to the avatar + one char of text. */
+    .ant-list-item {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 8px;
+    }
+
+    .ant-list-item > .ant-space,
+    .ant-list-item .ant-list-item-action {
+        flex-wrap: wrap;
+    }
+
+    /* The list-item meta shouldn't force its own overflow. */
+    .ant-list-item-meta {
+        min-width: 0;
+    }
+}
+
+/* Long unbreakable strings in list rows (emails, ids) must wrap rather than
+ * push the row — and the flex meta content needs min-width:0 to allow it.
+ * `flex: 1` makes the content FILL the meta's remaining width; without it the
+ * content collapses to its min-content (one char, given overflow-wrap:anywhere)
+ * when the meta is a flex item, breaking the text into a vertical column.
+ * Applies at all widths: harmless when there's room, essential at 320px. */
+.ant-list-item-meta-content {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.ant-list-item-meta-title,
+.ant-list-item-meta-description {
+    overflow-wrap: anywhere;
+}

@@ -1,0 +1,43 @@
+name: Tests
+
+# Source of truth for the main-branch tests + coverage badges: release.yml
+# deliberately skips tests on main (the PR pipeline already validated the
+# tree), so this workflow re-runs the suite on every merge and uploads the
+# coverage report to Codecov.
+on:
+  push:
+    branches: [ main ]
+
+concurrency:
+  group: tests-main
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    name: Test & upload coverage
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+
+      # pnpm version is read from package.json "packageManager".
+      - uses: pnpm/action-setup@v6
+
+      - name: Set up Node (with pnpm store cache)
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run tests with coverage
+        run: pnpm test:coverage
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage/lcov.info

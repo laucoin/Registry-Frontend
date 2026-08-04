@@ -1,7 +1,8 @@
 allowBuilds:
-  '@parcel/watcher': true
+  core-js: true
   esbuild: true
-  lmdb: true
-  msgpackr-extract: true
+  unrs-resolver: true
 minimumReleaseAgeExclude:
-  - eslint@10.8.0
+  - '@nuxtjs/i18n@10.6.0'
+patchedDependencies:
+  ant-design-vue@4.2.6: patches/ant-design-vue@4.2.6.patch
