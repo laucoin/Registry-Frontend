@@ -46,8 +46,4 @@ export class MovementUtil {
             }, {} as Record<string, MovementContentModel[]>,
         )
     }
-
-    public static getDrivers (movement: MovementModel): MovementContentModel[] {
-        return movement.content.filter( (content: MovementContentModel): boolean => !content.participant.major )
-    }
 }
