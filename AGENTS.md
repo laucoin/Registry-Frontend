@@ -108,7 +108,7 @@ Before marking any task or PR step as complete:
     - Update `README.md` and the placeholder `public/settings/*.json` samples whenever a config key, a consumed API, an
       enabled UI action, a route, or a dependency changes.
     - The `README.md` MUST include an exhaustive **"How to install and use it? ⚙️"** section detailing:
-        - Prerequisites & runtime versions (Node.js 22 — `^22.22` or `^24.15`; pnpm 11).
+        - Prerequisites & runtime versions (Node.js 24 LTS — `^24.15`; pnpm 11).
         - The two runtime config files (`public/settings/env.json`, `public/settings/config.json`) — every key with
           defaults and descriptions.
         - Local setup & installation steps (`pnpm install`, create the settings files, `pnpm start` with the backend
