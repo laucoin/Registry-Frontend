@@ -35,7 +35,7 @@ You need to install a Node environment. To do that there are 2 possibilities.
 #### Node Version Management (recommended)
 
 1. Install [NVM](https://github.com/nvm-sh/nvm#installing-and-updating)
-2. Then install node (`>= v22`)
+2. Then install node (`^24.15`, CI runs on Node 24 LTS)
     ```shell
     nvm install <version>
     ```
