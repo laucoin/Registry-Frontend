@@ -5,7 +5,7 @@ import {GenericService} from '../../util-tool/service/generic.service'
 import {AuthenticationUriModel} from '../../util-model/model/authentication-uri.model'
 import {CredentialsModel} from '../../util-model/model/credentials.model'
 import {HttpParams} from '@angular/common/http'
-import {TokenModel} from '../model/token.model'
+import {SessionModel} from '../model/session.model'
 
 @Injectable({
     providedIn: 'root',
@@ -29,14 +29,13 @@ export class SecurityService extends GenericService {
         ).toString()}`)
     }
 
-    public fetchToken(credentials: CredentialsModel): Observable<TokenModel> {
-        return this.http.post<TokenModel>(`${this.baseUrl}/token`, credentials)
+    public fetchToken(credentials: CredentialsModel): Observable<SessionModel> {
+        return this.http.post<SessionModel>(`${this.baseUrl}/token`, credentials)
     }
 
-    public refreshToken(refreshToken: string): Observable<TokenModel> {
-        return this.http.post<TokenModel>(`${this.baseUrl}/token/refresh`, {
-            refreshToken: refreshToken,
-        })
+    /** Takes no body: the refresh token travels in its cookie, which is the whole point. */
+    public refreshToken(): Observable<SessionModel> {
+        return this.http.post<SessionModel>(`${this.baseUrl}/token/refresh`, null)
     }
 
     public fetchCurrentUser(): Observable<CurrentUserModel> {

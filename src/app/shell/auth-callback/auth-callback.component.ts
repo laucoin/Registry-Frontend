@@ -19,13 +19,18 @@ export class AuthCallbackComponent implements OnInit, OnDestroy {
         this.handleAuthorizationCode()
     }
 
+    /**
+     * The `state` is not optional decoration: the backend matches it against the challenge cookie it
+     * set when the sign-in began, and refuses the exchange when they differ. Forwarding a callback
+     * without it would fail every login, so it is checked here rather than sent as `undefined`.
+     */
     private handleAuthorizationCode (): void {
         this.subscriptions.add(
             this.route.queryParams.subscribe( (params: Params): void => {
-                if (params['code']) {
-                    this.facade.fetchToken( params['code'] )
+                if (params['code'] && params['state']) {
+                    this.facade.fetchToken( params['code'], params['state'] )
                 } else {
-                    throw new Error( 'No authorization code found' )
+                    throw new Error( 'Callback is missing the authorization code or the state' )
                 }
             } ),
         )

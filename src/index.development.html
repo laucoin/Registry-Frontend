@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang='en'>
+<head>
+    <meta charset='utf-8' />
+    <!--
+      Development variant, swapped in by the `development` configuration of angular.json.
+
+      It exists so that development origins never reach production: the served policy allows the
+      local backend, which the production one deliberately does not. Keep the two directive sets
+      otherwise identical — a directive added here and forgotten there fails only in production.
+    -->
+    <meta http-equiv='Content-Security-Policy'
+          content="default-src 'self';
+                   script-src 'self';
+                   style-src 'self' 'unsafe-inline';
+                   font-src 'self';
+                   img-src 'self' data:;
+                   connect-src 'self' http://localhost:8081;
+                   object-src 'none';
+                   base-uri 'self';
+                   form-action 'self';" />
+    <meta content='This application allows virtual registry management.' name='description' />
+    <title>Registry</title>
+    <base href='/' />
+    <meta content='width=device-width, initial-scale=1' name='viewport' />
+    <link href='favicon.ico' rel='icon' type='image/x-icon' />
+</head>
+<body>
+<app-root></app-root>
+</body>
+</html>

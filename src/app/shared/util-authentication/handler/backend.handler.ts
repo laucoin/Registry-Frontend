@@ -7,17 +7,22 @@ import {
     HttpRequest,
 } from '@angular/common/http'
 import {inject} from '@angular/core'
-import {catchError, mergeMap, Observable, tap, throwError} from 'rxjs'
+import {catchError, mergeMap, Observable, throwError} from 'rxjs'
 import {RegistryFacade} from '../../util-common/state/registry.facade'
 import {CurrentUserModel} from '../../util-model/model/current-user.model'
-import {AUTHORIZATION, CURRENT_USER_ID, SELECT_PROFILE_PROJECT_ID, TOKEN,} from '../../util-tool/util/request.util'
-import {TokenModel} from '../model/token.model'
-import {SessionStorageUtils} from '../../util-tool/util/session-storage.util'
+import {CSRF_COOKIE, CSRF_HEADER, CURRENT_USER_ID, SELECT_PROFILE_PROJECT_ID} from '../../util-tool/util/request.util'
 import {AppConfig} from '../../../app.config'
 import {ErrorModel} from '../../util-model/model/error.model'
 import {TranslateService} from '@ngx-translate/core'
 import {SecurityService} from '../service/security.service'
 import {GenericUtil} from '../../util-tool/util/generic.util'
+import {CookieUtils} from '../../util-tool/util/cookie.util'
+
+/** Reads are never CSRF-protected, so there is no token to attach to them. */
+const SAFE_METHODS: readonly string[] = ['GET', 'HEAD', 'OPTIONS']
+
+/** Renewing the session cannot itself be retried by renewing the session. */
+const REFRESH_PATH: string = '/authentication/token/refresh'
 
 export const backendHandler: HttpInterceptorFn = (
     req: HttpRequest<unknown>,
@@ -34,16 +39,8 @@ export const backendHandler: HttpInterceptorFn = (
     const currentUser: CurrentUserModel | undefined = registryFacade.currentUser()
     const url: string = formatUrlIfNeeded(currentUser, req.url)
 
-    return next(req.clone({
-        url: url,
-        headers: buildHeaders(req.url, registryFacade.token(), registryFacade.currentUserLanguage(), req.headers),
-    }))
+    return next(authenticated(req, url))
         .pipe(catchError((error: HttpErrorResponse) => {
-            if (AppConfig.environment.backend.noAuthPaths.some((permitAll: string): boolean => req.url.includes(permitAll)) && error.status === 401) {
-                registryFacade.login()
-                return throwError((): ErrorModel => new ErrorModel(error))
-            }
-
             switch (error.status) {
                 case 0:
                 case 502:
@@ -55,29 +52,49 @@ export const backendHandler: HttpInterceptorFn = (
                         message: translateService.instant('global.notifications.503.message'),
                     }))
                 case 401:
-                    if (GenericUtil.isNull(registryFacade.token())) {
+                    // The session cookies are HttpOnly, so whether one is still valid is not something
+                    // this application can inspect — only the server can answer it. A 401 is therefore
+                    // the signal to try a renewal, and a failing renewal is the signal to sign in again.
+                    if (isAuthenticationCall(req.url)) {
                         registryFacade.login()
                         return throwError((): ErrorModel => new ErrorModel(error))
                     }
-                    return securityService.refreshToken(registryFacade.token()!.refreshToken).pipe(
-                        tap((token: TokenModel): void => {
-                            SessionStorageUtils.set(TOKEN, token)
-                            registryFacade.restoreSessionFromStorage()
-                        }),
-                        mergeMap((newToken: TokenModel): Observable<HttpEvent<unknown>> => {
-                            const retryHeaders: HttpHeaders = buildHeaders(
-                                req.url,
-                                newToken,
-                                registryFacade.currentUserLanguage(),
-                                req.headers,
-                            )
-                            return next(req.clone({url: url, headers: retryHeaders}))
+                    return securityService.refreshToken().pipe(
+                        mergeMap((): Observable<HttpEvent<unknown>> => next(authenticated(req, url))),
+                        catchError((): Observable<never> => {
+                            registryFacade.login()
+                            return throwError((): ErrorModel => new ErrorModel(error))
                         }),
                     )
                 default:
                     return throwError((): ErrorModel => new ErrorModel(error))
             }
         }))
+}
+
+/**
+ * Sends the session cookies, and the CSRF token that has to accompany any call that changes something.
+ *
+ * `withCredentials` is what makes the browser attach the cookies at all across origins. The CSRF header
+ * is set by hand rather than through Angular's XSRF support, which only covers same-origin requests —
+ * and the API is served from a sibling host.
+ */
+function authenticated(req: HttpRequest<unknown>, url: string): HttpRequest<unknown> {
+    let headers: HttpHeaders = req.headers
+
+    if (!SAFE_METHODS.includes(req.method)) {
+        const csrfToken: string | undefined = CookieUtils.get(CSRF_COOKIE)
+        if (GenericUtil.nonNull(csrfToken)) {
+            headers = headers.set(CSRF_HEADER, csrfToken!)
+        }
+    }
+
+    return req.clone({url: url, headers: headers, withCredentials: true})
+}
+
+function isAuthenticationCall(url: string): boolean {
+    return url.includes(REFRESH_PATH)
+        || AppConfig.environment.backend.noAuthPaths.some((permitAll: string): boolean => url.includes(permitAll))
 }
 
 function formatUrlIfNeeded(currentUser: CurrentUserModel | undefined, url: string): string {
@@ -108,20 +125,4 @@ function formatUrlIfNeeded(currentUser: CurrentUserModel | undefined, url: strin
     }
 
     return formattedUrl
-}
-
-function buildHeaders(
-    url: string,
-    token: TokenModel | undefined,
-    language: string,
-    headers: HttpHeaders | undefined,
-): HttpHeaders {
-    let filledHeaders: HttpHeaders = headers ?? new HttpHeaders()
-
-    if (AppConfig.environment.backend.noAuthPaths.some((permitAll: string): boolean => url.includes(permitAll))) {
-        return filledHeaders
-    }
-
-    filledHeaders = filledHeaders.set(AUTHORIZATION, `${token?.tokenType} ${token?.accessToken}`)
-    return filledHeaders
 }

@@ -43,6 +43,13 @@ export class AppConfig {
             [RegistryState, UserState],
             {
                 developmentMode: !AppConfig.environment.production,
+                // NGXS compiles its selectors with `new Function(...)`, which a Content-Security-Policy
+                // without 'unsafe-eval' refuses. Left on the default, every selector throws and the
+                // application renders nothing — so this flag is what makes the policy in index.html
+                // affordable, rather than an optimisation being traded away for its own sake.
+                compatibility: {
+                    strictContentSecurityPolicy: true,
+                },
             },
         ))
     }

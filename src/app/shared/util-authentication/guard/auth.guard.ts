@@ -4,11 +4,13 @@ import { RegistryFacade } from '../../util-common/state/registry.facade'
 import { GenericUtil } from '../../util-tool/util/generic.util'
 import { map, Observable } from 'rxjs'
 
+/**
+ * The session lives in `HttpOnly` cookies, so whether one is still valid is not something this
+ * application can inspect — only the server can answer it. Asking for the current user *is* the
+ * check: a 401 sends the interceptor through a renewal and, failing that, back to the login page.
+ */
 export const authGuard: CanActivateFn = (): Observable<boolean> => {
     const facade: RegistryFacade = inject( RegistryFacade )
-    if (GenericUtil.isNull( facade.token() )) {
-        facade.restoreSessionFromStorage()
-    }
     if (GenericUtil.isNull( facade.currentUser() )) {
         facade.fetchCurrentUser()
     }

@@ -68,7 +68,7 @@ corepack enable pnpm
     ```shell
     pnpm install
     ```
-4. Create `public/settings/config.json` with your configuration
+4. Create `public/settings/config.json` — copy `config.example.json` and adjust
     ```json
     {
         "defaultLanguage": "fr",
@@ -155,12 +155,12 @@ corepack enable pnpm
         },
         "logo": {
             "normal": {
-                "light": "img/SGDF/logo-white.svg",
-                "dark": "img/SGDF/logo-white.svg"
+                "light": "img/SGDF/logo.svg",
+                "dark": "img/SGDF/logo.svg"
             },
             "small": {
-                "light": "img/SGDF/small-logo-white.svg",
-                "dark": "img/SGDF/small-logo-white.svg"
+                "light": "img/SGDF/small-logo.svg",
+                "dark": "img/SGDF/small-logo.svg"
             }
         },
         "enabledActions": [ "<element-action.enum.ts>" ],
@@ -176,7 +176,7 @@ corepack enable pnpm
         }
     }
     ```
-5. Create `public/settings/env.json` with your environment
+5. Create `public/settings/env.json` — copy `env.example.json` and point `backend.url` at your API
     ```json
     {
         "production": "<true-for-non-local>",
@@ -191,7 +191,8 @@ corepack enable pnpm
         }
     }
     ```
-   Both files are gitignored (`public/settings/*.json`) and fetched at runtime, so they can be swapped per environment
+   Both files are gitignored (`public/settings/*.json`) and fetched at runtime, so they can be swapped per environment.
+   The `*.example.json` next to them are committed, and are the only thing telling a newcomer what shape they take
    without rebuilding the app.
 
 Now, you can use the following scripts. Enjoy !

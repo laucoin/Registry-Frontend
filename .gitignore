@@ -2,6 +2,8 @@
 
 # Config
 public/settings/*.json
+# …but the examples are the only thing telling a newcomer what shape these files take.
+!public/settings/*.example.json
 
 # Compiled output
 /dist

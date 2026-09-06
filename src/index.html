@@ -2,6 +2,30 @@
 <html lang='en'>
 <head>
     <meta charset='utf-8' />
+    <!--
+      The policy that protects the document itself. It is declared here, in the source, because the
+      SPA is served as a static file: no application produces this response, so no application can
+      put a header on it.
+
+      connect-src carries a subdomain wildcard on purpose. The backend origin is read from
+      settings/env.json at runtime and differs per tenant, while this policy is fixed at build time;
+      the wildcard covers backend.registry.<tenant> without hard-coding a host. It never widens to a
+      registrable domain, so the policy stays restrictive. A new tenant is the one event that
+      requires editing this line.
+
+      style-src keeps 'unsafe-inline' because Angular injects component styles, and PrimeNG its
+      themes, as <style> elements at runtime (ADR 012).
+    -->
+    <meta http-equiv='Content-Security-Policy'
+          content="default-src 'self';
+                   script-src 'self';
+                   style-src 'self' 'unsafe-inline';
+                   font-src 'self';
+                   img-src 'self' data:;
+                   connect-src 'self' https://*.registry.laucoin.fr https://*.registry.sgdf.fr;
+                   object-src 'none';
+                   base-uri 'self';
+                   form-action 'self';" />
     <meta content='This application allows virtual registry management.' name='description' />
     <title>Registry</title>
     <base href='/' />
