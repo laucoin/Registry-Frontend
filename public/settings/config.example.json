@@ -1,0 +1,29 @@
+{
+  "defaultLanguage": "fr",
+  "languages": [
+    "fr",
+    "en"
+  ],
+  "primeNg": {},
+  "logo": {
+    "normal": {
+      "light": "img/logo.svg",
+      "dark": "img/logo.svg"
+    },
+    "small": {
+      "light": "img/logo.svg",
+      "dark": "img/logo.svg"
+    }
+  },
+  "enabledActions": [],
+  "notification": {
+    "duration": {
+      "info": 4000,
+      "success": 4000,
+      "warn": 6000,
+      "error": null,
+      "secondary": 4000,
+      "contrast": 4000
+    }
+  }
+}

@@ -6,7 +6,7 @@ import {CurrentUserModel} from '../../util-model/model/current-user.model'
 import {ProjectProfileModel} from '../../util-model/model/project-profile.model'
 import {PageModel} from '../../util-model/model/page.model'
 import {GenericState} from '../../util-tool/state/generic.state'
-import {REDIRECT_URI, TOKEN} from '../../util-tool/util/request.util'
+import {REDIRECT_URI} from '../../util-tool/util/request.util'
 import {initialize} from '../../util-tool/util/rx.util'
 import {SessionStorageUtils} from '../../util-tool/util/session-storage.util'
 import {RegistryStateModel} from '../model/registry-state.model'
@@ -23,7 +23,6 @@ import {
     Logout,
     ManageUserProjectInvitationAcceptance,
     Notify,
-    RestoreSessionFromStorage,
     SelectUserProjectProfile,
     SelectUserProjectProfileByProject,
     SetGlobalError,
@@ -48,7 +47,7 @@ import {
 import {UserProjectProfileService} from './user-project-profile.service'
 import {PreferencesService} from './preferences.service'
 import {ProjectModel} from '../../util-model/model/project.model'
-import {TokenModel} from '../../util-authentication/model/token.model'
+import {SessionModel} from '../../util-authentication/model/session.model'
 import {AppRouteEnum} from '../../../app-route.enum'
 import {AuthenticationUriModel} from '../../util-model/model/authentication-uri.model'
 import {Router} from '@angular/router'
@@ -67,7 +66,7 @@ import {PrimeNG} from 'primeng/config'
 
 const defaultRegistryState: RegistryStateModel = {
     authentication: {
-        token: undefined,
+        session: undefined,
         currentUser: undefined,
         loading: false,
     },
@@ -189,8 +188,8 @@ export class RegistryState extends GenericState implements NgxsOnInit {
     }
 
     @Selector()
-    public static tokens(state: RegistryStateModel): TokenModel | undefined {
-        return state.authentication.token
+    public static session(state: RegistryStateModel): SessionModel | undefined {
+        return state.authentication.session
     }
 
     @Selector()
@@ -418,7 +417,7 @@ export class RegistryState extends GenericState implements NgxsOnInit {
 
     @Action(Logout)
     public logout(ctx: StateContext<RegistryStateModel>): Observable<void> {
-        SessionStorageUtils.delete(TOKEN)
+        // The cookies are cleared by the backend on this very call; there is nothing to erase here.
         return this.service.getLogoutUri(location.origin).pipe(
             initialize((): void => this.registryFacade.startGlobalLoader()),
             finalize((): void => this.registryFacade.stopGlobalLoader()),
@@ -429,25 +428,16 @@ export class RegistryState extends GenericState implements NgxsOnInit {
         )
     }
 
-    @Action(RestoreSessionFromStorage)
-    public restoreTokens(ctx: StateContext<RegistryStateModel>, payload: RestoreSessionFromStorage): void {
-        ctx.patchState({
-            authentication: {
-                ...ctx.getState().authentication,
-                token: payload.token,
-            },
-        })
-    }
-
     @Action(FetchTokens)
     public fetchTokens(ctx: StateContext<RegistryStateModel>, payload: FetchTokens): Observable<void> {
         return this.service.fetchToken({
             authorizationCode: payload.authorizationCode,
+            state: payload.state,
             redirectUri: `${location.origin}/${AppRouteEnum.AUTH_CALLBACK}`,
         }).pipe(
             initialize((): void => this.registryFacade.startGlobalLoader()),
             finalize((): void => this.registryFacade.stopGlobalLoader()),
-            map((token: TokenModel): void => this.fetchTokensComplete(ctx, token)),
+            map((session: SessionModel): void => this.fetchTokensComplete(ctx, session)),
             mergeMap((): Observable<CurrentUserModel> => this.service.fetchCurrentUser()),
             map((currentUser: CurrentUserModel): void => this.fetchCurrentUserComplete(ctx, currentUser)),
             map((): void => {
@@ -459,12 +449,11 @@ export class RegistryState extends GenericState implements NgxsOnInit {
         )
     }
 
-    private fetchTokensComplete(ctx: StateContext<RegistryStateModel>, token: TokenModel): void {
-        SessionStorageUtils.set(TOKEN, token)
+    private fetchTokensComplete(ctx: StateContext<RegistryStateModel>, session: SessionModel): void {
         ctx.patchState({
             authentication: {
                 ...ctx.getState().authentication,
-                token: token,
+                session: session,
             },
         })
     }
