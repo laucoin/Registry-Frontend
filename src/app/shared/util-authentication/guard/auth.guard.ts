@@ -6,9 +6,6 @@ import { map, Observable } from 'rxjs'
 
 export const authGuard: CanActivateFn = (): Observable<boolean> => {
     const facade: RegistryFacade = inject( RegistryFacade )
-    if (GenericUtil.isNull( facade.token() )) {
-        facade.restoreSessionFromStorage()
-    }
     if (GenericUtil.isNull( facade.currentUser() )) {
         facade.fetchCurrentUser()
     }

@@ -5,7 +5,6 @@ import {GenericService} from '../../util-tool/service/generic.service'
 import {AuthenticationUriModel} from '../../util-model/model/authentication-uri.model'
 import {CredentialsModel} from '../../util-model/model/credentials.model'
 import {HttpParams} from '@angular/common/http'
-import {TokenModel} from '../model/token.model'
 
 @Injectable({
     providedIn: 'root',
@@ -29,14 +28,12 @@ export class SecurityService extends GenericService {
         ).toString()}`)
     }
 
-    public fetchToken(credentials: CredentialsModel): Observable<TokenModel> {
-        return this.http.post<TokenModel>(`${this.baseUrl}/token`, credentials)
+    public fetchToken(credentials: CredentialsModel): Observable<void> {
+        return this.http.post<void>(`${this.baseUrl}/token`, credentials)
     }
 
-    public refreshToken(refreshToken: string): Observable<TokenModel> {
-        return this.http.post<TokenModel>(`${this.baseUrl}/token/refresh`, {
-            refreshToken: refreshToken,
-        })
+    public refreshToken(): Observable<void> {
+        return this.http.post<void>(`${this.baseUrl}/token/refresh`, {})
     }
 
     public fetchCurrentUser(): Observable<CurrentUserModel> {

@@ -2,17 +2,14 @@ import {
     HttpErrorResponse,
     HttpEvent,
     HttpHandlerFn,
-    HttpHeaders,
     HttpInterceptorFn,
     HttpRequest,
 } from '@angular/common/http'
 import {inject} from '@angular/core'
-import {catchError, mergeMap, Observable, tap, throwError} from 'rxjs'
+import {catchError, mergeMap, Observable, throwError} from 'rxjs'
 import {RegistryFacade} from '../../util-common/state/registry.facade'
 import {CurrentUserModel} from '../../util-model/model/current-user.model'
-import {AUTHORIZATION, CURRENT_USER_ID, SELECT_PROFILE_PROJECT_ID, TOKEN,} from '../../util-tool/util/request.util'
-import {TokenModel} from '../model/token.model'
-import {SessionStorageUtils} from '../../util-tool/util/session-storage.util'
+import {CURRENT_USER_ID, SELECT_PROFILE_PROJECT_ID} from '../../util-tool/util/request.util'
 import {AppConfig} from '../../../app.config'
 import {ErrorModel} from '../../util-model/model/error.model'
 import {TranslateService} from '@ngx-translate/core'
@@ -33,11 +30,9 @@ export const backendHandler: HttpInterceptorFn = (
 
     const currentUser: CurrentUserModel | undefined = registryFacade.currentUser()
     const url: string = formatUrlIfNeeded(currentUser, req.url)
+    const authenticatedReq: HttpRequest<unknown> = req.clone({url: url, withCredentials: true})
 
-    return next(req.clone({
-        url: url,
-        headers: buildHeaders(req.url, registryFacade.token(), registryFacade.currentUserLanguage(), req.headers),
-    }))
+    return next(authenticatedReq)
         .pipe(catchError((error: HttpErrorResponse) => {
             if (AppConfig.environment.backend.noAuthPaths.some((permitAll: string): boolean => req.url.includes(permitAll)) && error.status === 401) {
                 registryFacade.login()
@@ -55,23 +50,11 @@ export const backendHandler: HttpInterceptorFn = (
                         message: translateService.instant('global.notifications.503.message'),
                     }))
                 case 401:
-                    if (GenericUtil.isNull(registryFacade.token())) {
-                        registryFacade.login()
-                        return throwError((): ErrorModel => new ErrorModel(error))
-                    }
-                    return securityService.refreshToken(registryFacade.token()!.refreshToken).pipe(
-                        tap((token: TokenModel): void => {
-                            SessionStorageUtils.set(TOKEN, token)
-                            registryFacade.restoreSessionFromStorage()
-                        }),
-                        mergeMap((newToken: TokenModel): Observable<HttpEvent<unknown>> => {
-                            const retryHeaders: HttpHeaders = buildHeaders(
-                                req.url,
-                                newToken,
-                                registryFacade.currentUserLanguage(),
-                                req.headers,
-                            )
-                            return next(req.clone({url: url, headers: retryHeaders}))
+                    return securityService.refreshToken().pipe(
+                        mergeMap((): Observable<HttpEvent<unknown>> => next(authenticatedReq)),
+                        catchError((): Observable<HttpEvent<unknown>> => {
+                            registryFacade.login()
+                            return throwError((): ErrorModel => new ErrorModel(error))
                         }),
                     )
                 default:
@@ -108,20 +91,4 @@ function formatUrlIfNeeded(currentUser: CurrentUserModel | undefined, url: strin
     }
 
     return formattedUrl
-}
-
-function buildHeaders(
-    url: string,
-    token: TokenModel | undefined,
-    language: string,
-    headers: HttpHeaders | undefined,
-): HttpHeaders {
-    let filledHeaders: HttpHeaders = headers ?? new HttpHeaders()
-
-    if (AppConfig.environment.backend.noAuthPaths.some((permitAll: string): boolean => url.includes(permitAll))) {
-        return filledHeaders
-    }
-
-    filledHeaders = filledHeaders.set(AUTHORIZATION, `${token?.tokenType} ${token?.accessToken}`)
-    return filledHeaders
 }
