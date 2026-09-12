@@ -1,5 +1,4 @@
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
-import { TokenModel } from '../../util-authentication/model/token.model'
 import { CurrentUserModel } from '../../util-model/model/current-user.model'
 import { ProjectProfileModel } from '../../util-model/model/project-profile.model'
 import { PageRequestInformationModel } from '../../util-model/model/page-request-information.model'
@@ -11,7 +10,6 @@ import { ThemeEnum } from '../../util-model/enumeration/theme.enum'
 
 export interface RegistryStateModel {
     authentication: {
-        token: TokenModel | undefined
         currentUser: CurrentUserModel | undefined,
         loading: boolean,
     },

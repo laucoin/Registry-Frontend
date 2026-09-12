@@ -1,6 +1,5 @@
 import { ToastMessageOptions } from 'primeng/api'
 import { ProjectProfileModel } from '../../util-model/model/project-profile.model'
-import { TokenModel } from '../../util-authentication/model/token.model'
 import { ErrorModel } from '../../util-model/model/error.model'
 import { ThemeEnum } from '../../util-model/enumeration/theme.enum'
 
@@ -23,7 +22,6 @@ enum RegistryActionEnum {
     LOGIN = '[Backend] Logging in',
     LOGOUT = '[Backend] Logging out',
 
-    RESTORE_SESSION_FROM_STORAGE = '[Local] Restoring session from storage',
     FETCH_TOKENS = '[Backend] Fetching tokens',
 
     FETCH_CURRENT_USER = '[Backend] Fetching current user',
@@ -111,12 +109,6 @@ export class Login {
 
 export class Logout {
     public static readonly type: RegistryActionEnum = RegistryActionEnum.LOGOUT
-}
-
-export class RestoreSessionFromStorage {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.RESTORE_SESSION_FROM_STORAGE
-
-    public constructor (public readonly token: TokenModel) {}
 }
 
 export class FetchTokens {
