@@ -2,11 +2,13 @@ import {
     HttpErrorResponse,
     HttpEvent,
     HttpHandlerFn,
+    HttpHeaders,
     HttpInterceptorFn,
     HttpRequest,
+    HttpResponse,
 } from '@angular/common/http'
 import {inject} from '@angular/core'
-import {catchError, mergeMap, Observable, throwError} from 'rxjs'
+import {catchError, mergeMap, Observable, tap, throwError} from 'rxjs'
 import {RegistryFacade} from '../../util-common/state/registry.facade'
 import {CurrentUserModel} from '../../util-model/model/current-user.model'
 import {CURRENT_USER_ID, SELECT_PROFILE_PROJECT_ID} from '../../util-tool/util/request.util'
@@ -15,6 +17,12 @@ import {ErrorModel} from '../../util-model/model/error.model'
 import {TranslateService} from '@ngx-translate/core'
 import {SecurityService} from '../service/security.service'
 import {GenericUtil} from '../../util-tool/util/generic.util'
+
+// The backend derives this token from the caller's own access token and hands it back on every
+// response (see CsrfTokenService/CsrfTokenHeaderHandler) rather than a cookie, so it's cached here
+// in memory and echoed back on the next request instead of being read from document.cookie.
+const CSRF_TOKEN_HEADER: string = 'X-XSRF-TOKEN'
+let csrfToken: string | undefined
 
 export const backendHandler: HttpInterceptorFn = (
     req: HttpRequest<unknown>,
@@ -30,37 +38,57 @@ export const backendHandler: HttpInterceptorFn = (
 
     const currentUser: CurrentUserModel | undefined = registryFacade.currentUser()
     const url: string = formatUrlIfNeeded(currentUser, req.url)
-    const authenticatedReq: HttpRequest<unknown> = req.clone({url: url, withCredentials: true})
+    const authenticatedReq: HttpRequest<unknown> = req.clone({
+        url: url,
+        withCredentials: true,
+        setHeaders: csrfToken ? {[CSRF_TOKEN_HEADER]: csrfToken} : {},
+    })
 
     return next(authenticatedReq)
-        .pipe(catchError((error: HttpErrorResponse) => {
-            if (AppConfig.environment.backend.noAuthPaths.some((permitAll: string): boolean => req.url.includes(permitAll)) && error.status === 401) {
-                registryFacade.login()
-                return throwError((): ErrorModel => new ErrorModel(error))
-            }
+        .pipe(
+            tap((event: HttpEvent<unknown>): void => {
+                if (event instanceof HttpResponse) {
+                    captureCsrfToken(event.headers)
+                }
+            }),
+            catchError((error: HttpErrorResponse) => {
+                captureCsrfToken(error.headers)
 
-            switch (error.status) {
-                case 0:
-                case 502:
-                case 503:
-                    return throwError((): ErrorModel => ({
-                        status: 503,
-                        name: 'Service Unavailable',
-                        title: translateService.instant('global.notifications.503.title'),
-                        message: translateService.instant('global.notifications.503.message'),
-                    }))
-                case 401:
-                    return securityService.refreshToken().pipe(
-                        mergeMap((): Observable<HttpEvent<unknown>> => next(authenticatedReq)),
-                        catchError((): Observable<HttpEvent<unknown>> => {
-                            registryFacade.login()
-                            return throwError((): ErrorModel => new ErrorModel(error))
-                        }),
-                    )
-                default:
+                if (AppConfig.environment.backend.noAuthPaths.some((permitAll: string): boolean => req.url.includes(permitAll)) && error.status === 401) {
+                    registryFacade.login()
                     return throwError((): ErrorModel => new ErrorModel(error))
-            }
-        }))
+                }
+
+                switch (error.status) {
+                    case 0:
+                    case 502:
+                    case 503:
+                        return throwError((): ErrorModel => ({
+                            status: 503,
+                            name: 'Service Unavailable',
+                            title: translateService.instant('global.notifications.503.title'),
+                            message: translateService.instant('global.notifications.503.message'),
+                        }))
+                    case 401:
+                        return securityService.refreshToken().pipe(
+                            mergeMap((): Observable<HttpEvent<unknown>> => next(authenticatedReq)),
+                            catchError((): Observable<HttpEvent<unknown>> => {
+                                registryFacade.login()
+                                return throwError((): ErrorModel => new ErrorModel(error))
+                            }),
+                        )
+                    default:
+                        return throwError((): ErrorModel => new ErrorModel(error))
+                }
+            }),
+        )
+}
+
+function captureCsrfToken(headers: HttpHeaders): void {
+    const token: string | null = headers.get(CSRF_TOKEN_HEADER)
+    if (token) {
+        csrfToken = token
+    }
 }
 
 function formatUrlIfNeeded(currentUser: CurrentUserModel | undefined, url: string): string {
