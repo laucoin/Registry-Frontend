@@ -155,12 +155,12 @@ corepack enable pnpm
         },
         "logo": {
             "normal": {
-                "light": "img/SGDF/logo-white.svg",
-                "dark": "img/SGDF/logo-white.svg"
+                "light": "img/SGDF/logo.svg",
+                "dark": "img/SGDF/logo.svg"
             },
             "small": {
-                "light": "img/SGDF/small-logo-white.svg",
-                "dark": "img/SGDF/small-logo-white.svg"
+                "light": "img/SGDF/small-logo.svg",
+                "dark": "img/SGDF/small-logo.svg"
             }
         },
         "enabledActions": [ "<element-action.enum.ts>" ],

@@ -5,19 +5,24 @@ import {
     HttpHeaders,
     HttpInterceptorFn,
     HttpRequest,
+    HttpResponse,
 } from '@angular/common/http'
 import {inject} from '@angular/core'
 import {catchError, mergeMap, Observable, tap, throwError} from 'rxjs'
 import {RegistryFacade} from '../../util-common/state/registry.facade'
 import {CurrentUserModel} from '../../util-model/model/current-user.model'
-import {AUTHORIZATION, CURRENT_USER_ID, SELECT_PROFILE_PROJECT_ID, TOKEN,} from '../../util-tool/util/request.util'
-import {TokenModel} from '../model/token.model'
-import {SessionStorageUtils} from '../../util-tool/util/session-storage.util'
+import {CURRENT_USER_ID, SELECT_PROFILE_PROJECT_ID} from '../../util-tool/util/request.util'
 import {AppConfig} from '../../../app.config'
 import {ErrorModel} from '../../util-model/model/error.model'
 import {TranslateService} from '@ngx-translate/core'
 import {SecurityService} from '../service/security.service'
 import {GenericUtil} from '../../util-tool/util/generic.util'
+
+// The backend derives this token from the caller's own access token and hands it back on every
+// response (see CsrfTokenService/CsrfTokenHeaderHandler) rather than a cookie, so it's cached here
+// in memory and echoed back on the next request instead of being read from document.cookie.
+const CSRF_TOKEN_HEADER: string = 'X-XSRF-TOKEN'
+let csrfToken: string | undefined
 
 export const backendHandler: HttpInterceptorFn = (
     req: HttpRequest<unknown>,
@@ -33,51 +38,57 @@ export const backendHandler: HttpInterceptorFn = (
 
     const currentUser: CurrentUserModel | undefined = registryFacade.currentUser()
     const url: string = formatUrlIfNeeded(currentUser, req.url)
-
-    return next(req.clone({
+    const authenticatedReq: HttpRequest<unknown> = req.clone({
         url: url,
-        headers: buildHeaders(req.url, registryFacade.token(), registryFacade.currentUserLanguage(), req.headers),
-    }))
-        .pipe(catchError((error: HttpErrorResponse) => {
-            if (AppConfig.environment.backend.noAuthPaths.some((permitAll: string): boolean => req.url.includes(permitAll)) && error.status === 401) {
-                registryFacade.login()
-                return throwError((): ErrorModel => new ErrorModel(error))
-            }
+        withCredentials: true,
+        setHeaders: csrfToken ? {[CSRF_TOKEN_HEADER]: csrfToken} : {},
+    })
 
-            switch (error.status) {
-                case 0:
-                case 502:
-                case 503:
-                    return throwError((): ErrorModel => ({
-                        status: 503,
-                        name: 'Service Unavailable',
-                        title: translateService.instant('global.notifications.503.title'),
-                        message: translateService.instant('global.notifications.503.message'),
-                    }))
-                case 401:
-                    if (GenericUtil.isNull(registryFacade.token())) {
-                        registryFacade.login()
-                        return throwError((): ErrorModel => new ErrorModel(error))
-                    }
-                    return securityService.refreshToken(registryFacade.token()!.refreshToken).pipe(
-                        tap((token: TokenModel): void => {
-                            SessionStorageUtils.set(TOKEN, token)
-                            registryFacade.restoreSessionFromStorage()
-                        }),
-                        mergeMap((newToken: TokenModel): Observable<HttpEvent<unknown>> => {
-                            const retryHeaders: HttpHeaders = buildHeaders(
-                                req.url,
-                                newToken,
-                                registryFacade.currentUserLanguage(),
-                                req.headers,
-                            )
-                            return next(req.clone({url: url, headers: retryHeaders}))
-                        }),
-                    )
-                default:
+    return next(authenticatedReq)
+        .pipe(
+            tap((event: HttpEvent<unknown>): void => {
+                if (event instanceof HttpResponse) {
+                    captureCsrfToken(event.headers)
+                }
+            }),
+            catchError((error: HttpErrorResponse) => {
+                captureCsrfToken(error.headers)
+
+                if (AppConfig.environment.backend.noAuthPaths.some((permitAll: string): boolean => req.url.includes(permitAll)) && error.status === 401) {
+                    registryFacade.login()
                     return throwError((): ErrorModel => new ErrorModel(error))
-            }
-        }))
+                }
+
+                switch (error.status) {
+                    case 0:
+                    case 502:
+                    case 503:
+                        return throwError((): ErrorModel => ({
+                            status: 503,
+                            name: 'Service Unavailable',
+                            title: translateService.instant('global.notifications.503.title'),
+                            message: translateService.instant('global.notifications.503.message'),
+                        }))
+                    case 401:
+                        return securityService.refreshToken().pipe(
+                            mergeMap((): Observable<HttpEvent<unknown>> => next(authenticatedReq)),
+                            catchError((): Observable<HttpEvent<unknown>> => {
+                                registryFacade.login()
+                                return throwError((): ErrorModel => new ErrorModel(error))
+                            }),
+                        )
+                    default:
+                        return throwError((): ErrorModel => new ErrorModel(error))
+                }
+            }),
+        )
+}
+
+function captureCsrfToken(headers: HttpHeaders): void {
+    const token: string | null = headers.get(CSRF_TOKEN_HEADER)
+    if (token) {
+        csrfToken = token
+    }
 }
 
 function formatUrlIfNeeded(currentUser: CurrentUserModel | undefined, url: string): string {
@@ -108,20 +119,4 @@ function formatUrlIfNeeded(currentUser: CurrentUserModel | undefined, url: strin
     }
 
     return formattedUrl
-}
-
-function buildHeaders(
-    url: string,
-    token: TokenModel | undefined,
-    language: string,
-    headers: HttpHeaders | undefined,
-): HttpHeaders {
-    let filledHeaders: HttpHeaders = headers ?? new HttpHeaders()
-
-    if (AppConfig.environment.backend.noAuthPaths.some((permitAll: string): boolean => url.includes(permitAll))) {
-        return filledHeaders
-    }
-
-    filledHeaders = filledHeaders.set(AUTHORIZATION, `${token?.tokenType} ${token?.accessToken}`)
-    return filledHeaders
 }

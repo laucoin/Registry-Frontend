@@ -2,7 +2,6 @@ import {computed, inject, Injectable, Signal} from '@angular/core'
 import {ActionCompletion, ofActionCompleted} from '@ngxs/store'
 import {SelectItem, ToastMessageOptions} from 'primeng/api'
 import {filter, map, Observable} from 'rxjs'
-import {TokenModel} from '../../util-authentication/model/token.model'
 import {CurrentUserModel} from '../../util-model/model/current-user.model'
 import {ProjectProfileModel} from '../../util-model/model/project-profile.model'
 import {PageModel} from '../../util-model/model/page.model'
@@ -19,7 +18,6 @@ import {
     Logout,
     ManageUserProjectInvitationAcceptance,
     Notify,
-    RestoreSessionFromStorage,
     SelectUserProjectProfile,
     SelectUserProjectProfileByProject,
     SetGlobalError,
@@ -46,7 +44,7 @@ import {ProjectModel} from '../../util-model/model/project.model'
 import {AppConfig} from '../../../app.config'
 import {ErrorModel} from '../../util-model/model/error.model'
 import {SessionStorageUtils} from '../../util-tool/util/session-storage.util'
-import {REDIRECT_URI, TOKEN} from '../../util-tool/util/request.util'
+import {REDIRECT_URI} from '../../util-tool/util/request.util'
 import {GenericFacade} from '../../util-tool/facade/generic.facade'
 import {RegistryState} from './registry.state'
 import {DateUtil} from '../../util-tool/util/date.util'
@@ -131,10 +129,6 @@ export class RegistryFacade extends GenericFacade {
 
     public get notification(): Observable<ToastMessageOptions | undefined> {
         return this.ngStore.select(RegistryState.notification)
-    }
-
-    public get token(): Signal<TokenModel | undefined> {
-        return this.ngStore.selectSignal(RegistryState.tokens)
     }
 
     public get currentUser$(): Observable<CurrentUserModel> {
@@ -304,12 +298,6 @@ export class RegistryFacade extends GenericFacade {
 
     public impersonateCurrentUser(): void {
         this.ngStore.dispatch(ImpersonateCurrentUser)
-    }
-
-    public restoreSessionFromStorage(): void {
-        if (SessionStorageUtils.check(TOKEN)) {
-            this.ngStore.dispatch(new RestoreSessionFromStorage(SessionStorageUtils.get(TOKEN) as TokenModel))
-        }
     }
 
     public fetchToken(authorizationCode: string): void {
