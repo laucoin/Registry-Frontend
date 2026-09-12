@@ -1,3 +1,9 @@
+## [1.4.0](https://github.com/laucoin/Registry-Frontend/compare/1.3.0...1.4.0) (2026-09-12)
+
+### 🚀 Features
+
+* **auth:** Authenticate with cookie instead of header ([#26](https://github.com/laucoin/Registry-Frontend/issues/26)) ([110357c](https://github.com/laucoin/Registry-Frontend/commit/110357c5a29adfc000c3397fb29802db31bdfad9))
+
 ## [1.3.0](https://github.com/laucoin/Registry-Frontend/compare/1.2.1...1.3.0) (2026-09-05)
 
 ### 📦️ Other
