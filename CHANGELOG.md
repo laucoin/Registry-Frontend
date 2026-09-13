@@ -1,3 +1,9 @@
+## [1.6.2](https://github.com/laucoin/Registry-Frontend/compare/1.6.1...1.6.2) (2026-09-13)
+
+### 🐛 Bug Fixes
+
+* **GDPR:** Not log anymore form data in console ([#30](https://github.com/laucoin/Registry-Frontend/issues/30)) ([ea429ff](https://github.com/laucoin/Registry-Frontend/commit/ea429ffecd5705b341c4e1cf02dc51756fdfd2a9))
+
 ## [1.6.1](https://github.com/laucoin/Registry-Frontend/compare/1.6.0...1.6.1) (2026-09-13)
 
 ### 🐛 Bug Fixes
