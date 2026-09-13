@@ -8,6 +8,7 @@ import { inject } from '@angular/core'
 import { CustomDateFormatPipe } from '../pipe/custom-date-format.pipe'
 import { Location } from '@angular/common'
 import { GenericUtil } from '../util/generic.util'
+import { AppConfig } from '../../../app.config'
 
 export abstract class GenericFormComponent<M, D> extends GenericComponent {
     protected readonly datePipe: CustomDateFormatPipe = inject( CustomDateFormatPipe )
@@ -21,6 +22,11 @@ export abstract class GenericFormComponent<M, D> extends GenericComponent {
 
     protected constructor () {
         super()
+    }
+
+    // Form values may carry participants' personal data — kept out of the console in production.
+    protected logInvalidForm (value: unknown): void {
+        if (!AppConfig.environment.production) console.warn( this.invalidFormMessage, value )
     }
 
     private static get startDateExample (): Date {

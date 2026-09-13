@@ -135,7 +135,7 @@ export class ActivityFormComponent extends GenericFormComponent<ActivityModel, A
 
     protected submit(): void {
         if (!FormUtil.isFormValid(this.form)) {
-            console.warn(this.invalidFormMessage, this.form.value)
+            this.logInvalidForm(this.form.value)
             return
         }
 
