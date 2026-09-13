@@ -117,7 +117,7 @@ export class VehicleFormComponent extends GenericFormComponent<VehicleModel, Veh
 
     protected submit(): void {
         if (!FormUtil.isFormValid(this.form)) {
-            console.warn(this.invalidFormMessage, this.form.value)
+            this.logInvalidForm(this.form.value)
             return
         }
 

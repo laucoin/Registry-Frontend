@@ -250,13 +250,13 @@ export class MovementFormComponent extends GenericFormComponent<MovementModel, M
     protected submit(): void {
         switch (true) {
             case !FormUtil.isFormValid(this.informationForm):
-                console.warn(this.invalidFormMessage, this.informationForm.value)
+                this.logInvalidForm(this.informationForm.value)
                 return
             case !FormUtil.isFormValid(this.contentForm):
-                console.warn(this.invalidFormMessage, this.contentForm.value)
+                this.logInvalidForm(this.contentForm.value)
                 return
             case !FormUtil.isFormValid(this.vehicleForm):
-                console.warn(this.invalidFormMessage, this.vehicleForm.value)
+                this.logInvalidForm(this.vehicleForm.value)
                 return
         }
 
