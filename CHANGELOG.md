@@ -1,3 +1,9 @@
+## [1.5.0](https://github.com/laucoin/Registry-Frontend/compare/1.4.0...1.5.0) (2026-09-13)
+
+### 📦️ Other
+
+* **security:** clean nginx.conf ([#27](https://github.com/laucoin/Registry-Frontend/issues/27)) ([274e50e](https://github.com/laucoin/Registry-Frontend/commit/274e50e45dd0b02e46ea5c403f12d18099e3df4c))
+
 ## [1.4.0](https://github.com/laucoin/Registry-Frontend/compare/1.3.0...1.4.0) (2026-09-12)
 
 ### 🚀 Features
