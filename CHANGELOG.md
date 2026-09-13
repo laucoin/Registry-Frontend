@@ -1,3 +1,9 @@
+## [1.6.0](https://github.com/laucoin/Registry-Frontend/compare/1.5.0...1.6.0) (2026-09-13)
+
+### 📦️ Other
+
+* **dependabot:** add dependabot check ([#28](https://github.com/laucoin/Registry-Frontend/issues/28)) ([49cdb36](https://github.com/laucoin/Registry-Frontend/commit/49cdb367b91298bd83a852bbb43442b539ddee2a))
+
 ## [1.5.0](https://github.com/laucoin/Registry-Frontend/compare/1.4.0...1.5.0) (2026-09-13)
 
 ### 📦️ Other
