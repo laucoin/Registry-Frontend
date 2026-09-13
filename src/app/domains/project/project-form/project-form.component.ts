@@ -156,7 +156,7 @@ export class ProjectFormComponent extends GenericFormComponent<ProjectModel, Pro
 
     protected submit (): void {
         if (!FormUtil.isFormValid( this.form ) || !FormUtil.isFormValid( this.optionsForm )) {
-            console.warn( this.invalidFormMessage, {
+            this.logInvalidForm( {
                 ...this.form.value,
                 ...this.optionsForm.value,
             } )

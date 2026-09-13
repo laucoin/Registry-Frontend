@@ -56,7 +56,7 @@ export class ProjectProfileEditionFormComponent extends GenericProjectProfileFor
 
     protected submit(): void {
         if (!FormUtil.isFormValid(this.form)) {
-            console.warn(this.invalidFormMessage, this.form.value)
+            this.logInvalidForm(this.form.value)
             return
         }
 
