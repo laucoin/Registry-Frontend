@@ -1,3 +1,9 @@
+## [1.6.1](https://github.com/laucoin/Registry-Frontend/compare/1.6.0...1.6.1) (2026-09-13)
+
+### 🐛 Bug Fixes
+
+* **link:** Protect site from external link ([#29](https://github.com/laucoin/Registry-Frontend/issues/29)) ([5386553](https://github.com/laucoin/Registry-Frontend/commit/53865539b2b71869c94e916c37022550ca2e7c97))
+
 ## [1.6.0](https://github.com/laucoin/Registry-Frontend/compare/1.5.0...1.6.0) (2026-09-13)
 
 ### 📦️ Other
