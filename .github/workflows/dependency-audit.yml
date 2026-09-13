@@ -1,0 +1,33 @@
+name: Dependency Audit
+
+# Weekly full audit of pnpm-lock.yaml. Unlike dependency-review.yml, which only evaluates the
+# dependencies introduced by a PR's diff, this catches vulnerabilities disclosed after a dependency
+# was already merged in.
+on:
+  schedule:
+    - cron: "0 6 * * 1" # every Monday at 06:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      # pnpm version is read from package.json "packageManager".
+      - uses: pnpm/action-setup@v4
+
+      - name: Set up Node (with pnpm store cache)
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Audit dependencies
+        run: pnpm audit --audit-level high
