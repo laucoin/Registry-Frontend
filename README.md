@@ -261,6 +261,9 @@ The GitHub Actions workflows are the review gate — a pull request must be gree
   publishes a branch-tagged image for review.
 - **Dependency Review** ([dependency-review.yml](.github/workflows/dependency-review.yml)) — blocks a pull request that
   introduces vulnerable dependencies.
+- **Dependency Audit** ([dependency-audit.yml](.github/workflows/dependency-audit.yml)) — weekly `pnpm audit` of the
+  full lockfile, catching vulnerabilities disclosed after a dependency was already merged in (Dependency Review only
+  ever sees a PR's diff).
 - **CodeQL** ([codeql.yml](.github/workflows/codeql.yml)) — javascript-typescript static analysis on pull requests,
   pushes to `main` and on a schedule.
 - **Release** ([release.yml](.github/workflows/release.yml), on merge to `main`) — builds & pushes the DEV image, then
