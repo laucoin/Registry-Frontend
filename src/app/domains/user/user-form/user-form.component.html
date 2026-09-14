@@ -12,6 +12,7 @@
                     (keydown.enter)='submit()'
                     optionLabel='label'
                     optionValue='value' />
+            <small class='secondary-color'>{{ 'users.form.hint.role' | translate }}</small>
             <app-form-field-error [errors]='role.errors'
                                   [invalid]='FormUtil.invalid(role)'
                                   translationPrefix='users.form.error.role' />

@@ -448,6 +448,9 @@
     "form": {
       "title": "Mettre à jour le rôle de “{{firstName}} {{lastName}}”",
       "role": "Rôle",
+      "hint": {
+        "role": "Un changement de rôle peut mettre quelques instants à être appliqué partout."
+      },
       "error": {
         "role": {
           "required": "Le rôle de l’utilisateur ne peut pas être vide."
@@ -463,11 +466,11 @@
       "confirmations": {
         "disable": {
           "title": "Bloquer l’utilisateur",
-          "message": "Attention ! Tu vas bloquer un utilisateur. Tant qu’il est bloqué, {{element.firstName}} {{element.lastName}} ne pourra plus se connecter."
+          "message": "Attention ! Tu vas bloquer un utilisateur. Tant qu’il est bloqué, {{element.firstName}} {{element.lastName}} ne pourra plus se connecter. Ce changement peut mettre quelques instants à être appliqué partout."
         },
         "enable": {
           "title": "Débloquer l’utilisateur",
-          "message": "Attention ! Tu vas débloquer un utilisateur. {{element.firstName}} {{element.lastName}} pourra à nouveau se connecter."
+          "message": "Attention ! Tu vas débloquer un utilisateur. {{element.firstName}} {{element.lastName}} pourra à nouveau se connecter. Ce changement peut mettre quelques instants à être appliqué partout."
         },
         "impersonate": {
           "title": "Anonymiser l’utilisateur",
@@ -660,6 +663,7 @@
         }
       },
       "hint": {
+        "role": "Un changement de rôle peut mettre quelques instants à être appliqué partout.",
         "begin-date-time": "Par défaut, le profil sera disponible dès sa création.",
         "end-date-time": "Par défaut, le profil n’a pas de fin de validité."
       },
@@ -712,11 +716,11 @@
         },
         "disable": {
           "title": "Bloquer le profil",
-          "message": "Attention ! Tu vas bloquer un profil pour le projet “{{element.project.name}}”. Tant qu’il est bloqué, {{element.user.firstName}} {{element.user.lastName}} ne pourra plus l’utiliser."
+          "message": "Attention ! Tu vas bloquer un profil pour le projet “{{element.project.name}}”. Tant qu’il est bloqué, {{element.user.firstName}} {{element.user.lastName}} ne pourra plus l’utiliser. Ce changement peut mettre quelques instants à être appliqué partout."
         },
         "enable": {
           "title": "Débloquer le profil",
-          "message": "Attention ! Tu vas débloquer un profil pour le projet “{{element.project.name}}”. {{element.user.firstName}} {{element.user.lastName}} pourra à nouveau l’utiliser s’il est toujours valable."
+          "message": "Attention ! Tu vas débloquer un profil pour le projet “{{element.project.name}}”. {{element.user.firstName}} {{element.user.lastName}} pourra à nouveau l’utiliser s’il est toujours valable. Ce changement peut mettre quelques instants à être appliqué partout."
         },
         "delete": {
           "title": "Supprimer le profil",

@@ -448,6 +448,9 @@
     "form": {
       "title": "Update the role of “{{firstname}} {{lastname}}”",
       "role": "Role",
+      "hint": {
+        "role": "A role change may take a few moments to apply everywhere."
+      },
       "error": {
         "role": {
           "required": "The role of the user cannot be empty."
@@ -463,11 +466,11 @@
       "confirmations": {
         "disable": {
           "title": "Block the user",
-          "message": "Attention ! You will block a user. As long as it is blocked, {{element.firstname}} {{element.lastname}} will no longer be able to connect."
+          "message": "Attention ! You will block a user. As long as it is blocked, {{element.firstname}} {{element.lastname}} will no longer be able to connect. This change may take a few moments to apply everywhere."
         },
         "enable": {
           "title": "Unlock the user",
-          "message": "Attention ! You will unlock a user. {{element.firstname}} {{element.lastname}} may again connect."
+          "message": "Attention ! You will unlock a user. {{element.firstname}} {{element.lastname}} may again connect. This change may take a few moments to apply everywhere."
         },
         "impersonate": {
           "title": "Anonymize the user",
@@ -660,6 +663,7 @@
         }
       },
       "hint": {
+        "role": "A role change may take a few moments to apply everywhere.",
         "begin-date-time": "By default, the profile will be available from its creation.",
         "end-date-time": "By default, the profile has no end of validity."
       },
@@ -712,11 +716,11 @@
         },
         "disable": {
           "title": "Lock the profile",
-          "message": "Attention ! You will block a profile for the project “{{element.project.name}}”. As long as it is blocked, {{element.use.firstname}} {{element.user.lastname}} can no longer use it."
+          "message": "Attention ! You will block a profile for the project “{{element.project.name}}”. As long as it is blocked, {{element.use.firstname}} {{element.user.lastname}} can no longer use it. This change may take a few moments to apply everywhere."
         },
         "enable": {
           "title": "Unlock the profile",
-          "message": "Attention ! You will unlock a profile for the project “{{element.project.name}}”. {{element.user.firstname}} {{element.user.lastname}} may again use it if it is always valid."
+          "message": "Attention ! You will unlock a profile for the project “{{element.project.name}}”. {{element.user.firstname}} {{element.user.lastname}} may again use it if it is always valid. This change may take a few moments to apply everywhere."
         },
         "delete": {
           "title": "Delete profile",
