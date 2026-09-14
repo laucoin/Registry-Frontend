@@ -1,3 +1,13 @@
+## [1.7.0](https://github.com/laucoin/Registry-Frontend/compare/1.6.3...1.7.0) (2026-09-14)
+
+### 📦️ Other
+
+* **message:** Complete some translations to inform user action may … ([#32](https://github.com/laucoin/Registry-Frontend/issues/32)) ([2a277a5](https://github.com/laucoin/Registry-Frontend/commit/2a277a510bc11aaf4eef800e63b22d516df844ef))
+
+### 🐛 Bug Fixes
+
+* **refresh:** Avoid calling refresh token multiple times ([#31](https://github.com/laucoin/Registry-Frontend/issues/31)) ([0fb9414](https://github.com/laucoin/Registry-Frontend/commit/0fb9414e18125904f9cf48a3451fb94665aeb79b))
+
 ## [1.6.2](https://github.com/laucoin/Registry-Frontend/compare/1.6.1...1.6.2) (2026-09-13)
 
 ### 🐛 Bug Fixes
