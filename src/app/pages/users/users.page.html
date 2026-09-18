@@ -1,0 +1,12 @@
+<app-page-title
+	[eyebrow]="'users.eyebrow' | transloco"
+	[title]="'users.title' | transloco"
+	[lede]="'users.subtitle' | transloco"
+>
+	<button type="button" nz-button nzType="primary" (click)="addUser()">
+		<svg lucideUserPlus></svg>
+		{{ 'users.add' | transloco }}
+	</button>
+</app-page-title>
+
+<app-user-list />

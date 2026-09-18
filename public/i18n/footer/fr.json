@@ -1,0 +1,6 @@
+{
+  "terms": "Conditions d'utilisation",
+  "privacy": "Politique de confidentialité",
+  "support": "Support",
+  "version": "v{{ version }}"
+}

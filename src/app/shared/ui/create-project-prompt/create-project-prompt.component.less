@@ -1,0 +1,40 @@
+@import '../../../../theme.less';
+
+:host {
+	display: block;
+	height: 100%;
+}
+
+nz-card {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+.content {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: @in-block-spacing;
+	padding: @block-spacing @in-block-large-spacing;
+
+	h2 {
+		margin: 0;
+		color: @heading-color;
+		font-size: @text-lg;
+		font-weight: @font-weight-bold;
+	}
+
+	p {
+		margin: 0;
+		color: @text-color-secondary;
+		font-size: @text-sm;
+	}
+
+	button {
+		display: inline-flex;
+		align-items: center;
+		gap: @in-block-small-spacing;
+	}
+}

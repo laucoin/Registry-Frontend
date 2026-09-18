@@ -1,0 +1,38 @@
+<nz-card nzType="inner" [nzTitle]="header" [nzExtra]="extra" [nzBodyStyle]="{ padding: '0' }">
+	@if (profiles().length > 0) {
+		@for (profile of profiles(); track profile.id) {
+			<div class="profile">
+				<div class="profile-text">
+					<h3>{{ profile.projectName }}</h3>
+					<p>{{ profile.permissionsLabel }} · {{ profile.dateLabel }}</p>
+				</div>
+				<span class="role">{{ profile.roleLabel }}</span>
+			</div>
+			<nz-divider nzType="horizontal" />
+		}
+	} @else {
+		<div class="empty-state">
+			<nz-empty
+				[nzNotFoundContent]="'myAccesses.activeProfiles.empty' | transloco"
+				[nzNotFoundImage]="emptyIcon"
+			/>
+		</div>
+	}
+</nz-card>
+
+<ng-template #header>
+	<h2>
+		<svg lucideShieldCheck></svg>
+		{{ 'myAccesses.activeProfiles.title' | transloco }}
+	</h2>
+</ng-template>
+
+<ng-template #extra>
+	@if (profiles().length > 0) {
+		<span class="count">{{ profiles().length }}</span>
+	}
+</ng-template>
+
+<ng-template #emptyIcon>
+	<app-empty-state-icon />
+</ng-template>

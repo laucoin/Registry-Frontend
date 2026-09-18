@@ -1,0 +1,247 @@
+@import '../../../../theme.less';
+
+:host {
+	display: block;
+}
+
+::ng-deep .ant-card-head-title {
+	display: flex;
+	align-items: center;
+	gap: @in-block-small-spacing;
+	color: @heading-color;
+	font-size: @text-sm;
+	font-weight: @font-weight-bold;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+
+	h2 {
+		display: contents;
+		font: inherit;
+		color: inherit;
+		letter-spacing: inherit;
+		text-transform: inherit;
+	}
+
+	svg {
+		width: 1rem;
+		height: 1rem;
+	}
+}
+
+.count {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 1.5rem;
+	padding: 0.125rem @in-block-small-spacing;
+	border-radius: 999px;
+	background: @info-color-deprecated-bg;
+	color: @info-color;
+	font-size: @text-xs;
+	font-weight: @font-weight-bold;
+}
+
+.header-extra {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: @in-block-large-spacing;
+}
+
+.favorites {
+	display: flex;
+	align-items: center;
+	gap: 0.375rem;
+	color: @text-color-secondary;
+	font-size: @text-sm;
+	white-space: nowrap;
+
+	svg {
+		width: 0.875rem;
+		height: 0.875rem;
+		color: @warning-color;
+		fill: currentcolor;
+	}
+}
+
+.search {
+	display: flex;
+	align-items: center;
+	gap: @in-block-small-spacing;
+	width: 16rem;
+	max-width: 100%;
+	padding: 0 @in-block-spacing;
+	border: 1px solid @border-color-base;
+	border-radius: @border-radius-base;
+	background: @component-background;
+
+	svg {
+		flex: none;
+		width: 1rem;
+		height: 1rem;
+		color: @text-color-secondary;
+	}
+
+	input {
+		flex: 1;
+		min-width: 0;
+		border: none;
+		background: none;
+		padding: @in-block-small-spacing 0;
+		color: @text-color;
+		font-family: inherit;
+		font-size: @text-sm;
+
+		&:focus {
+			outline: none;
+		}
+
+		&::placeholder {
+			color: @text-color-secondary;
+		}
+	}
+}
+
+.project-row {
+	display: flex;
+	align-items: center;
+	gap: @in-block-spacing;
+	padding: @in-block-large-spacing;
+
+	@media (max-width: @breakpoint-tablet) {
+		flex-wrap: wrap;
+	}
+}
+
+.favorite {
+	flex: none;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: none;
+	background: none;
+	padding: 0;
+	color: @border-color-base;
+	cursor: pointer;
+
+	svg {
+		width: 1.125rem;
+		height: 1.125rem;
+	}
+
+	&.active {
+		color: @warning-color;
+
+		svg {
+			fill: currentcolor;
+		}
+	}
+}
+
+.code {
+	flex: none;
+	padding: @in-block-small-spacing @in-block-spacing;
+	border-radius: @border-radius-base;
+	background: tint(@primary-color, 92%);
+	color: @primary-color;
+	font-size: @text-sm;
+	font-weight: @font-weight-bold;
+}
+
+.project-text {
+	flex: 1;
+	min-width: 12rem;
+
+	h3 {
+		margin: 0;
+		color: @primary-color;
+		font-size: @text-base;
+		font-weight: @font-weight-bold;
+	}
+
+	p {
+		margin: 0.125rem 0 0;
+		color: @text-color-secondary;
+		font-size: @text-sm;
+	}
+}
+
+.modules {
+	flex: none;
+	max-width: 16rem;
+	color: @text-color-secondary;
+	font-size: @text-sm;
+	text-align: right;
+
+	@media (max-width: @breakpoint-tablet) {
+		display: none;
+	}
+}
+
+.status {
+	flex: none;
+	padding: 0.125rem @in-block-small-spacing;
+	border-radius: 999px;
+	font-size: @text-xs;
+	font-weight: @font-weight-bold;
+	letter-spacing: 0.02em;
+	text-transform: uppercase;
+	white-space: nowrap;
+
+	&.inProgress {
+		background: @success-color-deprecated-bg;
+		color: @success-color;
+	}
+
+	&.inPreparation {
+		background: @info-color-deprecated-bg;
+		color: @info-color;
+	}
+
+	&.completed,
+	&.archived {
+		background: @disabled-background;
+		color: @text-color-secondary;
+	}
+}
+
+.row-menu {
+	flex: none;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 2rem;
+	height: 2rem;
+	border: none;
+	background: none;
+	color: @text-color-secondary;
+	cursor: pointer;
+
+	&:hover {
+		color: @text-color;
+	}
+
+	svg {
+		width: 1.125rem;
+		height: 1.125rem;
+	}
+}
+
+::ng-deep .ant-dropdown-menu-item.danger {
+	color: @error-color;
+}
+
+nz-divider {
+	margin: 0;
+
+	&:last-child {
+		display: none;
+	}
+}
+
+.empty-state {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: @block-spacing @in-block-large-spacing;
+}

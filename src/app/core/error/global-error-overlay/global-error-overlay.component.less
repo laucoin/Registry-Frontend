@@ -1,0 +1,85 @@
+@import '../../../../theme.less';
+
+:host {
+	display: block;
+}
+
+.overlay {
+	position: fixed;
+	inset: 0;
+	z-index: 1000;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: @block-spacing;
+	background: var(--sgdf-bg-subtle);
+}
+
+.panel {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: @in-block-spacing;
+	max-width: 28rem;
+	padding: @block-spacing @in-block-large-spacing;
+	text-align: center;
+	border: 1px solid var(--sgdf-border);
+	border-radius: @border-radius-base;
+	background: var(--sgdf-bg);
+}
+
+.icon {
+	width: 2.5rem;
+	height: 2.5rem;
+	color: @error-color;
+}
+
+h1 {
+	margin: 0;
+	color: var(--sgdf-heading);
+	font-size: @text-lg;
+	font-weight: @font-weight-bold;
+}
+
+p {
+	margin: 0;
+	color: var(--sgdf-text-secondary);
+	font-size: @text-sm;
+}
+
+.actions {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: @in-block-spacing;
+	margin-top: @in-block-spacing;
+}
+
+.retry {
+	display: inline-flex;
+	align-items: center;
+	gap: @in-block-small-spacing;
+	border: none;
+	border-radius: @border-radius-base;
+	background: var(--sgdf-primary);
+	padding: @in-block-spacing @block-spacing;
+	color: #fff;
+	font-family: inherit;
+	font-size: @text-sm;
+	font-weight: @font-weight-semibold;
+	cursor: pointer;
+
+	&:hover {
+		opacity: 0.9;
+	}
+}
+
+.support {
+	color: @link-color;
+	font-size: @text-sm;
+	font-weight: @font-weight-medium;
+
+	&:hover {
+		color: @link-hover-color;
+	}
+}

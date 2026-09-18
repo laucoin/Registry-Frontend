@@ -1,0 +1,112 @@
+<nz-card nzType="inner" [nzTitle]="header" [nzExtra]="extra" [nzBodyStyle]="{ padding: '0' }">
+	@if (filteredProjects().length > 0) {
+		@for (project of filteredProjects(); track project.id) {
+			<div class="project-row">
+				<button
+					type="button"
+					class="favorite"
+					[class.active]="project.isFavorite"
+					[attr.aria-label]="'projects.list.toggleFavorite' | transloco"
+					(click)="toggleFavorite(project)"
+				>
+					<svg lucideStar></svg>
+				</button>
+				<span class="code">{{ project.code }}</span>
+				<div class="project-text">
+					<h3>{{ project.name }}</h3>
+					<p>
+						{{ 'projects.list.participants' | transloco: { count: project.participantsCount } }}
+						@if (project.secondaryStatLabel) {
+							· {{ project.secondaryStatLabel }}
+						}
+						· {{ project.dateRangeLabel }} · {{ project.activityLabel }}
+					</p>
+				</div>
+				<span class="modules">{{
+					project.moduleLabels.length > 0
+						? project.moduleLabels.join(' · ')
+						: ('projects.list.presenceOnly' | transloco)
+				}}</span>
+				<span class="status" [class]="project.status">{{
+					'projects.status.' + project.status | transloco
+				}}</span>
+				<button type="button" nz-button (click)="openProject(project)">
+					{{ 'projects.list.open' | transloco }}
+				</button>
+				<button
+					type="button"
+					class="row-menu"
+					nz-dropdown
+					nzTrigger="click"
+					[nzDropdownMenu]="rowMenu"
+					[attr.aria-label]="'projects.list.rowMenu' | transloco"
+				>
+					<svg lucideEllipsisVertical></svg>
+				</button>
+				<nz-dropdown-menu #rowMenu="nzDropdownMenu">
+					<ul nz-menu>
+						<!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -- nz-menu-item already makes the host focusable and wires keyboard activation (Enter/Space) itself. -->
+						<li nz-menu-item (click)="editProject(project)">
+							<svg lucidePencil></svg>
+							{{ 'projects.list.edit' | transloco }}
+						</li>
+						<!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -- nz-menu-item already makes the host focusable and wires keyboard activation (Enter/Space) itself. -->
+						<li nz-menu-item (click)="deactivateProject(project)">
+							<svg lucideBan></svg>
+							{{ 'projects.list.deactivate' | transloco }}
+						</li>
+						<!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -- nz-menu-item already makes the host focusable and wires keyboard activation (Enter/Space) itself. -->
+						<li nz-menu-item class="danger" (click)="deleteProject(project)">
+							<svg lucideTrash2></svg>
+							{{ 'projects.list.delete' | transloco }}
+						</li>
+					</ul>
+				</nz-dropdown-menu>
+			</div>
+			<nz-divider nzType="horizontal" />
+		}
+	} @else {
+		<div class="empty-state">
+			<nz-empty
+				[nzNotFoundContent]="
+					(projects().length > 0 ? 'projects.list.noResults' : 'projects.list.empty') | transloco
+				"
+				[nzNotFoundImage]="emptyIcon"
+			/>
+		</div>
+	}
+</nz-card>
+
+<ng-template #header>
+	<h2>
+		<svg lucideFolderKanban></svg>
+		{{ 'projects.list.title' | transloco }}
+	</h2>
+	@if (projects().length > 0) {
+		<span class="count">{{ projects().length }}</span>
+	}
+</ng-template>
+
+<ng-template #extra>
+	<div class="header-extra">
+		@if (favoriteCount() > 0) {
+			<span class="favorites">
+				<svg lucideStar></svg>
+				{{ 'projects.list.favorites' | transloco: { count: favoriteCount() } }}
+			</span>
+		}
+		<div class="search">
+			<svg lucideSearch></svg>
+			<input
+				type="search"
+				[value]="searchTerm()"
+				(input)="onSearchInput($event)"
+				[placeholder]="'projects.list.searchPlaceholder' | transloco"
+			/>
+		</div>
+	</div>
+</ng-template>
+
+<ng-template #emptyIcon>
+	<app-empty-state-icon />
+</ng-template>

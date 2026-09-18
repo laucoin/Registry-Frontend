@@ -1,0 +1,57 @@
+<div class="header">
+	<div class="header-text">
+		<h2>{{ 'home.favoritesProjects.title' | transloco }}</h2>
+		@if (projects().length > 0) {
+			<span class="subtitle">{{
+					'home.favoritesProjects.subtitle'
+						| transloco: { count: projects().length, total: totalCount() }
+				}}</span>
+		}
+	</div>
+	<button type="button" class="see-all" (click)="viewAllProjects()">
+		{{ 'home.favoritesProjects.seeAll' | transloco }}
+	</button>
+</div>
+
+@if (projects().length > 0) {
+	<div class="grid">
+		@for (project of projects(); track project.id) {
+			<a class="project-card" [routerLink]="['/projects', project.id, 'home']">
+				<div class="card-top">
+					@if (project.availability?.label) {
+						<span class="status" [class]="project.availability.status">{{
+								project.availability.label
+							}}</span>
+					} @else {
+						<span></span>
+					}
+					<button
+						type="button"
+						class="favorite"
+						[class.active]="project.isFavorite"
+						[attr.aria-label]="'home.favoritesProjects.toggleFavorite' | transloco"
+						(click)="onToggleFavorite($event, project)"
+					>
+						<svg lucideStar></svg>
+					</button>
+				</div>
+				<h3 class="name">{{ project.name }}</h3>
+				<nz-divider nzType="horizontal"/>
+				<p class="footer">{{ project.dateRangeLabel }} · {{ project.lastActivityLabel }}</p>
+			</a>
+		}
+	</div>
+} @else {
+	<div class="empty-state">
+		<nz-empty [nzNotFoundContent]="emptyContent" [nzNotFoundImage]="emptyIcon"/>
+	</div>
+}
+
+<ng-template #emptyContent>
+	<p class="empty-title">{{ 'home.favoritesProjects.emptyFavoritesTitle' | transloco }}</p>
+	<p class="empty-hint">{{ 'home.favoritesProjects.emptyFavoritesHint' | transloco }}</p>
+</ng-template>
+
+<ng-template #emptyIcon>
+	<app-empty-state-icon />
+</ng-template>

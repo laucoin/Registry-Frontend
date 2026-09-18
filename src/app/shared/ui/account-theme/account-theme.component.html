@@ -1,0 +1,43 @@
+<nz-card nzType="inner" [nzTitle]="header" [nzBodyStyle]="{ padding: '0' }">
+	<div class="options">
+		<button
+			type="button"
+			class="option"
+			[class.selected]="preference() === 'light'"
+			[disabled]="!currentUser()"
+			(click)="selectPreference('light')"
+		>
+			<svg lucideSun></svg>
+			{{ 'myAccount.theme.light' | transloco }}
+		</button>
+		<button
+			type="button"
+			class="option"
+			[class.selected]="preference() === 'dark'"
+			[disabled]="!currentUser()"
+			(click)="selectPreference('dark')"
+		>
+			<svg lucideMoon></svg>
+			{{ 'myAccount.theme.dark' | transloco }}
+		</button>
+		<button
+			type="button"
+			class="option"
+			[class.selected]="preference() === 'system'"
+			[disabled]="!currentUser()"
+			(click)="selectPreference('system')"
+		>
+			<svg lucideMonitor></svg>
+			{{ 'myAccount.theme.system' | transloco }}
+		</button>
+	</div>
+	<nz-divider nzType="horizontal" />
+	<div class="hint">{{ 'myAccount.theme.hint' | transloco }}</div>
+</nz-card>
+
+<ng-template #header>
+	<h2>
+		<svg lucideSun></svg>
+		{{ 'myAccount.theme.title' | transloco }}
+	</h2>
+</ng-template>

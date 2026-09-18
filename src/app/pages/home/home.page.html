@@ -1,0 +1,43 @@
+<app-page-title
+	[eyebrow]="'home.eyebrow' | transloco"
+	[title]="titleKey() | transloco: { username: displayName() }"
+	[lede]="'home.subtitle' | transloco"
+/>
+<section class="home-content">
+	<div class="favorites" [class.hero]="heroSlot() === 'favorites'" [class.shrunk]="favoritesEmpty()">
+		<app-favorites-projects
+			[projects]="favoritesProjects()"
+			[totalCount]="favoritesProjectsTotal()"
+			(favoriteToggled)="onFavoriteToggled($event)"
+		/>
+	</div>
+	@if (heroSlot() === 'createProject') {
+		<div class="create-project hero">
+			<app-create-project-prompt/>
+		</div>
+	}
+	@if (showSecondaryWidgets()) {
+		<div class="invitations" [class.hero]="heroSlot() === 'invitations'">
+			<app-received-invitations
+				[invitations]="receivedInvitations()"
+				(accepted)="onInvitationAccepted($event)"
+				(declined)="onInvitationRejected($event)"
+			/>
+		</div>
+		<div class="attention">
+			<app-attention-projects [projects]="attentionProjects()" (favoriteToggled)="onFavoriteToggled($event)"/>
+		</div>
+		<div class="projects-in-progress" [class.hero]="heroSlot() === 'projectsInProgress'">
+			<app-projects-in-progress
+				[projects]="projectsInProgress()"
+				(favoriteToggled)="onFavoriteToggled($event)"
+			/>
+		</div>
+		<div class="upcoming" [class.hero]="heroSlot() === 'upcoming'">
+			<app-upcoming-projects [projects]="upcomingProjects()" (favoriteToggled)="onFavoriteToggled($event)"/>
+		</div>
+	}
+	<div class="shortcuts">
+		<app-shortcuts/>
+	</div>
+</section>

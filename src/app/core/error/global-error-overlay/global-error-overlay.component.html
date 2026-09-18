@@ -1,0 +1,18 @@
+<div class="overlay" role="alertdialog" aria-live="assertive">
+	<div class="panel">
+		<svg class="icon" lucideCircleAlert></svg>
+		<h1>{{ 'globalError.title' | transloco }}</h1>
+		<p>{{ messageKey() | transloco }}</p>
+		<div class="actions">
+			<button type="button" class="retry" (click)="retry()">
+				<svg lucideRefreshCw></svg>
+				{{ 'globalError.retry' | transloco }}
+			</button>
+			@if (supportUrl(); as url) {
+				<a class="support" [href]="url" target="_blank" rel="noopener noreferrer">
+					{{ 'globalError.contactSupport' | transloco }}
+				</a>
+			}
+		</div>
+	</div>
+</div>
