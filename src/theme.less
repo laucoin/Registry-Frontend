@@ -1,0 +1,63 @@
+// ── Colors ──────────────────────────────────────────────────
+@primary-color: #003a5d;
+@processing-color: @primary-color;
+@info-color: #0077b3;
+@success-color: #007254;
+@warning-color: #ff8300;
+@error-color: #d03f15;
+
+// ── Neutral & text ──────────────────────────────────────────────────────
+@text-color: #343343;
+@text-color-secondary: #6b7280;
+@heading-color: #003a5d;
+@disabled-color: fade(#343343, 40%);
+@border-color-base: #d1d5db;
+@component-background: #ffffff;
+@body-background: #f9fafb;
+
+// ── Typography ──────────────────────────────────────────────────────────
+@font-family: 'Sarabun', 'Segoe UI', Arial, sans-serif;
+@font-size-base: 16px;
+@line-height-base: 1.5;
+
+// ── Border radius, heights, shadows ─────────────────────────────────────────────
+@border-radius-base: 8px;
+@height-base: 40px;
+@height-lg: 50px;
+@height-sm: 30px;
+
+@shadow-color: rgba(0, 0, 0, 0.1);
+@box-shadow-base:
+	0 4px 6px -1px rgba(0, 0, 0, 0.1),
+	0 2px 4px -2px rgba(0, 0, 0, 0.1); // sgdf-shadow-md
+
+// ── Buttons ──────────────────────────────────────────────────────────────
+@btn-font-weight: 600;
+@btn-primary-color: #ffffff;
+@btn-primary-bg: @primary-color;
+
+// ── Links ────────────────────────────────────────────────────────────────
+@link-color: @primary-color;
+@link-hover-color: #0b2b40; // sgdf-color-default-hover
+
+// ── Focus ────────────────────────────────────────────────────────────────
+@outline-color: @primary-color;
+
+// ── Tags de statut & alertes ─────────────────────────────────────────────
+@success-color-deprecated-bg: tint(@success-color, 90%);
+@success-color-deprecated-border: tint(@success-color, 55%);
+@warning-color-deprecated-bg: tint(@warning-color, 90%);
+@warning-color-deprecated-border: tint(@warning-color, 55%);
+@error-color-deprecated-bg: tint(@error-color, 90%);
+@error-color-deprecated-border: tint(@error-color, 55%);
+@info-color-deprecated-bg: tint(@info-color, 90%);
+@info-color-deprecated-border: tint(@info-color, 55%);
+
+@alert-success-bg-color: tint(@success-color, 92%);
+@alert-success-border-color: tint(@success-color, 65%);
+@alert-warning-bg-color: tint(@warning-color, 92%);
+@alert-warning-border-color: tint(@warning-color, 65%);
+@alert-error-bg-color: tint(@error-color, 92%);
+@alert-error-border-color: tint(@error-color, 65%);
+@alert-info-bg-color: tint(@info-color, 92%);
+@alert-info-border-color: tint(@info-color, 65%);

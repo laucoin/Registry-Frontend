@@ -1,9 +1,0 @@
-<app-list (updateRequired)='loadPage($event)'
-          [elementPage]='facade.currentMovementsPageWithActivity()'
-          [error]='facade.currentMovementsPageWithActivityError()'
-          [loading]='facade.currentMovementsPageWithActivityLoading()'
-          emptyMessagePrefix='activities.notifications.EMPTY'>
-    <ng-template appTemplate='element' let-movement>
-        <app-movement-element [movement]='movement' [reversible]='true' [communicable]='true' />
-    </ng-template>
-</app-list>
