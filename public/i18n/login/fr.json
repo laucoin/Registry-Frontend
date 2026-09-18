@@ -1,0 +1,13 @@
+{
+  "tagline": "Gestion des présences par projet",
+  "eyebrow": "Espace membre",
+  "title": "Ravie de te revoir",
+  "subtitle": "Connecte-toi avec ton compte {{ organizationName }} pour accéder à tes projets.",
+  "submit": "Se connecter",
+  "legalPrefix": "En te connectant, tu reconnais avoir pris connaissance des",
+  "terms": "conditions d'utilisation",
+  "legalMiddle": "et de la",
+  "privacy": "politique de confidentialité",
+  "heroCaption": "Bienvenue",
+  "heroQuote": "« Avoir une vue d'ensemble des présences. »"
+}

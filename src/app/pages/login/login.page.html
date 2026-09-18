@@ -1,0 +1,69 @@
+<main class="login-shell">
+	<section class="login-panel">
+		<div class="login-panel__inner">
+			<header class="brand-row">
+				<div class="brand-row__identity">
+					<span class="brand-mark">R</span>
+					<div class="brand-row__text">
+						<strong>Registry</strong>
+						<span>{{ 'login.tagline' | transloco }}</span>
+					</div>
+				</div>
+				<div class="org-mark" aria-hidden="true">
+					<svg
+						viewBox="0 0 24 24"
+						width="18"
+						height="18"
+						fill="none"
+						xmlns="http://www.w3.org/2000/svg"
+					>
+						<path d="M3 18 9 8l4 6 2-3 6 7z" fill="currentColor"/>
+					</svg>
+					<span>{{ organization()?.name }}</span>
+				</div>
+			</header>
+
+			<div>
+				<p class="eyebrow">{{ 'login.eyebrow' | transloco }}</p>
+				<h1>{{ 'login.title' | transloco }}</h1>
+				<p class="lede">
+					{{ 'login.subtitle' | transloco: { organizationName: organization()?.name } }}
+				</p>
+
+				<button
+					nz-button
+					nzType="primary"
+					nzBlock
+					nzSize="large"
+					type="button"
+					class="submit-btn"
+					(click)="login()"
+				>
+					{{ 'login.submit' | transloco }}
+				</button>
+
+				<p class="legal">
+					{{ 'login.legalPrefix' | transloco }}
+					<a routerLink="/terms">{{ 'login.terms' | transloco }}</a>
+					{{ 'login.legalMiddle' | transloco }}
+					<a routerLink="/privacy">{{ 'login.privacy' | transloco }}</a
+					>.
+				</p>
+			</div>
+		</div>
+	</section>
+
+	<section class="login-hero">
+		<img
+			ngSrc="/images/login-hero.webp"
+			fill="true"
+			alt=""
+			class="login-hero__photo"
+			[class.login-hero__photo--loaded]="heroPhotoLoaded()"
+			(load)="heroPhotoLoaded.set(true)"
+		/>
+		<div class="login-hero__scrim"></div>
+		<p class="login-hero__caption">{{ 'login.heroCaption' | transloco }}</p>
+		<blockquote class="login-hero__quote">{{ 'login.heroQuote' | transloco }}</blockquote>
+	</section>
+</main>

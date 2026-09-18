@@ -1,0 +1,138 @@
+{
+  "back": "Retour",
+  "title": "Conditions générales d'utilisation",
+  "updatedAt": "Dernière mise à jour : 17 septembre 2026",
+  "intro": [
+    "Les présentes conditions générales d'utilisation (les « CGU ») régissent l'accès et l'utilisation de Registry (l'« Application »), un outil gratuit de gestion des présences par projet, mis à disposition des membres de {{ organizationName }}.",
+    "En te connectant à l'Application, tu reconnais avoir pris connaissance des présentes CGU et de la politique de confidentialité, et tu t'engages à les respecter."
+  ],
+  "sections": {
+    "publisher": {
+      "title": "1. Éditeur",
+      "identityLine": "Registry est édité, à titre personnel et non professionnel, par {{ creatorName }}. Contact : <a href=\"mailto:{{ creatorEmail }}\">{{ creatorEmail }}</a>.",
+      "affiliationLine": "Registry a été conçu à l'origine pour les Scouts et Guides de France (SGDF), mais l'Application est un service proposé en mode SaaS, pouvant être déployé pour d'autres organisations : cette instance est mise à disposition des membres de {{ organizationName }}, qui intervient comme fournisseur d'identité pour la connexion (SSO). Selon les modalités propres à ce déploiement, {{ organizationName }} peut également intervenir dans l'hébergement ou le suivi technique (monitoring) de l'Application, mais ce n'est pas systématique ; le cas échéant, ces précisions sont communiquées par {{ organizationName }} ou par l'Éditeur.",
+      "hostingClause": "L'Application est hébergée par {{ providerName }}, dont le siège est situé au {{ providerAddress }}.",
+      "hostingFallback": "Les informations relatives à l'hébergeur ne sont pas renseignées sur cette page ; tu peux les obtenir en écrivant à <a href=\"mailto:{{ creatorEmail }}\">{{ creatorEmail }}</a>.",
+      "contactLine": "Pour toute question relative aux présentes CGU, tu peux écrire à <a href=\"mailto:{{ creatorEmail }}\">{{ creatorEmail }}</a>."
+    },
+    "definitions": {
+      "title": "2. Définitions",
+      "body": [
+        "Pour les besoins des présentes CGU, les termes suivants ont la signification indiquée ci-dessous :"
+      ],
+      "list": [
+        "« Application » : le service Registry, accessible via le site et l'interface décrits dans les présentes CGU.",
+        "« Éditeur » : la personne physique identifiée à l'article 1, responsable de l'édition et du fonctionnement technique de l'Application.",
+        "« Utilisateur » : toute personne disposant d'un Compte, qui se connecte à l'Application via son compte {{ organizationName }}.",
+        "« Compte » : l'accès personnel d'un Utilisateur à l'Application, associé à son identité {{ organizationName }} (identifiant, adresse e-mail, prénom, nom).",
+        "« Projet » : un espace créé dans l'Application par un ou plusieurs Utilisateurs pour suivre la présence de Participants à une activité, un camp ou toute autre activité de {{ organizationName }}.",
+        "« Responsable de projet » : l'Utilisateur qui crée et administre un Projet, ainsi que toute personne qu'il autorise à y saisir des données.",
+        "« Participant » : toute personne dont la présence à un Projet est enregistrée par un Utilisateur (nom, prénom, date de naissance, présences), qu'elle dispose ou non elle-même d'un Compte. Selon l'organisation, les Participants peuvent être des mineurs encadrés dans le cadre des activités de {{ organizationName }}."
+      ]
+    },
+    "acceptance": {
+      "title": "3. Acceptation des CGU",
+      "body": [
+        "La création ou l'utilisation d'un Compte vaut acceptation pleine et entière des présentes CGU. Si tu n'acceptes pas ces CGU, tu ne dois pas utiliser l'Application."
+      ]
+    },
+    "access": {
+      "title": "4. Accès au service",
+      "body": [
+        "L'accès à l'Application est réservé aux personnes disposant d'un compte {{ organizationName }} valide : la connexion se fait exclusivement via l'authentification unique (SSO) fournie par {{ organizationName }}, l'Éditeur ne gère lui-même ni mot de passe ni inscription directe.",
+        "L'Éditeur se réserve le droit de suspendre ou de supprimer l'accès d'un Utilisateur en cas d'usage contraire aux présentes CGU."
+      ]
+    },
+    "description": {
+      "title": "5. Description du service",
+      "body": [
+        "Registry permet à des Utilisateurs de créer des Projets et d'y enregistrer les entrées et sorties (présences) de Participants à des activités de {{ organizationName }}. Ces enregistrements constituent un registre destiné à assurer la traçabilité des présences, notamment pour reconstituer le déroulé des événements en cas d'incident (accident, agression, ou tout autre besoin de preuve). L'Application est fournie gratuitement, sans contrepartie financière ni abonnement."
+      ]
+    },
+    "roles": {
+      "title": "6. Répartition des responsabilités relatives aux données personnelles",
+      "body": [
+        "L'utilisation de l'Application implique le traitement de deux catégories de données personnelles, dont la responsabilité au sens du Règlement général sur la protection des données (RGPD) est répartie différemment :",
+        "Pour les données de Compte (identifiant {{ organizationName }}, e-mail, prénom, nom), l'Éditeur agit en tant que responsable de traitement : il détermine les finalités et les moyens de ce traitement, et c'est lui qui doit être contacté pour l'exercice des droits relatifs à ces données.",
+        "Pour les données de Participants saisies dans un Projet, c'est le Responsable de projet qui agit en tant que responsable de traitement : il décide de saisir ces données, doit s'assurer qu'il dispose d'une base légale et, le cas échéant, de l'information ou de l'accord des représentants légaux des Participants mineurs. L'Éditeur n'intervient dans ce cas qu'en qualité de sous-traitant, au sens de l'article 28 du RGPD : il met à disposition l'outil technique et n'utilise ces données que sur instruction du Responsable de projet, pour le seul fonctionnement de l'Application.",
+        "Ces principes sont détaillés dans la politique de confidentialité, à laquelle tu dois te référer pour comprendre précisément comment tes données, et celles des Participants que tu saisis, sont traitées."
+      ]
+    },
+    "commitments": {
+      "title": "7. Engagements de l'Utilisateur",
+      "body": [
+        "En utilisant l'Application, tout Utilisateur s'engage à :"
+      ],
+      "list": [
+        "n'utiliser l'Application que dans le cadre d'activités légitimes de {{ organizationName }}, et non à des fins personnelles ou étrangères à cet usage ;",
+        "saisir des données exactes et à jour concernant les Participants ;",
+        "conserver la confidentialité de son accès et ne pas partager son Compte avec un tiers ;",
+        "en tant que Responsable de projet, respecter le RGPD pour les données de Participants qu'il saisit, notamment s'assurer de disposer de la base légale nécessaire et, le cas échéant, informer les représentants légaux des Participants mineurs concernés ;",
+        "ne pas détourner l'Application de son objet, ni tenter d'en compromettre le fonctionnement ou la sécurité."
+      ]
+    },
+    "minors": {
+      "title": "8. Attention particulière portée aux mineurs",
+      "body": [
+        "Selon l'organisation, les Participants enregistrés dans l'Application peuvent être des mineurs. Dans ce cas, l'Éditeur n'a aucun contact direct avec les Participants ni, le cas échéant, avec leurs représentants légaux : c'est au Responsable de projet, dans le cadre de son rôle au sein de {{ organizationName }}, qu'il revient de s'assurer qu'il dispose de l'autorisation ou de la base légale nécessaire pour saisir ces données, et d'en informer les familles concernées.",
+        "Si tu es toi-même mineur et que tu disposes d'un Compte (par exemple en tant que jeune responsable), l'utilisation de l'Application doit se faire dans le cadre de ton encadrement par des adultes responsables au sein de {{ organizationName }}."
+      ]
+    },
+    "ip": {
+      "title": "9. Propriété intellectuelle",
+      "body": [
+        "L'Application, son code, sa structure et son interface sont la propriété de l'Éditeur, sauf éléments appartenant à des tiers (notamment les éléments de marque et d'identité visuelle de {{ organizationName }}, qui demeurent la propriété de {{ organizationName }}).",
+        "Le code source de l'Application est publié sur GitHub (<a href=\"https://github.com/laucoin/Registry-Frontend\" target=\"_blank\" rel=\"noopener noreferrer\">github.com/laucoin/Registry-Frontend</a>) sous une licence propre à l'Éditeur, la « Registry Source-Available License », consultable dans le fichier <a href=\"https://github.com/laucoin/Registry-Frontend/blob/main/LICENSE\" target=\"_blank\" rel=\"noopener noreferrer\">LICENSE</a> du dépôt, qui prévaut en cas de divergence avec le présent article. La publication du code source ne vaut pas mise à disposition en open source : elle n'autorise ni sa redistribution en tant que projet indépendant, ni sa présentation comme une création propre, ni la création d'un projet dérivé ou concurrent, sous réserve des permissions expressément accordées par cette licence.",
+        "Toute reproduction ou exploitation non autorisée de l'Application, de son code ou des éléments visés ci-dessus est interdite."
+      ]
+    },
+    "availability": {
+      "title": "10. Disponibilité du service",
+      "body": [
+        "L'Application est un projet gratuit, développé et maintenu à titre personnel. Elle est fournie « en l'état », sans garantie de disponibilité continue, de performance ou d'absence d'erreurs. L'Éditeur s'efforce d'assurer un service de qualité, dans la limite de ses moyens, mais peut interrompre, modifier ou faire évoluer l'Application à tout moment, y compris pour des raisons de maintenance."
+      ]
+    },
+    "liability": {
+      "title": "11. Limitation de responsabilité",
+      "body": [
+        "L'Application étant fournie gratuitement par un éditeur individuel, sa responsabilité ne peut être engagée qu'en cas de faute prouvée, et dans la limite de ce qui est raisonnablement exigible d'un projet bénévole de cette nature.",
+        "L'Éditeur n'est pas responsable de l'exactitude, de la licéité ou de l'opportunité des données saisies par les Utilisateurs, ni des conséquences résultant d'un usage de l'Application non conforme aux présentes CGU."
+      ]
+    },
+    "retention": {
+      "title": "12. Conservation et suppression des données",
+      "body": [
+        "Les modalités de conservation des données sont détaillées dans la politique de confidentialité. En résumé :",
+        "les données d'un Participant (identité et présences) sont conservées au minimum 12 mois à compter de leur enregistrement : ce délai ne peut pas être raccourci sur demande, y compris par le Responsable de projet, car il correspond à la finalité même du registre décrite à l'article 5 (traçabilité des présences en cas d'incident) ;",
+        "un Projet resté inactif pendant 12 mois est ensuite automatiquement supprimé, avec l'ensemble des données de Participants qu'il contient ;",
+        "au sein d'un Projet resté actif, un Participant resté inactif pendant 12 mois (aucune présence enregistrée le concernant) est également supprimé individuellement, dès lors que le délai minimal de 12 mois évoqué ci-dessus est écoulé."
+      ]
+    },
+    "accountDeletion": {
+      "title": "13. Suppression de compte",
+      "body": [
+        "Tu peux à tout moment demander la suppression de ton Compte, notamment depuis l'Application lorsque cette fonctionnalité est disponible, ou en écrivant à <a href=\"mailto:{{ creatorEmail }}\">{{ creatorEmail }}</a>.",
+        "Si tu es l'unique administrateur d'un ou plusieurs Projets, ton Compte ne peut pas être supprimé tant que tu n'as pas désigné un autre administrateur pour chacun de ces Projets, ou supprimé ces Projets toi-même : cette condition préalable évite qu'un Projet partagé avec d'autres Utilisateurs ne se retrouve sans administrateur et donc inutilisable.",
+        "La suppression de ton Compte n'entraîne pas automatiquement la suppression des Projets que tu as créés ni des données de Participants qu'ils contiennent, dont tu restes responsable en tant que Responsable de projet tant qu'ils existent."
+      ]
+    },
+    "changes": {
+      "title": "14. Modification des CGU",
+      "body": [
+        "L'Éditeur peut modifier les présentes CGU à tout moment, notamment pour tenir compte d'évolutions légales ou fonctionnelles. La date de dernière mise à jour figure en haut de cette page. En cas de modification substantielle, les Utilisateurs en seront informés dans la mesure du possible."
+      ]
+    },
+    "law": {
+      "title": "15. Droit applicable et litiges",
+      "body": [
+        "Les présentes CGU sont soumises au droit français. En cas de litige, et à défaut de résolution amiable, les tribunaux français compétents seront seuls saisis."
+      ]
+    },
+    "contact": {
+      "title": "16. Contact",
+      "body": [
+        "Pour toute question relative à l'Application ou aux présentes CGU, contacte l'Éditeur à l'adresse <a href=\"mailto:{{ creatorEmail }}\">{{ creatorEmail }}</a>."
+      ]
+    }
+  }
+}

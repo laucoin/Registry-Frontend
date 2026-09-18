@@ -4,7 +4,7 @@ name: Release
 # run here — branch protection guarantees the PR pipeline already validated it.
 on:
   push:
-    branches: [main]
+    branches: [ main ]
 
 concurrency:
   group: release-main
@@ -30,6 +30,12 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
+        env:
+          BACKEND_URL: http://build-placeholder.invalid
+          ORGANIZATION_NAME: build-placeholder
+          CREATOR_NAME: build-placeholder
+          CREATOR_EMAIL: build-placeholder@example.com
+          NODE_OPTIONS: --dns-result-order=ipv4first
       - uses: ./.github/actions/docker-publish
         with:
           registry: ${{ env.REGISTRY }}
@@ -89,6 +95,16 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
+        env:
+          BACKEND_URL: http://build-placeholder.invalid
+          ORGANIZATION_NAME: build-placeholder
+          CREATOR_NAME: build-placeholder
+          CREATOR_EMAIL: build-placeholder@example.com
+          # See Dockerfile's build stage: the route-extraction step binds a throwaway
+          # server to `localhost`, then self-probes it by URL over `localhost` too — on
+          # a dual-stack glibc/Linux host those two DNS lookups can disagree (::1 vs
+          # 127.0.0.1), so the self-probe connects to a socket nothing is listening on.
+          NODE_OPTIONS: --dns-result-order=ipv4first
       - uses: ./.github/actions/docker-publish
         with:
           registry: ${{ env.REGISTRY }}

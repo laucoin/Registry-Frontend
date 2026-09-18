@@ -4,7 +4,7 @@
 [![CodeQL](https://github.com/laucoin/Registry-Frontend/actions/workflows/codeql.yml/badge.svg)](https://github.com/laucoin/Registry-Frontend/actions/workflows/codeql.yml)
 [![Angular](https://img.shields.io/badge/Angular-22-DD0031?logo=angular&logoColor=white)](https://angular.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
-[![PrimeNG](https://img.shields.io/badge/PrimeNG-22-0EA5E9)](https://primeng.org)
+[![ng-zorro-antd](https://img.shields.io/badge/ng--zorro--antd-22-F5222D)](https://ng.ant.design)
 [![pnpm](https://img.shields.io/badge/pnpm-F69220?logo=pnpm&logoColor=white)](https://pnpm.io)
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
@@ -13,11 +13,18 @@
 
 ## This repository 📖
 
-This project is built with [Angular](https://angular.dev) (standalone components, no NgModules).
+This project is built with [Angular](https://angular.dev) (standalone components, no NgModules, signals) and
+**server-side rendered**: an [Express](https://expressjs.com) server (`src/server.ts`) uses `@angular/ssr` to render
+every route on the server before it reaches the browser, then hydrates on the client.
 
 This application allows virtual registry management. This is a frontend which calls the backend; authentication is
 brokered by the backend too — the browser is redirected to the backend's own login/logout endpoints and never talks to
-the identity provider directly.
+the identity provider directly. The session lives in an HttpOnly cookie the frontend never reads.
+
+Runtime configuration (backend URL, organization identity, support/hosting details, ...) is never baked into the
+build. `server.ts` reads it from environment variables at process start and serves it to the client over
+`GET /api/config`, fetched once at boot via `provideAppInitializer` before the app renders. See
+[Runtime configuration](#runtime-configuration) below for the full list of variables.
 
 Checkout the full documentation [here](https://doc.laucoin.fr/registry).
 
@@ -35,7 +42,7 @@ You need to install a Node environment. To do that there are 2 possibilities.
 #### Node Version Management (recommended)
 
 1. Install [NVM](https://github.com/nvm-sh/nvm#installing-and-updating)
-2. Then install node (`^24.15`, CI runs on Node 24 LTS)
+2. Then install node (`^24`, matches the Dockerfile's `node:24-slim` builder / `nodejs24` distroless runtime)
     ```shell
     nvm install <version>
     ```
@@ -44,10 +51,11 @@ You need to install a Node environment. To do that there are 2 possibilities.
 
 1. Install [Node.js](https://nodejs.org/en/download/)
 
-Then, in both cases, install [pnpm](https://pnpm.io/installation):
+Then, in both cases, install [pnpm](https://pnpm.io/installation) (version pinned via `packageManager` in
+`package.json` — `corepack` picks it up automatically, no separate install needed):
 
 ```shell
-corepack enable pnpm
+corepack enable
 ```
 
 ### Build and run locally
@@ -68,131 +76,26 @@ corepack enable pnpm
     ```shell
     pnpm install
     ```
-4. Create `public/settings/config.json` with your configuration
-    ```json
-    {
-        "defaultLanguage": "fr",
-        "languages": [
-            "fr",
-            "en"
-        ],
-        "primeNg": {
-            "semantic": {
-                "primary": {
-                    "50": "#eef9ff",
-                    "100": "#dcf4ff",
-                    "200": "#b2ebff",
-                    "300": "#6ddcff",
-                    "400": "#20cbff",
-                    "500": "#00b5ff",
-                    "600": "#0091df",
-                    "700": "#0073b4",
-                    "800": "#006295",
-                    "900": "#00507a",
-                    "950": "#003a5d"
-                },
-            "colorScheme": {
-                "light": {
-                    "primary": {
-                        "color": "#003a5d",
-                        "contrastColor": "#eef9ff",
-                        "hoverColor": "#00507a",
-                        "activeColor": "#006295"
-                    },
-                    "highlight": {
-                        "background": "#003a5d",
-                        "focusBackground": "#0073b4",
-                        "color": "#ffffff",
-                        "focusColor": "#ffffff"
-                    }
-                },
-                "dark": {
-                    "primary": {
-                        "color": "#eef9ff",
-                        "contrastColor": "#003a5d",
-                        "hoverColor": "#dcf4ff",
-                        "activeColor": "#b2ebff"
-                    },
-                    "highlight": {
-                        "background": "rgba(250, 250, 250, .16)",
-                        "focusBackground": "rgba(250, 250, 250, .24)",
-                        "color": "rgba(255,255,255,.87)",
-                        "focusColor": "rgba(255,255,255,.87)"
-                    }
-                }
-            }
-            },
-            "components": {
-                "card": {
-                    "body": {
-                        "padding": "1rem"
-                    }
-                },
-                "dataview": {
-                    "root": {
-                        "borderWidth": "0"
-                    },
-                    "header": {
-                        "padding": "0"
-                    }
-                },
-                "menu": {
-                    "item": {
-                        "padding": "0"
-                    }
-                },
-                "popover": {
-                    "content": {
-                        "padding": "0"
-                    }
-                },
-                "tabs": {
-                    "tabpanel": {
-                        "padding": "1rem 0"
-                    }
-                }
-            }
-        },
-        "logo": {
-            "normal": {
-                "light": "img/SGDF/logo.svg",
-                "dark": "img/SGDF/logo.svg"
-            },
-            "small": {
-                "light": "img/SGDF/small-logo.svg",
-                "dark": "img/SGDF/small-logo.svg"
-            }
-        },
-        "enabledActions": [ "<element-action.enum.ts>" ],
-        "notification": {
-            "duration": {
-                "info": 5000,
-                "success": 3000,
-                "warn": 8000,
-                "error": 15000,
-                "secondary": 5000,
-                "contrast": 5000
-            }
-        }
-    }
+4. Copy `.env.example` to `.env` and fill it in:
+    ```shell
+    cp .env.example .env
     ```
-5. Create `public/settings/env.json` with your environment
-    ```json
-    {
-        "production": "<true-for-non-local>",
-        "backend": {
-            "url": "<backend-url>",
-            "noAuthPaths": [
-                "/api/v1/authentication/login/uri",
-                "/api/v1/authentication/logout/uri",
-                "/api/v1/authentication/token",
-                "/api/v1/authentication/token/refresh"
-            ]
-        }
-    }
-    ```
-   Both files are gitignored (`public/settings/*.json`) and fetched at runtime, so they can be swapped per environment
-   without rebuilding the app.
+
+   `.env` is gitignored and read once by `server.ts` at startup — nothing here is compiled into the build. In
+   production these are set on the host/container itself (Docker, PM2, ...) instead of a committed `.env` file.
+
+#### Runtime configuration
+
+| Variable                                             | Required?                  | Holds                                                                                                                                                                                                          |
+|-------------------------------------------------------|----------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `BACKEND_URL`                                        | Yes                         | Base URL of the backend API.                                                                                                                                                                                  |
+| `NG_ALLOWED_HOSTS`                                   | Yes, in practice            | Comma-separated hostnames (no port, no scheme) Angular's built-in SSRF guard accepts a `Host` header for. Empty/unset rejects **every** request, including the app's own same-origin `/api/config` self-fetch on boot — set this even to load the login page locally (e.g. `localhost`). |
+| `ORGANIZATION_NAME` / `ORGANIZATION_WEBSITE`         | Name yes, website no        | The organization this instance is deployed for (Registry is a multi-tenant SaaS — SGDF is only the origin use case, not a hardcoded assumption). Shown on the login screen and throughout the legal pages.  |
+| `CREATOR_NAME` / `CREATOR_WEBSITE` / `CREATOR_EMAIL` | Name + email yes, website no | Copyright notice in the footer, and the login screen / legal pages.                                                                                                                                          |
+| `HOSTING_PROVIDER_NAME` / `HOSTING_PROVIDER_ADDRESS` | No                          | Displayed in the `/terms` and `/privacy` legal notices (hébergeur). Missing just shows a fallback message.                                                                                                    |
+| `SUPPORT_ISSUES_URL`                                 | No                          | Repository issues URL, linked from the "Support" entry in the footer. Left unset, the link is hidden.                                                                                                        |
+
+A missing *required* variable crashes the server loudly at startup rather than silently booting misconfigured.
 
 Now, you can use the following scripts. Enjoy !
 
@@ -201,11 +104,14 @@ Now, you can use the following scripts. Enjoy !
 
 #### Running the application in dev mode
 
-You can run your application in dev mode that enables live coding using:
+You can run your application in dev mode that enables live coding (with SSR) using:
 
 ```shell script
 pnpm start
 ```
+
+This runs `ng serve` on `http://localhost:4200` — it requires the backend running and `NG_ALLOWED_HOSTS` set (see
+above), otherwise every request 400s, including the app's own boot.
 
 #### Packaging and running the application
 
@@ -219,33 +125,50 @@ pnpm run build --configuration=development
 pnpm run build --configuration=production
 ```
 
-It produces the `index.html` file and all the other resources in the `dist/browser/` directory.
+It produces `dist/registry-frontend/browser/` (static client assets) and `dist/registry-frontend/server/` (the
+Express/Angular-SSR entry point, `server.mjs`).
 
-The application is now usable using `dist/browser/index.html`, or served behind nginx as configured by
-the [Dockerfile](Dockerfile) and [nginx.conf](nginx.conf).
+Run the compiled server with:
+
+```shell script
+pnpm run serve:ssr:registry-frontend
+```
+
+It listens on `http://localhost:4000` by default (override with the `PORT` environment variable), or is served as
+configured by the [Dockerfile](Dockerfile).
 
 #### Code scaffolding
 
 Run `ng generate component component-name` to generate a new component. You can also use
-`ng generate directive|pipe|service|class|guard|interface|enum|module`.
+`ng generate directive|pipe|service|class|guard|interface|enum`.
 
 #### Other scripts
 
 ```shell script
+pnpm test   # vitest (@angular/build:unit-test)
 pnpm lint   # eslint (angular-eslint)
 ```
 
-> There is no automated test suite yet — `pnpm lint` and `pnpm build` are the only checks the
-> [Pull Request workflow](.github/workflows/pull-request.yml) runs today.
+#### Docker
+
+```shell script
+docker build .
+```
+
+Multi-stage build: `node:24-slim` (install + `ng build`) → `gcr.io/distroless/nodejs24-debian12:nonroot` runtime
+(uid 65532, no shell, no package manager). The build stage sets throwaway placeholder env vars purely so `ng build`'s
+internal route-extraction step (which briefly boots `server.ts`) doesn't abort on a missing required variable — real
+configuration is supplied at `docker run` time via the variables listed in
+[Runtime configuration](#runtime-configuration).
 
 #### Further help
 
 - Angular [documentation](https://angular.dev)
 - Angular CLI [reference](https://angular.dev/tools/cli)
 - TypeScript [documentation](https://www.typescriptlang.org/docs/)
-- NGXS [documentation](https://www.ngxs.io/)
-- PrimeNG [documentation](https://primeng.org/)
-- ngx-translate [documentation](https://github.com/ngx-translate/core)
+- NgRx Signals [documentation](https://ngrx.io/guide/signals)
+- ng-zorro-antd [documentation](https://ng.ant.design)
+- Transloco [documentation](https://jsverse.github.io/transloco/)
 
 ## Contributing 💻
 
@@ -275,8 +198,8 @@ The GitHub Actions workflows are the review gate — a pull request must be gree
 - **PR Cleanup** ([pr-cleanup.yml](.github/workflows/pr-cleanup.yml)) — deletes the branch image from the registry when
   the pull request closes.
 
-Before contributing, please read the [documentation](https://doc.laucoin.fr/registry) and our
-[code of conduct](CODE_OF_CONDUCT.md).
+Before contributing, please read the [documentation](https://doc.laucoin.fr/registry), our
+[code of conduct](CODE_OF_CONDUCT.md) and our [security policy](SECURITY.md).
 
 ## Contributors 🧑‍💻
 
@@ -292,7 +215,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/e
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/lvicainne"><img src="https://avatars.githubusercontent.com/u/1641160?v=4?s=100" width="100px;" alt="Louis VICAINNE"/><br /><sub><b>Louis VICAINNE</b></sub></a><br /><a href="#infra-lvicainne" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="#ideas-lvicainne" title="Ideas, Planning, & Feedback">🤔</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/ctruillet"><img src="https://avatars.githubusercontent.com/u/43933447?v=4?s=100" width="100px;" alt="Clément Truillet"/><br /><sub><b>Clément Truillet</b></sub></a><br /><a href="#ideas-ctruillet" title="Ideas, Planning, & Feedback">🤔</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Usinouv"><img src="https://avatars.githubusercontent.com/u/13047412?v=4?s=100" width="100px;" alt="Usinouv"/><br /><sub><b>Alexandre D'HONT</b></sub></a><br /><a href="#ideas-Usinouv" title="Ideas, Planning, & Feedback">🤔</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://www.linkedin.com/in/c%C3%A9cile-crochon/"><img src="https://media.licdn.com/dms/image/v2/C4D03AQEWB-ofOcjZ7A/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1626700975351?e=1789603200&v=beta&t=Vj9eWZiVoCro7Lg-L3ewYLOaB3lXejJ8NLNP-LiXkhk" width="100px;" alt="Cécile CROCHON"/><br /><sub><b>Cécile CROCHON</b></sub></a><br /><a href="#projectManagement-crochon" title="Project Management">📆</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://www.linkedin.com/in/c%C3%A9cile-crochon/"><img src="https://avatars.githubusercontent.com/u/0?v=4&s=100" width="100px;" alt="Cécile CROCHON"/><br /><sub><b>Cécile CROCHON</b></sub></a><br /><a href="#projectManagement-crochon" title="Project Management">📆</a></td>
     </tr>
   </tbody>
 </table>
