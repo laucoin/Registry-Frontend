@@ -1,0 +1,145 @@
+<main class="legal-shell">
+	<article class="legal-doc">
+		<a class="legal-doc__back" routerLink="/login"
+			><span aria-hidden="true">←</span> {{ 'privacy.back' | transloco }}</a
+		>
+
+		<header class="legal-doc__header">
+			<h1>{{ 'privacy.title' | transloco }}</h1>
+			<p class="legal-doc__updated">{{ 'privacy.updatedAt' | transloco }}</p>
+		</header>
+
+		@for (paragraph of 'privacy.intro' | transloco: orgParams(); track $index) {
+			<p [innerHTML]="paragraph"></p>
+		}
+
+		<section>
+			<h2>{{ 'privacy.sections.controller.title' | transloco }}</h2>
+			@for (
+				paragraph of 'privacy.sections.controller.body' | transloco: orgParams();
+				track $index
+			) {
+				<p [innerHTML]="paragraph"></p>
+			}
+		</section>
+
+		<section>
+			<h2>{{ 'privacy.sections.dataCollected.title' | transloco }}</h2>
+			@for (
+				paragraph of 'privacy.sections.dataCollected.body' | transloco: orgParams();
+				track $index
+			) {
+				<p [innerHTML]="paragraph"></p>
+			}
+			<ul>
+				@for (
+					item of 'privacy.sections.dataCollected.list' | transloco: orgParams();
+					track $index
+				) {
+					<li [innerHTML]="item"></li>
+				}
+			</ul>
+		</section>
+
+		<section>
+			<h2>{{ 'privacy.sections.purposes.title' | transloco }}</h2>
+			@for (paragraph of 'privacy.sections.purposes.body' | transloco: orgParams(); track $index) {
+				<p [innerHTML]="paragraph"></p>
+			}
+		</section>
+
+		<section>
+			<h2>{{ 'privacy.sections.legalBasis.title' | transloco }}</h2>
+			@for (
+				paragraph of 'privacy.sections.legalBasis.body' | transloco: orgParams();
+				track $index
+			) {
+				<p [innerHTML]="paragraph"></p>
+			}
+		</section>
+
+		<section>
+			<h2>{{ 'privacy.sections.recipients.title' | transloco }}</h2>
+			@for (
+				paragraph of 'privacy.sections.recipients.body' | transloco: orgParams();
+				track $index
+			) {
+				<p [innerHTML]="paragraph"></p>
+			}
+		</section>
+
+		<section>
+			<h2>{{ 'privacy.sections.minors.title' | transloco }}</h2>
+			@for (paragraph of 'privacy.sections.minors.body' | transloco: orgParams(); track $index) {
+				<p [innerHTML]="paragraph"></p>
+			}
+		</section>
+
+		<section>
+			<h2>{{ 'privacy.sections.retention.title' | transloco }}</h2>
+			@for (paragraph of 'privacy.sections.retention.body' | transloco: orgParams(); track $index) {
+				<p [innerHTML]="paragraph"></p>
+			}
+		</section>
+
+		<section>
+			<h2>{{ 'privacy.sections.cookies.title' | transloco }}</h2>
+			@for (paragraph of 'privacy.sections.cookies.body' | transloco: orgParams(); track $index) {
+				<p [innerHTML]="paragraph"></p>
+			}
+		</section>
+
+		<section>
+			<h2>{{ 'privacy.sections.security.title' | transloco }}</h2>
+			@for (paragraph of 'privacy.sections.security.body' | transloco: orgParams(); track $index) {
+				<p [innerHTML]="paragraph"></p>
+			}
+		</section>
+
+		<section>
+			<h2>{{ 'privacy.sections.hosting.title' | transloco }}</h2>
+			@if (hosting()?.providerName && hosting()?.providerAddress) {
+				<p>
+					{{
+						'privacy.sections.hosting.clause'
+							| transloco
+								: {
+										providerName: hosting()!.providerName,
+										providerAddress: hosting()!.providerAddress,
+								  }
+					}}
+				</p>
+			} @else {
+				<p [innerHTML]="'privacy.sections.hosting.fallback' | transloco: orgParams()"></p>
+			}
+		</section>
+
+		<section>
+			<h2>{{ 'privacy.sections.rights.title' | transloco }}</h2>
+			@for (paragraph of 'privacy.sections.rights.body' | transloco: orgParams(); track $index) {
+				<p [innerHTML]="paragraph"></p>
+			}
+		</section>
+
+		<section>
+			<h2>{{ 'privacy.sections.complaint.title' | transloco }}</h2>
+			@for (paragraph of 'privacy.sections.complaint.body' | transloco: orgParams(); track $index) {
+				<p [innerHTML]="paragraph"></p>
+			}
+		</section>
+
+		<section>
+			<h2>{{ 'privacy.sections.contact.title' | transloco }}</h2>
+			@for (paragraph of 'privacy.sections.contact.body' | transloco: orgParams(); track $index) {
+				<p [innerHTML]="paragraph"></p>
+			}
+		</section>
+
+		<section>
+			<h2>{{ 'privacy.sections.changes.title' | transloco }}</h2>
+			@for (paragraph of 'privacy.sections.changes.body' | transloco: orgParams(); track $index) {
+				<p [innerHTML]="paragraph"></p>
+			}
+		</section>
+	</article>
+</main>

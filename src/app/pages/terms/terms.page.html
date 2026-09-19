@@ -1,0 +1,158 @@
+<main class="legal-shell">
+	<article class="legal-doc">
+		<a class="legal-doc__back" routerLink="/login"
+			><span aria-hidden="true">←</span> {{ 'terms.back' | transloco }}</a
+		>
+
+		<header class="legal-doc__header">
+			<h1>{{ 'terms.title' | transloco }}</h1>
+			<p class="legal-doc__updated">{{ 'terms.updatedAt' | transloco }}</p>
+		</header>
+
+		@for (paragraph of 'terms.intro' | transloco: orgParams(); track $index) {
+			<p [innerHTML]="paragraph"></p>
+		}
+
+		<section>
+			<h2>{{ 'terms.sections.publisher.title' | transloco }}</h2>
+			<p [innerHTML]="'terms.sections.publisher.identityLine' | transloco: orgParams()"></p>
+			<p [innerHTML]="'terms.sections.publisher.affiliationLine' | transloco: orgParams()"></p>
+			@if (hosting()?.providerName && hosting()?.providerAddress) {
+				<p>
+					{{
+						'terms.sections.publisher.hostingClause'
+							| transloco
+								: {
+										providerName: hosting()!.providerName,
+										providerAddress: hosting()!.providerAddress,
+								  }
+					}}
+				</p>
+			} @else {
+				<p [innerHTML]="'terms.sections.publisher.hostingFallback' | transloco: orgParams()"></p>
+			}
+			<p [innerHTML]="'terms.sections.publisher.contactLine' | transloco: orgParams()"></p>
+		</section>
+
+		<section>
+			<h2>{{ 'terms.sections.definitions.title' | transloco }}</h2>
+			@for (paragraph of 'terms.sections.definitions.body' | transloco: orgParams(); track $index) {
+				<p [innerHTML]="paragraph"></p>
+			}
+			<ul>
+				@for (item of 'terms.sections.definitions.list' | transloco: orgParams(); track $index) {
+					<li [innerHTML]="item"></li>
+				}
+			</ul>
+		</section>
+
+		<section>
+			<h2>{{ 'terms.sections.acceptance.title' | transloco }}</h2>
+			@for (paragraph of 'terms.sections.acceptance.body' | transloco: orgParams(); track $index) {
+				<p [innerHTML]="paragraph"></p>
+			}
+		</section>
+
+		<section>
+			<h2>{{ 'terms.sections.access.title' | transloco }}</h2>
+			@for (paragraph of 'terms.sections.access.body' | transloco: orgParams(); track $index) {
+				<p [innerHTML]="paragraph"></p>
+			}
+		</section>
+
+		<section>
+			<h2>{{ 'terms.sections.description.title' | transloco }}</h2>
+			@for (paragraph of 'terms.sections.description.body' | transloco: orgParams(); track $index) {
+				<p [innerHTML]="paragraph"></p>
+			}
+		</section>
+
+		<section>
+			<h2>{{ 'terms.sections.roles.title' | transloco }}</h2>
+			@for (paragraph of 'terms.sections.roles.body' | transloco: orgParams(); track $index) {
+				<p [innerHTML]="paragraph"></p>
+			}
+		</section>
+
+		<section>
+			<h2>{{ 'terms.sections.commitments.title' | transloco }}</h2>
+			@for (paragraph of 'terms.sections.commitments.body' | transloco: orgParams(); track $index) {
+				<p [innerHTML]="paragraph"></p>
+			}
+			<ul>
+				@for (item of 'terms.sections.commitments.list' | transloco: orgParams(); track $index) {
+					<li [innerHTML]="item"></li>
+				}
+			</ul>
+		</section>
+
+		<section>
+			<h2>{{ 'terms.sections.minors.title' | transloco }}</h2>
+			@for (paragraph of 'terms.sections.minors.body' | transloco: orgParams(); track $index) {
+				<p [innerHTML]="paragraph"></p>
+			}
+		</section>
+
+		<section>
+			<h2>{{ 'terms.sections.ip.title' | transloco }}</h2>
+			@for (paragraph of 'terms.sections.ip.body' | transloco: orgParams(); track $index) {
+				<p [innerHTML]="paragraph"></p>
+			}
+		</section>
+
+		<section>
+			<h2>{{ 'terms.sections.availability.title' | transloco }}</h2>
+			@for (
+				paragraph of 'terms.sections.availability.body' | transloco: orgParams();
+				track $index
+			) {
+				<p [innerHTML]="paragraph"></p>
+			}
+		</section>
+
+		<section>
+			<h2>{{ 'terms.sections.liability.title' | transloco }}</h2>
+			@for (paragraph of 'terms.sections.liability.body' | transloco: orgParams(); track $index) {
+				<p [innerHTML]="paragraph"></p>
+			}
+		</section>
+
+		<section>
+			<h2>{{ 'terms.sections.retention.title' | transloco }}</h2>
+			@for (paragraph of 'terms.sections.retention.body' | transloco: orgParams(); track $index) {
+				<p [innerHTML]="paragraph"></p>
+			}
+		</section>
+
+		<section>
+			<h2>{{ 'terms.sections.accountDeletion.title' | transloco }}</h2>
+			@for (
+				paragraph of 'terms.sections.accountDeletion.body' | transloco: orgParams();
+				track $index
+			) {
+				<p [innerHTML]="paragraph"></p>
+			}
+		</section>
+
+		<section>
+			<h2>{{ 'terms.sections.changes.title' | transloco }}</h2>
+			@for (paragraph of 'terms.sections.changes.body' | transloco: orgParams(); track $index) {
+				<p [innerHTML]="paragraph"></p>
+			}
+		</section>
+
+		<section>
+			<h2>{{ 'terms.sections.law.title' | transloco }}</h2>
+			@for (paragraph of 'terms.sections.law.body' | transloco: orgParams(); track $index) {
+				<p [innerHTML]="paragraph"></p>
+			}
+		</section>
+
+		<section>
+			<h2>{{ 'terms.sections.contact.title' | transloco }}</h2>
+			@for (paragraph of 'terms.sections.contact.body' | transloco: orgParams(); track $index) {
+				<p [innerHTML]="paragraph"></p>
+			}
+		</section>
+	</article>
+</main>

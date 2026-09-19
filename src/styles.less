@@ -1,0 +1,75 @@
+// On-demand ng-zorro-antd imports: only core plus the components actually used
+// (button, dropdown, menu). The full `ng-zorro-antd.less` bundle ships every
+// component's CSS regardless of usage. Add a matching entry here when a new
+// nz-* component is introduced, or its styles will be missing.
+@import 'ng-zorro-antd/style/default.less';
+@import 'ng-zorro-antd/button/style/entry';
+@import 'ng-zorro-antd/dropdown/style/entry';
+@import 'ng-zorro-antd/menu/style/entry';
+@import './theme.less';
+
+:root {
+	--sgdf-bg: #ffffff;
+	--sgdf-bg-subtle: #f9fafb;
+	--sgdf-text: #343343;
+	--sgdf-text-secondary: #6b7280;
+	--sgdf-heading: #003a5d;
+	--sgdf-border: #d1d5db;
+	--sgdf-primary: #003a5d;
+	--sgdf-success: #007254;
+}
+
+:root[data-theme='dark'] {
+	--sgdf-bg: #141414;
+	--sgdf-bg-subtle: #000000;
+	--sgdf-text: #d9d9d9;
+	--sgdf-text-secondary: #8c8c8c;
+	--sgdf-heading: #f0f0f0;
+	--sgdf-border: #424242;
+	--sgdf-primary: #4d94c4;
+	--sgdf-success: #2ea882;
+}
+
+html,
+body {
+	height: 100%;
+	min-width: 320px;
+	margin: 0;
+	font-family: @font-family;
+	background: var(--sgdf-bg-subtle);
+	color: var(--sgdf-text);
+	transition: background-color 0.2s ease,
+	color 0.2s ease;
+}
+
+// ng-zorro suppresses the native focus outline (operation-unit(), @link-focus-outline: 0) —
+// !important is required to override it.
+:focus-visible {
+	outline: 2px solid var(--sgdf-primary) !important;
+	outline-offset: 2px;
+}
+
+.eyebrow {
+	margin: 0 0 8px;
+	color: var(--sgdf-success);
+	font-size: 12px;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+h1 {
+	margin: 0 0 12px;
+	color: var(--sgdf-heading);
+	font-family: 'Raleway', @font-family;
+	font-size: 34px;
+	font-weight: 800;
+	letter-spacing: -0.01em;
+}
+
+.lede {
+	margin: 0 0 32px;
+	color: var(--sgdf-text-secondary);
+	font-size: 14px;
+	line-height: 1.6;
+}

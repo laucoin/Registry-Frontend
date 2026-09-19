@@ -1,0 +1,19 @@
+{
+  "printWidth": 100,
+  "singleQuote": true,
+  "useTabs": true,
+  "overrides": [
+    {
+      "files": "*.html",
+      "options": {
+        "parser": "angular"
+      }
+    },
+    {
+      "files": ["*.json", "*.yml", "*.yaml", "*.md"],
+      "options": {
+        "useTabs": false
+      }
+    }
+  ]
+}

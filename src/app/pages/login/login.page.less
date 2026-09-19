@@ -1,0 +1,158 @@
+@import '../../../theme.less';
+
+:host {
+	display: block;
+	height: 100%;
+}
+
+.login-shell {
+	display: flex;
+	min-height: 100vh;
+	background: var(--sgdf-bg);
+}
+
+// ── Panneau gauche : action de connexion ──────────────────────────────────
+.login-panel {
+	flex: 1 1 480px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 48px 32px;
+	min-width: 0;
+}
+
+.login-panel__inner {
+	width: 100%;
+	max-width: 360px;
+}
+
+.brand-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 56px;
+}
+
+.brand-row__identity {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.brand-mark {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 40px;
+	height: 40px;
+	border-radius: @border-radius-base;
+	background: var(--sgdf-primary);
+	color: #fff;
+	font-weight: 700;
+	font-size: 14px;
+	flex: none;
+}
+
+.brand-row__text {
+	display: flex;
+	flex-direction: column;
+	line-height: 1.3;
+
+	strong {
+		color: var(--sgdf-heading);
+		font-size: 15px;
+	}
+
+	span {
+		color: var(--sgdf-text-secondary);
+		font-size: 12px;
+	}
+}
+
+.org-mark {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	color: var(--sgdf-primary);
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.04em;
+}
+
+.submit-btn {
+	font-weight: 600;
+}
+
+.legal {
+	margin-top: 28px;
+	color: var(--sgdf-text-secondary);
+	font-size: 12px;
+	line-height: 1.6;
+	text-align: center;
+
+	a {
+		color: var(--sgdf-text-secondary);
+		text-decoration: underline;
+
+		&:hover {
+			color: var(--sgdf-primary);
+		}
+	}
+}
+
+// ── Panneau droit : illustration ──────────────────────────────────────────
+.login-hero {
+	position: relative;
+	flex: 1 1 55%;
+	display: none;
+	flex-direction: column;
+	justify-content: flex-end;
+	padding: 48px;
+	overflow: hidden;
+	background: linear-gradient(160deg, #003a5d 0%, #0b2b40 35%, #081e2c 70%, #04121b 100%);
+
+	@media (min-width: 900px) {
+		display: flex;
+	}
+}
+
+// NgOptimizedImage `fill` handles position/sizing; loading="lazy" (default when
+// `priority` is unset) keeps this decorative photo out of the critical rendering path.
+.login-hero__photo {
+	object-fit: cover;
+	opacity: 0;
+	transition: opacity 600ms ease;
+
+	&--loaded {
+		opacity: 1;
+	}
+}
+
+.login-hero__scrim {
+	position: absolute;
+	inset: 0;
+	background: radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.1), transparent 40%),
+	linear-gradient(to top, rgba(4, 18, 27, 0.88) 0%, rgba(8, 30, 44, 0.45) 28%, transparent 55%);
+	pointer-events: none;
+}
+
+.login-hero__caption {
+	position: relative;
+	margin: 0 0 12px;
+	color: rgba(255, 255, 255, 0.85);
+	font-size: 12px;
+	font-weight: 700;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+}
+
+.login-hero__quote {
+	position: relative;
+	margin: 0;
+	max-width: 520px;
+	color: #fff;
+	font-family: 'Raleway', @font-family;
+	font-size: 32px;
+	font-weight: 700;
+	line-height: 1.25;
+}

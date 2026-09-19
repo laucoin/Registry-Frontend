@@ -1,0 +1,111 @@
+{
+  "back": "Retour",
+  "title": "Politique de confidentialité",
+  "updatedAt": "Dernière mise à jour : 17 septembre 2026",
+  "intro": [
+    "Cette politique explique quelles données personnelles sont traitées par Registry (l'« Application »), pourquoi, et comment tu peux exercer tes droits. Elle complète les conditions générales d'utilisation (CGU), qui définissent notamment les termes « Utilisateur », « Participant », « Projet » et « Responsable de projet »."
+  ],
+  "sections": {
+    "controller": {
+      "title": "1. Qui est responsable de tes données ?",
+      "body": [
+        "Deux catégories de données sont traitées dans l'Application, avec deux responsables distincts :",
+        "Pour les données de ton Compte (identifiant {{ organizationName }}, e-mail, prénom, nom), le responsable de traitement est l'Éditeur : {{ creatorName }}, contact <a href=\"mailto:{{ creatorEmail }}\">{{ creatorEmail }}</a>.",
+        "Pour les données des Participants que toi, ou un autre Utilisateur, saisissez dans un Projet, le responsable de traitement est le Responsable de ce Projet — c'est-à-dire l'Utilisateur qui a créé ou administre le Projet concerné. L'Éditeur n'agit dans ce cas qu'en tant que sous-traitant technique, au sens de l'article 28 du RGPD : il héberge et fait fonctionner l'outil, sans décider lui-même des finalités de ce traitement."
+      ]
+    },
+    "dataCollected": {
+      "title": "2. Quelles données sont collectées ?",
+      "body": [
+        "L'Application traite les catégories de données suivantes :"
+      ],
+      "list": [
+        "Données de Compte : identifiant, e-mail, prénom et nom, transmis par {{ organizationName }} lors de la connexion (authentification unique SSO).",
+        "Données techniques de connexion : cookies strictement nécessaires à l'authentification (session) et à la protection contre les attaques CSRF (voir section 8 « Cookies »).",
+        "Données de Participants : nom, prénom, date de naissance et présences (entrées/sorties) à un Projet, saisies par un Utilisateur."
+      ]
+    },
+    "purposes": {
+      "title": "3. Pourquoi ces données sont-elles traitées ?",
+      "body": [
+        "Les données de Compte sont utilisées pour authentifier les Utilisateurs, sécuriser leur session, et leur permettre d'accéder aux Projets qu'ils gèrent.",
+        "Les données de Participants constituent un registre de présence (entrées/sorties) destiné à permettre aux Utilisateurs de suivre qui a participé à leurs Projets, et à assurer la traçabilité de ces présences en cas d'incident (accident, agression, ou tout autre besoin de preuve). C'est cette finalité de registre qui justifie la durée minimale de conservation décrite à la section 7."
+      ]
+    },
+    "legalBasis": {
+      "title": "4. Bases légales",
+      "body": [
+        "Le traitement des données de Compte repose sur l'exécution des CGU que tu acceptes en utilisant l'Application, ainsi que sur l'intérêt légitime de l'Éditeur à assurer la sécurité et le bon fonctionnement du service.",
+        "Le traitement des données de Participants repose sur la base légale choisie et assumée par le Responsable de projet qui les saisit (par exemple l'intérêt légitime de {{ organizationName }} à assurer la sécurité et la traçabilité des présences à ses activités), dans le cadre de ses propres obligations RGPD en tant que responsable de traitement pour ces données."
+      ]
+    },
+    "recipients": {
+      "title": "5. Qui a accès à tes données ?",
+      "body": [
+        "Les données sont accessibles à l'Éditeur, dans la limite nécessaire au fonctionnement et à la maintenance de l'Application, ainsi qu'à l'hébergeur (voir section 10), qui agit en tant que sous-traitant technique. Selon les modalités propres à ce déploiement, {{ organizationName }} peut également avoir accès aux données à des fins d'hébergement ou de suivi technique (monitoring) de l'Application ; ce n'est toutefois pas systématique.",
+        "{{ organizationName }} intervient par ailleurs en tant que fournisseur d'identité (SSO) : lors de la connexion, {{ organizationName }} transmet à l'Application ton identifiant, ton e-mail, ton prénom et ton nom, mais ne reçoit en retour aucune donnée saisie dans l'Application (Projets, présences, données de Participants), sauf si {{ organizationName }} intervient également dans l'hébergement ou le monitoring comme indiqué ci-dessus.",
+        "Aucune donnée n'est vendue, louée ni transmise à des fins publicitaires."
+      ]
+    },
+    "minors": {
+      "title": "6. Attention particulière portée aux mineurs",
+      "body": [
+        "Selon l'organisation, les Participants peuvent être des mineurs, ce qui appelle une vigilance particulière conformément à l'article 8 du RGPD relatif aux données des enfants. Le cas échéant, l'Éditeur n'a aucun contact direct avec les Participants ni, le cas échéant, avec leurs représentants légaux.",
+        "C'est au Responsable de projet, dans le cadre de son rôle au sein de {{ organizationName }}, qu'il revient de s'assurer qu'il dispose de la base légale et, le cas échéant, de l'information ou de l'accord nécessaires des représentants légaux avant de saisir les données d'un Participant mineur dans l'Application."
+      ]
+    },
+    "retention": {
+      "title": "7. Durées de conservation",
+      "body": [
+        "Les données de ton Compte sont conservées tant que ton Compte existe, et supprimées lorsque tu en demandes la suppression (voir section 11). Si tu es l'unique administrateur d'un ou plusieurs Projets, la suppression de ton Compte est conditionnée à la désignation d'un autre administrateur pour ces Projets, ou à leur suppression, afin d'éviter qu'un Projet partagé avec d'autres Utilisateurs ne devienne inutilisable.",
+        "Les données d'un Participant (identité et présences) sont conservées au minimum 12 mois à compter de leur enregistrement. Conformément au principe de conservation limitée du RGPD (article 5), une donnée peut être conservée aussi longtemps que la finalité qui la justifie le nécessite : ce délai minimal correspond à la finalité de registre de traçabilité décrite à la section 3, et ne peut donc pas être raccourci sur simple demande avant son terme, y compris par le Responsable de projet.",
+        "Passé ce délai minimal, un Projet resté inactif pendant 12 mois est automatiquement supprimé, avec l'ensemble des données de Participants qu'il contient ; au sein d'un Projet resté actif, un Participant resté inactif pendant 12 mois (aucune présence enregistrée le concernant) est également supprimé individuellement."
+      ]
+    },
+    "cookies": {
+      "title": "8. Cookies",
+      "body": [
+        "L'Application utilise uniquement des cookies strictement nécessaires à son fonctionnement : un cookie de session pour maintenir ta connexion, et un jeton de protection contre les attaques CSRF. Aucun cookie de mesure d'audience, de publicité ou de traçage n'est utilisé.",
+        "Ces cookies étant strictement nécessaires au fonctionnement du service, leur dépôt ne nécessite pas ton consentement préalable, conformément à la réglementation applicable (article 82 de la loi Informatique et Libertés)."
+      ]
+    },
+    "security": {
+      "title": "9. Sécurité",
+      "body": [
+        "L'Application met en œuvre des mesures techniques raisonnables pour protéger tes données : connexion chiffrée (HTTPS), cookies de session non accessibles en JavaScript, protection contre les attaques CSRF."
+      ]
+    },
+    "hosting": {
+      "title": "10. Hébergement et transferts de données",
+      "clause": "Les données sont hébergées par {{ providerName }}, dont le siège est situé au {{ providerAddress }}, au sein de l'Union européenne. Aucune donnée n'est transférée en dehors de l'Union européenne.",
+      "fallback": "Les informations relatives à l'hébergeur ne sont pas renseignées sur cette page ; tu peux les obtenir en écrivant à <a href=\"mailto:{{ creatorEmail }}\">{{ creatorEmail }}</a>. Le service est en tout état de cause hébergé au sein de l'Union européenne."
+    },
+    "rights": {
+      "title": "11. Tes droits",
+      "body": [
+        "Conformément au RGPD, tu disposes d'un droit d'accès, de rectification, d'effacement, de limitation, d'opposition et de portabilité sur les données te concernant.",
+        "Pour exercer ces droits sur les données de ton Compte, ou pour le supprimer, contacte l'Éditeur à <a href=\"mailto:{{ creatorEmail }}\">{{ creatorEmail }}</a> (une suppression directe depuis l'Application peut également être disponible). Si tu es l'unique administrateur d'un Projet, cette suppression suppose au préalable de désigner un autre administrateur ou de supprimer le Projet (voir section 7).",
+        "Pour exercer ces droits sur les données d'un Participant, contacte le Responsable du Projet dans lequel ces données ont été saisies : c'est lui qui en est responsable de traitement. Si tu ne sais pas qui contacter, tu peux écrire à l'Éditeur, qui t'orientera dans la mesure du possible.",
+        "Le droit à l'effacement des données d'un Participant ne peut toutefois pas être exercé avant l'expiration du délai minimal de conservation de 12 mois décrit à la section 7 : pendant cette période, la donnée reste nécessaire à la finalité de registre de traçabilité, ce qui écarte l'application du droit à l'effacement au sens de l'article 17 du RGPD. Les droits d'accès et de rectification restent quant à eux exerçables à tout moment, y compris pendant ce délai."
+      ]
+    },
+    "complaint": {
+      "title": "12. Réclamation auprès de la CNIL",
+      "body": [
+        "Si tu estimes que tes droits ne sont pas respectés, tu peux introduire une réclamation auprès de la Commission Nationale de l'Informatique et des Libertés (CNIL) : <a href=\"https://www.cnil.fr\" target=\"_blank\" rel=\"noopener noreferrer\">www.cnil.fr</a>."
+      ]
+    },
+    "contact": {
+      "title": "13. Contact",
+      "body": [
+        "Pour toute question relative à cette politique de confidentialité, écris à <a href=\"mailto:{{ creatorEmail }}\">{{ creatorEmail }}</a>."
+      ]
+    },
+    "changes": {
+      "title": "14. Modification de la politique de confidentialité",
+      "body": [
+        "Cette politique peut être modifiée à tout moment, notamment pour tenir compte d'évolutions légales ou fonctionnelles. La date de dernière mise à jour figure en haut de cette page."
+      ]
+    }
+  }
+}

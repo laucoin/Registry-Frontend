@@ -1,8 +1,13 @@
-# The image only needs nginx.conf and dist/browser — keep the context small.
+# Unlike the CSR Dockerfile, this one builds inside the image (multi-stage), so it
+# needs the full source — only exclude what the build itself doesn't need.
 .git
 .github
+.idea
+.vscode
+*.iml
 node_modules
+dist
 .angular
-src
-public
+.env
+.env.example
 *.md

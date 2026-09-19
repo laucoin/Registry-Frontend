@@ -1,0 +1,6 @@
+{
+  "eyebrow": "Espace applicatif",
+  "helloUser": "Bonjour {{ username }}",
+  "hello": "Bonjour",
+  "logout": "Se déconnecter"
+}

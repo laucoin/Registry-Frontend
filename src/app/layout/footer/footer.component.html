@@ -1,0 +1,31 @@
+<footer class="app-footer">
+	<div class="app-footer__inner">
+		<div class="brand">
+			<span class="brand__mark">R</span>
+			<div class="brand__text">
+				<strong>Registry {{ organizationName() }}</strong>
+				<span>
+					© {{ creationYear }} - {{ currentYear }}
+					@if (creatorWebsite(); as website) {
+						<a [href]="website" target="_blank" rel="noopener noreferrer">{{ creatorName() }}</a>
+					} @else {
+						{{ creatorName() }}
+					}
+				</span>
+				<span class="brand__version">{{
+					'footer.version' | transloco: { version: appVersion }
+				}}</span>
+			</div>
+		</div>
+
+		<nav class="app-footer__links">
+			<a routerLink="/terms">{{ 'footer.terms' | transloco }}</a>
+			<a routerLink="/privacy">{{ 'footer.privacy' | transloco }}</a>
+			@if (supportIssuesUrl(); as issuesUrl) {
+				<a [href]="issuesUrl" target="_blank" rel="noopener noreferrer">{{
+					'footer.support' | transloco
+				}}</a>
+			}
+		</nav>
+	</div>
+</footer>

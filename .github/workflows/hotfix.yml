@@ -27,6 +27,12 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
+        env:
+          BACKEND_URL: http://build-placeholder.invalid
+          ORGANIZATION_NAME: build-placeholder
+          CREATOR_NAME: build-placeholder
+          CREATOR_EMAIL: build-placeholder@example.com
+          NODE_OPTIONS: --dns-result-order=ipv4first
       # Tag == the exact hotfix tag name, e.g. 1.0.0-hotfix-1.
       - uses: ./.github/actions/docker-publish
         with:

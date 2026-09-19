@@ -1,0 +1,74 @@
+name: 🐛 Bug report
+description: Something in the app is broken or behaves unexpectedly.
+labels: [ "bug" ]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: A clear description of the bug. What did you expect instead?
+    validations:
+      required: true
+
+  - type: input
+    id: userId
+    attributes:
+      label: Affected user
+      description: The user ID or email that hit the bug, if known. Helps us look up their session/profile without guessing.
+      placeholder: e.g. administrator@sgdf.fr or a UUID
+
+  - type: input
+    id: projectId
+    attributes:
+      label: Affected project
+      description: The project ID or name involved, if known — Registry is multi-project, and most data-related bugs are scoped to one.
+      placeholder: e.g. Camp d'été 2026 or a UUID
+
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Where did this happen?
+      options:
+        - Production
+        - A branch preview image
+        - Local dev (ng serve)
+        - Local dev (Docker)
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: The exact steps, starting from a clean state, that trigger the bug.
+      placeholder: |
+        1. Go to '...'
+        2. Click on '...'
+        3. See error
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version / image tag
+      description: The app version (footer), branch name, or image tag, if known.
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Console / network output
+      description: Browser console errors, failed network requests, or server logs.
+      render: shell
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Browser/OS, screenshots, anything else relevant.
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes / comments
+      description: Anything else worth flagging — workarounds you tried, how often it happens, who else it affects.

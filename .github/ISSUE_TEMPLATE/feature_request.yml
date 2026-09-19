@@ -1,0 +1,50 @@
+name: ✨ Feature request
+description: Suggest a new feature or an improvement to an existing one.
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: What are you trying to do, and what's currently getting in the way?
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: What you'd like to happen. Sketches, mockups, or links to similar patterns elsewhere are welcome.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Any other approaches you thought about, and why you'd prefer the one above.
+
+  - type: input
+    id: projectId
+    attributes:
+      label: Related project
+      description: The project ID or name this need comes from, if it's grounded in a concrete case rather than a general idea — Registry is multi-project, and this helps us weigh how broadly useful the request is.
+      placeholder: e.g. Camp d'été 2026 or a UUID
+
+  - type: dropdown
+    id: audience
+    attributes:
+      label: Who is this for?
+      description: The role(s) that would use this. Leave unselected if unsure or if it's not role-specific.
+      multiple: true
+      options:
+        - Administrator
+        - Coordinator
+        - Participant
+        - Everyone
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Anything else that would help evaluate or scope this.

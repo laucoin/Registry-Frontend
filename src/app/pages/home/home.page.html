@@ -1,0 +1,12 @@
+<div class="home-shell">
+	<p class="eyebrow">{{ 'home.eyebrow' | transloco }}</p>
+	@if (authFacade.currentUser(); as currentUser) {
+		<h1>{{ 'home.helloUser' | transloco: { username: currentUser?.email } }}</h1>
+	} @else {
+		<h1>{{ 'home.hello' | transloco }}</h1>
+	}
+
+	<button nz-button nzType="default" type="button" (click)="logout()">
+		{{ 'home.logout' | transloco }}
+	</button>
+</div>

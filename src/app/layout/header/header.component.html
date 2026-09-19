@@ -1,0 +1,68 @@
+<header class="app-header">
+	<div class="app-header__inner">
+		<div class="header-left">
+			<a class="brand" routerLink="/">
+				<span class="brand__mark">R</span>
+				<span class="brand__text">
+					<strong>Registry</strong>
+					@if (organization(); as org) {
+						<span>{{ org.name }}</span>
+					}
+				</span>
+			</a>
+			<span class="divider" aria-hidden="true"></span>
+		</div>
+
+		<div class="header-spacer"></div>
+
+		@if (currentUser(); as user) {
+			<div class="header-actions">
+				<span class="icon-btn" aria-hidden="true">
+					<svg
+						viewBox="0 0 24 24"
+						width="18"
+						height="18"
+						fill="none"
+						xmlns="http://www.w3.org/2000/svg"
+					>
+						<path
+							d="M12 3a6 6 0 0 0-6 6v3.2c0 .5-.18.99-.5 1.38L4 15.3c-.8.94-.14 2.4 1.09 2.4h13.82c1.23 0 1.89-1.46 1.09-2.4l-1.5-1.72a2.1 2.1 0 0 1-.5-1.38V9a6 6 0 0 0-6-6Z"
+							stroke="currentColor"
+							stroke-width="1.6"
+							stroke-linejoin="round"
+						/>
+						<path
+							d="M9.5 20a2.5 2.5 0 0 0 5 0"
+							stroke="currentColor"
+							stroke-width="1.6"
+							stroke-linecap="round"
+						/>
+					</svg>
+				</span>
+
+				<span class="divider" aria-hidden="true"></span>
+
+				<button
+					class="user-menu"
+					type="button"
+					nz-dropdown
+					nzTrigger="click"
+					[nzDropdownMenu]="userMenu"
+				>
+					<span class="user-menu__avatar">{{ initials() }}</span>
+					<div class="user-menu__info">
+						<span class="user-menu__name">{{ displayName() }}</span>
+						<span class="user-menu__role">{{ user.role?.label }}</span>
+					</div>
+				</button>
+
+				<nz-dropdown-menu #userMenu="nzDropdownMenu">
+					<ul nz-menu>
+						<!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -- nz-menu-item already makes the host focusable and wires keyboard activation (Enter/Space) itself. -->
+						<li nz-menu-item (click)="logout()">{{ 'header.logout' | transloco }}</li>
+					</ul>
+				</nz-dropdown-menu>
+			</div>
+		}
+	</div>
+</header>
