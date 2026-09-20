@@ -1,0 +1,5 @@
+{
+  "*.{ts,html}": ["eslint --fix"],
+  "*.less": ["stylelint --fix"],
+  "*.{ts,html,less,json,md,yml,yaml}": ["prettier --write --log-level=warn"]
+}

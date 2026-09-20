@@ -1,12 +1,40 @@
-<div class="home-shell">
-	<p class="eyebrow">{{ 'home.eyebrow' | transloco }}</p>
-	@if (authFacade.currentUser(); as currentUser) {
-		<h1>{{ 'home.helloUser' | transloco: { username: currentUser?.email } }}</h1>
-	} @else {
-		<h1>{{ 'home.hello' | transloco }}</h1>
+<app-page-title
+	[eyebrow]="'home.eyebrow' | transloco"
+	[title]="titleKey() | transloco: { username: displayName() }"
+	[lede]="'home.subtitle' | transloco"
+/>
+<section class="home-content">
+	<div class="favorites" [class.hero]="heroSlot() === 'favorites'" [class.shrunk]="favoritesEmpty()">
+		<app-favorites-projects
+			[projects]="favoritesProjects()"
+			[totalCount]="favoritesProjectsTotal()"
+			(favoriteToggled)="onFavoriteToggled($event)"
+		/>
+	</div>
+	@if (heroSlot() === 'createProject') {
+		<div class="create-project hero">
+			<app-create-project-prompt/>
+		</div>
 	}
-
-	<button nz-button nzType="default" type="button" (click)="logout()">
-		{{ 'home.logout' | transloco }}
-	</button>
-</div>
+	@if (showInvitations()) {
+		<div class="invitations" [class.hero]="heroSlot() === 'invitations'">
+			<app-received-invitations
+				[invitations]="receivedInvitations()"
+				(accepted)="onInvitationAccepted($event)"
+				(declined)="onInvitationRejected($event)"
+			/>
+		</div>
+	}
+	<div class="attention">
+		<app-attention-projects [projects]="attentionProjects()"/>
+	</div>
+	<div class="projects-in-progress" [class.hero]="heroSlot() === 'projectsInProgress'">
+		<app-projects-in-progress [projects]="projectsInProgress()"/>
+	</div>
+	<div class="upcoming" [class.hero]="heroSlot() === 'upcoming'">
+		<app-upcoming-projects [projects]="upcomingProjects()"/>
+	</div>
+	<div class="shortcuts">
+		<app-shortcuts/>
+	</div>
+</section>

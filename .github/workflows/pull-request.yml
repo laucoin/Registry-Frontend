@@ -2,8 +2,8 @@ name: Pull Request
 
 on:
   pull_request:
-    branches: [ main ]
-    types: [ opened, synchronize, reopened ]
+    branches: [main]
+    types: [opened, synchronize, reopened]
 
 concurrency:
   group: pr-${{ github.event.pull_request.number }}
@@ -30,7 +30,7 @@ jobs:
       - name: Set up Node (with pnpm store cache)
         uses: actions/setup-node@v4
         with:
-          node-version: "24"
+          node-version: '24'
           cache: pnpm
 
       - name: Install dependencies
@@ -38,6 +38,15 @@ jobs:
 
       - name: Lint
         run: pnpm lint
+
+      - name: Test
+        run: pnpm test -- --watch=false
+
+      - name: Format check
+        run: pnpm run format:check
+
+      - name: Lint styles
+        run: pnpm run lint:styles
 
       - name: Build
         run: pnpm build
@@ -51,7 +60,7 @@ jobs:
       - name: Run Lighthouse CI
         run: pnpm exec lhci autorun
         env:
-          PORT: "4310"
+          PORT: '4310'
           BACKEND_URL: http://build-placeholder.invalid
           ORGANIZATION_NAME: build-placeholder
           CREATOR_NAME: build-placeholder

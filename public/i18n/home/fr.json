@@ -1,6 +1,70 @@
 {
+  "documentTitle": "Accueil",
   "eyebrow": "Espace applicatif",
   "helloUser": "Bonjour {{ username }}",
   "hello": "Bonjour",
-  "logout": "Se déconnecter"
+  "subtitle": "Retrouvez vos projets, vos invitations et les éléments qui demandent votre attention.",
+  "logout": "Se déconnecter",
+  "recentProjects": {
+    "title": "Mes projets favoris",
+    "subtitle": "{{ count }} affichés sur {{ total }} projets favoris",
+    "seeAll": "Voir tous les projets",
+    "toggleFavorite": "Marquer comme favori",
+    "emptyFavoritesTitle": "Aucun projet favori pour le moment",
+    "emptyFavoritesHint": "Rendez-vous dans l'onglet Projets et cliquez sur l'étoile d'un projet pour l'ajouter ici.",
+    "emptyFavoritesGifAlt": "Démonstration : cliquer sur l'onglet Projets puis sur l'étoile favoris d'un projet"
+  },
+  "receivedInvitations": {
+    "title": "Invitations reçues",
+    "pendingCount": "{{ count }} en attente",
+    "description": "{{ inviter }} vous invite comme {{ role }}",
+    "decline": "Refuser",
+    "accept": "Accepter",
+    "seeAll": "Voir les {{ count }} invitations",
+    "empty": "Aucune invitation en attente."
+  },
+  "projectsToWatch": {
+    "title": "Projets en cours",
+    "seeAll": "Voir tous les projets",
+    "empty": "Aucun projet en cours pour le moment.",
+    "endDate": "Se termine le {{ date }}",
+    "noEndDate": "Date de fin indéterminée"
+  },
+  "upcomingProjects": {
+    "title": "Projets à venir",
+    "seeAll": "Voir tous les projets",
+    "empty": "Aucun projet à venir pour le moment."
+  },
+  "attentionProjects": {
+    "title": "Projets demandant ton attention",
+    "seeAll": "Voir tous les projets",
+    "empty": "Aucun projet ne nécessite ton attention pour le moment.",
+    "ongoingAlerts": "{{ count }} alerte en cours",
+    "ongoingAlerts_plural": "{{ count }} alertes en cours"
+  },
+  "projectRow": {
+    "participants": "{{ count }} participant",
+    "participants_plural": "{{ count }} participants",
+    "vehicles": "{{ count }} véhicule",
+    "vehicles_plural": "{{ count }} véhicules",
+    "groups": "{{ count }} groupe",
+    "groups_plural": "{{ count }} groupes",
+    "activities": "{{ count }} activité",
+    "activities_plural": "{{ count }} activités",
+    "profiles": "{{ count }} membre",
+    "profiles_plural": "{{ count }} membres",
+    "noOptions": "Aucune option"
+  },
+  "createProject": {
+    "title": "Créez votre premier projet",
+    "description": "Vous n'avez pour l'instant aucun projet en cours ni à venir. Créez-en un pour commencer.",
+    "action": "Créer un projet"
+  },
+  "shortcuts": {
+    "title": "Accès rapides",
+    "users": "Utilisateurs",
+    "myAccount": "Mon compte",
+    "myAccesses": "Mes accès",
+    "helpCenter": "Centre d'aide"
+  }
 }

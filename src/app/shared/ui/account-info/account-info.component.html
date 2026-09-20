@@ -1,0 +1,36 @@
+<nz-card
+	nzType="inner"
+	[nzTitle]="header"
+	[nzBodyStyle]="{ padding: '0', display: 'flex', flexDirection: 'column', flex: '1' }"
+>
+	<div class="row">
+		<span class="title">{{ 'myAccount.info.name' | transloco }}</span>
+		<span class="value" *appSkeletonIf="currentUser()">{{ displayName() }}</span>
+	</div>
+	<nz-divider nzType="horizontal" />
+	<div class="row">
+		<span class="title">{{ 'myAccount.info.email' | transloco }}</span>
+		<span class="value" *appSkeletonIf="currentUser(); width: '10rem'">{{ email() }}</span>
+	</div>
+	<nz-divider nzType="horizontal" />
+	<div class="row">
+		<span class="title">{{ 'myAccount.info.role' | transloco }}</span>
+		<span class="value" *appSkeletonIf="currentUser(); width: '7rem'">{{ role() }}</span>
+	</div>
+	<nz-divider nzType="horizontal" />
+	<div class="row">
+		<span class="title">{{ 'myAccount.info.lastLogin' | transloco }}</span>
+		<span class="value" *appSkeletonIf="currentUser(); width: '8rem'">{{ lastLogin() }}</span>
+	</div>
+	@if (organizationName(); as orgName) {
+		<nz-divider nzType="horizontal" />
+		<div class="hint">{{ 'myAccount.info.hint' | transloco: { origin: orgName } }}</div>
+	}
+</nz-card>
+
+<ng-template #header>
+	<h2>
+		<svg lucideUser></svg>
+		{{ 'myAccount.info.title' | transloco }}
+	</h2>
+</ng-template>

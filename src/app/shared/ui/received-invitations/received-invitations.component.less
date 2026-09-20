@@ -1,0 +1,124 @@
+@import '../../../../theme.less';
+
+:host {
+	display: block;
+	height: 100%;
+}
+
+nz-card {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+
+	::ng-deep .ant-card-body {
+		display: flex;
+		flex-direction: column;
+		flex: 1;
+		min-height: 0;
+	}
+
+	::ng-deep .ant-card-head-title {
+		display: flex;
+		align-items: center;
+		gap: @in-block-small-spacing;
+		color: @heading-color;
+		font-size: @text-sm;
+		font-weight: @font-weight-bold;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+
+		h2 {
+			display: contents;
+			font: inherit;
+			color: inherit;
+			letter-spacing: inherit;
+			text-transform: inherit;
+		}
+
+		svg {
+			width: 1rem;
+			height: 1rem;
+		}
+	}
+}
+
+.pending-count {
+	padding: 0.125rem @in-block-small-spacing;
+	border-radius: 999px;
+	background: @info-color-deprecated-bg;
+	color: @info-color;
+	font-size: @text-xs;
+	font-weight: @font-weight-bold;
+	letter-spacing: 0.02em;
+	text-transform: uppercase;
+	white-space: nowrap;
+}
+
+.invitation {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: @in-block-large-spacing;
+	padding: @in-block-large-spacing;
+
+	@media (max-width: @breakpoint-sm) {
+		flex-direction: column;
+		align-items: stretch;
+	}
+}
+
+.invitation-text {
+	h3 {
+		margin: 0;
+		color: @heading-color;
+		font-size: @text-base;
+		font-weight: @font-weight-bold;
+	}
+
+	p {
+		margin: 0.125rem 0 0;
+		color: @text-color-secondary;
+		font-size: @text-sm;
+	}
+}
+
+.invitation-actions {
+	flex: none;
+	display: flex;
+	gap: @in-block-small-spacing;
+}
+
+nz-divider {
+	margin: 0;
+
+	&:last-child {
+		display: none;
+	}
+}
+
+.empty-state {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: @block-spacing @in-block-large-spacing;
+}
+
+.see-all {
+	display: block;
+	width: 100%;
+	margin-top: auto;
+	border: none;
+	background: none;
+	padding: @in-block-spacing;
+	color: @link-color;
+	font-family: inherit;
+	font-size: @text-sm;
+	font-weight: @font-weight-medium;
+	text-align: center;
+	text-decoration: none;
+	cursor: pointer;
+
+	&:hover {
+		color: @link-hover-color;
+	}
+}

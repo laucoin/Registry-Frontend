@@ -10,25 +10,17 @@
 					</div>
 				</div>
 				<div class="org-mark" aria-hidden="true">
-					<svg
-						viewBox="0 0 24 24"
-						width="18"
-						height="18"
-						fill="none"
-						xmlns="http://www.w3.org/2000/svg"
-					>
-						<path d="M3 18 9 8l4 6 2-3 6 7z" fill="currentColor"/>
-					</svg>
+					<svg lucideMountain size="18"></svg>
 					<span>{{ organization()?.name }}</span>
 				</div>
 			</header>
 
 			<div>
-				<p class="eyebrow">{{ 'login.eyebrow' | transloco }}</p>
-				<h1>{{ 'login.title' | transloco }}</h1>
-				<p class="lede">
-					{{ 'login.subtitle' | transloco: { organizationName: organization()?.name } }}
-				</p>
+				<app-page-title
+					[eyebrow]="'login.eyebrow' | transloco"
+					[title]="'login.title' | transloco"
+					[lede]="'login.subtitle' | transloco: { organizationName: organization()?.name }"
+				/>
 
 				<button
 					nz-button

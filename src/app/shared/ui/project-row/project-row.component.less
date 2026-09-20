@@ -1,0 +1,57 @@
+@import '../../../../theme.less';
+
+:host {
+	display: contents;
+}
+
+.project {
+	display: flex;
+	align-items: center;
+	gap: @in-block-spacing;
+	padding: @in-block-large-spacing;
+	color: inherit;
+	text-decoration: none;
+	cursor: pointer;
+
+	&:hover {
+		background: @disabled-background;
+	}
+}
+
+.project-text {
+	flex: 1;
+	min-width: 0;
+
+	h3 {
+		margin: 0;
+		color: @heading-color;
+		font-size: @text-sm;
+		font-weight: @font-weight-bold;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	p {
+		margin: 0.125rem 0 0;
+		color: @text-color-secondary;
+		font-size: @text-xs;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	// Hidden first as the widget narrows — least essential of the two secondary lines.
+	.counts {
+		@media (max-width: @breakpoint-lg) {
+			display: none;
+		}
+	}
+
+	// Kept longer than `.counts`, only hidden once the widget drops to its narrowest layout.
+	.options {
+		@media (max-width: @breakpoint-sm) {
+			display: none;
+		}
+	}
+}

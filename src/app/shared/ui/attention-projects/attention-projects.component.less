@@ -1,0 +1,101 @@
+@import '../../../../theme.less';
+
+:host {
+	display: block;
+	height: 100%;
+}
+
+nz-card {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+
+	::ng-deep .ant-card-body {
+		display: flex;
+		flex-direction: column;
+		flex: 1;
+		min-height: 0;
+	}
+
+	::ng-deep .ant-card-head-title {
+		display: flex;
+		align-items: center;
+		gap: @in-block-small-spacing;
+		color: @heading-color;
+		font-size: @text-sm;
+		font-weight: @font-weight-bold;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+
+		h2 {
+			display: contents;
+			font: inherit;
+			color: inherit;
+			letter-spacing: inherit;
+			text-transform: inherit;
+		}
+
+		svg {
+			width: 1rem;
+			height: 1rem;
+			color: @error-color;
+		}
+	}
+}
+
+.count {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 1.5rem;
+	padding: 0.125rem @in-block-small-spacing;
+	border-radius: 999px;
+	background: @error-color-deprecated-bg;
+	color: @error-color;
+	font-size: @text-xs;
+	font-weight: @font-weight-bold;
+}
+
+.ongoing-alerts {
+	flex: none;
+	padding: 0.125rem @in-block-small-spacing;
+	border-radius: 999px;
+	background: @error-color-deprecated-bg;
+	color: @error-color;
+	font-size: @text-xs;
+	font-weight: @font-weight-bold;
+	letter-spacing: 0.02em;
+	white-space: nowrap;
+}
+
+nz-divider {
+	margin: 0;
+
+	&:last-child {
+		display: none;
+	}
+}
+
+.empty-state {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: @block-spacing @in-block-large-spacing;
+}
+
+.see-all {
+	width: 100%;
+	margin-top: auto;
+	border: none;
+	background: none;
+	padding: @in-block-spacing;
+	color: @link-color;
+	font-family: inherit;
+	font-size: @text-sm;
+	font-weight: @font-weight-medium;
+	cursor: pointer;
+
+	&:hover {
+		color: @link-hover-color;
+	}
+}

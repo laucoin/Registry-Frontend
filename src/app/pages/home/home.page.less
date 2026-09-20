@@ -1,5 +1,72 @@
 @import '../../../theme.less';
 
 :host {
-	display: block;
+	width: 100%;
+}
+
+.home-content {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 2rem;
+
+	// The hero slot always comes first, whichever widget currently occupies it (favorites by default,
+	// or one of the widgets below when favorites has no content) — see HomePage.heroSlot. A 100% basis
+	// forces it alone on its line.
+	.hero {
+		order: -1;
+		flex: 12 0 100% !important;
+	}
+
+	// Widgets declare a flex-grow equal to their nominal 12-column weight (6 = half, 4 = third) so that
+	// when a line's items don't sum to 100% — a lone widget with no same-width sibling left, or an odd
+	// leftover count after wrapping — the remaining space is distributed instead of left as a blank gap.
+	// flex-shrink stays 0: widgets keep their nominal width and wrap to a new line rather than being
+	// squeezed to cram everything onto one row.
+	.favorites {
+		flex: 12 0 100%;
+
+		// Shrinks to the size "Projets en cours" normally occupies when there's no favorite project,
+		// making room for whichever widget gets promoted to the hero slot instead.
+		&.shrunk {
+			flex: 4 0 calc(33.3333% - 1.3333rem);
+		}
+	}
+
+	.attention,
+	.invitations {
+		flex: 6 0 calc(50% - 1rem);
+	}
+
+	.projects-in-progress,
+	.upcoming,
+	.shortcuts {
+		flex: 4 0 calc(33.3333% - 1.3333rem);
+	}
+
+	@media (max-width: @breakpoint-xl) {
+		.attention,
+		.invitations {
+			flex-basis: 100%;
+		}
+
+		.favorites.shrunk,
+		.projects-in-progress,
+		.upcoming,
+		.shortcuts {
+			flex-basis: calc(50% - 1rem);
+		}
+	}
+
+	@media (max-width: @breakpoint-sm) {
+		.favorites,
+		.favorites.shrunk,
+		.create-project,
+		.attention,
+		.invitations,
+		.projects-in-progress,
+		.upcoming,
+		.shortcuts {
+			flex-basis: 100%;
+		}
+	}
 }

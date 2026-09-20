@@ -4,22 +4,11 @@
   "compileOnSave": false,
   "compilerOptions": {
     "paths": {
-      "@root/*": [
-        "./*"
-      ],
-      "@app/*": [
-        "./src/app/*"
-      ],
-      "@pages/*": [
-        "./src/app/pages/*"
-      ],
-      "@layout/*": [
-        "./src/app/layout/*"
-      ],
-      "@features/*": [
-        "./src/app/features/*"
-      ]
+      "@core/*": ["./src/app/core/*"],
+      "@pages/*": ["./src/app/pages/*"],
+      "@shared/*": ["./src/app/shared/*"]
     },
+    "strict": true,
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,

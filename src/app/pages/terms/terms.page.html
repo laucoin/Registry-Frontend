@@ -1,12 +1,12 @@
 <main class="legal-shell">
 	<article class="legal-doc">
-		<a class="legal-doc__back" routerLink="/login"
-			><span aria-hidden="true">←</span> {{ 'terms.back' | transloco }}</a
-		>
-
-		<header class="legal-doc__header">
-			<h1>{{ 'terms.title' | transloco }}</h1>
-			<p class="legal-doc__updated">{{ 'terms.updatedAt' | transloco }}</p>
+		<header>
+			<app-page-title
+				[eyebrow]="'terms.eyebrow' | transloco"
+				[title]="'terms.title' | transloco"
+				[backButtonLabel]="'terms.back' | transloco"
+				[lede]="'terms.updatedAt' | transloco"
+			/>
 		</header>
 
 		@for (paragraph of 'terms.intro' | transloco: orgParams(); track $index) {

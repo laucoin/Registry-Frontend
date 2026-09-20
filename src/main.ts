@@ -1,5 +1,7 @@
 import { bootstrapApplication } from '@angular/platform-browser';
-import { appConfig } from '@app/app.config';
-import { Registry } from '@layout/registry/registry';
+import { RegistryComponent } from '@core/layout/registry.component';
+import { appConfig } from './app/app.config';
 
-bootstrapApplication(Registry, appConfig).catch((err: unknown): void => console.error(err));
+bootstrapApplication(RegistryComponent, appConfig).catch((err: unknown): void =>
+	console.error(err),
+);

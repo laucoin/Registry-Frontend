@@ -1,0 +1,37 @@
+<nz-card nzType="inner" [nzTitle]="header" [nzExtra]="extra" [nzBodyStyle]="{ padding: '0' }">
+	@if (projects().length > 0) {
+		@for (project of projects(); track project.id) {
+			<app-project-row [id]="project.id" [name]="project.name" [options]="project.moduleLabels">
+				<span class="end-date">{{ endDateBadgeLabel(project.endDateLabel) }}</span>
+			</app-project-row>
+			<nz-divider nzType="horizontal" />
+		}
+		<button type="button" class="see-all" (click)="viewAllProjects()">
+			{{ 'home.projectsToWatch.seeAll' | transloco }}
+		</button>
+	} @else {
+		<div class="empty-state">
+			<nz-empty
+				[nzNotFoundContent]="'home.projectsToWatch.empty' | transloco"
+				[nzNotFoundImage]="emptyIcon"
+			/>
+		</div>
+	}
+</nz-card>
+
+<ng-template #header>
+	<h2>
+		<svg lucideFolderKanban></svg>
+		{{ 'home.projectsToWatch.title' | transloco }}
+	</h2>
+</ng-template>
+
+<ng-template #extra>
+	@if (projects().length > 0) {
+		<span class="count">{{ projects().length }}</span>
+	}
+</ng-template>
+
+<ng-template #emptyIcon>
+	<app-empty-state-icon />
+</ng-template>

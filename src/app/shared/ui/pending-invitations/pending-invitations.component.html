@@ -1,0 +1,48 @@
+<nz-card nzType="inner" [nzTitle]="header" [nzExtra]="extra" [nzBodyStyle]="{ padding: '0' }">
+	@if (invitations().length > 0) {
+		@for (invitation of invitations(); track invitation.id) {
+			<div class="invitation">
+				<h3>{{ invitation.projectName }}</h3>
+				<p>
+					{{
+						'myAccesses.pendingInvitations.description'
+							| transloco: { inviter: invitation.inviterName, role: invitation.roleLabel }
+					}}
+				</p>
+				<div class="invitation-actions">
+					<button type="button" nz-button nzType="primary" (click)="acceptInvitation(invitation)">
+						{{ 'myAccesses.pendingInvitations.accept' | transloco }}
+					</button>
+					<button type="button" nz-button (click)="declineInvitation(invitation)">
+						{{ 'myAccesses.pendingInvitations.decline' | transloco }}
+					</button>
+				</div>
+			</div>
+			<nz-divider nzType="horizontal" />
+		}
+	} @else {
+		<div class="empty-state">
+			<nz-empty
+				[nzNotFoundContent]="'myAccesses.pendingInvitations.empty' | transloco"
+				[nzNotFoundImage]="emptyIcon"
+			/>
+		</div>
+	}
+</nz-card>
+
+<ng-template #header>
+	<h2>
+		<svg lucideMail></svg>
+		{{ 'myAccesses.pendingInvitations.title' | transloco }}
+	</h2>
+</ng-template>
+
+<ng-template #extra>
+	@if (invitations().length > 0) {
+		<span class="count">{{ invitations().length }}</span>
+	}
+</ng-template>
+
+<ng-template #emptyIcon>
+	<app-empty-state-icon />
+</ng-template>

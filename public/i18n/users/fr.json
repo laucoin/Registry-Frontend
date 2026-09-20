@@ -1,0 +1,19 @@
+{
+  "eyebrow": "Espace applicatif",
+  "title": "Gestion des utilisateurs",
+  "subtitle": "Les profils proviennent du fournisseur d'identité et ne sont pas modifiables ici. Vous pouvez bloquer un accès ou supprimer définitivement un compte.",
+  "add": "Ajouter un utilisateur",
+  "list": {
+    "title": "Comptes",
+    "blockedCount": "{{ count }} bloqués",
+    "searchPlaceholder": "Rechercher un utilisateur...",
+    "active": "Actif",
+    "blocked": "Bloqué",
+    "block": "Bloquer l'accès",
+    "unblock": "Débloquer l'accès",
+    "delete": "Supprimer définitivement",
+    "rowMenu": "Actions",
+    "empty": "Aucun utilisateur pour le moment.",
+    "noResults": "Aucun utilisateur ne correspond à votre recherche."
+  }
+}

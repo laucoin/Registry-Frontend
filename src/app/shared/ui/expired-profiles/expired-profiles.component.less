@@ -1,0 +1,100 @@
+@import '../../../../theme.less';
+
+:host {
+	display: block;
+}
+
+::ng-deep .ant-card-head-title {
+	display: flex;
+	align-items: center;
+	gap: @in-block-small-spacing;
+	color: @heading-color;
+	font-size: @text-sm;
+	font-weight: @font-weight-bold;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+
+	h2 {
+		display: contents;
+		font: inherit;
+		color: inherit;
+		letter-spacing: inherit;
+		text-transform: inherit;
+	}
+
+	svg {
+		width: 1rem;
+		height: 1rem;
+	}
+}
+
+.count {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 1.5rem;
+	padding: 0.125rem @in-block-small-spacing;
+	border-radius: 999px;
+	background: @disabled-background;
+	color: @text-color-secondary;
+	font-size: @text-xs;
+	font-weight: @font-weight-bold;
+}
+
+.profile {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: @in-block-large-spacing;
+	padding: @in-block-large-spacing;
+
+	@media (max-width: @breakpoint-sm) {
+		flex-direction: column;
+		align-items: stretch;
+	}
+}
+
+.profile-text {
+	min-width: 0;
+
+	h3 {
+		margin: 0;
+		color: @text-color;
+		font-size: @text-base;
+		font-weight: @font-weight-bold;
+	}
+
+	p {
+		margin: 0.125rem 0 0;
+		color: @text-color-secondary;
+		font-size: @text-sm;
+	}
+}
+
+.role {
+	flex: none;
+	padding: 0.125rem @in-block-small-spacing;
+	border-radius: 999px;
+	background: @disabled-background;
+	color: @text-color-secondary;
+	font-size: @text-xs;
+	font-weight: @font-weight-bold;
+	letter-spacing: 0.02em;
+	text-transform: uppercase;
+	white-space: nowrap;
+}
+
+nz-divider {
+	margin: 0;
+
+	&:last-child {
+		display: none;
+	}
+}
+
+.empty-state {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: @block-spacing @in-block-large-spacing;
+}

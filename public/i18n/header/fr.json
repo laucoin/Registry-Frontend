@@ -1,3 +1,7 @@
 {
-  "logout": "Se déconnecter"
+  "logout": "Se déconnecter",
+  "myAccesses": "Mes accès",
+  "menu": "Menu",
+  "projects": "Projets",
+  "users": "Utilisateurs"
 }

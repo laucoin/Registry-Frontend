@@ -1,0 +1,31 @@
+<nz-card nzType="inner" [nzTitle]="header" [nzBodyStyle]="{ padding: '0' }">
+	<div class="options">
+		<button
+			type="button"
+			class="option"
+			[class.selected]="activeLang() === 'fr'"
+			[disabled]="!currentUser()"
+			(click)="selectLanguage('fr')"
+		>
+			Français
+		</button>
+		<button
+			type="button"
+			class="option"
+			[class.selected]="activeLang() === 'en'"
+			[disabled]="!currentUser()"
+			(click)="selectLanguage('en')"
+		>
+			English
+		</button>
+	</div>
+	<nz-divider nzType="horizontal" />
+	<div class="hint">{{ 'myAccount.language.hint' | transloco }}</div>
+</nz-card>
+
+<ng-template #header>
+	<h2>
+		<svg lucideLanguages></svg>
+		{{ 'myAccount.language.title' | transloco }}
+	</h2>
+</ng-template>

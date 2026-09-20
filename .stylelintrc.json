@@ -1,0 +1,12 @@
+{
+  "extends": ["stylelint-config-standard-less"],
+  "rules": {
+    "media-feature-range-notation": "prefix",
+    "color-function-notation": "legacy",
+    "color-function-alias-notation": "with-alpha",
+    "alpha-value-notation": "number",
+    "selector-class-pattern": null,
+    "selector-pseudo-element-no-unknown": [true, { "ignorePseudoElements": ["ng-deep"] }],
+    "no-descending-specificity": null
+  }
+}

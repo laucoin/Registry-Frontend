@@ -1,31 +1,34 @@
 import { ChangeDetectionStrategy, Component, computed, inject, Signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { ConfigFacade } from '@features/config/config.facade';
-import { RuntimeConfigModel } from '@features/config/runtime-config.model';
+import { ConfigFacade } from '@core/config/config.facade';
 import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco';
+import { RuntimeConfigModel } from '@shared/models/runtime-config.model';
+import { PageTitleComponent } from '@shared/ui/page-title/page-title.component';
 
 @Component({
-	selector: 'app-privacy-page',
-	standalone: true,
-	imports: [TranslocoPipe, RouterLink],
+	imports: [TranslocoPipe, PageTitleComponent],
 	providers: [provideTranslocoScope('privacy')],
 	templateUrl: './privacy.page.html',
 	styleUrl: './privacy.page.less',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
+/**
+ * Purpose: Static privacy-policy route, personalized with the organization's hosting/creator info.
+ * Scope: Reads ConfigFacade only; renders translated legal copy with those values interpolated.
+ * Limits: No data fetching or state mutation of its own.
+ */
 export class PrivacyPage {
-	private readonly configFacade: ConfigFacade = inject(ConfigFacade);
+	private readonly _configFacade: ConfigFacade = inject(ConfigFacade);
 
 	protected readonly hosting: Signal<RuntimeConfigModel['hosting'] | undefined> =
-		this.configFacade.hosting;
+		this._configFacade.hosting;
 
 	protected readonly orgParams: Signal<{
 		organizationName: string;
 		creatorName: string;
 		creatorEmail: string;
 	}> = computed(() => ({
-		organizationName: this.configFacade.organization()?.name ?? '',
-		creatorName: this.configFacade.creator()?.name ?? '',
-		creatorEmail: this.configFacade.creator()?.email ?? '',
+		organizationName: this._configFacade.organization()?.name ?? '',
+		creatorName: this._configFacade.creator()?.name ?? '',
+		creatorEmail: this._configFacade.creator()?.email ?? '',
 	}));
 }

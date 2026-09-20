@@ -10,15 +10,55 @@
 @text-color: #343343;
 @text-color-secondary: #6b7280;
 @heading-color: #003a5d;
-@disabled-color: fade(#343343, 40%);
+@disabled-background: oklch(96.8% 0.004 247);
+@disabled-color: oklch(53% 0.025 260);
 @border-color-base: #d1d5db;
+@border-color-split: @border-color-base;
 @component-background: #ffffff;
 @body-background: #f9fafb;
+@text-xs: 0.75rem;
+@text-xs--line-height: calc(1 / 0.75);
+@text-sm: 0.875rem;
+@text-sm--line-height: calc(1.25 / 0.875);
+@text-base: 1rem;
+@text-base--line-height: calc(1.5 / 1);
+@text-lg: 1.125rem;
+@text-lg--line-height: calc(1.75 / 1.125);
+@text-xl: 1.25rem;
+@text-xl--line-height: calc(1.75 / 1.25);
+@text-2xl: 1.5rem;
+@text-2xl--line-height: calc(2 / 1.5);
+@text-3xl: 1.875rem;
+@text-3xl--line-height: calc(2.25 / 1.875);
+@text-4xl: 2.25rem;
+@text-4xl--line-height: calc(2.5 / 2.25);
+@font-weight-normal: 400;
+@font-weight-medium: 500;
+@font-weight-semibold: 600;
+@font-weight-bold: 700;
+
+// ── Spacing ─────────────────────────────────────────────────────────────
+@in-block-small-spacing: 0.5rem;
+@in-block-spacing: 0.75rem;
+@in-block-large-spacing: 1rem;
+@block-spacing: 2rem;
 
 // ── Typography ──────────────────────────────────────────────────────────
 @font-family: 'Sarabun', 'Segoe UI', Arial, sans-serif;
 @font-size-base: 16px;
 @line-height-base: 1.5;
+
+// ── Breakpoints (mirrors ng-zorro's @screen-* scale) ─────────────────────
+@breakpoint-xs: 480px;
+@breakpoint-sm: 576px;
+@breakpoint-md: 768px;
+@breakpoint-lg: 992px;
+@breakpoint-xl: 1200px;
+@breakpoint-xxl: 1600px;
+
+// Semantic shortcuts (ng-zorro/antd device mapping: xs = phone, md = tablet)
+@breakpoint-phone: @breakpoint-xs;
+@breakpoint-tablet: @breakpoint-md;
 
 // ── Border radius, heights, shadows ─────────────────────────────────────────────
 @border-radius-base: 8px;
@@ -42,6 +82,9 @@
 
 // ── Focus ────────────────────────────────────────────────────────────────
 @outline-color: @primary-color;
+
+// ── Cards ────────────────────────────────────────────────────────────────
+@card-inner-head-background: @disabled-background;
 
 // ── Tags de statut & alertes ─────────────────────────────────────────────
 @success-color-deprecated-bg: tint(@success-color, 90%);

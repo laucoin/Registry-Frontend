@@ -1,0 +1,14 @@
+<a class="project" [routerLink]="['/projects', id(), 'home']">
+	<div class="project-text">
+		<h3>{{ name() }}</h3>
+		@if (counts(); as counts) {
+			@if (countsLabel(counts); as label) {
+				<p class="counts">{{ label }}</p>
+			}
+		}
+		@if (options(); as options) {
+			<p class="options">{{ optionsLabel(options) }}</p>
+		}
+	</div>
+	<ng-content />
+</a>

@@ -4,12 +4,19 @@ import {
 	isMainModule,
 	writeResponseToNodeResponse,
 } from '@angular/ssr/node';
-import { RuntimeConfigModel } from '@features/config/runtime-config.model';
+import { RuntimeConfigModel } from '@shared/models/runtime-config.model';
 import compression from 'compression';
 import { config as loadDotenv } from 'dotenv';
 import express, { NextFunction, Request, Response } from 'express';
 import { join } from 'node:path';
 
+/**
+ * Purpose: Node/Express entry point — validates required runtime env vars into RuntimeConfigModel,
+ * serves it over GET /api/config, and hands every other request to Angular's SSR engine.
+ * Scope: Runs once per process at startup (env read/validation) plus the two Express handlers below.
+ * Limits: A missing required env var crashes the process at startup rather than booting misconfigured;
+ * this file owns process/server wiring only, not any domain logic.
+ */
 loadDotenv();
 
 function readRequiredEnv(name: string): string {
@@ -54,6 +61,7 @@ const runtimeConfig: RuntimeConfigModel = {
 	},
 	support: {
 		issuesUrl: readOptionalEnv('SUPPORT_ISSUES_URL'),
+		helpCenterUrl: readOptionalEnv('SUPPORT_HELP_CENTER_URL'),
 	},
 };
 

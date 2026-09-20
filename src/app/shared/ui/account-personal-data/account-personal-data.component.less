@@ -1,0 +1,87 @@
+@import '../../../../theme.less';
+
+nz-card {
+	display: flex;
+	flex-direction: column;
+
+	::ng-deep .ant-card-head-title h2 {
+		display: contents;
+		font: inherit;
+		color: inherit;
+		letter-spacing: inherit;
+		text-transform: inherit;
+	}
+}
+
+.gdpr-banner {
+	display: flex;
+	flex-direction: column;
+	gap: @in-block-small-spacing;
+	padding: @in-block-large-spacing;
+
+	.gdpr-label {
+		color: @text-color-secondary;
+		font-size: @text-xs;
+		line-height: @text-xs--line-height;
+		text-transform: uppercase;
+	}
+
+	.learn-more {
+		display: inline-flex;
+		align-items: center;
+		gap: @in-block-small-spacing;
+		width: fit-content;
+		color: @link-color;
+		font-size: @text-xs;
+		line-height: @text-xs--line-height;
+		font-weight: @font-weight-semibold;
+		text-decoration: none;
+
+		&:hover {
+			color: @link-hover-color;
+			text-decoration: underline;
+		}
+	}
+}
+
+.actions {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: @in-block-large-spacing;
+	padding: @in-block-large-spacing;
+
+	@media (max-width: @breakpoint-tablet) {
+		grid-template-columns: 1fr;
+	}
+}
+
+.action {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: @in-block-small-spacing;
+	padding: @in-block-large-spacing;
+	border: 1px solid @border-color-base;
+	border-radius: @border-radius-base;
+
+	h3 {
+		margin: 0;
+		color: @text-color;
+		font-size: @text-sm;
+		line-height: @text-sm--line-height;
+		font-weight: @font-weight-bold;
+	}
+
+	p {
+		margin: 0;
+		color: @text-color-secondary;
+		font-size: @text-xs;
+		line-height: @text-xs--line-height;
+		flex: 1;
+	}
+
+	button {
+		margin-top: @in-block-small-spacing;
+		font-size: @text-sm;
+	}
+}

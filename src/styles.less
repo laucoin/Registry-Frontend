@@ -4,12 +4,16 @@
 // nz-* component is introduced, or its styles will be missing.
 @import 'ng-zorro-antd/style/default.less';
 @import 'ng-zorro-antd/button/style/entry';
+@import 'ng-zorro-antd/card/style/entry';
 @import 'ng-zorro-antd/dropdown/style/entry';
+@import 'ng-zorro-antd/divider/style/entry';
 @import 'ng-zorro-antd/menu/style/entry';
+@import 'ng-zorro-antd/skeleton/style/entry';
+@import 'ng-zorro-antd/empty/style/entry';
 @import './theme.less';
 
 :root {
-	--sgdf-bg: #ffffff;
+	--sgdf-bg: #fff;
 	--sgdf-bg-subtle: #f9fafb;
 	--sgdf-text: #343343;
 	--sgdf-text-secondary: #6b7280;
@@ -21,7 +25,7 @@
 
 :root[data-theme='dark'] {
 	--sgdf-bg: #141414;
-	--sgdf-bg-subtle: #000000;
+	--sgdf-bg-subtle: #000;
 	--sgdf-text: #d9d9d9;
 	--sgdf-text-secondary: #8c8c8c;
 	--sgdf-heading: #f0f0f0;
@@ -33,43 +37,116 @@
 html,
 body {
 	height: 100%;
-	min-width: 320px;
+	min-width: 20rem;
 	margin: 0;
 	font-family: @font-family;
 	background: var(--sgdf-bg-subtle);
 	color: var(--sgdf-text);
-	transition: background-color 0.2s ease,
-	color 0.2s ease;
+	font-size: @text-base;
+	line-height: @text-base--line-height;
+	font-weight: @font-weight-normal;
+	transition:
+		background-color 0.2s ease,
+		color 0.2s ease;
+
+	@media (max-width: @breakpoint-tablet) {
+		font-size: @text-sm;
+		line-height: @text-sm--line-height;
+	}
 }
 
+// ── Buttons ──────────────────────────────────────────────────────────────
+button.ant-btn {
+	display: flex;
+	align-items: center;
+	gap: @in-block-small-spacing;
+}
+
+button.btn-link {
+	margin: 0;
+	padding: 0;
+	border: none;
+	background: none;
+	font-family: inherit;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	gap: @in-block-small-spacing;
+	color: @info-color;
+	font-size: @text-sm;
+	line-height: @text-sm--line-height;
+	font-weight: @font-weight-semibold;
+}
+
+.btn-link:hover {
+	text-decoration: underline;
+}
+
+// ── Focus ────────────────────────────────────────────────────────────────
 // ng-zorro suppresses the native focus outline (operation-unit(), @link-focus-outline: 0) —
 // !important is required to override it.
 :focus-visible {
-	outline: 2px solid var(--sgdf-primary) !important;
-	outline-offset: 2px;
+	outline: 0.125rem solid var(--sgdf-primary) !important;
+	outline-offset: 0.125rem;
 }
 
-.eyebrow {
-	margin: 0 0 8px;
-	color: var(--sgdf-success);
-	font-size: 12px;
-	font-weight: 700;
-	letter-spacing: 0.08em;
-	text-transform: uppercase;
+// ── Icons ────────────────────────────────────────────────────────────────
+svg.lucide {
+	width: 1em;
+	height: 1em;
 }
 
-h1 {
-	margin: 0 0 12px;
-	color: var(--sgdf-heading);
-	font-family: 'Raleway', @font-family;
-	font-size: 34px;
-	font-weight: 800;
-	letter-spacing: -0.01em;
+// ── Skeleton ─────────────────────────────────────────────────────────────
+.ant-skeleton-paragraph {
+	margin: 0;
 }
 
-.lede {
-	margin: 0 0 32px;
-	color: var(--sgdf-text-secondary);
-	font-size: 14px;
-	line-height: 1.6;
+// ── Dividers ─────────────────────────────────────────────────────────────
+.ant-divider-horizontal {
+	margin: 0;
+}
+
+// ── Empty state ──────────────────────────────────────────────────────────
+// nz-empty's image slot is filled with app-empty-state-icon (see that
+// component for the tinted-circle badge styling); this just centers it.
+.ant-empty-image {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: auto;
+	margin: 0 0 @in-block-small-spacing;
+}
+
+// ── Cards ────────────────────────────────────────────────────────────────
+.ant-card-head {
+	min-height: 0;
+}
+
+.ant-card-type-inner {
+	border-color: @border-color-base;
+
+	.ant-card-head {
+		border-bottom-color: @card-inner-head-background;
+		padding: 0 @in-block-large-spacing;
+	}
+
+	.ant-card-head-title {
+		display: flex;
+		align-items: center;
+		gap: @in-block-small-spacing;
+		color: @primary-color;
+		font-size: @text-sm;
+		font-weight: @font-weight-bold;
+		line-height: @text-sm--line-height;
+		text-transform: uppercase;
+	}
+
+	.ant-card-body {
+		@media (max-width: @breakpoint-tablet) {
+			font-size: @text-sm;
+			line-height: @text-sm--line-height;
+		}
+
+		padding: @in-block-large-spacing;
+	}
 }

@@ -1,0 +1,8 @@
+{
+  "title": "Un problème est survenu",
+  "configLoadFailed": "L'application n'a pas pu démarrer correctement. Merci de réessayer dans quelques instants.",
+  "sessionCheckFailed": "Impossible de contacter le serveur pour vérifier votre session. Le service est peut-être temporairement indisponible.",
+  "tokenExchangeFailed": "Impossible de finaliser votre connexion. Le service est peut-être temporairement indisponible.",
+  "retry": "Réessayer",
+  "contactSupport": "Contacter le support"
+}

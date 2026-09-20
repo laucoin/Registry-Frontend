@@ -1,0 +1,20 @@
+<app-page-title
+	[eyebrow]="'myAccount.eyebrow' | transloco"
+	[title]="'myAccount.title' | transloco"
+	[lede]="'myAccount.subtitle' | transloco"
+/>
+
+<section class="account-content">
+	<div class="info">
+		<app-account-info />
+	</div>
+	<div class="language">
+		<app-account-language />
+	</div>
+	<div class="theme">
+		<app-account-theme />
+	</div>
+	<div class="personal-data">
+		<app-account-personal-data />
+	</div>
+</section>
