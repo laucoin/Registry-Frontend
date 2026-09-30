@@ -1,4 +1,4 @@
-import { ProjectAvailabilityModel } from '@shared/models/project-profile.model';
+import { ProjectAvailabilityModel } from '@shared/models/project.model';
 
 // Generic over the backend's enum-backed `value`, mirroring the backend's own LabelResponse<T> DTO —
 // defaults to `string` for call sites (role, module options) that only ever display `.label` and never

@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { LucidePlus } from '@lucide/angular';
+import { LucideFolderPlus } from '@lucide/angular';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardComponent } from 'ng-zorro-antd/card';
 
 @Component({
-	imports: [TranslocoPipe, NzButtonModule, NzCardComponent, LucidePlus],
+	imports: [TranslocoPipe, NzButtonModule, NzCardComponent, LucideFolderPlus],
 	selector: 'app-create-project-prompt',
 	styleUrl: './create-project-prompt.component.less',
 	templateUrl: './create-project-prompt.component.html',

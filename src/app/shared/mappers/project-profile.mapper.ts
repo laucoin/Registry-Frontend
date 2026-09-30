@@ -2,9 +2,9 @@ import { DateTimeHelper } from '@shared/helpers/date-time.helper';
 import { StringHelper } from '@shared/helpers/string.helper';
 import { GenericProjectReaderResponse } from '@shared/mappers/common/generic-project-reader.response';
 import { AvailabilityStatusValue, LabelMapper, LabelResponse } from '@shared/mappers/common/label.mapper';
-import { CustomDateTimeResponse } from '@shared/mappers/common/custom-date-time.response';
-import { ProjectCountsMapper, ProjectCountsResponse } from '@shared/mappers/project-counts.mapper';
+import { ProjectMapper } from '@shared/mappers/project.mapper';
 import { ProjectProfileModel } from '@shared/models/project-profile.model';
+import { ProjectModel } from '@shared/models/project.model';
 
 interface PartialUserResponse {
 	firstName: string | null;
@@ -16,50 +16,39 @@ interface PartialUserResponse {
  * Purpose: Raw shape of every `/api/v2/users/profiles` query response — the backend only ever populates
  * the fields relevant to the query that produced it, hence every field beyond `id`/`project.name` is
  * optional (not just nullable).
- * Scope: One response type for ProfilesApi.findProfiles and findProfilesRequiringAttention.
+ * Scope: One response type for ProfilesApi.findProfiles and findProfilesRequiringAttention. `availabilityStatus`
+ * is this profile's own access availability, distinct from `project.status` (the project's own availability).
  */
 export interface ProjectProfileResponse extends GenericProjectReaderResponse {
 	favorite?: boolean;
 	lastEdition?: { dateTime: string } | null;
 	role?: LabelResponse | null;
+	availabilityStatus?: LabelResponse<AvailabilityStatusValue> | null;
 	creation?: { user: PartialUserResponse | null } | null;
-	project: {
-		name: string;
-		status?: LabelResponse<AvailabilityStatusValue> | null;
-		begin?: CustomDateTimeResponse | null;
-		end?: CustomDateTimeResponse | null;
-		options?: LabelResponse[];
-		counts?: ProjectCountsResponse | null;
-	};
 }
 
 export class ProjectProfileMapper {
 	public static toModel(response: ProjectProfileResponse): ProjectProfileModel {
 		const inviter: PartialUserResponse | null = response.creation?.user ?? null;
+		const project: ProjectModel = ProjectMapper.toModel(response.project);
 
 		return {
 			id: response.id,
-			name: response.project.name,
+			name: project.name,
 			availability:
-				response.project.status !== undefined
-					? LabelMapper.toAvailability(response.project.status)
+				response.availabilityStatus !== undefined
+					? LabelMapper.toAvailability(response.availabilityStatus)
 					: undefined,
 			isFavorite: response.favorite,
-			dateRangeLabel:
-				response.project.begin || response.project.end
-					? DateTimeHelper.formatDateRange(response.project.begin ?? null, response.project.end ?? null)
-					: undefined,
+			dateRangeLabel: project.dateRangeLabel,
 			lastActivityLabel: response.lastEdition
 				? DateTimeHelper.formatDate(response.lastEdition.dateTime)
 				: undefined,
-			endDateLabel: response.project.end ? DateTimeHelper.formatDate(response.project.end.date) : undefined,
-			moduleLabels: response.project.options ? LabelMapper.toLabels(response.project.options) : undefined,
+			endDateLabel: project.endDateLabel,
+			moduleLabels: project.moduleLabels,
 			inviterName: response.creation !== undefined ? ProjectProfileMapper._inviterName(inviter) : undefined,
 			roleLabel: response.role !== undefined ? (response.role?.label ?? '') : undefined,
-			counts:
-				response.project.counts !== undefined
-					? ProjectCountsMapper.toModel(response.project.counts)
-					: undefined,
+			counts: project.counts,
 		};
 	}
 

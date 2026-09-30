@@ -1,11 +1,5 @@
 import { ProjectCountsModel } from '@shared/models/project-counts.model';
-
-export type ProjectAvailabilityStatusModel = 'available' | 'unavailable';
-
-export interface ProjectAvailabilityModel {
-	status: ProjectAvailabilityStatusModel;
-	label: string;
-}
+import { ProjectAvailabilityModel } from '@shared/models/project.model';
 
 /**
  * Purpose: Single model for every `/api/v2/users/profiles` query the home page makes (favorites, in

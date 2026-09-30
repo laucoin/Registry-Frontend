@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, Signal } from '@angular/core';
 import { AuthFacade } from '@core/auth/auth.facade';
 import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco';
+import { LucideFolderPlus } from '@lucide/angular';
 import { HomeFacade } from '@pages/home/home.facade';
 import { StringHelper } from '@shared/helpers/string.helper';
 import { UserHelper } from '@shared/helpers/user.helper';
@@ -14,6 +15,8 @@ import { ProjectsInProgressComponent } from '@shared/ui/projects-in-progress/pro
 import { ReceivedInvitationsComponent } from '@shared/ui/received-invitations/received-invitations.component';
 import { ShortcutsComponent } from '@shared/ui/shortcuts/shortcuts.component';
 import { UpcomingProjectsComponent } from '@shared/ui/upcoming-projects/upcoming-projects.component';
+import { NzButtonComponent } from 'ng-zorro-antd/button';
+import { NzWaveDirective } from 'ng-zorro-antd/core/wave';
 
 /**
  * Which widget occupies the page's hero slot (first, full-width). Priority when favorites is empty:
@@ -33,6 +36,9 @@ type HomeHeroSlot = 'favorites' | 'projectsInProgress' | 'upcoming' | 'invitatio
 		CreateProjectPromptComponent,
 		ShortcutsComponent,
 		FavoritesProjectsComponent,
+		NzButtonComponent,
+		NzWaveDirective,
+		LucideFolderPlus,
 	],
 	providers: [provideTranslocoScope('home')],
 	templateUrl: './home.page.html',

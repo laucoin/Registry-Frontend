@@ -19,9 +19,9 @@
 			<a class="project-card" [routerLink]="['/projects', project.id, 'home']">
 				<div class="card-top">
 					@if (project.availability?.label) {
-						<span class="status" [class]="project.availability.status">{{
-								project.availability.label
-							}}</span>
+						<span class="status" [class]="project.availability!.status">
+							{{ project.availability!.label }}
+						</span>
 					} @else {
 						<span></span>
 					}
@@ -37,7 +37,7 @@
 				</div>
 				<h3 class="name">{{ project.name }}</h3>
 				<nz-divider nzType="horizontal"/>
-				<p class="footer">{{ project.dateRangeLabel }} · {{ project.lastActivityLabel }}</p>
+				<p class="footer">{{ project.dateRangeLabel }}</p>
 			</a>
 		}
 	</div>
@@ -53,5 +53,5 @@
 </ng-template>
 
 <ng-template #emptyIcon>
-	<app-empty-state-icon />
+	<app-empty-state-icon/>
 </ng-template>

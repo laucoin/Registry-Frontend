@@ -2,7 +2,12 @@
 	[eyebrow]="'home.eyebrow' | transloco"
 	[title]="titleKey() | transloco: { username: displayName() }"
 	[lede]="'home.subtitle' | transloco"
-/>
+>
+	<button type="button" nz-button nzType="primary">
+		<svg lucideFolderPlus></svg>
+		{{ 'home.createProject.action' | transloco }}
+	</button>
+</app-page-title>
 <section class="home-content">
 	<div class="favorites" [class.hero]="heroSlot() === 'favorites'" [class.shrunk]="favoritesEmpty()">
 		<app-favorites-projects
