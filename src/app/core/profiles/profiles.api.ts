@@ -6,7 +6,6 @@ import { ProjectProfileResponse } from '@shared/mappers/project-profile.mapper';
 import { Observable } from 'rxjs';
 
 const PROFILES_API_PATH: string = '/api/v2/users/profiles';
-const ATTENTION_API_PATH: string = '/api/v2/users/profiles/attention';
 
 export interface FindProfilesParams {
 	status: 'ACCEPTED' | 'INVITED';
@@ -34,10 +33,6 @@ export class ProfilesApi {
 		return `${this._configFacade.config()!.backend.url}${PROFILES_API_PATH}`;
 	}
 
-	private get _attentionUrl(): string {
-		return `${this._configFacade.config()!.backend.url}${ATTENTION_API_PATH}`;
-	}
-
 	public findProfiles(params: FindProfilesParams): Observable<PageResponse<ProjectProfileResponse>> {
 		let httpParams: HttpParams = new HttpParams().set('status', params.status).set('size', params.size);
 		if (params.favorite !== undefined) {
@@ -57,12 +52,6 @@ export class ProfilesApi {
 		}
 
 		return this._http.get<PageResponse<ProjectProfileResponse>>(this._baseUrl, { params: httpParams });
-	}
-
-	public findProfilesRequiringAttention(limit: number): Observable<ProjectProfileResponse[]> {
-		const params: HttpParams = new HttpParams().set('limit', limit);
-
-		return this._http.get<ProjectProfileResponse[]>(this._attentionUrl, { params });
 	}
 
 	public toggleFavorite(id: string): Observable<void> {

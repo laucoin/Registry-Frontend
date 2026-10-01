@@ -10,7 +10,7 @@ import {
 import { Router } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { LucideTriangleAlert } from '@lucide/angular';
-import { ProjectProfileModel } from '@shared/models/project-profile.model';
+import { ProjectModel } from '@shared/models/project.model';
 import { EmptyStateIconComponent } from '@shared/ui/empty-state-icon/empty-state-icon.component';
 import { ProjectRowComponent } from '@shared/ui/project-row/project-row.component';
 import { NzCardComponent } from 'ng-zorro-antd/card';
@@ -43,12 +43,11 @@ export class AttentionProjectsComponent {
 	private readonly _router: Router = inject(Router);
 	private readonly _translateService: TranslocoService = inject(TranslocoService);
 
-	public readonly projects: InputSignal<ProjectProfileModel[]> =
-		input.required<ProjectProfileModel[]>();
+	public readonly projects: InputSignal<ProjectModel[]> = input.required<ProjectModel[]>();
 
 	public readonly favoriteToggled: OutputEmitterRef<string> = output<string>();
 
-	protected toggleFavorite(project: ProjectProfileModel): void {
+	protected toggleFavorite(project: ProjectModel): void {
 		this.favoriteToggled.emit(project.id);
 	}
 

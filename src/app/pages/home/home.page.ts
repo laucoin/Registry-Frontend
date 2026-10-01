@@ -7,6 +7,7 @@ import { StringHelper } from '@shared/helpers/string.helper';
 import { UserHelper } from '@shared/helpers/user.helper';
 import { CurrentUserModel } from '@shared/models/current-user.model';
 import { ProjectProfileModel } from '@shared/models/project-profile.model';
+import { ProjectModel } from '@shared/models/project.model';
 import { AttentionProjectsComponent } from '@shared/ui/attention-projects/attention-projects.component';
 import { CreateProjectPromptComponent } from '@shared/ui/create-project-prompt/create-project-prompt.component';
 import { FavoritesProjectsComponent } from '@shared/ui/favorites-projects/favorites-projects.component';
@@ -67,7 +68,7 @@ export class HomePage {
 	protected readonly projectsInProgress: Signal<ProjectProfileModel[]> = this.homeFacade.projectsInProgress;
 	protected readonly receivedInvitations: Signal<ProjectProfileModel[]> = this.homeFacade.receivedInvitations;
 	protected readonly upcomingProjects: Signal<ProjectProfileModel[]> = this.homeFacade.upcomingProjects;
-	protected readonly attentionProjects: Signal<ProjectProfileModel[]> = this.homeFacade.attentionProjects;
+	protected readonly attentionProjects: Signal<ProjectModel[]> = this.homeFacade.attentionProjects;
 
 	// Favorites is the default hero (unchanged from the historical layout) whenever it has content;
 	// otherwise the first non-empty widget below wins the slot, in this fixed order, and if none do,

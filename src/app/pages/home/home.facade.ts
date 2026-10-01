@@ -1,6 +1,7 @@
 import { inject, Injectable, Signal } from '@angular/core';
 import { HomeStore } from '@pages/home/home.store';
 import { ProjectProfileModel } from '@shared/models/project-profile.model';
+import { ProjectModel } from '@shared/models/project.model';
 
 /**
  * Purpose: Sole public entry point for the home page's own domain data — favorites/in-progress/upcoming/attention
@@ -17,7 +18,7 @@ export class HomeFacade {
 	public readonly projectsInProgress: Signal<ProjectProfileModel[]> = this._store.projectsInProgress;
 	public readonly receivedInvitations: Signal<ProjectProfileModel[]> = this._store.receivedInvitations;
 	public readonly upcomingProjects: Signal<ProjectProfileModel[]> = this._store.upcomingProjects;
-	public readonly attentionProjects: Signal<ProjectProfileModel[]> = this._store.attentionProjects;
+	public readonly attentionProjects: Signal<ProjectModel[]> = this._store.attentionProjects;
 
 	public loadAll(): void {
 		this._store.loadFavoritesProjects();

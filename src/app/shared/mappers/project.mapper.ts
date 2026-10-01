@@ -4,10 +4,15 @@ import { CustomDateTimeResponse } from '@shared/mappers/common/custom-date-time.
 import { ProjectCountsMapper, ProjectCountsResponse } from '@shared/mappers/project-counts.mapper';
 import { ProjectModel } from '@shared/models/project.model';
 
+export interface ProjectActiveProfileResponse {
+	favorite: boolean;
+}
+
 /**
- * Purpose: Raw shape of the `project` object nested in every `/api/v2/users/profiles` response,
- * mirroring the backend's ProjectReaderDto. `status` is the project's own availability (is it within
- * its begin/end window) — not to be confused with a profile's own top-level `availabilityStatus`.
+ * Purpose: Raw shape of the `project` object nested in every `/api/v2/users/profiles` response, and of
+ * every `/api/v2/projects` response, mirroring the backend's ProjectReaderDto. `status` is the project's
+ * own availability (is it within its begin/end window) — not to be confused with a profile's own
+ * top-level `availabilityStatus`. `activeProfile` is the caller's own Profile on this project, if any.
  */
 export interface ProjectResponse {
 	id: string;
@@ -16,7 +21,7 @@ export interface ProjectResponse {
 	begin?: CustomDateTimeResponse | null;
 	end?: CustomDateTimeResponse | null;
 	options?: LabelResponse[];
-	favorite?: boolean;
+	activeProfile?: ProjectActiveProfileResponse | null;
 	counts?: ProjectCountsResponse | null;
 }
 
@@ -26,7 +31,7 @@ export class ProjectMapper {
 			id: response.id,
 			name: response.name,
 			availability: response.status !== undefined ? LabelMapper.toAvailability(response.status) : undefined,
-			isFavorite: response.favorite,
+			isFavorite: response.activeProfile?.favorite,
 			dateRangeLabel:
 				response.begin || response.end
 					? DateTimeHelper.formatDateRange(response.begin ?? null, response.end ?? null)

@@ -1,10 +1,13 @@
 import { inject } from '@angular/core';
 import { ProfilesApi } from '@core/profiles/profiles.api';
+import { ProjectsApi } from '@core/projects/projects.api';
 import { patchState, signalStore, withMethods, withState } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { PageResponse } from '@shared/mappers/common/page.response';
 import { ProjectProfileMapper, ProjectProfileResponse } from '@shared/mappers/project-profile.mapper';
+import { ProjectMapper, ProjectResponse } from '@shared/mappers/project.mapper';
 import { ProjectProfileModel } from '@shared/models/project-profile.model';
+import { ProjectModel } from '@shared/models/project.model';
 import { catchError, EMPTY, map, pipe, switchMap, tap } from 'rxjs';
 
 const RECENT_PROJECTS_SIZE: number = 5;
@@ -19,7 +22,7 @@ interface HomeState {
 	projectsInProgress: ProjectProfileModel[];
 	receivedInvitations: ProjectProfileModel[];
 	upcomingProjects: ProjectProfileModel[];
-	attentionProjects: ProjectProfileModel[];
+	attentionProjects: ProjectModel[];
 }
 
 const initialState: HomeState = {
@@ -35,8 +38,8 @@ function toModels(page: PageResponse<ProjectProfileResponse>): ProjectProfileMod
 	return page.content.map(ProjectProfileMapper.toModel);
 }
 
-function toggleFavoriteIn(projects: ProjectProfileModel[], id: string): ProjectProfileModel[] {
-	return projects.map((project: ProjectProfileModel) =>
+function toggleFavoriteIn<T extends { id: string; isFavorite?: boolean }>(projects: T[], id: string): T[] {
+	return projects.map((project: T) =>
 		project.id === id ? { ...project, isFavorite: !project.isFavorite } : project,
 	);
 }
@@ -53,6 +56,7 @@ export const HomeStore = signalStore(
 	withState(initialState),
 	withMethods((store) => {
 		const profilesApi: ProfilesApi = inject(ProfilesApi);
+		const projectsApi: ProjectsApi = inject(ProjectsApi);
 
 		function removeInvitation(id: string): void {
 			patchState(store, {
@@ -123,12 +127,12 @@ export const HomeStore = signalStore(
 			loadProjectsRequiringAttention: rxMethod<void>(
 				pipe(
 					switchMap(() =>
-						profilesApi.findProfilesRequiringAttention(ATTENTION_PROJECTS_LIMIT).pipe(
-							map((response: ProjectProfileResponse[]) => response.map(ProjectProfileMapper.toModel)),
+						projectsApi.findProjectsRequiringAttention(ATTENTION_PROJECTS_LIMIT).pipe(
+							map((response: ProjectResponse[]) => response.map(ProjectMapper.toModel)),
 							catchError(() => EMPTY),
 						),
 					),
-					tap((attentionProjects: ProjectProfileModel[]): void => patchState(store, { attentionProjects })),
+					tap((attentionProjects: ProjectModel[]): void => patchState(store, { attentionProjects })),
 				),
 			),
 
