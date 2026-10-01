@@ -1,0 +1,101 @@
+<header class="app-header">
+	<div class="app-header__inner">
+		<div class="header-left">
+			<a class="brand" routerLink="/">
+				<span class="brand__mark">R</span>
+				<span class="brand__text">
+					<strong>Registry</strong>
+					@if (organization(); as org) {
+						<span>{{ org.name }}</span>
+					}
+				</span>
+			</a>
+			<span class="divider" aria-hidden="true"></span>
+		</div>
+
+		<div class="header-spacer"></div>
+
+		@if (currentUser(); as user) {
+			<nav class="main-nav">
+				<a routerLink="/projects" routerLinkActive="active">{{ 'header.projects' | transloco }}</a>
+				<a routerLink="/users" routerLinkActive="active">{{ 'header.users' | transloco }}</a>
+			</nav>
+
+			<div class="header-actions">
+				<span class="divider" aria-hidden="true"></span>
+
+				<button
+					class="user-menu"
+					type="button"
+					nz-dropdown
+					nzTrigger="click"
+					[nzDropdownMenu]="userMenu"
+				>
+					<span class="user-menu__avatar">{{ initials() }}</span>
+					<div class="user-menu__info">
+						<span class="user-menu__name">{{ displayName() }}</span>
+						<span class="user-menu__role">{{ user.role?.label }}</span>
+					</div>
+				</button>
+
+				<button
+					class="burger"
+					type="button"
+					nz-dropdown
+					nzTrigger="click"
+					[nzDropdownMenu]="burgerMenu"
+					[attr.aria-label]="'header.menu' | transloco"
+				>
+					<span class="burger__bar"></span>
+					<span class="burger__bar"></span>
+					<span class="burger__bar"></span>
+				</button>
+
+				<nz-dropdown-menu #userMenu="nzDropdownMenu">
+					<ul nz-menu class="burger-menu">
+						<li nz-menu-item [routerLink]="'/my-account'">
+							<div class="burger-menu__identity">
+								<span class="user-menu__avatar">{{ initials() }}</span>
+								<div class="user-menu__info">
+									<span class="user-menu__name">{{ displayName() }}</span>
+									<span class="user-menu__role">{{ user.role?.label }}</span>
+								</div>
+							</div>
+						</li>
+						<li nz-menu-divider></li>
+						<!-- TODO: Add a badge with the invitation count -->
+						<li nz-menu-item [routerLink]="'/my-accesses'">
+							{{ 'header.myAccesses' | transloco }}
+						</li>
+						<!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -- nz-menu-item already makes the host focusable and wires keyboard activation (Enter/Space) itself. -->
+						<li nz-menu-item (click)="logout()">{{ 'header.logout' | transloco }}</li>
+					</ul>
+				</nz-dropdown-menu>
+
+				<nz-dropdown-menu #burgerMenu="nzDropdownMenu">
+					<ul nz-menu class="burger-menu">
+						<li nz-menu-item [routerLink]="'/my-account'">
+							<div class="burger-menu__identity">
+								<span class="user-menu__avatar">{{ initials() }}</span>
+								<div class="user-menu__info">
+									<span class="user-menu__name">{{ displayName() }}</span>
+									<span class="user-menu__role">{{ user.role?.label }}</span>
+								</div>
+							</div>
+						</li>
+						<li nz-menu-divider></li>
+						<li nz-menu-item [routerLink]="'/projects'">{{ 'header.projects' | transloco }}</li>
+						<li nz-menu-item [routerLink]="'/users'">{{ 'header.users' | transloco }}</li>
+						<li nz-menu-divider></li>
+						<!-- TODO: Add a badge with the invitation count -->
+						<li nz-menu-item [routerLink]="'/my-accesses'">
+							{{ 'header.myAccesses' | transloco }}
+						</li>
+						<!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -- nz-menu-item already makes the host focusable and wires keyboard activation (Enter/Space) itself. -->
+						<li nz-menu-item (click)="logout()">{{ 'header.logout' | transloco }}</li>
+					</ul>
+				</nz-dropdown-menu>
+			</div>
+		}
+	</div>
+</header>

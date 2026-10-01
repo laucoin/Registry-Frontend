@@ -5,7 +5,7 @@ name: Dependency Audit
 # was already merged in.
 on:
   schedule:
-    - cron: "0 6 * * 1" # every Monday at 06:00 UTC
+    - cron: '0 6 * * 1' # every Monday at 06:00 UTC
   workflow_dispatch:
 
 permissions:
@@ -23,7 +23,7 @@ jobs:
       - name: Set up Node (with pnpm store cache)
         uses: actions/setup-node@v4
         with:
-          node-version: "24"
+          node-version: '24'
           cache: pnpm
 
       - name: Install dependencies

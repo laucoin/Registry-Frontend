@@ -1,0 +1,6 @@
+dist
+.angular
+coverage
+.lighthouseci
+pnpm-lock.yaml
+CHANGELOG.md

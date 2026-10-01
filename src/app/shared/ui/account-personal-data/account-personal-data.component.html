@@ -1,0 +1,42 @@
+<nz-card nzType="inner" [nzTitle]="header" [nzBodyStyle]="{ padding: '0' }">
+	<div class="gdpr-banner">
+		<span class="gdpr-label">{{ 'myAccount.personalData.gdprLabel' | transloco }}</span>
+		<a routerLink="/privacy" class="learn-more">
+			<svg lucideShieldCheck></svg>
+			{{ 'myAccount.personalData.learnMore' | transloco }}
+		</a>
+	</div>
+	<nz-divider nzType="horizontal" />
+	<div class="actions">
+		<div class="action">
+			<h3>{{ 'myAccount.personalData.extract.title' | transloco }}</h3>
+			<p>{{ 'myAccount.personalData.extract.description' | transloco }}</p>
+			<button type="button" nz-button [disabled]="!currentUser()" (click)="requestDataExtract()">
+				<svg lucideDownload></svg>
+				{{ 'myAccount.personalData.extract.action' | transloco }}
+			</button>
+		</div>
+		<div class="action">
+			<h3>{{ 'myAccount.personalData.delete.title' | transloco }}</h3>
+			<p>{{ 'myAccount.personalData.delete.description' | transloco }}</p>
+			<button
+				type="button"
+				nz-button
+				nzType="primary"
+				nzDanger
+				[disabled]="!currentUser()"
+				(click)="deleteAccount()"
+			>
+				<svg lucideTrash2></svg>
+				{{ 'myAccount.personalData.delete.action' | transloco }}
+			</button>
+		</div>
+	</div>
+</nz-card>
+
+<ng-template #header>
+	<h2>
+		<svg lucideShieldCheck></svg>
+		{{ 'myAccount.personalData.title' | transloco }}
+	</h2>
+</ng-template>

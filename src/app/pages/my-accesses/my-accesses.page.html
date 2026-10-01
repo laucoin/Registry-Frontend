@@ -1,0 +1,17 @@
+<app-page-title
+	[eyebrow]="'myAccesses.eyebrow' | transloco"
+	[title]="'myAccesses.title' | transloco"
+	[lede]="'myAccesses.subtitle' | transloco"
+/>
+
+<section class="accesses-content">
+	<div class="pending-invitations">
+		<app-pending-invitations />
+	</div>
+	<div class="active-profiles">
+		<app-active-profiles />
+	</div>
+	<div class="expired-profiles">
+		<app-expired-profiles />
+	</div>
+</section>

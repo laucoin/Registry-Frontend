@@ -1,0 +1,20 @@
+{
+  "eyebrow": "Mon compte",
+  "title": "Mes accès",
+  "subtitle": "Vos invitations en attente, vos profils actifs sur les projets et vos profils expirés.",
+  "pendingInvitations": {
+    "title": "Invitations en attente",
+    "description": "{{ inviter }} vous invite comme {{ role }}",
+    "accept": "Accepter",
+    "decline": "Refuser",
+    "empty": "Aucune invitation en attente."
+  },
+  "activeProfiles": {
+    "title": "Profils actifs",
+    "empty": "Aucun profil actif pour le moment."
+  },
+  "expiredProfiles": {
+    "title": "Profils expirés",
+    "empty": "Aucun profil expiré."
+  }
+}

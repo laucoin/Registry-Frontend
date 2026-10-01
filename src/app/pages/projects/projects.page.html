@@ -1,0 +1,12 @@
+<app-page-title
+	[eyebrow]="'projects.eyebrow' | transloco"
+	[title]="'projects.title' | transloco"
+	[lede]="'projects.subtitle' | transloco"
+>
+	<button type="button" nz-button nzType="primary" (click)="createProject()">
+		<svg lucidePlus></svg>
+		{{ 'projects.create' | transloco }}
+	</button>
+</app-page-title>
+
+<app-project-list />

@@ -1,0 +1,87 @@
+<nz-card nzType="inner" [nzTitle]="header" [nzExtra]="extra" [nzBodyStyle]="{ padding: '0' }">
+	@if (filteredAccounts().length > 0) {
+		@for (account of filteredAccounts(); track account.id) {
+			<div class="account-row" [class.blocked]="account.isBlocked">
+				<span class="avatar">{{ account.initials }}</span>
+				<div class="account-text">
+					<h3>{{ account.displayName }}</h3>
+					<p>{{ account.email }} · {{ account.activityLabel }}</p>
+				</div>
+				<span class="role">{{ account.roleLabel }}</span>
+				<span class="status" [class.blocked]="account.isBlocked">
+					{{ (account.isBlocked ? 'users.list.blocked' : 'users.list.active') | transloco }}
+				</span>
+				<button
+					type="button"
+					class="row-menu"
+					nz-dropdown
+					nzTrigger="click"
+					[nzDropdownMenu]="rowMenu"
+					[attr.aria-label]="'users.list.rowMenu' | transloco"
+				>
+					<svg lucideEllipsisVertical></svg>
+				</button>
+				<nz-dropdown-menu #rowMenu="nzDropdownMenu">
+					<ul nz-menu>
+						<!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -- nz-menu-item already makes the host focusable and wires keyboard activation (Enter/Space) itself. -->
+						<li nz-menu-item (click)="toggleBlocked(account)">
+							@if (account.isBlocked) {
+								<svg lucideLockOpen></svg>
+								{{ 'users.list.unblock' | transloco }}
+							} @else {
+								<svg lucideBan></svg>
+								{{ 'users.list.block' | transloco }}
+							}
+						</li>
+						<!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -- nz-menu-item already makes the host focusable and wires keyboard activation (Enter/Space) itself. -->
+						<li nz-menu-item class="danger" (click)="deleteAccount(account)">
+							<svg lucideTrash2></svg>
+							{{ 'users.list.delete' | transloco }}
+						</li>
+					</ul>
+				</nz-dropdown-menu>
+			</div>
+			<nz-divider nzType="horizontal" />
+		}
+	} @else {
+		<div class="empty-state">
+			<nz-empty
+				[nzNotFoundContent]="
+					(accounts().length > 0 ? 'users.list.noResults' : 'users.list.empty') | transloco
+				"
+				[nzNotFoundImage]="emptyIcon"
+			/>
+		</div>
+	}
+</nz-card>
+
+<ng-template #header>
+	<h2>
+		<svg lucideUsers></svg>
+		{{ 'users.list.title' | transloco }}
+	</h2>
+	@if (accounts().length > 0) {
+		<span class="count">{{ accounts().length }}</span>
+	}
+	@if (blockedCount() > 0) {
+		<span class="blocked-count">{{
+			'users.list.blockedCount' | transloco: { count: blockedCount() }
+		}}</span>
+	}
+</ng-template>
+
+<ng-template #extra>
+	<div class="search">
+		<svg lucideSearch></svg>
+		<input
+			type="search"
+			[value]="searchTerm()"
+			(input)="onSearchInput($event)"
+			[placeholder]="'users.list.searchPlaceholder' | transloco"
+		/>
+	</div>
+</ng-template>
+
+<ng-template #emptyIcon>
+	<app-empty-state-icon />
+</ng-template>

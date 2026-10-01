@@ -1,0 +1,27 @@
+{
+  "eyebrow": "Espace applicatif",
+  "title": "Gestion des projets",
+  "subtitle": "Créez, recherchez et organisez vos projets : favoris, périodes et accès rapide. Le statut est calculé automatiquement à partir des dates.",
+  "create": "Créer un projet",
+  "status": {
+    "inProgress": "En cours",
+    "inPreparation": "En préparation",
+    "completed": "Terminé",
+    "archived": "Archivé"
+  },
+  "list": {
+    "title": "Tous les projets",
+    "favorites": "{{ count }} favoris",
+    "searchPlaceholder": "Rechercher un projet...",
+    "participants": "{{ count }} participants",
+    "presenceOnly": "Suivi des présences uniquement",
+    "open": "Ouvrir",
+    "rowMenu": "Actions",
+    "edit": "Modifier",
+    "deactivate": "Désactiver",
+    "delete": "Supprimer définitivement",
+    "toggleFavorite": "Marquer comme favori",
+    "empty": "Aucun projet pour le moment.",
+    "noResults": "Aucun projet ne correspond à votre recherche."
+  }
+}

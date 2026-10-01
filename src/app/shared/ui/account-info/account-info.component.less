@@ -1,0 +1,53 @@
+@import '../../../../theme.less';
+
+:host {
+	height: 100%;
+}
+
+nz-card {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+
+	::ng-deep .ant-card-head-title h2 {
+		display: contents;
+		font: inherit;
+		color: inherit;
+		letter-spacing: inherit;
+		text-transform: inherit;
+	}
+}
+
+.row {
+	padding: @in-block-spacing @in-block-large-spacing;
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	gap: @in-block-small-spacing;
+
+	@media (max-width: @breakpoint-tablet) {
+		flex-direction: column;
+	}
+
+	.title {
+		font-size: @text-xs;
+		line-height: @text-xs--line-height;
+		text-transform: uppercase;
+		font-weight: @font-weight-bold;
+		color: @text-color-secondary;
+	}
+
+	.value {
+		font-size: @text-sm;
+		line-height: @text-sm--line-height;
+		color: @text-color;
+	}
+}
+
+.hint {
+	margin-top: auto;
+	padding: @in-block-spacing @in-block-large-spacing;
+	color: @text-color-secondary;
+	font-size: @text-xs;
+	line-height: @text-xs--line-height;
+}

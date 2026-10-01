@@ -2,12 +2,12 @@ version: 2
 updates:
   # ── npm / pnpm dependencies ─────────────────────────────────────────
   - package-ecosystem: npm
-    directory: "/"
+    directory: '/'
     schedule:
       interval: weekly
       day: monday
     open-pull-requests-limit: 10
-    labels: ["dependencies", "npm"]
+    labels: ['dependencies', 'npm']
     # Conventional-commit prefix so merges are picked up by semantic-release.
     # NOTE: per your .releaserc releaseRules, `chore` => a MINOR release. Switch
     # the prefix to `fix` if you'd rather have dependency bumps release as PATCH.
@@ -22,12 +22,12 @@ updates:
 
   # ── Dockerfile base images ──────────────────────────────────────────
   - package-ecosystem: docker
-    directory: "/"
+    directory: '/'
     schedule:
       interval: weekly
       day: monday
     open-pull-requests-limit: 5
-    labels: ["dependencies", "docker"]
+    labels: ['dependencies', 'docker']
     commit-message:
       prefix: chore
       include: scope
@@ -37,12 +37,12 @@ updates:
 
   # ── GitHub Actions (workflows + local composite actions) ────────────
   - package-ecosystem: github-actions
-    directory: "/"
+    directory: '/'
     schedule:
       interval: weekly
       day: monday
     open-pull-requests-limit: 5
-    labels: ["dependencies", "github-actions"]
+    labels: ['dependencies', 'github-actions']
     commit-message:
       prefix: ci
       include: scope

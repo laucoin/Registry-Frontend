@@ -15,7 +15,7 @@ env:
 
 jobs:
   verify:
-    name: Lint, build & publish branch image
+    name: Lint, build, Lighthouse & publish branch image
     runs-on: ubuntu-latest
     if: github.event.pull_request.head.repo.full_name == github.repository
     permissions:
@@ -30,7 +30,7 @@ jobs:
       - name: Set up Node (with pnpm store cache)
         uses: actions/setup-node@v4
         with:
-          node-version: "24"
+          node-version: '24'
           cache: pnpm
 
       - name: Install dependencies
@@ -39,9 +39,41 @@ jobs:
       - name: Lint
         run: pnpm lint
 
-      # Produces dist/browser, which the Dockerfile copies into nginx.
+      - name: Test
+        run: pnpm test -- --watch=false
+
+      - name: Format check
+        run: pnpm run format:check
+
+      - name: Lint styles
+        run: pnpm run lint:styles
+
       - name: Build
         run: pnpm build
+        env:
+          BACKEND_URL: http://build-placeholder.invalid
+          ORGANIZATION_NAME: build-placeholder
+          CREATOR_NAME: build-placeholder
+          CREATOR_EMAIL: build-placeholder@example.com
+          NODE_OPTIONS: --dns-result-order=ipv4first
+
+      - name: Run Lighthouse CI
+        run: pnpm exec lhci autorun
+        env:
+          PORT: '4310'
+          BACKEND_URL: http://build-placeholder.invalid
+          ORGANIZATION_NAME: build-placeholder
+          CREATOR_NAME: build-placeholder
+          CREATOR_EMAIL: build-placeholder@example.com
+          NG_ALLOWED_HOSTS: localhost
+
+      - name: Upload Lighthouse report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-report
+          path: .lighthouseci
+          retention-days: 14
 
       - name: Compute branch image tag
         id: tag

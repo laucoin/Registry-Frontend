@@ -1,0 +1,52 @@
+// Same on-demand rationale as src/styles.less: only core plus button/dropdown/menu,
+// compiled against the dark theme variables below instead of the full dark bundle.
+@import 'ng-zorro-antd/style/dark.less';
+@import 'ng-zorro-antd/button/style/entry';
+@import 'ng-zorro-antd/dropdown/style/entry';
+@import 'ng-zorro-antd/menu/style/entry';
+
+// ── Colors ──
+@primary-color: #4d94c4;
+@processing-color: @primary-color;
+@info-color: #4dabdb;
+@success-color: #2ea882;
+@warning-color: #ffa733;
+@error-color: #e2694a;
+
+// ── Typography ───────────────────────
+@font-family: 'Sarabun', 'Segoe UI', Arial, sans-serif;
+@font-size-base: 16px;
+@line-height-base: 1.5;
+@border-radius-base: 8px;
+@height-base: 40px;
+@height-lg: 50px;
+@height-sm: 30px;
+
+// ── Buttons / links ────────────────────────────────────────────────────────
+@btn-font-weight: 600;
+@btn-primary-color: #ffffff;
+@btn-primary-bg: @primary-color;
+@link-color: @primary-color;
+@outline-color: @primary-color;
+
+// ── Status tags & alerts ─────────────────────────────────────────────
+@success-color-deprecated-bg: mix(@success-color, @component-background, 20%);
+@success-color-deprecated-border: mix(@success-color, @component-background, 50%);
+@warning-color-deprecated-bg: mix(@warning-color, @component-background, 20%);
+@warning-color-deprecated-border: mix(@warning-color, @component-background, 50%);
+@error-color-deprecated-bg: mix(@error-color, @component-background, 20%);
+@error-color-deprecated-border: mix(@error-color, @component-background, 50%);
+@info-color-deprecated-bg: mix(@info-color, @component-background, 20%);
+@info-color-deprecated-border: mix(@info-color, @component-background, 50%);
+
+@alert-success-bg-color: mix(@success-color, @component-background, 18%);
+@alert-success-border-color: mix(@success-color, @component-background, 45%);
+@alert-warning-bg-color: mix(@warning-color, @component-background, 18%);
+@alert-warning-border-color: mix(@warning-color, @component-background, 45%);
+@alert-error-bg-color: mix(@error-color, @component-background, 18%);
+@alert-error-border-color: mix(@error-color, @component-background, 45%);
+@alert-info-bg-color: mix(@info-color, @component-background, 18%);
+@alert-info-border-color: mix(@info-color, @component-background, 45%);
+
+// ── Progress ───────────────────────────────────────────────────────────
+@progress-remaining-color: #424242;

@@ -1,0 +1,55 @@
+@import '../../../../theme.less';
+
+nz-card {
+	display: flex;
+	flex-direction: column;
+
+	::ng-deep .ant-card-head-title h2 {
+		display: contents;
+		font: inherit;
+		color: inherit;
+		letter-spacing: inherit;
+		text-transform: inherit;
+	}
+}
+
+.options {
+	display: flex;
+	gap: @in-block-large-spacing;
+	padding: @in-block-large-spacing;
+
+	@media (max-width: @breakpoint-tablet) {
+		flex-direction: column;
+	}
+}
+
+.option {
+	flex: 1;
+	padding: @in-block-spacing @in-block-large-spacing;
+	border: 1px solid @border-color-base;
+	border-radius: @border-radius-base;
+	background: @component-background;
+	color: @text-color;
+	font-family: inherit;
+	font-size: @text-sm;
+	font-weight: @font-weight-medium;
+	cursor: pointer;
+
+	&.selected {
+		border-color: @primary-color;
+		background: tint(@primary-color, 95%);
+		color: @primary-color;
+	}
+
+	&:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+}
+
+.hint {
+	padding: @in-block-spacing @in-block-large-spacing;
+	color: @text-color-secondary;
+	font-size: @text-xs;
+	line-height: @text-xs--line-height;
+}
