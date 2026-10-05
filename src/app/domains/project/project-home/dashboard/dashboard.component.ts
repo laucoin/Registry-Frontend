@@ -1,124 +1,122 @@
-import { ChangeDetectionStrategy, Component, computed, inject, OnDestroy, Signal } from '@angular/core'
+import { TitleCasePipe, UpperCasePipe } from '@angular/common'
+import { Component, computed, inject, OnDestroy, Signal } from '@angular/core'
+import { TranslatePipe } from '@ngx-translate/core'
 import { Card } from 'primeng/card'
 import { Divider } from 'primeng/divider'
-import { PluralTranslationPipe } from '../../../../shared/util-tool/pipe/plural-translation.pipe'
-import { Skeleton } from 'primeng/skeleton'
-import { TranslatePipe } from '@ngx-translate/core'
-import { GenericComponent } from '../../../../shared/util-tool/component/generic.component'
-import { GenericUtil } from '../../../../shared/util-tool/util/generic.util'
-import { SelectedProjectFacade } from '../../data/state/selected-project/selected-project.facade'
 import { Panel } from 'primeng/panel'
-import { ElementCardComponent } from '../../../../shared/util-ui/element-card/element-card.component'
-import { SeverityCircleComponent } from '../../../../shared/util-ui/severity-circle/severity-circle.component'
-import { SeverityTagComponent } from '../../../../shared/util-ui/severity-tag/severity-tag.component'
-import { TitleCasePipe, UpperCasePipe } from '@angular/common'
-import { DateFormatPipe } from '../../../../shared/util-tool/pipe/date-format.pipe'
+import { Skeleton } from 'primeng/skeleton'
+import { Subscription, tap } from 'rxjs'
 import { ParticipantTypeEnum } from '../../../../shared/util-model/enumeration/participant-type.enum'
 import { PresenceStatusEnum } from '../../../../shared/util-model/enumeration/presence-status.enum'
+import { GenericComponent } from '../../../../shared/util-tool/component/generic.component'
+import { DateFormatPipe } from '../../../../shared/util-tool/pipe/date-format.pipe'
+import { PluralTranslationPipe } from '../../../../shared/util-tool/pipe/plural-translation.pipe'
+import { GenericUtil } from '../../../../shared/util-tool/util/generic.util'
+import { ElementCardComponent } from '../../../../shared/util-ui/element-card/element-card.component'
+import { SeverityCircleComponent } from '../../../../shared/util-ui/severity-circle/severity-circle.component'
 import {
-    SeverityInformationComponent,
+	SeverityInformationComponent,
 } from '../../../../shared/util-ui/severity-information/severity-information.component'
+import { SeverityTagComponent } from '../../../../shared/util-ui/severity-tag/severity-tag.component'
+import { SelectedProjectFacade } from '../../data/state/selected-project/selected-project.facade'
 import { MovementFacade } from '../../movement/data/state/movement.facade'
-import { Subscription, tap } from 'rxjs'
 
-@Component( {
-    selector: 'app-dashboard',
-    standalone: true,
-    imports: [
-        Card,
-        Divider,
-        PluralTranslationPipe,
-        Skeleton,
-        TranslatePipe,
-        Panel,
-        ElementCardComponent,
-        SeverityCircleComponent,
-        SeverityTagComponent,
-        TitleCasePipe,
-        UpperCasePipe,
-        DateFormatPipe,
-        SeverityInformationComponent,
-    ],
-    templateUrl: './dashboard.component.html',
-    styleUrl: './dashboard.component.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush,
-} )
+@Component({
+	selector: 'app-dashboard',
+	imports: [
+		Card,
+		Divider,
+		PluralTranslationPipe,
+		Skeleton,
+		TranslatePipe,
+		Panel,
+		ElementCardComponent,
+		SeverityCircleComponent,
+		SeverityTagComponent,
+		TitleCasePipe,
+		UpperCasePipe,
+		DateFormatPipe,
+		SeverityInformationComponent,
+	],
+	templateUrl: './dashboard.component.html',
+	styleUrl: './dashboard.component.scss',
+})
 export class DashboardComponent extends GenericComponent implements OnDestroy {
-    protected readonly facade: SelectedProjectFacade = inject( SelectedProjectFacade )
-    protected readonly movementFacade: MovementFacade = inject( MovementFacade )
+	protected readonly facade: SelectedProjectFacade = inject(SelectedProjectFacade)
+	protected readonly movementFacade: MovementFacade = inject(MovementFacade)
 
-    private readonly subscriptions: Subscription = new Subscription()
+	private readonly subscriptions: Subscription = new Subscription()
 
-    protected readonly ParticipantTypeEnum: typeof ParticipantTypeEnum = ParticipantTypeEnum
-    protected readonly PresenceStatusEnum: typeof PresenceStatusEnum = PresenceStatusEnum
+	protected readonly ParticipantTypeEnum: typeof ParticipantTypeEnum = ParticipantTypeEnum
+	protected readonly PresenceStatusEnum: typeof PresenceStatusEnum = PresenceStatusEnum
 
-    protected readonly totalParticipants: Signal<number | undefined>
-    protected readonly totalGuests: Signal<number | undefined>
-    protected readonly totalPresentRegistered: Signal<number | undefined>
-    protected readonly totalAbsentRegistered: Signal<number | undefined>
-    protected readonly totalVehicles: Signal<number | undefined>
-    protected readonly totalPresentVehicles: Signal<number | undefined>
-    protected readonly totalAbsentVehicles: Signal<number | undefined>
+	protected readonly totalParticipants: Signal<number | undefined>
+	protected readonly totalGuests: Signal<number | undefined>
+	protected readonly totalPresentRegistered: Signal<number | undefined>
+	protected readonly totalAbsentRegistered: Signal<number | undefined>
+	protected readonly totalVehicles: Signal<number | undefined>
+	protected readonly totalPresentVehicles: Signal<number | undefined>
+	protected readonly totalAbsentVehicles: Signal<number | undefined>
 
-    public constructor () {
-        super()
+	public constructor() {
+		super()
 
-        this.facade.loadProjectHomeInformation( false )
+		this.facade.loadProjectHomeInformation(false)
 
-        this.totalParticipants = computed( (): number | undefined => {
-            if (GenericUtil.isNull( this.facade.participantsStatus() )) return undefined
-            return this.facade.participantsStatus()!.guests
-                   + this.facade.participantsStatus()!.registered.presentMajors
-                   + this.facade.participantsStatus()!.registered.presentMinors
-                   + this.facade.participantsStatus()!.registered.absentMajors
-                   + this.facade.participantsStatus()!.registered.absentMinors
-        } )
+		this.totalParticipants = computed((): number | undefined => {
+			if (GenericUtil.isNull(this.facade.participantsStatus())) return undefined
+			return this.facade.participantsStatus()!.guests
+				+ this.facade.participantsStatus()!.registered.presentMajors
+				+ this.facade.participantsStatus()!.registered.presentMinors
+				+ this.facade.participantsStatus()!.registered.absentMajors
+				+ this.facade.participantsStatus()!.registered.absentMinors
+		})
 
-        this.totalGuests = computed( (): number | undefined => {
-            if (GenericUtil.isNull( this.facade.participantsStatus() )) return undefined
-            return this.facade.participantsStatus()!.guests
-        } )
+		this.totalGuests = computed((): number | undefined => {
+			if (GenericUtil.isNull(this.facade.participantsStatus())) return undefined
+			return this.facade.participantsStatus()!.guests
+		})
 
-        this.totalPresentRegistered = computed( (): number | undefined => {
-            if (GenericUtil.isNull( this.facade.participantsStatus() )) return undefined
-            return this.facade.participantsStatus()!.registered.presentMajors
-                   + this.facade.participantsStatus()!.registered.presentMinors
-        } )
+		this.totalPresentRegistered = computed((): number | undefined => {
+			if (GenericUtil.isNull(this.facade.participantsStatus())) return undefined
+			return this.facade.participantsStatus()!.registered.presentMajors
+				+ this.facade.participantsStatus()!.registered.presentMinors
+		})
 
-        this.totalAbsentRegistered = computed( (): number | undefined => {
-            if (GenericUtil.isNull( this.facade.participantsStatus() )) return undefined
-            return this.facade.participantsStatus()!.registered.absentMajors
-                   + this.facade.participantsStatus()!.registered.absentMinors
-        } )
+		this.totalAbsentRegistered = computed((): number | undefined => {
+			if (GenericUtil.isNull(this.facade.participantsStatus())) return undefined
+			return this.facade.participantsStatus()!.registered.absentMajors
+				+ this.facade.participantsStatus()!.registered.absentMinors
+		})
 
-        this.totalVehicles = computed( (): number | undefined => {
-            if (GenericUtil.isNull( this.facade.vehiclesStatus() )) return undefined
-            return this.facade.vehiclesStatus()!.present
-                   + this.facade.vehiclesStatus()!.absent
-        } )
+		this.totalVehicles = computed((): number | undefined => {
+			if (GenericUtil.isNull(this.facade.vehiclesStatus())) return undefined
+			return this.facade.vehiclesStatus()!.present
+				+ this.facade.vehiclesStatus()!.absent
+		})
 
-        this.totalPresentVehicles = computed( (): number | undefined => {
-            if (GenericUtil.isNull( this.facade.vehiclesStatus() )) return undefined
-            return this.facade.vehiclesStatus()!.present
-        } )
+		this.totalPresentVehicles = computed((): number | undefined => {
+			if (GenericUtil.isNull(this.facade.vehiclesStatus())) return undefined
+			return this.facade.vehiclesStatus()!.present
+		})
 
-        this.totalAbsentVehicles = computed( (): number | undefined => {
-            if (GenericUtil.isNull( this.facade.vehiclesStatus() )) return undefined
-            return this.facade.vehiclesStatus()!.absent
-        } )
+		this.totalAbsentVehicles = computed((): number | undefined => {
+			if (GenericUtil.isNull(this.facade.vehiclesStatus())) return undefined
+			return this.facade.vehiclesStatus()!.absent
+		})
 
-        this.handleMovementActions()
-    }
+		this.handleMovementActions()
+	}
 
-    public ngOnDestroy (): void {
-        this.subscriptions.unsubscribe()
-    }
+	public ngOnDestroy(): void {
+		this.subscriptions.unsubscribe()
+	}
 
-    private handleMovementActions (): void {
-        this.subscriptions.add(
-            this.movementFacade.handleMovementChanges().pipe(
-                tap( (): void => this.facade.loadProjectHomeInformation( true ) ),
-            ).subscribe(),
-        )
-    }
+	private handleMovementActions(): void {
+		this.subscriptions.add(
+			this.movementFacade.handleMovementChanges().pipe(
+				tap((): void => this.facade.loadProjectHomeInformation(true)),
+			).subscribe(),
+		)
+	}
 }

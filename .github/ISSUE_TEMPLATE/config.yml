@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 📖 Documentation
+    url: https://doc.laucoin.fr/registry
+    about: Functional and technical documentation — check here before filing a bug in case it's expected behavior.

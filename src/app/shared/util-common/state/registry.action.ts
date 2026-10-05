@@ -1,233 +1,250 @@
 import { ToastMessageOptions } from 'primeng/api'
-import { ProjectProfileModel } from '../../util-model/model/project-profile.model'
-import { ErrorModel } from '../../util-model/model/error.model'
 import { ThemeEnum } from '../../util-model/enumeration/theme.enum'
+import { ErrorModel } from '../../util-model/model/error.model'
+import { ProjectProfileModel } from '../../util-model/model/project-profile.model'
 
 enum RegistryActionEnum {
-    START_GLOBAL_LOADER = '[Local] Starting global loader',
-    STOP_GLOBAL_LOADER = '[Local] Stopping global loader',
+	START_GLOBAL_LOADER = '[Local] Starting global loader',
+	STOP_GLOBAL_LOADER = '[Local] Stopping global loader',
 
-    SET_GLOBAL_ERROR = '[Local] Setting global error',
+	SET_GLOBAL_ERROR = '[Local] Setting global error',
 
-    UPDATE_NETWORK = '[Local] Updating network status',
-    UPDATE_SCREEN_WIDTH = '[Local] Updating screen width',
-    UPDATE_THEME = '[Local] Updating application theme',
+	UPDATE_NETWORK = '[Local] Updating network status',
+	UPDATE_SCREEN_WIDTH = '[Local] Updating screen width',
+	UPDATE_THEME = '[Local] Updating application theme',
 
-    NOTIFY = '[Local] Notifying',
-    ACK_NOTIFICATION = '[Local] Acknowledging notification',
+	NOTIFY = '[Local] Notifying',
+	ACK_NOTIFICATION = '[Local] Acknowledging notification',
 
-    START_CURRENT_USER_ACTION_LOADER = '[Local] Starting current user action loader',
-    STOP_CURRENT_USER_ACTION_LOADER = '[Local] Stopping current user action loader',
+	START_CURRENT_USER_ACTION_LOADER = '[Local] Starting current user action loader',
+	STOP_CURRENT_USER_ACTION_LOADER = '[Local] Stopping current user action loader',
 
-    LOGIN = '[Backend] Logging in',
-    LOGOUT = '[Backend] Logging out',
+	LOGIN = '[Backend] Logging in',
+	LOGOUT = '[Backend] Logging out',
 
-    FETCH_TOKENS = '[Backend] Fetching tokens',
+	FETCH_TOKENS = '[Backend] Fetching tokens',
 
-    FETCH_CURRENT_USER = '[Backend] Fetching current user',
-    IMPERSONATE_CURRENT_USER = '[Backend] Impersonating current user',
+	FETCH_CURRENT_USER = '[Backend] Fetching current user',
+	IMPERSONATE_CURRENT_USER = '[Backend] Impersonating current user',
 
-    START_USER_PROJECT_PROFILES_PAGE_LOADER = '[Local] Starting user project profiles\' page loader',
-    STOP_USER_PROJECT_PROFILES_PAGE_LOADER = '[Local] Stopping user project profiles\' page loader',
+	START_USER_PROJECT_PROFILES_PAGE_LOADER = '[Local] Starting user project profiles\' page loader',
+	STOP_USER_PROJECT_PROFILES_PAGE_LOADER = '[Local] Stopping user project profiles\' page loader',
 
-    FETCH_USER_PROJECT_PROFILES_PAGE = '[Backend] Fetching user project profiles\' page',
-    UPDATE_USER_PROJECT_PROFILES_PAGE_SEARCH_PARAMS = '[Local] Updating user project profiles\' page search params',
+	FETCH_USER_PROJECT_PROFILES_PAGE = '[Backend] Fetching user project profiles\' page',
+	UPDATE_USER_PROJECT_PROFILES_PAGE_SEARCH_PARAMS = '[Local] Updating user project profiles\' page search params',
 
-    START_USER_PROJECT_PROFILE_INVITATIONS_PAGE_LOADER = '[Local] Starting user project profile invitations\' page loader',
-    STOP_USER_PROJECT_PROFILE_INVITATIONS_PAGE_LOADER = '[Local] Stopping user project profile invitations\' page loader',
+	START_USER_PROJECT_PROFILE_INVITATIONS_PAGE_LOADER = '[Local] Starting user project profile invitations\' page loader',
+	STOP_USER_PROJECT_PROFILE_INVITATIONS_PAGE_LOADER = '[Local] Stopping user project profile invitations\' page loader',
 
-    FETCH_USER_PROJECT_PROFILE_INVITATIONS_PAGE = '[Backend] Fetching user project profile invitations\' page',
-    UPDATE_USER_PROJECT_PROFILE_INVITATIONS_PAGE_SEARCH_PARAMS = '[Local] Updating user project profile invitations\' page search params',
+	FETCH_USER_PROJECT_PROFILE_INVITATIONS_PAGE = '[Backend] Fetching user project profile invitations\' page',
+	UPDATE_USER_PROJECT_PROFILE_INVITATIONS_PAGE_SEARCH_PARAMS = '[Local] Updating user project profile invitations\' page search params',
 
-    START_USER_PROJECT_PROFILE_LOADER = '[Local] Starting user project profile loader',
-    STOP_USER_PROJECT_PROFILE_LOADER = '[Local] Stopping user project profile loader',
+	START_USER_PROJECT_PROFILE_LOADER = '[Local] Starting user project profile loader',
+	STOP_USER_PROJECT_PROFILE_LOADER = '[Local] Stopping user project profile loader',
 
-    UPDATE_CURRENT_USER_THEME = '[Backend] Updating current user theme',
-    UPDATE_CURRENT_USER_LANGUAGE = '[Backend] Updating current user language',
+	UPDATE_CURRENT_USER_THEME = '[Backend] Updating current user theme',
+	UPDATE_CURRENT_USER_LANGUAGE = '[Backend] Updating current user language',
 
-    MANAGE_USER_PROJECT_INVITATION_ACCEPTANCE = '[Backend] Managing user project invitation acceptance',
-    SELECT_USER_PROJECT_PROFILE = '[Backend] Selecting user project profile',
-    SELECT_USER_PROJECT_PROFILE_BY_PROJECT = '[Backend] Selecting user project profile by project',
-    DELETE_USER_PROJECT_PROFILE = '[Backend] Deleting user project profile',
+	MANAGE_USER_PROJECT_INVITATION_ACCEPTANCE = '[Backend] Managing user project invitation acceptance',
+	SELECT_USER_PROJECT_PROFILE = '[Backend] Selecting user project profile',
+	SELECT_USER_PROJECT_PROFILE_BY_PROJECT = '[Backend] Selecting user project profile by project',
+	DELETE_USER_PROJECT_PROFILE = '[Backend] Deleting user project profile',
 
-    CREATE_SUPPORT_PROJECT_PROFILE = '[Backend] Creating project profiles',
+	CREATE_SUPPORT_PROJECT_PROFILE = '[Backend] Creating project profiles',
 }
 
 export class StartGlobalLoader {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.START_GLOBAL_LOADER
+	public static readonly type: RegistryActionEnum = RegistryActionEnum.START_GLOBAL_LOADER
 }
 
 export class StopGlobalLoader {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.STOP_GLOBAL_LOADER
+	public static readonly type: RegistryActionEnum = RegistryActionEnum.STOP_GLOBAL_LOADER
 }
 
 export class SetGlobalError {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.SET_GLOBAL_ERROR
+	public static readonly type: RegistryActionEnum = RegistryActionEnum.SET_GLOBAL_ERROR
 
-    public constructor (public readonly error: ErrorModel) {}
+	public constructor(public readonly error: ErrorModel) {
+	}
 }
 
 export class UpdateNetwork {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.UPDATE_NETWORK
+	public static readonly type: RegistryActionEnum = RegistryActionEnum.UPDATE_NETWORK
 
-    public constructor (public readonly online: boolean) {}
+	public constructor(public readonly online: boolean) {
+	}
 }
 
 export class UpdateScreenWidth {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.UPDATE_SCREEN_WIDTH
+	public static readonly type: RegistryActionEnum = RegistryActionEnum.UPDATE_SCREEN_WIDTH
 
-    public constructor (public readonly screenWidth: number) {}
+	public constructor(public readonly screenWidth: number) {
+	}
 }
 
 export class UpdateTheme {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.UPDATE_THEME
+	public static readonly type: RegistryActionEnum = RegistryActionEnum.UPDATE_THEME
 
-    public constructor (public readonly theme: ThemeEnum) {}
+	public constructor(public readonly theme: ThemeEnum) {
+	}
 }
 
 export class Notify {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.NOTIFY
+	public static readonly type: RegistryActionEnum = RegistryActionEnum.NOTIFY
 
-    public constructor (public readonly message: ToastMessageOptions) {}
+	public constructor(public readonly message: ToastMessageOptions) {
+	}
 }
 
 export class AckNotification {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.ACK_NOTIFICATION
+	public static readonly type: RegistryActionEnum = RegistryActionEnum.ACK_NOTIFICATION
 }
 
 export class StartCurrentUserActionLoader {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.START_CURRENT_USER_ACTION_LOADER
+	public static readonly type: RegistryActionEnum = RegistryActionEnum.START_CURRENT_USER_ACTION_LOADER
 }
 
 export class StopCurrentUserActionLoader {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.STOP_CURRENT_USER_ACTION_LOADER
+	public static readonly type: RegistryActionEnum = RegistryActionEnum.STOP_CURRENT_USER_ACTION_LOADER
 }
 
 export class Login {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.LOGIN
+	public static readonly type: RegistryActionEnum = RegistryActionEnum.LOGIN
 }
 
 export class Logout {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.LOGOUT
+	public static readonly type: RegistryActionEnum = RegistryActionEnum.LOGOUT
 }
 
 export class FetchTokens {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.FETCH_TOKENS
+	public static readonly type: RegistryActionEnum = RegistryActionEnum.FETCH_TOKENS
 
-    public constructor (public readonly authorizationCode: string) {}
+	public constructor(public readonly authorizationCode: string) {
+	}
 }
 
 export class FetchCurrentUser {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.FETCH_CURRENT_USER
+	public static readonly type: RegistryActionEnum = RegistryActionEnum.FETCH_CURRENT_USER
 }
 
 export class ImpersonateCurrentUser {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.IMPERSONATE_CURRENT_USER
+	public static readonly type: RegistryActionEnum = RegistryActionEnum.IMPERSONATE_CURRENT_USER
 }
 
 export class StartUserProjectProfilesPageLoader {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.START_USER_PROJECT_PROFILES_PAGE_LOADER
+	public static readonly type: RegistryActionEnum = RegistryActionEnum.START_USER_PROJECT_PROFILES_PAGE_LOADER
 }
 
 export class StopUserProjectProfilesPageLoader {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.STOP_USER_PROJECT_PROFILES_PAGE_LOADER
+	public static readonly type: RegistryActionEnum = RegistryActionEnum.STOP_USER_PROJECT_PROFILES_PAGE_LOADER
 }
 
 export class FetchUserProjectProfilesPage {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.FETCH_USER_PROJECT_PROFILES_PAGE
+	public static readonly type: RegistryActionEnum = RegistryActionEnum.FETCH_USER_PROJECT_PROFILES_PAGE
 
-    public constructor (
-        public readonly pageNumber: number | undefined,
-        public readonly pageSize: number | undefined,
-        public readonly force: boolean = false,
-    ) {}
+	public constructor(
+		public readonly pageNumber: number | undefined,
+		public readonly pageSize: number | undefined,
+		public readonly force: boolean = false,
+	) {
+	}
 }
 
 export class UpdateUserProjectProfilesPageSearchParams {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.UPDATE_USER_PROJECT_PROFILES_PAGE_SEARCH_PARAMS
+	public static readonly type: RegistryActionEnum = RegistryActionEnum.UPDATE_USER_PROJECT_PROFILES_PAGE_SEARCH_PARAMS
 
-    public constructor (
-        public readonly resetSearch: boolean,
-        public readonly textSearched: string | undefined,
-        public readonly availabilitySearched: boolean | undefined,
-        public readonly dateTimeSearched: string | undefined,
-    ) {}
+	public constructor(
+		public readonly resetSearch: boolean,
+		public readonly textSearched: string | undefined,
+		public readonly availabilitySearched: boolean | undefined,
+		public readonly dateTimeSearched: string | undefined,
+	) {
+	}
 }
 
 export class StartUserProjectProfileInvitationsPageLoader {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.START_USER_PROJECT_PROFILE_INVITATIONS_PAGE_LOADER
+	public static readonly type: RegistryActionEnum = RegistryActionEnum.START_USER_PROJECT_PROFILE_INVITATIONS_PAGE_LOADER
 }
 
 export class StopUserProjectProfileInvitationsPageLoader {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.STOP_USER_PROJECT_PROFILE_INVITATIONS_PAGE_LOADER
+	public static readonly type: RegistryActionEnum = RegistryActionEnum.STOP_USER_PROJECT_PROFILE_INVITATIONS_PAGE_LOADER
 }
 
 export class FetchUserProjectProfileInvitationsPage {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.FETCH_USER_PROJECT_PROFILE_INVITATIONS_PAGE
+	public static readonly type: RegistryActionEnum = RegistryActionEnum.FETCH_USER_PROJECT_PROFILE_INVITATIONS_PAGE
 
-    public constructor (
-        public readonly pageNumber: number | undefined,
-        public readonly pageSize: number | undefined,
-        public readonly force: boolean = false,
-    ) {}
+	public constructor(
+		public readonly pageNumber: number | undefined,
+		public readonly pageSize: number | undefined,
+		public readonly force: boolean = false,
+	) {
+	}
 }
 
 export class UpdateUserProjectProfileInvitationsPageSearchParams {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.UPDATE_USER_PROJECT_PROFILE_INVITATIONS_PAGE_SEARCH_PARAMS
+	public static readonly type: RegistryActionEnum = RegistryActionEnum.UPDATE_USER_PROJECT_PROFILE_INVITATIONS_PAGE_SEARCH_PARAMS
 
-    public constructor (
-        public readonly resetSearch: boolean,
-        public readonly textSearched: string | undefined,
-        public readonly dateTimeSearched: string | undefined,
-    ) {}
+	public constructor(
+		public readonly resetSearch: boolean,
+		public readonly textSearched: string | undefined,
+		public readonly dateTimeSearched: string | undefined,
+	) {
+	}
 }
 
 export class StartUserProjectProfileLoader {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.START_USER_PROJECT_PROFILE_LOADER
+	public static readonly type: RegistryActionEnum = RegistryActionEnum.START_USER_PROJECT_PROFILE_LOADER
 }
 
 export class StopUserProjectProfileLoader {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.STOP_USER_PROJECT_PROFILE_LOADER
+	public static readonly type: RegistryActionEnum = RegistryActionEnum.STOP_USER_PROJECT_PROFILE_LOADER
 }
 
 export class UpdateCurrentUserTheme {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.UPDATE_CURRENT_USER_THEME
+	public static readonly type: RegistryActionEnum = RegistryActionEnum.UPDATE_CURRENT_USER_THEME
 
-    public constructor (public readonly theme: ThemeEnum) {}
+	public constructor(public readonly theme: ThemeEnum) {
+	}
 }
 
 export class UpdateCurrentUserLanguage {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.UPDATE_CURRENT_USER_LANGUAGE
+	public static readonly type: RegistryActionEnum = RegistryActionEnum.UPDATE_CURRENT_USER_LANGUAGE
 
-    public constructor (public readonly language: string) {}
+	public constructor(public readonly language: string) {
+	}
 }
 
 export class ManageUserProjectInvitationAcceptance {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.MANAGE_USER_PROJECT_INVITATION_ACCEPTANCE
+	public static readonly type: RegistryActionEnum = RegistryActionEnum.MANAGE_USER_PROJECT_INVITATION_ACCEPTANCE
 
-    public constructor (public readonly profileId: string, public readonly accepted: boolean) {}
+	public constructor(public readonly profileId: string, public readonly accepted: boolean) {
+	}
 }
 
 export class SelectUserProjectProfile {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.SELECT_USER_PROJECT_PROFILE
+	public static readonly type: RegistryActionEnum = RegistryActionEnum.SELECT_USER_PROJECT_PROFILE
 
-    public constructor (public readonly profileId: string | undefined) {}
+	public constructor(public readonly profileId: string | undefined) {
+	}
 }
 
 export class SelectUserProjectProfileByProject {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.SELECT_USER_PROJECT_PROFILE_BY_PROJECT
+	public static readonly type: RegistryActionEnum = RegistryActionEnum.SELECT_USER_PROJECT_PROFILE_BY_PROJECT
 
-    public constructor (public readonly projectId: string) {}
+	public constructor(public readonly projectId: string) {
+	}
 }
 
 export class DeleteUserProjectProfile {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.DELETE_USER_PROJECT_PROFILE
+	public static readonly type: RegistryActionEnum = RegistryActionEnum.DELETE_USER_PROJECT_PROFILE
 
-    public constructor (public readonly profile: ProjectProfileModel) {}
+	public constructor(public readonly profile: ProjectProfileModel) {
+	}
 }
 
 export class CreateSupportProjectProfile {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.CREATE_SUPPORT_PROJECT_PROFILE
+	public static readonly type: RegistryActionEnum = RegistryActionEnum.CREATE_SUPPORT_PROJECT_PROFILE
 
-    public constructor (public readonly projectId: string) {}
+	public constructor(public readonly projectId: string) {
+	}
 }

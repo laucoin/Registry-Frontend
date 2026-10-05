@@ -1,11 +1,11 @@
-import { Component } from '@angular/core'
+import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { RouterOutlet } from '@angular/router'
 
-@Component( {
-    selector: 'app-movement',
-    standalone: true,
-    imports: [ RouterOutlet ],
-    template: '<router-outlet/>',
-} )
+@Component({
+	selector: 'app-movement',
+	imports: [RouterOutlet],
+	template: '<router-outlet/>',
+	changeDetection: ChangeDetectionStrategy.Eager,
+})
 export class MovementComponent {
 }

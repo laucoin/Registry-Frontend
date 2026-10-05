@@ -1,71 +1,69 @@
-import {ChangeDetectionStrategy, Component, computed, Signal} from '@angular/core'
-import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms'
-import {TranslatePipe} from '@ngx-translate/core'
-import {PageEventModel} from '../../../shared/util-model/model/page-event.model'
-import {InputTextModule} from 'primeng/inputtext'
-import {ToggleButtonModule} from 'primeng/togglebutton'
-import {GenericListComponent} from '../../../shared/util-tool/component/generic-list.component'
-import {ListComponent} from '../../../shared/util-ui/list/list.component'
-import {DatePicker} from 'primeng/datepicker'
-import {Button} from 'primeng/button'
+import { Component, computed, Signal } from '@angular/core'
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms'
+import { RouterLink } from '@angular/router'
+import { TranslatePipe } from '@ngx-translate/core'
+import { Button } from 'primeng/button'
+import { DatePicker } from 'primeng/datepicker'
+import { InputTextModule } from 'primeng/inputtext'
+import { ToggleButtonModule } from 'primeng/togglebutton'
+import { PageEventModel } from '../../../shared/util-model/model/page-event.model'
+import { GenericListComponent } from '../../../shared/util-tool/component/generic-list.component'
+import { RegistryTemplateDirective } from '../../../shared/util-tool/directive/registry-template.directive'
+import { GenericUtil } from '../../../shared/util-tool/util/generic.util'
+import { StringUtil } from '../../../shared/util-tool/util/string.util'
+import { ListComponent } from '../../../shared/util-ui/list/list.component'
 import {
-    ProjectProfileElementComponent,
+	ProjectProfileElementComponent,
 } from '../../../shared/util-ui/project-profile-element/project-profile-element.component'
-import {RegistryTemplateDirective} from '../../../shared/util-tool/directive/registry-template.directive'
-import {StringUtil} from '../../../shared/util-tool/util/string.util'
-import {GenericUtil} from '../../../shared/util-tool/util/generic.util'
-import {RouterLink} from '@angular/router'
 
 @Component({
-    selector: 'app-invitations-list',
-    standalone: true,
-    imports: [
-        TranslatePipe,
-        FormsModule,
-        InputTextModule,
-        ToggleButtonModule,
-        ReactiveFormsModule,
-        ListComponent,
-        DatePicker,
-        Button,
-        ProjectProfileElementComponent,
-        RegistryTemplateDirective,
-        RouterLink,
-    ],
-    templateUrl: './invitations-list.component.html',
-    changeDetection: ChangeDetectionStrategy.OnPush,
+	selector: 'app-invitations-list',
+	imports: [
+		TranslatePipe,
+		FormsModule,
+		InputTextModule,
+		ToggleButtonModule,
+		ReactiveFormsModule,
+		ListComponent,
+		DatePicker,
+		Button,
+		ProjectProfileElementComponent,
+		RegistryTemplateDirective,
+		RouterLink,
+	],
+	templateUrl: './invitations-list.component.html',
 })
 export class InvitationsListComponent extends GenericListComponent {
-    protected readonly hasFilters: Signal<boolean> = computed((): boolean =>
-        StringUtil.isNotNullNorBlank(this.registryFacade.userProjectProfileInvitationsPageTextSearchParam())
-        || GenericUtil.nonNull(this.registryFacade.userProjectProfileInvitationsPageDateTimeSearchParam()),
-    )
+	protected readonly hasFilters: Signal<boolean> = computed((): boolean =>
+		StringUtil.isNotNullNorBlank(this.registryFacade.userProjectProfileInvitationsPageTextSearchParam())
+		|| GenericUtil.nonNull(this.registryFacade.userProjectProfileInvitationsPageDateTimeSearchParam()),
+	)
 
-    public constructor() {
-        super()
+	public constructor() {
+		super()
 
-        this.form = this.initForm()
+		this.form = this.initForm()
 
-        this.registryFacade.fetchProjectProfileInvitationPage(undefined, undefined, false)
-    }
+		this.registryFacade.fetchProjectProfileInvitationPage(undefined, undefined, false)
+	}
 
-    protected initForm(): FormGroup {
-        return this.formBuilder.group({
-            textSearched: this.formBuilder.control(this.registryFacade.userProjectProfileInvitationsPageTextSearchParam()),
-            dateTimeSearched: this.formBuilder.control(this.registryFacade.userProjectProfileInvitationsPageDateTimeSearchParam()),
-        })
-    }
+	protected initForm(): FormGroup {
+		return this.formBuilder.group({
+			textSearched: this.formBuilder.control(this.registryFacade.userProjectProfileInvitationsPageTextSearchParam()),
+			dateTimeSearched: this.formBuilder.control(this.registryFacade.userProjectProfileInvitationsPageDateTimeSearchParam()),
+		})
+	}
 
-    protected loadPage(pageEvent: PageEventModel): void {
-        this.registryFacade.inputInvitationsPageSearchParameters(this.textSearched.value, this.dateTimeSearched.value)
-        this.registryFacade.fetchProjectProfileInvitationPage(pageEvent.pageNumber, pageEvent.pageSize, false)
-    }
+	protected loadPage(pageEvent: PageEventModel): void {
+		this.registryFacade.inputInvitationsPageSearchParameters(this.textSearched.value, this.dateTimeSearched.value)
+		this.registryFacade.fetchProjectProfileInvitationPage(pageEvent.pageNumber, pageEvent.pageSize, false)
+	}
 
-    protected get textSearched(): FormControl {
-        return this.form.get('textSearched') as FormControl
-    }
+	protected get textSearched(): FormControl {
+		return this.form.get('textSearched') as FormControl
+	}
 
-    protected get dateTimeSearched(): FormControl {
-        return this.form.get('dateTimeSearched') as FormControl
-    }
+	protected get dateTimeSearched(): FormControl {
+		return this.form.get('dateTimeSearched') as FormControl
+	}
 }

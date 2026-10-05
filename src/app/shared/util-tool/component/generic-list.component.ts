@@ -3,9 +3,9 @@ import { PageEventModel } from '../../util-model/model/page-event.model'
 import { GenericComponent } from './generic.component'
 
 export abstract class GenericListComponent extends GenericComponent {
-    protected form: FormGroup = this.formBuilder.group( {} )
+	protected form: FormGroup = this.formBuilder.group({})
 
-    protected abstract initForm (): FormGroup
+	protected abstract initForm(): FormGroup
 
-    protected abstract loadPage (pageEvent: PageEventModel): void
+	protected abstract loadPage(pageEvent: PageEventModel): void
 }

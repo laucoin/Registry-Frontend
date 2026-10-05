@@ -1,10 +1,11 @@
-import { Component } from '@angular/core'
+import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { RouterOutlet } from '@angular/router'
 
-@Component( {
-    selector: 'app-group',
-    standalone: true,
-    imports: [ RouterOutlet ],
-    template: '<router-outlet/>',
-} )
-export class GroupComponent {}
+@Component({
+	selector: 'app-group',
+	imports: [RouterOutlet],
+	template: '<router-outlet/>',
+	changeDetection: ChangeDetectionStrategy.Eager,
+})
+export class GroupComponent {
+}

@@ -1,7 +1,7 @@
-import { ParticipantModel } from './participant.model'
 import { GroupModel } from './group.model'
+import { ParticipantModel } from './participant.model'
 
 export interface MovementParticipantsAndGroupsModel {
-    participants: ParticipantModel[]
-    groups: GroupModel[]
+	participants: ParticipantModel[]
+	groups: GroupModel[]
 }

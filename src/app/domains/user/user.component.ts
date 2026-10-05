@@ -1,10 +1,11 @@
-import { Component } from '@angular/core'
+import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { RouterOutlet } from '@angular/router'
 
-@Component( {
-    selector: 'app-user',
-    standalone: true,
-    imports: [ RouterOutlet ],
-    template: '<router-outlet/>',
-} )
-export class UserComponent {}
+@Component({
+	selector: 'app-user',
+	imports: [RouterOutlet],
+	template: '<router-outlet/>',
+	changeDetection: ChangeDetectionStrategy.Eager,
+})
+export class UserComponent {
+}

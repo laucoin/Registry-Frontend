@@ -1,19 +1,17 @@
-import { ChangeDetectionStrategy, Component, input, InputSignal } from '@angular/core'
-import { ProgressSpinnerModule } from 'primeng/progressspinner'
+import { Component, input, InputSignal } from '@angular/core'
 import { FormGroup } from '@angular/forms'
+import { ProgressSpinnerModule } from 'primeng/progressspinner'
 
-@Component( {
-    selector: 'app-form',
-    standalone: true,
-    imports: [
-        ProgressSpinnerModule,
-    ],
-    templateUrl: './form.component.html',
-    changeDetection: ChangeDetectionStrategy.OnPush,
-} )
+@Component({
+	selector: 'app-form',
+	imports: [
+		ProgressSpinnerModule,
+	],
+	templateUrl: './form.component.html',
+})
 export class FormComponent {
-    public readonly loading: InputSignal<boolean> = input.required()
-    public readonly form: InputSignal<FormGroup> = input.required()
-    public readonly showTitle: InputSignal<boolean> = input<boolean>( true )
-    public readonly title: InputSignal<string | undefined> = input<string | undefined>()
+	public readonly loading: InputSignal<boolean> = input.required()
+	public readonly form: InputSignal<FormGroup> = input.required()
+	public readonly showTitle: InputSignal<boolean> = input<boolean>(true)
+	public readonly title: InputSignal<string | undefined> = input<string | undefined>()
 }

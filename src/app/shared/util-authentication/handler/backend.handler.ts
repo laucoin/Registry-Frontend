@@ -1,11 +1,11 @@
 import {
-    HttpErrorResponse,
-    HttpEvent,
-    HttpHandlerFn,
-    HttpHeaders,
-    HttpInterceptorFn,
-    HttpRequest,
-    HttpResponse,
+	HttpErrorResponse,
+	HttpEvent,
+	HttpHandlerFn,
+	HttpHeaders,
+	HttpInterceptorFn,
+	HttpRequest,
+	HttpResponse,
 } from '@angular/common/http'
 import { inject } from '@angular/core'
 import { TranslateService } from '@ngx-translate/core'
