@@ -14,7 +14,7 @@ import { StateUtil } from '../../../../../shared/util-tool/state/state.util'
 import { initialize } from '../../../../../shared/util-tool/util/rx.util'
 import { ProjectOptionModel } from '../../model/project-option.model'
 import { ProjectStateModel } from '../../model/project-state.model'
-import { ProjectService } from '../project.service'
+import { ProjectApi } from '../project.api'
 import {
     CreateProject,
     DeleteProject,
@@ -78,7 +78,7 @@ const defaultProjectState: ProjectStateModel = {
 })
 @Injectable()
 export class ProjectState extends GenericElementState<ProjectStateModel> {
-	private readonly service: ProjectService = inject(ProjectService)
+	private readonly service: ProjectApi = inject(ProjectApi)
 	private readonly facade: ProjectFacade = inject(ProjectFacade)
 
 	private readonly projectIcon: string = 'pi pi-calendar'

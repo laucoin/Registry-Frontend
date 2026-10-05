@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core'
 import { Action, NgxsOnInit, Selector, State, StateContext } from '@ngxs/store'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { catchError, finalize, map, Observable, of } from 'rxjs'
-import { MetadataService } from '../../../../../../shared/util-common/state/metadata.service'
+import { MetadataApi } from '../../../../../../shared/util-common/state/metadata.api'
 import { PresenceStatusEnum } from '../../../../../../shared/util-model/enumeration/presence-status.enum'
 import { SeverityEnum } from '../../../../../../shared/util-model/enumeration/severity.enum'
 import {
@@ -22,7 +22,7 @@ import { GroupUtil } from '../../../../../../shared/util-tool/util/group.util'
 import { MovementUtil } from '../../../../../../shared/util-tool/util/movement.util'
 import { initialize } from '../../../../../../shared/util-tool/util/rx.util'
 import { UserUtil } from '../../../../../../shared/util-tool/util/user.util'
-import { MovementService } from '../../../../movement/data/state/movement.service'
+import { MovementApi } from '../../../../movement/data/state/movement.api'
 import { ParticipantStateModel } from '../model/participant-state.model'
 import {
     CreateParticipant,
@@ -49,7 +49,7 @@ import {
     UpdateParticipantsPageSearchParams,
 } from './participant.action'
 import { ParticipantFacade } from './participant.facade'
-import { ParticipantService } from './participant.service'
+import { ParticipantApi } from './participant.api'
 
 const defaultParticipant: ElementRequestInformationModel<ParticipantModel> = {
 	element: undefined,
@@ -105,9 +105,9 @@ const defaultParticipantState: ParticipantStateModel = {
 export class ParticipantState extends GenericProjectElementState<ParticipantStateModel> implements NgxsOnInit {
 	private readonly participantIcon: string = 'pi pi-users'
 
-	private readonly service: ParticipantService = inject(ParticipantService)
-	private readonly metadataService: MetadataService = inject(MetadataService)
-	private readonly movementService: MovementService = inject(MovementService)
+	private readonly service: ParticipantApi = inject(ParticipantApi)
+	private readonly metadataApi: MetadataApi = inject(MetadataApi)
+	private readonly movementApi: MovementApi = inject(MovementApi)
 	private readonly facade: ParticipantFacade = inject(ParticipantFacade)
 
 	public ngxsOnInit(): void {
@@ -242,7 +242,7 @@ export class ParticipantState extends GenericProjectElementState<ParticipantStat
 
 	@Action(FetchParticipantPresencesStatus)
 	public fetchParticipantPresencesStatus(ctx: StateContext<ParticipantStateModel>): Observable<void> {
-		return this.metadataService.getPresencesStatus().pipe(
+		return this.metadataApi.getPresencesStatus().pipe(
 			map((types: SelectItem<PresenceStatusEnum>[]): void => this.fetchParticipantPresencesStatusComplete(
 				ctx,
 				types,
@@ -392,7 +392,7 @@ export class ParticipantState extends GenericProjectElementState<ParticipantStat
 		ctx: StateContext<ParticipantStateModel>,
 		payload: FetchParticipantMovementsContents,
 	): Observable<void> {
-		return this.movementService.findMovementsContents(
+		return this.movementApi.findMovementsContents(
 			payload.projectId,
 			payload.movementIds,
 			ctx.getState().movements.params.currentMovements,

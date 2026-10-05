@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core'
 import { Action, NgxsOnInit, Selector, State, StateContext } from '@ngxs/store'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { catchError, finalize, map, Observable, of } from 'rxjs'
-import { MetadataService } from '../../../../../../shared/util-common/state/metadata.service'
+import { MetadataApi } from '../../../../../../shared/util-common/state/metadata.api'
 import { ProfileStatusEnum } from '../../../../../../shared/util-model/enumeration/profile-status.enum'
 import { SeverityEnum } from '../../../../../../shared/util-model/enumeration/severity.enum'
 import {
@@ -39,7 +39,7 @@ import {
     UpdateProjectProfilesPageSearchParams,
 } from './project-profile.action'
 import { ProjectProfileFacade } from './project-profile.facade'
-import { ProjectProfileService } from './project-profile.service'
+import { ProjectProfileApi } from './project-profile.api'
 
 const defaultProjectProfile: ElementRequestInformationModel<ProjectProfileModel> = {
 	element: undefined,
@@ -81,8 +81,8 @@ const defaultProjectProfileState: ProjectProfileStateModel = {
 export class ProjectProfileState extends GenericProjectElementState<ProjectProfileStateModel> implements NgxsOnInit {
 	private readonly projectProfileIcon: string = 'pi pi-key'
 
-	private readonly service: ProjectProfileService = inject(ProjectProfileService)
-	private readonly serviceMetadata: MetadataService = inject(MetadataService)
+	private readonly service: ProjectProfileApi = inject(ProjectProfileApi)
+	private readonly serviceMetadata: MetadataApi = inject(MetadataApi)
 	private readonly facade: ProjectProfileFacade = inject(ProjectProfileFacade)
 	private readonly pluralTranslationPipe: PluralTranslationPipe = inject(PluralTranslationPipe)
 

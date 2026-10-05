@@ -4,14 +4,14 @@ import { SelectItem } from 'primeng/api'
 import { Observable } from 'rxjs'
 import { PageModel } from '../../../../shared/util-model/model/page.model'
 import { UserModel } from '../../../../shared/util-model/model/user.model'
-import { GenericService } from '../../../../shared/util-tool/service/generic.service'
+import { GenericApi } from '../../../../shared/util-tool/service/generic.api'
 import { QueryUtil } from '../../../../shared/util-tool/util/query.util'
 import { UserPageParamsModel } from '../model/user-page-params.model'
 
 @Injectable({
 	providedIn: 'root',
 })
-export class UserService extends GenericService {
+export class UserApi extends GenericApi {
 	public constructor() {
 		super('/api/v1/users')
 	}

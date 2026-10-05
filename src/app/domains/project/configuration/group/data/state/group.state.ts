@@ -44,7 +44,7 @@ import {
     UpdateGroupsPageSearchParams,
 } from './group.action'
 import { GroupFacade } from './group.facade'
-import { GroupService } from './group.service'
+import { GroupApi } from './group.api'
 
 const defaultGroup: ElementRequestInformationModel<GroupModel> = {
 	element: undefined,
@@ -102,7 +102,7 @@ const defaultGroupState: GroupStateModel = {
 export class GroupState extends GenericProjectElementState<GroupStateModel> {
 	private readonly groupIcon: string = 'pi pi-users'
 
-	private readonly service: GroupService = inject(GroupService)
+	private readonly service: GroupApi = inject(GroupApi)
 	private readonly facade: GroupFacade = inject(GroupFacade)
 	private readonly pluralTranslationPipe: PluralTranslationPipe = inject(PluralTranslationPipe)
 

@@ -4,7 +4,7 @@ import { ActivityModel } from '../../../../../../shared/util-model/model/activit
 import { MovementPageParamsModel } from '../../../../../../shared/util-model/model/movement-page-params.model'
 import { MovementModel } from '../../../../../../shared/util-model/model/movement.model'
 import { PageModel } from '../../../../../../shared/util-model/model/page.model'
-import { GenericProjectService } from '../../../../../../shared/util-tool/service/generic-project.service'
+import { GenericProjectApi } from '../../../../../../shared/util-tool/service/generic-project.api'
 import { QueryUtil } from '../../../../../../shared/util-tool/util/query.util'
 import { SELECT_PROFILE_PROJECT_ID } from '../../../../../../shared/util-tool/util/request.util'
 import { ActivityDto } from '../dto/activity.dto'
@@ -13,7 +13,7 @@ import { ActivityPageParamsModel } from '../model/activity-page-params.model'
 @Injectable({
 	providedIn: 'root',
 })
-export class ActivityService extends GenericProjectService {
+export class ActivityApi extends GenericProjectApi {
 	public constructor() {
 		super(`/api/v1/projects/${SELECT_PROFILE_PROJECT_ID}/activities`)
 	}

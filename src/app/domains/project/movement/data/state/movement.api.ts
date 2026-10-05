@@ -11,7 +11,7 @@ import { MovementModel } from '../../../../../shared/util-model/model/movement.m
 import { PageModel } from '../../../../../shared/util-model/model/page.model'
 import { PairModel } from '../../../../../shared/util-model/model/pair.model'
 import { VehicleModel } from '../../../../../shared/util-model/model/vehicle.model'
-import { GenericProjectService } from '../../../../../shared/util-tool/service/generic-project.service'
+import { GenericProjectApi } from '../../../../../shared/util-tool/service/generic-project.api'
 import { GenericUtil } from '../../../../../shared/util-tool/util/generic.util'
 import { QueryUtil } from '../../../../../shared/util-tool/util/query.util'
 import { SELECT_PROFILE_PROJECT_ID } from '../../../../../shared/util-tool/util/request.util'
@@ -26,7 +26,7 @@ import { MovementReasonModel } from '../model/movement-reason.model'
 @Injectable({
 	providedIn: 'root',
 })
-export class MovementService extends GenericProjectService {
+export class MovementApi extends GenericProjectApi {
 	public constructor() {
 		super(`/api/v1/projects/${SELECT_PROFILE_PROJECT_ID}/movements`)
 	}

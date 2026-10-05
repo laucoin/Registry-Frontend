@@ -16,16 +16,16 @@ import { CurrentUserModel } from '../../util-model/model/current-user.model'
 import { ErrorModel } from '../../util-model/model/error.model'
 import { GenericUtil } from '../../util-tool/util/generic.util'
 import { CURRENT_USER_ID, SELECT_PROFILE_PROJECT_ID } from '../../util-tool/util/request.util'
-import { SecurityService } from '../service/security.service'
+import { SecurityApi } from '../service/security.api'
 
 const CSRF_TOKEN_HEADER: string = 'X-XSRF-TOKEN'
 let csrfToken: string | undefined
 
 let refreshTokenInProgress$: Observable<void> | null = null
 
-function refreshAccessToken(securityService: SecurityService, registryFacade: RegistryFacade): Observable<void> {
+function refreshAccessToken(securityApi: SecurityApi, registryFacade: RegistryFacade): Observable<void> {
 	if (!refreshTokenInProgress$) {
-		refreshTokenInProgress$ = securityService.refreshToken().pipe(
+		refreshTokenInProgress$ = securityApi.refreshToken().pipe(
 			map((): void => undefined),
 			tap({
 				complete: (): void => {
@@ -52,7 +52,7 @@ export const backendHandler: HttpInterceptorFn = (
 	}
 
 	const registryFacade: RegistryFacade = inject(RegistryFacade)
-	const securityService: SecurityService = inject(SecurityService)
+	const securityApi: SecurityApi = inject(SecurityApi)
 	const translateService: TranslateService = inject(TranslateService)
 
 	const currentUser: CurrentUserModel | undefined = registryFacade.currentUser()
@@ -89,7 +89,7 @@ export const backendHandler: HttpInterceptorFn = (
 							message: translateService.instant('global.notifications.503.message'),
 						}))
 					case 401:
-						return refreshAccessToken(securityService, registryFacade).pipe(
+						return refreshAccessToken(securityApi, registryFacade).pipe(
 							mergeMap((): Observable<HttpEvent<unknown>> => next(authenticatedReq)),
 							catchError((): Observable<HttpEvent<unknown>> => throwError((): ErrorModel => new ErrorModel(error))),
 						)

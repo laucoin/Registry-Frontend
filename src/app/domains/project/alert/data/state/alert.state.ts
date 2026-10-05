@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core'
 import { Action, NgxsOnInit, Selector, State, StateContext } from '@ngxs/store'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { catchError, finalize, map, Observable, of } from 'rxjs'
-import { MetadataService } from '../../../../../shared/util-common/state/metadata.service'
+import { MetadataApi } from '../../../../../shared/util-common/state/metadata.api'
 import { AlertStatusEnum } from '../../../../../shared/util-model/enumeration/alert-status.enum'
 import { SeverityEnum } from '../../../../../shared/util-model/enumeration/severity.enum'
 import { AlertModel } from '../../../../../shared/util-model/model/alert.model'
@@ -15,7 +15,7 @@ import { GenericProjectElementState } from '../../../../../shared/util-tool/stat
 import { StateUtil } from '../../../../../shared/util-tool/state/state.util'
 import { initialize } from '../../../../../shared/util-tool/util/rx.util'
 import { CommunicationModel } from '../../../communication/data/model/communication.model'
-import { AlertService } from '../../../movement/data/state/alert.service'
+import { AlertApi } from '../../../movement/data/state/alert.api'
 import { AlertStateModel } from '../model/alert-state.model'
 import {
     CreateAlert,
@@ -93,8 +93,8 @@ const defaultAlertState: AlertStateModel = {
 export class AlertState extends GenericProjectElementState<AlertStateModel> implements NgxsOnInit {
 	private readonly alertIcon: string = 'pi pi-sort-alt'
 
-	private readonly service: AlertService = inject(AlertService)
-	private readonly metadataService: MetadataService = inject(MetadataService)
+	private readonly service: AlertApi = inject(AlertApi)
+	private readonly metadataApi: MetadataApi = inject(MetadataApi)
 	private readonly facade: AlertFacade = inject(AlertFacade)
 
 	public ngxsOnInit(): void {
@@ -229,7 +229,7 @@ export class AlertState extends GenericProjectElementState<AlertStateModel> impl
 
 	@Action(FetchAlertStatus)
 	public fetchAlertStatus(ctx: StateContext<AlertStateModel>): Observable<void> {
-		return this.metadataService.getAlertsStatus().pipe(
+		return this.metadataApi.getAlertsStatus().pipe(
 			map((status: SelectItem<AlertStatusEnum>[]): void => this.fetchAlertStatusComplete(ctx, status)),
 		)
 	}

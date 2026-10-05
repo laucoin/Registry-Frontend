@@ -2,12 +2,12 @@ import { HttpParams } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import { Observable } from 'rxjs'
 import { PreferencesModel } from '../../util-model/model/preferences.model'
-import { GenericService } from '../../util-tool/service/generic.service'
+import { GenericApi } from '../../util-tool/service/generic.api'
 
 @Injectable({
 	providedIn: 'root',
 })
-export class PreferencesService extends GenericService {
+export class PreferencesApi extends GenericApi {
 	public constructor() {
 		super('/api/v1/users/preferences')
 	}

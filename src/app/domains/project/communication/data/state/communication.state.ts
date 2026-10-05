@@ -37,7 +37,7 @@ import {
     UpdateCommunicationsPageSearchParams,
 } from './communication.action'
 import { CommunicationFacade } from './communication.facade'
-import { CommunicationService } from './communication.service'
+import { CommunicationApi } from './communication.api'
 
 const defaultCommunication: ElementRequestInformationModel<CommunicationModel> = {
 	element: undefined,
@@ -78,7 +78,7 @@ const defaultCommunicationState: CommunicationStateModel = {
 export class CommunicationState extends GenericProjectElementState<CommunicationStateModel> {
 	private readonly communicationIcon: string = 'pi pi-sort-alt'
 
-	private readonly service: CommunicationService = inject(CommunicationService)
+	private readonly service: CommunicationApi = inject(CommunicationApi)
 	private readonly facade: CommunicationFacade = inject(CommunicationFacade)
 	private readonly datePipe: DateFormatPipe = inject(DateFormatPipe)
 

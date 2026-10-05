@@ -4,12 +4,12 @@ import { Observable } from 'rxjs'
 import { AuthenticationUriModel } from '../../util-model/model/authentication-uri.model'
 import { CredentialsModel } from '../../util-model/model/credentials.model'
 import { CurrentUserModel } from '../../util-model/model/current-user.model'
-import { GenericService } from '../../util-tool/service/generic.service'
+import { GenericApi } from '../../util-tool/service/generic.api'
 
 @Injectable({
 	providedIn: 'root',
 })
-export class SecurityService extends GenericService {
+export class SecurityApi extends GenericApi {
 	public constructor() {
 		super('/api/v1/authentication')
 	}

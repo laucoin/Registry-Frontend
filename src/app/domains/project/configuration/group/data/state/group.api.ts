@@ -5,7 +5,7 @@ import { AddedGroupMembersDto } from '../../../../../../shared/util-model/dto/ad
 import { GroupModel } from '../../../../../../shared/util-model/model/group.model'
 import { PageModel } from '../../../../../../shared/util-model/model/page.model'
 import { ParticipantModel } from '../../../../../../shared/util-model/model/participant.model'
-import { GenericProjectService } from '../../../../../../shared/util-tool/service/generic-project.service'
+import { GenericProjectApi } from '../../../../../../shared/util-tool/service/generic-project.api'
 import { QueryUtil } from '../../../../../../shared/util-tool/util/query.util'
 import { SELECT_PROFILE_PROJECT_ID } from '../../../../../../shared/util-tool/util/request.util'
 import { ParticipantPageParamsModel } from '../../../participant/data/model/participant-page-params.model'
@@ -15,7 +15,7 @@ import { GroupPageParamsModel } from '../model/group-page-params.model'
 @Injectable({
 	providedIn: 'root',
 })
-export class GroupService extends GenericProjectService {
+export class GroupApi extends GenericProjectApi {
 	public constructor() {
 		super(`/api/v1/projects/${SELECT_PROFILE_PROJECT_ID}/groups`)
 	}

@@ -16,7 +16,7 @@ import { GenericProjectElementState } from '../../../../../../shared/util-tool/s
 import { StateUtil } from '../../../../../../shared/util-tool/state/state.util'
 import { MovementUtil } from '../../../../../../shared/util-tool/util/movement.util'
 import { initialize } from '../../../../../../shared/util-tool/util/rx.util'
-import { MovementService } from '../../../../movement/data/state/movement.service'
+import { MovementApi } from '../../../../movement/data/state/movement.api'
 import { ActivityStateModel } from '../model/activity-state.model'
 import {
     CreateActivity,
@@ -40,7 +40,7 @@ import {
     UpdateActivityMovementsPageSearchParams,
 } from './activity.action'
 import { ActivityFacade } from './activity.facade'
-import { ActivityService } from './activity.service'
+import { ActivityApi } from './activity.api'
 
 const defaultActivity: ElementRequestInformationModel<ActivityModel> = {
 	element: undefined,
@@ -99,8 +99,8 @@ const defaultActivityState: ActivityStateModel = {
 export class ActivityState extends GenericProjectElementState<ActivityStateModel> {
 	private readonly activityIcon: string = 'pi pi-users'
 
-	private readonly service: ActivityService = inject(ActivityService)
-	private readonly movementService: MovementService = inject(MovementService)
+	private readonly service: ActivityApi = inject(ActivityApi)
+	private readonly movementApi: MovementApi = inject(MovementApi)
 	private readonly facade: ActivityFacade = inject(ActivityFacade)
 
 	@Selector()
@@ -345,7 +345,7 @@ export class ActivityState extends GenericProjectElementState<ActivityStateModel
 		ctx: StateContext<ActivityStateModel>,
 		payload: FetchActivityMovementsContents,
 	): Observable<void> {
-		return this.movementService.findMovementsContents(
+		return this.movementApi.findMovementsContents(
 			payload.projectId,
 			payload.movementIds,
 			ctx.getState().movements.params.currentMovements,

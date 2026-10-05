@@ -4,7 +4,7 @@ import { MovementPageParamsModel } from '../../../../../../shared/util-model/mod
 import { MovementModel } from '../../../../../../shared/util-model/model/movement.model'
 import { PageModel } from '../../../../../../shared/util-model/model/page.model'
 import { VehicleModel } from '../../../../../../shared/util-model/model/vehicle.model'
-import { GenericProjectService } from '../../../../../../shared/util-tool/service/generic-project.service'
+import { GenericProjectApi } from '../../../../../../shared/util-tool/service/generic-project.api'
 import { QueryUtil } from '../../../../../../shared/util-tool/util/query.util'
 import { SELECT_PROFILE_PROJECT_ID } from '../../../../../../shared/util-tool/util/request.util'
 import { VehicleDto } from '../dto/vehicle.dto'
@@ -13,7 +13,7 @@ import { VehiclePageParamsModel } from '../model/vehicle-page-params.model'
 @Injectable({
 	providedIn: 'root',
 })
-export class VehicleService extends GenericProjectService {
+export class VehicleApi extends GenericProjectApi {
 	public constructor() {
 		super(`/api/v1/projects/${SELECT_PROFILE_PROJECT_ID}/vehicles`)
 	}

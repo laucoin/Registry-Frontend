@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core'
 import { Action, NgxsOnInit, Selector, State, StateContext } from '@ngxs/store'
 import { SelectItem, SelectItemGroup, ToastMessageOptions } from 'primeng/api'
 import { catchError, finalize, map, Observable, of } from 'rxjs'
-import { MetadataService } from '../../../../../shared/util-common/state/metadata.service'
+import { MetadataApi } from '../../../../../shared/util-common/state/metadata.api'
 import { MovementTypeEnum } from '../../../../../shared/util-model/enumeration/movement-type.enum'
 import { ParticipantTypeEnum } from '../../../../../shared/util-model/enumeration/participant-type.enum'
 import { SeverityEnum } from '../../../../../shared/util-model/enumeration/severity.enum'
@@ -61,7 +61,7 @@ import {
     UpdateMovementsPageSearchParams,
 } from './movement.action'
 import { MovementFacade } from './movement.facade'
-import { MovementService } from './movement.service'
+import { MovementApi } from './movement.api'
 
 const defaultMovement: ElementRequestInformationModel<MovementModel> = {
 	element: undefined,
@@ -120,8 +120,8 @@ const defaultMovementState: MovementStateModel = {
 export class MovementState extends GenericProjectElementState<MovementStateModel> implements NgxsOnInit {
 	private readonly movementIcon: string = 'pi pi-sort-alt'
 
-	private readonly service: MovementService = inject(MovementService)
-	private readonly metadataService: MetadataService = inject(MetadataService)
+	private readonly service: MovementApi = inject(MovementApi)
+	private readonly metadataApi: MetadataApi = inject(MetadataApi)
 	private readonly facade: MovementFacade = inject(MovementFacade)
 	private readonly pluralTranslationPipe: PluralTranslationPipe = inject(PluralTranslationPipe)
 	private readonly datePipe: DateFormatPipe = inject(DateFormatPipe)
@@ -275,7 +275,7 @@ export class MovementState extends GenericProjectElementState<MovementStateModel
 
 	@Action(FetchMovementTypes)
 	public fetchMovementTypes(ctx: StateContext<MovementStateModel>): Observable<void> {
-		return this.metadataService.getMovementsTypes().pipe(
+		return this.metadataApi.getMovementsTypes().pipe(
 			map((types: SelectItem<MovementTypeEnum>[]): void => this.fetchMovementTypesComplete(ctx, types)),
 		)
 	}
@@ -297,7 +297,7 @@ export class MovementState extends GenericProjectElementState<MovementStateModel
 
 	@Action(FetchParticipantTypes)
 	public fetchParticipantTypes(ctx: StateContext<MovementStateModel>): Observable<void> {
-		return this.metadataService.getParticipantsTypes().pipe(
+		return this.metadataApi.getParticipantsTypes().pipe(
 			map((types: SelectItem<ParticipantTypeEnum>[]): void => this.fetchParticipantTypesComplete(ctx, types)),
 		)
 	}

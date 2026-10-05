@@ -5,13 +5,13 @@ import {
 } from '../../../domains/project/configuration/project-profile/data/model/project-profile-page-params.model'
 import { PageModel } from '../../util-model/model/page.model'
 import { ProjectProfileModel } from '../../util-model/model/project-profile.model'
-import { GenericService } from '../../util-tool/service/generic.service'
+import { GenericApi } from '../../util-tool/service/generic.api'
 import { QueryUtil } from '../../util-tool/util/query.util'
 
 @Injectable({
 	providedIn: 'root',
 })
-export class UserProjectProfileService extends GenericService {
+export class UserProjectProfileApi extends GenericApi {
 	public constructor() {
 		super('/api/v1/users/profiles')
 	}

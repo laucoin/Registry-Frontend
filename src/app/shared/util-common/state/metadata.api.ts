@@ -6,12 +6,12 @@ import { MovementTypeEnum } from '../../util-model/enumeration/movement-type.enu
 import { ParticipantTypeEnum } from '../../util-model/enumeration/participant-type.enum'
 import { PresenceStatusEnum } from '../../util-model/enumeration/presence-status.enum'
 import { ProfileStatusEnum } from '../../util-model/enumeration/profile-status.enum'
-import { GenericService } from '../../util-tool/service/generic.service'
+import { GenericApi } from '../../util-tool/service/generic.api'
 
 @Injectable({
 	providedIn: 'root',
 })
-export class MetadataService extends GenericService {
+export class MetadataApi extends GenericApi {
 	public constructor() {
 		super('/api/v1/metadata')
 	}

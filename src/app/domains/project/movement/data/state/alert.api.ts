@@ -4,7 +4,7 @@ import { AlertStatusEnum } from '../../../../../shared/util-model/enumeration/al
 import { AlertPageParamsModel } from '../../../../../shared/util-model/model/alert-page-params.model'
 import { AlertModel } from '../../../../../shared/util-model/model/alert.model'
 import { PageModel } from '../../../../../shared/util-model/model/page.model'
-import { GenericProjectService } from '../../../../../shared/util-tool/service/generic-project.service'
+import { GenericProjectApi } from '../../../../../shared/util-tool/service/generic-project.api'
 import { QueryUtil } from '../../../../../shared/util-tool/util/query.util'
 import { SELECT_PROFILE_PROJECT_ID } from '../../../../../shared/util-tool/util/request.util'
 import { AlertDto } from '../../../alert/data/dto/alert.dto'
@@ -14,7 +14,7 @@ import { CommunicationModel } from '../../../communication/data/model/communicat
 @Injectable({
 	providedIn: 'root',
 })
-export class AlertService extends GenericProjectService {
+export class AlertApi extends GenericProjectApi {
 	public constructor() {
 		super(`/api/v1/projects/${SELECT_PROFILE_PROJECT_ID}/alerts`)
 	}

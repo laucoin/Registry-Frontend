@@ -1,7 +1,7 @@
 import { SELECT_PROFILE_PROJECT_ID } from '../util/request.util'
-import { GenericService } from './generic.service'
+import { GenericApi } from './generic.api'
 
-export abstract class GenericProjectService extends GenericService {
+export abstract class GenericProjectApi extends GenericApi {
 	protected constructor(baseUrl: string | undefined = undefined) {
 		super(baseUrl)
 	}

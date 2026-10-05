@@ -28,7 +28,7 @@ import {
     UpdateUsersPageSearchParams,
 } from './user.action'
 import { UserFacade } from './user.facade'
-import { UserService } from './user.service'
+import { UserApi } from './user.api'
 
 const defaultUser: ElementRequestInformationModel<UserModel> = {
 	element: undefined,
@@ -75,7 +75,7 @@ const defaultUserState: UserStateModel = {
 export class UserState extends GenericElementState<UserStateModel> {
 	private readonly userIcon: string = 'pi pi-users'
 
-	private readonly service: UserService = inject(UserService)
+	private readonly service: UserApi = inject(UserApi)
 	private readonly facade: UserFacade = inject(UserFacade)
 
 	@Selector()

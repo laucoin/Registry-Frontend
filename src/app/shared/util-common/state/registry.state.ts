@@ -6,8 +6,8 @@ import { PrimeNG } from 'primeng/config'
 import { catchError, finalize, map, mergeMap, Observable, of } from 'rxjs'
 import { AppRouteEnum } from '../../../app-route.enum'
 import { AppConfig } from '../../../app.config'
-import { UserService } from '../../../domains/user/data/state/user.service'
-import { SecurityService } from '../../util-authentication/service/security.service'
+import { UserApi } from '../../../domains/user/data/state/user.api'
+import { SecurityApi } from '../../util-authentication/service/security.api'
 import { CurrentUserUtil } from '../../util-authentication/tool/current-user.util'
 import { ProfileStatusEnum } from '../../util-model/enumeration/profile-status.enum'
 import { SeverityEnum } from '../../util-model/enumeration/severity.enum'
@@ -26,7 +26,7 @@ import { REDIRECT_URI } from '../../util-tool/util/request.util'
 import { initialize } from '../../util-tool/util/rx.util'
 import { SessionStorageUtils } from '../../util-tool/util/session-storage.util'
 import { RegistryStateModel } from '../model/registry-state.model'
-import { PreferencesService } from './preferences.service'
+import { PreferencesApi } from './preferences.api'
 import {
     AckNotification,
     CreateSupportProjectProfile,
@@ -61,7 +61,7 @@ import {
     UpdateUserProjectProfileInvitationsPageSearchParams,
     UpdateUserProjectProfilesPageSearchParams,
 } from './registry.action'
-import { UserProjectProfileService } from './user-project-profile.service'
+import { UserProjectProfileApi } from './user-project-profile.api'
 
 const defaultRegistryState: RegistryStateModel = {
 	authentication: {
@@ -136,10 +136,10 @@ export class RegistryState extends GenericState implements NgxsOnInit {
 	private readonly darkModeClass: string = 'dark-mod'
 	private readonly htmlElement: HTMLHtmlElement = document.querySelector('html') as HTMLHtmlElement
 
-	private readonly service: SecurityService = inject(SecurityService)
-	private readonly userProjectProfileService: UserProjectProfileService = inject(UserProjectProfileService)
-	private readonly preferencesService: PreferencesService = inject(PreferencesService)
-	private readonly userService: UserService = inject(UserService)
+	private readonly service: SecurityApi = inject(SecurityApi)
+	private readonly userProjectProfileApi: UserProjectProfileApi = inject(UserProjectProfileApi)
+	private readonly preferencesApi: PreferencesApi = inject(PreferencesApi)
+	private readonly userApi: UserApi = inject(UserApi)
 	private readonly router: Router = inject(Router)
 	private readonly datePipe: CustomDateFormatPipe = inject(CustomDateFormatPipe)
 
@@ -470,7 +470,7 @@ export class RegistryState extends GenericState implements NgxsOnInit {
 
 	@Action(ImpersonateCurrentUser)
 	public impersonateCurrentUser(): Observable<void> {
-		return this.userService.impersonateCurrentUser().pipe(
+		return this.userApi.impersonateCurrentUser().pipe(
 			initialize((): void => this.registryFacade.startCurrentUserActionLoader()),
 			finalize((): void => this.registryFacade.stopCurrentUserActionLoader()),
 			map((): void => this.registryFacade.logout()),
@@ -500,7 +500,7 @@ export class RegistryState extends GenericState implements NgxsOnInit {
 		ctx: StateContext<RegistryStateModel>,
 		payload: FetchUserProjectProfilesPage,
 	): Observable<void> {
-		return this.userProjectProfileService.findUserProjectProfiles(
+		return this.userProjectProfileApi.findUserProjectProfiles(
 			payload.pageNumber,
 			payload.pageSize,
 			ctx.getState().profiles.params,
@@ -592,7 +592,7 @@ export class RegistryState extends GenericState implements NgxsOnInit {
 		ctx: StateContext<RegistryStateModel>,
 		payload: FetchUserProjectProfileInvitationsPage,
 	): Observable<void> {
-		return this.userProjectProfileService.findUserProjectProfiles(
+		return this.userProjectProfileApi.findUserProjectProfiles(
 			payload.pageNumber,
 			payload.pageSize,
 			ctx.getState().invitations.params,
@@ -683,7 +683,7 @@ export class RegistryState extends GenericState implements NgxsOnInit {
 		ctx: StateContext<RegistryStateModel>,
 		payload: UpdateCurrentUserTheme,
 	): Observable<void> {
-		return this.preferencesService.updateTheme(CurrentUserUtil.mapThemeToString(payload.theme)).pipe(
+		return this.preferencesApi.updateTheme(CurrentUserUtil.mapThemeToString(payload.theme)).pipe(
 			map((preferences: PreferencesModel): void => this.updateCurrentUserThemeComplete(ctx, preferences)),
 		)
 	}
@@ -711,7 +711,7 @@ export class RegistryState extends GenericState implements NgxsOnInit {
 		_: StateContext<RegistryStateModel>,
 		payload: UpdateCurrentUserLanguage,
 	): Observable<PreferencesModel> {
-		return this.preferencesService.updateLanguage(payload.language)
+		return this.preferencesApi.updateLanguage(payload.language)
 	}
 
 	@Action(ManageUserProjectInvitationAcceptance)
@@ -719,7 +719,7 @@ export class RegistryState extends GenericState implements NgxsOnInit {
 		ctx: StateContext<RegistryStateModel>,
 		payload: ManageUserProjectInvitationAcceptance,
 	): Observable<void> {
-		return this.userProjectProfileService.manageUserProjectProfileAcceptance(
+		return this.userProjectProfileApi.manageUserProjectProfileAcceptance(
 			payload.profileId,
 			payload.accepted,
 		).pipe(
@@ -753,7 +753,7 @@ export class RegistryState extends GenericState implements NgxsOnInit {
 		_: StateContext<RegistryStateModel>,
 		payload: SelectUserProjectProfile,
 	): Observable<void> {
-		return this.preferencesService.selectUserProjectProfile(payload.profileId).pipe(
+		return this.preferencesApi.selectUserProjectProfile(payload.profileId).pipe(
 			initialize((): void => this.registryFacade.startGlobalLoader()),
 			finalize((): void => this.registryFacade.stopGlobalLoader()),
 			map((): void => this.selectProjectProfileComplete()),
@@ -769,7 +769,7 @@ export class RegistryState extends GenericState implements NgxsOnInit {
 		_: StateContext<RegistryStateModel>,
 		payload: SelectUserProjectProfileByProject,
 	): Observable<void> {
-		return this.preferencesService.selectUserProjectProfileByProjectId(payload.projectId).pipe(
+		return this.preferencesApi.selectUserProjectProfileByProjectId(payload.projectId).pipe(
 			initialize((): void => this.registryFacade.startGlobalLoader()),
 			finalize((): void => this.registryFacade.stopGlobalLoader()),
 			map((): void => this.selectUserProjectProfileByProjectComplete()),
@@ -785,7 +785,7 @@ export class RegistryState extends GenericState implements NgxsOnInit {
 		ctx: StateContext<RegistryStateModel>,
 		payload: DeleteUserProjectProfile,
 	): Observable<void> {
-		return this.userProjectProfileService.deleteUserProfileById(payload.profile.id).pipe(
+		return this.userProjectProfileApi.deleteUserProfileById(payload.profile.id).pipe(
 			initialize((): void => this.registryFacade.startProfileLoader()),
 			finalize((): void => this.registryFacade.stopProfileLoader()),
 			map((): void => this.deleteUserProjectProfileComplete(ctx, payload.profile)),
@@ -812,7 +812,7 @@ export class RegistryState extends GenericState implements NgxsOnInit {
 		_: StateContext<RegistryStateModel>,
 		payload: CreateSupportProjectProfile,
 	): Observable<void> {
-		return this.userProjectProfileService.createSupportProjectProfile(payload.projectId).pipe(
+		return this.userProjectProfileApi.createSupportProjectProfile(payload.projectId).pipe(
 			map((profile: ProjectProfileModel): void => this.createSupportProjectProfileComplete(profile)),
 		)
 	}

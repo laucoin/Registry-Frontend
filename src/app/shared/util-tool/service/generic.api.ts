@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http'
 import { inject } from '@angular/core'
 import { AppConfig } from '../../../app.config'
 
-export abstract class GenericService {
+export abstract class GenericApi {
 	protected readonly baseUrl: string
 	protected readonly http: HttpClient = inject(HttpClient)
 

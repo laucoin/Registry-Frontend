@@ -14,9 +14,9 @@ import { GenericState } from '../../../../../shared/util-tool/state/generic.stat
 import { StateUtil } from '../../../../../shared/util-tool/state/state.util'
 import { MovementUtil } from '../../../../../shared/util-tool/util/movement.util'
 import { initialize } from '../../../../../shared/util-tool/util/rx.util'
-import { ParticipantService } from '../../../configuration/participant/data/state/participant.service'
-import { AlertService } from '../../../movement/data/state/alert.service'
-import { MovementService } from '../../../movement/data/state/movement.service'
+import { ParticipantApi } from '../../../configuration/participant/data/state/participant.api'
+import { AlertApi } from '../../../movement/data/state/alert.api'
+import { MovementApi } from '../../../movement/data/state/movement.api'
 import { ProjectStatusModel } from '../../model/project-status.model'
 import { SelectedProjectStateModel } from '../../model/selected-project-state.model'
 import { VehicleStatusModel } from '../../model/vehicle-status.model'
@@ -110,9 +110,9 @@ const defaultSelectedProjectState: SelectedProjectStateModel = {
 @Injectable()
 export class SelectedProjectState extends GenericState {
 	private readonly facade: SelectedProjectFacade = inject(SelectedProjectFacade)
-	private readonly movementService: MovementService = inject(MovementService)
-	private readonly alertService: AlertService = inject(AlertService)
-	private readonly participantService: ParticipantService = inject(ParticipantService)
+	private readonly movementApi: MovementApi = inject(MovementApi)
+	private readonly alertApi: AlertApi = inject(AlertApi)
+	private readonly participantApi: ParticipantApi = inject(ParticipantApi)
 
 	@Selector()
 	public static participantsStatus(state: SelectedProjectStateModel): ProjectStatusModel | undefined {
@@ -261,7 +261,7 @@ export class SelectedProjectState extends GenericState {
 		ctx: StateContext<SelectedProjectStateModel>,
 		payload: FetchParticipantsStatus,
 	): Observable<void> {
-		return this.movementService.findParticipantsStatus(payload.projectId).pipe(
+		return this.movementApi.findParticipantsStatus(payload.projectId).pipe(
 			initialize((): void => this.facade.startParticipantsStatusLoader()),
 			finalize((): void => this.facade.stopParticipantsStatusLoader()),
 			map((status: ProjectStatusModel): void => this.fetchParticipantsStatusComplete(ctx, status)),
@@ -338,7 +338,7 @@ export class SelectedProjectState extends GenericState {
 		ctx: StateContext<SelectedProjectStateModel>,
 		payload: FetchParticipantsStatus,
 	): Observable<void> {
-		return this.movementService.findVehiclesStatus(payload.projectId).pipe(
+		return this.movementApi.findVehiclesStatus(payload.projectId).pipe(
 			initialize((): void => this.facade.startVehiclesStatusLoader()),
 			finalize((): void => this.facade.stopVehiclesStatusLoader()),
 			map((status: VehicleStatusModel): void => this.fetchVehiclesStatusComplete(ctx, status)),
@@ -393,7 +393,7 @@ export class SelectedProjectState extends GenericState {
 		ctx: StateContext<SelectedProjectStateModel>,
 		payload: FetchParticipantsStatus,
 	): Observable<void> {
-		return this.participantService.findParticipantsBirthdays(payload.projectId).pipe(
+		return this.participantApi.findParticipantsBirthdays(payload.projectId).pipe(
 			map((participants: ParticipantModel[]): void => this.fetchParticipantsBirthdaysComplete(
 				ctx,
 				participants,
@@ -435,7 +435,7 @@ export class SelectedProjectState extends GenericState {
 		ctx: StateContext<SelectedProjectStateModel>,
 		payload: FetchCurrentMovementsPageWithoutActivity,
 	): Observable<void> {
-		return this.movementService.findMovements(
+		return this.movementApi.findMovements(
 			payload.projectId,
 			payload.pageNumber,
 			payload.pageSize,
@@ -498,7 +498,7 @@ export class SelectedProjectState extends GenericState {
 		ctx: StateContext<SelectedProjectStateModel>,
 		payload: FetchCurrentMovementsWithoutActivityContents,
 	): Observable<void> {
-		return this.movementService.findMovementsContents(
+		return this.movementApi.findMovementsContents(
 			payload.projectId,
 			payload.movementIds,
 			ctx.getState().currentMovements.withoutActivity.params.currentMovements,
@@ -560,7 +560,7 @@ export class SelectedProjectState extends GenericState {
 		ctx: StateContext<SelectedProjectStateModel>,
 		payload: FetchCurrentMovementsPageWithActivity,
 	): Observable<void> {
-		return this.movementService.findMovements(
+		return this.movementApi.findMovements(
 			payload.projectId,
 			payload.pageNumber,
 			payload.pageSize,
@@ -623,7 +623,7 @@ export class SelectedProjectState extends GenericState {
 		ctx: StateContext<SelectedProjectStateModel>,
 		payload: FetchCurrentMovementsWithActivityContents,
 	): Observable<void> {
-		return this.movementService.findMovementsContents(
+		return this.movementApi.findMovementsContents(
 			payload.projectId,
 			payload.movementIds,
 			ctx.getState().currentMovements.withActivity.params.currentMovements,
@@ -665,7 +665,7 @@ export class SelectedProjectState extends GenericState {
 		ctx: StateContext<SelectedProjectStateModel>,
 		payload: FetchCurrentAlertsPage,
 	): Observable<void> {
-		return this.alertService.findAlerts(
+		return this.alertApi.findAlerts(
 			payload.projectId,
 			payload.pageNumber,
 			payload.pageSize,

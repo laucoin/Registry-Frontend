@@ -7,7 +7,7 @@ import { MovementModel } from '../../../../../../shared/util-model/model/movemen
 import { PageModel } from '../../../../../../shared/util-model/model/page.model'
 import { ParticipantModel } from '../../../../../../shared/util-model/model/participant.model'
 import { UserModel } from '../../../../../../shared/util-model/model/user.model'
-import { GenericProjectService } from '../../../../../../shared/util-tool/service/generic-project.service'
+import { GenericProjectApi } from '../../../../../../shared/util-tool/service/generic-project.api'
 import { QueryUtil } from '../../../../../../shared/util-tool/util/query.util'
 import { SELECT_PROFILE_PROJECT_ID } from '../../../../../../shared/util-tool/util/request.util'
 import { ParticipantDto } from '../dto/participant.dto'
@@ -16,7 +16,7 @@ import { ParticipantPageParamsModel } from '../model/participant-page-params.mod
 @Injectable({
 	providedIn: 'root',
 })
-export class ParticipantService extends GenericProjectService {
+export class ParticipantApi extends GenericProjectApi {
 	public constructor() {
 		super(`/api/v1/projects/${SELECT_PROFILE_PROJECT_ID}/participants`)
 	}

@@ -4,7 +4,7 @@ import { Observable } from 'rxjs'
 import { AlertModel } from '../../../../../shared/util-model/model/alert.model'
 import { MovementModel } from '../../../../../shared/util-model/model/movement.model'
 import { PageModel } from '../../../../../shared/util-model/model/page.model'
-import { GenericProjectService } from '../../../../../shared/util-tool/service/generic-project.service'
+import { GenericProjectApi } from '../../../../../shared/util-tool/service/generic-project.api'
 import { QueryUtil } from '../../../../../shared/util-tool/util/query.util'
 import { SELECT_PROFILE_PROJECT_ID } from '../../../../../shared/util-tool/util/request.util'
 import { CommunicationDto } from '../dto/communication.dto'
@@ -14,7 +14,7 @@ import { CommunicationModel } from '../model/communication.model'
 @Injectable({
 	providedIn: 'root',
 })
-export class CommunicationService extends GenericProjectService {
+export class CommunicationApi extends GenericProjectApi {
 	public constructor() {
 		super(`/api/v1/projects/${SELECT_PROFILE_PROJECT_ID}/communications`)
 	}

@@ -5,7 +5,7 @@ import { Observable } from 'rxjs'
 import { PageModel } from '../../../../../../shared/util-model/model/page.model'
 import { ProjectProfileModel } from '../../../../../../shared/util-model/model/project-profile.model'
 import { UserModel } from '../../../../../../shared/util-model/model/user.model'
-import { GenericProjectService } from '../../../../../../shared/util-tool/service/generic-project.service'
+import { GenericProjectApi } from '../../../../../../shared/util-tool/service/generic-project.api'
 import { QueryUtil } from '../../../../../../shared/util-tool/util/query.util'
 import { SELECT_PROFILE_PROJECT_ID } from '../../../../../../shared/util-tool/util/request.util'
 import { CreatedProjectProfiles } from '../dto/created-project-profiles.dto'
@@ -16,7 +16,7 @@ import { ProjectProfilePageParamsModel } from '../model/project-profile-page-par
 @Injectable({
 	providedIn: 'root',
 })
-export class ProjectProfileService extends GenericProjectService {
+export class ProjectProfileApi extends GenericProjectApi {
 	public constructor() {
 		super(`/api/v1/projects/${SELECT_PROFILE_PROJECT_ID}/profiles`)
 	}
