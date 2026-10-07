@@ -1,13 +1,9 @@
-import { computed, Injectable, Signal } from '@angular/core'
-import { Observable } from 'rxjs'
+import { computed, inject, Injectable, Signal } from '@angular/core'
+import { Observable, tap } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
 import { VehicleModel } from '@shared/models/model/vehicle.model'
 import { VehicleDto } from '@pages/projects/[projectId]/configuration/vehicles/data/dto/vehicle.dto'
 import {
-    CreateVehicle,
-    DeleteVehicle,
-    DisableVehicle,
-    EnableVehicle,
     FetchVehicle,
     FetchVehicleMovementsContents,
     FetchVehicleMovementsPage,
@@ -20,20 +16,24 @@ import {
     StopVehicleLoader,
     StopVehicleMovementsPageLoader,
     StopVehiclesPageLoader,
-    UpdateVehicle,
     UpdateVehicleMovementsPageSearchParams,
     UpdateVehiclesPageSearchParams,
 } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.action'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
-import { ofActionSuccessful } from '@ngxs/store'
 import { VehicleState } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.state'
 import { GenericProjectElementFacade } from '@shared/helpers/facade/generic-project-element.facade'
 import { MovementModel } from '@shared/models/model/movement.model'
 import { DateUtil } from '@shared/helpers/util/date.util'
 import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum'
+import { VehicleService } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.service'
+import { notifyOnError } from '@shared/helpers/util/rx.util'
+import { StateUtil } from '@shared/helpers/state/state.util'
+import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 
 @Injectable()
 export class VehicleFacade extends GenericProjectElementFacade {
+    private readonly service: VehicleService = inject( VehicleService )
+
     public get vehiclesPage (): Signal<PageModel<VehicleModel> | undefined> {
         return this.ngStore.selectSignal( VehicleState.vehiclesPage )
     }
@@ -240,37 +240,56 @@ export class VehicleFacade extends GenericProjectElementFacade {
         this.ngStore.dispatch( ResetVehicle )
     }
 
-    public createVehicle (
-        vehicle: VehicleDto,
-    ): Observable<CreateVehicle> {
-        this.ngStore.dispatch( new CreateVehicle( this.selectedProjectId(), vehicle ) )
-        return this.actions$.pipe( ofActionSuccessful( CreateVehicle ) )
+    public createVehicle (vehicle: VehicleDto): Observable<VehicleModel> {
+        return this.service.createVehicle( this.selectedProjectId(), vehicle ).pipe(
+            notifyOnError( this.registryFacade ),
+            tap( (created: VehicleModel): void => this.onCommandSuccess( 'create', created ) ),
+        )
     }
 
-    public updateVehicle (
-        id: string,
-        vehicle: VehicleDto,
-    ): Observable<UpdateVehicle> {
-        this.ngStore.dispatch( new UpdateVehicle( this.selectedProjectId(), id, vehicle ) )
-        return this.actions$.pipe( ofActionSuccessful( UpdateVehicle ) )
+    public updateVehicle (id: string, vehicle: VehicleDto): Observable<VehicleModel> {
+        return this.service.updateVehicleById( this.selectedProjectId(), id, vehicle ).pipe(
+            notifyOnError( this.registryFacade ),
+            tap( (updated: VehicleModel): void => this.onCommandSuccess( 'edit', updated ) ),
+        )
     }
 
-    public disableVehicle (
-        id: string,
-    ): void {
-        this.ngStore.dispatch( new DisableVehicle( this.selectedProjectId(), id ) )
+    public disableVehicle (id: string): Observable<VehicleModel> {
+        return this.service.disableVehicleById( this.selectedProjectId(), id ).pipe(
+            notifyOnError( this.registryFacade ),
+            tap( (disabled: VehicleModel): void => this.onCommandSuccess( 'disable', disabled ) ),
+        )
     }
 
-    public enableVehicle (
-        id: string,
-    ): void {
-        this.ngStore.dispatch( new EnableVehicle( this.selectedProjectId(), id ) )
+    public enableVehicle (id: string): Observable<VehicleModel> {
+        return this.service.enableVehicleById( this.selectedProjectId(), id ).pipe(
+            notifyOnError( this.registryFacade ),
+            tap( (enabled: VehicleModel): void => this.onCommandSuccess( 'enable', enabled ) ),
+        )
     }
 
-    public deleteVehicle (
-        vehicle: VehicleModel,
-    ): void {
-        this.ngStore.dispatch( new DeleteVehicle( this.selectedProjectId(), vehicle ) )
+    public deleteVehicle (vehicle: VehicleModel): Observable<void> {
+        return this.service.deleteVehicleById( undefined, vehicle.id ).pipe(
+            notifyOnError( this.registryFacade ),
+            tap( (): void => this.onCommandSuccess( 'delete', vehicle ) ),
+        )
+    }
+
+    private onCommandSuccess (command: string, vehicle: VehicleModel): void {
+        this.registryFacade.notify( StateUtil.buildNotificationMessage(
+            SeverityEnum.SUCCESS,
+            `vehicles.notifications.${ command }.title`,
+            `vehicles.notifications.${ command }.message`,
+            'pi pi-users',
+            {
+                registration: vehicle?.licensePlate,
+                brand: vehicle?.brand,
+                model: vehicle?.model,
+            },
+        ) )
+
+        const page: PageModel<VehicleModel> | undefined = this.vehiclesPage()
+        this.fetchVehiclesPage( page?.pageNumber, page?.pageSize, true )
     }
 
     public fetchPresencesStatus (): void {

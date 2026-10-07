@@ -6,10 +6,6 @@ import { GenericProjectElementState } from '@shared/helpers/state/generic-projec
 import { initialize } from '@shared/helpers/util/rx.util'
 import { VehicleStateModel } from '@pages/projects/[projectId]/configuration/vehicles/data/model/vehicle-state.model'
 import {
-    CreateVehicle,
-    DeleteVehicle,
-    DisableVehicle,
-    EnableVehicle,
     FetchVehicle,
     FetchVehicleMovementsContents,
     FetchVehicleMovementsPage,
@@ -23,7 +19,6 @@ import {
     StopVehicleLoader,
     StopVehicleMovementsPageLoader,
     StopVehiclesPageLoader,
-    UpdateVehicle,
     UpdateVehicleMovementsPageSearchParams,
     UpdateVehiclesPageSearchParams,
 } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.action'
@@ -43,7 +38,6 @@ import { MovementContentModel } from '@shared/models/model/movement-content.mode
 import { MovementUtil } from '@shared/helpers/util/movement.util'
 import { MetadataService } from '@core/registry/state/metadata.service'
 import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum'
-import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 
 const defaultVehicle: ElementRequestInformationModel<VehicleModel> = {
     element: undefined,
@@ -101,8 +95,6 @@ const defaultVehicleState: VehicleStateModel = {
 } )
 @Injectable()
 export class VehicleState extends GenericProjectElementState<VehicleStateModel> implements NgxsOnInit {
-    private readonly vehicleIcon: string = 'pi pi-users'
-
     private readonly service: VehicleService = inject( VehicleService )
     private readonly metadataService: MetadataService = inject( MetadataService )
     private readonly movementService: MovementService = inject( MovementService )
@@ -474,147 +466,6 @@ export class VehicleState extends GenericProjectElementState<VehicleStateModel> 
         ctx.patchState( {
             vehicle: defaultVehicle,
         } )
-    }
-
-    @Action( CreateVehicle )
-    public createVehicle (ctx: StateContext<VehicleStateModel>, payload: CreateVehicle): Observable<void> {
-        return this.service.createVehicle( payload.projectId, payload.vehicle ).pipe(
-            initialize( (): void => this.facade.startVehicleLoader() ),
-            finalize( (): void => this.facade.stopVehicleLoader() ),
-            map( (vehicle: VehicleModel): void => this.createVehicleComplete(
-                ctx,
-                vehicle,
-            ) ),
-        )
-    }
-
-    private createVehicleComplete (
-        ctx: StateContext<VehicleStateModel>,
-        vehicle: VehicleModel,
-    ): void {
-        this.buildMessageAndNotify(
-            SeverityEnum.SUCCESS,
-            'vehicles.notifications.create.title',
-            'vehicles.notifications.create.message',
-            this.vehicleIcon,
-            this.buildTranslationArgs( vehicle ),
-        )
-        this.refreshPage( ctx )
-    }
-
-    @Action( UpdateVehicle )
-    public updateVehicle (ctx: StateContext<VehicleStateModel>, payload: UpdateVehicle): Observable<void> {
-        return this.service.updateVehicleById( payload.projectId, payload.id, payload.vehicle ).pipe(
-            initialize( (): void => this.facade.startVehicleLoader() ),
-            finalize( (): void => this.facade.stopVehicleLoader() ),
-            map( (vehicle: VehicleModel): void => this.updateVehicleComplete(
-                ctx,
-                vehicle,
-            ) ),
-        )
-    }
-
-    private updateVehicleComplete (
-        ctx: StateContext<VehicleStateModel>,
-        vehicle: VehicleModel,
-    ): void {
-        this.buildMessageAndNotify(
-            SeverityEnum.SUCCESS,
-            'vehicles.notifications.edit.title',
-            'vehicles.notifications.edit.message',
-            this.vehicleIcon,
-            this.buildTranslationArgs( vehicle ),
-        )
-        this.refreshPage( ctx )
-    }
-
-    @Action( DisableVehicle )
-    public disableVehicle (
-        ctx: StateContext<VehicleStateModel>,
-        payload: DisableVehicle,
-    ): Observable<void> {
-        return this.service.disableVehicleById( payload.projectId, payload.id ).pipe(
-            initialize( (): void => this.facade.startVehicleLoader() ),
-            finalize( (): void => this.facade.stopVehicleLoader() ),
-            map( (vehicle: VehicleModel): void => this.disableVehicleComplete(
-                ctx,
-                vehicle,
-            ) ),
-        )
-    }
-
-    private disableVehicleComplete (
-        ctx: StateContext<VehicleStateModel>,
-        vehicle: VehicleModel,
-    ): void {
-        this.buildMessageAndNotify(
-            SeverityEnum.SUCCESS,
-            'vehicles.notifications.disable.title',
-            'vehicles.notifications.disable.message',
-            this.vehicleIcon,
-            this.buildTranslationArgs( vehicle ),
-        )
-        this.refreshPage( ctx )
-    }
-
-    @Action( EnableVehicle )
-    public enableVehicle (ctx: StateContext<VehicleStateModel>, payload: EnableVehicle): Observable<void> {
-        return this.service.enableVehicleById( payload.projectId, payload.id ).pipe(
-            initialize( (): void => this.facade.startVehicleLoader() ),
-            finalize( (): void => this.facade.stopVehicleLoader() ),
-            map( (vehicle: VehicleModel): void => this.enableVehicleComplete(
-                ctx,
-                vehicle,
-            ) ),
-        )
-    }
-
-    private enableVehicleComplete (
-        ctx: StateContext<VehicleStateModel>,
-        vehicle: VehicleModel,
-    ): void {
-        this.buildMessageAndNotify(
-            SeverityEnum.SUCCESS,
-            'vehicles.notifications.enable.title',
-            'vehicles.notifications.enable.message',
-            this.vehicleIcon,
-            this.buildTranslationArgs( vehicle ),
-        )
-        this.refreshPage( ctx )
-    }
-
-    @Action( DeleteVehicle )
-    public deleteVehicle (ctx: StateContext<VehicleStateModel>, payload: DeleteVehicle): Observable<void> {
-        return this.service.deleteVehicleById( undefined, payload.vehicle.id ).pipe(
-            initialize( (): void => this.facade.startVehicleLoader() ),
-            finalize( (): void => this.facade.stopVehicleLoader() ),
-            map( (): void => this.deleteVehicleComplete(
-                ctx,
-                payload.vehicle,
-            ) ),
-        )
-    }
-
-    private deleteVehicleComplete (
-        ctx: StateContext<VehicleStateModel>,
-        vehicle: VehicleModel,
-    ): void {
-        this.buildMessageAndNotify(
-            SeverityEnum.SUCCESS,
-            'vehicles.notifications.delete.title',
-            'vehicles.notifications.delete.message',
-            this.vehicleIcon,
-            this.buildTranslationArgs( vehicle ),
-        )
-        this.refreshPage( ctx )
-    }
-
-    private buildTranslationArgs (vehicle: VehicleModel): object {
-        return {
-            registration: vehicle?.licensePlate,
-            brand: vehicle?.brand,
-            model: vehicle?.model,
-        }
     }
 
     protected refreshPage (ctx: StateContext<VehicleStateModel>): void {

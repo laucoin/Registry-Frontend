@@ -1,4 +1,6 @@
-import { Component, computed, inject, input, InputSignal, Signal} from '@angular/core'
+import { Component, computed, inject, input, InputSignal, signal, Signal, WritableSignal } from '@angular/core'
+import { Observable } from 'rxjs'
+import { withLoading } from '@shared/helpers/util/rx.util'
 import {ElementCardComponent} from '@shared/ui/element-card/element-card.component'
 import {TagModule} from 'primeng/tag'
 import {ChipModule} from 'primeng/chip'
@@ -36,6 +38,8 @@ export class VehicleElementComponent extends GenericElementComponent {
     public readonly actionMenuVisible: InputSignal<boolean> = input(true)
     public readonly vehicle: InputSignal<VehicleModel> = input.required()
 
+    protected readonly busy: WritableSignal<boolean> = signal(false)
+
     protected readonly actions: Signal<MenuItem[]> = computed((): MenuItem[] => [
         {
             label: 'vehicles.actions.movements-history',
@@ -62,7 +66,7 @@ export class VehicleElementComponent extends GenericElementComponent {
         {
             label: 'vehicles.actions.disable',
             icon: 'pi pi-eye-slash',
-            disabled: !this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_VEHICLE_U),
+            disabled: this.busy() || !this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_VEHICLE_U),
             visible: this.actionIsEnable(ElementActionEnum.VEHICLE_DISABLE) && this.vehicle().visible,
             command: (): void => {
                 this.confirmationService.confirm(
@@ -71,7 +75,7 @@ export class VehicleElementComponent extends GenericElementComponent {
                         'pi pi-exclamation-triangle',
                         this.vehicle(),
                         SeverityEnum.WARNING,
-                        (): void => this.facade.disableVehicle(this.vehicle().id),
+                        (): void => this.run(this.facade.disableVehicle(this.vehicle().id)),
                     ),
                 )
             },
@@ -79,7 +83,7 @@ export class VehicleElementComponent extends GenericElementComponent {
         {
             label: 'vehicles.actions.enable',
             icon: 'pi pi-replay',
-            disabled: !this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_VEHICLE_U),
+            disabled: this.busy() || !this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_VEHICLE_U),
             visible: this.actionIsEnable(ElementActionEnum.VEHICLE_ENABLE) && !this.vehicle().visible,
             command: (): void => {
                 this.confirmationService.confirm(
@@ -88,7 +92,7 @@ export class VehicleElementComponent extends GenericElementComponent {
                         'pi pi-info-circle',
                         this.vehicle(),
                         SeverityEnum.INFO,
-                        (): void => this.facade.enableVehicle(this.vehicle().id),
+                        (): void => this.run(this.facade.enableVehicle(this.vehicle().id)),
                     ),
                 )
             },
@@ -96,7 +100,7 @@ export class VehicleElementComponent extends GenericElementComponent {
         {
             label: 'vehicles.actions.delete',
             icon: 'pi pi-trash',
-            disabled: !this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_VEHICLE_D),
+            disabled: this.busy() || !this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_VEHICLE_D),
             visible: this.actionIsEnable(ElementActionEnum.VEHICLE_DELETE),
             command: (): void => {
                 this.confirmationService.confirm(
@@ -105,7 +109,7 @@ export class VehicleElementComponent extends GenericElementComponent {
                         'pi pi-exclamation-triangle',
                         this.vehicle(),
                         SeverityEnum.DANGER,
-                        (): void => this.facade.deleteVehicle(this.vehicle()),
+                        (): void => this.run(this.facade.deleteVehicle(this.vehicle())),
                     ),
                 )
             },
@@ -122,4 +126,8 @@ export class VehicleElementComponent extends GenericElementComponent {
                 return SeverityEnum.SECONDARY
         }
     })
+
+    private run(command: Observable<unknown>): void {
+        command.pipe(withLoading(this.busy)).subscribe({ error: (): void => undefined })
+    }
 }

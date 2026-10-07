@@ -1,5 +1,3 @@
-import { VehicleDto } from '@pages/projects/[projectId]/configuration/vehicles/data/dto/vehicle.dto'
-import { VehicleModel } from '@shared/models/model/vehicle.model'
 import { MovementPageParamsModel } from '@shared/models/model/movement-page-params.model'
 import { VehiclePageParamsModel } from '@pages/projects/[projectId]/configuration/vehicles/data/model/vehicle-page-params.model'
 
@@ -26,11 +24,6 @@ enum VehicleActionEnum {
 
     FETCH_VEHICLE = '[Backend] Fetching vehicle',
     RESET_VEHICLE = '[Local] Resetting vehicle',
-    CREATE_VEHICLE = '[Backend] Creating vehicle',
-    UPDATE_VEHICLE = '[Backend] Updating vehicle',
-    DISABLE_VEHICLE = '[Backend] Disabling vehicle',
-    ENABLE_VEHICLE = '[Backend] Enabling vehicle',
-    DELETE_VEHICLE = '[Backend] Deleting vehicle',
 }
 
 export class ResetVehicleState {
@@ -117,38 +110,4 @@ export class FetchVehicle {
 
 export class ResetVehicle {
     public static readonly type: VehicleActionEnum = VehicleActionEnum.RESET_VEHICLE
-}
-
-export class CreateVehicle {
-    public static readonly type: VehicleActionEnum = VehicleActionEnum.CREATE_VEHICLE
-
-    public constructor (public readonly projectId: string | undefined, public readonly vehicle: VehicleDto) {}
-}
-
-export class UpdateVehicle {
-    public static readonly type: VehicleActionEnum = VehicleActionEnum.UPDATE_VEHICLE
-
-    public constructor (
-        public readonly projectId: string | undefined,
-        public readonly id: string,
-        public readonly vehicle: VehicleDto,
-    ) {}
-}
-
-export class DisableVehicle {
-    public static readonly type: VehicleActionEnum = VehicleActionEnum.DISABLE_VEHICLE
-
-    public constructor (public readonly projectId: string | undefined, public readonly id: string) {}
-}
-
-export class EnableVehicle {
-    public static readonly type: VehicleActionEnum = VehicleActionEnum.ENABLE_VEHICLE
-
-    public constructor (public readonly projectId: string | undefined, public readonly id: string) {}
-}
-
-export class DeleteVehicle {
-    public static readonly type: VehicleActionEnum = VehicleActionEnum.DELETE_VEHICLE
-
-    public constructor (public readonly projectId: string | undefined, public readonly vehicle: VehicleModel) {}
 }

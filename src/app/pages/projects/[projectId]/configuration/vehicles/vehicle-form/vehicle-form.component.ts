@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy,Component, inject, OnDestroy} from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, OnDestroy, signal, WritableSignal } from '@angular/core'
 import {VehicleFacade} from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.facade'
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms'
 import {RegistryValidators} from '@shared/helpers/util/registry.validator'
@@ -18,7 +18,7 @@ import {InputMask} from 'primeng/inputmask'
 import {DateFormatPipe} from '@shared/helpers/pipe/date-format.pipe'
 import {GenericFormComponent} from '@shared/ui/base/generic-form.component'
 import {map, Observable} from 'rxjs'
-import {CreateVehicle, UpdateVehicle} from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.action'
+import {withLoading} from '@shared/helpers/util/rx.util'
 import {FormTitlePipe} from '@shared/helpers/pipe/form-title.pipe'
 import {FormButtonPipe} from '@shared/helpers/pipe/form-button.pipe'
 import {GenericUtil} from '@shared/helpers/util/generic.util'
@@ -52,6 +52,7 @@ export class VehicleFormComponent extends GenericFormComponent<VehicleModel, Veh
     protected readonly facade: VehicleFacade = inject(VehicleFacade)
 
     protected readonly form: FormGroup
+    protected readonly saving: WritableSignal<boolean> = signal(false)
 
     public constructor() {
         super()
@@ -116,21 +117,24 @@ export class VehicleFormComponent extends GenericFormComponent<VehicleModel, Veh
     }
 
     protected submit(): void {
+        if (this.saving()) return
+
         if (!FormUtil.isFormValid(this.form)) {
             this.logInvalidForm(this.form.value)
             return
         }
 
         const dto: VehicleDto = this.buildDto()
-        const observable: Observable<CreateVehicle | UpdateVehicle> =
+        const observable: Observable<VehicleModel> =
             this.facade.vehicle()
                 ? this.facade.updateVehicle(this.facade.vehicle()!.id!, dto)
                 : this.facade.createVehicle(dto)
 
         this.subscriptions.add(
             observable.pipe(
+                withLoading(this.saving),
                 map((): void => this.navigateToRedirectUri()),
-            ).subscribe(),
+            ).subscribe({ error: (): void => undefined }),
         )
     }
 
