@@ -51,7 +51,7 @@ export class ProfilesListPage extends GenericListComponent {
 
         this.form = this.initForm()
 
-        this.registryFacade.fetchProjectProfilesPage(undefined, undefined, false)
+        this.registryFacade.fetchProjectProfilesPage(undefined, undefined)
     }
 
     protected initForm(): FormGroup {
@@ -68,7 +68,7 @@ export class ProfilesListPage extends GenericListComponent {
             this.availabilitySearched.value,
             this.dateTimeSearched.value,
         )
-        this.registryFacade.fetchProjectProfilesPage(pageEvent.pageNumber, pageEvent.pageSize, false)
+        this.registryFacade.fetchProjectProfilesPage(pageEvent.pageNumber, pageEvent.pageSize)
     }
 
     protected get textSearched(): FormControl {

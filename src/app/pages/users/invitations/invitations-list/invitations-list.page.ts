@@ -44,7 +44,7 @@ export class InvitationsListPage extends GenericListComponent {
 
         this.form = this.initForm()
 
-        this.registryFacade.fetchProjectProfileInvitationPage(undefined, undefined, false)
+        this.registryFacade.fetchProjectProfileInvitationPage(undefined, undefined)
     }
 
     protected initForm(): FormGroup {
@@ -56,7 +56,7 @@ export class InvitationsListPage extends GenericListComponent {
 
     protected loadPage(pageEvent: PageEventModel): void {
         this.registryFacade.inputInvitationsPageSearchParameters(this.textSearched.value, this.dateTimeSearched.value)
-        this.registryFacade.fetchProjectProfileInvitationPage(pageEvent.pageNumber, pageEvent.pageSize, false)
+        this.registryFacade.fetchProjectProfileInvitationPage(pageEvent.pageNumber, pageEvent.pageSize)
     }
 
     protected get textSearched(): FormControl {
