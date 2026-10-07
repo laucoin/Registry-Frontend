@@ -1,7 +1,7 @@
 import { Action, NgxsOnInit, Selector, State, StateContext } from '@ngxs/store'
 import { catchError, finalize, map, Observable, of } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
-import { GenericProjectElementState } from '@shared/helpers/state/generic-project-element.state'
+import { GenericProjectElementStore } from '@shared/helpers/state/generic-project-element.store'
 import { initialize } from '@shared/helpers/util/rx.util'
 import {
     FetchAssignableProjectProfileRoles,
@@ -21,13 +21,13 @@ import { UserUtil } from '@shared/helpers/util/user.util'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { UserModel } from '@shared/models/model/user.model'
 import { ErrorModel } from '@shared/models/model/error.model'
-import { ProjectProfileStateModel } from '@pages/projects/[projectId]/configuration/profiles/data/model/project-profile-state.model'
+import { ProjectProfileStoreModel } from '@pages/projects/[projectId]/configuration/profiles/data/model/project-profile-store.model'
 import { ProjectProfileModel } from '@shared/models/model/project-profile.model'
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
 import { MetadataApi } from '@core/registry/state/metadata.api'
 import { ProfileStatusEnum } from '@shared/models/enumeration/profile-status.enum'
 
-const defaultProjectProfileState: ProjectProfileStateModel = {
+const defaultProjectProfileStore: ProjectProfileStoreModel = {
     projectProfiles: {
         element: undefined,
         params: {
@@ -53,12 +53,12 @@ const defaultProjectProfileState: ProjectProfileStateModel = {
     },
 }
 
-@State<ProjectProfileStateModel>( {
+@State<ProjectProfileStoreModel>( {
     name: 'projectProfile',
-    defaults: defaultProjectProfileState,
+    defaults: defaultProjectProfileStore,
 } )
 @Injectable()
-export class ProjectProfileState extends GenericProjectElementState<ProjectProfileStateModel> implements NgxsOnInit {
+export class ProjectProfileStore extends GenericProjectElementStore<ProjectProfileStoreModel> implements NgxsOnInit {
     private readonly api: ProjectProfileApi = inject( ProjectProfileApi )
     private readonly serviceMetadata: MetadataApi = inject( MetadataApi )
     private readonly facade: ProjectProfileFacade = inject( ProjectProfileFacade )
@@ -69,90 +69,90 @@ export class ProjectProfileState extends GenericProjectElementState<ProjectProfi
     }
 
     @Selector()
-    public static projectProfilesPage (state: ProjectProfileStateModel): PageModel<ProjectProfileModel> | undefined {
+    public static projectProfilesPage (state: ProjectProfileStoreModel): PageModel<ProjectProfileModel> | undefined {
         return state.projectProfiles.element
     }
 
     @Selector()
-    public static projectProfilesPageLoading (state: ProjectProfileStateModel): boolean {
+    public static projectProfilesPageLoading (state: ProjectProfileStoreModel): boolean {
         return state.projectProfiles.loading
     }
 
     @Selector()
-    public static projectProfilesPageError (state: ProjectProfileStateModel): ToastMessageOptions | undefined {
+    public static projectProfilesPageError (state: ProjectProfileStoreModel): ToastMessageOptions | undefined {
         return state.projectProfiles.error
     }
 
     @Selector()
-    public static projectProfilesPageSilentLoading (state: ProjectProfileStateModel): boolean {
+    public static projectProfilesPageSilentLoading (state: ProjectProfileStoreModel): boolean {
         return state.projectProfiles.silentLoading
     }
 
     @Selector()
-    public static projectProfilesPageResetSearch (state: ProjectProfileStateModel): boolean {
+    public static projectProfilesPageResetSearch (state: ProjectProfileStoreModel): boolean {
         return state.projectProfiles.params.resetSearch
     }
 
     @Selector()
-    public static projectProfilesPageTextSearchedParam (state: ProjectProfileStateModel): string | undefined {
+    public static projectProfilesPageTextSearchedParam (state: ProjectProfileStoreModel): string | undefined {
         return state.projectProfiles.params.textSearched
     }
 
     @Selector()
-    public static projectProfilesPageStatusSearchedParam (state: ProjectProfileStateModel): string | undefined {
+    public static projectProfilesPageStatusSearchedParam (state: ProjectProfileStoreModel): string | undefined {
         return state.projectProfiles.params.statusSearched
     }
 
     @Selector()
-    public static projectProfilesPageDateTimeSearchedParam (state: ProjectProfileStateModel): string | undefined {
+    public static projectProfilesPageDateTimeSearchedParam (state: ProjectProfileStoreModel): string | undefined {
         return state.projectProfiles.params.dateTimeSearched
     }
 
     @Selector()
-    public static projectProfilesPageAvailabilitySearchedParam (state: ProjectProfileStateModel): boolean | undefined {
+    public static projectProfilesPageAvailabilitySearchedParam (state: ProjectProfileStoreModel): boolean | undefined {
         return state.projectProfiles.params.availabilitySearched
     }
 
     @Selector()
-    public static searchedUsersMetadata (state: ProjectProfileStateModel): SelectItem<UserModel>[] {
+    public static searchedUsersMetadata (state: ProjectProfileStoreModel): SelectItem<UserModel>[] {
         return state._metadata.searched
     }
 
     @Selector()
-    public static projectProfileAssignableRolesMetadata (state: ProjectProfileStateModel): SelectItem<string>[] {
+    public static projectProfileAssignableRolesMetadata (state: ProjectProfileStoreModel): SelectItem<string>[] {
         return state._metadata.roles
     }
 
     @Selector()
-    public static projectProfilesStatusMetadata (state: ProjectProfileStateModel): SelectItem<ProfileStatusEnum | undefined>[] {
+    public static projectProfilesStatusMetadata (state: ProjectProfileStoreModel): SelectItem<ProfileStatusEnum | undefined>[] {
         return state._metadata.status
     }
 
     @Selector()
-    public static projectProfilesAvailabilitiesMetadata (state: ProjectProfileStateModel): SelectItem<boolean | undefined>[] {
+    public static projectProfilesAvailabilitiesMetadata (state: ProjectProfileStoreModel): SelectItem<boolean | undefined>[] {
         return state._metadata.availabilities
     }
 
     @Action( ResetProjectProfileState )
-    public resetProjectProfileState (ctx: StateContext<ProjectProfileStateModel>): void {
+    public resetProjectProfileState (ctx: StateContext<ProjectProfileStoreModel>): void {
         ctx.setState( {
-            ...defaultProjectProfileState,
+            ...defaultProjectProfileStore,
             _metadata: {
-                ...defaultProjectProfileState._metadata,
+                ...defaultProjectProfileStore._metadata,
                 status: ctx.getState()._metadata.status,
             },
         } )
     }
 
     @Action( StartProjectProfilesPageLoader )
-    public startProjectProfilesPageLoader (ctx: StateContext<ProjectProfileStateModel>): void {
+    public startProjectProfilesPageLoader (ctx: StateContext<ProjectProfileStoreModel>): void {
         ctx.patchState( {
             projectProfiles: StateUtil.updatePageLoader( ctx.getState().projectProfiles, true ),
         } )
     }
 
     @Action( StopProjectProfilesPageLoader )
-    public stopProjectProfilesPageLoader (ctx: StateContext<ProjectProfileStateModel>): void {
+    public stopProjectProfilesPageLoader (ctx: StateContext<ProjectProfileStoreModel>): void {
         ctx.patchState( {
             projectProfiles: StateUtil.updatePageLoader( ctx.getState().projectProfiles, false ),
         } )
@@ -160,7 +160,7 @@ export class ProjectProfileState extends GenericProjectElementState<ProjectProfi
 
     @Action( FetchProjectProfilesPage )
     public fetchProjectProfilesPage (
-        ctx: StateContext<ProjectProfileStateModel>,
+        ctx: StateContext<ProjectProfileStoreModel>,
         payload: FetchProjectProfilesPage,
     ): Observable<void> {
         return this.api.findProjectProfiles(
@@ -180,7 +180,7 @@ export class ProjectProfileState extends GenericProjectElementState<ProjectProfi
     }
 
     private fetchProjectProfilesPageComplete (
-        ctx: StateContext<ProjectProfileStateModel>,
+        ctx: StateContext<ProjectProfileStoreModel>,
         profilePage: PageModel<ProjectProfileModel>,
     ): void {
         ctx.patchState( {
@@ -197,7 +197,7 @@ export class ProjectProfileState extends GenericProjectElementState<ProjectProfi
 
     @Action( UpdateProjectProfilesPageSearchParams )
     public updateProjectProfilesPageSearchParams (
-        ctx: StateContext<ProjectProfileStateModel>,
+        ctx: StateContext<ProjectProfileStoreModel>,
         payload: UpdateProjectProfilesPageSearchParams,
     ): void {
         ctx.patchState( {
@@ -210,7 +210,7 @@ export class ProjectProfileState extends GenericProjectElementState<ProjectProfi
 
     @Action( SearchUsers )
     public SearchUsers (
-        ctx: StateContext<ProjectProfileStateModel>,
+        ctx: StateContext<ProjectProfileStoreModel>,
         payload: SearchUsers,
     ): Observable<void> {
         return this.api.searchUsers(
@@ -225,7 +225,7 @@ export class ProjectProfileState extends GenericProjectElementState<ProjectProfi
     }
 
     private searchUsersComplete (
-        ctx: StateContext<ProjectProfileStateModel>,
+        ctx: StateContext<ProjectProfileStoreModel>,
         users: UserModel[],
     ): void {
         ctx.patchState( {
@@ -238,7 +238,7 @@ export class ProjectProfileState extends GenericProjectElementState<ProjectProfi
 
     @Action( FetchAssignableProjectProfileRoles )
     public fetchAssignableProjectProfileRoles (
-        ctx: StateContext<ProjectProfileStateModel>,
+        ctx: StateContext<ProjectProfileStoreModel>,
         payload: FetchAssignableProjectProfileRoles,
     ): Observable<void> {
         return this.api.getAssignableProjectProfileRoles( payload.projectId ).pipe(
@@ -247,7 +247,7 @@ export class ProjectProfileState extends GenericProjectElementState<ProjectProfi
     }
 
     private fetchAssignableProjectProfileRolesComplete (
-        ctx: StateContext<ProjectProfileStateModel>,
+        ctx: StateContext<ProjectProfileStoreModel>,
         roles: SelectItem<string>[],
     ): void {
         ctx.patchState( {
@@ -260,7 +260,7 @@ export class ProjectProfileState extends GenericProjectElementState<ProjectProfi
 
     @Action( FetchProfileStatus )
     public fetchProfileStatus (
-        ctx: StateContext<ProjectProfileStateModel>,
+        ctx: StateContext<ProjectProfileStoreModel>,
     ): Observable<void> {
         return this.serviceMetadata.getProfilesStatus().pipe(
             map( (status: SelectItem<ProfileStatusEnum>[]): void => this.fetchProfileStatusComplete(
@@ -271,7 +271,7 @@ export class ProjectProfileState extends GenericProjectElementState<ProjectProfi
     }
 
     private fetchProfileStatusComplete (
-        ctx: StateContext<ProjectProfileStateModel>,
+        ctx: StateContext<ProjectProfileStoreModel>,
         status: SelectItem<ProfileStatusEnum>[],
     ): void {
         ctx.patchState( {
@@ -285,12 +285,12 @@ export class ProjectProfileState extends GenericProjectElementState<ProjectProfi
         } )
     }
 
-    protected refreshPage (ctx: StateContext<ProjectProfileStateModel>): void {
+    protected refreshPage (ctx: StateContext<ProjectProfileStoreModel>): void {
         const page: PageModel<ProjectProfileModel> | undefined = ctx.getState().projectProfiles.element
         this.facade.fetchProjectProfilesPage( page?.pageNumber, page?.pageSize, true )
     }
 
-    protected pageError (ctx: StateContext<ProjectProfileStateModel>, error: ErrorModel): Observable<void> {
+    protected pageError (ctx: StateContext<ProjectProfileStoreModel>, error: ErrorModel): Observable<void> {
         if (error.status == 503) {
             throw error
         } else {

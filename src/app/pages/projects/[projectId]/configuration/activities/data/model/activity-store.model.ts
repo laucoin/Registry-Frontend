@@ -5,7 +5,7 @@ import { MovementModel } from '@shared/models/model/movement.model'
 import { ActivityModel } from '@shared/models/model/activity.model'
 import { SelectItem } from 'primeng/api'
 
-export interface ActivityStateModel {
+export interface ActivityStoreModel {
     activities: PageRequestInformationModel<ActivityPageParamsModel, ActivityModel>
     movements: PageRequestInformationModel<MovementPageParamsModel, MovementModel>
     _metadata: {

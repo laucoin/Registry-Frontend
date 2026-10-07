@@ -1,7 +1,7 @@
 import { computed, Injectable, Signal, inject } from '@angular/core'
 import { PageModel } from '@shared/models/model/page.model'
 import { CommunicationModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
-import { CommunicationState } from '@pages/projects/[projectId]/movements/communication/data/state/communication.state'
+import { CommunicationStore } from '@pages/projects/[projectId]/movements/communication/data/state/communication.store'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { DateUtil } from '@shared/helpers/util/date.util'
 import { CommunicationApi } from '@pages/projects/[projectId]/movements/communication/data/state/communication.api'
@@ -33,60 +33,60 @@ export class CommunicationFacade extends GenericProjectElementFacade {
     private readonly datePipe: DateFormatPipe = inject( DateFormatPipe )
 
     public get communicationsPage (): Signal<PageModel<CommunicationModel> | undefined> {
-        return this.ngStore.selectSignal( CommunicationState.communicationsPage )
+        return this.ngStore.selectSignal( CommunicationStore.communicationsPage )
     }
 
     public get communicationsPageLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( CommunicationState.communicationsPageLoading )
+        return this.ngStore.selectSignal( CommunicationStore.communicationsPageLoading )
     }
 
     public get communicationsPageSilentLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( CommunicationState.communicationsPageSilentLoading )
+        return this.ngStore.selectSignal( CommunicationStore.communicationsPageSilentLoading )
     }
 
     public get communicationsPageError (): Signal<ToastMessageOptions | undefined> {
-        return this.ngStore.selectSignal( CommunicationState.communicationsPageError )
+        return this.ngStore.selectSignal( CommunicationStore.communicationsPageError )
     }
 
     private get communicationsPageResetSearch (): Signal<boolean> {
-        return this.ngStore.selectSignal( CommunicationState.communicationsPageResetSearch )
+        return this.ngStore.selectSignal( CommunicationStore.communicationsPageResetSearch )
     }
 
     public get communicationsPageTextSearchedParam (): Signal<string | undefined> {
-        return this.ngStore.selectSignal( CommunicationState.communicationsPageTextSearchedParam )
+        return this.ngStore.selectSignal( CommunicationStore.communicationsPageTextSearchedParam )
     }
 
     public get communicationsPageVisibilitySearchedParam (): Signal<boolean | undefined> {
-        return this.ngStore.selectSignal( CommunicationState.communicationsPageVisibilitySearchedParam )
+        return this.ngStore.selectSignal( CommunicationStore.communicationsPageVisibilitySearchedParam )
     }
 
     public get communicationsPageStartDateTimeSearchedParam (): Signal<Date | undefined> {
         return computed( (): Date | undefined =>
-            DateUtil.buildDate( this.ngStore.selectSignal( CommunicationState.communicationsPageStartDateTimeSearchedParam )() ),
+            DateUtil.buildDate( this.ngStore.selectSignal( CommunicationStore.communicationsPageStartDateTimeSearchedParam )() ),
         )
     }
 
     public get communicationsPageEndDateTimeSearchedParam (): Signal<Date | undefined> {
         return computed( (): Date | undefined =>
-            DateUtil.buildDate( this.ngStore.selectSignal( CommunicationState.communicationsPageEndDateTimeSearchedParam )() ),
+            DateUtil.buildDate( this.ngStore.selectSignal( CommunicationStore.communicationsPageEndDateTimeSearchedParam )() ),
         )
     }
 
     public get communication (): Signal<CommunicationModel | undefined> {
-        return this.ngStore.selectSignal( CommunicationState.communication )
+        return this.ngStore.selectSignal( CommunicationStore.communication )
     }
 
     public get communication$ (): Observable<CommunicationModel | undefined> {
-        return this.ngStore.select( CommunicationState.communication )
+        return this.ngStore.select( CommunicationStore.communication )
     }
 
     public get communicationLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( CommunicationState.communicationLoading )
+        return this.ngStore.selectSignal( CommunicationStore.communicationLoading )
     }
 
     public get visibilitiesMetadata (): Signal<SelectItem<boolean | undefined>[]> {
         return computed( () =>
-            this.ngStore.selectSignal( CommunicationState.visibilitiesMetadata )().map( (status: SelectItem<boolean | undefined>) => ({
+            this.ngStore.selectSignal( CommunicationStore.visibilitiesMetadata )().map( (status: SelectItem<boolean | undefined>) => ({
                 ...status,
                 label: this.translateService.instant( status.label! ),
             }) ),
@@ -94,11 +94,11 @@ export class CommunicationFacade extends GenericProjectElementFacade {
     }
 
     public get searchedMovementsMetadata (): Signal<SelectItem<MovementModel>[]> {
-        return this.ngStore.selectSignal( CommunicationState.searchedMovementsMetadata )
+        return this.ngStore.selectSignal( CommunicationStore.searchedMovementsMetadata )
     }
 
     public get searchedAlertsMetadata (): Signal<SelectItem<AlertModel>[]> {
-        return this.ngStore.selectSignal( CommunicationState.searchedAlertsMetadata )
+        return this.ngStore.selectSignal( CommunicationStore.searchedAlertsMetadata )
     }
 
     public startCommunicationsPageLoader (): void {

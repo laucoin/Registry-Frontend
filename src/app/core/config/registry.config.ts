@@ -2,10 +2,10 @@ import {EnvironmentProviders, importProvidersFrom, Injectable, Provider} from '@
 import {provideTranslateHttpLoader} from '@ngx-translate/http-loader'
 import {NgxsReduxDevtoolsPluginModule} from '@ngxs/devtools-plugin'
 import {NgxsModule} from '@ngxs/store'
-import {RegistryState} from '@core/registry/state/registry.state'
+import {RegistryStore} from '@core/registry/state/registry.store'
 import {EnvironmentModel} from '@core/config/model/environment.model'
 import {StringUtil} from '@shared/helpers/util/string.util'
-import {UserState} from '@pages/users/data/state/user.state'
+import {UserStore} from '@pages/users/data/state/user.store'
 import {providePrimeNG} from 'primeng/config'
 import {LocalStorageUtils} from '@shared/helpers/util/local-storage.util'
 import {GenericUtil} from '@shared/helpers/util/generic.util'
@@ -40,7 +40,7 @@ export class RegistryConfig {
 
     public static provideNgxs(): Provider | EnvironmentProviders {
         return importProvidersFrom(NgxsModule.forRoot(
-            [RegistryState, UserState],
+            [RegistryStore, UserStore],
             {
                 developmentMode: !RegistryConfig.environment.production,
             },

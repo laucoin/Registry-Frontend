@@ -17,7 +17,7 @@ import {
 } from '@pages/projects/[projectId]/configuration/groups/data/state/group.action'
 import { ParticipantModel } from '@shared/models/model/participant.model'
 import { GroupModel } from '@shared/models/model/group.model'
-import { GroupState } from '@pages/projects/[projectId]/configuration/groups/data/state/group.state'
+import { GroupStore } from '@pages/projects/[projectId]/configuration/groups/data/state/group.store'
 import { DateUtil } from '@shared/helpers/util/date.util'
 import { GroupApi } from '@pages/projects/[projectId]/configuration/groups/data/state/group.api'
 import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/util/rx.util'
@@ -32,82 +32,82 @@ export class GroupFacade extends GenericProjectElementFacade {
     private readonly pluralTranslationPipe: PluralTranslationPipe = inject( PluralTranslationPipe )
 
     public get groupsPage (): Signal<PageModel<GroupModel> | undefined> {
-        return this.ngStore.selectSignal( GroupState.groupsPage )
+        return this.ngStore.selectSignal( GroupStore.groupsPage )
     }
 
     public get groupsPageLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( GroupState.groupsPageLoading )
+        return this.ngStore.selectSignal( GroupStore.groupsPageLoading )
     }
 
     public get groupsPageSilentLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( GroupState.groupsPageSilentLoading )
+        return this.ngStore.selectSignal( GroupStore.groupsPageSilentLoading )
     }
 
     public get groupsPageError (): Signal<ToastMessageOptions | undefined> {
-        return this.ngStore.selectSignal( GroupState.groupsPageError )
+        return this.ngStore.selectSignal( GroupStore.groupsPageError )
     }
 
     public get groupsPageResetSearch (): Signal<boolean> {
-        return this.ngStore.selectSignal( GroupState.groupsPageResetSearch )
+        return this.ngStore.selectSignal( GroupStore.groupsPageResetSearch )
     }
 
     public get groupsPageTextSearchedParam (): Signal<string | undefined> {
-        return this.ngStore.selectSignal( GroupState.groupsPageTextSearchedParam )
+        return this.ngStore.selectSignal( GroupStore.groupsPageTextSearchedParam )
     }
 
     public get groupsPageDateTimeSearchedParam (): Signal<Date | undefined> {
         return computed( () =>
-            DateUtil.buildDate( this.ngStore.selectSignal( GroupState.groupsPageDateTimeSearchedParam )() ),
+            DateUtil.buildDate( this.ngStore.selectSignal( GroupStore.groupsPageDateTimeSearchedParam )() ),
         )
     }
 
     public get groupsPagePresenceSearchedParam (): Signal<boolean | undefined> {
-        return this.ngStore.selectSignal( GroupState.groupsPagePresenceSearchedParam )
+        return this.ngStore.selectSignal( GroupStore.groupsPagePresenceSearchedParam )
     }
 
     public get groupsPageVisibilitySearchedParam (): Signal<boolean | undefined> {
-        return this.ngStore.selectSignal( GroupState.groupsPageVisibilitySearchedParam )
+        return this.ngStore.selectSignal( GroupStore.groupsPageVisibilitySearchedParam )
     }
 
     public get groupMembersPage (): Signal<PageModel<ParticipantModel> | undefined> {
-        return this.ngStore.selectSignal( GroupState.groupMembersPage )
+        return this.ngStore.selectSignal( GroupStore.groupMembersPage )
     }
 
     public get groupMembersPageLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( GroupState.groupMembersPageLoading )
+        return this.ngStore.selectSignal( GroupStore.groupMembersPageLoading )
     }
 
     public get groupMembersPageSilentLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( GroupState.groupMembersPageSilentLoading )
+        return this.ngStore.selectSignal( GroupStore.groupMembersPageSilentLoading )
     }
 
     public get groupMembersPageError (): Signal<ToastMessageOptions | undefined> {
-        return this.ngStore.selectSignal( GroupState.groupMembersPageError )
+        return this.ngStore.selectSignal( GroupStore.groupMembersPageError )
     }
 
     public get groupMembersPageResetSearch (): Signal<boolean> {
-        return this.ngStore.selectSignal( GroupState.groupMembersPageResetSearch )
+        return this.ngStore.selectSignal( GroupStore.groupMembersPageResetSearch )
     }
 
     public get groupMembersPageTextSearchedParam (): Signal<string | undefined> {
-        return this.ngStore.selectSignal( GroupState.groupMembersPageTextSearchedParam )
+        return this.ngStore.selectSignal( GroupStore.groupMembersPageTextSearchedParam )
     }
 
     public get groupMembersPageStatusSearchedParam (): Signal<string | undefined> {
-        return this.ngStore.selectSignal( GroupState.groupMembersPageStatusSearchedParam )
+        return this.ngStore.selectSignal( GroupStore.groupMembersPageStatusSearchedParam )
     }
 
     public get groupMembersPageVisibilitySearchedParam (): Signal<boolean | undefined> {
-        return this.ngStore.selectSignal( GroupState.groupMembersPageVisibilitySearchedParam )
+        return this.ngStore.selectSignal( GroupStore.groupMembersPageVisibilitySearchedParam )
     }
 
     public get searchedParticipantsMetadata (): Signal<SelectItem<ParticipantModel>[]> {
-        return this.ngStore.selectSignal( GroupState.searchedParticipantsMetadata )
+        return this.ngStore.selectSignal( GroupStore.searchedParticipantsMetadata )
     }
 
     public get availabilitiesMetadata (): Signal<SelectItem<boolean | undefined>[]> {
         return computed( (): SelectItem<boolean | undefined>[] =>
-            this.ngStore.selectSignal( GroupState.availabilitiesMetadata )().map( (status: SelectItem<boolean | undefined>): SelectItem<boolean | undefined> => ({
+            this.ngStore.selectSignal( GroupStore.availabilitiesMetadata )().map( (status: SelectItem<boolean | undefined>): SelectItem<boolean | undefined> => ({
                 ...status,
                 label: this.translateService.instant( status.label! ),
             }) ),
@@ -116,7 +116,7 @@ export class GroupFacade extends GenericProjectElementFacade {
 
     public get visibilitiesMetadata (): Signal<SelectItem<boolean | undefined>[]> {
         return computed( (): SelectItem<boolean | undefined>[] =>
-            this.ngStore.selectSignal( GroupState.visibilitiesMetadata )().map( (status: SelectItem<boolean | undefined>): SelectItem<boolean | undefined> => ({
+            this.ngStore.selectSignal( GroupStore.visibilitiesMetadata )().map( (status: SelectItem<boolean | undefined>): SelectItem<boolean | undefined> => ({
                 ...status,
                 label: this.translateService.instant( status.label! ),
             }) ),

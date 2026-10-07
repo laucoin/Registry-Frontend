@@ -2,9 +2,9 @@ import { Action, Selector, State, StateContext } from '@ngxs/store'
 import { catchError, finalize, map, Observable, of } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
 import { ActivityModel } from '@shared/models/model/activity.model'
-import { GenericProjectElementState } from '@shared/helpers/state/generic-project-element.state'
+import { GenericProjectElementStore } from '@shared/helpers/state/generic-project-element.store'
 import { initialize } from '@shared/helpers/util/rx.util'
-import { ActivityStateModel } from '@pages/projects/[projectId]/configuration/activities/data/model/activity-state.model'
+import { ActivityStoreModel } from '@pages/projects/[projectId]/configuration/activities/data/model/activity-store.model'
 import {
     FetchActivitiesPage,
     FetchActivityMovementsContents,
@@ -29,7 +29,7 @@ import { PairModel } from '@shared/models/model/pair.model'
 import { MovementContentModel } from '@shared/models/model/movement-content.model'
 import { MovementUtil } from '@shared/helpers/util/movement.util'
 
-const defaultActivityState: ActivityStateModel = {
+const defaultActivityStore: ActivityStoreModel = {
     activities: {
         element: undefined,
         params: {
@@ -72,130 +72,130 @@ const defaultActivityState: ActivityStateModel = {
     },
 }
 
-@State<ActivityStateModel>( {
+@State<ActivityStoreModel>( {
     name: 'activity',
-    defaults: defaultActivityState,
+    defaults: defaultActivityStore,
 } )
 @Injectable()
-export class ActivityState extends GenericProjectElementState<ActivityStateModel> {
+export class ActivityStore extends GenericProjectElementStore<ActivityStoreModel> {
     private readonly api: ActivityApi = inject( ActivityApi )
     private readonly movementApi: MovementApi = inject( MovementApi )
     private readonly facade: ActivityFacade = inject( ActivityFacade )
 
     @Selector()
-    public static activitiesPage (state: ActivityStateModel): PageModel<ActivityModel> | undefined {
+    public static activitiesPage (state: ActivityStoreModel): PageModel<ActivityModel> | undefined {
         return state.activities.element
     }
 
     @Selector()
-    public static activitiesPageLoading (state: ActivityStateModel): boolean {
+    public static activitiesPageLoading (state: ActivityStoreModel): boolean {
         return state.activities.loading
     }
 
     @Selector()
-    public static activitiesPageError (state: ActivityStateModel): ToastMessageOptions | undefined {
+    public static activitiesPageError (state: ActivityStoreModel): ToastMessageOptions | undefined {
         return state.activities.error
     }
 
     @Selector()
-    public static activitiesPageSilentLoading (state: ActivityStateModel): boolean {
+    public static activitiesPageSilentLoading (state: ActivityStoreModel): boolean {
         return state.activities.silentLoading
     }
 
     @Selector()
-    public static activitiesPageResetSearch (state: ActivityStateModel): boolean {
+    public static activitiesPageResetSearch (state: ActivityStoreModel): boolean {
         return state.activities.params.resetSearch
     }
 
     @Selector()
-    public static activitiesPageTextSearchedParam (state: ActivityStateModel): string | undefined {
+    public static activitiesPageTextSearchedParam (state: ActivityStoreModel): string | undefined {
         return state.activities.params.textSearched
     }
 
     @Selector()
-    public static activitiesPageDateTimeSearchedParam (state: ActivityStateModel): string | undefined {
+    public static activitiesPageDateTimeSearchedParam (state: ActivityStoreModel): string | undefined {
         return state.activities.params.dateTimeSearched
     }
 
     @Selector()
-    public static activitiesPageAvailabilitySearchedParam (state: ActivityStateModel): boolean | undefined {
+    public static activitiesPageAvailabilitySearchedParam (state: ActivityStoreModel): boolean | undefined {
         return state.activities.params.availabilitySearched
     }
 
     @Selector()
-    public static activitiesPageVisibilitySearchedParam (state: ActivityStateModel): boolean | undefined {
+    public static activitiesPageVisibilitySearchedParam (state: ActivityStoreModel): boolean | undefined {
         return state.activities.params.visibilitySearched
     }
 
     @Selector()
-    public static activityMovementsPage (state: ActivityStateModel): PageModel<MovementModel> | undefined {
+    public static activityMovementsPage (state: ActivityStoreModel): PageModel<MovementModel> | undefined {
         return state.movements.element
     }
 
     @Selector()
-    public static activityMovementsPageLoading (state: ActivityStateModel): boolean {
+    public static activityMovementsPageLoading (state: ActivityStoreModel): boolean {
         return state.movements.loading
     }
 
     @Selector()
-    public static activityMovementsPageError (state: ActivityStateModel): ToastMessageOptions | undefined {
+    public static activityMovementsPageError (state: ActivityStoreModel): ToastMessageOptions | undefined {
         return state.movements.error
     }
 
     @Selector()
-    public static activityMovementsPageSilentLoading (state: ActivityStateModel): boolean {
+    public static activityMovementsPageSilentLoading (state: ActivityStoreModel): boolean {
         return state.movements.silentLoading
     }
 
     @Selector()
-    public static activityMovementsPageResetSearch (state: ActivityStateModel): boolean {
+    public static activityMovementsPageResetSearch (state: ActivityStoreModel): boolean {
         return state.movements.params.resetSearch
     }
 
     @Selector()
-    public static activityMovementsPageTypeSearchedParam (state: ActivityStateModel): string | undefined {
+    public static activityMovementsPageTypeSearchedParam (state: ActivityStoreModel): string | undefined {
         return state.movements.params.typeSearched
     }
 
     @Selector()
-    public static activityMovementsPageStartDateTimeSearchedParam (state: ActivityStateModel): string | undefined {
+    public static activityMovementsPageStartDateTimeSearchedParam (state: ActivityStoreModel): string | undefined {
         return state.movements.params.startDateTimeSearched
     }
 
     @Selector()
-    public static activityMovementsPageEndDateTimeSearchedParam (state: ActivityStateModel): string | undefined {
+    public static activityMovementsPageEndDateTimeSearchedParam (state: ActivityStoreModel): string | undefined {
         return state.movements.params.endDateTimeSearched
     }
 
     @Selector()
-    public static activityMovementsPageVisibilitySearchedParam (state: ActivityStateModel): boolean | undefined {
+    public static activityMovementsPageVisibilitySearchedParam (state: ActivityStoreModel): boolean | undefined {
         return state.movements.params.visibilitySearched
     }
 
     @Selector()
-    public static availabilitiesMetadata (state: ActivityStateModel): SelectItem<boolean | undefined>[] {
+    public static availabilitiesMetadata (state: ActivityStoreModel): SelectItem<boolean | undefined>[] {
         return state._metadata.availabilities
     }
 
     @Selector()
-    public static visibilitiesMetadata (state: ActivityStateModel): SelectItem<boolean | undefined>[] {
+    public static visibilitiesMetadata (state: ActivityStoreModel): SelectItem<boolean | undefined>[] {
         return state._metadata.visibilities
     }
 
     @Action( ResetActivityState )
-    public resetActivityState (ctx: StateContext<ActivityStateModel>): void {
-        ctx.setState( defaultActivityState )
+    public resetActivityState (ctx: StateContext<ActivityStoreModel>): void {
+        ctx.setState( defaultActivityStore )
     }
 
     @Action( StartActivitiesPageLoader )
-    public startActivitiesPageLoader (ctx: StateContext<ActivityStateModel>): void {
+    public startActivitiesPageLoader (ctx: StateContext<ActivityStoreModel>): void {
         ctx.patchState( {
             activities: StateUtil.updatePageLoader( ctx.getState().activities, true ),
         } )
     }
 
     @Action( StopActivitiesPageLoader )
-    public stopActivitiesPageLoader (ctx: StateContext<ActivityStateModel>): void {
+    public stopActivitiesPageLoader (ctx: StateContext<ActivityStoreModel>): void {
         ctx.patchState( {
             activities: StateUtil.updatePageLoader( ctx.getState().activities, false ),
         } )
@@ -203,7 +203,7 @@ export class ActivityState extends GenericProjectElementState<ActivityStateModel
 
     @Action( FetchActivitiesPage )
     public fetchActivitiesPage (
-        ctx: StateContext<ActivityStateModel>,
+        ctx: StateContext<ActivityStoreModel>,
         payload: FetchActivitiesPage,
     ): Observable<void> {
         return this.api.findActivities(
@@ -223,7 +223,7 @@ export class ActivityState extends GenericProjectElementState<ActivityStateModel
     }
 
     private fetchActivitiesPageComplete (
-        ctx: StateContext<ActivityStateModel>,
+        ctx: StateContext<ActivityStoreModel>,
         activityPage: PageModel<ActivityModel>,
     ): void {
         ctx.patchState( {
@@ -240,7 +240,7 @@ export class ActivityState extends GenericProjectElementState<ActivityStateModel
 
     @Action( UpdateActivitiesPageSearchParams )
     public updateActivitiesPageSearchParams (
-        ctx: StateContext<ActivityStateModel>,
+        ctx: StateContext<ActivityStoreModel>,
         payload: UpdateActivitiesPageSearchParams,
     ): void {
         ctx.patchState( {
@@ -252,14 +252,14 @@ export class ActivityState extends GenericProjectElementState<ActivityStateModel
     }
 
     @Action( StartActivityMovementsPageLoader )
-    public startActivityMovementsPageLoader (ctx: StateContext<ActivityStateModel>): void {
+    public startActivityMovementsPageLoader (ctx: StateContext<ActivityStoreModel>): void {
         ctx.patchState( {
             movements: StateUtil.updatePageLoader( ctx.getState().movements, true ),
         } )
     }
 
     @Action( StopActivityMovementsPageLoader )
-    public stopActivityMovementsPageLoader (ctx: StateContext<ActivityStateModel>): void {
+    public stopActivityMovementsPageLoader (ctx: StateContext<ActivityStoreModel>): void {
         ctx.patchState( {
             movements: StateUtil.updatePageLoader( ctx.getState().movements, false ),
         } )
@@ -267,7 +267,7 @@ export class ActivityState extends GenericProjectElementState<ActivityStateModel
 
     @Action( FetchActivityMovementsPage )
     public fetchActivityMovementsPage (
-        ctx: StateContext<ActivityStateModel>,
+        ctx: StateContext<ActivityStoreModel>,
         payload: FetchActivityMovementsPage,
     ): Observable<void> {
         return this.api.findActivityMovements(
@@ -288,7 +288,7 @@ export class ActivityState extends GenericProjectElementState<ActivityStateModel
     }
 
     private fetchActivityMovementsPageComplete (
-        ctx: StateContext<ActivityStateModel>,
+        ctx: StateContext<ActivityStoreModel>,
         movementsPage: PageModel<MovementModel>,
     ): void {
         ctx.patchState( {
@@ -311,7 +311,7 @@ export class ActivityState extends GenericProjectElementState<ActivityStateModel
 
     @Action( FetchActivityMovementsContents )
     public fetchActivityMovementsContents (
-        ctx: StateContext<ActivityStateModel>,
+        ctx: StateContext<ActivityStoreModel>,
         payload: FetchActivityMovementsContents,
     ): Observable<void> {
         return this.movementApi.findMovementsContents(
@@ -327,7 +327,7 @@ export class ActivityState extends GenericProjectElementState<ActivityStateModel
     }
 
     private fetchActivityMovementsContentsComplete (
-        ctx: StateContext<ActivityStateModel>,
+        ctx: StateContext<ActivityStoreModel>,
         contents: PairModel<MovementContentModel[]>[],
     ): void {
         if (!ctx.getState().movements.element) {
@@ -347,7 +347,7 @@ export class ActivityState extends GenericProjectElementState<ActivityStateModel
 
     @Action( UpdateActivityMovementsPageSearchParams )
     public updateActivityMovementsPageSearchParams (
-        ctx: StateContext<ActivityStateModel>,
+        ctx: StateContext<ActivityStoreModel>,
         payload: UpdateActivityMovementsPageSearchParams,
     ): void {
         ctx.patchState( {
@@ -358,12 +358,12 @@ export class ActivityState extends GenericProjectElementState<ActivityStateModel
         } )
     }
 
-    protected refreshPage (ctx: StateContext<ActivityStateModel>): void {
+    protected refreshPage (ctx: StateContext<ActivityStoreModel>): void {
         const page: PageModel<ActivityModel> | undefined = ctx.getState().activities.element
         this.facade.fetchActivitiesPage( page?.pageNumber, page?.pageSize, true )
     }
 
-    protected pageError (ctx: StateContext<ActivityStateModel>, error: ErrorModel): Observable<void> {
+    protected pageError (ctx: StateContext<ActivityStoreModel>, error: ErrorModel): Observable<void> {
         if (error.status == 503) {
             throw error
         } else {
@@ -375,7 +375,7 @@ export class ActivityState extends GenericProjectElementState<ActivityStateModel
         return of()
     }
 
-    protected movementsPageError (ctx: StateContext<ActivityStateModel>, error: ErrorModel): Observable<void> {
+    protected movementsPageError (ctx: StateContext<ActivityStoreModel>, error: ErrorModel): Observable<void> {
         if (error.status == 503) {
             throw error
         } else {

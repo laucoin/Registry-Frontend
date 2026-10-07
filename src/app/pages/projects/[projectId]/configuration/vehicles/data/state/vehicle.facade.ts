@@ -16,7 +16,7 @@ import {
     UpdateVehiclesPageSearchParams,
 } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.action'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
-import { VehicleState } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.state'
+import { VehicleStore } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.store'
 import { GenericProjectElementFacade } from '@shared/helpers/facade/generic-project-element.facade'
 import { MovementModel } from '@shared/models/model/movement.model'
 import { DateUtil } from '@shared/helpers/util/date.util'
@@ -29,90 +29,90 @@ export class VehicleFacade extends GenericProjectElementFacade {
     private readonly api: VehicleApi = inject( VehicleApi )
 
     public get vehiclesPage (): Signal<PageModel<VehicleModel> | undefined> {
-        return this.ngStore.selectSignal( VehicleState.vehiclesPage )
+        return this.ngStore.selectSignal( VehicleStore.vehiclesPage )
     }
 
     public get vehiclesPageLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( VehicleState.vehiclesPageLoading )
+        return this.ngStore.selectSignal( VehicleStore.vehiclesPageLoading )
     }
 
     public get vehiclesPageSilentLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( VehicleState.vehiclesPageSilentLoading )
+        return this.ngStore.selectSignal( VehicleStore.vehiclesPageSilentLoading )
     }
 
     public get vehiclesPageError (): Signal<ToastMessageOptions | undefined> {
-        return this.ngStore.selectSignal( VehicleState.vehiclesPageError )
+        return this.ngStore.selectSignal( VehicleStore.vehiclesPageError )
     }
 
     public get vehiclesPageResetSearch (): Signal<boolean> {
-        return this.ngStore.selectSignal( VehicleState.vehiclesPageResetSearch )
+        return this.ngStore.selectSignal( VehicleStore.vehiclesPageResetSearch )
     }
 
     public get vehiclesPageTextSearchedParam (): Signal<string | undefined> {
-        return this.ngStore.selectSignal( VehicleState.vehiclesPageTextSearchedParam )
+        return this.ngStore.selectSignal( VehicleStore.vehiclesPageTextSearchedParam )
     }
 
     public get vehiclesPageDateTimeSearchedParam (): Signal<Date | undefined> {
         return computed( (): Date | undefined =>
-            DateUtil.buildDate( this.ngStore.selectSignal( VehicleState.vehiclesPageDateTimeSearchedParam )() ),
+            DateUtil.buildDate( this.ngStore.selectSignal( VehicleStore.vehiclesPageDateTimeSearchedParam )() ),
         )
     }
 
     public get vehiclesPageStatusSearchedParam (): Signal<boolean | undefined> {
-        return this.ngStore.selectSignal( VehicleState.vehiclesPageAvailabilitySearchedParam )
+        return this.ngStore.selectSignal( VehicleStore.vehiclesPageAvailabilitySearchedParam )
     }
 
     public get vehiclesPageVisibilitySearchedParam (): Signal<boolean | undefined> {
-        return this.ngStore.selectSignal( VehicleState.vehiclesPageVisibilitySearchedParam )
+        return this.ngStore.selectSignal( VehicleStore.vehiclesPageVisibilitySearchedParam )
     }
 
     public get vehicleMovementsPage (): Signal<PageModel<MovementModel> | undefined> {
-        return this.ngStore.selectSignal( VehicleState.vehicleMovementsPage )
+        return this.ngStore.selectSignal( VehicleStore.vehicleMovementsPage )
     }
 
     public get vehicleMovementsPageLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( VehicleState.vehicleMovementsPageLoading )
+        return this.ngStore.selectSignal( VehicleStore.vehicleMovementsPageLoading )
     }
 
     public get vehicleMovementsPageSilentLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( VehicleState.vehicleMovementsPageSilentLoading )
+        return this.ngStore.selectSignal( VehicleStore.vehicleMovementsPageSilentLoading )
     }
 
     public get vehicleMovementsPageError (): Signal<ToastMessageOptions | undefined> {
-        return this.ngStore.selectSignal( VehicleState.vehicleMovementsPageError )
+        return this.ngStore.selectSignal( VehicleStore.vehicleMovementsPageError )
     }
 
     private get vehicleMovementsPageResetSearch (): Signal<boolean> {
-        return this.ngStore.selectSignal( VehicleState.vehicleMovementsPageResetSearch )
+        return this.ngStore.selectSignal( VehicleStore.vehicleMovementsPageResetSearch )
     }
 
     public get vehicleMovementsPageTypeSearchedParam (): Signal<string | undefined> {
-        return this.ngStore.selectSignal( VehicleState.vehicleMovementsPageTypeSearchedParam )
+        return this.ngStore.selectSignal( VehicleStore.vehicleMovementsPageTypeSearchedParam )
     }
 
     public get vehicleMovementsPageStartDateTimeSearchedParam (): Signal<Date | undefined> {
         return computed( (): Date | undefined =>
-            DateUtil.buildDate( this.ngStore.selectSignal( VehicleState.vehicleMovementsPageStartDateTimeSearchedParam )() ),
+            DateUtil.buildDate( this.ngStore.selectSignal( VehicleStore.vehicleMovementsPageStartDateTimeSearchedParam )() ),
         )
     }
 
     public get vehicleMovementsPageEndDateTimeSearchedParam (): Signal<Date | undefined> {
         return computed( (): Date | undefined =>
-            DateUtil.buildDate( this.ngStore.selectSignal( VehicleState.vehicleMovementsPageEndDateTimeSearchedParam )() ),
+            DateUtil.buildDate( this.ngStore.selectSignal( VehicleStore.vehicleMovementsPageEndDateTimeSearchedParam )() ),
         )
     }
 
     public get vehicleMovementsPageVisibilitySearchedParam (): Signal<boolean | undefined> {
-        return this.ngStore.selectSignal( VehicleState.vehicleMovementsPageVisibilitySearchedParam )
+        return this.ngStore.selectSignal( VehicleStore.vehicleMovementsPageVisibilitySearchedParam )
     }
 
     public get presencesStatusMetadata (): Signal<SelectItem<PresenceStatusEnum | undefined>[]> {
-        return this.ngStore.selectSignal( VehicleState.presencesStatusMetadata )
+        return this.ngStore.selectSignal( VehicleStore.presencesStatusMetadata )
     }
 
     public get visibilitiesMetadata (): Signal<SelectItem<boolean | undefined>[]> {
         return computed( (): SelectItem<boolean | undefined>[] =>
-            this.ngStore.selectSignal( VehicleState.visibilitiesMetadata )().map(
+            this.ngStore.selectSignal( VehicleStore.visibilitiesMetadata )().map(
                 (status: SelectItem<boolean | undefined>): SelectItem<boolean | undefined> => ({
                     ...status,
                     label: this.translateService.instant( status.label! ),

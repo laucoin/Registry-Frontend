@@ -21,57 +21,57 @@ import {
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { ofActionSuccessful } from '@ngxs/store'
 import { GenericFacade } from '@shared/helpers/facade/generic.facade'
-import { UserState } from '@pages/users/data/state/user.state'
+import { UserStore } from '@pages/users/data/state/user.store'
 
 @Injectable()
 export class UserFacade extends GenericFacade {
     public get usersPage (): Signal<PageModel<UserModel> | undefined> {
-        return this.ngStore.selectSignal( UserState.usersPage )
+        return this.ngStore.selectSignal( UserStore.usersPage )
     }
 
     public get usersPageLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( UserState.usersPageLoading )
+        return this.ngStore.selectSignal( UserStore.usersPageLoading )
     }
 
     public get usersPageSilentLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( UserState.usersPageSilentLoading )
+        return this.ngStore.selectSignal( UserStore.usersPageSilentLoading )
     }
 
     public get usersPageError (): Signal<ToastMessageOptions | undefined> {
-        return this.ngStore.selectSignal( UserState.usersPageError )
+        return this.ngStore.selectSignal( UserStore.usersPageError )
     }
 
     public get usersPageResetSearch (): Signal<boolean> {
-        return this.ngStore.selectSignal( UserState.usersPageResetSearch )
+        return this.ngStore.selectSignal( UserStore.usersPageResetSearch )
     }
 
     public get usersPageTextSearchedParam (): Signal<string | undefined> {
-        return this.ngStore.selectSignal( UserState.usersPageTextSearchedParam )
+        return this.ngStore.selectSignal( UserStore.usersPageTextSearchedParam )
     }
 
     public get actualUsersPageVisibilitySearchedParam (): Signal<boolean | undefined> {
-        return this.ngStore.selectSignal( UserState.usersPageVisibilitySearchedParam )
+        return this.ngStore.selectSignal( UserStore.usersPageVisibilitySearchedParam )
     }
 
     public get user (): Signal<UserModel | undefined> {
-        return this.ngStore.selectSignal( UserState.user )
+        return this.ngStore.selectSignal( UserStore.user )
     }
 
     public get user$ (): Observable<UserModel | undefined> {
-        return this.ngStore.select( UserState.user )
+        return this.ngStore.select( UserStore.user )
     }
 
     public get userLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( UserState.userLoading )
+        return this.ngStore.selectSignal( UserStore.userLoading )
     }
 
     public get assignableRolesMetadata (): Signal<SelectItem<string>[]> {
-        return this.ngStore.selectSignal( UserState.assignableRolesMetadata )
+        return this.ngStore.selectSignal( UserStore.assignableRolesMetadata )
     }
 
     public get statusMetadata (): Signal<SelectItem<boolean | undefined>[]> {
         return computed( () =>
-            this.ngStore.selectSignal( UserState.statusMetadata )().map( (status: SelectItem<boolean | undefined>) => ({
+            this.ngStore.selectSignal( UserStore.statusMetadata )().map( (status: SelectItem<boolean | undefined>) => ({
                 ...status,
                 label: this.translateService.instant( status.label! ),
             }) ),

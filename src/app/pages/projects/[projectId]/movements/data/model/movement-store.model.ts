@@ -11,7 +11,7 @@ import { MovementTypeEnum } from '@shared/models/enumeration/movement-type.enum'
 import { CommunicationPageParamsModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication-page-params.model'
 import { CommunicationModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
 
-export interface MovementStateModel {
+export interface MovementStoreModel {
     movements: PageRequestInformationModel<MovementPageParamsModel, MovementModel>
     movementCommunications: PageRequestInformationModel<CommunicationPageParamsModel, CommunicationModel>
     _metadata: {

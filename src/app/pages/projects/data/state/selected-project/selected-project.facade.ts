@@ -6,8 +6,8 @@ import { PageModel } from '@shared/models/model/page.model'
 import { MovementModel } from '@shared/models/model/movement.model'
 import { DateUtil } from '@shared/helpers/util/date.util'
 import { GenericFacade } from '@shared/helpers/facade/generic.facade'
-import { SelectedProjectState } from '@pages/projects/data/state/selected-project/selected-project.state'
-import { RegistryState } from '@core/registry/state/registry.state'
+import { SelectedProjectStore } from '@pages/projects/data/state/selected-project/selected-project.store'
+import { RegistryStore } from '@core/registry/state/registry.store'
 import {
     FetchCurrentAlertsPage,
     FetchCurrentMovementsPageWithActivity,
@@ -35,103 +35,103 @@ import { AlertModel } from '@shared/models/model/alert.model'
 @Injectable()
 export class SelectedProjectFacade extends GenericFacade {
     public get participantsStatus (): Signal<ProjectStatusModel | undefined> {
-        return this.ngStore.selectSignal( SelectedProjectState.participantsStatus )
+        return this.ngStore.selectSignal( SelectedProjectStore.participantsStatus )
     }
 
     public get participantsStatusLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( SelectedProjectState.participantsStatusLoading )
+        return this.ngStore.selectSignal( SelectedProjectStore.participantsStatusLoading )
     }
 
     public get participantsStatusError (): Signal<ToastMessageOptions | undefined> {
-        return this.ngStore.selectSignal( SelectedProjectState.participantsStatusError )
+        return this.ngStore.selectSignal( SelectedProjectStore.participantsStatusError )
     }
 
     public get vehiclesStatus (): Signal<VehicleStatusModel | undefined> {
-        return this.ngStore.selectSignal( SelectedProjectState.vehiclesStatus )
+        return this.ngStore.selectSignal( SelectedProjectStore.vehiclesStatus )
     }
 
     public get vehiclesStatusLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( SelectedProjectState.vehiclesStatusLoading )
+        return this.ngStore.selectSignal( SelectedProjectStore.vehiclesStatusLoading )
     }
 
     public get vehiclesStatusError (): Signal<ToastMessageOptions | undefined> {
-        return this.ngStore.selectSignal( SelectedProjectState.vehiclesStatusError )
+        return this.ngStore.selectSignal( SelectedProjectStore.vehiclesStatusError )
     }
 
     public get participantsBirthdays (): Signal<ParticipantModel[]> {
-        return this.ngStore.selectSignal( SelectedProjectState.participantsBirthdays )
+        return this.ngStore.selectSignal( SelectedProjectStore.participantsBirthdays )
     }
 
     public get currentMovementsPageWithoutActivityLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( SelectedProjectState.currentMovementsPageWithoutActivityLoading )
+        return this.ngStore.selectSignal( SelectedProjectStore.currentMovementsPageWithoutActivityLoading )
     }
 
     public get currentMovementsPageWithoutActivitySilentLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( SelectedProjectState.currentMovementsPageWithoutActivitySilentLoading )
+        return this.ngStore.selectSignal( SelectedProjectStore.currentMovementsPageWithoutActivitySilentLoading )
     }
 
     public get currentMovementsPageWithoutActivityError (): Signal<ToastMessageOptions | undefined> {
-        return this.ngStore.selectSignal( SelectedProjectState.currentMovementsPageWithoutActivityError )
+        return this.ngStore.selectSignal( SelectedProjectStore.currentMovementsPageWithoutActivityError )
     }
 
     public get currentMovementsPageWithoutActivity (): Signal<PageModel<MovementModel> | undefined> {
-        return this.ngStore.selectSignal( SelectedProjectState.currentMovementsPageWithoutActivity )
+        return this.ngStore.selectSignal( SelectedProjectStore.currentMovementsPageWithoutActivity )
     }
 
     private get currentMovementsPageWithoutActivityResetSearch (): Signal<boolean> {
-        return this.ngStore.selectSignal( SelectedProjectState.currentMovementsPageWithoutActivityResetSearch )
+        return this.ngStore.selectSignal( SelectedProjectStore.currentMovementsPageWithoutActivityResetSearch )
     }
 
     public get currentMovementsPageWithoutActivityStartDateTimeSearchedParam (): Signal<Date | undefined> {
         return computed( (): Date | undefined =>
-            DateUtil.buildDate( this.ngStore.selectSignal( SelectedProjectState.currentMovementsPageWithoutActivityStartDateTimeSearchedParam )() ),
+            DateUtil.buildDate( this.ngStore.selectSignal( SelectedProjectStore.currentMovementsPageWithoutActivityStartDateTimeSearchedParam )() ),
         )
     }
 
     public get currentMovementsPageWithoutActivityEndDateTimeSearchedParam (): Signal<Date | undefined> {
         return computed( (): Date | undefined =>
-            DateUtil.buildDate( this.ngStore.selectSignal( SelectedProjectState.currentMovementsPageWithoutActivityEndDateTimeSearchedParam )() ),
+            DateUtil.buildDate( this.ngStore.selectSignal( SelectedProjectStore.currentMovementsPageWithoutActivityEndDateTimeSearchedParam )() ),
         )
     }
 
     public get currentMovementsPageWithActivityLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( SelectedProjectState.currentMovementsPageWithActivityLoading )
+        return this.ngStore.selectSignal( SelectedProjectStore.currentMovementsPageWithActivityLoading )
     }
 
     public get currentMovementsPageWithActivitySilentLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( SelectedProjectState.currentMovementsPageWithActivitySilentLoading )
+        return this.ngStore.selectSignal( SelectedProjectStore.currentMovementsPageWithActivitySilentLoading )
     }
 
     public get currentMovementsPageWithActivityError (): Signal<ToastMessageOptions | undefined> {
-        return this.ngStore.selectSignal( SelectedProjectState.currentMovementsPageWithActivityError )
+        return this.ngStore.selectSignal( SelectedProjectStore.currentMovementsPageWithActivityError )
     }
 
     public get currentMovementsPageWithActivity (): Signal<PageModel<MovementModel> | undefined> {
-        return this.ngStore.selectSignal( SelectedProjectState.currentMovementsPageWithActivity )
+        return this.ngStore.selectSignal( SelectedProjectStore.currentMovementsPageWithActivity )
     }
 
     private get currentMovementsPageWithActivityResetSearch (): Signal<boolean> {
-        return this.ngStore.selectSignal( SelectedProjectState.currentMovementsPageWithActivityResetSearch )
+        return this.ngStore.selectSignal( SelectedProjectStore.currentMovementsPageWithActivityResetSearch )
     }
 
     public get currentMovementsPageWithActivityStartDateTimeSearchedParam (): Signal<Date | undefined> {
         return computed( (): Date | undefined =>
-            DateUtil.buildDate( this.ngStore.selectSignal( SelectedProjectState.currentMovementsPageWithActivityStartDateTimeSearchedParam )() ),
+            DateUtil.buildDate( this.ngStore.selectSignal( SelectedProjectStore.currentMovementsPageWithActivityStartDateTimeSearchedParam )() ),
         )
     }
 
     public get currentMovementsPageWithActivityEndDateTimeSearchedParam (): Signal<Date | undefined> {
         return computed( (): Date | undefined =>
-            DateUtil.buildDate( this.ngStore.selectSignal( SelectedProjectState.currentMovementsPageWithActivityEndDateTimeSearchedParam )() ),
+            DateUtil.buildDate( this.ngStore.selectSignal( SelectedProjectStore.currentMovementsPageWithActivityEndDateTimeSearchedParam )() ),
         )
     }
 
     public get currentAlertsPageError (): Signal<ToastMessageOptions | undefined> {
-        return this.ngStore.selectSignal( SelectedProjectState.currentAlertsPageError )
+        return this.ngStore.selectSignal( SelectedProjectStore.currentAlertsPageError )
     }
 
     public get currentAlertsPage (): Signal<PageModel<AlertModel> | undefined> {
-        return this.ngStore.selectSignal( SelectedProjectState.currentAlertsPage )
+        return this.ngStore.selectSignal( SelectedProjectStore.currentAlertsPage )
     }
 
     public startParticipantsStatusLoader (): void {
@@ -145,21 +145,21 @@ export class SelectedProjectFacade extends GenericFacade {
     public loadProjectHomeInformation (force: boolean): void {
         const actions: object[] = [
             new FetchParticipantsStatus(
-                this.ngStore.selectSignal( RegistryState.currentUserSelectedProjectId )(),
+                this.ngStore.selectSignal( RegistryStore.currentUserSelectedProjectId )(),
                 force,
             ),
             new FetchParticipantsBirthdays(
-                this.ngStore.selectSignal( RegistryState.currentUserSelectedProjectId )(),
+                this.ngStore.selectSignal( RegistryStore.currentUserSelectedProjectId )(),
                 force,
             ),
         ]
         if (ProjectUtil.hasOption(
-            this.ngStore.selectSignal( RegistryState.currentUserSelectedProject )(),
+            this.ngStore.selectSignal( RegistryStore.currentUserSelectedProject )(),
             ProjectOptionEnum.VEHICLE,
         )) {
             actions.push(
                 new FetchVehiclesStatus(
-                    this.ngStore.selectSignal( RegistryState.currentUserSelectedProjectId )(),
+                    this.ngStore.selectSignal( RegistryStore.currentUserSelectedProjectId )(),
                     force,
                 ),
             )
@@ -177,7 +177,7 @@ export class SelectedProjectFacade extends GenericFacade {
 
     public fetchVehiclesStatus (force: boolean): void {
         this.ngStore.dispatch( new FetchVehiclesStatus(
-            this.ngStore.selectSignal( RegistryState.currentUserSelectedProjectId )(),
+            this.ngStore.selectSignal( RegistryStore.currentUserSelectedProjectId )(),
             force,
         ) )
     }
@@ -196,7 +196,7 @@ export class SelectedProjectFacade extends GenericFacade {
         force: boolean,
     ): void {
         this.ngStore.dispatch( new FetchCurrentMovementsPageWithoutActivity(
-            this.ngStore.selectSignal( RegistryState.currentUserSelectedProjectId )(),
+            this.ngStore.selectSignal( RegistryStore.currentUserSelectedProjectId )(),
             pageNumber,
             pageSize,
             force,
@@ -204,7 +204,7 @@ export class SelectedProjectFacade extends GenericFacade {
     }
 
     public fetchCurrentMovementsWithoutActivityDetails (movementIds: string[]): void {
-        const project: ProjectModel | undefined = this.ngStore.selectSignal( RegistryState.currentUserSelectedProject )()
+        const project: ProjectModel | undefined = this.ngStore.selectSignal( RegistryStore.currentUserSelectedProject )()
         this.ngStore.dispatch( new FetchCurrentMovementsWithoutActivityContents( project?.id, movementIds ) )
     }
 
@@ -222,7 +222,7 @@ export class SelectedProjectFacade extends GenericFacade {
         force: boolean,
     ): void {
         this.ngStore.dispatch( new FetchCurrentMovementsPageWithActivity(
-            this.ngStore.selectSignal( RegistryState.currentUserSelectedProjectId )(),
+            this.ngStore.selectSignal( RegistryStore.currentUserSelectedProjectId )(),
             pageNumber,
             pageSize,
             force,
@@ -230,7 +230,7 @@ export class SelectedProjectFacade extends GenericFacade {
     }
 
     public fetchCurrentMovementsWithActivityDetails (movementIds: string[]): void {
-        const project: ProjectModel | undefined = this.ngStore.selectSignal( RegistryState.currentUserSelectedProject )()
+        const project: ProjectModel | undefined = this.ngStore.selectSignal( RegistryStore.currentUserSelectedProject )()
         this.ngStore.dispatch( new FetchCurrentMovementsWithActivityContents( project?.id, movementIds ) )
     }
 
@@ -240,7 +240,7 @@ export class SelectedProjectFacade extends GenericFacade {
         force: boolean,
     ): void {
         this.ngStore.dispatch( new FetchCurrentAlertsPage(
-            this.ngStore.selectSignal( RegistryState.currentUserSelectedProjectId )(),
+            this.ngStore.selectSignal( RegistryStore.currentUserSelectedProjectId )(),
             pageNumber,
             pageSize,
             force,

@@ -6,7 +6,7 @@ import { VehicleModel } from '@shared/models/model/vehicle.model'
 import { SelectItem } from 'primeng/api'
 import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum'
 
-export interface VehicleStateModel {
+export interface VehicleStoreModel {
     vehicles: PageRequestInformationModel<VehiclePageParamsModel, VehicleModel>
     movements: PageRequestInformationModel<MovementPageParamsModel, MovementModel>
     _metadata: {

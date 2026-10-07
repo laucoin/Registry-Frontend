@@ -3,7 +3,7 @@ import { Observable } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { GenericFacade } from '@shared/helpers/facade/generic.facade'
-import { ProjectState } from '@pages/projects/data/state/project/project.state'
+import { ProjectStore } from '@pages/projects/data/state/project/project.store'
 import {
     CreateProject,
     DeleteProject,
@@ -30,52 +30,52 @@ import { FetchCurrentUser } from '@core/registry/state/registry.action'
 @Injectable()
 export class ProjectFacade extends GenericFacade {
     public get projectsPage (): Signal<PageModel<ProjectModel> | undefined> {
-        return this.ngStore.selectSignal( ProjectState.projectsPage )
+        return this.ngStore.selectSignal( ProjectStore.projectsPage )
     }
 
     public get projectsPageLoading (): Signal<boolean> {
-        return computed( (): boolean => this.ngStore.selectSignal( ProjectState.projectsPageLoading )() )
+        return computed( (): boolean => this.ngStore.selectSignal( ProjectStore.projectsPageLoading )() )
     }
 
     public get projectsPageSilentLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( ProjectState.projectsPageSilentLoading )
+        return this.ngStore.selectSignal( ProjectStore.projectsPageSilentLoading )
     }
 
     public get projectsPageError (): Signal<ToastMessageOptions | undefined> {
-        return this.ngStore.selectSignal( ProjectState.projectsPageError )
+        return this.ngStore.selectSignal( ProjectStore.projectsPageError )
     }
 
     private get projectsPageResetSearch (): Signal<boolean> {
-        return this.ngStore.selectSignal( ProjectState.projectsPageResetSearch )
+        return this.ngStore.selectSignal( ProjectStore.projectsPageResetSearch )
     }
 
     public get projectsPageTextSearchedParam (): Signal<string | undefined> {
-        return this.ngStore.selectSignal( ProjectState.projectsPageTextSearchedParam )
+        return this.ngStore.selectSignal( ProjectStore.projectsPageTextSearchedParam )
     }
 
     public get projectsPageDateTimeSearchedParam (): Signal<Date | undefined> {
-        return computed( (): Date | undefined => DateUtil.buildDate( this.ngStore.selectSignal( ProjectState.projectsPageDateTimeSearchedParam )() ) )
+        return computed( (): Date | undefined => DateUtil.buildDate( this.ngStore.selectSignal( ProjectStore.projectsPageDateTimeSearchedParam )() ) )
     }
 
     public get projectsPageWithProfileSearchedParam (): Signal<boolean | undefined> {
-        return this.ngStore.selectSignal( ProjectState.projectsPageWithProfileSearchedParam )
+        return this.ngStore.selectSignal( ProjectStore.projectsPageWithProfileSearchedParam )
     }
 
     public get projectsPageVisibilitySearchedParam (): Signal<boolean | undefined> {
-        return this.ngStore.selectSignal( ProjectState.projectsPageVisibilitySearchedParam )
+        return this.ngStore.selectSignal( ProjectStore.projectsPageVisibilitySearchedParam )
     }
 
     public get projectOptionsMetadata (): Signal<ProjectOptionModel[]> {
-        return this.ngStore.selectSignal( ProjectState.projectOptionsMetadata )
+        return this.ngStore.selectSignal( ProjectStore.projectOptionsMetadata )
     }
 
     public get projectOptionsMetadata$ (): Observable<ProjectOptionModel[]> {
-        return this.ngStore.select( ProjectState.projectOptionsMetadata )
+        return this.ngStore.select( ProjectStore.projectOptionsMetadata )
     }
 
     public get visibilitiesMetadata (): Signal<SelectItem<boolean | undefined>[]> {
         return computed( (): SelectItem<boolean | undefined>[] =>
-            this.ngStore.selectSignal( ProjectState.visibilitiesMetadata )().map( (item: SelectItem<boolean | undefined>): SelectItem<boolean | undefined> => ({
+            this.ngStore.selectSignal( ProjectStore.visibilitiesMetadata )().map( (item: SelectItem<boolean | undefined>): SelectItem<boolean | undefined> => ({
                 ...item,
                 label: this.translateService.instant( item.label! ),
             }) ),
@@ -83,19 +83,19 @@ export class ProjectFacade extends GenericFacade {
     }
 
     public get project (): Signal<ProjectModel | undefined> {
-        return this.ngStore.selectSignal( ProjectState.project )
+        return this.ngStore.selectSignal( ProjectStore.project )
     }
 
     public get createdProjectId (): Signal<string | undefined> {
-        return this.ngStore.selectSignal( ProjectState.createdProjectId )
+        return this.ngStore.selectSignal( ProjectStore.createdProjectId )
     }
 
     public get project$ (): Observable<ProjectModel | undefined> {
-        return this.ngStore.select( ProjectState.project )
+        return this.ngStore.select( ProjectStore.project )
     }
 
     public get projectLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( ProjectState.projectLoading )
+        return this.ngStore.selectSignal( ProjectStore.projectLoading )
     }
 
     public fetchProjectOptions (): void {

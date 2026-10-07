@@ -1,7 +1,7 @@
 import { Action, Selector, State, StateContext } from '@ngxs/store'
 import { catchError, finalize, map, Observable, of } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
-import { GenericElementState } from '@shared/helpers/state/generic-element.state'
+import { GenericElementStore } from '@shared/helpers/state/generic-element.store'
 import { initialize } from '@shared/helpers/util/rx.util'
 import {
     CreateProject,
@@ -30,7 +30,7 @@ import { ProjectOptionModel } from '@pages/projects/data/model/project-option.mo
 import { ErrorModel } from '@shared/models/model/error.model'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { ProjectModel } from '@shared/models/model/project.model'
-import { ProjectStateModel } from '@pages/projects/data/model/project-state.model'
+import { ProjectStoreModel } from '@pages/projects/data/model/project-store.model'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 
 const defaultProject: ElementRequestInformationModel<ProjectModel> = {
@@ -38,7 +38,7 @@ const defaultProject: ElementRequestInformationModel<ProjectModel> = {
     loading: false,
 }
 
-const defaultProjectState: ProjectStateModel = {
+const defaultProjectStore: ProjectStoreModel = {
     projects: {
         element: undefined,
         params: {
@@ -73,96 +73,96 @@ const defaultProjectState: ProjectStateModel = {
     },
 }
 
-@State<ProjectStateModel>( {
+@State<ProjectStoreModel>( {
     name: 'project',
-    defaults: defaultProjectState,
+    defaults: defaultProjectStore,
 } )
 @Injectable()
-export class ProjectState extends GenericElementState<ProjectStateModel> {
+export class ProjectStore extends GenericElementStore<ProjectStoreModel> {
     private readonly api: ProjectApi = inject( ProjectApi )
     private readonly facade: ProjectFacade = inject( ProjectFacade )
 
     private readonly projectIcon: string = 'pi pi-calendar'
 
     @Selector()
-    public static projectsPage (state: ProjectStateModel): PageModel<ProjectModel> | undefined {
+    public static projectsPage (state: ProjectStoreModel): PageModel<ProjectModel> | undefined {
         return state.projects.element
     }
 
     @Selector()
-    public static projectsPageLoading (state: ProjectStateModel): boolean {
+    public static projectsPageLoading (state: ProjectStoreModel): boolean {
         return state.projects.loading
     }
 
     @Selector()
-    public static projectsPageError (state: ProjectStateModel): ToastMessageOptions | undefined {
+    public static projectsPageError (state: ProjectStoreModel): ToastMessageOptions | undefined {
         return state.projects.error
     }
 
     @Selector()
-    public static projectsPageSilentLoading (state: ProjectStateModel): boolean {
+    public static projectsPageSilentLoading (state: ProjectStoreModel): boolean {
         return state.projects.silentLoading
     }
 
     @Selector()
-    public static projectsPageResetSearch (state: ProjectStateModel): boolean {
+    public static projectsPageResetSearch (state: ProjectStoreModel): boolean {
         return state.projects.params.resetSearch
     }
 
     @Selector()
-    public static projectsPageTextSearchedParam (state: ProjectStateModel): string | undefined {
+    public static projectsPageTextSearchedParam (state: ProjectStoreModel): string | undefined {
         return state.projects.params.textSearched
     }
 
     @Selector()
-    public static projectsPageWithProfileSearchedParam (state: ProjectStateModel): boolean | undefined {
+    public static projectsPageWithProfileSearchedParam (state: ProjectStoreModel): boolean | undefined {
         return state.projects.params.withProfile
     }
 
     @Selector()
-    public static projectsPageDateTimeSearchedParam (state: ProjectStateModel): string | undefined {
+    public static projectsPageDateTimeSearchedParam (state: ProjectStoreModel): string | undefined {
         return state.projects.params.dateTimeSearched
     }
 
     @Selector()
-    public static projectsPageVisibilitySearchedParam (state: ProjectStateModel): boolean | undefined {
+    public static projectsPageVisibilitySearchedParam (state: ProjectStoreModel): boolean | undefined {
         return state.projects.params.visibilitySearched
     }
 
     @Selector()
-    public static createdProjectId (state: ProjectStateModel): string | undefined {
+    public static createdProjectId (state: ProjectStoreModel): string | undefined {
         return state.createdProjectId
     }
 
     @Selector()
-    public static project (state: ProjectStateModel): ProjectModel | undefined {
+    public static project (state: ProjectStoreModel): ProjectModel | undefined {
         return state.project.element
     }
 
     @Selector()
-    public static projectLoading (state: ProjectStateModel): boolean {
+    public static projectLoading (state: ProjectStoreModel): boolean {
         return state.project.loading
     }
 
     @Selector()
-    public static projectOptionsMetadata (state: ProjectStateModel): ProjectOptionModel[] {
+    public static projectOptionsMetadata (state: ProjectStoreModel): ProjectOptionModel[] {
         return state._metadata.options
     }
 
     @Selector()
-    public static visibilitiesMetadata (state: ProjectStateModel): SelectItem<boolean | undefined>[] {
+    public static visibilitiesMetadata (state: ProjectStoreModel): SelectItem<boolean | undefined>[] {
         return state._metadata.visibilities
     }
 
     @Action( FetchProjectOptions )
-    public fetchProjectOptions (ctx: StateContext<ProjectStateModel>): Observable<void> {
+    public fetchProjectOptions (ctx: StateContext<ProjectStoreModel>): Observable<void> {
         return this.api.getAvailableProjectOptions().pipe(
             map( (options: ProjectOptionModel[]): void => this.fetchProjectOptionsComplete( ctx, options ) ),
         )
     }
 
     private fetchProjectOptionsComplete (
-        ctx: StateContext<ProjectStateModel>,
+        ctx: StateContext<ProjectStoreModel>,
         options: ProjectOptionModel[],
     ): void {
         ctx.patchState( {
@@ -174,21 +174,21 @@ export class ProjectState extends GenericElementState<ProjectStateModel> {
     }
 
     @Action( StartProjectsPageLoader )
-    public startProjectsPageLoader (ctx: StateContext<ProjectStateModel>): void {
+    public startProjectsPageLoader (ctx: StateContext<ProjectStoreModel>): void {
         ctx.patchState( {
             projects: StateUtil.updatePageLoader( ctx.getState().projects, true ),
         } )
     }
 
     @Action( StopProjectsPageLoader )
-    public stopProjectsPageLoader (ctx: StateContext<ProjectStateModel>): void {
+    public stopProjectsPageLoader (ctx: StateContext<ProjectStoreModel>): void {
         ctx.patchState( {
             projects: StateUtil.updatePageLoader( ctx.getState().projects, false ),
         } )
     }
 
     @Action( FetchProjectsPage )
-    public fetchProjectsPage (ctx: StateContext<ProjectStateModel>, payload: FetchProjectsPage): Observable<void> {
+    public fetchProjectsPage (ctx: StateContext<ProjectStoreModel>, payload: FetchProjectsPage): Observable<void> {
         return this.api.findProjects( payload.pageNumber, payload.pageSize, ctx.getState().projects.params ).pipe(
             initialize( (): void => this.facade.startProjectsPageLoader() ),
             finalize( (): void => this.facade.stopProjectsPageLoader() ),
@@ -198,7 +198,7 @@ export class ProjectState extends GenericElementState<ProjectStateModel> {
     }
 
     private fetchProjectsPageComplete (
-        ctx: StateContext<ProjectStateModel>,
+        ctx: StateContext<ProjectStoreModel>,
         projectPage: PageModel<ProjectModel>,
     ): void {
         ctx.patchState( {
@@ -215,7 +215,7 @@ export class ProjectState extends GenericElementState<ProjectStateModel> {
 
     @Action( UpdateProjectsPageSearchParams )
     public updateProjectsPageSearchParams (
-        ctx: StateContext<ProjectStateModel>,
+        ctx: StateContext<ProjectStoreModel>,
         payload: UpdateProjectsPageSearchParams,
     ): void {
         ctx.patchState( {
@@ -227,21 +227,21 @@ export class ProjectState extends GenericElementState<ProjectStateModel> {
     }
 
     @Action( StartProjectLoader )
-    public startProjectLoader (ctx: StateContext<ProjectStateModel>): void {
+    public startProjectLoader (ctx: StateContext<ProjectStoreModel>): void {
         ctx.patchState( {
             project: StateUtil.updateElementLoader( ctx.getState().project, true ),
         } )
     }
 
     @Action( StopProjectLoader )
-    public stopProjectLoader (ctx: StateContext<ProjectStateModel>): void {
+    public stopProjectLoader (ctx: StateContext<ProjectStoreModel>): void {
         ctx.patchState( {
             project: StateUtil.updateElementLoader( ctx.getState().project, false ),
         } )
     }
 
     @Action( FetchProject )
-    public fetchProject (ctx: StateContext<ProjectStateModel>, payload: FetchProject): Observable<void> {
+    public fetchProject (ctx: StateContext<ProjectStoreModel>, payload: FetchProject): Observable<void> {
         return this.api.findProjectById( payload.id ).pipe(
             initialize( (): void => this.facade.startProjectLoader() ),
             finalize( (): void => this.facade.stopProjectLoader() ),
@@ -249,7 +249,7 @@ export class ProjectState extends GenericElementState<ProjectStateModel> {
         )
     }
 
-    private fetchProjectComplete (ctx: StateContext<ProjectStateModel>, project: ProjectModel): void {
+    private fetchProjectComplete (ctx: StateContext<ProjectStoreModel>, project: ProjectModel): void {
         ctx.patchState( {
             project: {
                 ...ctx.getState().project,
@@ -259,14 +259,14 @@ export class ProjectState extends GenericElementState<ProjectStateModel> {
     }
 
     @Action( ResetProject )
-    public resetProject (ctx: StateContext<ProjectStateModel>): void {
+    public resetProject (ctx: StateContext<ProjectStoreModel>): void {
         ctx.patchState( {
             project: defaultProject,
         } )
     }
 
     @Action( CreateProject )
-    public createProject (ctx: StateContext<ProjectStateModel>, payload: CreateProject): Observable<void> {
+    public createProject (ctx: StateContext<ProjectStoreModel>, payload: CreateProject): Observable<void> {
         return this.api.createProject( payload.project ).pipe(
             initialize( (): void => this.facade.startProjectLoader() ),
             finalize( (): void => this.facade.stopProjectLoader() ),
@@ -274,7 +274,7 @@ export class ProjectState extends GenericElementState<ProjectStateModel> {
         )
     }
 
-    private createProjectComplete (ctx: StateContext<ProjectStateModel>, project: ProjectModel): void {
+    private createProjectComplete (ctx: StateContext<ProjectStoreModel>, project: ProjectModel): void {
         ctx.patchState( { createdProjectId: project.id } )
         this.buildMessageAndNotify(
             SeverityEnum.SUCCESS,
@@ -288,7 +288,7 @@ export class ProjectState extends GenericElementState<ProjectStateModel> {
     }
 
     @Action( UpdateProject )
-    public updateProject (ctx: StateContext<ProjectStateModel>, payload: UpdateProject): Observable<void> {
+    public updateProject (ctx: StateContext<ProjectStoreModel>, payload: UpdateProject): Observable<void> {
         return this.api.updateProjectById( payload.id, payload.project ).pipe(
             initialize( (): void => this.facade.startProjectLoader() ),
             finalize( (): void => this.facade.stopProjectLoader() ),
@@ -296,7 +296,7 @@ export class ProjectState extends GenericElementState<ProjectStateModel> {
         )
     }
 
-    private updateProjectComplete (ctx: StateContext<ProjectStateModel>, project: ProjectModel): void {
+    private updateProjectComplete (ctx: StateContext<ProjectStoreModel>, project: ProjectModel): void {
         this.buildMessageAndNotify(
             SeverityEnum.SUCCESS,
             'projects.notifications.edit.title',
@@ -313,7 +313,7 @@ export class ProjectState extends GenericElementState<ProjectStateModel> {
     }
 
     @Action( DisableProject )
-    public disableProject (ctx: StateContext<ProjectStateModel>, payload: DisableProject): Observable<void> {
+    public disableProject (ctx: StateContext<ProjectStoreModel>, payload: DisableProject): Observable<void> {
         return this.api.disableProjectById( payload.id ).pipe(
             initialize( (): void => this.facade.startProjectLoader() ),
             finalize( (): void => this.facade.stopProjectLoader() ),
@@ -321,7 +321,7 @@ export class ProjectState extends GenericElementState<ProjectStateModel> {
         )
     }
 
-    private disableProjectComplete (ctx: StateContext<ProjectStateModel>, project: ProjectModel): void {
+    private disableProjectComplete (ctx: StateContext<ProjectStoreModel>, project: ProjectModel): void {
         this.buildMessageAndNotify(
             SeverityEnum.SUCCESS,
             'projects.notifications.disable.title',
@@ -334,7 +334,7 @@ export class ProjectState extends GenericElementState<ProjectStateModel> {
     }
 
     @Action( EnableProject )
-    public enableProject (ctx: StateContext<ProjectStateModel>, payload: EnableProject): Observable<void> {
+    public enableProject (ctx: StateContext<ProjectStoreModel>, payload: EnableProject): Observable<void> {
         return this.api.enableProjectById( payload.id ).pipe(
             initialize( (): void => this.facade.startProjectLoader() ),
             finalize( (): void => this.facade.stopProjectLoader() ),
@@ -342,7 +342,7 @@ export class ProjectState extends GenericElementState<ProjectStateModel> {
         )
     }
 
-    private enableProjectComplete (ctx: StateContext<ProjectStateModel>, project: ProjectModel): void {
+    private enableProjectComplete (ctx: StateContext<ProjectStoreModel>, project: ProjectModel): void {
         this.buildMessageAndNotify(
             SeverityEnum.SUCCESS,
             'projects.notifications.enable.title',
@@ -355,7 +355,7 @@ export class ProjectState extends GenericElementState<ProjectStateModel> {
     }
 
     @Action( DeleteProject )
-    public deleteProject (ctx: StateContext<ProjectStateModel>, payload: DeleteProject): Observable<void> {
+    public deleteProject (ctx: StateContext<ProjectStoreModel>, payload: DeleteProject): Observable<void> {
         return this.api.deleteProjectById( payload.project.id ).pipe(
             initialize( (): void => this.facade.startProjectLoader() ),
             finalize( (): void => this.facade.stopProjectLoader() ),
@@ -363,7 +363,7 @@ export class ProjectState extends GenericElementState<ProjectStateModel> {
         )
     }
 
-    private deleteProjectComplete (ctx: StateContext<ProjectStateModel>, project: ProjectModel): void {
+    private deleteProjectComplete (ctx: StateContext<ProjectStoreModel>, project: ProjectModel): void {
         this.buildMessageAndNotify(
             SeverityEnum.SUCCESS,
             'projects.notifications.delete.title',
@@ -379,12 +379,12 @@ export class ProjectState extends GenericElementState<ProjectStateModel> {
         return { name: project.name }
     }
 
-    protected refreshPage (ctx: StateContext<ProjectStateModel>): void {
+    protected refreshPage (ctx: StateContext<ProjectStoreModel>): void {
         const page: PageModel<ProjectModel> | undefined = ctx.getState().projects.element
         this.facade.fetchProjectsPage( page?.pageNumber, page?.pageSize, true )
     }
 
-    protected pageError (ctx: StateContext<ProjectStateModel>, error: ErrorModel): Observable<void> {
+    protected pageError (ctx: StateContext<ProjectStoreModel>, error: ErrorModel): Observable<void> {
         if (error.status == 503) {
             throw error
         } else {

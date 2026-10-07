@@ -4,9 +4,9 @@ import { Action, Selector, State, StateContext } from '@ngxs/store'
 import { catchError, finalize, map, Observable, of } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
 import { UserModel } from '@shared/models/model/user.model'
-import { GenericElementState } from '@shared/helpers/state/generic-element.state'
+import { GenericElementStore } from '@shared/helpers/state/generic-element.store'
 import { initialize } from '@shared/helpers/util/rx.util'
-import { UserStateModel } from '@pages/users/data/model/user-state.model'
+import { UserStoreModel } from '@pages/users/data/model/user-store.model'
 import {
     BlockUser,
     DeleteUser,
@@ -35,7 +35,7 @@ const defaultUser: ElementRequestInformationModel<UserModel> = {
     loading: false,
 }
 
-const defaultUserState: UserStateModel = {
+const defaultUserStore: UserStoreModel = {
     users: {
         element: undefined,
         params: {
@@ -67,88 +67,88 @@ const defaultUserState: UserStateModel = {
     },
 }
 
-@State<UserStateModel>( {
+@State<UserStoreModel>( {
     name: 'user',
-    defaults: defaultUserState,
+    defaults: defaultUserStore,
 } )
 @Injectable()
-export class UserState extends GenericElementState<UserStateModel> {
+export class UserStore extends GenericElementStore<UserStoreModel> {
     private readonly userIcon: string = 'pi pi-users'
 
     private readonly api: UserApi = inject( UserApi )
     private readonly facade: UserFacade = inject( UserFacade )
 
     @Selector()
-    public static usersPage (state: UserStateModel): PageModel<UserModel> | undefined {
+    public static usersPage (state: UserStoreModel): PageModel<UserModel> | undefined {
         return state.users.element
     }
 
     @Selector()
-    public static usersPageLoading (state: UserStateModel): boolean {
+    public static usersPageLoading (state: UserStoreModel): boolean {
         return state.users.loading
     }
 
     @Selector()
-    public static usersPageError (state: UserStateModel): ToastMessageOptions | undefined {
+    public static usersPageError (state: UserStoreModel): ToastMessageOptions | undefined {
         return state.users.error
     }
 
     @Selector()
-    public static usersPageSilentLoading (state: UserStateModel): boolean {
+    public static usersPageSilentLoading (state: UserStoreModel): boolean {
         return state.users.silentLoading
     }
 
     @Selector()
-    public static usersPageResetSearch (state: UserStateModel): boolean {
+    public static usersPageResetSearch (state: UserStoreModel): boolean {
         return state.users.params.resetSearch
     }
 
     @Selector()
-    public static usersPageTextSearchedParam (state: UserStateModel): string | undefined {
+    public static usersPageTextSearchedParam (state: UserStoreModel): string | undefined {
         return state.users.params.textSearched
     }
 
     @Selector()
-    public static usersPageVisibilitySearchedParam (state: UserStateModel): boolean | undefined {
+    public static usersPageVisibilitySearchedParam (state: UserStoreModel): boolean | undefined {
         return state.users.params.visibilitySearched
     }
 
     @Selector()
-    public static user (state: UserStateModel): UserModel | undefined {
+    public static user (state: UserStoreModel): UserModel | undefined {
         return state.user.element
     }
 
     @Selector()
-    public static userLoading (state: UserStateModel): boolean {
+    public static userLoading (state: UserStoreModel): boolean {
         return state.user.loading
     }
 
     @Selector()
-    public static assignableRolesMetadata (state: UserStateModel): SelectItem<string>[] {
+    public static assignableRolesMetadata (state: UserStoreModel): SelectItem<string>[] {
         return state._metadata.assignableRoles
     }
 
     @Selector()
-    public static statusMetadata (state: UserStateModel): SelectItem<boolean | undefined>[] {
+    public static statusMetadata (state: UserStoreModel): SelectItem<boolean | undefined>[] {
         return state._metadata.status
     }
 
     @Action( StartUsersPageLoader )
-    public startUsersPageLoader (ctx: StateContext<UserStateModel>): void {
+    public startUsersPageLoader (ctx: StateContext<UserStoreModel>): void {
         ctx.patchState( {
             users: StateUtil.updatePageLoader( ctx.getState().users, true ),
         } )
     }
 
     @Action( StopUsersPageLoader )
-    public stopUsersPageLoader (ctx: StateContext<UserStateModel>): void {
+    public stopUsersPageLoader (ctx: StateContext<UserStoreModel>): void {
         ctx.patchState( {
             users: StateUtil.updatePageLoader( ctx.getState().users, false ),
         } )
     }
 
     @Action( FetchUsersPage )
-    public fetchUsersPage (ctx: StateContext<UserStateModel>, payload: FetchUsersPage): Observable<void> {
+    public fetchUsersPage (ctx: StateContext<UserStoreModel>, payload: FetchUsersPage): Observable<void> {
         return this.api.findUsers( payload.pageNumber, payload.pageSize, ctx.getState().users.params ).pipe(
             initialize( (): void => this.facade.startUsersPageLoader() ),
             finalize( (): void => this.facade.stopUsersPageLoader() ),
@@ -157,7 +157,7 @@ export class UserState extends GenericElementState<UserStateModel> {
         )
     }
 
-    private fetchUsersPageComplete (ctx: StateContext<UserStateModel>, userPage: PageModel<UserModel>): void {
+    private fetchUsersPageComplete (ctx: StateContext<UserStoreModel>, userPage: PageModel<UserModel>): void {
         ctx.patchState( {
             users: {
                 ...ctx.getState().users,
@@ -172,7 +172,7 @@ export class UserState extends GenericElementState<UserStateModel> {
 
     @Action( UpdateUsersPageSearchParams )
     public inputUsersPageTextSearched (
-        ctx: StateContext<UserStateModel>,
+        ctx: StateContext<UserStoreModel>,
         payload: UpdateUsersPageSearchParams,
     ): void {
         ctx.patchState( {
@@ -184,21 +184,21 @@ export class UserState extends GenericElementState<UserStateModel> {
     }
 
     @Action( StartUserLoader )
-    public startUserLoader (ctx: StateContext<UserStateModel>): void {
+    public startUserLoader (ctx: StateContext<UserStoreModel>): void {
         ctx.patchState( {
             user: StateUtil.updateElementLoader( ctx.getState().user, true ),
         } )
     }
 
     @Action( StopUserLoader )
-    public stopUserLoader (ctx: StateContext<UserStateModel>): void {
+    public stopUserLoader (ctx: StateContext<UserStoreModel>): void {
         ctx.patchState( {
             user: StateUtil.updateElementLoader( ctx.getState().user, false ),
         } )
     }
 
     @Action( FetchUser )
-    public fetchUser (ctx: StateContext<UserStateModel>, payload: FetchUser): Observable<void> {
+    public fetchUser (ctx: StateContext<UserStoreModel>, payload: FetchUser): Observable<void> {
         return this.api.findUserById( payload.id ).pipe(
             initialize( (): void => this.facade.startUserLoader() ),
             finalize( (): void => this.facade.stopUserLoader() ),
@@ -206,7 +206,7 @@ export class UserState extends GenericElementState<UserStateModel> {
         )
     }
 
-    private fetchUserComplete (ctx: StateContext<UserStateModel>, user: UserModel): void {
+    private fetchUserComplete (ctx: StateContext<UserStoreModel>, user: UserModel): void {
         ctx.patchState( {
             user: {
                 ...ctx.getState().user,
@@ -216,14 +216,14 @@ export class UserState extends GenericElementState<UserStateModel> {
     }
 
     @Action( ResetUser )
-    public resetUser (ctx: StateContext<UserStateModel>): void {
+    public resetUser (ctx: StateContext<UserStoreModel>): void {
         ctx.patchState( {
             user: defaultUser,
         } )
     }
 
     @Action( FetchAssignableUserRoles )
-    public fetchAssignableUserRoles (ctx: StateContext<UserStateModel>): Observable<void> {
+    public fetchAssignableUserRoles (ctx: StateContext<UserStoreModel>): Observable<void> {
         return this.api.getAssignableUserRoles().pipe(
             initialize( (): void => this.facade.startUserLoader() ),
             finalize( (): void => this.facade.stopUserLoader() ),
@@ -232,7 +232,7 @@ export class UserState extends GenericElementState<UserStateModel> {
     }
 
     private fetchAssignableUserRolesComplete (
-        ctx: StateContext<UserStateModel>,
+        ctx: StateContext<UserStoreModel>,
         roles: SelectItem<string>[],
     ): void {
         ctx.patchState( {
@@ -244,7 +244,7 @@ export class UserState extends GenericElementState<UserStateModel> {
     }
 
     @Action( UpdateUserRole )
-    public updateUserRole (ctx: StateContext<UserStateModel>, payload: UpdateUserRole): Observable<void> {
+    public updateUserRole (ctx: StateContext<UserStoreModel>, payload: UpdateUserRole): Observable<void> {
         return this.api.updateUserRole( payload.id, payload.role ).pipe(
             initialize( (): void => this.facade.startUserLoader() ),
             finalize( (): void => this.facade.stopUserLoader() ),
@@ -252,7 +252,7 @@ export class UserState extends GenericElementState<UserStateModel> {
         )
     }
 
-    private updateUserRoleComplete (ctx: StateContext<UserStateModel>, user: UserModel): void {
+    private updateUserRoleComplete (ctx: StateContext<UserStoreModel>, user: UserModel): void {
         this.buildMessageAndNotify(
             SeverityEnum.SUCCESS,
             'users.notifications.update-role.title',
@@ -264,7 +264,7 @@ export class UserState extends GenericElementState<UserStateModel> {
     }
 
     @Action( BlockUser )
-    public blockUser (ctx: StateContext<UserStateModel>, payload: BlockUser): Observable<void> {
+    public blockUser (ctx: StateContext<UserStoreModel>, payload: BlockUser): Observable<void> {
         return this.api.blockUserById( payload.id ).pipe(
             initialize( (): void => this.facade.startUserLoader() ),
             finalize( (): void => this.facade.stopUserLoader() ),
@@ -272,7 +272,7 @@ export class UserState extends GenericElementState<UserStateModel> {
         )
     }
 
-    private blockUserComplete (ctx: StateContext<UserStateModel>, user: UserModel): void {
+    private blockUserComplete (ctx: StateContext<UserStoreModel>, user: UserModel): void {
         this.buildMessageAndNotify(
             SeverityEnum.SUCCESS,
             'users.notifications.disable.title',
@@ -284,7 +284,7 @@ export class UserState extends GenericElementState<UserStateModel> {
     }
 
     @Action( UnblockUser )
-    public unblockUser (ctx: StateContext<UserStateModel>, payload: UnblockUser): Observable<void> {
+    public unblockUser (ctx: StateContext<UserStoreModel>, payload: UnblockUser): Observable<void> {
         return this.api.unblockUserById( payload.id ).pipe(
             initialize( (): void => this.facade.startUserLoader() ),
             finalize( (): void => this.facade.stopUserLoader() ),
@@ -292,7 +292,7 @@ export class UserState extends GenericElementState<UserStateModel> {
         )
     }
 
-    private unblockUserComplete (ctx: StateContext<UserStateModel>, user: UserModel): void {
+    private unblockUserComplete (ctx: StateContext<UserStoreModel>, user: UserModel): void {
         this.buildMessageAndNotify(
             SeverityEnum.SUCCESS,
             'users.notifications.enable.title',
@@ -304,7 +304,7 @@ export class UserState extends GenericElementState<UserStateModel> {
     }
 
     @Action( ImpersonateUser )
-    public impersonateUser (ctx: StateContext<UserStateModel>, payload: ImpersonateUser): Observable<void> {
+    public impersonateUser (ctx: StateContext<UserStoreModel>, payload: ImpersonateUser): Observable<void> {
         return this.api.impersonateUserById( payload.user.id ).pipe(
             initialize( (): void => this.facade.startUserLoader() ),
             finalize( (): void => this.facade.stopUserLoader() ),
@@ -312,7 +312,7 @@ export class UserState extends GenericElementState<UserStateModel> {
         )
     }
 
-    private impersonateUserComplete (ctx: StateContext<UserStateModel>, user: UserModel): void {
+    private impersonateUserComplete (ctx: StateContext<UserStoreModel>, user: UserModel): void {
         this.buildMessageAndNotify(
             SeverityEnum.SUCCESS,
             'users.notifications.impersonate.title',
@@ -325,7 +325,7 @@ export class UserState extends GenericElementState<UserStateModel> {
     }
 
     @Action( DeleteUser )
-    public DeleteUser (ctx: StateContext<UserStateModel>, payload: DeleteUser): Observable<void> {
+    public DeleteUser (ctx: StateContext<UserStoreModel>, payload: DeleteUser): Observable<void> {
         return this.api.deleteUserById( payload.user.id ).pipe(
             initialize( (): void => this.facade.startUserLoader() ),
             finalize( (): void => this.facade.stopUserLoader() ),
@@ -333,7 +333,7 @@ export class UserState extends GenericElementState<UserStateModel> {
         )
     }
 
-    private deleteUserComplete (ctx: StateContext<UserStateModel>, user: UserModel): void {
+    private deleteUserComplete (ctx: StateContext<UserStoreModel>, user: UserModel): void {
         this.buildMessageAndNotify(
             SeverityEnum.SUCCESS,
             'users.notifications.delete.title',
@@ -351,12 +351,12 @@ export class UserState extends GenericElementState<UserStateModel> {
         }
     }
 
-    protected refreshPage (ctx: StateContext<UserStateModel>): void {
+    protected refreshPage (ctx: StateContext<UserStoreModel>): void {
         const page: PageModel<UserModel> | undefined = ctx.getState().users.element
         this.facade.fetchUsersPage( page?.pageNumber, page?.pageSize, true )
     }
 
-    protected pageError (ctx: StateContext<UserStateModel>, error: HttpErrorResponse): Observable<void> {
+    protected pageError (ctx: StateContext<UserStoreModel>, error: HttpErrorResponse): Observable<void> {
         if (error.status === 503) {
             throw error
         } else {

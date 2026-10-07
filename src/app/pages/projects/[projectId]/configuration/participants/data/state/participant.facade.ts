@@ -19,7 +19,7 @@ import {
 } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.action'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { GroupModel } from '@shared/models/model/group.model'
-import { ParticipantState } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.state'
+import { ParticipantStore } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.store'
 import { GenericProjectElementFacade } from '@shared/helpers/facade/generic-project-element.facade'
 import { MovementModel } from '@shared/models/model/movement.model'
 import { DateUtil } from '@shared/helpers/util/date.util'
@@ -34,92 +34,92 @@ export class ParticipantFacade extends GenericProjectElementFacade {
     private readonly api: ParticipantApi = inject( ParticipantApi )
 
     public get participantsPage (): Signal<PageModel<ParticipantModel> | undefined> {
-        return this.ngStore.selectSignal( ParticipantState.participantsPage )
+        return this.ngStore.selectSignal( ParticipantStore.participantsPage )
     }
 
     public get participantsPageLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( ParticipantState.participantsPageLoading )
+        return this.ngStore.selectSignal( ParticipantStore.participantsPageLoading )
     }
 
     public get participantsPageSilentLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( ParticipantState.participantsPageSilentLoading )
+        return this.ngStore.selectSignal( ParticipantStore.participantsPageSilentLoading )
     }
 
     public get participantsPageError (): Signal<ToastMessageOptions | undefined> {
-        return this.ngStore.selectSignal( ParticipantState.participantsPageError )
+        return this.ngStore.selectSignal( ParticipantStore.participantsPageError )
     }
 
     public get participantsPageResetSearch (): Signal<boolean> {
-        return this.ngStore.selectSignal( ParticipantState.participantsPageResetSearch )
+        return this.ngStore.selectSignal( ParticipantStore.participantsPageResetSearch )
     }
 
     public get participantsPageTextSearchedParam (): Signal<string | undefined> {
-        return this.ngStore.selectSignal( ParticipantState.participantsPageTextSearchedParam )
+        return this.ngStore.selectSignal( ParticipantStore.participantsPageTextSearchedParam )
     }
 
     public get participantsPageStatusSearchedParam (): Signal<string | undefined> {
-        return this.ngStore.selectSignal( ParticipantState.participantsPageStatusSearchedParam )
+        return this.ngStore.selectSignal( ParticipantStore.participantsPageStatusSearchedParam )
     }
 
     public get participantsPageVisibilitySearchedParam (): Signal<boolean | undefined> {
-        return this.ngStore.selectSignal( ParticipantState.participantsPageVisibilitySearchedParam )
+        return this.ngStore.selectSignal( ParticipantStore.participantsPageVisibilitySearchedParam )
     }
 
     public get participantMovementsPage (): Signal<PageModel<MovementModel> | undefined> {
-        return this.ngStore.selectSignal( ParticipantState.participantMovementsPage )
+        return this.ngStore.selectSignal( ParticipantStore.participantMovementsPage )
     }
 
     public get participantMovementsPageLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( ParticipantState.participantMovementsPageLoading )
+        return this.ngStore.selectSignal( ParticipantStore.participantMovementsPageLoading )
     }
 
     public get participantMovementsPageSilentLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( ParticipantState.participantMovementsPageSilentLoading )
+        return this.ngStore.selectSignal( ParticipantStore.participantMovementsPageSilentLoading )
     }
 
     public get participantMovementsPageError (): Signal<ToastMessageOptions | undefined> {
-        return this.ngStore.selectSignal( ParticipantState.participantMovementsPageError )
+        return this.ngStore.selectSignal( ParticipantStore.participantMovementsPageError )
     }
 
     public get participantMovementsPageResetSearch (): Signal<boolean> {
-        return this.ngStore.selectSignal( ParticipantState.participantMovementsPageResetSearch )
+        return this.ngStore.selectSignal( ParticipantStore.participantMovementsPageResetSearch )
     }
 
     public get participantMovementsPageTypeSearchedParam (): Signal<string | undefined> {
-        return this.ngStore.selectSignal( ParticipantState.participantMovementsPageTypeSearchedParam )
+        return this.ngStore.selectSignal( ParticipantStore.participantMovementsPageTypeSearchedParam )
     }
 
     public get participantMovementsPageStartDateTimeSearchedParam (): Signal<Date | undefined> {
         return computed( (): Date | undefined =>
-            DateUtil.buildDate( this.ngStore.selectSignal( ParticipantState.participantMovementsPageStartDateTimeSearchedParam )() ),
+            DateUtil.buildDate( this.ngStore.selectSignal( ParticipantStore.participantMovementsPageStartDateTimeSearchedParam )() ),
         )
     }
 
     public get participantMovementsPageEndDateTimeSearchedParam (): Signal<Date | undefined> {
         return computed( (): Date | undefined =>
-            DateUtil.buildDate( this.ngStore.selectSignal( ParticipantState.participantMovementsPageEndDateTimeSearchedParam )() ),
+            DateUtil.buildDate( this.ngStore.selectSignal( ParticipantStore.participantMovementsPageEndDateTimeSearchedParam )() ),
         )
     }
 
     public get participantMovementsPageVisibilitySearchedParam (): Signal<boolean | undefined> {
-        return this.ngStore.selectSignal( ParticipantState.participantMovementsPageVisibilitySearchedParam )
+        return this.ngStore.selectSignal( ParticipantStore.participantMovementsPageVisibilitySearchedParam )
     }
 
     public get searchedUsersMetadata (): Signal<SelectItem<UserModel>[]> {
-        return this.ngStore.selectSignal( ParticipantState.searchedUsersMetadata )
+        return this.ngStore.selectSignal( ParticipantStore.searchedUsersMetadata )
     }
 
     public get searchedGroupsMetadata (): Signal<SelectItem<GroupModel>[]> {
-        return this.ngStore.selectSignal( ParticipantState.searchedGroupsMetadata )
+        return this.ngStore.selectSignal( ParticipantStore.searchedGroupsMetadata )
     }
 
     public get presencesStatusMetadata (): Signal<SelectItem<PresenceStatusEnum | undefined>[]> {
-        return this.ngStore.selectSignal( ParticipantState.presencesStatusMetadata )
+        return this.ngStore.selectSignal( ParticipantStore.presencesStatusMetadata )
     }
 
     public get visibilitiesMetadata (): Signal<SelectItem<boolean | undefined>[]> {
         return computed( (): SelectItem<boolean | undefined>[] =>
-            this.ngStore.selectSignal( ParticipantState.visibilitiesMetadata )().map( (status: SelectItem<boolean | undefined>): SelectItem<boolean | undefined> => ({
+            this.ngStore.selectSignal( ParticipantStore.visibilitiesMetadata )().map( (status: SelectItem<boolean | undefined>): SelectItem<boolean | undefined> => ({
                 ...status,
                 label: this.translateService.instant( status.label! ),
             }) ),

@@ -5,7 +5,7 @@ import { ToastMessageOptions } from 'primeng/api'
 import { VehicleStatusModel } from '@pages/projects/data/model/vehicle-status.model'
 import { PageModel } from '@shared/models/model/page.model'
 import { MovementModel } from '@shared/models/model/movement.model'
-import { SelectedProjectStateModel } from '@pages/projects/data/model/selected-project-state.model'
+import { SelectedProjectStoreModel } from '@pages/projects/data/model/selected-project-store.model'
 import { catchError, finalize, map, Observable, of } from 'rxjs'
 import { initialize } from '@shared/helpers/util/rx.util'
 import { ErrorModel } from '@shared/models/model/error.model'
@@ -39,9 +39,9 @@ import { AlertStatusEnum } from '@shared/models/enumeration/alert-status.enum'
 import { AlertApi } from '@pages/projects/[projectId]/movements/data/state/alert.api'
 import { AlertModel } from '@shared/models/model/alert.model'
 import { StateUtil } from '@shared/helpers/state/state.util'
-import { GenericState } from '@shared/helpers/state/generic.state'
+import { GenericStore } from '@shared/helpers/state/generic.store'
 
-const defaultSelectedProjectState: SelectedProjectStateModel = {
+const defaultSelectedProjectStore: SelectedProjectStoreModel = {
     status: {
         participants: {
             element: undefined,
@@ -103,148 +103,148 @@ const defaultSelectedProjectState: SelectedProjectStateModel = {
     },
 }
 
-@State<SelectedProjectStateModel>( {
+@State<SelectedProjectStoreModel>( {
     name: 'selectedProject',
-    defaults: defaultSelectedProjectState,
+    defaults: defaultSelectedProjectStore,
 } )
 @Injectable()
-export class SelectedProjectState extends GenericState {
+export class SelectedProjectStore extends GenericStore {
     private readonly facade: SelectedProjectFacade = inject( SelectedProjectFacade )
     private readonly movementApi: MovementApi = inject( MovementApi )
     private readonly alertApi: AlertApi = inject( AlertApi )
     private readonly participantApi: ParticipantApi = inject( ParticipantApi )
 
     @Selector()
-    public static participantsStatus (state: SelectedProjectStateModel): ProjectStatusModel | undefined {
+    public static participantsStatus (state: SelectedProjectStoreModel): ProjectStatusModel | undefined {
         return state.status.participants.element
     }
 
     @Selector()
-    public static participantsStatusLoading (state: SelectedProjectStateModel): boolean {
+    public static participantsStatusLoading (state: SelectedProjectStoreModel): boolean {
         return state.status.participants.loading
     }
 
     @Selector()
-    public static participantsStatusError (state: SelectedProjectStateModel): ToastMessageOptions | undefined {
+    public static participantsStatusError (state: SelectedProjectStoreModel): ToastMessageOptions | undefined {
         return state.status.participants.error
     }
 
     @Selector()
-    public static vehiclesStatus (state: SelectedProjectStateModel): VehicleStatusModel | undefined {
+    public static vehiclesStatus (state: SelectedProjectStoreModel): VehicleStatusModel | undefined {
         return state.status.vehicles.element
     }
 
     @Selector()
-    public static vehiclesStatusLoading (state: SelectedProjectStateModel): boolean {
+    public static vehiclesStatusLoading (state: SelectedProjectStoreModel): boolean {
         return state.status.vehicles.loading
     }
 
     @Selector()
-    public static vehiclesStatusError (state: SelectedProjectStateModel): ToastMessageOptions | undefined {
+    public static vehiclesStatusError (state: SelectedProjectStoreModel): ToastMessageOptions | undefined {
         return state.status.vehicles.error
     }
 
     @Selector()
-    public static participantsBirthdays (state: SelectedProjectStateModel): ParticipantModel[] {
+    public static participantsBirthdays (state: SelectedProjectStoreModel): ParticipantModel[] {
         return state.birthdays
     }
 
     @Selector()
-    public static currentMovementsPageWithoutActivity (state: SelectedProjectStateModel): PageModel<MovementModel> | undefined {
+    public static currentMovementsPageWithoutActivity (state: SelectedProjectStoreModel): PageModel<MovementModel> | undefined {
         return state.currentMovements.withoutActivity.element
     }
 
     @Selector()
-    public static currentMovementsPageWithoutActivityLoading (state: SelectedProjectStateModel): boolean {
+    public static currentMovementsPageWithoutActivityLoading (state: SelectedProjectStoreModel): boolean {
         return state.currentMovements.withoutActivity.loading
     }
 
     @Selector()
-    public static currentMovementsPageWithoutActivityError (state: SelectedProjectStateModel): ToastMessageOptions | undefined {
+    public static currentMovementsPageWithoutActivityError (state: SelectedProjectStoreModel): ToastMessageOptions | undefined {
         return state.currentMovements.withoutActivity.error
     }
 
     @Selector()
-    public static currentMovementsPageWithoutActivitySilentLoading (state: SelectedProjectStateModel): boolean {
+    public static currentMovementsPageWithoutActivitySilentLoading (state: SelectedProjectStoreModel): boolean {
         return state.currentMovements.withoutActivity.silentLoading
     }
 
     @Selector()
-    public static currentMovementsPageWithoutActivityResetSearch (state: SelectedProjectStateModel): boolean {
+    public static currentMovementsPageWithoutActivityResetSearch (state: SelectedProjectStoreModel): boolean {
         return state.currentMovements.withoutActivity.params.resetSearch
     }
 
     @Selector()
-    public static currentMovementsPageWithoutActivityStartDateTimeSearchedParam (state: SelectedProjectStateModel): string | undefined {
+    public static currentMovementsPageWithoutActivityStartDateTimeSearchedParam (state: SelectedProjectStoreModel): string | undefined {
         return state.currentMovements.withoutActivity.params.startDateTimeSearched
     }
 
     @Selector()
-    public static currentMovementsPageWithoutActivityEndDateTimeSearchedParam (state: SelectedProjectStateModel): string | undefined {
+    public static currentMovementsPageWithoutActivityEndDateTimeSearchedParam (state: SelectedProjectStoreModel): string | undefined {
         return state.currentMovements.withoutActivity.params.endDateTimeSearched
     }
 
     @Selector()
-    public static currentMovementsPageWithActivity (state: SelectedProjectStateModel): PageModel<MovementModel> | undefined {
+    public static currentMovementsPageWithActivity (state: SelectedProjectStoreModel): PageModel<MovementModel> | undefined {
         return state.currentMovements.withActivity.element
     }
 
     @Selector()
-    public static currentMovementsPageWithActivityLoading (state: SelectedProjectStateModel): boolean {
+    public static currentMovementsPageWithActivityLoading (state: SelectedProjectStoreModel): boolean {
         return state.currentMovements.withActivity.loading
     }
 
     @Selector()
-    public static currentMovementsPageWithActivityError (state: SelectedProjectStateModel): ToastMessageOptions | undefined {
+    public static currentMovementsPageWithActivityError (state: SelectedProjectStoreModel): ToastMessageOptions | undefined {
         return state.currentMovements.withActivity.error
     }
 
     @Selector()
-    public static currentMovementsPageWithActivitySilentLoading (state: SelectedProjectStateModel): boolean {
+    public static currentMovementsPageWithActivitySilentLoading (state: SelectedProjectStoreModel): boolean {
         return state.currentMovements.withActivity.silentLoading
     }
 
     @Selector()
-    public static currentMovementsPageWithActivityResetSearch (state: SelectedProjectStateModel): boolean {
+    public static currentMovementsPageWithActivityResetSearch (state: SelectedProjectStoreModel): boolean {
         return state.currentMovements.withActivity.params.resetSearch
     }
 
     @Selector()
-    public static currentMovementsPageWithActivityStartDateTimeSearchedParam (state: SelectedProjectStateModel): string | undefined {
+    public static currentMovementsPageWithActivityStartDateTimeSearchedParam (state: SelectedProjectStoreModel): string | undefined {
         return state.currentMovements.withActivity.params.startDateTimeSearched
     }
 
     @Selector()
-    public static currentMovementsPageWithActivityEndDateTimeSearchedParam (state: SelectedProjectStateModel): string | undefined {
+    public static currentMovementsPageWithActivityEndDateTimeSearchedParam (state: SelectedProjectStoreModel): string | undefined {
         return state.currentMovements.withActivity.params.endDateTimeSearched
     }
 
     @Selector()
-    public static currentAlertsPageError (state: SelectedProjectStateModel): ToastMessageOptions | undefined {
+    public static currentAlertsPageError (state: SelectedProjectStoreModel): ToastMessageOptions | undefined {
         return state.alerts.error
     }
 
     @Selector()
-    public static currentAlertsPage (state: SelectedProjectStateModel): PageModel<AlertModel> | undefined {
+    public static currentAlertsPage (state: SelectedProjectStoreModel): PageModel<AlertModel> | undefined {
         return state.alerts.element
     }
 
     @Action( ResetSelectedProjectState )
-    public resetSelectedProjectState (ctx: StateContext<SelectedProjectStateModel>): void {
-        ctx.setState( defaultSelectedProjectState )
+    public resetSelectedProjectState (ctx: StateContext<SelectedProjectStoreModel>): void {
+        ctx.setState( defaultSelectedProjectStore )
     }
 
     @Action( StartParticipantsStatusLoader )
-    public startParticipantsStatusLoader (ctx: StateContext<SelectedProjectStateModel>): void {
+    public startParticipantsStatusLoader (ctx: StateContext<SelectedProjectStoreModel>): void {
         this.updateParticipantsStatusLoader( ctx, true )
     }
 
     @Action( StopParticipantsStatusLoader )
-    public stopParticipantsStatusLoader (ctx: StateContext<SelectedProjectStateModel>): void {
+    public stopParticipantsStatusLoader (ctx: StateContext<SelectedProjectStoreModel>): void {
         this.updateParticipantsStatusLoader( ctx, false )
     }
 
-    private updateParticipantsStatusLoader (ctx: StateContext<SelectedProjectStateModel>, loading: boolean): void {
+    private updateParticipantsStatusLoader (ctx: StateContext<SelectedProjectStoreModel>, loading: boolean): void {
         ctx.patchState( {
             status: {
                 ...ctx.getState().status,
@@ -258,7 +258,7 @@ export class SelectedProjectState extends GenericState {
 
     @Action( FetchParticipantsStatus )
     public fetchParticipantsStatus (
-        ctx: StateContext<SelectedProjectStateModel>,
+        ctx: StateContext<SelectedProjectStoreModel>,
         payload: FetchParticipantsStatus,
     ): Observable<void> {
         return this.movementApi.findParticipantsStatus( payload.projectId ).pipe(
@@ -270,7 +270,7 @@ export class SelectedProjectState extends GenericState {
     }
 
     private fetchParticipantsStatusComplete (
-        ctx: StateContext<SelectedProjectStateModel>,
+        ctx: StateContext<SelectedProjectStoreModel>,
         status: ProjectStatusModel,
     ): void {
         ctx.patchState( {
@@ -285,7 +285,7 @@ export class SelectedProjectState extends GenericState {
     }
 
     private fetchParticipantsStatusError (
-        ctx: StateContext<SelectedProjectStateModel>,
+        ctx: StateContext<SelectedProjectStoreModel>,
         error: ErrorModel,
     ): Observable<void> {
         if (error.status == 503) {
@@ -312,16 +312,16 @@ export class SelectedProjectState extends GenericState {
     }
 
     @Action( StartVehiclesStatusLoader )
-    public startVehiclesStatusLoader (ctx: StateContext<SelectedProjectStateModel>): void {
+    public startVehiclesStatusLoader (ctx: StateContext<SelectedProjectStoreModel>): void {
         this.updateVehiclesStatusLoader( ctx, true )
     }
 
     @Action( StopVehiclesStatusLoader )
-    public stopVehiclesStatusLoader (ctx: StateContext<SelectedProjectStateModel>): void {
+    public stopVehiclesStatusLoader (ctx: StateContext<SelectedProjectStoreModel>): void {
         this.updateVehiclesStatusLoader( ctx, false )
     }
 
-    private updateVehiclesStatusLoader (ctx: StateContext<SelectedProjectStateModel>, loading: boolean): void {
+    private updateVehiclesStatusLoader (ctx: StateContext<SelectedProjectStoreModel>, loading: boolean): void {
         ctx.patchState( {
             status: {
                 ...ctx.getState().status,
@@ -335,7 +335,7 @@ export class SelectedProjectState extends GenericState {
 
     @Action( FetchVehiclesStatus )
     public fetchVehiclesStatus (
-        ctx: StateContext<SelectedProjectStateModel>,
+        ctx: StateContext<SelectedProjectStoreModel>,
         payload: FetchParticipantsStatus,
     ): Observable<void> {
         return this.movementApi.findVehiclesStatus( payload.projectId ).pipe(
@@ -347,7 +347,7 @@ export class SelectedProjectState extends GenericState {
     }
 
     private fetchVehiclesStatusComplete (
-        ctx: StateContext<SelectedProjectStateModel>,
+        ctx: StateContext<SelectedProjectStoreModel>,
         status: VehicleStatusModel,
     ): void {
         ctx.patchState( {
@@ -362,7 +362,7 @@ export class SelectedProjectState extends GenericState {
     }
 
     private fetchVehiclesStatusError (
-        ctx: StateContext<SelectedProjectStateModel>,
+        ctx: StateContext<SelectedProjectStoreModel>,
         error: ErrorModel,
     ): Observable<void> {
         if (error.status == 503) {
@@ -390,7 +390,7 @@ export class SelectedProjectState extends GenericState {
 
     @Action( FetchParticipantsBirthdays )
     public fetchParticipantsBirthdays (
-        ctx: StateContext<SelectedProjectStateModel>,
+        ctx: StateContext<SelectedProjectStoreModel>,
         payload: FetchParticipantsStatus,
     ): Observable<void> {
         return this.participantApi.findParticipantsBirthdays( payload.projectId ).pipe(
@@ -402,7 +402,7 @@ export class SelectedProjectState extends GenericState {
     }
 
     private fetchParticipantsBirthdaysComplete (
-        ctx: StateContext<SelectedProjectStateModel>,
+        ctx: StateContext<SelectedProjectStoreModel>,
         participants: ParticipantModel[],
     ): void {
         ctx.patchState( {
@@ -411,7 +411,7 @@ export class SelectedProjectState extends GenericState {
     }
 
     @Action( StartCurrentMovementsPageWithoutActivityLoader )
-    public startCurrentMovementsPageWithoutActivityLoader (ctx: StateContext<SelectedProjectStateModel>): void {
+    public startCurrentMovementsPageWithoutActivityLoader (ctx: StateContext<SelectedProjectStoreModel>): void {
         ctx.patchState( {
             currentMovements: {
                 ...ctx.getState().currentMovements,
@@ -421,7 +421,7 @@ export class SelectedProjectState extends GenericState {
     }
 
     @Action( StopCurrentMovementsPageWithoutActivityLoader )
-    public stopCurrentMovementsPageWithoutActivityLoader (ctx: StateContext<SelectedProjectStateModel>): void {
+    public stopCurrentMovementsPageWithoutActivityLoader (ctx: StateContext<SelectedProjectStoreModel>): void {
         ctx.patchState( {
             currentMovements: {
                 ...ctx.getState().currentMovements,
@@ -432,7 +432,7 @@ export class SelectedProjectState extends GenericState {
 
     @Action( FetchCurrentMovementsPageWithoutActivity )
     public fetchCurrentMovementsPageWithoutActivity (
-        ctx: StateContext<SelectedProjectStateModel>,
+        ctx: StateContext<SelectedProjectStoreModel>,
         payload: FetchCurrentMovementsPageWithoutActivity,
     ): Observable<void> {
         return this.movementApi.findMovements(
@@ -455,7 +455,7 @@ export class SelectedProjectState extends GenericState {
     }
 
     private fetchCurrentMovementsPageWithoutActivityComplete (
-        ctx: StateContext<SelectedProjectStateModel>,
+        ctx: StateContext<SelectedProjectStoreModel>,
         movementsPage: PageModel<MovementModel>,
     ): void {
         ctx.patchState( {
@@ -476,7 +476,7 @@ export class SelectedProjectState extends GenericState {
     }
 
     private fetchCurrentMovementsPageWithoutActivityError (
-        ctx: StateContext<SelectedProjectStateModel>,
+        ctx: StateContext<SelectedProjectStoreModel>,
         error: ErrorModel,
     ): Observable<void> {
         if (error.status == 503) {
@@ -495,7 +495,7 @@ export class SelectedProjectState extends GenericState {
 
     @Action( FetchCurrentMovementsWithoutActivityContents )
     public fetchCurrentMovementsWithoutActivityContents (
-        ctx: StateContext<SelectedProjectStateModel>,
+        ctx: StateContext<SelectedProjectStoreModel>,
         payload: FetchCurrentMovementsWithoutActivityContents,
     ): Observable<void> {
         return this.movementApi.findMovementsContents(
@@ -511,7 +511,7 @@ export class SelectedProjectState extends GenericState {
     }
 
     private fetchCurrentMovementsWithoutActivityContentsComplete (
-        ctx: StateContext<SelectedProjectStateModel>,
+        ctx: StateContext<SelectedProjectStoreModel>,
         contents: PairModel<MovementContentModel[]>[],
     ): void {
         if (!ctx.getState().currentMovements.withoutActivity.element) {
@@ -536,7 +536,7 @@ export class SelectedProjectState extends GenericState {
     }
 
     @Action( StartCurrentMovementsPageWithActivityLoader )
-    public startCurrentMovementsPageWithActivityLoader (ctx: StateContext<SelectedProjectStateModel>): void {
+    public startCurrentMovementsPageWithActivityLoader (ctx: StateContext<SelectedProjectStoreModel>): void {
         ctx.patchState( {
             currentMovements: {
                 ...ctx.getState().currentMovements,
@@ -546,7 +546,7 @@ export class SelectedProjectState extends GenericState {
     }
 
     @Action( StopCurrentMovementsPageWithActivityLoader )
-    public stopCurrentMovementsPageWithActivityLoader (ctx: StateContext<SelectedProjectStateModel>): void {
+    public stopCurrentMovementsPageWithActivityLoader (ctx: StateContext<SelectedProjectStoreModel>): void {
         ctx.patchState( {
             currentMovements: {
                 ...ctx.getState().currentMovements,
@@ -557,7 +557,7 @@ export class SelectedProjectState extends GenericState {
 
     @Action( FetchCurrentMovementsPageWithActivity )
     public fetchCurrentMovementsPageWithActivity (
-        ctx: StateContext<SelectedProjectStateModel>,
+        ctx: StateContext<SelectedProjectStoreModel>,
         payload: FetchCurrentMovementsPageWithActivity,
     ): Observable<void> {
         return this.movementApi.findMovements(
@@ -580,7 +580,7 @@ export class SelectedProjectState extends GenericState {
     }
 
     private fetchCurrentMovementsPageWithActivityComplete (
-        ctx: StateContext<SelectedProjectStateModel>,
+        ctx: StateContext<SelectedProjectStoreModel>,
         movementsPage: PageModel<MovementModel>,
     ): void {
         ctx.patchState( {
@@ -601,7 +601,7 @@ export class SelectedProjectState extends GenericState {
     }
 
     private fetchCurrentMovementsPageWithActivityError (
-        ctx: StateContext<SelectedProjectStateModel>,
+        ctx: StateContext<SelectedProjectStoreModel>,
         error: ErrorModel,
     ): Observable<void> {
         if (error.status == 503) {
@@ -620,7 +620,7 @@ export class SelectedProjectState extends GenericState {
 
     @Action( FetchCurrentMovementsWithActivityContents )
     public fetchCurrentMovementsWithActivityContents (
-        ctx: StateContext<SelectedProjectStateModel>,
+        ctx: StateContext<SelectedProjectStoreModel>,
         payload: FetchCurrentMovementsWithActivityContents,
     ): Observable<void> {
         return this.movementApi.findMovementsContents(
@@ -636,7 +636,7 @@ export class SelectedProjectState extends GenericState {
     }
 
     private fetchCurrentMovementsWithActivityContentsComplete (
-        ctx: StateContext<SelectedProjectStateModel>,
+        ctx: StateContext<SelectedProjectStoreModel>,
         contents: PairModel<MovementContentModel[]>[],
     ): void {
         if (!ctx.getState().currentMovements.withActivity.element) {
@@ -662,7 +662,7 @@ export class SelectedProjectState extends GenericState {
 
     @Action( FetchCurrentAlertsPage )
     public fetchCurrentAlertsPage (
-        ctx: StateContext<SelectedProjectStateModel>,
+        ctx: StateContext<SelectedProjectStoreModel>,
         payload: FetchCurrentAlertsPage,
     ): Observable<void> {
         return this.alertApi.findAlerts(
@@ -683,7 +683,7 @@ export class SelectedProjectState extends GenericState {
     }
 
     private fetchCurrentAlertsPageComplete (
-        ctx: StateContext<SelectedProjectStateModel>,
+        ctx: StateContext<SelectedProjectStoreModel>,
         alertsPage: PageModel<AlertModel>,
     ): void {
         ctx.patchState( {
@@ -695,7 +695,7 @@ export class SelectedProjectState extends GenericState {
     }
 
     private fetchCurrentAlertsPageError (
-        ctx: StateContext<SelectedProjectStateModel>,
+        ctx: StateContext<SelectedProjectStoreModel>,
         error: ErrorModel,
     ): Observable<void> {
         if (error.status == 503) {

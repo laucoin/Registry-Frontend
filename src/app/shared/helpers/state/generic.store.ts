@@ -8,7 +8,7 @@ import { GenericModel } from '@shared/models/model/generic.model'
 import { TranslateService } from '@ngx-translate/core'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 
-export abstract class GenericState {
+export abstract class GenericStore {
     protected readonly registryFacade: RegistryFacade = inject( RegistryFacade )
     protected readonly translateService: TranslateService = inject( TranslateService )
 

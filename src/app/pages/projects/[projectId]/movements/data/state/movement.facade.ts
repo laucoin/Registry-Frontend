@@ -3,7 +3,7 @@ import { Observable, tap } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
 import { SelectItem, SelectItemGroup, ToastMessageOptions } from 'primeng/api'
 import { GroupModel } from '@shared/models/model/group.model'
-import { MovementState } from '@pages/projects/[projectId]/movements/data/state/movement.state'
+import { MovementStore } from '@pages/projects/[projectId]/movements/data/state/movement.store'
 import {
     FetchMovementCommunicationsPage,
     FetchMovementsContent,
@@ -44,108 +44,108 @@ export class MovementFacade extends GenericProjectElementFacade {
     private readonly datePipe: DateFormatPipe = inject( DateFormatPipe )
 
     public get movementsPage (): Signal<PageModel<MovementModel> | undefined> {
-        return this.ngStore.selectSignal( MovementState.movementsPage )
+        return this.ngStore.selectSignal( MovementStore.movementsPage )
     }
 
     public get movementsPageLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( MovementState.movementsPageLoading )
+        return this.ngStore.selectSignal( MovementStore.movementsPageLoading )
     }
 
     public get movementsPageSilentLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( MovementState.movementsPageSilentLoading )
+        return this.ngStore.selectSignal( MovementStore.movementsPageSilentLoading )
     }
 
     public get movementsPageError (): Signal<ToastMessageOptions | undefined> {
-        return this.ngStore.selectSignal( MovementState.movementsPageError )
+        return this.ngStore.selectSignal( MovementStore.movementsPageError )
     }
 
     private get movementsPageResetSearch (): Signal<boolean> {
-        return this.ngStore.selectSignal( MovementState.movementsPageResetSearch )
+        return this.ngStore.selectSignal( MovementStore.movementsPageResetSearch )
     }
 
     public get movementsPageTypeSearchedParam (): Signal<string | undefined> {
-        return this.ngStore.selectSignal( MovementState.movementsPageTypeSearchedParam )
+        return this.ngStore.selectSignal( MovementStore.movementsPageTypeSearchedParam )
     }
 
     public get movementsPageStartDateTimeSearchedParam (): Signal<Date | undefined> {
         return computed( (): Date | undefined =>
-            DateUtil.buildDate( this.ngStore.selectSignal( MovementState.movementsPageStartDateTimeSearchedParam )() ),
+            DateUtil.buildDate( this.ngStore.selectSignal( MovementStore.movementsPageStartDateTimeSearchedParam )() ),
         )
     }
 
     public get movementsPageEndDateTimeSearchedParam (): Signal<Date | undefined> {
         return computed( (): Date | undefined =>
-            DateUtil.buildDate( this.ngStore.selectSignal( MovementState.movementsPageEndDateTimeSearchedParam )() ),
+            DateUtil.buildDate( this.ngStore.selectSignal( MovementStore.movementsPageEndDateTimeSearchedParam )() ),
         )
     }
 
     public get movementsPageVisibilitySearchedParam (): Signal<boolean | undefined> {
-        return this.ngStore.selectSignal( MovementState.movementsPageVisibilitySearchedParam )
+        return this.ngStore.selectSignal( MovementStore.movementsPageVisibilitySearchedParam )
     }
 
     public get movementCommunicationsPage (): Signal<PageModel<CommunicationModel> | undefined> {
-        return this.ngStore.selectSignal( MovementState.movementCommunicationsPage )
+        return this.ngStore.selectSignal( MovementStore.movementCommunicationsPage )
     }
 
     public get movementCommunicationsPageLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( MovementState.movementCommunicationsPageLoading )
+        return this.ngStore.selectSignal( MovementStore.movementCommunicationsPageLoading )
     }
 
     public get movementCommunicationsPageSilentLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( MovementState.movementCommunicationsPageSilentLoading )
+        return this.ngStore.selectSignal( MovementStore.movementCommunicationsPageSilentLoading )
     }
 
     public get movementCommunicationsPageError (): Signal<ToastMessageOptions | undefined> {
-        return this.ngStore.selectSignal( MovementState.movementCommunicationsPageError )
+        return this.ngStore.selectSignal( MovementStore.movementCommunicationsPageError )
     }
 
     private get movementCommunicationsPageResetSearch (): Signal<boolean> {
-        return this.ngStore.selectSignal( MovementState.movementCommunicationsPageResetSearch )
+        return this.ngStore.selectSignal( MovementStore.movementCommunicationsPageResetSearch )
     }
 
     public get movementCommunicationsPageTextSearchedParam (): Signal<string | undefined> {
-        return this.ngStore.selectSignal( MovementState.movementCommunicationsPageTextSearchedParam )
+        return this.ngStore.selectSignal( MovementStore.movementCommunicationsPageTextSearchedParam )
     }
 
     public get movementCommunicationsPageVisibilitySearchedParam (): Signal<boolean | undefined> {
-        return this.ngStore.selectSignal( MovementState.movementCommunicationsPageVisibilitySearchedParam )
+        return this.ngStore.selectSignal( MovementStore.movementCommunicationsPageVisibilitySearchedParam )
     }
 
     public get movementCommunicationsPageStartDateTimeSearchedParam (): Signal<Date | undefined> {
         return computed( (): Date | undefined =>
-            DateUtil.buildDate( this.ngStore.selectSignal( MovementState.movementCommunicationsPageStartDateTimeSearchedParam )() ),
+            DateUtil.buildDate( this.ngStore.selectSignal( MovementStore.movementCommunicationsPageStartDateTimeSearchedParam )() ),
         )
     }
 
     public get movementCommunicationsPageEndDateTimeSearchedParam (): Signal<Date | undefined> {
         return computed( (): Date | undefined =>
-            DateUtil.buildDate( this.ngStore.selectSignal( MovementState.movementCommunicationsPageEndDateTimeSearchedParam )() ),
+            DateUtil.buildDate( this.ngStore.selectSignal( MovementStore.movementCommunicationsPageEndDateTimeSearchedParam )() ),
         )
     }
 
     public get searchedReasonAndActivityMetadata (): Signal<MovementReasonModel[]> {
-        return this.ngStore.selectSignal( MovementState.searchedReasonAndActivityMetadata )
+        return this.ngStore.selectSignal( MovementStore.searchedReasonAndActivityMetadata )
     }
 
     public get searchedParticipantAndGroupMetadata (): Signal<SelectItemGroup<ParticipantModel | GroupModel>[]> {
-        return this.ngStore.selectSignal( MovementState.searchedParticipantAndGroupMetadata )
+        return this.ngStore.selectSignal( MovementStore.searchedParticipantAndGroupMetadata )
     }
 
     public get searchedVehicleMetadata (): Signal<SelectItem<VehicleModel>[]> {
-        return this.ngStore.selectSignal( MovementState.searchedVehicleMetadata )
+        return this.ngStore.selectSignal( MovementStore.searchedVehicleMetadata )
     }
 
     public get movementTypesMetadata (): Signal<SelectItem<MovementTypeEnum | undefined>[]> {
-        return this.ngStore.selectSignal( MovementState.movementTypesMetadata )
+        return this.ngStore.selectSignal( MovementStore.movementTypesMetadata )
     }
 
     public get participantTypesMetadata (): Signal<SelectItem<ParticipantTypeEnum>[]> {
-        return this.ngStore.selectSignal( MovementState.participantTypesMetadata )
+        return this.ngStore.selectSignal( MovementStore.participantTypesMetadata )
     }
 
     public get visibilitiesMetadata (): Signal<SelectItem<boolean | undefined>[]> {
         return computed( () =>
-            this.ngStore.selectSignal( MovementState.visibilitiesMetadata )().map( (status: SelectItem<boolean | undefined>) => ({
+            this.ngStore.selectSignal( MovementStore.visibilitiesMetadata )().map( (status: SelectItem<boolean | undefined>) => ({
                 ...status,
                 label: this.translateService.instant( status.label! ),
             }) ),

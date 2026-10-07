@@ -5,11 +5,11 @@ import {SecurityApi} from '@core/authentication/service/security.api'
 import {CurrentUserModel} from '@shared/models/model/current-user.model'
 import {ProjectProfileModel} from '@shared/models/model/project-profile.model'
 import {PageModel} from '@shared/models/model/page.model'
-import {GenericState} from '@shared/helpers/state/generic.state'
+import {GenericStore} from '@shared/helpers/state/generic.store'
 import {REDIRECT_URI} from '@shared/helpers/util/request.util'
 import {initialize} from '@shared/helpers/util/rx.util'
 import {SessionStorageUtils} from '@shared/helpers/util/session-storage.util'
-import {RegistryStateModel} from '@core/registry/model/registry-state.model'
+import {RegistryStoreModel} from '@core/registry/model/registry-store.model'
 import {
     AckNotification,
     CreateSupportProjectProfile,
@@ -62,7 +62,7 @@ import {PreferencesModel} from '@shared/models/model/preferences.model'
 import {CurrentUserUtil} from '@core/authentication/tool/current-user.util'
 import {PrimeNG} from 'primeng/config'
 
-const defaultRegistryState: RegistryStateModel = {
+const defaultRegistryStore: RegistryStoreModel = {
     authentication: {
         currentUser: undefined,
         loading: false,
@@ -128,12 +128,12 @@ const defaultRegistryState: RegistryStateModel = {
     },
 }
 
-@State<RegistryStateModel>({
+@State<RegistryStoreModel>({
     name: 'registry',
-    defaults: defaultRegistryState,
+    defaults: defaultRegistryStore,
 })
 @Injectable()
-export class RegistryState extends GenericState implements NgxsOnInit {
+export class RegistryStore extends GenericStore implements NgxsOnInit {
     private readonly primeConfig: PrimeNG = inject(PrimeNG)
 
     private readonly darkModeClass: string = 'dark-mod'
@@ -146,10 +146,10 @@ export class RegistryState extends GenericState implements NgxsOnInit {
     private readonly router: Router = inject(Router)
     private readonly datePipe: CustomDateFormatPipe = inject(CustomDateFormatPipe)
 
-    public ngxsOnInit(ctx: StateContext<RegistryStateModel>): void {
+    public ngxsOnInit(ctx: StateContext<RegistryStoreModel>): void {
         ctx.patchState({
             _metadata: {
-                themes: defaultRegistryState._metadata.themes,
+                themes: defaultRegistryStore._metadata.themes,
                 languages: RegistryConfig.config.languages.map((lang: string): SelectItem<string> => ({
                     label: 'global.language.' + lang,
                     value: lang,
@@ -159,163 +159,163 @@ export class RegistryState extends GenericState implements NgxsOnInit {
     }
 
     @Selector()
-    public static globalLoading(state: RegistryStateModel): boolean {
+    public static globalLoading(state: RegistryStoreModel): boolean {
         return state._util.loading
     }
 
     @Selector()
-    public static globalError(state: RegistryStateModel): ToastMessageOptions | undefined {
+    public static globalError(state: RegistryStoreModel): ToastMessageOptions | undefined {
         return state._util.error
     }
 
     @Selector()
-    public static online(state: RegistryStateModel): boolean | undefined {
+    public static online(state: RegistryStoreModel): boolean | undefined {
         return state._util.online
     }
 
     @Selector()
-    public static screenWidth(state: RegistryStateModel): number {
+    public static screenWidth(state: RegistryStoreModel): number {
         return state._util.screenWidth
     }
 
     @Selector()
-    public static theme(state: RegistryStateModel): ThemeEnum {
+    public static theme(state: RegistryStoreModel): ThemeEnum {
         return state._util.theme
     }
 
     @Selector()
-    public static notification(state: RegistryStateModel): ToastMessageOptions | undefined {
+    public static notification(state: RegistryStoreModel): ToastMessageOptions | undefined {
         return state._util.notification
     }
 
     @Selector()
-    public static currentUser(state: RegistryStateModel): CurrentUserModel | undefined {
+    public static currentUser(state: RegistryStoreModel): CurrentUserModel | undefined {
         return state.authentication.currentUser
     }
 
     @Selector()
-    public static currentUserTheme(state: RegistryStateModel): ThemeEnum | undefined {
+    public static currentUserTheme(state: RegistryStoreModel): ThemeEnum | undefined {
         const currentUserTheme: string | undefined = state.authentication.currentUser?.preferences?.theme
         return GenericUtil.nonNull(currentUserTheme) ? CurrentUserUtil.mapThemeToEnum(currentUserTheme!) : state._util.theme
     }
 
     @Selector()
-    public static currentUserLanguage(state: RegistryStateModel): string {
+    public static currentUserLanguage(state: RegistryStoreModel): string {
         return state.authentication.currentUser?.preferences?.language ?? RegistryConfig.config.defaultLanguage
     }
 
     @Selector()
-    public static currentUserSelectedProject(state: RegistryStateModel): ProjectModel | undefined {
+    public static currentUserSelectedProject(state: RegistryStoreModel): ProjectModel | undefined {
         return state.currentProject.profile?.project
     }
 
     @Selector()
-    public static currentUserSelectedProjectId(state: RegistryStateModel): string | undefined {
+    public static currentUserSelectedProjectId(state: RegistryStoreModel): string | undefined {
         return state.currentProject.id
     }
 
     @Selector()
-    public static userProjectProfilesPage(state: RegistryStateModel): PageModel<ProjectProfileModel> | undefined {
+    public static userProjectProfilesPage(state: RegistryStoreModel): PageModel<ProjectProfileModel> | undefined {
         return state.profiles.element
     }
 
     @Selector()
-    public static userProjectProfilesPageLoading(state: RegistryStateModel): boolean {
+    public static userProjectProfilesPageLoading(state: RegistryStoreModel): boolean {
         return state.profiles.loading
     }
 
     @Selector()
-    public static userProjectProfilesPageError(state: RegistryStateModel): ToastMessageOptions | undefined {
+    public static userProjectProfilesPageError(state: RegistryStoreModel): ToastMessageOptions | undefined {
         return state.profiles.error
     }
 
     @Selector()
-    public static userProjectProfilesPageSilentLoading(state: RegistryStateModel): boolean {
+    public static userProjectProfilesPageSilentLoading(state: RegistryStoreModel): boolean {
         return state.profiles.silentLoading
     }
 
     @Selector()
-    public static userProjectProfilesPageResetSearch(state: RegistryStateModel): boolean {
+    public static userProjectProfilesPageResetSearch(state: RegistryStoreModel): boolean {
         return state.profiles.params.resetSearch
     }
 
     @Selector()
-    public static userProjectProfilesPageTextSearchParam(state: RegistryStateModel): string | undefined {
+    public static userProjectProfilesPageTextSearchParam(state: RegistryStoreModel): string | undefined {
         return state.profiles.params.textSearched
     }
 
     @Selector()
-    public static userProjectProfilesPageDateTimeSearchParam(state: RegistryStateModel): string | undefined {
+    public static userProjectProfilesPageDateTimeSearchParam(state: RegistryStoreModel): string | undefined {
         return state.profiles.params.dateTimeSearched
     }
 
     @Selector()
-    public static userProjectProfilesPageAvailabilitySearchParam(state: RegistryStateModel): boolean | undefined {
+    public static userProjectProfilesPageAvailabilitySearchParam(state: RegistryStoreModel): boolean | undefined {
         return state.profiles.params.availabilitySearched
     }
 
     @Selector()
-    public static userProjectProfileInvitationsPage(state: RegistryStateModel): PageModel<ProjectProfileModel> | undefined {
+    public static userProjectProfileInvitationsPage(state: RegistryStoreModel): PageModel<ProjectProfileModel> | undefined {
         return state.invitations.element
     }
 
     @Selector()
-    public static userProjectProfileInvitationsPageLoading(state: RegistryStateModel): boolean {
+    public static userProjectProfileInvitationsPageLoading(state: RegistryStoreModel): boolean {
         return state.invitations.loading
     }
 
     @Selector()
-    public static userProjectProfileInvitationsPageError(state: RegistryStateModel): ToastMessageOptions | undefined {
+    public static userProjectProfileInvitationsPageError(state: RegistryStoreModel): ToastMessageOptions | undefined {
         return state.invitations.error
     }
 
     @Selector()
-    public static userProjectProfileInvitationsPageSilentLoading(state: RegistryStateModel): boolean {
+    public static userProjectProfileInvitationsPageSilentLoading(state: RegistryStoreModel): boolean {
         return state.invitations.silentLoading
     }
 
     @Selector()
-    public static userProjectProfileInvitationsPageResetSearch(state: RegistryStateModel): boolean {
+    public static userProjectProfileInvitationsPageResetSearch(state: RegistryStoreModel): boolean {
         return state.invitations.params.resetSearch
     }
 
     @Selector()
-    public static userProjectProfileInvitationsPageTextSearchParam(state: RegistryStateModel): string | undefined {
+    public static userProjectProfileInvitationsPageTextSearchParam(state: RegistryStoreModel): string | undefined {
         return state.invitations.params.textSearched
     }
 
     @Selector()
-    public static userProjectProfileInvitationsPageDateTimeParam(state: RegistryStateModel): string | undefined {
+    public static userProjectProfileInvitationsPageDateTimeParam(state: RegistryStoreModel): string | undefined {
         return state.invitations.params.dateTimeSearched
     }
 
     @Selector()
-    public static themesMetadata(state: RegistryStateModel): SelectItem<ThemeEnum>[] {
+    public static themesMetadata(state: RegistryStoreModel): SelectItem<ThemeEnum>[] {
         return state._metadata.themes
     }
 
     @Selector()
-    public static languagesMetadata(state: RegistryStateModel): SelectItem<string>[] {
+    public static languagesMetadata(state: RegistryStoreModel): SelectItem<string>[] {
         return state._metadata.languages
     }
 
     @Action(StartGlobalLoader)
-    public startGlobalLoader(ctx: StateContext<RegistryStateModel>): void {
+    public startGlobalLoader(ctx: StateContext<RegistryStoreModel>): void {
         this.updateGlobalLoader(ctx, true)
     }
 
     @Action(StopGlobalLoader)
-    public stopGlobalLoader(ctx: StateContext<RegistryStateModel>): void {
+    public stopGlobalLoader(ctx: StateContext<RegistryStoreModel>): void {
         this.updateGlobalLoader(ctx, false)
     }
 
     @Action(SetGlobalError)
-    public setGlobalError(ctx: StateContext<RegistryStateModel>, payload: SetGlobalError): void {
+    public setGlobalError(ctx: StateContext<RegistryStoreModel>, payload: SetGlobalError): void {
         this.globalError(ctx, payload.error)
     }
 
     @Action(UpdateNetwork)
-    public updateNetwork(ctx: StateContext<RegistryStateModel>, payload: UpdateNetwork): void {
+    public updateNetwork(ctx: StateContext<RegistryStoreModel>, payload: UpdateNetwork): void {
         ctx.patchState({
             _util: {
                 ...ctx.getState()._util,
@@ -325,7 +325,7 @@ export class RegistryState extends GenericState implements NgxsOnInit {
     }
 
     @Action(UpdateScreenWidth)
-    public updateScreenWidth(ctx: StateContext<RegistryStateModel>, payload: UpdateScreenWidth): void {
+    public updateScreenWidth(ctx: StateContext<RegistryStoreModel>, payload: UpdateScreenWidth): void {
         ctx.patchState({
             _util: {
                 ...ctx.getState()._util,
@@ -335,7 +335,7 @@ export class RegistryState extends GenericState implements NgxsOnInit {
     }
 
     @Action(UpdateTheme)
-    public updateTheme(ctx: StateContext<RegistryStateModel>, payload: UpdateTheme): void {
+    public updateTheme(ctx: StateContext<RegistryStoreModel>, payload: UpdateTheme): void {
         switch (payload.theme) {
             case ThemeEnum.DARK:
                 this.htmlElement?.classList.add(this.darkModeClass)
@@ -360,7 +360,7 @@ export class RegistryState extends GenericState implements NgxsOnInit {
     }
 
     @Action(Notify)
-    public notify(ctx: StateContext<RegistryStateModel>, payload: Notify): void {
+    public notify(ctx: StateContext<RegistryStoreModel>, payload: Notify): void {
         ctx.patchState({
             _util: {
                 ...ctx.getState()._util,
@@ -370,7 +370,7 @@ export class RegistryState extends GenericState implements NgxsOnInit {
     }
 
     @Action(AckNotification)
-    public ackNotification(ctx: StateContext<RegistryStateModel>): void {
+    public ackNotification(ctx: StateContext<RegistryStoreModel>): void {
         ctx.patchState({
             _util: {
                 ...ctx.getState()._util,
@@ -380,16 +380,16 @@ export class RegistryState extends GenericState implements NgxsOnInit {
     }
 
     @Action(StartCurrentUserActionLoader)
-    public startCurrentUserActionLoader(ctx: StateContext<RegistryStateModel>): void {
+    public startCurrentUserActionLoader(ctx: StateContext<RegistryStoreModel>): void {
         this.updateCurrentUserActionLoader(ctx, true)
     }
 
     @Action(StopCurrentUserActionLoader)
-    public stopCurrentUserActionLoader(ctx: StateContext<RegistryStateModel>): void {
+    public stopCurrentUserActionLoader(ctx: StateContext<RegistryStoreModel>): void {
         this.updateCurrentUserActionLoader(ctx, false)
     }
 
-    private updateCurrentUserActionLoader(ctx: StateContext<RegistryStateModel>, loading: boolean): void {
+    private updateCurrentUserActionLoader(ctx: StateContext<RegistryStoreModel>, loading: boolean): void {
         ctx.patchState({
             authentication: {
                 ...ctx.getState().authentication,
@@ -399,8 +399,8 @@ export class RegistryState extends GenericState implements NgxsOnInit {
     }
 
     @Action(Login)
-    public login(ctx: StateContext<RegistryStateModel>): Observable<void> {
-        ctx.setState(defaultRegistryState)
+    public login(ctx: StateContext<RegistryStoreModel>): Observable<void> {
+        ctx.setState(defaultRegistryStore)
         return this.api.getLoginUri(`${location.origin}/${RegistryRouteEnum.AUTH_CALLBACK}`).pipe(
             initialize((): void => this.registryFacade.startGlobalLoader()),
             finalize((): void => this.registryFacade.stopGlobalLoader()),
@@ -412,7 +412,7 @@ export class RegistryState extends GenericState implements NgxsOnInit {
     }
 
     @Action(Logout)
-    public logout(ctx: StateContext<RegistryStateModel>): Observable<void> {
+    public logout(ctx: StateContext<RegistryStoreModel>): Observable<void> {
         return this.api.getLogoutUri(location.origin).pipe(
             initialize((): void => this.registryFacade.startGlobalLoader()),
             finalize((): void => this.registryFacade.stopGlobalLoader()),
@@ -424,7 +424,7 @@ export class RegistryState extends GenericState implements NgxsOnInit {
     }
 
     @Action(FetchTokens)
-    public fetchTokens(ctx: StateContext<RegistryStateModel>, payload: FetchTokens): Observable<void> {
+    public fetchTokens(ctx: StateContext<RegistryStoreModel>, payload: FetchTokens): Observable<void> {
         return this.api.fetchToken({
             authorizationCode: payload.authorizationCode,
             redirectUri: `${location.origin}/${RegistryRouteEnum.AUTH_CALLBACK}`,
@@ -443,7 +443,7 @@ export class RegistryState extends GenericState implements NgxsOnInit {
     }
 
     @Action(FetchCurrentUser)
-    public fetchCurrentUser(ctx: StateContext<RegistryStateModel>): Observable<void> {
+    public fetchCurrentUser(ctx: StateContext<RegistryStoreModel>): Observable<void> {
         return this.api.fetchCurrentUser().pipe(
             initialize((): void => this.registryFacade.startGlobalLoader()),
             finalize((): void => this.registryFacade.stopGlobalLoader()),
@@ -452,7 +452,7 @@ export class RegistryState extends GenericState implements NgxsOnInit {
         )
     }
 
-    private fetchCurrentUserComplete(ctx: StateContext<RegistryStateModel>, currentUser: CurrentUserModel): void {
+    private fetchCurrentUserComplete(ctx: StateContext<RegistryStoreModel>, currentUser: CurrentUserModel): void {
         ctx.patchState({
             authentication: {
                 ...ctx.getState().authentication,
@@ -481,16 +481,16 @@ export class RegistryState extends GenericState implements NgxsOnInit {
     }
 
     @Action(StartUserProjectProfilesPageLoader)
-    public startUserProjectProfilesPageLoader(ctx: StateContext<RegistryStateModel>): void {
+    public startUserProjectProfilesPageLoader(ctx: StateContext<RegistryStoreModel>): void {
         this.updateUserProjectProfilesLoader(ctx, true)
     }
 
     @Action(StopUserProjectProfilesPageLoader)
-    public stopUserProjectProfilesPageLoader(ctx: StateContext<RegistryStateModel>): void {
+    public stopUserProjectProfilesPageLoader(ctx: StateContext<RegistryStoreModel>): void {
         this.updateUserProjectProfilesLoader(ctx, false)
     }
 
-    private updateUserProjectProfilesLoader(ctx: StateContext<RegistryStateModel>, loading: boolean): void {
+    private updateUserProjectProfilesLoader(ctx: StateContext<RegistryStoreModel>, loading: boolean): void {
         ctx.patchState({
             profiles: {
                 ...ctx.getState().profiles, loading: loading,
@@ -500,7 +500,7 @@ export class RegistryState extends GenericState implements NgxsOnInit {
 
     @Action(FetchUserProjectProfilesPage)
     public fetchUserProjectProfilesPage(
-        ctx: StateContext<RegistryStateModel>,
+        ctx: StateContext<RegistryStoreModel>,
         payload: FetchUserProjectProfilesPage,
     ): Observable<void> {
         return this.userProjectProfileApi.findUserProjectProfiles(
@@ -522,7 +522,7 @@ export class RegistryState extends GenericState implements NgxsOnInit {
     }
 
     private fetchUserProjectProfilesPageComplete(
-        ctx: StateContext<RegistryStateModel>,
+        ctx: StateContext<RegistryStoreModel>,
         profilePage: PageModel<ProjectProfileModel>,
     ): void {
         ctx.patchState({
@@ -538,7 +538,7 @@ export class RegistryState extends GenericState implements NgxsOnInit {
     }
 
     private fetchUserProjectProfilesPageError(
-        ctx: StateContext<RegistryStateModel>,
+        ctx: StateContext<RegistryStoreModel>,
         error: ErrorModel,
     ): Observable<void> {
         if (error.status === 503) {
@@ -554,7 +554,7 @@ export class RegistryState extends GenericState implements NgxsOnInit {
 
     @Action(UpdateUserProjectProfilesPageSearchParams)
     public updateUserProjectProfilesPageSearchParams(
-        ctx: StateContext<RegistryStateModel>,
+        ctx: StateContext<RegistryStoreModel>,
         payload: UpdateUserProjectProfilesPageSearchParams,
     ): void {
         ctx.patchState({
@@ -572,16 +572,16 @@ export class RegistryState extends GenericState implements NgxsOnInit {
     }
 
     @Action(StartUserProjectProfileInvitationsPageLoader)
-    public startUserProjectProfileInvitationsPageLoader(ctx: StateContext<RegistryStateModel>): void {
+    public startUserProjectProfileInvitationsPageLoader(ctx: StateContext<RegistryStoreModel>): void {
         this.updateUserProjectProfileInvitationsLoader(ctx, true)
     }
 
     @Action(StopUserProjectProfileInvitationsPageLoader)
-    public stopUserProjectProfileInvitationsPageLoader(ctx: StateContext<RegistryStateModel>): void {
+    public stopUserProjectProfileInvitationsPageLoader(ctx: StateContext<RegistryStoreModel>): void {
         this.updateUserProjectProfileInvitationsLoader(ctx, false)
     }
 
-    private updateUserProjectProfileInvitationsLoader(ctx: StateContext<RegistryStateModel>, loading: boolean): void {
+    private updateUserProjectProfileInvitationsLoader(ctx: StateContext<RegistryStoreModel>, loading: boolean): void {
         ctx.patchState({
             invitations: {
                 ...ctx.getState().invitations,
@@ -592,7 +592,7 @@ export class RegistryState extends GenericState implements NgxsOnInit {
 
     @Action(FetchUserProjectProfileInvitationsPage)
     public fetchUserProjectProfileInvitationsPage(
-        ctx: StateContext<RegistryStateModel>,
+        ctx: StateContext<RegistryStoreModel>,
         payload: FetchUserProjectProfileInvitationsPage,
     ): Observable<void> {
         return this.userProjectProfileApi.findUserProjectProfiles(
@@ -614,7 +614,7 @@ export class RegistryState extends GenericState implements NgxsOnInit {
     }
 
     private fetchUserProjectProfileInvitationsPageComplete(
-        ctx: StateContext<RegistryStateModel>,
+        ctx: StateContext<RegistryStoreModel>,
         invitationPage: PageModel<ProjectProfileModel>,
     ): void {
         ctx.patchState({
@@ -630,7 +630,7 @@ export class RegistryState extends GenericState implements NgxsOnInit {
     }
 
     private fetchUserProjectProfileInvitationsPageError(
-        ctx: StateContext<RegistryStateModel>,
+        ctx: StateContext<RegistryStoreModel>,
         error: ErrorModel,
     ): Observable<void> {
         if (error.status === 503) {
@@ -646,7 +646,7 @@ export class RegistryState extends GenericState implements NgxsOnInit {
 
     @Action(UpdateUserProjectProfileInvitationsPageSearchParams)
     public updateUserProjectProfileInvitationsPageSearchParams(
-        ctx: StateContext<RegistryStateModel>,
+        ctx: StateContext<RegistryStoreModel>,
         payload: UpdateUserProjectProfileInvitationsPageSearchParams,
     ): void {
         ctx.patchState({
@@ -663,16 +663,16 @@ export class RegistryState extends GenericState implements NgxsOnInit {
     }
 
     @Action(StartUserProjectProfileLoader)
-    public startUserProjectProfileLoader(ctx: StateContext<RegistryStateModel>): void {
+    public startUserProjectProfileLoader(ctx: StateContext<RegistryStoreModel>): void {
         this.updateUserProjectProfileLoader(ctx, true)
     }
 
     @Action(StopUserProjectProfileLoader)
-    public stopUserProjectProfileLoader(ctx: StateContext<RegistryStateModel>): void {
+    public stopUserProjectProfileLoader(ctx: StateContext<RegistryStoreModel>): void {
         this.updateUserProjectProfileLoader(ctx, false)
     }
 
-    private updateUserProjectProfileLoader(ctx: StateContext<RegistryStateModel>, loading: boolean): void {
+    private updateUserProjectProfileLoader(ctx: StateContext<RegistryStoreModel>, loading: boolean): void {
         ctx.patchState({
             profile: {
                 ...ctx.getState().profile,
@@ -683,7 +683,7 @@ export class RegistryState extends GenericState implements NgxsOnInit {
 
     @Action(UpdateCurrentUserTheme)
     public updateCurrentUserTheme(
-        ctx: StateContext<RegistryStateModel>,
+        ctx: StateContext<RegistryStoreModel>,
         payload: UpdateCurrentUserTheme,
     ): Observable<void> {
         return this.preferencesApi.updateTheme(CurrentUserUtil.mapThemeToString(payload.theme)).pipe(
@@ -692,7 +692,7 @@ export class RegistryState extends GenericState implements NgxsOnInit {
     }
 
     private updateCurrentUserThemeComplete(
-        ctx: StateContext<RegistryStateModel>,
+        ctx: StateContext<RegistryStoreModel>,
         preferences: PreferencesModel,
     ): void {
         ctx.patchState({
@@ -711,7 +711,7 @@ export class RegistryState extends GenericState implements NgxsOnInit {
 
     @Action(UpdateCurrentUserLanguage)
     public updateCurrentUserLanguage(
-        _: StateContext<RegistryStateModel>,
+        _: StateContext<RegistryStoreModel>,
         payload: UpdateCurrentUserLanguage,
     ): Observable<PreferencesModel> {
         return this.preferencesApi.updateLanguage(payload.language)
@@ -719,7 +719,7 @@ export class RegistryState extends GenericState implements NgxsOnInit {
 
     @Action(ManageUserProjectInvitationAcceptance)
     public manageProjectInvitationAcceptance(
-        ctx: StateContext<RegistryStateModel>,
+        ctx: StateContext<RegistryStoreModel>,
         payload: ManageUserProjectInvitationAcceptance,
     ): Observable<void> {
         return this.userProjectProfileApi.manageUserProjectProfileAcceptance(
@@ -736,7 +736,7 @@ export class RegistryState extends GenericState implements NgxsOnInit {
     }
 
     private manageProjectInvitationAcceptanceComplete(
-        ctx: StateContext<RegistryStateModel>,
+        ctx: StateContext<RegistryStoreModel>,
         profile: ProjectProfileModel,
     ): void {
         this.buildMessageAndNotify(
@@ -753,7 +753,7 @@ export class RegistryState extends GenericState implements NgxsOnInit {
 
     @Action(SetCurrentProject, {cancelUncompleted: true})
     public setCurrentProject(
-        ctx: StateContext<RegistryStateModel>,
+        ctx: StateContext<RegistryStoreModel>,
         payload: SetCurrentProject,
     ): Observable<void> {
         ctx.patchState({currentProject: {id: payload.projectId, profile: undefined}})
@@ -774,7 +774,7 @@ export class RegistryState extends GenericState implements NgxsOnInit {
 
     @Action(DeleteUserProjectProfile)
     public deleteUserProjectProfile(
-        ctx: StateContext<RegistryStateModel>,
+        ctx: StateContext<RegistryStoreModel>,
         payload: DeleteUserProjectProfile,
     ): Observable<void> {
         return this.userProjectProfileApi.deleteUserProfileById(payload.profile.id).pipe(
@@ -785,7 +785,7 @@ export class RegistryState extends GenericState implements NgxsOnInit {
     }
 
     private deleteUserProjectProfileComplete(
-        ctx: StateContext<RegistryStateModel>,
+        ctx: StateContext<RegistryStoreModel>,
         profile: ProjectProfileModel,
     ): void {
         this.buildMessageAndNotify(
@@ -801,7 +801,7 @@ export class RegistryState extends GenericState implements NgxsOnInit {
 
     @Action(CreateSupportProjectProfile)
     public createSupportProjectProfile(
-        _: StateContext<RegistryStateModel>,
+        _: StateContext<RegistryStoreModel>,
         payload: CreateSupportProjectProfile,
     ): Observable<void> {
         return this.userProjectProfileApi.createSupportProjectProfile(payload.projectId).pipe(
@@ -826,7 +826,7 @@ export class RegistryState extends GenericState implements NgxsOnInit {
         )
     }
 
-    private updateGlobalLoader(ctx: StateContext<RegistryStateModel>, loading: boolean): void {
+    private updateGlobalLoader(ctx: StateContext<RegistryStoreModel>, loading: boolean): void {
         ctx.patchState({
             _util: {
                 ...ctx.getState()._util,
@@ -835,7 +835,7 @@ export class RegistryState extends GenericState implements NgxsOnInit {
         })
     }
 
-    private globalError(ctx: StateContext<RegistryStateModel>, error: ErrorModel): Observable<void> {
+    private globalError(ctx: StateContext<RegistryStoreModel>, error: ErrorModel): Observable<void> {
         ctx.patchState({
             _util: {
                 ...ctx.getState()._util,
@@ -852,12 +852,12 @@ export class RegistryState extends GenericState implements NgxsOnInit {
         return of()
     }
 
-    protected refreshProfilesPage(ctx: StateContext<RegistryStateModel>): void {
+    protected refreshProfilesPage(ctx: StateContext<RegistryStoreModel>): void {
         const page: PageModel<ProjectProfileModel> | undefined = ctx.getState().profiles.element
         this.registryFacade.fetchProjectProfilesPage(page?.pageNumber, page?.pageSize, true)
     }
 
-    protected refreshInvitationsPage(ctx: StateContext<RegistryStateModel>): void {
+    protected refreshInvitationsPage(ctx: StateContext<RegistryStoreModel>): void {
         const page: PageModel<ProjectProfileModel> | undefined = ctx.getState().invitations.element
         this.registryFacade.fetchProjectProfileInvitationPage(page?.pageNumber, page?.pageSize, true)
     }

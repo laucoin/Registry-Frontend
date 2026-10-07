@@ -9,7 +9,7 @@ import { ProfilesListComponent } from '@pages/users/profiles/profiles-list/profi
 import { importProvidersFrom } from '@angular/core'
 import { NgxsModule } from '@ngxs/store'
 import { ProjectProfileFacade } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.facade'
-import { ProjectProfileState } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.state'
+import { ProjectProfileStore } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.store'
 
 export const userRoutes: Routes = [
     {
@@ -25,12 +25,12 @@ export const userRoutes: Routes = [
             {
                 path: UserRoutesEnum.PROFILES,
                 component: ProfilesListComponent,
-                providers: [ ProjectProfileFacade, importProvidersFrom( NgxsModule.forFeature( [ ProjectProfileState ] ) ) ],
+                providers: [ ProjectProfileFacade, importProvidersFrom( NgxsModule.forFeature( [ ProjectProfileStore ] ) ) ],
             },
             {
                 path: UserRoutesEnum.INVITATIONS,
                 component: InvitationsListComponent,
-                providers: [ ProjectProfileFacade, importProvidersFrom( NgxsModule.forFeature( [ ProjectProfileState ] ) ) ],
+                providers: [ ProjectProfileFacade, importProvidersFrom( NgxsModule.forFeature( [ ProjectProfileStore ] ) ) ],
             },
             {
                 path: UserRoutesEnum.SETTINGS, component: SettingComponent,

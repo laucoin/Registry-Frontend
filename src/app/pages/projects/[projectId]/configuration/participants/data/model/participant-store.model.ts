@@ -8,7 +8,7 @@ import { MovementModel } from '@shared/models/model/movement.model'
 import { UserModel } from '@shared/models/model/user.model'
 import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum'
 
-export interface ParticipantStateModel {
+export interface ParticipantStoreModel {
     participants: PageRequestInformationModel<ParticipantPageParamsModel, ParticipantModel>
     movements: PageRequestInformationModel<MovementPageParamsModel, MovementModel>
     _metadata: {

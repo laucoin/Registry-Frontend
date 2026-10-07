@@ -2,9 +2,9 @@ import { Action, NgxsOnInit, Selector, State, StateContext } from '@ngxs/store'
 import { catchError, finalize, map, Observable, of } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
 import { ParticipantModel } from '@shared/models/model/participant.model'
-import { GenericProjectElementState } from '@shared/helpers/state/generic-project-element.state'
+import { GenericProjectElementStore } from '@shared/helpers/state/generic-project-element.store'
 import { initialize } from '@shared/helpers/util/rx.util'
-import { ParticipantStateModel } from '@pages/projects/[projectId]/configuration/participants/data/model/participant-state.model'
+import { ParticipantStoreModel } from '@pages/projects/[projectId]/configuration/participants/data/model/participant-store.model'
 import {
     FetchParticipantMovementsContents,
     FetchParticipantMovementsPage,
@@ -38,7 +38,7 @@ import { MovementUtil } from '@shared/helpers/util/movement.util'
 import { MetadataApi } from '@core/registry/state/metadata.api'
 import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum'
 
-const defaultParticipantState: ParticipantStateModel = {
+const defaultParticipantStore: ParticipantStoreModel = {
     participants: {
         element: undefined,
         params: {
@@ -78,12 +78,12 @@ const defaultParticipantState: ParticipantStateModel = {
     },
 }
 
-@State<ParticipantStateModel>( {
+@State<ParticipantStoreModel>( {
     name: 'participant',
-    defaults: defaultParticipantState,
+    defaults: defaultParticipantStore,
 } )
 @Injectable()
-export class ParticipantState extends GenericProjectElementState<ParticipantStateModel> implements NgxsOnInit {
+export class ParticipantStore extends GenericProjectElementStore<ParticipantStoreModel> implements NgxsOnInit {
     private readonly api: ParticipantApi = inject( ParticipantApi )
     private readonly metadataApi: MetadataApi = inject( MetadataApi )
     private readonly movementApi: MovementApi = inject( MovementApi )
@@ -94,123 +94,123 @@ export class ParticipantState extends GenericProjectElementState<ParticipantStat
     }
 
     @Selector()
-    public static participantsPage (state: ParticipantStateModel): PageModel<ParticipantModel> | undefined {
+    public static participantsPage (state: ParticipantStoreModel): PageModel<ParticipantModel> | undefined {
         return state.participants.element
     }
 
     @Selector()
-    public static participantsPageLoading (state: ParticipantStateModel): boolean {
+    public static participantsPageLoading (state: ParticipantStoreModel): boolean {
         return state.participants.loading
     }
 
     @Selector()
-    public static participantsPageError (state: ParticipantStateModel): ToastMessageOptions | undefined {
+    public static participantsPageError (state: ParticipantStoreModel): ToastMessageOptions | undefined {
         return state.participants.error
     }
 
     @Selector()
-    public static participantsPageSilentLoading (state: ParticipantStateModel): boolean {
+    public static participantsPageSilentLoading (state: ParticipantStoreModel): boolean {
         return state.participants.silentLoading
     }
 
     @Selector()
-    public static participantsPageResetSearch (state: ParticipantStateModel): boolean {
+    public static participantsPageResetSearch (state: ParticipantStoreModel): boolean {
         return state.participants.params.resetSearch
     }
 
     @Selector()
-    public static participantsPageTextSearchedParam (state: ParticipantStateModel): string | undefined {
+    public static participantsPageTextSearchedParam (state: ParticipantStoreModel): string | undefined {
         return state.participants.params.textSearched
     }
 
     @Selector()
-    public static participantsPageStatusSearchedParam (state: ParticipantStateModel): string | undefined {
+    public static participantsPageStatusSearchedParam (state: ParticipantStoreModel): string | undefined {
         return state.participants.params.statusSearched
     }
 
     @Selector()
-    public static participantsPageVisibilitySearchedParam (state: ParticipantStateModel): boolean | undefined {
+    public static participantsPageVisibilitySearchedParam (state: ParticipantStoreModel): boolean | undefined {
         return state.participants.params.visibilitySearched
     }
 
     @Selector()
-    public static participantMovementsPage (state: ParticipantStateModel): PageModel<MovementModel> | undefined {
+    public static participantMovementsPage (state: ParticipantStoreModel): PageModel<MovementModel> | undefined {
         return state.movements.element
     }
 
     @Selector()
-    public static participantMovementsPageLoading (state: ParticipantStateModel): boolean {
+    public static participantMovementsPageLoading (state: ParticipantStoreModel): boolean {
         return state.movements.loading
     }
 
     @Selector()
-    public static participantMovementsPageError (state: ParticipantStateModel): ToastMessageOptions | undefined {
+    public static participantMovementsPageError (state: ParticipantStoreModel): ToastMessageOptions | undefined {
         return state.movements.error
     }
 
     @Selector()
-    public static participantMovementsPageSilentLoading (state: ParticipantStateModel): boolean {
+    public static participantMovementsPageSilentLoading (state: ParticipantStoreModel): boolean {
         return state.movements.silentLoading
     }
 
     @Selector()
-    public static participantMovementsPageResetSearch (state: ParticipantStateModel): boolean {
+    public static participantMovementsPageResetSearch (state: ParticipantStoreModel): boolean {
         return state.movements.params.resetSearch
     }
 
     @Selector()
-    public static participantMovementsPageTypeSearchedParam (state: ParticipantStateModel): string | undefined {
+    public static participantMovementsPageTypeSearchedParam (state: ParticipantStoreModel): string | undefined {
         return state.movements.params.typeSearched
     }
 
     @Selector()
-    public static participantMovementsPageStartDateTimeSearchedParam (state: ParticipantStateModel): string | undefined {
+    public static participantMovementsPageStartDateTimeSearchedParam (state: ParticipantStoreModel): string | undefined {
         return state.movements.params.startDateTimeSearched
     }
 
     @Selector()
-    public static participantMovementsPageEndDateTimeSearchedParam (state: ParticipantStateModel): string | undefined {
+    public static participantMovementsPageEndDateTimeSearchedParam (state: ParticipantStoreModel): string | undefined {
         return state.movements.params.endDateTimeSearched
     }
 
     @Selector()
-    public static participantMovementsPageVisibilitySearchedParam (state: ParticipantStateModel): boolean | undefined {
+    public static participantMovementsPageVisibilitySearchedParam (state: ParticipantStoreModel): boolean | undefined {
         return state.movements.params.visibilitySearched
     }
 
     @Selector()
-    public static searchedUsersMetadata (state: ParticipantStateModel): SelectItem<UserModel>[] {
+    public static searchedUsersMetadata (state: ParticipantStoreModel): SelectItem<UserModel>[] {
         return state._metadata.searchedUsers
     }
 
     @Selector()
-    public static searchedGroupsMetadata (state: ParticipantStateModel): SelectItem<GroupModel>[] {
+    public static searchedGroupsMetadata (state: ParticipantStoreModel): SelectItem<GroupModel>[] {
         return state._metadata.searchedGroups
     }
 
     @Selector()
-    public static presencesStatusMetadata (state: ParticipantStateModel): SelectItem<PresenceStatusEnum | undefined>[] {
+    public static presencesStatusMetadata (state: ParticipantStoreModel): SelectItem<PresenceStatusEnum | undefined>[] {
         return state._metadata.presencesStatus
     }
 
     @Selector()
-    public static visibilitiesMetadata (state: ParticipantStateModel): SelectItem<boolean | undefined>[] {
+    public static visibilitiesMetadata (state: ParticipantStoreModel): SelectItem<boolean | undefined>[] {
         return state._metadata.visibilities
     }
 
     @Action( ResetParticipantState )
-    public resetParticipantState (ctx: StateContext<ParticipantStateModel>): void {
+    public resetParticipantState (ctx: StateContext<ParticipantStoreModel>): void {
         ctx.setState( {
-            ...defaultParticipantState,
+            ...defaultParticipantStore,
             _metadata: {
-                ...defaultParticipantState._metadata,
+                ...defaultParticipantStore._metadata,
                 presencesStatus: ctx.getState()._metadata.presencesStatus,
             },
         } )
     }
 
     @Action( FetchParticipantPresencesStatus )
-    public fetchParticipantPresencesStatus (ctx: StateContext<ParticipantStateModel>): Observable<void> {
+    public fetchParticipantPresencesStatus (ctx: StateContext<ParticipantStoreModel>): Observable<void> {
         return this.metadataApi.getPresencesStatus().pipe(
             map( (types: SelectItem<PresenceStatusEnum>[]): void => this.fetchParticipantPresencesStatusComplete(
                 ctx,
@@ -220,7 +220,7 @@ export class ParticipantState extends GenericProjectElementState<ParticipantStat
     }
 
     private fetchParticipantPresencesStatusComplete (
-        ctx: StateContext<ParticipantStateModel>,
+        ctx: StateContext<ParticipantStoreModel>,
         status: SelectItem<PresenceStatusEnum>[],
     ): void {
         ctx.patchState( {
@@ -235,14 +235,14 @@ export class ParticipantState extends GenericProjectElementState<ParticipantStat
     }
 
     @Action( StartParticipantsPageLoader )
-    public startParticipantsPageLoader (ctx: StateContext<ParticipantStateModel>): void {
+    public startParticipantsPageLoader (ctx: StateContext<ParticipantStoreModel>): void {
         ctx.patchState( {
             participants: StateUtil.updatePageLoader( ctx.getState().participants, true ),
         } )
     }
 
     @Action( StopParticipantsPageLoader )
-    public stopParticipantsPageLoader (ctx: StateContext<ParticipantStateModel>): void {
+    public stopParticipantsPageLoader (ctx: StateContext<ParticipantStoreModel>): void {
         ctx.patchState( {
             participants: StateUtil.updatePageLoader( ctx.getState().participants, false ),
         } )
@@ -250,7 +250,7 @@ export class ParticipantState extends GenericProjectElementState<ParticipantStat
 
     @Action( FetchParticipantsPage )
     public fetchParticipantsPage (
-        ctx: StateContext<ParticipantStateModel>,
+        ctx: StateContext<ParticipantStoreModel>,
         payload: FetchParticipantsPage,
     ): Observable<void> {
         return this.api.findParticipants(
@@ -270,7 +270,7 @@ export class ParticipantState extends GenericProjectElementState<ParticipantStat
     }
 
     private fetchParticipantsPageComplete (
-        ctx: StateContext<ParticipantStateModel>,
+        ctx: StateContext<ParticipantStoreModel>,
         participantPage: PageModel<ParticipantModel>,
     ): void {
         ctx.patchState( {
@@ -287,7 +287,7 @@ export class ParticipantState extends GenericProjectElementState<ParticipantStat
 
     @Action( UpdateParticipantsPageSearchParams )
     public updateParticipantsPageSearchParams (
-        ctx: StateContext<ParticipantStateModel>,
+        ctx: StateContext<ParticipantStoreModel>,
         payload: UpdateParticipantsPageSearchParams,
     ): void {
         ctx.patchState( {
@@ -299,14 +299,14 @@ export class ParticipantState extends GenericProjectElementState<ParticipantStat
     }
 
     @Action( StartParticipantMovementsPageLoader )
-    public startParticipantMovementsPageLoader (ctx: StateContext<ParticipantStateModel>): void {
+    public startParticipantMovementsPageLoader (ctx: StateContext<ParticipantStoreModel>): void {
         ctx.patchState( {
             movements: StateUtil.updatePageLoader( ctx.getState().movements, true ),
         } )
     }
 
     @Action( StopParticipantMovementsPageLoader )
-    public stopParticipantMovementsPageLoader (ctx: StateContext<ParticipantStateModel>): void {
+    public stopParticipantMovementsPageLoader (ctx: StateContext<ParticipantStoreModel>): void {
         ctx.patchState( {
             movements: StateUtil.updatePageLoader( ctx.getState().movements, false ),
         } )
@@ -314,7 +314,7 @@ export class ParticipantState extends GenericProjectElementState<ParticipantStat
 
     @Action( FetchParticipantMovementsPage )
     public fetchParticipantMovementsPage (
-        ctx: StateContext<ParticipantStateModel>,
+        ctx: StateContext<ParticipantStoreModel>,
         payload: FetchParticipantMovementsPage,
     ): Observable<void> {
         return this.api.findParticipantMovements(
@@ -335,7 +335,7 @@ export class ParticipantState extends GenericProjectElementState<ParticipantStat
     }
 
     private fetchParticipantMovementsPageComplete (
-        ctx: StateContext<ParticipantStateModel>,
+        ctx: StateContext<ParticipantStoreModel>,
         movementsPage: PageModel<MovementModel>,
     ): void {
         ctx.patchState( {
@@ -358,7 +358,7 @@ export class ParticipantState extends GenericProjectElementState<ParticipantStat
 
     @Action( FetchParticipantMovementsContents )
     public fetchParticipantMovementsContents (
-        ctx: StateContext<ParticipantStateModel>,
+        ctx: StateContext<ParticipantStoreModel>,
         payload: FetchParticipantMovementsContents,
     ): Observable<void> {
         return this.movementApi.findMovementsContents(
@@ -374,7 +374,7 @@ export class ParticipantState extends GenericProjectElementState<ParticipantStat
     }
 
     private fetchParticipantMovementsContentsComplete (
-        ctx: StateContext<ParticipantStateModel>,
+        ctx: StateContext<ParticipantStoreModel>,
         contents: PairModel<MovementContentModel[]>[],
     ): void {
         if (!ctx.getState().movements.element) {
@@ -394,7 +394,7 @@ export class ParticipantState extends GenericProjectElementState<ParticipantStat
 
     @Action( UpdateParticipantMovementsPageSearchParams )
     public updateParticipantMovementsPageSearchParams (
-        ctx: StateContext<ParticipantStateModel>,
+        ctx: StateContext<ParticipantStoreModel>,
         payload: UpdateParticipantMovementsPageSearchParams,
     ): void {
         ctx.patchState( {
@@ -407,7 +407,7 @@ export class ParticipantState extends GenericProjectElementState<ParticipantStat
 
     @Action( SearchUsers )
     public searchUsers (
-        ctx: StateContext<ParticipantStateModel>,
+        ctx: StateContext<ParticipantStoreModel>,
         payload: SearchUsers,
     ): Observable<void> {
         return this.api.searchUsers(
@@ -422,7 +422,7 @@ export class ParticipantState extends GenericProjectElementState<ParticipantStat
     }
 
     private searchUsersComplete (
-        ctx: StateContext<ParticipantStateModel>,
+        ctx: StateContext<ParticipantStoreModel>,
         users: UserModel[],
     ): void {
         ctx.patchState( {
@@ -435,7 +435,7 @@ export class ParticipantState extends GenericProjectElementState<ParticipantStat
 
     @Action( SearchGroups )
     public searchGroups (
-        ctx: StateContext<ParticipantStateModel>,
+        ctx: StateContext<ParticipantStoreModel>,
         payload: SearchGroups,
     ): Observable<void> {
         return this.api.searchGroups(
@@ -450,7 +450,7 @@ export class ParticipantState extends GenericProjectElementState<ParticipantStat
     }
 
     private searchGroupsComplete (
-        ctx: StateContext<ParticipantStateModel>,
+        ctx: StateContext<ParticipantStoreModel>,
         groups: GroupModel[],
     ): void {
         ctx.patchState( {
@@ -461,12 +461,12 @@ export class ParticipantState extends GenericProjectElementState<ParticipantStat
         } )
     }
 
-    protected refreshPage (ctx: StateContext<ParticipantStateModel>): void {
+    protected refreshPage (ctx: StateContext<ParticipantStoreModel>): void {
         const page: PageModel<ParticipantModel> | undefined = ctx.getState().participants.element
         this.facade.fetchParticipantsPage( page?.pageNumber, page?.pageSize, true )
     }
 
-    protected pageError (ctx: StateContext<ParticipantStateModel>, error: ErrorModel): Observable<void> {
+    protected pageError (ctx: StateContext<ParticipantStoreModel>, error: ErrorModel): Observable<void> {
         if (error.status == 503) {
             throw error
         } else {
@@ -478,7 +478,7 @@ export class ParticipantState extends GenericProjectElementState<ParticipantStat
         return of()
     }
 
-    protected movementsPageError (ctx: StateContext<ParticipantStateModel>, error: ErrorModel): Observable<void> {
+    protected movementsPageError (ctx: StateContext<ParticipantStoreModel>, error: ErrorModel): Observable<void> {
         if (error.status == 503) {
             throw error
         } else {

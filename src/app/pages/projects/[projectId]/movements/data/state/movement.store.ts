@@ -1,7 +1,7 @@
 import { Action, NgxsOnInit, Selector, State, StateContext } from '@ngxs/store'
 import { catchError, finalize, map, Observable, of } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
-import { GenericProjectElementState } from '@shared/helpers/state/generic-project-element.state'
+import { GenericProjectElementStore } from '@shared/helpers/state/generic-project-element.store'
 import { initialize } from '@shared/helpers/util/rx.util'
 import {
     FetchMovementCommunicationsPage,
@@ -30,7 +30,7 @@ import { SelectItem, SelectItemGroup, ToastMessageOptions } from 'primeng/api'
 import { ErrorModel } from '@shared/models/model/error.model'
 import { ParticipantModel } from '@shared/models/model/participant.model'
 import { MovementModel } from '@shared/models/model/movement.model'
-import { MovementStateModel } from '@pages/projects/[projectId]/movements/data/model/movement-state.model'
+import { MovementStoreModel } from '@pages/projects/[projectId]/movements/data/model/movement-store.model'
 import {
     MovementParticipantsAndGroupsModel,
 } from '@shared/models/model/movement-participants-and-groups.model'
@@ -48,7 +48,7 @@ import { MovementTypeEnum } from '@shared/models/enumeration/movement-type.enum'
 import { ParticipantTypeEnum } from '@shared/models/enumeration/participant-type.enum'
 import { CommunicationModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
 
-const defaultMovementState: MovementStateModel = {
+const defaultMovementStore: MovementStoreModel = {
     movements: {
         element: undefined,
         params: {
@@ -91,12 +91,12 @@ const defaultMovementState: MovementStateModel = {
     },
 }
 
-@State<MovementStateModel>( {
+@State<MovementStoreModel>( {
     name: 'movement',
-    defaults: defaultMovementState,
+    defaults: defaultMovementStore,
 } )
 @Injectable()
-export class MovementState extends GenericProjectElementState<MovementStateModel> implements NgxsOnInit {
+export class MovementStore extends GenericProjectElementStore<MovementStoreModel> implements NgxsOnInit {
     private readonly api: MovementApi = inject( MovementApi )
     private readonly metadataApi: MetadataApi = inject( MetadataApi )
     private readonly facade: MovementFacade = inject( MovementFacade )
@@ -109,131 +109,131 @@ export class MovementState extends GenericProjectElementState<MovementStateModel
     }
 
     @Selector()
-    public static movementsPage (state: MovementStateModel): PageModel<MovementModel> | undefined {
+    public static movementsPage (state: MovementStoreModel): PageModel<MovementModel> | undefined {
         return state.movements.element
     }
 
     @Selector()
-    public static movementsPageLoading (state: MovementStateModel): boolean {
+    public static movementsPageLoading (state: MovementStoreModel): boolean {
         return state.movements.loading
     }
 
     @Selector()
-    public static movementsPageError (state: MovementStateModel): ToastMessageOptions | undefined {
+    public static movementsPageError (state: MovementStoreModel): ToastMessageOptions | undefined {
         return state.movements.error
     }
 
     @Selector()
-    public static movementsPageSilentLoading (state: MovementStateModel): boolean {
+    public static movementsPageSilentLoading (state: MovementStoreModel): boolean {
         return state.movements.silentLoading
     }
 
     @Selector()
-    public static movementsPageResetSearch (state: MovementStateModel): boolean {
+    public static movementsPageResetSearch (state: MovementStoreModel): boolean {
         return state.movements.params.resetSearch
     }
 
     @Selector()
-    public static movementsPageTypeSearchedParam (state: MovementStateModel): string | undefined {
+    public static movementsPageTypeSearchedParam (state: MovementStoreModel): string | undefined {
         return state.movements.params.typeSearched
     }
 
     @Selector()
-    public static movementsPageVisibilitySearchedParam (state: MovementStateModel): boolean | undefined {
+    public static movementsPageVisibilitySearchedParam (state: MovementStoreModel): boolean | undefined {
         return state.movements.params.visibilitySearched
     }
 
     @Selector()
-    public static movementsPageStartDateTimeSearchedParam (state: MovementStateModel): string | undefined {
+    public static movementsPageStartDateTimeSearchedParam (state: MovementStoreModel): string | undefined {
         return state.movements.params.startDateTimeSearched
     }
 
     @Selector()
-    public static movementsPageEndDateTimeSearchedParam (state: MovementStateModel): string | undefined {
+    public static movementsPageEndDateTimeSearchedParam (state: MovementStoreModel): string | undefined {
         return state.movements.params.endDateTimeSearched
     }
 
     @Selector()
-    public static movementCommunicationsPage (state: MovementStateModel): PageModel<CommunicationModel> | undefined {
+    public static movementCommunicationsPage (state: MovementStoreModel): PageModel<CommunicationModel> | undefined {
         return state.movementCommunications.element
     }
 
     @Selector()
-    public static movementCommunicationsPageLoading (state: MovementStateModel): boolean {
+    public static movementCommunicationsPageLoading (state: MovementStoreModel): boolean {
         return state.movementCommunications.loading
     }
 
     @Selector()
-    public static movementCommunicationsPageError (state: MovementStateModel): ToastMessageOptions | undefined {
+    public static movementCommunicationsPageError (state: MovementStoreModel): ToastMessageOptions | undefined {
         return state.movementCommunications.error
     }
 
     @Selector()
-    public static movementCommunicationsPageSilentLoading (state: MovementStateModel): boolean {
+    public static movementCommunicationsPageSilentLoading (state: MovementStoreModel): boolean {
         return state.movementCommunications.silentLoading
     }
 
     @Selector()
-    public static movementCommunicationsPageResetSearch (state: MovementStateModel): boolean {
+    public static movementCommunicationsPageResetSearch (state: MovementStoreModel): boolean {
         return state.movementCommunications.params.resetSearch
     }
 
     @Selector()
-    public static movementCommunicationsPageTextSearchedParam (state: MovementStateModel): string | undefined {
+    public static movementCommunicationsPageTextSearchedParam (state: MovementStoreModel): string | undefined {
         return state.movementCommunications.params.textSearched
     }
 
     @Selector()
-    public static movementCommunicationsPageVisibilitySearchedParam (state: MovementStateModel): boolean | undefined {
+    public static movementCommunicationsPageVisibilitySearchedParam (state: MovementStoreModel): boolean | undefined {
         return state.movementCommunications.params.visibilitySearched
     }
 
     @Selector()
-    public static movementCommunicationsPageStartDateTimeSearchedParam (state: MovementStateModel): string | undefined {
+    public static movementCommunicationsPageStartDateTimeSearchedParam (state: MovementStoreModel): string | undefined {
         return state.movementCommunications.params.startDateTimeSearched
     }
 
     @Selector()
-    public static movementCommunicationsPageEndDateTimeSearchedParam (state: MovementStateModel): string | undefined {
+    public static movementCommunicationsPageEndDateTimeSearchedParam (state: MovementStoreModel): string | undefined {
         return state.movementCommunications.params.endDateTimeSearched
     }
 
     @Selector()
-    public static searchedReasonAndActivityMetadata (state: MovementStateModel): MovementReasonModel[] {
+    public static searchedReasonAndActivityMetadata (state: MovementStoreModel): MovementReasonModel[] {
         return state._metadata.searchedReasonsAndActivities
     }
 
     @Selector()
-    public static searchedParticipantAndGroupMetadata (state: MovementStateModel): SelectItemGroup<ParticipantModel | GroupModel>[] {
+    public static searchedParticipantAndGroupMetadata (state: MovementStoreModel): SelectItemGroup<ParticipantModel | GroupModel>[] {
         return state._metadata.searchedParticipantsAndGroups
     }
 
     @Selector()
-    public static searchedVehicleMetadata (state: MovementStateModel): SelectItem<VehicleModel>[] {
+    public static searchedVehicleMetadata (state: MovementStoreModel): SelectItem<VehicleModel>[] {
         return state._metadata.searchedVehicles
     }
 
     @Selector()
-    public static movementTypesMetadata (state: MovementStateModel): SelectItem<MovementTypeEnum | undefined>[] {
+    public static movementTypesMetadata (state: MovementStoreModel): SelectItem<MovementTypeEnum | undefined>[] {
         return state._metadata.types
     }
 
     @Selector()
-    public static participantTypesMetadata (state: MovementStateModel): SelectItem<ParticipantTypeEnum>[] {
+    public static participantTypesMetadata (state: MovementStoreModel): SelectItem<ParticipantTypeEnum>[] {
         return state._metadata.participantTypes
     }
 
     @Selector()
-    public static visibilitiesMetadata (state: MovementStateModel): SelectItem<boolean | undefined>[] {
+    public static visibilitiesMetadata (state: MovementStoreModel): SelectItem<boolean | undefined>[] {
         return state._metadata.visibilities
     }
 
     @Action( ResetMovementState )
-    public resetMovementState (ctx: StateContext<MovementStateModel>): void {
+    public resetMovementState (ctx: StateContext<MovementStoreModel>): void {
         ctx.setState( {
-            ...defaultMovementState,
+            ...defaultMovementStore,
             _metadata: {
-                ...defaultMovementState._metadata,
+                ...defaultMovementStore._metadata,
                 participantTypes: ctx.getState()._metadata.participantTypes,
                 types: ctx.getState()._metadata.types,
             },
@@ -241,14 +241,14 @@ export class MovementState extends GenericProjectElementState<MovementStateModel
     }
 
     @Action( FetchMovementTypes )
-    public fetchMovementTypes (ctx: StateContext<MovementStateModel>): Observable<void> {
+    public fetchMovementTypes (ctx: StateContext<MovementStoreModel>): Observable<void> {
         return this.metadataApi.getMovementsTypes().pipe(
             map( (types: SelectItem<MovementTypeEnum>[]): void => this.fetchMovementTypesComplete( ctx, types ) ),
         )
     }
 
     private fetchMovementTypesComplete (
-        ctx: StateContext<MovementStateModel>,
+        ctx: StateContext<MovementStoreModel>,
         types: SelectItem<MovementTypeEnum>[],
     ): void {
         ctx.patchState( {
@@ -263,14 +263,14 @@ export class MovementState extends GenericProjectElementState<MovementStateModel
     }
 
     @Action( FetchParticipantTypes )
-    public fetchParticipantTypes (ctx: StateContext<MovementStateModel>): Observable<void> {
+    public fetchParticipantTypes (ctx: StateContext<MovementStoreModel>): Observable<void> {
         return this.metadataApi.getParticipantsTypes().pipe(
             map( (types: SelectItem<ParticipantTypeEnum>[]): void => this.fetchParticipantTypesComplete( ctx, types ) ),
         )
     }
 
     private fetchParticipantTypesComplete (
-        ctx: StateContext<MovementStateModel>,
+        ctx: StateContext<MovementStoreModel>,
         types: SelectItem<ParticipantTypeEnum>[],
     ): void {
         ctx.patchState( {
@@ -282,21 +282,21 @@ export class MovementState extends GenericProjectElementState<MovementStateModel
     }
 
     @Action( StartMovementsPageLoader )
-    public startMovementsPageLoader (ctx: StateContext<MovementStateModel>): void {
+    public startMovementsPageLoader (ctx: StateContext<MovementStoreModel>): void {
         ctx.patchState( {
             movements: StateUtil.updatePageLoader( ctx.getState().movements, true ),
         } )
     }
 
     @Action( StopMovementsPageLoader )
-    public stopMovementsPageLoader (ctx: StateContext<MovementStateModel>): void {
+    public stopMovementsPageLoader (ctx: StateContext<MovementStoreModel>): void {
         ctx.patchState( {
             movements: StateUtil.updatePageLoader( ctx.getState().movements, false ),
         } )
     }
 
     @Action( FetchMovementsPage )
-    public fetchMovementsPage (ctx: StateContext<MovementStateModel>, payload: FetchMovementsPage): Observable<void> {
+    public fetchMovementsPage (ctx: StateContext<MovementStoreModel>, payload: FetchMovementsPage): Observable<void> {
         return this.api.findMovements(
             payload.projectId,
             payload.pageNumber,
@@ -314,7 +314,7 @@ export class MovementState extends GenericProjectElementState<MovementStateModel
     }
 
     private fetchMovementsPageComplete (
-        ctx: StateContext<MovementStateModel>,
+        ctx: StateContext<MovementStoreModel>,
         movementsPage: PageModel<MovementModel>,
     ): void {
         ctx.patchState( {
@@ -337,7 +337,7 @@ export class MovementState extends GenericProjectElementState<MovementStateModel
 
     @Action( FetchMovementsContent )
     public fetchMovementsContent (
-        ctx: StateContext<MovementStateModel>,
+        ctx: StateContext<MovementStoreModel>,
         payload: FetchMovementsContent,
     ): Observable<void> {
         return this.api.findMovementsContents(
@@ -353,7 +353,7 @@ export class MovementState extends GenericProjectElementState<MovementStateModel
     }
 
     private fetchMovementsContentComplete (
-        ctx: StateContext<MovementStateModel>,
+        ctx: StateContext<MovementStoreModel>,
         contents: PairModel<MovementContentModel[]>[],
     ): void {
         if (!ctx.getState().movements.element) {
@@ -373,7 +373,7 @@ export class MovementState extends GenericProjectElementState<MovementStateModel
 
     @Action( UpdateMovementsPageSearchParams )
     public updateMovementsPageSearchParams (
-        ctx: StateContext<MovementStateModel>,
+        ctx: StateContext<MovementStoreModel>,
         payload: UpdateMovementsPageSearchParams,
     ): void {
         ctx.patchState( {
@@ -385,14 +385,14 @@ export class MovementState extends GenericProjectElementState<MovementStateModel
     }
 
     @Action( StartMovementCommunicationsPageLoader )
-    public startMovementCommunicationsPageLoader (ctx: StateContext<MovementStateModel>): void {
+    public startMovementCommunicationsPageLoader (ctx: StateContext<MovementStoreModel>): void {
         ctx.patchState( {
             movementCommunications: StateUtil.updatePageLoader( ctx.getState().movementCommunications, true ),
         } )
     }
 
     @Action( StopMovementCommunicationsPageLoader )
-    public stopMovementCommunicationsPageLoader (ctx: StateContext<MovementStateModel>): void {
+    public stopMovementCommunicationsPageLoader (ctx: StateContext<MovementStoreModel>): void {
         ctx.patchState( {
             movementCommunications: StateUtil.updatePageLoader( ctx.getState().movementCommunications, false ),
         } )
@@ -400,7 +400,7 @@ export class MovementState extends GenericProjectElementState<MovementStateModel
 
     @Action( FetchMovementCommunicationsPage )
     public fetchMovementCommunicationsPage (
-        ctx: StateContext<MovementStateModel>,
+        ctx: StateContext<MovementStoreModel>,
         payload: FetchMovementCommunicationsPage,
     ): Observable<void> {
         return this.api.findMovementCommunications(
@@ -421,7 +421,7 @@ export class MovementState extends GenericProjectElementState<MovementStateModel
     }
 
     private fetchMovementCommunicationsPageComplete (
-        ctx: StateContext<MovementStateModel>,
+        ctx: StateContext<MovementStoreModel>,
         communicationsPage: PageModel<CommunicationModel>,
     ): void {
         ctx.patchState( {
@@ -438,7 +438,7 @@ export class MovementState extends GenericProjectElementState<MovementStateModel
 
     @Action( UpdateMovementCommunicationsPageSearchParams )
     public updateMovementCommunicationsPageSearchParams (
-        ctx: StateContext<MovementStateModel>,
+        ctx: StateContext<MovementStoreModel>,
         payload: UpdateMovementCommunicationsPageSearchParams,
     ): void {
         ctx.patchState( {
@@ -451,7 +451,7 @@ export class MovementState extends GenericProjectElementState<MovementStateModel
 
     @Action( SearchReasonsAndActivities )
     public searchReasonsAndActivities (
-        ctx: StateContext<MovementStateModel>,
+        ctx: StateContext<MovementStoreModel>,
         payload: SearchReasonsAndActivities,
     ): Observable<void> {
         return this.api.searchReasonsAndActivities(
@@ -468,7 +468,7 @@ export class MovementState extends GenericProjectElementState<MovementStateModel
     }
 
     private searchReasonsAndActivitiesComplete (
-        ctx: StateContext<MovementStateModel>,
+        ctx: StateContext<MovementStoreModel>,
         reasonsAndActivities: MovementReasonModel[],
     ): void {
         ctx.patchState( {
@@ -481,7 +481,7 @@ export class MovementState extends GenericProjectElementState<MovementStateModel
 
     @Action( SearchParticipantsAndGroups )
     public searchParticipantsAndGroups (
-        ctx: StateContext<MovementStateModel>,
+        ctx: StateContext<MovementStoreModel>,
         payload: SearchParticipantsAndGroups,
     ): Observable<void> {
         return this.api.searchParticipantsAndGroups(
@@ -497,7 +497,7 @@ export class MovementState extends GenericProjectElementState<MovementStateModel
     }
 
     private searchParticipantsAndGroupsComplete (
-        ctx: StateContext<MovementStateModel>,
+        ctx: StateContext<MovementStoreModel>,
         participantsAndGroups: MovementParticipantsAndGroupsModel,
     ): void {
         const searched: SelectItemGroup<ParticipantModel | GroupModel>[] = []
@@ -537,7 +537,7 @@ export class MovementState extends GenericProjectElementState<MovementStateModel
 
     @Action( SearchVehicles )
     public searchVehicles (
-        ctx: StateContext<MovementStateModel>,
+        ctx: StateContext<MovementStoreModel>,
         payload: SearchVehicles,
     ): Observable<void> {
         return this.api.searchVehicles( payload.projectId, payload.textSearched ).pipe(
@@ -549,7 +549,7 @@ export class MovementState extends GenericProjectElementState<MovementStateModel
     }
 
     private searchVehiclesComplete (
-        ctx: StateContext<MovementStateModel>,
+        ctx: StateContext<MovementStoreModel>,
         vehicles: VehicleModel[],
     ): void {
         ctx.patchState( {
@@ -562,12 +562,12 @@ export class MovementState extends GenericProjectElementState<MovementStateModel
         } )
     }
 
-    protected refreshPage (ctx: StateContext<MovementStateModel>): void {
+    protected refreshPage (ctx: StateContext<MovementStoreModel>): void {
         const page: PageModel<MovementModel> | undefined = ctx.getState().movements.element
         this.facade.fetchMovementsPage( page?.pageNumber, page?.pageSize, true )
     }
 
-    protected communicationsPageError (ctx: StateContext<MovementStateModel>, error: ErrorModel): Observable<void> {
+    protected communicationsPageError (ctx: StateContext<MovementStoreModel>, error: ErrorModel): Observable<void> {
         if (error.status == 503) {
             throw error
         } else {
@@ -579,7 +579,7 @@ export class MovementState extends GenericProjectElementState<MovementStateModel
         return of()
     }
 
-    protected pageError (ctx: StateContext<MovementStateModel>, error: ErrorModel): Observable<void> {
+    protected pageError (ctx: StateContext<MovementStoreModel>, error: ErrorModel): Observable<void> {
         if (error.status == 503) {
             throw error
         } else {

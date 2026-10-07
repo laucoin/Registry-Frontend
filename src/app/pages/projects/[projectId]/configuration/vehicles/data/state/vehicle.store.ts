@@ -2,9 +2,9 @@ import { Action, NgxsOnInit, Selector, State, StateContext } from '@ngxs/store'
 import { catchError, finalize, map, Observable, of } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
 import { VehicleModel } from '@shared/models/model/vehicle.model'
-import { GenericProjectElementState } from '@shared/helpers/state/generic-project-element.state'
+import { GenericProjectElementStore } from '@shared/helpers/state/generic-project-element.store'
 import { initialize } from '@shared/helpers/util/rx.util'
-import { VehicleStateModel } from '@pages/projects/[projectId]/configuration/vehicles/data/model/vehicle-state.model'
+import { VehicleStoreModel } from '@pages/projects/[projectId]/configuration/vehicles/data/model/vehicle-store.model'
 import {
     FetchVehicleMovementsContents,
     FetchVehicleMovementsPage,
@@ -32,7 +32,7 @@ import { MovementUtil } from '@shared/helpers/util/movement.util'
 import { MetadataApi } from '@core/registry/state/metadata.api'
 import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum'
 
-const defaultVehicleState: VehicleStateModel = {
+const defaultVehicleStore: VehicleStoreModel = {
     vehicles: {
         element: undefined,
         params: {
@@ -76,12 +76,12 @@ const defaultVehicleState: VehicleStateModel = {
     },
 }
 
-@State<VehicleStateModel>( {
+@State<VehicleStoreModel>( {
     name: 'vehicle',
-    defaults: defaultVehicleState,
+    defaults: defaultVehicleStore,
 } )
 @Injectable()
-export class VehicleState extends GenericProjectElementState<VehicleStateModel> implements NgxsOnInit {
+export class VehicleStore extends GenericProjectElementStore<VehicleStoreModel> implements NgxsOnInit {
     private readonly api: VehicleApi = inject( VehicleApi )
     private readonly metadataApi: MetadataApi = inject( MetadataApi )
     private readonly movementApi: MovementApi = inject( MovementApi )
@@ -92,123 +92,123 @@ export class VehicleState extends GenericProjectElementState<VehicleStateModel> 
     }
 
     @Selector()
-    public static vehiclesPage (state: VehicleStateModel): PageModel<VehicleModel> | undefined {
+    public static vehiclesPage (state: VehicleStoreModel): PageModel<VehicleModel> | undefined {
         return state.vehicles.element
     }
 
     @Selector()
-    public static vehiclesPageLoading (state: VehicleStateModel): boolean {
+    public static vehiclesPageLoading (state: VehicleStoreModel): boolean {
         return state.vehicles.loading
     }
 
     @Selector()
-    public static vehiclesPageError (state: VehicleStateModel): ToastMessageOptions | undefined {
+    public static vehiclesPageError (state: VehicleStoreModel): ToastMessageOptions | undefined {
         return state.vehicles.error
     }
 
     @Selector()
-    public static vehiclesPageSilentLoading (state: VehicleStateModel): boolean {
+    public static vehiclesPageSilentLoading (state: VehicleStoreModel): boolean {
         return state.vehicles.silentLoading
     }
 
     @Selector()
-    public static vehiclesPageResetSearch (state: VehicleStateModel): boolean {
+    public static vehiclesPageResetSearch (state: VehicleStoreModel): boolean {
         return state.vehicles.params.resetSearch
     }
 
     @Selector()
-    public static vehiclesPageTextSearchedParam (state: VehicleStateModel): string | undefined {
+    public static vehiclesPageTextSearchedParam (state: VehicleStoreModel): string | undefined {
         return state.vehicles.params.textSearched
     }
 
     @Selector()
-    public static vehiclesPageDateTimeSearchedParam (state: VehicleStateModel): string | undefined {
+    public static vehiclesPageDateTimeSearchedParam (state: VehicleStoreModel): string | undefined {
         return state.vehicles.params.dateTimeSearched
     }
 
     @Selector()
-    public static vehiclesPageAvailabilitySearchedParam (state: VehicleStateModel): boolean | undefined {
+    public static vehiclesPageAvailabilitySearchedParam (state: VehicleStoreModel): boolean | undefined {
         return state.vehicles.params.statusSearched
     }
 
     @Selector()
-    public static vehiclesPageVisibilitySearchedParam (state: VehicleStateModel): boolean | undefined {
+    public static vehiclesPageVisibilitySearchedParam (state: VehicleStoreModel): boolean | undefined {
         return state.vehicles.params.visibilitySearched
     }
 
     @Selector()
-    public static vehicleMovementsPage (state: VehicleStateModel): PageModel<MovementModel> | undefined {
+    public static vehicleMovementsPage (state: VehicleStoreModel): PageModel<MovementModel> | undefined {
         return state.movements.element
     }
 
     @Selector()
-    public static vehicleMovementsPageLoading (state: VehicleStateModel): boolean {
+    public static vehicleMovementsPageLoading (state: VehicleStoreModel): boolean {
         return state.movements.loading
     }
 
     @Selector()
-    public static vehicleMovementsPageError (state: VehicleStateModel): ToastMessageOptions | undefined {
+    public static vehicleMovementsPageError (state: VehicleStoreModel): ToastMessageOptions | undefined {
         return state.movements.error
     }
 
     @Selector()
-    public static vehicleMovementsPageSilentLoading (state: VehicleStateModel): boolean {
+    public static vehicleMovementsPageSilentLoading (state: VehicleStoreModel): boolean {
         return state.movements.silentLoading
     }
 
     @Selector()
-    public static vehicleMovementsPageResetSearch (state: VehicleStateModel): boolean {
+    public static vehicleMovementsPageResetSearch (state: VehicleStoreModel): boolean {
         return state.movements.params.resetSearch
     }
 
     @Selector()
-    public static vehicleMovementsPageTypeSearchedParam (state: VehicleStateModel): string | undefined {
+    public static vehicleMovementsPageTypeSearchedParam (state: VehicleStoreModel): string | undefined {
         return state.movements.params.typeSearched
     }
 
     @Selector()
-    public static vehicleMovementsPageStartDateTimeSearchedParam (state: VehicleStateModel): string | undefined {
+    public static vehicleMovementsPageStartDateTimeSearchedParam (state: VehicleStoreModel): string | undefined {
         return state.movements.params.startDateTimeSearched
     }
 
     @Selector()
-    public static vehicleMovementsPageEndDateTimeSearchedParam (state: VehicleStateModel): string | undefined {
+    public static vehicleMovementsPageEndDateTimeSearchedParam (state: VehicleStoreModel): string | undefined {
         return state.movements.params.endDateTimeSearched
     }
 
     @Selector()
-    public static vehicleMovementsPageVisibilitySearchedParam (state: VehicleStateModel): boolean | undefined {
+    public static vehicleMovementsPageVisibilitySearchedParam (state: VehicleStoreModel): boolean | undefined {
         return state.movements.params.visibilitySearched
     }
 
     @Selector()
-    public static availabilitiesMetadata (state: VehicleStateModel): SelectItem<boolean | undefined>[] {
+    public static availabilitiesMetadata (state: VehicleStoreModel): SelectItem<boolean | undefined>[] {
         return state._metadata.availabilities
     }
 
     @Selector()
-    public static visibilitiesMetadata (state: VehicleStateModel): SelectItem<boolean | undefined>[] {
+    public static visibilitiesMetadata (state: VehicleStoreModel): SelectItem<boolean | undefined>[] {
         return state._metadata.visibilities
     }
 
     @Selector()
-    public static presencesStatusMetadata (state: VehicleStateModel): SelectItem<PresenceStatusEnum | undefined>[] {
+    public static presencesStatusMetadata (state: VehicleStoreModel): SelectItem<PresenceStatusEnum | undefined>[] {
         return state._metadata.presencesStatus
     }
 
     @Action( ResetVehicleState )
-    public resetVehicleState (ctx: StateContext<VehicleStateModel>): void {
+    public resetVehicleState (ctx: StateContext<VehicleStoreModel>): void {
         ctx.setState( {
-            ...defaultVehicleState,
+            ...defaultVehicleStore,
             _metadata: {
-                ...defaultVehicleState._metadata,
+                ...defaultVehicleStore._metadata,
                 presencesStatus: ctx.getState()._metadata.presencesStatus,
             },
         } )
     }
 
     @Action( FetchVehiclePresencesStatus )
-    public fetchVehiclePresencesStatus (ctx: StateContext<VehicleStateModel>): Observable<void> {
+    public fetchVehiclePresencesStatus (ctx: StateContext<VehicleStoreModel>): Observable<void> {
         return this.metadataApi.getPresencesStatus().pipe(
             map( (types: SelectItem<PresenceStatusEnum>[]): void => this.fetchVehiclePresencesStatusComplete(
                 ctx,
@@ -218,7 +218,7 @@ export class VehicleState extends GenericProjectElementState<VehicleStateModel> 
     }
 
     private fetchVehiclePresencesStatusComplete (
-        ctx: StateContext<VehicleStateModel>,
+        ctx: StateContext<VehicleStoreModel>,
         status: SelectItem<PresenceStatusEnum>[],
     ): void {
         ctx.patchState( {
@@ -233,14 +233,14 @@ export class VehicleState extends GenericProjectElementState<VehicleStateModel> 
     }
 
     @Action( StartVehiclesPageLoader )
-    public startVehiclesPageLoader (ctx: StateContext<VehicleStateModel>): void {
+    public startVehiclesPageLoader (ctx: StateContext<VehicleStoreModel>): void {
         ctx.patchState( {
             vehicles: StateUtil.updatePageLoader( ctx.getState().vehicles, true ),
         } )
     }
 
     @Action( StopVehiclesPageLoader )
-    public stopVehiclesPageLoader (ctx: StateContext<VehicleStateModel>): void {
+    public stopVehiclesPageLoader (ctx: StateContext<VehicleStoreModel>): void {
         ctx.patchState( {
             vehicles: StateUtil.updatePageLoader( ctx.getState().vehicles, false ),
         } )
@@ -248,7 +248,7 @@ export class VehicleState extends GenericProjectElementState<VehicleStateModel> 
 
     @Action( FetchVehiclesPage )
     public fetchVehiclesPage (
-        ctx: StateContext<VehicleStateModel>,
+        ctx: StateContext<VehicleStoreModel>,
         payload: FetchVehiclesPage,
     ): Observable<void> {
         return this.api.findVehicles(
@@ -268,7 +268,7 @@ export class VehicleState extends GenericProjectElementState<VehicleStateModel> 
     }
 
     private fetchVehiclesPageComplete (
-        ctx: StateContext<VehicleStateModel>,
+        ctx: StateContext<VehicleStoreModel>,
         vehiclePage: PageModel<VehicleModel>,
     ): void {
         ctx.patchState( {
@@ -285,7 +285,7 @@ export class VehicleState extends GenericProjectElementState<VehicleStateModel> 
 
     @Action( UpdateVehiclesPageSearchParams )
     public updateVehiclesPageSearchParams (
-        ctx: StateContext<VehicleStateModel>,
+        ctx: StateContext<VehicleStoreModel>,
         payload: UpdateVehiclesPageSearchParams,
     ): void {
         ctx.patchState( {
@@ -297,14 +297,14 @@ export class VehicleState extends GenericProjectElementState<VehicleStateModel> 
     }
 
     @Action( StartVehicleMovementsPageLoader )
-    public startVehicleMovementsPageLoader (ctx: StateContext<VehicleStateModel>): void {
+    public startVehicleMovementsPageLoader (ctx: StateContext<VehicleStoreModel>): void {
         ctx.patchState( {
             movements: StateUtil.updatePageLoader( ctx.getState().movements, true ),
         } )
     }
 
     @Action( StopVehicleMovementsPageLoader )
-    public stopVehicleMovementsPageLoader (ctx: StateContext<VehicleStateModel>): void {
+    public stopVehicleMovementsPageLoader (ctx: StateContext<VehicleStoreModel>): void {
         ctx.patchState( {
             movements: StateUtil.updatePageLoader( ctx.getState().movements, false ),
         } )
@@ -312,7 +312,7 @@ export class VehicleState extends GenericProjectElementState<VehicleStateModel> 
 
     @Action( FetchVehicleMovementsPage )
     public fetchVehicleMovementsPage (
-        ctx: StateContext<VehicleStateModel>,
+        ctx: StateContext<VehicleStoreModel>,
         payload: FetchVehicleMovementsPage,
     ): Observable<void> {
         return this.api.findVehicleMovements(
@@ -333,7 +333,7 @@ export class VehicleState extends GenericProjectElementState<VehicleStateModel> 
     }
 
     private fetchVehicleMovementsPageComplete (
-        ctx: StateContext<VehicleStateModel>,
+        ctx: StateContext<VehicleStoreModel>,
         movementsPage: PageModel<MovementModel>,
     ): void {
         ctx.patchState( {
@@ -356,7 +356,7 @@ export class VehicleState extends GenericProjectElementState<VehicleStateModel> 
 
     @Action( FetchVehicleMovementsContents )
     public fetchVehicleMovementsContents (
-        ctx: StateContext<VehicleStateModel>,
+        ctx: StateContext<VehicleStoreModel>,
         payload: FetchVehicleMovementsContents,
     ): Observable<void> {
         return this.movementApi.findMovementsContents(
@@ -372,7 +372,7 @@ export class VehicleState extends GenericProjectElementState<VehicleStateModel> 
     }
 
     private fetchVehicleMovementsContentsComplete (
-        ctx: StateContext<VehicleStateModel>,
+        ctx: StateContext<VehicleStoreModel>,
         contents: PairModel<MovementContentModel[]>[],
     ): void {
         if (!ctx.getState().movements.element) {
@@ -392,7 +392,7 @@ export class VehicleState extends GenericProjectElementState<VehicleStateModel> 
 
     @Action( UpdateVehicleMovementsPageSearchParams )
     public updateVehicleMovementsPageSearchParams (
-        ctx: StateContext<VehicleStateModel>,
+        ctx: StateContext<VehicleStoreModel>,
         payload: UpdateVehicleMovementsPageSearchParams,
     ): void {
         ctx.patchState( {
@@ -403,12 +403,12 @@ export class VehicleState extends GenericProjectElementState<VehicleStateModel> 
         } )
     }
 
-    protected refreshPage (ctx: StateContext<VehicleStateModel>): void {
+    protected refreshPage (ctx: StateContext<VehicleStoreModel>): void {
         const page: PageModel<VehicleModel> | undefined = ctx.getState().vehicles.element
         this.facade.fetchVehiclesPage( page?.pageNumber, page?.pageSize, true )
     }
 
-    protected pageError (ctx: StateContext<VehicleStateModel>, error: ErrorModel): Observable<void> {
+    protected pageError (ctx: StateContext<VehicleStoreModel>, error: ErrorModel): Observable<void> {
         if (error.status == 503) {
             throw error
         } else {
@@ -420,7 +420,7 @@ export class VehicleState extends GenericProjectElementState<VehicleStateModel> 
         return of()
     }
 
-    protected movementsPageError (ctx: StateContext<VehicleStateModel>, error: ErrorModel): Observable<void> {
+    protected movementsPageError (ctx: StateContext<VehicleStoreModel>, error: ErrorModel): Observable<void> {
         if (error.status == 503) {
             throw error
         } else {

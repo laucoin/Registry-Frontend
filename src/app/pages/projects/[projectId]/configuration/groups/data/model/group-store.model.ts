@@ -5,7 +5,7 @@ import { ParticipantModel } from '@shared/models/model/participant.model'
 import { SelectItem } from 'primeng/api'
 import { ParticipantPageParamsModel } from '@pages/projects/[projectId]/configuration/participants/data/model/participant-page-params.model'
 
-export interface GroupStateModel {
+export interface GroupStoreModel {
     groups: PageRequestInformationModel<GroupPageParamsModel, GroupModel>
     members: PageRequestInformationModel<ParticipantPageParamsModel, ParticipantModel> & { groupId: string | undefined }
     _metadata: {

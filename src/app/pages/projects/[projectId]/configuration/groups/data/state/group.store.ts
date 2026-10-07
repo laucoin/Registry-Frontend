@@ -2,7 +2,7 @@ import { Action, Selector, State, StateContext } from '@ngxs/store'
 import { catchError, finalize, map, Observable, of } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
 import { GroupModel } from '@shared/models/model/group.model'
-import { GenericProjectElementState } from '@shared/helpers/state/generic-project-element.state'
+import { GenericProjectElementStore } from '@shared/helpers/state/generic-project-element.store'
 import { initialize } from '@shared/helpers/util/rx.util'
 import {
     FetchGroupMembersPage,
@@ -25,9 +25,9 @@ import { ParticipantUtil } from '@shared/helpers/util/participant.util'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { GenericUtil } from '@shared/helpers/util/generic.util'
 import { ErrorModel } from '@shared/models/model/error.model'
-import { GroupStateModel } from '@pages/projects/[projectId]/configuration/groups/data/model/group-state.model'
+import { GroupStoreModel } from '@pages/projects/[projectId]/configuration/groups/data/model/group-store.model'
 
-const defaultGroupState: GroupStateModel = {
+const defaultGroupStore: GroupStoreModel = {
     groups: {
         element: undefined,
         params: {
@@ -69,129 +69,129 @@ const defaultGroupState: GroupStateModel = {
     },
 }
 
-@State<GroupStateModel>( {
+@State<GroupStoreModel>( {
     name: 'group',
-    defaults: defaultGroupState,
+    defaults: defaultGroupStore,
 } )
 @Injectable()
-export class GroupState extends GenericProjectElementState<GroupStateModel> {
+export class GroupStore extends GenericProjectElementStore<GroupStoreModel> {
     private readonly api: GroupApi = inject( GroupApi )
     private readonly facade: GroupFacade = inject( GroupFacade )
 
     @Selector()
-    public static groupsPage (state: GroupStateModel): PageModel<GroupModel> | undefined {
+    public static groupsPage (state: GroupStoreModel): PageModel<GroupModel> | undefined {
         return state.groups.element
     }
 
     @Selector()
-    public static groupsPageLoading (state: GroupStateModel): boolean {
+    public static groupsPageLoading (state: GroupStoreModel): boolean {
         return state.groups.loading
     }
 
     @Selector()
-    public static groupsPageError (state: GroupStateModel): ToastMessageOptions | undefined {
+    public static groupsPageError (state: GroupStoreModel): ToastMessageOptions | undefined {
         return state.groups.error
     }
 
     @Selector()
-    public static groupsPageSilentLoading (state: GroupStateModel): boolean {
+    public static groupsPageSilentLoading (state: GroupStoreModel): boolean {
         return state.groups.silentLoading
     }
 
     @Selector()
-    public static groupsPageResetSearch (state: GroupStateModel): boolean {
+    public static groupsPageResetSearch (state: GroupStoreModel): boolean {
         return state.groups.params.resetSearch
     }
 
     @Selector()
-    public static groupsPageTextSearchedParam (state: GroupStateModel): string | undefined {
+    public static groupsPageTextSearchedParam (state: GroupStoreModel): string | undefined {
         return state.groups.params.textSearched
     }
 
     @Selector()
-    public static groupsPageDateTimeSearchedParam (state: GroupStateModel): string | undefined {
+    public static groupsPageDateTimeSearchedParam (state: GroupStoreModel): string | undefined {
         return state.groups.params.dateTimeSearched
     }
 
     @Selector()
-    public static groupsPagePresenceSearchedParam (state: GroupStateModel): boolean | undefined {
+    public static groupsPagePresenceSearchedParam (state: GroupStoreModel): boolean | undefined {
         return state.groups.params.presenceSearched
     }
 
     @Selector()
-    public static groupsPageVisibilitySearchedParam (state: GroupStateModel): boolean | undefined {
+    public static groupsPageVisibilitySearchedParam (state: GroupStoreModel): boolean | undefined {
         return state.groups.params.visibilitySearched
     }
 
     @Selector()
-    public static groupMembersPage (state: GroupStateModel): PageModel<ParticipantModel> | undefined {
+    public static groupMembersPage (state: GroupStoreModel): PageModel<ParticipantModel> | undefined {
         return state.members.element
     }
 
     @Selector()
-    public static groupMembersPageLoading (state: GroupStateModel): boolean {
+    public static groupMembersPageLoading (state: GroupStoreModel): boolean {
         return state.members.loading
     }
 
     @Selector()
-    public static groupMembersPageError (state: GroupStateModel): ToastMessageOptions | undefined {
+    public static groupMembersPageError (state: GroupStoreModel): ToastMessageOptions | undefined {
         return state.members.error
     }
 
     @Selector()
-    public static groupMembersPageSilentLoading (state: GroupStateModel): boolean {
+    public static groupMembersPageSilentLoading (state: GroupStoreModel): boolean {
         return state.members.silentLoading
     }
 
     @Selector()
-    public static groupMembersPageResetSearch (state: GroupStateModel): boolean {
+    public static groupMembersPageResetSearch (state: GroupStoreModel): boolean {
         return state.members.params.resetSearch
     }
 
     @Selector()
-    public static groupMembersPageTextSearchedParam (state: GroupStateModel): string | undefined {
+    public static groupMembersPageTextSearchedParam (state: GroupStoreModel): string | undefined {
         return state.members.params.textSearched
     }
 
     @Selector()
-    public static groupMembersPageStatusSearchedParam (state: GroupStateModel): string | undefined {
+    public static groupMembersPageStatusSearchedParam (state: GroupStoreModel): string | undefined {
         return state.members.params.statusSearched
     }
 
     @Selector()
-    public static groupMembersPageVisibilitySearchedParam (state: GroupStateModel): boolean | undefined {
+    public static groupMembersPageVisibilitySearchedParam (state: GroupStoreModel): boolean | undefined {
         return state.members.params.visibilitySearched
     }
 
     @Selector()
-    public static searchedParticipantsMetadata (state: GroupStateModel): SelectItem<ParticipantModel>[] {
+    public static searchedParticipantsMetadata (state: GroupStoreModel): SelectItem<ParticipantModel>[] {
         return state._metadata.searched
     }
 
     @Selector()
-    public static availabilitiesMetadata (state: GroupStateModel): SelectItem<boolean | undefined>[] {
+    public static availabilitiesMetadata (state: GroupStoreModel): SelectItem<boolean | undefined>[] {
         return state._metadata.availabilities
     }
 
     @Selector()
-    public static visibilitiesMetadata (state: GroupStateModel): SelectItem<boolean | undefined>[] {
+    public static visibilitiesMetadata (state: GroupStoreModel): SelectItem<boolean | undefined>[] {
         return state._metadata.visibilities
     }
 
     @Action( ResetGroupState )
-    public resetGroupState (ctx: StateContext<GroupStateModel>): void {
-        ctx.setState( defaultGroupState )
+    public resetGroupState (ctx: StateContext<GroupStoreModel>): void {
+        ctx.setState( defaultGroupStore )
     }
 
     @Action( StartGroupsPageLoader )
-    public startGroupsPageLoader (ctx: StateContext<GroupStateModel>): void {
+    public startGroupsPageLoader (ctx: StateContext<GroupStoreModel>): void {
         ctx.patchState( {
             groups: StateUtil.updatePageLoader( ctx.getState().groups, true ),
         } )
     }
 
     @Action( StopGroupsPageLoader )
-    public stopGroupsPageLoader (ctx: StateContext<GroupStateModel>): void {
+    public stopGroupsPageLoader (ctx: StateContext<GroupStoreModel>): void {
         ctx.patchState( {
             groups: StateUtil.updatePageLoader( ctx.getState().groups, false ),
         } )
@@ -199,7 +199,7 @@ export class GroupState extends GenericProjectElementState<GroupStateModel> {
 
     @Action( FetchGroupsPage )
     public fetchGroupsPage (
-        ctx: StateContext<GroupStateModel>,
+        ctx: StateContext<GroupStoreModel>,
         payload: FetchGroupsPage,
     ): Observable<void> {
         return this.api.findGroups(
@@ -219,7 +219,7 @@ export class GroupState extends GenericProjectElementState<GroupStateModel> {
     }
 
     private fetchGroupsPageComplete (
-        ctx: StateContext<GroupStateModel>,
+        ctx: StateContext<GroupStoreModel>,
         groupsPage: PageModel<GroupModel>,
     ): void {
         ctx.patchState( {
@@ -236,7 +236,7 @@ export class GroupState extends GenericProjectElementState<GroupStateModel> {
 
     @Action( UpdateGroupsPageSearchParams )
     public updateGroupsPageSearchParams (
-        ctx: StateContext<GroupStateModel>,
+        ctx: StateContext<GroupStoreModel>,
         payload: UpdateGroupsPageSearchParams,
     ): void {
         ctx.patchState( {
@@ -248,8 +248,8 @@ export class GroupState extends GenericProjectElementState<GroupStateModel> {
     }
 
     @Action( StartGroupMembersPageLoader )
-    public startGroupMembersPageLoader (ctx: StateContext<GroupStateModel>): void {
-        const requestInformation: GroupStateModel['members'] = ctx.getState().members
+    public startGroupMembersPageLoader (ctx: StateContext<GroupStoreModel>): void {
+        const requestInformation: GroupStoreModel['members'] = ctx.getState().members
         const page: PageModel<ParticipantModel> | undefined = requestInformation.element
         if (GenericUtil.isNull( page ) || page!.content?.length == 0) {
             ctx.patchState( {
@@ -269,7 +269,7 @@ export class GroupState extends GenericProjectElementState<GroupStateModel> {
     }
 
     @Action( StopGroupMembersPageLoader )
-    public stopGroupMembersPageLoader (ctx: StateContext<GroupStateModel>): void {
+    public stopGroupMembersPageLoader (ctx: StateContext<GroupStoreModel>): void {
         ctx.patchState( {
             members: {
                 ...ctx.getState().members,
@@ -281,13 +281,13 @@ export class GroupState extends GenericProjectElementState<GroupStateModel> {
 
     @Action( FetchGroupMembersPage )
     public fetchGroupMembersPage (
-        ctx: StateContext<GroupStateModel>,
+        ctx: StateContext<GroupStoreModel>,
         payload: FetchGroupMembersPage,
     ): Observable<void> {
         if (ctx.getState().members.groupId != payload.id) {
             ctx.patchState( {
                 members: {
-                    ...defaultGroupState.members,
+                    ...defaultGroupStore.members,
                     groupId: payload.id,
                 },
             } )
@@ -311,7 +311,7 @@ export class GroupState extends GenericProjectElementState<GroupStateModel> {
     }
 
     private fetchGroupMembersPageComplete (
-        ctx: StateContext<GroupStateModel>,
+        ctx: StateContext<GroupStoreModel>,
         membersPage: PageModel<ParticipantModel>,
     ): void {
         ctx.patchState( {
@@ -328,7 +328,7 @@ export class GroupState extends GenericProjectElementState<GroupStateModel> {
 
     @Action( UpdateGroupMembersPageSearchParams )
     public updateGroupMembersPageSearchParams (
-        ctx: StateContext<GroupStateModel>,
+        ctx: StateContext<GroupStoreModel>,
         payload: UpdateGroupMembersPageSearchParams,
     ): void {
         ctx.patchState( {
@@ -341,7 +341,7 @@ export class GroupState extends GenericProjectElementState<GroupStateModel> {
 
     @Action( SearchParticipants )
     public searchParticipants (
-        ctx: StateContext<GroupStateModel>,
+        ctx: StateContext<GroupStoreModel>,
         payload: SearchParticipants,
     ): Observable<void> {
         return this.api.searchParticipants(
@@ -356,7 +356,7 @@ export class GroupState extends GenericProjectElementState<GroupStateModel> {
     }
 
     private searchParticipantsComplete (
-        ctx: StateContext<GroupStateModel>,
+        ctx: StateContext<GroupStoreModel>,
         participants: ParticipantModel[],
     ): void {
         ctx.patchState( {
@@ -369,12 +369,12 @@ export class GroupState extends GenericProjectElementState<GroupStateModel> {
         } )
     }
 
-    protected refreshPage (ctx: StateContext<GroupStateModel>): void {
+    protected refreshPage (ctx: StateContext<GroupStoreModel>): void {
         const page: PageModel<GroupModel> | undefined = ctx.getState().groups.element
         this.facade.fetchGroupsPage( page?.pageNumber, page?.pageSize, true )
     }
 
-    protected pageError (ctx: StateContext<GroupStateModel>, error: ErrorModel): Observable<void> {
+    protected pageError (ctx: StateContext<GroupStoreModel>, error: ErrorModel): Observable<void> {
         if (error.status == 503) {
             throw error
         } else {
@@ -386,7 +386,7 @@ export class GroupState extends GenericProjectElementState<GroupStateModel> {
         return of()
     }
 
-    protected memberPageError (ctx: StateContext<GroupStateModel>, error: ErrorModel): Observable<void> {
+    protected memberPageError (ctx: StateContext<GroupStoreModel>, error: ErrorModel): Observable<void> {
         if (error.status == 503) {
             throw error
         } else {

@@ -8,7 +8,7 @@ import {
 } from '@pages/projects/[projectId]/configuration/profiles/data/model/user-project-profile-page-params.model'
 import { ThemeEnum } from '@shared/models/enumeration/theme.enum'
 
-export interface RegistryStateModel {
+export interface RegistryStoreModel {
     authentication: {
         currentUser: CurrentUserModel | undefined,
         loading: boolean,

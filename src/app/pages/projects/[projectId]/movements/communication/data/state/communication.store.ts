@@ -1,7 +1,7 @@
 import { Action, Selector, State, StateContext } from '@ngxs/store'
 import { catchError, finalize, map, Observable, of } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
-import { GenericProjectElementState } from '@shared/helpers/state/generic-project-element.state'
+import { GenericProjectElementStore } from '@shared/helpers/state/generic-project-element.store'
 import { initialize } from '@shared/helpers/util/rx.util'
 import { StateUtil } from '@shared/helpers/state/state.util'
 import { inject, Injectable } from '@angular/core'
@@ -11,7 +11,7 @@ import {
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { ErrorModel } from '@shared/models/model/error.model'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
-import { CommunicationStateModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication-state.model'
+import { CommunicationStoreModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication-store.model'
 import { CommunicationModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
 import { CommunicationApi } from '@pages/projects/[projectId]/movements/communication/data/state/communication.api'
 import { CommunicationFacade } from '@pages/projects/[projectId]/movements/communication/data/state/communication.facade'
@@ -38,7 +38,7 @@ const defaultCommunication: ElementRequestInformationModel<CommunicationModel> =
     loading: false,
 }
 
-const defaultCommunicationState: CommunicationStateModel = {
+const defaultCommunicationStore: CommunicationStoreModel = {
     communications: {
         element: undefined,
         params: {
@@ -64,100 +64,100 @@ const defaultCommunicationState: CommunicationStateModel = {
     },
 }
 
-@State<CommunicationStateModel>( {
+@State<CommunicationStoreModel>( {
     name: 'communication',
-    defaults: defaultCommunicationState,
+    defaults: defaultCommunicationStore,
 } )
 @Injectable()
-export class CommunicationState extends GenericProjectElementState<CommunicationStateModel> {
+export class CommunicationStore extends GenericProjectElementStore<CommunicationStoreModel> {
     private readonly api: CommunicationApi = inject( CommunicationApi )
     private readonly facade: CommunicationFacade = inject( CommunicationFacade )
     private readonly datePipe: DateFormatPipe = inject( DateFormatPipe )
 
     @Selector()
-    public static communicationsPage (state: CommunicationStateModel): PageModel<CommunicationModel> | undefined {
+    public static communicationsPage (state: CommunicationStoreModel): PageModel<CommunicationModel> | undefined {
         return state.communications.element
     }
 
     @Selector()
-    public static communicationsPageLoading (state: CommunicationStateModel): boolean {
+    public static communicationsPageLoading (state: CommunicationStoreModel): boolean {
         return state.communications.loading
     }
 
     @Selector()
-    public static communicationsPageError (state: CommunicationStateModel): ToastMessageOptions | undefined {
+    public static communicationsPageError (state: CommunicationStoreModel): ToastMessageOptions | undefined {
         return state.communications.error
     }
 
     @Selector()
-    public static communicationsPageSilentLoading (state: CommunicationStateModel): boolean {
+    public static communicationsPageSilentLoading (state: CommunicationStoreModel): boolean {
         return state.communications.silentLoading
     }
 
     @Selector()
-    public static communicationsPageResetSearch (state: CommunicationStateModel): boolean {
+    public static communicationsPageResetSearch (state: CommunicationStoreModel): boolean {
         return state.communications.params.resetSearch
     }
 
     @Selector()
-    public static communicationsPageTextSearchedParam (state: CommunicationStateModel): string | undefined {
+    public static communicationsPageTextSearchedParam (state: CommunicationStoreModel): string | undefined {
         return state.communications.params.textSearched
     }
 
     @Selector()
-    public static communicationsPageVisibilitySearchedParam (state: CommunicationStateModel): boolean | undefined {
+    public static communicationsPageVisibilitySearchedParam (state: CommunicationStoreModel): boolean | undefined {
         return state.communications.params.visibilitySearched
     }
 
     @Selector()
-    public static communicationsPageStartDateTimeSearchedParam (state: CommunicationStateModel): string | undefined {
+    public static communicationsPageStartDateTimeSearchedParam (state: CommunicationStoreModel): string | undefined {
         return state.communications.params.startDateTimeSearched
     }
 
     @Selector()
-    public static communicationsPageEndDateTimeSearchedParam (state: CommunicationStateModel): string | undefined {
+    public static communicationsPageEndDateTimeSearchedParam (state: CommunicationStoreModel): string | undefined {
         return state.communications.params.endDateTimeSearched
     }
 
     @Selector()
-    public static communication (state: CommunicationStateModel): CommunicationModel | undefined {
+    public static communication (state: CommunicationStoreModel): CommunicationModel | undefined {
         return state.communication.element
     }
 
     @Selector()
-    public static communicationLoading (state: CommunicationStateModel): boolean {
+    public static communicationLoading (state: CommunicationStoreModel): boolean {
         return state.communication.loading
     }
 
     @Selector()
-    public static searchedMovementsMetadata (state: CommunicationStateModel): SelectItem<MovementModel>[] {
+    public static searchedMovementsMetadata (state: CommunicationStoreModel): SelectItem<MovementModel>[] {
         return state._metadata.searchedMovements
     }
 
     @Selector()
-    public static searchedAlertsMetadata (state: CommunicationStateModel): SelectItem<AlertModel>[] {
+    public static searchedAlertsMetadata (state: CommunicationStoreModel): SelectItem<AlertModel>[] {
         return state._metadata.searchedAlerts
     }
 
     @Selector()
-    public static visibilitiesMetadata (state: CommunicationStateModel): SelectItem<boolean | undefined>[] {
+    public static visibilitiesMetadata (state: CommunicationStoreModel): SelectItem<boolean | undefined>[] {
         return state._metadata.visibilities
     }
 
     @Action( ResetCommunicationState )
-    public resetCommunicationState (ctx: StateContext<CommunicationStateModel>): void {
-        ctx.setState( defaultCommunicationState )
+    public resetCommunicationState (ctx: StateContext<CommunicationStoreModel>): void {
+        ctx.setState( defaultCommunicationStore )
     }
 
     @Action( StartCommunicationsPageLoader )
-    public startCommunicationsPageLoader (ctx: StateContext<CommunicationStateModel>): void {
+    public startCommunicationsPageLoader (ctx: StateContext<CommunicationStoreModel>): void {
         ctx.patchState( {
             communications: StateUtil.updatePageLoader( ctx.getState().communications, true ),
         } )
     }
 
     @Action( StopCommunicationsPageLoader )
-    public stopCommunicationsPageLoader (ctx: StateContext<CommunicationStateModel>): void {
+    public stopCommunicationsPageLoader (ctx: StateContext<CommunicationStoreModel>): void {
         ctx.patchState( {
             communications: StateUtil.updatePageLoader( ctx.getState().communications, false ),
         } )
@@ -165,7 +165,7 @@ export class CommunicationState extends GenericProjectElementState<Communication
 
     @Action( FetchCommunicationsPage )
     public fetchCommunicationsPage (
-        ctx: StateContext<CommunicationStateModel>,
+        ctx: StateContext<CommunicationStoreModel>,
         payload: FetchCommunicationsPage,
     ): Observable<void> {
         return this.api.findCommunications(
@@ -185,7 +185,7 @@ export class CommunicationState extends GenericProjectElementState<Communication
     }
 
     private fetchCommunicationsPageComplete (
-        ctx: StateContext<CommunicationStateModel>,
+        ctx: StateContext<CommunicationStoreModel>,
         communicationsPage: PageModel<CommunicationModel>,
     ): void {
         ctx.patchState( {
@@ -202,7 +202,7 @@ export class CommunicationState extends GenericProjectElementState<Communication
 
     @Action( UpdateCommunicationsPageSearchParams )
     public updateCommunicationsPageSearchParams (
-        ctx: StateContext<CommunicationStateModel>,
+        ctx: StateContext<CommunicationStoreModel>,
         payload: UpdateCommunicationsPageSearchParams,
     ): void {
         ctx.patchState( {
@@ -214,14 +214,14 @@ export class CommunicationState extends GenericProjectElementState<Communication
     }
 
     @Action( StartCommunicationLoader )
-    public startCommunicationLoader (ctx: StateContext<CommunicationStateModel>): void {
+    public startCommunicationLoader (ctx: StateContext<CommunicationStoreModel>): void {
         ctx.patchState( {
             communication: StateUtil.updateElementLoader( ctx.getState().communication, true ),
         } )
     }
 
     @Action( StopCommunicationLoader )
-    public stopCommunicationLoader (ctx: StateContext<CommunicationStateModel>): void {
+    public stopCommunicationLoader (ctx: StateContext<CommunicationStoreModel>): void {
         ctx.patchState( {
             communication: StateUtil.updateElementLoader( ctx.getState().communication, false ),
         } )
@@ -229,7 +229,7 @@ export class CommunicationState extends GenericProjectElementState<Communication
 
     @Action( FetchCommunication )
     public fetchCommunication (
-        ctx: StateContext<CommunicationStateModel>,
+        ctx: StateContext<CommunicationStoreModel>,
         payload: FetchCommunication,
     ): Observable<void> {
         return this.api.findCommunicationById( payload.projectId, payload.id ).pipe(
@@ -240,7 +240,7 @@ export class CommunicationState extends GenericProjectElementState<Communication
     }
 
     private fetchCommunicationComplete (
-        ctx: StateContext<CommunicationStateModel>,
+        ctx: StateContext<CommunicationStoreModel>,
         communication: CommunicationModel,
     ): void {
         ctx.patchState( {
@@ -253,7 +253,7 @@ export class CommunicationState extends GenericProjectElementState<Communication
 
     @Action( SearchMovements )
     public searchMovements (
-        ctx: StateContext<CommunicationStateModel>,
+        ctx: StateContext<CommunicationStoreModel>,
         payload: SearchMovements,
     ): Observable<void> {
         return this.api.searchMovements( payload.projectId, payload.textSearched ).pipe(
@@ -264,7 +264,7 @@ export class CommunicationState extends GenericProjectElementState<Communication
     }
 
     private searchMovementsComplete (
-        ctx: StateContext<CommunicationStateModel>,
+        ctx: StateContext<CommunicationStoreModel>,
         movements: MovementModel[],
     ): void {
         ctx.patchState( {
@@ -279,7 +279,7 @@ export class CommunicationState extends GenericProjectElementState<Communication
 
     @Action( SearchAlerts )
     public searchAlerts (
-        ctx: StateContext<CommunicationStateModel>,
+        ctx: StateContext<CommunicationStoreModel>,
         payload: SearchAlerts,
     ): Observable<void> {
         return this.api.searchAlerts( payload.projectId, payload.textSearched ).pipe(
@@ -290,7 +290,7 @@ export class CommunicationState extends GenericProjectElementState<Communication
     }
 
     private searchAlertsComplete (
-        ctx: StateContext<CommunicationStateModel>,
+        ctx: StateContext<CommunicationStoreModel>,
         alerts: AlertModel[],
     ): void {
         ctx.patchState( {
@@ -304,18 +304,18 @@ export class CommunicationState extends GenericProjectElementState<Communication
     }
 
     @Action( ResetCommunication )
-    public resetCommunication (ctx: StateContext<CommunicationStateModel>): void {
+    public resetCommunication (ctx: StateContext<CommunicationStoreModel>): void {
         ctx.patchState( {
             communication: defaultCommunication,
         } )
     }
 
-    protected refreshPage (ctx: StateContext<CommunicationStateModel>): void {
+    protected refreshPage (ctx: StateContext<CommunicationStoreModel>): void {
         const page: PageModel<CommunicationModel> | undefined = ctx.getState().communications.element
         this.facade.fetchCommunicationsPage( page?.pageNumber, page?.pageSize, true )
     }
 
-    protected pageError (ctx: StateContext<CommunicationStateModel>, error: ErrorModel): Observable<void> {
+    protected pageError (ctx: StateContext<CommunicationStoreModel>, error: ErrorModel): Observable<void> {
         if (error.status == 503) {
             throw error
         } else {

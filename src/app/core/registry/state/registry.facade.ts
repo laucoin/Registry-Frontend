@@ -45,7 +45,7 @@ import {ErrorModel} from '@shared/models/model/error.model'
 import {SessionStorageUtils} from '@shared/helpers/util/session-storage.util'
 import {REDIRECT_URI} from '@shared/helpers/util/request.util'
 import {GenericFacade} from '@shared/helpers/facade/generic.facade'
-import {RegistryState} from '@core/registry/state/registry.state'
+import {RegistryStore} from '@core/registry/state/registry.store'
 import {DateUtil} from '@shared/helpers/util/date.util'
 import {StringUtil} from '@shared/helpers/util/string.util'
 import {SeverityEnum} from '@shared/models/enumeration/severity.enum'
@@ -92,23 +92,23 @@ export class RegistryFacade extends GenericFacade {
     )
 
     public get theme(): Signal<ThemeEnum> {
-        return this.ngStore.selectSignal(RegistryState.theme)
+        return this.ngStore.selectSignal(RegistryStore.theme)
     }
 
     public get tinyScreen(): Signal<boolean> {
-        return computed((): boolean => this.ngStore.selectSignal(RegistryState.screenWidth)() < 768)
+        return computed((): boolean => this.ngStore.selectSignal(RegistryStore.screenWidth)() < 768)
     }
 
     public get globalLoading(): Signal<boolean> {
-        return this.ngStore.selectSignal(RegistryState.globalLoading)
+        return this.ngStore.selectSignal(RegistryStore.globalLoading)
     }
 
     public get globalError(): Signal<ToastMessageOptions | undefined> {
-        return this.ngStore.selectSignal(RegistryState.globalError)
+        return this.ngStore.selectSignal(RegistryStore.globalError)
     }
 
     private get online(): Signal<boolean | undefined> {
-        return this.ngStore.selectSignal(RegistryState.online)
+        return this.ngStore.selectSignal(RegistryStore.online)
     }
 
     public get logoPath(): Signal<string> {
@@ -127,103 +127,103 @@ export class RegistryFacade extends GenericFacade {
     }
 
     public get notification(): Observable<ToastMessageOptions | undefined> {
-        return this.ngStore.select(RegistryState.notification)
+        return this.ngStore.select(RegistryStore.notification)
     }
 
     public get currentUser$(): Observable<CurrentUserModel> {
-        return this.ngStore.select(RegistryState.currentUser).pipe(
+        return this.ngStore.select(RegistryStore.currentUser).pipe(
             filter((user: CurrentUserModel | undefined): boolean => GenericUtil.nonNull(user)),
             map((user: CurrentUserModel | undefined): CurrentUserModel => user!),
         )
     }
 
     public get currentUser(): Signal<CurrentUserModel | undefined> {
-        return this.ngStore.selectSignal(RegistryState.currentUser)
+        return this.ngStore.selectSignal(RegistryStore.currentUser)
     }
 
     public get currentUserTheme(): Signal<ThemeEnum | undefined> {
-        return this.ngStore.selectSignal(RegistryState.currentUserTheme)
+        return this.ngStore.selectSignal(RegistryStore.currentUserTheme)
     }
 
     public get currentUserLanguage(): Signal<string> {
-        return this.ngStore.selectSignal(RegistryState.currentUserLanguage)
+        return this.ngStore.selectSignal(RegistryStore.currentUserLanguage)
     }
 
     public get selectedProject(): Signal<ProjectModel | undefined> {
-        return this.ngStore.selectSignal(RegistryState.currentUserSelectedProject)
+        return this.ngStore.selectSignal(RegistryStore.currentUserSelectedProject)
     }
 
     public get userProjectProfilesPage(): Signal<PageModel<ProjectProfileModel> | undefined> {
-        return this.ngStore.selectSignal(RegistryState.userProjectProfilesPage)
+        return this.ngStore.selectSignal(RegistryStore.userProjectProfilesPage)
     }
 
     public get userProjectProfilesPageLoading(): Signal<boolean> {
-        return this.ngStore.selectSignal(RegistryState.userProjectProfilesPageLoading)
+        return this.ngStore.selectSignal(RegistryStore.userProjectProfilesPageLoading)
     }
 
     public get userProjectProfilesPageSilentLoading(): Signal<boolean> {
-        return this.ngStore.selectSignal(RegistryState.userProjectProfilesPageSilentLoading)
+        return this.ngStore.selectSignal(RegistryStore.userProjectProfilesPageSilentLoading)
     }
 
     public get userProjectProfilesPageError(): Signal<ToastMessageOptions | undefined> {
-        return this.ngStore.selectSignal(RegistryState.userProjectProfilesPageError)
+        return this.ngStore.selectSignal(RegistryStore.userProjectProfilesPageError)
     }
 
     public get userProjectProfilesPageResetSearch(): Signal<boolean> {
-        return this.ngStore.selectSignal(RegistryState.userProjectProfilesPageResetSearch)
+        return this.ngStore.selectSignal(RegistryStore.userProjectProfilesPageResetSearch)
     }
 
     public get userProjectProfilesPageTextSearchParam(): Signal<string | undefined> {
-        return this.ngStore.selectSignal(RegistryState.userProjectProfilesPageTextSearchParam)
+        return this.ngStore.selectSignal(RegistryStore.userProjectProfilesPageTextSearchParam)
     }
 
     public get userProjectProfilesPageDateTimeSearchParam(): Signal<Date | undefined> {
         return computed((): Date | undefined =>
-            DateUtil.buildDate(this.ngStore.selectSignal(RegistryState.userProjectProfilesPageDateTimeSearchParam)()),
+            DateUtil.buildDate(this.ngStore.selectSignal(RegistryStore.userProjectProfilesPageDateTimeSearchParam)()),
         )
     }
 
     public get userProjectProfilesPageAvailabilitySearchParam(): Signal<boolean | undefined> {
-        return this.ngStore.selectSignal(RegistryState.userProjectProfilesPageAvailabilitySearchParam)
+        return this.ngStore.selectSignal(RegistryStore.userProjectProfilesPageAvailabilitySearchParam)
     }
 
     public get userProjectProfileInvitationsPage(): Signal<PageModel<ProjectProfileModel> | undefined> {
-        return this.ngStore.selectSignal(RegistryState.userProjectProfileInvitationsPage)
+        return this.ngStore.selectSignal(RegistryStore.userProjectProfileInvitationsPage)
     }
 
     public get userProjectProfileInvitationsPageLoading(): Signal<boolean> {
-        return this.ngStore.selectSignal(RegistryState.userProjectProfileInvitationsPageLoading)
+        return this.ngStore.selectSignal(RegistryStore.userProjectProfileInvitationsPageLoading)
     }
 
     public get userProjectProfileInvitationsPageSilentLoading(): Signal<boolean> {
-        return this.ngStore.selectSignal(RegistryState.userProjectProfileInvitationsPageSilentLoading)
+        return this.ngStore.selectSignal(RegistryStore.userProjectProfileInvitationsPageSilentLoading)
     }
 
     public get userProjectProfileInvitationsPageError(): Signal<ToastMessageOptions | undefined> {
-        return this.ngStore.selectSignal(RegistryState.userProjectProfileInvitationsPageError)
+        return this.ngStore.selectSignal(RegistryStore.userProjectProfileInvitationsPageError)
     }
 
     public get userProjectProfileInvitationsPageResetSearch(): Signal<boolean> {
-        return this.ngStore.selectSignal(RegistryState.userProjectProfileInvitationsPageResetSearch)
+        return this.ngStore.selectSignal(RegistryStore.userProjectProfileInvitationsPageResetSearch)
     }
 
     public get userProjectProfileInvitationsPageTextSearchParam(): Signal<string | undefined> {
-        return this.ngStore.selectSignal(RegistryState.userProjectProfileInvitationsPageTextSearchParam)
+        return this.ngStore.selectSignal(RegistryStore.userProjectProfileInvitationsPageTextSearchParam)
     }
 
     public get userProjectProfileInvitationsPageDateTimeSearchParam(): Signal<Date | undefined> {
         return computed((): Date | undefined =>
-            DateUtil.buildDate(this.ngStore.selectSignal(RegistryState.userProjectProfileInvitationsPageDateTimeParam)()),
+            DateUtil.buildDate(this.ngStore.selectSignal(RegistryStore.userProjectProfileInvitationsPageDateTimeParam)()),
         )
     }
 
     public get themesMetadata(): Signal<SelectItem<ThemeEnum>[]> {
-        return this.ngStore.selectSignal(RegistryState.themesMetadata)
+        return this.ngStore.selectSignal(RegistryStore.themesMetadata)
     }
 
     public get languagesMetadata(): Signal<SelectItem<string>[]> {
         return computed(() =>
-            this.ngStore.selectSignal(RegistryState.languagesMetadata)().map((lang: SelectItem<string>): SelectItem<string> => ({
+            this.ngStore.selectSignal(RegistryStore.languagesMetadata)().map((lang: SelectItem<string>): SelectItem<string> => ({
                 ...lang,
                 label: this.translateService.instant(lang.label!),
             })),
@@ -424,7 +424,7 @@ export class RegistryFacade extends GenericFacade {
     }
 
     public get currentProjectId(): Signal<string | undefined> {
-        return this.ngStore.selectSignal(RegistryState.currentUserSelectedProjectId)
+        return this.ngStore.selectSignal(RegistryStore.currentUserSelectedProjectId)
     }
 
     public deleteUserProjectProfile(profile: ProjectProfileModel): Observable<ActionCompletion<DeleteUserProjectProfile>> {

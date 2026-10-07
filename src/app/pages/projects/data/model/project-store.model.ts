@@ -5,7 +5,7 @@ import { ElementRequestInformationModel } from '@shared/models/model/element-req
 import { ProjectOptionModel } from '@pages/projects/data/model/project-option.model'
 import { SelectItem } from 'primeng/api'
 
-export interface ProjectStateModel {
+export interface ProjectStoreModel {
     projects: PageRequestInformationModel<ProjectPageParamsModel, ProjectModel>
     project: ElementRequestInformationModel<ProjectModel>
     createdProjectId: string | undefined

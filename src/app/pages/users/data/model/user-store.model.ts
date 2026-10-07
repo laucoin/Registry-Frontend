@@ -4,7 +4,7 @@ import { ElementRequestInformationModel } from '@shared/models/model/element-req
 import { SelectItem } from 'primeng/api'
 import { UserPageParamsModel } from '@pages/users/data/model/user-page-params.model'
 
-export interface UserStateModel {
+export interface UserStoreModel {
     users: PageRequestInformationModel<UserPageParamsModel, UserModel>
     user: ElementRequestInformationModel<UserModel>
     _metadata: {

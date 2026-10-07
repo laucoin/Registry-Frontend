@@ -8,7 +8,7 @@ import { ParticipantModel } from '@shared/models/model/participant.model'
 import { AlertModel } from '@shared/models/model/alert.model'
 import { AlertPageParamsModel } from '@shared/models/model/alert-page-params.model'
 
-export interface SelectedProjectStateModel {
+export interface SelectedProjectStoreModel {
     status: {
         participants: {
             element: ProjectStatusModel | undefined

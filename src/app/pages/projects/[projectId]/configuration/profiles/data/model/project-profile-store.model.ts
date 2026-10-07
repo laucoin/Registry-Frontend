@@ -5,7 +5,7 @@ import { SelectItem } from 'primeng/api'
 import { UserModel } from '@shared/models/model/user.model'
 import { ProfileStatusEnum } from '@shared/models/enumeration/profile-status.enum'
 
-export interface ProjectProfileStateModel {
+export interface ProjectProfileStoreModel {
     projectProfiles: PageRequestInformationModel<ProjectProfilePageParamsModel, ProjectProfileModel>
     _metadata: {
         roles: SelectItem<string>[]
