@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, OnDestroy, signal, WritableSignal } from '@angular/core'
+import { Component, inject, OnDestroy, signal, WritableSignal } from '@angular/core'
 import {ActivityFacade} from '@pages/projects/[projectId]/configuration/activities/data/state/activity.facade'
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms'
 import {RegistryValidators} from '@shared/helpers/registry.validator'
@@ -30,7 +30,6 @@ import {DateTimeFieldComponent} from '@shared/ui/date-time-field/date-time-field
 import {FormIconPipe} from '@shared/helpers/pipe/form-icon.pipe'
 
 @Component({
-	changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'app-activity-form',
     imports: [
         Button,

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy,Component, OnDestroy} from '@angular/core'
+import { Component, OnDestroy} from '@angular/core'
 import {FormGroup, ReactiveFormsModule, Validators} from '@angular/forms'
 import {ProjectProfileDto} from '@pages/projects/[projectId]/configuration/profiles/data/dto/project-profile.dto'
 import {ProjectProfileModel} from '@shared/models/model/project-profile.model'
@@ -17,7 +17,6 @@ import {DateTimeFieldComponent} from '@shared/ui/date-time-field/date-time-field
 import {RegistryValidators} from '@shared/helpers/registry.validator'
 
 @Component({
-	changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'app-project-profile-edition-form',
     imports: [
         TranslatePipe,

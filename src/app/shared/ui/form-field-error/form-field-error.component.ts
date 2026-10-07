@@ -1,10 +1,9 @@
-import { ChangeDetectionStrategy,Component, computed, inject, input, InputSignal, Signal} from '@angular/core'
+import { Component, computed, inject, input, InputSignal, Signal} from '@angular/core'
 import {ValidationErrors} from '@angular/forms'
 import {MessageModule} from 'primeng/message'
 import {TranslateService} from '@ngx-translate/core'
 
 @Component({
-	changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'app-form-field-error',
     imports: [
         MessageModule,

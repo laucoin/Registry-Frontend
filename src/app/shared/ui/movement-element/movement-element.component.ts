@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy,Component, computed, inject, input, InputSignal, Signal} from '@angular/core'
+import { Component, computed, inject, input, InputSignal, Signal, signal, WritableSignal} from '@angular/core'
 import {MovementModel} from '@shared/models/model/movement.model'
 import {MovementFacade} from '@pages/projects/[projectId]/movements/data/state/movement.facade'
 import {ElementCardComponent} from '@shared/ui/element-card/element-card.component'
@@ -42,7 +42,6 @@ import {
 } from '@pages/projects/[projectId]/movements/movement-communications-list/movement-communications-list.component'
 
 @Component({
-	changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'app-movement-element',
     imports: [
         ElementCardComponent,
@@ -85,9 +84,9 @@ export class MovementElementComponent extends GenericElementComponent {
     protected readonly VehicleHelper: typeof VehicleHelper = VehicleHelper
     protected readonly MovementTypeEnum: typeof MovementTypeEnum = MovementTypeEnum
 
-    protected participantLayerActiveTab: number = 1
-    protected participantsLayerOpened: boolean = false
-    protected communicationsLayerOpened: boolean = false
+    protected readonly participantLayerActiveTab: WritableSignal<number> = signal(1)
+    protected readonly participantsLayerOpened: WritableSignal<boolean> = signal(false)
+    protected readonly communicationsLayerOpened: WritableSignal<boolean> = signal(false)
 
     protected readonly message: FormControl = new FormControl(undefined, [
         RegistryValidators.nonBlank(),
@@ -219,7 +218,7 @@ export class MovementElementComponent extends GenericElementComponent {
 
     protected onClickParticipant(event: ListboxClickEvent): void {
         if (this.reversible()) {
-            this.participantsLayerOpened = false
+            this.participantsLayerOpened.set(false)
             this.confirmMovementReversion([event.option])
         }
     }

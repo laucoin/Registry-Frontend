@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy,Component, OnDestroy} from '@angular/core'
+import { Component, OnDestroy} from '@angular/core'
 import {CardModule} from 'primeng/card'
 import {DividerModule} from 'primeng/divider'
 import {InputTextModule} from 'primeng/inputtext'
@@ -26,7 +26,6 @@ import {UserModel} from '@shared/models/model/user.model'
 import {RegistryValidators} from '@shared/helpers/registry.validator'
 
 @Component({
-	changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'app-project-profile-invitation-form',
     imports: [
         CardModule,

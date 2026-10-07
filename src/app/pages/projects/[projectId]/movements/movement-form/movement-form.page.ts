@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, OnDestroy, Signal, signal, WritableSignal} from '@angular/core'
+import { Component, computed, inject, OnDestroy, Signal, signal, WritableSignal} from '@angular/core'
 import {FormArray, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms'
 import {FormHelper} from '@shared/helpers/form.helper'
 import {MovementFacade} from '@pages/projects/[projectId]/movements/data/state/movement.facade'
@@ -49,7 +49,6 @@ import {withLoading} from '@shared/helpers/rx.helper'
 import {FormErrorComponent} from '@shared/ui/form-error/form-error.component'
 
 @Component({
-	changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'app-movement-form',
     imports: [
         Button,
@@ -115,7 +114,7 @@ export class MovementFormPage extends GenericFormComponent<MovementModel, Moveme
 
     protected readonly interpretedMovementType: WritableSignal<PresenceStatusEnum[]> = signal([])
 
-    protected activeTab: number = 1
+    protected readonly activeTab: WritableSignal<number> = signal(1)
 
     public constructor() {
         super()
