@@ -5,7 +5,6 @@ import {NgxsModule} from '@ngxs/store'
 import {RegistryStore} from '@core/registry/state/registry.store'
 import {EnvironmentModel} from '@core/config/model/environment.model'
 import {StringHelper} from '@shared/helpers/string.helper'
-import {UserStore} from '@pages/users/data/state/user.store'
 import {providePrimeNG} from 'primeng/config'
 import {LocalStorageUtils} from '@shared/helpers/local-storage.helper'
 import {GenericHelper} from '@shared/helpers/generic.helper'
@@ -40,7 +39,7 @@ export class RegistryConfig {
 
     public static provideNgxs(): Provider | EnvironmentProviders {
         return importProvidersFrom(NgxsModule.forRoot(
-            [RegistryStore, UserStore],
+            [RegistryStore],
             {
                 developmentMode: !RegistryConfig.environment.production,
             },

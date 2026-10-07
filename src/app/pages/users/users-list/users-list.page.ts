@@ -35,7 +35,7 @@ export class UsersListPage extends GenericListComponent {
 
         this.form = this.initForm()
 
-        this.facade.fetchUsersPage(undefined, undefined, false)
+        this.facade.fetchUsersPage(undefined, undefined)
     }
 
     protected initForm(): FormGroup {
@@ -47,7 +47,7 @@ export class UsersListPage extends GenericListComponent {
 
     protected loadPage(pageEvent: PageEventModel): void {
         this.facade.inputPageSearchParameters(this.textSearched.value, this.visibilitySearched.value)
-        this.facade.fetchUsersPage(pageEvent.pageNumber, pageEvent.pageSize, false)
+        this.facade.fetchUsersPage(pageEvent.pageNumber, pageEvent.pageSize)
     }
 
     protected get textSearched(): FormControl {

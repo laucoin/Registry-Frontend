@@ -7,7 +7,7 @@ import { UserPageParamsModel } from '@pages/users/data/model/user-page-params.mo
 export interface UserStoreModel {
     users: PageRequestInformationModel<UserPageParamsModel, UserModel>
     user: ElementRequestInformationModel<UserModel>
-    _metadata: {
+    metadata: {
         assignableRoles: SelectItem<string>[]
         status: SelectItem<boolean | undefined>[]
     }
