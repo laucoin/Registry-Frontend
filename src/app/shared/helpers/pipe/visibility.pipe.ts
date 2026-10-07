@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core'
 import { GenericModel } from '@shared/models/model/generic.model'
-import { GenericUtil } from '@shared/helpers/util/generic.util'
+import { GenericHelper } from '@shared/helpers/generic.helper'
 
 @Pipe( {
     name: 'visibilityName', standalone: true,
@@ -8,6 +8,6 @@ import { GenericUtil } from '@shared/helpers/util/generic.util'
 export class VisibilityNamePipe<T extends GenericModel> implements PipeTransform {
     public transform (value: T | undefined, prefix: string | undefined): string {
         const formattedPrefix: string = prefix ? `${prefix}.` : ''
-        return formattedPrefix + (GenericUtil.isNull( value ) || !value?.visible ? 'visible.false' : 'visible.true')
+        return formattedPrefix + (GenericHelper.isNull( value ) || !value?.visible ? 'visible.false' : 'visible.true')
     }
 }

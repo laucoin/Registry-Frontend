@@ -3,11 +3,11 @@ import {Observable} from 'rxjs'
 import {ProjectProfileModel} from '@shared/models/model/project-profile.model'
 import {PageModel} from '@shared/models/model/page.model'
 import {GenericProjectApi} from '@shared/helpers/api/generic-project.api'
-import {SELECT_PROFILE_PROJECT_ID} from '@shared/helpers/util/request.util'
+import {SELECT_PROFILE_PROJECT_ID} from '@shared/helpers/request.helper'
 import {ProjectProfileDto} from '@pages/projects/[projectId]/configuration/profiles/data/dto/project-profile.dto'
 import {ProjectProfilesDto} from '@pages/projects/[projectId]/configuration/profiles/data/dto/project-profiles.dto'
 import {ProjectProfilePageParamsModel} from '@pages/projects/[projectId]/configuration/profiles/data/model/project-profile-page-params.model'
-import {QueryUtil} from '@shared/helpers/util/query.util'
+import {QueryHelper} from '@shared/helpers/query.helper'
 import {CreatedProjectProfiles} from '@pages/projects/[projectId]/configuration/profiles/data/dto/created-project-profiles.dto'
 import {HttpParams} from '@angular/common/http'
 import {UserModel} from '@shared/models/model/user.model'
@@ -28,7 +28,7 @@ export class ProjectProfileApi extends GenericProjectApi {
         params: ProjectProfilePageParamsModel,
     ): Observable<PageModel<ProjectProfileModel>> {
         return this.http.get<PageModel<ProjectProfileModel>>(
-            `${this.buildRequestBaseUrl(projectId)}?${QueryUtil.buildQueryParams(
+            `${this.buildRequestBaseUrl(projectId)}?${QueryHelper.buildQueryParams(
                 pageNumber,
                 pageSize,
                 params,

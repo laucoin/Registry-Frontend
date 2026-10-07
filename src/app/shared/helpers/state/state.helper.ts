@@ -4,10 +4,10 @@ import {PageModel} from '@shared/models/model/page.model'
 import {ElementRequestInformationModel} from '@shared/models/model/element-request-information.model'
 import {ToastMessageOptions} from 'primeng/api'
 import {RegistryConfig} from '@core/config/registry.config'
-import {GenericUtil} from '@shared/helpers/util/generic.util'
+import {GenericHelper} from '@shared/helpers/generic.helper'
 import {SeverityEnum} from '@shared/models/enumeration/severity.enum'
 
-export class StateUtil {
+export class StateHelper {
     public static updatePageLoader<P, M extends GenericModel>(
         requestInformation: PageRequestInformationModel<P, M>,
         loading: boolean,
@@ -21,7 +21,7 @@ export class StateUtil {
         }
 
         const page: PageModel<M> | undefined = requestInformation.element
-        if (GenericUtil.isNull(page) || page!.content?.length == 0) {
+        if (GenericHelper.isNull(page) || page!.content?.length == 0) {
             return {
                 ...requestInformation,
                 loading: loading,

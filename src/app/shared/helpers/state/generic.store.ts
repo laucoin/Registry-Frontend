@@ -2,7 +2,7 @@ import { ToastMessageOptions } from 'primeng/api'
 import { ErrorModel } from '@shared/models/model/error.model'
 import { RegistryFacade } from '@core/registry/state/registry.facade'
 import { inject } from '@angular/core'
-import { StateUtil } from '@shared/helpers/state/state.util'
+import { StateHelper } from '@shared/helpers/state/state.helper'
 import { PageRequestInformationModel } from '@shared/models/model/page-request-information.model'
 import { GenericModel } from '@shared/models/model/generic.model'
 import { TranslateService } from '@ngx-translate/core'
@@ -35,7 +35,7 @@ export abstract class GenericStore {
         icon: string | undefined = undefined,
         data: object | undefined = undefined,
     ): void {
-        const message: ToastMessageOptions = StateUtil.buildNotificationMessage(
+        const message: ToastMessageOptions = StateHelper.buildNotificationMessage(
             severity,
             summary,
             detail,

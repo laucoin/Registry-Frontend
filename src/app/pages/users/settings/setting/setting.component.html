@@ -10,7 +10,7 @@
             <div>
                 <b>{{ 'settings.birthday' | translate }}</b>
                 {{
-                    GenericUtil.nonNull(registryFacade.currentUser()?.birthday)
+                    GenericHelper.nonNull(registryFacade.currentUser()?.birthday)
                     ? (registryFacade.currentUser()!.birthday | dateFormat: 'date')
                     : ('global.not-set' | translate)
                 }}

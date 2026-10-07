@@ -25,9 +25,9 @@ import { MovementModel } from '@shared/models/model/movement.model'
 import { ParticipantModel } from '@shared/models/model/participant.model'
 import { GenericProjectElementFacade } from '@shared/helpers/facade/generic-project-element.facade'
 import { VehicleModel } from '@shared/models/model/vehicle.model'
-import { DateUtil } from '@shared/helpers/util/date.util'
+import { DateHelper } from '@shared/helpers/date.helper'
 import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
-import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/util/rx.util'
+import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/rx.helper'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
@@ -69,13 +69,13 @@ export class MovementFacade extends GenericProjectElementFacade {
 
     public get movementsPageStartDateTimeSearchedParam (): Signal<Date | undefined> {
         return computed( (): Date | undefined =>
-            DateUtil.buildDate( this.ngStore.selectSignal( MovementStore.movementsPageStartDateTimeSearchedParam )() ),
+            DateHelper.buildDate( this.ngStore.selectSignal( MovementStore.movementsPageStartDateTimeSearchedParam )() ),
         )
     }
 
     public get movementsPageEndDateTimeSearchedParam (): Signal<Date | undefined> {
         return computed( (): Date | undefined =>
-            DateUtil.buildDate( this.ngStore.selectSignal( MovementStore.movementsPageEndDateTimeSearchedParam )() ),
+            DateHelper.buildDate( this.ngStore.selectSignal( MovementStore.movementsPageEndDateTimeSearchedParam )() ),
         )
     }
 
@@ -113,13 +113,13 @@ export class MovementFacade extends GenericProjectElementFacade {
 
     public get movementCommunicationsPageStartDateTimeSearchedParam (): Signal<Date | undefined> {
         return computed( (): Date | undefined =>
-            DateUtil.buildDate( this.ngStore.selectSignal( MovementStore.movementCommunicationsPageStartDateTimeSearchedParam )() ),
+            DateHelper.buildDate( this.ngStore.selectSignal( MovementStore.movementCommunicationsPageStartDateTimeSearchedParam )() ),
         )
     }
 
     public get movementCommunicationsPageEndDateTimeSearchedParam (): Signal<Date | undefined> {
         return computed( (): Date | undefined =>
-            DateUtil.buildDate( this.ngStore.selectSignal( MovementStore.movementCommunicationsPageEndDateTimeSearchedParam )() ),
+            DateHelper.buildDate( this.ngStore.selectSignal( MovementStore.movementCommunicationsPageEndDateTimeSearchedParam )() ),
         )
     }
 

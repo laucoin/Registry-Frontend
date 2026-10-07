@@ -3,7 +3,7 @@ import { catchError, finalize, map, Observable, of } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
 import { ParticipantModel } from '@shared/models/model/participant.model'
 import { GenericProjectElementStore } from '@shared/helpers/state/generic-project-element.store'
-import { initialize } from '@shared/helpers/util/rx.util'
+import { initialize } from '@shared/helpers/rx.helper'
 import { ParticipantStoreModel } from '@pages/projects/[projectId]/configuration/participants/data/model/participant-store.model'
 import {
     FetchParticipantMovementsContents,
@@ -22,19 +22,19 @@ import {
 } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.action'
 import { ParticipantApi } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.api'
 import { ParticipantFacade } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.facade'
-import { StateUtil } from '@shared/helpers/state/state.util'
+import { StateHelper } from '@shared/helpers/state/state.helper'
 import { inject, Injectable } from '@angular/core'
-import { UserUtil } from '@shared/helpers/util/user.util'
+import { UserHelper } from '@shared/helpers/user.helper'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { GroupModel } from '@shared/models/model/group.model'
-import { GroupUtil } from '@shared/helpers/util/group.util'
+import { GroupHelper } from '@shared/helpers/group.helper'
 import { UserModel } from '@shared/models/model/user.model'
 import { ErrorModel } from '@shared/models/model/error.model'
 import { MovementModel } from '@shared/models/model/movement.model'
 import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
 import { PairModel } from '@shared/models/model/pair.model'
 import { MovementContentModel } from '@shared/models/model/movement-content.model'
-import { MovementUtil } from '@shared/helpers/util/movement.util'
+import { MovementHelper } from '@shared/helpers/movement.helper'
 import { MetadataApi } from '@core/registry/state/metadata.api'
 import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum'
 
@@ -237,14 +237,14 @@ export class ParticipantStore extends GenericProjectElementStore<ParticipantStor
     @Action( StartParticipantsPageLoader )
     public startParticipantsPageLoader (ctx: StateContext<ParticipantStoreModel>): void {
         ctx.patchState( {
-            participants: StateUtil.updatePageLoader( ctx.getState().participants, true ),
+            participants: StateHelper.updatePageLoader( ctx.getState().participants, true ),
         } )
     }
 
     @Action( StopParticipantsPageLoader )
     public stopParticipantsPageLoader (ctx: StateContext<ParticipantStoreModel>): void {
         ctx.patchState( {
-            participants: StateUtil.updatePageLoader( ctx.getState().participants, false ),
+            participants: StateHelper.updatePageLoader( ctx.getState().participants, false ),
         } )
     }
 
@@ -301,14 +301,14 @@ export class ParticipantStore extends GenericProjectElementStore<ParticipantStor
     @Action( StartParticipantMovementsPageLoader )
     public startParticipantMovementsPageLoader (ctx: StateContext<ParticipantStoreModel>): void {
         ctx.patchState( {
-            movements: StateUtil.updatePageLoader( ctx.getState().movements, true ),
+            movements: StateHelper.updatePageLoader( ctx.getState().movements, true ),
         } )
     }
 
     @Action( StopParticipantMovementsPageLoader )
     public stopParticipantMovementsPageLoader (ctx: StateContext<ParticipantStoreModel>): void {
         ctx.patchState( {
-            movements: StateUtil.updatePageLoader( ctx.getState().movements, false ),
+            movements: StateHelper.updatePageLoader( ctx.getState().movements, false ),
         } )
     }
 
@@ -386,7 +386,7 @@ export class ParticipantStore extends GenericProjectElementStore<ParticipantStor
                 ...ctx.getState().movements,
                 element: {
                     ...ctx.getState().movements.element!,
-                    content: MovementUtil.rebuildPageWithContent( ctx.getState().movements.element!.content, contents ),
+                    content: MovementHelper.rebuildPageWithContent( ctx.getState().movements.element!.content, contents ),
                 },
             },
         } )
@@ -428,7 +428,7 @@ export class ParticipantStore extends GenericProjectElementStore<ParticipantStor
         ctx.patchState( {
             _metadata: {
                 ...ctx.getState()._metadata,
-                searchedUsers: users.map( (user: UserModel): SelectItem<UserModel> => UserUtil.toSelectItem( user ) ),
+                searchedUsers: users.map( (user: UserModel): SelectItem<UserModel> => UserHelper.toSelectItem( user ) ),
             },
         } )
     }
@@ -456,7 +456,7 @@ export class ParticipantStore extends GenericProjectElementStore<ParticipantStor
         ctx.patchState( {
             _metadata: {
                 ...ctx.getState()._metadata,
-                searchedGroups: groups.map( (group: GroupModel): SelectItem<GroupModel> => GroupUtil.toSelectItem( group ) ),
+                searchedGroups: groups.map( (group: GroupModel): SelectItem<GroupModel> => GroupHelper.toSelectItem( group ) ),
             },
         } )
     }

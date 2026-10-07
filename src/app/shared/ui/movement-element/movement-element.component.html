@@ -119,7 +119,7 @@
                                     </div>
                                     @if (content.vehicle) {
                                         <div class='mt-2'>
-                                            <p-tag [value]='VehicleUtil.toSelectItem(content.vehicle).label'/>
+                                            <p-tag [value]='VehicleHelper.toSelectItem(content.vehicle).label'/>
                                         </div>
                                     }
                                 </div>
@@ -159,7 +159,7 @@
                                 </div>
                                 @if (adult.vehicle) {
                                     <div class='mt-2'>
-                                        <p-tag [value]='VehicleUtil.toSelectItem(adult.vehicle).label'/>
+                                        <p-tag [value]='VehicleHelper.toSelectItem(adult.vehicle).label'/>
                                     </div>
                                 }
                             </div>
@@ -204,7 +204,7 @@
                             </div>
                             @if (content.vehicle) {
                                 <div class='mt-2'>
-                                    <p-tag [value]='VehicleUtil.toSelectItem(content.vehicle).label'/>
+                                    <p-tag [value]='VehicleHelper.toSelectItem(content.vehicle).label'/>
                                 </div>
                             }
                         </div>
@@ -231,7 +231,7 @@
                         'movements.communication.layer.title' | translate: {movement: movement().reason?.label}
                     }}
                 </div>
-                @if (GenericUtil.nonNull(movement().reason)) {
+                @if (GenericHelper.nonNull(movement().reason)) {
                     <small class='mt-2 secondary-color'>
                         {{
                             'movements.communication.layer.subtitle' | translate: {

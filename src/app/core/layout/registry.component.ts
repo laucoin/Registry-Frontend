@@ -7,7 +7,7 @@ import {ProgressSpinnerModule} from 'primeng/progressspinner'
 import {ToastModule} from 'primeng/toast'
 import {map, Subscription} from 'rxjs'
 import {RegistryConfig} from '@core/config/registry.config'
-import {breakPoint} from '@shared/helpers/util/breakpoint.const'
+import {breakPoint} from '@shared/helpers/breakpoint.const'
 import {PrimeNG} from 'primeng/config'
 import {Button} from 'primeng/button'
 import {Dialog} from 'primeng/dialog'
@@ -17,7 +17,7 @@ import {NavbarComponent} from '@core/shell/navbar/navbar.component'
 import {RouterOutlet} from '@angular/router'
 import {ThemeEnum} from '@shared/models/enumeration/theme.enum'
 import {SeverityInformationComponent} from '@shared/ui/severity-information/severity-information.component'
-import {GenericUtil} from '@shared/helpers/util/generic.util'
+import {GenericHelper} from '@shared/helpers/generic.helper'
 
 @Component({
     selector: 'app-root',
@@ -67,10 +67,10 @@ export class RegistryComponent extends GenericComponent implements OnDestroy {
     }
 
     private handleThemeChanges(): void {
-        this.registryFacade.updateTheme(GenericUtil.navigatorTheme)
-        GenericUtil.themeMediaQuery.addEventListener('change', (): void => {
-            if (GenericUtil.isNull(this.registryFacade.currentUserTheme()) || this.registryFacade.currentUserTheme() === ThemeEnum.SYSTEM) {
-                this.registryFacade.updateTheme(GenericUtil.navigatorTheme)
+        this.registryFacade.updateTheme(GenericHelper.navigatorTheme)
+        GenericHelper.themeMediaQuery.addEventListener('change', (): void => {
+            if (GenericHelper.isNull(this.registryFacade.currentUserTheme()) || this.registryFacade.currentUserTheme() === ThemeEnum.SYSTEM) {
+                this.registryFacade.updateTheme(GenericHelper.navigatorTheme)
             }
         })
     }

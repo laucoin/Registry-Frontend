@@ -5,29 +5,29 @@ import {ActivatedRoute, Router} from '@angular/router'
 import {FormBuilder} from '@angular/forms'
 import {UserAuthorityEnum} from '@shared/models/enumeration/user-authority.enum'
 import {ProjectAuthorityEnum} from '@shared/models/enumeration/project-authority.enum'
-import {CurrentUserUtil} from '@core/authentication/tool/current-user.util'
-import {GenericUtil} from '@shared/helpers/util/generic.util'
-import {StringUtil} from '@shared/helpers/util/string.util'
-import {breakPoint} from '@shared/helpers/util/breakpoint.const'
+import {CurrentUserHelper} from '@core/authentication/tool/current-user.helper'
+import {GenericHelper} from '@shared/helpers/generic.helper'
+import {StringHelper} from '@shared/helpers/string.helper'
+import {breakPoint} from '@shared/helpers/breakpoint.const'
 import {RegistryRouteEnum} from '@core/routing/registry-route.enum'
-import {ProjectUtil} from '@shared/helpers/util/project.util'
+import {ProjectHelper} from '@shared/helpers/project.helper'
 import {ProjectOptionEnum} from '@shared/models/enumeration/project-option.enum'
 import {SeverityEnum} from '@shared/models/enumeration/severity.enum'
-import {FormUtil} from '@shared/helpers/util/form.util'
+import {FormHelper} from '@shared/helpers/form.helper'
 
 export abstract class GenericComponent {
     protected readonly RegistryRouteEnum: typeof RegistryRouteEnum = RegistryRouteEnum
 
-    protected readonly GenericUtil: typeof GenericUtil = GenericUtil
-    protected readonly StringUtil: typeof StringUtil = StringUtil
-    protected readonly FormUtil: typeof FormUtil = FormUtil
+    protected readonly GenericHelper: typeof GenericHelper = GenericHelper
+    protected readonly StringHelper: typeof StringHelper = StringHelper
+    protected readonly FormHelper: typeof FormHelper = FormHelper
 
-    protected readonly CurrentUserUtil: typeof CurrentUserUtil = CurrentUserUtil
+    protected readonly CurrentUserHelper: typeof CurrentUserHelper = CurrentUserHelper
     protected readonly UserAuthority: typeof UserAuthorityEnum = UserAuthorityEnum
     protected readonly ProjectAuthority: typeof ProjectAuthorityEnum = ProjectAuthorityEnum
     protected readonly ProjectOptionEnum: typeof ProjectOptionEnum = ProjectOptionEnum
     protected readonly SeverityEnum: typeof SeverityEnum = SeverityEnum
-    protected readonly ProjectUtil: typeof ProjectUtil = ProjectUtil
+    protected readonly ProjectHelper: typeof ProjectHelper = ProjectHelper
 
     protected readonly formBuilder: FormBuilder = inject(FormBuilder)
     protected readonly registryFacade: RegistryFacade = inject(RegistryFacade)

@@ -15,28 +15,28 @@ import { CommunicationModel } from '@pages/projects/[projectId]/movements/commun
 import { CommunicationDto } from '@pages/projects/[projectId]/movements/communication/data/dto/communication.dto'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { CommunicationFacade } from '@pages/projects/[projectId]/movements/communication/data/state/communication.facade'
-import { GenericUtil } from '@shared/helpers/util/generic.util'
-import { RegistryValidators } from '@shared/helpers/util/registry.validator'
+import { GenericHelper } from '@shared/helpers/generic.helper'
+import { RegistryValidators } from '@shared/helpers/registry.validator'
 import { tap } from 'rxjs'
 import { MenuItem, SelectItem } from 'primeng/api'
 import { MovementModel } from '@shared/models/model/movement.model'
-import { MovementUtil } from '@shared/helpers/util/movement.util'
+import { MovementHelper } from '@shared/helpers/movement.helper'
 import { AlertModel } from '@shared/models/model/alert.model'
-import { AlertUtil } from '@shared/helpers/util/alert.util'
+import { AlertHelper } from '@shared/helpers/alert.helper'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
 import { Button } from 'primeng/button'
 import { Card } from 'primeng/card'
 import { FormFieldErrorComponent } from '@shared/ui/form-field-error/form-field-error.component'
 import { Textarea } from 'primeng/textarea'
 import { TranslatePipe } from '@ngx-translate/core'
-import { ProjectUtil } from '@shared/helpers/util/project.util'
+import { ProjectHelper } from '@shared/helpers/project.helper'
 import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
 import { Menu } from 'primeng/menu'
 import { Ripple } from 'primeng/ripple'
 import { ProjectOptionIconPipe } from '@shared/helpers/pipe/project-option-icon.pipe'
 import { AutoComplete, AutoCompleteCompleteEvent } from 'primeng/autocomplete'
 import { Divider } from 'primeng/divider'
-import { FormUtil } from '@shared/helpers/util/form.util'
+import { FormHelper } from '@shared/helpers/form.helper'
 import {
 } from '@pages/projects/[projectId]/movements/communication/data/state/communication.action'
 import { InputText } from 'primeng/inputtext'
@@ -145,7 +145,7 @@ export class CommunicationFormComponent extends GenericFormComponent<Communicati
 
     private setAlertIfNecessary (): void {
         this.alert.patchValue( this.initialAlert()?.id )
-        this.handleAlertSelection( GenericUtil.nonNull( this.initialAlert() ) ? AlertUtil.toSelectItem(
+        this.handleAlertSelection( GenericHelper.nonNull( this.initialAlert() ) ? AlertHelper.toSelectItem(
             this.initialAlert()!,
             this.classicDatePipe,
         ) : undefined )
@@ -153,7 +153,7 @@ export class CommunicationFormComponent extends GenericFormComponent<Communicati
 
     private setMovementIfNecessary (): void {
         this.movement.patchValue( this.initialMovement()?.id )
-        this.handleMovementSelection( GenericUtil.nonNull( this.initialMovement() ) ? MovementUtil.toActivitySelectItem(
+        this.handleMovementSelection( GenericHelper.nonNull( this.initialMovement() ) ? MovementHelper.toActivitySelectItem(
             this.initialMovement()!,
             this.classicDatePipe,
         ) : undefined )
@@ -162,7 +162,7 @@ export class CommunicationFormComponent extends GenericFormComponent<Communicati
     protected override loadData (): void {
         this.facade.resetCommunication()
 
-        if (GenericUtil.nonNull( this.idParam )) {
+        if (GenericHelper.nonNull( this.idParam )) {
             this.facade.fetchCommunication( this.idParam! )
         }
     }
@@ -193,7 +193,7 @@ export class CommunicationFormComponent extends GenericFormComponent<Communicati
         if (!element) return
 
         if (element?.movement) {
-            const movement: SelectItem<MovementModel> = MovementUtil.toActivitySelectItem(
+            const movement: SelectItem<MovementModel> = MovementHelper.toActivitySelectItem(
                 element.movement,
                 this.classicDatePipe,
             )
@@ -203,7 +203,7 @@ export class CommunicationFormComponent extends GenericFormComponent<Communicati
         }
 
         if (element?.alert) {
-            const alert: SelectItem<AlertModel> = AlertUtil.toSelectItem(
+            const alert: SelectItem<AlertModel> = AlertHelper.toSelectItem(
                 element.alert,
                 this.classicDatePipe,
             )
@@ -241,7 +241,7 @@ export class CommunicationFormComponent extends GenericFormComponent<Communicati
     protected submit (): void {
         if (this.saving()) return
 
-        if (!FormUtil.isFormValid( this.form )) {
+        if (!FormHelper.isFormValid( this.form )) {
             this.logInvalidForm( this.form.value )
             return
         }
@@ -269,7 +269,7 @@ export class CommunicationFormComponent extends GenericFormComponent<Communicati
     }
 
     protected override buildDto (): CommunicationDto {
-        const dateTime: Date = GenericUtil.nonNull( this.facade.communication()?.dateTime )
+        const dateTime: Date = GenericHelper.nonNull( this.facade.communication()?.dateTime )
                                ? new Date( this.facade.communication()!.dateTime )
                                : new Date()
         return {
@@ -281,7 +281,7 @@ export class CommunicationFormComponent extends GenericFormComponent<Communicati
     }
 
     private buildAlertDto (): AlertDto {
-        const dateTime: Date = GenericUtil.nonNull( this.facade.communication()?.dateTime )
+        const dateTime: Date = GenericHelper.nonNull( this.facade.communication()?.dateTime )
                                ? new Date( this.facade.communication()!.dateTime )
                                : new Date()
         return {
@@ -319,18 +319,18 @@ export class CommunicationFormComponent extends GenericFormComponent<Communicati
         return actions.filter( (action: MenuItem): boolean => {
             switch (true) {
                 case action.id === CommunicationModulableFieldEnum.ALERT:
-                    return GenericUtil.isNull( this.initialAlert() ) && ProjectUtil.hasOption(
+                    return GenericHelper.isNull( this.initialAlert() ) && ProjectHelper.hasOption(
                         this.registryFacade.selectedProject(),
                         ProjectOptionEnum.ALERT,
                     )
                 case action.id === CommunicationModulableFieldEnum.MOVEMENT:
-                    return GenericUtil.isNull( this.initialMovement() )
+                    return GenericHelper.isNull( this.initialMovement() )
                 default:
                     return true
             }
         } ).map( (action: MenuItem): MenuItem => ({
             ...action,
-            disabled: action.disabled || (action.id === CommunicationModulableFieldEnum.ALERT && GenericUtil.nonNull(
+            disabled: action.disabled || (action.id === CommunicationModulableFieldEnum.ALERT && GenericHelper.nonNull(
                 this.alertSelectorMode() )) || (action.id === CommunicationModulableFieldEnum.MOVEMENT && this.movementSelectorVisible()),
         }) )
     }

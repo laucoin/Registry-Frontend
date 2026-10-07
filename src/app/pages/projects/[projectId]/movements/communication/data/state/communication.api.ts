@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core'
 import {Observable} from 'rxjs'
 import {GenericProjectApi} from '@shared/helpers/api/generic-project.api'
-import {SELECT_PROFILE_PROJECT_ID} from '@shared/helpers/util/request.util'
+import {SELECT_PROFILE_PROJECT_ID} from '@shared/helpers/request.helper'
 import {PageModel} from '@shared/models/model/page.model'
-import {QueryUtil} from '@shared/helpers/util/query.util'
+import {QueryHelper} from '@shared/helpers/query.helper'
 import {CommunicationPageParamsModel} from '@pages/projects/[projectId]/movements/communication/data/model/communication-page-params.model'
 import {CommunicationModel} from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
 import {CommunicationDto} from '@pages/projects/[projectId]/movements/communication/data/dto/communication.dto'
@@ -26,7 +26,7 @@ export class CommunicationApi extends GenericProjectApi {
         params: CommunicationPageParamsModel,
     ): Observable<PageModel<CommunicationModel>> {
         return this.http.get<PageModel<CommunicationModel>>(
-            `${this.buildRequestBaseUrl(projectId)}?${QueryUtil.buildQueryParams(
+            `${this.buildRequestBaseUrl(projectId)}?${QueryHelper.buildQueryParams(
                 pageNumber,
                 pageSize,
                 params,

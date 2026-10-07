@@ -14,8 +14,8 @@ import {
 import {RegistryTemplateDirective} from '@shared/directives/registry-template.directive'
 import {ProjectProfileFacade} from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.facade'
 import {Select} from 'primeng/select'
-import {GenericUtil} from '@shared/helpers/util/generic.util'
-import {StringUtil} from '@shared/helpers/util/string.util'
+import {GenericHelper} from '@shared/helpers/generic.helper'
+import {StringHelper} from '@shared/helpers/string.helper'
 import {RouterLink} from '@angular/router'
 
 @Component({
@@ -41,9 +41,9 @@ export class ProfilesListComponent extends GenericListComponent {
     protected readonly facade: ProjectProfileFacade = inject(ProjectProfileFacade)
 
     protected readonly hasFilters: Signal<boolean> = computed((): boolean =>
-        StringUtil.isNotNullNorBlank(this.registryFacade.userProjectProfilesPageTextSearchParam())
-        || GenericUtil.nonNull(this.registryFacade.userProjectProfilesPageDateTimeSearchParam())
-        || GenericUtil.nonNull(this.registryFacade.userProjectProfilesPageAvailabilitySearchParam()),
+        StringHelper.isNotNullNorBlank(this.registryFacade.userProjectProfilesPageTextSearchParam())
+        || GenericHelper.nonNull(this.registryFacade.userProjectProfilesPageDateTimeSearchParam())
+        || GenericHelper.nonNull(this.registryFacade.userProjectProfilesPageAvailabilitySearchParam()),
     )
 
     public constructor() {

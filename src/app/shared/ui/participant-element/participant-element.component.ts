@@ -13,7 +13,7 @@ import {SeverityTagComponent} from '@shared/ui/severity-tag/severity-tag.compone
 import {GenericElementComponent} from '@shared/ui/base/generic-element.component'
 import {PluralTranslationPipe} from '@shared/helpers/pipe/plural-translation.pipe'
 import {CustomDateFormatPipe} from '@shared/helpers/pipe/custom-date-format.pipe'
-import {GenericUtil} from '@shared/helpers/util/generic.util'
+import {GenericHelper} from '@shared/helpers/generic.helper'
 import {ParticipantTypeEnum} from '@shared/models/enumeration/participant-type.enum'
 import {SeverityCircleComponent} from '@shared/ui/severity-circle/severity-circle.component'
 import {SeverityEnum} from '@shared/models/enumeration/severity.enum'
@@ -120,7 +120,7 @@ export class ParticipantElementComponent extends GenericElementComponent {
             label: 'participants.actions.remove-member',
             icon: 'pi pi-user-minus',
             disabled: this.busy() || !this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_U),
-            visible: this.actionIsEnable(ElementActionEnum.PARTICIPANT_REMOVE_FROM_GROUP) && GenericUtil.nonNull(this.groupIdToRemove()),
+            visible: this.actionIsEnable(ElementActionEnum.PARTICIPANT_REMOVE_FROM_GROUP) && GenericHelper.nonNull(this.groupIdToRemove()),
             command: (): void => {
                 this.confirmationService.confirm(
                     this.buildConfirmation(

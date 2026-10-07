@@ -29,7 +29,7 @@
                     </div>
                 </div>
             </div>
-            @if (GenericUtil.nonNull(getTemplate('search'))) {
+            @if (GenericHelper.nonNull(getTemplate('search'))) {
                 <div class='col-12 order-2 order-sm-1'>
                     <p-panel [style]='{ "border": "none" }' [header]='"global.actions.search-and-filter" | translate'
                              toggleable [collapsed]="true">
@@ -58,8 +58,8 @@
         </div>
     </ng-template>
     <ng-template #emptymessage>
-        @if (GenericUtil.nonNull(error())) {
-            @if (GenericUtil.nonNull(getTemplate('error'))) {
+        @if (GenericHelper.nonNull(error())) {
+            @if (GenericHelper.nonNull(getTemplate('error'))) {
                 <ng-container [ngTemplateOutlet]='getTemplate("error")'/>
             } @else {
                 <div class='p-3 d-flex flex-column justify-content-center align-items-center'>

@@ -15,9 +15,9 @@ import {Select} from 'primeng/select'
 import {DatePicker} from 'primeng/datepicker'
 import {GenericListComponent} from '@shared/ui/base/generic-list.component'
 import {ToggleSwitch} from 'primeng/toggleswitch'
-import {GenericUtil} from '@shared/helpers/util/generic.util'
+import {GenericHelper} from '@shared/helpers/generic.helper'
 import {InfoComponent} from '@shared/ui/info/info.component'
-import {StringUtil} from '@shared/helpers/util/string.util'
+import {StringHelper} from '@shared/helpers/string.helper'
 
 @Component({
     selector: 'app-projects-list',
@@ -45,9 +45,9 @@ export class ProjectsListComponent extends GenericListComponent {
     protected readonly ProjectRoutesEnum: typeof ProjectRoutesEnum = ProjectRoutesEnum
 
     protected readonly hasFilters: Signal<boolean> = computed((): boolean =>
-        StringUtil.isNotNullNorBlank(this.facade.projectsPageTextSearchedParam())
-        || GenericUtil.nonNull(this.facade.projectsPageDateTimeSearchedParam())
-        || GenericUtil.nonNull(this.facade.projectsPageVisibilitySearchedParam()),
+        StringHelper.isNotNullNorBlank(this.facade.projectsPageTextSearchedParam())
+        || GenericHelper.nonNull(this.facade.projectsPageDateTimeSearchedParam())
+        || GenericHelper.nonNull(this.facade.projectsPageVisibilitySearchedParam()),
     )
 
     public constructor() {

@@ -2,9 +2,9 @@ import { computed, Injectable, Signal, inject } from '@angular/core'
 import { PageModel } from '@shared/models/model/page.model'
 import { AlertStore } from '@pages/projects/[projectId]/alerts/data/state/alert.store'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
-import { DateUtil } from '@shared/helpers/util/date.util'
+import { DateHelper } from '@shared/helpers/date.helper'
 import { AlertApi } from '@pages/projects/[projectId]/movements/data/state/alert.api'
-import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/util/rx.util'
+import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/rx.helper'
 import { CommandEvent } from '@shared/helpers/facade/command-event.service'
 import { Observable, tap } from 'rxjs'
 import {
@@ -63,13 +63,13 @@ export class AlertFacade extends GenericProjectElementFacade {
 
     public get alertsPageStartDateTimeSearchedParam (): Signal<Date | undefined> {
         return computed( (): Date | undefined =>
-            DateUtil.buildDate( this.ngStore.selectSignal( AlertStore.alertsPageStartDateTimeSearchedParam )() ),
+            DateHelper.buildDate( this.ngStore.selectSignal( AlertStore.alertsPageStartDateTimeSearchedParam )() ),
         )
     }
 
     public get alertsPageEndDateTimeSearchedParam (): Signal<Date | undefined> {
         return computed( (): Date | undefined =>
-            DateUtil.buildDate( this.ngStore.selectSignal( AlertStore.alertsPageEndDateTimeSearchedParam )() ),
+            DateHelper.buildDate( this.ngStore.selectSignal( AlertStore.alertsPageEndDateTimeSearchedParam )() ),
         )
     }
 
@@ -103,13 +103,13 @@ export class AlertFacade extends GenericProjectElementFacade {
 
     public get alertCommunicationsPageStartDateTimeSearchedParam (): Signal<Date | undefined> {
         return computed( (): Date | undefined =>
-            DateUtil.buildDate( this.ngStore.selectSignal( AlertStore.alertCommunicationsPageStartDateTimeSearchedParam )() ),
+            DateHelper.buildDate( this.ngStore.selectSignal( AlertStore.alertCommunicationsPageStartDateTimeSearchedParam )() ),
         )
     }
 
     public get alertCommunicationsPageEndDateTimeSearchedParam (): Signal<Date | undefined> {
         return computed( (): Date | undefined =>
-            DateUtil.buildDate( this.ngStore.selectSignal( AlertStore.alertCommunicationsPageEndDateTimeSearchedParam )() ),
+            DateHelper.buildDate( this.ngStore.selectSignal( AlertStore.alertCommunicationsPageEndDateTimeSearchedParam )() ),
         )
     }
 

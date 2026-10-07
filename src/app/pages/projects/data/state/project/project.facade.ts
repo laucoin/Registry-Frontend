@@ -24,7 +24,7 @@ import { ProjectDto } from '@pages/projects/data/dto/project.dto'
 import { ofActionSuccessful } from '@ngxs/store'
 import { ProjectModel } from '@shared/models/model/project.model'
 import { ProjectOptionModel } from '@pages/projects/data/model/project-option.model'
-import { DateUtil } from '@shared/helpers/util/date.util'
+import { DateHelper } from '@shared/helpers/date.helper'
 import { FetchCurrentUser } from '@core/registry/state/registry.action'
 
 @Injectable()
@@ -54,7 +54,7 @@ export class ProjectFacade extends GenericFacade {
     }
 
     public get projectsPageDateTimeSearchedParam (): Signal<Date | undefined> {
-        return computed( (): Date | undefined => DateUtil.buildDate( this.ngStore.selectSignal( ProjectStore.projectsPageDateTimeSearchedParam )() ) )
+        return computed( (): Date | undefined => DateHelper.buildDate( this.ngStore.selectSignal( ProjectStore.projectsPageDateTimeSearchedParam )() ) )
     }
 
     public get projectsPageWithProfileSearchedParam (): Signal<boolean | undefined> {

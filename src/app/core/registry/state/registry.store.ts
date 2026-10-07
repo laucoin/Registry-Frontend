@@ -6,9 +6,9 @@ import {CurrentUserModel} from '@shared/models/model/current-user.model'
 import {ProjectProfileModel} from '@shared/models/model/project-profile.model'
 import {PageModel} from '@shared/models/model/page.model'
 import {GenericStore} from '@shared/helpers/state/generic.store'
-import {REDIRECT_URI} from '@shared/helpers/util/request.util'
-import {initialize} from '@shared/helpers/util/rx.util'
-import {SessionStorageUtils} from '@shared/helpers/util/session-storage.util'
+import {REDIRECT_URI} from '@shared/helpers/request.helper'
+import {initialize} from '@shared/helpers/rx.helper'
+import {SessionStorageUtils} from '@shared/helpers/session-storage.helper'
 import {RegistryStoreModel} from '@core/registry/model/registry-store.model'
 import {
     AckNotification,
@@ -57,9 +57,9 @@ import {ProfileStatusEnum} from '@shared/models/enumeration/profile-status.enum'
 import {SeverityEnum} from '@shared/models/enumeration/severity.enum'
 import {ThemeEnum} from '@shared/models/enumeration/theme.enum'
 import {RegistryConfig} from '@core/config/registry.config'
-import {GenericUtil} from '@shared/helpers/util/generic.util'
+import {GenericHelper} from '@shared/helpers/generic.helper'
 import {PreferencesModel} from '@shared/models/model/preferences.model'
-import {CurrentUserUtil} from '@core/authentication/tool/current-user.util'
+import {CurrentUserHelper} from '@core/authentication/tool/current-user.helper'
 import {PrimeNG} from 'primeng/config'
 
 const defaultRegistryStore: RegistryStoreModel = {
@@ -196,7 +196,7 @@ export class RegistryStore extends GenericStore implements NgxsOnInit {
     @Selector()
     public static currentUserTheme(state: RegistryStoreModel): ThemeEnum | undefined {
         const currentUserTheme: string | undefined = state.authentication.currentUser?.preferences?.theme
-        return GenericUtil.nonNull(currentUserTheme) ? CurrentUserUtil.mapThemeToEnum(currentUserTheme!) : state._util.theme
+        return GenericHelper.nonNull(currentUserTheme) ? CurrentUserHelper.mapThemeToEnum(currentUserTheme!) : state._util.theme
     }
 
     @Selector()
@@ -344,7 +344,7 @@ export class RegistryStore extends GenericStore implements NgxsOnInit {
                 this.htmlElement?.classList.remove(this.darkModeClass)
                 break
             default:
-                if (GenericUtil.navigatorTheme === ThemeEnum.DARK) {
+                if (GenericHelper.navigatorTheme === ThemeEnum.DARK) {
                     this.htmlElement?.classList.add(this.darkModeClass)
                 } else {
                     this.htmlElement?.classList.remove(this.darkModeClass)
@@ -459,12 +459,12 @@ export class RegistryStore extends GenericStore implements NgxsOnInit {
                 currentUser: currentUser,
             },
         })
-        const userTheme: ThemeEnum = CurrentUserUtil.mapThemeToEnum(currentUser.preferences.theme)
+        const userTheme: ThemeEnum = CurrentUserHelper.mapThemeToEnum(currentUser.preferences.theme)
         if (userTheme !== ctx.getState()._util.theme) {
             ctx.dispatch(new UpdateTheme(userTheme))
         }
         const userLanguage: string | undefined = currentUser.preferences.language
-        if (GenericUtil.nonNull(userLanguage) && userLanguage !== this.translateService.currentLang()) {
+        if (GenericHelper.nonNull(userLanguage) && userLanguage !== this.translateService.currentLang()) {
             this.translateService.use(currentUser.preferences.language)
             this.primeConfig.setTranslation(this.translateService.instant('prime-ng'))
             this.registryFacade.reloadTranslatedData()
@@ -686,7 +686,7 @@ export class RegistryStore extends GenericStore implements NgxsOnInit {
         ctx: StateContext<RegistryStoreModel>,
         payload: UpdateCurrentUserTheme,
     ): Observable<void> {
-        return this.preferencesApi.updateTheme(CurrentUserUtil.mapThemeToString(payload.theme)).pipe(
+        return this.preferencesApi.updateTheme(CurrentUserHelper.mapThemeToString(payload.theme)).pipe(
             map((preferences: PreferencesModel): void => this.updateCurrentUserThemeComplete(ctx, preferences)),
         )
     }
@@ -758,7 +758,7 @@ export class RegistryStore extends GenericStore implements NgxsOnInit {
     ): Observable<void> {
         ctx.patchState({currentProject: {id: payload.projectId, profile: undefined}})
 
-        if (GenericUtil.isNull(payload.projectId)) {
+        if (GenericHelper.isNull(payload.projectId)) {
             return of(undefined)
         }
 

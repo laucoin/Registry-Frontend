@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, OnDestroy, Signal, signal, WritableSignal} from '@angular/core'
 import {FormArray, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms'
-import {FormUtil} from '@shared/helpers/util/form.util'
+import {FormHelper} from '@shared/helpers/form.helper'
 import {MovementFacade} from '@pages/projects/[projectId]/movements/data/state/movement.facade'
 import {MovementModel} from '@shared/models/model/movement.model'
 import {MovementDto} from '@pages/projects/[projectId]/movements/data/dto/movement.dto'
@@ -20,10 +20,10 @@ import {RegistryRequiredDirective} from '@shared/directives/registry-required.di
 import {MovementContentModel} from '@shared/models/model/movement-content.model'
 import {ProjectModel} from '@shared/models/model/project.model'
 import {VehicleModel} from '@shared/models/model/vehicle.model'
-import {ProjectUtil} from '@shared/helpers/util/project.util'
+import {ProjectHelper} from '@shared/helpers/project.helper'
 import {DateFormatPipe} from '@shared/helpers/pipe/date-format.pipe'
 import {GenericFormComponent} from '@shared/ui/base/generic-form.component'
-import {ParticipantUtil} from '@shared/helpers/util/participant.util'
+import {ParticipantHelper} from '@shared/helpers/participant.helper'
 import {MovementContentFieldComponent} from '@pages/projects/[projectId]/movements/movement-form/movement-content-field/movement-content-field.component'
 import {PluralTranslationPipe} from '@shared/helpers/pipe/plural-translation.pipe'
 import {FormTitlePipe} from '@shared/helpers/pipe/form-title.pipe'
@@ -31,8 +31,8 @@ import {FormButtonPipe} from '@shared/helpers/pipe/form-button.pipe'
 import {AutoComplete} from 'primeng/autocomplete'
 import {InputGroup} from 'primeng/inputgroup'
 import {InputGroupAddon} from 'primeng/inputgroupaddon'
-import {VehicleUtil} from '@shared/helpers/util/vehicle.util'
-import {GenericUtil} from '@shared/helpers/util/generic.util'
+import {VehicleHelper} from '@shared/helpers/vehicle.helper'
+import {GenericHelper} from '@shared/helpers/generic.helper'
 import {MovementReasonModel} from '@pages/projects/[projectId]/movements/data/model/movement-reason.model'
 import {ProgressSpinner} from 'primeng/progressspinner'
 import {Step, StepItem, StepPanel, Stepper} from 'primeng/stepper'
@@ -40,12 +40,12 @@ import {FormIconPipe} from '@shared/helpers/pipe/form-icon.pipe'
 import {RadioButton} from 'primeng/radiobutton'
 import {ParticipantTypeEnum} from '@shared/models/enumeration/participant-type.enum'
 import {ParticipantDto} from '@pages/projects/[projectId]/configuration/participants/data/dto/participant.dto'
-import {DateUtil} from '@shared/helpers/util/date.util'
+import {DateHelper} from '@shared/helpers/date.helper'
 import {MovementTypeEnum} from '@shared/models/enumeration/movement-type.enum'
 import {ProjectOptionEnum} from '@shared/models/enumeration/project-option.enum'
 import {PresenceStatusEnum} from '@shared/models/enumeration/presence-status.enum'
 
-import {withLoading} from '@shared/helpers/util/rx.util'
+import {withLoading} from '@shared/helpers/rx.helper'
 import {FormErrorComponent} from '@shared/ui/form-error/form-error.component'
 
 @Component({
@@ -89,7 +89,7 @@ import {FormErrorComponent} from '@shared/ui/form-error/form-error.component'
 export class MovementFormComponent extends GenericFormComponent<MovementModel, MovementDto> implements OnDestroy {
     protected readonly facade: MovementFacade = inject(MovementFacade)
 
-    protected readonly VehicleUtil: typeof VehicleUtil = VehicleUtil
+    protected readonly VehicleHelper: typeof VehicleHelper = VehicleHelper
     protected readonly ParticipantTypeEnum: typeof ParticipantTypeEnum = ParticipantTypeEnum
 
     protected readonly now: Date = new Date()
@@ -102,13 +102,13 @@ export class MovementFormComponent extends GenericFormComponent<MovementModel, M
     protected readonly reasonRequired: WritableSignal<boolean> = signal(true)
     protected readonly isContentSelection: WritableSignal<boolean> = signal(true)
     protected readonly selectedReason: WritableSignal<MovementReasonModel | undefined> = signal(undefined)
-    private readonly hasVehicleOption: Signal<boolean> = computed((): boolean => ProjectUtil.hasOption(
+    private readonly hasVehicleOption: Signal<boolean> = computed((): boolean => ProjectHelper.hasOption(
         this.registryFacade.selectedProject(),
         ProjectOptionEnum.VEHICLE,
     ))
     protected readonly isEligibleToVehicle: Signal<boolean> = computed((): boolean =>
         this.hasVehicleOption()
-        || (this.movement()?.content.some((content: MovementContentModel): boolean => GenericUtil.nonNull(
+        || (this.movement()?.content.some((content: MovementContentModel): boolean => GenericHelper.nonNull(
             content.vehicle)) ?? false),
     )
     protected readonly drivers: WritableSignal<SelectItem<ParticipantModel>[]> = signal([])
@@ -135,7 +135,7 @@ export class MovementFormComponent extends GenericFormComponent<MovementModel, M
     }
 
     protected override loadData(): void {
-        if (GenericUtil.nonNull(this.idParam)) {
+        if (GenericHelper.nonNull(this.idParam)) {
             this.subscriptions.add(
                 this.facade.fetchMovement(this.idParam!).pipe(
                     withLoading(this.loading),
@@ -210,7 +210,7 @@ export class MovementFormComponent extends GenericFormComponent<MovementModel, M
     }
 
     protected handleLoadedElement(): void {
-        if (!GenericUtil.nonNull(this.idParam)) {
+        if (!GenericHelper.nonNull(this.idParam)) {
             this.applyMovement(undefined)
         }
     }
@@ -226,7 +226,7 @@ export class MovementFormComponent extends GenericFormComponent<MovementModel, M
             this.participantContent.valueChanges.pipe(
                 map((content: MovementContentModel[]): MovementContentModel[] => content.filter((element: MovementContentModel): boolean => element.participant?.major ?? true)),
                 tap((item: MovementContentModel[]): void => this.drivers.set(
-                    item.map((element: MovementContentModel): SelectItem<ParticipantModel> => ParticipantUtil.toSelectItem(
+                    item.map((element: MovementContentModel): SelectItem<ParticipantModel> => ParticipantHelper.toSelectItem(
                         element.participant)),
                 )),
             ).subscribe(),
@@ -255,16 +255,16 @@ export class MovementFormComponent extends GenericFormComponent<MovementModel, M
     protected submit(): void {
         if (this.saving() || this.loading()) return
 
-        if (GenericUtil.nonNull(this.idParam) && !this.movement()) return
+        if (GenericHelper.nonNull(this.idParam) && !this.movement()) return
 
         switch (true) {
-            case !FormUtil.isFormValid(this.informationForm):
+            case !FormHelper.isFormValid(this.informationForm):
                 this.logInvalidForm(this.informationForm.value)
                 return
-            case !FormUtil.isFormValid(this.contentForm):
+            case !FormHelper.isFormValid(this.contentForm):
                 this.logInvalidForm(this.contentForm.value)
                 return
-            case !FormUtil.isFormValid(this.vehicleForm):
+            case !FormHelper.isFormValid(this.vehicleForm):
                 this.logInvalidForm(this.vehicleForm.value)
                 return
         }
@@ -289,7 +289,7 @@ export class MovementFormComponent extends GenericFormComponent<MovementModel, M
                 id: guest.id,
                 firstName: guest.firstName,
                 lastName: guest.lastName,
-                birthday: DateUtil.getDate(new Date(guest.birthday)),
+                birthday: DateHelper.getDate(new Date(guest.birthday)),
             })),
         }
     }

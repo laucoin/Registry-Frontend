@@ -1,4 +1,4 @@
-<p-block-ui [blocked]='registryFacade.globalLoading() || GenericUtil.nonNull(registryFacade.globalError())'>
+<p-block-ui [blocked]='registryFacade.globalLoading() || GenericHelper.nonNull(registryFacade.globalError())'>
     @if (registryFacade.globalLoading()) {
         <p-progress-spinner class='m-auto'></p-progress-spinner>
     } @else {
@@ -14,7 +14,7 @@
     </div>
 }
 </p-block-ui>
-@if (GenericUtil.isNull(registryFacade.globalError())) {
+@if (GenericHelper.isNull(registryFacade.globalError())) {
     <p-confirm-dialog [breakpoints]='breakPoint'/>
     <p-toast [breakpoints]="{ '576px': { width: '95%', right: '2.5%', left: '2.5%' } }">
         <ng-template #message let-message>

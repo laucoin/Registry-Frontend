@@ -22,9 +22,9 @@ import { GroupModel } from '@shared/models/model/group.model'
 import { ParticipantStore } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.store'
 import { GenericProjectElementFacade } from '@shared/helpers/facade/generic-project-element.facade'
 import { MovementModel } from '@shared/models/model/movement.model'
-import { DateUtil } from '@shared/helpers/util/date.util'
+import { DateHelper } from '@shared/helpers/date.helper'
 import { ParticipantApi } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.api'
-import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/util/rx.util'
+import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/rx.helper'
 import { CommandEvent } from '@shared/helpers/facade/command-event.service'
 import { UserModel } from '@shared/models/model/user.model'
 import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum'
@@ -91,13 +91,13 @@ export class ParticipantFacade extends GenericProjectElementFacade {
 
     public get participantMovementsPageStartDateTimeSearchedParam (): Signal<Date | undefined> {
         return computed( (): Date | undefined =>
-            DateUtil.buildDate( this.ngStore.selectSignal( ParticipantStore.participantMovementsPageStartDateTimeSearchedParam )() ),
+            DateHelper.buildDate( this.ngStore.selectSignal( ParticipantStore.participantMovementsPageStartDateTimeSearchedParam )() ),
         )
     }
 
     public get participantMovementsPageEndDateTimeSearchedParam (): Signal<Date | undefined> {
         return computed( (): Date | undefined =>
-            DateUtil.buildDate( this.ngStore.selectSignal( ParticipantStore.participantMovementsPageEndDateTimeSearchedParam )() ),
+            DateHelper.buildDate( this.ngStore.selectSignal( ParticipantStore.participantMovementsPageEndDateTimeSearchedParam )() ),
         )
     }
 

@@ -18,14 +18,14 @@
                                    pInputText
                                    type='text'/>
                             <app-form-field-error [errors]='name.errors'
-                                                  [invalid]='FormUtil.invalid(name)'
+                                                  [invalid]='FormHelper.invalid(name)'
                                                   translationPrefix='projects.form.error.name'/>
                         </div>
                         <div class='d-flex flex-wrap'>
                             <div class='left-field field'>
                                 <label for='begin-date-time'>{{ 'projects.form.begin-datetime' | translate }}</label>
                                 <app-date-time-field [formControl]='beginDateTime'
-                                                     [invalid]='FormUtil.invalid(beginDateTime)'
+                                                     [invalid]='FormHelper.invalid(beginDateTime)'
                                                      inputId='begin-date-time'
                                                      [datePlaceholder]='"projects.form.placeholder.date" | translate: {
                                                             date: startDateExample | dateFormat: "date"
@@ -34,13 +34,13 @@
                                                             date: startDateExample | dateFormat: "time"
                                                          }'/>
                                 <app-form-field-error [errors]='beginDateTime.errors'
-                                                      [invalid]='FormUtil.invalid(beginDateTime)'
+                                                      [invalid]='FormHelper.invalid(beginDateTime)'
                                                       translationPrefix='projects.form.error.begin-datetime'/>
                             </div>
                             <div class='right-field field'>
                                 <label for='end-date-time'>{{ 'projects.form.end-datetime' | translate }}</label>
                                 <app-date-time-field [formControl]='endDateTime'
-                                                     [invalid]='FormUtil.invalid(endDateTime)'
+                                                     [invalid]='FormHelper.invalid(endDateTime)'
                                                      inputId='end-date-time'
                                                      [datePlaceholder]='"projects.form.placeholder.date" | translate: {
                                                             date: endDateExample | dateFormat: "date"
@@ -49,12 +49,12 @@
                                                             date: endDateExample | dateFormat: "time"
                                                          }'/>
                                 <app-form-field-error [errors]='endDateTime.errors'
-                                                      [invalid]='FormUtil.invalid(endDateTime)'
+                                                      [invalid]='FormHelper.invalid(endDateTime)'
                                                       translationPrefix='projects.form.error.end-datetime'/>
                             </div>
                         </div>
                         <app-form-field-error [errors]='form.errors'
-                                              [invalid]='FormUtil.invalid(form) && beginDateTime.valid && endDateTime.valid'
+                                              [invalid]='FormHelper.invalid(form) && beginDateTime.valid && endDateTime.valid'
                                               translationPrefix='projects.form.error.date-range'/>
                         <div class='d-flex pt-4 justify-content-between'>
                             <p-button
@@ -63,7 +63,7 @@
                                     text
                                     rounded/>
                             <p-button
-                                    (onClick)='FormUtil.isFormValid(form) ? activateCallback(2) : undefined'
+                                    (onClick)='FormHelper.isFormValid(form) ? activateCallback(2) : undefined'
                                     [label]='registryFacade.tinyScreen() ? "" : "global.actions.next" | translate'
                                     rounded
                                     outlined
@@ -106,7 +106,7 @@
                                                     [inputId]='option.value'/>
                                     </div>
                                     <app-form-field-error [errors]='control.errors'
-                                                          [invalid]='FormUtil.invalid(control)'
+                                                          [invalid]='FormHelper.invalid(control)'
                                                           translationPrefix='projects.form.error.options'/>
                                 </div>
                                 @if (!$last) {

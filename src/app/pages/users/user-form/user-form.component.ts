@@ -3,7 +3,7 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { UserModel } from '@shared/models/model/user.model'
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
 import { UserFacade } from '@pages/users/data/state/user.facade'
-import { GenericUtil } from '@shared/helpers/util/generic.util'
+import { GenericHelper } from '@shared/helpers/generic.helper'
 import { Button } from 'primeng/button'
 import { Card } from 'primeng/card'
 import { FormComponent } from '@shared/ui/form/form.component'
@@ -13,7 +13,7 @@ import { Select } from 'primeng/select'
 import { GenericFormComponent } from '@shared/ui/base/generic-form.component'
 import { UserDto } from '@shared/models/dto/user.dto'
 import { filter, map } from 'rxjs'
-import { FormUtil } from '@shared/helpers/util/form.util'
+import { FormHelper } from '@shared/helpers/form.helper'
 import { FormFieldErrorComponent } from '@shared/ui/form-field-error/form-field-error.component'
 
 @Component( {
@@ -66,7 +66,7 @@ export class UserFormComponent extends GenericFormComponent<UserModel, UserDto> 
     protected handleLoadedElement (): void {
         this.subscriptions.add(
             this.facade.user$.pipe(
-                filter( (user: UserModel | undefined): boolean => GenericUtil.nonNull( user ) ),
+                filter( (user: UserModel | undefined): boolean => GenericHelper.nonNull( user ) ),
                 map( (user: UserModel | undefined): void => this.fillForm( user! ) ),
             ).subscribe(),
         )
@@ -77,7 +77,7 @@ export class UserFormComponent extends GenericFormComponent<UserModel, UserDto> 
     }
 
     protected submit (): void {
-        if (!FormUtil.isFormValid( this.form )) {
+        if (!FormHelper.isFormValid( this.form )) {
             this.logInvalidForm( this.form.value )
             return
         }

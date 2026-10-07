@@ -1,6 +1,6 @@
 import { inject, Pipe, PipeTransform } from '@angular/core'
 import { TranslateService } from '@ngx-translate/core'
-import { GenericUtil } from '@shared/helpers/util/generic.util'
+import { GenericHelper } from '@shared/helpers/generic.helper'
 
 @Pipe( {
     name: 'pluralTranslation', standalone: true, pure: false,
@@ -21,7 +21,7 @@ export class PluralTranslationPipe implements PipeTransform {
             case size === 2 && this.translateService.instant( twoKey ) !== twoKey: {
                 return twoKey
             }
-            case GenericUtil.nonNull( size ) && size! >= 2: {
+            case GenericHelper.nonNull( size ) && size! >= 2: {
                 return `${key}.few`
             }
             default:

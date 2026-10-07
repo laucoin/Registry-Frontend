@@ -14,7 +14,7 @@
                     optionValue='value' />
             <small class='secondary-color'>{{ 'users.form.hint.role' | translate }}</small>
             <app-form-field-error [errors]='role.errors'
-                                  [invalid]='FormUtil.invalid(role)'
+                                  [invalid]='FormHelper.invalid(role)'
                                   translationPrefix='users.form.error.role' />
         </div>
     </p-card>

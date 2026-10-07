@@ -14,8 +14,8 @@ import {RegistryRouteEnum} from '@core/routing/registry-route.enum'
 import {SeverityTagComponent} from '@shared/ui/severity-tag/severity-tag.component'
 import {Skeleton} from 'primeng/skeleton'
 import {GenericElementComponent} from '@shared/ui/base/generic-element.component'
-import {MovementUtil} from '@shared/helpers/util/movement.util'
-import {VehicleUtil} from '@shared/helpers/util/vehicle.util'
+import {MovementHelper} from '@shared/helpers/movement.helper'
+import {VehicleHelper} from '@shared/helpers/vehicle.helper'
 import {PluralTranslationPipe} from '@shared/helpers/pipe/plural-translation.pipe'
 import {DateFormatPipe} from '@shared/helpers/pipe/date-format.pipe'
 import {SeverityCircleComponent} from '@shared/ui/severity-circle/severity-circle.component'
@@ -29,9 +29,9 @@ import {TruncatePipe} from '@shared/helpers/pipe/truncate.pipe'
 import {Button} from 'primeng/button'
 import {MovementDto} from '@pages/projects/[projectId]/movements/data/dto/movement.dto'
 import {MovementContentDto} from '@pages/projects/[projectId]/movements/data/dto/movement-content.dto'
-import {GenericUtil} from '@shared/helpers/util/generic.util'
+import {GenericHelper} from '@shared/helpers/generic.helper'
 import {FormControl, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms'
-import {RegistryValidators} from '@shared/helpers/util/registry.validator'
+import {RegistryValidators} from '@shared/helpers/registry.validator'
 import {MenuItem} from 'primeng/api'
 import {Dialog} from 'primeng/dialog'
 import {Menu} from 'primeng/menu'
@@ -82,7 +82,7 @@ export class MovementElementComponent extends GenericElementComponent {
     protected readonly facade: MovementFacade = inject(MovementFacade)
     protected readonly pluralTranslation: PluralTranslationPipe = inject(PluralTranslationPipe)
 
-    protected readonly VehicleUtil: typeof VehicleUtil = VehicleUtil
+    protected readonly VehicleHelper: typeof VehicleHelper = VehicleHelper
     protected readonly MovementTypeEnum: typeof MovementTypeEnum = MovementTypeEnum
 
     protected participantLayerActiveTab: number = 1
@@ -181,17 +181,17 @@ export class MovementElementComponent extends GenericElementComponent {
 
     protected readonly typeAndReason: Signal<string> = computed((): string => {
         let text: string = this.movement().type.label ?? ''
-        if (GenericUtil.nonNull(this.movement().reason)) {
+        if (GenericHelper.nonNull(this.movement().reason)) {
             text += ` - ${this.movement().reason!.label}`
         }
         return text
     })
     protected readonly total: Signal<number> = computed((): number => this.movement().content.length)
-    protected readonly adults: Signal<MovementContentModel[]> = computed((): MovementContentModel[] => MovementUtil.getAdults(
+    protected readonly adults: Signal<MovementContentModel[]> = computed((): MovementContentModel[] => MovementHelper.getAdults(
         this.movement()))
-    protected readonly children: Signal<MovementContentModel[]> = computed((): MovementContentModel[] => MovementUtil.getChildren(
+    protected readonly children: Signal<MovementContentModel[]> = computed((): MovementContentModel[] => MovementHelper.getChildren(
         this.movement()))
-    protected readonly pools: Signal<Record<string, MovementContentModel[]>> = computed((): Record<string, MovementContentModel[]> => MovementUtil.getPools(
+    protected readonly pools: Signal<Record<string, MovementContentModel[]>> = computed((): Record<string, MovementContentModel[]> => MovementHelper.getPools(
         this.movement()))
     protected readonly driver: Signal<MovementContentModel | undefined> = computed((): MovementContentModel | undefined => {
         if (this.vehicleId()) {

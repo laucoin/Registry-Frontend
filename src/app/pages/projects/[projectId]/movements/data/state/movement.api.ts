@@ -2,10 +2,10 @@ import {Injectable} from '@angular/core'
 import {Observable} from 'rxjs'
 import {PageModel} from '@shared/models/model/page.model'
 import {GenericProjectApi} from '@shared/helpers/api/generic-project.api'
-import {SELECT_PROFILE_PROJECT_ID} from '@shared/helpers/util/request.util'
+import {SELECT_PROFILE_PROJECT_ID} from '@shared/helpers/request.helper'
 import {MovementDto} from '@pages/projects/[projectId]/movements/data/dto/movement.dto'
 import {MovementPageParamsModel} from '@shared/models/model/movement-page-params.model'
-import {QueryUtil} from '@shared/helpers/util/query.util'
+import {QueryHelper} from '@shared/helpers/query.helper'
 import {MovementModel} from '@shared/models/model/movement.model'
 import {HttpParams} from '@angular/common/http'
 import {
@@ -14,8 +14,8 @@ import {
 import {VehicleModel} from '@shared/models/model/vehicle.model'
 import {MovementContentModel} from '@shared/models/model/movement-content.model'
 import {PairModel} from '@shared/models/model/pair.model'
-import {GenericUtil} from '@shared/helpers/util/generic.util'
-import {StringUtil} from '@shared/helpers/util/string.util'
+import {GenericHelper} from '@shared/helpers/generic.helper'
+import {StringHelper} from '@shared/helpers/string.helper'
 import {MovementReasonModel} from '@pages/projects/[projectId]/movements/data/model/movement-reason.model'
 import {ParticipantTypeEnum} from '@shared/models/enumeration/participant-type.enum'
 import {CommunicationModel} from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
@@ -38,7 +38,7 @@ export class MovementApi extends GenericProjectApi {
         params: MovementPageParamsModel,
     ): Observable<PageModel<MovementModel>> {
         return this.http.get<PageModel<MovementModel>>(
-            `${this.buildRequestBaseUrl(projectId)}?${QueryUtil.buildQueryParams(
+            `${this.buildRequestBaseUrl(projectId)}?${QueryHelper.buildQueryParams(
                 pageNumber,
                 pageSize,
                 params,
@@ -52,7 +52,7 @@ export class MovementApi extends GenericProjectApi {
         currentMovements: boolean,
     ): Observable<PairModel<MovementContentModel[]>[]> {
         let builtParams: HttpParams = new HttpParams().set('currentMovements', currentMovements)
-        if (GenericUtil.nonNull(movementIds)) {
+        if (GenericHelper.nonNull(movementIds)) {
             movementIds.forEach((movementId: string): void => {
                 builtParams = builtParams.append('movementIds', movementId)
             })
@@ -71,7 +71,7 @@ export class MovementApi extends GenericProjectApi {
         params: CommunicationPageParamsModel,
     ): Observable<PageModel<CommunicationModel>> {
         return this.http.get<PageModel<CommunicationModel>>(
-            `${this.buildRequestBaseUrl(projectId)}/${id}/communications?${QueryUtil.buildQueryParams(
+            `${this.buildRequestBaseUrl(projectId)}/${id}/communications?${QueryHelper.buildQueryParams(
                 pageNumber,
                 pageSize,
                 params,
@@ -101,7 +101,7 @@ export class MovementApi extends GenericProjectApi {
             .set('typeSearched', typeSearched)
             .set('contentTypeSearched', contentTypeSearched.toString())
 
-        if (StringUtil.isNotNullNorBlank(textSearched)) params = params.set(
+        if (StringHelper.isNotNullNorBlank(textSearched)) params = params.set(
             'textSearched',
             textSearched!,
         )
@@ -118,7 +118,7 @@ export class MovementApi extends GenericProjectApi {
     ): Observable<MovementParticipantsAndGroupsModel> {
         let params: HttpParams = new HttpParams().set('contentTypeSearched', typeSearched.toString())
 
-        if (GenericUtil.nonNull(textSearched)) params = params.set('textSearched', textSearched!)
+        if (GenericHelper.nonNull(textSearched)) params = params.set('textSearched', textSearched!)
 
         return this.http.get<MovementParticipantsAndGroupsModel>(
             `${this.buildRequestBaseUrl(projectId)}/search/participants-and-groups?${params.toString()}`,

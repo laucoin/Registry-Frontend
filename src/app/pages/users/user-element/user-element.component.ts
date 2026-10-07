@@ -7,7 +7,7 @@ import {TranslatePipe} from '@ngx-translate/core'
 import {TagModule} from 'primeng/tag'
 import {ClipboardModule} from '@angular/cdk/clipboard'
 import {ToastModule} from 'primeng/toast'
-import {StateUtil} from '@shared/helpers/state/state.util'
+import {StateHelper} from '@shared/helpers/state/state.helper'
 import {UserFacade} from '@pages/users/data/state/user.facade'
 import {IconFieldModule} from 'primeng/iconfield'
 import {InputIconModule} from 'primeng/inputicon'
@@ -139,7 +139,7 @@ export class UserElementComponent extends GenericElementComponent {
     })
 
     protected copied(): void {
-        this.registryFacade.notify(StateUtil.buildNotificationMessage(
+        this.registryFacade.notify(StateHelper.buildNotificationMessage(
             SeverityEnum.INFO,
             undefined,
             'users.notifications.email-copied',

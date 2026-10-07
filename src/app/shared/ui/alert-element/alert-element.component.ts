@@ -25,9 +25,9 @@ import { Popover } from 'primeng/popover'
 import { Ripple } from 'primeng/ripple'
 import { ProjectOptionIconPipe } from '@shared/helpers/pipe/project-option-icon.pipe'
 import { MenuItem } from 'primeng/api'
-import { AlertUtil } from '@shared/helpers/util/alert.util'
+import { AlertHelper } from '@shared/helpers/alert.helper'
 import { IntervalModel } from '@shared/models/model/interval.model'
-import { DateUtil } from '@shared/helpers/util/date.util'
+import { DateHelper } from '@shared/helpers/date.helper'
 import { IntervalPipe } from '@shared/helpers/pipe/interval.pipe'
 
 @Component( {
@@ -171,8 +171,8 @@ export class AlertElementComponent extends GenericElementComponent {
 
     protected readonly isInProgress: Signal<boolean> = computed( (): boolean => this.alert().status.value === AlertStatusEnum.IN_PROGRESS )
 
-    protected readonly statusIcon: Signal<string> = computed( (): string => AlertUtil.getIconFromStatus( this.alert().status.value ) )
-    protected readonly statusSeverity: Signal<SeverityEnum> = computed( (): SeverityEnum => AlertUtil.getSeverityFromStatus(
+    protected readonly statusIcon: Signal<string> = computed( (): string => AlertHelper.getIconFromStatus( this.alert().status.value ) )
+    protected readonly statusSeverity: Signal<SeverityEnum> = computed( (): SeverityEnum => AlertHelper.getSeverityFromStatus(
         this.alert().status.value ) )
 
     protected readonly statusLabel: Signal<string> = computed( (): string =>
@@ -187,6 +187,6 @@ export class AlertElementComponent extends GenericElementComponent {
 
     private getInProgressSince (): IntervalModel | undefined {
         if (this.alert().status.value !== AlertStatusEnum.IN_PROGRESS) return undefined
-        return DateUtil.buildDateInterval( this.alert().dateTime, new Date() )
+        return DateHelper.buildDateInterval( this.alert().dateTime, new Date() )
     }
 }

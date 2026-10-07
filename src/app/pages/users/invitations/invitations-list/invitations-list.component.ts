@@ -12,8 +12,8 @@ import {
     ProjectProfileElementComponent,
 } from '@shared/ui/project-profile-element/project-profile-element.component'
 import {RegistryTemplateDirective} from '@shared/directives/registry-template.directive'
-import {StringUtil} from '@shared/helpers/util/string.util'
-import {GenericUtil} from '@shared/helpers/util/generic.util'
+import {StringHelper} from '@shared/helpers/string.helper'
+import {GenericHelper} from '@shared/helpers/generic.helper'
 import {RouterLink} from '@angular/router'
 
 @Component({
@@ -35,8 +35,8 @@ import {RouterLink} from '@angular/router'
 })
 export class InvitationsListComponent extends GenericListComponent {
     protected readonly hasFilters: Signal<boolean> = computed((): boolean =>
-        StringUtil.isNotNullNorBlank(this.registryFacade.userProjectProfileInvitationsPageTextSearchParam())
-        || GenericUtil.nonNull(this.registryFacade.userProjectProfileInvitationsPageDateTimeSearchParam()),
+        StringHelper.isNotNullNorBlank(this.registryFacade.userProjectProfileInvitationsPageTextSearchParam())
+        || GenericHelper.nonNull(this.registryFacade.userProjectProfileInvitationsPageDateTimeSearchParam()),
     )
 
     public constructor() {

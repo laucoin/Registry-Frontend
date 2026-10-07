@@ -5,7 +5,7 @@ import { catchError, finalize, map, Observable, of } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
 import { UserModel } from '@shared/models/model/user.model'
 import { GenericElementStore } from '@shared/helpers/state/generic-element.store'
-import { initialize } from '@shared/helpers/util/rx.util'
+import { initialize } from '@shared/helpers/rx.helper'
 import { UserStoreModel } from '@pages/users/data/model/user-store.model'
 import {
     BlockUser,
@@ -27,7 +27,7 @@ import { UserApi } from '@pages/users/data/state/user.api'
 import { UserFacade } from '@pages/users/data/state/user.facade'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { ElementRequestInformationModel } from '@shared/models/model/element-request-information.model'
-import { StateUtil } from '@shared/helpers/state/state.util'
+import { StateHelper } from '@shared/helpers/state/state.helper'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 
 const defaultUser: ElementRequestInformationModel<UserModel> = {
@@ -136,14 +136,14 @@ export class UserStore extends GenericElementStore<UserStoreModel> {
     @Action( StartUsersPageLoader )
     public startUsersPageLoader (ctx: StateContext<UserStoreModel>): void {
         ctx.patchState( {
-            users: StateUtil.updatePageLoader( ctx.getState().users, true ),
+            users: StateHelper.updatePageLoader( ctx.getState().users, true ),
         } )
     }
 
     @Action( StopUsersPageLoader )
     public stopUsersPageLoader (ctx: StateContext<UserStoreModel>): void {
         ctx.patchState( {
-            users: StateUtil.updatePageLoader( ctx.getState().users, false ),
+            users: StateHelper.updatePageLoader( ctx.getState().users, false ),
         } )
     }
 
@@ -186,14 +186,14 @@ export class UserStore extends GenericElementStore<UserStoreModel> {
     @Action( StartUserLoader )
     public startUserLoader (ctx: StateContext<UserStoreModel>): void {
         ctx.patchState( {
-            user: StateUtil.updateElementLoader( ctx.getState().user, true ),
+            user: StateHelper.updateElementLoader( ctx.getState().user, true ),
         } )
     }
 
     @Action( StopUserLoader )
     public stopUserLoader (ctx: StateContext<UserStoreModel>): void {
         ctx.patchState( {
-            user: StateUtil.updateElementLoader( ctx.getState().user, false ),
+            user: StateHelper.updateElementLoader( ctx.getState().user, false ),
         } )
     }
 

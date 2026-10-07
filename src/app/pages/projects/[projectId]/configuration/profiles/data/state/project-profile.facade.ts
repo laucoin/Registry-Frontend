@@ -17,10 +17,10 @@ import {
 import { ProjectProfileDto } from '@pages/projects/[projectId]/configuration/profiles/data/dto/project-profile.dto'
 import { ProjectProfilesDto } from '@pages/projects/[projectId]/configuration/profiles/data/dto/project-profiles.dto'
 import { UserModel } from '@shared/models/model/user.model'
-import { DateUtil } from '@shared/helpers/util/date.util'
+import { DateHelper } from '@shared/helpers/date.helper'
 import { ProfileStatusEnum } from '@shared/models/enumeration/profile-status.enum'
 import { ProjectProfileApi } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.api'
-import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/util/rx.util'
+import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/rx.helper'
 import { CommandEvent } from '@shared/helpers/facade/command-event.service'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { CreatedProjectProfiles } from '@pages/projects/[projectId]/configuration/profiles/data/dto/created-project-profiles.dto'
@@ -57,7 +57,7 @@ export class ProjectProfileFacade extends GenericProjectElementFacade {
 
     public get projectProfilesPageDateTimeSearchedParam (): Signal<Date | undefined> {
         return computed( (): Date | undefined =>
-            DateUtil.buildDate( this.ngStore.selectSignal( ProjectProfileStore.projectProfilesPageDateTimeSearchedParam )() ),
+            DateHelper.buildDate( this.ngStore.selectSignal( ProjectProfileStore.projectProfilesPageDateTimeSearchedParam )() ),
         )
     }
 

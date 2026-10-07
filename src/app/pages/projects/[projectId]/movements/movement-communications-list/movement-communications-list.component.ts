@@ -9,7 +9,7 @@ import { CommunicationFormComponent } from '@shared/ui/communication-form/commun
 import { GenericComponent } from '@shared/ui/base/generic.component'
 import { DialogElementComponent } from '@shared/ui/dialog-element/dialog-element.component'
 import { CommunicationModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
-import { CommunicationUtil } from '@shared/helpers/util/communication.util'
+import { CommunicationHelper } from '@shared/helpers/communication.helper'
 import { AlertFacade } from '@pages/projects/[projectId]/alerts/data/state/alert.facade'
 
 @Component( {
@@ -84,13 +84,13 @@ export class MovementCommunicationsListComponent extends GenericComponent implem
     protected getPreviousAuthorId (index: number): string | undefined {
         if (index <= 0) return undefined
         const previousCommunication: CommunicationModel = this.facade.movementCommunicationsPage()!.content[index - 1]
-        return CommunicationUtil.getAuthorId( previousCommunication )
+        return CommunicationHelper.getAuthorId( previousCommunication )
     }
 
     protected getNextAuthorId (index: number, isLast: boolean): string | undefined {
         if (isLast) return undefined
         const nextCommunication: CommunicationModel = this.facade.movementCommunicationsPage()!.content[index + 1]
-        return CommunicationUtil.getAuthorId( nextCommunication )
+        return CommunicationHelper.getAuthorId( nextCommunication )
     }
 
     public ngOnDestroy (): void {

@@ -5,7 +5,7 @@ import {PageModel} from '@shared/models/model/page.model'
 import {GenericApi} from '@shared/helpers/api/generic.api'
 import {ProjectDto} from '@pages/projects/data/dto/project.dto'
 import {ProjectPageParamsModel} from '@pages/projects/data/model/project-page-params.model'
-import {QueryUtil} from '@shared/helpers/util/query.util'
+import {QueryHelper} from '@shared/helpers/query.helper'
 import {ProjectOptionModel} from '@pages/projects/data/model/project-option.model'
 
 @Injectable({
@@ -22,7 +22,7 @@ export class ProjectApi extends GenericApi {
         params: ProjectPageParamsModel,
     ): Observable<PageModel<ProjectModel>> {
         return this.http.get<PageModel<ProjectModel>>(
-            `${this.baseUrl}?${QueryUtil.buildQueryParams(pageNumber, pageSize, params).toString()}`,
+            `${this.baseUrl}?${QueryHelper.buildQueryParams(pageNumber, pageSize, params).toString()}`,
         )
     }
 

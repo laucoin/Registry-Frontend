@@ -38,18 +38,18 @@ import {
     UpdateUserProjectProfileInvitationsPageSearchParams,
     UpdateUserProjectProfilesPageSearchParams,
 } from '@core/registry/state/registry.action'
-import {StateUtil} from '@shared/helpers/state/state.util'
+import {StateHelper} from '@shared/helpers/state/state.helper'
 import {ProjectModel} from '@shared/models/model/project.model'
 import {RegistryConfig} from '@core/config/registry.config'
 import {ErrorModel} from '@shared/models/model/error.model'
-import {SessionStorageUtils} from '@shared/helpers/util/session-storage.util'
-import {REDIRECT_URI} from '@shared/helpers/util/request.util'
+import {SessionStorageUtils} from '@shared/helpers/session-storage.helper'
+import {REDIRECT_URI} from '@shared/helpers/request.helper'
 import {GenericFacade} from '@shared/helpers/facade/generic.facade'
 import {RegistryStore} from '@core/registry/state/registry.store'
-import {DateUtil} from '@shared/helpers/util/date.util'
-import {StringUtil} from '@shared/helpers/util/string.util'
+import {DateHelper} from '@shared/helpers/date.helper'
+import {StringHelper} from '@shared/helpers/string.helper'
 import {SeverityEnum} from '@shared/models/enumeration/severity.enum'
-import {GenericUtil} from '@shared/helpers/util/generic.util'
+import {GenericHelper} from '@shared/helpers/generic.helper'
 import {ThemeEnum} from '@shared/models/enumeration/theme.enum'
 import {ResetSelectedProjectState} from '@pages/projects/data/state/selected-project/selected-project.action'
 import {
@@ -77,14 +77,14 @@ import {PrimeNG} from 'primeng/config'
 export class RegistryFacade extends GenericFacade {
     private readonly primeConfig: PrimeNG = inject(PrimeNG)
 
-    private readonly onlineMessage: ToastMessageOptions = StateUtil.buildNotificationMessage(
+    private readonly onlineMessage: ToastMessageOptions = StateHelper.buildNotificationMessage(
         SeverityEnum.SUCCESS,
         'global.notifications.ONLINE.title',
         'global.notifications.ONLINE.message',
         'pi pi-sort-alt',
     )
 
-    private readonly offlineMessage: ToastMessageOptions = StateUtil.buildNotificationMessage(
+    private readonly offlineMessage: ToastMessageOptions = StateHelper.buildNotificationMessage(
         SeverityEnum.WARNING,
         'global.notifications.OFFLINE.title',
         'global.notifications.OFFLINE.message',
@@ -132,7 +132,7 @@ export class RegistryFacade extends GenericFacade {
 
     public get currentUser$(): Observable<CurrentUserModel> {
         return this.ngStore.select(RegistryStore.currentUser).pipe(
-            filter((user: CurrentUserModel | undefined): boolean => GenericUtil.nonNull(user)),
+            filter((user: CurrentUserModel | undefined): boolean => GenericHelper.nonNull(user)),
             map((user: CurrentUserModel | undefined): CurrentUserModel => user!),
         )
     }
@@ -179,7 +179,7 @@ export class RegistryFacade extends GenericFacade {
 
     public get userProjectProfilesPageDateTimeSearchParam(): Signal<Date | undefined> {
         return computed((): Date | undefined =>
-            DateUtil.buildDate(this.ngStore.selectSignal(RegistryStore.userProjectProfilesPageDateTimeSearchParam)()),
+            DateHelper.buildDate(this.ngStore.selectSignal(RegistryStore.userProjectProfilesPageDateTimeSearchParam)()),
         )
     }
 
@@ -213,7 +213,7 @@ export class RegistryFacade extends GenericFacade {
 
     public get userProjectProfileInvitationsPageDateTimeSearchParam(): Signal<Date | undefined> {
         return computed((): Date | undefined =>
-            DateUtil.buildDate(this.ngStore.selectSignal(RegistryStore.userProjectProfileInvitationsPageDateTimeParam)()),
+            DateHelper.buildDate(this.ngStore.selectSignal(RegistryStore.userProjectProfileInvitationsPageDateTimeParam)()),
         )
     }
 
@@ -260,7 +260,7 @@ export class RegistryFacade extends GenericFacade {
         }
 
         let formattedMessage: ToastMessageOptions = message
-        if (StringUtil.isNullOrBlank(message.detail) && StringUtil.isNullOrBlank(message.summary)) {
+        if (StringHelper.isNullOrBlank(message.detail) && StringHelper.isNullOrBlank(message.summary)) {
             formattedMessage = {
                 ...message,
                 detail: this.translateService.instant('global.notifications.UNKNOWN_ERROR'),
@@ -376,13 +376,13 @@ export class RegistryFacade extends GenericFacade {
     }
 
     public updateTheme(theme: ThemeEnum | undefined): void {
-        if (GenericUtil.nonNull(theme)) {
+        if (GenericHelper.nonNull(theme)) {
             this.ngStore.dispatch(new UpdateTheme(theme!))
         }
     }
 
     public updateCurrentUserTheme(theme: ThemeEnum | undefined): void {
-        if (GenericUtil.isNull(theme)) return
+        if (GenericHelper.isNull(theme)) return
         this.ngStore.dispatch([new UpdateCurrentUserTheme(theme!), new UpdateTheme(theme!)])
     }
 

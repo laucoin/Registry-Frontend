@@ -19,14 +19,14 @@
                         optionLabel='label'
                         optionValue='value' />
                 <app-form-field-error [errors]='role.errors'
-                                      [invalid]='FormUtil.invalid(role)'
+                                      [invalid]='FormHelper.invalid(role)'
                                       translationPrefix='project-profiles.form.error.role' />
             </div>
             <div class='d-flex flex-wrap'>
                 <div class='left-field field'>
                     <label for='begin-date-time'>{{ 'project-profiles.form.begin-datetime' | translate }}</label>
                     <app-date-time-field [formControl]='beginDateTime'
-                                         [invalid]='FormUtil.invalid(beginDateTime)'
+                                         [invalid]='FormHelper.invalid(beginDateTime)'
                                          inputId='begin-date-time'
                                          [datePlaceholder]='"project-profiles.form.placeholder.date" | translate: {
                                                             date: startDateExample | dateFormat: "date"
@@ -36,13 +36,13 @@
                                                          }' />
                     <small class='secondary-color'>{{ 'project-profiles.form.hint.begin-date-time' | translate }}</small>
                     <app-form-field-error [errors]='beginDateTime.errors'
-                                          [invalid]='FormUtil.invalid(beginDateTime)'
+                                          [invalid]='FormHelper.invalid(beginDateTime)'
                                           translationPrefix='project-profiles.form.error.begin-datetime' />
                 </div>
                 <div class='right-field field'>
                     <label for='end-date-time'>{{ 'project-profiles.form.end-datetime' | translate }}</label>
                     <app-date-time-field [formControl]='endDateTime'
-                                         [invalid]='FormUtil.invalid(endDateTime)'
+                                         [invalid]='FormHelper.invalid(endDateTime)'
                                          inputId='end-date-time'
                                          [datePlaceholder]='"project-profiles.form.placeholder.date" | translate: {
                                                             date: startDateExample | dateFormat: "date"
@@ -52,12 +52,12 @@
                                                          }' />
                     <small class='secondary-color'>{{ 'project-profiles.form.hint.end-date-time' | translate }}</small>
                     <app-form-field-error [errors]='endDateTime.errors'
-                                          [invalid]='FormUtil.invalid(endDateTime)'
+                                          [invalid]='FormHelper.invalid(endDateTime)'
                                           translationPrefix='project-profiles.form.error.end-datetime' />
                 </div>
             </div>
             <app-form-field-error [errors]='form.errors'
-                                  [invalid]='FormUtil.invalid(form) && beginDateTime.valid && endDateTime.valid'
+                                  [invalid]='FormHelper.invalid(form) && beginDateTime.valid && endDateTime.valid'
                                   translationPrefix='project-profiles.form.error.date-range' />
             <p-divider />
             <div class='field'>
@@ -67,17 +67,17 @@
                 <app-select-elements-field [formControl]='users'
                                            [fluid]='true'
                                            [multiple]='true'
-                                           [invalid]='FormUtil.invalid(users)'
+                                           [invalid]='FormHelper.invalid(users)'
                                            [selectionLabel]='"project-profiles.form.users.selected" | pluralTranslation:
                                            (users.value?.length ?? 0) | translate'
                                            [emptyMessage]='"project-profiles.form.users.empty" | translate'
                                            [emptySelectionMessage]='"project-profiles.form.users.empty-search" | translate'
                                            [suggestions]='facade.searchedUsersMetadata()'
-                                           [selectItemBuilder]='UserUtil.toSelectItem'
+                                           [selectItemBuilder]='UserHelper.toSelectItem'
                                            inputId='users'
                                            (handleSearch)='handleSearch($event.query)' />
                 <app-form-field-error [errors]='users.errors'
-                                      [invalid]='FormUtil.invalid(users)'
+                                      [invalid]='FormHelper.invalid(users)'
                                       translationPrefix='project-profiles.form.error.users' />
             </div>
         </form>

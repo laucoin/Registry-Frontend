@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, OnDestroy, signal, WritableSignal } from '@angular/core'
 import {VehicleFacade} from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.facade'
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms'
-import {RegistryValidators} from '@shared/helpers/util/registry.validator'
+import {RegistryValidators} from '@shared/helpers/registry.validator'
 import {VehicleDto} from '@pages/projects/[projectId]/configuration/vehicles/data/dto/vehicle.dto'
 import {Button} from 'primeng/button'
 import {CardModule} from 'primeng/card'
@@ -10,17 +10,17 @@ import {FormComponent} from '@shared/ui/form/form.component'
 import {FormFieldErrorComponent} from '@shared/ui/form-field-error/form-field-error.component'
 import {InputTextModule} from 'primeng/inputtext'
 import {TranslatePipe} from '@ngx-translate/core'
-import {FormUtil} from '@shared/helpers/util/form.util'
+import {FormHelper} from '@shared/helpers/form.helper'
 import {VehicleModel} from '@shared/models/model/vehicle.model'
 import {RegistryRequiredDirective} from '@shared/directives/registry-required.directive'
 import {ProjectModel} from '@shared/models/model/project.model'
 import {InputMask} from 'primeng/inputmask'
 import {DateFormatPipe} from '@shared/helpers/pipe/date-format.pipe'
 import {GenericFormComponent} from '@shared/ui/base/generic-form.component'
-import {withLoading} from '@shared/helpers/util/rx.util'
+import {withLoading} from '@shared/helpers/rx.helper'
 import {FormTitlePipe} from '@shared/helpers/pipe/form-title.pipe'
 import {FormButtonPipe} from '@shared/helpers/pipe/form-button.pipe'
-import {GenericUtil} from '@shared/helpers/util/generic.util'
+import {GenericHelper} from '@shared/helpers/generic.helper'
 import {DateTimeFieldComponent} from '@shared/ui/date-time-field/date-time-field.component'
 import {FormIconPipe} from '@shared/helpers/pipe/form-icon.pipe'
 
@@ -64,7 +64,7 @@ export class VehicleFormComponent extends GenericFormComponent<VehicleModel, Veh
     }
 
     protected override loadData(): void {
-        if (GenericUtil.nonNull(this.idParam)) {
+        if (GenericHelper.nonNull(this.idParam)) {
             this.subscriptions.add(
                 this.facade.fetchVehicle(this.idParam!).pipe(
                     withLoading(this.loading),
@@ -98,7 +98,7 @@ export class VehicleFormComponent extends GenericFormComponent<VehicleModel, Veh
     }
 
     protected handleLoadedElement(): void {
-        if (!GenericUtil.nonNull(this.idParam)) {
+        if (!GenericHelper.nonNull(this.idParam)) {
             this.applyVehicle(undefined)
         }
     }
@@ -123,10 +123,10 @@ export class VehicleFormComponent extends GenericFormComponent<VehicleModel, Veh
     protected submit(): void {
         if (this.saving() || this.loading()) return
 
-        const editing: boolean = GenericUtil.nonNull(this.idParam)
+        const editing: boolean = GenericHelper.nonNull(this.idParam)
         if (editing && !this.vehicle()) return
 
-        if (!FormUtil.isFormValid(this.form)) {
+        if (!FormHelper.isFormValid(this.form)) {
             this.logInvalidForm(this.form.value)
             return
         }

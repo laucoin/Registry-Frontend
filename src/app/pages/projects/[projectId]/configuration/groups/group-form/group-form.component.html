@@ -12,14 +12,14 @@
                    pInputText
                    type='text' />
             <app-form-field-error [errors]='name.errors'
-                                  [invalid]='FormUtil.invalid(name)'
+                                  [invalid]='FormHelper.invalid(name)'
                                   translationPrefix='groups.form.error.name' />
         </div>
         <div class='d-flex flex-wrap'>
             <div class='left-field field'>
                 <label for='begin-date-time'>{{ 'groups.form.begin-datetime' | translate }}</label>
                 <app-date-time-field [formControl]='beginDateTime'
-                                     [invalid]='FormUtil.invalid(beginDateTime)'
+                                     [invalid]='FormHelper.invalid(beginDateTime)'
                                      inputId='begin-date-time'
                                      [datePlaceholder]='"groups.form.placeholder.date" | translate: {
                                                             date: startDateExample | dateFormat: "date"
@@ -29,13 +29,13 @@
                                                          }' />
                 <small class='secondary-color'>{{ 'groups.form.hint.begin-date-time' | translate }}</small>
                 <app-form-field-error [errors]='beginDateTime.errors'
-                                      [invalid]='FormUtil.invalid(beginDateTime)'
+                                      [invalid]='FormHelper.invalid(beginDateTime)'
                                       translationPrefix='groups.form.error.begin-datetime' />
             </div>
             <div class='right-field field'>
                 <label for='end-date-time'>{{ 'groups.form.end-datetime' | translate }}</label>
                 <app-date-time-field [formControl]='endDateTime'
-                                     [invalid]='FormUtil.invalid(endDateTime)'
+                                     [invalid]='FormHelper.invalid(endDateTime)'
                                      inputId='end-date-time'
                                      [datePlaceholder]='"groups.form.placeholder.date" | translate: {
                                                             date: endDateExample | dateFormat: "date"
@@ -45,12 +45,12 @@
                                                          }' />
                 <small class='secondary-color'>{{ 'groups.form.hint.end-date-time' | translate }}</small>
                 <app-form-field-error [errors]='endDateTime.errors'
-                                      [invalid]='FormUtil.invalid(endDateTime)'
+                                      [invalid]='FormHelper.invalid(endDateTime)'
                                       translationPrefix='groups.form.error.end-datetime' />
             </div>
         </div>
         <app-form-field-error [errors]='form.errors'
-                              [invalid]='FormUtil.invalid(form) && beginDateTime.valid && endDateTime.valid'
+                              [invalid]='FormHelper.invalid(form) && beginDateTime.valid && endDateTime.valid'
                               translationPrefix='groups.form.error.date-range' />
         <p-divider />
         <div class='field'>
@@ -60,7 +60,7 @@
                                        [suggestions]='facade.searchedParticipantsMetadata()'
                                        [fluid]='true'
                                        [multiple]='true'
-                                       [selectItemBuilder]='ParticipantUtil.toSelectItem'
+                                       [selectItemBuilder]='ParticipantHelper.toSelectItem'
                                        [selectionLabel]='"groups.form.members.selected" | pluralTranslation: participants.value |
                                        translate'
                                        [emptyMessage]='"groups.form.members.empty" | translate'
@@ -68,7 +68,7 @@
                                        inputId='members'
                                        (handleSearch)='handleSearch($event.query)' />
             <app-form-field-error [errors]='participants.errors'
-                                  [invalid]='FormUtil.invalid(participants)'
+                                  [invalid]='FormHelper.invalid(participants)'
                                   translationPrefix='groups.form.error.members' />
         </div>
     </p-card>

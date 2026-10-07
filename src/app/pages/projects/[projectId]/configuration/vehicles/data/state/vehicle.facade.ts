@@ -19,10 +19,10 @@ import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { VehicleStore } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.store'
 import { GenericProjectElementFacade } from '@shared/helpers/facade/generic-project-element.facade'
 import { MovementModel } from '@shared/models/model/movement.model'
-import { DateUtil } from '@shared/helpers/util/date.util'
+import { DateHelper } from '@shared/helpers/date.helper'
 import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum'
 import { VehicleApi } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.api'
-import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/util/rx.util'
+import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/rx.helper'
 
 @Injectable()
 export class VehicleFacade extends GenericProjectElementFacade {
@@ -54,7 +54,7 @@ export class VehicleFacade extends GenericProjectElementFacade {
 
     public get vehiclesPageDateTimeSearchedParam (): Signal<Date | undefined> {
         return computed( (): Date | undefined =>
-            DateUtil.buildDate( this.ngStore.selectSignal( VehicleStore.vehiclesPageDateTimeSearchedParam )() ),
+            DateHelper.buildDate( this.ngStore.selectSignal( VehicleStore.vehiclesPageDateTimeSearchedParam )() ),
         )
     }
 
@@ -92,13 +92,13 @@ export class VehicleFacade extends GenericProjectElementFacade {
 
     public get vehicleMovementsPageStartDateTimeSearchedParam (): Signal<Date | undefined> {
         return computed( (): Date | undefined =>
-            DateUtil.buildDate( this.ngStore.selectSignal( VehicleStore.vehicleMovementsPageStartDateTimeSearchedParam )() ),
+            DateHelper.buildDate( this.ngStore.selectSignal( VehicleStore.vehicleMovementsPageStartDateTimeSearchedParam )() ),
         )
     }
 
     public get vehicleMovementsPageEndDateTimeSearchedParam (): Signal<Date | undefined> {
         return computed( (): Date | undefined =>
-            DateUtil.buildDate( this.ngStore.selectSignal( VehicleStore.vehicleMovementsPageEndDateTimeSearchedParam )() ),
+            DateHelper.buildDate( this.ngStore.selectSignal( VehicleStore.vehicleMovementsPageEndDateTimeSearchedParam )() ),
         )
     }
 

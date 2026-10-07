@@ -3,7 +3,7 @@ import { AlertModel } from '@shared/models/model/alert.model'
 import { AlertFacade } from '@pages/projects/[projectId]/alerts/data/state/alert.facade'
 import { ReactiveFormsModule } from '@angular/forms'
 import { DialogElementComponent } from '@shared/ui/dialog-element/dialog-element.component'
-import { CommunicationUtil } from '@shared/helpers/util/communication.util'
+import { CommunicationHelper } from '@shared/helpers/communication.helper'
 import { CommunicationModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
 import { CommunicationFormComponent } from '@shared/ui/communication-form/communication-form.component'
 import { Subscription, tap } from 'rxjs'
@@ -41,13 +41,13 @@ export class AlertCommunicationsListComponent implements OnInit, OnDestroy {
     protected getPreviousAuthorId (index: number): string | undefined {
         if (index <= 0) return undefined
         const previousCommunication: CommunicationModel = this.facade.alertCommunicationsPage()!.content[index - 1]
-        return CommunicationUtil.getAuthorId( previousCommunication )
+        return CommunicationHelper.getAuthorId( previousCommunication )
     }
 
     protected getNextAuthorId (index: number, isLast: boolean): string | undefined {
         if (isLast) return undefined
         const nextCommunication: CommunicationModel = this.facade.alertCommunicationsPage()!.content[index + 1]
-        return CommunicationUtil.getAuthorId( nextCommunication )
+        return CommunicationHelper.getAuthorId( nextCommunication )
     }
 
     private handleCommunicationActions (): void {

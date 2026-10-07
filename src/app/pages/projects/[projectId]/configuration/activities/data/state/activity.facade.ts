@@ -18,9 +18,9 @@ import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { ActivityStore } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.store'
 import { GenericProjectElementFacade } from '@shared/helpers/facade/generic-project-element.facade'
 import { MovementModel } from '@shared/models/model/movement.model'
-import { DateUtil } from '@shared/helpers/util/date.util'
+import { DateHelper } from '@shared/helpers/date.helper'
 import { ActivityApi } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.api'
-import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/util/rx.util'
+import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/rx.helper'
 
 @Injectable()
 export class ActivityFacade extends GenericProjectElementFacade {
@@ -52,7 +52,7 @@ export class ActivityFacade extends GenericProjectElementFacade {
 
     public get activitiesPageDateTimeSearchedParam (): Signal<Date | undefined> {
         return computed( (): Date | undefined =>
-            DateUtil.buildDate( this.ngStore.selectSignal( ActivityStore.activitiesPageDateTimeSearchedParam )() ),
+            DateHelper.buildDate( this.ngStore.selectSignal( ActivityStore.activitiesPageDateTimeSearchedParam )() ),
         )
     }
 
@@ -90,13 +90,13 @@ export class ActivityFacade extends GenericProjectElementFacade {
 
     public get activityMovementsPageStartDateTimeSearchedParam (): Signal<Date | undefined> {
         return computed( (): Date | undefined =>
-            DateUtil.buildDate( this.ngStore.selectSignal( ActivityStore.activityMovementsPageStartDateTimeSearchedParam )() ),
+            DateHelper.buildDate( this.ngStore.selectSignal( ActivityStore.activityMovementsPageStartDateTimeSearchedParam )() ),
         )
     }
 
     public get activityMovementsPageEndDateTimeSearchedParam (): Signal<Date | undefined> {
         return computed( (): Date | undefined =>
-            DateUtil.buildDate( this.ngStore.selectSignal( ActivityStore.activityMovementsPageEndDateTimeSearchedParam )() ),
+            DateHelper.buildDate( this.ngStore.selectSignal( ActivityStore.activityMovementsPageEndDateTimeSearchedParam )() ),
         )
     }
 

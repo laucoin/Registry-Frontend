@@ -14,8 +14,8 @@ import { RegistryConfig } from '@core/config/registry.config'
 import { RegistryFacade } from '@core/registry/state/registry.facade'
 import { CurrentUserModel } from '@shared/models/model/current-user.model'
 import { ErrorModel } from '@shared/models/model/error.model'
-import { GenericUtil } from '@shared/helpers/util/generic.util'
-import { CURRENT_USER_ID, SELECT_PROFILE_PROJECT_ID } from '@shared/helpers/util/request.util'
+import { GenericHelper } from '@shared/helpers/generic.helper'
+import { CURRENT_USER_ID, SELECT_PROFILE_PROJECT_ID } from '@shared/helpers/request.helper'
 import { SecurityApi } from '@core/authentication/service/security.api'
 
 const CSRF_TOKEN_HEADER: string = 'X-XSRF-TOKEN'
@@ -112,7 +112,7 @@ function formatUrlIfNeeded(registryFacade: RegistryFacade, currentUser: CurrentU
 
 	if (formattedUrl.includes(CURRENT_USER_ID)) {
 		const userId: string | undefined = currentUser?.id
-		if (GenericUtil.isNull(userId)) {
+		if (GenericHelper.isNull(userId)) {
 			throw {
 				title: 'global.notifications.NO_USER_ID.title',
 				message: 'global.notifications.NO_USER_ID.message',
@@ -124,7 +124,7 @@ function formatUrlIfNeeded(registryFacade: RegistryFacade, currentUser: CurrentU
 
 	if (formattedUrl.includes(SELECT_PROFILE_PROJECT_ID)) {
 		const selectedProjectId: string | undefined = registryFacade.currentProjectId()
-		if (GenericUtil.isNull(selectedProjectId)) {
+		if (GenericHelper.isNull(selectedProjectId)) {
 			throw {
 				title: 'global.notifications.NO_SELECTED_PROJECT.title',
 				message: 'global.notifications.NO_SELECTED_PROJECT.message',

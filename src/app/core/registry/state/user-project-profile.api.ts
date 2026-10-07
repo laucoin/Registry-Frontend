@@ -6,7 +6,7 @@ import {
 import {ProjectProfileModel} from '@shared/models/model/project-profile.model'
 import {PageModel} from '@shared/models/model/page.model'
 import {GenericApi} from '@shared/helpers/api/generic.api'
-import {QueryUtil} from '@shared/helpers/util/query.util'
+import {QueryHelper} from '@shared/helpers/query.helper'
 
 @Injectable({
     providedIn: 'root',
@@ -22,7 +22,7 @@ export class UserProjectProfileApi extends GenericApi {
         params: ProjectProfilePageParamsModel,
     ): Observable<PageModel<ProjectProfileModel>> {
         return this.http.get<PageModel<ProjectProfileModel>>(
-            `${this.baseUrl}?${QueryUtil.buildQueryParams(pageNumber, pageSize, params).toString()}`,
+            `${this.baseUrl}?${QueryHelper.buildQueryParams(pageNumber, pageSize, params).toString()}`,
         )
     }
 

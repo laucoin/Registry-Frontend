@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy,Component, inject, input, InputSignal, OnDestroy, signal, WritableSignal} from '@angular/core'
 import {ParticipantFacade} from '@pages/projects/[projectId]/configuration/participants/data/state/participant.facade'
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms'
-import {RegistryValidators} from '@shared/helpers/util/registry.validator'
+import {RegistryValidators} from '@shared/helpers/registry.validator'
 import {ParticipantDto} from '@pages/projects/[projectId]/configuration/participants/data/dto/participant.dto'
 import {Button} from 'primeng/button'
 import {CardModule} from 'primeng/card'
@@ -10,25 +10,25 @@ import {FormComponent} from '@shared/ui/form/form.component'
 import {FormFieldErrorComponent} from '@shared/ui/form-field-error/form-field-error.component'
 import {InputTextModule} from 'primeng/inputtext'
 import {TranslatePipe} from '@ngx-translate/core'
-import {FormUtil} from '@shared/helpers/util/form.util'
+import {FormHelper} from '@shared/helpers/form.helper'
 import {ParticipantModel} from '@shared/models/model/participant.model'
 import {UserDto} from '@shared/models/dto/user.dto'
-import {DateUtil} from '@shared/helpers/util/date.util'
+import {DateHelper} from '@shared/helpers/date.helper'
 import {RegistryRequiredDirective} from '@shared/directives/registry-required.directive'
 import {DatePicker} from 'primeng/datepicker'
 import {AutoComplete, AutoCompleteCompleteEvent} from 'primeng/autocomplete'
 import {SelectItem} from 'primeng/api'
-import {UserUtil} from '@shared/helpers/util/user.util'
+import {UserHelper} from '@shared/helpers/user.helper'
 import {GroupModel} from '@shared/models/model/group.model'
 import {
     SelectElementsFieldComponent,
 } from '@shared/ui/select-elements-field/select-elements-field.component'
-import {GroupUtil} from '@shared/helpers/util/group.util'
+import {GroupHelper} from '@shared/helpers/group.helper'
 import {ProjectModel} from '@shared/models/model/project.model'
 import {DateFormatPipe} from '@shared/helpers/pipe/date-format.pipe'
 import {GenericFormComponent} from '@shared/ui/base/generic-form.component'
-import {withLoading} from '@shared/helpers/util/rx.util'
-import {GenericUtil} from '@shared/helpers/util/generic.util'
+import {withLoading} from '@shared/helpers/rx.helper'
+import {GenericHelper} from '@shared/helpers/generic.helper'
 import {FormTitlePipe} from '@shared/helpers/pipe/form-title.pipe'
 import {FormButtonPipe} from '@shared/helpers/pipe/form-button.pipe'
 import {DateTimeFieldComponent} from '@shared/ui/date-time-field/date-time-field.component'
@@ -65,7 +65,7 @@ import {FormIconPipe} from '@shared/helpers/pipe/form-icon.pipe'
 export class ParticipantFormComponent extends GenericFormComponent<ParticipantModel, ParticipantDto> implements OnDestroy {
     protected readonly facade: ParticipantFacade = inject(ParticipantFacade)
 
-    protected readonly GroupUtil: typeof GroupUtil = GroupUtil
+    protected readonly GroupHelper: typeof GroupHelper = GroupHelper
 
     protected readonly form: FormGroup
     protected readonly participant: WritableSignal<ParticipantModel | undefined> = signal(undefined)
@@ -89,7 +89,7 @@ export class ParticipantFormComponent extends GenericFormComponent<ParticipantMo
     }
 
     protected override loadData(): void {
-        if (GenericUtil.nonNull(this.idParam)) {
+        if (GenericHelper.nonNull(this.idParam)) {
             this.subscriptions.add(
                 this.facade.fetchParticipant(this.idParam!).pipe(
                     withLoading(this.loading),
@@ -115,7 +115,7 @@ export class ParticipantFormComponent extends GenericFormComponent<ParticipantMo
                 undefined,
                 [
                     Validators.required, RegistryValidators.maxDateTime(
-                    DateUtil.toCustomDateTime(new Date())!,
+                    DateHelper.toCustomDateTime(new Date())!,
                     undefined,
                 ),
                 ],
@@ -130,7 +130,7 @@ export class ParticipantFormComponent extends GenericFormComponent<ParticipantMo
     }
 
     protected handleLoadedElement(): void {
-        if (!GenericUtil.nonNull(this.idParam)) {
+        if (!GenericHelper.nonNull(this.idParam)) {
             this.applyParticipant(undefined)
         }
     }
@@ -149,7 +149,7 @@ export class ParticipantFormComponent extends GenericFormComponent<ParticipantMo
         this.lastName.patchValue(element?.lastName)
         this.birthday.patchValue(element?.birthday ? new Date(element?.birthday) : undefined)
         if (element?.user) {
-            const user: SelectItem<UserDto> = UserUtil.toSelectItem(element.user)
+            const user: SelectItem<UserDto> = UserHelper.toSelectItem(element.user)
             this.user.patchValue(user)
             this.handleUserSelection(user)
         }
@@ -161,10 +161,10 @@ export class ParticipantFormComponent extends GenericFormComponent<ParticipantMo
     protected submit(): void {
         if (this.saving() || this.loading()) return
 
-        const editing: boolean = GenericUtil.nonNull(this.idParam)
+        const editing: boolean = GenericHelper.nonNull(this.idParam)
         if (editing && !this.participant()) return
 
-        if (!FormUtil.isFormValid(this.form)) {
+        if (!FormHelper.isFormValid(this.form)) {
             this.logInvalidForm(this.form.value)
             return
         }
@@ -181,7 +181,7 @@ export class ParticipantFormComponent extends GenericFormComponent<ParticipantMo
         return {
             firstName: this.firstName.value,
             lastName: this.lastName.value,
-            birthday: DateUtil.getDate(this.birthday.value),
+            birthday: DateHelper.getDate(this.birthday.value),
             userId: this.selectedUser()?.value.id,
             groupIds: groupIds,
             startAvailability: this.beginDateTime.value,
@@ -201,7 +201,7 @@ export class ParticipantFormComponent extends GenericFormComponent<ParticipantMo
         this.selectedUser.set(selectedUser)
 
         const user: UserDto | undefined = this.selectedUser()?.value
-        if (GenericUtil.nonNull(user)) {
+        if (GenericHelper.nonNull(user)) {
             if (user!.firstName) {
                 this.previousFirstName.set(this.firstName.value)
                 this.firstName.patchValue(user!.firstName)

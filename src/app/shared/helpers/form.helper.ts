@@ -1,8 +1,8 @@
 import { AbstractControl, FormArray, FormControl, FormGroup } from '@angular/forms'
 
-export class FormUtil {
+export class FormHelper {
     public static isFormValid (form: FormGroup): boolean {
-        FormUtil.markAllControlsAsDirty( form )
+        FormHelper.markAllControlsAsDirty( form )
         return !form.invalid
     }
 
@@ -17,7 +17,7 @@ export class FormUtil {
                 control.markAsDirty( { onlySelf: true } )
                 control.controls.forEach( (subControl: AbstractControl): void => {
                     if (subControl instanceof FormGroup) {
-                        FormUtil.markAllControlsAsDirty( subControl )
+                        FormHelper.markAllControlsAsDirty( subControl )
                     } else {
                         subControl.markAsDirty( { onlySelf: true } )
                         subControl.updateValueAndValidity()

@@ -1,12 +1,12 @@
 import { CommunicationModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
-import { StringUtil } from '@shared/helpers/util/string.util'
+import { StringHelper } from '@shared/helpers/string.helper'
 
-export class CommunicationUtil {
+export class CommunicationHelper {
     public static getAuthorId (communication: CommunicationModel): string | undefined {
         switch (true) {
-            case StringUtil.isNotNullNorBlank( communication.movement?.reason?.label ):
+            case StringHelper.isNotNullNorBlank( communication.movement?.reason?.label ):
                 return communication.movement!.id
-            case StringUtil.isNotNullNorBlank( communication.lastEdition?.user?.firstName ):
+            case StringHelper.isNotNullNorBlank( communication.lastEdition?.user?.firstName ):
                 return communication.lastEdition!.user!.id
             default:
                 return undefined

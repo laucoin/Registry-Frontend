@@ -3,13 +3,13 @@ import { CanActivateFn } from '@angular/router'
 import { RegistryFacade } from '@core/registry/state/registry.facade'
 import { SelectItem } from 'primeng/api'
 import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
-import { GenericUtil } from '@shared/helpers/util/generic.util'
+import { GenericHelper } from '@shared/helpers/generic.helper'
 import { map, Observable } from 'rxjs'
 
 export const activityOptionGuard: CanActivateFn = (): Promise<boolean> | Observable<boolean> | boolean => {
     const registryFacade: RegistryFacade = inject( RegistryFacade )
 
-    if (GenericUtil.isNull( registryFacade.currentUser() )) {
+    if (GenericHelper.isNull( registryFacade.currentUser() )) {
         return registryFacade.currentUser$.pipe(
             map( (): boolean => hasActivityOption( registryFacade ) ),
         )

@@ -17,9 +17,9 @@ import { AutoComplete, AutoCompleteCompleteEvent } from 'primeng/autocomplete'
 import { SelectItem, SelectItemGroup } from 'primeng/api'
 import { ParticipantModel } from '@shared/models/model/participant.model'
 import { GroupModel } from '@shared/models/model/group.model'
-import { GenericUtil } from '@shared/helpers/util/generic.util'
+import { GenericHelper } from '@shared/helpers/generic.helper'
 import { Button } from 'primeng/button'
-import { ParticipantUtil } from '@shared/helpers/util/participant.util'
+import { ParticipantHelper } from '@shared/helpers/participant.helper'
 import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum'
 import { TranslatePipe } from '@ngx-translate/core'
 import { RegistryFacade } from '@core/registry/state/registry.facade'
@@ -43,7 +43,7 @@ import { RegistryFacade } from '@core/registry/state/registry.facade'
 } )
 export class MovementContentFieldComponent implements ControlValueAccessor {
     protected readonly registryFacade: RegistryFacade = inject( RegistryFacade )
-    protected readonly ParticipantUtil: typeof ParticipantUtil = ParticipantUtil
+    protected readonly ParticipantHelper: typeof ParticipantHelper = ParticipantHelper
     protected readonly Object: typeof Object = Object
 
     public readonly suggestions: InputSignal<SelectItemGroup<ParticipantModel | GroupModel>[]> = input.required()
@@ -103,7 +103,7 @@ export class MovementContentFieldComponent implements ControlValueAccessor {
     }
 
     private groupByPoolName (content: MovementContentModel[]): Record<string, ParticipantModel[]> {
-        return content.filter( (value: MovementContentModel): boolean => GenericUtil.nonNull( value.poolName ) )
+        return content.filter( (value: MovementContentModel): boolean => GenericHelper.nonNull( value.poolName ) )
                       .reduce( (
                           acc: Record<string, ParticipantModel[]>,
                           value: MovementContentModel,
@@ -114,7 +114,7 @@ export class MovementContentFieldComponent implements ControlValueAccessor {
     }
 
     private extractOrphanParticipants (content: MovementContentModel[]): ParticipantModel[] {
-        return content.filter( (value: MovementContentModel): boolean => GenericUtil.isNull( value.poolName ) )
+        return content.filter( (value: MovementContentModel): boolean => GenericHelper.isNull( value.poolName ) )
                       .map( (value: MovementContentModel): ParticipantModel => value.participant )
     }
 

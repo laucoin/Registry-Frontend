@@ -1,22 +1,22 @@
 import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum'
 import { UserAuthorityEnum } from '@shared/models/enumeration/user-authority.enum'
 import { CurrentUserModel } from '@shared/models/model/current-user.model'
-import { ArrayUtil } from '@shared/helpers/util/array.util'
-import { ProjectUtil } from '@shared/helpers/util/project.util'
-import { GenericUtil } from '@shared/helpers/util/generic.util'
+import { ArrayHelper } from '@shared/helpers/array.helper'
+import { ProjectHelper } from '@shared/helpers/project.helper'
+import { GenericHelper } from '@shared/helpers/generic.helper'
 import { ProjectModel } from '@shared/models/model/project.model'
 import { ActionableItemModel } from '@shared/models/model/actionable-item.model'
 import { ThemeEnum } from '@shared/models/enumeration/theme.enum'
 
-export class CurrentUserUtil {
+export class CurrentUserHelper {
     public static isFeasible (
         currentUser: CurrentUserModel | undefined,
         project: ProjectModel | undefined,
         actionableItem: ActionableItemModel,
     ): boolean {
-        if (GenericUtil.isNull( currentUser ) || (!project && (actionableItem.requiredProjectOption || actionableItem.requiredProjectAuthority))) return false
+        if (GenericHelper.isNull( currentUser ) || (!project && (actionableItem.requiredProjectOption || actionableItem.requiredProjectAuthority))) return false
 
-        return ProjectUtil.hasOption( project, actionableItem.requiredProjectOption ) &&
+        return ProjectHelper.hasOption( project, actionableItem.requiredProjectOption ) &&
                this.hasAuthority( currentUser!, actionableItem.requiredUserAuthority ) &&
                this.hasAuthority(
                    currentUser!,
@@ -29,7 +29,7 @@ export class CurrentUserUtil {
         id: string | undefined,
         authority: ProjectAuthorityEnum,
     ): boolean {
-        if (GenericUtil.isNull( currentUser ) || !id) return false
+        if (GenericHelper.isNull( currentUser ) || !id) return false
 
         return this.hasAuthority( currentUser!, this.buildAuthority( authority, id ) )
     }
@@ -38,7 +38,7 @@ export class CurrentUserUtil {
         requiredAuthority: ProjectAuthorityEnum | undefined,
         id: string | undefined,
     ): UserAuthorityEnum | string | undefined {
-        if (GenericUtil.isNull( requiredAuthority )) return undefined
+        if (GenericHelper.isNull( requiredAuthority )) return undefined
 
         return `${id}_${requiredAuthority}`
     }
@@ -47,7 +47,7 @@ export class CurrentUserUtil {
         currentUser: CurrentUserModel | undefined,
         authority: UserAuthorityEnum,
     ): boolean {
-        if (GenericUtil.isNull( currentUser )) return false
+        if (GenericHelper.isNull( currentUser )) return false
 
         return this.hasAuthority( currentUser!, authority )
     }
@@ -57,7 +57,7 @@ export class CurrentUserUtil {
         authority: UserAuthorityEnum | string | undefined,
     ): boolean {
         if (!currentUser) return false
-        return ArrayUtil.includes( currentUser.authorities, authority )
+        return ArrayHelper.includes( currentUser.authorities, authority )
     }
 
     public static mapThemeToEnum (theme: string): ThemeEnum {

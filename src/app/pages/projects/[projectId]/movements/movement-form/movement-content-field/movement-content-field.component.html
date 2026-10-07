@@ -19,7 +19,7 @@
     @for (participant of orphanParticipants(); track participant.id) {
         <li class='item list-item w-100 d-flex align-items-center justify-content-between' [attr.data-value]='participant.id'>
             <div class='ms-3 d-flex align-items-center'>
-                {{ ParticipantUtil.toSelectItem(participant).label }}
+                {{ ParticipantHelper.toSelectItem(participant).label }}
                 @if (interpretedMovementType().includes(participant.status.value)) {
                     <div class='warning-tips'>
                         <i class='pi pi-exclamation-triangle'></i>
@@ -59,7 +59,7 @@
     <ul class='list-box'>
         @for (member of groups()[groupName]; track member.id) {
             <li class='item list-item w-100 d-flex align-items-center justify-content-between' [attr.data-value]='member.id'>
-                <div class='ms-3'>{{ ParticipantUtil.toSelectItem(member).label }}</div>
+                <div class='ms-3'>{{ ParticipantHelper.toSelectItem(member).label }}</div>
                 <p-button icon='pi pi-times'
                           size='small'
                           severity='danger'

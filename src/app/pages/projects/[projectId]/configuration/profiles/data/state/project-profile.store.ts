@@ -2,7 +2,7 @@ import { Action, NgxsOnInit, Selector, State, StateContext } from '@ngxs/store'
 import { catchError, finalize, map, Observable, of } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
 import { GenericProjectElementStore } from '@shared/helpers/state/generic-project-element.store'
-import { initialize } from '@shared/helpers/util/rx.util'
+import { initialize } from '@shared/helpers/rx.helper'
 import {
     FetchAssignableProjectProfileRoles,
     FetchProfileStatus,
@@ -16,8 +16,8 @@ import {
 import { ProjectProfileApi } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.api'
 import { ProjectProfileFacade } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.facade'
 import { inject, Injectable } from '@angular/core'
-import { StateUtil } from '@shared/helpers/state/state.util'
-import { UserUtil } from '@shared/helpers/util/user.util'
+import { StateHelper } from '@shared/helpers/state/state.helper'
+import { UserHelper } from '@shared/helpers/user.helper'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { UserModel } from '@shared/models/model/user.model'
 import { ErrorModel } from '@shared/models/model/error.model'
@@ -147,14 +147,14 @@ export class ProjectProfileStore extends GenericProjectElementStore<ProjectProfi
     @Action( StartProjectProfilesPageLoader )
     public startProjectProfilesPageLoader (ctx: StateContext<ProjectProfileStoreModel>): void {
         ctx.patchState( {
-            projectProfiles: StateUtil.updatePageLoader( ctx.getState().projectProfiles, true ),
+            projectProfiles: StateHelper.updatePageLoader( ctx.getState().projectProfiles, true ),
         } )
     }
 
     @Action( StopProjectProfilesPageLoader )
     public stopProjectProfilesPageLoader (ctx: StateContext<ProjectProfileStoreModel>): void {
         ctx.patchState( {
-            projectProfiles: StateUtil.updatePageLoader( ctx.getState().projectProfiles, false ),
+            projectProfiles: StateHelper.updatePageLoader( ctx.getState().projectProfiles, false ),
         } )
     }
 
@@ -231,7 +231,7 @@ export class ProjectProfileStore extends GenericProjectElementStore<ProjectProfi
         ctx.patchState( {
             _metadata: {
                 ...ctx.getState()._metadata,
-                searched: users.map( (user: UserModel): SelectItem<UserModel> => UserUtil.toSelectItem( user ) ),
+                searched: users.map( (user: UserModel): SelectItem<UserModel> => UserHelper.toSelectItem( user ) ),
             },
         } )
     }

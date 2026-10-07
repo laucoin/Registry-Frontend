@@ -1,4 +1,4 @@
-export class ArrayUtil {
+export class ArrayHelper {
     public static includes (array: unknown[], value: unknown, strict: boolean = false): boolean {
         if (!strict) {
             if (!value && !strict) return true

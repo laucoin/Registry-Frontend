@@ -1,6 +1,6 @@
 import { ThemeEnum } from '@shared/models/enumeration/theme.enum'
 
-export class GenericUtil {
+export class GenericHelper {
     public static isNull = (value: unknown | undefined | null): boolean => value == undefined
     public static nonNull = (value: unknown | undefined | null): boolean => !this.isNull( value )
     public static themeMediaQuery: MediaQueryList = window.matchMedia( '(prefers-color-scheme: light)' )

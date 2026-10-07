@@ -3,10 +3,10 @@ import {Observable} from 'rxjs'
 import {PageModel} from '@shared/models/model/page.model'
 import {GroupModel} from '@shared/models/model/group.model'
 import {GenericProjectApi} from '@shared/helpers/api/generic-project.api'
-import {SELECT_PROFILE_PROJECT_ID} from '@shared/helpers/util/request.util'
+import {SELECT_PROFILE_PROJECT_ID} from '@shared/helpers/request.helper'
 import {GroupDto} from '@pages/projects/[projectId]/configuration/groups/data/dto/group.dto'
 import {GroupPageParamsModel} from '@pages/projects/[projectId]/configuration/groups/data/model/group-page-params.model'
-import {QueryUtil} from '@shared/helpers/util/query.util'
+import {QueryHelper} from '@shared/helpers/query.helper'
 import {HttpParams} from '@angular/common/http'
 import {ParticipantModel} from '@shared/models/model/participant.model'
 import {ParticipantPageParamsModel} from '@pages/projects/[projectId]/configuration/participants/data/model/participant-page-params.model'
@@ -27,7 +27,7 @@ export class GroupApi extends GenericProjectApi {
         params: GroupPageParamsModel,
     ): Observable<PageModel<GroupModel>> {
         return this.http.get<PageModel<GroupModel>>(
-            `${this.buildRequestBaseUrl(projectId)}?${QueryUtil.buildQueryParams(
+            `${this.buildRequestBaseUrl(projectId)}?${QueryHelper.buildQueryParams(
                 pageNumber,
                 pageSize,
                 params,
@@ -43,7 +43,7 @@ export class GroupApi extends GenericProjectApi {
         params: ParticipantPageParamsModel,
     ): Observable<PageModel<ParticipantModel>> {
         return this.http.get<PageModel<ParticipantModel>>(
-            `${this.buildRequestBaseUrl(projectId)}/${id}/members?${QueryUtil.buildQueryParams(
+            `${this.buildRequestBaseUrl(projectId)}/${id}/members?${QueryHelper.buildQueryParams(
                 pageNumber,
                 pageSize,
                 params,

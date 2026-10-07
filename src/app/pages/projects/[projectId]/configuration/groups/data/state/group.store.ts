@@ -3,7 +3,7 @@ import { catchError, finalize, map, Observable, of } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
 import { GroupModel } from '@shared/models/model/group.model'
 import { GenericProjectElementStore } from '@shared/helpers/state/generic-project-element.store'
-import { initialize } from '@shared/helpers/util/rx.util'
+import { initialize } from '@shared/helpers/rx.helper'
 import {
     FetchGroupMembersPage,
     FetchGroupsPage,
@@ -18,12 +18,12 @@ import {
 } from '@pages/projects/[projectId]/configuration/groups/data/state/group.action'
 import { GroupApi } from '@pages/projects/[projectId]/configuration/groups/data/state/group.api'
 import { GroupFacade } from '@pages/projects/[projectId]/configuration/groups/data/state/group.facade'
-import { StateUtil } from '@shared/helpers/state/state.util'
+import { StateHelper } from '@shared/helpers/state/state.helper'
 import { inject, Injectable } from '@angular/core'
 import { ParticipantModel } from '@shared/models/model/participant.model'
-import { ParticipantUtil } from '@shared/helpers/util/participant.util'
+import { ParticipantHelper } from '@shared/helpers/participant.helper'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
-import { GenericUtil } from '@shared/helpers/util/generic.util'
+import { GenericHelper } from '@shared/helpers/generic.helper'
 import { ErrorModel } from '@shared/models/model/error.model'
 import { GroupStoreModel } from '@pages/projects/[projectId]/configuration/groups/data/model/group-store.model'
 
@@ -186,14 +186,14 @@ export class GroupStore extends GenericProjectElementStore<GroupStoreModel> {
     @Action( StartGroupsPageLoader )
     public startGroupsPageLoader (ctx: StateContext<GroupStoreModel>): void {
         ctx.patchState( {
-            groups: StateUtil.updatePageLoader( ctx.getState().groups, true ),
+            groups: StateHelper.updatePageLoader( ctx.getState().groups, true ),
         } )
     }
 
     @Action( StopGroupsPageLoader )
     public stopGroupsPageLoader (ctx: StateContext<GroupStoreModel>): void {
         ctx.patchState( {
-            groups: StateUtil.updatePageLoader( ctx.getState().groups, false ),
+            groups: StateHelper.updatePageLoader( ctx.getState().groups, false ),
         } )
     }
 
@@ -251,7 +251,7 @@ export class GroupStore extends GenericProjectElementStore<GroupStoreModel> {
     public startGroupMembersPageLoader (ctx: StateContext<GroupStoreModel>): void {
         const requestInformation: GroupStoreModel['members'] = ctx.getState().members
         const page: PageModel<ParticipantModel> | undefined = requestInformation.element
-        if (GenericUtil.isNull( page ) || page!.content?.length == 0) {
+        if (GenericHelper.isNull( page ) || page!.content?.length == 0) {
             ctx.patchState( {
                 members: {
                     ...requestInformation,
@@ -363,7 +363,7 @@ export class GroupStore extends GenericProjectElementStore<GroupStoreModel> {
             _metadata: {
                 ...ctx.getState()._metadata,
                 searched: participants.map( (participant: ParticipantModel): SelectItem<ParticipantModel> =>
-                    ParticipantUtil.toSelectItem( participant ),
+                    ParticipantHelper.toSelectItem( participant ),
                 ),
             },
         } )

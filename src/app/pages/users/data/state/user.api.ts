@@ -4,7 +4,7 @@ import {Observable} from 'rxjs'
 import {PageModel} from '@shared/models/model/page.model'
 import {UserModel} from '@shared/models/model/user.model'
 import {GenericApi} from '@shared/helpers/api/generic.api'
-import {QueryUtil} from '@shared/helpers/util/query.util'
+import {QueryHelper} from '@shared/helpers/query.helper'
 import {SelectItem} from 'primeng/api'
 import {UserPageParamsModel} from '@pages/users/data/model/user-page-params.model'
 
@@ -22,7 +22,7 @@ export class UserApi extends GenericApi {
         params: UserPageParamsModel,
     ): Observable<PageModel<UserModel>> {
         return this.http.get<PageModel<UserModel>>(
-            `${this.baseUrl}?${QueryUtil.buildQueryParams(pageNumber, pageSize, params).toString()}`,
+            `${this.baseUrl}?${QueryHelper.buildQueryParams(pageNumber, pageSize, params).toString()}`,
         )
     }
 

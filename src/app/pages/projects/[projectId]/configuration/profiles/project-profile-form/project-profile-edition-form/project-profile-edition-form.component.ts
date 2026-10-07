@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy,Component, OnDestroy} from '@angular/core'
 import {FormGroup, ReactiveFormsModule, Validators} from '@angular/forms'
 import {ProjectProfileDto} from '@pages/projects/[projectId]/configuration/profiles/data/dto/project-profile.dto'
 import {ProjectProfileModel} from '@shared/models/model/project-profile.model'
-import {FormUtil} from '@shared/helpers/util/form.util'
+import {FormHelper} from '@shared/helpers/form.helper'
 import {TranslatePipe} from '@ngx-translate/core'
 import {CardModule} from 'primeng/card'
 import {FormFieldErrorComponent} from '@shared/ui/form-field-error/form-field-error.component'
@@ -14,7 +14,7 @@ import {Button} from 'primeng/button'
 import {Select, SelectModule} from 'primeng/select'
 import {DateFormatPipe} from '@shared/helpers/pipe/date-format.pipe'
 import {DateTimeFieldComponent} from '@shared/ui/date-time-field/date-time-field.component'
-import {RegistryValidators} from '@shared/helpers/util/registry.validator'
+import {RegistryValidators} from '@shared/helpers/registry.validator'
 
 @Component({
 	changeDetection: ChangeDetectionStrategy.Eager,
@@ -54,7 +54,7 @@ export class ProjectProfileEditionFormComponent extends GenericProjectProfileFor
     }
 
     protected submit(): void {
-        if (!FormUtil.isFormValid(this.form)) {
+        if (!FormHelper.isFormValid(this.form)) {
             this.logInvalidForm(this.form.value)
             return
         }

@@ -16,7 +16,7 @@
                          [placeholder]='"vehicles.form.placeholder.license-plate" | translate'
                          (keydown.enter)='submit()' />
             <app-form-field-error [errors]='licensePlate.errors'
-                                  [invalid]='FormUtil.invalid(licensePlate)'
+                                  [invalid]='FormHelper.invalid(licensePlate)'
                                   translationPrefix='vehicles.form.error.license-plate' />
         </div>
         <div class='field'>
@@ -28,7 +28,7 @@
                    pInputText
                    type='text' />
             <app-form-field-error [errors]='brand.errors'
-                                  [invalid]='FormUtil.invalid(brand)'
+                                  [invalid]='FormHelper.invalid(brand)'
                                   translationPrefix='vehicles.form.error.brand' />
         </div>
         <div class='field'>
@@ -40,14 +40,14 @@
                    pInputText
                    type='text' />
             <app-form-field-error [errors]='model.errors'
-                                  [invalid]='FormUtil.invalid(model)'
+                                  [invalid]='FormHelper.invalid(model)'
                                   translationPrefix='vehicles.form.error.model' />
         </div>
         <div class='d-flex flex-wrap'>
             <div class='left-field field'>
                 <label for='begin-date-time'>{{ 'vehicles.form.begin-datetime' | translate }}</label>
                 <app-date-time-field [formControl]='beginDateTime'
-                                     [invalid]='FormUtil.invalid(beginDateTime)'
+                                     [invalid]='FormHelper.invalid(beginDateTime)'
                                      inputId='begin-date-time'
                                      [datePlaceholder]='"vehicles.form.placeholder.date" | translate: {
                                                             date: startDateExample | dateFormat: "date"
@@ -57,13 +57,13 @@
                                                          }' />
                 <small class='secondary-color'>{{ 'vehicles.form.hint.begin-date-time' | translate }}</small>
                 <app-form-field-error [errors]='beginDateTime.errors'
-                                      [invalid]='FormUtil.invalid(beginDateTime)'
+                                      [invalid]='FormHelper.invalid(beginDateTime)'
                                       translationPrefix='vehicles.form.error.begin-datetime' />
             </div>
             <div class='right-field field'>
                 <label for='end-date-time'>{{ 'vehicles.form.end-datetime' | translate }}</label>
                 <app-date-time-field [formControl]='endDateTime'
-                                     [invalid]='FormUtil.invalid(endDateTime)'
+                                     [invalid]='FormHelper.invalid(endDateTime)'
                                      inputId='end-date-time'
                                      [datePlaceholder]='"vehicles.form.placeholder.date" | translate: {
                                                             date: endDateExample | dateFormat: "date"
@@ -73,12 +73,12 @@
                                                          }' />
                 <small class='secondary-color'>{{ 'vehicles.form.hint.end-date-time' | translate }}</small>
                 <app-form-field-error [errors]='endDateTime.errors'
-                                      [invalid]='FormUtil.invalid(endDateTime)'
+                                      [invalid]='FormHelper.invalid(endDateTime)'
                                       translationPrefix='vehicles.form.error.end-datetime' />
             </div>
         </div>
         <app-form-field-error [errors]='form.errors'
-                              [invalid]='FormUtil.invalid(form) && beginDateTime.valid && endDateTime.valid'
+                              [invalid]='FormHelper.invalid(form) && beginDateTime.valid && endDateTime.valid'
                               translationPrefix='vehicles.form.error.date-range' />
     </p-card>
     <div class='d-flex mt-2 justify-content-center'>

@@ -1,25 +1,25 @@
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
-import { GenericUtil } from '@shared/helpers/util/generic.util'
+import { GenericHelper } from '@shared/helpers/generic.helper'
 
-export class StringUtil {
+export class StringHelper {
     public static addCacheBustingToUrl (url: string): string {
         const separator: string = url.includes( '?' ) ? '&' : '?'
         return `${url}${separator}cache-bust=${Math.random()}`
     }
 
     public static truncate (text: string | undefined, maxLength: number, tail?: string): string {
-        if (GenericUtil.isNull( text )) return ''
+        if (GenericHelper.isNull( text )) return ''
         if (text!.length > maxLength) return text!.substring( 0, maxLength ) + (tail ?? '')
         return text!
     }
 
     public static isBlank (text: string | undefined): boolean {
-        if (GenericUtil.isNull( text )) return false
+        if (GenericHelper.isNull( text )) return false
         return text!.trim().length === 0
     }
 
     public static isNullOrBlank (text: string | undefined): boolean {
-        return GenericUtil.isNull( text ) || text!.trim().length === 0
+        return GenericHelper.isNull( text ) || text!.trim().length === 0
     }
 
     public static isNotNullNorBlank (text: string | undefined): boolean {
@@ -28,7 +28,7 @@ export class StringUtil {
 
     public static toNumber (value: number | string | null | undefined): number | undefined {
         switch (true) {
-            case GenericUtil.isNull( value ):
+            case GenericHelper.isNull( value ):
                 return undefined
             case typeof value == 'string':
                 return Number.parseInt( value )
@@ -42,8 +42,8 @@ export class StringUtil {
     }
 
     public static isRouteActive (route: RegistryRouteEnum): boolean {
-        const castedRoute: string = StringUtil.sanitizeRoute( route )
-        const currentUri: string = StringUtil.sanitizeRoute( location.pathname )
+        const castedRoute: string = StringHelper.sanitizeRoute( route )
+        const currentUri: string = StringHelper.sanitizeRoute( location.pathname )
         const isUserRoute: boolean = RegistryRouteEnum.USERS.includes( castedRoute )
 
         switch (true) {
@@ -72,7 +72,7 @@ export class StringUtil {
 
     public static formatAtLeastOnTwoDigits (num: number | undefined): string {
         switch (true) {
-            case GenericUtil.isNull( num ):
+            case GenericHelper.isNull( num ):
             case num! >= 100:
                 return num?.toString() ?? ''
             default:

@@ -14,9 +14,9 @@ import { UserAuthorityEnum } from '@shared/models/enumeration/user-authority.enu
 import { MenuItemModel } from '@core/shell/data/model/menu-item.model'
 import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum'
 import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
-import { StringUtil } from '@shared/helpers/util/string.util'
+import { StringHelper } from '@shared/helpers/string.helper'
 import { CurrentUserModel } from '@shared/models/model/current-user.model'
-import { CurrentUserUtil } from '@core/authentication/tool/current-user.util'
+import { CurrentUserHelper } from '@core/authentication/tool/current-user.helper'
 import { TruncatePipe } from '@shared/helpers/pipe/truncate.pipe'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { ProjectOptionIconPipe } from '@shared/helpers/pipe/project-option-icon.pipe'
@@ -157,15 +157,15 @@ export class NavbarComponent extends GenericComponent {
     protected readonly contextMenuItems: Signal<MenuItem[]>
 
     protected readonly displayName: Signal<string> = computed( (): string =>
-        StringUtil.truncate(
-            StringUtil.toTitleCase( this.registryFacade.currentUser()?.firstName ) + ' ' + this.registryFacade.currentUser()?.lastName?.toUpperCase(),
+        StringHelper.truncate(
+            StringHelper.toTitleCase( this.registryFacade.currentUser()?.firstName ) + ' ' + this.registryFacade.currentUser()?.lastName?.toUpperCase(),
             this.maxMenuTextLength,
         ),
     )
-    protected readonly initials: Signal<string> = computed( (): string => StringUtil.truncate(
+    protected readonly initials: Signal<string> = computed( (): string => StringHelper.truncate(
         this.registryFacade.currentUser()?.firstName,
         1,
-    ) + StringUtil.truncate( this.registryFacade.currentUser()?.lastName, 1 ) )
+    ) + StringHelper.truncate( this.registryFacade.currentUser()?.lastName, 1 ) )
 
     protected readonly role: Signal<string | undefined> = computed( (): string | undefined => this.registryFacade.currentUser()?.role?.label )
 
@@ -194,7 +194,7 @@ export class NavbarComponent extends GenericComponent {
         if (!currentUser) return []
 
         return menuItems
-            .filter( (item: MenuItemModel): boolean => CurrentUserUtil.isFeasible(
+            .filter( (item: MenuItemModel): boolean => CurrentUserHelper.isFeasible(
                 currentUser,
                 this.registryFacade.selectedProject(),
                 item,

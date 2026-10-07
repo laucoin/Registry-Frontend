@@ -2,8 +2,8 @@ import {Injectable} from '@angular/core'
 import {Observable} from 'rxjs'
 import {PageModel} from '@shared/models/model/page.model'
 import {GenericProjectApi} from '@shared/helpers/api/generic-project.api'
-import {SELECT_PROFILE_PROJECT_ID} from '@shared/helpers/util/request.util'
-import {QueryUtil} from '@shared/helpers/util/query.util'
+import {SELECT_PROFILE_PROJECT_ID} from '@shared/helpers/request.helper'
+import {QueryHelper} from '@shared/helpers/query.helper'
 import {AlertModel} from '@shared/models/model/alert.model'
 import {CommunicationModel} from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
 import {CommunicationPageParamsModel} from '@pages/projects/[projectId]/movements/communication/data/model/communication-page-params.model'
@@ -26,7 +26,7 @@ export class AlertApi extends GenericProjectApi {
         params: AlertPageParamsModel,
     ): Observable<PageModel<AlertModel>> {
         return this.http.get<PageModel<AlertModel>>(
-            `${this.buildRequestBaseUrl(projectId)}?${QueryUtil.buildQueryParams(
+            `${this.buildRequestBaseUrl(projectId)}?${QueryHelper.buildQueryParams(
                 pageNumber,
                 pageSize,
                 params,
@@ -42,7 +42,7 @@ export class AlertApi extends GenericProjectApi {
         params: CommunicationPageParamsModel,
     ): Observable<PageModel<CommunicationModel>> {
         return this.http.get<PageModel<CommunicationModel>>(
-            `${this.buildRequestBaseUrl(projectId)}/${id}/communications?${QueryUtil.buildQueryParams(
+            `${this.buildRequestBaseUrl(projectId)}/${id}/communications?${QueryHelper.buildQueryParams(
                 pageNumber,
                 pageSize,
                 params,

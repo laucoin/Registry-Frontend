@@ -2,8 +2,8 @@ import { Action, Selector, State, StateContext } from '@ngxs/store'
 import { catchError, finalize, map, Observable, of } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
 import { GenericProjectElementStore } from '@shared/helpers/state/generic-project-element.store'
-import { initialize } from '@shared/helpers/util/rx.util'
-import { StateUtil } from '@shared/helpers/state/state.util'
+import { initialize } from '@shared/helpers/rx.helper'
+import { StateHelper } from '@shared/helpers/state/state.helper'
 import { inject, Injectable } from '@angular/core'
 import {
     ElementRequestInformationModel,
@@ -29,9 +29,9 @@ import {
     UpdateCommunicationsPageSearchParams,
 } from '@pages/projects/[projectId]/movements/communication/data/state/communication.action'
 import { MovementModel } from '@shared/models/model/movement.model'
-import { MovementUtil } from '@shared/helpers/util/movement.util'
+import { MovementHelper } from '@shared/helpers/movement.helper'
 import { AlertModel } from '@shared/models/model/alert.model'
-import { AlertUtil } from '@shared/helpers/util/alert.util'
+import { AlertHelper } from '@shared/helpers/alert.helper'
 
 const defaultCommunication: ElementRequestInformationModel<CommunicationModel> = {
     element: undefined,
@@ -152,14 +152,14 @@ export class CommunicationStore extends GenericProjectElementStore<Communication
     @Action( StartCommunicationsPageLoader )
     public startCommunicationsPageLoader (ctx: StateContext<CommunicationStoreModel>): void {
         ctx.patchState( {
-            communications: StateUtil.updatePageLoader( ctx.getState().communications, true ),
+            communications: StateHelper.updatePageLoader( ctx.getState().communications, true ),
         } )
     }
 
     @Action( StopCommunicationsPageLoader )
     public stopCommunicationsPageLoader (ctx: StateContext<CommunicationStoreModel>): void {
         ctx.patchState( {
-            communications: StateUtil.updatePageLoader( ctx.getState().communications, false ),
+            communications: StateHelper.updatePageLoader( ctx.getState().communications, false ),
         } )
     }
 
@@ -216,14 +216,14 @@ export class CommunicationStore extends GenericProjectElementStore<Communication
     @Action( StartCommunicationLoader )
     public startCommunicationLoader (ctx: StateContext<CommunicationStoreModel>): void {
         ctx.patchState( {
-            communication: StateUtil.updateElementLoader( ctx.getState().communication, true ),
+            communication: StateHelper.updateElementLoader( ctx.getState().communication, true ),
         } )
     }
 
     @Action( StopCommunicationLoader )
     public stopCommunicationLoader (ctx: StateContext<CommunicationStoreModel>): void {
         ctx.patchState( {
-            communication: StateUtil.updateElementLoader( ctx.getState().communication, false ),
+            communication: StateHelper.updateElementLoader( ctx.getState().communication, false ),
         } )
     }
 
@@ -271,7 +271,7 @@ export class CommunicationStore extends GenericProjectElementStore<Communication
             _metadata: {
                 ...ctx.getState()._metadata,
                 searchedMovements: movements.map( (movement: MovementModel): SelectItem<MovementModel> =>
-                    MovementUtil.toActivitySelectItem( movement, this.datePipe ),
+                    MovementHelper.toActivitySelectItem( movement, this.datePipe ),
                 ),
             },
         } )
@@ -297,7 +297,7 @@ export class CommunicationStore extends GenericProjectElementStore<Communication
             _metadata: {
                 ...ctx.getState()._metadata,
                 searchedAlerts: alerts.map( (alert: AlertModel): SelectItem<AlertModel> =>
-                    AlertUtil.toSelectItem( alert, this.datePipe ),
+                    AlertHelper.toSelectItem( alert, this.datePipe ),
                 ),
             },
         } )

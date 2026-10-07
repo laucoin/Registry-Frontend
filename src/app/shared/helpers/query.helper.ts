@@ -1,7 +1,7 @@
 import { HttpParams } from '@angular/common/http'
-import { GenericUtil } from '@shared/helpers/util/generic.util'
+import { GenericHelper } from '@shared/helpers/generic.helper'
 
-export class QueryUtil {
+export class QueryHelper {
     public static buildQueryParams (
         pageNumber: number | undefined,
         pageSize: number | undefined,
@@ -11,10 +11,10 @@ export class QueryUtil {
             .set( 'pageNumber', pageNumber ?? 0 )
             .set( 'pageSize', pageSize ?? 20 )
 
-        if (GenericUtil.isNull( params )) return builtParams
+        if (GenericHelper.isNull( params )) return builtParams
 
         Object.entries( params! ).forEach( ([ key, value ]: [ string, string | number | boolean | undefined ]): void => {
-            if (GenericUtil.nonNull( value ) && key !== 'resetSearch') builtParams = builtParams.set( key, value! )
+            if (GenericHelper.nonNull( value ) && key !== 'resetSearch') builtParams = builtParams.set( key, value! )
         } )
 
         return builtParams

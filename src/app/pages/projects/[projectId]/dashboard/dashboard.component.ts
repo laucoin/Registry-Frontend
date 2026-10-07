@@ -5,7 +5,7 @@ import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.p
 import { Skeleton } from 'primeng/skeleton'
 import { TranslatePipe } from '@ngx-translate/core'
 import { GenericComponent } from '@shared/ui/base/generic.component'
-import { GenericUtil } from '@shared/helpers/util/generic.util'
+import { GenericHelper } from '@shared/helpers/generic.helper'
 import { SelectedProjectFacade } from '@pages/projects/data/state/selected-project/selected-project.facade'
 import { Panel } from 'primeng/panel'
 import { ElementCardComponent } from '@shared/ui/element-card/element-card.component'
@@ -64,7 +64,7 @@ export class DashboardComponent extends GenericComponent implements OnDestroy {
         this.facade.loadProjectHomeInformation( false )
 
         this.totalParticipants = computed( (): number | undefined => {
-            if (GenericUtil.isNull( this.facade.participantsStatus() )) return undefined
+            if (GenericHelper.isNull( this.facade.participantsStatus() )) return undefined
             return this.facade.participantsStatus()!.guests
                    + this.facade.participantsStatus()!.registered.presentMajors
                    + this.facade.participantsStatus()!.registered.presentMinors
@@ -73,35 +73,35 @@ export class DashboardComponent extends GenericComponent implements OnDestroy {
         } )
 
         this.totalGuests = computed( (): number | undefined => {
-            if (GenericUtil.isNull( this.facade.participantsStatus() )) return undefined
+            if (GenericHelper.isNull( this.facade.participantsStatus() )) return undefined
             return this.facade.participantsStatus()!.guests
         } )
 
         this.totalPresentRegistered = computed( (): number | undefined => {
-            if (GenericUtil.isNull( this.facade.participantsStatus() )) return undefined
+            if (GenericHelper.isNull( this.facade.participantsStatus() )) return undefined
             return this.facade.participantsStatus()!.registered.presentMajors
                    + this.facade.participantsStatus()!.registered.presentMinors
         } )
 
         this.totalAbsentRegistered = computed( (): number | undefined => {
-            if (GenericUtil.isNull( this.facade.participantsStatus() )) return undefined
+            if (GenericHelper.isNull( this.facade.participantsStatus() )) return undefined
             return this.facade.participantsStatus()!.registered.absentMajors
                    + this.facade.participantsStatus()!.registered.absentMinors
         } )
 
         this.totalVehicles = computed( (): number | undefined => {
-            if (GenericUtil.isNull( this.facade.vehiclesStatus() )) return undefined
+            if (GenericHelper.isNull( this.facade.vehiclesStatus() )) return undefined
             return this.facade.vehiclesStatus()!.present
                    + this.facade.vehiclesStatus()!.absent
         } )
 
         this.totalPresentVehicles = computed( (): number | undefined => {
-            if (GenericUtil.isNull( this.facade.vehiclesStatus() )) return undefined
+            if (GenericHelper.isNull( this.facade.vehiclesStatus() )) return undefined
             return this.facade.vehiclesStatus()!.present
         } )
 
         this.totalAbsentVehicles = computed( (): number | undefined => {
-            if (GenericUtil.isNull( this.facade.vehiclesStatus() )) return undefined
+            if (GenericHelper.isNull( this.facade.vehiclesStatus() )) return undefined
             return this.facade.vehiclesStatus()!.absent
         } )
 

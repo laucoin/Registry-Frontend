@@ -3,9 +3,9 @@ import { PageModel } from '@shared/models/model/page.model'
 import { CommunicationModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
 import { CommunicationStore } from '@pages/projects/[projectId]/movements/communication/data/state/communication.store'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
-import { DateUtil } from '@shared/helpers/util/date.util'
+import { DateHelper } from '@shared/helpers/date.helper'
 import { CommunicationApi } from '@pages/projects/[projectId]/movements/communication/data/state/communication.api'
-import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/util/rx.util'
+import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/rx.helper'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
 import { CommandEvent } from '@shared/helpers/facade/command-event.service'
 import { Observable, tap } from 'rxjs'
@@ -62,13 +62,13 @@ export class CommunicationFacade extends GenericProjectElementFacade {
 
     public get communicationsPageStartDateTimeSearchedParam (): Signal<Date | undefined> {
         return computed( (): Date | undefined =>
-            DateUtil.buildDate( this.ngStore.selectSignal( CommunicationStore.communicationsPageStartDateTimeSearchedParam )() ),
+            DateHelper.buildDate( this.ngStore.selectSignal( CommunicationStore.communicationsPageStartDateTimeSearchedParam )() ),
         )
     }
 
     public get communicationsPageEndDateTimeSearchedParam (): Signal<Date | undefined> {
         return computed( (): Date | undefined =>
-            DateUtil.buildDate( this.ngStore.selectSignal( CommunicationStore.communicationsPageEndDateTimeSearchedParam )() ),
+            DateHelper.buildDate( this.ngStore.selectSignal( CommunicationStore.communicationsPageEndDateTimeSearchedParam )() ),
         )
     }
 

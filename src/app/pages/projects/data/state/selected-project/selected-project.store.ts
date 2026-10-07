@@ -7,7 +7,7 @@ import { PageModel } from '@shared/models/model/page.model'
 import { MovementModel } from '@shared/models/model/movement.model'
 import { SelectedProjectStoreModel } from '@pages/projects/data/model/selected-project-store.model'
 import { catchError, finalize, map, Observable, of } from 'rxjs'
-import { initialize } from '@shared/helpers/util/rx.util'
+import { initialize } from '@shared/helpers/rx.helper'
 import { ErrorModel } from '@shared/models/model/error.model'
 import {
     FetchCurrentAlertsPage,
@@ -34,11 +34,11 @@ import { ParticipantModel } from '@shared/models/model/participant.model'
 import { ParticipantApi } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.api'
 import { PairModel } from '@shared/models/model/pair.model'
 import { MovementContentModel } from '@shared/models/model/movement-content.model'
-import { MovementUtil } from '@shared/helpers/util/movement.util'
+import { MovementHelper } from '@shared/helpers/movement.helper'
 import { AlertStatusEnum } from '@shared/models/enumeration/alert-status.enum'
 import { AlertApi } from '@pages/projects/[projectId]/movements/data/state/alert.api'
 import { AlertModel } from '@shared/models/model/alert.model'
-import { StateUtil } from '@shared/helpers/state/state.util'
+import { StateHelper } from '@shared/helpers/state/state.helper'
 import { GenericStore } from '@shared/helpers/state/generic.store'
 
 const defaultSelectedProjectStore: SelectedProjectStoreModel = {
@@ -415,7 +415,7 @@ export class SelectedProjectStore extends GenericStore {
         ctx.patchState( {
             currentMovements: {
                 ...ctx.getState().currentMovements,
-                withoutActivity: StateUtil.updatePageLoader( ctx.getState().currentMovements.withoutActivity, true ),
+                withoutActivity: StateHelper.updatePageLoader( ctx.getState().currentMovements.withoutActivity, true ),
             },
         } )
     }
@@ -425,7 +425,7 @@ export class SelectedProjectStore extends GenericStore {
         ctx.patchState( {
             currentMovements: {
                 ...ctx.getState().currentMovements,
-                withoutActivity: StateUtil.updatePageLoader( ctx.getState().currentMovements.withoutActivity, false ),
+                withoutActivity: StateHelper.updatePageLoader( ctx.getState().currentMovements.withoutActivity, false ),
             },
         } )
     }
@@ -525,7 +525,7 @@ export class SelectedProjectStore extends GenericStore {
                     ...ctx.getState().currentMovements.withoutActivity,
                     element: {
                         ...ctx.getState().currentMovements.withoutActivity.element!,
-                        content: MovementUtil.rebuildPageWithContent(
+                        content: MovementHelper.rebuildPageWithContent(
                             ctx.getState().currentMovements.withoutActivity.element!.content,
                             contents,
                         ),
@@ -540,7 +540,7 @@ export class SelectedProjectStore extends GenericStore {
         ctx.patchState( {
             currentMovements: {
                 ...ctx.getState().currentMovements,
-                withActivity: StateUtil.updatePageLoader( ctx.getState().currentMovements.withActivity, true ),
+                withActivity: StateHelper.updatePageLoader( ctx.getState().currentMovements.withActivity, true ),
             },
         } )
     }
@@ -550,7 +550,7 @@ export class SelectedProjectStore extends GenericStore {
         ctx.patchState( {
             currentMovements: {
                 ...ctx.getState().currentMovements,
-                withActivity: StateUtil.updatePageLoader( ctx.getState().currentMovements.withActivity, false ),
+                withActivity: StateHelper.updatePageLoader( ctx.getState().currentMovements.withActivity, false ),
             },
         } )
     }
@@ -650,7 +650,7 @@ export class SelectedProjectStore extends GenericStore {
                     ...ctx.getState().currentMovements.withActivity,
                     element: {
                         ...ctx.getState().currentMovements.withActivity.element!,
-                        content: MovementUtil.rebuildPageWithContent(
+                        content: MovementHelper.rebuildPageWithContent(
                             ctx.getState().currentMovements.withActivity.element!.content,
                             contents,
                         ),

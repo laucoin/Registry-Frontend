@@ -18,9 +18,9 @@ import {
 import { ParticipantModel } from '@shared/models/model/participant.model'
 import { GroupModel } from '@shared/models/model/group.model'
 import { GroupStore } from '@pages/projects/[projectId]/configuration/groups/data/state/group.store'
-import { DateUtil } from '@shared/helpers/util/date.util'
+import { DateHelper } from '@shared/helpers/date.helper'
 import { GroupApi } from '@pages/projects/[projectId]/configuration/groups/data/state/group.api'
-import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/util/rx.util'
+import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/rx.helper'
 import { CommandEvent } from '@shared/helpers/facade/command-event.service'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { AddedGroupMembersDto } from '@shared/models/dto/added-group-members.dto'
@@ -57,7 +57,7 @@ export class GroupFacade extends GenericProjectElementFacade {
 
     public get groupsPageDateTimeSearchedParam (): Signal<Date | undefined> {
         return computed( () =>
-            DateUtil.buildDate( this.ngStore.selectSignal( GroupStore.groupsPageDateTimeSearchedParam )() ),
+            DateHelper.buildDate( this.ngStore.selectSignal( GroupStore.groupsPageDateTimeSearchedParam )() ),
         )
     }
 

@@ -18,12 +18,12 @@ import {
     SelectElementsFieldComponent,
 } from '@shared/ui/select-elements-field/select-elements-field.component'
 import {PluralTranslationPipe} from '@shared/helpers/pipe/plural-translation.pipe'
-import {FormUtil} from '@shared/helpers/util/form.util'
+import {FormHelper} from '@shared/helpers/form.helper'
 import {DateFormatPipe} from '@shared/helpers/pipe/date-format.pipe'
-import {UserUtil} from '@shared/helpers/util/user.util'
+import {UserHelper} from '@shared/helpers/user.helper'
 import {DateTimeFieldComponent} from '@shared/ui/date-time-field/date-time-field.component'
 import {UserModel} from '@shared/models/model/user.model'
-import {RegistryValidators} from '@shared/helpers/util/registry.validator'
+import {RegistryValidators} from '@shared/helpers/registry.validator'
 
 @Component({
 	changeDetection: ChangeDetectionStrategy.Eager,
@@ -50,7 +50,7 @@ import {RegistryValidators} from '@shared/helpers/util/registry.validator'
     templateUrl: './project-profile-invitation-form.component.html',
 })
 export class ProjectProfileInvitationFormComponent extends GenericProjectProfileFormComponent implements OnDestroy {
-    protected readonly UserUtil: typeof UserUtil = UserUtil
+    protected readonly UserHelper: typeof UserHelper = UserHelper
 
     public constructor() {
         super()
@@ -72,7 +72,7 @@ export class ProjectProfileInvitationFormComponent extends GenericProjectProfile
     }
 
     protected submit(): void {
-        if (!FormUtil.isFormValid(this.form)) {
+        if (!FormHelper.isFormValid(this.form)) {
             this.logInvalidForm(this.form.value)
             return
         }

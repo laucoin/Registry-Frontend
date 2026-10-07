@@ -1,4 +1,4 @@
-import { StorageUtils } from '@shared/helpers/util/storage.util'
+import { StorageUtils } from '@shared/helpers/storage.helper'
 
 export class LocalStorageUtils {
     public static get (key: string): unknown {

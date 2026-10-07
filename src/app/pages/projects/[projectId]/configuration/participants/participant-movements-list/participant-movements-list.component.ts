@@ -1,6 +1,6 @@
 import { Component, inject, OnDestroy, signal, WritableSignal } from '@angular/core'
 import {ParticipantModel} from '@shared/models/model/participant.model'
-import {withLoading} from '@shared/helpers/util/rx.util'
+import {withLoading} from '@shared/helpers/rx.helper'
 import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms'
 import {PageEventModel} from '@shared/models/model/page-event.model'
 import {ListComponent} from '@shared/ui/list/list.component'

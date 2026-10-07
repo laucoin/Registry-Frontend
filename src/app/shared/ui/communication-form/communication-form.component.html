@@ -1,5 +1,5 @@
 <p-card styleClass='mb-3'>
-    @if (GenericUtil.isNull(facade.communication())) {
+    @if (GenericHelper.isNull(facade.communication())) {
         @if (movementSelectorVisible()) {
             <div class='field other-field-container'>
                 <label for='movement'>{{ 'communications.form.movement.title' | translate }}</label>
@@ -32,7 +32,7 @@
                               (onClick)='removeMovementField()' />
                 </div>
                 <app-form-field-error [errors]='movement.errors'
-                                      [invalid]='FormUtil.invalid(movement)'
+                                      [invalid]='FormHelper.invalid(movement)'
                                       translationPrefix='communications.form.error.movement' />
             </div>
         }
@@ -69,7 +69,7 @@
                               (onClick)='removeAlertField()' />
                 </div>
                 <app-form-field-error [errors]='alert.errors'
-                                      [invalid]='FormUtil.invalid(alert)'
+                                      [invalid]='FormHelper.invalid(alert)'
                                       translationPrefix='communications.form.error.alert' />
             </div>
         }
@@ -94,17 +94,17 @@
                               (onClick)='removeAlertField()' />
                 </div>
                 <app-form-field-error [errors]='newAlertTitle.errors'
-                                      [invalid]='FormUtil.invalid(newAlertTitle)'
+                                      [invalid]='FormHelper.invalid(newAlertTitle)'
                                       translationPrefix='alerts.form.error.title' />
             </div>
         }
-        @if (movementSelectorVisible() || GenericUtil.nonNull(alertSelectorMode())) {
+        @if (movementSelectorVisible() || GenericHelper.nonNull(alertSelectorMode())) {
             <p-divider styleClass='other-field-container field-container' />
         }
     }
     <app-form-error [error]='error()' />
     <div class='d-flex align-items-top' [formGroup]='form'>
-        @if (GenericUtil.nonNull(facade.communication())) {
+        @if (GenericHelper.nonNull(facade.communication())) {
             <p-button (onClick)='resetForm()' class='me-2' icon='pi pi-times' rounded text />
         } @else {
             <p-button [disabled]='actions().length === 0' (onClick)='menu.toggle($event)' class='me-2' icon='pi pi-plus' rounded
@@ -119,14 +119,14 @@
                           [formControl]='message'></textarea>
             <small class='secondary-color'>{{ 'communications.form.hint.message' | translate }}</small>
             <app-form-field-error [errors]='message.errors'
-                                  [invalid]='FormUtil.invalid(message)'
+                                  [invalid]='FormHelper.invalid(message)'
                                   translationPrefix='communications.form.error.message' />
             <app-form-field-error [errors]='form.errors'
-                                  [invalid]='FormUtil.invalid(form)'
+                                  [invalid]='FormHelper.invalid(form)'
                                   translationPrefix='communications.form.error.link' />
         </div>
         <p-button class='ms-2' outlined rounded severity='success'
-                  [icon]='GenericUtil.nonNull(facade.communication()) ? "pi pi-check" : "pi pi-send"'
+                  [icon]='GenericHelper.nonNull(facade.communication()) ? "pi pi-check" : "pi pi-send"'
                   [disabled]='saving()'
                   (onClick)='submit()' />
     </div>

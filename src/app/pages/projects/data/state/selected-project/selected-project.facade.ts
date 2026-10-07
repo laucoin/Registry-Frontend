@@ -4,7 +4,7 @@ import { ToastMessageOptions } from 'primeng/api'
 import { VehicleStatusModel } from '@pages/projects/data/model/vehicle-status.model'
 import { PageModel } from '@shared/models/model/page.model'
 import { MovementModel } from '@shared/models/model/movement.model'
-import { DateUtil } from '@shared/helpers/util/date.util'
+import { DateHelper } from '@shared/helpers/date.helper'
 import { GenericFacade } from '@shared/helpers/facade/generic.facade'
 import { SelectedProjectStore } from '@pages/projects/data/state/selected-project/selected-project.store'
 import { RegistryStore } from '@core/registry/state/registry.store'
@@ -27,7 +27,7 @@ import {
     StopVehiclesStatusLoader,
 } from '@pages/projects/data/state/selected-project/selected-project.action'
 import { ParticipantModel } from '@shared/models/model/participant.model'
-import { ProjectUtil } from '@shared/helpers/util/project.util'
+import { ProjectHelper } from '@shared/helpers/project.helper'
 import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
 import { ProjectModel } from '@shared/models/model/project.model'
 import { AlertModel } from '@shared/models/model/alert.model'
@@ -84,13 +84,13 @@ export class SelectedProjectFacade extends GenericFacade {
 
     public get currentMovementsPageWithoutActivityStartDateTimeSearchedParam (): Signal<Date | undefined> {
         return computed( (): Date | undefined =>
-            DateUtil.buildDate( this.ngStore.selectSignal( SelectedProjectStore.currentMovementsPageWithoutActivityStartDateTimeSearchedParam )() ),
+            DateHelper.buildDate( this.ngStore.selectSignal( SelectedProjectStore.currentMovementsPageWithoutActivityStartDateTimeSearchedParam )() ),
         )
     }
 
     public get currentMovementsPageWithoutActivityEndDateTimeSearchedParam (): Signal<Date | undefined> {
         return computed( (): Date | undefined =>
-            DateUtil.buildDate( this.ngStore.selectSignal( SelectedProjectStore.currentMovementsPageWithoutActivityEndDateTimeSearchedParam )() ),
+            DateHelper.buildDate( this.ngStore.selectSignal( SelectedProjectStore.currentMovementsPageWithoutActivityEndDateTimeSearchedParam )() ),
         )
     }
 
@@ -116,13 +116,13 @@ export class SelectedProjectFacade extends GenericFacade {
 
     public get currentMovementsPageWithActivityStartDateTimeSearchedParam (): Signal<Date | undefined> {
         return computed( (): Date | undefined =>
-            DateUtil.buildDate( this.ngStore.selectSignal( SelectedProjectStore.currentMovementsPageWithActivityStartDateTimeSearchedParam )() ),
+            DateHelper.buildDate( this.ngStore.selectSignal( SelectedProjectStore.currentMovementsPageWithActivityStartDateTimeSearchedParam )() ),
         )
     }
 
     public get currentMovementsPageWithActivityEndDateTimeSearchedParam (): Signal<Date | undefined> {
         return computed( (): Date | undefined =>
-            DateUtil.buildDate( this.ngStore.selectSignal( SelectedProjectStore.currentMovementsPageWithActivityEndDateTimeSearchedParam )() ),
+            DateHelper.buildDate( this.ngStore.selectSignal( SelectedProjectStore.currentMovementsPageWithActivityEndDateTimeSearchedParam )() ),
         )
     }
 
@@ -153,7 +153,7 @@ export class SelectedProjectFacade extends GenericFacade {
                 force,
             ),
         ]
-        if (ProjectUtil.hasOption(
+        if (ProjectHelper.hasOption(
             this.ngStore.selectSignal( RegistryStore.currentUserSelectedProject )(),
             ProjectOptionEnum.VEHICLE,
         )) {

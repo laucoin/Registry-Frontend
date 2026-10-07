@@ -3,10 +3,10 @@ import {Observable} from 'rxjs'
 import {PageModel} from '@shared/models/model/page.model'
 import {ActivityModel} from '@shared/models/model/activity.model'
 import {GenericProjectApi} from '@shared/helpers/api/generic-project.api'
-import {SELECT_PROFILE_PROJECT_ID} from '@shared/helpers/util/request.util'
+import {SELECT_PROFILE_PROJECT_ID} from '@shared/helpers/request.helper'
 import {ActivityDto} from '@pages/projects/[projectId]/configuration/activities/data/dto/activity.dto'
 import {ActivityPageParamsModel} from '@pages/projects/[projectId]/configuration/activities/data/model/activity-page-params.model'
-import {QueryUtil} from '@shared/helpers/util/query.util'
+import {QueryHelper} from '@shared/helpers/query.helper'
 import {MovementPageParamsModel} from '@shared/models/model/movement-page-params.model'
 import {MovementModel} from '@shared/models/model/movement.model'
 
@@ -25,7 +25,7 @@ export class ActivityApi extends GenericProjectApi {
         params: ActivityPageParamsModel,
     ): Observable<PageModel<ActivityModel>> {
         return this.http.get<PageModel<ActivityModel>>(
-            `${this.buildRequestBaseUrl(projectId)}?${QueryUtil.buildQueryParams(
+            `${this.buildRequestBaseUrl(projectId)}?${QueryHelper.buildQueryParams(
                 pageNumber,
                 pageSize,
                 params,
@@ -45,7 +45,7 @@ export class ActivityApi extends GenericProjectApi {
         params: MovementPageParamsModel,
     ): Observable<PageModel<MovementModel>> {
         return this.http.get<PageModel<MovementModel>>(
-            `${this.buildRequestBaseUrl(projectId)}/${id}/movements?${QueryUtil.buildQueryParams(
+            `${this.buildRequestBaseUrl(projectId)}/${id}/movements?${QueryHelper.buildQueryParams(
                 pageNumber,
                 pageSize,
                 params,

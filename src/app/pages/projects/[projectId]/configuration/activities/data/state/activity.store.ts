@@ -3,7 +3,7 @@ import { catchError, finalize, map, Observable, of } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
 import { ActivityModel } from '@shared/models/model/activity.model'
 import { GenericProjectElementStore } from '@shared/helpers/state/generic-project-element.store'
-import { initialize } from '@shared/helpers/util/rx.util'
+import { initialize } from '@shared/helpers/rx.helper'
 import { ActivityStoreModel } from '@pages/projects/[projectId]/configuration/activities/data/model/activity-store.model'
 import {
     FetchActivitiesPage,
@@ -19,7 +19,7 @@ import {
 } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.action'
 import { ActivityApi } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.api'
 import { ActivityFacade } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.facade'
-import { StateUtil } from '@shared/helpers/state/state.util'
+import { StateHelper } from '@shared/helpers/state/state.helper'
 import { inject, Injectable } from '@angular/core'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { ErrorModel } from '@shared/models/model/error.model'
@@ -27,7 +27,7 @@ import { MovementModel } from '@shared/models/model/movement.model'
 import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
 import { PairModel } from '@shared/models/model/pair.model'
 import { MovementContentModel } from '@shared/models/model/movement-content.model'
-import { MovementUtil } from '@shared/helpers/util/movement.util'
+import { MovementHelper } from '@shared/helpers/movement.helper'
 
 const defaultActivityStore: ActivityStoreModel = {
     activities: {
@@ -190,14 +190,14 @@ export class ActivityStore extends GenericProjectElementStore<ActivityStoreModel
     @Action( StartActivitiesPageLoader )
     public startActivitiesPageLoader (ctx: StateContext<ActivityStoreModel>): void {
         ctx.patchState( {
-            activities: StateUtil.updatePageLoader( ctx.getState().activities, true ),
+            activities: StateHelper.updatePageLoader( ctx.getState().activities, true ),
         } )
     }
 
     @Action( StopActivitiesPageLoader )
     public stopActivitiesPageLoader (ctx: StateContext<ActivityStoreModel>): void {
         ctx.patchState( {
-            activities: StateUtil.updatePageLoader( ctx.getState().activities, false ),
+            activities: StateHelper.updatePageLoader( ctx.getState().activities, false ),
         } )
     }
 
@@ -254,14 +254,14 @@ export class ActivityStore extends GenericProjectElementStore<ActivityStoreModel
     @Action( StartActivityMovementsPageLoader )
     public startActivityMovementsPageLoader (ctx: StateContext<ActivityStoreModel>): void {
         ctx.patchState( {
-            movements: StateUtil.updatePageLoader( ctx.getState().movements, true ),
+            movements: StateHelper.updatePageLoader( ctx.getState().movements, true ),
         } )
     }
 
     @Action( StopActivityMovementsPageLoader )
     public stopActivityMovementsPageLoader (ctx: StateContext<ActivityStoreModel>): void {
         ctx.patchState( {
-            movements: StateUtil.updatePageLoader( ctx.getState().movements, false ),
+            movements: StateHelper.updatePageLoader( ctx.getState().movements, false ),
         } )
     }
 
@@ -339,7 +339,7 @@ export class ActivityStore extends GenericProjectElementStore<ActivityStoreModel
                 ...ctx.getState().movements,
                 element: {
                     ...ctx.getState().movements.element!,
-                    content: MovementUtil.rebuildPageWithContent( ctx.getState().movements.element!.content, contents ),
+                    content: MovementHelper.rebuildPageWithContent( ctx.getState().movements.element!.content, contents ),
                 },
             },
         } )

@@ -1,5 +1,5 @@
 import { GenericApi } from '@shared/helpers/api/generic.api'
-import { SELECT_PROFILE_PROJECT_ID } from '@shared/helpers/util/request.util'
+import { SELECT_PROFILE_PROJECT_ID } from '@shared/helpers/request.helper'
 
 export abstract class GenericProjectApi extends GenericApi {
     protected constructor (baseUrl: string | undefined = undefined) {

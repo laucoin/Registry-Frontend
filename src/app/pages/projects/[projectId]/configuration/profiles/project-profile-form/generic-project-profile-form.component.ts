@@ -4,9 +4,9 @@ import { ProjectProfileFacade } from '@pages/projects/[projectId]/configuration/
 import { ProjectProfileModel } from '@shared/models/model/project-profile.model'
 import { ProjectProfileDto } from '@pages/projects/[projectId]/configuration/profiles/data/dto/project-profile.dto'
 import { GenericFormComponent } from '@shared/ui/base/generic-form.component'
-import { withLoading } from '@shared/helpers/util/rx.util'
+import { withLoading } from '@shared/helpers/rx.helper'
 import { ProjectProfilesDto } from '@pages/projects/[projectId]/configuration/profiles/data/dto/project-profiles.dto'
-import { GenericUtil } from '@shared/helpers/util/generic.util'
+import { GenericHelper } from '@shared/helpers/generic.helper'
 
 export abstract class GenericProjectProfileFormComponent extends GenericFormComponent<ProjectProfileModel, ProjectProfilesDto | ProjectProfileDto> {
     protected readonly facade: ProjectProfileFacade = inject( ProjectProfileFacade )
@@ -27,7 +27,7 @@ export abstract class GenericProjectProfileFormComponent extends GenericFormComp
     protected override loadData (): void {
         this.facade.fetchAssignableRoles()
 
-        if (GenericUtil.nonNull( this.idParam )) {
+        if (GenericHelper.nonNull( this.idParam )) {
             this.subscriptions.add(
                 this.facade.fetchProjectProfile( this.idParam! ).pipe(
                     withLoading( this.loading ),

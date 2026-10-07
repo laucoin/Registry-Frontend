@@ -1,5 +1,5 @@
-import { GenericUtil } from '@shared/helpers/util/generic.util'
-import { Utils } from '@shared/helpers/util/json.util'
+import { GenericHelper } from '@shared/helpers/generic.helper'
+import { Utils } from '@shared/helpers/json.helper'
 
 export class StorageUtils {
     public static get (storage: Storage, key: string): unknown {
@@ -8,7 +8,7 @@ export class StorageUtils {
     }
 
     public static check (storage: Storage, key: string): boolean {
-        return GenericUtil.nonNull( this.get( storage, key ) )
+        return GenericHelper.nonNull( this.get( storage, key ) )
     }
 
     public static set (storage: Storage, key: string, value: unknown): void {

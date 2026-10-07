@@ -4,7 +4,7 @@ import { MovementContentModel } from '@shared/models/model/movement-content.mode
 import { SelectItem } from 'primeng/api'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
 
-export class MovementUtil {
+export class MovementHelper {
     public static rebuildPageWithContent (
         movements: MovementModel[],
         contents: PairModel<MovementContentModel[]>[],

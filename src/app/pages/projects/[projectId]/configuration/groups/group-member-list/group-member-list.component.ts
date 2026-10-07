@@ -1,6 +1,6 @@
 import { Component, inject, OnDestroy, signal, WritableSignal } from '@angular/core'
 import { GroupModel } from '@shared/models/model/group.model'
-import { withLoading } from '@shared/helpers/util/rx.util'
+import { withLoading } from '@shared/helpers/rx.helper'
 import { ParticipantModel } from '@shared/models/model/participant.model'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { PageEventModel } from '@shared/models/model/page-event.model'
@@ -23,7 +23,7 @@ import { Observable, Subscription, switchMap, tap } from 'rxjs'
 import { FormFieldErrorComponent } from '@shared/ui/form-field-error/form-field-error.component'
 import { Select } from 'primeng/select'
 import { GenericListComponent } from '@shared/ui/base/generic-list.component'
-import { ParticipantUtil } from '@shared/helpers/util/participant.util'
+import { ParticipantHelper } from '@shared/helpers/participant.helper'
 import { ParticipantFacade } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.facade'
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
 import { ParticipantFormComponent } from '@pages/projects/[projectId]/configuration/participants/participant-form/participant-form.component'
@@ -58,7 +58,7 @@ export class GroupMemberListComponent extends GenericListComponent implements On
     protected readonly facade: GroupFacade = inject( GroupFacade )
     protected readonly participantFacade: ParticipantFacade = inject( ParticipantFacade )
 
-    protected readonly ParticipantUtil: typeof ParticipantUtil = ParticipantUtil
+    protected readonly ParticipantHelper: typeof ParticipantHelper = ParticipantHelper
 
     private readonly subscriptions: Subscription = new Subscription()
 

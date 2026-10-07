@@ -3,7 +3,7 @@ import { DatePicker } from 'primeng/datepicker'
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms'
 import { CustomDatetimeModel } from '@shared/models/model/custom-datetime.model'
 import { RegistryFacade } from '@core/registry/state/registry.facade'
-import { DateUtil } from '@shared/helpers/util/date.util'
+import { DateHelper } from '@shared/helpers/date.helper'
 
 @Component( {
     selector: 'app-date-time-field',
@@ -40,7 +40,7 @@ export class DateTimeFieldComponent implements ControlValueAccessor {
 
     protected onDateChange (): void {
         this.onInputChange( {
-            date: DateUtil.toIsoDate( this.date ),
+            date: DateHelper.toIsoDate( this.date ),
             time: this.value()?.time,
         } )
     }
@@ -48,7 +48,7 @@ export class DateTimeFieldComponent implements ControlValueAccessor {
     protected onTimeChange (): void {
         this.onInputChange( {
             date: this.value()?.date,
-            time: DateUtil.toIsoTime( this.time ),
+            time: DateHelper.toIsoTime( this.time ),
         } )
     }
 
@@ -72,7 +72,7 @@ export class DateTimeFieldComponent implements ControlValueAccessor {
 
     public writeValue (value: CustomDatetimeModel | undefined): void {
         this.value.set( value )
-        this.date = DateUtil.fromIsoDate( value?.date )
-        this.time = DateUtil.fromIsoTime( value?.time )
+        this.date = DateHelper.fromIsoDate( value?.date )
+        this.time = DateHelper.fromIsoTime( value?.time )
     }
 }

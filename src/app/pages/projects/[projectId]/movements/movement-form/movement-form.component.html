@@ -34,7 +34,7 @@
                                                inputId='datetime'
                                                fluid/>
                                 <app-form-field-error [errors]='dateTime.errors'
-                                                      [invalid]='FormUtil.invalid(dateTime)'
+                                                      [invalid]='FormHelper.invalid(dateTime)'
                                                       translationPrefix='movements.form.error.datetime'/>
                             </div>
                             <div class='right-field field'>
@@ -51,7 +51,7 @@
                                         optionLabel='label'
                                         optionValue='value'/>
                                 <app-form-field-error [errors]='type.errors'
-                                                      [invalid]='FormUtil.invalid(type)'
+                                                      [invalid]='FormHelper.invalid(type)'
                                                       translationPrefix='movements.form.error.type'/>
                             </div>
                         </div>
@@ -79,7 +79,7 @@
                                     text
                                     rounded/>
                             <p-button
-                                    (onClick)='FormUtil.isFormValid(informationForm) ? activateCallback(2) : undefined'
+                                    (onClick)='FormHelper.isFormValid(informationForm) ? activateCallback(2) : undefined'
                                     [label]='registryFacade.tinyScreen() ? "" : "global.actions.next" | translate'
                                     rounded
                                     icon='pi pi-arrow-down'
@@ -119,7 +119,7 @@
                                     </ng-template>
                                 </p-auto-complete>
                                 <app-form-field-error [errors]='reason.errors'
-                                                      [invalid]='FormUtil.invalid(reason)'
+                                                      [invalid]='FormHelper.invalid(reason)'
                                                       translationPrefix='movements.form.error.reason'/>
                             </div>
                             <p-divider/>
@@ -130,7 +130,7 @@
                             <label for='content'
                                    class='secondary-color'>{{ 'movements.form.content.registered.search' | translate }}</label>
                             <app-movement-content-field [formControl]='participantContent'
-                                                        [invalid]='FormUtil.invalid(participantContent)'
+                                                        [invalid]='FormHelper.invalid(participantContent)'
                                                         [suggestions]='facade.searchedParticipantAndGroupMetadata()'
                                                         [interpretedMovementType]='interpretedMovementType()'
                                                         [selectionLabel]='"movements.form.content.registered.selected" | pluralTranslation: participantContent.value | translate'
@@ -139,7 +139,7 @@
                                                         inputId='content'
                                                         (handleSearch)='handleParticipantsAndGroupsSearch($event.query)'/>
                             <app-form-field-error [errors]='participantContent.errors'
-                                                  [invalid]='FormUtil.invalid(participantContent)'
+                                                  [invalid]='FormHelper.invalid(participantContent)'
                                                   translationPrefix='movements.form.error.participantContent'/>
                         </div>
                     } @else {
@@ -167,7 +167,7 @@
                                                        pInputText
                                                        type='text'/>
                                                 <app-form-field-error [errors]='firstName($index).errors'
-                                                                      [invalid]='FormUtil.invalid(firstName($index))'
+                                                                      [invalid]='FormHelper.invalid(firstName($index))'
                                                                       translationPrefix='participants.form.error.firstname'/>
                                             </div>
                                             <div class='right-field field'>
@@ -183,7 +183,7 @@
                                                        pInputText
                                                        type='text'/>
                                                 <app-form-field-error [errors]='lastName($index).errors'
-                                                                      [invalid]='FormUtil.invalid(lastName($index))'
+                                                                      [invalid]='FormHelper.invalid(lastName($index))'
                                                                       translationPrefix='participants.form.error.lastname'/>
                                             </div>
                                         </div>
@@ -202,7 +202,7 @@
                                                            [id]='"birthday_" + $index'
                                                            fluid/>
                                             <app-form-field-error [errors]='birthday($index).errors'
-                                                                  [invalid]='FormUtil.invalid(birthday($index))'
+                                                                  [invalid]='FormHelper.invalid(birthday($index))'
                                                                   translationPrefix='participants.form.error.birthday'/>
                                         </div>
                                     </div>
@@ -221,7 +221,7 @@
                                       severity='secondary'/>
                         </div>
                         <app-form-field-error [errors]='guestContent.errors'
-                                              [invalid]='FormUtil.invalid(guestContent)'
+                                              [invalid]='FormHelper.invalid(guestContent)'
                                               translationPrefix='movements.form.error.guestContent'/>
                     }
                         <div class='d-flex pt-4 justify-content-between'>
@@ -233,7 +233,7 @@
                                     rounded/>
                             @if (isEligibleToVehicle() && contentType.value === ParticipantTypeEnum.REGISTERED) {
                                 <p-button
-                                        (onClick)='FormUtil.isFormValid(contentForm) ? activateCallback(3) : undefined'
+                                        (onClick)='FormHelper.isFormValid(contentForm) ? activateCallback(3) : undefined'
                                         [label]='registryFacade.tinyScreen() ? "" : "global.actions.next" | translate'
                                         rounded
                                         outlined
@@ -288,7 +288,7 @@
                                         <div class='field'>
                                             <p-inputgroup>
                                                 <p-inputgroup-addon>
-                                                    {{ VehicleUtil.toSelectItem(vehicle($index).value).label }}
+                                                    {{ VehicleHelper.toSelectItem(vehicle($index).value).label }}
                                                     @if (interpretedMovementType().includes(vehicle($index).value?.status.value)) {
                                                         <div class='warning-tips'>
                                                             <i class='pi pi-exclamation-triangle'></i>
@@ -321,7 +321,7 @@
                                                 </p-inputgroup-addon>
                                             </p-inputgroup>
                                             <app-form-field-error [errors]='control.errors'
-                                                                  [invalid]='FormUtil.invalid(control)'
+                                                                  [invalid]='FormHelper.invalid(control)'
                                                                   translationPrefix='movements.form.error.driver'/>
                                         </div>
                                     </div>
@@ -343,7 +343,7 @@
                                         rounded/>
                                 <p-button
                                         class='ms-2'
-                                        (onClick)='FormUtil.isFormValid(vehicleForm) ? submit() : undefined'
+                                        (onClick)='FormHelper.isFormValid(vehicleForm) ? submit() : undefined'
                                         [label]='registryFacade.tinyScreen() ? "" : movement() | formButton | translate'
                                         rounded
                                         outlined

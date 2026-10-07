@@ -3,7 +3,7 @@ import { TranslateService } from '@ngx-translate/core'
 import { IntervalModel } from '@shared/models/model/interval.model'
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
 import { SelectItem } from 'primeng/api'
-import { StringUtil } from '@shared/helpers/util/string.util'
+import { StringHelper } from '@shared/helpers/string.helper'
 
 @Pipe( {
     name: 'intervalFormat', standalone: true,
@@ -26,15 +26,15 @@ export class IntervalPipe implements PipeTransform {
             case value.dayCount.value > 0:
                 return this.buildLabel( value.dayCount, value.hourCount, translationKey )
             case value.hourCount.value > 0: {
-                const formattedHourCount: string = StringUtil.formatDigits( value.hourCount.value, 2 )
-                const formattedMinuteCount: string = StringUtil.formatDigits( value.minuteCount.value, 2 )
-                const formattedSecondCount: string = StringUtil.formatDigits( value.secondCount.value, 2 )
+                const formattedHourCount: string = StringHelper.formatDigits( value.hourCount.value, 2 )
+                const formattedMinuteCount: string = StringHelper.formatDigits( value.minuteCount.value, 2 )
+                const formattedSecondCount: string = StringHelper.formatDigits( value.secondCount.value, 2 )
                 return `${formattedHourCount}:${formattedMinuteCount}:${formattedSecondCount}`
             }
             case value.secondCount.value > 0:
             case value.minuteCount.value > 0: {
-                const formattedMinuteCount: string = StringUtil.formatDigits( value.minuteCount.value, 2 )
-                const formattedSecondCount: string = StringUtil.formatDigits( value.secondCount.value, 2 )
+                const formattedMinuteCount: string = StringHelper.formatDigits( value.minuteCount.value, 2 )
+                const formattedSecondCount: string = StringHelper.formatDigits( value.secondCount.value, 2 )
                 return `${formattedMinuteCount}:${formattedSecondCount}`
             }
             default:

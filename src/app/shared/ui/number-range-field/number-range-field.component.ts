@@ -6,8 +6,8 @@ import { InputGroupAddon } from 'primeng/inputgroupaddon'
 import { InputNumber } from 'primeng/inputnumber'
 import { TranslateService } from '@ngx-translate/core'
 import { NumericRangeModel } from '@pages/projects/[projectId]/configuration/activities/data/model/numeric-range.model'
-import { GenericUtil } from '@shared/helpers/util/generic.util'
-import { StringUtil } from '@shared/helpers/util/string.util'
+import { GenericHelper } from '@shared/helpers/generic.helper'
+import { StringHelper } from '@shared/helpers/string.helper'
 
 @Component( {
     selector: 'app-number-range-field',
@@ -48,16 +48,16 @@ export class NumberRangeFieldComponent implements ControlValueAccessor {
     private onTouched: (() => void) | undefined = undefined
 
     protected onInputMin (min: number | string | null): void {
-        this.onInputChange( StringUtil.toNumber( min ), this.value()?.upper )
+        this.onInputChange( StringHelper.toNumber( min ), this.value()?.upper )
     }
 
     protected onInputMax (max: number | string | null): void {
-        this.onInputChange( this.value()?.lower, StringUtil.toNumber( max ) )
+        this.onInputChange( this.value()?.lower, StringHelper.toNumber( max ) )
     }
 
     protected onInputChange (min: number | undefined, max: number | undefined): void {
         const numericRangeModel: NumericRangeModel | undefined =
-            GenericUtil.isNull( min ) && GenericUtil.isNull( max )
+            GenericHelper.isNull( min ) && GenericHelper.isNull( max )
             ? undefined : { lower: min, upper: max }
         this.value.set( numericRangeModel )
         this.onChange?.( numericRangeModel )

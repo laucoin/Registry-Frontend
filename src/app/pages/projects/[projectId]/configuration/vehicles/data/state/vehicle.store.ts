@@ -3,7 +3,7 @@ import { catchError, finalize, map, Observable, of } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
 import { VehicleModel } from '@shared/models/model/vehicle.model'
 import { GenericProjectElementStore } from '@shared/helpers/state/generic-project-element.store'
-import { initialize } from '@shared/helpers/util/rx.util'
+import { initialize } from '@shared/helpers/rx.helper'
 import { VehicleStoreModel } from '@pages/projects/[projectId]/configuration/vehicles/data/model/vehicle-store.model'
 import {
     FetchVehicleMovementsContents,
@@ -20,7 +20,7 @@ import {
 } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.action'
 import { VehicleApi } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.api'
 import { VehicleFacade } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.facade'
-import { StateUtil } from '@shared/helpers/state/state.util'
+import { StateHelper } from '@shared/helpers/state/state.helper'
 import { inject, Injectable } from '@angular/core'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { ErrorModel } from '@shared/models/model/error.model'
@@ -28,7 +28,7 @@ import { MovementModel } from '@shared/models/model/movement.model'
 import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
 import { PairModel } from '@shared/models/model/pair.model'
 import { MovementContentModel } from '@shared/models/model/movement-content.model'
-import { MovementUtil } from '@shared/helpers/util/movement.util'
+import { MovementHelper } from '@shared/helpers/movement.helper'
 import { MetadataApi } from '@core/registry/state/metadata.api'
 import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum'
 
@@ -235,14 +235,14 @@ export class VehicleStore extends GenericProjectElementStore<VehicleStoreModel> 
     @Action( StartVehiclesPageLoader )
     public startVehiclesPageLoader (ctx: StateContext<VehicleStoreModel>): void {
         ctx.patchState( {
-            vehicles: StateUtil.updatePageLoader( ctx.getState().vehicles, true ),
+            vehicles: StateHelper.updatePageLoader( ctx.getState().vehicles, true ),
         } )
     }
 
     @Action( StopVehiclesPageLoader )
     public stopVehiclesPageLoader (ctx: StateContext<VehicleStoreModel>): void {
         ctx.patchState( {
-            vehicles: StateUtil.updatePageLoader( ctx.getState().vehicles, false ),
+            vehicles: StateHelper.updatePageLoader( ctx.getState().vehicles, false ),
         } )
     }
 
@@ -299,14 +299,14 @@ export class VehicleStore extends GenericProjectElementStore<VehicleStoreModel> 
     @Action( StartVehicleMovementsPageLoader )
     public startVehicleMovementsPageLoader (ctx: StateContext<VehicleStoreModel>): void {
         ctx.patchState( {
-            movements: StateUtil.updatePageLoader( ctx.getState().movements, true ),
+            movements: StateHelper.updatePageLoader( ctx.getState().movements, true ),
         } )
     }
 
     @Action( StopVehicleMovementsPageLoader )
     public stopVehicleMovementsPageLoader (ctx: StateContext<VehicleStoreModel>): void {
         ctx.patchState( {
-            movements: StateUtil.updatePageLoader( ctx.getState().movements, false ),
+            movements: StateHelper.updatePageLoader( ctx.getState().movements, false ),
         } )
     }
 
@@ -384,7 +384,7 @@ export class VehicleStore extends GenericProjectElementStore<VehicleStoreModel> 
                 ...ctx.getState().movements,
                 element: {
                     ...ctx.getState().movements.element!,
-                    content: MovementUtil.rebuildPageWithContent( ctx.getState().movements.element!.content, contents ),
+                    content: MovementHelper.rebuildPageWithContent( ctx.getState().movements.element!.content, contents ),
                 },
             },
         } )

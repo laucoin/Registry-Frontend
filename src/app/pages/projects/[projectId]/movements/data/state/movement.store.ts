@@ -2,7 +2,7 @@ import { Action, NgxsOnInit, Selector, State, StateContext } from '@ngxs/store'
 import { catchError, finalize, map, Observable, of } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
 import { GenericProjectElementStore } from '@shared/helpers/state/generic-project-element.store'
-import { initialize } from '@shared/helpers/util/rx.util'
+import { initialize } from '@shared/helpers/rx.helper'
 import {
     FetchMovementCommunicationsPage,
     FetchMovementsContent,
@@ -22,10 +22,10 @@ import {
 } from '@pages/projects/[projectId]/movements/data/state/movement.action'
 import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
 import { MovementFacade } from '@pages/projects/[projectId]/movements/data/state/movement.facade'
-import { StateUtil } from '@shared/helpers/state/state.util'
+import { StateHelper } from '@shared/helpers/state/state.helper'
 import { inject, Injectable } from '@angular/core'
 import { GroupModel } from '@shared/models/model/group.model'
-import { GroupUtil } from '@shared/helpers/util/group.util'
+import { GroupHelper } from '@shared/helpers/group.helper'
 import { SelectItem, SelectItemGroup, ToastMessageOptions } from 'primeng/api'
 import { ErrorModel } from '@shared/models/model/error.model'
 import { ParticipantModel } from '@shared/models/model/participant.model'
@@ -34,12 +34,12 @@ import { MovementStoreModel } from '@pages/projects/[projectId]/movements/data/m
 import {
     MovementParticipantsAndGroupsModel,
 } from '@shared/models/model/movement-participants-and-groups.model'
-import { ParticipantUtil } from '@shared/helpers/util/participant.util'
+import { ParticipantHelper } from '@shared/helpers/participant.helper'
 import { VehicleModel } from '@shared/models/model/vehicle.model'
-import { VehicleUtil } from '@shared/helpers/util/vehicle.util'
+import { VehicleHelper } from '@shared/helpers/vehicle.helper'
 import { MovementContentModel } from '@shared/models/model/movement-content.model'
 import { PairModel } from '@shared/models/model/pair.model'
-import { MovementUtil } from '@shared/helpers/util/movement.util'
+import { MovementHelper } from '@shared/helpers/movement.helper'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
 import { MetadataApi } from '@core/registry/state/metadata.api'
@@ -284,14 +284,14 @@ export class MovementStore extends GenericProjectElementStore<MovementStoreModel
     @Action( StartMovementsPageLoader )
     public startMovementsPageLoader (ctx: StateContext<MovementStoreModel>): void {
         ctx.patchState( {
-            movements: StateUtil.updatePageLoader( ctx.getState().movements, true ),
+            movements: StateHelper.updatePageLoader( ctx.getState().movements, true ),
         } )
     }
 
     @Action( StopMovementsPageLoader )
     public stopMovementsPageLoader (ctx: StateContext<MovementStoreModel>): void {
         ctx.patchState( {
-            movements: StateUtil.updatePageLoader( ctx.getState().movements, false ),
+            movements: StateHelper.updatePageLoader( ctx.getState().movements, false ),
         } )
     }
 
@@ -365,7 +365,7 @@ export class MovementStore extends GenericProjectElementStore<MovementStoreModel
                 ...ctx.getState().movements,
                 element: {
                     ...ctx.getState().movements.element!,
-                    content: MovementUtil.rebuildPageWithContent( ctx.getState().movements.element!.content, contents ),
+                    content: MovementHelper.rebuildPageWithContent( ctx.getState().movements.element!.content, contents ),
                 },
             },
         } )
@@ -387,14 +387,14 @@ export class MovementStore extends GenericProjectElementStore<MovementStoreModel
     @Action( StartMovementCommunicationsPageLoader )
     public startMovementCommunicationsPageLoader (ctx: StateContext<MovementStoreModel>): void {
         ctx.patchState( {
-            movementCommunications: StateUtil.updatePageLoader( ctx.getState().movementCommunications, true ),
+            movementCommunications: StateHelper.updatePageLoader( ctx.getState().movementCommunications, true ),
         } )
     }
 
     @Action( StopMovementCommunicationsPageLoader )
     public stopMovementCommunicationsPageLoader (ctx: StateContext<MovementStoreModel>): void {
         ctx.patchState( {
-            movementCommunications: StateUtil.updatePageLoader( ctx.getState().movementCommunications, false ),
+            movementCommunications: StateHelper.updatePageLoader( ctx.getState().movementCommunications, false ),
         } )
     }
 
@@ -509,7 +509,7 @@ export class MovementStore extends GenericProjectElementStore<MovementStoreModel
                     participantsAndGroups.participants,
                 ) ),
                 items: participantsAndGroups.groups.map( (group: GroupModel): SelectItem<GroupModel> =>
-                    GroupUtil.toSelectItem( group ),
+                    GroupHelper.toSelectItem( group ),
                 ),
             } )
         }
@@ -522,7 +522,7 @@ export class MovementStore extends GenericProjectElementStore<MovementStoreModel
                 ) ),
                 items: participantsAndGroups.participants.map(
                     (participant: ParticipantModel): SelectItem<ParticipantModel> =>
-                        ParticipantUtil.toSelectItem( participant ),
+                        ParticipantHelper.toSelectItem( participant ),
                 ),
             } )
         }
@@ -556,7 +556,7 @@ export class MovementStore extends GenericProjectElementStore<MovementStoreModel
             _metadata: {
                 ...ctx.getState()._metadata,
                 searchedVehicles: vehicles.map( (vehicle: VehicleModel): SelectItem<VehicleModel> =>
-                    VehicleUtil.toSelectItem( vehicle ),
+                    VehicleHelper.toSelectItem( vehicle ),
                 ),
             },
         } )

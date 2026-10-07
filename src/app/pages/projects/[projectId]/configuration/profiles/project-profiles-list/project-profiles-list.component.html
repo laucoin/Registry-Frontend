@@ -58,7 +58,7 @@
         </div>
     </ng-template>
     <ng-template appTemplate='creation'>
-        @if (CurrentUserUtil.hasProjectAuthority(registryFacade.currentUser(), facade.selectedProjectId(), ProjectAuthority.REGISTRY_PROJECT_PROFILE_C)) {
+        @if (CurrentUserHelper.hasProjectAuthority(registryFacade.currentUser(), facade.selectedProjectId(), ProjectAuthority.REGISTRY_PROJECT_PROFILE_C)) {
             <p-button class='m-1'
                       severity='success'
                       outlined

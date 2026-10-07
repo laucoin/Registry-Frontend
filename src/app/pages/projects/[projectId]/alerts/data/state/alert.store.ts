@@ -2,8 +2,8 @@ import { Action, NgxsOnInit, Selector, State, StateContext } from '@ngxs/store'
 import { catchError, finalize, map, Observable, of } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
 import { GenericProjectElementStore } from '@shared/helpers/state/generic-project-element.store'
-import { initialize } from '@shared/helpers/util/rx.util'
-import { StateUtil } from '@shared/helpers/state/state.util'
+import { initialize } from '@shared/helpers/rx.helper'
+import { StateHelper } from '@shared/helpers/state/state.helper'
 import { inject, Injectable } from '@angular/core'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { ErrorModel } from '@shared/models/model/error.model'
@@ -220,14 +220,14 @@ export class AlertStore extends GenericProjectElementStore<AlertStoreModel> impl
     @Action( StartAlertsPageLoader )
     public startAlertsPageLoader (ctx: StateContext<AlertStoreModel>): void {
         ctx.patchState( {
-            alerts: StateUtil.updatePageLoader( ctx.getState().alerts, true ),
+            alerts: StateHelper.updatePageLoader( ctx.getState().alerts, true ),
         } )
     }
 
     @Action( StopAlertsPageLoader )
     public stopAlertsPageLoader (ctx: StateContext<AlertStoreModel>): void {
         ctx.patchState( {
-            alerts: StateUtil.updatePageLoader( ctx.getState().alerts, false ),
+            alerts: StateHelper.updatePageLoader( ctx.getState().alerts, false ),
         } )
     }
 
@@ -284,14 +284,14 @@ export class AlertStore extends GenericProjectElementStore<AlertStoreModel> impl
     @Action( StartAlertCommunicationsPageLoader )
     public startAlertCommunicationsPageLoader (ctx: StateContext<AlertStoreModel>): void {
         ctx.patchState( {
-            communications: StateUtil.updatePageLoader( ctx.getState().communications, true ),
+            communications: StateHelper.updatePageLoader( ctx.getState().communications, true ),
         } )
     }
 
     @Action( StopAlertCommunicationsPageLoader )
     public stopAlertCommunicationsPageLoader (ctx: StateContext<AlertStoreModel>): void {
         ctx.patchState( {
-            communications: StateUtil.updatePageLoader( ctx.getState().communications, false ),
+            communications: StateHelper.updatePageLoader( ctx.getState().communications, false ),
         } )
     }
 

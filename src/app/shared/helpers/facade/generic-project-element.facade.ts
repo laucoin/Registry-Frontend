@@ -2,7 +2,7 @@ import { GenericFacade } from '@shared/helpers/facade/generic.facade'
 import { RegistryStore } from '@core/registry/state/registry.store'
 import { RegistryFacade } from '@core/registry/state/registry.facade'
 import { inject, Signal } from '@angular/core'
-import { StateUtil } from '@shared/helpers/state/state.util'
+import { StateHelper } from '@shared/helpers/state/state.helper'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { CommandEvent, CommandEventService } from '@shared/helpers/facade/command-event.service'
 
@@ -21,7 +21,7 @@ export abstract class GenericProjectElementFacade extends GenericFacade {
         icon: string,
         data: object,
     ): void {
-        this.registryFacade.notify( StateUtil.buildNotificationMessage( severity, summary, detail, icon, data ) )
+        this.registryFacade.notify( StateHelper.buildNotificationMessage( severity, summary, detail, icon, data ) )
     }
 
     protected notifySuccess (translationPrefix: string, icon: string, data: object): void {

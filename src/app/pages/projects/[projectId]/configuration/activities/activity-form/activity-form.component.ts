@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, OnDestroy, signal, WritableSignal } from '@angular/core'
 import {ActivityFacade} from '@pages/projects/[projectId]/configuration/activities/data/state/activity.facade'
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms'
-import {RegistryValidators} from '@shared/helpers/util/registry.validator'
+import {RegistryValidators} from '@shared/helpers/registry.validator'
 import {ActivityDto} from '@pages/projects/[projectId]/configuration/activities/data/dto/activity.dto'
 import {Button} from 'primeng/button'
 import {CardModule} from 'primeng/card'
@@ -10,14 +10,14 @@ import {FormComponent} from '@shared/ui/form/form.component'
 import {FormFieldErrorComponent} from '@shared/ui/form-field-error/form-field-error.component'
 import {InputTextModule} from 'primeng/inputtext'
 import {TranslatePipe} from '@ngx-translate/core'
-import {FormUtil} from '@shared/helpers/util/form.util'
+import {FormHelper} from '@shared/helpers/form.helper'
 import {ActivityModel} from '@shared/models/model/activity.model'
 import {RegistryRequiredDirective} from '@shared/directives/registry-required.directive'
 import {ProjectModel} from '@shared/models/model/project.model'
-import {DateUtil} from '@shared/helpers/util/date.util'
+import {DateHelper} from '@shared/helpers/date.helper'
 import {Textarea} from 'primeng/textarea'
 import {GenericFormComponent} from '@shared/ui/base/generic-form.component'
-import {withLoading} from '@shared/helpers/util/rx.util'
+import {withLoading} from '@shared/helpers/rx.helper'
 import {DurationFieldComponent} from '@shared/ui/duration-field/duration-field.component'
 import {
     NumberRangeFieldComponent,
@@ -25,7 +25,7 @@ import {
 import {DateFormatPipe} from '@shared/helpers/pipe/date-format.pipe'
 import {FormTitlePipe} from '@shared/helpers/pipe/form-title.pipe'
 import {FormButtonPipe} from '@shared/helpers/pipe/form-button.pipe'
-import {GenericUtil} from '@shared/helpers/util/generic.util'
+import {GenericHelper} from '@shared/helpers/generic.helper'
 import {DateTimeFieldComponent} from '@shared/ui/date-time-field/date-time-field.component'
 import {FormIconPipe} from '@shared/helpers/pipe/form-icon.pipe'
 
@@ -72,7 +72,7 @@ export class ActivityFormComponent extends GenericFormComponent<ActivityModel, A
     }
 
     protected override loadData(): void {
-        if (GenericUtil.nonNull(this.idParam)) {
+        if (GenericHelper.nonNull(this.idParam)) {
             this.subscriptions.add(
                 this.facade.fetchActivity(this.idParam!).pipe(
                     withLoading(this.loading),
@@ -112,7 +112,7 @@ export class ActivityFormComponent extends GenericFormComponent<ActivityModel, A
     }
 
     protected handleLoadedElement(): void {
-        if (!GenericUtil.nonNull(this.idParam)) {
+        if (!GenericHelper.nonNull(this.idParam)) {
             this.applyActivity(undefined)
         }
     }
@@ -130,7 +130,7 @@ export class ActivityFormComponent extends GenericFormComponent<ActivityModel, A
         this.name.patchValue(element.name)
         this.description.patchValue(element.description)
 
-        this.duration.patchValue(DateUtil.parseIsoDuration(element.duration?.value))
+        this.duration.patchValue(DateHelper.parseIsoDuration(element.duration?.value))
 
         this.allowedParticipants.patchValue(element.allowedParticipants)
 
@@ -141,10 +141,10 @@ export class ActivityFormComponent extends GenericFormComponent<ActivityModel, A
     protected submit(): void {
         if (this.saving() || this.loading()) return
 
-        const editing: boolean = GenericUtil.nonNull(this.idParam)
+        const editing: boolean = GenericHelper.nonNull(this.idParam)
         if (editing && !this.activity()) return
 
-        if (!FormUtil.isFormValid(this.form)) {
+        if (!FormHelper.isFormValid(this.form)) {
             this.logInvalidForm(this.form.value)
             return
         }
@@ -157,7 +157,7 @@ export class ActivityFormComponent extends GenericFormComponent<ActivityModel, A
         return {
             name: this.name.value,
             description: this.description.value,
-            duration: this.duration.value ? DateUtil.toIsoDuration(
+            duration: this.duration.value ? DateHelper.toIsoDuration(
                 this.duration.value.hours,
                 this.duration.value.minutes,
             ) : undefined,

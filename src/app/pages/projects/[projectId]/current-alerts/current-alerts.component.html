@@ -1,4 +1,4 @@
-@if (GenericUtil.nonNull(facade.currentAlertsPage()) && facade.currentAlertsPage()!.content.length > 0) {
+@if (GenericHelper.nonNull(facade.currentAlertsPage()) && facade.currentAlertsPage()!.content.length > 0) {
     <h2>{{ 'project-home.alerts.title' | translate }}</h2>
     <i class='secondary-color last-refresh'>
         {{
@@ -15,7 +15,7 @@
                 [responsiveOptions]='carouselBreakpoints'>
         <ng-template let-alert #item>
             <div class='h-100 p-2'>
-                @if (GenericUtil.nonNull(alert)) {
+                @if (GenericHelper.nonNull(alert)) {
                     <app-alert-element [alert]='alert' [carouselView]='true' />
                 } @else {
                     <div class='h-100 d-flex align-items-center'>

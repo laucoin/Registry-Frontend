@@ -18,7 +18,7 @@ import { Button } from 'primeng/button'
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import { SelectItem } from 'primeng/api'
 import { BaseModel } from '@shared/models/model/base.model'
-import { GenericUtil } from '@shared/helpers/util/generic.util'
+import { GenericHelper } from '@shared/helpers/generic.helper'
 
 @Component( {
     selector: 'app-select-elements-field',
@@ -42,7 +42,7 @@ import { GenericUtil } from '@shared/helpers/util/generic.util'
 export class SelectElementsFieldComponent<T extends BaseModel> implements ControlValueAccessor {
     @ContentChildren( RegistryTemplateDirective ) public templates: QueryList<RegistryTemplateDirective> | undefined
 
-    protected readonly GenericUtil: typeof GenericUtil = GenericUtil
+    protected readonly GenericHelper: typeof GenericHelper = GenericHelper
 
     public readonly suggestions: InputSignal<SelectItem<T>[]> = input<SelectItem<T>[]>( [] )
     public readonly selectItemBuilder: InputSignal<(element: T) => SelectItem<T>> = input.required()

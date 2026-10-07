@@ -4,7 +4,7 @@ import { Carousel, CarouselResponsiveOptions } from 'primeng/carousel'
 import { GenericComponent } from '@shared/ui/base/generic.component'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
 import { TranslatePipe } from '@ngx-translate/core'
-import { GenericUtil } from '@shared/helpers/util/generic.util'
+import { GenericHelper } from '@shared/helpers/generic.helper'
 import { AlertModel } from '@shared/models/model/alert.model'
 import { Button } from 'primeng/button'
 import { AlertElementComponent } from '@shared/ui/alert-element/alert-element.component'
@@ -47,7 +47,7 @@ export class CurrentAlertsComponent extends GenericComponent implements OnDestro
     protected readonly hasOtherCurrentAlert: Signal<boolean> = computed( (): boolean => {
         const page: number | undefined = this.facade.currentAlertsPage()?.pageNumber
         const totalPages: number | undefined = this.facade.currentAlertsPage()?.totalPages
-        return GenericUtil.nonNull( page ) && GenericUtil.nonNull( totalPages ) ? page! < totalPages! : false
+        return GenericHelper.nonNull( page ) && GenericHelper.nonNull( totalPages ) ? page! < totalPages! : false
     } )
 
     protected readonly content: Signal<(AlertModel | undefined)[]> = computed( (): (AlertModel | undefined)[] => {

@@ -2,27 +2,27 @@ import { AbstractControl, FormGroup, ValidationErrors, ValidatorFn } from '@angu
 import { ProjectOptionModel } from '@pages/projects/data/model/project-option.model'
 import { SelectItem } from 'primeng/api'
 import { NumericRangeModel } from '@pages/projects/[projectId]/configuration/activities/data/model/numeric-range.model'
-import { GenericUtil } from '@shared/helpers/util/generic.util'
+import { GenericHelper } from '@shared/helpers/generic.helper'
 import { CustomDatetimeModel } from '@shared/models/model/custom-datetime.model'
-import { DateUtil } from '@shared/helpers/util/date.util'
-import { StringUtil } from '@shared/helpers/util/string.util'
+import { DateHelper } from '@shared/helpers/date.helper'
+import { StringHelper } from '@shared/helpers/string.helper'
 import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
 
 export class RegistryValidators {
     public static nonBlank (): ValidatorFn {
         return (control: AbstractControl): ValidationErrors | null => {
-            const isBlank: boolean = StringUtil.isBlank( control.value )
+            const isBlank: boolean = StringHelper.isBlank( control.value )
             return isBlank ? { blank: true } : null
         }
     }
 
     public static minDateTime (min: CustomDatetimeModel, formatedMinDate: string | undefined): ValidatorFn {
         return (control: AbstractControl): ValidationErrors | null => {
-            if (GenericUtil.isNull( control.value )) return null
+            if (GenericHelper.isNull( control.value )) return null
             const value: CustomDatetimeModel | undefined = 'date' in control.value
                                                            ? control.value
-                                                           : DateUtil.toCustomDateTime( control.value )
-            if (DateUtil.isCustomBefore( value, min )) {
+                                                           : DateHelper.toCustomDateTime( control.value )
+            if (DateHelper.isCustomBefore( value, min )) {
                 return { minDate: { min: formatedMinDate } }
             }
 
@@ -32,12 +32,12 @@ export class RegistryValidators {
 
     public static maxDateTime (max: CustomDatetimeModel, formatedMaxDate: string | undefined): ValidatorFn {
         return (control: AbstractControl): ValidationErrors | null => {
-            if (GenericUtil.isNull( control.value )) return null
+            if (GenericHelper.isNull( control.value )) return null
             const value: CustomDatetimeModel | undefined = 'date' in control.value
                                                            ? control.value
-                                                           : DateUtil.toCustomDateTime( control.value )
+                                                           : DateHelper.toCustomDateTime( control.value )
 
-            if (DateUtil.isCustomDateAfter( value, max )) {
+            if (DateHelper.isCustomDateAfter( value, max )) {
                 return { maxDate: { max: formatedMaxDate } }
             }
 
@@ -72,7 +72,7 @@ export class RegistryValidators {
     public static numericRange (): ValidatorFn {
         return (control: AbstractControl): ValidationErrors | null => {
             const value: NumericRangeModel | undefined = control.value
-            if (!value || GenericUtil.isNull( value.lower ) || GenericUtil.isNull( value.upper )) return null
+            if (!value || GenericHelper.isNull( value.lower ) || GenericHelper.isNull( value.upper )) return null
 
             if (value.upper! < value.lower!) {
                 return { rangeMin: { min: value.lower, actual: value.upper } }
@@ -85,7 +85,7 @@ export class RegistryValidators {
     public static numericRangeMin (min: number): ValidatorFn {
         return (control: AbstractControl): ValidationErrors | null => {
             const value: NumericRangeModel | undefined = control.value
-            if (!value || GenericUtil.isNull( value.lower )) return null
+            if (!value || GenericHelper.isNull( value.lower )) return null
 
             if (value.lower! < min) {
                 return { min: { min: min, actual: value.lower } }
@@ -98,7 +98,7 @@ export class RegistryValidators {
     public static numericRangeMax (max: number): ValidatorFn {
         return (control: AbstractControl): ValidationErrors | null => {
             const value: NumericRangeModel | undefined = control.value
-            if (!value || GenericUtil.isNull( value.upper )) return null
+            if (!value || GenericHelper.isNull( value.upper )) return null
 
             if (value.upper! > max) {
                 return { max: { max: max, actual: value.upper } }
@@ -114,8 +114,8 @@ export class RegistryValidators {
             if (!value) return null
 
             if (
-                (GenericUtil.isNull( value.lower ) && GenericUtil.nonNull( value.upper ))
-                || (GenericUtil.isNull( value.upper ) && GenericUtil.nonNull( value.lower ))
+                (GenericHelper.isNull( value.lower ) && GenericHelper.nonNull( value.upper ))
+                || (GenericHelper.isNull( value.upper ) && GenericHelper.nonNull( value.lower ))
             ) {
                 return { rangeBothDefined: true }
             }
@@ -129,7 +129,7 @@ export class RegistryValidators {
             const value: CustomDatetimeModel | undefined = control.value
             if (!value) return null
 
-            if (StringUtil.isNullOrBlank( value.date ) && !StringUtil.isNullOrBlank( value.time )) {
+            if (StringHelper.isNullOrBlank( value.date ) && !StringHelper.isNullOrBlank( value.time )) {
                 return { dateRequiredForTime: true }
             }
 
@@ -142,7 +142,7 @@ export class RegistryValidators {
             const begin: CustomDatetimeModel | undefined = group.get( beginKey )?.value
             const end: CustomDatetimeModel | undefined = group.get( endKey )?.value
 
-            if (GenericUtil.nonNull( begin ) && GenericUtil.nonNull( end ) && DateUtil.isAfterOrEqual( begin, end )) {
+            if (GenericHelper.nonNull( begin ) && GenericHelper.nonNull( end ) && DateHelper.isAfterOrEqual( begin, end )) {
                 return { beginDateBeforeEndDate: true }
             }
 
@@ -155,7 +155,7 @@ export class RegistryValidators {
             const first: unknown | undefined = group.get( firstKey )?.value
             const second: unknown | undefined = group.get( secondKey )?.value
 
-            if (GenericUtil.isNull( first ) && GenericUtil.isNull( second )) {
+            if (GenericHelper.isNull( first ) && GenericHelper.isNull( second )) {
                 return { atLeastOneRequired: true }
             }
 

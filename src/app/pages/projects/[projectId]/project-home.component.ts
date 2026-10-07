@@ -5,7 +5,7 @@ import { DashboardComponent } from '@pages/projects/[projectId]/dashboard/dashbo
 import { CurrentActivitiesComponent } from '@pages/projects/[projectId]/current-activities/current-activities.component'
 import { CurrentMovementsComponent } from '@pages/projects/[projectId]/current-movements/current-movements.component'
 import { GenericComponent } from '@shared/ui/base/generic.component'
-import { GenericUtil } from '@shared/helpers/util/generic.util'
+import { GenericHelper } from '@shared/helpers/generic.helper'
 import { ParamMap } from '@angular/router'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { CurrentAlertsComponent } from '@pages/projects/[projectId]/current-alerts/current-alerts.component'
@@ -36,7 +36,7 @@ export class ProjectHomeComponent extends GenericComponent {
     private readonly queryParams: Signal<ParamMap | undefined> = toSignal( this.route.queryParamMap )
     protected readonly currentTab: Signal<string> = computed( (): string => {
         const param: string | null | undefined = this.queryParams()?.get( this.tabParam )
-        if (GenericUtil.isNull( param ) || !this.tab.includes( param! )) {
+        if (GenericHelper.isNull( param ) || !this.tab.includes( param! )) {
             return this.tab[0]!
         }
         return param!

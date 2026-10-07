@@ -2,7 +2,7 @@ import { Action, Selector, State, StateContext } from '@ngxs/store'
 import { catchError, finalize, map, Observable, of } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
 import { GenericElementStore } from '@shared/helpers/state/generic-element.store'
-import { initialize } from '@shared/helpers/util/rx.util'
+import { initialize } from '@shared/helpers/rx.helper'
 import {
     CreateProject,
     DeleteProject,
@@ -22,7 +22,7 @@ import {
 import { ProjectApi } from '@pages/projects/data/state/project.api'
 import { ProjectFacade } from '@pages/projects/data/state/project/project.facade'
 import { inject, Injectable } from '@angular/core'
-import { StateUtil } from '@shared/helpers/state/state.util'
+import { StateHelper } from '@shared/helpers/state/state.helper'
 import {
     ElementRequestInformationModel,
 } from '@shared/models/model/element-request-information.model'
@@ -176,14 +176,14 @@ export class ProjectStore extends GenericElementStore<ProjectStoreModel> {
     @Action( StartProjectsPageLoader )
     public startProjectsPageLoader (ctx: StateContext<ProjectStoreModel>): void {
         ctx.patchState( {
-            projects: StateUtil.updatePageLoader( ctx.getState().projects, true ),
+            projects: StateHelper.updatePageLoader( ctx.getState().projects, true ),
         } )
     }
 
     @Action( StopProjectsPageLoader )
     public stopProjectsPageLoader (ctx: StateContext<ProjectStoreModel>): void {
         ctx.patchState( {
-            projects: StateUtil.updatePageLoader( ctx.getState().projects, false ),
+            projects: StateHelper.updatePageLoader( ctx.getState().projects, false ),
         } )
     }
 
@@ -229,14 +229,14 @@ export class ProjectStore extends GenericElementStore<ProjectStoreModel> {
     @Action( StartProjectLoader )
     public startProjectLoader (ctx: StateContext<ProjectStoreModel>): void {
         ctx.patchState( {
-            project: StateUtil.updateElementLoader( ctx.getState().project, true ),
+            project: StateHelper.updateElementLoader( ctx.getState().project, true ),
         } )
     }
 
     @Action( StopProjectLoader )
     public stopProjectLoader (ctx: StateContext<ProjectStoreModel>): void {
         ctx.patchState( {
-            project: StateUtil.updateElementLoader( ctx.getState().project, false ),
+            project: StateHelper.updateElementLoader( ctx.getState().project, false ),
         } )
     }
 

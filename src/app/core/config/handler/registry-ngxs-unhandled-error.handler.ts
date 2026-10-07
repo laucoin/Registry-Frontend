@@ -4,7 +4,7 @@ import { catchError, ObservableInput } from 'rxjs'
 import { NgxsNextPluginFn } from '@ngxs/store/plugins'
 import { ErrorModel } from '@shared/models/model/error.model'
 import { RegistryFacade } from '@core/registry/state/registry.facade'
-import { reportError } from '@shared/helpers/util/rx.util'
+import { reportError } from '@shared/helpers/rx.helper'
 
 @Injectable()
 export class RegistryNgxsUnhandledErrorHandler implements NgxsPlugin {

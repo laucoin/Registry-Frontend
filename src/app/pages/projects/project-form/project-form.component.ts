@@ -5,15 +5,15 @@ import { ProjectDto } from '@pages/projects/data/dto/project.dto'
 import { ProjectFacade } from '@pages/projects/data/state/project/project.facade'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
-import { RegistryValidators } from '@shared/helpers/util/registry.validator'
+import { RegistryValidators } from '@shared/helpers/registry.validator'
 import { combineLatest, filter, map, Observable, tap } from 'rxjs'
 import { ProjectOptionModel } from '@pages/projects/data/model/project-option.model'
-import { ArrayUtil } from '@shared/helpers/util/array.util'
+import { ArrayHelper } from '@shared/helpers/array.helper'
 import { SelectItem } from 'primeng/api'
-import { FormUtil } from '@shared/helpers/util/form.util'
+import { FormHelper } from '@shared/helpers/form.helper'
 import { UpdateProject } from '@pages/projects/data/state/project/project.action'
 import { Checkbox, CheckboxChangeEvent } from 'primeng/checkbox'
-import { GenericUtil } from '@shared/helpers/util/generic.util'
+import { GenericHelper } from '@shared/helpers/generic.helper'
 import { Step, StepItem, StepPanel, Stepper } from 'primeng/stepper'
 import { Button } from 'primeng/button'
 import { TranslatePipe } from '@ngx-translate/core'
@@ -90,7 +90,7 @@ export class ProjectFormComponent extends GenericFormComponent<ProjectModel, Pro
         this.facade.resetProject()
         this.facade.fetchProjectOptions()
 
-        if (GenericUtil.nonNull( this.idParam )) {
+        if (GenericHelper.nonNull( this.idParam )) {
             this.facade.fetchProject( this.idParam! )
         }
     }
@@ -112,7 +112,7 @@ export class ProjectFormComponent extends GenericFormComponent<ProjectModel, Pro
         this.subscriptions.add(
             combineLatest( [ this.facade.project$, this.facade.projectOptionsMetadata$ ] ).pipe(
                 filter( ([ , options ]: [ ProjectModel | undefined, ProjectOptionModel[] ]): boolean =>
-                    !ArrayUtil.isNullOrEmpty( options ),
+                    !ArrayHelper.isNullOrEmpty( options ),
                 ),
                 map( ([ project, options ]: [ ProjectModel | undefined, ProjectOptionModel[] ]): void => {
                     this.addOptionsFieldIfNeeded( options )
@@ -154,7 +154,7 @@ export class ProjectFormComponent extends GenericFormComponent<ProjectModel, Pro
     }
 
     protected submit (): void {
-        if (!FormUtil.isFormValid( this.form ) || !FormUtil.isFormValid( this.optionsForm )) {
+        if (!FormHelper.isFormValid( this.form ) || !FormHelper.isFormValid( this.optionsForm )) {
             this.logInvalidForm( {
                 ...this.form.value,
                 ...this.optionsForm.value,
@@ -177,10 +177,10 @@ export class ProjectFormComponent extends GenericFormComponent<ProjectModel, Pro
 
     private navigateAfterSave (): void {
         const createdProjectId: string | undefined = this.facade.createdProjectId()
-        const isCreation: boolean = GenericUtil.isNull( this.facade.project() )
+        const isCreation: boolean = GenericHelper.isNull( this.facade.project() )
 
         this.navigateToRedirectUri(
-            isCreation && GenericUtil.nonNull( createdProjectId )
+            isCreation && GenericHelper.nonNull( createdProjectId )
             ? RegistryRouteEnum.PROJECT.replace( ':projectId', createdProjectId! ) as RegistryRouteEnum
             : undefined,
         )

@@ -59,7 +59,7 @@
         <app-participant-element [participant]='participant' [groupIdToRemove]='group()?.id' />
     </ng-template>
     <ng-template appTemplate='creation'>
-        @if (CurrentUserUtil.hasProjectAuthority(registryFacade.currentUser(), facade.selectedProjectId(), ProjectAuthority.REGISTRY_PROJECT_GROUP_U)) {
+        @if (CurrentUserHelper.hasProjectAuthority(registryFacade.currentUser(), facade.selectedProjectId(), ProjectAuthority.REGISTRY_PROJECT_GROUP_U)) {
             <p-button (onClick)='initAddMembersForm()'
                       class='m-1'
                       severity='info'
@@ -68,8 +68,8 @@
                       [label]='registryFacade.tinyScreen() ? "" : "groups.actions.add-members" | translate'
                       icon='pi pi-user-plus' />
         }
-        @if (CurrentUserUtil.hasProjectAuthority(registryFacade.currentUser(), facade.selectedProjectId(), ProjectAuthority.REGISTRY_PROJECT_PARTICIPANT_C)
-             && CurrentUserUtil.hasProjectAuthority(registryFacade.currentUser(), facade.selectedProjectId(), ProjectAuthority.REGISTRY_PROJECT_GROUP_U)) {
+        @if (CurrentUserHelper.hasProjectAuthority(registryFacade.currentUser(), facade.selectedProjectId(), ProjectAuthority.REGISTRY_PROJECT_PARTICIPANT_C)
+             && CurrentUserHelper.hasProjectAuthority(registryFacade.currentUser(), facade.selectedProjectId(), ProjectAuthority.REGISTRY_PROJECT_GROUP_U)) {
             <p-button (onClick)='initCreateMemberForm()'
                       class='m-1'
                       severity='success'
@@ -92,7 +92,7 @@
                 <app-select-elements-field [formControl]='addMembersParticipants' [suggestions]='facade.searchedParticipantsMetadata()'
                                            [fluid]='true'
                                            [multiple]='true'
-                                           [selectItemBuilder]='ParticipantUtil.toSelectItem'
+                                           [selectItemBuilder]='ParticipantHelper.toSelectItem'
                                            [selectionLabel]='"groups.form.members.selected" | pluralTranslation: addMembersParticipants.value |
                                        translate'
                                            [emptyMessage]='"groups.form.members.empty" | translate'
@@ -100,7 +100,7 @@
                                            inputId='members'
                                            (handleSearch)='handleSearch($event.query)' />
                 <app-form-field-error [errors]='addMembersParticipants.errors'
-                                      [invalid]='FormUtil.invalid(addMembersParticipants)'
+                                      [invalid]='FormHelper.invalid(addMembersParticipants)'
                                       translationPrefix='groups.form.error.add-members' />
             </div>
 

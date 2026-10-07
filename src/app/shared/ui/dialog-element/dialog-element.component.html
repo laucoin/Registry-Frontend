@@ -15,7 +15,7 @@
                     </div>
                 </ng-template>
             }
-            @if (GenericUtil.nonNull(communication().alert) && alertVisible()) {
+            @if (GenericHelper.nonNull(communication().alert) && alertVisible()) {
                 <div class='mb-2'>
                     <app-message [severity]='alertSeverity()' [reverseBackground]='true'>
                         <div class='response-title mb-2'>{{ communication().alert!.title }}</div>

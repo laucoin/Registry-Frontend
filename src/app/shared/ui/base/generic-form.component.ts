@@ -3,13 +3,13 @@ import { GenericComponent } from '@shared/ui/base/generic.component'
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
 import { Observable, Subscription } from 'rxjs'
 import { ErrorModel } from '@shared/models/model/error.model'
-import { withLoading } from '@shared/helpers/util/rx.util'
+import { withLoading } from '@shared/helpers/rx.helper'
 import { ProjectModel } from '@shared/models/model/project.model'
-import { RegistryValidators } from '@shared/helpers/util/registry.validator'
+import { RegistryValidators } from '@shared/helpers/registry.validator'
 import { DestroyRef, inject, signal, WritableSignal } from '@angular/core'
 import { CustomDateFormatPipe } from '@shared/helpers/pipe/custom-date-format.pipe'
 import { Location } from '@angular/common'
-import { GenericUtil } from '@shared/helpers/util/generic.util'
+import { GenericHelper } from '@shared/helpers/generic.helper'
 import { RegistryConfig } from '@core/config/registry.config'
 
 export abstract class GenericFormComponent<M, D> extends GenericComponent {
@@ -108,7 +108,7 @@ export abstract class GenericFormComponent<M, D> extends GenericComponent {
     protected abstract buildDto (): D
 
     protected navigateToRedirectUri (route: RegistryRouteEnum | undefined = undefined): void {
-        if (GenericUtil.nonNull( route )) this.router.navigateByUrl( route! ).catch( (): void => this.location.back() )
+        if (GenericHelper.nonNull( route )) this.router.navigateByUrl( route! ).catch( (): void => this.location.back() )
         else this.location.back()
     }
 

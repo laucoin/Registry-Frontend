@@ -2,24 +2,24 @@ import { Component, computed, inject, input, InputSignal, Signal } from '@angula
 import { Card } from 'primeng/card'
 import { CommunicationModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
 import { Avatar } from 'primeng/avatar'
-import { StringUtil } from '@shared/helpers/util/string.util'
+import { StringHelper } from '@shared/helpers/string.helper'
 import { HistoryUserModel } from '@shared/models/model/history-user.model'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
 import { CurrentUserModel } from '@shared/models/model/current-user.model'
 import { ContextMenu } from 'primeng/contextmenu'
 import { Ripple } from 'primeng/ripple'
 import { TranslatePipe } from '@ngx-translate/core'
-import { CommunicationUtil } from '@shared/helpers/util/communication.util'
+import { CommunicationHelper } from '@shared/helpers/communication.helper'
 import { CommunicationFacade } from '@pages/projects/[projectId]/movements/communication/data/state/communication.facade'
 import { MenuItem } from 'primeng/api'
 import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum'
 import { ElementActionEnum } from '@shared/models/enumeration/element-action.enum'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { GenericElementComponent } from '@shared/ui/base/generic-element.component'
-import { AlertUtil } from '@shared/helpers/util/alert.util'
+import { AlertHelper } from '@shared/helpers/alert.helper'
 import { MessageComponent } from '@shared/ui/message/message.component'
 import { SeverityTagComponent } from '@shared/ui/severity-tag/severity-tag.component'
-import { DateUtil } from '@shared/helpers/util/date.util'
+import { DateHelper } from '@shared/helpers/date.helper'
 
 @Component( {
     selector: 'app-dialog-element',
@@ -107,11 +107,11 @@ export class DialogElementComponent extends GenericElementComponent {
     ] )
 
     protected readonly firstAuthorMessage: Signal<boolean> = computed( (): boolean =>
-        CommunicationUtil.getAuthorId( this.communication() ) !== this.previousAuthorId(),
+        CommunicationHelper.getAuthorId( this.communication() ) !== this.previousAuthorId(),
     )
 
     protected readonly lastAuthorMessage: Signal<boolean> = computed( (): boolean =>
-        CommunicationUtil.getAuthorId( this.communication() ) !== this.nextAuthorId(),
+        CommunicationHelper.getAuthorId( this.communication() ) !== this.nextAuthorId(),
     )
 
     protected readonly authorIsCurrentUser: Signal<boolean> = computed(
@@ -120,26 +120,26 @@ export class DialogElementComponent extends GenericElementComponent {
 
     protected readonly authorName: Signal<string> = computed( (): string => this.buildAuthorName( this.communication() ) )
 
-    protected readonly alertSeverity: Signal<SeverityEnum | undefined> = computed( (): SeverityEnum | undefined => AlertUtil.getSeverityFromStatus(
+    protected readonly alertSeverity: Signal<SeverityEnum | undefined> = computed( (): SeverityEnum | undefined => AlertHelper.getSeverityFromStatus(
         this.communication().alert?.status?.value ) )
 
     protected readonly updated: Signal<boolean> = computed( (): boolean =>
-        DateUtil.isAfter( this.communication().lastEdition.dateTime, this.communication().creation.dateTime ),
+        DateHelper.isAfter( this.communication().lastEdition.dateTime, this.communication().creation.dateTime ),
     )
 
     private buildAuthorIsCurrentUser (
         communication: CommunicationModel,
         currentUser: CurrentUserModel | undefined,
     ): boolean {
-        return StringUtil.isNullOrBlank( communication.movement?.reason?.label ) && communication?.lastEdition?.user?.id === currentUser?.id
+        return StringHelper.isNullOrBlank( communication.movement?.reason?.label ) && communication?.lastEdition?.user?.id === currentUser?.id
     }
 
 
     private buildAuthorName (communication: CommunicationModel): string {
         switch (true) {
-            case StringUtil.isNotNullNorBlank( communication.movement?.reason?.label ):
+            case StringHelper.isNotNullNorBlank( communication.movement?.reason?.label ):
                 return communication.movement!.reason!.label!
-            case StringUtil.isNotNullNorBlank( communication.lastEdition?.user?.firstName ): {
+            case StringHelper.isNotNullNorBlank( communication.lastEdition?.user?.firstName ): {
                 const lastEditor: HistoryUserModel = communication.lastEdition!.user!
                 return `${lastEditor.firstName} ${lastEditor.lastName}`
             }

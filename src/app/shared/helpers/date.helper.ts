@@ -1,16 +1,16 @@
-import { StringUtil } from '@shared/helpers/util/string.util'
+import { StringHelper } from '@shared/helpers/string.helper'
 import { SplitTimeModel } from '@shared/models/model/split-time.model'
 import { CustomDatetimeModel } from '@shared/models/model/custom-datetime.model'
-import { GenericUtil } from '@shared/helpers/util/generic.util'
+import { GenericHelper } from '@shared/helpers/generic.helper'
 import { IntervalModel } from '@shared/models/model/interval.model'
 
-export class DateUtil {
+export class DateHelper {
     public static getDate (date: Date): string {
         const toFormat: Date = new Date( date )
-        return `${toFormat.getFullYear()}-${StringUtil.formatDigits(
+        return `${toFormat.getFullYear()}-${StringHelper.formatDigits(
             toFormat.getMonth() + 1,
             2,
-        )}-${StringUtil.formatDigits( toFormat.getDate(), 2 )}`
+        )}-${StringHelper.formatDigits( toFormat.getDate(), 2 )}`
     }
 
     public static buildDate (date: string | Date | undefined): Date | undefined {
@@ -27,13 +27,13 @@ export class DateUtil {
         ignoreNull: boolean = false,
     ): (CustomDatetimeModel | undefined)[] {
         const toSort: (CustomDatetimeModel | undefined)[] = dates.filter( (date: CustomDatetimeModel | undefined): boolean =>
-            ignoreNull ? GenericUtil.nonNull( date?.date ) : true,
+            ignoreNull ? GenericHelper.nonNull( date?.date ) : true,
         )
 
         return toSort.sort( (a: CustomDatetimeModel | undefined, b: CustomDatetimeModel | undefined): 1 | -1 | 0 => {
-            if (DateUtil.isCustomBefore( a, b )) {
+            if (DateHelper.isCustomBefore( a, b )) {
                 return ascending ? -1 : 1
-            } else if (DateUtil.isCustomDateAfter( a, b )) {
+            } else if (DateHelper.isCustomDateAfter( a, b )) {
                 return ascending ? 1 : -1
             } else {
                 return 0
@@ -45,14 +45,14 @@ export class DateUtil {
         actual: CustomDatetimeModel | undefined,
         other: CustomDatetimeModel | undefined,
     ): boolean {
-        return this.isBefore( DateUtil.toDate( actual ), DateUtil.toDate( other ) )
+        return this.isBefore( DateHelper.toDate( actual ), DateHelper.toDate( other ) )
     }
 
     public static isBefore (actual: Date | undefined, other: Date | undefined): boolean {
         switch (true) {
-            case GenericUtil.isNull( other ):
+            case GenericHelper.isNull( other ):
                 return false
-            case GenericUtil.isNull( actual ) || new Date( actual! ).getTime() < new Date( other! ).getTime():
+            case GenericHelper.isNull( actual ) || new Date( actual! ).getTime() < new Date( other! ).getTime():
                 return true
             default:
                 return false
@@ -63,12 +63,12 @@ export class DateUtil {
         actual: CustomDatetimeModel | undefined,
         other: CustomDatetimeModel | undefined,
     ): boolean {
-        const actualDate: number | undefined = DateUtil.toDate( actual )?.getTime()
-        const otherDate: number | undefined = DateUtil.toDate( other )?.getTime()
+        const actualDate: number | undefined = DateHelper.toDate( actual )?.getTime()
+        const otherDate: number | undefined = DateHelper.toDate( other )?.getTime()
         switch (true) {
-            case GenericUtil.isNull( other ):
+            case GenericHelper.isNull( other ):
                 return false
-            case GenericUtil.isNull( actual ) || actualDate! <= otherDate!:
+            case GenericHelper.isNull( actual ) || actualDate! <= otherDate!:
                 return true
             default:
                 return false
@@ -79,14 +79,14 @@ export class DateUtil {
         actual: CustomDatetimeModel | undefined,
         other: CustomDatetimeModel | undefined,
     ): boolean {
-        return this.isAfter( DateUtil.toDate( actual ), DateUtil.toDate( other ) )
+        return this.isAfter( DateHelper.toDate( actual ), DateHelper.toDate( other ) )
     }
 
     public static isAfter (actual: Date | undefined, other: Date | undefined): boolean {
         switch (true) {
-            case GenericUtil.isNull( other ):
+            case GenericHelper.isNull( other ):
                 return false
-            case GenericUtil.isNull( actual ) || new Date( actual! ).getTime()! > new Date( other! ).getTime()!:
+            case GenericHelper.isNull( actual ) || new Date( actual! ).getTime()! > new Date( other! ).getTime()!:
                 return true
             default:
                 return false
@@ -97,12 +97,12 @@ export class DateUtil {
         actual: CustomDatetimeModel | undefined,
         other: CustomDatetimeModel | undefined,
     ): boolean {
-        const actualDate: number | undefined = DateUtil.toDate( actual )?.getTime()
-        const otherDate: number | undefined = DateUtil.toDate( other )?.getTime()
+        const actualDate: number | undefined = DateHelper.toDate( actual )?.getTime()
+        const otherDate: number | undefined = DateHelper.toDate( other )?.getTime()
         switch (true) {
-            case GenericUtil.isNull( other ):
+            case GenericHelper.isNull( other ):
                 return false
-            case GenericUtil.isNull( actual ) || actualDate! >= otherDate!:
+            case GenericHelper.isNull( actual ) || actualDate! >= otherDate!:
                 return true
             default:
                 return false
@@ -113,8 +113,8 @@ export class DateUtil {
         if (!date) return undefined
         const formattedDate: Date = new Date( date )
         return {
-            date: DateUtil.toIsoDate( formattedDate ),
-            time: DateUtil.toIsoTime( formattedDate ),
+            date: DateHelper.toIsoDate( formattedDate ),
+            time: DateHelper.toIsoTime( formattedDate ),
         }
     }
 
@@ -145,7 +145,7 @@ export class DateUtil {
             parseInt( hours ?? '0' ),
             parseInt( minutes ?? '0' ),
             parseInt( seconds ?? '0' ),
-            parseInt( StringUtil.truncate( milliseconds ?? '0', 3 ) ),
+            parseInt( StringHelper.truncate( milliseconds ?? '0', 3 ) ),
         )
 
         return formattedValue
@@ -155,21 +155,21 @@ export class DateUtil {
         dateTime: CustomDatetimeModel | undefined | null,
         mode: 'min' | 'max' = 'min',
     ): Date | undefined {
-        if (GenericUtil.isNull( dateTime ) || (GenericUtil.isNull( dateTime!.date ) && GenericUtil.isNull( dateTime!.time ))) return undefined
+        if (GenericHelper.isNull( dateTime ) || (GenericHelper.isNull( dateTime!.date ) && GenericHelper.isNull( dateTime!.time ))) return undefined
 
         const formattedValue: Date = new Date()
-        if (GenericUtil.isNull( dateTime?.date )) {
+        if (GenericHelper.isNull( dateTime?.date )) {
             formattedValue.setFullYear( 1970, 0, 1 )
         } else {
-            const date: Date = DateUtil.fromIsoDate( dateTime?.date )!
+            const date: Date = DateHelper.fromIsoDate( dateTime?.date )!
             formattedValue.setFullYear( date.getFullYear(), date.getMonth(), date.getDate() )
         }
 
-        if (GenericUtil.isNull( dateTime?.time )) {
+        if (GenericHelper.isNull( dateTime?.time )) {
             if (mode == 'min') formattedValue.setHours( 0, 0, 0, 0 )
             else formattedValue.setHours( 23, 59, 59, 999 )
         } else {
-            const time: Date = DateUtil.fromIsoTime( dateTime?.time )!
+            const time: Date = DateHelper.fromIsoTime( dateTime?.time )!
             formattedValue.setHours( time.getHours(), time.getMinutes(), time.getSeconds(), time.getMilliseconds() )
         }
 
@@ -199,7 +199,7 @@ export class DateUtil {
             return { hours: undefined, minutes: undefined }
         }
 
-        const match: RegExpMatchArray | null = duration.match( DateUtil.durationISO8601Regex )
+        const match: RegExpMatchArray | null = duration.match( DateHelper.durationISO8601Regex )
 
         if (!match) {
             throw new Error( 'Invalid ISO 8601 duration format' )
@@ -215,7 +215,7 @@ export class DateUtil {
         start: Date | undefined,
         end: Date | undefined,
     ): IntervalModel | undefined {
-        if (GenericUtil.isNull( start ) || GenericUtil.isNull( end )) return undefined
+        if (GenericHelper.isNull( start ) || GenericHelper.isNull( end )) return undefined
 
         const startTime: number = new Date( start! ).getTime()
         const endTime: number = new Date( end! ).getTime()

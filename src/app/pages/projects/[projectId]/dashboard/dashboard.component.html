@@ -1,11 +1,11 @@
 <div class='dashboard'>
-    @if (GenericUtil.nonNull(facade.participantsStatusError())) {
+    @if (GenericHelper.nonNull(facade.participantsStatusError())) {
         <app-severity-information [showImage]='false' [message]='facade.participantsStatusError()' />
     }
-    @if (GenericUtil.nonNull(facade.vehiclesStatusError())) {
+    @if (GenericHelper.nonNull(facade.vehiclesStatusError())) {
         <app-severity-information [showImage]='false' [message]='facade.vehiclesStatusError()' />
     }
-    @if (GenericUtil.isNull(facade.participantsStatusError())) {
+    @if (GenericHelper.isNull(facade.participantsStatusError())) {
         <p-card class='total-participant'>
             <ng-template #title>
                 <div class='d-flex justify-content-center align-items-center'>
@@ -70,7 +70,7 @@
             </ng-template>
         </p-card>
     }
-    @if (ProjectUtil.hasOption(registryFacade.selectedProject(), ProjectOptionEnum.VEHICLE) && GenericUtil.isNull(facade.vehiclesStatusError())) {
+    @if (ProjectHelper.hasOption(registryFacade.selectedProject(), ProjectOptionEnum.VEHICLE) && GenericHelper.isNull(facade.vehiclesStatusError())) {
         <p-card class='total-vehicle'>
             <ng-template #title>
                 <div class='d-flex justify-content-center align-items-center'>

@@ -4,7 +4,7 @@ import { AlertModel } from '@shared/models/model/alert.model'
 import { AlertStatusEnum } from '@shared/models/enumeration/alert-status.enum'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 
-export class AlertUtil {
+export class AlertHelper {
     public static toSelectItem (alert: AlertModel, datePipe: DateFormatPipe): SelectItem<AlertModel> {
         return {
             label: `${alert.title} (${datePipe.transform( alert.dateTime, 'datetime' )})`,

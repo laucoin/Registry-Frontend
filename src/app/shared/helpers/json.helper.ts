@@ -1,4 +1,4 @@
-import { GenericUtil } from '@shared/helpers/util/generic.util'
+import { GenericHelper } from '@shared/helpers/generic.helper'
 
 export class Utils {
     public static isJson (item: string | null): boolean {
@@ -10,10 +10,10 @@ export class Utils {
             return false
         }
 
-        return typeof value === 'object' && GenericUtil.nonNull( value )
+        return typeof value === 'object' && GenericHelper.nonNull( value )
     }
 
     public static isObject (item: unknown): boolean {
-        return typeof item === 'object' && GenericUtil.nonNull( item )
+        return typeof item === 'object' && GenericHelper.nonNull( item )
     }
 }

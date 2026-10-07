@@ -47,7 +47,7 @@
                     </small>
                 }
                 <app-form-field-error [errors]='firstName.errors'
-                                      [invalid]='FormUtil.invalid(firstName)'
+                                      [invalid]='FormHelper.invalid(firstName)'
                                       translationPrefix='participants.form.error.firstname' />
             </div>
             <div class='right-field field'>
@@ -64,7 +64,7 @@
                     </small>
                 }
                 <app-form-field-error [errors]='lastName.errors'
-                                      [invalid]='FormUtil.invalid(lastName)'
+                                      [invalid]='FormHelper.invalid(lastName)'
                                       translationPrefix='participants.form.error.lastname' />
             </div>
         </div>
@@ -82,7 +82,7 @@
                            id='birthday'
                            fluid />
             <app-form-field-error [errors]='birthday.errors'
-                                  [invalid]='FormUtil.invalid(birthday)'
+                                  [invalid]='FormHelper.invalid(birthday)'
                                   translationPrefix='participants.form.error.birthday' />
         </div>
         @if (!defaultGroup()) {
@@ -90,7 +90,7 @@
                 <div class='left-field field'>
                     <label for='begin-date-time'>{{ 'participants.form.begin-datetime' | translate }}</label>
                     <app-date-time-field [formControl]='beginDateTime'
-                                         [invalid]='FormUtil.invalid(beginDateTime)'
+                                         [invalid]='FormHelper.invalid(beginDateTime)'
                                          inputId='begin-date-time'
                                          [datePlaceholder]='"participants.form.placeholder.date" | translate: {
                                                             date: startDateExample | dateFormat: "date"
@@ -100,13 +100,13 @@
                                                          }' />
                     <small class='secondary-color'>{{ 'participants.form.hint.begin-date-time' | translate }}</small>
                     <app-form-field-error [errors]='beginDateTime.errors'
-                                          [invalid]='FormUtil.invalid(beginDateTime)'
+                                          [invalid]='FormHelper.invalid(beginDateTime)'
                                           translationPrefix='participants.form.error.begin-datetime' />
                 </div>
                 <div class='right-field field'>
                     <label for='end-date-time'>{{ 'participants.form.end-datetime' | translate }}</label>
                     <app-date-time-field [formControl]='endDateTime'
-                                         [invalid]='FormUtil.invalid(endDateTime)'
+                                         [invalid]='FormHelper.invalid(endDateTime)'
                                          inputId='end-date-time'
                                          [datePlaceholder]='"participants.form.placeholder.date" | translate: {
                                                             date: endDateExample | dateFormat: "date"
@@ -116,12 +116,12 @@
                                                          }' />
                     <small class='secondary-color'>{{ 'participants.form.hint.end-date-time' | translate }}</small>
                     <app-form-field-error [errors]='endDateTime.errors'
-                                          [invalid]='FormUtil.invalid(endDateTime)'
+                                          [invalid]='FormHelper.invalid(endDateTime)'
                                           translationPrefix='participants.form.error.end-datetime' />
                 </div>
             </div>
             <app-form-field-error [errors]='form.errors'
-                                  [invalid]='FormUtil.invalid(form) && beginDateTime.valid && endDateTime.valid'
+                                  [invalid]='FormHelper.invalid(form) && beginDateTime.valid && endDateTime.valid'
                                   translationPrefix='participants.form.error.date-range' />
             <p-divider />
             <div class='field'>
@@ -130,7 +130,7 @@
                 <app-select-elements-field [formControl]='groups'
                                            [fluid]='true'
                                            [multiple]='true'
-                                           [selectItemBuilder]='GroupUtil.toSelectItem'
+                                           [selectItemBuilder]='GroupHelper.toSelectItem'
                                            [selectionLabel]='"participants.form.groups.selected" | pluralTranslation:
                                            (groups.value?.length ?? 0) | translate'
                                            [emptyMessage]='"participants.form.groups.empty-search" | translate'
