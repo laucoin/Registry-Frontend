@@ -9,7 +9,7 @@ import { CommunicationModel } from '@pages/projects/[projectId]/movements/commun
 export interface AlertStoreModel {
     alerts: PageRequestInformationModel<AlertPageParamsModel, AlertModel>
     communications: PageRequestInformationModel<CommunicationPageParamsModel, CommunicationModel>
-    _metadata: {
+    metadata: {
         status: SelectItem<AlertStatusEnum | undefined>[],
         visibilities: SelectItem<boolean | undefined>[],
     }

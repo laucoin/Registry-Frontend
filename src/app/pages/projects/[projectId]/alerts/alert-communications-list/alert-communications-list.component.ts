@@ -35,7 +35,7 @@ export class AlertCommunicationsListComponent implements OnInit, OnDestroy {
     }
 
     protected loadData (): void {
-        this.facade.fetchAlertCommunicationsPage( this.alert().id!, undefined, undefined, true )
+        this.facade.fetchAlertCommunicationsPage( this.alert().id!, undefined, undefined)
     }
 
     protected getPreviousAuthorId (index: number): string | undefined {
@@ -57,9 +57,7 @@ export class AlertCommunicationsListComponent implements OnInit, OnDestroy {
                     this.facade.fetchAlertCommunicationsPage(
                         this.alert().id,
                         undefined,
-                        undefined,
-                        true,
-                    )
+                        undefined)
                 } ),
             ).subscribe(),
         )
@@ -70,9 +68,7 @@ export class AlertCommunicationsListComponent implements OnInit, OnDestroy {
                     this.facade.fetchAlertCommunicationsPage(
                         this.alert().id,
                         this.facade.alertCommunicationsPage()?.pageNumber,
-                        this.facade.alertCommunicationsPage()?.pageSize,
-                        true,
-                    )
+                        this.facade.alertCommunicationsPage()?.pageSize)
                 } ),
             ).subscribe(),
         )

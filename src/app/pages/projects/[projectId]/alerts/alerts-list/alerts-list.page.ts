@@ -50,7 +50,7 @@ export class AlertsListPage extends GenericListComponent {
     }
 
     protected loadData(): void {
-        this.facade.fetchAlertsPage(undefined, undefined, false)
+        this.facade.fetchAlertsPage(undefined, undefined)
     }
 
     protected loadPage(pageEvent: PageEventModel): void {
@@ -61,7 +61,7 @@ export class AlertsListPage extends GenericListComponent {
             this.startDateTimeSearched.value,
             this.endDateTimeSearched.value,
         )
-        this.facade.fetchAlertsPage(pageEvent.pageNumber, pageEvent.pageSize, false)
+        this.facade.fetchAlertsPage(pageEvent.pageNumber, pageEvent.pageSize)
     }
 
     protected get textSearched(): FormControl {

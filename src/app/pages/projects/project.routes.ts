@@ -43,8 +43,8 @@ export const projectRoutes: Routes = [
                     {
                         path: '', component: ProjectHomePage,
                         providers: [
-                            SelectedProjectFacade, ParticipantFacade, ParticipantStore, MovementFacade, MovementStore, CommunicationFacade, CommunicationStore, AlertFacade,
-                            importProvidersFrom( NgxsModule.forFeature( [ SelectedProjectStore, AlertStore ] ) ),
+                            SelectedProjectFacade, ParticipantFacade, ParticipantStore, MovementFacade, MovementStore, CommunicationFacade, CommunicationStore, AlertFacade, AlertStore,
+                            importProvidersFrom( NgxsModule.forFeature( [ SelectedProjectStore ] ) ),
                         ],
                     },
                     {
@@ -56,7 +56,7 @@ export const projectRoutes: Routes = [
                         path: ProjectRoutesEnum.ALERTS,
                         component: AlertsListPage,
                         canActivate: [ alertOptionGuard ],
-                        providers: [ CommunicationFacade, CommunicationStore, AlertFacade, importProvidersFrom( NgxsModule.forFeature( [ AlertStore ] ) ) ],
+                        providers: [ CommunicationFacade, CommunicationStore, AlertFacade, AlertStore ],
                     },
                     {
                         path: ProjectRoutesEnum.CONFIGURATION,
