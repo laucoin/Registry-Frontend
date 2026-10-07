@@ -1,0 +1,48 @@
+import { Component } from '@angular/core'
+import { Card } from 'primeng/card'
+import { Avatar } from 'primeng/avatar'
+import { TitleCasePipe, UpperCasePipe } from '@angular/common'
+import { TranslatePipe } from '@ngx-translate/core'
+import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
+import { SeverityTagComponent } from '@shared/ui/severity-tag/severity-tag.component'
+import { SelectButton } from 'primeng/selectbutton'
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms'
+import { Select } from 'primeng/select'
+import { Button } from 'primeng/button'
+import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
+import { GenericElementComponent } from '@shared/ui/base/generic-element.component'
+
+@Component( {
+    selector: 'app-setting',
+    imports: [
+        Card,
+        Avatar,
+        TitleCasePipe,
+        UpperCasePipe,
+        TranslatePipe,
+        DateFormatPipe,
+        SeverityTagComponent,
+        SelectButton,
+        FormsModule,
+        Select,
+        Button,
+        ReactiveFormsModule,
+    ],
+    templateUrl: './setting.component.html',
+} )
+export class SettingComponent extends GenericElementComponent {
+    protected themeControl: FormControl = new FormControl( this.registryFacade.currentUserTheme() )
+    protected languageControl: FormControl = new FormControl( this.registryFacade.currentUserLanguage() )
+
+    protected confirmImpersonate (): void {
+        this.confirmationService.confirm(
+            this.buildConfirmation(
+                'settings.actions.confirmations.impersonate',
+                'pi pi-exclamation-triangle',
+                this.registryFacade.currentUser(),
+                SeverityEnum.DANGER,
+                (): void => this.registryFacade.impersonateCurrentUser(),
+            ),
+        )
+    }
+}
