@@ -34,12 +34,12 @@ export const configurationRoutes: Routes = [
             {
                 path: ConfigurationRoutesEnum.PARTICIPANTS,
                 loadChildren: () => import('@pages/projects/[projectId]/configuration/participants/participant.routes').then( (m: typeof import('@pages/projects/[projectId]/configuration/participants/participant.routes')) => m.participantRoutes ),
-                providers: [ MovementFacade, ParticipantFacade, importProvidersFrom( NgxsModule.forFeature( [ MovementStore, ParticipantStore ] ) ) ],
+                providers: [ MovementFacade, ParticipantFacade, ParticipantStore, importProvidersFrom( NgxsModule.forFeature( [ MovementStore ] ) ) ],
             },
             {
                 path: ConfigurationRoutesEnum.GROUPS,
                 loadChildren: () => import('@pages/projects/[projectId]/configuration/groups/group.routes').then( (m: typeof import('@pages/projects/[projectId]/configuration/groups/group.routes')) => m.groupRoutes ),
-                providers: [ GroupFacade, ParticipantFacade, importProvidersFrom( NgxsModule.forFeature( [ GroupStore, ParticipantStore ] ) ) ],
+                providers: [ GroupFacade, ParticipantFacade, ParticipantStore, importProvidersFrom( NgxsModule.forFeature( [ GroupStore ] ) ) ],
             },
             {
                 path: ConfigurationRoutesEnum.VEHICLES,

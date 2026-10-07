@@ -43,8 +43,8 @@ export const projectRoutes: Routes = [
                     {
                         path: '', component: ProjectHomePage,
                         providers: [
-                            SelectedProjectFacade, ParticipantFacade, MovementFacade, CommunicationFacade, AlertFacade,
-                            importProvidersFrom( NgxsModule.forFeature( [ SelectedProjectStore, ParticipantStore, MovementStore, CommunicationStore, AlertStore ] ) ),
+                            SelectedProjectFacade, ParticipantFacade, ParticipantStore, MovementFacade, CommunicationFacade, AlertFacade,
+                            importProvidersFrom( NgxsModule.forFeature( [ SelectedProjectStore, MovementStore, CommunicationStore, AlertStore ] ) ),
                         ],
                     },
                     {

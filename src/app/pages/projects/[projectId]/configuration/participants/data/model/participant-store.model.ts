@@ -11,7 +11,7 @@ import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.e
 export interface ParticipantStoreModel {
     participants: PageRequestInformationModel<ParticipantPageParamsModel, ParticipantModel>
     movements: PageRequestInformationModel<MovementPageParamsModel, MovementModel>
-    _metadata: {
+    metadata: {
         searchedUsers: SelectItem<UserModel>[]
         searchedGroups: SelectItem<GroupModel>[]
         presencesStatus: SelectItem<PresenceStatusEnum | undefined>[]

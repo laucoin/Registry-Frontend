@@ -76,7 +76,7 @@ export class ParticipantMovementsListPage extends GenericListComponent implement
                 withLoading(this.participantLoading),
             ).subscribe( (participant: ParticipantModel): void => this.participant.set(participant) ),
         )
-        this.facade.fetchParticipantMovementsPage(id!, undefined, undefined, false)
+        this.facade.fetchParticipantMovementsPage(id!, undefined, undefined)
     }
 
     private handleMovementActions(): void {
@@ -86,9 +86,7 @@ export class ParticipantMovementsListPage extends GenericListComponent implement
                     this.facade.fetchParticipantMovementsPage(
                         this.route.snapshot.params['participantId'],
                         undefined,
-                        undefined,
-                        true,
-                    )
+                        undefined)
                 }),
             ).subscribe(),
         )
@@ -99,9 +97,7 @@ export class ParticipantMovementsListPage extends GenericListComponent implement
                     this.facade.fetchParticipantMovementsPage(
                         this.route.snapshot.params['participantId'],
                         this.facade.participantMovementsPage()?.pageNumber,
-                        this.facade.participantMovementsPage()?.pageSize,
-                        true,
-                    )
+                        this.facade.participantMovementsPage()?.pageSize)
                 }),
             ).subscribe(),
         )
@@ -115,8 +111,7 @@ export class ParticipantMovementsListPage extends GenericListComponent implement
             this.visibilitySearched.value,
         )
         this.facade.fetchParticipantMovementsPage(
-            this.route.snapshot.params['participantId'], pageEvent.pageNumber, pageEvent.pageSize, false,
-        )
+            this.route.snapshot.params['participantId'], pageEvent.pageNumber, pageEvent.pageSize)
     }
 
     public ngOnDestroy(): void {

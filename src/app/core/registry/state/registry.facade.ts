@@ -58,10 +58,6 @@ import {
     ResetMovementState,
 } from '@pages/projects/[projectId]/movements/data/state/movement.action'
 import {ResetCommunicationState} from '@pages/projects/[projectId]/movements/communication/data/state/communication.action'
-import {
-    FetchParticipantPresencesStatus,
-    ResetParticipantState,
-} from '@pages/projects/[projectId]/configuration/participants/data/state/participant.action'
 import {FetchAlertStatus} from '@pages/projects/[projectId]/alerts/data/state/alert.action'
 import {PrimeNG} from 'primeng/config'
 import {ProfileResetService} from '@shared/helpers/store/profile-reset.service'
@@ -385,7 +381,6 @@ export class RegistryFacade extends GenericFacade {
             FetchCurrentUser,
             FetchMovementTypes,
             FetchParticipantTypes,
-            FetchParticipantPresencesStatus,
             FetchAlertStatus,
         ])
     }
@@ -407,7 +402,6 @@ export class RegistryFacade extends GenericFacade {
             new ResetSelectedProjectState(),
             new ResetMovementState(),
             new ResetCommunicationState(),
-            new ResetParticipantState(),
             new SetCurrentProject(projectId),
         ])
 
@@ -430,7 +424,6 @@ export class RegistryFacade extends GenericFacade {
             new ResetSelectedProjectState(),
             new ResetMovementState(),
             new ResetCommunicationState(),
-            new ResetParticipantState(),
             new CreateSupportProjectProfile(projectId),
         ])
 

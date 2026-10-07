@@ -55,7 +55,7 @@ export class ParticipantsListPage extends GenericListComponent {
     }
 
     protected loadData(): void {
-        this.facade.fetchParticipantsPage(undefined, undefined, false)
+        this.facade.fetchParticipantsPage(undefined, undefined)
     }
 
     protected loadPage(pageEvent: PageEventModel): void {
@@ -64,7 +64,7 @@ export class ParticipantsListPage extends GenericListComponent {
             this.statusSearched.value,
             this.visibilitySearched.value,
         )
-        this.facade.fetchParticipantsPage(pageEvent.pageNumber, pageEvent.pageSize, false)
+        this.facade.fetchParticipantsPage(pageEvent.pageNumber, pageEvent.pageSize)
     }
 
     protected get textSearched(): FormControl {
