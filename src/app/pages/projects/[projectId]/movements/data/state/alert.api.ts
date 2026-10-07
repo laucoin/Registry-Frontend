@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core'
 import {Observable} from 'rxjs'
 import {PageModel} from '@shared/models/model/page.model'
-import {GenericProjectService} from '@shared/helpers/service/generic-project.service'
+import {GenericProjectApi} from '@shared/helpers/api/generic-project.api'
 import {SELECT_PROFILE_PROJECT_ID} from '@shared/helpers/util/request.util'
 import {QueryUtil} from '@shared/helpers/util/query.util'
 import {AlertModel} from '@shared/models/model/alert.model'
@@ -14,7 +14,7 @@ import {AlertStatusEnum} from '@shared/models/enumeration/alert-status.enum'
 @Injectable({
     providedIn: 'root',
 })
-export class AlertService extends GenericProjectService {
+export class AlertApi extends GenericProjectApi {
     public constructor() {
         super(`/api/v1/projects/${SELECT_PROFILE_PROJECT_ID}/alerts`)
     }

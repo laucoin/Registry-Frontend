@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core'
 import {Observable} from 'rxjs'
 import {PageModel} from '@shared/models/model/page.model'
 import {ParticipantModel} from '@shared/models/model/participant.model'
-import {GenericProjectService} from '@shared/helpers/service/generic-project.service'
+import {GenericProjectApi} from '@shared/helpers/api/generic-project.api'
 import {SELECT_PROFILE_PROJECT_ID} from '@shared/helpers/util/request.util'
 import {ParticipantDto} from '@pages/projects/[projectId]/configuration/participants/data/dto/participant.dto'
 import {ParticipantPageParamsModel} from '@pages/projects/[projectId]/configuration/participants/data/model/participant-page-params.model'
@@ -16,7 +16,7 @@ import {MovementModel} from '@shared/models/model/movement.model'
 @Injectable({
     providedIn: 'root',
 })
-export class ParticipantService extends GenericProjectService {
+export class ParticipantApi extends GenericProjectApi {
     public constructor() {
         super(`/api/v1/projects/${SELECT_PROFILE_PROJECT_ID}/participants`)
     }

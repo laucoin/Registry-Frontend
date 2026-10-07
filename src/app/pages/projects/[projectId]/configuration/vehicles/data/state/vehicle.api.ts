@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core'
 import {Observable} from 'rxjs'
 import {PageModel} from '@shared/models/model/page.model'
 import {VehicleModel} from '@shared/models/model/vehicle.model'
-import {GenericProjectService} from '@shared/helpers/service/generic-project.service'
+import {GenericProjectApi} from '@shared/helpers/api/generic-project.api'
 import {SELECT_PROFILE_PROJECT_ID} from '@shared/helpers/util/request.util'
 import {VehicleDto} from '@pages/projects/[projectId]/configuration/vehicles/data/dto/vehicle.dto'
 import {VehiclePageParamsModel} from '@pages/projects/[projectId]/configuration/vehicles/data/model/vehicle-page-params.model'
@@ -13,7 +13,7 @@ import {MovementModel} from '@shared/models/model/movement.model'
 @Injectable({
     providedIn: 'root',
 })
-export class VehicleService extends GenericProjectService {
+export class VehicleApi extends GenericProjectApi {
     public constructor() {
         super(`/api/v1/projects/${SELECT_PROFILE_PROJECT_ID}/vehicles`)
     }

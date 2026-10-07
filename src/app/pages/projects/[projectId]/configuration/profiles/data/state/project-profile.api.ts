@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core'
 import {Observable} from 'rxjs'
 import {ProjectProfileModel} from '@shared/models/model/project-profile.model'
 import {PageModel} from '@shared/models/model/page.model'
-import {GenericProjectService} from '@shared/helpers/service/generic-project.service'
+import {GenericProjectApi} from '@shared/helpers/api/generic-project.api'
 import {SELECT_PROFILE_PROJECT_ID} from '@shared/helpers/util/request.util'
 import {ProjectProfileDto} from '@pages/projects/[projectId]/configuration/profiles/data/dto/project-profile.dto'
 import {ProjectProfilesDto} from '@pages/projects/[projectId]/configuration/profiles/data/dto/project-profiles.dto'
@@ -16,7 +16,7 @@ import {SelectItem} from 'primeng/api'
 @Injectable({
     providedIn: 'root',
 })
-export class ProjectProfileService extends GenericProjectService {
+export class ProjectProfileApi extends GenericProjectApi {
     public constructor() {
         super(`/api/v1/projects/${SELECT_PROFILE_PROJECT_ID}/profiles`)
     }

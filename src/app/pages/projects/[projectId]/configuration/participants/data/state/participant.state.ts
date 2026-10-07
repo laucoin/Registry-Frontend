@@ -20,7 +20,7 @@ import {
     UpdateParticipantMovementsPageSearchParams,
     UpdateParticipantsPageSearchParams,
 } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.action'
-import { ParticipantService } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.service'
+import { ParticipantApi } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.api'
 import { ParticipantFacade } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.facade'
 import { StateUtil } from '@shared/helpers/state/state.util'
 import { inject, Injectable } from '@angular/core'
@@ -31,11 +31,11 @@ import { GroupUtil } from '@shared/helpers/util/group.util'
 import { UserModel } from '@shared/models/model/user.model'
 import { ErrorModel } from '@shared/models/model/error.model'
 import { MovementModel } from '@shared/models/model/movement.model'
-import { MovementService } from '@pages/projects/[projectId]/movements/data/state/movement.service'
+import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
 import { PairModel } from '@shared/models/model/pair.model'
 import { MovementContentModel } from '@shared/models/model/movement-content.model'
 import { MovementUtil } from '@shared/helpers/util/movement.util'
-import { MetadataService } from '@core/registry/state/metadata.service'
+import { MetadataApi } from '@core/registry/state/metadata.api'
 import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum'
 
 const defaultParticipantState: ParticipantStateModel = {
@@ -84,9 +84,9 @@ const defaultParticipantState: ParticipantStateModel = {
 } )
 @Injectable()
 export class ParticipantState extends GenericProjectElementState<ParticipantStateModel> implements NgxsOnInit {
-    private readonly service: ParticipantService = inject( ParticipantService )
-    private readonly metadataService: MetadataService = inject( MetadataService )
-    private readonly movementService: MovementService = inject( MovementService )
+    private readonly api: ParticipantApi = inject( ParticipantApi )
+    private readonly metadataApi: MetadataApi = inject( MetadataApi )
+    private readonly movementApi: MovementApi = inject( MovementApi )
     private readonly facade: ParticipantFacade = inject( ParticipantFacade )
 
     public ngxsOnInit (): void {
@@ -211,7 +211,7 @@ export class ParticipantState extends GenericProjectElementState<ParticipantStat
 
     @Action( FetchParticipantPresencesStatus )
     public fetchParticipantPresencesStatus (ctx: StateContext<ParticipantStateModel>): Observable<void> {
-        return this.metadataService.getPresencesStatus().pipe(
+        return this.metadataApi.getPresencesStatus().pipe(
             map( (types: SelectItem<PresenceStatusEnum>[]): void => this.fetchParticipantPresencesStatusComplete(
                 ctx,
                 types,
@@ -253,7 +253,7 @@ export class ParticipantState extends GenericProjectElementState<ParticipantStat
         ctx: StateContext<ParticipantStateModel>,
         payload: FetchParticipantsPage,
     ): Observable<void> {
-        return this.service.findParticipants(
+        return this.api.findParticipants(
             payload.projectId,
             payload.pageNumber,
             payload.pageSize,
@@ -317,7 +317,7 @@ export class ParticipantState extends GenericProjectElementState<ParticipantStat
         ctx: StateContext<ParticipantStateModel>,
         payload: FetchParticipantMovementsPage,
     ): Observable<void> {
-        return this.service.findParticipantMovements(
+        return this.api.findParticipantMovements(
             payload.projectId,
             payload.id,
             payload.pageNumber,
@@ -361,7 +361,7 @@ export class ParticipantState extends GenericProjectElementState<ParticipantStat
         ctx: StateContext<ParticipantStateModel>,
         payload: FetchParticipantMovementsContents,
     ): Observable<void> {
-        return this.movementService.findMovementsContents(
+        return this.movementApi.findMovementsContents(
             payload.projectId,
             payload.movementIds,
             ctx.getState().movements.params.currentMovements,
@@ -410,7 +410,7 @@ export class ParticipantState extends GenericProjectElementState<ParticipantStat
         ctx: StateContext<ParticipantStateModel>,
         payload: SearchUsers,
     ): Observable<void> {
-        return this.service.searchUsers(
+        return this.api.searchUsers(
             payload.projectId,
             payload.textSearched,
         ).pipe(
@@ -438,7 +438,7 @@ export class ParticipantState extends GenericProjectElementState<ParticipantStat
         ctx: StateContext<ParticipantStateModel>,
         payload: SearchGroups,
     ): Observable<void> {
-        return this.service.searchGroups(
+        return this.api.searchGroups(
             payload.projectId,
             payload.textSearched,
         ).pipe(

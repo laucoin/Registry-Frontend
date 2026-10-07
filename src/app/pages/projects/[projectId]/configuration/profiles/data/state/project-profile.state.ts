@@ -13,7 +13,7 @@ import {
     StopProjectProfilesPageLoader,
     UpdateProjectProfilesPageSearchParams,
 } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.action'
-import { ProjectProfileService } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.service'
+import { ProjectProfileApi } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.api'
 import { ProjectProfileFacade } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.facade'
 import { inject, Injectable } from '@angular/core'
 import { StateUtil } from '@shared/helpers/state/state.util'
@@ -24,7 +24,7 @@ import { ErrorModel } from '@shared/models/model/error.model'
 import { ProjectProfileStateModel } from '@pages/projects/[projectId]/configuration/profiles/data/model/project-profile-state.model'
 import { ProjectProfileModel } from '@shared/models/model/project-profile.model'
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
-import { MetadataService } from '@core/registry/state/metadata.service'
+import { MetadataApi } from '@core/registry/state/metadata.api'
 import { ProfileStatusEnum } from '@shared/models/enumeration/profile-status.enum'
 
 const defaultProjectProfileState: ProjectProfileStateModel = {
@@ -59,8 +59,8 @@ const defaultProjectProfileState: ProjectProfileStateModel = {
 } )
 @Injectable()
 export class ProjectProfileState extends GenericProjectElementState<ProjectProfileStateModel> implements NgxsOnInit {
-    private readonly service: ProjectProfileService = inject( ProjectProfileService )
-    private readonly serviceMetadata: MetadataService = inject( MetadataService )
+    private readonly api: ProjectProfileApi = inject( ProjectProfileApi )
+    private readonly serviceMetadata: MetadataApi = inject( MetadataApi )
     private readonly facade: ProjectProfileFacade = inject( ProjectProfileFacade )
     private readonly pluralTranslationPipe: PluralTranslationPipe = inject( PluralTranslationPipe )
 
@@ -163,7 +163,7 @@ export class ProjectProfileState extends GenericProjectElementState<ProjectProfi
         ctx: StateContext<ProjectProfileStateModel>,
         payload: FetchProjectProfilesPage,
     ): Observable<void> {
-        return this.service.findProjectProfiles(
+        return this.api.findProjectProfiles(
             payload.projectId,
             payload.pageNumber,
             payload.pageSize,
@@ -213,7 +213,7 @@ export class ProjectProfileState extends GenericProjectElementState<ProjectProfi
         ctx: StateContext<ProjectProfileStateModel>,
         payload: SearchUsers,
     ): Observable<void> {
-        return this.service.searchUsers(
+        return this.api.searchUsers(
             payload.projectId,
             payload.textSearched,
         ).pipe(
@@ -241,7 +241,7 @@ export class ProjectProfileState extends GenericProjectElementState<ProjectProfi
         ctx: StateContext<ProjectProfileStateModel>,
         payload: FetchAssignableProjectProfileRoles,
     ): Observable<void> {
-        return this.service.getAssignableProjectProfileRoles( payload.projectId ).pipe(
+        return this.api.getAssignableProjectProfileRoles( payload.projectId ).pipe(
             map( (roles: SelectItem<string>[]): void => this.fetchAssignableProjectProfileRolesComplete( ctx, roles ) ),
         )
     }

@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core'
 import {Observable} from 'rxjs'
 import {CurrentUserModel} from '@shared/models/model/current-user.model'
-import {GenericService} from '@shared/helpers/service/generic.service'
+import {GenericApi} from '@shared/helpers/api/generic.api'
 import {AuthenticationUriModel} from '@shared/models/model/authentication-uri.model'
 import {CredentialsModel} from '@shared/models/model/credentials.model'
 import {HttpParams} from '@angular/common/http'
@@ -9,7 +9,7 @@ import {HttpParams} from '@angular/common/http'
 @Injectable({
     providedIn: 'root',
 })
-export class SecurityService extends GenericService {
+export class SecurityApi extends GenericApi {
     public constructor() {
         super('/api/v1/authentication')
     }

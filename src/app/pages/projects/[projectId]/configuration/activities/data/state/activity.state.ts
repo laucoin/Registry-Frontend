@@ -17,14 +17,14 @@ import {
     UpdateActivitiesPageSearchParams,
     UpdateActivityMovementsPageSearchParams,
 } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.action'
-import { ActivityService } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.service'
+import { ActivityApi } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.api'
 import { ActivityFacade } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.facade'
 import { StateUtil } from '@shared/helpers/state/state.util'
 import { inject, Injectable } from '@angular/core'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { ErrorModel } from '@shared/models/model/error.model'
 import { MovementModel } from '@shared/models/model/movement.model'
-import { MovementService } from '@pages/projects/[projectId]/movements/data/state/movement.service'
+import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
 import { PairModel } from '@shared/models/model/pair.model'
 import { MovementContentModel } from '@shared/models/model/movement-content.model'
 import { MovementUtil } from '@shared/helpers/util/movement.util'
@@ -78,8 +78,8 @@ const defaultActivityState: ActivityStateModel = {
 } )
 @Injectable()
 export class ActivityState extends GenericProjectElementState<ActivityStateModel> {
-    private readonly service: ActivityService = inject( ActivityService )
-    private readonly movementService: MovementService = inject( MovementService )
+    private readonly api: ActivityApi = inject( ActivityApi )
+    private readonly movementApi: MovementApi = inject( MovementApi )
     private readonly facade: ActivityFacade = inject( ActivityFacade )
 
     @Selector()
@@ -206,7 +206,7 @@ export class ActivityState extends GenericProjectElementState<ActivityStateModel
         ctx: StateContext<ActivityStateModel>,
         payload: FetchActivitiesPage,
     ): Observable<void> {
-        return this.service.findActivities(
+        return this.api.findActivities(
             payload.projectId,
             payload.pageNumber,
             payload.pageSize,
@@ -270,7 +270,7 @@ export class ActivityState extends GenericProjectElementState<ActivityStateModel
         ctx: StateContext<ActivityStateModel>,
         payload: FetchActivityMovementsPage,
     ): Observable<void> {
-        return this.service.findActivityMovements(
+        return this.api.findActivityMovements(
             payload.projectId,
             payload.id,
             payload.pageNumber,
@@ -314,7 +314,7 @@ export class ActivityState extends GenericProjectElementState<ActivityStateModel
         ctx: StateContext<ActivityStateModel>,
         payload: FetchActivityMovementsContents,
     ): Observable<void> {
-        return this.movementService.findMovementsContents(
+        return this.movementApi.findMovementsContents(
             payload.projectId,
             payload.movementIds,
             ctx.getState().movements.params.currentMovements,

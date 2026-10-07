@@ -26,7 +26,7 @@ import { ParticipantModel } from '@shared/models/model/participant.model'
 import { GenericProjectElementFacade } from '@shared/helpers/facade/generic-project-element.facade'
 import { VehicleModel } from '@shared/models/model/vehicle.model'
 import { DateUtil } from '@shared/helpers/util/date.util'
-import { MovementService } from '@pages/projects/[projectId]/movements/data/state/movement.service'
+import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
 import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/util/rx.util'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
@@ -39,7 +39,7 @@ import { CommunicationModel } from '@pages/projects/[projectId]/movements/commun
 
 @Injectable()
 export class MovementFacade extends GenericProjectElementFacade {
-    private readonly service: MovementService = inject( MovementService )
+    private readonly api: MovementApi = inject( MovementApi )
     private readonly pluralTranslationPipe: PluralTranslationPipe = inject( PluralTranslationPipe )
     private readonly datePipe: DateFormatPipe = inject( DateFormatPipe )
 
@@ -296,15 +296,15 @@ export class MovementFacade extends GenericProjectElementFacade {
     }
 
     public fetchMovement (id: string): Observable<MovementModel> {
-        return this.service.findMovementById( this.selectedProjectId(), id ).pipe(
+        return this.api.findMovementById( this.selectedProjectId(), id ).pipe(
             notifyOnError( this.registryFacade ),
         )
     }
 
     public createMovement (movement: MovementDto): Observable<MovementModel> {
         const request: Observable<MovementModel> = movement.contentType === ParticipantTypeEnum.REGISTERED
-            ? this.service.createMovement( this.selectedProjectId(), movement )
-            : this.service.createGuestsMovement( this.selectedProjectId(), movement )
+            ? this.api.createMovement( this.selectedProjectId(), movement )
+            : this.api.createGuestsMovement( this.selectedProjectId(), movement )
 
         return request.pipe(
             notifyUnavailableOnly( this.registryFacade ),
@@ -314,8 +314,8 @@ export class MovementFacade extends GenericProjectElementFacade {
 
     public updateMovement (id: string, movement: MovementDto): Observable<MovementModel> {
         const request: Observable<MovementModel> = movement.contentType === ParticipantTypeEnum.REGISTERED
-            ? this.service.updateMovementById( this.selectedProjectId(), id, movement )
-            : this.service.updateGuestsMovementById( this.selectedProjectId(), id, movement )
+            ? this.api.updateMovementById( this.selectedProjectId(), id, movement )
+            : this.api.updateGuestsMovementById( this.selectedProjectId(), id, movement )
 
         return request.pipe(
             notifyUnavailableOnly( this.registryFacade ),
@@ -324,21 +324,21 @@ export class MovementFacade extends GenericProjectElementFacade {
     }
 
     public disableMovement (id: string): Observable<MovementModel> {
-        return this.service.disableMovementById( this.selectedProjectId(), id ).pipe(
+        return this.api.disableMovementById( this.selectedProjectId(), id ).pipe(
             notifyOnError( this.registryFacade ),
             tap( (disabled: MovementModel): void => this.onCommandSuccess( 'disable', disabled ) ),
         )
     }
 
     public enableMovement (id: string): Observable<MovementModel> {
-        return this.service.enableMovementById( this.selectedProjectId(), id ).pipe(
+        return this.api.enableMovementById( this.selectedProjectId(), id ).pipe(
             notifyOnError( this.registryFacade ),
             tap( (enabled: MovementModel): void => this.onCommandSuccess( 'enable', enabled ) ),
         )
     }
 
     public deleteMovement (movement: MovementModel): Observable<void> {
-        return this.service.deleteMovementById( undefined, movement.id ).pipe(
+        return this.api.deleteMovementById( undefined, movement.id ).pipe(
             notifyOnError( this.registryFacade ),
             tap( (): void => this.onCommandSuccess( 'delete', movement ) ),
         )

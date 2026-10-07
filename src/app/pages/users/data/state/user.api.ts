@@ -3,7 +3,7 @@ import {Injectable} from '@angular/core'
 import {Observable} from 'rxjs'
 import {PageModel} from '@shared/models/model/page.model'
 import {UserModel} from '@shared/models/model/user.model'
-import {GenericService} from '@shared/helpers/service/generic.service'
+import {GenericApi} from '@shared/helpers/api/generic.api'
 import {QueryUtil} from '@shared/helpers/util/query.util'
 import {SelectItem} from 'primeng/api'
 import {UserPageParamsModel} from '@pages/users/data/model/user-page-params.model'
@@ -11,7 +11,7 @@ import {UserPageParamsModel} from '@pages/users/data/model/user-page-params.mode
 @Injectable({
     providedIn: 'root',
 })
-export class UserService extends GenericService {
+export class UserApi extends GenericApi {
     public constructor() {
         super('/api/v1/users')
     }

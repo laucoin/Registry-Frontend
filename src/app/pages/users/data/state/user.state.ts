@@ -23,7 +23,7 @@ import {
     UpdateUserRole,
     UpdateUsersPageSearchParams,
 } from '@pages/users/data/state/user.action'
-import { UserService } from '@pages/users/data/state/user.service'
+import { UserApi } from '@pages/users/data/state/user.api'
 import { UserFacade } from '@pages/users/data/state/user.facade'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { ElementRequestInformationModel } from '@shared/models/model/element-request-information.model'
@@ -75,7 +75,7 @@ const defaultUserState: UserStateModel = {
 export class UserState extends GenericElementState<UserStateModel> {
     private readonly userIcon: string = 'pi pi-users'
 
-    private readonly service: UserService = inject( UserService )
+    private readonly api: UserApi = inject( UserApi )
     private readonly facade: UserFacade = inject( UserFacade )
 
     @Selector()
@@ -149,7 +149,7 @@ export class UserState extends GenericElementState<UserStateModel> {
 
     @Action( FetchUsersPage )
     public fetchUsersPage (ctx: StateContext<UserStateModel>, payload: FetchUsersPage): Observable<void> {
-        return this.service.findUsers( payload.pageNumber, payload.pageSize, ctx.getState().users.params ).pipe(
+        return this.api.findUsers( payload.pageNumber, payload.pageSize, ctx.getState().users.params ).pipe(
             initialize( (): void => this.facade.startUsersPageLoader() ),
             finalize( (): void => this.facade.stopUsersPageLoader() ),
             map( (userPage: PageModel<UserModel>): void => this.fetchUsersPageComplete( ctx, userPage ) ),
@@ -199,7 +199,7 @@ export class UserState extends GenericElementState<UserStateModel> {
 
     @Action( FetchUser )
     public fetchUser (ctx: StateContext<UserStateModel>, payload: FetchUser): Observable<void> {
-        return this.service.findUserById( payload.id ).pipe(
+        return this.api.findUserById( payload.id ).pipe(
             initialize( (): void => this.facade.startUserLoader() ),
             finalize( (): void => this.facade.stopUserLoader() ),
             map( (user: UserModel): void => this.fetchUserComplete( ctx, user ) ),
@@ -224,7 +224,7 @@ export class UserState extends GenericElementState<UserStateModel> {
 
     @Action( FetchAssignableUserRoles )
     public fetchAssignableUserRoles (ctx: StateContext<UserStateModel>): Observable<void> {
-        return this.service.getAssignableUserRoles().pipe(
+        return this.api.getAssignableUserRoles().pipe(
             initialize( (): void => this.facade.startUserLoader() ),
             finalize( (): void => this.facade.stopUserLoader() ),
             map( (roles: SelectItem<string>[]): void => this.fetchAssignableUserRolesComplete( ctx, roles ) ),
@@ -245,7 +245,7 @@ export class UserState extends GenericElementState<UserStateModel> {
 
     @Action( UpdateUserRole )
     public updateUserRole (ctx: StateContext<UserStateModel>, payload: UpdateUserRole): Observable<void> {
-        return this.service.updateUserRole( payload.id, payload.role ).pipe(
+        return this.api.updateUserRole( payload.id, payload.role ).pipe(
             initialize( (): void => this.facade.startUserLoader() ),
             finalize( (): void => this.facade.stopUserLoader() ),
             map( (user: UserModel): void => this.updateUserRoleComplete( ctx, user ) ),
@@ -265,7 +265,7 @@ export class UserState extends GenericElementState<UserStateModel> {
 
     @Action( BlockUser )
     public blockUser (ctx: StateContext<UserStateModel>, payload: BlockUser): Observable<void> {
-        return this.service.blockUserById( payload.id ).pipe(
+        return this.api.blockUserById( payload.id ).pipe(
             initialize( (): void => this.facade.startUserLoader() ),
             finalize( (): void => this.facade.stopUserLoader() ),
             map( (user: UserModel): void => this.blockUserComplete( ctx, user ) ),
@@ -285,7 +285,7 @@ export class UserState extends GenericElementState<UserStateModel> {
 
     @Action( UnblockUser )
     public unblockUser (ctx: StateContext<UserStateModel>, payload: UnblockUser): Observable<void> {
-        return this.service.unblockUserById( payload.id ).pipe(
+        return this.api.unblockUserById( payload.id ).pipe(
             initialize( (): void => this.facade.startUserLoader() ),
             finalize( (): void => this.facade.stopUserLoader() ),
             map( (user: UserModel): void => this.unblockUserComplete( ctx, user ) ),
@@ -305,7 +305,7 @@ export class UserState extends GenericElementState<UserStateModel> {
 
     @Action( ImpersonateUser )
     public impersonateUser (ctx: StateContext<UserStateModel>, payload: ImpersonateUser): Observable<void> {
-        return this.service.impersonateUserById( payload.user.id ).pipe(
+        return this.api.impersonateUserById( payload.user.id ).pipe(
             initialize( (): void => this.facade.startUserLoader() ),
             finalize( (): void => this.facade.stopUserLoader() ),
             map( (): void => this.impersonateUserComplete( ctx, payload.user ) ),
@@ -326,7 +326,7 @@ export class UserState extends GenericElementState<UserStateModel> {
 
     @Action( DeleteUser )
     public DeleteUser (ctx: StateContext<UserStateModel>, payload: DeleteUser): Observable<void> {
-        return this.service.deleteUserById( payload.user.id ).pipe(
+        return this.api.deleteUserById( payload.user.id ).pipe(
             initialize( (): void => this.facade.startUserLoader() ),
             finalize( (): void => this.facade.stopUserLoader() ),
             map( (): void => this.deleteUserComplete( ctx, payload.user ) ),

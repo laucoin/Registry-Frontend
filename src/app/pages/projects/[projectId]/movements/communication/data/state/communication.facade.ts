@@ -4,7 +4,7 @@ import { CommunicationModel } from '@pages/projects/[projectId]/movements/commun
 import { CommunicationState } from '@pages/projects/[projectId]/movements/communication/data/state/communication.state'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { DateUtil } from '@shared/helpers/util/date.util'
-import { CommunicationService } from '@pages/projects/[projectId]/movements/communication/data/state/communication.service'
+import { CommunicationApi } from '@pages/projects/[projectId]/movements/communication/data/state/communication.api'
 import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/util/rx.util'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
 import { CommandEvent } from '@shared/helpers/facade/command-event.service'
@@ -29,7 +29,7 @@ import { AlertModel } from '@shared/models/model/alert.model'
 
 @Injectable()
 export class CommunicationFacade extends GenericProjectElementFacade {
-    private readonly service: CommunicationService = inject( CommunicationService )
+    private readonly api: CommunicationApi = inject( CommunicationApi )
     private readonly datePipe: DateFormatPipe = inject( DateFormatPipe )
 
     public get communicationsPage (): Signal<PageModel<CommunicationModel> | undefined> {
@@ -177,35 +177,35 @@ export class CommunicationFacade extends GenericProjectElementFacade {
     }
 
     public createCommunication (communication: CommunicationDto): Observable<CommunicationModel> {
-        return this.service.createCommunication( this.selectedProjectId(), communication ).pipe(
+        return this.api.createCommunication( this.selectedProjectId(), communication ).pipe(
             notifyUnavailableOnly( this.registryFacade ),
             tap( (created: CommunicationModel): void => this.onCommandSuccess( 'create', created ) ),
         )
     }
 
     public updateCommunication (id: string, communication: CommunicationDto): Observable<CommunicationModel> {
-        return this.service.updateCommunicationById( this.selectedProjectId(), id, communication ).pipe(
+        return this.api.updateCommunicationById( this.selectedProjectId(), id, communication ).pipe(
             notifyUnavailableOnly( this.registryFacade ),
             tap( (updated: CommunicationModel): void => this.onCommandSuccess( 'update', updated ) ),
         )
     }
 
     public disableCommunication (id: string): Observable<CommunicationModel> {
-        return this.service.disableCommunicationById( this.selectedProjectId(), id ).pipe(
+        return this.api.disableCommunicationById( this.selectedProjectId(), id ).pipe(
             notifyOnError( this.registryFacade ),
             tap( (disabled: CommunicationModel): void => this.onCommandSuccess( 'disable', disabled ) ),
         )
     }
 
     public enableCommunication (id: string): Observable<CommunicationModel> {
-        return this.service.enableCommunicationById( this.selectedProjectId(), id ).pipe(
+        return this.api.enableCommunicationById( this.selectedProjectId(), id ).pipe(
             notifyOnError( this.registryFacade ),
             tap( (enabled: CommunicationModel): void => this.onCommandSuccess( 'enable', enabled ) ),
         )
     }
 
     public deleteCommunication (communication: CommunicationModel): Observable<void> {
-        return this.service.deleteCommunicationById( undefined, communication.id ).pipe(
+        return this.api.deleteCommunicationById( undefined, communication.id ).pipe(
             notifyOnError( this.registryFacade ),
             tap( (): void => this.onCommandSuccess( 'delete', communication ) ),
         )

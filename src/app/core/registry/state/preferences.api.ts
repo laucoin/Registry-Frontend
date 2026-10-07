@@ -1,12 +1,12 @@
 import {Injectable} from '@angular/core'
 import {Observable} from 'rxjs'
-import {GenericService} from '@shared/helpers/service/generic.service'
+import {GenericApi} from '@shared/helpers/api/generic.api'
 import {PreferencesModel} from '@shared/models/model/preferences.model'
 
 @Injectable({
     providedIn: 'root',
 })
-export class PreferencesService extends GenericService {
+export class PreferencesApi extends GenericApi {
     public constructor() {
         super('/api/v1/users/preferences')
     }

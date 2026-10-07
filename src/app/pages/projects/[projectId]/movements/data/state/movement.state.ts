@@ -20,7 +20,7 @@ import {
     UpdateMovementCommunicationsPageSearchParams,
     UpdateMovementsPageSearchParams,
 } from '@pages/projects/[projectId]/movements/data/state/movement.action'
-import { MovementService } from '@pages/projects/[projectId]/movements/data/state/movement.service'
+import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
 import { MovementFacade } from '@pages/projects/[projectId]/movements/data/state/movement.facade'
 import { StateUtil } from '@shared/helpers/state/state.util'
 import { inject, Injectable } from '@angular/core'
@@ -42,7 +42,7 @@ import { PairModel } from '@shared/models/model/pair.model'
 import { MovementUtil } from '@shared/helpers/util/movement.util'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
-import { MetadataService } from '@core/registry/state/metadata.service'
+import { MetadataApi } from '@core/registry/state/metadata.api'
 import { MovementReasonModel } from '@pages/projects/[projectId]/movements/data/model/movement-reason.model'
 import { MovementTypeEnum } from '@shared/models/enumeration/movement-type.enum'
 import { ParticipantTypeEnum } from '@shared/models/enumeration/participant-type.enum'
@@ -97,8 +97,8 @@ const defaultMovementState: MovementStateModel = {
 } )
 @Injectable()
 export class MovementState extends GenericProjectElementState<MovementStateModel> implements NgxsOnInit {
-    private readonly service: MovementService = inject( MovementService )
-    private readonly metadataService: MetadataService = inject( MetadataService )
+    private readonly api: MovementApi = inject( MovementApi )
+    private readonly metadataApi: MetadataApi = inject( MetadataApi )
     private readonly facade: MovementFacade = inject( MovementFacade )
     private readonly pluralTranslationPipe: PluralTranslationPipe = inject( PluralTranslationPipe )
     private readonly datePipe: DateFormatPipe = inject( DateFormatPipe )
@@ -242,7 +242,7 @@ export class MovementState extends GenericProjectElementState<MovementStateModel
 
     @Action( FetchMovementTypes )
     public fetchMovementTypes (ctx: StateContext<MovementStateModel>): Observable<void> {
-        return this.metadataService.getMovementsTypes().pipe(
+        return this.metadataApi.getMovementsTypes().pipe(
             map( (types: SelectItem<MovementTypeEnum>[]): void => this.fetchMovementTypesComplete( ctx, types ) ),
         )
     }
@@ -264,7 +264,7 @@ export class MovementState extends GenericProjectElementState<MovementStateModel
 
     @Action( FetchParticipantTypes )
     public fetchParticipantTypes (ctx: StateContext<MovementStateModel>): Observable<void> {
-        return this.metadataService.getParticipantsTypes().pipe(
+        return this.metadataApi.getParticipantsTypes().pipe(
             map( (types: SelectItem<ParticipantTypeEnum>[]): void => this.fetchParticipantTypesComplete( ctx, types ) ),
         )
     }
@@ -297,7 +297,7 @@ export class MovementState extends GenericProjectElementState<MovementStateModel
 
     @Action( FetchMovementsPage )
     public fetchMovementsPage (ctx: StateContext<MovementStateModel>, payload: FetchMovementsPage): Observable<void> {
-        return this.service.findMovements(
+        return this.api.findMovements(
             payload.projectId,
             payload.pageNumber,
             payload.pageSize,
@@ -340,7 +340,7 @@ export class MovementState extends GenericProjectElementState<MovementStateModel
         ctx: StateContext<MovementStateModel>,
         payload: FetchMovementsContent,
     ): Observable<void> {
-        return this.service.findMovementsContents(
+        return this.api.findMovementsContents(
             payload.projectId,
             payload.movementIds,
             ctx.getState().movements.params.currentMovements,
@@ -403,7 +403,7 @@ export class MovementState extends GenericProjectElementState<MovementStateModel
         ctx: StateContext<MovementStateModel>,
         payload: FetchMovementCommunicationsPage,
     ): Observable<void> {
-        return this.service.findMovementCommunications(
+        return this.api.findMovementCommunications(
             payload.projectId,
             payload.id,
             payload.pageNumber,
@@ -454,7 +454,7 @@ export class MovementState extends GenericProjectElementState<MovementStateModel
         ctx: StateContext<MovementStateModel>,
         payload: SearchReasonsAndActivities,
     ): Observable<void> {
-        return this.service.searchReasonsAndActivities(
+        return this.api.searchReasonsAndActivities(
             payload.projectId,
             payload.textSearched,
             payload.typeSearched,
@@ -484,7 +484,7 @@ export class MovementState extends GenericProjectElementState<MovementStateModel
         ctx: StateContext<MovementStateModel>,
         payload: SearchParticipantsAndGroups,
     ): Observable<void> {
-        return this.service.searchParticipantsAndGroups(
+        return this.api.searchParticipantsAndGroups(
             payload.projectId,
             payload.contentTypeSearched,
             payload.textSearched,
@@ -540,7 +540,7 @@ export class MovementState extends GenericProjectElementState<MovementStateModel
         ctx: StateContext<MovementStateModel>,
         payload: SearchVehicles,
     ): Observable<void> {
-        return this.service.searchVehicles( payload.projectId, payload.textSearched ).pipe(
+        return this.api.searchVehicles( payload.projectId, payload.textSearched ).pipe(
             map( (vehicles: VehicleModel[]): void => this.searchVehiclesComplete(
                 ctx,
                 vehicles,

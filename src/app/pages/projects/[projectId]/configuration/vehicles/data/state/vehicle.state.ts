@@ -18,18 +18,18 @@ import {
     UpdateVehicleMovementsPageSearchParams,
     UpdateVehiclesPageSearchParams,
 } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.action'
-import { VehicleService } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.service'
+import { VehicleApi } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.api'
 import { VehicleFacade } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.facade'
 import { StateUtil } from '@shared/helpers/state/state.util'
 import { inject, Injectable } from '@angular/core'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { ErrorModel } from '@shared/models/model/error.model'
 import { MovementModel } from '@shared/models/model/movement.model'
-import { MovementService } from '@pages/projects/[projectId]/movements/data/state/movement.service'
+import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
 import { PairModel } from '@shared/models/model/pair.model'
 import { MovementContentModel } from '@shared/models/model/movement-content.model'
 import { MovementUtil } from '@shared/helpers/util/movement.util'
-import { MetadataService } from '@core/registry/state/metadata.service'
+import { MetadataApi } from '@core/registry/state/metadata.api'
 import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum'
 
 const defaultVehicleState: VehicleStateModel = {
@@ -82,9 +82,9 @@ const defaultVehicleState: VehicleStateModel = {
 } )
 @Injectable()
 export class VehicleState extends GenericProjectElementState<VehicleStateModel> implements NgxsOnInit {
-    private readonly service: VehicleService = inject( VehicleService )
-    private readonly metadataService: MetadataService = inject( MetadataService )
-    private readonly movementService: MovementService = inject( MovementService )
+    private readonly api: VehicleApi = inject( VehicleApi )
+    private readonly metadataApi: MetadataApi = inject( MetadataApi )
+    private readonly movementApi: MovementApi = inject( MovementApi )
     private readonly facade: VehicleFacade = inject( VehicleFacade )
 
     public ngxsOnInit (): void {
@@ -209,7 +209,7 @@ export class VehicleState extends GenericProjectElementState<VehicleStateModel> 
 
     @Action( FetchVehiclePresencesStatus )
     public fetchVehiclePresencesStatus (ctx: StateContext<VehicleStateModel>): Observable<void> {
-        return this.metadataService.getPresencesStatus().pipe(
+        return this.metadataApi.getPresencesStatus().pipe(
             map( (types: SelectItem<PresenceStatusEnum>[]): void => this.fetchVehiclePresencesStatusComplete(
                 ctx,
                 types,
@@ -251,7 +251,7 @@ export class VehicleState extends GenericProjectElementState<VehicleStateModel> 
         ctx: StateContext<VehicleStateModel>,
         payload: FetchVehiclesPage,
     ): Observable<void> {
-        return this.service.findVehicles(
+        return this.api.findVehicles(
             payload.projectId,
             payload.pageNumber,
             payload.pageSize,
@@ -315,7 +315,7 @@ export class VehicleState extends GenericProjectElementState<VehicleStateModel> 
         ctx: StateContext<VehicleStateModel>,
         payload: FetchVehicleMovementsPage,
     ): Observable<void> {
-        return this.service.findVehicleMovements(
+        return this.api.findVehicleMovements(
             payload.projectId,
             payload.id,
             payload.pageNumber,
@@ -359,7 +359,7 @@ export class VehicleState extends GenericProjectElementState<VehicleStateModel> 
         ctx: StateContext<VehicleStateModel>,
         payload: FetchVehicleMovementsContents,
     ): Observable<void> {
-        return this.movementService.findMovementsContents(
+        return this.movementApi.findMovementsContents(
             payload.projectId,
             payload.movementIds,
             ctx.getState().movements.params.currentMovements,

@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core'
 import {Observable} from 'rxjs'
 import {PageModel} from '@shared/models/model/page.model'
-import {GenericProjectService} from '@shared/helpers/service/generic-project.service'
+import {GenericProjectApi} from '@shared/helpers/api/generic-project.api'
 import {SELECT_PROFILE_PROJECT_ID} from '@shared/helpers/util/request.util'
 import {MovementDto} from '@pages/projects/[projectId]/movements/data/dto/movement.dto'
 import {MovementPageParamsModel} from '@shared/models/model/movement-page-params.model'
@@ -26,7 +26,7 @@ import {VehicleStatusModel} from '@pages/projects/data/model/vehicle-status.mode
 @Injectable({
     providedIn: 'root',
 })
-export class MovementService extends GenericProjectService {
+export class MovementApi extends GenericProjectApi {
     public constructor() {
         super(`/api/v1/projects/${SELECT_PROFILE_PROJECT_ID}/movements`)
     }

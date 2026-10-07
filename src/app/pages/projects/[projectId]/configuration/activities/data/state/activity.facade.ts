@@ -19,12 +19,12 @@ import { ActivityState } from '@pages/projects/[projectId]/configuration/activit
 import { GenericProjectElementFacade } from '@shared/helpers/facade/generic-project-element.facade'
 import { MovementModel } from '@shared/models/model/movement.model'
 import { DateUtil } from '@shared/helpers/util/date.util'
-import { ActivityService } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.service'
+import { ActivityApi } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.api'
 import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/util/rx.util'
 
 @Injectable()
 export class ActivityFacade extends GenericProjectElementFacade {
-    private readonly service: ActivityService = inject( ActivityService )
+    private readonly api: ActivityApi = inject( ActivityApi )
 
     public get activitiesPage (): Signal<PageModel<ActivityModel> | undefined> {
         return this.ngStore.selectSignal( ActivityState.activitiesPage )
@@ -212,41 +212,41 @@ export class ActivityFacade extends GenericProjectElementFacade {
     }
 
     public fetchActivity (id: string): Observable<ActivityModel> {
-        return this.service.findActivityById( this.selectedProjectId(), id ).pipe(
+        return this.api.findActivityById( this.selectedProjectId(), id ).pipe(
             notifyOnError( this.registryFacade ),
         )
     }
 
     public createActivity (activity: ActivityDto): Observable<ActivityModel> {
-        return this.service.createActivity( this.selectedProjectId(), activity ).pipe(
+        return this.api.createActivity( this.selectedProjectId(), activity ).pipe(
             notifyUnavailableOnly( this.registryFacade ),
             tap( (created: ActivityModel): void => this.onCommandSuccess( 'create', created ) ),
         )
     }
 
     public updateActivity (id: string, activity: ActivityDto): Observable<ActivityModel> {
-        return this.service.updateActivityById( this.selectedProjectId(), id, activity ).pipe(
+        return this.api.updateActivityById( this.selectedProjectId(), id, activity ).pipe(
             notifyUnavailableOnly( this.registryFacade ),
             tap( (updated: ActivityModel): void => this.onCommandSuccess( 'edit', updated ) ),
         )
     }
 
     public disableActivity (id: string): Observable<ActivityModel> {
-        return this.service.disableActivityById( this.selectedProjectId(), id ).pipe(
+        return this.api.disableActivityById( this.selectedProjectId(), id ).pipe(
             notifyOnError( this.registryFacade ),
             tap( (disabled: ActivityModel): void => this.onCommandSuccess( 'disable', disabled ) ),
         )
     }
 
     public enableActivity (id: string): Observable<ActivityModel> {
-        return this.service.enableActivityById( this.selectedProjectId(), id ).pipe(
+        return this.api.enableActivityById( this.selectedProjectId(), id ).pipe(
             notifyOnError( this.registryFacade ),
             tap( (enabled: ActivityModel): void => this.onCommandSuccess( 'enable', enabled ) ),
         )
     }
 
     public deleteActivity (activity: ActivityModel): Observable<void> {
-        return this.service.deleteActivityById( undefined, activity.id ).pipe(
+        return this.api.deleteActivityById( undefined, activity.id ).pipe(
             notifyOnError( this.registryFacade ),
             tap( (): void => this.onCommandSuccess( 'delete', activity ) ),
         )

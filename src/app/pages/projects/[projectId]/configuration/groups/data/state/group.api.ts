@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core'
 import {Observable} from 'rxjs'
 import {PageModel} from '@shared/models/model/page.model'
 import {GroupModel} from '@shared/models/model/group.model'
-import {GenericProjectService} from '@shared/helpers/service/generic-project.service'
+import {GenericProjectApi} from '@shared/helpers/api/generic-project.api'
 import {SELECT_PROFILE_PROJECT_ID} from '@shared/helpers/util/request.util'
 import {GroupDto} from '@pages/projects/[projectId]/configuration/groups/data/dto/group.dto'
 import {GroupPageParamsModel} from '@pages/projects/[projectId]/configuration/groups/data/model/group-page-params.model'
@@ -15,7 +15,7 @@ import {AddedGroupMembersDto} from '@shared/models/dto/added-group-members.dto'
 @Injectable({
     providedIn: 'root',
 })
-export class GroupService extends GenericProjectService {
+export class GroupApi extends GenericProjectApi {
     public constructor() {
         super(`/api/v1/projects/${SELECT_PROFILE_PROJECT_ID}/groups`)
     }

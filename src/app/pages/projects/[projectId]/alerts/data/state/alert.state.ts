@@ -10,7 +10,7 @@ import { ErrorModel } from '@shared/models/model/error.model'
 import { AlertFacade } from '@pages/projects/[projectId]/alerts/data/state/alert.facade'
 import { AlertModel } from '@shared/models/model/alert.model'
 import { AlertStateModel } from '@pages/projects/[projectId]/alerts/data/model/alert-state.model'
-import { AlertService } from '@pages/projects/[projectId]/movements/data/state/alert.service'
+import { AlertApi } from '@pages/projects/[projectId]/movements/data/state/alert.api'
 import { AlertStatusEnum } from '@shared/models/enumeration/alert-status.enum'
 import {
     FetchAlertCommunicationsPage,
@@ -24,7 +24,7 @@ import {
     UpdateAlertCommunicationsPageSearchParams,
     UpdateAlertsPageSearchParams,
 } from '@pages/projects/[projectId]/alerts/data/state/alert.action'
-import { MetadataService } from '@core/registry/state/metadata.service'
+import { MetadataApi } from '@core/registry/state/metadata.api'
 import { CommunicationModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
 
 const defaultAlertState: AlertStateModel = {
@@ -71,8 +71,8 @@ const defaultAlertState: AlertStateModel = {
 } )
 @Injectable()
 export class AlertState extends GenericProjectElementState<AlertStateModel> implements NgxsOnInit {
-    private readonly service: AlertService = inject( AlertService )
-    private readonly metadataService: MetadataService = inject( MetadataService )
+    private readonly api: AlertApi = inject( AlertApi )
+    private readonly metadataApi: MetadataApi = inject( MetadataApi )
     private readonly facade: AlertFacade = inject( AlertFacade )
 
     public ngxsOnInit (): void {
@@ -197,7 +197,7 @@ export class AlertState extends GenericProjectElementState<AlertStateModel> impl
 
     @Action( FetchAlertStatus )
     public fetchAlertStatus (ctx: StateContext<AlertStateModel>): Observable<void> {
-        return this.metadataService.getAlertsStatus().pipe(
+        return this.metadataApi.getAlertsStatus().pipe(
             map( (status: SelectItem<AlertStatusEnum>[]): void => this.fetchAlertStatusComplete( ctx, status ) ),
         )
     }
@@ -236,7 +236,7 @@ export class AlertState extends GenericProjectElementState<AlertStateModel> impl
         ctx: StateContext<AlertStateModel>,
         payload: FetchAlertsPage,
     ): Observable<void> {
-        return this.service.findAlerts(
+        return this.api.findAlerts(
             payload.projectId,
             payload.pageNumber,
             payload.pageSize,
@@ -300,7 +300,7 @@ export class AlertState extends GenericProjectElementState<AlertStateModel> impl
         ctx: StateContext<AlertStateModel>,
         payload: FetchAlertCommunicationsPage,
     ): Observable<void> {
-        return this.service.findAlertCommunications(
+        return this.api.findAlertCommunications(
             payload.projectId,
             payload.id,
             payload.pageNumber,

@@ -13,7 +13,7 @@ import { ErrorModel } from '@shared/models/model/error.model'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
 import { CommunicationStateModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication-state.model'
 import { CommunicationModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
-import { CommunicationService } from '@pages/projects/[projectId]/movements/communication/data/state/communication.service'
+import { CommunicationApi } from '@pages/projects/[projectId]/movements/communication/data/state/communication.api'
 import { CommunicationFacade } from '@pages/projects/[projectId]/movements/communication/data/state/communication.facade'
 import {
     FetchCommunication,
@@ -70,7 +70,7 @@ const defaultCommunicationState: CommunicationStateModel = {
 } )
 @Injectable()
 export class CommunicationState extends GenericProjectElementState<CommunicationStateModel> {
-    private readonly service: CommunicationService = inject( CommunicationService )
+    private readonly api: CommunicationApi = inject( CommunicationApi )
     private readonly facade: CommunicationFacade = inject( CommunicationFacade )
     private readonly datePipe: DateFormatPipe = inject( DateFormatPipe )
 
@@ -168,7 +168,7 @@ export class CommunicationState extends GenericProjectElementState<Communication
         ctx: StateContext<CommunicationStateModel>,
         payload: FetchCommunicationsPage,
     ): Observable<void> {
-        return this.service.findCommunications(
+        return this.api.findCommunications(
             payload.projectId,
             payload.pageNumber,
             payload.pageSize,
@@ -232,7 +232,7 @@ export class CommunicationState extends GenericProjectElementState<Communication
         ctx: StateContext<CommunicationStateModel>,
         payload: FetchCommunication,
     ): Observable<void> {
-        return this.service.findCommunicationById( payload.projectId, payload.id ).pipe(
+        return this.api.findCommunicationById( payload.projectId, payload.id ).pipe(
             initialize( (): void => this.facade.startCommunicationLoader() ),
             finalize( (): void => this.facade.stopCommunicationLoader() ),
             map( (communication: CommunicationModel): void => this.fetchCommunicationComplete( ctx, communication ) ),
@@ -256,7 +256,7 @@ export class CommunicationState extends GenericProjectElementState<Communication
         ctx: StateContext<CommunicationStateModel>,
         payload: SearchMovements,
     ): Observable<void> {
-        return this.service.searchMovements( payload.projectId, payload.textSearched ).pipe(
+        return this.api.searchMovements( payload.projectId, payload.textSearched ).pipe(
             initialize( (): void => this.facade.startCommunicationLoader() ),
             finalize( (): void => this.facade.stopCommunicationLoader() ),
             map( (movements: MovementModel[]): void => this.searchMovementsComplete( ctx, movements ) ),
@@ -282,7 +282,7 @@ export class CommunicationState extends GenericProjectElementState<Communication
         ctx: StateContext<CommunicationStateModel>,
         payload: SearchAlerts,
     ): Observable<void> {
-        return this.service.searchAlerts( payload.projectId, payload.textSearched ).pipe(
+        return this.api.searchAlerts( payload.projectId, payload.textSearched ).pipe(
             initialize( (): void => this.facade.startCommunicationLoader() ),
             finalize( (): void => this.facade.stopCommunicationLoader() ),
             map( (alerts: AlertModel[]): void => this.searchAlertsComplete( ctx, alerts ) ),

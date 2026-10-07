@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core'
 import {Observable} from 'rxjs'
 import {ProjectModel} from '@shared/models/model/project.model'
 import {PageModel} from '@shared/models/model/page.model'
-import {GenericService} from '@shared/helpers/service/generic.service'
+import {GenericApi} from '@shared/helpers/api/generic.api'
 import {ProjectDto} from '@pages/projects/data/dto/project.dto'
 import {ProjectPageParamsModel} from '@pages/projects/data/model/project-page-params.model'
 import {QueryUtil} from '@shared/helpers/util/query.util'
@@ -11,7 +11,7 @@ import {ProjectOptionModel} from '@pages/projects/data/model/project-option.mode
 @Injectable({
     providedIn: 'root',
 })
-export class ProjectService extends GenericService {
+export class ProjectApi extends GenericApi {
     public constructor() {
         super('/api/v1/projects')
     }

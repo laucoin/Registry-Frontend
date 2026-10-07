@@ -23,7 +23,7 @@ import { ParticipantState } from '@pages/projects/[projectId]/configuration/part
 import { GenericProjectElementFacade } from '@shared/helpers/facade/generic-project-element.facade'
 import { MovementModel } from '@shared/models/model/movement.model'
 import { DateUtil } from '@shared/helpers/util/date.util'
-import { ParticipantService } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.service'
+import { ParticipantApi } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.api'
 import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/util/rx.util'
 import { CommandEvent } from '@shared/helpers/facade/command-event.service'
 import { UserModel } from '@shared/models/model/user.model'
@@ -31,7 +31,7 @@ import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.e
 
 @Injectable()
 export class ParticipantFacade extends GenericProjectElementFacade {
-    private readonly service: ParticipantService = inject( ParticipantService )
+    private readonly api: ParticipantApi = inject( ParticipantApi )
 
     public get participantsPage (): Signal<PageModel<ParticipantModel> | undefined> {
         return this.ngStore.selectSignal( ParticipantState.participantsPage )
@@ -239,41 +239,41 @@ export class ParticipantFacade extends GenericProjectElementFacade {
     }
 
     public fetchParticipant (id: string): Observable<ParticipantModel> {
-        return this.service.findParticipantById( this.selectedProjectId(), id ).pipe(
+        return this.api.findParticipantById( this.selectedProjectId(), id ).pipe(
             notifyOnError( this.registryFacade ),
         )
     }
 
     public createParticipant (participant: ParticipantDto): Observable<ParticipantModel> {
-        return this.service.createParticipant( this.selectedProjectId(), participant ).pipe(
+        return this.api.createParticipant( this.selectedProjectId(), participant ).pipe(
             notifyUnavailableOnly( this.registryFacade ),
             tap( (created: ParticipantModel): void => this.onCommandSuccess( 'create', created ) ),
         )
     }
 
     public updateParticipant (id: string, participant: ParticipantDto): Observable<ParticipantModel> {
-        return this.service.updateParticipantById( this.selectedProjectId(), id, participant ).pipe(
+        return this.api.updateParticipantById( this.selectedProjectId(), id, participant ).pipe(
             notifyUnavailableOnly( this.registryFacade ),
             tap( (updated: ParticipantModel): void => this.onCommandSuccess( 'update', updated ) ),
         )
     }
 
     public disableParticipant (id: string): Observable<ParticipantModel> {
-        return this.service.disableParticipantById( this.selectedProjectId(), id ).pipe(
+        return this.api.disableParticipantById( this.selectedProjectId(), id ).pipe(
             notifyOnError( this.registryFacade ),
             tap( (disabled: ParticipantModel): void => this.onCommandSuccess( 'disable', disabled ) ),
         )
     }
 
     public enableParticipant (id: string): Observable<ParticipantModel> {
-        return this.service.enableParticipantById( this.selectedProjectId(), id ).pipe(
+        return this.api.enableParticipantById( this.selectedProjectId(), id ).pipe(
             notifyOnError( this.registryFacade ),
             tap( (enabled: ParticipantModel): void => this.onCommandSuccess( 'enable', enabled ) ),
         )
     }
 
     public deleteParticipant (participant: ParticipantModel): Observable<void> {
-        return this.service.deleteParticipantById( undefined, participant.id ).pipe(
+        return this.api.deleteParticipantById( undefined, participant.id ).pipe(
             notifyOnError( this.registryFacade ),
             tap( (): void => this.onCommandSuccess( 'delete', participant ) ),
         )

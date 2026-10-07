@@ -21,12 +21,12 @@ import { GenericProjectElementFacade } from '@shared/helpers/facade/generic-proj
 import { MovementModel } from '@shared/models/model/movement.model'
 import { DateUtil } from '@shared/helpers/util/date.util'
 import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum'
-import { VehicleService } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.service'
+import { VehicleApi } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.api'
 import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/util/rx.util'
 
 @Injectable()
 export class VehicleFacade extends GenericProjectElementFacade {
-    private readonly service: VehicleService = inject( VehicleService )
+    private readonly api: VehicleApi = inject( VehicleApi )
 
     public get vehiclesPage (): Signal<PageModel<VehicleModel> | undefined> {
         return this.ngStore.selectSignal( VehicleState.vehiclesPage )
@@ -207,41 +207,41 @@ export class VehicleFacade extends GenericProjectElementFacade {
     }
 
     public fetchVehicle (id: string): Observable<VehicleModel> {
-        return this.service.findVehicleById( this.selectedProjectId(), id ).pipe(
+        return this.api.findVehicleById( this.selectedProjectId(), id ).pipe(
             notifyOnError( this.registryFacade ),
         )
     }
 
     public createVehicle (vehicle: VehicleDto): Observable<VehicleModel> {
-        return this.service.createVehicle( this.selectedProjectId(), vehicle ).pipe(
+        return this.api.createVehicle( this.selectedProjectId(), vehicle ).pipe(
             notifyUnavailableOnly( this.registryFacade ),
             tap( (created: VehicleModel): void => this.onCommandSuccess( 'create', created ) ),
         )
     }
 
     public updateVehicle (id: string, vehicle: VehicleDto): Observable<VehicleModel> {
-        return this.service.updateVehicleById( this.selectedProjectId(), id, vehicle ).pipe(
+        return this.api.updateVehicleById( this.selectedProjectId(), id, vehicle ).pipe(
             notifyUnavailableOnly( this.registryFacade ),
             tap( (updated: VehicleModel): void => this.onCommandSuccess( 'edit', updated ) ),
         )
     }
 
     public disableVehicle (id: string): Observable<VehicleModel> {
-        return this.service.disableVehicleById( this.selectedProjectId(), id ).pipe(
+        return this.api.disableVehicleById( this.selectedProjectId(), id ).pipe(
             notifyOnError( this.registryFacade ),
             tap( (disabled: VehicleModel): void => this.onCommandSuccess( 'disable', disabled ) ),
         )
     }
 
     public enableVehicle (id: string): Observable<VehicleModel> {
-        return this.service.enableVehicleById( this.selectedProjectId(), id ).pipe(
+        return this.api.enableVehicleById( this.selectedProjectId(), id ).pipe(
             notifyOnError( this.registryFacade ),
             tap( (enabled: VehicleModel): void => this.onCommandSuccess( 'enable', enabled ) ),
         )
     }
 
     public deleteVehicle (vehicle: VehicleModel): Observable<void> {
-        return this.service.deleteVehicleById( undefined, vehicle.id ).pipe(
+        return this.api.deleteVehicleById( undefined, vehicle.id ).pipe(
             notifyOnError( this.registryFacade ),
             tap( (): void => this.onCommandSuccess( 'delete', vehicle ) ),
         )

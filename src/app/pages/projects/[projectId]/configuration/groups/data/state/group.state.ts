@@ -16,7 +16,7 @@ import {
     UpdateGroupMembersPageSearchParams,
     UpdateGroupsPageSearchParams,
 } from '@pages/projects/[projectId]/configuration/groups/data/state/group.action'
-import { GroupService } from '@pages/projects/[projectId]/configuration/groups/data/state/group.service'
+import { GroupApi } from '@pages/projects/[projectId]/configuration/groups/data/state/group.api'
 import { GroupFacade } from '@pages/projects/[projectId]/configuration/groups/data/state/group.facade'
 import { StateUtil } from '@shared/helpers/state/state.util'
 import { inject, Injectable } from '@angular/core'
@@ -75,7 +75,7 @@ const defaultGroupState: GroupStateModel = {
 } )
 @Injectable()
 export class GroupState extends GenericProjectElementState<GroupStateModel> {
-    private readonly service: GroupService = inject( GroupService )
+    private readonly api: GroupApi = inject( GroupApi )
     private readonly facade: GroupFacade = inject( GroupFacade )
 
     @Selector()
@@ -202,7 +202,7 @@ export class GroupState extends GenericProjectElementState<GroupStateModel> {
         ctx: StateContext<GroupStateModel>,
         payload: FetchGroupsPage,
     ): Observable<void> {
-        return this.service.findGroups(
+        return this.api.findGroups(
             payload.projectId,
             payload.pageNumber,
             payload.pageSize,
@@ -293,7 +293,7 @@ export class GroupState extends GenericProjectElementState<GroupStateModel> {
             } )
         }
 
-        return this.service.findGroupMembersByGroupId(
+        return this.api.findGroupMembersByGroupId(
             payload.projectId,
             payload.id,
             payload.pageNumber,
@@ -344,7 +344,7 @@ export class GroupState extends GenericProjectElementState<GroupStateModel> {
         ctx: StateContext<GroupStateModel>,
         payload: SearchParticipants,
     ): Observable<void> {
-        return this.service.searchParticipants(
+        return this.api.searchParticipants(
             payload.projectId,
             payload.textSearched,
         ).pipe(

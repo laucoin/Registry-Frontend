@@ -19,7 +19,7 @@ import { ProjectProfilesDto } from '@pages/projects/[projectId]/configuration/pr
 import { UserModel } from '@shared/models/model/user.model'
 import { DateUtil } from '@shared/helpers/util/date.util'
 import { ProfileStatusEnum } from '@shared/models/enumeration/profile-status.enum'
-import { ProjectProfileService } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.service'
+import { ProjectProfileApi } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.api'
 import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/util/rx.util'
 import { CommandEvent } from '@shared/helpers/facade/command-event.service'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
@@ -28,7 +28,7 @@ import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.p
 
 @Injectable()
 export class ProjectProfileFacade extends GenericProjectElementFacade {
-    private readonly service: ProjectProfileService = inject( ProjectProfileService )
+    private readonly api: ProjectProfileApi = inject( ProjectProfileApi )
     private readonly pluralTranslationPipe: PluralTranslationPipe = inject( PluralTranslationPipe )
 
     public get projectProfilesPage (): Signal<PageModel<ProjectProfileModel> | undefined> {
@@ -142,13 +142,13 @@ export class ProjectProfileFacade extends GenericProjectElementFacade {
     }
 
     public fetchProjectProfile (id: string): Observable<ProjectProfileModel> {
-        return this.service.findProjectProfileById( this.selectedProjectId(), id ).pipe(
+        return this.api.findProjectProfileById( this.selectedProjectId(), id ).pipe(
             notifyOnError( this.registryFacade ),
         )
     }
 
     public createProjectProfiles (projectProfiles: ProjectProfilesDto): Observable<CreatedProjectProfiles> {
-        return this.service.createProjectProfiles( this.selectedProjectId(), projectProfiles ).pipe(
+        return this.api.createProjectProfiles( this.selectedProjectId(), projectProfiles ).pipe(
             notifyUnavailableOnly( this.registryFacade ),
             tap( (creationStatus: CreatedProjectProfiles): void => {
                 const created: number = creationStatus?.createdUserIds?.length ?? 0
@@ -183,28 +183,28 @@ export class ProjectProfileFacade extends GenericProjectElementFacade {
     }
 
     public updateProjectProfile (id: string, projectProfile: ProjectProfileDto): Observable<ProjectProfileModel> {
-        return this.service.updateProjectProfileById( this.selectedProjectId(), id, projectProfile ).pipe(
+        return this.api.updateProjectProfileById( this.selectedProjectId(), id, projectProfile ).pipe(
             notifyUnavailableOnly( this.registryFacade ),
             tap( (updated: ProjectProfileModel): void => this.onCommandSuccess( 'update', updated ) ),
         )
     }
 
     public blockProjectProfile (profile: ProjectProfileModel): Observable<ProjectProfileModel> {
-        return this.service.blockProjectProfileById( this.selectedProjectId(), profile.id ).pipe(
+        return this.api.blockProjectProfileById( this.selectedProjectId(), profile.id ).pipe(
             notifyOnError( this.registryFacade ),
             tap( (): void => this.onCommandSuccess( 'disable', profile ) ),
         )
     }
 
     public unblockProjectProfile (profile: ProjectProfileModel): Observable<ProjectProfileModel> {
-        return this.service.unblockProjectProfileById( this.selectedProjectId(), profile.id ).pipe(
+        return this.api.unblockProjectProfileById( this.selectedProjectId(), profile.id ).pipe(
             notifyOnError( this.registryFacade ),
             tap( (): void => this.onCommandSuccess( 'enable', profile ) ),
         )
     }
 
     public deleteProjectProfile (profile: ProjectProfileModel): Observable<void> {
-        return this.service.deleteProjectProfileById( undefined, profile.id ).pipe(
+        return this.api.deleteProjectProfileById( undefined, profile.id ).pipe(
             notifyOnError( this.registryFacade ),
             tap( (): void => this.onCommandSuccess( 'delete', profile ) ),
         )

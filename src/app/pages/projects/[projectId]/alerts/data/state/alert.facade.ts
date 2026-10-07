@@ -3,7 +3,7 @@ import { PageModel } from '@shared/models/model/page.model'
 import { AlertState } from '@pages/projects/[projectId]/alerts/data/state/alert.state'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { DateUtil } from '@shared/helpers/util/date.util'
-import { AlertService } from '@pages/projects/[projectId]/movements/data/state/alert.service'
+import { AlertApi } from '@pages/projects/[projectId]/movements/data/state/alert.api'
 import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/util/rx.util'
 import { CommandEvent } from '@shared/helpers/facade/command-event.service'
 import { Observable, tap } from 'rxjs'
@@ -27,7 +27,7 @@ import { CommunicationModel } from '@pages/projects/[projectId]/movements/commun
 
 @Injectable()
 export class AlertFacade extends GenericProjectElementFacade {
-    private readonly service: AlertService = inject( AlertService )
+    private readonly api: AlertApi = inject( AlertApi )
 
     public get alertsPage (): Signal<PageModel<AlertModel> | undefined> {
         return this.ngStore.selectSignal( AlertState.alertsPage )
@@ -235,48 +235,48 @@ export class AlertFacade extends GenericProjectElementFacade {
     }
 
     public fetchAlert (id: string): Observable<AlertModel> {
-        return this.service.findAlertById( this.selectedProjectId(), id ).pipe(
+        return this.api.findAlertById( this.selectedProjectId(), id ).pipe(
             notifyOnError( this.registryFacade ),
         )
     }
 
     public createAlert (alert: AlertDto): Observable<AlertModel> {
-        return this.service.createAlert( this.selectedProjectId(), alert ).pipe(
+        return this.api.createAlert( this.selectedProjectId(), alert ).pipe(
             notifyUnavailableOnly( this.registryFacade ),
             tap( (created: AlertModel): void => this.onCommandSuccess( 'create', created ) ),
         )
     }
 
     public updateAlert (id: string, alert: AlertDto): Observable<AlertModel> {
-        return this.service.updateAlertById( this.selectedProjectId(), id, alert ).pipe(
+        return this.api.updateAlertById( this.selectedProjectId(), id, alert ).pipe(
             notifyUnavailableOnly( this.registryFacade ),
             tap( (updated: AlertModel): void => this.onCommandSuccess( 'update', updated ) ),
         )
     }
 
     public disableAlert (id: string): Observable<AlertModel> {
-        return this.service.disableAlertById( this.selectedProjectId(), id ).pipe(
+        return this.api.disableAlertById( this.selectedProjectId(), id ).pipe(
             notifyOnError( this.registryFacade ),
             tap( (disabled: AlertModel): void => this.onCommandSuccess( 'disable', disabled ) ),
         )
     }
 
     public enableAlert (id: string): Observable<AlertModel> {
-        return this.service.enableAlertById( this.selectedProjectId(), id ).pipe(
+        return this.api.enableAlertById( this.selectedProjectId(), id ).pipe(
             notifyOnError( this.registryFacade ),
             tap( (enabled: AlertModel): void => this.onCommandSuccess( 'enable', enabled ) ),
         )
     }
 
     public deleteAlert (alert: AlertModel): Observable<void> {
-        return this.service.deleteAlertById( undefined, alert.id ).pipe(
+        return this.api.deleteAlertById( undefined, alert.id ).pipe(
             notifyOnError( this.registryFacade ),
             tap( (): void => this.onCommandSuccess( 'delete', alert ) ),
         )
     }
 
     public updateAlertStatus (id: string, status: AlertStatusEnum): Observable<AlertModel> {
-        return this.service.updateAlertStatusById( this.selectedProjectId(), id, status ).pipe(
+        return this.api.updateAlertStatusById( this.selectedProjectId(), id, status ).pipe(
             notifyOnError( this.registryFacade ),
             tap( (updated: AlertModel): void => this.onCommandSuccess( 'status', updated ) ),
         )

@@ -19,7 +19,7 @@ import {
     UpdateProject,
     UpdateProjectsPageSearchParams,
 } from '@pages/projects/data/state/project/project.action'
-import { ProjectService } from '@pages/projects/data/state/project.service'
+import { ProjectApi } from '@pages/projects/data/state/project.api'
 import { ProjectFacade } from '@pages/projects/data/state/project/project.facade'
 import { inject, Injectable } from '@angular/core'
 import { StateUtil } from '@shared/helpers/state/state.util'
@@ -79,7 +79,7 @@ const defaultProjectState: ProjectStateModel = {
 } )
 @Injectable()
 export class ProjectState extends GenericElementState<ProjectStateModel> {
-    private readonly service: ProjectService = inject( ProjectService )
+    private readonly api: ProjectApi = inject( ProjectApi )
     private readonly facade: ProjectFacade = inject( ProjectFacade )
 
     private readonly projectIcon: string = 'pi pi-calendar'
@@ -156,7 +156,7 @@ export class ProjectState extends GenericElementState<ProjectStateModel> {
 
     @Action( FetchProjectOptions )
     public fetchProjectOptions (ctx: StateContext<ProjectStateModel>): Observable<void> {
-        return this.service.getAvailableProjectOptions().pipe(
+        return this.api.getAvailableProjectOptions().pipe(
             map( (options: ProjectOptionModel[]): void => this.fetchProjectOptionsComplete( ctx, options ) ),
         )
     }
@@ -189,7 +189,7 @@ export class ProjectState extends GenericElementState<ProjectStateModel> {
 
     @Action( FetchProjectsPage )
     public fetchProjectsPage (ctx: StateContext<ProjectStateModel>, payload: FetchProjectsPage): Observable<void> {
-        return this.service.findProjects( payload.pageNumber, payload.pageSize, ctx.getState().projects.params ).pipe(
+        return this.api.findProjects( payload.pageNumber, payload.pageSize, ctx.getState().projects.params ).pipe(
             initialize( (): void => this.facade.startProjectsPageLoader() ),
             finalize( (): void => this.facade.stopProjectsPageLoader() ),
             map( (projectPage: PageModel<ProjectModel>): void => this.fetchProjectsPageComplete( ctx, projectPage ) ),
@@ -242,7 +242,7 @@ export class ProjectState extends GenericElementState<ProjectStateModel> {
 
     @Action( FetchProject )
     public fetchProject (ctx: StateContext<ProjectStateModel>, payload: FetchProject): Observable<void> {
-        return this.service.findProjectById( payload.id ).pipe(
+        return this.api.findProjectById( payload.id ).pipe(
             initialize( (): void => this.facade.startProjectLoader() ),
             finalize( (): void => this.facade.stopProjectLoader() ),
             map( (project: ProjectModel): void => this.fetchProjectComplete( ctx, project ) ),
@@ -267,7 +267,7 @@ export class ProjectState extends GenericElementState<ProjectStateModel> {
 
     @Action( CreateProject )
     public createProject (ctx: StateContext<ProjectStateModel>, payload: CreateProject): Observable<void> {
-        return this.service.createProject( payload.project ).pipe(
+        return this.api.createProject( payload.project ).pipe(
             initialize( (): void => this.facade.startProjectLoader() ),
             finalize( (): void => this.facade.stopProjectLoader() ),
             map( (project: ProjectModel): void => this.createProjectComplete( ctx, project ) ),
@@ -289,7 +289,7 @@ export class ProjectState extends GenericElementState<ProjectStateModel> {
 
     @Action( UpdateProject )
     public updateProject (ctx: StateContext<ProjectStateModel>, payload: UpdateProject): Observable<void> {
-        return this.service.updateProjectById( payload.id, payload.project ).pipe(
+        return this.api.updateProjectById( payload.id, payload.project ).pipe(
             initialize( (): void => this.facade.startProjectLoader() ),
             finalize( (): void => this.facade.stopProjectLoader() ),
             map( (project: ProjectModel): void => this.updateProjectComplete( ctx, project ) ),
@@ -314,7 +314,7 @@ export class ProjectState extends GenericElementState<ProjectStateModel> {
 
     @Action( DisableProject )
     public disableProject (ctx: StateContext<ProjectStateModel>, payload: DisableProject): Observable<void> {
-        return this.service.disableProjectById( payload.id ).pipe(
+        return this.api.disableProjectById( payload.id ).pipe(
             initialize( (): void => this.facade.startProjectLoader() ),
             finalize( (): void => this.facade.stopProjectLoader() ),
             map( (project: ProjectModel): void => this.disableProjectComplete( ctx, project ) ),
@@ -335,7 +335,7 @@ export class ProjectState extends GenericElementState<ProjectStateModel> {
 
     @Action( EnableProject )
     public enableProject (ctx: StateContext<ProjectStateModel>, payload: EnableProject): Observable<void> {
-        return this.service.enableProjectById( payload.id ).pipe(
+        return this.api.enableProjectById( payload.id ).pipe(
             initialize( (): void => this.facade.startProjectLoader() ),
             finalize( (): void => this.facade.stopProjectLoader() ),
             map( (project: ProjectModel): void => this.enableProjectComplete( ctx, project ) ),
@@ -356,7 +356,7 @@ export class ProjectState extends GenericElementState<ProjectStateModel> {
 
     @Action( DeleteProject )
     public deleteProject (ctx: StateContext<ProjectStateModel>, payload: DeleteProject): Observable<void> {
-        return this.service.deleteProjectById( payload.project.id ).pipe(
+        return this.api.deleteProjectById( payload.project.id ).pipe(
             initialize( (): void => this.facade.startProjectLoader() ),
             finalize( (): void => this.facade.stopProjectLoader() ),
             map( (): void => this.deleteProjectComplete( ctx, payload.project ) ),

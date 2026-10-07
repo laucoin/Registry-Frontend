@@ -1,7 +1,7 @@
-import { GenericService } from '@shared/helpers/service/generic.service'
+import { GenericApi } from '@shared/helpers/api/generic.api'
 import { SELECT_PROFILE_PROJECT_ID } from '@shared/helpers/util/request.util'
 
-export abstract class GenericProjectService extends GenericService {
+export abstract class GenericProjectApi extends GenericApi {
     protected constructor (baseUrl: string | undefined = undefined) {
         super( baseUrl )
     }

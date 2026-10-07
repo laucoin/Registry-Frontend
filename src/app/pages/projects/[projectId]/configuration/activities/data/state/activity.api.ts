@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core'
 import {Observable} from 'rxjs'
 import {PageModel} from '@shared/models/model/page.model'
 import {ActivityModel} from '@shared/models/model/activity.model'
-import {GenericProjectService} from '@shared/helpers/service/generic-project.service'
+import {GenericProjectApi} from '@shared/helpers/api/generic-project.api'
 import {SELECT_PROFILE_PROJECT_ID} from '@shared/helpers/util/request.util'
 import {ActivityDto} from '@pages/projects/[projectId]/configuration/activities/data/dto/activity.dto'
 import {ActivityPageParamsModel} from '@pages/projects/[projectId]/configuration/activities/data/model/activity-page-params.model'
@@ -13,7 +13,7 @@ import {MovementModel} from '@shared/models/model/movement.model'
 @Injectable({
     providedIn: 'root',
 })
-export class ActivityService extends GenericProjectService {
+export class ActivityApi extends GenericProjectApi {
     public constructor() {
         super(`/api/v1/projects/${SELECT_PROFILE_PROJECT_ID}/activities`)
     }

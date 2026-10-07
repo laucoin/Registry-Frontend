@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core'
 import {Observable} from 'rxjs'
-import {GenericService} from '@shared/helpers/service/generic.service'
+import {GenericApi} from '@shared/helpers/api/generic.api'
 import {SelectItem} from 'primeng/api'
 import {MovementTypeEnum} from '@shared/models/enumeration/movement-type.enum'
 import {ParticipantTypeEnum} from '@shared/models/enumeration/participant-type.enum'
@@ -11,7 +11,7 @@ import {AlertStatusEnum} from '@shared/models/enumeration/alert-status.enum'
 @Injectable({
     providedIn: 'root',
 })
-export class MetadataService extends GenericService {
+export class MetadataApi extends GenericApi {
     public constructor() {
         super('/api/v1/metadata')
     }
