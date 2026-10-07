@@ -4,30 +4,19 @@ import { PageModel } from '@shared/models/model/page.model'
 import { GenericProjectElementState } from '@shared/helpers/state/generic-project-element.state'
 import { initialize } from '@shared/helpers/util/rx.util'
 import {
-    CreateGuestsMovement,
-    CreateMovement,
-    DeleteMovement,
-    DisableMovement,
-    EnableMovement,
-    FetchMovement,
     FetchMovementCommunicationsPage,
     FetchMovementsContent,
     FetchMovementsPage,
     FetchMovementTypes,
     FetchParticipantTypes,
-    ResetMovement,
     ResetMovementState,
     SearchParticipantsAndGroups,
     SearchReasonsAndActivities,
     SearchVehicles,
     StartMovementCommunicationsPageLoader,
-    StartMovementLoader,
     StartMovementsPageLoader,
     StopMovementCommunicationsPageLoader,
-    StopMovementLoader,
     StopMovementsPageLoader,
-    UpdateGuestsMovement,
-    UpdateMovement,
     UpdateMovementCommunicationsPageSearchParams,
     UpdateMovementsPageSearchParams,
 } from '@pages/projects/[projectId]/movements/data/state/movement.action'
@@ -35,9 +24,6 @@ import { MovementService } from '@pages/projects/[projectId]/movements/data/stat
 import { MovementFacade } from '@pages/projects/[projectId]/movements/data/state/movement.facade'
 import { StateUtil } from '@shared/helpers/state/state.util'
 import { inject, Injectable } from '@angular/core'
-import {
-    ElementRequestInformationModel,
-} from '@shared/models/model/element-request-information.model'
 import { GroupModel } from '@shared/models/model/group.model'
 import { GroupUtil } from '@shared/helpers/util/group.util'
 import { SelectItem, SelectItemGroup, ToastMessageOptions } from 'primeng/api'
@@ -60,13 +46,7 @@ import { MetadataService } from '@core/registry/state/metadata.service'
 import { MovementReasonModel } from '@pages/projects/[projectId]/movements/data/model/movement-reason.model'
 import { MovementTypeEnum } from '@shared/models/enumeration/movement-type.enum'
 import { ParticipantTypeEnum } from '@shared/models/enumeration/participant-type.enum'
-import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { CommunicationModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
-
-const defaultMovement: ElementRequestInformationModel<MovementModel> = {
-    element: undefined,
-    loading: false,
-}
 
 const defaultMovementState: MovementStateModel = {
     movements: {
@@ -97,7 +77,6 @@ const defaultMovementState: MovementStateModel = {
         silentLoading: false,
         error: undefined,
     },
-    movement: defaultMovement,
     _metadata: {
         types: [],
         participantTypes: [],
@@ -118,8 +97,6 @@ const defaultMovementState: MovementStateModel = {
 } )
 @Injectable()
 export class MovementState extends GenericProjectElementState<MovementStateModel> implements NgxsOnInit {
-    private readonly movementIcon: string = 'pi pi-sort-alt'
-
     private readonly service: MovementService = inject( MovementService )
     private readonly metadataService: MetadataService = inject( MetadataService )
     private readonly facade: MovementFacade = inject( MovementFacade )
@@ -219,16 +196,6 @@ export class MovementState extends GenericProjectElementState<MovementStateModel
     @Selector()
     public static movementCommunicationsPageEndDateTimeSearchedParam (state: MovementStateModel): string | undefined {
         return state.movementCommunications.params.endDateTimeSearched
-    }
-
-    @Selector()
-    public static movement (state: MovementStateModel): MovementModel | undefined {
-        return state.movement.element
-    }
-
-    @Selector()
-    public static movementLoading (state: MovementStateModel): boolean {
-        return state.movement.loading
     }
 
     @Selector()
@@ -482,38 +449,6 @@ export class MovementState extends GenericProjectElementState<MovementStateModel
         } )
     }
 
-    @Action( StartMovementLoader )
-    public startMovementLoader (ctx: StateContext<MovementStateModel>): void {
-        ctx.patchState( {
-            movement: StateUtil.updateElementLoader( ctx.getState().movement, true ),
-        } )
-    }
-
-    @Action( StopMovementLoader )
-    public stopMovementLoader (ctx: StateContext<MovementStateModel>): void {
-        ctx.patchState( {
-            movement: StateUtil.updateElementLoader( ctx.getState().movement, false ),
-        } )
-    }
-
-    @Action( FetchMovement )
-    public fetchMovement (ctx: StateContext<MovementStateModel>, payload: FetchMovement): Observable<void> {
-        return this.service.findMovementById( payload.projectId, payload.id ).pipe(
-            initialize( (): void => this.facade.startMovementLoader() ),
-            finalize( (): void => this.facade.stopMovementLoader() ),
-            map( (movement: MovementModel): void => this.fetchMovementComplete( ctx, movement ) ),
-        )
-    }
-
-    private fetchMovementComplete (ctx: StateContext<MovementStateModel>, movement: MovementModel): void {
-        ctx.patchState( {
-            movement: {
-                ...ctx.getState().movement,
-                element: movement,
-            },
-        } )
-    }
-
     @Action( SearchReasonsAndActivities )
     public searchReasonsAndActivities (
         ctx: StateContext<MovementStateModel>,
@@ -625,162 +560,6 @@ export class MovementState extends GenericProjectElementState<MovementStateModel
                 ),
             },
         } )
-    }
-
-    @Action( ResetMovement )
-    public resetMovement (ctx: StateContext<MovementStateModel>): void {
-        ctx.patchState( {
-            movement: defaultMovement,
-        } )
-    }
-
-    @Action( CreateMovement )
-    public createMovement (ctx: StateContext<MovementStateModel>, payload: CreateMovement): Observable<void> {
-        return this.service.createMovement( payload.projectId, payload.movement ).pipe(
-            initialize( (): void => this.facade.startMovementLoader() ),
-            finalize( (): void => this.facade.stopMovementLoader() ),
-            map( (movement: MovementModel): void => this.createMovementComplete( ctx, movement ) ),
-        )
-    }
-
-    @Action( CreateGuestsMovement )
-    public createGuestsMovement (
-        ctx: StateContext<MovementStateModel>,
-        payload: CreateGuestsMovement,
-    ): Observable<void> {
-        return this.service.createGuestsMovement( payload.projectId, payload.movement ).pipe(
-            initialize( (): void => this.facade.startMovementLoader() ),
-            finalize( (): void => this.facade.stopMovementLoader() ),
-            map( (movement: MovementModel): void => this.createMovementComplete( ctx, movement ) ),
-        )
-    }
-
-    private createMovementComplete (
-        ctx: StateContext<MovementStateModel>,
-        movement: MovementModel,
-    ): void {
-        this.buildMessageAndNotify(
-            SeverityEnum.SUCCESS,
-            `movements.notifications.create.${movement.type.value}.title`,
-            this.pluralTranslationPipe.transform(
-                `movements.notifications.create.${movement.type.value}.message`,
-                movement.content,
-            ),
-            this.movementIcon,
-            this.buildTranslationArgs( movement ),
-        )
-        this.refreshPage( ctx )
-    }
-
-    @Action( UpdateMovement )
-    public updateMovement (ctx: StateContext<MovementStateModel>, payload: UpdateMovement): Observable<void> {
-        return this.service.updateMovementById( payload.projectId, payload.id, payload.movement ).pipe(
-            initialize( (): void => this.facade.startMovementLoader() ),
-            finalize( (): void => this.facade.stopMovementLoader() ),
-            map( (movement: MovementModel): void => this.updateMovementComplete( ctx, movement ) ),
-        )
-    }
-
-    @Action( UpdateGuestsMovement )
-    public updateGuestsMovement (
-        ctx: StateContext<MovementStateModel>,
-        payload: UpdateGuestsMovement,
-    ): Observable<void> {
-        return this.service.updateGuestsMovementById( payload.projectId, payload.id, payload.movement ).pipe(
-            initialize( (): void => this.facade.startMovementLoader() ),
-            finalize( (): void => this.facade.stopMovementLoader() ),
-            map( (movement: MovementModel): void => this.updateMovementComplete( ctx, movement ) ),
-        )
-    }
-
-    private updateMovementComplete (
-        ctx: StateContext<MovementStateModel>,
-        movement: MovementModel,
-    ): void {
-        this.buildMessageAndNotify(
-            SeverityEnum.SUCCESS,
-            `movements.notifications.edit.${movement.type.value}.title`,
-            `movements.notifications.edit.${movement.type.value}.message`,
-            this.movementIcon,
-            this.buildTranslationArgs( movement ),
-        )
-        this.refreshPage( ctx )
-    }
-
-    @Action( DisableMovement )
-    public disableMovement (ctx: StateContext<MovementStateModel>, payload: DisableMovement): Observable<void> {
-        return this.service.disableMovementById( payload.projectId, payload.id ).pipe(
-            initialize( (): void => this.facade.startMovementLoader() ),
-            finalize( (): void => this.facade.stopMovementLoader() ),
-            map( (movement: MovementModel): void => this.disableMovementComplete( ctx, movement ) ),
-        )
-    }
-
-    private disableMovementComplete (
-        ctx: StateContext<MovementStateModel>,
-        movement: MovementModel,
-    ): void {
-        this.buildMessageAndNotify(
-            SeverityEnum.SUCCESS,
-            `movements.notifications.disable.${movement.type.value}.title`,
-            `movements.notifications.disable.${movement.type.value}.message`,
-            this.movementIcon,
-            this.buildTranslationArgs( movement ),
-        )
-        this.refreshPage( ctx )
-    }
-
-    @Action( EnableMovement )
-    public enableMovement (ctx: StateContext<MovementStateModel>, payload: EnableMovement): Observable<void> {
-        return this.service.enableMovementById( payload.projectId, payload.id ).pipe(
-            initialize( (): void => this.facade.startMovementLoader() ),
-            finalize( (): void => this.facade.stopMovementLoader() ),
-            map( (movement: MovementModel): void => this.enableMovementComplete( ctx, movement ) ),
-        )
-    }
-
-    private enableMovementComplete (
-        ctx: StateContext<MovementStateModel>,
-        movement: MovementModel,
-    ): void {
-        this.buildMessageAndNotify(
-            SeverityEnum.SUCCESS,
-            `movements.notifications.enable.${movement.type.value}.title`,
-            `movements.notifications.enable.${movement.type.value}.message`,
-            this.movementIcon,
-            this.buildTranslationArgs( movement ),
-        )
-        this.refreshPage( ctx )
-    }
-
-    @Action( DeleteMovement )
-    public deleteMovement (ctx: StateContext<MovementStateModel>, payload: DeleteMovement): Observable<void> {
-        return this.service.deleteMovementById( undefined, payload.movement.id ).pipe(
-            initialize( (): void => this.facade.startMovementLoader() ),
-            finalize( (): void => this.facade.stopMovementLoader() ),
-            map( (): void => this.deleteMovementComplete( ctx, payload.movement ) ),
-        )
-    }
-
-    private deleteMovementComplete (
-        ctx: StateContext<MovementStateModel>,
-        movement: MovementModel,
-    ): void {
-        this.buildMessageAndNotify(
-            SeverityEnum.SUCCESS,
-            `movements.notifications.delete.${movement.type.value}.title`,
-            `movements.notifications.delete.${movement.type.value}.message`,
-            this.movementIcon,
-            this.buildTranslationArgs( movement ),
-        )
-        this.refreshPage( ctx )
-    }
-
-    private buildTranslationArgs (movement: MovementModel): object {
-        return {
-            datetime: this.datePipe.transform( movement?.dateTime, 'datetime' ),
-            participants: movement.content?.length ?? 0,
-        }
     }
 
     protected refreshPage (ctx: StateContext<MovementStateModel>): void {

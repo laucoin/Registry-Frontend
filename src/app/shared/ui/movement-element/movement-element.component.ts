@@ -115,7 +115,7 @@ export class MovementElementComponent extends GenericElementComponent {
         {
             label: 'movements.actions.disable',
             icon: 'pi pi-eye-slash',
-            disabled: !this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_MOVEMENT_U),
+            disabled: this.busy() || !this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_MOVEMENT_U),
             visible: this.actionIsEnable(ElementActionEnum.MOVEMENT_DISABLE) && this.movement().visible,
             command: (): void => {
                 this.confirmationService.confirm(
@@ -124,7 +124,7 @@ export class MovementElementComponent extends GenericElementComponent {
                         'pi pi-exclamation-triangle',
                         this.movement(),
                         SeverityEnum.WARNING,
-                        (): void => this.facade.disableMovement(this.movement().id),
+                        (): void => this.run(this.facade.disableMovement(this.movement().id)),
                     ),
                 )
             },
@@ -132,7 +132,7 @@ export class MovementElementComponent extends GenericElementComponent {
         {
             label: 'movements.actions.enable',
             icon: 'pi pi-replay',
-            disabled: !this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_MOVEMENT_U),
+            disabled: this.busy() || !this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_MOVEMENT_U),
             visible: this.actionIsEnable(ElementActionEnum.MOVEMENT_ENABLE) && !this.movement().visible,
             command: (): void => {
                 this.confirmationService.confirm(
@@ -141,7 +141,7 @@ export class MovementElementComponent extends GenericElementComponent {
                         'pi pi-info-circle',
                         this.movement(),
                         SeverityEnum.INFO,
-                        (): void => this.facade.enableMovement(this.movement().id),
+                        (): void => this.run(this.facade.enableMovement(this.movement().id)),
                     ),
                 )
             },
@@ -149,7 +149,7 @@ export class MovementElementComponent extends GenericElementComponent {
         {
             label: 'movements.actions.delete',
             icon: 'pi pi-trash',
-            disabled: !this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_MOVEMENT_D),
+            disabled: this.busy() || !this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_MOVEMENT_D),
             visible: this.actionIsEnable(ElementActionEnum.MOVEMENT_DELETE),
             command: (): void => {
                 this.confirmationService.confirm(
@@ -158,7 +158,7 @@ export class MovementElementComponent extends GenericElementComponent {
                         'pi pi-exclamation-triangle',
                         this.movement(),
                         SeverityEnum.DANGER,
-                        (): void => this.facade.deleteMovement(this.movement()),
+                        (): void => this.run(this.facade.deleteMovement(this.movement())),
                     ),
                 )
             },
@@ -238,6 +238,6 @@ export class MovementElementComponent extends GenericElementComponent {
             })),
             guests: [],
         }
-        this.facade.createMovement(reverseMovement)
+        this.run(this.facade.createMovement(reverseMovement))
     }
 }

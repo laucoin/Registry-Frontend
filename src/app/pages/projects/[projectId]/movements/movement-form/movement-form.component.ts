@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy,Component, computed, inject, OnDestroy, Signal, signal, WritableSignal} from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject, OnDestroy, Signal, signal, WritableSignal} from '@angular/core'
 import {FormArray, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms'
 import {FormUtil} from '@shared/helpers/util/form.util'
 import {MovementFacade} from '@pages/projects/[projectId]/movements/data/state/movement.facade'
@@ -13,7 +13,7 @@ import {TranslatePipe} from '@ngx-translate/core'
 import {MovementContentDto} from '@pages/projects/[projectId]/movements/data/dto/movement-content.dto'
 import {Select, SelectModule} from 'primeng/select'
 import {DatePicker} from 'primeng/datepicker'
-import {map, Observable, tap} from 'rxjs'
+import {map, tap} from 'rxjs'
 import {SelectItem} from 'primeng/api'
 import {ParticipantModel} from '@shared/models/model/participant.model'
 import {RegistryRequiredDirective} from '@shared/directives/registry-required.directive'
@@ -41,15 +41,12 @@ import {RadioButton} from 'primeng/radiobutton'
 import {ParticipantTypeEnum} from '@shared/models/enumeration/participant-type.enum'
 import {ParticipantDto} from '@pages/projects/[projectId]/configuration/participants/data/dto/participant.dto'
 import {DateUtil} from '@shared/helpers/util/date.util'
-import {
-    CreateGuestsMovement,
-    CreateMovement,
-    UpdateGuestsMovement,
-    UpdateMovement,
-} from '@pages/projects/[projectId]/movements/data/state/movement.action'
 import {MovementTypeEnum} from '@shared/models/enumeration/movement-type.enum'
 import {ProjectOptionEnum} from '@shared/models/enumeration/project-option.enum'
 import {PresenceStatusEnum} from '@shared/models/enumeration/presence-status.enum'
+
+import {withLoading} from '@shared/helpers/util/rx.util'
+import {FormErrorComponent} from '@shared/ui/form-error/form-error.component'
 
 @Component({
 	changeDetection: ChangeDetectionStrategy.Eager,
@@ -84,6 +81,7 @@ import {PresenceStatusEnum} from '@shared/models/enumeration/presence-status.enu
         FormIconPipe,
         RadioButton,
         FormsModule,
+        FormErrorComponent,
     ],
     templateUrl: './movement-form.component.html',
     styleUrl: './movement-form.component.scss',
@@ -99,6 +97,8 @@ export class MovementFormComponent extends GenericFormComponent<MovementModel, M
     protected readonly contentForm: FormGroup
     protected readonly vehicleForm: FormGroup
 
+    protected readonly movement: WritableSignal<MovementModel | undefined> = signal(undefined)
+
     protected readonly reasonRequired: WritableSignal<boolean> = signal(true)
     protected readonly isContentSelection: WritableSignal<boolean> = signal(true)
     protected readonly selectedReason: WritableSignal<MovementReasonModel | undefined> = signal(undefined)
@@ -108,7 +108,7 @@ export class MovementFormComponent extends GenericFormComponent<MovementModel, M
     ))
     protected readonly isEligibleToVehicle: Signal<boolean> = computed((): boolean =>
         this.hasVehicleOption()
-        || (this.facade.movement()?.content.some((content: MovementContentModel): boolean => GenericUtil.nonNull(
+        || (this.movement()?.content.some((content: MovementContentModel): boolean => GenericUtil.nonNull(
             content.vehicle)) ?? false),
     )
     protected readonly drivers: WritableSignal<SelectItem<ParticipantModel>[]> = signal([])
@@ -135,10 +135,15 @@ export class MovementFormComponent extends GenericFormComponent<MovementModel, M
     }
 
     protected override loadData(): void {
-        this.facade.resetMovement()
-
         if (GenericUtil.nonNull(this.idParam)) {
-            this.facade.fetchMovement(this.idParam!)
+            this.subscriptions.add(
+                this.facade.fetchMovement(this.idParam!).pipe(
+                    withLoading(this.loading),
+                ).subscribe((movement: MovementModel): void => {
+                    this.movement.set(movement)
+                    this.applyMovement(movement)
+                }),
+            )
         }
     }
 
@@ -205,15 +210,15 @@ export class MovementFormComponent extends GenericFormComponent<MovementModel, M
     }
 
     protected handleLoadedElement(): void {
-        this.subscriptions.add(
-            this.facade.movement$.pipe(
-                tap((movement: MovementModel | undefined): void => {
-                    const contextProject: ProjectModel | undefined = movement?.project || this.registryFacade.selectedProject()
-                    this.addProjectDateValidators(contextProject, this.dateTime)
-                    this.fillForm(movement)
-                }),
-            ).subscribe(),
-        )
+        if (!GenericUtil.nonNull(this.idParam)) {
+            this.applyMovement(undefined)
+        }
+    }
+
+    private applyMovement(movement: MovementModel | undefined): void {
+        const contextProject: ProjectModel | undefined = movement?.project || this.registryFacade.selectedProject()
+        this.addProjectDateValidators(contextProject, this.dateTime)
+        this.fillForm(movement)
     }
 
     private handleContentChange(): void {
@@ -248,6 +253,10 @@ export class MovementFormComponent extends GenericFormComponent<MovementModel, M
     }
 
     protected submit(): void {
+        if (this.saving() || this.loading()) return
+
+        if (GenericUtil.nonNull(this.idParam) && !this.movement()) return
+
         switch (true) {
             case !FormUtil.isFormValid(this.informationForm):
                 this.logInvalidForm(this.informationForm.value)
@@ -261,16 +270,7 @@ export class MovementFormComponent extends GenericFormComponent<MovementModel, M
         }
 
         const dto: MovementDto = this.buildDto()
-        const observable: Observable<CreateMovement | CreateGuestsMovement | UpdateMovement | UpdateGuestsMovement> =
-            this.facade.movement()
-                ? this.facade.updateMovement(this.facade.movement()!.id!, dto)
-                : this.facade.createMovement(dto)
-
-        this.subscriptions.add(
-            observable.pipe(
-                map((): void => this.navigateToRedirectUri()),
-            ).subscribe(),
-        )
+        this.save(this.movement() ? this.facade.updateMovement(this.movement()!.id, dto) : this.facade.createMovement(dto))
     }
 
     protected buildDto(): MovementDto {
@@ -302,7 +302,7 @@ export class MovementFormComponent extends GenericFormComponent<MovementModel, M
 
     private buildVehiclesFromLoadedMovement(): void {
         this.vehiclesWithDrivers.clear()
-        this.facade.movement()?.content
+        this.movement()?.content
             .filter((content: MovementContentModel): boolean => !!content.vehicle)
             .forEach((content: MovementContentModel): void => {
                 this.vehiclesWithDrivers.push(

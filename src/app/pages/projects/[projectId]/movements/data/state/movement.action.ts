@@ -1,5 +1,3 @@
-import { MovementDto } from '@pages/projects/[projectId]/movements/data/dto/movement.dto'
-import { MovementModel } from '@shared/models/model/movement.model'
 import { MovementPageParamsModel } from '@shared/models/model/movement-page-params.model'
 import { ParticipantTypeEnum } from '@shared/models/enumeration/participant-type.enum'
 import { CommunicationPageParamsModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication-page-params.model'
@@ -23,21 +21,10 @@ enum MovementActionEnum {
     FETCH_MOVEMENT_COMMUNICATIONS_PAGE = '[Backend] Fetching movement communications\' page',
     UPDATE_MOVEMENT_COMMUNICATIONS_PAGE_SEARCH_PARAMS = '[Local] Updating movement communications\' page search params',
 
-    START_MOVEMENT_LOADER = '[Local] Starting movement loader',
-    STOP_MOVEMENT_LOADER = '[Local] Stopping movement loader',
 
-    FETCH_MOVEMENT = '[Backend] Fetching movement',
     SEARCH_REASONS_AND_ACTIVITIES = '[Backend] Searching reasons and activities to add in a movement',
     SEARCH_PARTICIPANTS_AND_GROUPS = '[Backend] Searching participants and groups to add in a movement',
     SEARCH_VEHICLES = '[Backend] Searching vehicles to add in a movement',
-    RESET_MOVEMENT = '[Local] Resetting movement',
-    CREATE_MOVEMENT = '[Backend] Creating movement',
-    UPDATE_MOVEMENT = '[Backend] Updating movement',
-    CREATE_GUESTS_MOVEMENT = '[Backend] Creating guests movement',
-    UPDATE_GUESTS_MOVEMENT = '[Backend] Updating guests movement',
-    DISABLE_MOVEMENT = '[Backend] Disabling movement',
-    ENABLE_MOVEMENT = '[Backend] Enabling movement',
-    DELETE_MOVEMENT = '[Backend] Deleting movement',
 }
 
 export class ResetMovementState {
@@ -112,20 +99,6 @@ export class UpdateMovementCommunicationsPageSearchParams {
     public constructor (public readonly params: CommunicationPageParamsModel) {}
 }
 
-export class StartMovementLoader {
-    public static readonly type: MovementActionEnum = MovementActionEnum.START_MOVEMENT_LOADER
-}
-
-export class StopMovementLoader {
-    public static readonly type: MovementActionEnum = MovementActionEnum.STOP_MOVEMENT_LOADER
-}
-
-export class FetchMovement {
-    public static readonly type: MovementActionEnum = MovementActionEnum.FETCH_MOVEMENT
-
-    public constructor (public readonly projectId: string | undefined, public readonly id: string) {}
-}
-
 export class SearchReasonsAndActivities {
     public static readonly type: MovementActionEnum = MovementActionEnum.SEARCH_REASONS_AND_ACTIVITIES
 
@@ -154,58 +127,4 @@ export class SearchVehicles {
         public readonly projectId: string | undefined,
         public readonly textSearched: string | undefined,
     ) {}
-}
-
-export class ResetMovement {
-    public static readonly type: MovementActionEnum = MovementActionEnum.RESET_MOVEMENT
-}
-
-export class CreateMovement {
-    public static readonly type: MovementActionEnum = MovementActionEnum.CREATE_MOVEMENT
-
-    public constructor (public readonly projectId: string | undefined, public readonly movement: MovementDto) {}
-}
-
-export class UpdateMovement {
-    public static readonly type: MovementActionEnum = MovementActionEnum.UPDATE_MOVEMENT
-
-    public constructor (
-        public readonly projectId: string | undefined,
-        public readonly id: string,
-        public readonly movement: MovementDto,
-    ) {}
-}
-
-export class CreateGuestsMovement {
-    public static readonly type: MovementActionEnum = MovementActionEnum.CREATE_GUESTS_MOVEMENT
-
-    public constructor (public readonly projectId: string | undefined, public readonly movement: MovementDto) {}
-}
-
-export class UpdateGuestsMovement {
-    public static readonly type: MovementActionEnum = MovementActionEnum.UPDATE_GUESTS_MOVEMENT
-
-    public constructor (
-        public readonly projectId: string | undefined,
-        public readonly id: string,
-        public readonly movement: MovementDto,
-    ) {}
-}
-
-export class DisableMovement {
-    public static readonly type: MovementActionEnum = MovementActionEnum.DISABLE_MOVEMENT
-
-    public constructor (public readonly projectId: string | undefined, public readonly id: string) {}
-}
-
-export class EnableMovement {
-    public static readonly type: MovementActionEnum = MovementActionEnum.ENABLE_MOVEMENT
-
-    public constructor (public readonly projectId: string | undefined, public readonly id: string) {}
-}
-
-export class DeleteMovement {
-    public static readonly type: MovementActionEnum = MovementActionEnum.DELETE_MOVEMENT
-
-    public constructor (public readonly projectId: string | undefined, public readonly movement: MovementModel) {}
 }

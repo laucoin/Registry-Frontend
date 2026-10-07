@@ -1,16 +1,14 @@
 import { Component, input, InputSignal } from '@angular/core'
 import { ProgressSpinnerModule } from 'primeng/progressspinner'
 import { FormGroup } from '@angular/forms'
-import { MessageModule } from 'primeng/message'
-import { TranslatePipe } from '@ngx-translate/core'
 import { ErrorModel } from '@shared/models/model/error.model'
+import { FormErrorComponent } from '@shared/ui/form-error/form-error.component'
 
 @Component( {
     selector: 'app-form',
     imports: [
         ProgressSpinnerModule,
-        MessageModule,
-        TranslatePipe,
+        FormErrorComponent,
     ],
     templateUrl: './form.component.html',
 } )

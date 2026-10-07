@@ -1,9 +1,6 @@
 import { MovementPageParamsModel } from '@shared/models/model/movement-page-params.model'
 import { MovementModel } from '@shared/models/model/movement.model'
 import { PageRequestInformationModel } from '@shared/models/model/page-request-information.model'
-import {
-    ElementRequestInformationModel,
-} from '@shared/models/model/element-request-information.model'
 import { SelectItem, SelectItemGroup } from 'primeng/api'
 import { ParticipantModel } from '@shared/models/model/participant.model'
 import { GroupModel } from '@shared/models/model/group.model'
@@ -17,7 +14,6 @@ import { CommunicationModel } from '@pages/projects/[projectId]/movements/commun
 export interface MovementStateModel {
     movements: PageRequestInformationModel<MovementPageParamsModel, MovementModel>
     movementCommunications: PageRequestInformationModel<CommunicationPageParamsModel, CommunicationModel>
-    movement: ElementRequestInformationModel<MovementModel>
     _metadata: {
         types: SelectItem<MovementTypeEnum | undefined>[]
         participantTypes: SelectItem<ParticipantTypeEnum>[]

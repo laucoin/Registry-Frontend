@@ -1,34 +1,22 @@
-import { computed, Injectable, Signal } from '@angular/core'
-import { Observable } from 'rxjs'
+import { computed, inject, Injectable, Signal } from '@angular/core'
+import { Observable, tap } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
 import { SelectItem, SelectItemGroup, ToastMessageOptions } from 'primeng/api'
-import { ofActionSuccessful } from '@ngxs/store'
 import { GroupModel } from '@shared/models/model/group.model'
 import { MovementState } from '@pages/projects/[projectId]/movements/data/state/movement.state'
 import {
-    CreateGuestsMovement,
-    CreateMovement,
-    DeleteMovement,
-    DisableMovement,
-    EnableMovement,
-    FetchMovement,
     FetchMovementCommunicationsPage,
     FetchMovementsContent,
     FetchMovementsPage,
     FetchMovementTypes,
     FetchParticipantTypes,
-    ResetMovement,
     SearchParticipantsAndGroups,
     SearchReasonsAndActivities,
     SearchVehicles,
     StartMovementCommunicationsPageLoader,
-    StartMovementLoader,
     StartMovementsPageLoader,
     StopMovementCommunicationsPageLoader,
-    StopMovementLoader,
     StopMovementsPageLoader,
-    UpdateGuestsMovement,
-    UpdateMovement,
     UpdateMovementCommunicationsPageSearchParams,
     UpdateMovementsPageSearchParams,
 } from '@pages/projects/[projectId]/movements/data/state/movement.action'
@@ -38,6 +26,12 @@ import { ParticipantModel } from '@shared/models/model/participant.model'
 import { GenericProjectElementFacade } from '@shared/helpers/facade/generic-project-element.facade'
 import { VehicleModel } from '@shared/models/model/vehicle.model'
 import { DateUtil } from '@shared/helpers/util/date.util'
+import { MovementService } from '@pages/projects/[projectId]/movements/data/state/movement.service'
+import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/util/rx.util'
+import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
+import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
+import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
+import { CommandEvent } from '@shared/helpers/facade/command-event.service'
 import { MovementReasonModel } from '@pages/projects/[projectId]/movements/data/model/movement-reason.model'
 import { ParticipantTypeEnum } from '@shared/models/enumeration/participant-type.enum'
 import { MovementTypeEnum } from '@shared/models/enumeration/movement-type.enum'
@@ -45,6 +39,10 @@ import { CommunicationModel } from '@pages/projects/[projectId]/movements/commun
 
 @Injectable()
 export class MovementFacade extends GenericProjectElementFacade {
+    private readonly service: MovementService = inject( MovementService )
+    private readonly pluralTranslationPipe: PluralTranslationPipe = inject( PluralTranslationPipe )
+    private readonly datePipe: DateFormatPipe = inject( DateFormatPipe )
+
     public get movementsPage (): Signal<PageModel<MovementModel> | undefined> {
         return this.ngStore.selectSignal( MovementState.movementsPage )
     }
@@ -123,18 +121,6 @@ export class MovementFacade extends GenericProjectElementFacade {
         return computed( (): Date | undefined =>
             DateUtil.buildDate( this.ngStore.selectSignal( MovementState.movementCommunicationsPageEndDateTimeSearchedParam )() ),
         )
-    }
-
-    public get movement (): Signal<MovementModel | undefined> {
-        return this.ngStore.selectSignal( MovementState.movement )
-    }
-
-    public get movement$ (): Observable<MovementModel | undefined> {
-        return this.ngStore.select( MovementState.movement )
-    }
-
-    public get movementLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( MovementState.movementLoading )
     }
 
     public get searchedReasonAndActivityMetadata (): Signal<MovementReasonModel[]> {
@@ -257,18 +243,6 @@ export class MovementFacade extends GenericProjectElementFacade {
         }
     }
 
-    public startMovementLoader (): void {
-        this.ngStore.dispatch( StartMovementLoader )
-    }
-
-    public stopMovementLoader (): void {
-        this.ngStore.dispatch( StopMovementLoader )
-    }
-
-    public fetchMovement (id: string): void {
-        this.ngStore.dispatch( new FetchMovement( this.selectedProjectId(), id ) )
-    }
-
     public searchReasonsAndActivities (
         textSearched: string | undefined = undefined,
         typeSearched: string,
@@ -297,61 +271,6 @@ export class MovementFacade extends GenericProjectElementFacade {
         this.ngStore.dispatch( new SearchVehicles( this.selectedProjectId(), textSearched ) )
     }
 
-    public resetMovement (): void {
-        this.ngStore.dispatch( ResetMovement )
-    }
-
-    public handleMovementFirstPageReload (): Observable<CreateMovement | DeleteMovement> {
-        return this.actions$.pipe(
-            ofActionSuccessful( CreateMovement, DeleteMovement ),
-        )
-    }
-
-    public handleMovementCurrentPageReload (): Observable<UpdateMovement | DisableMovement | EnableMovement> {
-        return this.actions$.pipe(
-            ofActionSuccessful( UpdateMovement, DisableMovement, EnableMovement ),
-        )
-    }
-
-    public handleMovementChanges (): Observable<CreateMovement | UpdateMovement | DeleteMovement | DisableMovement | EnableMovement> {
-        return this.actions$.pipe(
-            ofActionSuccessful( CreateMovement, UpdateMovement, DeleteMovement, DisableMovement, EnableMovement ),
-        )
-    }
-
-    public createMovement (movement: MovementDto): Observable<CreateMovement | CreateGuestsMovement> {
-        if (movement.contentType === ParticipantTypeEnum.REGISTERED) {
-            this.ngStore.dispatch( new CreateMovement( this.selectedProjectId(), movement ) )
-        } else {
-            this.ngStore.dispatch( new CreateGuestsMovement( this.selectedProjectId(), movement ) )
-        }
-        return this.actions$.pipe( ofActionSuccessful( CreateMovement, CreateGuestsMovement ) )
-    }
-
-    public updateMovement (
-        id: string,
-        movement: MovementDto,
-    ): Observable<UpdateMovement | UpdateGuestsMovement> {
-        if (movement.contentType === ParticipantTypeEnum.REGISTERED) {
-            this.ngStore.dispatch( new UpdateMovement( this.selectedProjectId(), id, movement ) )
-        } else {
-            this.ngStore.dispatch( new UpdateGuestsMovement( this.selectedProjectId(), id, movement ) )
-        }
-        return this.actions$.pipe( ofActionSuccessful( UpdateMovement, UpdateGuestsMovement ) )
-    }
-
-    public disableMovement (id: string): void {
-        this.ngStore.dispatch( new DisableMovement( this.selectedProjectId(), id ) )
-    }
-
-    public enableMovement (id: string): void {
-        this.ngStore.dispatch( new EnableMovement( this.selectedProjectId(), id ) )
-    }
-
-    public deleteMovement (movement: MovementModel): void {
-        this.ngStore.dispatch( new DeleteMovement( this.selectedProjectId(), movement ) )
-    }
-
     public fetchMovementTypes (): void {
         if (this.movementTypesMetadata().length === 0) {
             this.ngStore.dispatch( FetchMovementTypes )
@@ -362,5 +281,86 @@ export class MovementFacade extends GenericProjectElementFacade {
         if (this.participantTypesMetadata().length === 0) {
             this.ngStore.dispatch( FetchParticipantTypes )
         }
+    }
+
+    public handleMovementFirstPageReload (): Observable<unknown> {
+        return this.commandEvents.on( 'movement', 'create', 'delete' )
+    }
+
+    public handleMovementCurrentPageReload (): Observable<unknown> {
+        return this.commandEvents.on( 'movement', 'update', 'disable', 'enable' )
+    }
+
+    public handleMovementChanges (): Observable<unknown> {
+        return this.commandEvents.on( 'movement', 'create', 'update', 'delete', 'disable', 'enable' )
+    }
+
+    public fetchMovement (id: string): Observable<MovementModel> {
+        return this.service.findMovementById( this.selectedProjectId(), id ).pipe(
+            notifyOnError( this.registryFacade ),
+        )
+    }
+
+    public createMovement (movement: MovementDto): Observable<MovementModel> {
+        const request: Observable<MovementModel> = movement.contentType === ParticipantTypeEnum.REGISTERED
+            ? this.service.createMovement( this.selectedProjectId(), movement )
+            : this.service.createGuestsMovement( this.selectedProjectId(), movement )
+
+        return request.pipe(
+            notifyUnavailableOnly( this.registryFacade ),
+            tap( (created: MovementModel): void => this.onCommandSuccess( 'create', created ) ),
+        )
+    }
+
+    public updateMovement (id: string, movement: MovementDto): Observable<MovementModel> {
+        const request: Observable<MovementModel> = movement.contentType === ParticipantTypeEnum.REGISTERED
+            ? this.service.updateMovementById( this.selectedProjectId(), id, movement )
+            : this.service.updateGuestsMovementById( this.selectedProjectId(), id, movement )
+
+        return request.pipe(
+            notifyUnavailableOnly( this.registryFacade ),
+            tap( (updated: MovementModel): void => this.onCommandSuccess( 'update', updated ) ),
+        )
+    }
+
+    public disableMovement (id: string): Observable<MovementModel> {
+        return this.service.disableMovementById( this.selectedProjectId(), id ).pipe(
+            notifyOnError( this.registryFacade ),
+            tap( (disabled: MovementModel): void => this.onCommandSuccess( 'disable', disabled ) ),
+        )
+    }
+
+    public enableMovement (id: string): Observable<MovementModel> {
+        return this.service.enableMovementById( this.selectedProjectId(), id ).pipe(
+            notifyOnError( this.registryFacade ),
+            tap( (enabled: MovementModel): void => this.onCommandSuccess( 'enable', enabled ) ),
+        )
+    }
+
+    public deleteMovement (movement: MovementModel): Observable<void> {
+        return this.service.deleteMovementById( undefined, movement.id ).pipe(
+            notifyOnError( this.registryFacade ),
+            tap( (): void => this.onCommandSuccess( 'delete', movement ) ),
+        )
+    }
+
+    private onCommandSuccess (command: CommandEvent, movement: MovementModel): void {
+        const prefix: string = `movements.notifications.${ command === 'update' ? 'edit' : command }.${ movement.type.value }`
+        this.notifyMessage(
+            SeverityEnum.SUCCESS,
+            `${ prefix }.title`,
+            command === 'create'
+            ? this.pluralTranslationPipe.transform( `${ prefix }.message`, movement.content )
+            : `${ prefix }.message`,
+            'pi pi-sort-alt',
+            {
+                datetime: this.datePipe.transform( movement?.dateTime, 'datetime' ),
+                participants: movement.content?.length ?? 0,
+            },
+        )
+        this.commandEvents.emit( 'movement', command )
+
+        const page: PageModel<MovementModel> | undefined = this.movementsPage()
+        this.fetchMovementsPage( page?.pageNumber, page?.pageSize, true )
     }
 }

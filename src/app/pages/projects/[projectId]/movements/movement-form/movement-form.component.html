@@ -1,12 +1,13 @@
-@if (informationForm.untouched && facade.movementLoading()) {
+@if (informationForm.untouched && loading()) {
     <div class='d-flex justify-content-center'>
         <p-progress-spinner></p-progress-spinner>
     </div>
 } @else {
+    <app-form-error [error]='error()' />
     <h2>
         {{
-            (("movements.form.title" | formTitle: facade.movement()) + "." + (type.value ?? "none")) | translate: {
-                datetime: facade.movement()?.dateTime | dateFormat: "datetime"
+            (("movements.form.title" | formTitle: movement()) + "." + (type.value ?? "none")) | translate: {
+                datetime: movement()?.dateTime | dateFormat: "datetime"
             }
         }}
     </h2>
@@ -241,10 +242,11 @@
                             } @else {
                             <p-button
                                     (onClick)='submit()'
-                                    [label]='registryFacade.tinyScreen() ? "" : facade.movement() | formButton | translate'
+                                    [label]='registryFacade.tinyScreen() ? "" : movement() | formButton | translate'
                                     rounded
                                     outlined
-                                    [icon]='facade.movement() | formIcon'
+                                    [icon]='movement() | formIcon'
+                                    [disabled]='saving()'
                                     severity='success'/>
                         }
                         </div>
@@ -342,10 +344,11 @@
                                 <p-button
                                         class='ms-2'
                                         (onClick)='FormUtil.isFormValid(vehicleForm) ? submit() : undefined'
-                                        [label]='registryFacade.tinyScreen() ? "" : facade.movement() | formButton | translate'
+                                        [label]='registryFacade.tinyScreen() ? "" : movement() | formButton | translate'
                                         rounded
                                         outlined
-                                        [icon]='facade.movement() | formIcon'
+                                        [icon]='movement() | formIcon'
+                                        [disabled]='saving()'
                                         severity='success'/>
                             </div>
                         </div>
