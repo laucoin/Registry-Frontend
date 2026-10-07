@@ -4,17 +4,6 @@ import { PageModel } from '@shared/models/model/page.model'
 import { GenericProjectElementFacade } from '@shared/helpers/facade/generic-project-element.facade'
 import { GroupDto } from '@pages/projects/[projectId]/configuration/groups/data/dto/group.dto'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
-import {
-    FetchGroupMembersPage,
-    FetchGroupsPage,
-    SearchParticipants,
-    StartGroupMembersPageLoader,
-    StartGroupsPageLoader,
-    StopGroupMembersPageLoader,
-    StopGroupsPageLoader,
-    UpdateGroupMembersPageSearchParams,
-    UpdateGroupsPageSearchParams,
-} from '@pages/projects/[projectId]/configuration/groups/data/state/group.action'
 import { ParticipantModel } from '@shared/models/model/participant.model'
 import { GroupModel } from '@shared/models/model/group.model'
 import { GroupStore } from '@pages/projects/[projectId]/configuration/groups/data/state/group.store'
@@ -28,116 +17,69 @@ import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.p
 
 @Injectable()
 export class GroupFacade extends GenericProjectElementFacade {
+    private readonly store: InstanceType<typeof GroupStore> = inject( GroupStore )
+
     private readonly api: GroupApi = inject( GroupApi )
     private readonly pluralTranslationPipe: PluralTranslationPipe = inject( PluralTranslationPipe )
 
-    public get groupsPage (): Signal<PageModel<GroupModel> | undefined> {
-        return this.ngStore.selectSignal( GroupStore.groupsPage )
-    }
+    public readonly groupsPage: Signal<PageModel<GroupModel> | undefined> = this.store.groups.element
 
-    public get groupsPageLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( GroupStore.groupsPageLoading )
-    }
+    public readonly groupsPageLoading: Signal<boolean> = this.store.groups.loading
 
-    public get groupsPageSilentLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( GroupStore.groupsPageSilentLoading )
-    }
+    public readonly groupsPageSilentLoading: Signal<boolean> = this.store.groups.silentLoading
 
-    public get groupsPageError (): Signal<ToastMessageOptions | undefined> {
-        return this.ngStore.selectSignal( GroupStore.groupsPageError )
-    }
+    public readonly groupsPageError: Signal<ToastMessageOptions | undefined> = this.store.groups.error
 
-    public get groupsPageResetSearch (): Signal<boolean> {
-        return this.ngStore.selectSignal( GroupStore.groupsPageResetSearch )
-    }
+    public readonly groupsPageResetSearch: Signal<boolean> = this.store.groups.params.resetSearch
 
-    public get groupsPageTextSearchedParam (): Signal<string | undefined> {
-        return this.ngStore.selectSignal( GroupStore.groupsPageTextSearchedParam )
-    }
+    public readonly groupsPageTextSearchedParam: Signal<string | undefined> = this.store.groups.params.textSearched
 
-    public get groupsPageDateTimeSearchedParam (): Signal<Date | undefined> {
-        return computed( () =>
-            DateHelper.buildDate( this.ngStore.selectSignal( GroupStore.groupsPageDateTimeSearchedParam )() ),
+    public readonly groupsPageDateTimeSearchedParam: Signal<Date | undefined> = computed( () =>
+            DateHelper.buildDate( this.store.groups.params.dateTimeSearched() ),
         )
-    }
 
-    public get groupsPagePresenceSearchedParam (): Signal<boolean | undefined> {
-        return this.ngStore.selectSignal( GroupStore.groupsPagePresenceSearchedParam )
-    }
+    public readonly groupsPagePresenceSearchedParam: Signal<boolean | undefined> = this.store.groups.params.presenceSearched
 
-    public get groupsPageVisibilitySearchedParam (): Signal<boolean | undefined> {
-        return this.ngStore.selectSignal( GroupStore.groupsPageVisibilitySearchedParam )
-    }
+    public readonly groupsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.groups.params.visibilitySearched
 
-    public get groupMembersPage (): Signal<PageModel<ParticipantModel> | undefined> {
-        return this.ngStore.selectSignal( GroupStore.groupMembersPage )
-    }
+    public readonly groupMembersPage: Signal<PageModel<ParticipantModel> | undefined> = this.store.members.element
 
-    public get groupMembersPageLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( GroupStore.groupMembersPageLoading )
-    }
+    public readonly groupMembersPageLoading: Signal<boolean> = this.store.members.loading
 
-    public get groupMembersPageSilentLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( GroupStore.groupMembersPageSilentLoading )
-    }
+    public readonly groupMembersPageSilentLoading: Signal<boolean> = this.store.members.silentLoading
 
-    public get groupMembersPageError (): Signal<ToastMessageOptions | undefined> {
-        return this.ngStore.selectSignal( GroupStore.groupMembersPageError )
-    }
+    public readonly groupMembersPageError: Signal<ToastMessageOptions | undefined> = this.store.members.error
 
-    public get groupMembersPageResetSearch (): Signal<boolean> {
-        return this.ngStore.selectSignal( GroupStore.groupMembersPageResetSearch )
-    }
+    public readonly groupMembersPageResetSearch: Signal<boolean> = this.store.members.params.resetSearch
 
-    public get groupMembersPageTextSearchedParam (): Signal<string | undefined> {
-        return this.ngStore.selectSignal( GroupStore.groupMembersPageTextSearchedParam )
-    }
+    public readonly groupMembersPageTextSearchedParam: Signal<string | undefined> = this.store.members.params.textSearched
 
-    public get groupMembersPageStatusSearchedParam (): Signal<string | undefined> {
-        return this.ngStore.selectSignal( GroupStore.groupMembersPageStatusSearchedParam )
-    }
+    public readonly groupMembersPageStatusSearchedParam: Signal<string | undefined> = this.store.members.params.statusSearched
 
-    public get groupMembersPageVisibilitySearchedParam (): Signal<boolean | undefined> {
-        return this.ngStore.selectSignal( GroupStore.groupMembersPageVisibilitySearchedParam )
-    }
+    public readonly groupMembersPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.members.params.visibilitySearched
 
-    public get searchedParticipantsMetadata (): Signal<SelectItem<ParticipantModel>[]> {
-        return this.ngStore.selectSignal( GroupStore.searchedParticipantsMetadata )
-    }
+    public readonly searchedParticipantsMetadata: Signal<SelectItem<ParticipantModel>[]> = this.store.metadata.searched
 
-    public get availabilitiesMetadata (): Signal<SelectItem<boolean | undefined>[]> {
-        return computed( (): SelectItem<boolean | undefined>[] =>
-            this.ngStore.selectSignal( GroupStore.availabilitiesMetadata )().map( (status: SelectItem<boolean | undefined>): SelectItem<boolean | undefined> => ({
+    public readonly availabilitiesMetadata: Signal<SelectItem<boolean | undefined>[]> = computed( (): SelectItem<boolean | undefined>[] =>
+            this.store.metadata.availabilities().map( (status: SelectItem<boolean | undefined>): SelectItem<boolean | undefined> => ({
                 ...status,
                 label: this.translateService.instant( status.label! ),
             }) ),
         )
-    }
 
-    public get visibilitiesMetadata (): Signal<SelectItem<boolean | undefined>[]> {
-        return computed( (): SelectItem<boolean | undefined>[] =>
-            this.ngStore.selectSignal( GroupStore.visibilitiesMetadata )().map( (status: SelectItem<boolean | undefined>): SelectItem<boolean | undefined> => ({
+    public readonly visibilitiesMetadata: Signal<SelectItem<boolean | undefined>[]> = computed( (): SelectItem<boolean | undefined>[] =>
+            this.store.metadata.visibilities().map( (status: SelectItem<boolean | undefined>): SelectItem<boolean | undefined> => ({
                 ...status,
                 label: this.translateService.instant( status.label! ),
             }) ),
         )
-    }
-
-    public startGroupsPageLoader (): void {
-        this.ngStore.dispatch( StartGroupsPageLoader )
-    }
-
-    public stopGroupsPageLoader (): void {
-        this.ngStore.dispatch( StopGroupsPageLoader )
-    }
 
     public fetchGroupsPage (
         pageNumber: number | undefined,
         pageSize: number | undefined,
-        force: boolean,
     ): void {
         const index: number | undefined = this.groupsPageResetSearch() ? 0 : pageNumber
-        this.ngStore.dispatch( new FetchGroupsPage( this.selectedProjectId(), index, pageSize, force ) )
+        this.store.fetchGroupsPage( { projectId: this.selectedProjectId(), pageNumber: index, pageSize: pageSize } )
     }
 
     public inputPageSearchParameters (
@@ -152,32 +94,23 @@ export class GroupFacade extends GenericProjectElementFacade {
                                      || this.groupsPageVisibilitySearchedParam() != visibilitySearched
 
         if (resetSearch) {
-            this.ngStore.dispatch( new UpdateGroupsPageSearchParams( {
+            this.store.updateGroupsPageSearchParams( {
                 resetSearch: resetSearch,
                 textSearched: textSearched,
                 presenceSearched: presenceSearched,
                 visibilitySearched: visibilitySearched,
                 dateTimeSearched: dateTimeSearched?.toISOString(),
-            } ) )
+            } )
         }
-    }
-
-    public startGroupMembersPageLoader (): void {
-        this.ngStore.dispatch( StartGroupMembersPageLoader )
-    }
-
-    public stopGroupMembersPageLoader (): void {
-        this.ngStore.dispatch( StopGroupMembersPageLoader )
     }
 
     public fetchGroupMembersPage (
         id: string,
         pageNumber: number | undefined,
         pageSize: number | undefined,
-        force: boolean,
     ): void {
         const index: number | undefined = this.groupMembersPageResetSearch() ? 0 : pageNumber
-        this.ngStore.dispatch( new FetchGroupMembersPage( this.selectedProjectId(), id, index, pageSize, force ) )
+        this.store.fetchGroupMembersPage( { projectId: this.selectedProjectId(), id: id, pageNumber: index, pageSize: pageSize } )
     }
 
     public inputMembersPageSearchParameters (
@@ -190,19 +123,19 @@ export class GroupFacade extends GenericProjectElementFacade {
                                      || this.groupMembersPageVisibilitySearchedParam() != visibilitySearched
 
         if (resetSearch) {
-            this.ngStore.dispatch( new UpdateGroupMembersPageSearchParams( {
+            this.store.updateGroupMembersPageSearchParams( {
                 resetSearch: resetSearch,
                 visibilitySearched: visibilitySearched,
                 statusSearched: statusSearched,
                 textSearched: textSearched,
-            } ) )
+            } )
         }
     }
 
     public searchParticipants (
         textSearched: string | undefined = undefined,
     ): void {
-        this.ngStore.dispatch( new SearchParticipants( this.selectedProjectId(), textSearched ) )
+        this.store.searchParticipants( { projectId: this.selectedProjectId(), textSearched: textSearched } )
     }
 
     public fetchGroup (id: string): Observable<GroupModel> {
@@ -250,7 +183,7 @@ export class GroupFacade extends GenericProjectElementFacade {
         this.onCommandSucceeded( 'group', command, 'groups.notifications', 'pi pi-users', { name: group?.name } )
 
         const page: PageModel<GroupModel> | undefined = this.groupsPage()
-        this.fetchGroupsPage( page?.pageNumber, page?.pageSize, true )
+        this.fetchGroupsPage( page?.pageNumber, page?.pageSize )
     }
 
     public addMembersToGroup (id: string, memberIds: string[]): Observable<AddedGroupMembersDto> {
@@ -292,7 +225,7 @@ export class GroupFacade extends GenericProjectElementFacade {
 
     private onMembersChanged (id: string): void {
         const page: PageModel<ParticipantModel> | undefined = this.groupMembersPage()
-        this.fetchGroupMembersPage( id, page?.pageNumber, page?.pageSize, true )
+        this.fetchGroupMembersPage( id, page?.pageNumber, page?.pageSize )
         this.commandEvents.emit( 'group', 'members' )
     }
 }

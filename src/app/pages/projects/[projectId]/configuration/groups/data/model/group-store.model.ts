@@ -8,7 +8,7 @@ import { ParticipantPageParamsModel } from '@pages/projects/[projectId]/configur
 export interface GroupStoreModel {
     groups: PageRequestInformationModel<GroupPageParamsModel, GroupModel>
     members: PageRequestInformationModel<ParticipantPageParamsModel, ParticipantModel> & { groupId: string | undefined }
-    _metadata: {
+    metadata: {
         searched: SelectItem<ParticipantModel>[]
         availabilities: SelectItem<boolean | undefined>[]
         visibilities: SelectItem<boolean | undefined>[]

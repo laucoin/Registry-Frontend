@@ -39,7 +39,7 @@ export const configurationRoutes: Routes = [
             {
                 path: ConfigurationRoutesEnum.GROUPS,
                 loadChildren: () => import('@pages/projects/[projectId]/configuration/groups/group.routes').then( (m: typeof import('@pages/projects/[projectId]/configuration/groups/group.routes')) => m.groupRoutes ),
-                providers: [ GroupFacade, ParticipantFacade, ParticipantStore, importProvidersFrom( NgxsModule.forFeature( [ GroupStore ] ) ) ],
+                providers: [ GroupFacade, GroupStore, ParticipantFacade, ParticipantStore ],
             },
             {
                 path: ConfigurationRoutesEnum.VEHICLES,

@@ -94,7 +94,7 @@ export class GroupMemberListPage extends GenericListComponent implements OnDestr
                 withLoading( this.groupLoading ),
             ).subscribe( (group: GroupModel): void => this.group.set( group ) ),
         )
-        this.facade.fetchGroupMembersPage( id!, undefined, undefined, false )
+        this.facade.fetchGroupMembersPage( id!, undefined, undefined)
     }
 
     private handleParticipantActions (): void {
@@ -111,9 +111,7 @@ export class GroupMemberListPage extends GenericListComponent implements OnDestr
                     this.facade.fetchGroupMembersPage(
                         this.route.snapshot.params['groupId'],
                         undefined,
-                        undefined,
-                        true,
-                    )
+                        undefined)
                 } ),
             ).subscribe(),
         )
@@ -125,9 +123,7 @@ export class GroupMemberListPage extends GenericListComponent implements OnDestr
                     this.facade.fetchGroupMembersPage(
                         this.route.snapshot.params['groupId'],
                         this.facade.groupsPage()?.pageNumber,
-                        this.facade.groupsPage()?.pageSize,
-                        true,
-                    )
+                        this.facade.groupsPage()?.pageSize)
                 } ),
             ).subscribe(),
         )
@@ -154,9 +150,7 @@ export class GroupMemberListPage extends GenericListComponent implements OnDestr
         this.facade.fetchGroupMembersPage(
             this.route.snapshot.params['groupId'],
             pageEvent.pageNumber,
-            pageEvent.pageSize,
-            false,
-        )
+            pageEvent.pageSize)
     }
 
     protected handleSearch (searched: string | undefined): void {

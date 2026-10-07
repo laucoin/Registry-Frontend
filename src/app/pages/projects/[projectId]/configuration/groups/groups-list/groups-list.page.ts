@@ -53,7 +53,7 @@ export class GroupsListPage extends GenericListComponent {
     }
 
     protected loadData (): void {
-        this.facade.fetchGroupsPage( undefined, undefined, false )
+        this.facade.fetchGroupsPage( undefined, undefined)
     }
 
     protected loadPage (pageEvent: PageEventModel): void {
@@ -63,7 +63,7 @@ export class GroupsListPage extends GenericListComponent {
             this.presenceSearched.value,
             this.visibilitySearched.value,
         )
-        this.facade.fetchGroupsPage( pageEvent.pageNumber, pageEvent.pageSize, false )
+        this.facade.fetchGroupsPage( pageEvent.pageNumber, pageEvent.pageSize)
     }
 
     protected get textSearched (): FormControl {
