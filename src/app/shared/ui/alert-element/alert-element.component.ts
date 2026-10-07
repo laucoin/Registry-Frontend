@@ -67,7 +67,7 @@ export class AlertElementComponent extends GenericElementComponent {
         {
             label: 'alerts.actions.resolve',
             icon: 'pi pi-check',
-            disabled: !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_ALERT_U ),
+            disabled: this.busy() || !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_ALERT_U ),
             visible: this.actionIsEnable( ElementActionEnum.ALERT_RESOLVE ) && this.isInProgress() && this.alert().visible,
             command: (): void => {
                 this.confirmationService.confirm(
@@ -76,7 +76,7 @@ export class AlertElementComponent extends GenericElementComponent {
                         'pi pi-info-circle',
                         this.alert(),
                         SeverityEnum.INFO,
-                        (): void => this.facade.updateAlertStatus( this.alert().id, AlertStatusEnum.RESOLVED ),
+                        (): void => this.run(this.facade.updateAlertStatus( this.alert().id, AlertStatusEnum.RESOLVED )),
                     ),
                 )
             },
@@ -84,7 +84,7 @@ export class AlertElementComponent extends GenericElementComponent {
         {
             label: 'alerts.actions.cancel',
             icon: 'pi pi-times',
-            disabled: !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_ALERT_U ),
+            disabled: this.busy() || !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_ALERT_U ),
             visible: this.actionIsEnable( ElementActionEnum.ALERT_CANCEL ) && this.isInProgress() && this.alert().visible,
             command: (): void => {
                 this.confirmationService.confirm(
@@ -93,7 +93,7 @@ export class AlertElementComponent extends GenericElementComponent {
                         'pi pi-info-circle',
                         this.alert(),
                         SeverityEnum.INFO,
-                        (): void => this.facade.updateAlertStatus( this.alert().id, AlertStatusEnum.CANCELED ),
+                        (): void => this.run(this.facade.updateAlertStatus( this.alert().id, AlertStatusEnum.CANCELED )),
                     ),
                 )
             },
@@ -101,7 +101,7 @@ export class AlertElementComponent extends GenericElementComponent {
         {
             label: 'alerts.actions.reopen',
             icon: 'pi pi-replay',
-            disabled: !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_ALERT_U ),
+            disabled: this.busy() || !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_ALERT_U ),
             visible: this.actionIsEnable( ElementActionEnum.ALERT_REOPEN ) && !this.isInProgress() && this.alert().visible,
             command: (): void => {
                 this.confirmationService.confirm(
@@ -110,7 +110,7 @@ export class AlertElementComponent extends GenericElementComponent {
                         'pi pi-info-circle',
                         this.alert(),
                         SeverityEnum.INFO,
-                        (): void => this.facade.updateAlertStatus( this.alert().id, AlertStatusEnum.IN_PROGRESS ),
+                        (): void => this.run(this.facade.updateAlertStatus( this.alert().id, AlertStatusEnum.IN_PROGRESS )),
                     ),
                 )
             },
@@ -118,8 +118,8 @@ export class AlertElementComponent extends GenericElementComponent {
         {
             label: 'alerts.actions.disable',
             icon: 'pi pi-eye-slash',
-            disabled: !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_ALERT_U ),
-            visible: this.actionIsEnable( ElementActionEnum.ALERT_DISABLE ) && this.alert().visible,
+            disabled: this.busy() || !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_ALERT_U ),
+            visible: this.actionIsEnable(ElementActionEnum.ALERT_DISABLE ) && this.alert().visible,
             command: (): void => {
                 this.confirmationService.confirm(
                     this.buildConfirmation(
@@ -127,7 +127,7 @@ export class AlertElementComponent extends GenericElementComponent {
                         'pi pi-exclamation-triangle',
                         this.alert(),
                         SeverityEnum.WARNING,
-                        (): void => this.facade.disableAlert( this.alert().id ),
+                        (): void => this.run(this.facade.disableAlert(this.alert().id)),
                     ),
                 )
             },
@@ -135,8 +135,8 @@ export class AlertElementComponent extends GenericElementComponent {
         {
             label: 'alerts.actions.enable',
             icon: 'pi pi-replay',
-            disabled: !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_ALERT_U ),
-            visible: this.actionIsEnable( ElementActionEnum.ALERT_ENABLE ) && !this.alert().visible,
+            disabled: this.busy() || !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_ALERT_U ),
+            visible: this.actionIsEnable(ElementActionEnum.ALERT_ENABLE ) && !this.alert().visible,
             command: (): void => {
                 this.confirmationService.confirm(
                     this.buildConfirmation(
@@ -144,7 +144,7 @@ export class AlertElementComponent extends GenericElementComponent {
                         'pi pi-info-circle',
                         this.alert(),
                         SeverityEnum.INFO,
-                        (): void => this.facade.enableAlert( this.alert().id ),
+                        (): void => this.run(this.facade.enableAlert(this.alert().id)),
                     ),
                 )
             },
@@ -153,8 +153,8 @@ export class AlertElementComponent extends GenericElementComponent {
             id: ElementActionEnum.ALERT_DELETE,
             label: 'alerts.actions.delete',
             icon: 'pi pi-trash',
-            disabled: !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_ALERT_D ),
-            visible: this.actionIsEnable( ElementActionEnum.ALERT_DELETE ),
+            disabled: this.busy() || !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_ALERT_D ),
+            visible: this.actionIsEnable(ElementActionEnum.ALERT_DELETE ),
             command: (): void => {
                 this.confirmationService.confirm(
                     this.buildConfirmation(
@@ -162,7 +162,7 @@ export class AlertElementComponent extends GenericElementComponent {
                         'pi pi-exclamation-triangle',
                         this.alert(),
                         SeverityEnum.DANGER,
-                        (): void => this.facade.deleteAlert( this.alert() ),
+                        (): void => this.run(this.facade.deleteAlert(this.alert())),
                     ),
                 )
             },

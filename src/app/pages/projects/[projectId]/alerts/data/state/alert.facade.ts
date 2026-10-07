@@ -1,32 +1,24 @@
-import { computed, Injectable, Signal } from '@angular/core'
+import { computed, Injectable, Signal, inject } from '@angular/core'
 import { PageModel } from '@shared/models/model/page.model'
 import { AlertState } from '@pages/projects/[projectId]/alerts/data/state/alert.state'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { DateUtil } from '@shared/helpers/util/date.util'
-import { Observable } from 'rxjs'
+import { AlertService } from '@pages/projects/[projectId]/movements/data/state/alert.service'
+import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/util/rx.util'
+import { CommandEvent } from '@shared/helpers/facade/command-event.service'
+import { Observable, tap } from 'rxjs'
 import {
-    CreateAlert,
-    DeleteAlert,
-    DisableAlert,
-    EnableAlert,
-    FetchAlert,
     FetchAlertCommunicationsPage,
     FetchAlertsPage,
     FetchAlertStatus,
-    ResetAlert,
     StartAlertCommunicationsPageLoader,
-    StartAlertLoader,
     StartAlertsPageLoader,
     StopAlertCommunicationsPageLoader,
-    StopAlertLoader,
     StopAlertsPageLoader,
-    UpdateAlert,
     UpdateAlertCommunicationsPageSearchParams,
     UpdateAlertsPageSearchParams,
-    UpdateAlertStatus,
 } from '@pages/projects/[projectId]/alerts/data/state/alert.action'
 import { GenericProjectElementFacade } from '@shared/helpers/facade/generic-project-element.facade'
-import { ofActionSuccessful } from '@ngxs/store'
 import { AlertDto } from '@pages/projects/[projectId]/alerts/data/dto/alert.dto'
 import { AlertModel } from '@shared/models/model/alert.model'
 import { AlertStatusEnum } from '@shared/models/enumeration/alert-status.enum'
@@ -35,6 +27,8 @@ import { CommunicationModel } from '@pages/projects/[projectId]/movements/commun
 
 @Injectable()
 export class AlertFacade extends GenericProjectElementFacade {
+    private readonly service: AlertService = inject( AlertService )
+
     public get alertsPage (): Signal<PageModel<AlertModel> | undefined> {
         return this.ngStore.selectSignal( AlertState.alertsPage )
     }
@@ -117,18 +111,6 @@ export class AlertFacade extends GenericProjectElementFacade {
         return computed( (): Date | undefined =>
             DateUtil.buildDate( this.ngStore.selectSignal( AlertState.alertCommunicationsPageEndDateTimeSearchedParam )() ),
         )
-    }
-
-    public get alert (): Signal<AlertModel | undefined> {
-        return this.ngStore.selectSignal( AlertState.alert )
-    }
-
-    public get alert$ (): Observable<AlertModel | undefined> {
-        return this.ngStore.select( AlertState.alert )
-    }
-
-    public get alertLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( AlertState.alertLoading )
     }
 
     public get visibilitiesMetadata (): Signal<SelectItem<boolean | undefined>[]> {
@@ -236,80 +218,74 @@ export class AlertFacade extends GenericProjectElementFacade {
         }
     }
 
-    public startAlertLoader (): void {
-        this.ngStore.dispatch( StartAlertLoader )
+    public handleAlertFirstPageReload (): Observable<unknown> {
+        return this.commandEvents.on( 'alert', 'create', 'delete' )
     }
 
-    public stopAlertLoader (): void {
-        this.ngStore.dispatch( StopAlertLoader )
+    public handleAlertCurrentPageReload (): Observable<unknown> {
+        return this.commandEvents.on( 'alert', 'update', 'disable', 'enable' )
     }
 
-    public fetchAlert (id: string): void {
-        this.ngStore.dispatch( new FetchAlert( this.selectedProjectId(), id ) )
+    public handleAlertCreation (): Observable<unknown> {
+        return this.commandEvents.on( 'alert', 'create' )
     }
 
-    public resetAlert (): void {
-        this.ngStore.dispatch( ResetAlert )
+    public handleAlertChange (): Observable<unknown> {
+        return this.commandEvents.on( 'alert', 'create', 'update', 'status', 'disable', 'enable', 'delete' )
     }
 
-    public handleAlertFirstPageReload (): Observable<CreateAlert | DeleteAlert> {
-        return this.actions$.pipe(
-            ofActionSuccessful( CreateAlert, DeleteAlert ),
+    public fetchAlert (id: string): Observable<AlertModel> {
+        return this.service.findAlertById( this.selectedProjectId(), id ).pipe(
+            notifyOnError( this.registryFacade ),
         )
     }
 
-    public handleAlertCurrentPageReload (): Observable<UpdateAlert | DisableAlert | EnableAlert> {
-        return this.actions$.pipe(
-            ofActionSuccessful( UpdateAlert, DisableAlert, EnableAlert ),
+    public createAlert (alert: AlertDto): Observable<AlertModel> {
+        return this.service.createAlert( this.selectedProjectId(), alert ).pipe(
+            notifyUnavailableOnly( this.registryFacade ),
+            tap( (created: AlertModel): void => this.onCommandSuccess( 'create', created ) ),
         )
     }
 
-    public createAlert (alert: AlertDto): Observable<CreateAlert> {
-        this.ngStore.dispatch( new CreateAlert( this.selectedProjectId(), alert ) )
-
-        return this.actions$.pipe( ofActionSuccessful( CreateAlert ) )
+    public updateAlert (id: string, alert: AlertDto): Observable<AlertModel> {
+        return this.service.updateAlertById( this.selectedProjectId(), id, alert ).pipe(
+            notifyUnavailableOnly( this.registryFacade ),
+            tap( (updated: AlertModel): void => this.onCommandSuccess( 'update', updated ) ),
+        )
     }
 
-    public handleAlertCreation (): Observable<CreateAlert> {
-        return this.actions$.pipe( ofActionSuccessful( CreateAlert ) )
+    public disableAlert (id: string): Observable<AlertModel> {
+        return this.service.disableAlertById( this.selectedProjectId(), id ).pipe(
+            notifyOnError( this.registryFacade ),
+            tap( (disabled: AlertModel): void => this.onCommandSuccess( 'disable', disabled ) ),
+        )
     }
 
-    public handleAlertChange (): Observable<CreateAlert | UpdateAlert | DisableAlert | EnableAlert | DeleteAlert> {
-        return this.actions$.pipe( ofActionSuccessful(
-            CreateAlert,
-            UpdateAlert,
-            UpdateAlertStatus,
-            DisableAlert,
-            EnableAlert,
-            DeleteAlert,
-        ) )
+    public enableAlert (id: string): Observable<AlertModel> {
+        return this.service.enableAlertById( this.selectedProjectId(), id ).pipe(
+            notifyOnError( this.registryFacade ),
+            tap( (enabled: AlertModel): void => this.onCommandSuccess( 'enable', enabled ) ),
+        )
     }
 
-    public updateAlert (
-        id: string,
-        alert: AlertDto,
-    ): Observable<UpdateAlert> {
-        this.ngStore.dispatch( new UpdateAlert( this.selectedProjectId(), id, alert ) )
-
-        return this.actions$.pipe( ofActionSuccessful( UpdateAlert ) )
+    public deleteAlert (alert: AlertModel): Observable<void> {
+        return this.service.deleteAlertById( undefined, alert.id ).pipe(
+            notifyOnError( this.registryFacade ),
+            tap( (): void => this.onCommandSuccess( 'delete', alert ) ),
+        )
     }
 
-    public updateAlertStatus (
-        id: string,
-        status: AlertStatusEnum,
-    ): void {
-        this.ngStore.dispatch( new UpdateAlertStatus( this.selectedProjectId(), id, status ) )
+    public updateAlertStatus (id: string, status: AlertStatusEnum): Observable<AlertModel> {
+        return this.service.updateAlertStatusById( this.selectedProjectId(), id, status ).pipe(
+            notifyOnError( this.registryFacade ),
+            tap( (updated: AlertModel): void => this.onCommandSuccess( 'status', updated ) ),
+        )
     }
 
-    public disableAlert (id: string): void {
-        this.ngStore.dispatch( new DisableAlert( this.selectedProjectId(), id ) )
-    }
+    private onCommandSuccess (command: CommandEvent, alert: AlertModel): void {
+        this.onCommandSucceeded( 'alert', command, 'alerts.notifications', 'pi pi-sort-alt', { title: alert?.title, status: alert?.status?.label } )
 
-    public enableAlert (id: string): void {
-        this.ngStore.dispatch( new EnableAlert( this.selectedProjectId(), id ) )
-    }
-
-    public deleteAlert (alert: AlertModel): void {
-        this.ngStore.dispatch( new DeleteAlert( this.selectedProjectId(), alert ) )
+        const page: PageModel<AlertModel> | undefined = this.alertsPage()
+        this.fetchAlertsPage( page?.pageNumber, page?.pageSize, true )
     }
 }

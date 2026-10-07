@@ -41,7 +41,8 @@ export abstract class GenericProjectElementFacade extends GenericFacade {
         icon: string,
         data: object,
     ): void {
-        this.notifySuccess( `${ translationPrefix }.${ command === 'update' ? 'edit' : command }`, icon, data )
+        const key: string = command === 'update' ? 'edit' : command === 'status' ? 'edit-status' : command
+        this.notifySuccess( `${ translationPrefix }.${ key }`, icon, data )
         this.commandEvents.emit( scope, command )
     }
 }

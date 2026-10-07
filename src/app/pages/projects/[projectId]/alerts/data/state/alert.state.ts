@@ -5,46 +5,27 @@ import { GenericProjectElementState } from '@shared/helpers/state/generic-projec
 import { initialize } from '@shared/helpers/util/rx.util'
 import { StateUtil } from '@shared/helpers/state/state.util'
 import { inject, Injectable } from '@angular/core'
-import {
-    ElementRequestInformationModel,
-} from '@shared/models/model/element-request-information.model'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { ErrorModel } from '@shared/models/model/error.model'
-import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { AlertFacade } from '@pages/projects/[projectId]/alerts/data/state/alert.facade'
 import { AlertModel } from '@shared/models/model/alert.model'
 import { AlertStateModel } from '@pages/projects/[projectId]/alerts/data/model/alert-state.model'
 import { AlertService } from '@pages/projects/[projectId]/movements/data/state/alert.service'
 import { AlertStatusEnum } from '@shared/models/enumeration/alert-status.enum'
 import {
-    CreateAlert,
-    DeleteAlert,
-    DisableAlert,
-    EnableAlert,
-    FetchAlert,
     FetchAlertCommunicationsPage,
     FetchAlertsPage,
     FetchAlertStatus,
-    ResetAlert,
     ResetAlertState,
     StartAlertCommunicationsPageLoader,
-    StartAlertLoader,
     StartAlertsPageLoader,
     StopAlertCommunicationsPageLoader,
-    StopAlertLoader,
     StopAlertsPageLoader,
-    UpdateAlert,
     UpdateAlertCommunicationsPageSearchParams,
     UpdateAlertsPageSearchParams,
-    UpdateAlertStatus,
 } from '@pages/projects/[projectId]/alerts/data/state/alert.action'
 import { MetadataService } from '@core/registry/state/metadata.service'
 import { CommunicationModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
-
-const defaultAlert: ElementRequestInformationModel<AlertModel> = {
-    element: undefined,
-    loading: false,
-}
 
 const defaultAlertState: AlertStateModel = {
     alerts: {
@@ -61,7 +42,6 @@ const defaultAlertState: AlertStateModel = {
         silentLoading: false,
         error: undefined,
     },
-    alert: defaultAlert,
     communications: {
         element: undefined,
         params: {
@@ -91,8 +71,6 @@ const defaultAlertState: AlertStateModel = {
 } )
 @Injectable()
 export class AlertState extends GenericProjectElementState<AlertStateModel> implements NgxsOnInit {
-    private readonly alertIcon: string = 'pi pi-sort-alt'
-
     private readonly service: AlertService = inject( AlertService )
     private readonly metadataService: MetadataService = inject( MetadataService )
     private readonly facade: AlertFacade = inject( AlertFacade )
@@ -194,16 +172,6 @@ export class AlertState extends GenericProjectElementState<AlertStateModel> impl
     @Selector()
     public static alertCommunicationsPageEndDateTimeSearchedParam (state: AlertStateModel): string | undefined {
         return state.communications.params.endDateTimeSearched
-    }
-
-    @Selector()
-    public static alert (state: AlertStateModel): AlertModel | undefined {
-        return state.alert.element
-    }
-
-    @Selector()
-    public static alertLoading (state: AlertStateModel): boolean {
-        return state.alert.loading
     }
 
     @Selector()
@@ -391,214 +359,6 @@ export class AlertState extends GenericProjectElementState<AlertStateModel> impl
                 params: payload.params,
             },
         } )
-    }
-
-    @Action( StartAlertLoader )
-    public startAlertLoader (ctx: StateContext<AlertStateModel>): void {
-        ctx.patchState( {
-            alert: StateUtil.updateElementLoader( ctx.getState().alert, true ),
-        } )
-    }
-
-    @Action( StopAlertLoader )
-    public stopAlertLoader (ctx: StateContext<AlertStateModel>): void {
-        ctx.patchState( {
-            alert: StateUtil.updateElementLoader( ctx.getState().alert, false ),
-        } )
-    }
-
-    @Action( FetchAlert )
-    public fetchAlert (
-        ctx: StateContext<AlertStateModel>,
-        payload: FetchAlert,
-    ): Observable<void> {
-        return this.service.findAlertById( payload.projectId, payload.id ).pipe(
-            initialize( (): void => this.facade.startAlertLoader() ),
-            finalize( (): void => this.facade.stopAlertLoader() ),
-            map( (alert: AlertModel): void => this.fetchAlertComplete( ctx, alert ) ),
-        )
-    }
-
-    private fetchAlertComplete (
-        ctx: StateContext<AlertStateModel>,
-        alert: AlertModel,
-    ): void {
-        ctx.patchState( {
-            alert: {
-                ...ctx.getState().alert,
-                element: alert,
-            },
-        } )
-    }
-
-    @Action( ResetAlert )
-    public resetAlert (ctx: StateContext<AlertStateModel>): void {
-        ctx.patchState( {
-            alert: defaultAlert,
-        } )
-    }
-
-    @Action( CreateAlert )
-    public createAlert (
-        ctx: StateContext<AlertStateModel>,
-        payload: CreateAlert,
-    ): Observable<void> {
-        return this.service.createAlert( payload.projectId, payload.alert ).pipe(
-            initialize( (): void => this.facade.startAlertLoader() ),
-            finalize( (): void => this.facade.stopAlertLoader() ),
-            map( (alert: AlertModel): void => this.createAlertComplete( ctx, alert ) ),
-        )
-    }
-
-    private createAlertComplete (
-        ctx: StateContext<AlertStateModel>,
-        alert: AlertModel,
-    ): void {
-        this.buildMessageAndNotify(
-            SeverityEnum.SUCCESS,
-            `alerts.notifications.create.title`,
-            `alerts.notifications.create.message`,
-            this.alertIcon,
-            this.buildTranslationArgs( alert ),
-        )
-        this.refreshPage( ctx )
-    }
-
-    @Action( UpdateAlert )
-    public updateAlert (
-        ctx: StateContext<AlertStateModel>,
-        payload: UpdateAlert,
-    ): Observable<void> {
-        return this.service.updateAlertById( payload.projectId, payload.id, payload.alert ).pipe(
-            initialize( (): void => this.facade.startAlertLoader() ),
-            finalize( (): void => this.facade.stopAlertLoader() ),
-            map( (alert: AlertModel): void => this.updateAlertComplete( ctx, alert ) ),
-        )
-    }
-
-    private updateAlertComplete (
-        ctx: StateContext<AlertStateModel>,
-        alert: AlertModel,
-    ): void {
-        this.buildMessageAndNotify(
-            SeverityEnum.SUCCESS,
-            `alerts.notifications.edit.title`,
-            `alerts.notifications.edit.message`,
-            this.alertIcon,
-            this.buildTranslationArgs( alert ),
-        )
-        this.refreshPage( ctx )
-    }
-
-    @Action( UpdateAlertStatus )
-    public updateAlertStatus (
-        ctx: StateContext<AlertStateModel>,
-        payload: UpdateAlertStatus,
-    ): Observable<void> {
-        return this.service.updateAlertStatusById( payload.projectId, payload.id, payload.status ).pipe(
-            initialize( (): void => this.facade.startAlertLoader() ),
-            finalize( (): void => this.facade.stopAlertLoader() ),
-            map( (alert: AlertModel): void => this.updateAlertStatusComplete( ctx, alert ) ),
-        )
-    }
-
-    private updateAlertStatusComplete (
-        ctx: StateContext<AlertStateModel>,
-        alert: AlertModel,
-    ): void {
-        this.buildMessageAndNotify(
-            SeverityEnum.SUCCESS,
-            `alerts.notifications.edit-status.title`,
-            `alerts.notifications.edit-status.message`,
-            this.alertIcon,
-            this.buildTranslationArgs( alert ),
-        )
-        this.refreshPage( ctx )
-    }
-
-    @Action( DisableAlert )
-    public disableAlert (
-        ctx: StateContext<AlertStateModel>,
-        payload: DisableAlert,
-    ): Observable<void> {
-        return this.service.disableAlertById( payload.projectId, payload.id ).pipe(
-            initialize( (): void => this.facade.startAlertLoader() ),
-            finalize( (): void => this.facade.stopAlertLoader() ),
-            map( (alert: AlertModel): void => this.disableAlertComplete( ctx, alert ) ),
-        )
-    }
-
-    private disableAlertComplete (
-        ctx: StateContext<AlertStateModel>,
-        alert: AlertModel,
-    ): void {
-        this.buildMessageAndNotify(
-            SeverityEnum.SUCCESS,
-            `alerts.notifications.disable.title`,
-            `alerts.notifications.disable.message`,
-            this.alertIcon,
-            this.buildTranslationArgs( alert ),
-        )
-        this.refreshPage( ctx )
-    }
-
-    @Action( EnableAlert )
-    public enableAlert (
-        ctx: StateContext<AlertStateModel>,
-        payload: EnableAlert,
-    ): Observable<void> {
-        return this.service.enableAlertById( payload.projectId, payload.id ).pipe(
-            initialize( (): void => this.facade.startAlertLoader() ),
-            finalize( (): void => this.facade.stopAlertLoader() ),
-            map( (alert: AlertModel): void => this.enableAlertComplete( ctx, alert ) ),
-        )
-    }
-
-    private enableAlertComplete (
-        ctx: StateContext<AlertStateModel>,
-        alert: AlertModel,
-    ): void {
-        this.buildMessageAndNotify(
-            SeverityEnum.SUCCESS,
-            `alerts.notifications.enable.title`,
-            `alerts.notifications.enable.message`,
-            this.alertIcon,
-            this.buildTranslationArgs( alert ),
-        )
-        this.refreshPage( ctx )
-    }
-
-    @Action( DeleteAlert )
-    public deleteAlert (
-        ctx: StateContext<AlertStateModel>,
-        payload: DeleteAlert,
-    ): Observable<void> {
-        return this.service.deleteAlertById( undefined, payload.alert.id ).pipe(
-            initialize( (): void => this.facade.startAlertLoader() ),
-            finalize( (): void => this.facade.stopAlertLoader() ),
-            map( (): void => this.deleteAlertComplete( ctx, payload.alert ) ),
-        )
-    }
-
-    private deleteAlertComplete (
-        ctx: StateContext<AlertStateModel>,
-        alert: AlertModel,
-    ): void {
-        this.buildMessageAndNotify(
-            SeverityEnum.SUCCESS,
-            `alerts.notifications.delete.title`,
-            `alerts.notifications.delete.message`,
-            this.alertIcon,
-            this.buildTranslationArgs( alert ),
-        )
-        this.refreshPage( ctx )
-    }
-
-    private buildTranslationArgs (alert: AlertModel): object {
-        return {
-            title: alert?.title,
-            status: alert?.status?.label,
-        }
     }
 
     protected refreshPage (ctx: StateContext<AlertStateModel>): void {

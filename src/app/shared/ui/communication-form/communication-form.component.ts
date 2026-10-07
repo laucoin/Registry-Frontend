@@ -265,13 +265,7 @@ export class CommunicationFormComponent extends GenericFormComponent<Communicati
     }
 
     private submitAlert (): void {
-        const dto: AlertDto = this.buildAlertDto()
-
-        this.subscriptions.add(
-            this.alertFacade.createAlert( dto ).pipe(
-                tap( (): void => this.resetForm() ),
-            ).subscribe(),
-        )
+        this.save( this.alertFacade.createAlert( this.buildAlertDto() ).pipe( tap( (): void => this.resetForm() ) ), false )
     }
 
     protected override buildDto (): CommunicationDto {
