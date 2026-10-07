@@ -1,122 +1,73 @@
-import { computed, Injectable, Signal } from '@angular/core'
-import { Observable } from 'rxjs'
+import { computed, inject, Injectable, Signal } from '@angular/core'
+import { toObservable } from '@angular/core/rxjs-interop'
+import { finalize, Observable, switchMap, tap } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { GenericFacade } from '@shared/helpers/facade/generic.facade'
 import { ProjectStore } from '@pages/projects/data/state/project/project.store'
-import {
-    CreateProject,
-    DeleteProject,
-    DisableProject,
-    EnableProject,
-    FetchProject,
-    FetchProjectOptions,
-    FetchProjectsPage,
-    ResetProject,
-    StartProjectLoader,
-    StartProjectsPageLoader,
-    StopProjectLoader,
-    StopProjectsPageLoader,
-    UpdateProject,
-    UpdateProjectsPageSearchParams,
-} from '@pages/projects/data/state/project/project.action'
 import { ProjectDto } from '@pages/projects/data/dto/project.dto'
-import { ofActionSuccessful } from '@ngxs/store'
+import { ProjectApi } from '@pages/projects/data/state/project.api'
+import { RegistryFacade } from '@core/registry/state/registry.facade'
+import { StateHelper } from '@shared/helpers/state/state.helper'
+import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
+import { initialize, notifyOnError } from '@shared/helpers/rx.helper'
 import { ProjectModel } from '@shared/models/model/project.model'
 import { ProjectOptionModel } from '@pages/projects/data/model/project-option.model'
 import { DateHelper } from '@shared/helpers/date.helper'
-import { FetchCurrentUser } from '@core/registry/state/registry.action'
 
 @Injectable()
 export class ProjectFacade extends GenericFacade {
-    public get projectsPage (): Signal<PageModel<ProjectModel> | undefined> {
-        return this.ngStore.selectSignal( ProjectStore.projectsPage )
-    }
+    private readonly store: InstanceType<typeof ProjectStore> = inject( ProjectStore )
+    private readonly api: ProjectApi = inject( ProjectApi )
+    private readonly registryFacade: RegistryFacade = inject( RegistryFacade )
 
-    public get projectsPageLoading (): Signal<boolean> {
-        return computed( (): boolean => this.ngStore.selectSignal( ProjectStore.projectsPageLoading )() )
-    }
+    public readonly projectsPage: Signal<PageModel<ProjectModel> | undefined> = this.store.projects.element
 
-    public get projectsPageSilentLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( ProjectStore.projectsPageSilentLoading )
-    }
+    public readonly projectsPageLoading: Signal<boolean> = this.store.projects.loading
 
-    public get projectsPageError (): Signal<ToastMessageOptions | undefined> {
-        return this.ngStore.selectSignal( ProjectStore.projectsPageError )
-    }
+    public readonly projectsPageSilentLoading: Signal<boolean> = this.store.projects.silentLoading
 
-    private get projectsPageResetSearch (): Signal<boolean> {
-        return this.ngStore.selectSignal( ProjectStore.projectsPageResetSearch )
-    }
+    public readonly projectsPageError: Signal<ToastMessageOptions | undefined> = this.store.projects.error
 
-    public get projectsPageTextSearchedParam (): Signal<string | undefined> {
-        return this.ngStore.selectSignal( ProjectStore.projectsPageTextSearchedParam )
-    }
+    private readonly projectsPageResetSearch: Signal<boolean> = this.store.projects.params.resetSearch
 
-    public get projectsPageDateTimeSearchedParam (): Signal<Date | undefined> {
-        return computed( (): Date | undefined => DateHelper.buildDate( this.ngStore.selectSignal( ProjectStore.projectsPageDateTimeSearchedParam )() ) )
-    }
+    public readonly projectsPageTextSearchedParam: Signal<string | undefined> = this.store.projects.params.textSearched
 
-    public get projectsPageWithProfileSearchedParam (): Signal<boolean | undefined> {
-        return this.ngStore.selectSignal( ProjectStore.projectsPageWithProfileSearchedParam )
-    }
+    public readonly projectsPageDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined => DateHelper.buildDate( this.store.projects.params.dateTimeSearched() ) )
 
-    public get projectsPageVisibilitySearchedParam (): Signal<boolean | undefined> {
-        return this.ngStore.selectSignal( ProjectStore.projectsPageVisibilitySearchedParam )
-    }
+    public readonly projectsPageWithProfileSearchedParam: Signal<boolean | undefined> = this.store.projects.params.withProfile
 
-    public get projectOptionsMetadata (): Signal<ProjectOptionModel[]> {
-        return this.ngStore.selectSignal( ProjectStore.projectOptionsMetadata )
-    }
+    public readonly projectsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.projects.params.visibilitySearched
 
-    public get projectOptionsMetadata$ (): Observable<ProjectOptionModel[]> {
-        return this.ngStore.select( ProjectStore.projectOptionsMetadata )
-    }
+    public readonly projectOptionsMetadata: Signal<ProjectOptionModel[]> = this.store.metadata.options
 
-    public get visibilitiesMetadata (): Signal<SelectItem<boolean | undefined>[]> {
-        return computed( (): SelectItem<boolean | undefined>[] =>
-            this.ngStore.selectSignal( ProjectStore.visibilitiesMetadata )().map( (item: SelectItem<boolean | undefined>): SelectItem<boolean | undefined> => ({
+    public readonly projectOptionsMetadata$: Observable<ProjectOptionModel[]> = toObservable( this.projectOptionsMetadata )
+
+    public readonly visibilitiesMetadata: Signal<SelectItem<boolean | undefined>[]> = computed( (): SelectItem<boolean | undefined>[] =>
+            this.store.metadata.visibilities().map( (item: SelectItem<boolean | undefined>): SelectItem<boolean | undefined> => ({
                 ...item,
                 label: this.translateService.instant( item.label! ),
             }) ),
         )
-    }
 
-    public get project (): Signal<ProjectModel | undefined> {
-        return this.ngStore.selectSignal( ProjectStore.project )
-    }
+    public readonly project: Signal<ProjectModel | undefined> = this.store.project.element
 
-    public get createdProjectId (): Signal<string | undefined> {
-        return this.ngStore.selectSignal( ProjectStore.createdProjectId )
-    }
+    public readonly createdProjectId: Signal<string | undefined> = this.store.createdProjectId
 
-    public get project$ (): Observable<ProjectModel | undefined> {
-        return this.ngStore.select( ProjectStore.project )
-    }
+    public readonly project$: Observable<ProjectModel | undefined> = toObservable( this.project )
 
-    public get projectLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( ProjectStore.projectLoading )
-    }
+    public readonly projectLoading: Signal<boolean> = this.store.project.loading
 
     public fetchProjectOptions (): void {
-        this.ngStore.dispatch( FetchProjectOptions )
-    }
-
-    public startProjectsPageLoader (): void {
-        this.ngStore.dispatch( StartProjectsPageLoader )
-    }
-
-    public stopProjectsPageLoader (): void {
-        this.ngStore.dispatch( StopProjectsPageLoader )
+        this.store.fetchProjectOptions()
     }
 
     public fetchProjectsPage (
         pageNumber: number | undefined,
         pageSize: number | undefined,
-        force: boolean,
     ): void {
         const index: number | undefined = this.projectsPageResetSearch() ? 0 : pageNumber
-        this.ngStore.dispatch( new FetchProjectsPage( index, pageSize, force ) )
+        this.store.fetchProjectsPage( { pageNumber: index, pageSize: pageSize } )
     }
 
     public inputPageSearchParameters (
@@ -131,56 +82,92 @@ export class ProjectFacade extends GenericFacade {
                                      || this.projectsPageVisibilitySearchedParam() != visibilitySearched
 
         if (resetSearch) {
-            this.ngStore.dispatch( new UpdateProjectsPageSearchParams( {
+            this.store.updateProjectsPageSearchParams( {
                 resetSearch: resetSearch,
                 visibilitySearched: visibilitySearched,
                 textSearched: textSearched,
                 withProfile: withProfile,
                 dateTimeSearched: dateTimeSearched?.toISOString(),
-            } ) )
+            } )
         }
     }
 
-    public startProjectLoader (): void {
-        this.ngStore.dispatch( StartProjectLoader )
-    }
-
-    public stopProjectLoader (): void {
-        this.ngStore.dispatch( StopProjectLoader )
-    }
-
     public fetchProject (id: string): void {
-        this.ngStore.dispatch( new FetchProject( id ) )
+        this.store.fetchProject( id )
     }
 
     public resetProject (): void {
-        this.ngStore.dispatch( ResetProject )
+        this.store.resetProject()
     }
 
-    public createProject (project: ProjectDto): Observable<FetchCurrentUser> {
-        this.ngStore.dispatch( new CreateProject( project ) )
-
-        return this.actions$.pipe( ofActionSuccessful( FetchCurrentUser ) )
+    public createProject (project: ProjectDto): Observable<unknown> {
+        return this.api.createProject( project ).pipe(
+            this.trackProjectLoader,
+            notifyOnError( this.registryFacade ),
+            tap( (created: ProjectModel): void => {
+                this.store.setCreatedProjectId( created.id )
+                this.onCommandSuccess( 'create', created )
+            } ),
+            switchMap( (): Observable<unknown> => this.registryFacade.fetchCurrentUser() ),
+        )
     }
 
-    public updateProject (
-        id: string,
-        project: ProjectDto,
-    ): Observable<UpdateProject> {
-        this.ngStore.dispatch( new UpdateProject( id, project ) )
-
-        return this.actions$.pipe( ofActionSuccessful( UpdateProject ) )
+    public updateProject (id: string, project: ProjectDto): Observable<ProjectModel> {
+        return this.api.updateProjectById( id, project ).pipe(
+            this.trackProjectLoader,
+            notifyOnError( this.registryFacade ),
+            tap( (updated: ProjectModel): void => {
+                this.onCommandSuccess( 'edit', updated )
+                if (this.registryFacade.currentProjectId() == updated.id) {
+                    this.registryFacade.fetchCurrentUser()
+                }
+            } ),
+        )
     }
 
     public disableProject (id: string): void {
-        this.ngStore.dispatch( new DisableProject( id ) )
+        this.api.disableProjectById( id ).pipe(
+            this.trackProjectLoader,
+            notifyOnError( this.registryFacade ),
+            tap( (project: ProjectModel): void => this.onCommandSuccess( 'disable', project, true ) ),
+        ).subscribe()
     }
 
     public enableProject (id: string): void {
-        this.ngStore.dispatch( new EnableProject( id ) )
+        this.api.enableProjectById( id ).pipe(
+            this.trackProjectLoader,
+            notifyOnError( this.registryFacade ),
+            tap( (project: ProjectModel): void => this.onCommandSuccess( 'enable', project, true ) ),
+        ).subscribe()
     }
 
     public deleteProject (element: ProjectModel): void {
-        this.ngStore.dispatch( new DeleteProject( element ) )
+        this.api.deleteProjectById( element.id ).pipe(
+            this.trackProjectLoader,
+            notifyOnError( this.registryFacade ),
+            tap( (): void => this.onCommandSuccess( 'delete', element, true ) ),
+        ).subscribe()
+    }
+
+    private readonly trackProjectLoader = <T> (source: Observable<T>): Observable<T> => source.pipe(
+        initialize( (): void => this.store.startProjectLoader() ),
+        finalize( (): void => this.store.stopProjectLoader() ),
+    )
+
+    private onCommandSuccess (command: string, project: ProjectModel, refreshUser: boolean = false): void {
+        this.registryFacade.notify( StateHelper.buildNotificationMessage(
+            SeverityEnum.SUCCESS,
+            `projects.notifications.${ command }.title`,
+            `projects.notifications.${ command }.message`,
+            'pi pi-calendar',
+            { name: project.name },
+        ) )
+
+        if (refreshUser) {
+            this.registryFacade.fetchCurrentUser()
+        }
+
+        const page: PageModel<ProjectModel> | undefined = this.projectsPage()
+        this.fetchProjectsPage( page?.pageNumber, page?.pageSize )
     }
 }

@@ -9,7 +9,7 @@ export interface ProjectStoreModel {
     projects: PageRequestInformationModel<ProjectPageParamsModel, ProjectModel>
     project: ElementRequestInformationModel<ProjectModel>
     createdProjectId: string | undefined
-    _metadata: {
+    metadata: {
         options: ProjectOptionModel[],
         visibilities: SelectItem<boolean | undefined>[],
     }

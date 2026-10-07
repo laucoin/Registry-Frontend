@@ -274,8 +274,8 @@ export class RegistryFacade extends GenericFacade {
         this.ngStore.dispatch(Logout)
     }
 
-    public fetchCurrentUser(): void {
-        this.ngStore.dispatch(FetchCurrentUser)
+    public fetchCurrentUser(): Observable<void> {
+        return this.ngStore.dispatch(FetchCurrentUser)
     }
 
     public impersonateCurrentUser(): void {

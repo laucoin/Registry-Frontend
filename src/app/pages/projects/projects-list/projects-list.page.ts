@@ -55,7 +55,7 @@ export class ProjectsListPage extends GenericListComponent {
 
         this.form = this.initForm()
 
-        this.facade.fetchProjectsPage(undefined, undefined, false)
+        this.facade.fetchProjectsPage(undefined, undefined)
     }
 
     protected initForm(): FormGroup {
@@ -74,7 +74,7 @@ export class ProjectsListPage extends GenericListComponent {
             this.withProfile.value,
             this.visibilitySearched.value,
         )
-        this.facade.fetchProjectsPage(pageEvent.pageNumber, pageEvent.pageSize, false)
+        this.facade.fetchProjectsPage(pageEvent.pageNumber, pageEvent.pageSize)
     }
 
     protected get textSearched(): FormControl {
