@@ -1,5 +1,4 @@
 import {
-    ChangeDetectionStrategy,
     Component,
     ContentChildren,
     EventEmitter,
@@ -19,13 +18,11 @@ import { GenericComponent } from '../../util-tool/component/generic.component'
 
 @Component( {
     selector: 'app-layer',
-    standalone: true,
     imports: [
         NgTemplateOutlet,
         DialogModule,
     ],
     templateUrl: './layer.component.html',
-    changeDetection: ChangeDetectionStrategy.OnPush,
 } )
 export class LayerComponent extends GenericComponent {
     @ContentChildren( RegistryTemplateDirective ) public templates: QueryList<RegistryTemplateDirective> | undefined

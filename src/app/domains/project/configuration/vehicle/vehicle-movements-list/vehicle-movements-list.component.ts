@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, inject, OnDestroy} from '@angular/core'
+import { Component, inject, OnDestroy} from '@angular/core'
 import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms'
 import {PageEventModel} from '../../../../../shared/util-model/model/page-event.model'
 import {ListComponent} from '../../../../../shared/util-ui/list/list.component'
@@ -20,7 +20,6 @@ import {Card} from 'primeng/card'
 
 @Component({
     selector: 'app-vehicle-movements-list',
-    standalone: true,
     templateUrl: './vehicle-movements-list.component.html',
     imports: [
         ListComponent,
@@ -38,7 +37,6 @@ import {Card} from 'primeng/card'
         ElementSkeletonComponent,
         Card,
     ],
-    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VehicleMovementsListComponent extends GenericListComponent implements OnDestroy {
     protected readonly facade: VehicleFacade = inject(VehicleFacade)

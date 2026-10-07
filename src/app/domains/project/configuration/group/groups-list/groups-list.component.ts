@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
+import { Component, inject } from '@angular/core'
 import { GroupRoutesEnum } from '../group-routes.enum'
 import { GroupFacade } from '../data/state/group.facade'
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms'
@@ -16,7 +16,6 @@ import { GenericListComponent } from '../../../../../shared/util-tool/component/
 
 @Component( {
     selector: 'app-groups-list',
-    standalone: true,
     imports: [
         Button,
         DatePicker,
@@ -30,7 +29,6 @@ import { GenericListComponent } from '../../../../../shared/util-tool/component/
         Select,
     ],
     templateUrl: './groups-list.component.html',
-    changeDetection: ChangeDetectionStrategy.OnPush,
 } )
 export class GroupsListComponent extends GenericListComponent {
     protected readonly facade: GroupFacade = inject( GroupFacade )

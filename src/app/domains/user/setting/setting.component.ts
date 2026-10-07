@@ -14,7 +14,6 @@ import { GenericElementComponent } from '../../../shared/util-tool/component/gen
 
 @Component( {
     selector: 'app-setting',
-    standalone: true,
     imports: [
         Card,
         Avatar,

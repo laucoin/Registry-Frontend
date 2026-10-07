@@ -1,5 +1,4 @@
 import {
-    ChangeDetectionStrategy,
     Component,
     computed,
     forwardRef,
@@ -27,7 +26,6 @@ import { RegistryFacade } from '../../../../../shared/util-common/state/registry
 
 @Component( {
     selector: 'app-movement-content-field',
-    standalone: true,
     imports: [
         AutoComplete,
         Button,
@@ -42,7 +40,6 @@ import { RegistryFacade } from '../../../../../shared/util-common/state/registry
     ],
     templateUrl: './movement-content-field.component.html',
     styleUrl: './movement-content-field.component.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush,
 } )
 export class MovementContentFieldComponent implements ControlValueAccessor {
     protected readonly registryFacade: RegistryFacade = inject( RegistryFacade )

@@ -18,7 +18,6 @@ import { FormFieldErrorComponent } from '../../../shared/util-ui/form-field-erro
 
 @Component( {
     selector: 'app-user-form',
-    standalone: true,
     imports: [
         Button,
         Card,

@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, computed, input, InputSignal, Signal} from '@angular/core'
+import { Component, computed, input, InputSignal, Signal} from '@angular/core'
 import {TranslatePipe} from '@ngx-translate/core'
 import {ToastMessageOptions} from 'primeng/api'
 import {SeverityEnum} from '../../util-model/enumeration/severity.enum'
@@ -12,11 +12,9 @@ enum InformationImageEnum {
 
 @Component({
     selector: 'app-severity-information',
-    standalone: true,
     imports: [TranslatePipe, MessageModule, MessageComponent],
     templateUrl: './severity-information.component.html',
     styleUrl: './severity-information.component.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SeverityInformationComponent {
     public readonly showImage: InputSignal<boolean> = input(true)

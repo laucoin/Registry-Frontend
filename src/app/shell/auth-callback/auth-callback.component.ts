@@ -1,13 +1,11 @@
-import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit } from '@angular/core'
+import { Component, inject, OnDestroy, OnInit } from '@angular/core'
 import { ActivatedRoute, Params } from '@angular/router'
 import { RegistryFacade } from '../../shared/util-common/state/registry.facade'
 import { Subscription } from 'rxjs'
 
 @Component( {
     selector: 'app-auth-callback',
-    standalone: true,
     template: '',
-    changeDetection: ChangeDetectionStrategy.OnPush,
 } )
 export class AuthCallbackComponent implements OnInit, OnDestroy {
     private readonly subscriptions: Subscription = new Subscription()

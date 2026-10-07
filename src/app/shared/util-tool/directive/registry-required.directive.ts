@@ -3,7 +3,6 @@ import { TranslateService } from '@ngx-translate/core'
 
 @Directive( {
     selector: '[appRequired]',
-    standalone: true,
 } )
 export class RegistryRequiredDirective implements OnInit {
     private el: ElementRef = inject( ElementRef )

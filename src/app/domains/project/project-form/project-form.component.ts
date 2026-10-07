@@ -35,7 +35,6 @@ import { FetchCurrentUser } from '../../../shared/util-common/state/registry.act
 
 @Component( {
     selector: 'app-project-form',
-    standalone: true,
     imports: [
         Stepper,
         StepItem,

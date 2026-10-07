@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input, InputSignal, Signal } from '@angular/core'
+import { Component, computed, inject, input, InputSignal, Signal } from '@angular/core'
 import { Card } from 'primeng/card'
 import { CommunicationModel } from '../../../domains/project/communication/data/model/communication.model'
 import { Avatar } from 'primeng/avatar'
@@ -23,7 +23,6 @@ import { DateUtil } from '../../util-tool/util/date.util'
 
 @Component( {
     selector: 'app-dialog-element',
-    standalone: true,
     imports: [
         Card,
         Avatar,
@@ -37,7 +36,6 @@ import { DateUtil } from '../../util-tool/util/date.util'
     ],
     templateUrl: './dialog-element.component.html',
     styleUrl: './dialog-element.component.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush,
 } )
 export class DialogElementComponent extends GenericElementComponent {
     protected readonly facade: CommunicationFacade = inject( CommunicationFacade )

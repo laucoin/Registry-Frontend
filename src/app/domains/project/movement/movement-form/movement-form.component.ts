@@ -1,4 +1,4 @@
-import {Component, computed, inject, OnDestroy, Signal, signal, WritableSignal} from '@angular/core'
+import { ChangeDetectionStrategy,Component, computed, inject, OnDestroy, Signal, signal, WritableSignal} from '@angular/core'
 import {FormArray, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms'
 import {FormUtil} from '../../../../shared/util-tool/util/form.util'
 import {MovementFacade} from '../data/state/movement.facade'
@@ -52,8 +52,8 @@ import {ProjectOptionEnum} from '../../../../shared/util-model/enumeration/proje
 import {PresenceStatusEnum} from '../../../../shared/util-model/enumeration/presence-status.enum'
 
 @Component({
+	changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'app-movement-form',
-    standalone: true,
     imports: [
         Button,
         CardModule,

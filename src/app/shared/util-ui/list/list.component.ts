@@ -1,6 +1,5 @@
 import {NgTemplateOutlet} from '@angular/common'
 import {
-    ChangeDetectionStrategy,
     Component,
     computed,
     ContentChildren,
@@ -32,7 +31,6 @@ import {SeverityEnum} from '../../util-model/enumeration/severity.enum'
 
 @Component({
     selector: 'app-list',
-    standalone: true,
     imports: [
         DataViewModule,
         TranslatePipe,
@@ -47,7 +45,6 @@ import {SeverityEnum} from '../../util-model/enumeration/severity.enum'
     ],
     templateUrl: './list.component.html',
     styleUrl: './list.component.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ListComponent<T extends GenericModel> extends GenericComponent {
     @ContentChildren(RegistryTemplateDirective) public templates: QueryList<RegistryTemplateDirective> | undefined

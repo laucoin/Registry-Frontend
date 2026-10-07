@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, inject, OnDestroy} from '@angular/core'
+import { Component, inject, OnDestroy} from '@angular/core'
 import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms'
 import {PageEventModel} from '../../../../../shared/util-model/model/page-event.model'
 import {ListComponent} from '../../../../../shared/util-ui/list/list.component'
@@ -22,7 +22,6 @@ import {ElementSkeletonComponent} from '../../../../../shared/util-ui/element-sk
 
 @Component({
     selector: 'app-participant-movements-list',
-    standalone: true,
     templateUrl: './participant-movements-list.component.html',
     imports: [
         ListComponent,
@@ -40,7 +39,6 @@ import {ElementSkeletonComponent} from '../../../../../shared/util-ui/element-sk
         Card,
         ElementSkeletonComponent,
     ],
-    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ParticipantMovementsListComponent extends GenericListComponent implements OnDestroy {
     protected readonly facade: ParticipantFacade = inject(ParticipantFacade)

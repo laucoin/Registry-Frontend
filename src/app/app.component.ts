@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, HostListener, inject, OnDestroy} from '@angular/core'
+import { Component, HostListener, inject, OnDestroy} from '@angular/core'
 import {TranslatePipe} from '@ngx-translate/core'
 import {ConfirmationService, MessageService, ToastMessageOptions} from 'primeng/api'
 import {BlockUIModule} from 'primeng/blockui'
@@ -21,7 +21,6 @@ import {GenericUtil} from './shared/util-tool/util/generic.util'
 
 @Component({
     selector: 'app-root',
-    standalone: true,
     imports: [
         TranslatePipe,
         ConfirmDialogModule,
@@ -38,7 +37,6 @@ import {GenericUtil} from './shared/util-tool/util/generic.util'
     providers: [ConfirmationService, MessageService],
     templateUrl: './app.component.html',
     styleUrl: './app.component.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent extends GenericComponent implements OnDestroy {
     protected readonly breakPoint: Record<string, string> = breakPoint

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input, InputSignal, Signal } from '@angular/core'
+import { Component, computed, inject, input, InputSignal, Signal } from '@angular/core'
 import { GroupModel } from '../../../../../shared/util-model/model/group.model'
 import { GroupFacade } from '../data/state/group.facade'
 import { ElementCardComponent } from '../../../../../shared/util-ui/element-card/element-card.component'
@@ -18,7 +18,6 @@ import { AvailabilityStatusEnum } from '../../../../../shared/util-model/enumera
 
 @Component( {
     selector: 'app-group-element',
-    standalone: true,
     imports: [
         ElementCardComponent,
         TranslatePipe,
@@ -30,7 +29,6 @@ import { AvailabilityStatusEnum } from '../../../../../shared/util-model/enumera
     ],
     templateUrl: './group-element.component.html',
     styleUrl: './group-element.component.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush,
 } )
 export class GroupElementComponent extends GenericElementComponent {
     protected readonly facade: GroupFacade = inject( GroupFacade )

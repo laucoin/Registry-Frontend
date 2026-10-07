@@ -1,4 +1,4 @@
-import {Component, computed, inject, input, InputSignal, Signal} from '@angular/core'
+import { ChangeDetectionStrategy,Component, computed, inject, input, InputSignal, Signal} from '@angular/core'
 import {MovementModel} from '../../util-model/model/movement.model'
 import {MovementFacade} from '../../../domains/project/movement/data/state/movement.facade'
 import {ElementCardComponent} from '../element-card/element-card.component'
@@ -42,8 +42,8 @@ import {
 } from '../../../domains/project/movement/movement-communications-list/movement-communications-list.component'
 
 @Component({
+	changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'app-movement-element',
-    standalone: true,
     imports: [
         ElementCardComponent,
         TranslatePipe,

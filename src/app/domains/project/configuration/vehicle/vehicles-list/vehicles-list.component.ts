@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, inject} from '@angular/core'
+import { Component, inject} from '@angular/core'
 import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms'
 import {PageEventModel} from '../../../../../shared/util-model/model/page-event.model'
 import {VehicleFacade} from '../data/state/vehicle.facade'
@@ -17,7 +17,6 @@ import {GenericListComponent} from '../../../../../shared/util-tool/component/ge
 
 @Component({
     selector: 'app-vehicles-list',
-    standalone: true,
     templateUrl: './vehicles-list.component.html',
     imports: [
         ListComponent,
@@ -33,7 +32,6 @@ import {GenericListComponent} from '../../../../../shared/util-tool/component/ge
         VehicleElementComponent,
         Select,
     ],
-    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VehiclesListComponent extends GenericListComponent {
     protected readonly facade: VehicleFacade = inject(VehicleFacade)

@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, computed, inject, input, InputSignal, Signal} from '@angular/core'
+import { Component, computed, inject, input, InputSignal, Signal} from '@angular/core'
 import {ParticipantModel} from '../../util-model/model/participant.model'
 import {ParticipantFacade} from '../../../domains/project/configuration/participant/data/state/participant.facade'
 import {ElementCardComponent} from '../element-card/element-card.component'
@@ -24,7 +24,6 @@ import {MenuItem} from 'primeng/api'
 
 @Component({
     selector: 'app-participant-element',
-    standalone: true,
     imports: [
         ElementCardComponent,
         TitleCasePipe,
@@ -41,7 +40,6 @@ import {MenuItem} from 'primeng/api'
     providers: [GroupFacade],
     templateUrl: './participant-element.component.html',
     styleUrl: './participant-element.component.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ParticipantElementComponent extends GenericElementComponent {
     protected readonly facade: ParticipantFacade = inject(ParticipantFacade)

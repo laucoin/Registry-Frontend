@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, computed, inject, Signal} from '@angular/core'
+import { Component, computed, inject, Signal} from '@angular/core'
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms'
 import {PageEventModel} from '../../../shared/util-model/model/page-event.model'
 import {ProjectFacade} from '../data/state/project/project.facade'
@@ -21,7 +21,6 @@ import {StringUtil} from '../../../shared/util-tool/util/string.util'
 
 @Component({
     selector: 'app-projects-list',
-    standalone: true,
     imports: [
         ListComponent,
         RegistryTemplateDirective,
@@ -39,7 +38,6 @@ import {StringUtil} from '../../../shared/util-tool/util/string.util'
         InfoComponent,
     ],
     templateUrl: './projects-list.component.html',
-    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProjectsListComponent extends GenericListComponent {
     protected readonly facade: ProjectFacade = inject(ProjectFacade)

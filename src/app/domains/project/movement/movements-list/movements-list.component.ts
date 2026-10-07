@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, inject} from '@angular/core'
+import { Component, inject} from '@angular/core'
 import {MovementFacade} from '../data/state/movement.facade'
 import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms'
 import {PageEventModel} from '../../../../shared/util-model/model/page-event.model'
@@ -17,7 +17,6 @@ import {GenericListComponent} from '../../../../shared/util-tool/component/gener
 
 @Component({
     selector: 'app-movements-list',
-    standalone: true,
     templateUrl: './movements-list.component.html',
     imports: [
         ListComponent,
@@ -33,7 +32,6 @@ import {GenericListComponent} from '../../../../shared/util-tool/component/gener
         Button,
         DatePicker,
     ],
-    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MovementsListComponent extends GenericListComponent {
     protected readonly facade: MovementFacade = inject(MovementFacade)

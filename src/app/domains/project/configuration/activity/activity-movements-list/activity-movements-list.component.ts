@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, inject, OnDestroy} from '@angular/core'
+import { Component, inject, OnDestroy} from '@angular/core'
 import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms'
 import {PageEventModel} from '../../../../../shared/util-model/model/page-event.model'
 import {ListComponent} from '../../../../../shared/util-ui/list/list.component'
@@ -20,7 +20,6 @@ import {Subscription, tap} from 'rxjs'
 
 @Component({
     selector: 'app-activity-movements-list',
-    standalone: true,
     templateUrl: './activity-movements-list.component.html',
     imports: [
         ListComponent,
@@ -38,7 +37,6 @@ import {Subscription, tap} from 'rxjs'
         Card,
         ElementSkeletonComponent,
     ],
-    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ActivityMovementsListComponent extends GenericListComponent implements OnDestroy {
     protected readonly facade: ActivityFacade = inject(ActivityFacade)

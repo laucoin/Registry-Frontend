@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, computed, inject, input, InputSignal, Signal} from '@angular/core'
+import { Component, computed, inject, input, InputSignal, Signal} from '@angular/core'
 import {UserModel} from '../../../shared/util-model/model/user.model'
 import {ChipModule} from 'primeng/chip'
 import {TitleCasePipe, UpperCasePipe} from '@angular/common'
@@ -26,7 +26,6 @@ import {MenuItem} from 'primeng/api'
 
 @Component({
     selector: 'app-user-element',
-    standalone: true,
     imports: [
         ChipModule,
         ElementCardComponent,
@@ -47,7 +46,6 @@ import {MenuItem} from 'primeng/api'
     ],
     templateUrl: './user-element.component.html',
     styleUrl: './user-element.component.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UserElementComponent extends GenericElementComponent {
     protected readonly facade: UserFacade = inject(UserFacade)

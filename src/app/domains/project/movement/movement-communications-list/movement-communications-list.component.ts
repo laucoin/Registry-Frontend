@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, input, InputSignal, OnDestroy, OnInit } from '@angular/core'
+import { Component, inject, input, InputSignal, OnDestroy, OnInit } from '@angular/core'
 import { ReactiveFormsModule } from '@angular/forms'
 import { MovementFacade } from '../data/state/movement.facade'
 import { Subscription, tap } from 'rxjs'
@@ -14,7 +14,6 @@ import { AlertFacade } from '../../alert/data/state/alert.facade'
 
 @Component( {
     selector: 'app-movement-communications-list',
-    standalone: true,
     imports: [
         ReactiveFormsModule,
         TranslatePipe,
@@ -22,7 +21,6 @@ import { AlertFacade } from '../../alert/data/state/alert.facade'
         DialogElementComponent,
     ],
     templateUrl: './movement-communications-list.component.html',
-    changeDetection: ChangeDetectionStrategy.OnPush,
 } )
 export class MovementCommunicationsListComponent extends GenericComponent implements OnInit, OnDestroy {
     protected readonly facade: MovementFacade = inject( MovementFacade )

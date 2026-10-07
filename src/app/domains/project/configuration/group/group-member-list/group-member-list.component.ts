@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, OnDestroy } from '@angular/core'
+import { Component, inject, OnDestroy } from '@angular/core'
 import { ParticipantModel } from '../../../../../shared/util-model/model/participant.model'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { PageEventModel } from '../../../../../shared/util-model/model/page-event.model'
@@ -30,7 +30,6 @@ import { Card } from 'primeng/card'
 
 @Component( {
     selector: 'app-group-member-list',
-    standalone: true,
     imports: [
         GroupElementComponent,
         Button,
@@ -52,7 +51,6 @@ import { Card } from 'primeng/card'
 
     ],
     templateUrl: './group-member-list.component.html',
-    changeDetection: ChangeDetectionStrategy.OnPush,
 } )
 export class GroupMemberListComponent extends GenericListComponent implements OnDestroy {
     protected readonly facade: GroupFacade = inject( GroupFacade )

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, input, InputSignal, OnDestroy, OnInit } from '@angular/core'
+import { Component, inject, input, InputSignal, OnDestroy, OnInit } from '@angular/core'
 import { AlertModel } from '../../../../shared/util-model/model/alert.model'
 import { AlertFacade } from '../data/state/alert.facade'
 import { ReactiveFormsModule } from '@angular/forms'
@@ -12,7 +12,6 @@ import { TranslatePipe } from '@ngx-translate/core'
 
 @Component( {
     selector: 'app-alert-communications-list',
-    standalone: true,
     imports: [
         DialogElementComponent,
         ReactiveFormsModule,
@@ -21,7 +20,6 @@ import { TranslatePipe } from '@ngx-translate/core'
     ],
     templateUrl: './alert-communications-list.component.html',
     styleUrl: './alert-communications-list.component.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush,
 } )
 export class AlertCommunicationsListComponent implements OnInit, OnDestroy {
     protected readonly facade: AlertFacade = inject( AlertFacade )

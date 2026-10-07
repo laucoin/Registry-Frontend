@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, computed, inject, Signal} from '@angular/core'
+import { Component, computed, inject, Signal} from '@angular/core'
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms'
 import {TranslatePipe} from '@ngx-translate/core'
 import {PageEventModel} from '../../../shared/util-model/model/page-event.model'
@@ -20,7 +20,6 @@ import {RouterLink} from '@angular/router'
 
 @Component({
     selector: 'app-profiles-list',
-    standalone: true,
     imports: [
         TranslatePipe,
         FormsModule,
@@ -37,7 +36,6 @@ import {RouterLink} from '@angular/router'
 
     ],
     templateUrl: './profiles-list.component.html',
-    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProfilesListComponent extends GenericListComponent {
     protected readonly facade: ProjectProfileFacade = inject(ProjectProfileFacade)

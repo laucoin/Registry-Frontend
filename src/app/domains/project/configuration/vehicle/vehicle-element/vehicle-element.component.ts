@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, computed, inject, input, InputSignal, Signal} from '@angular/core'
+import { Component, computed, inject, input, InputSignal, Signal} from '@angular/core'
 import {ElementCardComponent} from '../../../../../shared/util-ui/element-card/element-card.component'
 import {TagModule} from 'primeng/tag'
 import {ChipModule} from 'primeng/chip'
@@ -18,7 +18,6 @@ import {MenuItem} from 'primeng/api'
 
 @Component({
     selector: 'app-vehicle-element',
-    standalone: true,
     imports: [
         ElementCardComponent,
         TagModule,
@@ -30,7 +29,6 @@ import {MenuItem} from 'primeng/api'
     ],
     templateUrl: './vehicle-element.component.html',
     styleUrl: './vehicle-element.component.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VehicleElementComponent extends GenericElementComponent {
     protected readonly facade: VehicleFacade = inject(VehicleFacade)

@@ -25,7 +25,6 @@ import { InfoComponent } from '../../shared/util-ui/info/info.component'
 
 @Component( {
     selector: 'app-navbar',
-    standalone: true,
     imports: [
         Menubar,
         Avatar,

@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, inject} from '@angular/core'
+import { Component, inject} from '@angular/core'
 import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms'
 import {PageEventModel} from '../../../../../shared/util-model/model/page-event.model'
 import {ProjectProfileFacade} from '../data/state/project-profile.facade'
@@ -19,7 +19,6 @@ import {GenericListComponent} from '../../../../../shared/util-tool/component/ge
 
 @Component({
     selector: 'app-project-profiles-list',
-    standalone: true,
     templateUrl: './project-profiles-list.component.html',
     imports: [
         ListComponent,
@@ -35,7 +34,6 @@ import {GenericListComponent} from '../../../../../shared/util-tool/component/ge
         Button,
         DatePicker,
     ],
-    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProjectProfilesListComponent extends GenericListComponent {
     protected readonly facade: ProjectProfileFacade = inject(ProjectProfileFacade)

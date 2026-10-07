@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, computed, inject, input, InputSignal, Signal} from '@angular/core'
+import { Component, computed, inject, input, InputSignal, Signal} from '@angular/core'
 import {TranslatePipe} from '@ngx-translate/core'
 import {AvatarModule} from 'primeng/avatar'
 import {Button} from 'primeng/button'
@@ -19,7 +19,6 @@ import {MenuItem} from 'primeng/api'
 
 @Component({
     selector: 'app-element-card',
-    standalone: true,
     imports: [
         CardModule,
         AvatarModule,
@@ -37,7 +36,6 @@ import {MenuItem} from 'primeng/api'
     ],
     templateUrl: './element-card.component.html',
     styleUrl: './element-card.component.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ElementCardComponent<T extends GenericModel> extends GenericComponent {
     private readonly datePipe: DateFormatPipe = inject(DateFormatPipe)

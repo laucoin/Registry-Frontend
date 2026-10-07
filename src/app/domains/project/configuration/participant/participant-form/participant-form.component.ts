@@ -1,4 +1,4 @@
-import {Component, inject, input, InputSignal, OnDestroy, signal, WritableSignal} from '@angular/core'
+import { ChangeDetectionStrategy,Component, inject, input, InputSignal, OnDestroy, signal, WritableSignal} from '@angular/core'
 import {ParticipantFacade} from '../data/state/participant.facade'
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms'
 import {RegistryValidators} from '../../../../../shared/util-tool/util/registry.validator'
@@ -37,8 +37,8 @@ import {PluralTranslationPipe} from '../../../../../shared/util-tool/pipe/plural
 import {FormIconPipe} from '../../../../../shared/util-tool/pipe/form-icon.pipe'
 
 @Component({
+	changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'app-participant-form',
-    standalone: true,
     imports: [
         Button,
         CardModule,

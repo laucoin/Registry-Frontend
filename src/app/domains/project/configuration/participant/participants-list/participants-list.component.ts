@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, inject} from '@angular/core'
+import { Component, inject} from '@angular/core'
 import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms'
 import {PageEventModel} from '../../../../../shared/util-model/model/page-event.model'
 import {ParticipantFacade} from '../data/state/participant.facade'
@@ -18,7 +18,6 @@ import {GenericListComponent} from '../../../../../shared/util-tool/component/ge
 
 @Component({
     selector: 'app-participants-list',
-    standalone: true,
     templateUrl: './participants-list.component.html',
     imports: [
         ListComponent,
@@ -33,7 +32,6 @@ import {GenericListComponent} from '../../../../../shared/util-tool/component/ge
         Button,
         Select,
     ],
-    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ParticipantsListComponent extends GenericListComponent {
     protected readonly facade: ParticipantFacade = inject(ParticipantFacade)

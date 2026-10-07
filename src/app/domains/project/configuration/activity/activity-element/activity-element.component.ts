@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, computed, inject, input, InputSignal, Signal} from '@angular/core'
+import { Component, computed, inject, input, InputSignal, Signal} from '@angular/core'
 import {ElementCardComponent} from '../../../../../shared/util-ui/element-card/element-card.component'
 import {TagModule} from 'primeng/tag'
 import {TranslatePipe} from '@ngx-translate/core'
@@ -21,7 +21,6 @@ import {MessageComponent} from '../../../../../shared/util-ui/message/message.co
 
 @Component({
     selector: 'app-activity-element',
-    standalone: true,
     imports: [
         ElementCardComponent,
         TagModule,
@@ -36,7 +35,6 @@ import {MessageComponent} from '../../../../../shared/util-ui/message/message.co
     ],
     templateUrl: './activity-element.component.html',
     styleUrl: './activity-element.component.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ActivityElementComponent extends GenericElementComponent {
     protected readonly facade: ActivityFacade = inject(ActivityFacade)

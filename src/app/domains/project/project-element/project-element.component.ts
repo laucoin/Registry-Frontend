@@ -1,5 +1,4 @@
 import {
-    ChangeDetectionStrategy,
     Component,
     computed,
     inject,
@@ -33,7 +32,6 @@ import {AvailabilityStatusEnum} from '../../../shared/util-model/enumeration/ava
 
 @Component({
     selector: 'app-project-element',
-    standalone: true,
     imports: [
         ElementCardComponent,
         TagModule,
@@ -49,7 +47,6 @@ import {AvailabilityStatusEnum} from '../../../shared/util-model/enumeration/ava
     ],
     templateUrl: './project-element.component.html',
     styleUrl: './project-element.component.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProjectElementComponent extends GenericElementComponent implements OnDestroy {
     protected readonly facade: ProjectFacade = inject(ProjectFacade)

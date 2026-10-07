@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, OnDestroy, Signal } from '@angular/core'
+import { Component, computed, inject, OnDestroy, Signal } from '@angular/core'
 import { Card } from 'primeng/card'
 import { Divider } from 'primeng/divider'
 import { PluralTranslationPipe } from '../../../../shared/util-tool/pipe/plural-translation.pipe'
@@ -23,7 +23,6 @@ import { Subscription, tap } from 'rxjs'
 
 @Component( {
     selector: 'app-dashboard',
-    standalone: true,
     imports: [
         Card,
         Divider,
@@ -41,7 +40,6 @@ import { Subscription, tap } from 'rxjs'
     ],
     templateUrl: './dashboard.component.html',
     styleUrl: './dashboard.component.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush,
 } )
 export class DashboardComponent extends GenericComponent implements OnDestroy {
     protected readonly facade: SelectedProjectFacade = inject( SelectedProjectFacade )

@@ -1,5 +1,4 @@
 import {
-    ChangeDetectionStrategy,
     Component,
     computed,
     ContentChildren,
@@ -23,7 +22,6 @@ import { GenericUtil } from '../../util-tool/util/generic.util'
 
 @Component( {
     selector: 'app-select-elements-field',
-    standalone: true,
     imports: [
         ReactiveFormsModule,
         Button,
@@ -40,7 +38,6 @@ import { GenericUtil } from '../../util-tool/util/generic.util'
     ],
     templateUrl: './select-elements-field.component.html',
     styleUrl: './select-elements-field.component.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush,
 } )
 export class SelectElementsFieldComponent<T extends BaseModel> implements ControlValueAccessor {
     @ContentChildren( RegistryTemplateDirective ) public templates: QueryList<RegistryTemplateDirective> | undefined

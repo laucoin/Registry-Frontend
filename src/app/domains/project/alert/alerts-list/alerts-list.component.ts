@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, inject} from '@angular/core'
+import { Component, inject} from '@angular/core'
 import {GenericListComponent} from '../../../../shared/util-tool/component/generic-list.component'
 import {AlertFacade} from '../data/state/alert.facade'
 import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms'
@@ -14,7 +14,6 @@ import {AlertElementComponent} from '../../../../shared/util-ui/alert-element/al
 
 @Component({
     selector: 'app-alerts-list',
-    standalone: true,
     imports: [
         Button,
         DatePicker,
@@ -28,7 +27,6 @@ import {AlertElementComponent} from '../../../../shared/util-ui/alert-element/al
     ],
     templateUrl: './alerts-list.component.html',
     styleUrl: './alerts-list.component.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AlertsListComponent extends GenericListComponent {
     protected readonly facade: AlertFacade = inject(AlertFacade)

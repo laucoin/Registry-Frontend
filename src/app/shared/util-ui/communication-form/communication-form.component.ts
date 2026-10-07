@@ -57,7 +57,6 @@ enum AlertModulableFieldEnum {
 
 @Component( {
     selector: 'app-communication-form',
-    standalone: true,
     imports: [
         Button,
         Card,

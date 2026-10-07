@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, inject} from '@angular/core'
+import { Component, inject} from '@angular/core'
 import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms'
 import {PageEventModel} from '../../../../../shared/util-model/model/page-event.model'
 import {ActivityFacade} from '../data/state/activity.facade'
@@ -17,7 +17,6 @@ import {GenericListComponent} from '../../../../../shared/util-tool/component/ge
 
 @Component({
     selector: 'app-activities-list',
-    standalone: true,
     templateUrl: './activities-list.component.html',
     imports: [
         ListComponent,
@@ -33,7 +32,6 @@ import {GenericListComponent} from '../../../../../shared/util-tool/component/ge
         ActivityElementComponent,
         Select,
     ],
-    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ActivitiesListComponent extends GenericListComponent {
     protected readonly facade: ActivityFacade = inject(ActivityFacade)

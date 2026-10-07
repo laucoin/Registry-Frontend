@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, inject} from '@angular/core'
+import { Component, inject} from '@angular/core'
 import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms'
 import {PageEventModel} from '../../../shared/util-model/model/page-event.model'
 import {UserFacade} from '../data/state/user.facade'
@@ -14,7 +14,6 @@ import {GenericListComponent} from '../../../shared/util-tool/component/generic-
 
 @Component({
     selector: 'app-users-list',
-    standalone: true,
     imports: [
         ListComponent,
         ReactiveFormsModule,
@@ -27,7 +26,6 @@ import {GenericListComponent} from '../../../shared/util-tool/component/generic-
         Select,
     ],
     templateUrl: './users-list.component.html',
-    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UsersListComponent extends GenericListComponent {
     protected readonly facade: UserFacade = inject(UserFacade)

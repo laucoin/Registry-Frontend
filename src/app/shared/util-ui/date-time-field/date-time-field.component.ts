@@ -7,7 +7,6 @@ import { DateUtil } from '../../util-tool/util/date.util'
 
 @Component( {
     selector: 'app-date-time-field',
-    standalone: true,
     imports: [
         DatePicker,
         FormsModule,

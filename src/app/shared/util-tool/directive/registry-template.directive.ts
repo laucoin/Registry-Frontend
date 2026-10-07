@@ -2,7 +2,6 @@ import { Directive, inject, input, InputSignal, TemplateRef } from '@angular/cor
 
 @Directive( {
     selector: '[appTemplate]',
-    standalone: true,
 } )
 export class RegistryTemplateDirective {
     public appTemplate: InputSignal<string | undefined> = input.required()

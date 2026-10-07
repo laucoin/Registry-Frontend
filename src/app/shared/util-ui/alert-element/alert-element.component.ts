@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input, InputSignal, Signal } from '@angular/core'
+import { Component, computed, inject, input, InputSignal, Signal } from '@angular/core'
 import { ElementActionEnum } from '../../util-model/enumeration/element-action.enum'
 import { ProjectAuthorityEnum } from '../../util-model/enumeration/project-authority.enum'
 import { SeverityEnum } from '../../util-model/enumeration/severity.enum'
@@ -32,7 +32,6 @@ import { IntervalPipe } from '../../util-tool/pipe/interval.pipe'
 
 @Component( {
     selector: 'app-alert-element',
-    standalone: true,
     imports: [
         ElementCardComponent,
         SeverityCircleComponent,
@@ -51,7 +50,6 @@ import { IntervalPipe } from '../../util-tool/pipe/interval.pipe'
     ],
     templateUrl: './alert-element.component.html',
     styleUrl: './alert-element.component.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush,
 } )
 export class AlertElementComponent extends GenericElementComponent {
     protected readonly facade: AlertFacade = inject( AlertFacade )

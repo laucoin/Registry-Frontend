@@ -1,5 +1,4 @@
 import {
-    ChangeDetectionStrategy,
     Component,
     computed,
     inject,
@@ -34,7 +33,6 @@ import {AvailabilityStatusEnum} from '../../util-model/enumeration/availability-
 
 @Component({
     selector: 'app-project-profile-element',
-    standalone: true,
     imports: [
         ChipModule,
         ElementCardComponent,
@@ -50,7 +48,6 @@ import {AvailabilityStatusEnum} from '../../util-model/enumeration/availability-
     providers: [ConfirmationService, ProjectProfileFacade],
     templateUrl: './project-profile-element.component.html',
     styleUrl: './project-profile-element.component.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProjectProfileElementComponent extends GenericElementComponent implements OnDestroy {
     protected readonly facade: ProjectProfileFacade = inject(ProjectProfileFacade)

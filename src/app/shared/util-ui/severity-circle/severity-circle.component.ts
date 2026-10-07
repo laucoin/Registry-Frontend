@@ -3,7 +3,6 @@ import { SeverityEnum } from '../../util-model/enumeration/severity.enum'
 
 @Component( {
     selector: 'app-severity-circle',
-    standalone: true,
     templateUrl: './severity-circle.component.html',
     styleUrl: './severity-circle.component.scss',
 } )
