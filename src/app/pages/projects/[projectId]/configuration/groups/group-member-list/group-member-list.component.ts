@@ -1,4 +1,6 @@
-import { Component, inject, OnDestroy } from '@angular/core'
+import { Component, inject, OnDestroy, signal, WritableSignal } from '@angular/core'
+import { GroupModel } from '@shared/models/model/group.model'
+import { withLoading } from '@shared/helpers/util/rx.util'
 import { ParticipantModel } from '@shared/models/model/participant.model'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { PageEventModel } from '@shared/models/model/page-event.model'
@@ -17,7 +19,7 @@ import { RegistryRequiredDirective } from '@shared/directives/registry-required.
 import {
     SelectElementsFieldComponent,
 } from '@shared/ui/select-elements-field/select-elements-field.component'
-import { Subscription, tap } from 'rxjs'
+import { Observable, Subscription, switchMap, tap } from 'rxjs'
 import { FormFieldErrorComponent } from '@shared/ui/form-field-error/form-field-error.component'
 import { Select } from 'primeng/select'
 import { GenericListComponent } from '@shared/ui/base/generic-list.component'
@@ -60,6 +62,9 @@ export class GroupMemberListComponent extends GenericListComponent implements On
 
     private readonly subscriptions: Subscription = new Subscription()
 
+    protected readonly group: WritableSignal<GroupModel | undefined> = signal( undefined )
+    protected readonly groupLoading: WritableSignal<boolean> = signal( false )
+
     protected addMembersForm: FormGroup | undefined
     protected addMembersFormLayerOpened: boolean = false
 
@@ -84,11 +89,21 @@ export class GroupMemberListComponent extends GenericListComponent implements On
 
     protected loadData (): void {
         const id: string | undefined = this.route.snapshot.params['groupId']
-        this.facade.fetchGroup( id! )
+        this.subscriptions.add(
+            this.facade.fetchGroup( id! ).pipe(
+                withLoading( this.groupLoading ),
+            ).subscribe( (group: GroupModel): void => this.group.set( group ) ),
+        )
         this.facade.fetchGroupMembersPage( id!, undefined, undefined, false )
     }
 
     private handleParticipantActions (): void {
+        this.subscriptions.add(
+            this.facade.handleGroupMembersChange().pipe(
+                switchMap( (): Observable<GroupModel> => this.facade.fetchGroup( this.route.snapshot.params['groupId'] ) ),
+            ).subscribe( (group: GroupModel): void => this.group.set( group ) ),
+        )
+
         this.subscriptions.add(
             this.participantFacade.handleParticipantFirstPageReload().pipe(
                 tap( (): void => {
@@ -137,7 +152,7 @@ export class GroupMemberListComponent extends GenericListComponent implements On
             this.visibilitySearched.value,
         )
         this.facade.fetchGroupMembersPage(
-            this.facade.group()!.id,
+            this.route.snapshot.params['groupId'],
             pageEvent.pageNumber,
             pageEvent.pageSize,
             false,
@@ -154,14 +169,12 @@ export class GroupMemberListComponent extends GenericListComponent implements On
             return
         }
 
-        const groupId: string = this.facade.group()!.id
+        const groupId: string = this.route.snapshot.params['groupId']
         const newMemberIds: string[] = this.addMembersParticipants?.value?.map( (item: ParticipantModel): string => item.id ) ?? []
 
         this.subscriptions.add(
             this.facade.addMembersToGroup( groupId, newMemberIds ).subscribe( (): void => {
                 this.addMembersFormLayerOpened = false
-                this.facade.fetchGroup( groupId )
-                this.facade.fetchGroupMembersPage( groupId, undefined, undefined, true )
             } ),
         )
     }

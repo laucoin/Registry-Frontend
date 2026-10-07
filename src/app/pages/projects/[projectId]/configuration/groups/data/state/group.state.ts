@@ -5,25 +5,14 @@ import { GroupModel } from '@shared/models/model/group.model'
 import { GenericProjectElementState } from '@shared/helpers/state/generic-project-element.state'
 import { initialize } from '@shared/helpers/util/rx.util'
 import {
-    AddMembersToGroup,
-    CreateGroup,
-    DeleteGroup,
-    DisableGroup,
-    EnableGroup,
-    FetchGroup,
     FetchGroupMembersPage,
     FetchGroupsPage,
-    RemoveMemberFromGroup,
-    ResetGroup,
     ResetGroupState,
     SearchParticipants,
-    StartGroupLoader,
     StartGroupMembersPageLoader,
     StartGroupsPageLoader,
-    StopGroupLoader,
     StopGroupMembersPageLoader,
     StopGroupsPageLoader,
-    UpdateGroup,
     UpdateGroupMembersPageSearchParams,
     UpdateGroupsPageSearchParams,
 } from '@pages/projects/[projectId]/configuration/groups/data/state/group.action'
@@ -31,25 +20,12 @@ import { GroupService } from '@pages/projects/[projectId]/configuration/groups/d
 import { GroupFacade } from '@pages/projects/[projectId]/configuration/groups/data/state/group.facade'
 import { StateUtil } from '@shared/helpers/state/state.util'
 import { inject, Injectable } from '@angular/core'
-import {
-    ElementRequestInformationModel,
-} from '@shared/models/model/element-request-information.model'
 import { ParticipantModel } from '@shared/models/model/participant.model'
 import { ParticipantUtil } from '@shared/helpers/util/participant.util'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { GenericUtil } from '@shared/helpers/util/generic.util'
-import { AddedGroupMembersDto } from '@shared/models/dto/added-group-members.dto'
-import { PageRequestInformationModel } from '@shared/models/model/page-request-information.model'
-import { ParticipantPageParamsModel } from '@pages/projects/[projectId]/configuration/participants/data/model/participant-page-params.model'
 import { ErrorModel } from '@shared/models/model/error.model'
 import { GroupStateModel } from '@pages/projects/[projectId]/configuration/groups/data/model/group-state.model'
-import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
-import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
-
-const defaultGroup: ElementRequestInformationModel<GroupModel> = {
-    element: undefined,
-    loading: false,
-}
 
 const defaultGroupState: GroupStateModel = {
     groups: {
@@ -78,7 +54,6 @@ const defaultGroupState: GroupStateModel = {
         silentLoading: false,
         error: undefined,
     },
-    group: defaultGroup,
     _metadata: {
         searched: [],
         availabilities: [
@@ -100,11 +75,8 @@ const defaultGroupState: GroupStateModel = {
 } )
 @Injectable()
 export class GroupState extends GenericProjectElementState<GroupStateModel> {
-    private readonly groupIcon: string = 'pi pi-users'
-
     private readonly service: GroupService = inject( GroupService )
     private readonly facade: GroupFacade = inject( GroupFacade )
-    private readonly pluralTranslationPipe: PluralTranslationPipe = inject( PluralTranslationPipe )
 
     @Selector()
     public static groupsPage (state: GroupStateModel): PageModel<GroupModel> | undefined {
@@ -189,16 +161,6 @@ export class GroupState extends GenericProjectElementState<GroupStateModel> {
     @Selector()
     public static groupMembersPageVisibilitySearchedParam (state: GroupStateModel): boolean | undefined {
         return state.members.params.visibilitySearched
-    }
-
-    @Selector()
-    public static group (state: GroupStateModel): GroupModel | undefined {
-        return state.group.element
-    }
-
-    @Selector()
-    public static groupLoading (state: GroupStateModel): boolean {
-        return state.group.loading
     }
 
     @Selector()
@@ -377,41 +339,6 @@ export class GroupState extends GenericProjectElementState<GroupStateModel> {
         } )
     }
 
-    @Action( StartGroupLoader )
-    public startGroupLoader (ctx: StateContext<GroupStateModel>): void {
-        ctx.patchState( {
-            group: StateUtil.updateElementLoader( ctx.getState().group, true ),
-        } )
-    }
-
-    @Action( StopGroupLoader )
-    public stopGroupLoader (ctx: StateContext<GroupStateModel>): void {
-        ctx.patchState( {
-            group: StateUtil.updateElementLoader( ctx.getState().group, false ),
-        } )
-    }
-
-    @Action( FetchGroup )
-    public fetchGroup (ctx: StateContext<GroupStateModel>, payload: FetchGroup): Observable<void> {
-        return this.service.findGroupById( payload.projectId, payload.id ).pipe(
-            initialize( (): void => this.facade.startGroupLoader() ),
-            finalize( (): void => this.facade.stopGroupLoader() ),
-            map( (group: GroupModel): void => this.fetchGroupComplete( ctx, group ) ),
-        )
-    }
-
-    private fetchGroupComplete (
-        ctx: StateContext<GroupStateModel>,
-        group: GroupModel,
-    ): void {
-        ctx.patchState( {
-            group: {
-                ...ctx.getState().group,
-                element: group,
-            },
-        } )
-    }
-
     @Action( SearchParticipants )
     public searchParticipants (
         ctx: StateContext<GroupStateModel>,
@@ -442,258 +369,9 @@ export class GroupState extends GenericProjectElementState<GroupStateModel> {
         } )
     }
 
-    @Action( ResetGroup )
-    public resetGroup (ctx: StateContext<GroupStateModel>): void {
-        ctx.patchState( {
-            group: defaultGroup,
-        } )
-    }
-
-    @Action( CreateGroup )
-    public createGroup (ctx: StateContext<GroupStateModel>, payload: CreateGroup): Observable<void> {
-        return this.service.createGroup( payload.projectId, payload.group ).pipe(
-            initialize( (): void => this.facade.startGroupLoader() ),
-            finalize( (): void => this.facade.stopGroupLoader() ),
-            map( (group: GroupModel): void => this.createGroupComplete(
-                ctx,
-                group,
-            ) ),
-        )
-    }
-
-    private createGroupComplete (
-        ctx: StateContext<GroupStateModel>,
-        group: GroupModel,
-    ): void {
-        this.buildMessageAndNotify(
-            SeverityEnum.SUCCESS,
-            'groups.notifications.create.title',
-            'groups.notifications.create.message',
-            this.groupIcon,
-            this.buildTranslationArgs( group ),
-        )
-        this.refreshPage( ctx )
-    }
-
-    @Action( UpdateGroup )
-    public updateGroup (ctx: StateContext<GroupStateModel>, payload: UpdateGroup): Observable<void> {
-        return this.service.updateGroupById( payload.projectId, payload.id, payload.group ).pipe(
-            initialize( (): void => this.facade.startGroupLoader() ),
-            finalize( (): void => this.facade.stopGroupLoader() ),
-            map( (group: GroupModel): void => this.updateGroupComplete(
-                ctx,
-                group,
-            ) ),
-        )
-    }
-
-    private updateGroupComplete (
-        ctx: StateContext<GroupStateModel>,
-        group: GroupModel,
-    ): void {
-        this.buildMessageAndNotify(
-            SeverityEnum.SUCCESS,
-            'groups.notifications.edit.title',
-            'groups.notifications.edit.message',
-            this.groupIcon,
-            this.buildTranslationArgs( group ),
-        )
-        this.refreshPage( ctx )
-    }
-
-    @Action( AddMembersToGroup )
-    public addMembersToGroup (ctx: StateContext<GroupStateModel>, payload: AddMembersToGroup): Observable<void> {
-        return this.service.addMembersToGroupById( payload.projectId, payload.id, payload.memberIds ).pipe(
-            initialize( (): void => this.facade.startGroupLoader() ),
-            finalize( (): void => this.facade.stopGroupLoader() ),
-            map( (response: AddedGroupMembersDto): void => this.addMembersToGroupComplete(
-                ctx,
-                payload.memberIds.length,
-                response.members,
-            ) ),
-        )
-    }
-
-    private addMembersToGroupComplete (
-        ctx: StateContext<GroupStateModel>,
-        asked: number,
-        members: string[],
-    ): void {
-        if (asked != members.length) {
-            const prefixKey: string = 'groups.notifications.partial-add-member'
-            this.buildMessageAndNotify(
-                SeverityEnum.WARNING,
-                this.pluralTranslationPipe.transform(
-                    prefixKey + '.title',
-                    members.length,
-                ),
-                this.pluralTranslationPipe.transform(
-                    prefixKey + '.message',
-                    members.length,
-                ),
-                'pi pi-user-plus',
-                {
-                    asked: asked,
-                    added: members.length,
-                },
-            )
-        } else {
-            const prefixKey: string = 'groups.notifications.add-member'
-            this.buildMessageAndNotify(
-                SeverityEnum.SUCCESS,
-                this.pluralTranslationPipe.transform(
-                    prefixKey + '.title',
-                    members.length,
-                ),
-                this.pluralTranslationPipe.transform(
-                    prefixKey + '.message',
-                    members.length,
-                ),
-                'pi pi-user-plus',
-                {
-                    added: members.length,
-                },
-            )
-        }
-        this.refreshGroupMembers( ctx )
-    }
-
-    @Action( RemoveMemberFromGroup )
-    public removeMemberFromGroup (
-        ctx: StateContext<GroupStateModel>,
-        payload: RemoveMemberFromGroup,
-    ): Observable<void> {
-        return this.service.removeMemberFromGroupById( payload.projectId, payload.id, payload.participant.id ).pipe(
-            initialize( (): void => this.facade.startGroupLoader() ),
-            finalize( (): void => this.facade.stopGroupLoader() ),
-            map( (group: GroupModel): void => this.removeMemberFromGroupComplete(
-                ctx,
-                group,
-                payload.participant,
-            ) ),
-        )
-    }
-
-    private removeMemberFromGroupComplete (
-        ctx: StateContext<GroupStateModel>,
-        group: GroupModel,
-        participant: ParticipantModel,
-    ): void {
-        this.buildMessageAndNotify(
-            SeverityEnum.SUCCESS,
-            'groups.notifications.remove-member.title',
-            'groups.notifications.remove-member.message',
-            'pi pi-user-minus',
-            {
-                ...this.buildTranslationArgs( group ),
-                firstName: participant.firstName,
-                lastName: participant.lastName,
-            },
-        )
-        this.refreshGroupMembers( ctx )
-    }
-
-    @Action( DisableGroup )
-    public disableGroup (
-        ctx: StateContext<GroupStateModel>,
-        payload: DisableGroup,
-    ): Observable<void> {
-        return this.service.disableGroupById( payload.projectId, payload.id ).pipe(
-            initialize( (): void => this.facade.startGroupLoader() ),
-            finalize( (): void => this.facade.stopGroupLoader() ),
-            map( (group: GroupModel): void => this.disableGroupComplete(
-                ctx,
-                group,
-            ) ),
-        )
-    }
-
-    private disableGroupComplete (
-        ctx: StateContext<GroupStateModel>,
-        group: GroupModel,
-    ): void {
-        this.buildMessageAndNotify(
-            SeverityEnum.SUCCESS,
-            'groups.notifications.disable.title',
-            'groups.notifications.disable.message',
-            this.groupIcon,
-            this.buildTranslationArgs( group ),
-        )
-        this.refreshPage( ctx )
-    }
-
-    @Action( EnableGroup )
-    public enableGroup (ctx: StateContext<GroupStateModel>, payload: EnableGroup): Observable<void> {
-        return this.service.enableGroupById( payload.projectId, payload.id ).pipe(
-            initialize( (): void => this.facade.startGroupLoader() ),
-            finalize( (): void => this.facade.stopGroupLoader() ),
-            map( (group: GroupModel): void => this.enableGroupComplete(
-                ctx,
-                group,
-            ) ),
-        )
-    }
-
-    private enableGroupComplete (
-        ctx: StateContext<GroupStateModel>,
-        group: GroupModel,
-    ): void {
-        this.buildMessageAndNotify(
-            SeverityEnum.SUCCESS,
-            'groups.notifications.enable.title',
-            'groups.notifications.enable.message',
-            this.groupIcon,
-            this.buildTranslationArgs( group ),
-        )
-        this.refreshPage( ctx )
-    }
-
-    @Action( DeleteGroup )
-    public deleteGroup (ctx: StateContext<GroupStateModel>, payload: DeleteGroup): Observable<void> {
-        return this.service.deleteGroupById( undefined, payload.group.id ).pipe(
-            initialize( (): void => this.facade.startGroupLoader() ),
-            finalize( (): void => this.facade.stopGroupLoader() ),
-            map( (): void => this.deleteGroupComplete(
-                ctx,
-                payload.group,
-            ) ),
-        )
-    }
-
-    private deleteGroupComplete (
-        ctx: StateContext<GroupStateModel>,
-        group: GroupModel,
-    ): void {
-        this.buildMessageAndNotify(
-            SeverityEnum.SUCCESS,
-            'groups.notifications.delete.title',
-            'groups.notifications.delete.message',
-            this.groupIcon,
-            this.buildTranslationArgs( group ),
-        )
-        this.refreshPage( ctx )
-    }
-
-    private buildTranslationArgs (group: GroupModel): object {
-        return { name: group?.name }
-    }
-
     protected refreshPage (ctx: StateContext<GroupStateModel>): void {
         const page: PageModel<GroupModel> | undefined = ctx.getState().groups.element
         this.facade.fetchGroupsPage( page?.pageNumber, page?.pageSize, true )
-    }
-
-    protected refreshGroupMembers (ctx: StateContext<GroupStateModel>): void {
-        const pageInformation: PageRequestInformationModel<ParticipantPageParamsModel, ParticipantModel> & {
-            groupId: string | undefined
-        } = ctx.getState().members
-        this.facade.fetchGroupMembersPage(
-            pageInformation.groupId!,
-            pageInformation.element?.pageNumber,
-            pageInformation.element?.pageSize,
-            true,
-        )
-        this.facade.fetchGroup( pageInformation.groupId! )
     }
 
     protected pageError (ctx: StateContext<GroupStateModel>, error: ErrorModel): Observable<void> {

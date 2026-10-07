@@ -1,8 +1,5 @@
 import { GroupPageParamsModel } from '@pages/projects/[projectId]/configuration/groups/data/model/group-page-params.model'
 import { PageRequestInformationModel } from '@shared/models/model/page-request-information.model'
-import {
-    ElementRequestInformationModel,
-} from '@shared/models/model/element-request-information.model'
 import { GroupModel } from '@shared/models/model/group.model'
 import { ParticipantModel } from '@shared/models/model/participant.model'
 import { SelectItem } from 'primeng/api'
@@ -11,7 +8,6 @@ import { ParticipantPageParamsModel } from '@pages/projects/[projectId]/configur
 export interface GroupStateModel {
     groups: PageRequestInformationModel<GroupPageParamsModel, GroupModel>
     members: PageRequestInformationModel<ParticipantPageParamsModel, ParticipantModel> & { groupId: string | undefined }
-    group: ElementRequestInformationModel<GroupModel>
     _metadata: {
         searched: SelectItem<ParticipantModel>[]
         availabilities: SelectItem<boolean | undefined>[]

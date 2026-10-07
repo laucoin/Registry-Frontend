@@ -14,14 +14,24 @@ export abstract class GenericProjectElementFacade extends GenericFacade {
         return this.ngStore.selectSignal( RegistryState.currentUserSelectedProjectId )
     }
 
+    protected notifyMessage (
+        severity: SeverityEnum,
+        summary: string,
+        detail: string,
+        icon: string,
+        data: object,
+    ): void {
+        this.registryFacade.notify( StateUtil.buildNotificationMessage( severity, summary, detail, icon, data ) )
+    }
+
     protected notifySuccess (translationPrefix: string, icon: string, data: object): void {
-        this.registryFacade.notify( StateUtil.buildNotificationMessage(
+        this.notifyMessage(
             SeverityEnum.SUCCESS,
             `${ translationPrefix }.title`,
             `${ translationPrefix }.message`,
             icon,
             data,
-        ) )
+        )
     }
 
     protected onCommandSucceeded (

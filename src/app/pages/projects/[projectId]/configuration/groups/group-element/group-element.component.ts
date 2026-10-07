@@ -63,8 +63,8 @@ export class GroupElementComponent extends GenericElementComponent {
         {
             label: 'groups.actions.disable',
             icon: 'pi pi-eye-slash',
-            disabled: !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_U ),
-            visible: this.actionIsEnable( ElementActionEnum.GROUP_DISABLE ) && this.group().visible,
+            disabled: this.busy() || !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_U ),
+            visible: this.actionIsEnable(ElementActionEnum.GROUP_DISABLE ) && this.group().visible,
             command: (): void => {
                 this.confirmationService.confirm(
                     this.buildConfirmation(
@@ -72,7 +72,7 @@ export class GroupElementComponent extends GenericElementComponent {
                         'pi pi-exclamation-triangle',
                         this.group(),
                         SeverityEnum.WARNING,
-                        (): void => this.facade.disableGroup( this.group().id ),
+                        (): void => this.run(this.facade.disableGroup(this.group().id)),
                     ),
                 )
             },
@@ -80,8 +80,8 @@ export class GroupElementComponent extends GenericElementComponent {
         {
             label: 'groups.actions.enable',
             icon: 'pi pi-replay',
-            disabled: !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_U ),
-            visible: this.actionIsEnable( ElementActionEnum.GROUP_ENABLE ) && !this.group().visible,
+            disabled: this.busy() || !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_U ),
+            visible: this.actionIsEnable(ElementActionEnum.GROUP_ENABLE ) && !this.group().visible,
             command: (): void => {
                 this.confirmationService.confirm(
                     this.buildConfirmation(
@@ -89,7 +89,7 @@ export class GroupElementComponent extends GenericElementComponent {
                         'pi pi-info-circle',
                         this.group(),
                         SeverityEnum.INFO,
-                        (): void => this.facade.enableGroup( this.group().id ),
+                        (): void => this.run(this.facade.enableGroup(this.group().id)),
                     ),
                 )
             },
@@ -97,8 +97,8 @@ export class GroupElementComponent extends GenericElementComponent {
         {
             label: 'groups.actions.delete',
             icon: 'pi pi-trash',
-            disabled: !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_D ),
-            visible: this.actionIsEnable( ElementActionEnum.GROUP_DELETE ),
+            disabled: this.busy() || !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_D ),
+            visible: this.actionIsEnable(ElementActionEnum.GROUP_DELETE ),
             command: (): void => {
                 this.confirmationService.confirm(
                     this.buildConfirmation(
@@ -106,7 +106,7 @@ export class GroupElementComponent extends GenericElementComponent {
                         'pi pi-exclamation-triangle',
                         this.group(),
                         SeverityEnum.DANGER,
-                        (): void => this.facade.deleteGroup( this.group() ),
+                        (): void => this.run(this.facade.deleteGroup(this.group())),
                     ),
                 )
             },

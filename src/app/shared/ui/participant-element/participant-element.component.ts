@@ -119,7 +119,7 @@ export class ParticipantElementComponent extends GenericElementComponent {
         {
             label: 'participants.actions.remove-member',
             icon: 'pi pi-user-minus',
-            disabled: !this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_U),
+            disabled: this.busy() || !this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_U),
             visible: this.actionIsEnable(ElementActionEnum.PARTICIPANT_REMOVE_FROM_GROUP) && GenericUtil.nonNull(this.groupIdToRemove()),
             command: (): void => {
                 this.confirmationService.confirm(
@@ -128,10 +128,10 @@ export class ParticipantElementComponent extends GenericElementComponent {
                         'pi pi-exclamation-triangle',
                         this.participant(),
                         SeverityEnum.WARNING,
-                        (): void => this.groupFacade.removeMemberFromGroup(
+                        (): void => this.run(this.groupFacade.removeMemberFromGroup(
                             this.groupIdToRemove()!,
                             this.participant(),
-                        ),
+                        )),
                     ),
                 )
             },

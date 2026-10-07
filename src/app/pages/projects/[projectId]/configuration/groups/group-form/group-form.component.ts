@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy } from '@angular/core'
+import { Component, inject, OnDestroy, signal, WritableSignal } from '@angular/core'
 import { GroupModel } from '@shared/models/model/group.model'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { FormUtil } from '@shared/helpers/util/form.util'
@@ -21,8 +21,7 @@ import { ParticipantUtil } from '@shared/helpers/util/participant.util'
 import { ProjectModel } from '@shared/models/model/project.model'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
 import { GenericFormComponent } from '@shared/ui/base/generic-form.component'
-import { map, Observable } from 'rxjs'
-import { CreateGroup, UpdateGroup } from '@pages/projects/[projectId]/configuration/groups/data/state/group.action'
+import { withLoading } from '@shared/helpers/util/rx.util'
 import { FormTitlePipe } from '@shared/helpers/pipe/form-title.pipe'
 import { FormButtonPipe } from '@shared/helpers/pipe/form-button.pipe'
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
@@ -59,6 +58,7 @@ export class GroupFormComponent extends GenericFormComponent<GroupModel, GroupDt
     protected readonly ParticipantUtil: typeof ParticipantUtil = ParticipantUtil
 
     protected readonly form: FormGroup
+    protected readonly group: WritableSignal<GroupModel | undefined> = signal( undefined )
 
     public constructor () {
         super()
@@ -71,10 +71,15 @@ export class GroupFormComponent extends GenericFormComponent<GroupModel, GroupDt
     }
 
     protected override loadData (): void {
-        this.facade.resetGroup()
-
         if (GenericUtil.nonNull( this.idParam )) {
-            this.facade.fetchGroup( this.idParam! )
+            this.subscriptions.add(
+                this.facade.fetchGroup( this.idParam! ).pipe(
+                    withLoading( this.loading ),
+                ).subscribe( (group: GroupModel): void => {
+                    this.group.set( group )
+                    this.applyGroup( group )
+                } ),
+            )
         }
     }
 
@@ -93,16 +98,16 @@ export class GroupFormComponent extends GenericFormComponent<GroupModel, GroupDt
     }
 
     protected handleLoadedElement (): void {
-        this.subscriptions.add(
-            this.facade.group$.pipe(
-                map( (group: GroupModel | undefined): void => {
-                    const contextProject: ProjectModel | undefined = group?.project || this.registryFacade.selectedProject()
-                    this.addProjectDateValidators( contextProject, this.beginDateTime )
-                    this.addProjectDateValidators( contextProject, this.endDateTime )
-                    this.fillForm( group )
-                } ),
-            ).subscribe(),
-        )
+        if (!GenericUtil.nonNull( this.idParam )) {
+            this.applyGroup( undefined )
+        }
+    }
+
+    private applyGroup (group: GroupModel | undefined): void {
+        const contextProject: ProjectModel | undefined = group?.project || this.registryFacade.selectedProject()
+        this.addProjectDateValidators( contextProject, this.beginDateTime )
+        this.addProjectDateValidators( contextProject, this.endDateTime )
+        this.fillForm( group )
     }
 
     protected fillForm (element: GroupModel | undefined): void {
@@ -115,22 +120,18 @@ export class GroupFormComponent extends GenericFormComponent<GroupModel, GroupDt
     }
 
     protected submit (): void {
+        if (this.saving() || this.loading()) return
+
+        const editing: boolean = GenericUtil.nonNull( this.idParam )
+        if (editing && !this.group()) return
+
         if (!FormUtil.isFormValid( this.form )) {
             this.logInvalidForm( this.form.value )
             return
         }
 
         const dto: GroupDto = this.buildDto()
-        const observable: Observable<CreateGroup | UpdateGroup> =
-            this.facade.group()
-            ? this.facade.updateGroup( this.facade.group()!.id!, dto )
-            : this.facade.createGroup( dto )
-
-        this.subscriptions.add(
-            observable.pipe(
-                map( (): void => this.navigateToRedirectUri() ),
-            ).subscribe(),
-        )
+        this.save( editing ? this.facade.updateGroup( this.group()!.id, dto ) : this.facade.createGroup( dto ) )
     }
 
     protected buildDto (): GroupDto {

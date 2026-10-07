@@ -1,6 +1,7 @@
 <app-form [form]='form'
-          [loading]='facade.groupLoading()'
-          [title]='"groups.form.title" | formTitle: facade.group() | translate: { name: facade.group()?.name }'>
+          [loading]='loading()'
+          [error]='error()'
+          [title]='"groups.form.title" | formTitle: group() | translate: { name: group()?.name }'>
     <p-card>
         <div class='field'>
             <label for='name' appRequired>{{ 'groups.form.name' | translate }}</label>
@@ -80,10 +81,11 @@
         <p-button
                 class='ms-2'
                 (onClick)='submit()'
-                [label]='facade.group() | formButton | translate'
+                [label]='group() | formButton | translate'
                 rounded
                 outlined
-                [icon]='facade.group() | formIcon'
+                [icon]='group() | formIcon'
+                [disabled]='saving()'
                 severity='success' />
     </div>
 </app-form>

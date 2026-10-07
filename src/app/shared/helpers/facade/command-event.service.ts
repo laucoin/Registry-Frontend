@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core'
 import { filter, Observable, Subject } from 'rxjs'
 
-export type CommandEvent = 'create' | 'update' | 'disable' | 'enable' | 'delete'
+export type CommandEvent = 'create' | 'update' | 'disable' | 'enable' | 'delete' | 'members'
 
 interface CommandEventMessage {
     scope: string

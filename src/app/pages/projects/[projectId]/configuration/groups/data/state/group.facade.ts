@@ -1,29 +1,17 @@
-import { computed, Injectable, Signal } from '@angular/core'
-import { Observable } from 'rxjs'
+import { computed, inject, Injectable, Signal } from '@angular/core'
+import { Observable, tap } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
 import { GenericProjectElementFacade } from '@shared/helpers/facade/generic-project-element.facade'
 import { GroupDto } from '@pages/projects/[projectId]/configuration/groups/data/dto/group.dto'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
-import { ofActionSuccessful } from '@ngxs/store'
 import {
-    AddMembersToGroup,
-    CreateGroup,
-    DeleteGroup,
-    DisableGroup,
-    EnableGroup,
-    FetchGroup,
     FetchGroupMembersPage,
     FetchGroupsPage,
-    RemoveMemberFromGroup,
-    ResetGroup,
     SearchParticipants,
-    StartGroupLoader,
     StartGroupMembersPageLoader,
     StartGroupsPageLoader,
-    StopGroupLoader,
     StopGroupMembersPageLoader,
     StopGroupsPageLoader,
-    UpdateGroup,
     UpdateGroupMembersPageSearchParams,
     UpdateGroupsPageSearchParams,
 } from '@pages/projects/[projectId]/configuration/groups/data/state/group.action'
@@ -31,9 +19,18 @@ import { ParticipantModel } from '@shared/models/model/participant.model'
 import { GroupModel } from '@shared/models/model/group.model'
 import { GroupState } from '@pages/projects/[projectId]/configuration/groups/data/state/group.state'
 import { DateUtil } from '@shared/helpers/util/date.util'
+import { GroupService } from '@pages/projects/[projectId]/configuration/groups/data/state/group.service'
+import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/util/rx.util'
+import { CommandEvent } from '@shared/helpers/facade/command-event.service'
+import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
+import { AddedGroupMembersDto } from '@shared/models/dto/added-group-members.dto'
+import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
 
 @Injectable()
 export class GroupFacade extends GenericProjectElementFacade {
+    private readonly service: GroupService = inject( GroupService )
+    private readonly pluralTranslationPipe: PluralTranslationPipe = inject( PluralTranslationPipe )
+
     public get groupsPage (): Signal<PageModel<GroupModel> | undefined> {
         return this.ngStore.selectSignal( GroupState.groupsPage )
     }
@@ -102,18 +99,6 @@ export class GroupFacade extends GenericProjectElementFacade {
 
     public get groupMembersPageVisibilitySearchedParam (): Signal<boolean | undefined> {
         return this.ngStore.selectSignal( GroupState.groupMembersPageVisibilitySearchedParam )
-    }
-
-    public get group (): Signal<GroupModel | undefined> {
-        return this.ngStore.selectSignal( GroupState.group )
-    }
-
-    public get group$ (): Observable<GroupModel | undefined> {
-        return this.ngStore.select( GroupState.group )
-    }
-
-    public get groupLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( GroupState.groupLoading )
     }
 
     public get searchedParticipantsMetadata (): Signal<SelectItem<ParticipantModel>[]> {
@@ -214,74 +199,100 @@ export class GroupFacade extends GenericProjectElementFacade {
         }
     }
 
-    public addMembersToGroup (
-        id: string,
-        memberIds: string[],
-    ): Observable<AddMembersToGroup> {
-        this.ngStore.dispatch( new AddMembersToGroup( this.selectedProjectId(), id, memberIds ) )
-
-        return this.actions$.pipe( ofActionSuccessful( AddMembersToGroup ) )
-    }
-
-    public removeMemberFromGroup (
-        id: string,
-        participant: ParticipantModel,
-    ): void {
-        this.ngStore.dispatch( new RemoveMemberFromGroup( this.selectedProjectId(), id, participant ) )
-    }
-
-    public startGroupLoader (): void {
-        this.ngStore.dispatch( StartGroupLoader )
-    }
-
-    public stopGroupLoader (): void {
-        this.ngStore.dispatch( StopGroupLoader )
-    }
-
-    public fetchGroup (id: string): void {
-        this.ngStore.dispatch( new FetchGroup( this.selectedProjectId(), id ) )
-    }
-
     public searchParticipants (
         textSearched: string | undefined = undefined,
     ): void {
         this.ngStore.dispatch( new SearchParticipants( this.selectedProjectId(), textSearched ) )
     }
 
-    public resetGroup (): void {
-        this.ngStore.dispatch( ResetGroup )
+    public fetchGroup (id: string): Observable<GroupModel> {
+        return this.service.findGroupById( this.selectedProjectId(), id ).pipe(
+            notifyOnError( this.registryFacade ),
+        )
     }
 
-    public createGroup (
-        group: GroupDto,
-    ): Observable<CreateGroup> {
-        this.ngStore.dispatch( new CreateGroup( this.selectedProjectId(), group ) )
-        return this.actions$.pipe( ofActionSuccessful( CreateGroup ) )
+    public createGroup (group: GroupDto): Observable<GroupModel> {
+        return this.service.createGroup( this.selectedProjectId(), group ).pipe(
+            notifyUnavailableOnly( this.registryFacade ),
+            tap( (created: GroupModel): void => this.onCommandSuccess( 'create', created ) ),
+        )
     }
 
-    public updateGroup (
-        id: string,
-        group: GroupDto,
-    ): Observable<UpdateGroup> {
-        this.ngStore.dispatch( new UpdateGroup( this.selectedProjectId(), id, group ) )
-        return this.actions$.pipe( ofActionSuccessful( UpdateGroup ) )
+    public updateGroup (id: string, group: GroupDto): Observable<GroupModel> {
+        return this.service.updateGroupById( this.selectedProjectId(), id, group ).pipe(
+            notifyUnavailableOnly( this.registryFacade ),
+            tap( (updated: GroupModel): void => this.onCommandSuccess( 'update', updated ) ),
+        )
     }
 
-    public disableGroup (
-        id: string,
-    ): void {
-        this.ngStore.dispatch( new DisableGroup( this.selectedProjectId(), id ) )
+    public disableGroup (id: string): Observable<GroupModel> {
+        return this.service.disableGroupById( this.selectedProjectId(), id ).pipe(
+            notifyOnError( this.registryFacade ),
+            tap( (disabled: GroupModel): void => this.onCommandSuccess( 'disable', disabled ) ),
+        )
     }
 
-    public enableGroup (
-        id: string,
-    ): void {
-        this.ngStore.dispatch( new EnableGroup( this.selectedProjectId(), id ) )
+    public enableGroup (id: string): Observable<GroupModel> {
+        return this.service.enableGroupById( this.selectedProjectId(), id ).pipe(
+            notifyOnError( this.registryFacade ),
+            tap( (enabled: GroupModel): void => this.onCommandSuccess( 'enable', enabled ) ),
+        )
     }
 
-    public deleteGroup (
-        group: GroupModel,
-    ): void {
-        this.ngStore.dispatch( new DeleteGroup( this.selectedProjectId(), group ) )
+    public deleteGroup (group: GroupModel): Observable<void> {
+        return this.service.deleteGroupById( undefined, group.id ).pipe(
+            notifyOnError( this.registryFacade ),
+            tap( (): void => this.onCommandSuccess( 'delete', group ) ),
+        )
+    }
+
+    private onCommandSuccess (command: CommandEvent, group: GroupModel): void {
+        this.onCommandSucceeded( 'group', command, 'groups.notifications', 'pi pi-users', { name: group?.name } )
+
+        const page: PageModel<GroupModel> | undefined = this.groupsPage()
+        this.fetchGroupsPage( page?.pageNumber, page?.pageSize, true )
+    }
+
+    public addMembersToGroup (id: string, memberIds: string[]): Observable<AddedGroupMembersDto> {
+        return this.service.addMembersToGroupById( this.selectedProjectId(), id, memberIds ).pipe(
+            notifyOnError( this.registryFacade ),
+            tap( (response: AddedGroupMembersDto): void => {
+                const added: number = response.members.length
+                const partial: boolean = memberIds.length != added
+                const prefixKey: string = partial ? 'groups.notifications.partial-add-member' : 'groups.notifications.add-member'
+                this.notifyMessage(
+                    partial ? SeverityEnum.WARNING : SeverityEnum.SUCCESS,
+                    this.pluralTranslationPipe.transform( prefixKey + '.title', added ),
+                    this.pluralTranslationPipe.transform( prefixKey + '.message', added ),
+                    'pi pi-user-plus',
+                    partial ? { asked: memberIds.length, added: added } : { added: added },
+                )
+                this.onMembersChanged( id )
+            } ),
+        )
+    }
+
+    public removeMemberFromGroup (id: string, participant: ParticipantModel): Observable<GroupModel> {
+        return this.service.removeMemberFromGroupById( this.selectedProjectId(), id, participant.id ).pipe(
+            notifyOnError( this.registryFacade ),
+            tap( (group: GroupModel): void => {
+                this.notifySuccess( 'groups.notifications.remove-member', 'pi pi-user-minus', {
+                    name: group?.name,
+                    firstName: participant.firstName,
+                    lastName: participant.lastName,
+                } )
+                this.onMembersChanged( id )
+            } ),
+        )
+    }
+
+    public handleGroupMembersChange (): Observable<unknown> {
+        return this.commandEvents.on( 'group', 'members' )
+    }
+
+    private onMembersChanged (id: string): void {
+        const page: PageModel<ParticipantModel> | undefined = this.groupMembersPage()
+        this.fetchGroupMembersPage( id, page?.pageNumber, page?.pageSize, true )
+        this.commandEvents.emit( 'group', 'members' )
     }
 }

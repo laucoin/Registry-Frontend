@@ -1,6 +1,3 @@
-import { GroupDto } from '@pages/projects/[projectId]/configuration/groups/data/dto/group.dto'
-import { GroupModel } from '@shared/models/model/group.model'
-import { ParticipantModel } from '@shared/models/model/participant.model'
 import { ParticipantPageParamsModel } from '@pages/projects/[projectId]/configuration/participants/data/model/participant-page-params.model'
 import { GroupPageParamsModel } from '@pages/projects/[projectId]/configuration/groups/data/model/group-page-params.model'
 
@@ -19,19 +16,8 @@ enum GroupActionEnum {
     FETCH_GROUP_MEMBERS_PAGE = '[Backend] Fetching group members\' page',
     UPDATE_GROUP_MEMBERS_PAGE_SEARCH_PARAMS = '[Local] Updating group members\' page search params',
 
-    START_GROUP_LOADER = '[Local] Starting group loader',
-    STOP_GROUP_LOADER = '[Local] Stopping group loader',
 
-    FETCH_GROUP = '[Backend] Fetching Group',
-    RESET_GROUP = '[Local] Resetting Group',
     SEARCH_PARTICIPANTS = '[Backend] Searching participants to add in a group',
-    CREATE_GROUP = '[Backend] Creating Group',
-    UPDATE_GROUP = '[Backend] Updating Group',
-    ADD_MEMBERS_TO_GROUP = '[Backend] Adding members to group',
-    REMOVE_MEMBER_FROM_GROUP = '[Backend] Removing member from group',
-    DISABLE_GROUP = '[Backend] Disabling Group',
-    ENABLE_GROUP = '[Backend] Enabling Group',
-    DELETE_GROUP = '[Backend] Deleting Group',
 }
 
 export class ResetGroupState {
@@ -89,24 +75,6 @@ export class UpdateGroupMembersPageSearchParams {
     public constructor (public readonly params: ParticipantPageParamsModel) {}
 }
 
-export class StartGroupLoader {
-    public static readonly type: GroupActionEnum = GroupActionEnum.START_GROUP_LOADER
-}
-
-export class StopGroupLoader {
-    public static readonly type: GroupActionEnum = GroupActionEnum.STOP_GROUP_LOADER
-}
-
-export class FetchGroup {
-    public static readonly type: GroupActionEnum = GroupActionEnum.FETCH_GROUP
-
-    public constructor (public readonly projectId: string | undefined, public readonly id: string) {}
-}
-
-export class ResetGroup {
-    public static readonly type: GroupActionEnum = GroupActionEnum.RESET_GROUP
-}
-
 export class SearchParticipants {
     public static readonly type: GroupActionEnum = GroupActionEnum.SEARCH_PARTICIPANTS
 
@@ -114,58 +82,4 @@ export class SearchParticipants {
         public readonly projectId: string | undefined,
         public readonly textSearched: string | undefined,
     ) {}
-}
-
-export class CreateGroup {
-    public static readonly type: GroupActionEnum = GroupActionEnum.CREATE_GROUP
-
-    public constructor (public readonly projectId: string | undefined, public readonly group: GroupDto) {}
-}
-
-export class UpdateGroup {
-    public static readonly type: GroupActionEnum = GroupActionEnum.UPDATE_GROUP
-
-    public constructor (
-        public readonly projectId: string | undefined,
-        public readonly id: string,
-        public readonly group: GroupDto,
-    ) {}
-}
-
-export class AddMembersToGroup {
-    public static readonly type: GroupActionEnum = GroupActionEnum.ADD_MEMBERS_TO_GROUP
-
-    public constructor (
-        public readonly projectId: string | undefined,
-        public readonly id: string,
-        public readonly memberIds: string[],
-    ) {}
-}
-
-export class RemoveMemberFromGroup {
-    public static readonly type: GroupActionEnum = GroupActionEnum.REMOVE_MEMBER_FROM_GROUP
-
-    public constructor (
-        public readonly projectId: string | undefined,
-        public readonly id: string,
-        public readonly participant: ParticipantModel,
-    ) {}
-}
-
-export class DisableGroup {
-    public static readonly type: GroupActionEnum = GroupActionEnum.DISABLE_GROUP
-
-    public constructor (public readonly projectId: string | undefined, public readonly id: string) {}
-}
-
-export class EnableGroup {
-    public static readonly type: GroupActionEnum = GroupActionEnum.ENABLE_GROUP
-
-    public constructor (public readonly projectId: string | undefined, public readonly id: string) {}
-}
-
-export class DeleteGroup {
-    public static readonly type: GroupActionEnum = GroupActionEnum.DELETE_GROUP
-
-    public constructor (public readonly projectId: string | undefined, public readonly group: GroupModel) {}
 }
