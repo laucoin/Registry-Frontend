@@ -57,7 +57,6 @@ import {
     FetchParticipantTypes,
     ResetMovementState,
 } from '@pages/projects/[projectId]/movements/data/state/movement.action'
-import {ResetActivityState} from '@pages/projects/[projectId]/configuration/activities/data/state/activity.action'
 import {ResetCommunicationState} from '@pages/projects/[projectId]/movements/communication/data/state/communication.action'
 import {
     FetchParticipantPresencesStatus,
@@ -411,7 +410,6 @@ export class RegistryFacade extends GenericFacade {
         this.ngStore.dispatch([
             new ResetSelectedProjectState(),
             new ResetMovementState(),
-            new ResetActivityState(),
             new ResetCommunicationState(),
             new ResetParticipantState(),
             new SetCurrentProject(projectId),
@@ -435,7 +433,6 @@ export class RegistryFacade extends GenericFacade {
         this.ngStore.dispatch([
             new ResetSelectedProjectState(),
             new ResetMovementState(),
-            new ResetActivityState(),
             new ResetCommunicationState(),
             new ResetParticipantState(),
             new CreateSupportProjectProfile(projectId),

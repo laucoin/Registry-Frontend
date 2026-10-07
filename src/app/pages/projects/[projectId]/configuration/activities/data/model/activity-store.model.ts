@@ -8,7 +8,7 @@ import { SelectItem } from 'primeng/api'
 export interface ActivityStoreModel {
     activities: PageRequestInformationModel<ActivityPageParamsModel, ActivityModel>
     movements: PageRequestInformationModel<MovementPageParamsModel, MovementModel>
-    _metadata: {
+    metadata: {
         availabilities: SelectItem<boolean | undefined>[],
         visibilities: SelectItem<boolean | undefined>[],
     }

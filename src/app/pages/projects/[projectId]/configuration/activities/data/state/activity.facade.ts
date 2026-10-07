@@ -3,17 +3,6 @@ import { Observable, tap } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
 import { ActivityModel } from '@shared/models/model/activity.model'
 import { ActivityDto } from '@pages/projects/[projectId]/configuration/activities/data/dto/activity.dto'
-import {
-    FetchActivitiesPage,
-    FetchActivityMovementsContents,
-    FetchActivityMovementsPage,
-    StartActivitiesPageLoader,
-    StartActivityMovementsPageLoader,
-    StopActivitiesPageLoader,
-    StopActivityMovementsPageLoader,
-    UpdateActivitiesPageSearchParams,
-    UpdateActivityMovementsPageSearchParams,
-} from '@pages/projects/[projectId]/configuration/activities/data/state/activity.action'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { ActivityStore } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.store'
 import { GenericProjectElementFacade } from '@shared/helpers/facade/generic-project-element.facade'
@@ -26,121 +15,52 @@ import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/rx.helper'
 export class ActivityFacade extends GenericProjectElementFacade {
     private readonly api: ActivityApi = inject( ActivityApi )
 
-    public get activitiesPage (): Signal<PageModel<ActivityModel> | undefined> {
-        return this.ngStore.selectSignal( ActivityStore.activitiesPage )
-    }
+    private readonly store: InstanceType<typeof ActivityStore> = inject( ActivityStore )
 
-    public get activitiesPageLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( ActivityStore.activitiesPageLoading )
-    }
+    public readonly activitiesPage: Signal<PageModel<ActivityModel> | undefined> = this.store.activities.element
+    public readonly activitiesPageLoading: Signal<boolean> = this.store.activities.loading
+    public readonly activitiesPageSilentLoading: Signal<boolean> = this.store.activities.silentLoading
+    public readonly activitiesPageError: Signal<ToastMessageOptions | undefined> = this.store.activities.error
+    private readonly activitiesPageResetSearch: Signal<boolean> = this.store.activities.params.resetSearch
+    public readonly activitiesPageTextSearchedParam: Signal<string | undefined> = this.store.activities.params.textSearched
+    public readonly activitiesPageDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
+        DateHelper.buildDate( this.store.activities.params.dateTimeSearched() ),
+    )
+    public readonly activitiesPageAvailabilitySearchedParam: Signal<boolean | undefined> = this.store.activities.params.availabilitySearched
+    public readonly activitiesPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.activities.params.visibilitySearched
 
-    public get activitiesPageSilentLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( ActivityStore.activitiesPageSilentLoading )
-    }
+    public readonly activityMovementsPage: Signal<PageModel<MovementModel> | undefined> = this.store.movements.element
+    public readonly activityMovementsPageLoading: Signal<boolean> = this.store.movements.loading
+    public readonly activityMovementsPageSilentLoading: Signal<boolean> = this.store.movements.silentLoading
+    public readonly activityMovementsPageError: Signal<ToastMessageOptions | undefined> = this.store.movements.error
+    public readonly activityMovementsPageResetSearch: Signal<boolean> = this.store.movements.params.resetSearch
+    public readonly activityMovementsPageTypeSearchedParam: Signal<string | undefined> = this.store.movements.params.typeSearched
+    public readonly activityMovementsPageStartDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
+        DateHelper.buildDate( this.store.movements.params.startDateTimeSearched() ),
+    )
+    public readonly activityMovementsPageEndDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
+        DateHelper.buildDate( this.store.movements.params.endDateTimeSearched() ),
+    )
+    public readonly activityMovementsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.movements.params.visibilitySearched
 
-    public get activitiesPageError (): Signal<ToastMessageOptions | undefined> {
-        return this.ngStore.selectSignal( ActivityStore.activitiesPageError )
-    }
+    public readonly availabilitiesMetadata: Signal<SelectItem<boolean | undefined>[]> = this.translated( this.store.metadata.availabilities )
+    public readonly visibilitiesMetadata: Signal<SelectItem<boolean | undefined>[]> = this.translated( this.store.metadata.visibilities )
 
-    private get activitiesPageResetSearch (): Signal<boolean> {
-        return this.ngStore.selectSignal( ActivityStore.activitiesPageResetSearch )
-    }
-
-    public get activitiesPageTextSearchedParam (): Signal<string | undefined> {
-        return this.ngStore.selectSignal( ActivityStore.activitiesPageTextSearchedParam )
-    }
-
-    public get activitiesPageDateTimeSearchedParam (): Signal<Date | undefined> {
-        return computed( (): Date | undefined =>
-            DateHelper.buildDate( this.ngStore.selectSignal( ActivityStore.activitiesPageDateTimeSearchedParam )() ),
-        )
-    }
-
-    public get activitiesPageAvailabilitySearchedParam (): Signal<boolean | undefined> {
-        return this.ngStore.selectSignal( ActivityStore.activitiesPageAvailabilitySearchedParam )
-    }
-
-    public get activitiesPageVisibilitySearchedParam (): Signal<boolean | undefined> {
-        return this.ngStore.selectSignal( ActivityStore.activitiesPageVisibilitySearchedParam )
-    }
-
-    public get activityMovementsPage (): Signal<PageModel<MovementModel> | undefined> {
-        return this.ngStore.selectSignal( ActivityStore.activityMovementsPage )
-    }
-
-    public get activityMovementsPageLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( ActivityStore.activityMovementsPageLoading )
-    }
-
-    public get activityMovementsPageSilentLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( ActivityStore.activityMovementsPageSilentLoading )
-    }
-
-    public get activityMovementsPageError (): Signal<ToastMessageOptions | undefined> {
-        return this.ngStore.selectSignal( ActivityStore.activityMovementsPageError )
-    }
-
-    public get activityMovementsPageResetSearch (): Signal<boolean> {
-        return this.ngStore.selectSignal( ActivityStore.activityMovementsPageResetSearch )
-    }
-
-    public get activityMovementsPageTypeSearchedParam (): Signal<string | undefined> {
-        return this.ngStore.selectSignal( ActivityStore.activityMovementsPageTypeSearchedParam )
-    }
-
-    public get activityMovementsPageStartDateTimeSearchedParam (): Signal<Date | undefined> {
-        return computed( (): Date | undefined =>
-            DateHelper.buildDate( this.ngStore.selectSignal( ActivityStore.activityMovementsPageStartDateTimeSearchedParam )() ),
-        )
-    }
-
-    public get activityMovementsPageEndDateTimeSearchedParam (): Signal<Date | undefined> {
-        return computed( (): Date | undefined =>
-            DateHelper.buildDate( this.ngStore.selectSignal( ActivityStore.activityMovementsPageEndDateTimeSearchedParam )() ),
-        )
-    }
-
-    public get activityMovementsPageVisibilitySearchedParam (): Signal<boolean | undefined> {
-        return this.ngStore.selectSignal( ActivityStore.activityMovementsPageVisibilitySearchedParam )
-    }
-
-    public get availabilitiesMetadata (): Signal<SelectItem<boolean | undefined>[]> {
-        return computed( (): SelectItem<boolean | undefined>[] =>
-            this.ngStore.selectSignal( ActivityStore.availabilitiesMetadata )().map(
-                (status: SelectItem<boolean | undefined>): SelectItem<boolean | undefined> => ({
-                    ...status,
-                    label: this.translateService.instant( status.label! ),
-                }),
-            ),
-        )
-    }
-
-    public get visibilitiesMetadata (): Signal<SelectItem<boolean | undefined>[]> {
-        return computed( (): SelectItem<boolean | undefined>[] =>
-            this.ngStore.selectSignal( ActivityStore.visibilitiesMetadata )().map(
-                (status: SelectItem<boolean | undefined>): SelectItem<boolean | undefined> => ({
-                    ...status,
-                    label: this.translateService.instant( status.label! ),
-                }),
-            ),
-        )
-    }
-
-    public startActivitiesPageLoader (): void {
-        this.ngStore.dispatch( StartActivitiesPageLoader )
-    }
-
-    public stopActivitiesPageLoader (): void {
-        this.ngStore.dispatch( StopActivitiesPageLoader )
+    private translated (items: Signal<SelectItem<boolean | undefined>[]>): Signal<SelectItem<boolean | undefined>[]> {
+        return computed( (): SelectItem<boolean | undefined>[] => items().map(
+            (status: SelectItem<boolean | undefined>): SelectItem<boolean | undefined> => ({
+                ...status,
+                label: this.translateService.instant( status.label! ),
+            }),
+        ) )
     }
 
     public fetchActivitiesPage (
         pageNumber: number | undefined,
         pageSize: number | undefined,
-        force: boolean,
     ): void {
         const index: number | undefined = this.activitiesPageResetSearch() ? 0 : pageNumber
-        this.ngStore.dispatch( new FetchActivitiesPage( this.selectedProjectId(), index, pageSize, force ) )
+        this.store.fetchActivitiesPage( { projectId: this.selectedProjectId(), pageNumber: index, pageSize: pageSize } )
     }
 
     public inputPageSearchParameters (
@@ -155,36 +75,27 @@ export class ActivityFacade extends GenericProjectElementFacade {
                                      || this.activitiesPageVisibilitySearchedParam() != visibilitySearched
 
         if (resetSearch) {
-            this.ngStore.dispatch( new UpdateActivitiesPageSearchParams( {
+            this.store.updateActivitiesPageSearchParams( {
                 resetSearch: resetSearch,
                 visibilitySearched: visibilitySearched,
                 textSearched: textSearched,
                 availabilitySearched: availabilitySearched,
                 dateTimeSearched: dateTimeSearched?.toISOString(),
-            } ) )
+            } )
         }
-    }
-
-    public startActivityMovementsPageLoader (): void {
-        this.ngStore.dispatch( StartActivityMovementsPageLoader )
-    }
-
-    public stopActivityMovementsPageLoader (): void {
-        this.ngStore.dispatch( StopActivityMovementsPageLoader )
     }
 
     public fetchActivityMovementsPage (
         id: string,
         pageNumber: number | undefined,
         pageSize: number | undefined,
-        force: boolean,
     ): void {
         const index: number | undefined = this.activityMovementsPageResetSearch() ? 0 : pageNumber
-        this.ngStore.dispatch( new FetchActivityMovementsPage( this.selectedProjectId(), id, index, pageSize, force ) )
+        this.store.fetchActivityMovementsPage( { projectId: this.selectedProjectId(), id: id, pageNumber: index, pageSize: pageSize } )
     }
 
     public fetchActivityMovementsContent (movementIds: string[]): void {
-        this.ngStore.dispatch( new FetchActivityMovementsContents( this.selectedProjectId(), movementIds ) )
+        this.store.fetchActivityMovementsContents( { projectId: this.selectedProjectId(), movementIds: movementIds } )
     }
 
     public inputMovementsPageSearchParameters (
@@ -199,7 +110,7 @@ export class ActivityFacade extends GenericProjectElementFacade {
                                      || this.activityMovementsPageVisibilitySearchedParam() != visibilitySearched
 
         if (resetSearch) {
-            this.ngStore.dispatch( new UpdateActivityMovementsPageSearchParams( {
+            this.store.updateActivityMovementsPageSearchParams( {
                 resetSearch: resetSearch,
                 visibilitySearched: visibilitySearched,
                 currentMovements: false,
@@ -207,7 +118,7 @@ export class ActivityFacade extends GenericProjectElementFacade {
                 typeSearched: typeSearched,
                 startDateTimeSearched: startDateTimeSearched?.toISOString(),
                 endDateTimeSearched: endDateTimeSearched?.toISOString(),
-            } ) )
+            } )
         }
     }
 
@@ -256,6 +167,6 @@ export class ActivityFacade extends GenericProjectElementFacade {
         this.notifySuccess( `activities.notifications.${ command }`, 'pi pi-users', { name: activity?.name } )
 
         const page: PageModel<ActivityModel> | undefined = this.activitiesPage()
-        this.fetchActivitiesPage( page?.pageNumber, page?.pageSize, true )
+        this.fetchActivitiesPage( page?.pageNumber, page?.pageSize )
     }
 }

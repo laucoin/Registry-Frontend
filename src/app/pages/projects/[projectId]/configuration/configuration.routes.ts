@@ -51,7 +51,7 @@ export const configurationRoutes: Routes = [
                 path: ConfigurationRoutesEnum.ACTIVITIES,
                 loadChildren: () => import('@pages/projects/[projectId]/configuration/activities/activity.routes').then( (m: typeof import('@pages/projects/[projectId]/configuration/activities/activity.routes')) => m.activityRoutes ),
                 canActivate: [ activityOptionGuard ],
-                providers: [ MovementFacade, ActivityFacade, importProvidersFrom( NgxsModule.forFeature( [ MovementStore, ActivityStore ] ) ) ],
+                providers: [ MovementFacade, ActivityFacade, ActivityStore, importProvidersFrom( NgxsModule.forFeature( [ MovementStore ] ) ) ],
             },
         ],
     },

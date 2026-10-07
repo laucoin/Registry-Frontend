@@ -74,7 +74,7 @@ export class ActivityMovementsListPage extends GenericListComponent implements O
                 withLoading(this.activityLoading),
             ).subscribe( (activity: ActivityModel): void => this.activity.set(activity) ),
         )
-        this.facade.fetchActivityMovementsPage(id!, undefined, undefined, false)
+        this.facade.fetchActivityMovementsPage(id!, undefined, undefined)
     }
 
     private handleMovementActions(): void {
@@ -84,9 +84,7 @@ export class ActivityMovementsListPage extends GenericListComponent implements O
                     this.facade.fetchActivityMovementsPage(
                         this.route.snapshot.params['activityId'],
                         undefined,
-                        undefined,
-                        true,
-                    )
+                        undefined)
                 }),
             ).subscribe(),
         )
@@ -97,9 +95,7 @@ export class ActivityMovementsListPage extends GenericListComponent implements O
                     this.facade.fetchActivityMovementsPage(
                         this.route.snapshot.params['activityId'],
                         this.facade.activityMovementsPage()?.pageNumber,
-                        this.facade.activityMovementsPage()?.pageSize,
-                        true,
-                    )
+                        this.facade.activityMovementsPage()?.pageSize)
                 }),
             ).subscribe(),
         )
@@ -113,8 +109,7 @@ export class ActivityMovementsListPage extends GenericListComponent implements O
             this.visibilitySearched.value,
         )
         this.facade.fetchActivityMovementsPage(
-            this.route.snapshot.params['activityId'], pageEvent.pageNumber, pageEvent.pageSize, false,
-        )
+            this.route.snapshot.params['activityId'], pageEvent.pageNumber, pageEvent.pageSize)
     }
 
     public ngOnDestroy(): void {
