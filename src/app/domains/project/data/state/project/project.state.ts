@@ -53,6 +53,7 @@ const defaultProjectState: ProjectStateModel = {
         error: undefined,
     },
     project: defaultProject,
+    createdProjectId: undefined,
     _metadata: {
         options: [],
         visibilities: [
@@ -126,6 +127,11 @@ export class ProjectState extends GenericElementState<ProjectStateModel> {
     @Selector()
     public static projectsPageVisibilitySearchedParam (state: ProjectStateModel): boolean | undefined {
         return state.projects.params.visibilitySearched
+    }
+
+    @Selector()
+    public static createdProjectId (state: ProjectStateModel): string | undefined {
+        return state.createdProjectId
     }
 
     @Selector()
@@ -269,6 +275,7 @@ export class ProjectState extends GenericElementState<ProjectStateModel> {
     }
 
     private createProjectComplete (ctx: StateContext<ProjectStateModel>, project: ProjectModel): void {
+        ctx.patchState( { createdProjectId: project.id } )
         this.buildMessageAndNotify(
             SeverityEnum.SUCCESS,
             'projects.notifications.create.title',
@@ -298,7 +305,7 @@ export class ProjectState extends GenericElementState<ProjectStateModel> {
             this.buildTranslationArgs( project ),
         )
 
-        if (this.registryFacade.currentUser()?.preferences.selectedProfile?.project?.id == project.id) {
+        if (this.registryFacade.currentProjectId() == project.id) {
             this.registryFacade.fetchCurrentUser()
         }
 

@@ -108,7 +108,7 @@ export class MovementElementComponent extends GenericElementComponent {
             visible: this.actionIsEnable(ElementActionEnum.MOVEMENT_UPDATE),
             command: (): void => {
                 this.router.navigateByUrl(
-                    AppRouteEnum.PROJECTS_MOVEMENTS_EDITION.replace(':movementId', this.movement().id),
+                    AppRouteEnum.PROJECTS_MOVEMENTS_EDITION.replace(':movementId', this.movement().id).replace(':projectId', this.registryFacade.currentProjectId() ?? ''),
                 ).catch(console.error)
             },
         },

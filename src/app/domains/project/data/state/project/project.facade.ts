@@ -86,6 +86,10 @@ export class ProjectFacade extends GenericFacade {
         return this.ngStore.selectSignal( ProjectState.project )
     }
 
+    public get createdProjectId (): Signal<string | undefined> {
+        return this.ngStore.selectSignal( ProjectState.createdProjectId )
+    }
+
     public get project$ (): Observable<ProjectModel | undefined> {
         return this.ngStore.select( ProjectState.project )
     }

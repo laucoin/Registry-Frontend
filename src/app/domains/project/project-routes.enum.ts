@@ -1,7 +1,7 @@
 export enum ProjectRoutesEnum {
     CREATE = 'create',
-    EDIT = ':projectId/edit',
-    SELECTED = 'selected',
+    PROJECT_ID = ':projectId',
+    EDIT = 'edit',
     MOVEMENTS = 'movements',
     ALERTS = 'alerts',
     CONFIGURATION = 'configuration',

@@ -55,7 +55,7 @@ export class ActivityElementComponent extends GenericElementComponent {
                     AppRouteEnum.PROJECTS_CONFIGURATION_ACTIVITIES_MOVEMENTS.replace(
                         ':activityId',
                         this.activity().id,
-                    ),
+                    ).replace(':projectId', this.registryFacade.currentProjectId() ?? ''),
                 ).catch(console.error)
             },
         },
@@ -66,7 +66,7 @@ export class ActivityElementComponent extends GenericElementComponent {
             visible: this.actionIsEnable(ElementActionEnum.ACTIVITY_UPDATE),
             command: (): void => {
                 this.router.navigateByUrl(
-                    AppRouteEnum.PROJECTS_CONFIGURATION_ACTIVITIES_EDITION.replace(':activityId', this.activity().id),
+                    AppRouteEnum.PROJECTS_CONFIGURATION_ACTIVITIES_EDITION.replace(':activityId', this.activity().id).replace(':projectId', this.registryFacade.currentProjectId() ?? ''),
                 ).catch(console.error)
             },
         },

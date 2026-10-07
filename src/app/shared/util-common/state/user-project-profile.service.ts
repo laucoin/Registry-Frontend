@@ -26,6 +26,10 @@ export class UserProjectProfileService extends GenericService {
         )
     }
 
+    public findUserProjectProfileByProjectId(projectId: string): Observable<ProjectProfileModel> {
+        return this.http.get<ProjectProfileModel>(`${this.baseUrl}/project/${projectId}`)
+    }
+
     public manageUserProjectProfileAcceptance(id: string, accepted: boolean): Observable<ProjectProfileModel> {
         return this.http.post<ProjectProfileModel>(`${this.baseUrl}/${id}/accept/${accepted}`, null)
     }

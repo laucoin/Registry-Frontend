@@ -19,16 +19,16 @@ export enum AppRouteEnum {
 
     PROJECTS = 'projects',
     PROJECTS_CREATION = `${PROJECTS}/${ProjectRoutesEnum.CREATE}`,
-    PROJECTS_EDITION = `${PROJECTS}/${ProjectRoutesEnum.EDIT}`,
 
-    PROJECTS_SELECTED = `${PROJECTS}/${ProjectRoutesEnum.SELECTED}`,
+    PROJECT = `${PROJECTS}/${ProjectRoutesEnum.PROJECT_ID}`,
+    PROJECTS_EDITION = `${PROJECT}/${ProjectRoutesEnum.EDIT}`,
 
-    PROJECTS_MOVEMENTS = `${PROJECTS}/${ProjectRoutesEnum.MOVEMENTS}`,
+    PROJECTS_MOVEMENTS = `${PROJECT}/${ProjectRoutesEnum.MOVEMENTS}`,
     PROJECTS_MOVEMENTS_EDITION = `${PROJECTS_MOVEMENTS}/${MovementRoutesEnum.EDIT}`,
 
-    PROJECTS_ALERTS = `${PROJECTS}/${ProjectRoutesEnum.ALERTS}`,
+    PROJECTS_ALERTS = `${PROJECT}/${ProjectRoutesEnum.ALERTS}`,
 
-    PROJECTS_CONFIGURATION = `${PROJECTS}/${ProjectRoutesEnum.CONFIGURATION}`,
+    PROJECTS_CONFIGURATION = `${PROJECT}/${ProjectRoutesEnum.CONFIGURATION}`,
 
     PROJECTS_CONFIGURATION_PROFILES = `${PROJECTS_CONFIGURATION}/${ConfigurationRoutesEnum.PROFILES}`,
     PROJECTS_CONFIGURATION_PROFILES_EDITION = `${PROJECTS_CONFIGURATION_PROFILES}/${ProjectProfileRoutesEnum.EDIT}`,

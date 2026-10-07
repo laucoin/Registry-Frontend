@@ -56,7 +56,7 @@ export const backendHandler: HttpInterceptorFn = (
 	const translateService: TranslateService = inject(TranslateService)
 
 	const currentUser: CurrentUserModel | undefined = registryFacade.currentUser()
-	const url: string = formatUrlIfNeeded(currentUser, req.url)
+	const url: string = formatUrlIfNeeded(registryFacade, currentUser, req.url)
 	const authenticatedReq: HttpRequest<unknown> = req.clone({
 		url: url,
 		withCredentials: true,
@@ -107,7 +107,7 @@ function captureCsrfToken(headers: HttpHeaders): void {
 	}
 }
 
-function formatUrlIfNeeded(currentUser: CurrentUserModel | undefined, url: string): string {
+function formatUrlIfNeeded(registryFacade: RegistryFacade, currentUser: CurrentUserModel | undefined, url: string): string {
 	let formattedUrl: string = url
 
 	if (formattedUrl.includes(CURRENT_USER_ID)) {
@@ -123,7 +123,7 @@ function formatUrlIfNeeded(currentUser: CurrentUserModel | undefined, url: strin
 	}
 
 	if (formattedUrl.includes(SELECT_PROFILE_PROJECT_ID)) {
-		const selectedProjectId: string | undefined = currentUser?.preferences?.selectedProfile?.project?.id
+		const selectedProjectId: string | undefined = registryFacade.currentProjectId()
 		if (GenericUtil.isNull(selectedProjectId)) {
 			throw {
 				title: 'global.notifications.NO_SELECTED_PROJECT.title',

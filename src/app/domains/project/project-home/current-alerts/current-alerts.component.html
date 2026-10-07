@@ -20,7 +20,7 @@
                 } @else {
                     <div class='h-100 d-flex align-items-center'>
                         <p-button severity='secondary' [label]='"project-home.alerts.see-more" | translate' icon='pi pi-search-plus'
-                                  [routerLink]='"/" + AppRouteEnum.PROJECTS_ALERTS' class='w-100'
+                                  [routerLink]='"/" + AppRouteEnum.PROJECTS_ALERTS.replace(":projectId", registryFacade.currentProjectId() ?? "")' class='w-100'
                                   iconPos='top' />
                     </div>
                 }

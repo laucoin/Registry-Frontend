@@ -3,7 +3,7 @@ import { ProjectComponent } from './project.component'
 import { ProjectsListComponent } from './projects-list/projects-list.component'
 import { ProjectRoutesEnum } from './project-routes.enum'
 import { ProjectFormComponent } from './project-form/project-form.component'
-import { selectedProfileGuard } from '../../shared/util-authentication/guard/selected-profile.guard'
+import { projectContextDeactivateGuard, projectContextGuard } from '../../shared/util-authentication/guard/project-context.guard'
 import { MovementFacade } from './movement/data/state/movement.facade'
 import { importProvidersFrom } from '@angular/core'
 import { NgxsModule } from '@ngxs/store'
@@ -29,34 +29,40 @@ export const projectRoutes: Routes = [
                 path: '', component: ProjectsListComponent,
             },
             {
-                path: ProjectRoutesEnum.SELECTED, component: ProjectHomeComponent,
-                providers: [
-                    SelectedProjectFacade, ParticipantFacade, MovementFacade, CommunicationFacade, AlertFacade,
-                    importProvidersFrom( NgxsModule.forFeature( [ SelectedProjectState, ParticipantState, MovementState, CommunicationState, AlertState ] ) ),
-                ],
-            },
-            {
                 path: ProjectRoutesEnum.CREATE, component: ProjectFormComponent,
             },
             {
-                path: ProjectRoutesEnum.EDIT, component: ProjectFormComponent,
+                path: `${ProjectRoutesEnum.PROJECT_ID}/${ProjectRoutesEnum.EDIT}`, component: ProjectFormComponent,
             },
             {
-                path: ProjectRoutesEnum.MOVEMENTS,
-                loadChildren: () => import('./movement/movement.routes').then( (m: typeof import('./movement/movement.routes')) => m.movementRoutes ),
-                canActivate: [ selectedProfileGuard ],
-                providers: [ CommunicationFacade, MovementFacade, importProvidersFrom( NgxsModule.forFeature( [ MovementState, CommunicationState ] ) ) ],
-            },
-            {
-                path: ProjectRoutesEnum.ALERTS,
-                component: AlertsListComponent,
-                canActivate: [ selectedProfileGuard, alertOptionGuard ],
-                providers: [ CommunicationFacade, AlertFacade, importProvidersFrom( NgxsModule.forFeature( [ AlertState, CommunicationState ] ) ) ],
-            },
-            {
-                path: ProjectRoutesEnum.CONFIGURATION,
-                loadChildren: () => import('./configuration/configuration.routes').then( (m: typeof import('./configuration/configuration.routes')) => m.configurationRoutes ),
-                canActivate: [ selectedProfileGuard ],
+                path: ProjectRoutesEnum.PROJECT_ID,
+                canActivate: [ projectContextGuard ],
+                canDeactivate: [ projectContextDeactivateGuard ],
+                runGuardsAndResolvers: 'paramsChange',
+                children: [
+                    {
+                        path: '', component: ProjectHomeComponent,
+                        providers: [
+                            SelectedProjectFacade, ParticipantFacade, MovementFacade, CommunicationFacade, AlertFacade,
+                            importProvidersFrom( NgxsModule.forFeature( [ SelectedProjectState, ParticipantState, MovementState, CommunicationState, AlertState ] ) ),
+                        ],
+                    },
+                    {
+                        path: ProjectRoutesEnum.MOVEMENTS,
+                        loadChildren: () => import('./movement/movement.routes').then( (m: typeof import('./movement/movement.routes')) => m.movementRoutes ),
+                        providers: [ CommunicationFacade, MovementFacade, importProvidersFrom( NgxsModule.forFeature( [ MovementState, CommunicationState ] ) ) ],
+                    },
+                    {
+                        path: ProjectRoutesEnum.ALERTS,
+                        component: AlertsListComponent,
+                        canActivate: [ alertOptionGuard ],
+                        providers: [ CommunicationFacade, AlertFacade, importProvidersFrom( NgxsModule.forFeature( [ AlertState, CommunicationState ] ) ) ],
+                    },
+                    {
+                        path: ProjectRoutesEnum.CONFIGURATION,
+                        loadChildren: () => import('./configuration/configuration.routes').then( (m: typeof import('./configuration/configuration.routes')) => m.configurationRoutes ),
+                    },
+                ],
             },
         ],
     },

@@ -46,7 +46,7 @@ export class GroupElementComponent extends GenericElementComponent {
             visible: this.actionIsEnable( ElementActionEnum.GROUP_CONSULT_MEMBERS ),
             command: (): void => {
                 this.router.navigateByUrl(
-                    AppRouteEnum.PROJECTS_CONFIGURATION_GROUPS_MEMBERS.replace( ':groupId', this.group().id ),
+                    AppRouteEnum.PROJECTS_CONFIGURATION_GROUPS_MEMBERS.replace( ':groupId', this.group().id ).replace(':projectId', this.registryFacade.currentProjectId() ?? ''),
                 ).catch( console.error )
             },
         },
@@ -58,7 +58,7 @@ export class GroupElementComponent extends GenericElementComponent {
             visible: this.actionIsEnable( ElementActionEnum.GROUP_UPDATE ),
             command: (): void => {
                 this.router.navigateByUrl(
-                    AppRouteEnum.PROJECTS_CONFIGURATION_GROUPS_EDITION.replace( ':groupId', this.group().id ),
+                    AppRouteEnum.PROJECTS_CONFIGURATION_GROUPS_EDITION.replace( ':groupId', this.group().id ).replace(':projectId', this.registryFacade.currentProjectId() ?? ''),
                 ).catch( console.error )
             },
         },

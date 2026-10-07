@@ -1,7 +1,7 @@
 <app-element-card [element]='profile()'
                   [actionMenuVisible]='actionMenuVisible()'
                   [actions]='actions()'
-                  [icon]='registryFacade.currentUser()!.preferences.selectedProfile?.id === profile().id ? "pi pi-verified" : "pi pi-user"'>
+                  [icon]='registryFacade.selectedProject()?.id === profile().project.id ? "pi pi-verified" : "pi pi-user"'>
     <div class='element-card'>
         <div class='profile-info d-flex flex-column justify-content-center'>
             <div class='profile-name d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>

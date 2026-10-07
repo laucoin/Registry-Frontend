@@ -13,6 +13,10 @@ export interface RegistryStateModel {
         currentUser: CurrentUserModel | undefined,
         loading: boolean,
     },
+    currentProject: {
+        id: string | undefined,
+        profile: ProjectProfileModel | undefined,
+    },
     profiles: PageRequestInformationModel<UserProjectProfilePageParamsModel, ProjectProfileModel>,
     invitations: PageRequestInformationModel<UserProjectProfilePageParamsModel, ProjectProfileModel>,
     profile: ElementRequestInformationModel<ProjectProfileModel>,

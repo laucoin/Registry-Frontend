@@ -143,11 +143,7 @@ export class ProjectElementComponent extends GenericElementComponent implements 
     }
 
     protected selectProject(): void {
-        this.subscriptions.add(
-            this.registryFacade.selectUserProjectProfileByProject(this.project().id).pipe(
-                tap(() => this.router.navigateByUrl(AppRouteEnum.PROJECTS_SELECTED).catch(console.error)),
-            ).subscribe(),
-        )
+        this.router.navigateByUrl(AppRouteEnum.PROJECT.replace(':projectId', this.project().id)).catch(console.error)
     }
 
     protected confirmSupportProfileCreation(): void {
@@ -176,7 +172,7 @@ export class ProjectElementComponent extends GenericElementComponent implements 
     private createSupportProfile(): void {
         this.subscriptions.add(
             this.registryFacade.createSupportProjectProfile(this.project().id).pipe(
-                tap(() => this.router.navigateByUrl(AppRouteEnum.PROJECTS_SELECTED).catch(console.error)),
+                tap(() => this.selectProject()),
             ).subscribe(),
         )
     }

@@ -29,9 +29,7 @@ export class CurrentUserUtil {
         id: string | undefined,
         authority: ProjectAuthorityEnum,
     ): boolean {
-        const projectId: string | undefined = id ?? currentUser?.preferences?.selectedProfile?.project?.id
-
-        if (GenericUtil.isNull( currentUser ) || !projectId) return false
+        if (GenericUtil.isNull( currentUser ) || !id) return false
 
         return this.hasAuthority( currentUser!, this.buildAuthority( authority, id ) )
     }

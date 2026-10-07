@@ -8,6 +8,7 @@ import { SelectItem } from 'primeng/api'
 export interface ProjectStateModel {
     projects: PageRequestInformationModel<ProjectPageParamsModel, ProjectModel>
     project: ElementRequestInformationModel<ProjectModel>
+    createdProjectId: string | undefined
     _metadata: {
         options: ProjectOptionModel[],
         visibilities: SelectItem<boolean | undefined>[],

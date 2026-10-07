@@ -23,8 +23,7 @@ import {
     Logout,
     ManageUserProjectInvitationAcceptance,
     Notify,
-    SelectUserProjectProfile,
-    SelectUserProjectProfileByProject,
+    SetCurrentProject,
     SetGlobalError,
     StartCurrentUserActionLoader,
     StartGlobalLoader,
@@ -67,6 +66,10 @@ const defaultRegistryState: RegistryStateModel = {
     authentication: {
         currentUser: undefined,
         loading: false,
+    },
+    currentProject: {
+        id: undefined,
+        profile: undefined,
     },
     profiles: {
         params: {
@@ -203,12 +206,12 @@ export class RegistryState extends GenericState implements NgxsOnInit {
 
     @Selector()
     public static currentUserSelectedProject(state: RegistryStateModel): ProjectModel | undefined {
-        return state.authentication.currentUser?.preferences?.selectedProfile?.project
+        return state.currentProject.profile?.project
     }
 
     @Selector()
     public static currentUserSelectedProjectId(state: RegistryStateModel): string | undefined {
-        return state.authentication.currentUser?.preferences?.selectedProfile?.project?.id
+        return state.currentProject.id
     }
 
     @Selector()
@@ -748,36 +751,25 @@ export class RegistryState extends GenericState implements NgxsOnInit {
         this.refreshInvitationsPage(ctx)
     }
 
-    @Action(SelectUserProjectProfile)
-    public selectProjectProfile(
-        _: StateContext<RegistryStateModel>,
-        payload: SelectUserProjectProfile,
+    @Action(SetCurrentProject, {cancelUncompleted: true})
+    public setCurrentProject(
+        ctx: StateContext<RegistryStateModel>,
+        payload: SetCurrentProject,
     ): Observable<void> {
-        return this.preferencesService.selectUserProjectProfile(payload.profileId).pipe(
+        ctx.patchState({currentProject: {id: payload.projectId, profile: undefined}})
+
+        if (GenericUtil.isNull(payload.projectId)) {
+            return of(undefined)
+        }
+
+        return this.userProjectProfileService.findUserProjectProfileByProjectId(payload.projectId!).pipe(
             initialize((): void => this.registryFacade.startGlobalLoader()),
             finalize((): void => this.registryFacade.stopGlobalLoader()),
-            map((): void => this.selectProjectProfileComplete()),
+            map((profile: ProjectProfileModel): void => {
+                ctx.patchState({currentProject: {id: payload.projectId, profile}})
+            }),
+            catchError((error: ErrorModel): Observable<void> => this.globalError(ctx, error)),
         )
-    }
-
-    private selectProjectProfileComplete(): void {
-        this.registryFacade.fetchCurrentUser()
-    }
-
-    @Action(SelectUserProjectProfileByProject)
-    public selectUserProjectProfileByProject(
-        _: StateContext<RegistryStateModel>,
-        payload: SelectUserProjectProfileByProject,
-    ): Observable<void> {
-        return this.preferencesService.selectUserProjectProfileByProjectId(payload.projectId).pipe(
-            initialize((): void => this.registryFacade.startGlobalLoader()),
-            finalize((): void => this.registryFacade.stopGlobalLoader()),
-            map((): void => this.selectUserProjectProfileByProjectComplete()),
-        )
-    }
-
-    private selectUserProjectProfileByProjectComplete(): void {
-        this.registryFacade.fetchCurrentUser()
     }
 
     @Action(DeleteUserProjectProfile)

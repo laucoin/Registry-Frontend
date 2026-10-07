@@ -66,7 +66,7 @@ export class ParticipantElementComponent extends GenericElementComponent {
                     AppRouteEnum.PROJECTS_CONFIGURATION_PARTICIPANTS_MOVEMENTS.replace(
                         ':participantId',
                         this.participant().id,
-                    ),
+                    ).replace(':projectId', this.registryFacade.currentProjectId() ?? ''),
                 ).catch(console.error)
             },
         },
@@ -80,7 +80,7 @@ export class ParticipantElementComponent extends GenericElementComponent {
                     AppRouteEnum.PROJECTS_CONFIGURATION_PARTICIPANTS_EDITION.replace(
                         ':participantId',
                         this.participant().id,
-                    ),
+                    ).replace(':projectId', this.registryFacade.currentProjectId() ?? ''),
                 ).catch(console.error)
             },
         },

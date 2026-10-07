@@ -46,7 +46,7 @@ export class VehicleElementComponent extends GenericElementComponent {
             visible: this.actionIsEnable(ElementActionEnum.VEHICLE_CONSULT_MOVEMENTS),
             command: (): void => {
                 this.router.navigateByUrl(
-                    AppRouteEnum.PROJECTS_CONFIGURATION_VEHICLES_MOVEMENTS.replace(':vehicleId', this.vehicle().id),
+                    AppRouteEnum.PROJECTS_CONFIGURATION_VEHICLES_MOVEMENTS.replace(':vehicleId', this.vehicle().id).replace(':projectId', this.registryFacade.currentProjectId() ?? ''),
                 ).catch(console.error)
             },
         },
@@ -57,7 +57,7 @@ export class VehicleElementComponent extends GenericElementComponent {
             visible: this.actionIsEnable(ElementActionEnum.VEHICLE_UPDATE),
             command: (): void => {
                 this.router.navigateByUrl(
-                    AppRouteEnum.PROJECTS_CONFIGURATION_VEHICLES_EDITION.replace(':vehicleId', this.vehicle().id),
+                    AppRouteEnum.PROJECTS_CONFIGURATION_VEHICLES_EDITION.replace(':vehicleId', this.vehicle().id).replace(':projectId', this.registryFacade.currentProjectId() ?? ''),
                 ).catch(console.error)
             },
         },

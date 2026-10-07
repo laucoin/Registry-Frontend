@@ -46,8 +46,7 @@ enum RegistryActionEnum {
     UPDATE_CURRENT_USER_LANGUAGE = '[Backend] Updating current user language',
 
     MANAGE_USER_PROJECT_INVITATION_ACCEPTANCE = '[Backend] Managing user project invitation acceptance',
-    SELECT_USER_PROJECT_PROFILE = '[Backend] Selecting user project profile',
-    SELECT_USER_PROJECT_PROFILE_BY_PROJECT = '[Backend] Selecting user project profile by project',
+    SET_CURRENT_PROJECT = '[Backend] Setting current project from route',
     DELETE_USER_PROJECT_PROFILE = '[Backend] Deleting user project profile',
 
     CREATE_SUPPORT_PROJECT_PROFILE = '[Backend] Creating project profiles',
@@ -208,16 +207,10 @@ export class ManageUserProjectInvitationAcceptance {
     public constructor (public readonly profileId: string, public readonly accepted: boolean) {}
 }
 
-export class SelectUserProjectProfile {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.SELECT_USER_PROJECT_PROFILE
+export class SetCurrentProject {
+    public static readonly type: RegistryActionEnum = RegistryActionEnum.SET_CURRENT_PROJECT
 
-    public constructor (public readonly profileId: string | undefined) {}
-}
-
-export class SelectUserProjectProfileByProject {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.SELECT_USER_PROJECT_PROFILE_BY_PROJECT
-
-    public constructor (public readonly projectId: string) {}
+    public constructor (public readonly projectId: string | undefined) {}
 }
 
 export class DeleteUserProjectProfile {

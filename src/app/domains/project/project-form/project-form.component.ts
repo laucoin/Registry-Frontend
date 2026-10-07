@@ -171,8 +171,19 @@ export class ProjectFormComponent extends GenericFormComponent<ProjectModel, Pro
 
         this.subscriptions.add(
             observable.pipe(
-                tap( (): void => this.navigateToRedirectUri( GenericUtil.isNull( this.facade.project() ) ? AppRouteEnum.PROJECTS_SELECTED : undefined ) ),
+                tap( (): void => this.navigateAfterSave() ),
             ).subscribe(),
+        )
+    }
+
+    private navigateAfterSave (): void {
+        const createdProjectId: string | undefined = this.facade.createdProjectId()
+        const isCreation: boolean = GenericUtil.isNull( this.facade.project() )
+
+        this.navigateToRedirectUri(
+            isCreation && GenericUtil.nonNull( createdProjectId )
+            ? AppRouteEnum.PROJECT.replace( ':projectId', createdProjectId! ) as AppRouteEnum
+            : undefined,
         )
     }
 

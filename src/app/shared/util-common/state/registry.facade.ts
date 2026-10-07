@@ -18,8 +18,7 @@ import {
     Logout,
     ManageUserProjectInvitationAcceptance,
     Notify,
-    SelectUserProjectProfile,
-    SelectUserProjectProfileByProject,
+    SetCurrentProject,
     SetGlobalError,
     StartCurrentUserActionLoader,
     StartGlobalLoader,
@@ -410,7 +409,7 @@ export class RegistryFacade extends GenericFacade {
         this.ngStore.dispatch(new ManageUserProjectInvitationAcceptance(id, accepted))
     }
 
-    public selectUserProjectProfile(id: string | undefined): Observable<ActionCompletion<FetchCurrentUser>> {
+    public setCurrentProject(projectId: string | undefined): Observable<ActionCompletion<SetCurrentProject>> {
         this.ngStore.dispatch([
             new ResetSelectedProjectState(),
             new ResetMovementState(),
@@ -418,24 +417,14 @@ export class RegistryFacade extends GenericFacade {
             new ResetCommunicationState(),
             new ResetParticipantState(),
             new ResetVehicleState(),
-            new SelectUserProjectProfile(id),
+            new SetCurrentProject(projectId),
         ])
 
-        return this.actions$.pipe(ofActionCompleted(FetchCurrentUser))
+        return this.actions$.pipe(ofActionCompleted(SetCurrentProject))
     }
 
-    public selectUserProjectProfileByProject(projectId: string): Observable<ActionCompletion<FetchCurrentUser>> {
-        this.ngStore.dispatch([
-            new ResetSelectedProjectState(),
-            new ResetMovementState(),
-            new ResetActivityState(),
-            new ResetCommunicationState(),
-            new ResetParticipantState(),
-            new ResetVehicleState(),
-            new SelectUserProjectProfileByProject(projectId),
-        ])
-
-        return this.actions$.pipe(ofActionCompleted(FetchCurrentUser))
+    public get currentProjectId(): Signal<string | undefined> {
+        return this.ngStore.selectSignal(RegistryState.currentUserSelectedProjectId)
     }
 
     public deleteUserProjectProfile(profile: ProjectProfileModel): Observable<ActionCompletion<DeleteUserProjectProfile>> {

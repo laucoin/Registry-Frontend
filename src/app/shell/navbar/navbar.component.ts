@@ -93,19 +93,19 @@ export class NavbarComponent extends GenericComponent {
         {
             label: 'global.menu.project-home',
             icon: 'pi pi-home',
-            url: AppRouteEnum.PROJECTS_SELECTED,
+            url: this.projectUrl( AppRouteEnum.PROJECT ),
             requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_R,
         },
         {
             label: 'global.menu.movements',
             icon: 'pi pi-sort-alt',
-            url: AppRouteEnum.PROJECTS_MOVEMENTS,
+            url: this.projectUrl( AppRouteEnum.PROJECTS_MOVEMENTS ),
             requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_MOVEMENT_R,
         },
         {
             label: 'global.menu.alerts',
             icon: this.iconOption.transform( ProjectOptionEnum.ALERT ),
-            url: AppRouteEnum.PROJECTS_ALERTS,
+            url: this.projectUrl( AppRouteEnum.PROJECTS_ALERTS ),
             requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_ALERT_R,
             requiredProjectOption: ProjectOptionEnum.ALERT,
         },
@@ -117,41 +117,38 @@ export class NavbarComponent extends GenericComponent {
                 {
                     label: 'global.menu.edit-project',
                     icon: 'pi pi-pen-to-square',
-                    url: AppRouteEnum.PROJECTS_EDITION.replace(
-                        ':projectId',
-                        this.registryFacade.selectedProject()?.id ?? '',
-                    ),
+                    url: this.projectUrl( AppRouteEnum.PROJECTS_EDITION ),
                     requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_U,
                 },
                 {
                     label: 'global.menu.project-profiles',
                     icon: 'pi pi-unlock',
-                    url: AppRouteEnum.PROJECTS_CONFIGURATION_PROFILES,
+                    url: this.projectUrl( AppRouteEnum.PROJECTS_CONFIGURATION_PROFILES ),
                     requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_R,
                 },
                 {
                     label: 'global.menu.participants',
                     icon: 'pi pi-user',
-                    url: AppRouteEnum.PROJECTS_CONFIGURATION_PARTICIPANTS,
+                    url: this.projectUrl( AppRouteEnum.PROJECTS_CONFIGURATION_PARTICIPANTS ),
                     requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_R,
                 },
                 {
                     label: 'global.menu.groups',
                     icon: 'pi pi-users',
-                    url: AppRouteEnum.PROJECTS_CONFIGURATION_GROUPS,
+                    url: this.projectUrl( AppRouteEnum.PROJECTS_CONFIGURATION_GROUPS ),
                     requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_R,
                 },
                 {
                     label: 'global.menu.vehicles',
                     icon: this.iconOption.transform( ProjectOptionEnum.VEHICLE ),
-                    url: AppRouteEnum.PROJECTS_CONFIGURATION_VEHICLES,
+                    url: this.projectUrl( AppRouteEnum.PROJECTS_CONFIGURATION_VEHICLES ),
                     requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_VEHICLE_R,
                     requiredProjectOption: ProjectOptionEnum.VEHICLE,
                 },
                 {
                     label: 'global.menu.activities',
                     icon: this.iconOption.transform( ProjectOptionEnum.ACTIVITY ),
-                    url: AppRouteEnum.PROJECTS_CONFIGURATION_ACTIVITIES,
+                    url: this.projectUrl( AppRouteEnum.PROJECTS_CONFIGURATION_ACTIVITIES ),
                     requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_ACTIVITY_R,
                     requiredProjectOption: ProjectOptionEnum.ACTIVITY,
                 },
@@ -200,7 +197,7 @@ export class NavbarComponent extends GenericComponent {
         return menuItems
             .filter( (item: MenuItemModel): boolean => CurrentUserUtil.isFeasible(
                 currentUser,
-                currentUser?.preferences?.selectedProfile?.project,
+                this.registryFacade.selectedProject(),
                 item,
             ) )
             .map( (menuItem: MenuItemModel): MenuItem => ({
@@ -226,8 +223,11 @@ export class NavbarComponent extends GenericComponent {
         this.lastScrollPosition.set( currentScrollPosition )
     }
 
+    private projectUrl (route: AppRouteEnum): string {
+        return route.replace( ':projectId', this.registryFacade.currentProjectId() ?? '' )
+    }
+
     protected backToProjects (): void {
-        this.registryFacade.selectUserProjectProfile( undefined )
         this.router.navigateByUrl( AppRouteEnum.PROJECTS ).catch( console.error )
     }
 

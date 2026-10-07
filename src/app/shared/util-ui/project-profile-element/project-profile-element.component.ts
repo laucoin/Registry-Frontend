@@ -25,7 +25,7 @@ import {CurrentUserModel} from '../../util-model/model/current-user.model'
 import {SeverityTagComponent} from '../severity-tag/severity-tag.component'
 import {GenericElementComponent} from '../../util-tool/component/generic-element.component'
 import {CustomDateFormatPipe} from '../../util-tool/pipe/custom-date-format.pipe'
-import {Subscription, tap} from 'rxjs'
+import {Subscription} from 'rxjs'
 import {ProfileStatusEnum} from '../../util-model/enumeration/profile-status.enum'
 import {SeverityEnum} from '../../util-model/enumeration/severity.enum'
 import {ProjectAuthorityEnum} from '../../util-model/enumeration/project-authority.enum'
@@ -72,11 +72,9 @@ export class ProjectProfileElementComponent extends GenericElementComponent impl
                 icon: 'pi pi-arrow-right',
                 visible: isCurrentUserProfile && !isSelectedProfile && this.actionIsEnable(ElementActionEnum.PROJECT_PROFILE_SELECT),
                 command: (): void => {
-                    this.subscriptions.add(
-                        this.registryFacade.selectUserProjectProfile(this.profile().id).pipe(
-                            tap(() => this.router.navigateByUrl(AppRouteEnum.PROJECTS_SELECTED).catch(console.error)),
-                        ).subscribe(),
-                    )
+                    this.router.navigateByUrl(
+                        AppRouteEnum.PROJECT.replace(':projectId', this.profile().project.id),
+                    ).catch(console.error)
                 },
             },
             {
@@ -86,7 +84,7 @@ export class ProjectProfileElementComponent extends GenericElementComponent impl
                 visible: !isCurrentUserProfile && this.actionIsEnable(ElementActionEnum.PROJECT_PROFILE_UPDATE),
                 command: (): void => {
                     this.router.navigateByUrl(
-                        AppRouteEnum.PROJECTS_CONFIGURATION_PROFILES_EDITION.replace(':profileId', this.profile().id),
+                        AppRouteEnum.PROJECTS_CONFIGURATION_PROFILES_EDITION.replace(':profileId', this.profile().id).replace(':projectId', this.registryFacade.currentProjectId() ?? ''),
                     ).catch(console.error)
                 },
             },
