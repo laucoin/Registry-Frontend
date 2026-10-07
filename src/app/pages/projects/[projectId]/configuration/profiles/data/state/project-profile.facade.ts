@@ -1,27 +1,17 @@
-import { computed, Injectable, Signal } from '@angular/core'
-import { Observable } from 'rxjs'
+import { computed, Injectable, Signal, inject } from '@angular/core'
+import { Observable, tap } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
 import { GenericProjectElementFacade } from '@shared/helpers/facade/generic-project-element.facade'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
-import { ofActionSuccessful } from '@ngxs/store'
 import { ProjectProfileModel } from '@shared/models/model/project-profile.model'
 import { ProjectProfileState } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.state'
 import {
-    BlockProjectProfile,
-    CreateProjectProfiles,
-    DeleteProjectProfile,
     FetchAssignableProjectProfileRoles,
     FetchProfileStatus,
-    FetchProjectProfile,
     FetchProjectProfilesPage,
-    ResetProjectProfile,
     SearchUsers,
-    StartProjectProfileLoader,
     StartProjectProfilesPageLoader,
-    StopProjectProfileLoader,
     StopProjectProfilesPageLoader,
-    UnblockProjectProfile,
-    UpdateProjectProfile,
     UpdateProjectProfilesPageSearchParams,
 } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.action'
 import { ProjectProfileDto } from '@pages/projects/[projectId]/configuration/profiles/data/dto/project-profile.dto'
@@ -29,9 +19,18 @@ import { ProjectProfilesDto } from '@pages/projects/[projectId]/configuration/pr
 import { UserModel } from '@shared/models/model/user.model'
 import { DateUtil } from '@shared/helpers/util/date.util'
 import { ProfileStatusEnum } from '@shared/models/enumeration/profile-status.enum'
+import { ProjectProfileService } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.service'
+import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/util/rx.util'
+import { CommandEvent } from '@shared/helpers/facade/command-event.service'
+import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
+import { CreatedProjectProfiles } from '@pages/projects/[projectId]/configuration/profiles/data/dto/created-project-profiles.dto'
+import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
 
 @Injectable()
 export class ProjectProfileFacade extends GenericProjectElementFacade {
+    private readonly service: ProjectProfileService = inject( ProjectProfileService )
+    private readonly pluralTranslationPipe: PluralTranslationPipe = inject( PluralTranslationPipe )
+
     public get projectProfilesPage (): Signal<PageModel<ProjectProfileModel> | undefined> {
         return this.ngStore.selectSignal( ProjectProfileState.projectProfilesPage )
     }
@@ -68,18 +67,6 @@ export class ProjectProfileFacade extends GenericProjectElementFacade {
 
     public get projectProfilesPageStatusSearchedParam (): Signal<string | undefined> {
         return this.ngStore.selectSignal( ProjectProfileState.projectProfilesPageStatusSearchedParam )
-    }
-
-    public get projectProfile (): Signal<ProjectProfileModel | undefined> {
-        return this.ngStore.selectSignal( ProjectProfileState.projectProfile )
-    }
-
-    public get projectProfile$ (): Observable<ProjectProfileModel | undefined> {
-        return this.ngStore.select( ProjectProfileState.projectProfile )
-    }
-
-    public get projectProfileLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( ProjectProfileState.projectProfileLoading )
     }
 
     public get searchedUsersMetadata (): Signal<SelectItem<UserModel>[]> {
@@ -142,22 +129,6 @@ export class ProjectProfileFacade extends GenericProjectElementFacade {
         }
     }
 
-    public startProjectProfileLoader (): void {
-        this.ngStore.dispatch( StartProjectProfileLoader )
-    }
-
-    public stopProjectProfileLoader (): void {
-        this.ngStore.dispatch( StopProjectProfileLoader )
-    }
-
-    public fetchProjectProfile (id: string): void {
-        this.ngStore.dispatch( new FetchProjectProfile( this.selectedProjectId(), id ) )
-    }
-
-    public resetProjectProfile (): void {
-        this.ngStore.dispatch( ResetProjectProfile )
-    }
-
     public searchUsers (textSearched: string | undefined = undefined): void {
         this.ngStore.dispatch( new SearchUsers( this.selectedProjectId(), textSearched ) )
     }
@@ -170,36 +141,94 @@ export class ProjectProfileFacade extends GenericProjectElementFacade {
         this.ngStore.dispatch( FetchProfileStatus )
     }
 
-    public createProjectProfiles (
-        projectProfiles: ProjectProfilesDto,
-    ): Observable<CreateProjectProfiles> {
-        this.ngStore.dispatch( new CreateProjectProfiles( this.selectedProjectId(), projectProfiles ) )
-        return this.actions$.pipe( ofActionSuccessful( CreateProjectProfiles ) )
+    public fetchProjectProfile (id: string): Observable<ProjectProfileModel> {
+        return this.service.findProjectProfileById( this.selectedProjectId(), id ).pipe(
+            notifyOnError( this.registryFacade ),
+        )
     }
 
-    public updateProjectProfile (
-        id: string,
-        projectProfile: ProjectProfileDto,
-    ): Observable<UpdateProjectProfile> {
-        this.ngStore.dispatch( new UpdateProjectProfile( this.selectedProjectId(), id, projectProfile ) )
-        return this.actions$.pipe( ofActionSuccessful( UpdateProjectProfile ) )
+    public createProjectProfiles (projectProfiles: ProjectProfilesDto): Observable<CreatedProjectProfiles> {
+        return this.service.createProjectProfiles( this.selectedProjectId(), projectProfiles ).pipe(
+            notifyUnavailableOnly( this.registryFacade ),
+            tap( (creationStatus: CreatedProjectProfiles): void => {
+                const created: number = creationStatus?.createdUserIds?.length ?? 0
+                const notCreated: number = creationStatus?.notCreatedUserIds?.length ?? 0
+                if (notCreated > 0) {
+                    const prefixKey: string = 'project-profiles.notifications.partial-invitation'
+                    this.notifyMessage(
+                        SeverityEnum.WARNING,
+                        this.pluralTranslationPipe.transform( prefixKey + '.title', created ),
+                        this.pluralTranslationPipe.transform( prefixKey + '.message', created ),
+                        'pi pi-key',
+                        { asked: created + notCreated, created: created },
+                    )
+                } else {
+                    this.notifyMessage(
+                        SeverityEnum.SUCCESS,
+                        this.pluralTranslationPipe.transform(
+                            'project-profiles.notifications.create.title',
+                            creationStatus.createdUserIds,
+                        ),
+                        this.pluralTranslationPipe.transform(
+                            'project-profiles.notifications.create.message',
+                            creationStatus.createdUserIds,
+                        ),
+                        'pi pi-key',
+                        { created: created },
+                    )
+                }
+                this.refreshPage()
+            } ),
+        )
     }
 
-    public blockProjectProfile (
-        profile: ProjectProfileModel,
-    ): void {
-        this.ngStore.dispatch( new BlockProjectProfile( this.selectedProjectId(), profile ) )
+    public updateProjectProfile (id: string, projectProfile: ProjectProfileDto): Observable<ProjectProfileModel> {
+        return this.service.updateProjectProfileById( this.selectedProjectId(), id, projectProfile ).pipe(
+            notifyUnavailableOnly( this.registryFacade ),
+            tap( (updated: ProjectProfileModel): void => this.onCommandSuccess( 'update', updated ) ),
+        )
     }
 
-    public unblockProjectProfile (
-        profile: ProjectProfileModel,
-    ): void {
-        this.ngStore.dispatch( new UnblockProjectProfile( this.selectedProjectId(), profile ) )
+    public blockProjectProfile (profile: ProjectProfileModel): Observable<ProjectProfileModel> {
+        return this.service.blockProjectProfileById( this.selectedProjectId(), profile.id ).pipe(
+            notifyOnError( this.registryFacade ),
+            tap( (): void => this.onCommandSuccess( 'disable', profile ) ),
+        )
     }
 
-    public deleteProjectProfile (
-        projectProfile: ProjectProfileModel,
-    ): void {
-        this.ngStore.dispatch( new DeleteProjectProfile( this.selectedProjectId(), projectProfile ) )
+    public unblockProjectProfile (profile: ProjectProfileModel): Observable<ProjectProfileModel> {
+        return this.service.unblockProjectProfileById( this.selectedProjectId(), profile.id ).pipe(
+            notifyOnError( this.registryFacade ),
+            tap( (): void => this.onCommandSuccess( 'enable', profile ) ),
+        )
+    }
+
+    public deleteProjectProfile (profile: ProjectProfileModel): Observable<void> {
+        return this.service.deleteProjectProfileById( undefined, profile.id ).pipe(
+            notifyOnError( this.registryFacade ),
+            tap( (): void => this.onCommandSuccess( 'delete', profile ) ),
+        )
+    }
+
+    private onCommandSuccess (command: CommandEvent, profile: ProjectProfileModel): void {
+        this.notifyMessage(
+            SeverityEnum.SUCCESS,
+            `project-profiles.notifications.${ command === 'update' ? 'edit' : command }.title`,
+            command === 'delete'
+            ? 'project-profiles.notifications.delete.message.other'
+            : `project-profiles.notifications.${ command === 'update' ? 'edit' : command }.message`,
+            'pi pi-key',
+            {
+                firstName: profile?.user?.firstName,
+                lastName: profile?.user?.lastName,
+                name: profile?.project?.name,
+            },
+        )
+        this.refreshPage()
+    }
+
+    private refreshPage (): void {
+        const page: PageModel<ProjectProfileModel> | undefined = this.projectProfilesPage()
+        this.fetchProjectProfilesPage( page?.pageNumber, page?.pageSize, true )
     }
 }

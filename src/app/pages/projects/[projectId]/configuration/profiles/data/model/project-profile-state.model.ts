@@ -1,8 +1,5 @@
 import { ProjectProfilePageParamsModel } from '@pages/projects/[projectId]/configuration/profiles/data/model/project-profile-page-params.model'
 import { PageRequestInformationModel } from '@shared/models/model/page-request-information.model'
-import {
-    ElementRequestInformationModel,
-} from '@shared/models/model/element-request-information.model'
 import { ProjectProfileModel } from '@shared/models/model/project-profile.model'
 import { SelectItem } from 'primeng/api'
 import { UserModel } from '@shared/models/model/user.model'
@@ -10,7 +7,6 @@ import { ProfileStatusEnum } from '@shared/models/enumeration/profile-status.enu
 
 export interface ProjectProfileStateModel {
     projectProfiles: PageRequestInformationModel<ProjectProfilePageParamsModel, ProjectProfileModel>
-    projectProfile: ElementRequestInformationModel<ProjectProfileModel>
     _metadata: {
         roles: SelectItem<string>[]
         status: SelectItem<ProfileStatusEnum | undefined>[]

@@ -1,4 +1,4 @@
-<app-form [form]='form' [loading]='facade.projectProfileLoading()'>
+<app-form [form]='form' [loading]='loading()' [error]='error()'>
     <h2>{{ 'project-profiles.form.title.create' | translate : { name: registryFacade.selectedProject()?.name } }}</h2>
     <p-card>
         <form [formGroup]='form'>
@@ -95,6 +95,7 @@
                 rounded
                 outlined
                 icon='pi pi-user-plus'
+                [disabled]='saving()'
                 severity='success' />
     </div>
 </app-form>

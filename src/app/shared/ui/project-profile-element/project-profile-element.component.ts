@@ -88,7 +88,7 @@ export class ProjectProfileElementComponent extends GenericElementComponent impl
             {
                 label: 'project-profiles.actions.disable',
                 icon: 'pi pi-ban',
-                disabled: !this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_U),
+                disabled: this.busy() || !this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_U),
                 visible: !isCurrentUserProfile && this.actionIsEnable(ElementActionEnum.PROJECT_PROFILE_BLOCK) && this.profile().visible && this.profile().status?.value === ProfileStatusEnum.ACCEPTED,
                 command: (): void => {
                     this.confirmationService.confirm(
@@ -97,7 +97,7 @@ export class ProjectProfileElementComponent extends GenericElementComponent impl
                             'pi pi-exclamation-triangle',
                             this.profile(),
                             SeverityEnum.WARNING,
-                            (): void => this.facade.blockProjectProfile(this.profile()),
+                            (): void => this.run(this.facade.blockProjectProfile(this.profile())),
                         ),
                     )
                 },
@@ -105,7 +105,7 @@ export class ProjectProfileElementComponent extends GenericElementComponent impl
             {
                 label: 'project-profiles.actions.enable',
                 icon: 'pi pi-replay',
-                disabled: !this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_U),
+                disabled: this.busy() || !this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_U),
                 visible: !isCurrentUserProfile && this.actionIsEnable(ElementActionEnum.PROJECT_PROFILE_UNBLOCK) && !this.profile().visible,
                 command: (): void => {
                     this.confirmationService.confirm(
@@ -114,7 +114,7 @@ export class ProjectProfileElementComponent extends GenericElementComponent impl
                             'pi pi-info-circle',
                             this.profile(),
                             SeverityEnum.INFO,
-                            (): void => this.facade.unblockProjectProfile(this.profile()),
+                            (): void => this.run(this.facade.unblockProjectProfile(this.profile())),
                         ),
                     )
                 },
@@ -122,7 +122,7 @@ export class ProjectProfileElementComponent extends GenericElementComponent impl
             {
                 label: 'project-profiles.actions.delete',
                 icon: 'pi pi-trash',
-                disabled: !this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_D),
+                disabled: this.busy() || !this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_D),
                 visible: this.actionIsEnable(ElementActionEnum.PROJECT_PROFILE_DELETE),
                 command: (): void => {
                     this.confirmationService.confirm(
@@ -131,7 +131,7 @@ export class ProjectProfileElementComponent extends GenericElementComponent impl
                             'pi pi-exclamation-triangle',
                             this.profile(),
                             SeverityEnum.DANGER,
-                            (): void => this.facade.deleteProjectProfile(this.profile()),
+                            (): void => this.run(this.facade.deleteProjectProfile(this.profile())),
                         ),
                     )
                 },

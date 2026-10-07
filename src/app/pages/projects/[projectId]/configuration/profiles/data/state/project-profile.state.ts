@@ -4,47 +4,28 @@ import { PageModel } from '@shared/models/model/page.model'
 import { GenericProjectElementState } from '@shared/helpers/state/generic-project-element.state'
 import { initialize } from '@shared/helpers/util/rx.util'
 import {
-    BlockProjectProfile,
-    CreateProjectProfiles,
-    DeleteProjectProfile,
     FetchAssignableProjectProfileRoles,
     FetchProfileStatus,
-    FetchProjectProfile,
     FetchProjectProfilesPage,
-    ResetProjectProfile,
     ResetProjectProfileState,
     SearchUsers,
-    StartProjectProfileLoader,
     StartProjectProfilesPageLoader,
-    StopProjectProfileLoader,
     StopProjectProfilesPageLoader,
-    UnblockProjectProfile,
-    UpdateProjectProfile,
     UpdateProjectProfilesPageSearchParams,
 } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.action'
 import { ProjectProfileService } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.service'
 import { ProjectProfileFacade } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.facade'
 import { inject, Injectable } from '@angular/core'
 import { StateUtil } from '@shared/helpers/state/state.util'
-import { CreatedProjectProfiles } from '@pages/projects/[projectId]/configuration/profiles/data/dto/created-project-profiles.dto'
 import { UserUtil } from '@shared/helpers/util/user.util'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { UserModel } from '@shared/models/model/user.model'
 import { ErrorModel } from '@shared/models/model/error.model'
 import { ProjectProfileStateModel } from '@pages/projects/[projectId]/configuration/profiles/data/model/project-profile-state.model'
 import { ProjectProfileModel } from '@shared/models/model/project-profile.model'
-import {
-    ElementRequestInformationModel,
-} from '@shared/models/model/element-request-information.model'
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
 import { MetadataService } from '@core/registry/state/metadata.service'
 import { ProfileStatusEnum } from '@shared/models/enumeration/profile-status.enum'
-import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
-
-const defaultProjectProfile: ElementRequestInformationModel<ProjectProfileModel> = {
-    element: undefined,
-    loading: false,
-}
 
 const defaultProjectProfileState: ProjectProfileStateModel = {
     projectProfiles: {
@@ -60,7 +41,6 @@ const defaultProjectProfileState: ProjectProfileStateModel = {
         silentLoading: false,
         error: undefined,
     },
-    projectProfile: defaultProjectProfile,
     _metadata: {
         roles: [],
         status: [],
@@ -79,8 +59,6 @@ const defaultProjectProfileState: ProjectProfileStateModel = {
 } )
 @Injectable()
 export class ProjectProfileState extends GenericProjectElementState<ProjectProfileStateModel> implements NgxsOnInit {
-    private readonly projectProfileIcon: string = 'pi pi-key'
-
     private readonly service: ProjectProfileService = inject( ProjectProfileService )
     private readonly serviceMetadata: MetadataService = inject( MetadataService )
     private readonly facade: ProjectProfileFacade = inject( ProjectProfileFacade )
@@ -133,16 +111,6 @@ export class ProjectProfileState extends GenericProjectElementState<ProjectProfi
     @Selector()
     public static projectProfilesPageAvailabilitySearchedParam (state: ProjectProfileStateModel): boolean | undefined {
         return state.projectProfiles.params.availabilitySearched
-    }
-
-    @Selector()
-    public static projectProfile (state: ProjectProfileStateModel): ProjectProfileModel | undefined {
-        return state.projectProfile.element
-    }
-
-    @Selector()
-    public static projectProfileLoading (state: ProjectProfileStateModel): boolean {
-        return state.projectProfile.loading
     }
 
     @Selector()
@@ -240,51 +208,6 @@ export class ProjectProfileState extends GenericProjectElementState<ProjectProfi
         } )
     }
 
-    @Action( StartProjectProfileLoader )
-    public startProjectProfileLoader (ctx: StateContext<ProjectProfileStateModel>): void {
-        ctx.patchState( {
-            projectProfile: StateUtil.updateElementLoader( ctx.getState().projectProfile, true ),
-        } )
-    }
-
-    @Action( StopProjectProfileLoader )
-    public stopProjectProfileLoader (ctx: StateContext<ProjectProfileStateModel>): void {
-        ctx.patchState( {
-            projectProfile: StateUtil.updateElementLoader( ctx.getState().projectProfile, false ),
-        } )
-    }
-
-    @Action( FetchProjectProfile )
-    public fetchProjectProfile (
-        ctx: StateContext<ProjectProfileStateModel>,
-        payload: FetchProjectProfile,
-    ): Observable<void> {
-        return this.service.findProjectProfileById( payload.projectId, payload.id ).pipe(
-            initialize( (): void => this.facade.startProjectProfileLoader() ),
-            finalize( (): void => this.facade.stopProjectProfileLoader() ),
-            map( (profile: ProjectProfileModel): void => this.fetchProjectProfileComplete( ctx, profile ) ),
-        )
-    }
-
-    private fetchProjectProfileComplete (
-        ctx: StateContext<ProjectProfileStateModel>,
-        profile: ProjectProfileModel,
-    ): void {
-        ctx.patchState( {
-            projectProfile: {
-                ...ctx.getState().projectProfile,
-                element: profile,
-            },
-        } )
-    }
-
-    @Action( ResetProjectProfile )
-    public resetProjectProfile (ctx: StateContext<ProjectProfileStateModel>): void {
-        ctx.patchState( {
-            projectProfile: defaultProjectProfile,
-        } )
-    }
-
     @Action( SearchUsers )
     public SearchUsers (
         ctx: StateContext<ProjectProfileStateModel>,
@@ -319,8 +242,6 @@ export class ProjectProfileState extends GenericProjectElementState<ProjectProfi
         payload: FetchAssignableProjectProfileRoles,
     ): Observable<void> {
         return this.service.getAssignableProjectProfileRoles( payload.projectId ).pipe(
-            initialize( (): void => this.facade.startProjectProfileLoader() ),
-            finalize( (): void => this.facade.stopProjectProfileLoader() ),
             map( (roles: SelectItem<string>[]): void => this.fetchAssignableProjectProfileRolesComplete( ctx, roles ) ),
         )
     }
@@ -362,174 +283,6 @@ export class ProjectProfileState extends GenericProjectElementState<ProjectProfi
                 ],
             },
         } )
-    }
-
-    @Action( CreateProjectProfiles )
-    public createProjectProfiles (
-        ctx: StateContext<ProjectProfileStateModel>,
-        payload: CreateProjectProfiles,
-    ): Observable<void> {
-        return this.service.createProjectProfiles( payload.projectId, payload.profiles ).pipe(
-            initialize( (): void => this.facade.startProjectProfileLoader() ),
-            finalize( (): void => this.facade.stopProjectProfileLoader() ),
-            map( (creationStatus: CreatedProjectProfiles): void => this.createProjectProfilesComplete(
-                ctx,
-                creationStatus,
-            ) ),
-        )
-    }
-
-    private createProjectProfilesComplete (
-        ctx: StateContext<ProjectProfileStateModel>,
-        creationStatus: CreatedProjectProfiles,
-    ): void {
-        if (creationStatus?.notCreatedUserIds.length > 0) {
-            const prefixKey: string = 'project-profiles.notifications.partial-invitation'
-            this.buildMessageAndNotify(
-                SeverityEnum.WARNING,
-                this.pluralTranslationPipe.transform(
-                    prefixKey + '.title',
-                    creationStatus.createdUserIds.length,
-                ),
-                this.pluralTranslationPipe.transform(
-                    prefixKey + '.message',
-                    creationStatus.createdUserIds.length,
-                ),
-                this.projectProfileIcon,
-                {
-                    asked: creationStatus.createdUserIds.length + creationStatus.notCreatedUserIds.length,
-                    created: creationStatus.createdUserIds.length,
-                },
-            )
-        } else {
-            this.buildMessageAndNotify(
-                SeverityEnum.SUCCESS,
-                this.pluralTranslationPipe.transform(
-                    'project-profiles.notifications.create.title',
-                    creationStatus.createdUserIds,
-                ),
-                this.pluralTranslationPipe.transform(
-                    'project-profiles.notifications.create.message',
-                    creationStatus.createdUserIds,
-                ),
-                this.projectProfileIcon,
-                {
-                    created: creationStatus.createdUserIds.length,
-                },
-            )
-        }
-        this.refreshPage( ctx )
-    }
-
-    @Action( UpdateProjectProfile )
-    public updateProjectProfile (
-        ctx: StateContext<ProjectProfileStateModel>,
-        payload: UpdateProjectProfile,
-    ): Observable<void> {
-        return this.service.updateProjectProfileById( payload.projectId, payload.id, payload.profile ).pipe(
-            initialize( (): void => this.facade.startProjectProfileLoader() ),
-            finalize( (): void => this.facade.stopProjectProfileLoader() ),
-            map( (): void => this.updateProjectProfileComplete( ctx ) ),
-        )
-    }
-
-    private updateProjectProfileComplete (
-        ctx: StateContext<ProjectProfileStateModel>,
-    ): void {
-        this.buildMessageAndNotify(
-            SeverityEnum.SUCCESS,
-            'project-profiles.notifications.edit.title',
-            'project-profiles.notifications.edit.message',
-            this.projectProfileIcon,
-            this.buildTranslationArgs( ctx.getState().projectProfile.element! ),
-        )
-        this.refreshPage( ctx )
-    }
-
-    @Action( BlockProjectProfile )
-    public disableProjectProfile (
-        ctx: StateContext<ProjectProfileStateModel>,
-        payload: BlockProjectProfile,
-    ): Observable<void> {
-        return this.service.blockProjectProfileById( payload.projectId, payload.profile.id ).pipe(
-            initialize( (): void => this.facade.startProjectProfileLoader() ),
-            finalize( (): void => this.facade.stopProjectProfileLoader() ),
-            map( (): void => this.blockProjectProfileComplete( ctx, payload.profile ) ),
-        )
-    }
-
-    private blockProjectProfileComplete (
-        ctx: StateContext<ProjectProfileStateModel>,
-        profile: ProjectProfileModel,
-    ): void {
-        this.buildMessageAndNotify(
-            SeverityEnum.SUCCESS,
-            'project-profiles.notifications.disable.title',
-            'project-profiles.notifications.disable.message',
-            this.projectProfileIcon,
-            this.buildTranslationArgs( profile ),
-        )
-        this.refreshPage( ctx )
-    }
-
-    @Action( UnblockProjectProfile )
-    public enableProjectProfile (
-        ctx: StateContext<ProjectProfileStateModel>,
-        payload: UnblockProjectProfile,
-    ): Observable<void> {
-        return this.service.unblockProjectProfileById( payload.projectId, payload.profile.id ).pipe(
-            initialize( (): void => this.facade.startProjectProfileLoader() ),
-            finalize( (): void => this.facade.stopProjectProfileLoader() ),
-            map( (): void => this.unblockProjectProfileComplete( ctx, payload.profile ) ),
-        )
-    }
-
-    private unblockProjectProfileComplete (
-        ctx: StateContext<ProjectProfileStateModel>,
-        profile: ProjectProfileModel,
-    ): void {
-        this.buildMessageAndNotify(
-            SeverityEnum.SUCCESS,
-            'project-profiles.notifications.enable.title',
-            'project-profiles.notifications.enable.message',
-            this.projectProfileIcon,
-            this.buildTranslationArgs( profile ),
-        )
-        this.refreshPage( ctx )
-    }
-
-    @Action( DeleteProjectProfile )
-    public deleteProjectProfile (
-        ctx: StateContext<ProjectProfileStateModel>,
-        payload: DeleteProjectProfile,
-    ): Observable<void> {
-        return this.service.deleteProjectProfileById( undefined, payload.profile.id ).pipe(
-            initialize( (): void => this.facade.startProjectProfileLoader() ),
-            finalize( (): void => this.facade.stopProjectProfileLoader() ),
-            map( (): void => this.deleteProjectProfileComplete( ctx, payload.profile ) ),
-        )
-    }
-
-    private deleteProjectProfileComplete (
-        ctx: StateContext<ProjectProfileStateModel>,
-        profile: ProjectProfileModel,
-    ): void {
-        this.buildMessageAndNotify(
-            SeverityEnum.SUCCESS,
-            'project-profiles.notifications.delete.title',
-            'project-profiles.notifications.delete.message.other',
-            this.projectProfileIcon,
-            this.buildTranslationArgs( profile ),
-        )
-        this.refreshPage( ctx )
-    }
-
-    private buildTranslationArgs (profile: ProjectProfileModel): object {
-        return {
-            firstName: profile?.user?.firstName,
-            lastName: profile?.user?.lastName,
-            name: profile?.project?.name,
-        }
     }
 
     protected refreshPage (ctx: StateContext<ProjectProfileStateModel>): void {

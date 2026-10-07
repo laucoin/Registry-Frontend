@@ -12,7 +12,6 @@ import {GenericProjectProfileFormComponent} from '@pages/projects/[projectId]/co
 import {RegistryRequiredDirective} from '@shared/directives/registry-required.directive'
 import {Button} from 'primeng/button'
 import {Select, SelectModule} from 'primeng/select'
-import {map} from 'rxjs'
 import {DateFormatPipe} from '@shared/helpers/pipe/date-format.pipe'
 import {DateTimeFieldComponent} from '@shared/ui/date-time-field/date-time-field.component'
 import {RegistryValidators} from '@shared/helpers/util/registry.validator'
@@ -60,11 +59,9 @@ export class ProjectProfileEditionFormComponent extends GenericProjectProfileFor
             return
         }
 
-        this.subscriptions.add(
-            this.facade.updateProjectProfile(this.facade.projectProfile()!.id!, this.buildDto()).pipe(
-                map((): void => this.navigateToRedirectUri()),
-            ).subscribe(),
-        )
+        if (this.saving() || this.loading() || !this.projectProfile()) return
+
+        this.save(this.facade.updateProjectProfile(this.projectProfile()!.id, this.buildDto()))
     }
 
     protected buildDto(): ProjectProfileDto {

@@ -19,7 +19,6 @@ import {
 } from '@shared/ui/select-elements-field/select-elements-field.component'
 import {PluralTranslationPipe} from '@shared/helpers/pipe/plural-translation.pipe'
 import {FormUtil} from '@shared/helpers/util/form.util'
-import {map} from 'rxjs'
 import {DateFormatPipe} from '@shared/helpers/pipe/date-format.pipe'
 import {UserUtil} from '@shared/helpers/util/user.util'
 import {DateTimeFieldComponent} from '@shared/ui/date-time-field/date-time-field.component'
@@ -78,11 +77,9 @@ export class ProjectProfileInvitationFormComponent extends GenericProjectProfile
             return
         }
 
-        this.subscriptions.add(
-            this.facade.createProjectProfiles(this.buildDto()).pipe(
-                map((): void => this.navigateToRedirectUri()),
-            ).subscribe(),
-        )
+        if (this.saving()) return
+
+        this.save(this.facade.createProjectProfiles(this.buildDto()))
     }
 
     protected buildDto(): ProjectProfilesDto {

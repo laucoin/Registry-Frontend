@@ -1,10 +1,10 @@
-import { inject } from '@angular/core'
+import { inject, signal, WritableSignal } from '@angular/core'
 import { FormControl, FormGroup } from '@angular/forms'
 import { ProjectProfileFacade } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.facade'
 import { ProjectProfileModel } from '@shared/models/model/project-profile.model'
 import { ProjectProfileDto } from '@pages/projects/[projectId]/configuration/profiles/data/dto/project-profile.dto'
 import { GenericFormComponent } from '@shared/ui/base/generic-form.component'
-import { map } from 'rxjs'
+import { withLoading } from '@shared/helpers/util/rx.util'
 import { ProjectProfilesDto } from '@pages/projects/[projectId]/configuration/profiles/data/dto/project-profiles.dto'
 import { GenericUtil } from '@shared/helpers/util/generic.util'
 
@@ -12,6 +12,7 @@ export abstract class GenericProjectProfileFormComponent extends GenericFormComp
     protected readonly facade: ProjectProfileFacade = inject( ProjectProfileFacade )
 
     protected readonly form: FormGroup
+    protected readonly projectProfile: WritableSignal<ProjectProfileModel | undefined> = signal( undefined )
 
     public constructor () {
         super()
@@ -24,20 +25,22 @@ export abstract class GenericProjectProfileFormComponent extends GenericFormComp
     }
 
     protected override loadData (): void {
-        this.facade.resetProjectProfile()
         this.facade.fetchAssignableRoles()
 
         if (GenericUtil.nonNull( this.idParam )) {
-            this.facade.fetchProjectProfile( this.idParam! )
+            this.subscriptions.add(
+                this.facade.fetchProjectProfile( this.idParam! ).pipe(
+                    withLoading( this.loading ),
+                ).subscribe( (profile: ProjectProfileModel): void => {
+                    this.projectProfile.set( profile )
+                    this.fillForm( profile )
+                } ),
+            )
         }
     }
 
     protected handleLoadedElement (): void {
-        this.subscriptions.add(
-            this.facade.projectProfile$.pipe(
-                map( (activity: ProjectProfileModel | undefined): void => this.fillForm( activity ) ),
-            ).subscribe(),
-        )
+        // the form is filled once the profile is fetched, see loadData
     }
 
     protected get idParam (): string | undefined {

@@ -1,12 +1,13 @@
 <app-form [form]='form'
-          [loading]='facade.projectProfileLoading()'
+          [loading]='loading()'
+          [error]='error()'
           [title]='"project-profiles.form.title.edit" | translate: {
-                firstName: facade.projectProfile()?.user?.firstName,
-                lastName: facade.projectProfile()?.user?.lastName,
+                firstName: projectProfile()?.user?.firstName,
+                lastName: projectProfile()?.user?.lastName,
           }'>
-    @if (facade.projectProfile()) {
+    @if (projectProfile()) {
         <div class='mb-2'>
-            <app-user-element [user]='facade.projectProfile()!.user!' [actionMenuVisible]='false' />
+            <app-user-element [user]='projectProfile()!.user!' [actionMenuVisible]='false' />
         </div>
     }
     <p-card>
@@ -78,6 +79,7 @@
                 rounded
                 outlined
                 icon='pi pi-pen-to-square'
+                [disabled]='saving()'
                 severity='success' />
     </div>
 </app-form>
