@@ -199,9 +199,6 @@ importers:
       '@ngx-translate/http-loader':
         specifier: ^18.0.0
         version: 18.0.0(@angular/common@22.1.5(@angular/core@22.1.5(@angular/compiler@22.1.5)(rxjs@7.8.2)(zone.js@0.16.3))(rxjs@7.8.2))(@angular/core@22.1.5(@angular/compiler@22.1.5)(rxjs@7.8.2)(zone.js@0.16.3))(@ngx-translate/core@18.0.0(@angular/common@22.1.5(@angular/core@22.1.5(@angular/compiler@22.1.5)(rxjs@7.8.2)(zone.js@0.16.3))(rxjs@7.8.2))(@angular/core@22.1.5(@angular/compiler@22.1.5)(rxjs@7.8.2)(zone.js@0.16.3))(rxjs@7.8.2))
-      '@ngxs/store':
-        specifier: ^22.0.0
-        version: 22.0.0(@angular/core@22.1.5(@angular/compiler@22.1.5)(rxjs@7.8.2)(zone.js@0.16.3))(rxjs@7.8.2)
       '@primeuix/themes':
         specifier: ^3.0.0
         version: 3.0.0
@@ -239,9 +236,6 @@ importers:
       '@eslint/js':
         specifier: ^10.0.1
         version: 10.0.1(eslint@10.9.1)
-      '@ngxs/devtools-plugin':
-        specifier: ^22.0.0
-        version: 22.0.0(@angular/core@22.1.5(@angular/compiler@22.1.5)(rxjs@7.8.2)(zone.js@0.16.3))(@ngxs/store@22.0.0(@angular/core@22.1.5(@angular/compiler@22.1.5)(rxjs@7.8.2)(zone.js@0.16.3))(rxjs@7.8.2))(rxjs@7.8.2)
       eslint:
         specifier: ^10.8.1
         version: 10.9.1
@@ -1233,19 +1227,6 @@ packages:
       '@angular/common': '>=18'
       '@angular/core': '>=18'
       '@ngx-translate/core': '>=18.0.0'
-
-  '@ngxs/devtools-plugin@22.0.0':
-    resolution: {integrity: sha512-M/WiWNZ6JIvirMpyYSYle2EUEc6qBPg3EJTCZ+jJD1PkaCRBBPSFAs6K3JcEMLIhDIjgJNwcJD4b06TDarqXng==}
-    peerDependencies:
-      '@angular/core': '>=22.0.0 <23.0.0'
-      '@ngxs/store': ^22.0.0 || ^22.0.0-dev
-      rxjs: '>=7.0.0'
-
-  '@ngxs/store@22.0.0':
-    resolution: {integrity: sha512-RJyEaFAE4lwAvseuNC9sHqXw9K3z4k0i46BeDGmy2oLurrrGdkT39RyGfNN9BlpFkjmTWtXTuB6A+heOffiBVg==}
-    peerDependencies:
-      '@angular/core': '>=22.0.0 <23.0.0'
-      rxjs: '>=7.0.0'
 
   '@noble/ed25519@2.3.0':
     resolution: {integrity: sha512-M7dvXL2B92/M7dw9+gzuydL8qn/jiqNHaoR3Q+cb1q1GHV7uwE17WCyFMG+Y+TZb5izcaXk5TdJRrDUxHXL78A==}
@@ -4257,19 +4238,6 @@ snapshots:
       '@angular/common': 22.1.5(@angular/core@22.1.5(@angular/compiler@22.1.5)(rxjs@7.8.2)(zone.js@0.16.3))(rxjs@7.8.2)
       '@angular/core': 22.1.5(@angular/compiler@22.1.5)(rxjs@7.8.2)(zone.js@0.16.3)
       '@ngx-translate/core': 18.0.0(@angular/common@22.1.5(@angular/core@22.1.5(@angular/compiler@22.1.5)(rxjs@7.8.2)(zone.js@0.16.3))(rxjs@7.8.2))(@angular/core@22.1.5(@angular/compiler@22.1.5)(rxjs@7.8.2)(zone.js@0.16.3))(rxjs@7.8.2)
-      tslib: 2.8.1
-
-  '@ngxs/devtools-plugin@22.0.0(@angular/core@22.1.5(@angular/compiler@22.1.5)(rxjs@7.8.2)(zone.js@0.16.3))(@ngxs/store@22.0.0(@angular/core@22.1.5(@angular/compiler@22.1.5)(rxjs@7.8.2)(zone.js@0.16.3))(rxjs@7.8.2))(rxjs@7.8.2)':
-    dependencies:
-      '@angular/core': 22.1.5(@angular/compiler@22.1.5)(rxjs@7.8.2)(zone.js@0.16.3)
-      '@ngxs/store': 22.0.0(@angular/core@22.1.5(@angular/compiler@22.1.5)(rxjs@7.8.2)(zone.js@0.16.3))(rxjs@7.8.2)
-      rxjs: 7.8.2
-      tslib: 2.8.1
-
-  '@ngxs/store@22.0.0(@angular/core@22.1.5(@angular/compiler@22.1.5)(rxjs@7.8.2)(zone.js@0.16.3))(rxjs@7.8.2)':
-    dependencies:
-      '@angular/core': 22.1.5(@angular/compiler@22.1.5)(rxjs@7.8.2)(zone.js@0.16.3)
-      rxjs: 7.8.2
       tslib: 2.8.1
 
   '@noble/ed25519@2.3.0': {}
