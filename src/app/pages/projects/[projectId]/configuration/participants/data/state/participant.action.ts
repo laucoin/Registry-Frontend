@@ -1,5 +1,3 @@
-import { ParticipantModel } from '@shared/models/model/participant.model'
-import { ParticipantDto } from '@pages/projects/[projectId]/configuration/participants/data/dto/participant.dto'
 import { ParticipantPageParamsModel } from '@pages/projects/[projectId]/configuration/participants/data/model/participant-page-params.model'
 import { MovementPageParamsModel } from '@shared/models/model/movement-page-params.model'
 
@@ -21,18 +19,9 @@ enum ParticipantActionEnum {
     FETCH_PARTICIPANT_MOVEMENTS_CONTENT = '[Backend] Fetching participant movements\' content',
     UPDATE_PARTICIPANT_MOVEMENTS_PAGE_SEARCH_PARAMS = '[Local] Updating participant movements\' page search params',
 
-    START_PARTICIPANT_LOADER = '[Local] Starting participant\'s loader',
-    STOP_PARTICIPANT_LOADER = '[Local] Stopping participant\'s loader',
 
-    FETCH_PARTICIPANT = '[Backend] Fetching participant',
     SEARCH_USERS = '[Backend] Searching users to link to participant',
     SEARCH_GROUPS = '[Backend] Searching groups to add participant in it',
-    RESET_PARTICIPANT = '[Local] Resetting participant',
-    CREATE_PARTICIPANT = '[Backend] Creating participant',
-    UPDATE_PARTICIPANT = '[Backend] Updating participant',
-    DISABLE_PARTICIPANT = '[Backend] Disabling participant',
-    ENABLE_PARTICIPANT = '[Backend] Enabling participant',
-    DELETE_PARTICIPANT = '[Backend] Deleting participant',
 }
 
 export class ResetParticipantState {
@@ -103,20 +92,6 @@ export class UpdateParticipantMovementsPageSearchParams {
     public constructor (public readonly params: MovementPageParamsModel) {}
 }
 
-export class StartParticipantLoader {
-    public static readonly type: ParticipantActionEnum = ParticipantActionEnum.START_PARTICIPANT_LOADER
-}
-
-export class StopParticipantLoader {
-    public static readonly type: ParticipantActionEnum = ParticipantActionEnum.STOP_PARTICIPANT_LOADER
-}
-
-export class FetchParticipant {
-    public static readonly type: ParticipantActionEnum = ParticipantActionEnum.FETCH_PARTICIPANT
-
-    public constructor (public readonly projectId: string | undefined, public readonly id: string) {}
-}
-
 export class SearchUsers {
     public static readonly type: ParticipantActionEnum = ParticipantActionEnum.SEARCH_USERS
 
@@ -133,42 +108,4 @@ export class SearchGroups {
         public readonly projectId: string | undefined,
         public readonly textSearched: string | undefined,
     ) {}
-}
-
-export class ResetParticipant {
-    public static readonly type: ParticipantActionEnum = ParticipantActionEnum.RESET_PARTICIPANT
-}
-
-export class CreateParticipant {
-    public static readonly type: ParticipantActionEnum = ParticipantActionEnum.CREATE_PARTICIPANT
-
-    public constructor (public readonly projectId: string | undefined, public readonly participant: ParticipantDto) {}
-}
-
-export class UpdateParticipant {
-    public static readonly type: ParticipantActionEnum = ParticipantActionEnum.UPDATE_PARTICIPANT
-
-    public constructor (
-        public readonly projectId: string | undefined,
-        public readonly id: string,
-        public readonly participant: ParticipantDto,
-    ) {}
-}
-
-export class DisableParticipant {
-    public static readonly type: ParticipantActionEnum = ParticipantActionEnum.DISABLE_PARTICIPANT
-
-    public constructor (public readonly projectId: string | undefined, public readonly id: string) {}
-}
-
-export class EnableParticipant {
-    public static readonly type: ParticipantActionEnum = ParticipantActionEnum.ENABLE_PARTICIPANT
-
-    public constructor (public readonly projectId: string | undefined, public readonly id: string) {}
-}
-
-export class DeleteParticipant {
-    public static readonly type: ParticipantActionEnum = ParticipantActionEnum.DELETE_PARTICIPANT
-
-    public constructor (public readonly projectId: string | undefined, public readonly participant: ParticipantModel) {}
 }

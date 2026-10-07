@@ -1,10 +1,10 @@
 <div class='mb-2'>
-    @if (facade.participantLoading()) {
+    @if (participantLoading()) {
         <p-card>
             <app-element-skeleton [withIcon]='true' [layout]='registryFacade.tinyScreen() ? "grid" : "list"' />
         </p-card>
-    } @else {
-        <app-participant-element [participant]='facade.participant()!' [actionMenuVisible]='false' />
+    } @else if (participant()) {
+        <app-participant-element [participant]='participant()!' [actionMenuVisible]='false' />
     }
 </div>
 

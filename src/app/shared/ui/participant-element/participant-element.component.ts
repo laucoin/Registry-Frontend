@@ -85,7 +85,7 @@ export class ParticipantElementComponent extends GenericElementComponent {
         {
             label: 'participants.actions.disable',
             icon: 'pi pi-eye-slash',
-            disabled: !this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_U),
+            disabled: this.busy() || !this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_U),
             visible: this.actionIsEnable(ElementActionEnum.PARTICIPANT_DISABLE) && this.participant().visible,
             command: (): void => {
                 this.confirmationService.confirm(
@@ -94,7 +94,7 @@ export class ParticipantElementComponent extends GenericElementComponent {
                         'pi pi-exclamation-triangle',
                         this.participant(),
                         SeverityEnum.WARNING,
-                        (): void => this.facade.disableParticipant(this.participant().id),
+                        (): void => this.run(this.facade.disableParticipant(this.participant().id)),
                     ),
                 )
             },
@@ -102,7 +102,7 @@ export class ParticipantElementComponent extends GenericElementComponent {
         {
             label: 'participants.actions.enable',
             icon: 'pi pi-replay',
-            disabled: !this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_U),
+            disabled: this.busy() || !this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_U),
             visible: this.actionIsEnable(ElementActionEnum.PARTICIPANT_ENABLE) && !this.participant().visible,
             command: (): void => {
                 this.confirmationService.confirm(
@@ -111,7 +111,7 @@ export class ParticipantElementComponent extends GenericElementComponent {
                         'pi pi-info-circle',
                         this.participant(),
                         SeverityEnum.INFO,
-                        (): void => this.facade.enableParticipant(this.participant().id),
+                        (): void => this.run(this.facade.enableParticipant(this.participant().id)),
                     ),
                 )
             },
@@ -139,7 +139,7 @@ export class ParticipantElementComponent extends GenericElementComponent {
         {
             label: 'participants.actions.delete',
             icon: 'pi pi-trash',
-            disabled: !this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_D),
+            disabled: this.busy() || !this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_D),
             visible: this.actionIsEnable(ElementActionEnum.PARTICIPANT_DELETE) && this.participant().visible,
             command: (): void => {
                 this.confirmationService.confirm(
@@ -148,7 +148,7 @@ export class ParticipantElementComponent extends GenericElementComponent {
                         'pi pi-exclamation-triangle',
                         this.participant(),
                         SeverityEnum.DANGER,
-                        (): void => this.facade.deleteParticipant(this.participant()),
+                        (): void => this.run(this.facade.deleteParticipant(this.participant())),
                     ),
                 )
             },

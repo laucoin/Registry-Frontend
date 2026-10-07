@@ -4,9 +4,11 @@ import { RegistryFacade } from '@core/registry/state/registry.facade'
 import { inject, Signal } from '@angular/core'
 import { StateUtil } from '@shared/helpers/state/state.util'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
+import { CommandEvent, CommandEventService } from '@shared/helpers/facade/command-event.service'
 
 export abstract class GenericProjectElementFacade extends GenericFacade {
     protected readonly registryFacade: RegistryFacade = inject( RegistryFacade )
+    protected readonly commandEvents: CommandEventService = inject( CommandEventService )
 
     public get selectedProjectId (): Signal<string | undefined> {
         return this.ngStore.selectSignal( RegistryState.currentUserSelectedProjectId )
@@ -20,5 +22,16 @@ export abstract class GenericProjectElementFacade extends GenericFacade {
             icon,
             data,
         ) )
+    }
+
+    protected onCommandSucceeded (
+        scope: string,
+        command: CommandEvent,
+        translationPrefix: string,
+        icon: string,
+        data: object,
+    ): void {
+        this.notifySuccess( `${ translationPrefix }.${ command === 'update' ? 'edit' : command }`, icon, data )
+        this.commandEvents.emit( scope, command )
     }
 }

@@ -27,8 +27,7 @@ import {GroupUtil} from '@shared/helpers/util/group.util'
 import {ProjectModel} from '@shared/models/model/project.model'
 import {DateFormatPipe} from '@shared/helpers/pipe/date-format.pipe'
 import {GenericFormComponent} from '@shared/ui/base/generic-form.component'
-import {map, Observable} from 'rxjs'
-import {CreateParticipant, UpdateParticipant} from '@pages/projects/[projectId]/configuration/participants/data/state/participant.action'
+import {withLoading} from '@shared/helpers/util/rx.util'
 import {GenericUtil} from '@shared/helpers/util/generic.util'
 import {FormTitlePipe} from '@shared/helpers/pipe/form-title.pipe'
 import {FormButtonPipe} from '@shared/helpers/pipe/form-button.pipe'
@@ -69,6 +68,7 @@ export class ParticipantFormComponent extends GenericFormComponent<ParticipantMo
     protected readonly GroupUtil: typeof GroupUtil = GroupUtil
 
     protected readonly form: FormGroup
+    protected readonly participant: WritableSignal<ParticipantModel | undefined> = signal(undefined)
 
     public readonly redirect: InputSignal<boolean> = input(true)
     public readonly showTitle: InputSignal<boolean> = input(true)
@@ -89,10 +89,15 @@ export class ParticipantFormComponent extends GenericFormComponent<ParticipantMo
     }
 
     protected override loadData(): void {
-        this.facade.resetParticipant()
-
         if (GenericUtil.nonNull(this.idParam)) {
-            this.facade.fetchParticipant(this.idParam!)
+            this.subscriptions.add(
+                this.facade.fetchParticipant(this.idParam!).pipe(
+                    withLoading(this.loading),
+                ).subscribe( (participant: ParticipantModel): void => {
+                    this.participant.set(participant)
+                    this.applyParticipant(participant)
+                } ),
+            )
         }
     }
 
@@ -125,16 +130,16 @@ export class ParticipantFormComponent extends GenericFormComponent<ParticipantMo
     }
 
     protected handleLoadedElement(): void {
-        this.subscriptions.add(
-            this.facade.participant$.pipe(
-                map((participant: ParticipantModel | undefined): void => {
-                    const contextProject: ProjectModel | undefined = participant?.project || this.registryFacade.selectedProject()
-                    this.addProjectDateValidators(contextProject, this.beginDateTime)
-                    this.addProjectDateValidators(contextProject, this.endDateTime)
-                    this.fillForm(participant)
-                }),
-            ).subscribe(),
-        )
+        if (!GenericUtil.nonNull(this.idParam)) {
+            this.applyParticipant(undefined)
+        }
+    }
+
+    private applyParticipant(participant: ParticipantModel | undefined): void {
+        const contextProject: ProjectModel | undefined = participant?.project || this.registryFacade.selectedProject()
+        this.addProjectDateValidators(contextProject, this.beginDateTime)
+        this.addProjectDateValidators(contextProject, this.endDateTime)
+        this.fillForm(participant)
     }
 
     protected fillForm(element: ParticipantModel | undefined): void {
@@ -154,24 +159,18 @@ export class ParticipantFormComponent extends GenericFormComponent<ParticipantMo
     }
 
     protected submit(): void {
+        if (this.saving() || this.loading()) return
+
+        const editing: boolean = GenericUtil.nonNull(this.idParam)
+        if (editing && !this.participant()) return
+
         if (!FormUtil.isFormValid(this.form)) {
             this.logInvalidForm(this.form.value)
             return
         }
 
         const dto: ParticipantDto = this.buildDto()
-        const observable: Observable<CreateParticipant | UpdateParticipant> =
-            this.facade.participant()
-                ? this.facade.updateParticipant(this.facade.participant()!.id!, dto)
-                : this.facade.createParticipant(dto)
-
-        if (this.redirect()) {
-            this.subscriptions.add(
-                observable.pipe(
-                    map((): void => this.navigateToRedirectUri()),
-                ).subscribe(),
-            )
-        }
+        this.save(editing ? this.facade.updateParticipant(this.participant()!.id, dto) : this.facade.createParticipant(dto), this.redirect())
     }
 
     protected buildDto(): ParticipantDto {

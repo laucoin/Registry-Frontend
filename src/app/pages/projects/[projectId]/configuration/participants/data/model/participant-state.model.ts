@@ -1,8 +1,5 @@
 import { ParticipantPageParamsModel } from '@pages/projects/[projectId]/configuration/participants/data/model/participant-page-params.model'
 import { PageRequestInformationModel } from '@shared/models/model/page-request-information.model'
-import {
-    ElementRequestInformationModel,
-} from '@shared/models/model/element-request-information.model'
 import { ParticipantModel } from '@shared/models/model/participant.model'
 import { SelectItem } from 'primeng/api'
 import { GroupModel } from '@shared/models/model/group.model'
@@ -14,7 +11,6 @@ import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.e
 export interface ParticipantStateModel {
     participants: PageRequestInformationModel<ParticipantPageParamsModel, ParticipantModel>
     movements: PageRequestInformationModel<MovementPageParamsModel, MovementModel>
-    participant: ElementRequestInformationModel<ParticipantModel>
     _metadata: {
         searchedUsers: SelectItem<UserModel>[]
         searchedGroups: SelectItem<GroupModel>[]

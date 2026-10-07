@@ -6,26 +6,17 @@ import { GenericProjectElementState } from '@shared/helpers/state/generic-projec
 import { initialize } from '@shared/helpers/util/rx.util'
 import { ParticipantStateModel } from '@pages/projects/[projectId]/configuration/participants/data/model/participant-state.model'
 import {
-    CreateParticipant,
-    DeleteParticipant,
-    DisableParticipant,
-    EnableParticipant,
-    FetchParticipant,
     FetchParticipantMovementsContents,
     FetchParticipantMovementsPage,
     FetchParticipantPresencesStatus,
     FetchParticipantsPage,
-    ResetParticipant,
     ResetParticipantState,
     SearchGroups,
     SearchUsers,
-    StartParticipantLoader,
     StartParticipantMovementsPageLoader,
     StartParticipantsPageLoader,
-    StopParticipantLoader,
     StopParticipantMovementsPageLoader,
     StopParticipantsPageLoader,
-    UpdateParticipant,
     UpdateParticipantMovementsPageSearchParams,
     UpdateParticipantsPageSearchParams,
 } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.action'
@@ -33,9 +24,6 @@ import { ParticipantService } from '@pages/projects/[projectId]/configuration/pa
 import { ParticipantFacade } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.facade'
 import { StateUtil } from '@shared/helpers/state/state.util'
 import { inject, Injectable } from '@angular/core'
-import {
-    ElementRequestInformationModel,
-} from '@shared/models/model/element-request-information.model'
 import { UserUtil } from '@shared/helpers/util/user.util'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { GroupModel } from '@shared/models/model/group.model'
@@ -49,12 +37,6 @@ import { MovementContentModel } from '@shared/models/model/movement-content.mode
 import { MovementUtil } from '@shared/helpers/util/movement.util'
 import { MetadataService } from '@core/registry/state/metadata.service'
 import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum'
-import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
-
-const defaultParticipant: ElementRequestInformationModel<ParticipantModel> = {
-    element: undefined,
-    loading: false,
-}
 
 const defaultParticipantState: ParticipantStateModel = {
     participants: {
@@ -84,7 +66,6 @@ const defaultParticipantState: ParticipantStateModel = {
         silentLoading: false,
         error: undefined,
     },
-    participant: defaultParticipant,
     _metadata: {
         searchedUsers: [],
         searchedGroups: [],
@@ -103,8 +84,6 @@ const defaultParticipantState: ParticipantStateModel = {
 } )
 @Injectable()
 export class ParticipantState extends GenericProjectElementState<ParticipantStateModel> implements NgxsOnInit {
-    private readonly participantIcon: string = 'pi pi-users'
-
     private readonly service: ParticipantService = inject( ParticipantService )
     private readonly metadataService: MetadataService = inject( MetadataService )
     private readonly movementService: MovementService = inject( MovementService )
@@ -197,16 +176,6 @@ export class ParticipantState extends GenericProjectElementState<ParticipantStat
     @Selector()
     public static participantMovementsPageVisibilitySearchedParam (state: ParticipantStateModel): boolean | undefined {
         return state.movements.params.visibilitySearched
-    }
-
-    @Selector()
-    public static participant (state: ParticipantStateModel): ParticipantModel | undefined {
-        return state.participant.element
-    }
-
-    @Selector()
-    public static participantLoading (state: ParticipantStateModel): boolean {
-        return state.participant.loading
     }
 
     @Selector()
@@ -436,41 +405,6 @@ export class ParticipantState extends GenericProjectElementState<ParticipantStat
         } )
     }
 
-    @Action( StartParticipantLoader )
-    public startParticipantLoader (ctx: StateContext<ParticipantStateModel>): void {
-        ctx.patchState( {
-            participant: StateUtil.updateElementLoader( ctx.getState().participant, true ),
-        } )
-    }
-
-    @Action( StopParticipantLoader )
-    public stopParticipantLoader (ctx: StateContext<ParticipantStateModel>): void {
-        ctx.patchState( {
-            participant: StateUtil.updateElementLoader( ctx.getState().participant, false ),
-        } )
-    }
-
-    @Action( FetchParticipant )
-    public fetchParticipant (ctx: StateContext<ParticipantStateModel>, payload: FetchParticipant): Observable<void> {
-        return this.service.findParticipantById( payload.projectId, payload.id ).pipe(
-            initialize( (): void => this.facade.startParticipantLoader() ),
-            finalize( (): void => this.facade.stopParticipantLoader() ),
-            map( (participant: ParticipantModel): void => this.fetchParticipantComplete( ctx, participant ) ),
-        )
-    }
-
-    private fetchParticipantComplete (
-        ctx: StateContext<ParticipantStateModel>,
-        participant: ParticipantModel,
-    ): void {
-        ctx.patchState( {
-            participant: {
-                ...ctx.getState().participant,
-                element: participant,
-            },
-        } )
-    }
-
     @Action( SearchUsers )
     public searchUsers (
         ctx: StateContext<ParticipantStateModel>,
@@ -525,153 +459,6 @@ export class ParticipantState extends GenericProjectElementState<ParticipantStat
                 searchedGroups: groups.map( (group: GroupModel): SelectItem<GroupModel> => GroupUtil.toSelectItem( group ) ),
             },
         } )
-    }
-
-    @Action( ResetParticipant )
-    public resetParticipant (ctx: StateContext<ParticipantStateModel>): void {
-        ctx.patchState( {
-            participant: defaultParticipant,
-        } )
-    }
-
-    @Action( CreateParticipant )
-    public createParticipant (ctx: StateContext<ParticipantStateModel>, payload: CreateParticipant): Observable<void> {
-        return this.service.createParticipant( payload.projectId, payload.participant ).pipe(
-            initialize( (): void => this.facade.startParticipantLoader() ),
-            finalize( (): void => this.facade.stopParticipantLoader() ),
-            map( (participant: ParticipantModel): void => this.createParticipantComplete(
-                ctx,
-                participant,
-            ) ),
-        )
-    }
-
-    private createParticipantComplete (
-        ctx: StateContext<ParticipantStateModel>,
-        participant: ParticipantModel,
-    ): void {
-        this.buildMessageAndNotify(
-            SeverityEnum.SUCCESS,
-            'participants.notifications.create.title',
-            'participants.notifications.create.message',
-            this.participantIcon,
-            this.buildTranslationArgs( participant ),
-        )
-        this.refreshPage( ctx )
-    }
-
-    @Action( UpdateParticipant )
-    public updateParticipant (ctx: StateContext<ParticipantStateModel>, payload: UpdateParticipant): Observable<void> {
-        return this.service.updateParticipantById( payload.projectId, payload.id, payload.participant ).pipe(
-            initialize( (): void => this.facade.startParticipantLoader() ),
-            finalize( (): void => this.facade.stopParticipantLoader() ),
-            map( (participant: ParticipantModel): void => this.updateParticipantComplete(
-                ctx,
-                participant,
-            ) ),
-        )
-    }
-
-    private updateParticipantComplete (
-        ctx: StateContext<ParticipantStateModel>,
-        participant: ParticipantModel,
-    ): void {
-        this.buildMessageAndNotify(
-            SeverityEnum.SUCCESS,
-            'participants.notifications.edit.title',
-            'participants.notifications.edit.message',
-            this.participantIcon,
-            this.buildTranslationArgs( participant ),
-        )
-        this.refreshPage( ctx )
-    }
-
-    @Action( DisableParticipant )
-    public disableParticipant (
-        ctx: StateContext<ParticipantStateModel>,
-        payload: DisableParticipant,
-    ): Observable<void> {
-        return this.service.disableParticipantById( payload.projectId, payload.id ).pipe(
-            initialize( (): void => this.facade.startParticipantLoader() ),
-            finalize( (): void => this.facade.stopParticipantLoader() ),
-            map( (participant: ParticipantModel): void => this.disableParticipantComplete(
-                ctx,
-                participant,
-            ) ),
-        )
-    }
-
-    private disableParticipantComplete (
-        ctx: StateContext<ParticipantStateModel>,
-        participant: ParticipantModel,
-    ): void {
-        this.buildMessageAndNotify(
-            SeverityEnum.SUCCESS,
-            'participants.notifications.disable.title',
-            'participants.notifications.disable.message',
-            this.participantIcon,
-            this.buildTranslationArgs( participant ),
-        )
-        this.refreshPage( ctx )
-    }
-
-    @Action( EnableParticipant )
-    public enableParticipant (ctx: StateContext<ParticipantStateModel>, payload: EnableParticipant): Observable<void> {
-        return this.service.enableParticipantById( payload.projectId, payload.id ).pipe(
-            initialize( (): void => this.facade.startParticipantLoader() ),
-            finalize( (): void => this.facade.stopParticipantLoader() ),
-            map( (participant: ParticipantModel): void => this.enableParticipantComplete(
-                ctx,
-                participant,
-            ) ),
-        )
-    }
-
-    private enableParticipantComplete (
-        ctx: StateContext<ParticipantStateModel>,
-        participant: ParticipantModel,
-    ): void {
-        this.buildMessageAndNotify(
-            SeverityEnum.SUCCESS,
-            'participants.notifications.enable.title',
-            'participants.notifications.enable.message',
-            this.participantIcon,
-            this.buildTranslationArgs( participant ),
-        )
-        this.refreshPage( ctx )
-    }
-
-    @Action( DeleteParticipant )
-    public deleteParticipant (ctx: StateContext<ParticipantStateModel>, payload: DeleteParticipant): Observable<void> {
-        return this.service.deleteParticipantById( undefined, payload.participant.id ).pipe(
-            initialize( (): void => this.facade.startParticipantLoader() ),
-            finalize( (): void => this.facade.stopParticipantLoader() ),
-            map( (): void => this.deleteParticipantComplete(
-                ctx,
-                payload.participant,
-            ) ),
-        )
-    }
-
-    private deleteParticipantComplete (
-        ctx: StateContext<ParticipantStateModel>,
-        participant: ParticipantModel,
-    ): void {
-        this.buildMessageAndNotify(
-            SeverityEnum.SUCCESS,
-            'participants.notifications.delete.title',
-            'participants.notifications.delete.message',
-            this.participantIcon,
-            this.buildTranslationArgs( participant ),
-        )
-        this.refreshPage( ctx )
-    }
-
-    private buildTranslationArgs (participant: ParticipantModel): object {
-        return {
-            firstName: participant?.firstName,
-            lastName: participant?.lastName,
-        }
     }
 
     protected refreshPage (ctx: StateContext<ParticipantStateModel>): void {

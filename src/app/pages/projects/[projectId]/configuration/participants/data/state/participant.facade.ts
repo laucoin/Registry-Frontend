@@ -1,43 +1,38 @@
-import { computed, Injectable, Signal } from '@angular/core'
-import { Observable } from 'rxjs'
+import { computed, inject, Injectable, Signal } from '@angular/core'
+import { Observable, tap } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
 import { ParticipantModel } from '@shared/models/model/participant.model'
 import { ParticipantDto } from '@pages/projects/[projectId]/configuration/participants/data/dto/participant.dto'
 import {
-    CreateParticipant,
-    DeleteParticipant,
-    DisableParticipant,
-    EnableParticipant,
-    FetchParticipant,
     FetchParticipantMovementsContents,
     FetchParticipantMovementsPage,
     FetchParticipantPresencesStatus,
     FetchParticipantsPage,
-    ResetParticipant,
     SearchGroups,
     SearchUsers,
-    StartParticipantLoader,
     StartParticipantMovementsPageLoader,
     StartParticipantsPageLoader,
-    StopParticipantLoader,
     StopParticipantMovementsPageLoader,
     StopParticipantsPageLoader,
-    UpdateParticipant,
     UpdateParticipantMovementsPageSearchParams,
     UpdateParticipantsPageSearchParams,
 } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.action'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
-import { ofActionSuccessful } from '@ngxs/store'
 import { GroupModel } from '@shared/models/model/group.model'
 import { ParticipantState } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.state'
 import { GenericProjectElementFacade } from '@shared/helpers/facade/generic-project-element.facade'
 import { MovementModel } from '@shared/models/model/movement.model'
 import { DateUtil } from '@shared/helpers/util/date.util'
+import { ParticipantService } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.service'
+import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/util/rx.util'
+import { CommandEvent } from '@shared/helpers/facade/command-event.service'
 import { UserModel } from '@shared/models/model/user.model'
 import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum'
 
 @Injectable()
 export class ParticipantFacade extends GenericProjectElementFacade {
+    private readonly service: ParticipantService = inject( ParticipantService )
+
     public get participantsPage (): Signal<PageModel<ParticipantModel> | undefined> {
         return this.ngStore.selectSignal( ParticipantState.participantsPage )
     }
@@ -108,18 +103,6 @@ export class ParticipantFacade extends GenericProjectElementFacade {
 
     public get participantMovementsPageVisibilitySearchedParam (): Signal<boolean | undefined> {
         return this.ngStore.selectSignal( ParticipantState.participantMovementsPageVisibilitySearchedParam )
-    }
-
-    public get participant (): Signal<ParticipantModel | undefined> {
-        return this.ngStore.selectSignal( ParticipantState.participant )
-    }
-
-    public get participant$ (): Observable<ParticipantModel | undefined> {
-        return this.ngStore.select( ParticipantState.participant )
-    }
-
-    public get participantLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( ParticipantState.participantLoading )
     }
 
     public get searchedUsersMetadata (): Signal<SelectItem<UserModel>[]> {
@@ -231,18 +214,6 @@ export class ParticipantFacade extends GenericProjectElementFacade {
         }
     }
 
-    public startParticipantLoader (): void {
-        this.ngStore.dispatch( StartParticipantLoader )
-    }
-
-    public stopParticipantLoader (): void {
-        this.ngStore.dispatch( StopParticipantLoader )
-    }
-
-    public fetchParticipant (id: string): void {
-        this.ngStore.dispatch( new FetchParticipant( this.selectedProjectId(), id ) )
-    }
-
     public searchUsers (
         textSearched: string | undefined = undefined,
     ): void {
@@ -255,56 +226,63 @@ export class ParticipantFacade extends GenericProjectElementFacade {
         this.ngStore.dispatch( new SearchGroups( this.selectedProjectId(), textSearched ) )
     }
 
-    public resetParticipant (): void {
-        this.ngStore.dispatch( ResetParticipant )
-    }
-
-    public handleParticipantFirstPageReload (): Observable<CreateParticipant | DeleteParticipant> {
-        return this.actions$.pipe(
-            ofActionSuccessful( CreateParticipant, DeleteParticipant ),
-        )
-    }
-
-    public handleParticipantCurrentPageReload (): Observable<UpdateParticipant | DisableParticipant | EnableParticipant> {
-        return this.actions$.pipe(
-            ofActionSuccessful( UpdateParticipant, DisableParticipant, EnableParticipant ),
-        )
-    }
-
-    public createParticipant (
-        participant: ParticipantDto,
-    ): Observable<CreateParticipant> {
-        this.ngStore.dispatch( new CreateParticipant( this.selectedProjectId(), participant ) )
-        return this.actions$.pipe( ofActionSuccessful( CreateParticipant ) )
-    }
-
-    public updateParticipant (
-        id: string,
-        participant: ParticipantDto,
-    ): Observable<UpdateParticipant> {
-        this.ngStore.dispatch( new UpdateParticipant( this.selectedProjectId(), id, participant ) )
-        return this.actions$.pipe( ofActionSuccessful( UpdateParticipant ) )
-    }
-
-    public disableParticipant (
-        id: string,
-    ): void {
-        this.ngStore.dispatch( new DisableParticipant( this.selectedProjectId(), id ) )
-    }
-
-    public enableParticipant (
-        id: string,
-    ): void {
-        this.ngStore.dispatch( new EnableParticipant( this.selectedProjectId(), id ) )
-    }
-
-    public deleteParticipant (
-        participant: ParticipantModel,
-    ): void {
-        this.ngStore.dispatch( new DeleteParticipant( this.selectedProjectId(), participant ) )
-    }
-
     public fetchPresencesStatus (): void {
         this.ngStore.dispatch( FetchParticipantPresencesStatus )
+    }
+
+    public handleParticipantFirstPageReload (): Observable<unknown> {
+        return this.commandEvents.on( 'participant', 'create', 'delete' )
+    }
+
+    public handleParticipantCurrentPageReload (): Observable<unknown> {
+        return this.commandEvents.on( 'participant', 'update', 'disable', 'enable' )
+    }
+
+    public fetchParticipant (id: string): Observable<ParticipantModel> {
+        return this.service.findParticipantById( this.selectedProjectId(), id ).pipe(
+            notifyOnError( this.registryFacade ),
+        )
+    }
+
+    public createParticipant (participant: ParticipantDto): Observable<ParticipantModel> {
+        return this.service.createParticipant( this.selectedProjectId(), participant ).pipe(
+            notifyUnavailableOnly( this.registryFacade ),
+            tap( (created: ParticipantModel): void => this.onCommandSuccess( 'create', created ) ),
+        )
+    }
+
+    public updateParticipant (id: string, participant: ParticipantDto): Observable<ParticipantModel> {
+        return this.service.updateParticipantById( this.selectedProjectId(), id, participant ).pipe(
+            notifyUnavailableOnly( this.registryFacade ),
+            tap( (updated: ParticipantModel): void => this.onCommandSuccess( 'update', updated ) ),
+        )
+    }
+
+    public disableParticipant (id: string): Observable<ParticipantModel> {
+        return this.service.disableParticipantById( this.selectedProjectId(), id ).pipe(
+            notifyOnError( this.registryFacade ),
+            tap( (disabled: ParticipantModel): void => this.onCommandSuccess( 'disable', disabled ) ),
+        )
+    }
+
+    public enableParticipant (id: string): Observable<ParticipantModel> {
+        return this.service.enableParticipantById( this.selectedProjectId(), id ).pipe(
+            notifyOnError( this.registryFacade ),
+            tap( (enabled: ParticipantModel): void => this.onCommandSuccess( 'enable', enabled ) ),
+        )
+    }
+
+    public deleteParticipant (participant: ParticipantModel): Observable<void> {
+        return this.service.deleteParticipantById( undefined, participant.id ).pipe(
+            notifyOnError( this.registryFacade ),
+            tap( (): void => this.onCommandSuccess( 'delete', participant ) ),
+        )
+    }
+
+    private onCommandSuccess (command: CommandEvent, participant: ParticipantModel): void {
+        this.onCommandSucceeded( 'participant', command, 'participants.notifications', 'pi pi-users', { firstName: participant?.firstName, lastName: participant?.lastName } )
+
+        const page: PageModel<ParticipantModel> | undefined = this.participantsPage()
+        this.fetchParticipantsPage( page?.pageNumber, page?.pageSize, true )
     }
 }

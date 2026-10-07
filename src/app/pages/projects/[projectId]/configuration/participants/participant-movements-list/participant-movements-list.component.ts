@@ -1,4 +1,6 @@
-import { Component, inject, OnDestroy} from '@angular/core'
+import { Component, inject, OnDestroy, signal, WritableSignal } from '@angular/core'
+import {ParticipantModel} from '@shared/models/model/participant.model'
+import {withLoading} from '@shared/helpers/util/rx.util'
 import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms'
 import {PageEventModel} from '@shared/models/model/page-event.model'
 import {ListComponent} from '@shared/ui/list/list.component'
@@ -46,6 +48,9 @@ export class ParticipantMovementsListComponent extends GenericListComponent impl
 
     private readonly subscriptions: Subscription = new Subscription()
 
+    protected readonly participant: WritableSignal<ParticipantModel | undefined> = signal(undefined)
+    protected readonly participantLoading: WritableSignal<boolean> = signal(false)
+
     public constructor() {
         super()
 
@@ -66,7 +71,11 @@ export class ParticipantMovementsListComponent extends GenericListComponent impl
 
     protected loadData(): void {
         const id: string | undefined = this.route.snapshot.params['participantId']
-        this.facade.fetchParticipant(id!)
+        this.subscriptions.add(
+            this.facade.fetchParticipant(id!).pipe(
+                withLoading(this.participantLoading),
+            ).subscribe( (participant: ParticipantModel): void => this.participant.set(participant) ),
+        )
         this.facade.fetchParticipantMovementsPage(id!, undefined, undefined, false)
     }
 
@@ -106,7 +115,7 @@ export class ParticipantMovementsListComponent extends GenericListComponent impl
             this.visibilitySearched.value,
         )
         this.facade.fetchParticipantMovementsPage(
-            this.facade.participant()!.id, pageEvent.pageNumber, pageEvent.pageSize, false,
+            this.route.snapshot.params['participantId'], pageEvent.pageNumber, pageEvent.pageSize, false,
         )
     }
 

@@ -1,9 +1,10 @@
 <app-form [form]='form'
-          [loading]='facade.participantLoading()'
+          [loading]='loading()'
+          [error]='error()'
           [showTitle]='showTitle()'
-          [title]='"participants.form.title" | formTitle: facade.participant() | translate : {
-              firstName: facade.participant()?.firstName,
-              lastName: facade.participant()?.lastName
+          [title]='"participants.form.title" | formTitle: participant() | translate : {
+              firstName: participant()?.firstName,
+              lastName: participant()?.lastName
           }'>
     <p-card>
         @if (!defaultGroup()) {
@@ -149,10 +150,11 @@
         <p-button
                 class='ms-2'
                 (onClick)='submit()'
-                [label]='facade.participant() | formButton | translate'
+                [label]='participant() | formButton | translate'
                 rounded
                 outlined
-                [icon]='facade.participant() | formIcon'
+                [icon]='participant() | formIcon'
+                [disabled]='saving()'
                 severity='success' />
     </div>
 </app-form>

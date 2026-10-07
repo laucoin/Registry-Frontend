@@ -37,11 +37,11 @@ export abstract class GenericFormComponent<M, D> extends GenericComponent {
 
     // Deliberately not tied to the component lifetime: once sent, a save must finish (toast, list refresh)
     // even if the user navigates away; only the redirect is skipped.
-    protected save<T> (command: Observable<T>): void {
+    protected save<T> (command: Observable<T>, redirect: boolean = true): void {
         this.error.set( undefined )
         command.pipe( withLoading( this.saving ) ).subscribe( {
             next: (): void => {
-                if (!this.destroyed) this.navigateToRedirectUri()
+                if (redirect && !this.destroyed) this.navigateToRedirectUri()
             },
             error: (error: ErrorModel): void => this.error.set( error ),
         } )
