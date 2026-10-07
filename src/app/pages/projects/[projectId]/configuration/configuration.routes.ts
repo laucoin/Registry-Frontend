@@ -1,7 +1,5 @@
 import { Routes } from '@angular/router'
 import { ConfigurationPage } from '@pages/projects/[projectId]/configuration/configuration.page'
-import { importProvidersFrom } from '@angular/core'
-import { NgxsModule } from '@ngxs/store'
 import { ConfigurationRoutesEnum } from '@pages/projects/[projectId]/configuration/configuration-routes.enum'
 import { ProjectProfileFacade } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.facade'
 import { ProjectProfileStore } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.store'
@@ -34,7 +32,7 @@ export const configurationRoutes: Routes = [
             {
                 path: ConfigurationRoutesEnum.PARTICIPANTS,
                 loadChildren: () => import('@pages/projects/[projectId]/configuration/participants/participant.routes').then( (m: typeof import('@pages/projects/[projectId]/configuration/participants/participant.routes')) => m.participantRoutes ),
-                providers: [ MovementFacade, ParticipantFacade, ParticipantStore, importProvidersFrom( NgxsModule.forFeature( [ MovementStore ] ) ) ],
+                providers: [ MovementFacade, ParticipantFacade, ParticipantStore, MovementStore ],
             },
             {
                 path: ConfigurationRoutesEnum.GROUPS,
@@ -45,13 +43,13 @@ export const configurationRoutes: Routes = [
                 path: ConfigurationRoutesEnum.VEHICLES,
                 loadChildren: () => import('@pages/projects/[projectId]/configuration/vehicles/vehicle.routes').then( (m: typeof import('@pages/projects/[projectId]/configuration/vehicles/vehicle.routes')) => m.vehicleRoutes ),
                 canActivate: [ vehicleOptionGuard ],
-                providers: [ MovementFacade, VehicleFacade, VehicleStore, importProvidersFrom( NgxsModule.forFeature( [ MovementStore ] ) ) ],
+                providers: [ MovementFacade, VehicleFacade, VehicleStore, MovementStore ],
             },
             {
                 path: ConfigurationRoutesEnum.ACTIVITIES,
                 loadChildren: () => import('@pages/projects/[projectId]/configuration/activities/activity.routes').then( (m: typeof import('@pages/projects/[projectId]/configuration/activities/activity.routes')) => m.activityRoutes ),
                 canActivate: [ activityOptionGuard ],
-                providers: [ MovementFacade, ActivityFacade, ActivityStore, importProvidersFrom( NgxsModule.forFeature( [ MovementStore ] ) ) ],
+                providers: [ MovementFacade, ActivityFacade, ActivityStore, MovementStore ],
             },
         ],
     },

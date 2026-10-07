@@ -37,7 +37,7 @@ export class MovementCommunicationsListComponent extends GenericComponent implem
     }
 
     protected loadData (): void {
-        this.facade.fetchMovementCommunicationsPage( this.movement().id!, undefined, undefined, true )
+        this.facade.fetchMovementCommunicationsPage( this.movement().id!, undefined, undefined)
     }
 
     private handleCommunicationActions (): void {
@@ -47,9 +47,7 @@ export class MovementCommunicationsListComponent extends GenericComponent implem
                     this.facade.fetchMovementCommunicationsPage(
                         this.movement().id,
                         undefined,
-                        undefined,
-                        true,
-                    )
+                        undefined)
                 } ),
             ).subscribe(),
         )
@@ -60,9 +58,7 @@ export class MovementCommunicationsListComponent extends GenericComponent implem
                     this.facade.fetchMovementCommunicationsPage(
                         this.movement().id,
                         undefined,
-                        undefined,
-                        true,
-                    )
+                        undefined)
                 } ),
             ).subscribe(),
         )
@@ -73,9 +69,7 @@ export class MovementCommunicationsListComponent extends GenericComponent implem
                     this.facade.fetchMovementCommunicationsPage(
                         this.movement().id,
                         this.facade.movementCommunicationsPage()?.pageNumber,
-                        this.facade.movementCommunicationsPage()?.pageSize,
-                        true,
-                    )
+                        this.facade.movementCommunicationsPage()?.pageSize)
                 } ),
             ).subscribe(),
         )

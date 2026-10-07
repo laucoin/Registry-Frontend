@@ -56,7 +56,7 @@ export class MovementsListPage extends GenericListComponent {
     }
 
     protected loadData(): void {
-        this.facade.fetchMovementsPage(undefined, undefined, false)
+        this.facade.fetchMovementsPage(undefined, undefined)
     }
 
     protected loadPage(pageEvent: PageEventModel): void {
@@ -66,7 +66,7 @@ export class MovementsListPage extends GenericListComponent {
             this.endDateTimeSearched.value,
             this.visibilitySearched.value,
         )
-        this.facade.fetchMovementsPage(pageEvent.pageNumber, pageEvent.pageSize, false)
+        this.facade.fetchMovementsPage(pageEvent.pageNumber, pageEvent.pageSize)
     }
 
     protected get typeSearched(): FormControl {

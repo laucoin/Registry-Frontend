@@ -43,14 +43,14 @@ export const projectRoutes: Routes = [
                     {
                         path: '', component: ProjectHomePage,
                         providers: [
-                            SelectedProjectFacade, ParticipantFacade, ParticipantStore, MovementFacade, CommunicationFacade, AlertFacade,
-                            importProvidersFrom( NgxsModule.forFeature( [ SelectedProjectStore, MovementStore, CommunicationStore, AlertStore ] ) ),
+                            SelectedProjectFacade, ParticipantFacade, ParticipantStore, MovementFacade, MovementStore, CommunicationFacade, AlertFacade,
+                            importProvidersFrom( NgxsModule.forFeature( [ SelectedProjectStore, CommunicationStore, AlertStore ] ) ),
                         ],
                     },
                     {
                         path: ProjectRoutesEnum.MOVEMENTS,
                         loadChildren: () => import('@pages/projects/[projectId]/movements/movement.routes').then( (m: typeof import('@pages/projects/[projectId]/movements/movement.routes')) => m.movementRoutes ),
-                        providers: [ CommunicationFacade, MovementFacade, importProvidersFrom( NgxsModule.forFeature( [ MovementStore, CommunicationStore ] ) ) ],
+                        providers: [ CommunicationFacade, MovementFacade, MovementStore, importProvidersFrom( NgxsModule.forFeature( [ CommunicationStore ] ) ) ],
                     },
                     {
                         path: ProjectRoutesEnum.ALERTS,
