@@ -6,6 +6,7 @@
     "start": "ng serve",
     "build": "ng build",
     "lint": "ng lint",
+    "test": "ng test",
     "prepare": "husky"
   },
   "private": true,
@@ -38,7 +39,9 @@
     "@ngxs/devtools-plugin": "^22.0.0",
     "eslint": "^10.8.1",
     "husky": "^9.1.7",
+    "jsdom": "^30.1.2",
     "typescript": "~6.0.3",
-    "typescript-eslint": "^8.69.0"
+    "typescript-eslint": "^8.69.0",
+    "vitest": "^4.1.11"
   }
 }
