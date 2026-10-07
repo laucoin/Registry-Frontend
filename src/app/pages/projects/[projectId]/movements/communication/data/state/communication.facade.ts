@@ -1,3 +1,4 @@
+import { toObservable } from '@angular/core/rxjs-interop'
 import { computed, Injectable, Signal, inject } from '@angular/core'
 import { PageModel } from '@shared/models/model/page.model'
 import { CommunicationModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
@@ -9,18 +10,6 @@ import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/rx.helper'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
 import { CommandEvent } from '@shared/helpers/facade/command-event.service'
 import { Observable, tap } from 'rxjs'
-import {
-    FetchCommunication,
-    FetchCommunicationsPage,
-    ResetCommunication,
-    SearchAlerts,
-    SearchMovements,
-    StartCommunicationLoader,
-    StartCommunicationsPageLoader,
-    StopCommunicationLoader,
-    StopCommunicationsPageLoader,
-    UpdateCommunicationsPageSearchParams,
-} from '@pages/projects/[projectId]/movements/communication/data/state/communication.action'
 import { GenericProjectElementFacade } from '@shared/helpers/facade/generic-project-element.facade'
 import { CommunicationDto } from '@pages/projects/[projectId]/movements/communication/data/dto/communication.dto'
 import { MovementModel } from '@shared/models/model/movement.model'
@@ -29,93 +18,56 @@ import { AlertModel } from '@shared/models/model/alert.model'
 
 @Injectable()
 export class CommunicationFacade extends GenericProjectElementFacade {
+    private readonly store: InstanceType<typeof CommunicationStore> = inject( CommunicationStore )
+
     private readonly api: CommunicationApi = inject( CommunicationApi )
     private readonly datePipe: DateFormatPipe = inject( DateFormatPipe )
 
-    public get communicationsPage (): Signal<PageModel<CommunicationModel> | undefined> {
-        return this.ngStore.selectSignal( CommunicationStore.communicationsPage )
-    }
+    public readonly communicationsPage: Signal<PageModel<CommunicationModel> | undefined> = this.store.communications.element
 
-    public get communicationsPageLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( CommunicationStore.communicationsPageLoading )
-    }
+    public readonly communicationsPageLoading: Signal<boolean> = this.store.communications.loading
 
-    public get communicationsPageSilentLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( CommunicationStore.communicationsPageSilentLoading )
-    }
+    public readonly communicationsPageSilentLoading: Signal<boolean> = this.store.communications.silentLoading
 
-    public get communicationsPageError (): Signal<ToastMessageOptions | undefined> {
-        return this.ngStore.selectSignal( CommunicationStore.communicationsPageError )
-    }
+    public readonly communicationsPageError: Signal<ToastMessageOptions | undefined> = this.store.communications.error
 
-    private get communicationsPageResetSearch (): Signal<boolean> {
-        return this.ngStore.selectSignal( CommunicationStore.communicationsPageResetSearch )
-    }
+    private readonly communicationsPageResetSearch: Signal<boolean> = this.store.communications.params.resetSearch
 
-    public get communicationsPageTextSearchedParam (): Signal<string | undefined> {
-        return this.ngStore.selectSignal( CommunicationStore.communicationsPageTextSearchedParam )
-    }
+    public readonly communicationsPageTextSearchedParam: Signal<string | undefined> = this.store.communications.params.textSearched
 
-    public get communicationsPageVisibilitySearchedParam (): Signal<boolean | undefined> {
-        return this.ngStore.selectSignal( CommunicationStore.communicationsPageVisibilitySearchedParam )
-    }
+    public readonly communicationsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.communications.params.visibilitySearched
 
-    public get communicationsPageStartDateTimeSearchedParam (): Signal<Date | undefined> {
-        return computed( (): Date | undefined =>
-            DateHelper.buildDate( this.ngStore.selectSignal( CommunicationStore.communicationsPageStartDateTimeSearchedParam )() ),
+    public readonly communicationsPageStartDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
+            DateHelper.buildDate( this.store.communications.params.startDateTimeSearched() ),
         )
-    }
 
-    public get communicationsPageEndDateTimeSearchedParam (): Signal<Date | undefined> {
-        return computed( (): Date | undefined =>
-            DateHelper.buildDate( this.ngStore.selectSignal( CommunicationStore.communicationsPageEndDateTimeSearchedParam )() ),
+    public readonly communicationsPageEndDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
+            DateHelper.buildDate( this.store.communications.params.endDateTimeSearched() ),
         )
-    }
 
-    public get communication (): Signal<CommunicationModel | undefined> {
-        return this.ngStore.selectSignal( CommunicationStore.communication )
-    }
+    public readonly communication: Signal<CommunicationModel | undefined> = this.store.communication.element
 
-    public get communication$ (): Observable<CommunicationModel | undefined> {
-        return this.ngStore.select( CommunicationStore.communication )
-    }
+    public readonly communication$: Observable<CommunicationModel | undefined> = toObservable( this.communication )
 
-    public get communicationLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( CommunicationStore.communicationLoading )
-    }
+    public readonly communicationLoading: Signal<boolean> = this.store.communication.loading
 
-    public get visibilitiesMetadata (): Signal<SelectItem<boolean | undefined>[]> {
-        return computed( () =>
-            this.ngStore.selectSignal( CommunicationStore.visibilitiesMetadata )().map( (status: SelectItem<boolean | undefined>) => ({
+    public readonly visibilitiesMetadata: Signal<SelectItem<boolean | undefined>[]> = computed( () =>
+            this.store.metadata.visibilities().map( (status: SelectItem<boolean | undefined>) => ({
                 ...status,
                 label: this.translateService.instant( status.label! ),
             }) ),
         )
-    }
 
-    public get searchedMovementsMetadata (): Signal<SelectItem<MovementModel>[]> {
-        return this.ngStore.selectSignal( CommunicationStore.searchedMovementsMetadata )
-    }
+    public readonly searchedMovementsMetadata: Signal<SelectItem<MovementModel>[]> = this.store.metadata.searchedMovements
 
-    public get searchedAlertsMetadata (): Signal<SelectItem<AlertModel>[]> {
-        return this.ngStore.selectSignal( CommunicationStore.searchedAlertsMetadata )
-    }
-
-    public startCommunicationsPageLoader (): void {
-        this.ngStore.dispatch( StartCommunicationsPageLoader )
-    }
-
-    public stopCommunicationsPageLoader (): void {
-        this.ngStore.dispatch( StopCommunicationsPageLoader )
-    }
+    public readonly searchedAlertsMetadata: Signal<SelectItem<AlertModel>[]> = this.store.metadata.searchedAlerts
 
     public fetchCommunicationsPage (
         pageNumber: number | undefined,
         pageSize: number | undefined,
-        force: boolean,
     ): void {
         const index: number | undefined = this.communicationsPageResetSearch() ? 0 : pageNumber
-        this.ngStore.dispatch( new FetchCommunicationsPage( this.selectedProjectId(), index, pageSize, force ) )
+        this.store.fetchCommunicationsPage( { projectId: this.selectedProjectId(), pageNumber: index, pageSize: pageSize } )
     }
 
     public inputPageSearchParameters (
@@ -130,42 +82,34 @@ export class CommunicationFacade extends GenericProjectElementFacade {
                                      || this.communicationsPageEndDateTimeSearchedParam() != endDateTimeSearched?.toISOString()
 
         if (resetSearch) {
-            this.ngStore.dispatch( new UpdateCommunicationsPageSearchParams( {
+            this.store.updateCommunicationsPageSearchParams( {
                 resetSearch: resetSearch,
                 textSearched: textSearched,
                 visibilitySearched: visibilitySearched,
                 startDateTimeSearched: startDateTimeSearched?.toISOString(),
                 endDateTimeSearched: endDateTimeSearched?.toISOString(),
-            } ) )
+            } )
         }
     }
 
-    public startCommunicationLoader (): void {
-        this.ngStore.dispatch( StartCommunicationLoader )
-    }
-
-    public stopCommunicationLoader (): void {
-        this.ngStore.dispatch( StopCommunicationLoader )
-    }
-
     public fetchCommunication (id: string): void {
-        this.ngStore.dispatch( new FetchCommunication( this.selectedProjectId(), id ) )
+        this.store.fetchCommunication( { projectId: this.selectedProjectId(), id: id } )
     }
 
     public searchMovements (
         textSearched: string | undefined = undefined,
     ): void {
-        this.ngStore.dispatch( new SearchMovements( this.selectedProjectId(), textSearched ) )
+        this.store.searchMovements( { projectId: this.selectedProjectId(), textSearched: textSearched } )
     }
 
     public searchAlerts (
         textSearched: string | undefined = undefined,
     ): void {
-        this.ngStore.dispatch( new SearchAlerts( this.selectedProjectId(), textSearched ) )
+        this.store.searchAlerts( { projectId: this.selectedProjectId(), textSearched: textSearched } )
     }
 
     public resetCommunication (): void {
-        this.ngStore.dispatch( ResetCommunication )
+        this.store.resetCommunication()
     }
 
     public handleCommunicationFirstPageReload (): Observable<unknown> {
@@ -226,6 +170,6 @@ export class CommunicationFacade extends GenericProjectElementFacade {
         }
 
         const page: PageModel<CommunicationModel> | undefined = this.communicationsPage()
-        this.fetchCommunicationsPage( page?.pageNumber, page?.pageSize, true )
+        this.fetchCommunicationsPage( page?.pageNumber, page?.pageSize )
     }
 }

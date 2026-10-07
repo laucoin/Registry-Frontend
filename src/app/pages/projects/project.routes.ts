@@ -43,20 +43,20 @@ export const projectRoutes: Routes = [
                     {
                         path: '', component: ProjectHomePage,
                         providers: [
-                            SelectedProjectFacade, ParticipantFacade, ParticipantStore, MovementFacade, MovementStore, CommunicationFacade, AlertFacade,
-                            importProvidersFrom( NgxsModule.forFeature( [ SelectedProjectStore, CommunicationStore, AlertStore ] ) ),
+                            SelectedProjectFacade, ParticipantFacade, ParticipantStore, MovementFacade, MovementStore, CommunicationFacade, CommunicationStore, AlertFacade,
+                            importProvidersFrom( NgxsModule.forFeature( [ SelectedProjectStore, AlertStore ] ) ),
                         ],
                     },
                     {
                         path: ProjectRoutesEnum.MOVEMENTS,
                         loadChildren: () => import('@pages/projects/[projectId]/movements/movement.routes').then( (m: typeof import('@pages/projects/[projectId]/movements/movement.routes')) => m.movementRoutes ),
-                        providers: [ CommunicationFacade, MovementFacade, MovementStore, importProvidersFrom( NgxsModule.forFeature( [ CommunicationStore ] ) ) ],
+                        providers: [ CommunicationFacade, CommunicationStore, MovementFacade, MovementStore ],
                     },
                     {
                         path: ProjectRoutesEnum.ALERTS,
                         component: AlertsListPage,
                         canActivate: [ alertOptionGuard ],
-                        providers: [ CommunicationFacade, AlertFacade, importProvidersFrom( NgxsModule.forFeature( [ AlertStore, CommunicationStore ] ) ) ],
+                        providers: [ CommunicationFacade, CommunicationStore, AlertFacade, importProvidersFrom( NgxsModule.forFeature( [ AlertStore ] ) ) ],
                     },
                     {
                         path: ProjectRoutesEnum.CONFIGURATION,

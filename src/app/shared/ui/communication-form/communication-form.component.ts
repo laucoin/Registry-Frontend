@@ -37,8 +37,6 @@ import { ProjectOptionIconPipe } from '@shared/helpers/pipe/project-option-icon.
 import { AutoComplete, AutoCompleteCompleteEvent } from 'primeng/autocomplete'
 import { Divider } from 'primeng/divider'
 import { FormHelper } from '@shared/helpers/form.helper'
-import {
-} from '@pages/projects/[projectId]/movements/communication/data/state/communication.action'
 import { InputText } from 'primeng/inputtext'
 import { AlertFacade } from '@pages/projects/[projectId]/alerts/data/state/alert.facade'
 import { AlertDto } from '@pages/projects/[projectId]/alerts/data/dto/alert.dto'

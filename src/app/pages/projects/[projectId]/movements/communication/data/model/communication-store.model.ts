@@ -11,7 +11,7 @@ import { AlertModel } from '@shared/models/model/alert.model'
 export interface CommunicationStoreModel {
     communications: PageRequestInformationModel<CommunicationPageParamsModel, CommunicationModel>
     communication: ElementRequestInformationModel<CommunicationModel>
-    _metadata: {
+    metadata: {
         searchedMovements: SelectItem<MovementModel>[]
         searchedAlerts: SelectItem<AlertModel>[]
         visibilities: SelectItem<boolean | undefined>[],

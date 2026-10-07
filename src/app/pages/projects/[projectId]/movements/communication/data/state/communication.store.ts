@@ -1,37 +1,41 @@
-import { Action, Selector, State, StateContext } from '@ngxs/store'
-import { catchError, finalize, map, Observable, of } from 'rxjs'
+import { inject } from '@angular/core'
+import { patchState, signalStore, withMethods, withProps, withState } from '@ngrx/signals'
+import { rxMethod } from '@ngrx/signals/rxjs-interop'
+import { catchError, EMPTY, finalize, Observable, pipe, switchMap, tap } from 'rxjs'
+import { SelectItem } from 'primeng/api'
 import { PageModel } from '@shared/models/model/page.model'
-import { GenericProjectElementStore } from '@shared/helpers/state/generic-project-element.store'
-import { initialize } from '@shared/helpers/rx.helper'
-import { StateHelper } from '@shared/helpers/state/state.helper'
-import { inject, Injectable } from '@angular/core'
-import {
-    ElementRequestInformationModel,
-} from '@shared/models/model/element-request-information.model'
-import { SelectItem, ToastMessageOptions } from 'primeng/api'
-import { ErrorModel } from '@shared/models/model/error.model'
-import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
-import { CommunicationStoreModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication-store.model'
-import { CommunicationModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
-import { CommunicationApi } from '@pages/projects/[projectId]/movements/communication/data/state/communication.api'
-import { CommunicationFacade } from '@pages/projects/[projectId]/movements/communication/data/state/communication.facade'
-import {
-    FetchCommunication,
-    FetchCommunicationsPage,
-    ResetCommunication,
-    ResetCommunicationState,
-    SearchAlerts,
-    SearchMovements,
-    StartCommunicationLoader,
-    StartCommunicationsPageLoader,
-    StopCommunicationLoader,
-    StopCommunicationsPageLoader,
-    UpdateCommunicationsPageSearchParams,
-} from '@pages/projects/[projectId]/movements/communication/data/state/communication.action'
 import { MovementModel } from '@shared/models/model/movement.model'
-import { MovementHelper } from '@shared/helpers/movement.helper'
 import { AlertModel } from '@shared/models/model/alert.model'
+import { ErrorModel } from '@shared/models/model/error.model'
+import { ElementRequestInformationModel } from '@shared/models/model/element-request-information.model'
+import { CommunicationPageParamsModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication-page-params.model'
+import { CommunicationModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
+import { CommunicationStoreModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication-store.model'
+import { CommunicationApi } from '@pages/projects/[projectId]/movements/communication/data/state/communication.api'
+import { RegistryFacade } from '@core/registry/state/registry.facade'
+import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
+import { MovementHelper } from '@shared/helpers/movement.helper'
 import { AlertHelper } from '@shared/helpers/alert.helper'
+import { StateHelper } from '@shared/helpers/state/state.helper'
+import { initialize, notifyOnError, reportError } from '@shared/helpers/rx.helper'
+import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
+import { withProfileScope } from '@shared/helpers/store/with-profile-scope.feature'
+
+interface CommunicationsPageRequest {
+    projectId: string | undefined
+    pageNumber: number | undefined
+    pageSize: number | undefined
+}
+
+interface CommunicationRequest {
+    projectId: string | undefined
+    id: string
+}
+
+interface SearchRequest {
+    projectId: string | undefined
+    textSearched: string | undefined
+}
 
 const defaultCommunication: ElementRequestInformationModel<CommunicationModel> = {
     element: undefined,
@@ -39,21 +43,15 @@ const defaultCommunication: ElementRequestInformationModel<CommunicationModel> =
 }
 
 const defaultCommunicationStore: CommunicationStoreModel = {
-    communications: {
-        element: undefined,
-        params: {
-            resetSearch: false,
-            textSearched: undefined,
-            visibilitySearched: undefined,
-            startDateTimeSearched: undefined,
-            endDateTimeSearched: undefined,
-        },
-        loading: false,
-        silentLoading: false,
-        error: undefined,
-    },
+    communications: PageStateHelper.initial<CommunicationPageParamsModel, CommunicationModel>( {
+        resetSearch: false,
+        textSearched: undefined,
+        visibilitySearched: undefined,
+        startDateTimeSearched: undefined,
+        endDateTimeSearched: undefined,
+    } ),
     communication: defaultCommunication,
-    _metadata: {
+    metadata: {
         searchedMovements: [],
         searchedAlerts: [],
         visibilities: [
@@ -64,266 +62,113 @@ const defaultCommunicationStore: CommunicationStoreModel = {
     },
 }
 
-@State<CommunicationStoreModel>( {
-    name: 'communication',
-    defaults: defaultCommunicationStore,
-} )
-@Injectable()
-export class CommunicationStore extends GenericProjectElementStore<CommunicationStoreModel> {
-    private readonly api: CommunicationApi = inject( CommunicationApi )
-    private readonly facade: CommunicationFacade = inject( CommunicationFacade )
-    private readonly datePipe: DateFormatPipe = inject( DateFormatPipe )
+export const CommunicationStore = signalStore(
+    withState<CommunicationStoreModel>( defaultCommunicationStore ),
+    withProfileScope<CommunicationStoreModel>( defaultCommunicationStore ),
+    withProps( () => ({
+        api: inject( CommunicationApi ),
+        registryFacade: inject( RegistryFacade ),
+        datePipe: inject( DateFormatPipe ),
+    }) ),
+    withMethods( (store) => {
+        const trackElementLoader = <T>(source: Observable<T>): Observable<T> => source.pipe(
+            initialize( (): void => patchState( store, (state: CommunicationStoreModel) => ({
+                communication: StateHelper.updateElementLoader( state.communication, true ),
+            }) ) ),
+            finalize( (): void => patchState( store, (state: CommunicationStoreModel) => ({
+                communication: StateHelper.updateElementLoader( state.communication, false ),
+            }) ) ),
+        )
 
-    @Selector()
-    public static communicationsPage (state: CommunicationStoreModel): PageModel<CommunicationModel> | undefined {
-        return state.communications.element
-    }
-
-    @Selector()
-    public static communicationsPageLoading (state: CommunicationStoreModel): boolean {
-        return state.communications.loading
-    }
-
-    @Selector()
-    public static communicationsPageError (state: CommunicationStoreModel): ToastMessageOptions | undefined {
-        return state.communications.error
-    }
-
-    @Selector()
-    public static communicationsPageSilentLoading (state: CommunicationStoreModel): boolean {
-        return state.communications.silentLoading
-    }
-
-    @Selector()
-    public static communicationsPageResetSearch (state: CommunicationStoreModel): boolean {
-        return state.communications.params.resetSearch
-    }
-
-    @Selector()
-    public static communicationsPageTextSearchedParam (state: CommunicationStoreModel): string | undefined {
-        return state.communications.params.textSearched
-    }
-
-    @Selector()
-    public static communicationsPageVisibilitySearchedParam (state: CommunicationStoreModel): boolean | undefined {
-        return state.communications.params.visibilitySearched
-    }
-
-    @Selector()
-    public static communicationsPageStartDateTimeSearchedParam (state: CommunicationStoreModel): string | undefined {
-        return state.communications.params.startDateTimeSearched
-    }
-
-    @Selector()
-    public static communicationsPageEndDateTimeSearchedParam (state: CommunicationStoreModel): string | undefined {
-        return state.communications.params.endDateTimeSearched
-    }
-
-    @Selector()
-    public static communication (state: CommunicationStoreModel): CommunicationModel | undefined {
-        return state.communication.element
-    }
-
-    @Selector()
-    public static communicationLoading (state: CommunicationStoreModel): boolean {
-        return state.communication.loading
-    }
-
-    @Selector()
-    public static searchedMovementsMetadata (state: CommunicationStoreModel): SelectItem<MovementModel>[] {
-        return state._metadata.searchedMovements
-    }
-
-    @Selector()
-    public static searchedAlertsMetadata (state: CommunicationStoreModel): SelectItem<AlertModel>[] {
-        return state._metadata.searchedAlerts
-    }
-
-    @Selector()
-    public static visibilitiesMetadata (state: CommunicationStoreModel): SelectItem<boolean | undefined>[] {
-        return state._metadata.visibilities
-    }
-
-    @Action( ResetCommunicationState )
-    public resetCommunicationState (ctx: StateContext<CommunicationStoreModel>): void {
-        ctx.setState( defaultCommunicationStore )
-    }
-
-    @Action( StartCommunicationsPageLoader )
-    public startCommunicationsPageLoader (ctx: StateContext<CommunicationStoreModel>): void {
-        ctx.patchState( {
-            communications: StateHelper.updatePageLoader( ctx.getState().communications, true ),
-        } )
-    }
-
-    @Action( StopCommunicationsPageLoader )
-    public stopCommunicationsPageLoader (ctx: StateContext<CommunicationStoreModel>): void {
-        ctx.patchState( {
-            communications: StateHelper.updatePageLoader( ctx.getState().communications, false ),
-        } )
-    }
-
-    @Action( FetchCommunicationsPage )
-    public fetchCommunicationsPage (
-        ctx: StateContext<CommunicationStoreModel>,
-        payload: FetchCommunicationsPage,
-    ): Observable<void> {
-        return this.api.findCommunications(
-            payload.projectId,
-            payload.pageNumber,
-            payload.pageSize,
-            ctx.getState().communications.params,
-        ).pipe(
-            initialize( (): void => this.facade.startCommunicationsPageLoader() ),
-            finalize( (): void => this.facade.stopCommunicationsPageLoader() ),
-            map( (communicationsPage: PageModel<CommunicationModel>): void => this.fetchCommunicationsPageComplete(
-                ctx,
-                communicationsPage,
+        return {
+            fetchCommunicationsPage: rxMethod<CommunicationsPageRequest>( pipe(
+                switchMap( (request: CommunicationsPageRequest): Observable<PageModel<CommunicationModel>> => store.api.findCommunications(
+                    request.projectId,
+                    request.pageNumber,
+                    request.pageSize,
+                    store.communications.params(),
+                ).pipe(
+                    initialize( (): void => patchState( store, (state: CommunicationStoreModel) => ({
+                        communications: StateHelper.updatePageLoader( state.communications, true ),
+                    }) ) ),
+                    finalize( (): void => patchState( store, (state: CommunicationStoreModel) => ({
+                        communications: StateHelper.updatePageLoader( state.communications, false ),
+                    }) ) ),
+                    catchError( (error: ErrorModel): Observable<never> => {
+                        if (error.status === 503) {
+                            reportError( store.registryFacade, error )
+                        } else {
+                            patchState( store, (state: CommunicationStoreModel) => ({
+                                communications: PageStateHelper.withError( state.communications, error ),
+                            }) )
+                        }
+                        return EMPTY
+                    } ),
+                ) ),
+                tap( (page: PageModel<CommunicationModel>): void => patchState( store, (state: CommunicationStoreModel) => ({
+                    communications: {
+                        ...state.communications,
+                        params: { ...state.communications.params, resetSearch: false },
+                        element: page,
+                    },
+                }) ) ),
             ) ),
-            catchError( (error: ErrorModel): Observable<void> => this.pageError( ctx, error ) ),
-        )
-    }
 
-    private fetchCommunicationsPageComplete (
-        ctx: StateContext<CommunicationStoreModel>,
-        communicationsPage: PageModel<CommunicationModel>,
-    ): void {
-        ctx.patchState( {
-            communications: {
-                ...ctx.getState().communications,
-                params: {
-                    ...ctx.getState().communications.params,
-                    resetSearch: false,
-                },
-                element: communicationsPage,
+            updateCommunicationsPageSearchParams: (params: CommunicationPageParamsModel): void => {
+                patchState( store, (state: CommunicationStoreModel) => ({
+                    communications: { ...state.communications, params: params },
+                }) )
             },
-        } )
-    }
 
-    @Action( UpdateCommunicationsPageSearchParams )
-    public updateCommunicationsPageSearchParams (
-        ctx: StateContext<CommunicationStoreModel>,
-        payload: UpdateCommunicationsPageSearchParams,
-    ): void {
-        ctx.patchState( {
-            communications: {
-                ...ctx.getState().communications,
-                params: payload.params,
-            },
-        } )
-    }
-
-    @Action( StartCommunicationLoader )
-    public startCommunicationLoader (ctx: StateContext<CommunicationStoreModel>): void {
-        ctx.patchState( {
-            communication: StateHelper.updateElementLoader( ctx.getState().communication, true ),
-        } )
-    }
-
-    @Action( StopCommunicationLoader )
-    public stopCommunicationLoader (ctx: StateContext<CommunicationStoreModel>): void {
-        ctx.patchState( {
-            communication: StateHelper.updateElementLoader( ctx.getState().communication, false ),
-        } )
-    }
-
-    @Action( FetchCommunication )
-    public fetchCommunication (
-        ctx: StateContext<CommunicationStoreModel>,
-        payload: FetchCommunication,
-    ): Observable<void> {
-        return this.api.findCommunicationById( payload.projectId, payload.id ).pipe(
-            initialize( (): void => this.facade.startCommunicationLoader() ),
-            finalize( (): void => this.facade.stopCommunicationLoader() ),
-            map( (communication: CommunicationModel): void => this.fetchCommunicationComplete( ctx, communication ) ),
-        )
-    }
-
-    private fetchCommunicationComplete (
-        ctx: StateContext<CommunicationStoreModel>,
-        communication: CommunicationModel,
-    ): void {
-        ctx.patchState( {
-            communication: {
-                ...ctx.getState().communication,
-                element: communication,
-            },
-        } )
-    }
-
-    @Action( SearchMovements )
-    public searchMovements (
-        ctx: StateContext<CommunicationStoreModel>,
-        payload: SearchMovements,
-    ): Observable<void> {
-        return this.api.searchMovements( payload.projectId, payload.textSearched ).pipe(
-            initialize( (): void => this.facade.startCommunicationLoader() ),
-            finalize( (): void => this.facade.stopCommunicationLoader() ),
-            map( (movements: MovementModel[]): void => this.searchMovementsComplete( ctx, movements ) ),
-        )
-    }
-
-    private searchMovementsComplete (
-        ctx: StateContext<CommunicationStoreModel>,
-        movements: MovementModel[],
-    ): void {
-        ctx.patchState( {
-            _metadata: {
-                ...ctx.getState()._metadata,
-                searchedMovements: movements.map( (movement: MovementModel): SelectItem<MovementModel> =>
-                    MovementHelper.toActivitySelectItem( movement, this.datePipe ),
+            fetchCommunication: rxMethod<CommunicationRequest>( pipe(
+                switchMap( (request: CommunicationRequest): Observable<CommunicationModel> =>
+                    store.api.findCommunicationById( request.projectId, request.id ).pipe(
+                        trackElementLoader,
+                        notifyOnError( store.registryFacade ),
+                    ),
                 ),
-            },
-        } )
-    }
+                tap( (communication: CommunicationModel): void => patchState( store, (state: CommunicationStoreModel) => ({
+                    communication: { ...state.communication, element: communication },
+                }) ) ),
+            ) ),
 
-    @Action( SearchAlerts )
-    public searchAlerts (
-        ctx: StateContext<CommunicationStoreModel>,
-        payload: SearchAlerts,
-    ): Observable<void> {
-        return this.api.searchAlerts( payload.projectId, payload.textSearched ).pipe(
-            initialize( (): void => this.facade.startCommunicationLoader() ),
-            finalize( (): void => this.facade.stopCommunicationLoader() ),
-            map( (alerts: AlertModel[]): void => this.searchAlertsComplete( ctx, alerts ) ),
-        )
-    }
-
-    private searchAlertsComplete (
-        ctx: StateContext<CommunicationStoreModel>,
-        alerts: AlertModel[],
-    ): void {
-        ctx.patchState( {
-            _metadata: {
-                ...ctx.getState()._metadata,
-                searchedAlerts: alerts.map( (alert: AlertModel): SelectItem<AlertModel> =>
-                    AlertHelper.toSelectItem( alert, this.datePipe ),
+            searchMovements: rxMethod<SearchRequest>( pipe(
+                switchMap( (request: SearchRequest): Observable<MovementModel[]> =>
+                    store.api.searchMovements( request.projectId, request.textSearched ).pipe(
+                        trackElementLoader,
+                        notifyOnError( store.registryFacade ),
+                    ),
                 ),
+                tap( (movements: MovementModel[]): void => patchState( store, (state: CommunicationStoreModel) => ({
+                    metadata: {
+                        ...state.metadata,
+                        searchedMovements: movements.map( (movement: MovementModel): SelectItem<MovementModel> =>
+                            MovementHelper.toActivitySelectItem( movement, store.datePipe ),
+                        ),
+                    },
+                }) ) ),
+            ) ),
+
+            searchAlerts: rxMethod<SearchRequest>( pipe(
+                switchMap( (request: SearchRequest): Observable<AlertModel[]> =>
+                    store.api.searchAlerts( request.projectId, request.textSearched ).pipe(
+                        trackElementLoader,
+                        notifyOnError( store.registryFacade ),
+                    ),
+                ),
+                tap( (alerts: AlertModel[]): void => patchState( store, (state: CommunicationStoreModel) => ({
+                    metadata: {
+                        ...state.metadata,
+                        searchedAlerts: alerts.map( (alert: AlertModel): SelectItem<AlertModel> =>
+                            AlertHelper.toSelectItem( alert, store.datePipe ),
+                        ),
+                    },
+                }) ) ),
+            ) ),
+
+            resetCommunication: (): void => {
+                patchState( store, { communication: defaultCommunication } )
             },
-        } )
-    }
-
-    @Action( ResetCommunication )
-    public resetCommunication (ctx: StateContext<CommunicationStoreModel>): void {
-        ctx.patchState( {
-            communication: defaultCommunication,
-        } )
-    }
-
-    protected refreshPage (ctx: StateContext<CommunicationStoreModel>): void {
-        const page: PageModel<CommunicationModel> | undefined = ctx.getState().communications.element
-        this.facade.fetchCommunicationsPage( page?.pageNumber, page?.pageSize, true )
-    }
-
-    protected pageError (ctx: StateContext<CommunicationStoreModel>, error: ErrorModel): Observable<void> {
-        if (error.status == 503) {
-            throw error
-        } else {
-            ctx.patchState( {
-                communications: this.buildErrorMessage( ctx.getState().communications, error ),
-            } )
         }
-
-        return of()
-    }
-}
+    } ),
+)

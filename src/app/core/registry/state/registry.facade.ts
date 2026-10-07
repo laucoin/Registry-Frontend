@@ -52,7 +52,6 @@ import {SeverityEnum} from '@shared/models/enumeration/severity.enum'
 import {GenericHelper} from '@shared/helpers/generic.helper'
 import {ThemeEnum} from '@shared/models/enumeration/theme.enum'
 import {ResetSelectedProjectState} from '@pages/projects/data/state/selected-project/selected-project.action'
-import {ResetCommunicationState} from '@pages/projects/[projectId]/movements/communication/data/state/communication.action'
 import {FetchAlertStatus} from '@pages/projects/[projectId]/alerts/data/state/alert.action'
 import {PrimeNG} from 'primeng/config'
 import {ProfileResetService} from '@shared/helpers/store/profile-reset.service'
@@ -393,7 +392,6 @@ export class RegistryFacade extends GenericFacade {
         this.profileReset.resetAll()
         this.ngStore.dispatch([
             new ResetSelectedProjectState(),
-            new ResetCommunicationState(),
             new SetCurrentProject(projectId),
         ])
 
@@ -414,7 +412,6 @@ export class RegistryFacade extends GenericFacade {
         this.profileReset.resetAll()
         this.ngStore.dispatch([
             new ResetSelectedProjectState(),
-            new ResetCommunicationState(),
             new CreateSupportProjectProfile(projectId),
         ])
 
