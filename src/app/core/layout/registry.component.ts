@@ -92,9 +92,8 @@ export class RegistryComponent extends GenericComponent implements OnDestroy {
 
     private handleNotification(): void {
         this.subscriptions.add(
-            this.registryFacade.notification.subscribe((message: ToastMessageOptions | undefined): void => {
-                this.notifyService.add(message!)
-                this.registryFacade.ackNotification()
+            this.registryFacade.notification.subscribe((message: ToastMessageOptions): void => {
+                this.notifyService.add(message)
             }),
         )
     }

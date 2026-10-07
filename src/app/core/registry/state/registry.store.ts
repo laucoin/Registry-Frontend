@@ -1,5 +1,5 @@
 import {inject, Injectable} from '@angular/core'
-import {Action, NgxsOnInit, Selector, State, StateContext} from '@ngxs/store'
+import {Action, Selector, State, StateContext} from '@ngxs/store'
 import {catchError, finalize, map, mergeMap, Observable, of} from 'rxjs'
 import {SecurityApi} from '@core/authentication/service/security.api'
 import {CurrentUserModel} from '@shared/models/model/current-user.model'
@@ -11,7 +11,6 @@ import {initialize} from '@shared/helpers/rx.helper'
 import {SessionStorageUtils} from '@shared/helpers/session-storage.helper'
 import {RegistryStoreModel} from '@core/registry/model/registry-store.model'
 import {
-    AckNotification,
     CreateSupportProjectProfile,
     DeleteUserProjectProfile,
     FetchCurrentUser,
@@ -22,24 +21,17 @@ import {
     Login,
     Logout,
     ManageUserProjectInvitationAcceptance,
-    Notify,
     SetCurrentProject,
-    SetGlobalError,
     StartCurrentUserActionLoader,
-    StartGlobalLoader,
     StartUserProjectProfileInvitationsPageLoader,
     StartUserProjectProfileLoader,
     StartUserProjectProfilesPageLoader,
     StopCurrentUserActionLoader,
-    StopGlobalLoader,
     StopUserProjectProfileInvitationsPageLoader,
     StopUserProjectProfileLoader,
     StopUserProjectProfilesPageLoader,
     UpdateCurrentUserLanguage,
     UpdateCurrentUserTheme,
-    UpdateNetwork,
-    UpdateScreenWidth,
-    UpdateTheme,
     UpdateUserProjectProfileInvitationsPageSearchParams,
     UpdateUserProjectProfilesPageSearchParams,
 } from '@core/registry/state/registry.action'
@@ -51,7 +43,7 @@ import {AuthenticationUriModel} from '@shared/models/model/authentication-uri.mo
 import {Router} from '@angular/router'
 import {ErrorModel} from '@shared/models/model/error.model'
 import {UserApi} from '@pages/users/data/state/user.api'
-import {SelectItem, ToastMessageOptions} from 'primeng/api'
+import {ToastMessageOptions} from 'primeng/api'
 import {CustomDateFormatPipe} from '@shared/helpers/pipe/custom-date-format.pipe'
 import {ProfileStatusEnum} from '@shared/models/enumeration/profile-status.enum'
 import {SeverityEnum} from '@shared/models/enumeration/severity.enum'
@@ -101,31 +93,6 @@ const defaultRegistryStore: RegistryStoreModel = {
         element: undefined,
         loading: false,
     },
-    _util: {
-        theme: (!window.matchMedia || window.matchMedia('(prefers-color-scheme: light)').matches) ? ThemeEnum.LIGHT : ThemeEnum.DARK,
-        screenWidth: window.innerWidth,
-        online: undefined,
-        notification: undefined,
-        loading: false,
-        error: undefined,
-    },
-    _metadata: {
-        themes: [
-            {
-                icon: 'pi pi-desktop',
-                value: ThemeEnum.SYSTEM,
-            },
-            {
-                icon: 'pi pi-sun',
-                value: ThemeEnum.LIGHT,
-            },
-            {
-                icon: 'pi pi-moon',
-                value: ThemeEnum.DARK,
-            },
-        ],
-        languages: [],
-    },
 }
 
 @State<RegistryStoreModel>({
@@ -133,7 +100,7 @@ const defaultRegistryStore: RegistryStoreModel = {
     defaults: defaultRegistryStore,
 })
 @Injectable()
-export class RegistryStore extends GenericStore implements NgxsOnInit {
+export class RegistryStore extends GenericStore {
     private readonly primeConfig: PrimeNG = inject(PrimeNG)
 
     private readonly darkModeClass: string = 'dark-mod'
@@ -146,58 +113,18 @@ export class RegistryStore extends GenericStore implements NgxsOnInit {
     private readonly router: Router = inject(Router)
     private readonly datePipe: CustomDateFormatPipe = inject(CustomDateFormatPipe)
 
-    public ngxsOnInit(ctx: StateContext<RegistryStoreModel>): void {
-        ctx.patchState({
-            _metadata: {
-                themes: defaultRegistryStore._metadata.themes,
-                languages: RegistryConfig.config.languages.map((lang: string): SelectItem<string> => ({
-                    label: 'global.language.' + lang,
-                    value: lang,
-                })),
-            },
-        })
-    }
 
-    @Selector()
-    public static globalLoading(state: RegistryStoreModel): boolean {
-        return state._util.loading
-    }
 
-    @Selector()
-    public static globalError(state: RegistryStoreModel): ToastMessageOptions | undefined {
-        return state._util.error
-    }
 
-    @Selector()
-    public static online(state: RegistryStoreModel): boolean | undefined {
-        return state._util.online
-    }
 
-    @Selector()
-    public static screenWidth(state: RegistryStoreModel): number {
-        return state._util.screenWidth
-    }
 
-    @Selector()
-    public static theme(state: RegistryStoreModel): ThemeEnum {
-        return state._util.theme
-    }
 
-    @Selector()
-    public static notification(state: RegistryStoreModel): ToastMessageOptions | undefined {
-        return state._util.notification
-    }
 
     @Selector()
     public static currentUser(state: RegistryStoreModel): CurrentUserModel | undefined {
         return state.authentication.currentUser
     }
 
-    @Selector()
-    public static currentUserTheme(state: RegistryStoreModel): ThemeEnum | undefined {
-        const currentUserTheme: string | undefined = state.authentication.currentUser?.preferences?.theme
-        return GenericHelper.nonNull(currentUserTheme) ? CurrentUserHelper.mapThemeToEnum(currentUserTheme!) : state._util.theme
-    }
 
     @Selector()
     public static currentUserLanguage(state: RegistryStoreModel): string {
@@ -289,95 +216,15 @@ export class RegistryStore extends GenericStore implements NgxsOnInit {
         return state.invitations.params.dateTimeSearched
     }
 
-    @Selector()
-    public static themesMetadata(state: RegistryStoreModel): SelectItem<ThemeEnum>[] {
-        return state._metadata.themes
-    }
 
-    @Selector()
-    public static languagesMetadata(state: RegistryStoreModel): SelectItem<string>[] {
-        return state._metadata.languages
-    }
 
-    @Action(StartGlobalLoader)
-    public startGlobalLoader(ctx: StateContext<RegistryStoreModel>): void {
-        this.updateGlobalLoader(ctx, true)
-    }
 
-    @Action(StopGlobalLoader)
-    public stopGlobalLoader(ctx: StateContext<RegistryStoreModel>): void {
-        this.updateGlobalLoader(ctx, false)
-    }
 
-    @Action(SetGlobalError)
-    public setGlobalError(ctx: StateContext<RegistryStoreModel>, payload: SetGlobalError): void {
-        this.globalError(ctx, payload.error)
-    }
 
-    @Action(UpdateNetwork)
-    public updateNetwork(ctx: StateContext<RegistryStoreModel>, payload: UpdateNetwork): void {
-        ctx.patchState({
-            _util: {
-                ...ctx.getState()._util,
-                online: payload.online,
-            },
-        })
-    }
 
-    @Action(UpdateScreenWidth)
-    public updateScreenWidth(ctx: StateContext<RegistryStoreModel>, payload: UpdateScreenWidth): void {
-        ctx.patchState({
-            _util: {
-                ...ctx.getState()._util,
-                screenWidth: payload.screenWidth,
-            },
-        })
-    }
 
-    @Action(UpdateTheme)
-    public updateTheme(ctx: StateContext<RegistryStoreModel>, payload: UpdateTheme): void {
-        switch (payload.theme) {
-            case ThemeEnum.DARK:
-                this.htmlElement?.classList.add(this.darkModeClass)
-                break
-            case ThemeEnum.LIGHT:
-                this.htmlElement?.classList.remove(this.darkModeClass)
-                break
-            default:
-                if (GenericHelper.navigatorTheme === ThemeEnum.DARK) {
-                    this.htmlElement?.classList.add(this.darkModeClass)
-                } else {
-                    this.htmlElement?.classList.remove(this.darkModeClass)
-                }
-        }
 
-        ctx.patchState({
-            _util: {
-                ...ctx.getState()._util,
-                theme: payload.theme,
-            },
-        })
-    }
 
-    @Action(Notify)
-    public notify(ctx: StateContext<RegistryStoreModel>, payload: Notify): void {
-        ctx.patchState({
-            _util: {
-                ...ctx.getState()._util,
-                notification: payload.message,
-            },
-        })
-    }
-
-    @Action(AckNotification)
-    public ackNotification(ctx: StateContext<RegistryStoreModel>): void {
-        ctx.patchState({
-            _util: {
-                ...ctx.getState()._util,
-                notification: undefined,
-            },
-        })
-    }
 
     @Action(StartCurrentUserActionLoader)
     public startCurrentUserActionLoader(ctx: StateContext<RegistryStoreModel>): void {
@@ -460,8 +307,8 @@ export class RegistryStore extends GenericStore implements NgxsOnInit {
             },
         })
         const userTheme: ThemeEnum = CurrentUserHelper.mapThemeToEnum(currentUser.preferences.theme)
-        if (userTheme !== ctx.getState()._util.theme) {
-            ctx.dispatch(new UpdateTheme(userTheme))
+        if (userTheme !== this.registryFacade.theme()) {
+            this.registryFacade.updateTheme(userTheme)
         }
         const userLanguage: string | undefined = currentUser.preferences.language
         if (GenericHelper.nonNull(userLanguage) && userLanguage !== this.translateService.currentLang()) {
@@ -826,29 +673,9 @@ export class RegistryStore extends GenericStore implements NgxsOnInit {
         )
     }
 
-    private updateGlobalLoader(ctx: StateContext<RegistryStoreModel>, loading: boolean): void {
-        ctx.patchState({
-            _util: {
-                ...ctx.getState()._util,
-                loading: loading,
-            },
-        })
-    }
 
-    private globalError(ctx: StateContext<RegistryStoreModel>, error: ErrorModel): Observable<void> {
-        ctx.patchState({
-            _util: {
-                ...ctx.getState()._util,
-                error: {
-                    severity: 'error',
-                    summary: error.title,
-                    detail: error.message,
-                    icon: 'pi pi-exclamation-triangle',
-                    closable: true,
-                },
-            },
-        })
-
+    private globalError(_: StateContext<RegistryStoreModel>, error: ErrorModel): Observable<void> {
+        this.registryFacade.setGlobalError(error)
         return of()
     }
 

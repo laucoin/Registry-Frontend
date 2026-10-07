@@ -6,7 +6,6 @@ import {CurrentUserModel} from '@shared/models/model/current-user.model'
 import {ProjectProfileModel} from '@shared/models/model/project-profile.model'
 import {PageModel} from '@shared/models/model/page.model'
 import {
-    AckNotification,
     CreateSupportProjectProfile,
     DeleteUserProjectProfile,
     FetchCurrentUser,
@@ -17,24 +16,17 @@ import {
     Login,
     Logout,
     ManageUserProjectInvitationAcceptance,
-    Notify,
     SetCurrentProject,
-    SetGlobalError,
     StartCurrentUserActionLoader,
-    StartGlobalLoader,
     StartUserProjectProfileInvitationsPageLoader,
     StartUserProjectProfileLoader,
     StartUserProjectProfilesPageLoader,
     StopCurrentUserActionLoader,
-    StopGlobalLoader,
     StopUserProjectProfileInvitationsPageLoader,
     StopUserProjectProfileLoader,
     StopUserProjectProfilesPageLoader,
     UpdateCurrentUserLanguage,
     UpdateCurrentUserTheme,
-    UpdateNetwork,
-    UpdateScreenWidth,
-    UpdateTheme,
     UpdateUserProjectProfileInvitationsPageSearchParams,
     UpdateUserProjectProfilesPageSearchParams,
 } from '@core/registry/state/registry.action'
@@ -52,12 +44,19 @@ import {SeverityEnum} from '@shared/models/enumeration/severity.enum'
 import {GenericHelper} from '@shared/helpers/generic.helper'
 import {ThemeEnum} from '@shared/models/enumeration/theme.enum'
 import {PrimeNG} from 'primeng/config'
+import {UiStore} from '@core/registry/state/ui.store'
+import {NotificationStore} from '@core/registry/state/notification.store'
+import {MetadataStore} from '@core/registry/state/metadata.store'
+import {CurrentUserHelper} from '@core/authentication/tool/current-user.helper'
 import {ProfileResetService} from '@shared/helpers/store/profile-reset.service'
 
 @Injectable()
 export class RegistryFacade extends GenericFacade {
     private readonly primeConfig: PrimeNG = inject(PrimeNG)
     private readonly profileReset: ProfileResetService = inject(ProfileResetService)
+    private readonly ui: InstanceType<typeof UiStore> = inject(UiStore)
+    private readonly notifications: InstanceType<typeof NotificationStore> = inject(NotificationStore)
+    private readonly metadata: InstanceType<typeof MetadataStore> = inject(MetadataStore)
 
     private readonly onlineMessage: ToastMessageOptions = StateHelper.buildNotificationMessage(
         SeverityEnum.SUCCESS,
@@ -74,23 +73,23 @@ export class RegistryFacade extends GenericFacade {
     )
 
     public get theme(): Signal<ThemeEnum> {
-        return this.ngStore.selectSignal(RegistryStore.theme)
+        return this.ui.theme
     }
 
     public get tinyScreen(): Signal<boolean> {
-        return computed((): boolean => this.ngStore.selectSignal(RegistryStore.screenWidth)() < 768)
+        return computed((): boolean => this.ui.screenWidth() < 768)
     }
 
     public get globalLoading(): Signal<boolean> {
-        return this.ngStore.selectSignal(RegistryStore.globalLoading)
+        return this.ui.loading
     }
 
     public get globalError(): Signal<ToastMessageOptions | undefined> {
-        return this.ngStore.selectSignal(RegistryStore.globalError)
+        return this.ui.error
     }
 
     private get online(): Signal<boolean | undefined> {
-        return this.ngStore.selectSignal(RegistryStore.online)
+        return this.ui.online
     }
 
     public get logoPath(): Signal<string> {
@@ -108,8 +107,8 @@ export class RegistryFacade extends GenericFacade {
         })
     }
 
-    public get notification(): Observable<ToastMessageOptions | undefined> {
-        return this.ngStore.select(RegistryStore.notification)
+    public get notification(): Observable<ToastMessageOptions> {
+        return this.notifications.messages$()
     }
 
     public get currentUser$(): Observable<CurrentUserModel> {
@@ -124,7 +123,10 @@ export class RegistryFacade extends GenericFacade {
     }
 
     public get currentUserTheme(): Signal<ThemeEnum | undefined> {
-        return this.ngStore.selectSignal(RegistryStore.currentUserTheme)
+        return computed((): ThemeEnum | undefined => {
+            const userTheme: string | undefined = this.currentUser()?.preferences?.theme
+            return GenericHelper.nonNull(userTheme) ? CurrentUserHelper.mapThemeToEnum(userTheme!) : this.ui.theme()
+        })
     }
 
     public get currentUserLanguage(): Signal<string> {
@@ -200,12 +202,12 @@ export class RegistryFacade extends GenericFacade {
     }
 
     public get themesMetadata(): Signal<SelectItem<ThemeEnum>[]> {
-        return this.ngStore.selectSignal(RegistryStore.themesMetadata)
+        return this.metadata.themes
     }
 
     public get languagesMetadata(): Signal<SelectItem<string>[]> {
         return computed(() =>
-            this.ngStore.selectSignal(RegistryStore.languagesMetadata)().map((lang: SelectItem<string>): SelectItem<string> => ({
+            this.metadata.languages().map((lang: SelectItem<string>): SelectItem<string> => ({
                 ...lang,
                 label: this.translateService.instant(lang.label!),
             })),
@@ -213,15 +215,15 @@ export class RegistryFacade extends GenericFacade {
     }
 
     public startGlobalLoader(): void {
-        this.ngStore.dispatch(StartGlobalLoader)
+        this.ui.startGlobalLoader()
     }
 
     public stopGlobalLoader(): void {
-        this.ngStore.dispatch(StopGlobalLoader)
+        this.ui.stopGlobalLoader()
     }
 
     public setGlobalError(error: ErrorModel): void {
-        this.ngStore.dispatch(new SetGlobalError(error))
+        this.ui.setGlobalError(error)
     }
 
     public updateNetwork(online: boolean): void {
@@ -229,11 +231,11 @@ export class RegistryFacade extends GenericFacade {
             this.notify(online ? this.onlineMessage : this.offlineMessage)
         }
 
-        this.ngStore.dispatch(new UpdateNetwork(online))
+        this.ui.updateNetwork(online)
     }
 
     public updateScreenWidth(screenWidth: number): void {
-        this.ngStore.dispatch(new UpdateScreenWidth(screenWidth))
+        this.ui.updateScreenWidth(screenWidth)
     }
 
     public notify(message: ToastMessageOptions): void {
@@ -249,11 +251,7 @@ export class RegistryFacade extends GenericFacade {
             }
         }
 
-        this.ngStore.dispatch(new Notify(formattedMessage))
-    }
-
-    public ackNotification(): void {
-        this.ngStore.dispatch(AckNotification)
+        this.notifications.notify(formattedMessage)
     }
 
     public startCurrentUserActionLoader(): void {
@@ -359,13 +357,14 @@ export class RegistryFacade extends GenericFacade {
 
     public updateTheme(theme: ThemeEnum | undefined): void {
         if (GenericHelper.nonNull(theme)) {
-            this.ngStore.dispatch(new UpdateTheme(theme!))
+            this.ui.updateTheme(theme!)
         }
     }
 
     public updateCurrentUserTheme(theme: ThemeEnum | undefined): void {
         if (GenericHelper.isNull(theme)) return
-        this.ngStore.dispatch([new UpdateCurrentUserTheme(theme!), new UpdateTheme(theme!)])
+        this.ui.updateTheme(theme!)
+        this.ngStore.dispatch(new UpdateCurrentUserTheme(theme!))
     }
 
     public reloadTranslatedData(): void {

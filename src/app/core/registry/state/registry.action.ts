@@ -1,20 +1,10 @@
-import { ToastMessageOptions } from 'primeng/api'
 import { ProjectProfileModel } from '@shared/models/model/project-profile.model'
-import { ErrorModel } from '@shared/models/model/error.model'
 import { ThemeEnum } from '@shared/models/enumeration/theme.enum'
 
 enum RegistryActionEnum {
-    START_GLOBAL_LOADER = '[Local] Starting global loader',
-    STOP_GLOBAL_LOADER = '[Local] Stopping global loader',
 
-    SET_GLOBAL_ERROR = '[Local] Setting global error',
 
-    UPDATE_NETWORK = '[Local] Updating network status',
-    UPDATE_SCREEN_WIDTH = '[Local] Updating screen width',
-    UPDATE_THEME = '[Local] Updating application theme',
 
-    NOTIFY = '[Local] Notifying',
-    ACK_NOTIFICATION = '[Local] Acknowledging notification',
 
     START_CURRENT_USER_ACTION_LOADER = '[Local] Starting current user action loader',
     STOP_CURRENT_USER_ACTION_LOADER = '[Local] Stopping current user action loader',
@@ -50,48 +40,6 @@ enum RegistryActionEnum {
     DELETE_USER_PROJECT_PROFILE = '[Backend] Deleting user project profile',
 
     CREATE_SUPPORT_PROJECT_PROFILE = '[Backend] Creating project profiles',
-}
-
-export class StartGlobalLoader {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.START_GLOBAL_LOADER
-}
-
-export class StopGlobalLoader {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.STOP_GLOBAL_LOADER
-}
-
-export class SetGlobalError {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.SET_GLOBAL_ERROR
-
-    public constructor (public readonly error: ErrorModel) {}
-}
-
-export class UpdateNetwork {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.UPDATE_NETWORK
-
-    public constructor (public readonly online: boolean) {}
-}
-
-export class UpdateScreenWidth {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.UPDATE_SCREEN_WIDTH
-
-    public constructor (public readonly screenWidth: number) {}
-}
-
-export class UpdateTheme {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.UPDATE_THEME
-
-    public constructor (public readonly theme: ThemeEnum) {}
-}
-
-export class Notify {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.NOTIFY
-
-    public constructor (public readonly message: ToastMessageOptions) {}
-}
-
-export class AckNotification {
-    public static readonly type: RegistryActionEnum = RegistryActionEnum.ACK_NOTIFICATION
 }
 
 export class StartCurrentUserActionLoader {
