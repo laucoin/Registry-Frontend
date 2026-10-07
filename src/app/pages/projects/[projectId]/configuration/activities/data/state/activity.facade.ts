@@ -1,37 +1,31 @@
-import { computed, Injectable, Signal } from '@angular/core'
-import { Observable } from 'rxjs'
+import { computed, inject, Injectable, Signal } from '@angular/core'
+import { Observable, tap } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
 import { ActivityModel } from '@shared/models/model/activity.model'
 import { ActivityDto } from '@pages/projects/[projectId]/configuration/activities/data/dto/activity.dto'
 import {
-    CreateActivity,
-    DeleteActivity,
-    DisableActivity,
-    EnableActivity,
     FetchActivitiesPage,
-    FetchActivity,
     FetchActivityMovementsContents,
     FetchActivityMovementsPage,
-    ResetActivity,
     StartActivitiesPageLoader,
-    StartActivityLoader,
     StartActivityMovementsPageLoader,
     StopActivitiesPageLoader,
-    StopActivityLoader,
     StopActivityMovementsPageLoader,
     UpdateActivitiesPageSearchParams,
-    UpdateActivity,
     UpdateActivityMovementsPageSearchParams,
 } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.action'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
-import { ofActionSuccessful } from '@ngxs/store'
 import { ActivityState } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.state'
 import { GenericProjectElementFacade } from '@shared/helpers/facade/generic-project-element.facade'
 import { MovementModel } from '@shared/models/model/movement.model'
 import { DateUtil } from '@shared/helpers/util/date.util'
+import { ActivityService } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.service'
+import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/util/rx.util'
 
 @Injectable()
 export class ActivityFacade extends GenericProjectElementFacade {
+    private readonly service: ActivityService = inject( ActivityService )
+
     public get activitiesPage (): Signal<PageModel<ActivityModel> | undefined> {
         return this.ngStore.selectSignal( ActivityState.activitiesPage )
     }
@@ -108,18 +102,6 @@ export class ActivityFacade extends GenericProjectElementFacade {
 
     public get activityMovementsPageVisibilitySearchedParam (): Signal<boolean | undefined> {
         return this.ngStore.selectSignal( ActivityState.activityMovementsPageVisibilitySearchedParam )
-    }
-
-    public get activity (): Signal<ActivityModel | undefined> {
-        return this.ngStore.selectSignal( ActivityState.activity )
-    }
-
-    public get activity$ (): Observable<ActivityModel | undefined> {
-        return this.ngStore.select( ActivityState.activity )
-    }
-
-    public get activityLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( ActivityState.activityLoading )
     }
 
     public get availabilitiesMetadata (): Signal<SelectItem<boolean | undefined>[]> {
@@ -229,44 +211,51 @@ export class ActivityFacade extends GenericProjectElementFacade {
         }
     }
 
-    public startActivityLoader (): void {
-        this.ngStore.dispatch( StartActivityLoader )
+    public fetchActivity (id: string): Observable<ActivityModel> {
+        return this.service.findActivityById( this.selectedProjectId(), id ).pipe(
+            notifyOnError( this.registryFacade ),
+        )
     }
 
-    public stopActivityLoader (): void {
-        this.ngStore.dispatch( StopActivityLoader )
+    public createActivity (activity: ActivityDto): Observable<ActivityModel> {
+        return this.service.createActivity( this.selectedProjectId(), activity ).pipe(
+            notifyUnavailableOnly( this.registryFacade ),
+            tap( (created: ActivityModel): void => this.onCommandSuccess( 'create', created ) ),
+        )
     }
 
-    public fetchActivity (id: string): void {
-        this.ngStore.dispatch( new FetchActivity( this.selectedProjectId(), id ) )
+    public updateActivity (id: string, activity: ActivityDto): Observable<ActivityModel> {
+        return this.service.updateActivityById( this.selectedProjectId(), id, activity ).pipe(
+            notifyUnavailableOnly( this.registryFacade ),
+            tap( (updated: ActivityModel): void => this.onCommandSuccess( 'edit', updated ) ),
+        )
     }
 
-    public resetActivity (): void {
-        this.ngStore.dispatch( ResetActivity )
+    public disableActivity (id: string): Observable<ActivityModel> {
+        return this.service.disableActivityById( this.selectedProjectId(), id ).pipe(
+            notifyOnError( this.registryFacade ),
+            tap( (disabled: ActivityModel): void => this.onCommandSuccess( 'disable', disabled ) ),
+        )
     }
 
-    public createActivity (activity: ActivityDto): Observable<CreateActivity> {
-        this.ngStore.dispatch( new CreateActivity( this.selectedProjectId(), activity ) )
-        return this.actions$.pipe( ofActionSuccessful( CreateActivity ) )
+    public enableActivity (id: string): Observable<ActivityModel> {
+        return this.service.enableActivityById( this.selectedProjectId(), id ).pipe(
+            notifyOnError( this.registryFacade ),
+            tap( (enabled: ActivityModel): void => this.onCommandSuccess( 'enable', enabled ) ),
+        )
     }
 
-    public updateActivity (
-        id: string,
-        activity: ActivityDto,
-    ): Observable<UpdateActivity> {
-        this.ngStore.dispatch( new UpdateActivity( this.selectedProjectId(), id, activity ) )
-        return this.actions$.pipe( ofActionSuccessful( UpdateActivity ) )
+    public deleteActivity (activity: ActivityModel): Observable<void> {
+        return this.service.deleteActivityById( undefined, activity.id ).pipe(
+            notifyOnError( this.registryFacade ),
+            tap( (): void => this.onCommandSuccess( 'delete', activity ) ),
+        )
     }
 
-    public disableActivity (id: string): void {
-        this.ngStore.dispatch( new DisableActivity( this.selectedProjectId(), id ) )
-    }
+    private onCommandSuccess (command: string, activity: ActivityModel): void {
+        this.notifySuccess( `activities.notifications.${ command }`, 'pi pi-users', { name: activity?.name } )
 
-    public enableActivity (id: string): void {
-        this.ngStore.dispatch( new EnableActivity( this.selectedProjectId(), id ) )
-    }
-
-    public deleteActivity (activity: ActivityModel): void {
-        this.ngStore.dispatch( new DeleteActivity( this.selectedProjectId(), activity ) )
+        const page: PageModel<ActivityModel> | undefined = this.activitiesPage()
+        this.fetchActivitiesPage( page?.pageNumber, page?.pageSize, true )
     }
 }

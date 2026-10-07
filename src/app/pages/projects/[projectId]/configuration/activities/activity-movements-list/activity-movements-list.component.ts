@@ -1,4 +1,6 @@
-import { Component, inject, OnDestroy} from '@angular/core'
+import { Component, inject, OnDestroy, signal, WritableSignal } from '@angular/core'
+import {ActivityModel} from '@shared/models/model/activity.model'
+import {withLoading} from '@shared/helpers/util/rx.util'
 import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms'
 import {PageEventModel} from '@shared/models/model/page-event.model'
 import {ListComponent} from '@shared/ui/list/list.component'
@@ -44,6 +46,9 @@ export class ActivityMovementsListComponent extends GenericListComponent impleme
 
     private readonly subscriptions: Subscription = new Subscription()
 
+    protected readonly activity: WritableSignal<ActivityModel | undefined> = signal(undefined)
+    protected readonly activityLoading: WritableSignal<boolean> = signal(false)
+
     public constructor() {
         super()
 
@@ -64,7 +69,11 @@ export class ActivityMovementsListComponent extends GenericListComponent impleme
 
     protected loadData(): void {
         const id: string | undefined = this.route.snapshot.params['activityId']
-        this.facade.fetchActivity(id!)
+        this.subscriptions.add(
+            this.facade.fetchActivity(id!).pipe(
+                withLoading(this.activityLoading),
+            ).subscribe( (activity: ActivityModel): void => this.activity.set(activity) ),
+        )
         this.facade.fetchActivityMovementsPage(id!, undefined, undefined, false)
     }
 
@@ -104,7 +113,7 @@ export class ActivityMovementsListComponent extends GenericListComponent impleme
             this.visibilitySearched.value,
         )
         this.facade.fetchActivityMovementsPage(
-            this.facade.activity()!.id, pageEvent.pageNumber, pageEvent.pageSize, false,
+            this.route.snapshot.params['activityId'], pageEvent.pageNumber, pageEvent.pageSize, false,
         )
     }
 

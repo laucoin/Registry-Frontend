@@ -1,6 +1,7 @@
 <app-form [form]='form'
-          [loading]='facade.activityLoading()'
-          [title]='"activities.form.title" | formTitle: facade.activity() | translate : { name: facade.activity()?.name }'>
+          [loading]='loading()'
+          [error]='error()'
+          [title]='"activities.form.title" | formTitle: activity() | translate : { name: activity()?.name }'>
     <p-card>
         <div class='field'>
             <label for='name' appRequired>{{ 'activities.form.name' | translate }}</label>
@@ -94,10 +95,11 @@
         <p-button
                 class='ms-2'
                 (onClick)='submit()'
-                [label]='facade.activity() | formButton | translate'
+                [label]='activity() | formButton | translate'
                 rounded
                 outlined
-                [icon]='facade.activity() | formIcon'
+                [icon]='activity() | formIcon'
+                [disabled]='saving()'
                 severity='success' />
     </div>
 </app-form>

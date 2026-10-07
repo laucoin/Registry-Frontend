@@ -1,5 +1,3 @@
-import { ActivityDto } from '@pages/projects/[projectId]/configuration/activities/data/dto/activity.dto'
-import { ActivityModel } from '@shared/models/model/activity.model'
 import { ActivityPageParamsModel } from '@pages/projects/[projectId]/configuration/activities/data/model/activity-page-params.model'
 import { MovementPageParamsModel } from '@shared/models/model/movement-page-params.model'
 
@@ -19,16 +17,6 @@ enum ActivityActionEnum {
     FETCH_ACTIVITY_MOVEMENTS_CONTENTS = '[Backend] Fetching activity movements\' contents',
     UPDATE_ACTIVITY_MOVEMENTS_PAGE_SEARCH_PARAMS = '[Local] Updating activity movements\' page searched params',
 
-    START_ACTIVITY_LOADER = '[Local] Starting activity\'s loader',
-    STOP_ACTIVITY_LOADER = '[Local] Stopping activity\'s loader',
-
-    FETCH_ACTIVITY = '[Backend] Fetching activity',
-    RESET_ACTIVITY = '[Local] Resetting activity',
-    CREATE_ACTIVITY = '[Backend] Creating activity',
-    UPDATE_ACTIVITY = '[Backend] Updating activity',
-    DISABLE_ACTIVITY = '[Backend] Disabling activity',
-    ENABLE_ACTIVITY = '[Backend] Enabling activity',
-    DELETE_ACTIVITY = '[Backend] Deleting activity',
 }
 
 export class ResetActivityState {
@@ -93,56 +81,4 @@ export class UpdateActivityMovementsPageSearchParams {
     public static readonly type: ActivityActionEnum = ActivityActionEnum.UPDATE_ACTIVITY_MOVEMENTS_PAGE_SEARCH_PARAMS
 
     public constructor (public readonly params: MovementPageParamsModel) {}
-}
-
-export class StartActivityLoader {
-    public static readonly type: ActivityActionEnum = ActivityActionEnum.START_ACTIVITY_LOADER
-}
-
-export class StopActivityLoader {
-    public static readonly type: ActivityActionEnum = ActivityActionEnum.STOP_ACTIVITY_LOADER
-}
-
-export class FetchActivity {
-    public static readonly type: ActivityActionEnum = ActivityActionEnum.FETCH_ACTIVITY
-
-    public constructor (public readonly projectId: string | undefined, public readonly id: string) {}
-}
-
-export class ResetActivity {
-    public static readonly type: ActivityActionEnum = ActivityActionEnum.RESET_ACTIVITY
-}
-
-export class CreateActivity {
-    public static readonly type: ActivityActionEnum = ActivityActionEnum.CREATE_ACTIVITY
-
-    public constructor (public readonly projectId: string | undefined, public readonly activity: ActivityDto) {}
-}
-
-export class UpdateActivity {
-    public static readonly type: ActivityActionEnum = ActivityActionEnum.UPDATE_ACTIVITY
-
-    public constructor (
-        public readonly projectId: string | undefined,
-        public readonly id: string,
-        public readonly activity: ActivityDto,
-    ) {}
-}
-
-export class DisableActivity {
-    public static readonly type: ActivityActionEnum = ActivityActionEnum.DISABLE_ACTIVITY
-
-    public constructor (public readonly projectId: string | undefined, public readonly id: string) {}
-}
-
-export class EnableActivity {
-    public static readonly type: ActivityActionEnum = ActivityActionEnum.ENABLE_ACTIVITY
-
-    public constructor (public readonly projectId: string | undefined, public readonly id: string) {}
-}
-
-export class DeleteActivity {
-    public static readonly type: ActivityActionEnum = ActivityActionEnum.DELETE_ACTIVITY
-
-    public constructor (public readonly projectId: string | undefined, public readonly activity: ActivityModel) {}
 }

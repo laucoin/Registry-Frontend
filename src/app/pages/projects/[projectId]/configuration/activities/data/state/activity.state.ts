@@ -6,33 +6,21 @@ import { GenericProjectElementState } from '@shared/helpers/state/generic-projec
 import { initialize } from '@shared/helpers/util/rx.util'
 import { ActivityStateModel } from '@pages/projects/[projectId]/configuration/activities/data/model/activity-state.model'
 import {
-    CreateActivity,
-    DeleteActivity,
-    DisableActivity,
-    EnableActivity,
     FetchActivitiesPage,
-    FetchActivity,
     FetchActivityMovementsContents,
     FetchActivityMovementsPage,
-    ResetActivity,
     ResetActivityState,
     StartActivitiesPageLoader,
-    StartActivityLoader,
     StartActivityMovementsPageLoader,
     StopActivitiesPageLoader,
-    StopActivityLoader,
     StopActivityMovementsPageLoader,
     UpdateActivitiesPageSearchParams,
-    UpdateActivity,
     UpdateActivityMovementsPageSearchParams,
 } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.action'
 import { ActivityService } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.service'
 import { ActivityFacade } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.facade'
 import { StateUtil } from '@shared/helpers/state/state.util'
 import { inject, Injectable } from '@angular/core'
-import {
-    ElementRequestInformationModel,
-} from '@shared/models/model/element-request-information.model'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { ErrorModel } from '@shared/models/model/error.model'
 import { MovementModel } from '@shared/models/model/movement.model'
@@ -40,12 +28,6 @@ import { MovementService } from '@pages/projects/[projectId]/movements/data/stat
 import { PairModel } from '@shared/models/model/pair.model'
 import { MovementContentModel } from '@shared/models/model/movement-content.model'
 import { MovementUtil } from '@shared/helpers/util/movement.util'
-import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
-
-const defaultActivity: ElementRequestInformationModel<ActivityModel> = {
-    element: undefined,
-    loading: false,
-}
 
 const defaultActivityState: ActivityStateModel = {
     activities: {
@@ -76,7 +58,6 @@ const defaultActivityState: ActivityStateModel = {
         silentLoading: false,
         error: undefined,
     },
-    activity: defaultActivity,
     _metadata: {
         availabilities: [
             { label: '-', value: undefined },
@@ -97,8 +78,6 @@ const defaultActivityState: ActivityStateModel = {
 } )
 @Injectable()
 export class ActivityState extends GenericProjectElementState<ActivityStateModel> {
-    private readonly activityIcon: string = 'pi pi-users'
-
     private readonly service: ActivityService = inject( ActivityService )
     private readonly movementService: MovementService = inject( MovementService )
     private readonly facade: ActivityFacade = inject( ActivityFacade )
@@ -191,16 +170,6 @@ export class ActivityState extends GenericProjectElementState<ActivityStateModel
     @Selector()
     public static activityMovementsPageVisibilitySearchedParam (state: ActivityStateModel): boolean | undefined {
         return state.movements.params.visibilitySearched
-    }
-
-    @Selector()
-    public static activity (state: ActivityStateModel): ActivityModel | undefined {
-        return state.activity.element
-    }
-
-    @Selector()
-    public static activityLoading (state: ActivityStateModel): boolean {
-        return state.activity.loading
     }
 
     @Selector()
@@ -387,187 +356,6 @@ export class ActivityState extends GenericProjectElementState<ActivityStateModel
                 params: payload.params,
             },
         } )
-    }
-
-    @Action( StartActivityLoader )
-    public startActivityLoader (ctx: StateContext<ActivityStateModel>): void {
-        ctx.patchState( {
-            activity: StateUtil.updateElementLoader( ctx.getState().activity, true ),
-        } )
-    }
-
-    @Action( StopActivityLoader )
-    public stopActivityLoader (ctx: StateContext<ActivityStateModel>): void {
-        ctx.patchState( {
-            activity: StateUtil.updateElementLoader( ctx.getState().activity, false ),
-        } )
-    }
-
-    @Action( FetchActivity )
-    public fetchActivity (ctx: StateContext<ActivityStateModel>, payload: FetchActivity): Observable<void> {
-        return this.service.findActivityById( payload.projectId, payload.id ).pipe(
-            initialize( (): void => this.facade.startActivityLoader() ),
-            finalize( (): void => this.facade.stopActivityLoader() ),
-            map( (activity: ActivityModel): void => this.fetchActivityComplete( ctx, activity ) ),
-        )
-    }
-
-    private fetchActivityComplete (
-        ctx: StateContext<ActivityStateModel>,
-        activity: ActivityModel,
-    ): void {
-        ctx.patchState( {
-            activity: {
-                ...ctx.getState().activity,
-                element: activity,
-            },
-        } )
-    }
-
-    @Action( ResetActivity )
-    public resetActivity (ctx: StateContext<ActivityStateModel>): void {
-        ctx.patchState( {
-            activity: defaultActivity,
-        } )
-    }
-
-    @Action( CreateActivity )
-    public createActivity (ctx: StateContext<ActivityStateModel>, payload: CreateActivity): Observable<void> {
-        return this.service.createActivity( payload.projectId, payload.activity ).pipe(
-            initialize( (): void => this.facade.startActivityLoader() ),
-            finalize( (): void => this.facade.stopActivityLoader() ),
-            map( (activity: ActivityModel): void => this.createActivityComplete(
-                ctx,
-                activity,
-            ) ),
-        )
-    }
-
-    private createActivityComplete (
-        ctx: StateContext<ActivityStateModel>,
-        activity: ActivityModel,
-    ): void {
-        this.buildMessageAndNotify(
-            SeverityEnum.SUCCESS,
-            'activities.notifications.create.title',
-            'activities.notifications.create.message',
-            this.activityIcon,
-            this.buildTranslationArgs( activity ),
-        )
-        this.refreshPage( ctx )
-    }
-
-    @Action( UpdateActivity )
-    public updateActivity (ctx: StateContext<ActivityStateModel>, payload: UpdateActivity): Observable<void> {
-        return this.service.updateActivityById( payload.projectId, payload.id, payload.activity ).pipe(
-            initialize( (): void => this.facade.startActivityLoader() ),
-            finalize( (): void => this.facade.stopActivityLoader() ),
-            map( (activity: ActivityModel): void => this.updateActivityComplete(
-                ctx,
-                activity,
-            ) ),
-        )
-    }
-
-    private updateActivityComplete (
-        ctx: StateContext<ActivityStateModel>,
-        activity: ActivityModel,
-    ): void {
-        this.buildMessageAndNotify(
-            SeverityEnum.SUCCESS,
-            'activities.notifications.edit.title',
-            'activities.notifications.edit.message',
-            this.activityIcon,
-            this.buildTranslationArgs( activity ),
-        )
-        this.refreshPage( ctx )
-    }
-
-    @Action( DisableActivity )
-    public disableActivity (
-        ctx: StateContext<ActivityStateModel>,
-        payload: DisableActivity,
-    ): Observable<void> {
-        return this.service.disableActivityById( payload.projectId, payload.id ).pipe(
-            initialize( (): void => this.facade.startActivityLoader() ),
-            finalize( (): void => this.facade.stopActivityLoader() ),
-            map( (activity: ActivityModel): void => this.disableActivityComplete(
-                ctx,
-                activity,
-            ) ),
-        )
-    }
-
-    private disableActivityComplete (
-        ctx: StateContext<ActivityStateModel>,
-        activity: ActivityModel,
-    ): void {
-        this.buildMessageAndNotify(
-            SeverityEnum.SUCCESS,
-            'activities.notifications.disable.title',
-            'activities.notifications.disable.message',
-            this.activityIcon,
-            this.buildTranslationArgs( activity ),
-        )
-        this.refreshPage( ctx )
-    }
-
-    @Action( EnableActivity )
-    public enableActivity (ctx: StateContext<ActivityStateModel>, payload: EnableActivity): Observable<void> {
-        return this.service.enableActivityById( payload.projectId, payload.id ).pipe(
-            initialize( (): void => this.facade.startActivityLoader() ),
-            finalize( (): void => this.facade.stopActivityLoader() ),
-            map( (activity: ActivityModel): void => this.enableActivityComplete(
-                ctx,
-                activity,
-            ) ),
-        )
-    }
-
-    private enableActivityComplete (
-        ctx: StateContext<ActivityStateModel>,
-        activity: ActivityModel,
-    ): void {
-        this.buildMessageAndNotify(
-            SeverityEnum.SUCCESS,
-            'activities.notifications.enable.title',
-            'activities.notifications.enable.message',
-            this.activityIcon,
-            this.buildTranslationArgs( activity ),
-        )
-        this.refreshPage( ctx )
-    }
-
-    @Action( DeleteActivity )
-    public deleteActivity (ctx: StateContext<ActivityStateModel>, payload: DeleteActivity): Observable<void> {
-        return this.service.deleteActivityById( undefined, payload.activity.id ).pipe(
-            initialize( (): void => this.facade.startActivityLoader() ),
-            finalize( (): void => this.facade.stopActivityLoader() ),
-            map( (): void => this.deleteActivityComplete(
-                ctx,
-                payload.activity,
-            ) ),
-        )
-    }
-
-    private deleteActivityComplete (
-        ctx: StateContext<ActivityStateModel>,
-        activity: ActivityModel,
-    ): void {
-        this.buildMessageAndNotify(
-            SeverityEnum.SUCCESS,
-            'activities.notifications.delete.title',
-            'activities.notifications.delete.message',
-            this.activityIcon,
-            this.buildTranslationArgs( activity ),
-        )
-        this.refreshPage( ctx )
-    }
-
-    private buildTranslationArgs (activity: ActivityModel): object {
-        return {
-            name: activity?.name,
-        }
     }
 
     protected refreshPage (ctx: StateContext<ActivityStateModel>): void {

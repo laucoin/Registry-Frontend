@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy,Component, inject, OnDestroy} from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, OnDestroy, signal, WritableSignal } from '@angular/core'
 import {ActivityFacade} from '@pages/projects/[projectId]/configuration/activities/data/state/activity.facade'
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms'
 import {RegistryValidators} from '@shared/helpers/util/registry.validator'
@@ -17,8 +17,7 @@ import {ProjectModel} from '@shared/models/model/project.model'
 import {DateUtil} from '@shared/helpers/util/date.util'
 import {Textarea} from 'primeng/textarea'
 import {GenericFormComponent} from '@shared/ui/base/generic-form.component'
-import {map, Observable} from 'rxjs'
-import {CreateActivity, UpdateActivity} from '@pages/projects/[projectId]/configuration/activities/data/state/activity.action'
+import {withLoading} from '@shared/helpers/util/rx.util'
 import {DurationFieldComponent} from '@shared/ui/duration-field/duration-field.component'
 import {
     NumberRangeFieldComponent,
@@ -60,6 +59,7 @@ export class ActivityFormComponent extends GenericFormComponent<ActivityModel, A
     protected readonly facade: ActivityFacade = inject(ActivityFacade)
 
     protected readonly form: FormGroup
+    protected readonly activity: WritableSignal<ActivityModel | undefined> = signal(undefined)
 
     public constructor() {
         super()
@@ -72,10 +72,15 @@ export class ActivityFormComponent extends GenericFormComponent<ActivityModel, A
     }
 
     protected override loadData(): void {
-        this.facade.resetActivity()
-
         if (GenericUtil.nonNull(this.idParam)) {
-            this.facade.fetchActivity(this.idParam!)
+            this.subscriptions.add(
+                this.facade.fetchActivity(this.idParam!).pipe(
+                    withLoading(this.loading),
+                ).subscribe( (activity: ActivityModel): void => {
+                    this.activity.set(activity)
+                    this.applyActivity(activity)
+                } ),
+            )
         }
     }
 
@@ -107,16 +112,16 @@ export class ActivityFormComponent extends GenericFormComponent<ActivityModel, A
     }
 
     protected handleLoadedElement(): void {
-        this.subscriptions.add(
-            this.facade.activity$.pipe(
-                map((activity: ActivityModel | undefined): void => {
-                    const contextProject: ProjectModel | undefined = activity?.project || this.registryFacade.selectedProject()
-                    this.addProjectDateValidators(contextProject, this.beginDateTime)
-                    this.addProjectDateValidators(contextProject, this.endDateTime)
-                    this.fillForm(activity)
-                }),
-            ).subscribe(),
-        )
+        if (!GenericUtil.nonNull(this.idParam)) {
+            this.applyActivity(undefined)
+        }
+    }
+
+    private applyActivity(activity: ActivityModel | undefined): void {
+        const contextProject: ProjectModel | undefined = activity?.project || this.registryFacade.selectedProject()
+        this.addProjectDateValidators(contextProject, this.beginDateTime)
+        this.addProjectDateValidators(contextProject, this.endDateTime)
+        this.fillForm(activity)
     }
 
     protected fillForm(element: ActivityModel | undefined): void {
@@ -134,22 +139,18 @@ export class ActivityFormComponent extends GenericFormComponent<ActivityModel, A
     }
 
     protected submit(): void {
+        if (this.saving() || this.loading()) return
+
+        const editing: boolean = GenericUtil.nonNull(this.idParam)
+        if (editing && !this.activity()) return
+
         if (!FormUtil.isFormValid(this.form)) {
             this.logInvalidForm(this.form.value)
             return
         }
 
         const dto: ActivityDto = this.buildDto()
-        const observable: Observable<CreateActivity | UpdateActivity> =
-            this.facade.activity()
-                ? this.facade.updateActivity(this.facade.activity()!.id!, dto)
-                : this.facade.createActivity(dto)
-
-        this.subscriptions.add(
-            observable.pipe(
-                map((): void => this.navigateToRedirectUri()),
-            ).subscribe(),
-        )
+        this.save(editing ? this.facade.updateActivity(this.activity()!.id, dto) : this.facade.createActivity(dto))
     }
 
     protected buildDto(): ActivityDto {
