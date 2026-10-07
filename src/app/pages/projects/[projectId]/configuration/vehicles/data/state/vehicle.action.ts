@@ -19,11 +19,6 @@ enum VehicleActionEnum {
     FETCH_VEHICLE_MOVEMENTS_CONTENTS = '[Backend] Fetching vehicle movements\' contents',
     UPDATE_VEHICLE_MOVEMENTS_PAGE_SEARCH_PARAMS = '[Local] Updating vehicle movements\' page search params',
 
-    START_VEHICLE_LOADER = '[Local] Starting vehicle\'s loader',
-    STOP_VEHICLE_LOADER = '[Local] Stopping vehicle\'s loader',
-
-    FETCH_VEHICLE = '[Backend] Fetching vehicle',
-    RESET_VEHICLE = '[Local] Resetting vehicle',
 }
 
 export class ResetVehicleState {
@@ -92,22 +87,4 @@ export class UpdateVehicleMovementsPageSearchParams {
     public static readonly type: VehicleActionEnum = VehicleActionEnum.UPDATE_VEHICLE_MOVEMENTS_PAGE_SEARCH_PARAMS
 
     public constructor (public readonly params: MovementPageParamsModel) {}
-}
-
-export class StartVehicleLoader {
-    public static readonly type: VehicleActionEnum = VehicleActionEnum.START_VEHICLE_LOADER
-}
-
-export class StopVehicleLoader {
-    public static readonly type: VehicleActionEnum = VehicleActionEnum.STOP_VEHICLE_LOADER
-}
-
-export class FetchVehicle {
-    public static readonly type: VehicleActionEnum = VehicleActionEnum.FETCH_VEHICLE
-
-    public constructor (public readonly projectId: string | undefined, public readonly id: string) {}
-}
-
-export class ResetVehicle {
-    public static readonly type: VehicleActionEnum = VehicleActionEnum.RESET_VEHICLE
 }

@@ -1,10 +1,10 @@
 <div class='mb-2'>
-    @if (facade.vehicleLoading()) {
+    @if (vehicleLoading()) {
         <p-card>
             <app-element-skeleton [withIcon]='true' [layout]='registryFacade.tinyScreen() ? "grid" : "list"' />
         </p-card>
-    } @else {
-        <app-vehicle-element [vehicle]='facade.vehicle()!'
+    } @else if (vehicle()) {
+        <app-vehicle-element [vehicle]='vehicle()!'
                              [actionMenuVisible]='false' />
     }
 </div>
@@ -70,6 +70,6 @@
         </div>
     </ng-template>
     <ng-template appTemplate='element' let-movement>
-        <app-movement-element [movement]='movement' [vehicleId]='facade.vehicle()?.id' />
+        <app-movement-element [movement]='movement' [vehicleId]='vehicle()?.id' />
     </ng-template>
 </app-list>

@@ -17,7 +17,6 @@ import {ProjectModel} from '@shared/models/model/project.model'
 import {InputMask} from 'primeng/inputmask'
 import {DateFormatPipe} from '@shared/helpers/pipe/date-format.pipe'
 import {GenericFormComponent} from '@shared/ui/base/generic-form.component'
-import {map, Observable} from 'rxjs'
 import {withLoading} from '@shared/helpers/util/rx.util'
 import {FormTitlePipe} from '@shared/helpers/pipe/form-title.pipe'
 import {FormButtonPipe} from '@shared/helpers/pipe/form-button.pipe'
@@ -52,7 +51,7 @@ export class VehicleFormComponent extends GenericFormComponent<VehicleModel, Veh
     protected readonly facade: VehicleFacade = inject(VehicleFacade)
 
     protected readonly form: FormGroup
-    protected readonly saving: WritableSignal<boolean> = signal(false)
+    protected readonly vehicle: WritableSignal<VehicleModel | undefined> = signal(undefined)
 
     public constructor() {
         super()
@@ -65,10 +64,15 @@ export class VehicleFormComponent extends GenericFormComponent<VehicleModel, Veh
     }
 
     protected override loadData(): void {
-        this.facade.resetVehicle()
-
         if (GenericUtil.nonNull(this.idParam)) {
-            this.facade.fetchVehicle(this.idParam!)
+            this.subscriptions.add(
+                this.facade.fetchVehicle(this.idParam!).pipe(
+                    withLoading(this.loading),
+                ).subscribe( (vehicle: VehicleModel): void => {
+                    this.vehicle.set(vehicle)
+                    this.applyVehicle(vehicle)
+                } ),
+            )
         }
     }
 
@@ -94,16 +98,16 @@ export class VehicleFormComponent extends GenericFormComponent<VehicleModel, Veh
     }
 
     protected handleLoadedElement(): void {
-        this.subscriptions.add(
-            this.facade.vehicle$.pipe(
-                map((vehicle: VehicleModel | undefined): void => {
-                    const contextProject: ProjectModel | undefined = vehicle?.project || this.registryFacade.selectedProject()
-                    this.addProjectDateValidators(contextProject, this.beginDateTime)
-                    this.addProjectDateValidators(contextProject, this.endDateTime)
-                    this.fillForm(vehicle)
-                }),
-            ).subscribe(),
-        )
+        if (!GenericUtil.nonNull(this.idParam)) {
+            this.applyVehicle(undefined)
+        }
+    }
+
+    private applyVehicle(vehicle: VehicleModel | undefined): void {
+        const contextProject: ProjectModel | undefined = vehicle?.project || this.registryFacade.selectedProject()
+        this.addProjectDateValidators(contextProject, this.beginDateTime)
+        this.addProjectDateValidators(contextProject, this.endDateTime)
+        this.fillForm(vehicle)
     }
 
     protected fillForm(element: VehicleModel | undefined): void {
@@ -117,7 +121,10 @@ export class VehicleFormComponent extends GenericFormComponent<VehicleModel, Veh
     }
 
     protected submit(): void {
-        if (this.saving()) return
+        if (this.saving() || this.loading()) return
+
+        const editing: boolean = GenericUtil.nonNull(this.idParam)
+        if (editing && !this.vehicle()) return
 
         if (!FormUtil.isFormValid(this.form)) {
             this.logInvalidForm(this.form.value)
@@ -125,17 +132,7 @@ export class VehicleFormComponent extends GenericFormComponent<VehicleModel, Veh
         }
 
         const dto: VehicleDto = this.buildDto()
-        const observable: Observable<VehicleModel> =
-            this.facade.vehicle()
-                ? this.facade.updateVehicle(this.facade.vehicle()!.id!, dto)
-                : this.facade.createVehicle(dto)
-
-        this.subscriptions.add(
-            observable.pipe(
-                withLoading(this.saving),
-                map((): void => this.navigateToRedirectUri()),
-            ).subscribe({ error: (): void => undefined }),
-        )
+        this.save(editing ? this.facade.updateVehicle(this.vehicle()!.id, dto) : this.facade.createVehicle(dto))
     }
 
     protected buildDto(): VehicleDto {

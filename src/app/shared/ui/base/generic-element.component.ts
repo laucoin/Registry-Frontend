@@ -1,7 +1,9 @@
 import {GenericComponent} from '@shared/ui/base/generic.component'
 import {CurrentUserUtil} from '@core/authentication/tool/current-user.util'
 import {ProjectModel} from '@shared/models/model/project.model'
-import {inject} from '@angular/core'
+import {inject, signal, WritableSignal} from '@angular/core'
+import {Observable} from 'rxjs'
+import {withLoading} from '@shared/helpers/util/rx.util'
 import {ElementActionEnum} from '@shared/models/enumeration/element-action.enum'
 import {Confirmation, ConfirmationService} from 'primeng/api'
 import {ProjectAuthorityEnum} from '@shared/models/enumeration/project-authority.enum'
@@ -13,6 +15,12 @@ import {SeverityEnum} from '@shared/models/enumeration/severity.enum'
 
 export abstract class GenericElementComponent extends GenericComponent {
     protected readonly confirmationService: ConfirmationService = inject(ConfirmationService)
+
+    protected readonly busy: WritableSignal<boolean> = signal(false)
+
+    protected run(command: Observable<unknown>): void {
+        command.pipe(withLoading(this.busy)).subscribe()
+    }
 
     protected hasProjectAuthority(
         authority: ProjectAuthorityEnum,

@@ -1,6 +1,4 @@
-import { Component, computed, inject, input, InputSignal, signal, Signal, WritableSignal } from '@angular/core'
-import { Observable } from 'rxjs'
-import { withLoading } from '@shared/helpers/util/rx.util'
+import { Component, computed, inject, input, InputSignal, Signal } from '@angular/core'
 import {ElementCardComponent} from '@shared/ui/element-card/element-card.component'
 import {TagModule} from 'primeng/tag'
 import {ChipModule} from 'primeng/chip'
@@ -37,8 +35,6 @@ export class VehicleElementComponent extends GenericElementComponent {
 
     public readonly actionMenuVisible: InputSignal<boolean> = input(true)
     public readonly vehicle: InputSignal<VehicleModel> = input.required()
-
-    protected readonly busy: WritableSignal<boolean> = signal(false)
 
     protected readonly actions: Signal<MenuItem[]> = computed((): MenuItem[] => [
         {
@@ -126,8 +122,4 @@ export class VehicleElementComponent extends GenericElementComponent {
                 return SeverityEnum.SECONDARY
         }
     })
-
-    private run(command: Observable<unknown>): void {
-        command.pipe(withLoading(this.busy)).subscribe({ error: (): void => undefined })
-    }
 }

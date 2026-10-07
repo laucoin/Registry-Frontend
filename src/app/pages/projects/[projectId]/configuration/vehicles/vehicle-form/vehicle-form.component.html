@@ -1,9 +1,10 @@
 <app-form [form]='form'
-          [loading]='facade.vehicleLoading()'
-          [title]='"vehicles.form.title" | formTitle: facade.vehicle() | translate : {
-              registration: facade.vehicle()?.licensePlate,
-              brand: facade.vehicle()?.brand,
-              model: facade.vehicle()?.model,
+          [loading]='loading()'
+          [error]='error()'
+          [title]='"vehicles.form.title" | formTitle: vehicle() | translate : {
+              registration: vehicle()?.licensePlate,
+              brand: vehicle()?.brand,
+              model: vehicle()?.model,
           }'>
     <p-card>
         <div class='field'>
@@ -89,11 +90,11 @@
         <p-button
                 class='ms-2'
                 (onClick)='submit()'
-                [label]='facade.vehicle() | formButton | translate'
+                [label]='vehicle() | formButton | translate'
                 rounded
                 outlined
                 [disabled]='saving()'
-                [icon]='facade.vehicle() | formIcon'
+                [icon]='vehicle() | formIcon'
                 severity='success' />
     </div>
 </app-form>

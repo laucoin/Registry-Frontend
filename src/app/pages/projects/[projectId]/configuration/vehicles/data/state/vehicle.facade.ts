@@ -4,16 +4,12 @@ import { PageModel } from '@shared/models/model/page.model'
 import { VehicleModel } from '@shared/models/model/vehicle.model'
 import { VehicleDto } from '@pages/projects/[projectId]/configuration/vehicles/data/dto/vehicle.dto'
 import {
-    FetchVehicle,
     FetchVehicleMovementsContents,
     FetchVehicleMovementsPage,
     FetchVehiclePresencesStatus,
     FetchVehiclesPage,
-    ResetVehicle,
-    StartVehicleLoader,
     StartVehicleMovementsPageLoader,
     StartVehiclesPageLoader,
-    StopVehicleLoader,
     StopVehicleMovementsPageLoader,
     StopVehiclesPageLoader,
     UpdateVehicleMovementsPageSearchParams,
@@ -26,9 +22,7 @@ import { MovementModel } from '@shared/models/model/movement.model'
 import { DateUtil } from '@shared/helpers/util/date.util'
 import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum'
 import { VehicleService } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.service'
-import { notifyOnError } from '@shared/helpers/util/rx.util'
-import { StateUtil } from '@shared/helpers/state/state.util'
-import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
+import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/util/rx.util'
 
 @Injectable()
 export class VehicleFacade extends GenericProjectElementFacade {
@@ -110,18 +104,6 @@ export class VehicleFacade extends GenericProjectElementFacade {
 
     public get vehicleMovementsPageVisibilitySearchedParam (): Signal<boolean | undefined> {
         return this.ngStore.selectSignal( VehicleState.vehicleMovementsPageVisibilitySearchedParam )
-    }
-
-    public get vehicle$ (): Observable<VehicleModel | undefined> {
-        return this.ngStore.select( VehicleState.vehicle )
-    }
-
-    public get vehicle (): Signal<VehicleModel | undefined> {
-        return this.ngStore.selectSignal( VehicleState.vehicle )
-    }
-
-    public get vehicleLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( VehicleState.vehicleLoading )
     }
 
     public get presencesStatusMetadata (): Signal<SelectItem<PresenceStatusEnum | undefined>[]> {
@@ -224,32 +206,22 @@ export class VehicleFacade extends GenericProjectElementFacade {
         }
     }
 
-    public startVehicleLoader (): void {
-        this.ngStore.dispatch( StartVehicleLoader )
-    }
-
-    public stopVehicleLoader (): void {
-        this.ngStore.dispatch( StopVehicleLoader )
-    }
-
-    public fetchVehicle (id: string): void {
-        this.ngStore.dispatch( new FetchVehicle( this.selectedProjectId(), id ) )
-    }
-
-    public resetVehicle (): void {
-        this.ngStore.dispatch( ResetVehicle )
+    public fetchVehicle (id: string): Observable<VehicleModel> {
+        return this.service.findVehicleById( this.selectedProjectId(), id ).pipe(
+            notifyOnError( this.registryFacade ),
+        )
     }
 
     public createVehicle (vehicle: VehicleDto): Observable<VehicleModel> {
         return this.service.createVehicle( this.selectedProjectId(), vehicle ).pipe(
-            notifyOnError( this.registryFacade ),
+            notifyUnavailableOnly( this.registryFacade ),
             tap( (created: VehicleModel): void => this.onCommandSuccess( 'create', created ) ),
         )
     }
 
     public updateVehicle (id: string, vehicle: VehicleDto): Observable<VehicleModel> {
         return this.service.updateVehicleById( this.selectedProjectId(), id, vehicle ).pipe(
-            notifyOnError( this.registryFacade ),
+            notifyUnavailableOnly( this.registryFacade ),
             tap( (updated: VehicleModel): void => this.onCommandSuccess( 'edit', updated ) ),
         )
     }
@@ -276,17 +248,11 @@ export class VehicleFacade extends GenericProjectElementFacade {
     }
 
     private onCommandSuccess (command: string, vehicle: VehicleModel): void {
-        this.registryFacade.notify( StateUtil.buildNotificationMessage(
-            SeverityEnum.SUCCESS,
-            `vehicles.notifications.${ command }.title`,
-            `vehicles.notifications.${ command }.message`,
-            'pi pi-users',
-            {
-                registration: vehicle?.licensePlate,
-                brand: vehicle?.brand,
-                model: vehicle?.model,
-            },
-        ) )
+        this.notifySuccess( `vehicles.notifications.${ command }`, 'pi pi-users', {
+            registration: vehicle?.licensePlate,
+            brand: vehicle?.brand,
+            model: vehicle?.model,
+        } )
 
         const page: PageModel<VehicleModel> | undefined = this.vehiclesPage()
         this.fetchVehiclesPage( page?.pageNumber, page?.pageSize, true )

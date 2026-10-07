@@ -1,10 +1,12 @@
 import { FormControl, FormGroup } from '@angular/forms'
 import { GenericComponent } from '@shared/ui/base/generic.component'
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
-import { Subscription } from 'rxjs'
+import { Observable, Subscription } from 'rxjs'
+import { ErrorModel } from '@shared/models/model/error.model'
+import { withLoading } from '@shared/helpers/util/rx.util'
 import { ProjectModel } from '@shared/models/model/project.model'
 import { RegistryValidators } from '@shared/helpers/util/registry.validator'
-import { inject } from '@angular/core'
+import { DestroyRef, inject, signal, WritableSignal } from '@angular/core'
 import { CustomDateFormatPipe } from '@shared/helpers/pipe/custom-date-format.pipe'
 import { Location } from '@angular/common'
 import { GenericUtil } from '@shared/helpers/util/generic.util'
@@ -16,12 +18,33 @@ export abstract class GenericFormComponent<M, D> extends GenericComponent {
 
     protected readonly subscriptions: Subscription = new Subscription()
 
+    protected readonly loading: WritableSignal<boolean> = signal( false )
+    protected readonly saving: WritableSignal<boolean> = signal( false )
+    protected readonly error: WritableSignal<ErrorModel | undefined> = signal( undefined )
+
+    private destroyed: boolean = false
+
     protected readonly invalidFormMessage: string = this.translateService.instant( 'global.messages.invalid-form' )
     protected readonly startDateExample: Date = GenericFormComponent.startDateExample
     protected readonly endDateExample: Date = GenericFormComponent.endDateExample
 
     protected constructor () {
         super()
+        inject( DestroyRef ).onDestroy( (): void => {
+            this.destroyed = true
+        } )
+    }
+
+    // Deliberately not tied to the component lifetime: once sent, a save must finish (toast, list refresh)
+    // even if the user navigates away; only the redirect is skipped.
+    protected save<T> (command: Observable<T>): void {
+        this.error.set( undefined )
+        command.pipe( withLoading( this.saving ) ).subscribe( {
+            next: (): void => {
+                if (!this.destroyed) this.navigateToRedirectUri()
+            },
+            error: (error: ErrorModel): void => this.error.set( error ),
+        } )
     }
 
     // Form values may carry participants' personal data — kept out of the console in production.

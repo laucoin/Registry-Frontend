@@ -6,17 +6,13 @@ import { GenericProjectElementState } from '@shared/helpers/state/generic-projec
 import { initialize } from '@shared/helpers/util/rx.util'
 import { VehicleStateModel } from '@pages/projects/[projectId]/configuration/vehicles/data/model/vehicle-state.model'
 import {
-    FetchVehicle,
     FetchVehicleMovementsContents,
     FetchVehicleMovementsPage,
     FetchVehiclePresencesStatus,
     FetchVehiclesPage,
-    ResetVehicle,
     ResetVehicleState,
-    StartVehicleLoader,
     StartVehicleMovementsPageLoader,
     StartVehiclesPageLoader,
-    StopVehicleLoader,
     StopVehicleMovementsPageLoader,
     StopVehiclesPageLoader,
     UpdateVehicleMovementsPageSearchParams,
@@ -26,9 +22,6 @@ import { VehicleService } from '@pages/projects/[projectId]/configuration/vehicl
 import { VehicleFacade } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.facade'
 import { StateUtil } from '@shared/helpers/state/state.util'
 import { inject, Injectable } from '@angular/core'
-import {
-    ElementRequestInformationModel,
-} from '@shared/models/model/element-request-information.model'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { ErrorModel } from '@shared/models/model/error.model'
 import { MovementModel } from '@shared/models/model/movement.model'
@@ -38,11 +31,6 @@ import { MovementContentModel } from '@shared/models/model/movement-content.mode
 import { MovementUtil } from '@shared/helpers/util/movement.util'
 import { MetadataService } from '@core/registry/state/metadata.service'
 import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum'
-
-const defaultVehicle: ElementRequestInformationModel<VehicleModel> = {
-    element: undefined,
-    loading: false,
-}
 
 const defaultVehicleState: VehicleStateModel = {
     vehicles: {
@@ -73,7 +61,6 @@ const defaultVehicleState: VehicleStateModel = {
         silentLoading: false,
         error: undefined,
     },
-    vehicle: defaultVehicle,
     _metadata: {
         availabilities: [
             { label: '-', value: undefined },
@@ -192,16 +179,6 @@ export class VehicleState extends GenericProjectElementState<VehicleStateModel> 
     @Selector()
     public static vehicleMovementsPageVisibilitySearchedParam (state: VehicleStateModel): boolean | undefined {
         return state.movements.params.visibilitySearched
-    }
-
-    @Selector()
-    public static vehicle (state: VehicleStateModel): VehicleModel | undefined {
-        return state.vehicle.element
-    }
-
-    @Selector()
-    public static vehicleLoading (state: VehicleStateModel): boolean {
-        return state.vehicle.loading
     }
 
     @Selector()
@@ -423,48 +400,6 @@ export class VehicleState extends GenericProjectElementState<VehicleStateModel> 
                 ...ctx.getState().movements,
                 params: payload.params,
             },
-        } )
-    }
-
-    @Action( StartVehicleLoader )
-    public startVehicleLoader (ctx: StateContext<VehicleStateModel>): void {
-        ctx.patchState( {
-            vehicle: StateUtil.updateElementLoader( ctx.getState().vehicle, true ),
-        } )
-    }
-
-    @Action( StopVehicleLoader )
-    public stopVehicleLoader (ctx: StateContext<VehicleStateModel>): void {
-        ctx.patchState( {
-            vehicle: StateUtil.updateElementLoader( ctx.getState().vehicle, false ),
-        } )
-    }
-
-    @Action( FetchVehicle )
-    public fetchVehicle (ctx: StateContext<VehicleStateModel>, payload: FetchVehicle): Observable<void> {
-        return this.service.findVehicleById( payload.projectId, payload.id ).pipe(
-            initialize( (): void => this.facade.startVehicleLoader() ),
-            finalize( (): void => this.facade.stopVehicleLoader() ),
-            map( (vehicle: VehicleModel): void => this.fetchVehicleComplete( ctx, vehicle ) ),
-        )
-    }
-
-    private fetchVehicleComplete (
-        ctx: StateContext<VehicleStateModel>,
-        vehicle: VehicleModel,
-    ): void {
-        ctx.patchState( {
-            vehicle: {
-                ...ctx.getState().vehicle,
-                element: vehicle,
-            },
-        } )
-    }
-
-    @Action( ResetVehicle )
-    public resetVehicle (ctx: StateContext<VehicleStateModel>): void {
-        ctx.patchState( {
-            vehicle: defaultVehicle,
         } )
     }
 

@@ -1,4 +1,6 @@
-import { Component, inject, OnDestroy} from '@angular/core'
+import { Component, inject, OnDestroy, signal, WritableSignal } from '@angular/core'
+import {VehicleModel} from '@shared/models/model/vehicle.model'
+import {withLoading} from '@shared/helpers/util/rx.util'
 import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms'
 import {PageEventModel} from '@shared/models/model/page-event.model'
 import {ListComponent} from '@shared/ui/list/list.component'
@@ -44,6 +46,9 @@ export class VehicleMovementsListComponent extends GenericListComponent implemen
 
     private readonly subscriptions: Subscription = new Subscription()
 
+    protected readonly vehicle: WritableSignal<VehicleModel | undefined> = signal(undefined)
+    protected readonly vehicleLoading: WritableSignal<boolean> = signal(false)
+
     public constructor() {
         super()
 
@@ -64,7 +69,11 @@ export class VehicleMovementsListComponent extends GenericListComponent implemen
 
     protected loadData(): void {
         const id: string | undefined = this.route.snapshot.params['vehicleId']
-        this.facade.fetchVehicle(id!)
+        this.subscriptions.add(
+            this.facade.fetchVehicle(id!).pipe(
+                withLoading(this.vehicleLoading),
+            ).subscribe( (vehicle: VehicleModel): void => this.vehicle.set(vehicle) ),
+        )
         this.facade.fetchVehicleMovementsPage(id!, undefined, undefined, false)
     }
 
@@ -104,7 +113,7 @@ export class VehicleMovementsListComponent extends GenericListComponent implemen
             this.visibilitySearched.value,
         )
         this.facade.fetchVehicleMovementsPage(
-            this.facade.vehicle()!.id, pageEvent.pageNumber, pageEvent.pageSize, false,
+            this.route.snapshot.params['vehicleId'], pageEvent.pageNumber, pageEvent.pageSize, false,
         )
     }
 
