@@ -1,12 +1,11 @@
 import {
     Component,
     ContentChildren,
-    EventEmitter,
     input,
-    Input,
     InputSignal,
+    model,
+    ModelSignal,
     output,
-    Output,
     OutputEmitterRef,
     QueryList,
     TemplateRef,
@@ -29,20 +28,9 @@ export class LayerComponent extends GenericComponent {
 
     public readonly title: InputSignal<string | undefined> = input()
 
-    @Input()
-    public get visible (): boolean {
-        return this._visible
-    }
+    public readonly visible: ModelSignal<boolean> = model<boolean>( false )
 
-    public set visible (value: boolean) {
-        this._visible = value
-        this.visibleChange.emit( this._visible ) // Emit updated value
-    }
-
-    public closeLayer: OutputEmitterRef<Event> = output<Event>()
-    @Output() private visibleChange: EventEmitter<boolean> = new EventEmitter<boolean>()
-
-    private _visible: boolean = false
+    public readonly closeLayer: OutputEmitterRef<Event> = output<Event>()
 
     protected getTemplate (name: string): TemplateRef<unknown> | null {
         const customTemplate: RegistryTemplateDirective | undefined = this.templates?.find( (t: RegistryTemplateDirective): boolean => t.appTemplate() === name )
