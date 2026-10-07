@@ -5,13 +5,25 @@ import { GenericModel } from '@shared/models/model/generic.model'
 
 describe( 'PageStateHelper', () => {
     it( 'builds an idle initial block', () => {
-        const block: PageRequestInformationModel<{ a: number }, GenericModel> = PageStateHelper.initial<{ a: number }, GenericModel>( { a: 1 } )
-        expect( block ).toEqual( { element: undefined, params: { a: 1 }, loading: false, silentLoading: false, error: undefined } )
+        // Arrange
+        const params: { a: number } = { a: 1 }
+
+        // Act
+        const block: PageRequestInformationModel<{ a: number }, GenericModel> = PageStateHelper.initial<{ a: number }, GenericModel>( params )
+
+        // Assert
+        expect( block ).toEqual( { element: undefined, params: params, loading: false, silentLoading: false, error: undefined } )
     } )
 
     it( 'sets an error toast without touching the rest', () => {
+        // Arrange
         const block: PageRequestInformationModel<object, GenericModel> = PageStateHelper.initial<object, GenericModel>( {} )
-        const result: PageRequestInformationModel<object, GenericModel> = PageStateHelper.withError( block, { title: 'T', message: 'M', status: 500 } as ErrorModel )
+        const error: ErrorModel = { title: 'T', message: 'M', status: 500 } as ErrorModel
+
+        // Act
+        const result: PageRequestInformationModel<object, GenericModel> = PageStateHelper.withError( block, error )
+
+        // Assert
         expect( result.error?.summary ).toBe( 'T' )
         expect( result.loading ).toBe( false )
     } )
