@@ -17,7 +17,7 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { CommunicationFacade } from '@pages/projects/[projectId]/movements/communication/data/state/communication.facade'
 import { GenericUtil } from '@shared/helpers/util/generic.util'
 import { RegistryValidators } from '@shared/helpers/util/registry.validator'
-import { Observable, tap } from 'rxjs'
+import { tap } from 'rxjs'
 import { MenuItem, SelectItem } from 'primeng/api'
 import { MovementModel } from '@shared/models/model/movement.model'
 import { MovementUtil } from '@shared/helpers/util/movement.util'
@@ -38,8 +38,6 @@ import { AutoComplete, AutoCompleteCompleteEvent } from 'primeng/autocomplete'
 import { Divider } from 'primeng/divider'
 import { FormUtil } from '@shared/helpers/util/form.util'
 import {
-    CreateCommunication,
-    UpdateCommunication,
 } from '@pages/projects/[projectId]/movements/communication/data/state/communication.action'
 import { InputText } from 'primeng/inputtext'
 import { AlertFacade } from '@pages/projects/[projectId]/alerts/data/state/alert.facade'
@@ -55,9 +53,12 @@ enum AlertModulableFieldEnum {
     NEW = 'NEW',
 }
 
+import { FormErrorComponent } from '@shared/ui/form-error/form-error.component'
+
 @Component( {
     selector: 'app-communication-form',
     imports: [
+        FormErrorComponent,
         Button,
         Card,
         FormFieldErrorComponent,
@@ -238,6 +239,8 @@ export class CommunicationFormComponent extends GenericFormComponent<Communicati
     }
 
     protected submit (): void {
+        if (this.saving()) return
+
         if (!FormUtil.isFormValid( this.form )) {
             this.logInvalidForm( this.form.value )
             return
@@ -252,15 +255,12 @@ export class CommunicationFormComponent extends GenericFormComponent<Communicati
 
     private submitCommunication (): void {
         const dto: CommunicationDto = this.buildDto()
-        const observable: Observable<CreateCommunication | UpdateCommunication> =
-            this.facade.communication()
-            ? this.facade.updateCommunication( this.facade.communication()!.id!, dto )
-            : this.facade.createCommunication( dto )
-
-        this.subscriptions.add(
-            observable.pipe(
-                tap( (): void => this.resetForm() ),
-            ).subscribe(),
+        this.save(
+            (this.facade.communication()
+             ? this.facade.updateCommunication( this.facade.communication()!.id, dto )
+             : this.facade.createCommunication( dto )
+            ).pipe( tap( (): void => this.resetForm() ) ),
+            false,
         )
     }
 

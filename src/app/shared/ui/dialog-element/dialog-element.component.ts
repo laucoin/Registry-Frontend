@@ -56,8 +56,8 @@ export class DialogElementComponent extends GenericElementComponent {
         {
             label: 'communications.actions.disable',
             icon: 'pi pi-eye-slash',
-            disabled: !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_COMMUNICATION_U ),
-            visible: this.actionIsEnable( ElementActionEnum.COMMUNICATION_DISABLE ) && this.communication().visible,
+            disabled: this.busy() || !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_COMMUNICATION_U ),
+            visible: this.actionIsEnable(ElementActionEnum.COMMUNICATION_DISABLE ) && this.communication().visible,
             command: (): void => {
                 this.confirmationService.confirm(
                     this.buildConfirmation(
@@ -65,7 +65,7 @@ export class DialogElementComponent extends GenericElementComponent {
                         'pi pi-exclamation-triangle',
                         this.communication(),
                         SeverityEnum.WARNING,
-                        (): void => this.facade.disableCommunication( this.communication().id ),
+                        (): void => this.run(this.facade.disableCommunication(this.communication().id)),
                     ),
                 )
             },
@@ -73,8 +73,8 @@ export class DialogElementComponent extends GenericElementComponent {
         {
             label: 'communications.actions.enable',
             icon: 'pi pi-replay',
-            disabled: !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_COMMUNICATION_U ),
-            visible: this.actionIsEnable( ElementActionEnum.COMMUNICATION_ENABLE ) && !this.communication().visible,
+            disabled: this.busy() || !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_COMMUNICATION_U ),
+            visible: this.actionIsEnable(ElementActionEnum.COMMUNICATION_ENABLE ) && !this.communication().visible,
             command: (): void => {
                 this.confirmationService.confirm(
                     this.buildConfirmation(
@@ -82,7 +82,7 @@ export class DialogElementComponent extends GenericElementComponent {
                         'pi pi-info-circle',
                         this.communication(),
                         SeverityEnum.INFO,
-                        (): void => this.facade.enableCommunication( this.communication().id ),
+                        (): void => this.run(this.facade.enableCommunication(this.communication().id)),
                     ),
                 )
             },
@@ -90,8 +90,8 @@ export class DialogElementComponent extends GenericElementComponent {
         {
             label: 'communications.actions.delete',
             icon: 'pi pi-trash',
-            disabled: !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_COMMUNICATION_D ),
-            visible: this.actionIsEnable( ElementActionEnum.COMMUNICATION_DELETE ),
+            disabled: this.busy() || !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_COMMUNICATION_D ),
+            visible: this.actionIsEnable(ElementActionEnum.COMMUNICATION_DELETE ),
             command: (): void => {
                 this.confirmationService.confirm(
                     this.buildConfirmation(
@@ -99,7 +99,7 @@ export class DialogElementComponent extends GenericElementComponent {
                         'pi pi-exclamation-triangle',
                         this.communication(),
                         SeverityEnum.INFO,
-                        (): void => this.facade.deleteCommunication( this.communication() ),
+                        (): void => this.run(this.facade.deleteCommunication(this.communication())),
                     ),
                 )
             },

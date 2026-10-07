@@ -102,6 +102,7 @@
             <p-divider styleClass='other-field-container field-container' />
         }
     }
+    <app-form-error [error]='error()' />
     <div class='d-flex align-items-top' [formGroup]='form'>
         @if (GenericUtil.nonNull(facade.communication())) {
             <p-button (onClick)='resetForm()' class='me-2' icon='pi pi-times' rounded text />
@@ -126,6 +127,7 @@
         </div>
         <p-button class='ms-2' outlined rounded severity='success'
                   [icon]='GenericUtil.nonNull(facade.communication()) ? "pi pi-check" : "pi pi-send"'
+                  [disabled]='saving()'
                   (onClick)='submit()' />
     </div>
 </p-card>

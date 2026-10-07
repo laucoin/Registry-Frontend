@@ -11,16 +11,11 @@ import {
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { ErrorModel } from '@shared/models/model/error.model'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
-import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { CommunicationStateModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication-state.model'
 import { CommunicationModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
 import { CommunicationService } from '@pages/projects/[projectId]/movements/communication/data/state/communication.service'
 import { CommunicationFacade } from '@pages/projects/[projectId]/movements/communication/data/state/communication.facade'
 import {
-    CreateCommunication,
-    DeleteCommunication,
-    DisableCommunication,
-    EnableCommunication,
     FetchCommunication,
     FetchCommunicationsPage,
     ResetCommunication,
@@ -31,7 +26,6 @@ import {
     StartCommunicationsPageLoader,
     StopCommunicationLoader,
     StopCommunicationsPageLoader,
-    UpdateCommunication,
     UpdateCommunicationsPageSearchParams,
 } from '@pages/projects/[projectId]/movements/communication/data/state/communication.action'
 import { MovementModel } from '@shared/models/model/movement.model'
@@ -76,8 +70,6 @@ const defaultCommunicationState: CommunicationStateModel = {
 } )
 @Injectable()
 export class CommunicationState extends GenericProjectElementState<CommunicationStateModel> {
-    private readonly communicationIcon: string = 'pi pi-sort-alt'
-
     private readonly service: CommunicationService = inject( CommunicationService )
     private readonly facade: CommunicationFacade = inject( CommunicationFacade )
     private readonly datePipe: DateFormatPipe = inject( DateFormatPipe )
@@ -316,126 +308,6 @@ export class CommunicationState extends GenericProjectElementState<Communication
         ctx.patchState( {
             communication: defaultCommunication,
         } )
-    }
-
-    @Action( CreateCommunication )
-    public createCommunication (
-        ctx: StateContext<CommunicationStateModel>,
-        payload: CreateCommunication,
-    ): Observable<void> {
-        return this.service.createCommunication( payload.projectId, payload.communication ).pipe(
-            initialize( (): void => this.facade.startCommunicationLoader() ),
-            finalize( (): void => this.facade.stopCommunicationLoader() ),
-            map( (): void => this.createCommunicationComplete( ctx ) ),
-        )
-    }
-
-    private createCommunicationComplete (
-        ctx: StateContext<CommunicationStateModel>,
-    ): void {
-        this.refreshPage( ctx )
-    }
-
-    @Action( UpdateCommunication )
-    public updateCommunication (
-        ctx: StateContext<CommunicationStateModel>,
-        payload: UpdateCommunication,
-    ): Observable<void> {
-        return this.service.updateCommunicationById( payload.projectId, payload.id, payload.communication ).pipe(
-            initialize( (): void => this.facade.startCommunicationLoader() ),
-            finalize( (): void => this.facade.stopCommunicationLoader() ),
-            map( (): void => this.updateCommunicationComplete( ctx ) ),
-        )
-    }
-
-    private updateCommunicationComplete (
-        ctx: StateContext<CommunicationStateModel>,
-    ): void {
-        this.refreshPage( ctx )
-    }
-
-    @Action( DisableCommunication )
-    public disableCommunication (
-        ctx: StateContext<CommunicationStateModel>,
-        payload: DisableCommunication,
-    ): Observable<void> {
-        return this.service.disableCommunicationById( payload.projectId, payload.id ).pipe(
-            initialize( (): void => this.facade.startCommunicationLoader() ),
-            finalize( (): void => this.facade.stopCommunicationLoader() ),
-            map( (communication: CommunicationModel): void => this.disableCommunicationComplete( ctx, communication ) ),
-        )
-    }
-
-    private disableCommunicationComplete (
-        ctx: StateContext<CommunicationStateModel>,
-        communication: CommunicationModel,
-    ): void {
-        this.buildMessageAndNotify(
-            SeverityEnum.SUCCESS,
-            `communications.notifications.disable.title`,
-            `communications.notifications.disable.message`,
-            this.communicationIcon,
-            this.buildTranslationArgs( communication ),
-        )
-        this.refreshPage( ctx )
-    }
-
-    @Action( EnableCommunication )
-    public enableCommunication (
-        ctx: StateContext<CommunicationStateModel>,
-        payload: EnableCommunication,
-    ): Observable<void> {
-        return this.service.enableCommunicationById( payload.projectId, payload.id ).pipe(
-            initialize( (): void => this.facade.startCommunicationLoader() ),
-            finalize( (): void => this.facade.stopCommunicationLoader() ),
-            map( (communication: CommunicationModel): void => this.enableCommunicationComplete( ctx, communication ) ),
-        )
-    }
-
-    private enableCommunicationComplete (
-        ctx: StateContext<CommunicationStateModel>,
-        communication: CommunicationModel,
-    ): void {
-        this.buildMessageAndNotify(
-            SeverityEnum.SUCCESS,
-            `communications.notifications.enable.title`,
-            `communications.notifications.enable.message`,
-            this.communicationIcon,
-            this.buildTranslationArgs( communication ),
-        )
-        this.refreshPage( ctx )
-    }
-
-    @Action( DeleteCommunication )
-    public deleteCommunication (
-        ctx: StateContext<CommunicationStateModel>,
-        payload: DeleteCommunication,
-    ): Observable<void> {
-        return this.service.deleteCommunicationById( undefined, payload.communication.id ).pipe(
-            initialize( (): void => this.facade.startCommunicationLoader() ),
-            finalize( (): void => this.facade.stopCommunicationLoader() ),
-            map( (): void => this.deleteCommunicationComplete( ctx, payload.communication ) ),
-        )
-    }
-
-    private deleteCommunicationComplete (
-        ctx: StateContext<CommunicationStateModel>,
-        communication: CommunicationModel,
-    ): void {
-        this.buildMessageAndNotify(
-            SeverityEnum.SUCCESS,
-            `communications.notifications.delete.title`,
-            `communications.notifications.delete.message`,
-            this.communicationIcon,
-            this.buildTranslationArgs( communication ),
-        )
-        this.refreshPage( ctx )
-    }
-
-    private buildTranslationArgs (communication: CommunicationModel): object {
-        return {
-            datetime: this.datePipe.transform( communication?.dateTime, 'datetime' ),
-        }
     }
 
     protected refreshPage (ctx: StateContext<CommunicationStateModel>): void {

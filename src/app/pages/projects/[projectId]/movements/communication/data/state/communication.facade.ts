@@ -1,15 +1,15 @@
-import { computed, Injectable, Signal } from '@angular/core'
+import { computed, Injectable, Signal, inject } from '@angular/core'
 import { PageModel } from '@shared/models/model/page.model'
 import { CommunicationModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
 import { CommunicationState } from '@pages/projects/[projectId]/movements/communication/data/state/communication.state'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { DateUtil } from '@shared/helpers/util/date.util'
-import { Observable } from 'rxjs'
+import { CommunicationService } from '@pages/projects/[projectId]/movements/communication/data/state/communication.service'
+import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/util/rx.util'
+import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
+import { CommandEvent } from '@shared/helpers/facade/command-event.service'
+import { Observable, tap } from 'rxjs'
 import {
-    CreateCommunication,
-    DeleteCommunication,
-    DisableCommunication,
-    EnableCommunication,
     FetchCommunication,
     FetchCommunicationsPage,
     ResetCommunication,
@@ -19,11 +19,9 @@ import {
     StartCommunicationsPageLoader,
     StopCommunicationLoader,
     StopCommunicationsPageLoader,
-    UpdateCommunication,
     UpdateCommunicationsPageSearchParams,
 } from '@pages/projects/[projectId]/movements/communication/data/state/communication.action'
 import { GenericProjectElementFacade } from '@shared/helpers/facade/generic-project-element.facade'
-import { ofActionSuccessful } from '@ngxs/store'
 import { CommunicationDto } from '@pages/projects/[projectId]/movements/communication/data/dto/communication.dto'
 import { MovementModel } from '@shared/models/model/movement.model'
 import { AlertModel } from '@shared/models/model/alert.model'
@@ -31,6 +29,9 @@ import { AlertModel } from '@shared/models/model/alert.model'
 
 @Injectable()
 export class CommunicationFacade extends GenericProjectElementFacade {
+    private readonly service: CommunicationService = inject( CommunicationService )
+    private readonly datePipe: DateFormatPipe = inject( DateFormatPipe )
+
     public get communicationsPage (): Signal<PageModel<CommunicationModel> | undefined> {
         return this.ngStore.selectSignal( CommunicationState.communicationsPage )
     }
@@ -167,42 +168,64 @@ export class CommunicationFacade extends GenericProjectElementFacade {
         this.ngStore.dispatch( ResetCommunication )
     }
 
-    public handleCommunicationFirstPageReload (): Observable<CreateCommunication | DeleteCommunication> {
-        return this.actions$.pipe(
-            ofActionSuccessful( CreateCommunication, DeleteCommunication ),
+    public handleCommunicationFirstPageReload (): Observable<unknown> {
+        return this.commandEvents.on( 'communication', 'create', 'delete' )
+    }
+
+    public handleCommunicationCurrentPageReload (): Observable<unknown> {
+        return this.commandEvents.on( 'communication', 'update', 'disable', 'enable' )
+    }
+
+    public createCommunication (communication: CommunicationDto): Observable<CommunicationModel> {
+        return this.service.createCommunication( this.selectedProjectId(), communication ).pipe(
+            notifyUnavailableOnly( this.registryFacade ),
+            tap( (created: CommunicationModel): void => this.onCommandSuccess( 'create', created ) ),
         )
     }
 
-    public handleCommunicationCurrentPageReload (): Observable<UpdateCommunication | DisableCommunication | EnableCommunication> {
-        return this.actions$.pipe(
-            ofActionSuccessful( UpdateCommunication, DisableCommunication, EnableCommunication ),
+    public updateCommunication (id: string, communication: CommunicationDto): Observable<CommunicationModel> {
+        return this.service.updateCommunicationById( this.selectedProjectId(), id, communication ).pipe(
+            notifyUnavailableOnly( this.registryFacade ),
+            tap( (updated: CommunicationModel): void => this.onCommandSuccess( 'update', updated ) ),
         )
     }
 
-    public createCommunication (communication: CommunicationDto): Observable<CreateCommunication> {
-        this.ngStore.dispatch( new CreateCommunication( this.selectedProjectId(), communication ) )
-
-        return this.actions$.pipe( ofActionSuccessful( CreateCommunication ) )
+    public disableCommunication (id: string): Observable<CommunicationModel> {
+        return this.service.disableCommunicationById( this.selectedProjectId(), id ).pipe(
+            notifyOnError( this.registryFacade ),
+            tap( (disabled: CommunicationModel): void => this.onCommandSuccess( 'disable', disabled ) ),
+        )
     }
 
-    public updateCommunication (
-        id: string,
-        communication: CommunicationDto,
-    ): Observable<UpdateCommunication> {
-        this.ngStore.dispatch( new UpdateCommunication( this.selectedProjectId(), id, communication ) )
-
-        return this.actions$.pipe( ofActionSuccessful( UpdateCommunication ) )
+    public enableCommunication (id: string): Observable<CommunicationModel> {
+        return this.service.enableCommunicationById( this.selectedProjectId(), id ).pipe(
+            notifyOnError( this.registryFacade ),
+            tap( (enabled: CommunicationModel): void => this.onCommandSuccess( 'enable', enabled ) ),
+        )
     }
 
-    public disableCommunication (id: string): void {
-        this.ngStore.dispatch( new DisableCommunication( this.selectedProjectId(), id ) )
+    public deleteCommunication (communication: CommunicationModel): Observable<void> {
+        return this.service.deleteCommunicationById( undefined, communication.id ).pipe(
+            notifyOnError( this.registryFacade ),
+            tap( (): void => this.onCommandSuccess( 'delete', communication ) ),
+        )
     }
 
-    public enableCommunication (id: string): void {
-        this.ngStore.dispatch( new EnableCommunication( this.selectedProjectId(), id ) )
-    }
+    // Creating or editing a communication is silent (the form resets itself); the other commands notify.
+    private onCommandSuccess (command: CommandEvent, communication: CommunicationModel): void {
+        if (command !== 'create' && command !== 'update') {
+            this.onCommandSucceeded(
+                'communication',
+                command,
+                'communications.notifications',
+                'pi pi-sort-alt',
+                { datetime: this.datePipe.transform( communication?.dateTime, 'datetime' ) },
+            )
+        } else {
+            this.commandEvents.emit( 'communication', command )
+        }
 
-    public deleteCommunication (communication: CommunicationModel): void {
-        this.ngStore.dispatch( new DeleteCommunication( this.selectedProjectId(), communication ) )
+        const page: PageModel<CommunicationModel> | undefined = this.communicationsPage()
+        this.fetchCommunicationsPage( page?.pageNumber, page?.pageSize, true )
     }
 }

@@ -1,6 +1,4 @@
 import { CommunicationPageParamsModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication-page-params.model'
-import { CommunicationDto } from '@pages/projects/[projectId]/movements/communication/data/dto/communication.dto'
-import { CommunicationModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
 
 enum CommunicationAction {
     RESET_COMMUNICATION_STATE = '[Local] Resetting communication state',
@@ -18,11 +16,6 @@ enum CommunicationAction {
     SEARCH_ALERTS = '[Backend] Searching alerts to link communication',
     FETCH_COMMUNICATION = '[Backend] Fetching communication',
     RESET_COMMUNICATION = '[Local] Resetting communication',
-    CREATE_COMMUNICATION = '[Backend] Creating communication',
-    UPDATE_COMMUNICATION = '[Backend] Updating communication',
-    DISABLE_COMMUNICATION = '[Backend] Disabling communication',
-    ENABLE_COMMUNICATION = '[Backend] Enabling communication',
-    DELETE_COMMUNICATION = '[Backend] Deleting communication',
 }
 
 export class ResetCommunicationState {
@@ -88,44 +81,4 @@ export class SearchAlerts {
 
 export class ResetCommunication {
     public static readonly type: CommunicationAction = CommunicationAction.RESET_COMMUNICATION
-}
-
-export class CreateCommunication {
-    public static readonly type: CommunicationAction = CommunicationAction.CREATE_COMMUNICATION
-
-    public constructor (
-        public readonly projectId: string | undefined,
-        public readonly communication: CommunicationDto,
-    ) {}
-}
-
-export class UpdateCommunication {
-    public static readonly type: CommunicationAction = CommunicationAction.UPDATE_COMMUNICATION
-
-    public constructor (
-        public readonly projectId: string | undefined,
-        public readonly id: string,
-        public readonly communication: CommunicationDto,
-    ) {}
-}
-
-export class DisableCommunication {
-    public static readonly type: CommunicationAction = CommunicationAction.DISABLE_COMMUNICATION
-
-    public constructor (public readonly projectId: string | undefined, public readonly id: string) {}
-}
-
-export class EnableCommunication {
-    public static readonly type: CommunicationAction = CommunicationAction.ENABLE_COMMUNICATION
-
-    public constructor (public readonly projectId: string | undefined, public readonly id: string) {}
-}
-
-export class DeleteCommunication {
-    public static readonly type: CommunicationAction = CommunicationAction.DELETE_COMMUNICATION
-
-    public constructor (
-        public readonly projectId: string | undefined,
-        public readonly communication: CommunicationModel,
-    ) {}
 }
