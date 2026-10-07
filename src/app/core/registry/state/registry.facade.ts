@@ -51,7 +51,6 @@ import {StringHelper} from '@shared/helpers/string.helper'
 import {SeverityEnum} from '@shared/models/enumeration/severity.enum'
 import {GenericHelper} from '@shared/helpers/generic.helper'
 import {ThemeEnum} from '@shared/models/enumeration/theme.enum'
-import {ResetSelectedProjectState} from '@pages/projects/data/state/selected-project/selected-project.action'
 import {PrimeNG} from 'primeng/config'
 import {ProfileResetService} from '@shared/helpers/store/profile-reset.service'
 
@@ -389,7 +388,6 @@ export class RegistryFacade extends GenericFacade {
     public setCurrentProject(projectId: string | undefined): Observable<ActionCompletion<SetCurrentProject>> {
         this.profileReset.resetAll()
         this.ngStore.dispatch([
-            new ResetSelectedProjectState(),
             new SetCurrentProject(projectId),
         ])
 
@@ -409,7 +407,6 @@ export class RegistryFacade extends GenericFacade {
     public createSupportProjectProfile(projectId: string): Observable<ActionCompletion<FetchCurrentUser>> {
         this.profileReset.resetAll()
         this.ngStore.dispatch([
-            new ResetSelectedProjectState(),
             new CreateSupportProjectProfile(projectId),
         ])
 

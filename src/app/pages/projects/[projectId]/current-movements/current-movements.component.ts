@@ -31,11 +31,11 @@ export class CurrentMovementsComponent extends GenericComponent implements OnDes
     }
 
     protected loadData (): void {
-        this.facade.fetchCurrentMovementsPageWithoutActivity( undefined, undefined, false )
+        this.facade.fetchCurrentMovementsPageWithoutActivity( undefined, undefined)
     }
 
     protected loadPage (pageEvent: PageEventModel): void {
-        this.facade.fetchCurrentMovementsPageWithoutActivity( pageEvent.pageNumber, pageEvent.pageSize, false )
+        this.facade.fetchCurrentMovementsPageWithoutActivity( pageEvent.pageNumber, pageEvent.pageSize)
     }
 
     private handleMovementActions (): void {
@@ -44,9 +44,7 @@ export class CurrentMovementsComponent extends GenericComponent implements OnDes
                 tap( (): void => {
                     this.facade.fetchCurrentMovementsPageWithoutActivity(
                         undefined,
-                        undefined,
-                        true,
-                    )
+                        undefined)
                 } ),
             ).subscribe(),
         )
@@ -56,9 +54,7 @@ export class CurrentMovementsComponent extends GenericComponent implements OnDes
                 tap( (): void => {
                     this.facade.fetchCurrentMovementsPageWithoutActivity(
                         this.facade.currentMovementsPageWithoutActivity()?.pageNumber,
-                        this.facade.currentMovementsPageWithoutActivity()?.pageSize,
-                        true,
-                    )
+                        this.facade.currentMovementsPageWithoutActivity()?.pageSize)
                 } ),
             ).subscribe(),
         )

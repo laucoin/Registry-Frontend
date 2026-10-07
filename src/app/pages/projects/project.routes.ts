@@ -5,8 +5,6 @@ import { ProjectRoutesEnum } from '@pages/projects/project-routes.enum'
 import { ProjectFormPage } from '@pages/projects/project-form/project-form.page'
 import { projectContextDeactivateGuard, projectContextGuard } from '@core/authentication/guard/project-context.guard'
 import { MovementFacade } from '@pages/projects/[projectId]/movements/data/state/movement.facade'
-import { importProvidersFrom } from '@angular/core'
-import { NgxsModule } from '@ngxs/store'
 import { MovementStore } from '@pages/projects/[projectId]/movements/data/state/movement.store'
 import { CommunicationFacade } from '@pages/projects/[projectId]/movements/communication/data/state/communication.facade'
 import { CommunicationStore } from '@pages/projects/[projectId]/movements/communication/data/state/communication.store'
@@ -43,8 +41,7 @@ export const projectRoutes: Routes = [
                     {
                         path: '', component: ProjectHomePage,
                         providers: [
-                            SelectedProjectFacade, ParticipantFacade, ParticipantStore, MovementFacade, MovementStore, CommunicationFacade, CommunicationStore, AlertFacade, AlertStore,
-                            importProvidersFrom( NgxsModule.forFeature( [ SelectedProjectStore ] ) ),
+                            SelectedProjectFacade, SelectedProjectStore, ParticipantFacade, ParticipantStore, MovementFacade, MovementStore, CommunicationFacade, CommunicationStore, AlertFacade, AlertStore,
                         ],
                     },
                     {

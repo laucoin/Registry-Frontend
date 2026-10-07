@@ -61,7 +61,7 @@ export class DashboardComponent extends GenericComponent implements OnDestroy {
     public constructor () {
         super()
 
-        this.facade.loadProjectHomeInformation( false )
+        this.facade.loadProjectHomeInformation()
 
         this.totalParticipants = computed( (): number | undefined => {
             if (GenericHelper.isNull( this.facade.participantsStatus() )) return undefined
@@ -115,7 +115,7 @@ export class DashboardComponent extends GenericComponent implements OnDestroy {
     private handleMovementActions (): void {
         this.subscriptions.add(
             this.movementFacade.handleMovementChanges().pipe(
-                tap( (): void => this.facade.loadProjectHomeInformation( true ) ),
+                tap( (): void => this.facade.loadProjectHomeInformation() ),
             ).subscribe(),
         )
     }

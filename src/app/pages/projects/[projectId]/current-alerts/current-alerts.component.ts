@@ -59,11 +59,11 @@ export class CurrentAlertsComponent extends GenericComponent implements OnDestro
         super()
 
         this.handleAlertsActions()
-        this.loadData( false )
+        this.loadData()
     }
 
-    private loadData (force: boolean): void {
-        this.facade.fetchCurrentAlertsPage( 0, 20, force )
+    private loadData (): void {
+        this.facade.fetchCurrentAlertsPage( 0, 20 )
     }
 
     private handleAlertsActions (): void {
@@ -71,7 +71,7 @@ export class CurrentAlertsComponent extends GenericComponent implements OnDestro
             this.alertFacade.handleAlertChange().pipe(
                 tap( (): void => {
                     if ((this.facade.currentAlertsPage()?.content ?? []).length > 0) {
-                        this.loadData( true )
+                        this.loadData()
                     }
                 } ),
             ).subscribe(),
