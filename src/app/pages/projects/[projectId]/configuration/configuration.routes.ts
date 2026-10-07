@@ -45,7 +45,7 @@ export const configurationRoutes: Routes = [
                 path: ConfigurationRoutesEnum.VEHICLES,
                 loadChildren: () => import('@pages/projects/[projectId]/configuration/vehicles/vehicle.routes').then( (m: typeof import('@pages/projects/[projectId]/configuration/vehicles/vehicle.routes')) => m.vehicleRoutes ),
                 canActivate: [ vehicleOptionGuard ],
-                providers: [ MovementFacade, VehicleFacade, importProvidersFrom( NgxsModule.forFeature( [ MovementStore, VehicleStore ] ) ) ],
+                providers: [ MovementFacade, VehicleFacade, VehicleStore, importProvidersFrom( NgxsModule.forFeature( [ MovementStore ] ) ) ],
             },
             {
                 path: ConfigurationRoutesEnum.ACTIVITIES,

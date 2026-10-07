@@ -9,7 +9,7 @@ import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.e
 export interface VehicleStoreModel {
     vehicles: PageRequestInformationModel<VehiclePageParamsModel, VehicleModel>
     movements: PageRequestInformationModel<MovementPageParamsModel, MovementModel>
-    _metadata: {
+    metadata: {
         availabilities: SelectItem<boolean | undefined>[]
         visibilities: SelectItem<boolean | undefined>[]
         presencesStatus: SelectItem<PresenceStatusEnum | undefined>[]

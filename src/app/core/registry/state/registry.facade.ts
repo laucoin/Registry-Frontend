@@ -63,19 +63,17 @@ import {
     FetchParticipantPresencesStatus,
     ResetParticipantState,
 } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.action'
-import {
-    FetchVehiclePresencesStatus,
-    ResetVehicleState,
-} from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.action'
 import {FetchAlertStatus} from '@pages/projects/[projectId]/alerts/data/state/alert.action'
 import {
     FetchProfileStatus,
 } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.action'
 import {PrimeNG} from 'primeng/config'
+import {ProfileResetService} from '@shared/helpers/store/profile-reset.service'
 
 @Injectable()
 export class RegistryFacade extends GenericFacade {
     private readonly primeConfig: PrimeNG = inject(PrimeNG)
+    private readonly profileReset: ProfileResetService = inject(ProfileResetService)
 
     private readonly onlineMessage: ToastMessageOptions = StateHelper.buildNotificationMessage(
         SeverityEnum.SUCCESS,
@@ -392,7 +390,6 @@ export class RegistryFacade extends GenericFacade {
             FetchMovementTypes,
             FetchParticipantTypes,
             FetchParticipantPresencesStatus,
-            FetchVehiclePresencesStatus,
             FetchAlertStatus,
             FetchProfileStatus,
         ])
@@ -410,13 +407,13 @@ export class RegistryFacade extends GenericFacade {
     }
 
     public setCurrentProject(projectId: string | undefined): Observable<ActionCompletion<SetCurrentProject>> {
+        this.profileReset.resetAll()
         this.ngStore.dispatch([
             new ResetSelectedProjectState(),
             new ResetMovementState(),
             new ResetActivityState(),
             new ResetCommunicationState(),
             new ResetParticipantState(),
-            new ResetVehicleState(),
             new SetCurrentProject(projectId),
         ])
 
@@ -434,13 +431,13 @@ export class RegistryFacade extends GenericFacade {
     }
 
     public createSupportProjectProfile(projectId: string): Observable<ActionCompletion<FetchCurrentUser>> {
+        this.profileReset.resetAll()
         this.ngStore.dispatch([
             new ResetSelectedProjectState(),
             new ResetMovementState(),
             new ResetActivityState(),
             new ResetCommunicationState(),
             new ResetParticipantState(),
-            new ResetVehicleState(),
             new CreateSupportProjectProfile(projectId),
         ])
 

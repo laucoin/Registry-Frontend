@@ -74,7 +74,7 @@ export class VehicleMovementsListPage extends GenericListComponent implements On
                 withLoading(this.vehicleLoading),
             ).subscribe( (vehicle: VehicleModel): void => this.vehicle.set(vehicle) ),
         )
-        this.facade.fetchVehicleMovementsPage(id!, undefined, undefined, false)
+        this.facade.fetchVehicleMovementsPage(id!, undefined, undefined)
     }
 
     private handleMovementActions(): void {
@@ -85,7 +85,6 @@ export class VehicleMovementsListPage extends GenericListComponent implements On
                         this.route.snapshot.params['vehicleId'],
                         undefined,
                         undefined,
-                        true,
                     )
                 }),
             ).subscribe(),
@@ -98,7 +97,6 @@ export class VehicleMovementsListPage extends GenericListComponent implements On
                         this.route.snapshot.params['vehicleId'],
                         this.facade.vehicleMovementsPage()?.pageNumber,
                         this.facade.vehicleMovementsPage()?.pageSize,
-                        true,
                     )
                 }),
             ).subscribe(),
@@ -113,7 +111,7 @@ export class VehicleMovementsListPage extends GenericListComponent implements On
             this.visibilitySearched.value,
         )
         this.facade.fetchVehicleMovementsPage(
-            this.route.snapshot.params['vehicleId'], pageEvent.pageNumber, pageEvent.pageSize, false,
+            this.route.snapshot.params['vehicleId'], pageEvent.pageNumber, pageEvent.pageSize,
         )
     }
 

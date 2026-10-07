@@ -56,7 +56,7 @@ export class VehiclesListPage extends GenericListComponent {
     }
 
     protected loadData(): void {
-        this.facade.fetchVehiclesPage(undefined, undefined, false)
+        this.facade.fetchVehiclesPage(undefined, undefined)
     }
 
     protected loadPage(pageEvent: PageEventModel): void {
@@ -66,7 +66,7 @@ export class VehiclesListPage extends GenericListComponent {
             this.statusSearched.value,
             this.visibilitySearched.value,
         )
-        this.facade.fetchVehiclesPage(pageEvent.pageNumber, pageEvent.pageSize, false)
+        this.facade.fetchVehiclesPage(pageEvent.pageNumber, pageEvent.pageSize)
     }
 
     protected get textSearched(): FormControl {
