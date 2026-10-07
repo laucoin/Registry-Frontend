@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router'
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
-import { AuthCallbackComponent } from '@pages/auth/callback/auth-callback.component'
+import { AuthCallbackPage } from '@pages/auth/callback/auth-callback.page'
 import { importProvidersFrom } from '@angular/core'
 import { NgxsModule } from '@ngxs/store'
 import { ProjectStore } from '@pages/projects/data/state/project/project.store'
@@ -21,7 +21,7 @@ export const routes: Routes = [
     },
     {
         path: RegistryRouteEnum.AUTH_CALLBACK,
-        component: AuthCallbackComponent,
+        component: AuthCallbackPage,
     },
     {
         path: '**',

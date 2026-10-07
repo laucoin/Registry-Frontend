@@ -1,17 +1,17 @@
 import { Routes } from '@angular/router'
-import { ParticipantComponent } from '@pages/projects/[projectId]/configuration/participants/participant.component'
-import { ParticipantsListComponent } from '@pages/projects/[projectId]/configuration/participants/participants-list/participants-list.component'
+import { ParticipantPage } from '@pages/projects/[projectId]/configuration/participants/participant.page'
+import { ParticipantsListPage } from '@pages/projects/[projectId]/configuration/participants/participants-list/participants-list.page'
 import { ParticipantRoutesEnum } from '@pages/projects/[projectId]/configuration/participants/participant-routes.enum'
 import { ParticipantFormComponent } from '@pages/projects/[projectId]/configuration/participants/participant-form/participant-form.component'
-import { ParticipantMovementsListComponent } from '@pages/projects/[projectId]/configuration/participants/participant-movements-list/participant-movements-list.component'
+import { ParticipantMovementsListPage } from '@pages/projects/[projectId]/configuration/participants/participant-movements-list/participant-movements-list.page'
 
 export const participantRoutes: Routes = [
     {
         path: '',
-        component: ParticipantComponent,
+        component: ParticipantPage,
         children: [
             {
-                path: '', component: ParticipantsListComponent,
+                path: '', component: ParticipantsListPage,
             },
             {
                 path: ParticipantRoutesEnum.CREATE, component: ParticipantFormComponent,
@@ -20,7 +20,7 @@ export const participantRoutes: Routes = [
                 path: ParticipantRoutesEnum.EDIT, component: ParticipantFormComponent,
             },
             {
-                path: ParticipantRoutesEnum.MOVEMENTS, component: ParticipantMovementsListComponent,
+                path: ParticipantRoutesEnum.MOVEMENTS, component: ParticipantMovementsListPage,
             },
         ],
     },

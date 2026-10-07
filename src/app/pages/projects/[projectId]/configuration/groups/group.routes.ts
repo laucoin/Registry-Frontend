@@ -1,26 +1,26 @@
 import { Routes } from '@angular/router'
 import { GroupRoutesEnum } from '@pages/projects/[projectId]/configuration/groups/group-routes.enum'
-import { GroupComponent } from '@pages/projects/[projectId]/configuration/groups/group.component'
-import { GroupsListComponent } from '@pages/projects/[projectId]/configuration/groups/groups-list/groups-list.component'
-import { GroupFormComponent } from '@pages/projects/[projectId]/configuration/groups/group-form/group-form.component'
-import { GroupMemberListComponent } from '@pages/projects/[projectId]/configuration/groups/group-member-list/group-member-list.component'
+import { GroupPage } from '@pages/projects/[projectId]/configuration/groups/group.page'
+import { GroupsListPage } from '@pages/projects/[projectId]/configuration/groups/groups-list/groups-list.page'
+import { GroupFormPage } from '@pages/projects/[projectId]/configuration/groups/group-form/group-form.page'
+import { GroupMemberListPage } from '@pages/projects/[projectId]/configuration/groups/group-member-list/group-member-list.page'
 
 export const groupRoutes: Routes = [
     {
         path: '',
-        component: GroupComponent,
+        component: GroupPage,
         children: [
             {
-                path: '', component: GroupsListComponent,
+                path: '', component: GroupsListPage,
             },
             {
-                path: GroupRoutesEnum.MEMBERS, component: GroupMemberListComponent,
+                path: GroupRoutesEnum.MEMBERS, component: GroupMemberListPage,
             },
             {
-                path: GroupRoutesEnum.CREATE, component: GroupFormComponent,
+                path: GroupRoutesEnum.CREATE, component: GroupFormPage,
             },
             {
-                path: GroupRoutesEnum.EDIT, component: GroupFormComponent,
+                path: GroupRoutesEnum.EDIT, component: GroupFormPage,
             },
         ],
     },

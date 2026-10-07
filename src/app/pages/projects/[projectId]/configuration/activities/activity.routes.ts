@@ -1,26 +1,26 @@
 import { Routes } from '@angular/router'
-import { ActivityComponent } from '@pages/projects/[projectId]/configuration/activities/activity.component'
-import { ActivitiesListComponent } from '@pages/projects/[projectId]/configuration/activities/activities-list/activities-list.component'
+import { ActivityPage } from '@pages/projects/[projectId]/configuration/activities/activity.page'
+import { ActivitiesListPage } from '@pages/projects/[projectId]/configuration/activities/activities-list/activities-list.page'
 import { ActivityRoutesEnum } from '@pages/projects/[projectId]/configuration/activities/activity-routes.enum'
-import { ActivityFormComponent } from '@pages/projects/[projectId]/configuration/activities/activity-form/activity-form.component'
-import { ActivityMovementsListComponent } from '@pages/projects/[projectId]/configuration/activities/activity-movements-list/activity-movements-list.component'
+import { ActivityFormPage } from '@pages/projects/[projectId]/configuration/activities/activity-form/activity-form.page'
+import { ActivityMovementsListPage } from '@pages/projects/[projectId]/configuration/activities/activity-movements-list/activity-movements-list.page'
 
 export const activityRoutes: Routes = [
     {
         path: '',
-        component: ActivityComponent,
+        component: ActivityPage,
         children: [
             {
-                path: '', component: ActivitiesListComponent,
+                path: '', component: ActivitiesListPage,
             },
             {
-                path: ActivityRoutesEnum.CREATE, component: ActivityFormComponent,
+                path: ActivityRoutesEnum.CREATE, component: ActivityFormPage,
             },
             {
-                path: ActivityRoutesEnum.EDIT, component: ActivityFormComponent,
+                path: ActivityRoutesEnum.EDIT, component: ActivityFormPage,
             },
             {
-                path: ActivityRoutesEnum.MOVEMENTS, component: ActivityMovementsListComponent,
+                path: ActivityRoutesEnum.MOVEMENTS, component: ActivityMovementsListPage,
             },
         ],
     },

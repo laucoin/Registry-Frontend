@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router'
-import { ConfigurationComponent } from '@pages/projects/[projectId]/configuration/configuration.component'
+import { ConfigurationPage } from '@pages/projects/[projectId]/configuration/configuration.page'
 import { importProvidersFrom } from '@angular/core'
 import { NgxsModule } from '@ngxs/store'
 import { ConfigurationRoutesEnum } from '@pages/projects/[projectId]/configuration/configuration-routes.enum'
@@ -21,10 +21,10 @@ import { ActivityStore } from '@pages/projects/[projectId]/configuration/activit
 export const configurationRoutes: Routes = [
     {
         path: '',
-        component: ConfigurationComponent,
+        component: ConfigurationPage,
         children: [
             {
-                path: '', component: ConfigurationComponent,
+                path: '', component: ConfigurationPage,
             },
             {
                 path: ConfigurationRoutesEnum.PROFILES,

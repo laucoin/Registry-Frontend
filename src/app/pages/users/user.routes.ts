@@ -1,11 +1,11 @@
 import { Routes } from '@angular/router'
-import { UserComponent } from '@pages/users/user.component'
-import { UsersListComponent } from '@pages/users/users-list/users-list.component'
-import { UserFormComponent } from '@pages/users/user-form/user-form.component'
+import { UserPage } from '@pages/users/user.page'
+import { UsersListPage } from '@pages/users/users-list/users-list.page'
+import { UserFormPage } from '@pages/users/user-form/user-form.page'
 import { UserRoutesEnum } from '@pages/users/user-routes.enum'
-import { InvitationsListComponent } from '@pages/users/invitations/invitations-list/invitations-list.component'
-import { SettingComponent } from '@pages/users/settings/setting/setting.component'
-import { ProfilesListComponent } from '@pages/users/profiles/profiles-list/profiles-list.component'
+import { InvitationsListPage } from '@pages/users/invitations/invitations-list/invitations-list.page'
+import { SettingPage } from '@pages/users/settings/setting/setting.page'
+import { ProfilesListPage } from '@pages/users/profiles/profiles-list/profiles-list.page'
 import { importProvidersFrom } from '@angular/core'
 import { NgxsModule } from '@ngxs/store'
 import { ProjectProfileFacade } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.facade'
@@ -14,26 +14,26 @@ import { ProjectProfileStore } from '@pages/projects/[projectId]/configuration/p
 export const userRoutes: Routes = [
     {
         path: '',
-        component: UserComponent,
+        component: UserPage,
         children: [
             {
-                path: '', component: UsersListComponent,
+                path: '', component: UsersListPage,
             },
             {
-                path: UserRoutesEnum.EDIT, component: UserFormComponent,
+                path: UserRoutesEnum.EDIT, component: UserFormPage,
             },
             {
                 path: UserRoutesEnum.PROFILES,
-                component: ProfilesListComponent,
+                component: ProfilesListPage,
                 providers: [ ProjectProfileFacade, importProvidersFrom( NgxsModule.forFeature( [ ProjectProfileStore ] ) ) ],
             },
             {
                 path: UserRoutesEnum.INVITATIONS,
-                component: InvitationsListComponent,
+                component: InvitationsListPage,
                 providers: [ ProjectProfileFacade, importProvidersFrom( NgxsModule.forFeature( [ ProjectProfileStore ] ) ) ],
             },
             {
-                path: UserRoutesEnum.SETTINGS, component: SettingComponent,
+                path: UserRoutesEnum.SETTINGS, component: SettingPage,
             },
         ],
     },

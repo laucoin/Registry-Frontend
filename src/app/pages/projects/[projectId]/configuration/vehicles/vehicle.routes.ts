@@ -1,26 +1,26 @@
 import { Routes } from '@angular/router'
-import { VehicleComponent } from '@pages/projects/[projectId]/configuration/vehicles/vehicle.component'
-import { VehiclesListComponent } from '@pages/projects/[projectId]/configuration/vehicles/vehicles-list/vehicles-list.component'
+import { VehiclePage } from '@pages/projects/[projectId]/configuration/vehicles/vehicle.page'
+import { VehiclesListPage } from '@pages/projects/[projectId]/configuration/vehicles/vehicles-list/vehicles-list.page'
 import { VehicleRoutesEnum } from '@pages/projects/[projectId]/configuration/vehicles/vehicle-routes.enum'
-import { VehicleFormComponent } from '@pages/projects/[projectId]/configuration/vehicles/vehicle-form/vehicle-form.component'
-import { VehicleMovementsListComponent } from '@pages/projects/[projectId]/configuration/vehicles/vehicle-movements-list/vehicle-movements-list.component'
+import { VehicleFormPage } from '@pages/projects/[projectId]/configuration/vehicles/vehicle-form/vehicle-form.page'
+import { VehicleMovementsListPage } from '@pages/projects/[projectId]/configuration/vehicles/vehicle-movements-list/vehicle-movements-list.page'
 
 export const vehicleRoutes: Routes = [
     {
         path: '',
-        component: VehicleComponent,
+        component: VehiclePage,
         children: [
             {
-                path: '', component: VehiclesListComponent,
+                path: '', component: VehiclesListPage,
             },
             {
-                path: VehicleRoutesEnum.CREATE, component: VehicleFormComponent,
+                path: VehicleRoutesEnum.CREATE, component: VehicleFormPage,
             },
             {
-                path: VehicleRoutesEnum.EDIT, component: VehicleFormComponent,
+                path: VehicleRoutesEnum.EDIT, component: VehicleFormPage,
             },
             {
-                path: VehicleRoutesEnum.MOVEMENTS, component: VehicleMovementsListComponent,
+                path: VehicleRoutesEnum.MOVEMENTS, component: VehicleMovementsListPage,
             },
         ],
     },

@@ -1,22 +1,22 @@
 import { Routes } from '@angular/router'
-import { MovementComponent } from '@pages/projects/[projectId]/movements/movement.component'
-import { MovementsListComponent } from '@pages/projects/[projectId]/movements/movements-list/movements-list.component'
+import { MovementPage } from '@pages/projects/[projectId]/movements/movement.page'
+import { MovementsListPage } from '@pages/projects/[projectId]/movements/movements-list/movements-list.page'
 import { MovementRoutesEnum } from '@pages/projects/[projectId]/movements/movement-routes.enum'
-import { MovementFormComponent } from '@pages/projects/[projectId]/movements/movement-form/movement-form.component'
+import { MovementFormPage } from '@pages/projects/[projectId]/movements/movement-form/movement-form.page'
 
 export const movementRoutes: Routes = [
     {
         path: '',
-        component: MovementComponent,
+        component: MovementPage,
         children: [
             {
-                path: '', component: MovementsListComponent,
+                path: '', component: MovementsListPage,
             },
             {
-                path: MovementRoutesEnum.CREATE, component: MovementFormComponent,
+                path: MovementRoutesEnum.CREATE, component: MovementFormPage,
             },
             {
-                path: MovementRoutesEnum.EDIT, component: MovementFormComponent,
+                path: MovementRoutesEnum.EDIT, component: MovementFormPage,
             },
         ],
     },
