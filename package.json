@@ -5,7 +5,8 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "prepare": "husky"
   },
   "private": true,
   "packageManager": "pnpm@12.4.1",
@@ -36,6 +37,7 @@
     "@eslint/js": "^10.0.1",
     "@ngxs/devtools-plugin": "^22.0.0",
     "eslint": "^10.8.1",
+    "husky": "^9.1.7",
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.69.0"
   }

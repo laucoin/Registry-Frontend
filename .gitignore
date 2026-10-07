@@ -1,7 +1,7 @@
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 
 # Config
-public/settings/*.json
+public/settings/env.json
 
 # Compiled output
 /dist
