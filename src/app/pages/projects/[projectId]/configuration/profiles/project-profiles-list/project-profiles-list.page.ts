@@ -58,7 +58,7 @@ export class ProjectProfilesListPage extends GenericListComponent {
     }
 
     protected loadData(): void {
-        this.facade.fetchProjectProfilesPage(undefined, undefined, false)
+        this.facade.fetchProjectProfilesPage(undefined, undefined)
     }
 
     protected loadPage(pageEvent: PageEventModel): void {
@@ -68,7 +68,7 @@ export class ProjectProfilesListPage extends GenericListComponent {
             this.statusSearched.value,
             this.availabilitySearched.value,
         )
-        this.facade.fetchProjectProfilesPage(pageEvent.pageNumber, pageEvent.pageSize, false)
+        this.facade.fetchProjectProfilesPage(pageEvent.pageNumber, pageEvent.pageSize)
     }
 
     protected get textSearched(): FormControl {

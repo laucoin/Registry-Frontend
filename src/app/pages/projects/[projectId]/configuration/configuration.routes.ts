@@ -29,7 +29,7 @@ export const configurationRoutes: Routes = [
             {
                 path: ConfigurationRoutesEnum.PROFILES,
                 loadChildren: () => import('@pages/projects/[projectId]/configuration/profiles/project-profile.routes').then( (m: typeof import('@pages/projects/[projectId]/configuration/profiles/project-profile.routes')) => m.projectProfileRoutes ),
-                providers: [ ProjectProfileFacade, importProvidersFrom( NgxsModule.forFeature( [ ProjectProfileStore ] ) ) ],
+                providers: [ ProjectProfileFacade, ProjectProfileStore ],
             },
             {
                 path: ConfigurationRoutesEnum.PARTICIPANTS,

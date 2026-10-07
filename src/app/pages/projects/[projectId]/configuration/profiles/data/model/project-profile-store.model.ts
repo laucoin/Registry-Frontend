@@ -7,7 +7,7 @@ import { ProfileStatusEnum } from '@shared/models/enumeration/profile-status.enu
 
 export interface ProjectProfileStoreModel {
     projectProfiles: PageRequestInformationModel<ProjectProfilePageParamsModel, ProjectProfileModel>
-    _metadata: {
+    metadata: {
         roles: SelectItem<string>[]
         status: SelectItem<ProfileStatusEnum | undefined>[]
         searched: SelectItem<UserModel>[]

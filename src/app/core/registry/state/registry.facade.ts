@@ -63,9 +63,6 @@ import {
     ResetParticipantState,
 } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.action'
 import {FetchAlertStatus} from '@pages/projects/[projectId]/alerts/data/state/alert.action'
-import {
-    FetchProfileStatus,
-} from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.action'
 import {PrimeNG} from 'primeng/config'
 import {ProfileResetService} from '@shared/helpers/store/profile-reset.service'
 
@@ -390,7 +387,6 @@ export class RegistryFacade extends GenericFacade {
             FetchParticipantTypes,
             FetchParticipantPresencesStatus,
             FetchAlertStatus,
-            FetchProfileStatus,
         ])
     }
 
