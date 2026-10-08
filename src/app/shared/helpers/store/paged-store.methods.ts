@@ -2,7 +2,6 @@ import { patchState, StateSignals, WritableStateSource } from '@ngrx/signals'
 import { RxMethod, rxMethod } from '@ngrx/signals/rxjs-interop'
 import { finalize, map, Observable, pipe, switchMap, tap } from 'rxjs'
 import { SelectItem } from 'primeng/api'
-import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
 import { ErrorSink, initialize, notifyOnError } from '@shared/helpers/rx.helper'
 import { MovementHelper } from '@shared/helpers/movement.helper'
 import { StateHelper } from '@shared/helpers/state/state.helper'
@@ -21,6 +20,10 @@ export type StoreRef<S extends object> = WritableStateSource<S> & StateSignals<S
 export type ParamsOf<B> = B extends PageRequestInformationModel<infer P, GenericModel> ? P : never
 
 export type PageOf<B> = B extends PageRequestInformationModel<object, infer M extends GenericModel> ? PageModel<M> : never
+
+export interface MovementContentsApi {
+    findMovementsContents (projectId: string | undefined, movementIds: string[], currentMovements: boolean): Observable<PairModel<MovementContentModel[]>[]>
+}
 
 export interface MovementContentsRequest {
     projectId: string | undefined
@@ -105,7 +108,7 @@ export function paramsMerger<S extends object, K extends keyof S & string> (stor
  */
 export function movementContentsFetcher<S extends { movements: MovementsBlock }> (
     store: StoreRef<S>,
-    movementApi: MovementApi,
+    movementApi: MovementContentsApi,
     errors: ErrorSink,
 ): RxMethod<MovementContentsRequest> {
     const movements: () => MovementsBlock = (): MovementsBlock => (store as unknown as { movements: () => MovementsBlock }).movements()

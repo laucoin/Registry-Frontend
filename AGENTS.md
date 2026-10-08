@@ -52,6 +52,9 @@ The source code is organized into three core directories:
   method calls. The facade may call the api directly instead of the store when there's nothing to persist/share (e.g. a
   redirect-only call) — only work whose result must be persisted in state and shared across components belongs in the
   store.
+- **Documented exception:** `shared/ui/domain/` holds the cards and forms of the business entities. They read their
+  domain facades and models from `pages/`, which is the only accepted `shared` to `pages` dependency (the 29 existing
+  imports). They are reworked with the `@sgdf/ui` migration; do not add new `shared` to `pages` imports elsewhere.
 - **Core facades:** `UiFacade` exposes what the shell displays (theme, screen, toasts, global loader and error),
   `SessionFacade` exposes the signed-in user, the selected project and the user's own profiles, and `RegistryFacade`
   only orchestrates the flows that cross both (sign-in, preferences, project selection). Stores never depend on a
