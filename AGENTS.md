@@ -20,6 +20,8 @@ on this Angular Client-Side Rendering (CSR) project.
 - **Reactivity & State:** Strictly use **Angular Signals** (including `@ngrx/signals` `signalStore`, reactive forms with
   signals, `input()`, `output()`, etc.). Avoid legacy reactive patterns where modern signals are applicable.
 - **Design System:** `@sgdf/ui` (Web Awesome based web components).
+- **Styling:** Tailwind CSS v4 utility classes in templates (default breakpoints), native CSS for the remaining
+  component styles. Bootstrap is not used. Beware the spacing scale: Tailwind steps are `n × 0.25rem`.
 
 ---
 
