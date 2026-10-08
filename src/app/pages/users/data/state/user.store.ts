@@ -1,19 +1,14 @@
 import { inject } from '@angular/core'
 import { patchState, signalStore, withMethods, withState } from '@ngrx/signals'
-import { rxMethod } from '@ngrx/signals/rxjs-interop'
-import { finalize, Observable, pipe, switchMap, tap } from 'rxjs'
 import { SelectItem } from 'primeng/api'
-import { PageModel } from '@shared/models/model/page.model'
-import { UserModel } from '@shared/models/model/user.model'
-import { ElementRequestInformationModel } from '@shared/models/model/element-request-information.model'
+import { ErrorReporter } from '@core/registry/state/error-reporter'
 import { UserPageParamsModel } from '@pages/users/data/model/user-page-params.model'
 import { UserStoreModel } from '@pages/users/data/model/user-store.model'
 import { UserApi } from '@pages/users/data/state/user.api'
-import { ErrorReporter } from '@core/registry/state/error-reporter'
-import { StateHelper } from '@shared/helpers/state/state.helper'
-import { initialize, notifyOnError } from '@shared/helpers/rx.helper'
 import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
-import { pageSlice, trackPage } from '@shared/helpers/store/track-page.operator'
+import { elementFetcher, loaderToggle, metadataFetcher, pageFetcher, paramsUpdater, trackElement } from '@shared/helpers/store/paged-store.methods'
+import { ElementRequestInformationModel } from '@shared/models/model/element-request-information.model'
+import { UserModel } from '@shared/models/model/user.model'
 
 interface UsersPageRequest {
     pageNumber: number | undefined
@@ -50,72 +45,15 @@ const defaultUserStore: UserStoreModel = {
 export const UserStore = signalStore(
     { providedIn: 'root' },
     withState<UserStoreModel>( defaultUserStore ),
-    withMethods( (
-        store,
-        api = inject( UserApi ),
-        errors = inject( ErrorReporter ),
-    ) => ({
-        fetchUsersPage: rxMethod<UsersPageRequest>( pipe(
-            switchMap( (request: UsersPageRequest): Observable<PageModel<UserModel>> => api.findUsers(
-                request.pageNumber,
-                request.pageSize,
-                store.users.params(),
-            ).pipe(
-                trackPage( errors, pageSlice( store, 'users' ) ),
-            ) ),
-            tap( (page: PageModel<UserModel>): void => patchState( store, (state: UserStoreModel) => ({
-                users: {
-                    ...state.users,
-                    params: { ...state.users.params, resetSearch: false },
-                    element: page,
-                },
-            }) ) ),
-        ) ),
-
-        updateUsersPageSearchParams: (params: UserPageParamsModel): void => {
-            patchState( store, (state: UserStoreModel) => ({ users: { ...state.users, params: params } }) )
-        },
-
-        startUserLoader: (): void => {
-            patchState( store, (state: UserStoreModel) => ({ user: StateHelper.updateElementLoader( state.user, true ) }) )
-        },
-
-        stopUserLoader: (): void => {
-            patchState( store, (state: UserStoreModel) => ({ user: StateHelper.updateElementLoader( state.user, false ) }) )
-        },
-
-        fetchUser: rxMethod<string>( pipe(
-            switchMap( (id: string): Observable<UserModel> => api.findUserById( id ).pipe(
-                initialize( (): void => patchState( store, (state: UserStoreModel) => ({
-                    user: StateHelper.updateElementLoader( state.user, true ),
-                }) ) ),
-                finalize( (): void => patchState( store, (state: UserStoreModel) => ({
-                    user: StateHelper.updateElementLoader( state.user, false ),
-                }) ) ),
-                notifyOnError( errors ),
-            ) ),
-            tap( (user: UserModel): void => patchState( store, (state: UserStoreModel) => ({
-                user: { ...state.user, element: user },
-            }) ) ),
-        ) ),
-
-        resetUser: (): void => {
-            patchState( store, { user: defaultUser } )
-        },
-
-        fetchAssignableRoles: rxMethod<void>( pipe(
-            switchMap( (): Observable<SelectItem<string>[]> => api.getAssignableUserRoles().pipe(
-                initialize( (): void => patchState( store, (state: UserStoreModel) => ({
-                    user: StateHelper.updateElementLoader( state.user, true ),
-                }) ) ),
-                finalize( (): void => patchState( store, (state: UserStoreModel) => ({
-                    user: StateHelper.updateElementLoader( state.user, false ),
-                }) ) ),
-                notifyOnError( errors ),
-            ) ),
-            tap( (roles: SelectItem<string>[]): void => patchState( store, (state: UserStoreModel) => ({
-                metadata: { ...state.metadata, assignableRoles: roles },
-            }) ) ),
-        ) ),
+    withMethods( (store, api = inject( UserApi ), errors = inject( ErrorReporter )) => ({
+        fetchUsersPage: pageFetcher( store, 'users', (request: UsersPageRequest, params: UserPageParamsModel) =>
+            api.findUsers( request.pageNumber, request.pageSize, params ), errors ),
+        updateUsersPageSearchParams: paramsUpdater( store, 'users' ),
+        startUserLoader: loaderToggle( store, 'user', true ),
+        stopUserLoader: loaderToggle( store, 'user', false ),
+        fetchUser: elementFetcher( store, 'user', (id: string) => api.findUserById( id ), errors ),
+        resetUser: (): void => patchState( store, { user: defaultUser } ),
+        fetchAssignableRoles: metadataFetcher<UserStoreModel, 'assignableRoles', void, SelectItem<string>[]>( store, 'assignableRoles', () =>
+            api.getAssignableUserRoles().pipe( trackElement( store, 'user' ) ), errors ),
     }) ),
 )
