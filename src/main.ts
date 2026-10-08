@@ -26,7 +26,6 @@ import {IntervalPipe} from '@shared/helpers/pipe/interval.pipe'
     bootstrapApplication(RegistryComponent, {
         providers: [
             provideZoneChangeDetection({eventCoalescing: true}),
-            provideHttpClient(),
             provideHttpClient(withInterceptors([backendHandler])),
             provideRouter(routes),
             MessageService,
