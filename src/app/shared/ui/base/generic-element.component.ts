@@ -53,6 +53,18 @@ export abstract class GenericElementComponent extends GenericComponent {
         return ProjectHelper.hasOption(project, option)
     }
 
+    protected confirmThen(
+        translationPrefix: string,
+        icon: string,
+        element: unknown,
+        acceptSeverity: SeverityEnum,
+        accept: () => void,
+    ): () => void {
+        return (): void => {
+            this.confirmationService.confirm( this.buildConfirmation( translationPrefix, icon, element, acceptSeverity, accept ) )
+        }
+    }
+
     protected buildConfirmation(
         translationPrefix: string,
         icon: string,

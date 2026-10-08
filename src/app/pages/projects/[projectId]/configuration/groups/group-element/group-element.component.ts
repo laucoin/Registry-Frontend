@@ -42,7 +42,15 @@ export class GroupElementComponent extends GenericElementComponent {
     public readonly group: InputSignal<GroupModel> = input.required()
 
     protected readonly actions: Signal<MenuItem[]> = computed( (): MenuItem[] => [
-        {
+        this.membersAction(),
+        this.editAction(),
+        this.disableAction(),
+        this.enableAction(),
+        this.deleteAction(),
+    ] )
+
+    private membersAction(): MenuItem {
+        return {
             label: 'groups.actions.members',
             icon: 'pi pi-users',
             disabled: !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_R ),
@@ -52,8 +60,11 @@ export class GroupElementComponent extends GenericElementComponent {
                     RegistryRouteEnum.PROJECTS_CONFIGURATION_GROUPS_MEMBERS.replace( ':groupId', this.group().id ).replace(':projectId', this.sessionFacade.currentProjectId() ?? ''),
                 ).catch( console.error )
             },
-        },
-        {
+        }
+    }
+
+    private editAction(): MenuItem {
+        return {
             id: ElementActionEnum.GROUP_UPDATE,
             label: 'groups.actions.edit',
             icon: 'pi pi-pen-to-square',
@@ -64,59 +75,56 @@ export class GroupElementComponent extends GenericElementComponent {
                     RegistryRouteEnum.PROJECTS_CONFIGURATION_GROUPS_EDITION.replace( ':groupId', this.group().id ).replace(':projectId', this.sessionFacade.currentProjectId() ?? ''),
                 ).catch( console.error )
             },
-        },
-        {
+        }
+    }
+
+    private disableAction(): MenuItem {
+        return {
             label: 'groups.actions.disable',
             icon: 'pi pi-eye-slash',
             disabled: this.busy() || !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_U ),
             visible: this.actionIsEnable(ElementActionEnum.GROUP_DISABLE ) && this.group().visible,
-            command: (): void => {
-                this.confirmationService.confirm(
-                    this.buildConfirmation(
-                        'groups.actions.confirmations.disable',
-                        'pi pi-exclamation-triangle',
-                        this.group(),
-                        SeverityEnum.WARNING,
-                        (): void => this.run(this.facade.disableGroup(this.group().id)),
-                    ),
-                )
-            },
-        },
-        {
+            command: this.confirmThen(
+                'groups.actions.confirmations.disable',
+                'pi pi-exclamation-triangle',
+                this.group(),
+                SeverityEnum.WARNING,
+                (): void => this.run(this.facade.disableGroup(this.group().id)),
+            ),
+        }
+    }
+
+    private enableAction(): MenuItem {
+        return {
             label: 'groups.actions.enable',
             icon: 'pi pi-replay',
             disabled: this.busy() || !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_U ),
             visible: this.actionIsEnable(ElementActionEnum.GROUP_ENABLE ) && !this.group().visible,
-            command: (): void => {
-                this.confirmationService.confirm(
-                    this.buildConfirmation(
-                        'groups.actions.confirmations.enable',
-                        'pi pi-info-circle',
-                        this.group(),
-                        SeverityEnum.INFO,
-                        (): void => this.run(this.facade.enableGroup(this.group().id)),
-                    ),
-                )
-            },
-        },
-        {
+            command: this.confirmThen(
+                'groups.actions.confirmations.enable',
+                'pi pi-info-circle',
+                this.group(),
+                SeverityEnum.INFO,
+                (): void => this.run(this.facade.enableGroup(this.group().id)),
+            ),
+        }
+    }
+
+    private deleteAction(): MenuItem {
+        return {
             label: 'groups.actions.delete',
             icon: 'pi pi-trash',
             disabled: this.busy() || !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_D ),
             visible: this.actionIsEnable(ElementActionEnum.GROUP_DELETE ),
-            command: (): void => {
-                this.confirmationService.confirm(
-                    this.buildConfirmation(
-                        'groups.actions.confirmations.delete',
-                        'pi pi-exclamation-triangle',
-                        this.group(),
-                        SeverityEnum.DANGER,
-                        (): void => this.run(this.facade.deleteGroup(this.group())),
-                    ),
-                )
-            },
-        },
-    ] )
+            command: this.confirmThen(
+                'groups.actions.confirmations.delete',
+                'pi pi-exclamation-triangle',
+                this.group(),
+                SeverityEnum.DANGER,
+                (): void => this.run(this.facade.deleteGroup(this.group())),
+            ),
+        }
+    }
 
     protected readonly statusSeverity: Signal<SeverityEnum> = computed( (): SeverityEnum =>
         this.group().status?.value === AvailabilityStatusEnum.AVAILABLE ? SeverityEnum.SUCCESS : SeverityEnum.INFO,

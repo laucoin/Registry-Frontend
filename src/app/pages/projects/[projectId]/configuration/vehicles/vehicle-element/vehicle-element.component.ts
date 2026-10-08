@@ -41,8 +41,16 @@ export class VehicleElementComponent extends GenericElementComponent {
     public readonly actionMenuVisible: InputSignal<boolean> = input(true)
     public readonly vehicle: InputSignal<VehicleModel> = input.required()
 
-    protected readonly actions: Signal<MenuItem[]> = computed((): MenuItem[] => [
-        {
+    protected readonly actions: Signal<MenuItem[]> = computed( (): MenuItem[] => [
+        this.movementsHistoryAction(),
+        this.editAction(),
+        this.disableAction(),
+        this.enableAction(),
+        this.deleteAction(),
+    ] )
+
+    private movementsHistoryAction(): MenuItem {
+        return {
             label: 'vehicles.actions.movements-history',
             icon: 'pi pi-history',
             disabled: !this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_VEHICLE_HISTORY_R),
@@ -52,8 +60,11 @@ export class VehicleElementComponent extends GenericElementComponent {
                     RegistryRouteEnum.PROJECTS_CONFIGURATION_VEHICLES_MOVEMENTS.replace(':vehicleId', this.vehicle().id).replace(':projectId', this.sessionFacade.currentProjectId() ?? ''),
                 ).catch(console.error)
             },
-        },
-        {
+        }
+    }
+
+    private editAction(): MenuItem {
+        return {
             label: 'vehicles.actions.edit',
             icon: 'pi pi-pen-to-square',
             disabled: !this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_VEHICLE_U),
@@ -63,59 +74,56 @@ export class VehicleElementComponent extends GenericElementComponent {
                     RegistryRouteEnum.PROJECTS_CONFIGURATION_VEHICLES_EDITION.replace(':vehicleId', this.vehicle().id).replace(':projectId', this.sessionFacade.currentProjectId() ?? ''),
                 ).catch(console.error)
             },
-        },
-        {
+        }
+    }
+
+    private disableAction(): MenuItem {
+        return {
             label: 'vehicles.actions.disable',
             icon: 'pi pi-eye-slash',
             disabled: this.busy() || !this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_VEHICLE_U),
             visible: this.actionIsEnable(ElementActionEnum.VEHICLE_DISABLE) && this.vehicle().visible,
-            command: (): void => {
-                this.confirmationService.confirm(
-                    this.buildConfirmation(
-                        'vehicles.actions.confirmations.disable',
-                        'pi pi-exclamation-triangle',
-                        this.vehicle(),
-                        SeverityEnum.WARNING,
-                        (): void => this.run(this.facade.disableVehicle(this.vehicle().id)),
-                    ),
-                )
-            },
-        },
-        {
+            command: this.confirmThen(
+                'vehicles.actions.confirmations.disable',
+                'pi pi-exclamation-triangle',
+                this.vehicle(),
+                SeverityEnum.WARNING,
+                (): void => this.run(this.facade.disableVehicle(this.vehicle().id)),
+            ),
+        }
+    }
+
+    private enableAction(): MenuItem {
+        return {
             label: 'vehicles.actions.enable',
             icon: 'pi pi-replay',
             disabled: this.busy() || !this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_VEHICLE_U),
             visible: this.actionIsEnable(ElementActionEnum.VEHICLE_ENABLE) && !this.vehicle().visible,
-            command: (): void => {
-                this.confirmationService.confirm(
-                    this.buildConfirmation(
-                        'vehicles.actions.confirmations.enable',
-                        'pi pi-info-circle',
-                        this.vehicle(),
-                        SeverityEnum.INFO,
-                        (): void => this.run(this.facade.enableVehicle(this.vehicle().id)),
-                    ),
-                )
-            },
-        },
-        {
+            command: this.confirmThen(
+                'vehicles.actions.confirmations.enable',
+                'pi pi-info-circle',
+                this.vehicle(),
+                SeverityEnum.INFO,
+                (): void => this.run(this.facade.enableVehicle(this.vehicle().id)),
+            ),
+        }
+    }
+
+    private deleteAction(): MenuItem {
+        return {
             label: 'vehicles.actions.delete',
             icon: 'pi pi-trash',
             disabled: this.busy() || !this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_VEHICLE_D),
             visible: this.actionIsEnable(ElementActionEnum.VEHICLE_DELETE),
-            command: (): void => {
-                this.confirmationService.confirm(
-                    this.buildConfirmation(
-                        'vehicles.actions.confirmations.delete',
-                        'pi pi-exclamation-triangle',
-                        this.vehicle(),
-                        SeverityEnum.DANGER,
-                        (): void => this.run(this.facade.deleteVehicle(this.vehicle())),
-                    ),
-                )
-            },
-        },
-    ])
+            command: this.confirmThen(
+                'vehicles.actions.confirmations.delete',
+                'pi pi-exclamation-triangle',
+                this.vehicle(),
+                SeverityEnum.DANGER,
+                (): void => this.run(this.facade.deleteVehicle(this.vehicle())),
+            ),
+        }
+    }
 
     protected readonly vehicleStatusSeverity: Signal<SeverityEnum> = computed((): SeverityEnum => {
         switch (this.vehicle().status.value) {

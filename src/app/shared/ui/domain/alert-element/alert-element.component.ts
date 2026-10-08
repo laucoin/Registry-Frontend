@@ -69,110 +69,110 @@ export class AlertElementComponent extends GenericElementComponent {
     public readonly alert: InputSignal<AlertModel> = input.required()
 
     protected readonly actions: Signal<MenuItem[]> = computed( (): MenuItem[] => [
-        {
+        this.resolveAction(),
+        this.cancelAction(),
+        this.reopenAction(),
+        this.disableAction(),
+        this.enableAction(),
+        this.deleteAction(),
+    ] )
+
+    private resolveAction(): MenuItem {
+        return {
             label: 'alerts.actions.resolve',
             icon: 'pi pi-check',
             disabled: this.busy() || !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_ALERT_U ),
             visible: this.actionIsEnable( ElementActionEnum.ALERT_RESOLVE ) && this.isInProgress() && this.alert().visible,
-            command: (): void => {
-                this.confirmationService.confirm(
-                    this.buildConfirmation(
-                        `alerts.actions.confirmations.status.${AlertStatusEnum.RESOLVED}`,
-                        'pi pi-info-circle',
-                        this.alert(),
-                        SeverityEnum.INFO,
-                        (): void => this.run(this.facade.updateAlertStatus( this.alert().id, AlertStatusEnum.RESOLVED )),
-                    ),
-                )
-            },
-        },
-        {
+            command: this.confirmThen(
+                `alerts.actions.confirmations.status.${AlertStatusEnum.RESOLVED}`,
+                'pi pi-info-circle',
+                this.alert(),
+                SeverityEnum.INFO,
+                (): void => this.run(this.facade.updateAlertStatus( this.alert().id, AlertStatusEnum.RESOLVED )),
+            ),
+        }
+    }
+
+    private cancelAction(): MenuItem {
+        return {
             label: 'alerts.actions.cancel',
             icon: 'pi pi-times',
             disabled: this.busy() || !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_ALERT_U ),
             visible: this.actionIsEnable( ElementActionEnum.ALERT_CANCEL ) && this.isInProgress() && this.alert().visible,
-            command: (): void => {
-                this.confirmationService.confirm(
-                    this.buildConfirmation(
-                        `alerts.actions.confirmations.status.${AlertStatusEnum.CANCELED}`,
-                        'pi pi-info-circle',
-                        this.alert(),
-                        SeverityEnum.INFO,
-                        (): void => this.run(this.facade.updateAlertStatus( this.alert().id, AlertStatusEnum.CANCELED )),
-                    ),
-                )
-            },
-        },
-        {
+            command: this.confirmThen(
+                `alerts.actions.confirmations.status.${AlertStatusEnum.CANCELED}`,
+                'pi pi-info-circle',
+                this.alert(),
+                SeverityEnum.INFO,
+                (): void => this.run(this.facade.updateAlertStatus( this.alert().id, AlertStatusEnum.CANCELED )),
+            ),
+        }
+    }
+
+    private reopenAction(): MenuItem {
+        return {
             label: 'alerts.actions.reopen',
             icon: 'pi pi-replay',
             disabled: this.busy() || !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_ALERT_U ),
             visible: this.actionIsEnable( ElementActionEnum.ALERT_REOPEN ) && !this.isInProgress() && this.alert().visible,
-            command: (): void => {
-                this.confirmationService.confirm(
-                    this.buildConfirmation(
-                        `alerts.actions.confirmations.status.${AlertStatusEnum.IN_PROGRESS}`,
-                        'pi pi-info-circle',
-                        this.alert(),
-                        SeverityEnum.INFO,
-                        (): void => this.run(this.facade.updateAlertStatus( this.alert().id, AlertStatusEnum.IN_PROGRESS )),
-                    ),
-                )
-            },
-        },
-        {
+            command: this.confirmThen(
+                `alerts.actions.confirmations.status.${AlertStatusEnum.IN_PROGRESS}`,
+                'pi pi-info-circle',
+                this.alert(),
+                SeverityEnum.INFO,
+                (): void => this.run(this.facade.updateAlertStatus( this.alert().id, AlertStatusEnum.IN_PROGRESS )),
+            ),
+        }
+    }
+
+    private disableAction(): MenuItem {
+        return {
             label: 'alerts.actions.disable',
             icon: 'pi pi-eye-slash',
             disabled: this.busy() || !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_ALERT_U ),
             visible: this.actionIsEnable(ElementActionEnum.ALERT_DISABLE ) && this.alert().visible,
-            command: (): void => {
-                this.confirmationService.confirm(
-                    this.buildConfirmation(
-                        'alerts.actions.confirmations.disable',
-                        'pi pi-exclamation-triangle',
-                        this.alert(),
-                        SeverityEnum.WARNING,
-                        (): void => this.run(this.facade.disableAlert(this.alert().id)),
-                    ),
-                )
-            },
-        },
-        {
+            command: this.confirmThen(
+                'alerts.actions.confirmations.disable',
+                'pi pi-exclamation-triangle',
+                this.alert(),
+                SeverityEnum.WARNING,
+                (): void => this.run(this.facade.disableAlert(this.alert().id)),
+            ),
+        }
+    }
+
+    private enableAction(): MenuItem {
+        return {
             label: 'alerts.actions.enable',
             icon: 'pi pi-replay',
             disabled: this.busy() || !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_ALERT_U ),
             visible: this.actionIsEnable(ElementActionEnum.ALERT_ENABLE ) && !this.alert().visible,
-            command: (): void => {
-                this.confirmationService.confirm(
-                    this.buildConfirmation(
-                        'alerts.actions.confirmations.enable',
-                        'pi pi-info-circle',
-                        this.alert(),
-                        SeverityEnum.INFO,
-                        (): void => this.run(this.facade.enableAlert(this.alert().id)),
-                    ),
-                )
-            },
-        },
-        {
+            command: this.confirmThen(
+                'alerts.actions.confirmations.enable',
+                'pi pi-info-circle',
+                this.alert(),
+                SeverityEnum.INFO,
+                (): void => this.run(this.facade.enableAlert(this.alert().id)),
+            ),
+        }
+    }
+
+    private deleteAction(): MenuItem {
+        return {
             id: ElementActionEnum.ALERT_DELETE,
             label: 'alerts.actions.delete',
             icon: 'pi pi-trash',
             disabled: this.busy() || !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_ALERT_D ),
             visible: this.actionIsEnable(ElementActionEnum.ALERT_DELETE ),
-            command: (): void => {
-                this.confirmationService.confirm(
-                    this.buildConfirmation(
-                        'alerts.actions.confirmations.delete',
-                        'pi pi-exclamation-triangle',
-                        this.alert(),
-                        SeverityEnum.DANGER,
-                        (): void => this.run(this.facade.deleteAlert(this.alert())),
-                    ),
-                )
-            },
-        },
-    ] )
+            command: this.confirmThen(
+                'alerts.actions.confirmations.delete',
+                'pi pi-exclamation-triangle',
+                this.alert(),
+                SeverityEnum.DANGER,
+                (): void => this.run(this.facade.deleteAlert(this.alert())),
+            ),
+        }
+    }
 
     protected readonly isInProgress: Signal<boolean> = computed( (): boolean => this.alert().status.value === AlertStatusEnum.IN_PROGRESS )
 

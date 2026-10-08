@@ -58,90 +58,93 @@ export class UserElementComponent extends GenericElementComponent {
     public readonly actionMenuVisible: InputSignal<boolean> = input(true)
     public readonly user: InputSignal<UserModel> = input.required()
 
-    protected readonly actions: Signal<MenuItem[]> = computed((): MenuItem[] => {
-        const isCurrentUser: boolean = this.sessionFacade.currentUser()?.id == this.user().id
-        return [
-            {
+    private readonly isCurrentUser: Signal<boolean> = computed((): boolean => this.sessionFacade.currentUser()?.id == this.user().id)
+
+    protected readonly actions: Signal<MenuItem[]> = computed((): MenuItem[] => [
+        this.updateRoleAction(),
+        this.disableAction(),
+        this.enableAction(),
+        this.impersonateAction(),
+        this.deleteAction(),
+    ])
+
+    private updateRoleAction(): MenuItem {
+        return {
                 label: 'users.actions.update-role',
                 icon: 'pi pi-user-edit',
                 disabled: !this.hasAuthority(UserAuthorityEnum.REGISTRY_USER_U),
-                visible: this.actionIsEnable(ElementActionEnum.USER_UPDATE) && !isCurrentUser,
+                visible: this.actionIsEnable(ElementActionEnum.USER_UPDATE) && !this.isCurrentUser(),
                 command: (): void => {
                     this.router.navigateByUrl(
                         RegistryRouteEnum.USERS_EDITION.replace(':userId', this.user().id),
                     ).catch(console.error)
                 },
-            },
-            {
+            }
+    }
+
+    private disableAction(): MenuItem {
+        return {
                 label: 'users.actions.disable',
                 icon: 'pi pi-ban',
                 disabled: !this.hasAuthority(UserAuthorityEnum.REGISTRY_USER_U),
-                visible: this.actionIsEnable(ElementActionEnum.USER_BLOCK) && this.user().visible && !isCurrentUser,
-                command: (): void => {
-                    this.confirmationService.confirm(
-                        this.buildConfirmation(
-                            'users.actions.confirmations.disable',
-                            'pi pi-exclamation-triangle',
-                            this.user(),
-                            SeverityEnum.WARNING,
-                            (): void => this.facade.bockUser(this.user().id),
-                        ),
-                    )
-                },
-            },
-            {
+                visible: this.actionIsEnable(ElementActionEnum.USER_BLOCK) && this.user().visible && !this.isCurrentUser(),
+                command: this.confirmThen(
+                    'users.actions.confirmations.disable',
+                    'pi pi-exclamation-triangle',
+                    this.user(),
+                    SeverityEnum.WARNING,
+                    (): void => this.facade.bockUser(this.user().id),
+                ),
+            }
+    }
+
+    private enableAction(): MenuItem {
+        return {
                 label: 'users.actions.enable',
                 icon: 'pi pi-replay',
                 disabled: !this.hasAuthority(UserAuthorityEnum.REGISTRY_USER_U),
-                visible: this.actionIsEnable(ElementActionEnum.USER_UNBLOCK) && !this.user().visible && !isCurrentUser,
-                command: (): void => {
-                    this.confirmationService.confirm(
-                        this.buildConfirmation(
-                            'users.actions.confirmations.enable',
-                            'pi pi-info-circle',
-                            this.user(),
-                            SeverityEnum.INFO,
-                            (): void => this.facade.unblockUser(this.user().id),
-                        ),
-                    )
-                },
-            },
-            {
+                visible: this.actionIsEnable(ElementActionEnum.USER_UNBLOCK) && !this.user().visible && !this.isCurrentUser(),
+                command: this.confirmThen(
+                    'users.actions.confirmations.enable',
+                    'pi pi-info-circle',
+                    this.user(),
+                    SeverityEnum.INFO,
+                    (): void => this.facade.unblockUser(this.user().id),
+                ),
+            }
+    }
+
+    private impersonateAction(): MenuItem {
+        return {
                 label: 'users.actions.impersonate',
                 icon: 'pi pi-eraser',
                 disabled: !this.hasAuthority(UserAuthorityEnum.REGISTRY_USER_D),
-                visible: this.actionIsEnable(ElementActionEnum.USER_IMPERSONATE) && !isCurrentUser,
-                command: (): void => {
-                    this.confirmationService.confirm(
-                        this.buildConfirmation(
-                            'users.actions.confirmations.impersonate',
-                            'pi pi-exclamation-circle',
-                            this.user(),
-                            SeverityEnum.DANGER,
-                            (): void => this.facade.impersonateUser(this.user()),
-                        ),
-                    )
-                },
-            },
-            {
+                visible: this.actionIsEnable(ElementActionEnum.USER_IMPERSONATE) && !this.isCurrentUser(),
+                command: this.confirmThen(
+                    'users.actions.confirmations.impersonate',
+                    'pi pi-exclamation-circle',
+                    this.user(),
+                    SeverityEnum.DANGER,
+                    (): void => this.facade.impersonateUser(this.user()),
+                ),
+            }
+    }
+
+    private deleteAction(): MenuItem {
+        return {
                 label: 'users.actions.delete',
                 icon: 'pi pi-trash',
                 disabled: !this.hasAuthority(UserAuthorityEnum.REGISTRY_USER_D),
-                visible: this.actionIsEnable(ElementActionEnum.USER_DELETE) && !isCurrentUser,
-                command: (): void => {
-                    this.confirmationService.confirm(
-                        this.buildConfirmation(
-                            'users.actions.confirmations.delete',
-                            'pi pi-exclamation-circle',
-                            this.user(),
-                            SeverityEnum.DANGER,
-                            (): void => this.facade.deleteUser(this.user()),
-                        ),
-                    )
-                },
-            },
-        ]
-    })
+                visible: this.actionIsEnable(ElementActionEnum.USER_DELETE) && !this.isCurrentUser(),
+                command: this.confirmThen(
+                    'users.actions.confirmations.delete',
+                    'pi pi-exclamation-circle',
+                    this.user(),
+                    SeverityEnum.DANGER,
+                    (): void => this.facade.deleteUser(this.user()),
+                ),
+            }
+    }
 
     protected copied(): void {
         this.uiFacade.notify(StateHelper.buildNotificationMessage(
