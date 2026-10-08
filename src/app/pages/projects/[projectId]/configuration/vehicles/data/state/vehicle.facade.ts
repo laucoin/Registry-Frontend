@@ -123,41 +123,41 @@ export class VehicleFacade extends GenericProjectElementFacade {
 
     public fetchVehicle (id: string): Observable<VehicleModel> {
         return this.api.findVehicleById( this.selectedProjectId(), id ).pipe(
-            notifyOnError( this.registryFacade ),
+            notifyOnError( this.uiFacade ),
         )
     }
 
     public createVehicle (vehicle: VehicleDto): Observable<VehicleModel> {
         return this.api.createVehicle( this.selectedProjectId(), vehicle ).pipe(
-            notifyUnavailableOnly( this.registryFacade ),
+            notifyUnavailableOnly( this.uiFacade ),
             tap( (created: VehicleModel): void => this.onCommandSuccess( 'create', created ) ),
         )
     }
 
     public updateVehicle (id: string, vehicle: VehicleDto): Observable<VehicleModel> {
         return this.api.updateVehicleById( this.selectedProjectId(), id, vehicle ).pipe(
-            notifyUnavailableOnly( this.registryFacade ),
+            notifyUnavailableOnly( this.uiFacade ),
             tap( (updated: VehicleModel): void => this.onCommandSuccess( 'edit', updated ) ),
         )
     }
 
     public disableVehicle (id: string): Observable<VehicleModel> {
         return this.api.disableVehicleById( this.selectedProjectId(), id ).pipe(
-            notifyOnError( this.registryFacade ),
+            notifyOnError( this.uiFacade ),
             tap( (disabled: VehicleModel): void => this.onCommandSuccess( 'disable', disabled ) ),
         )
     }
 
     public enableVehicle (id: string): Observable<VehicleModel> {
         return this.api.enableVehicleById( this.selectedProjectId(), id ).pipe(
-            notifyOnError( this.registryFacade ),
+            notifyOnError( this.uiFacade ),
             tap( (enabled: VehicleModel): void => this.onCommandSuccess( 'enable', enabled ) ),
         )
     }
 
     public deleteVehicle (vehicle: VehicleModel): Observable<void> {
         return this.api.deleteVehicleById( undefined, vehicle.id ).pipe(
-            notifyOnError( this.registryFacade ),
+            notifyOnError( this.uiFacade ),
             tap( (): void => this.onCommandSuccess( 'delete', vehicle ) ),
         )
     }

@@ -158,41 +158,41 @@ export class ParticipantFacade extends GenericProjectElementFacade {
 
     public fetchParticipant (id: string): Observable<ParticipantModel> {
         return this.api.findParticipantById( this.selectedProjectId(), id ).pipe(
-            notifyOnError( this.registryFacade ),
+            notifyOnError( this.uiFacade ),
         )
     }
 
     public createParticipant (participant: ParticipantDto): Observable<ParticipantModel> {
         return this.api.createParticipant( this.selectedProjectId(), participant ).pipe(
-            notifyUnavailableOnly( this.registryFacade ),
+            notifyUnavailableOnly( this.uiFacade ),
             tap( (created: ParticipantModel): void => this.onCommandSuccess( 'create', created ) ),
         )
     }
 
     public updateParticipant (id: string, participant: ParticipantDto): Observable<ParticipantModel> {
         return this.api.updateParticipantById( this.selectedProjectId(), id, participant ).pipe(
-            notifyUnavailableOnly( this.registryFacade ),
+            notifyUnavailableOnly( this.uiFacade ),
             tap( (updated: ParticipantModel): void => this.onCommandSuccess( 'update', updated ) ),
         )
     }
 
     public disableParticipant (id: string): Observable<ParticipantModel> {
         return this.api.disableParticipantById( this.selectedProjectId(), id ).pipe(
-            notifyOnError( this.registryFacade ),
+            notifyOnError( this.uiFacade ),
             tap( (disabled: ParticipantModel): void => this.onCommandSuccess( 'disable', disabled ) ),
         )
     }
 
     public enableParticipant (id: string): Observable<ParticipantModel> {
         return this.api.enableParticipantById( this.selectedProjectId(), id ).pipe(
-            notifyOnError( this.registryFacade ),
+            notifyOnError( this.uiFacade ),
             tap( (enabled: ParticipantModel): void => this.onCommandSuccess( 'enable', enabled ) ),
         )
     }
 
     public deleteParticipant (participant: ParticipantModel): Observable<void> {
         return this.api.deleteParticipantById( undefined, participant.id ).pipe(
-            notifyOnError( this.registryFacade ),
+            notifyOnError( this.uiFacade ),
             tap( (): void => this.onCommandSuccess( 'delete', participant ) ),
         )
     }

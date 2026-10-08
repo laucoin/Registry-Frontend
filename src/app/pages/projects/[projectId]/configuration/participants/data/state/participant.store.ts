@@ -17,7 +17,7 @@ import { ParticipantStoreModel } from '@pages/projects/[projectId]/configuration
 import { ParticipantApi } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.api'
 import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
 import { MetadataApi } from '@core/registry/state/metadata.api'
-import { RegistryFacade } from '@core/registry/state/registry.facade'
+import { UiFacade } from '@core/registry/state/ui.facade'
 import { UserHelper } from '@shared/helpers/user.helper'
 import { GroupHelper } from '@shared/helpers/group.helper'
 import { UserModel } from '@shared/models/model/user.model'
@@ -85,12 +85,12 @@ export const ParticipantStore = signalStore(
         api: inject( ParticipantApi ),
         movementApi: inject( MovementApi ),
         metadataApi: inject( MetadataApi ),
-        registryFacade: inject( RegistryFacade ),
+        uiFacade: inject( UiFacade ),
     }) ),
     withMethods( (store) => {
         const fetchPresencesStatus = rxMethod<void>( pipe(
             switchMap( (): Observable<SelectItem<PresenceStatusEnum>[]> => store.metadataApi.getPresencesStatus().pipe(
-                notifyOnError( store.registryFacade ),
+                notifyOnError( store.uiFacade ),
             ) ),
             tap( (status: SelectItem<PresenceStatusEnum>[]): void => patchState( store, (state: ParticipantStoreModel) => ({
                 metadata: { ...state.metadata, presencesStatus: [ { label: '-', value: undefined }, ...status ] },
@@ -103,7 +103,7 @@ export const ParticipantStore = signalStore(
                     request.projectId,
                     request.movementIds,
                     store.movements.params.currentMovements(),
-                ).pipe( notifyOnError( store.registryFacade ) ),
+                ).pipe( notifyOnError( store.uiFacade ) ),
             ),
             tap( (contents: PairModel<MovementContentModel[]>[]): void => patchState( store, (state: ParticipantStoreModel) => {
                 if (!state.movements.element) return state
@@ -123,7 +123,7 @@ export const ParticipantStore = signalStore(
             switchMap( (request: SearchRequest): Observable<UserModel[]> => store.api.searchUsers(
                 request.projectId,
                 request.textSearched,
-            ).pipe( notifyOnError( store.registryFacade ) ) ),
+            ).pipe( notifyOnError( store.uiFacade ) ) ),
             tap( (users: UserModel[]): void => patchState( store, (state: ParticipantStoreModel) => ({
                 metadata: {
                     ...state.metadata,
@@ -136,7 +136,7 @@ export const ParticipantStore = signalStore(
             switchMap( (request: SearchRequest): Observable<GroupModel[]> => store.api.searchGroups(
                 request.projectId,
                 request.textSearched,
-            ).pipe( notifyOnError( store.registryFacade ) ) ),
+            ).pipe( notifyOnError( store.uiFacade ) ) ),
             tap( (groups: GroupModel[]): void => patchState( store, (state: ParticipantStoreModel) => ({
                 metadata: {
                     ...state.metadata,
@@ -157,7 +157,7 @@ export const ParticipantStore = signalStore(
                     request.pageSize,
                     store.participants.params(),
                 ).pipe(
-                    trackPage( store.registryFacade, pageSlice( store, 'participants' ) ),
+                    trackPage( store.uiFacade, pageSlice( store, 'participants' ) ),
                 ) ),
                 tap( (page: PageModel<ParticipantModel>): void => patchState( store, (state: ParticipantStoreModel) => ({
                     participants: {
@@ -183,7 +183,7 @@ export const ParticipantStore = signalStore(
                     request.pageSize,
                     store.movements.params(),
                 ).pipe(
-                    trackPage( store.registryFacade, pageSlice( store, 'movements' ) ),
+                    trackPage( store.uiFacade, pageSlice( store, 'movements' ) ),
                     map( (page: PageModel<MovementModel>) => ({ request, page }) ),
                 ) ),
                 tap( ({ request, page }): void => {

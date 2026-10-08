@@ -38,7 +38,7 @@ export class LayerComponent extends GenericComponent {
     }
 
     protected get dialogStyle (): object {
-        return this.registryFacade.tinyScreen() ? {
+        return this.uiFacade.tinyScreen() ? {
             'width': '95vw',
             'height': '90vh',
             'margin-bottom': '0',

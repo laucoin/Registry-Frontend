@@ -64,7 +64,7 @@ export class NavbarComponent extends GenericComponent {
         {
             label: 'global.menu.help',
             icon: 'pi pi-question-circle',
-            visible: this.registryFacade.tinyScreen(),
+            visible: this.uiFacade.tinyScreen(),
             command: (): void => {
                 this.helpDialogOpened = true
             },

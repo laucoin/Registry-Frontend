@@ -1,7 +1,7 @@
 <div class='mb-2'>
     @if (groupLoading()) {
         <p-card>
-            <app-element-skeleton [withIcon]='true' [layout]='registryFacade.tinyScreen() ? "grid" : "list"' />
+            <app-element-skeleton [withIcon]='true' [layout]='uiFacade.tinyScreen() ? "grid" : "list"' />
         </p-card>
     } @else if (group()) {
         <app-group-element [group]='group()!' [actionMenuVisible]='false' />
@@ -65,7 +65,7 @@
                       severity='info'
                       rounded
                       outlined
-                      [label]='registryFacade.tinyScreen() ? "" : "groups.actions.add-members" | transloco'
+                      [label]='uiFacade.tinyScreen() ? "" : "groups.actions.add-members" | transloco'
                       icon='pi pi-user-plus' />
         }
         @if (CurrentUserHelper.hasProjectAuthority(registryFacade.currentUser(), facade.selectedProjectId(), ProjectAuthority.REGISTRY_PROJECT_PARTICIPANT_C)
@@ -75,7 +75,7 @@
                       severity='success'
                       rounded
                       outlined
-                      [label]='registryFacade.tinyScreen() ? "" : "groups.actions.create-member" | transloco'
+                      [label]='uiFacade.tinyScreen() ? "" : "groups.actions.create-member" | transloco'
                       icon='pi pi-plus' />
         }
     </ng-template>

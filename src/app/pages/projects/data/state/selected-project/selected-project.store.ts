@@ -19,7 +19,7 @@ import { SelectedProjectStoreModel } from '@pages/projects/data/model/selected-p
 import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
 import { AlertApi } from '@pages/projects/[projectId]/movements/data/state/alert.api'
 import { ParticipantApi } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.api'
-import { RegistryFacade } from '@core/registry/state/registry.facade'
+import { UiFacade } from '@core/registry/state/ui.facade'
 import { MovementHelper } from '@shared/helpers/movement.helper'
 import { StateHelper } from '@shared/helpers/state/state.helper'
 import { initialize, reportError } from '@shared/helpers/rx.helper'
@@ -86,7 +86,7 @@ export const SelectedProjectStore = signalStore(
         movementApi: inject( MovementApi ),
         alertApi: inject( AlertApi ),
         participantApi: inject( ParticipantApi ),
-        registryFacade: inject( RegistryFacade ),
+        uiFacade: inject( UiFacade ),
     }) ),
     withMethods( (store) => {
         const patchStatus = (key: StatusKey, patch: Partial<SelectedProjectStoreModel['status'][StatusKey]>): void => {
@@ -111,7 +111,7 @@ export const SelectedProjectStore = signalStore(
                     finalize( (): void => patchStatus( key, { loading: false } ) ),
                     catchError( (error: ErrorModel): Observable<never> => {
                         if (error.status === 503) {
-                            reportError( store.registryFacade, error )
+                            reportError( store.uiFacade, error )
                         } else {
                             patchStatus( key, { error: buildToast( error ) } )
                         }
@@ -129,7 +129,7 @@ export const SelectedProjectStore = signalStore(
                     store.currentMovements[key].params.currentMovements(),
                 ).pipe(
                     catchError( (error: ErrorModel): Observable<never> => {
-                        reportError( store.registryFacade, error )
+                        reportError( store.uiFacade, error )
                         return EMPTY
                     } ),
                 ),
@@ -162,7 +162,7 @@ export const SelectedProjectStore = signalStore(
                         finalize( (): void => patchCurrentMovements( key, (block) => StateHelper.updatePageLoader( block, false ) ) ),
                         catchError( (error: ErrorModel): Observable<never> => {
                             if (error.status === 503) {
-                                reportError( store.registryFacade, error )
+                                reportError( store.uiFacade, error )
                             } else {
                                 patchCurrentMovements( key, (block) => PageStateHelper.withError( block, error ) )
                             }
@@ -190,7 +190,7 @@ export const SelectedProjectStore = signalStore(
                 switchMap( (projectId: string | undefined): Observable<ParticipantModel[]> =>
                     store.participantApi.findParticipantsBirthdays( projectId ).pipe(
                         catchError( (error: ErrorModel): Observable<never> => {
-                            reportError( store.registryFacade, error )
+                            reportError( store.uiFacade, error )
                             return EMPTY
                         } ),
                     ),
@@ -212,7 +212,7 @@ export const SelectedProjectStore = signalStore(
                 ).pipe(
                     catchError( (error: ErrorModel): Observable<never> => {
                         if (error.status === 503) {
-                            reportError( store.registryFacade, error )
+                            reportError( store.uiFacade, error )
                         } else {
                             patchState( store, (state: SelectedProjectStoreModel) => ({
                                 alerts: PageStateHelper.withError( state.alerts, error ),

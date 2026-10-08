@@ -22,7 +22,7 @@ import { Button } from 'primeng/button'
 import { ParticipantHelper } from '@shared/helpers/participant.helper'
 import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum'
 import {TranslocoPipe} from '@jsverse/transloco'
-import { RegistryFacade } from '@core/registry/state/registry.facade'
+import { UiFacade } from '@core/registry/state/ui.facade'
 
 @Component( {
     selector: 'app-movement-content-field',
@@ -42,7 +42,7 @@ import { RegistryFacade } from '@core/registry/state/registry.facade'
     styleUrl: './movement-content-field.component.css',
 } )
 export class MovementContentFieldComponent implements ControlValueAccessor {
-    protected readonly registryFacade: RegistryFacade = inject( RegistryFacade )
+    protected readonly uiFacade: UiFacade = inject( UiFacade )
     protected readonly ParticipantHelper: typeof ParticipantHelper = ParticipantHelper
     protected readonly Object: typeof Object = Object
 

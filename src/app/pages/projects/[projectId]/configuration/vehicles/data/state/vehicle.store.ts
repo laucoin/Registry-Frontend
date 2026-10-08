@@ -17,7 +17,7 @@ import { VehicleStoreModel } from '@pages/projects/[projectId]/configuration/veh
 import { VehicleApi } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.api'
 import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
 import { MetadataApi } from '@core/registry/state/metadata.api'
-import { RegistryFacade } from '@core/registry/state/registry.facade'
+import { UiFacade } from '@core/registry/state/ui.facade'
 import { MovementHelper } from '@shared/helpers/movement.helper'
 import { notifyOnError } from '@shared/helpers/rx.helper'
 import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
@@ -80,12 +80,12 @@ export const VehicleStore = signalStore(
         api: inject( VehicleApi ),
         movementApi: inject( MovementApi ),
         metadataApi: inject( MetadataApi ),
-        registryFacade: inject( RegistryFacade ),
+        uiFacade: inject( UiFacade ),
     }) ),
     withMethods( (store) => {
         const fetchPresencesStatus = rxMethod<void>( pipe(
             switchMap( (): Observable<SelectItem<PresenceStatusEnum>[]> => store.metadataApi.getPresencesStatus().pipe(
-                notifyOnError( store.registryFacade ),
+                notifyOnError( store.uiFacade ),
             ) ),
             tap( (status: SelectItem<PresenceStatusEnum>[]): void => patchState( store, (state: VehicleStoreModel) => ({
                 metadata: { ...state.metadata, presencesStatus: [ { label: '-', value: undefined }, ...status ] },
@@ -98,7 +98,7 @@ export const VehicleStore = signalStore(
                     request.projectId,
                     request.movementIds,
                     store.movements.params.currentMovements(),
-                ).pipe( notifyOnError( store.registryFacade ) ),
+                ).pipe( notifyOnError( store.uiFacade ) ),
             ),
             tap( (contents: PairModel<MovementContentModel[]>[]): void => patchState( store, (state: VehicleStoreModel) => {
                 if (!state.movements.element) return state
@@ -124,7 +124,7 @@ export const VehicleStore = signalStore(
                     request.pageSize,
                     store.vehicles.params(),
                 ).pipe(
-                    trackPage( store.registryFacade, pageSlice( store, 'vehicles' ) ),
+                    trackPage( store.uiFacade, pageSlice( store, 'vehicles' ) ),
                 ) ),
                 tap( (page: PageModel<VehicleModel>): void => patchState( store, (state: VehicleStoreModel) => ({
                     vehicles: {
@@ -150,7 +150,7 @@ export const VehicleStore = signalStore(
                     request.pageSize,
                     store.movements.params(),
                 ).pipe(
-                    trackPage( store.registryFacade, pageSlice( store, 'movements' ) ),
+                    trackPage( store.uiFacade, pageSlice( store, 'movements' ) ),
                     map( (page: PageModel<MovementModel>) => ({ request, page }) ),
                 ) ),
                 tap( ({ request, page }): void => {

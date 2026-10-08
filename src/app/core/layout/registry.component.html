@@ -1,9 +1,9 @@
-<p-block-ui [blocked]='registryFacade.globalLoading() || GenericHelper.nonNull(registryFacade.globalError())'>
-    @if (registryFacade.globalLoading()) {
+<p-block-ui [blocked]='uiFacade.globalLoading() || GenericHelper.nonNull(uiFacade.globalError())'>
+    @if (uiFacade.globalLoading()) {
         <p-progress-spinner class='m-auto'></p-progress-spinner>
     } @else {
     <div class='m-auto'>
-        <app-severity-information [message]='registryFacade.globalError()'>
+        <app-severity-information [message]='uiFacade.globalError()'>
             <p-button
                     (onClick)='logout()'
                     [label]="'global.actions.sign-out' | transloco"
@@ -14,7 +14,7 @@
     </div>
 }
 </p-block-ui>
-@if (GenericHelper.isNull(registryFacade.globalError())) {
+@if (GenericHelper.isNull(uiFacade.globalError())) {
     @defer (on idle) {
         <p-confirm-dialog [breakpoints]='breakPoint'/>
     }

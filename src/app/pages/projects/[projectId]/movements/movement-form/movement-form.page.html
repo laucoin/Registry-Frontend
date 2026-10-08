@@ -28,7 +28,7 @@
                                                    date: now | dateFormat: "date",
                                                    time: now | dateFormat: "time",
                                                }'
-                                               [touchUI]='registryFacade.tinyScreen()'
+                                               [touchUI]='uiFacade.tinyScreen()'
                                                [showTime]='true'
                                                (keydown.enter)='submit()'
                                                inputId='datetime'
@@ -80,7 +80,7 @@
                                     rounded/>
                             <p-button
                                     (onClick)='FormHelper.isFormValid(informationForm) ? activateCallback(2) : undefined'
-                                    [label]='registryFacade.tinyScreen() ? "" : "global.actions.next" | transloco'
+                                    [label]='uiFacade.tinyScreen() ? "" : "global.actions.next" | transloco'
                                     rounded
                                     icon='pi pi-arrow-down'
                                     iconPos='right'/>
@@ -197,7 +197,7 @@
                                                            appendTo='body'
                                                            [showOnFocus]='false'
                                                            [placeholder]='"participants.form.placeholder.birthday" | transloco'
-                                                           [touchUI]='registryFacade.tinyScreen()'
+                                                           [touchUI]='uiFacade.tinyScreen()'
                                                            (keydown.enter)='submit()'
                                                            [id]='"birthday_" + $index'
                                                            fluid/>
@@ -234,7 +234,7 @@
                             @if (isEligibleToVehicle() && contentType.value === ParticipantTypeEnum.REGISTERED) {
                                 <p-button
                                         (onClick)='FormHelper.isFormValid(contentForm) ? activateCallback(3) : undefined'
-                                        [label]='registryFacade.tinyScreen() ? "" : "global.actions.next" | transloco'
+                                        [label]='uiFacade.tinyScreen() ? "" : "global.actions.next" | transloco'
                                         rounded
                                         outlined
                                         icon='pi pi-arrow-down'
@@ -242,7 +242,7 @@
                             } @else {
                             <p-button
                                     (onClick)='submit()'
-                                    [label]='registryFacade.tinyScreen() ? "" : movement() | formButton | transloco'
+                                    [label]='uiFacade.tinyScreen() ? "" : movement() | formButton | transloco'
                                     rounded
                                     outlined
                                     [icon]='movement() | formIcon'
@@ -292,7 +292,7 @@
                                                     @if (interpretedMovementType().includes(vehicle($index).value?.status.value)) {
                                                         <div class='warning-tips'>
                                                             <i class='pi pi-exclamation-triangle'></i>
-                                                            @if (!registryFacade.tinyScreen()) {
+                                                            @if (!uiFacade.tinyScreen()) {
                                                                 <span class='ms-2'>{{
                                                                         ('movements.form.warning.vehicle.' +
                                                                             vehicle($index).value.status.value) |
@@ -344,7 +344,7 @@
                                 <p-button
                                         class='ms-2'
                                         (onClick)='FormHelper.isFormValid(vehicleForm) ? submit() : undefined'
-                                        [label]='registryFacade.tinyScreen() ? "" : movement() | formButton | transloco'
+                                        [label]='uiFacade.tinyScreen() ? "" : movement() | formButton | transloco'
                                         rounded
                                         outlined
                                         [icon]='movement() | formIcon'

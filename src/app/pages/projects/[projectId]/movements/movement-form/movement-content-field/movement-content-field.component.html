@@ -23,7 +23,7 @@
                 @if (interpretedMovementType().includes(participant.status.value)) {
                     <div class='warning-tips'>
                         <i class='pi pi-exclamation-triangle'></i>
-                        @if (!registryFacade.tinyScreen()) {
+                        @if (!uiFacade.tinyScreen()) {
                             <span class='ms-2'>{{ ('movements.form.warning.participant.' + participant.status.value) | transloco }}</span>
                         }
                     </div>

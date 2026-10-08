@@ -5,14 +5,14 @@
                 @if (showContextMenu()) {
                     <p-button text rounded class='return-project' (onClick)='backToProjects()' (keydown.enter)='backToProjects()'
                               icon='pi pi-arrow-left'
-                              [label]='registryFacade.tinyScreen() ? "" : registryFacade.selectedProject()?.name'></p-button>
+                              [label]='uiFacade.tinyScreen() ? "" : registryFacade.selectedProject()?.name'></p-button>
                 } @else {
                     <a [tabIndex]='-1'
                        [routerLink]='RegistryRouteEnum.PROJECTS.toString()'
                        [attr.href]='RegistryRouteEnum.PROJECTS.toString()'>
                         <img
                                 [alt]="'global.menu.projects' | transloco"
-                                [src]='registryFacade.logoPath()!'
+                                [src]='uiFacade.logoPath()!'
                                 class='cursor-pointer h-15 w-auto max-w-none'
                                 height='60' />
                     </a>
@@ -29,7 +29,7 @@
             </a>
         </ng-template>
         <ng-template #end>
-            @if (!registryFacade.tinyScreen()) {
+            @if (!uiFacade.tinyScreen()) {
                 <p-button (onClick)='helpDialogOpened = true'
                           class='information-button'
                           text
@@ -40,9 +40,9 @@
                           styleClass='me-3' />
             }
             @if (registryFacade.currentUser()) {
-                <p-button (onClick)='userMenu.toggle($event)' severity='secondary' [text]='registryFacade.tinyScreen()'>
+                <p-button (onClick)='userMenu.toggle($event)' severity='secondary' [text]='uiFacade.tinyScreen()'>
                     <p-avatar [textContent]='initials()' shape='circle' />
-                    @if (!registryFacade.tinyScreen()) {
+                    @if (!uiFacade.tinyScreen()) {
                         <div>
                             <b>{{ displayName() }}</b>
                             @if (role()) {

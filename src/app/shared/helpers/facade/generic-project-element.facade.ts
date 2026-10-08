@@ -1,5 +1,6 @@
 import { GenericFacade } from '@shared/helpers/facade/generic.facade'
 import { RegistryFacade } from '@core/registry/state/registry.facade'
+import { UiFacade } from '@core/registry/state/ui.facade'
 import { inject, Signal } from '@angular/core'
 import { StateHelper } from '@shared/helpers/state/state.helper'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
@@ -7,6 +8,7 @@ import { CommandEvent, CommandEventService } from '@shared/helpers/facade/comman
 
 export abstract class GenericProjectElementFacade extends GenericFacade {
     protected readonly registryFacade: RegistryFacade = inject( RegistryFacade )
+    protected readonly uiFacade: UiFacade = inject( UiFacade )
     protected readonly commandEvents: CommandEventService = inject( CommandEventService )
 
     public get selectedProjectId (): Signal<string | undefined> {
@@ -20,7 +22,7 @@ export abstract class GenericProjectElementFacade extends GenericFacade {
         icon: string,
         data: object,
     ): void {
-        this.registryFacade.notify( StateHelper.buildNotificationMessage( severity, summary, detail, icon, data ) )
+        this.uiFacade.notify( StateHelper.buildNotificationMessage( severity, summary, detail, icon, data ) )
     }
 
     protected notifySuccess (translationPrefix: string, icon: string, data: object): void {

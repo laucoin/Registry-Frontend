@@ -1,7 +1,7 @@
 <p-card>
     <div class='ps-6 pe-6 pt-2 pb-2'>
-        <div class='flex items-center' [class.flex-col]='registryFacade.tinyScreen()'>
-            <div [class.me-6]='!registryFacade.tinyScreen()'>
+        <div class='flex items-center' [class.flex-col]='uiFacade.tinyScreen()'>
+            <div [class.me-6]='!uiFacade.tinyScreen()'>
                 <p-avatar icon='pi pi-user' size='large' shape='circle' />
             </div>
             <h1>{{ (registryFacade.currentUser()?.firstName | titlecase) + ' ' + (registryFacade.currentUser()?.lastName | uppercase) }}</h1>
@@ -28,7 +28,7 @@
         <div class='grid search-line mt-2 mb-2'>
             <div class='field'>
                 <label for='app-language'><b>{{ 'settings.configuration.form.language' | transloco }}</b></label>
-                <p-select [options]='registryFacade.languagesMetadata()'
+                <p-select [options]='uiFacade.languagesMetadata()'
                           optionLabel='label'
                           optionValue='value'
                           inputId='app-language'
@@ -38,7 +38,7 @@
             </div>
             <div class='field'>
                 <label for='app-theme'><b>{{ 'settings.configuration.form.theme' | transloco }}</b></label>
-                <p-select-button [options]='registryFacade.themesMetadata()'
+                <p-select-button [options]='uiFacade.themesMetadata()'
                                  id='app-theme'
                                  [formControl]='themeControl'
                                  optionValue='value'

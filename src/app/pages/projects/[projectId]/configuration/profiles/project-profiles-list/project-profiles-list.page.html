@@ -20,7 +20,7 @@
                                fluid
                                showButtonBar
                                [showTime]='true'
-                               [touchUI]='registryFacade.tinyScreen()'
+                               [touchUI]='uiFacade.tinyScreen()'
                                (onBlur)='loadPage(pageEvent)'
                                [formControl]='dateTimeSearched' />
             </div>
@@ -63,7 +63,7 @@
                       severity='success'
                       outlined
                       rounded
-                      [label]='registryFacade.tinyScreen() ? "" : "project-profiles.actions.invite-user.few" | transloco'
+                      [label]='uiFacade.tinyScreen() ? "" : "project-profiles.actions.invite-user.few" | transloco'
                       icon='pi pi-user-plus'
                       [routerLink]='ProjectProfileRoutesEnum.INVITE' />
         }

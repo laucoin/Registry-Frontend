@@ -64,7 +64,7 @@
                                     rounded/>
                             <p-button
                                     (onClick)='FormHelper.isFormValid(form) ? activateCallback(2) : undefined'
-                                    [label]='registryFacade.tinyScreen() ? "" : "global.actions.next" | transloco'
+                                    [label]='uiFacade.tinyScreen() ? "" : "global.actions.next" | transloco'
                                     rounded
                                     outlined
                                     icon='pi pi-arrow-down'
@@ -125,14 +125,14 @@
                         <div class='flex pt-6 justify-between'>
                             <p-button
                                     (onClick)='activateCallback(1)'
-                                    [label]='registryFacade.tinyScreen() ? "" :"global.actions.previous" | transloco'
+                                    [label]='uiFacade.tinyScreen() ? "" :"global.actions.previous" | transloco'
                                     icon='pi pi-arrow-up'
                                     text
                                     rounded/>
                             <p-button
                                     class='ms-2'
                                     (onClick)='submit()'
-                                    [label]='registryFacade.tinyScreen() ? "" : facade.project() | formButton | transloco'
+                                    [label]='uiFacade.tinyScreen() ? "" : facade.project() | formButton | transloco'
                                     rounded
                                     outlined
                                     [icon]='facade.project() | formIcon'

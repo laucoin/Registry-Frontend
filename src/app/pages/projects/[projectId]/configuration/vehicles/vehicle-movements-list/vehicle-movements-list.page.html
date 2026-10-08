@@ -1,7 +1,7 @@
 <div class='mb-2'>
     @if (vehicleLoading()) {
         <p-card>
-            <app-element-skeleton [withIcon]='true' [layout]='registryFacade.tinyScreen() ? "grid" : "list"' />
+            <app-element-skeleton [withIcon]='true' [layout]='uiFacade.tinyScreen() ? "grid" : "list"' />
         </p-card>
     } @else if (vehicle()) {
         <app-vehicle-element [vehicle]='vehicle()!'
@@ -22,7 +22,7 @@
                                fluid
                                showButtonBar
                                [showTime]='true'
-                               [touchUI]='registryFacade.tinyScreen()'
+                               [touchUI]='uiFacade.tinyScreen()'
                                (onBlur)='loadPage(pageEvent)'
                                [formControl]='startDateTimeSearched' />
             </div>
@@ -32,7 +32,7 @@
                                fluid
                                showButtonBar
                                [showTime]='true'
-                               [touchUI]='registryFacade.tinyScreen()'
+                               [touchUI]='uiFacade.tinyScreen()'
                                (onBlur)='loadPage(pageEvent)'
                                [formControl]='endDateTimeSearched' />
             </div>

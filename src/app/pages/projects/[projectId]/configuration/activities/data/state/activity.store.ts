@@ -12,7 +12,7 @@ import { MovementPageParamsModel } from '@shared/models/model/movement-page-para
 import { ActivityStoreModel } from '@pages/projects/[projectId]/configuration/activities/data/model/activity-store.model'
 import { ActivityApi } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.api'
 import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
-import { RegistryFacade } from '@core/registry/state/registry.facade'
+import { UiFacade } from '@core/registry/state/ui.facade'
 import { MovementHelper } from '@shared/helpers/movement.helper'
 import { notifyOnError } from '@shared/helpers/rx.helper'
 import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
@@ -71,7 +71,7 @@ export const ActivityStore = signalStore(
     withProps( () => ({
         api: inject( ActivityApi ),
         movementApi: inject( MovementApi ),
-        registryFacade: inject( RegistryFacade ),
+        uiFacade: inject( UiFacade ),
     }) ),
     withMethods( (store) => {
         const fetchMovementsContents = rxMethod<ActivityMovementsContentsRequest>( pipe(
@@ -80,7 +80,7 @@ export const ActivityStore = signalStore(
                     request.projectId,
                     request.movementIds,
                     store.movements.params.currentMovements(),
-                ).pipe( notifyOnError( store.registryFacade ) ),
+                ).pipe( notifyOnError( store.uiFacade ) ),
             ),
             tap( (contents: PairModel<MovementContentModel[]>[]): void => patchState( store, (state: ActivityStoreModel) => {
                 if (!state.movements.element) return state
@@ -104,7 +104,7 @@ export const ActivityStore = signalStore(
                     request.pageSize,
                     store.activities.params(),
                 ).pipe(
-                    trackPage( store.registryFacade, pageSlice( store, 'activities' ) ),
+                    trackPage( store.uiFacade, pageSlice( store, 'activities' ) ),
                 ) ),
                 tap( (page: PageModel<ActivityModel>): void => patchState( store, (state: ActivityStoreModel) => ({
                     activities: {
@@ -130,7 +130,7 @@ export const ActivityStore = signalStore(
                     request.pageSize,
                     store.movements.params(),
                 ).pipe(
-                    trackPage( store.registryFacade, pageSlice( store, 'movements' ) ),
+                    trackPage( store.uiFacade, pageSlice( store, 'movements' ) ),
                     map( (page: PageModel<MovementModel>) => ({ request, page }) ),
                 ) ),
                 tap( ({ request, page }): void => {

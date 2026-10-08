@@ -46,7 +46,7 @@
                 @for (_ of counterArray(6); track $index) {
                     <p-card>
                         <app-element-skeleton [withIcon]='true'
-                                              [layout]='registryFacade.tinyScreen() ? "grid" : "list"'/>
+                                              [layout]='uiFacade.tinyScreen() ? "grid" : "list"'/>
                     </p-card>
                 }
             } @else {

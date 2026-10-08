@@ -10,7 +10,7 @@ import { GroupPageParamsModel } from '@pages/projects/[projectId]/configuration/
 import { ParticipantPageParamsModel } from '@pages/projects/[projectId]/configuration/participants/data/model/participant-page-params.model'
 import { GroupStoreModel } from '@pages/projects/[projectId]/configuration/groups/data/model/group-store.model'
 import { GroupApi } from '@pages/projects/[projectId]/configuration/groups/data/state/group.api'
-import { RegistryFacade } from '@core/registry/state/registry.facade'
+import { UiFacade } from '@core/registry/state/ui.facade'
 import { ParticipantHelper } from '@shared/helpers/participant.helper'
 import { notifyOnError } from '@shared/helpers/rx.helper'
 import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
@@ -69,7 +69,7 @@ export const GroupStore = signalStore(
     withProfileScope<GroupStoreModel>( defaultGroupStore ),
     withProps( () => ({
         api: inject( GroupApi ),
-        registryFacade: inject( RegistryFacade ),
+        uiFacade: inject( UiFacade ),
     }) ),
     withMethods( (store) => ({
         fetchGroupsPage: rxMethod<GroupsPageRequest>( pipe(
@@ -79,7 +79,7 @@ export const GroupStore = signalStore(
                 request.pageSize,
                 store.groups.params(),
             ).pipe(
-                trackPage( store.registryFacade, pageSlice( store, 'groups' ) ),
+                trackPage( store.uiFacade, pageSlice( store, 'groups' ) ),
             ) ),
             tap( (page: PageModel<GroupModel>): void => patchState( store, (state: GroupStoreModel) => ({
                 groups: {
@@ -107,7 +107,7 @@ export const GroupStore = signalStore(
                 request.pageSize,
                 store.members.params(),
             ).pipe(
-                trackPage( store.registryFacade, pageSlice( store, 'members' ) ),
+                trackPage( store.uiFacade, pageSlice( store, 'members' ) ),
             ) ),
             tap( (page: PageModel<ParticipantModel>): void => patchState( store, (state: GroupStoreModel) => ({
                 members: {
@@ -126,7 +126,7 @@ export const GroupStore = signalStore(
             switchMap( (request: SearchParticipantsRequest): Observable<ParticipantModel[]> => store.api.searchParticipants(
                 request.projectId,
                 request.textSearched,
-            ).pipe( notifyOnError( store.registryFacade ) ) ),
+            ).pipe( notifyOnError( store.uiFacade ) ) ),
             tap( (participants: ParticipantModel[]): void => patchState( store, (state: GroupStoreModel) => ({
                 metadata: {
                     ...state.metadata,

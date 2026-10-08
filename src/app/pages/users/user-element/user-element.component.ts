@@ -139,7 +139,7 @@ export class UserElementComponent extends GenericElementComponent {
     })
 
     protected copied(): void {
-        this.registryFacade.notify(StateHelper.buildNotificationMessage(
+        this.uiFacade.notify(StateHelper.buildNotificationMessage(
             SeverityEnum.INFO,
             undefined,
             'users.notifications.email-copied',

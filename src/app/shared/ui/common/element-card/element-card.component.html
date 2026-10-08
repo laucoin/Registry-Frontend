@@ -1,17 +1,17 @@
 <p-card>
     <div #elementCard class='element-actions-container'>
-        <div [class]='registryFacade.tinyScreen() ? "card-content-grid" : "card-content-list"'>
+        <div [class]='uiFacade.tinyScreen() ? "card-content-grid" : "card-content-list"'>
             @if (loading()) {
-                <app-element-skeleton [withIcon]='!!icon' [layout]='registryFacade.tinyScreen() ? "grid" : "list"' />
+                <app-element-skeleton [withIcon]='!!icon' [layout]='uiFacade.tinyScreen() ? "grid" : "list"' />
             } @else {
-                <div class='flex items-center' [class.flex-col]='registryFacade.tinyScreen()'>
+                <div class='flex items-center' [class.flex-col]='uiFacade.tinyScreen()'>
                     @if (icon()) {
-                        <div [class.me-6]='!registryFacade.tinyScreen()'>
+                        <div [class.me-6]='!uiFacade.tinyScreen()'>
                             <p-avatar [icon]='icon()' size='large' shape='circle' />
                         </div>
                     }
                     <div class='w-full'
-                         [class.mt-2]='registryFacade.tinyScreen()'>
+                         [class.mt-2]='uiFacade.tinyScreen()'>
                         <ng-content />
                     </div>
                 </div>
@@ -53,7 +53,7 @@
     </div>
 </p-card>
 
-@if (!registryFacade.tinyScreen()) {
+@if (!uiFacade.tinyScreen()) {
     @if (actions().length > 0 && actionMenuVisible()) {
         <p-context-menu [target]='elementCard' [model]='actions()'>
             <ng-template #item let-item>

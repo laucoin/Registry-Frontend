@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing'
 import { of, throwError } from 'rxjs'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
-import { RegistryFacade } from '@core/registry/state/registry.facade'
+import { UiFacade } from '@core/registry/state/ui.facade'
 import { GroupApi } from '@pages/projects/[projectId]/configuration/groups/data/state/group.api'
 import { GroupStore } from '@pages/projects/[projectId]/configuration/groups/data/state/group.store'
 import { ErrorModel } from '@shared/models/model/error.model'
@@ -27,7 +27,7 @@ describe( 'GroupStore', () => {
             providers: [
                 GroupStore,
                 { provide: GroupApi, useValue: { findGroups, findGroupMembersByGroupId } },
-                { provide: RegistryFacade, useValue: { setGlobalError, notify: vi.fn() } },
+                { provide: UiFacade, useValue: { setGlobalError, notify: vi.fn() } },
             ],
         } )
         store = TestBed.inject( GroupStore )

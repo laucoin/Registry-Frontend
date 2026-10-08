@@ -1,6 +1,6 @@
 import { Component, inject, input, InputSignal } from '@angular/core'
 import { Tag } from 'primeng/tag'
-import { RegistryFacade } from '@core/registry/state/registry.facade'
+import { UiFacade } from '@core/registry/state/ui.facade'
 import { SeverityCircleComponent } from '@shared/ui/common/severity-circle/severity-circle.component'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 
@@ -10,7 +10,7 @@ import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
     templateUrl: './severity-tag.component.html',
 } )
 export class SeverityTagComponent {
-    protected readonly registryFacade: RegistryFacade = inject( RegistryFacade )
+    protected readonly uiFacade: UiFacade = inject( UiFacade )
     public readonly value: InputSignal<string | undefined> = input<string | undefined>()
     public readonly severity: InputSignal<SeverityEnum | undefined> = input<SeverityEnum | undefined>()
 }

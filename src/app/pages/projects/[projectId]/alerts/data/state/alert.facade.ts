@@ -157,48 +157,48 @@ export class AlertFacade extends GenericProjectElementFacade {
 
     public fetchAlert (id: string): Observable<AlertModel> {
         return this.api.findAlertById( this.selectedProjectId(), id ).pipe(
-            notifyOnError( this.registryFacade ),
+            notifyOnError( this.uiFacade ),
         )
     }
 
     public createAlert (alert: AlertDto): Observable<AlertModel> {
         return this.api.createAlert( this.selectedProjectId(), alert ).pipe(
-            notifyUnavailableOnly( this.registryFacade ),
+            notifyUnavailableOnly( this.uiFacade ),
             tap( (created: AlertModel): void => this.onCommandSuccess( 'create', created ) ),
         )
     }
 
     public updateAlert (id: string, alert: AlertDto): Observable<AlertModel> {
         return this.api.updateAlertById( this.selectedProjectId(), id, alert ).pipe(
-            notifyUnavailableOnly( this.registryFacade ),
+            notifyUnavailableOnly( this.uiFacade ),
             tap( (updated: AlertModel): void => this.onCommandSuccess( 'update', updated ) ),
         )
     }
 
     public disableAlert (id: string): Observable<AlertModel> {
         return this.api.disableAlertById( this.selectedProjectId(), id ).pipe(
-            notifyOnError( this.registryFacade ),
+            notifyOnError( this.uiFacade ),
             tap( (disabled: AlertModel): void => this.onCommandSuccess( 'disable', disabled ) ),
         )
     }
 
     public enableAlert (id: string): Observable<AlertModel> {
         return this.api.enableAlertById( this.selectedProjectId(), id ).pipe(
-            notifyOnError( this.registryFacade ),
+            notifyOnError( this.uiFacade ),
             tap( (enabled: AlertModel): void => this.onCommandSuccess( 'enable', enabled ) ),
         )
     }
 
     public deleteAlert (alert: AlertModel): Observable<void> {
         return this.api.deleteAlertById( undefined, alert.id ).pipe(
-            notifyOnError( this.registryFacade ),
+            notifyOnError( this.uiFacade ),
             tap( (): void => this.onCommandSuccess( 'delete', alert ) ),
         )
     }
 
     public updateAlertStatus (id: string, status: AlertStatusEnum): Observable<AlertModel> {
         return this.api.updateAlertStatusById( this.selectedProjectId(), id, status ).pipe(
-            notifyOnError( this.registryFacade ),
+            notifyOnError( this.uiFacade ),
             tap( (updated: AlertModel): void => this.onCommandSuccess( 'status', updated ) ),
         )
     }

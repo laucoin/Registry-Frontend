@@ -3,6 +3,7 @@ import { ActivatedRouteSnapshot, CanActivateFn, CanDeactivateFn, Router, UrlTree
 import { map, Observable, of, switchMap, take } from 'rxjs'
 import { RegistryConfig } from '@core/config/registry.config'
 import { RegistryFacade } from '@core/registry/state/registry.facade'
+import { UiFacade } from '@core/registry/state/ui.facade'
 import { GenericHelper } from '@shared/helpers/generic.helper'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { CurrentUserModel } from '@shared/models/model/current-user.model'
@@ -16,6 +17,7 @@ const PROJECT_ID_PARAM: string = 'projectId'
  */
 export const projectContextGuard: CanActivateFn = (route: ActivatedRouteSnapshot): Observable<boolean | UrlTree> => {
     const registryFacade: RegistryFacade = inject( RegistryFacade )
+    const uiFacade: UiFacade = inject( UiFacade )
     const router: Router = inject( Router )
     const projectId: string | undefined = route.paramMap.get( PROJECT_ID_PARAM ) ?? undefined
 
@@ -23,7 +25,7 @@ export const projectContextGuard: CanActivateFn = (route: ActivatedRouteSnapshot
         take( 1 ),
         switchMap( (currentUser: CurrentUserModel): Observable<boolean | UrlTree> => {
             if (GenericHelper.isNull( projectId ) || !hasProjectAccess( currentUser, projectId! )) {
-                notifyNoProfile( registryFacade )
+                notifyNoProfile( uiFacade )
                 return of( router.parseUrl( RegistryRouteEnum.PROJECTS ) )
             }
 
@@ -31,7 +33,7 @@ export const projectContextGuard: CanActivateFn = (route: ActivatedRouteSnapshot
                 take( 1 ),
                 map( (): boolean | UrlTree => {
                     if (GenericHelper.isNull( registryFacade.selectedProject() )) {
-                        notifyNoProfile( registryFacade )
+                        notifyNoProfile( uiFacade )
                         return router.parseUrl( RegistryRouteEnum.PROJECTS )
                     }
                     return true
@@ -50,8 +52,8 @@ function hasProjectAccess(currentUser: CurrentUserModel, projectId: string): boo
     return currentUser.authorities.some( (authority: string): boolean => authority.startsWith( `${projectId}_` ) )
 }
 
-function notifyNoProfile(registryFacade: RegistryFacade): void {
-    registryFacade.notify( {
+function notifyNoProfile(uiFacade: UiFacade): void {
+    uiFacade.notify( {
         severity: SeverityEnum.WARNING,
         summary: 'preferences.notifications.NO_SELECTED_PROFILE.title',
         detail: 'preferences.notifications.NO_SELECTED_PROFILE.message',

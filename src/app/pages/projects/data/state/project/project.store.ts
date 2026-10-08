@@ -9,7 +9,7 @@ import { ProjectOptionModel } from '@pages/projects/data/model/project-option.mo
 import { ProjectPageParamsModel } from '@pages/projects/data/model/project-page-params.model'
 import { ProjectStoreModel } from '@pages/projects/data/model/project-store.model'
 import { ProjectApi } from '@pages/projects/data/state/project.api'
-import { RegistryFacade } from '@core/registry/state/registry.facade'
+import { UiFacade } from '@core/registry/state/ui.facade'
 import { StateHelper } from '@shared/helpers/state/state.helper'
 import { initialize, notifyOnError } from '@shared/helpers/rx.helper'
 import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
@@ -49,12 +49,12 @@ export const ProjectStore = signalStore(
     withState<ProjectStoreModel>( defaultProjectStore ),
     withProps( () => ({
         api: inject( ProjectApi ),
-        registryFacade: inject( RegistryFacade ),
+        uiFacade: inject( UiFacade ),
     }) ),
     withMethods( (store) => ({
         fetchProjectOptions: rxMethod<void>( pipe(
             switchMap( (): Observable<ProjectOptionModel[]> => store.api.getAvailableProjectOptions().pipe(
-                notifyOnError( store.registryFacade ),
+                notifyOnError( store.uiFacade ),
             ) ),
             tap( (options: ProjectOptionModel[]): void => patchState( store, (state: ProjectStoreModel) => ({
                 metadata: { ...state.metadata, options: options },
@@ -67,7 +67,7 @@ export const ProjectStore = signalStore(
                 request.pageSize,
                 store.projects.params(),
             ).pipe(
-                trackPage( store.registryFacade, pageSlice( store, 'projects' ) ),
+                trackPage( store.uiFacade, pageSlice( store, 'projects' ) ),
             ) ),
             tap( (page: PageModel<ProjectModel>): void => patchState( store, (state: ProjectStoreModel) => ({
                 projects: {
@@ -98,7 +98,7 @@ export const ProjectStore = signalStore(
                 finalize( (): void => patchState( store, (state: ProjectStoreModel) => ({
                     project: StateHelper.updateElementLoader( state.project, false ),
                 }) ) ),
-                notifyOnError( store.registryFacade ),
+                notifyOnError( store.uiFacade ),
             ) ),
             tap( (project: ProjectModel): void => patchState( store, (state: ProjectStoreModel) => ({
                 project: { ...state.project, element: project },

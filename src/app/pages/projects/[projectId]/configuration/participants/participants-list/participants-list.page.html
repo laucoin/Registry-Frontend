@@ -53,7 +53,7 @@
                       severity='success'
                       outlined
                       rounded
-                      [label]='registryFacade.tinyScreen() ? "" : "global.actions.create" | transloco'
+                      [label]='uiFacade.tinyScreen() ? "" : "global.actions.create" | transloco'
                       icon='pi pi-plus'
                       [routerLink]='ParticipantRoutesEnum.CREATE' />
         }

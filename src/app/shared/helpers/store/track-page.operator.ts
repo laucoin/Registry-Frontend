@@ -1,7 +1,7 @@
 import { Signal } from '@angular/core'
 import { patchState, WritableStateSource } from '@ngrx/signals'
 import { catchError, EMPTY, finalize, Observable } from 'rxjs'
-import { RegistryFacade } from '@core/registry/state/registry.facade'
+import { UiFacade } from '@core/registry/state/ui.facade'
 import { ErrorModel } from '@shared/models/model/error.model'
 import { GenericModel } from '@shared/models/model/generic.model'
 import { PageRequestInformationModel } from '@shared/models/model/page-request-information.model'
@@ -36,11 +36,11 @@ export function pageSlice<S extends object, K extends keyof S & string>(
  * Scope: Marks the block loading while in flight, then reports a 503 globally or stores any other error in the block.
  * Limits: Swallows the error (completes empty) so the surrounding rxMethod stays alive; it does not fetch anything.
  */
-export const trackPage = <B extends PageBlock>(registryFacade: RegistryFacade, slice: PageSlice<B>) =>
+export const trackPage = <B extends PageBlock>(uiFacade: UiFacade, slice: PageSlice<B>) =>
     <T> (source: Observable<T>): Observable<T> => source.pipe(
         initialize( (): void => setLoading( slice, true ) ),
         finalize( (): void => setLoading( slice, false ) ),
-        catchError( (error: ErrorModel): Observable<never> => handleFailure( registryFacade, slice, error ) ),
+        catchError( (error: ErrorModel): Observable<never> => handleFailure( uiFacade, slice, error ) ),
     )
 
 function setLoading<B extends PageBlock>(slice: PageSlice<B>, loading: boolean): void {
@@ -48,9 +48,9 @@ function setLoading<B extends PageBlock>(slice: PageSlice<B>, loading: boolean):
     slice.write( { ...block, ...StateHelper.updatePageLoader( block, loading ) } )
 }
 
-function handleFailure<B extends PageBlock>(registryFacade: RegistryFacade, slice: PageSlice<B>, error: ErrorModel): Observable<never> {
+function handleFailure<B extends PageBlock>(uiFacade: UiFacade, slice: PageSlice<B>, error: ErrorModel): Observable<never> {
     if (error.status === 503) {
-        reportError( registryFacade, error )
+        reportError( uiFacade, error )
     } else {
         const block: B = slice.read()
         slice.write( { ...block, ...PageStateHelper.withError( block, error ) } )

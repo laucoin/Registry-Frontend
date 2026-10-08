@@ -20,7 +20,7 @@
                                fluid
                                showButtonBar
                                [showTime]='true'
-                               [touchUI]='registryFacade.tinyScreen()'
+                               [touchUI]='uiFacade.tinyScreen()'
                                (onBlur)='loadPage(pageEvent)'
                                [formControl]='dateTimeSearched' />
             </div>
@@ -65,7 +65,7 @@
                       severity='success'
                       outlined
                       rounded
-                      [label]='registryFacade.tinyScreen() ? "" : "global.actions.create" | transloco'
+                      [label]='uiFacade.tinyScreen() ? "" : "global.actions.create" | transloco'
                       icon='pi pi-plus'
                       [routerLink]='GroupRoutesEnum.CREATE' />
         }

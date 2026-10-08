@@ -63,10 +63,10 @@ export class RegistryComponent extends GenericComponent implements OnDestroy {
     }
 
     private handleThemeChanges(): void {
-        this.registryFacade.updateTheme(GenericHelper.navigatorTheme)
+        this.uiFacade.updateTheme(GenericHelper.navigatorTheme)
         GenericHelper.themeMediaQuery.addEventListener('change', (): void => {
             if (GenericHelper.isNull(this.registryFacade.currentUserTheme()) || this.registryFacade.currentUserTheme() === ThemeEnum.SYSTEM) {
-                this.registryFacade.updateTheme(GenericHelper.navigatorTheme)
+                this.uiFacade.updateTheme(GenericHelper.navigatorTheme)
             }
         })
     }
@@ -74,12 +74,12 @@ export class RegistryComponent extends GenericComponent implements OnDestroy {
     @HostListener('window:online')
     @HostListener('window:offline')
     public handleNetwork(): void {
-        this.registryFacade.updateNetwork(navigator.onLine)
+        this.uiFacade.updateNetwork(navigator.onLine)
     }
 
     @HostListener('window:resize')
     public handleResize(): void {
-        this.registryFacade.updateScreenWidth(window.innerWidth)
+        this.uiFacade.updateScreenWidth(window.innerWidth)
     }
 
     protected logout(): void {
@@ -88,7 +88,7 @@ export class RegistryComponent extends GenericComponent implements OnDestroy {
 
     private handleNotification(): void {
         this.subscriptions.add(
-            this.registryFacade.notification.subscribe((message: ToastMessageOptions): void => {
+            this.uiFacade.notification.subscribe((message: ToastMessageOptions): void => {
                 this.notifyService.add(message)
             }),
         )

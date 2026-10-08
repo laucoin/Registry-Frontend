@@ -9,7 +9,7 @@ import { ElementRequestInformationModel } from '@shared/models/model/element-req
 import { UserPageParamsModel } from '@pages/users/data/model/user-page-params.model'
 import { UserStoreModel } from '@pages/users/data/model/user-store.model'
 import { UserApi } from '@pages/users/data/state/user.api'
-import { RegistryFacade } from '@core/registry/state/registry.facade'
+import { UiFacade } from '@core/registry/state/ui.facade'
 import { StateHelper } from '@shared/helpers/state/state.helper'
 import { initialize, notifyOnError } from '@shared/helpers/rx.helper'
 import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
@@ -47,7 +47,7 @@ export const UserStore = signalStore(
     withState<UserStoreModel>( defaultUserStore ),
     withProps( () => ({
         api: inject( UserApi ),
-        registryFacade: inject( RegistryFacade ),
+        uiFacade: inject( UiFacade ),
     }) ),
     withMethods( (store) => ({
         fetchUsersPage: rxMethod<UsersPageRequest>( pipe(
@@ -56,7 +56,7 @@ export const UserStore = signalStore(
                 request.pageSize,
                 store.users.params(),
             ).pipe(
-                trackPage( store.registryFacade, pageSlice( store, 'users' ) ),
+                trackPage( store.uiFacade, pageSlice( store, 'users' ) ),
             ) ),
             tap( (page: PageModel<UserModel>): void => patchState( store, (state: UserStoreModel) => ({
                 users: {
@@ -87,7 +87,7 @@ export const UserStore = signalStore(
                 finalize( (): void => patchState( store, (state: UserStoreModel) => ({
                     user: StateHelper.updateElementLoader( state.user, false ),
                 }) ) ),
-                notifyOnError( store.registryFacade ),
+                notifyOnError( store.uiFacade ),
             ) ),
             tap( (user: UserModel): void => patchState( store, (state: UserStoreModel) => ({
                 user: { ...state.user, element: user },
@@ -106,7 +106,7 @@ export const UserStore = signalStore(
                 finalize( (): void => patchState( store, (state: UserStoreModel) => ({
                     user: StateHelper.updateElementLoader( state.user, false ),
                 }) ) ),
-                notifyOnError( store.registryFacade ),
+                notifyOnError( store.uiFacade ),
             ) ),
             tap( (roles: SelectItem<string>[]): void => patchState( store, (state: UserStoreModel) => ({
                 metadata: { ...state.metadata, assignableRoles: roles },

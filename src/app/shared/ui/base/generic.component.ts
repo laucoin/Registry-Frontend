@@ -1,4 +1,5 @@
 import {RegistryFacade} from '@core/registry/state/registry.facade'
+import {UiFacade} from '@core/registry/state/ui.facade'
 import {inject} from '@angular/core'
 import {TranslocoService} from '@jsverse/transloco'
 import {ActivatedRoute, Router} from '@angular/router'
@@ -31,6 +32,7 @@ export abstract class GenericComponent {
 
     protected readonly formBuilder: FormBuilder = inject(FormBuilder)
     protected readonly registryFacade: RegistryFacade = inject(RegistryFacade)
+    protected readonly uiFacade: UiFacade = inject(UiFacade)
     protected readonly route: ActivatedRoute = inject(ActivatedRoute)
     protected readonly router: Router = inject(Router)
     protected readonly translateService: TranslocoService = inject(TranslocoService)

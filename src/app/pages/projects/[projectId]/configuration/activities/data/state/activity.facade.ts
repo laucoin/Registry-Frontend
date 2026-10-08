@@ -124,41 +124,41 @@ export class ActivityFacade extends GenericProjectElementFacade {
 
     public fetchActivity (id: string): Observable<ActivityModel> {
         return this.api.findActivityById( this.selectedProjectId(), id ).pipe(
-            notifyOnError( this.registryFacade ),
+            notifyOnError( this.uiFacade ),
         )
     }
 
     public createActivity (activity: ActivityDto): Observable<ActivityModel> {
         return this.api.createActivity( this.selectedProjectId(), activity ).pipe(
-            notifyUnavailableOnly( this.registryFacade ),
+            notifyUnavailableOnly( this.uiFacade ),
             tap( (created: ActivityModel): void => this.onCommandSuccess( 'create', created ) ),
         )
     }
 
     public updateActivity (id: string, activity: ActivityDto): Observable<ActivityModel> {
         return this.api.updateActivityById( this.selectedProjectId(), id, activity ).pipe(
-            notifyUnavailableOnly( this.registryFacade ),
+            notifyUnavailableOnly( this.uiFacade ),
             tap( (updated: ActivityModel): void => this.onCommandSuccess( 'edit', updated ) ),
         )
     }
 
     public disableActivity (id: string): Observable<ActivityModel> {
         return this.api.disableActivityById( this.selectedProjectId(), id ).pipe(
-            notifyOnError( this.registryFacade ),
+            notifyOnError( this.uiFacade ),
             tap( (disabled: ActivityModel): void => this.onCommandSuccess( 'disable', disabled ) ),
         )
     }
 
     public enableActivity (id: string): Observable<ActivityModel> {
         return this.api.enableActivityById( this.selectedProjectId(), id ).pipe(
-            notifyOnError( this.registryFacade ),
+            notifyOnError( this.uiFacade ),
             tap( (enabled: ActivityModel): void => this.onCommandSuccess( 'enable', enabled ) ),
         )
     }
 
     public deleteActivity (activity: ActivityModel): Observable<void> {
         return this.api.deleteActivityById( undefined, activity.id ).pipe(
-            notifyOnError( this.registryFacade ),
+            notifyOnError( this.uiFacade ),
             tap( (): void => this.onCommandSuccess( 'delete', activity ) ),
         )
     }

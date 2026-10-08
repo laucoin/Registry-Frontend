@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing'
 import { Subject } from 'rxjs'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
-import { RegistryFacade } from '@core/registry/state/registry.facade'
+import { UiFacade } from '@core/registry/state/ui.facade'
 import { ErrorModel } from '@shared/models/model/error.model'
 import { TestPageBlock, TestPageStore } from '@shared/helpers/store/testing/test-page.store'
 import { PageSlice, trackPage } from '@shared/helpers/store/track-page.operator'
@@ -9,13 +9,13 @@ import { PageSlice, trackPage } from '@shared/helpers/store/track-page.operator'
 describe( 'track-page operator', () => {
     let store: InstanceType<typeof TestPageStore>
     let setGlobalError: Mock<(error: ErrorModel) => void>
-    let registryFacade: RegistryFacade
+    let uiFacade: UiFacade
     let slice: PageSlice<TestPageBlock>
 
     beforeEach( () => {
         store = TestBed.inject( TestPageStore )
         setGlobalError = vi.fn()
-        registryFacade = { setGlobalError: setGlobalError, notify: vi.fn() } as unknown as RegistryFacade
+        uiFacade = { setGlobalError: setGlobalError, notify: vi.fn() } as unknown as UiFacade
         slice = store.itemsSlice()
     } )
 
@@ -34,7 +34,7 @@ describe( 'track-page operator', () => {
     it( 'flags the block as loading while the request is in flight', () => {
         // Arrange
         const source: Subject<string> = new Subject<string>()
-        source.pipe( trackPage( registryFacade, slice ) ).subscribe()
+        source.pipe( trackPage( uiFacade, slice ) ).subscribe()
 
         // Act
         const loadingWhileInFlight: boolean = store.items().loading
@@ -50,7 +50,7 @@ describe( 'track-page operator', () => {
         const source: Subject<string> = new Subject<string>()
         const emitted: string[] = []
         const completed: Mock<() => void> = vi.fn()
-        source.pipe( trackPage( registryFacade, slice ) ).subscribe( { next: (value: string): number => emitted.push( value ), complete: completed } )
+        source.pipe( trackPage( uiFacade, slice ) ).subscribe( { next: (value: string): number => emitted.push( value ), complete: completed } )
 
         // Act
         source.error( { status: 500, title: 'Title', message: 'Message' } as ErrorModel )
@@ -66,7 +66,7 @@ describe( 'track-page operator', () => {
         // Arrange
         const source: Subject<string> = new Subject<string>()
         const error: ErrorModel = { status: 503, title: 'Down', message: 'Down' } as ErrorModel
-        source.pipe( trackPage( registryFacade, slice ) ).subscribe()
+        source.pipe( trackPage( uiFacade, slice ) ).subscribe()
 
         // Act
         source.error( error )

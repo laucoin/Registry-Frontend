@@ -4,7 +4,7 @@
                   [icon]='registryFacade.selectedProject()?.id === profile().project.id ? "pi pi-verified" : "pi pi-user"'>
     <div class='element-card'>
         <div class='profile-info flex flex-col justify-center basis-full xl:basis-[30%]'>
-            <div class='profile-name flex' [class.justify-center]='registryFacade.tinyScreen()'>
+            <div class='profile-name flex' [class.justify-center]='uiFacade.tinyScreen()'>
                 @if (view() === 'user') {
                     {{ profile().project.name }}
                 } @else {
@@ -12,34 +12,34 @@
                 }
             </div>
             @if (profile().startAccess) {
-                <div class='flex mt-1 content-center' [class.justify-center]='registryFacade.tinyScreen()'>
+                <div class='flex mt-1 content-center' [class.justify-center]='uiFacade.tinyScreen()'>
                     <i class='pi pi-play-circle'></i>
                     <span class='ms-1'>{{ profile().startAccess | customDateFormat }}</span>
                 </div>
             }
             @if (profile().endAccess) {
                 <div class='flex content-center'
-                     [class.justify-center]='registryFacade.tinyScreen()'
+                     [class.justify-center]='uiFacade.tinyScreen()'
                      [class.mt-1]='!profile().startAccess'>
                     <i class='pi pi-stop-circle'></i>
                     <span class='ms-1'>{{ profile().endAccess | customDateFormat }}</span>
                 </div>
             }
         </div>
-        <div class='role flex basis-full xl:basis-[15%]' [class.justify-center]='registryFacade.tinyScreen()'>
+        <div class='role flex basis-full xl:basis-[15%]' [class.justify-center]='uiFacade.tinyScreen()'>
             <app-severity-tag [value]='profile().role.label!' />
         </div>
         @if (profile().status.value !== ProfileStatusEnum.INVITED || profile().user.id !== registryFacade.currentUser()!.id) {
-            <div class='status flex basis-full lg:basis-1/2 xl:basis-[30%]' [class.justify-center]='registryFacade.tinyScreen()'>
+            <div class='status flex basis-full lg:basis-1/2 xl:basis-[30%]' [class.justify-center]='uiFacade.tinyScreen()'>
                 @if (profile().availabilityStatus) {
                     <app-severity-tag [severity]='availabilityStatusSeverity()' [value]='profile().availabilityStatus.label' />
                 }
             </div>
-            <div class='invitation-status flex basis-full lg:basis-1/2 xl:basis-[15%]' [class.justify-center]='registryFacade.tinyScreen()'>
+            <div class='invitation-status flex basis-full lg:basis-1/2 xl:basis-[15%]' [class.justify-center]='uiFacade.tinyScreen()'>
                 <app-severity-tag [severity]='statusSeverity()' [value]='profile().status.label!' />
             </div>
         } @else {
-            <div class='invitation-form flex basis-full xl:basis-[45%]' [class.justify-center]='registryFacade.tinyScreen()'>
+            <div class='invitation-form flex basis-full xl:basis-[45%]' [class.justify-center]='uiFacade.tinyScreen()'>
                 <div class='flex flex-col'>
                     <div>{{ 'project-profiles.manage-acceptance' | transloco }}</div>
                     <div class='flex justify-center mt-2'>

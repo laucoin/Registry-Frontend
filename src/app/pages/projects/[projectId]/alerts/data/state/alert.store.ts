@@ -14,7 +14,7 @@ import { CommunicationModel } from '@pages/projects/[projectId]/movements/commun
 import { AlertStoreModel } from '@pages/projects/[projectId]/alerts/data/model/alert-store.model'
 import { AlertApi } from '@pages/projects/[projectId]/movements/data/state/alert.api'
 import { MetadataApi } from '@core/registry/state/metadata.api'
-import { RegistryFacade } from '@core/registry/state/registry.facade'
+import { UiFacade } from '@core/registry/state/ui.facade'
 import { notifyOnError } from '@shared/helpers/rx.helper'
 import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
 import { pageSlice, trackPage } from '@shared/helpers/store/track-page.operator'
@@ -64,12 +64,12 @@ export const AlertStore = signalStore(
     withProps( () => ({
         api: inject( AlertApi ),
         metadataApi: inject( MetadataApi ),
-        registryFacade: inject( RegistryFacade ),
+        uiFacade: inject( UiFacade ),
     }) ),
     withMethods( (store) => ({
         fetchAlertStatus: rxMethod<void>( pipe(
             switchMap( (): Observable<SelectItem<AlertStatusEnum>[]> => store.metadataApi.getAlertsStatus().pipe(
-                notifyOnError( store.registryFacade ),
+                notifyOnError( store.uiFacade ),
             ) ),
             tap( (status: SelectItem<AlertStatusEnum>[]): void => patchState( store, (state: AlertStoreModel) => ({
                 metadata: { ...state.metadata, status: [ { label: '-', value: undefined }, ...status ] },
@@ -83,7 +83,7 @@ export const AlertStore = signalStore(
                 request.pageSize,
                 store.alerts.params(),
             ).pipe(
-                trackPage( store.registryFacade, pageSlice( store, 'alerts' ) ),
+                trackPage( store.uiFacade, pageSlice( store, 'alerts' ) ),
             ) ),
             tap( (page: PageModel<AlertModel>): void => patchState( store, (state: AlertStoreModel) => ({
                 alerts: {
@@ -107,7 +107,7 @@ export const AlertStore = signalStore(
                     request.pageSize,
                     store.communications.params(),
                 ).pipe(
-                    trackPage( store.registryFacade, pageSlice( store, 'communications' ) ),
+                    trackPage( store.uiFacade, pageSlice( store, 'communications' ) ),
                 ),
             ),
             tap( (page: PageModel<CommunicationModel>): void => patchState( store, (state: AlertStoreModel) => ({
