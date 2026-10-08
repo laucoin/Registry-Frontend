@@ -190,7 +190,11 @@ export class MovementFormPage extends GenericFormComponent<MovementModel, Moveme
         this.reason.patchValue(undefined)
 
         this.isContentSelection.set(contentType == ParticipantTypeEnum.REGISTERED || type == 'OUT')
+        this.updateContentRules()
+        this.updateReasonRules(type, contentType)
+    }
 
+    private updateContentRules(): void {
         if (this.isContentSelection()) {
             this.guestContent.clear()
             this.guestContent.clearValidators()
@@ -200,7 +204,9 @@ export class MovementFormPage extends GenericFormComponent<MovementModel, Moveme
             this.guestContent.addValidators([Validators.required])
             if (this.guestContent.length == 0) this.addGuest()
         }
+    }
 
+    private updateReasonRules(type: string | undefined, contentType: string): void {
         this.reasonRequired.set(
             type == MovementTypeEnum.OUT && contentType == ParticipantTypeEnum.REGISTERED ||
             type == MovementTypeEnum.IN && contentType == ParticipantTypeEnum.GUEST,

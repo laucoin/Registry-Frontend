@@ -1,6 +1,6 @@
 import { Component, inject, OnDestroy, signal, WritableSignal } from '@angular/core'
 import {ActivityFacade} from '@pages/projects/[projectId]/configuration/activities/data/state/activity.facade'
-import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms'
+import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidatorFn, Validators} from '@angular/forms'
 import {RegistryValidators} from '@shared/helpers/registry.validator'
 import {ActivityDto} from '@pages/projects/[projectId]/configuration/activities/data/dto/activity.dto'
 import {Button} from 'primeng/button'
@@ -94,25 +94,23 @@ export class ActivityFormPage extends GenericFormComponent<ActivityModel, Activi
                 undefined,
                 [Validators.required, Validators.maxLength(150), RegistryValidators.nonBlank()],
             ),
-            description: this.formBuilder.control(
-                undefined,
-                [Validators.maxLength(2000)],
-            ),
+            description: this.formBuilder.control(undefined, [Validators.maxLength(2000)]),
             duration: this.formBuilder.control(undefined, []),
-            allowedParticipants: this.formBuilder.control(
-                undefined,
-                [
-                    RegistryValidators.numericRange(),
-                    RegistryValidators.numericRangeMin(1),
-                    RegistryValidators.numericRangeMax(2147483647),
-                    RegistryValidators.numericRangeBothDefined(),
-                ],
-            ),
+            allowedParticipants: this.formBuilder.control(undefined, this.allowedParticipantsValidators()),
             beginDateTime: this.formBuilder.control(undefined, [RegistryValidators.dateRequiredForTime()]),
             endDateTime: this.formBuilder.control(undefined, [RegistryValidators.dateRequiredForTime()]),
         }, {
             validators: [RegistryValidators.beginDateBeforeEndDate('beginDateTime', 'endDateTime')],
         })
+    }
+
+    private allowedParticipantsValidators(): ValidatorFn[] {
+        return [
+            RegistryValidators.numericRange(),
+            RegistryValidators.numericRangeMin(1),
+            RegistryValidators.numericRangeMax(2147483647),
+            RegistryValidators.numericRangeBothDefined(),
+        ]
     }
 
     protected handleLoadedElement(): void {

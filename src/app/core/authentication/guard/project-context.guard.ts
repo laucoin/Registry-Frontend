@@ -12,42 +12,47 @@ import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
 
 const PROJECT_ID_PARAM: string = 'projectId'
 
-/**
- * Charge le projet courant depuis le paramètre `:projectId` de l'URL.
- * Redirige vers la liste des projets si l'utilisateur n'a aucun profil sur ce projet.
- */
+interface GuardContext {
+    registryFacade: RegistryFacade
+    sessionFacade: SessionFacade
+    uiFacade: UiFacade
+    router: Router
+}
+
 /**
  * Purpose: Selects the project of the `:projectId` route parameter for the routes below it.
  * Scope: Checks the user has an authority on the project, loads its profile and warns before redirecting to the projects list.
  * Limits: A usability aid only; the backend re-checks access, and the deactivate guard only clears the selection.
  */
 export const projectContextGuard: CanActivateFn = (route: ActivatedRouteSnapshot): Observable<boolean | UrlTree> => {
-    const registryFacade: RegistryFacade = inject( RegistryFacade )
-    const uiFacade: UiFacade = inject( UiFacade )
-    const sessionFacade: SessionFacade = inject( SessionFacade )
-    const router: Router = inject( Router )
+    const context: GuardContext = {
+        registryFacade: inject( RegistryFacade ),
+        sessionFacade: inject( SessionFacade ),
+        uiFacade: inject( UiFacade ),
+        router: inject( Router ),
+    }
     const projectId: string | undefined = route.paramMap.get( PROJECT_ID_PARAM ) ?? undefined
 
-    return sessionFacade.currentUser$.pipe(
+    return context.sessionFacade.currentUser$.pipe(
         take( 1 ),
-        switchMap( (currentUser: CurrentUserModel): Observable<boolean | UrlTree> => {
-            if (GenericHelper.isNull( projectId ) || !hasProjectAccess( currentUser, projectId! )) {
-                notifyNoProfile( uiFacade )
-                return of( router.parseUrl( RegistryRouteEnum.PROJECTS ) )
-            }
-
-            return registryFacade.setCurrentProject( projectId ).pipe(
-                take( 1 ),
-                map( (): boolean | UrlTree => {
-                    if (GenericHelper.isNull( sessionFacade.selectedProject() )) {
-                        notifyNoProfile( uiFacade )
-                        return router.parseUrl( RegistryRouteEnum.PROJECTS )
-                    }
-                    return true
-                } ),
-            )
-        } ),
+        switchMap( (currentUser: CurrentUserModel): Observable<boolean | UrlTree> => resolveAccess( context, currentUser, projectId ) ),
     )
+}
+
+function resolveAccess (context: GuardContext, currentUser: CurrentUserModel, projectId: string | undefined): Observable<boolean | UrlTree> {
+    if (GenericHelper.isNull( projectId ) || !hasProjectAccess( currentUser, projectId! )) {
+        return of( redirectToProjects( context ) )
+    }
+
+    return context.registryFacade.setCurrentProject( projectId ).pipe(
+        take( 1 ),
+        map( (): boolean | UrlTree => GenericHelper.isNull( context.sessionFacade.selectedProject() ) ? redirectToProjects( context ) : true ),
+    )
+}
+
+function redirectToProjects (context: GuardContext): UrlTree {
+    notifyNoProfile( context.uiFacade )
+    return context.router.parseUrl( RegistryRouteEnum.PROJECTS )
 }
 
 export const projectContextDeactivateGuard: CanDeactivateFn<unknown> = (): boolean => {

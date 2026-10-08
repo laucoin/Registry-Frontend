@@ -1,6 +1,6 @@
 import { Component, inject, input, InputSignal, OnDestroy, signal, WritableSignal} from '@angular/core'
 import {ParticipantFacade} from '@pages/projects/[projectId]/configuration/participants/data/state/participant.facade'
-import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms'
+import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidatorFn, Validators} from '@angular/forms'
 import {RegistryValidators} from '@shared/helpers/registry.validator'
 import {ParticipantDto} from '@pages/projects/[projectId]/configuration/participants/data/dto/participant.dto'
 import {Button} from 'primeng/button'
@@ -107,23 +107,9 @@ export class ParticipantFormComponent extends GenericFormComponent<ParticipantMo
 
     protected initForm(): FormGroup {
         return this.formBuilder.group({
-            firstName: this.formBuilder.control(
-                undefined,
-                [Validators.required, Validators.maxLength(150), RegistryValidators.nonBlank()],
-            ),
-            lastName: this.formBuilder.control(
-                undefined,
-                [Validators.required, Validators.maxLength(150), RegistryValidators.nonBlank()],
-            ),
-            birthday: this.formBuilder.control(
-                undefined,
-                [
-                    Validators.required, RegistryValidators.maxDateTime(
-                    DateHelper.toCustomDateTime(new Date())!,
-                    undefined,
-                ),
-                ],
-            ),
+            firstName: this.nameControl(),
+            lastName: this.nameControl(),
+            birthday: this.formBuilder.control(undefined, [Validators.required, this.notInTheFuture()]),
             user: this.formBuilder.control(undefined),
             groups: this.formBuilder.control(undefined),
             beginDateTime: this.formBuilder.control(undefined, [RegistryValidators.dateRequiredForTime()]),
@@ -131,6 +117,17 @@ export class ParticipantFormComponent extends GenericFormComponent<ParticipantMo
         }, {
             validators: [RegistryValidators.beginDateBeforeEndDate('beginDateTime', 'endDateTime')],
         })
+    }
+
+    private nameControl(): FormControl {
+        return this.formBuilder.control(
+            undefined,
+            [Validators.required, Validators.maxLength(150), RegistryValidators.nonBlank()],
+        )
+    }
+
+    private notInTheFuture(): ValidatorFn {
+        return RegistryValidators.maxDateTime(DateHelper.toCustomDateTime(new Date())!, undefined)
     }
 
     protected handleLoadedElement(): void {

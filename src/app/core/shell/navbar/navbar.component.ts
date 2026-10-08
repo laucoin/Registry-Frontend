@@ -115,19 +115,23 @@ export class NavbarComponent extends GenericComponent {
             requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_ALERT_R,
             requiredProjectOption: ProjectOptionEnum.ALERT,
         },
-        {
+        this.configurationMenu(),
+    ] )
+
+    private configurationMenu (): MenuItemModel {
+        return {
             label: 'global.menu.configuration',
             icon: 'pi pi-cog',
             requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_R,
             items: this.configurationMenuItems(),
-        },
-    ] )
-
-    private configurationMenuItems (): MenuItemModel[] {
-        return [ ...this.projectAndPeopleMenuItems(), ...this.optionMenuItems() ]
+        }
     }
 
-    private projectAndPeopleMenuItems (): MenuItemModel[] {
+    private configurationMenuItems (): MenuItemModel[] {
+        return [ ...this.projectMenuItems(), ...this.peopleMenuItems(), ...this.optionMenuItems() ]
+    }
+
+    private projectMenuItems (): MenuItemModel[] {
         return [
             {
                 label: 'global.menu.edit-project',
@@ -141,6 +145,11 @@ export class NavbarComponent extends GenericComponent {
                 url: this.projectUrl( RegistryRouteEnum.PROJECTS_CONFIGURATION_PROFILES ),
                 requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_R,
             },
+        ]
+    }
+
+    private peopleMenuItems (): MenuItemModel[] {
+        return [
             {
                 label: 'global.menu.participants',
                 icon: 'pi pi-user',
