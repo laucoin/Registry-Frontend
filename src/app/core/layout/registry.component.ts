@@ -2,7 +2,7 @@ import { Component, HostListener, inject, OnDestroy} from '@angular/core'
 import {TranslocoPipe} from '@jsverse/transloco'
 import {ConfirmationService, MessageService, ToastMessageOptions} from 'primeng/api'
 import {BlockUIModule} from 'primeng/blockui'
-import {ConfirmDialogModule} from 'primeng/confirmdialog'
+import {ConfirmDialog} from 'primeng/confirmdialog'
 import {ProgressSpinnerModule} from 'primeng/progressspinner'
 import {ToastModule} from 'primeng/toast'
 import {Subscription} from 'rxjs'
@@ -22,7 +22,7 @@ import {GenericHelper} from '@shared/helpers/generic.helper'
     selector: 'app-root',
     imports: [
         TranslocoPipe,
-        ConfirmDialogModule,
+        ConfirmDialog,
         ToastModule,
         BlockUIModule,
         ProgressSpinnerModule,

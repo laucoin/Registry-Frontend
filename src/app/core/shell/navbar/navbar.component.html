@@ -78,16 +78,18 @@
 
 <div [style]='{ "height": showContextMenu() ? "140px" : "82px" }'></div>
 
-<p-dialog
-        class='text-justify'
-        modal
-        [header]='"global.welcome.title" | transloco'
-        [breakpoints]='breakpoint'
-        [(visible)]='helpDialogOpened'
-        [draggable]='false'
-        [resizable]='false'>
-    <app-info />
-</p-dialog>
+@defer (when helpDialogOpened) {
+    <p-dialog
+            class='text-justify'
+            modal
+            [header]='"global.welcome.title" | transloco'
+            [breakpoints]='breakpoint'
+            [(visible)]='helpDialogOpened'
+            [draggable]='false'
+            [resizable]='false'>
+        <app-info />
+    </p-dialog>
+}
 
 <p-popover #userMenu appendTo='body'>
     <p-menu [model]='userMenuItems()'
