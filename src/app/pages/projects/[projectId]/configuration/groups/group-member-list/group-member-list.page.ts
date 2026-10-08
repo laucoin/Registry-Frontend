@@ -111,8 +111,8 @@ export class GroupMemberListPage extends GenericListComponent implements OnDestr
         this.reloadMembersOn( this.participantFacade.handleParticipantFirstPageReload(), undefined, undefined )
         this.reloadMembersOn(
             this.participantFacade.handleParticipantCurrentPageReload(),
-            () => this.facade.groupsPage()?.pageNumber,
-            () => this.facade.groupsPage()?.pageSize,
+            () => this.facade.groupMembersPage()?.pageNumber,
+            () => this.facade.groupMembersPage()?.pageSize,
         )
     }
 
