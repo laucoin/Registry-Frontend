@@ -40,20 +40,20 @@
         </div>
     </main>
     <footer>
-        <p class='flex flex-wrap justify-center secondary-color'>
-            © Luc AUCOIN {{ currentYear }} | 
-            <span class='cursor-pointer hover:underline'
-                  tabindex='1'
-                  (click)='showInformationDialog = true'
-                  (keydown.enter)='showInformationDialog = true'>
-                                {{ 'global.legal.information.name' | transloco }}
-                            </span> | 
-            <span class='cursor-pointer hover:underline'
-                  tabindex='2'
-                  (click)='showTermsOfUserDialog = true'
-                  (keydown.enter)='showTermsOfUserDialog = true'>
-                                {{ 'global.legal.terms-of-use.name' | transloco }}
-                            </span>
+        <p class='flex flex-wrap justify-center items-center gap-1 secondary-color'>
+            <span>© Luc AUCOIN {{ currentYear }}</span>
+            <span aria-hidden='true'>|</span>
+            <button type='button'
+                    class='cursor-pointer hover:underline'
+                    (click)='showInformationDialog = true'>
+                {{ 'global.legal.information.name' | transloco }}
+            </button>
+            <span aria-hidden='true'>|</span>
+            <button type='button'
+                    class='cursor-pointer hover:underline'
+                    (click)='showTermsOfUserDialog = true'>
+                {{ 'global.legal.terms-of-use.name' | transloco }}
+            </button>
         </p>
     </footer>
 }

@@ -324,7 +324,12 @@
       "previous": "Previous",
       "next": "Following",
       "search-and-filter": "Search & filter",
-      "sign-out": "Sign out"
+      "sign-out": "Sign out",
+      "remove": "Remove",
+      "reset": "Reset",
+      "add": "Add",
+      "clear": "Clear",
+      "help": "Help"
     },
     "messages": {
       "not-implemented": "🙅‍♂️ Functionality is not implemented.",

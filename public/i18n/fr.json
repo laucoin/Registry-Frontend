@@ -324,7 +324,12 @@
       "previous": "Précédent",
       "next": "Suivant",
       "search-and-filter": "Rechercher & Filtrer",
-      "sign-out": "Déconnexion"
+      "sign-out": "Déconnexion",
+      "remove": "Retirer",
+      "reset": "Réinitialiser",
+      "add": "Ajouter",
+      "clear": "Effacer",
+      "help": "Aide"
     },
     "messages": {
       "not-implemented": "🙅‍♂️ La fonctionnalité n’est pas implémentée.",

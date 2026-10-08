@@ -21,10 +21,12 @@ import { SelectItem } from 'primeng/api'
 import { BaseModel } from '@shared/models/model/base.model'
 import { GenericHelper } from '@shared/helpers/generic.helper'
 import { BrowserService } from '@core/browser/browser.service'
+import { TranslocoPipe } from '@jsverse/transloco'
 
 @Component( {
     selector: 'app-select-elements-field',
     imports: [
+        TranslocoPipe,
         ReactiveFormsModule,
         Button,
         FormsModule,

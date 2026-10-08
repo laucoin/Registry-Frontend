@@ -6,13 +6,12 @@
         <div class='user-info basis-full xl:basis-[30%]'>
             <div class='user-name flex'
                  [class.justify-center]='uiFacade.tinyScreen()'>
-                <span class='cursor-pointer hover:underline'
-                      tabindex='1'
-                      (click)='copied()'
-                      (keydown.enter)='copied()'
-                      [cdkCopyToClipboard]='user().email'>
+                <button type='button'
+                        class='cursor-pointer hover:underline'
+                        (click)='copied()'
+                        [cdkCopyToClipboard]='user().email'>
                     {{ (user().firstName | titlecase) + ' ' + (user().lastName | uppercase) }}
-                </span>
+                </button>
             </div>
         </div>
         @if (GenericHelper.nonNull(user().birthday)) {

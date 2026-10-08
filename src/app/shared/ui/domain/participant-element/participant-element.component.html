@@ -24,11 +24,11 @@
             }
         </div>
         <div class='groups flex basis-full 2xl:basis-[35%]' [class.justify-center]='uiFacade.tinyScreen()'>
-            <div [class.pointer]='additionalTotal() >= 0'
-                 [class.hover-underline]='additionalTotal() >= 0'
-                 tabindex='1'
-                 (click)='additionalTotal() >= 0 ? layerOpened = true : ""'
-                 (keydown.enter)='additionalTotal() >= 0 ? layerOpened = true : ""'>
+            <button type='button'
+                    [class.pointer]='additionalTotal() >= 0'
+                    [class.hover-underline]='additionalTotal() >= 0'
+                    [disabled]='additionalTotal() < 0'
+                    (click)='layerOpened = true'>
                 @if (additionalTotal() === 0) {
                     {{ participant().groups?.[0]?.name }}
                 } @else {
@@ -39,7 +39,7 @@
                         }
                     }}
                 }
-            </div>
+            </button>
         </div>
         <div class='status flex basis-full 2xl:basis-[35%]' [class.justify-center]='uiFacade.tinyScreen()'>
             <app-severity-tag [severity]='participantStatusSeverity()' [value]='participant().status.label' />

@@ -29,7 +29,7 @@
                     </div>
                 }
             </div>
-            <p-button icon='pi pi-times'
+            <p-button [ariaLabel]='"global.actions.remove" | transloco' icon='pi pi-times'
                       size='small'
                       severity='danger'
                       rounded
@@ -49,7 +49,7 @@
         <div>
             {{ 'movements.form.content.registered.group' | transloco: { name: groupName } }}
         </div>
-        <p-button icon='pi pi-times'
+        <p-button [ariaLabel]='"global.actions.remove" | transloco' icon='pi pi-times'
                   size='small'
                   severity='danger'
                   rounded
@@ -60,7 +60,7 @@
         @for (member of groups()[groupName]; track member.id) {
             <li class='item list-item w-full flex items-center justify-between' [attr.data-value]='member.id'>
                 <div class='ms-4'>{{ ParticipantHelper.toSelectItem(member).label }}</div>
-                <p-button icon='pi pi-times'
+                <p-button [ariaLabel]='"global.actions.remove" | transloco' icon='pi pi-times'
                           size='small'
                           severity='danger'
                           rounded

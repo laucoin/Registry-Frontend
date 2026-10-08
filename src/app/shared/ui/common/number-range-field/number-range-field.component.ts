@@ -8,10 +8,12 @@ import {TranslocoService} from '@jsverse/transloco'
 import { NumericRangeModel } from '@pages/projects/[projectId]/configuration/activities/data/model/numeric-range.model'
 import { GenericHelper } from '@shared/helpers/generic.helper'
 import { StringHelper } from '@shared/helpers/string.helper'
+import { TranslocoPipe } from '@jsverse/transloco'
 
 @Component( {
     selector: 'app-number-range-field',
     imports: [
+        TranslocoPipe,
         FormsModule,
         ReactiveFormsModule,
         Button,

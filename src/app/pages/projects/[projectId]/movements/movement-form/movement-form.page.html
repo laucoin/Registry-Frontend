@@ -150,7 +150,7 @@
                                     }}</span>
                             @for (_ of guestContent.controls; track $index) {
                                 <div class='flex flex-row items-center'>
-                                    <p-button size='small' [disabled]='participantId($index).value'
+                                    <p-button [ariaLabel]='"global.actions.remove" | transloco' size='small' [disabled]='participantId($index).value'
                                               (onClick)='removeGuest($index)'
                                               icon='pi pi-times' text rounded
                                               severity='danger'></p-button>
@@ -314,7 +314,7 @@
                                                     </ng-template>
                                                 </p-select>
                                                 <p-inputgroup-addon>
-                                                    <p-button icon='pi pi-times'
+                                                    <p-button [ariaLabel]='"global.actions.remove" | transloco' icon='pi pi-times'
                                                               (onClick)='removeVehicle($index)'
                                                               text
                                                               severity='danger'/>

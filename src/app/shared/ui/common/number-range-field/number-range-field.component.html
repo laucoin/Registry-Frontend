@@ -9,7 +9,7 @@
                     (onInput)='onInputMax($event.value)'
                     [placeholder]='maxPlaceholder()' />
     <p-inputgroup-addon>
-        <p-button icon='pi pi-times' severity='secondary' (onClick)='onInputChange(undefined, undefined); minValue = undefined;
+        <p-button [ariaLabel]='"global.actions.clear" | transloco' icon='pi pi-times' severity='secondary' (onClick)='onInputChange(undefined, undefined); minValue = undefined;
         maxValue = undefined' />
     </p-inputgroup-addon>
 </p-inputgroup>
