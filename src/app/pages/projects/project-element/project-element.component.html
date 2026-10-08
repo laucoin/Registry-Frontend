@@ -3,7 +3,7 @@
                   [actions]='actions()'
                   icon='pi pi-calendar'>
     <div class='element-card'>
-        <div class='project-info flex flex-col justify-center lg:basis-full xl:basis-[30%]'>
+        <div class='project-info flex flex-col justify-center basis-full lg:basis-full xl:basis-[30%]'>
             <div class='project-name flex mb-2' [class.justify-center]='registryFacade.tinyScreen()'>
                 <app-severity-circle class='me-2' [severity]='project().visible ? SeverityEnum.SUCCESS : SeverityEnum.DANGER' />
                 {{ project().name }}
@@ -23,7 +23,7 @@
                 </div>
             }
         </div>
-        <div class='options-and-status flex flex-col lg:basis-[70%] xl:basis-[55%]' [class.justify-center]='registryFacade.tinyScreen()'>
+        <div class='options-and-status flex flex-col basis-full lg:basis-[70%] xl:basis-[55%]' [class.justify-center]='registryFacade.tinyScreen()'>
             <div class='flex' [class.justify-center]='registryFacade.tinyScreen()'>
                 @let nbOfOptions = project().options?.length ?? 0;
                 <app-severity-tag
@@ -47,7 +47,7 @@
                 }
             </div>
         </div>
-        <div class='action-button flex lg:basis-[30%] xl:basis-[15%]' [class.justify-center]='registryFacade.tinyScreen()'>
+        <div class='action-button flex basis-full lg:basis-[30%] xl:basis-[15%]' [class.justify-center]='registryFacade.tinyScreen()'>
             @if (joinable()) {
                 <p-button icon='pi pi-arrow-right'
                           [label]='"projects.actions.select" | transloco'

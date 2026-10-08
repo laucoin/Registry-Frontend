@@ -37,13 +37,12 @@ import {MenuItem} from 'primeng/api'
         CustomDateFormatPipe,
         SeverityCircleComponent,
     ],
-    providers: [GroupFacade],
     templateUrl: './participant-element.component.html',
     styleUrl: './participant-element.component.css',
 })
 export class ParticipantElementComponent extends GenericElementComponent {
     protected readonly facade: ParticipantFacade = inject(ParticipantFacade)
-    private readonly groupFacade: GroupFacade = inject(GroupFacade)
+    private readonly groupFacade: GroupFacade | null = inject(GroupFacade, {optional: true})
 
     protected ParticipantTypeEnum: typeof ParticipantTypeEnum = ParticipantTypeEnum
 
@@ -128,7 +127,7 @@ export class ParticipantElementComponent extends GenericElementComponent {
                         'pi pi-exclamation-triangle',
                         this.participant(),
                         SeverityEnum.WARNING,
-                        (): void => this.run(this.groupFacade.removeMemberFromGroup(
+                        (): void => this.run(this.groupFacade!.removeMemberFromGroup(
                             this.groupIdToRemove()!,
                             this.participant(),
                         )),
