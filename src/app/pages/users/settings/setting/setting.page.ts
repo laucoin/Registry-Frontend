@@ -32,14 +32,14 @@ import { GenericElementComponent } from '@shared/ui/base/generic-element.compone
 } )
 export class SettingPage extends GenericElementComponent {
     protected themeControl: FormControl = new FormControl( this.registryFacade.currentUserTheme() )
-    protected languageControl: FormControl = new FormControl( this.registryFacade.currentUserLanguage() )
+    protected languageControl: FormControl = new FormControl( this.sessionFacade.currentUserLanguage() )
 
     protected confirmImpersonate (): void {
         this.confirmationService.confirm(
             this.buildConfirmation(
                 'settings.actions.confirmations.impersonate',
                 'pi pi-exclamation-triangle',
-                this.registryFacade.currentUser(),
+                this.sessionFacade.currentUser(),
                 SeverityEnum.DANGER,
                 (): void => this.registryFacade.impersonateCurrentUser(),
             ),

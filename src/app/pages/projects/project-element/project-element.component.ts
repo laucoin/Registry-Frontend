@@ -134,7 +134,7 @@ export class ProjectElementComponent extends GenericElementComponent implements 
     )
 
     private hasAnyProjectAuthority(element: ProjectModel): boolean {
-        return this.registryFacade.currentUser()!.authorities.some(
+        return this.sessionFacade.currentUser()!.authorities.some(
             (authority: string): boolean => authority.startsWith(`${element.id}_REGISTRY_PROJECT`),
         )
     }

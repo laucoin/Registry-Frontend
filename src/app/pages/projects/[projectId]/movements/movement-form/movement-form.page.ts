@@ -102,7 +102,7 @@ export class MovementFormPage extends GenericFormComponent<MovementModel, Moveme
     protected readonly isContentSelection: WritableSignal<boolean> = signal(true)
     protected readonly selectedReason: WritableSignal<MovementReasonModel | undefined> = signal(undefined)
     private readonly hasVehicleOption: Signal<boolean> = computed((): boolean => ProjectHelper.hasOption(
-        this.registryFacade.selectedProject(),
+        this.sessionFacade.selectedProject(),
         ProjectOptionEnum.VEHICLE,
     ))
     protected readonly isEligibleToVehicle: Signal<boolean> = computed((): boolean =>
@@ -215,7 +215,7 @@ export class MovementFormPage extends GenericFormComponent<MovementModel, Moveme
     }
 
     private applyMovement(movement: MovementModel | undefined): void {
-        const contextProject: ProjectModel | undefined = movement?.project || this.registryFacade.selectedProject()
+        const contextProject: ProjectModel | undefined = movement?.project || this.sessionFacade.selectedProject()
         this.addProjectDateValidators(contextProject, this.dateTime)
         this.fillForm(movement)
     }

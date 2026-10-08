@@ -5,7 +5,7 @@
                 @if (showContextMenu()) {
                     <p-button text rounded class='return-project' (onClick)='backToProjects()' (keydown.enter)='backToProjects()'
                               icon='pi pi-arrow-left'
-                              [label]='uiFacade.tinyScreen() ? "" : registryFacade.selectedProject()?.name'></p-button>
+                              [label]='uiFacade.tinyScreen() ? "" : sessionFacade.selectedProject()?.name'></p-button>
                 } @else {
                     <a [tabIndex]='-1'
                        [routerLink]='RegistryRouteEnum.PROJECTS.toString()'
@@ -39,7 +39,7 @@
                           size='small'
                           styleClass='me-3' />
             }
-            @if (registryFacade.currentUser()) {
+            @if (sessionFacade.currentUser()) {
                 <p-button (onClick)='userMenu.toggle($event)' severity='secondary' [text]='uiFacade.tinyScreen()'>
                     <p-avatar [textContent]='initials()' shape='circle' />
                     @if (!uiFacade.tinyScreen()) {

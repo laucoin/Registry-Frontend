@@ -3,6 +3,7 @@ import { ActivatedRouteSnapshot, CanActivateFn, CanDeactivateFn, Router, UrlTree
 import { map, Observable, of, switchMap, take } from 'rxjs'
 import { RegistryConfig } from '@core/config/registry.config'
 import { RegistryFacade } from '@core/registry/state/registry.facade'
+import { SessionFacade } from '@core/registry/state/session.facade'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { GenericHelper } from '@shared/helpers/generic.helper'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
@@ -18,10 +19,11 @@ const PROJECT_ID_PARAM: string = 'projectId'
 export const projectContextGuard: CanActivateFn = (route: ActivatedRouteSnapshot): Observable<boolean | UrlTree> => {
     const registryFacade: RegistryFacade = inject( RegistryFacade )
     const uiFacade: UiFacade = inject( UiFacade )
+    const sessionFacade: SessionFacade = inject( SessionFacade )
     const router: Router = inject( Router )
     const projectId: string | undefined = route.paramMap.get( PROJECT_ID_PARAM ) ?? undefined
 
-    return registryFacade.currentUser$.pipe(
+    return sessionFacade.currentUser$.pipe(
         take( 1 ),
         switchMap( (currentUser: CurrentUserModel): Observable<boolean | UrlTree> => {
             if (GenericHelper.isNull( projectId ) || !hasProjectAccess( currentUser, projectId! )) {
@@ -32,7 +34,7 @@ export const projectContextGuard: CanActivateFn = (route: ActivatedRouteSnapshot
             return registryFacade.setCurrentProject( projectId ).pipe(
                 take( 1 ),
                 map( (): boolean | UrlTree => {
-                    if (GenericHelper.isNull( registryFacade.selectedProject() )) {
+                    if (GenericHelper.isNull( sessionFacade.selectedProject() )) {
                         notifyNoProfile( uiFacade )
                         return router.parseUrl( RegistryRouteEnum.PROJECTS )
                     }

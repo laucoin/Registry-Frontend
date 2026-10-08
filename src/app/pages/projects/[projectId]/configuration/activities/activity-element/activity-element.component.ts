@@ -53,7 +53,7 @@ export class ActivityElementComponent extends GenericElementComponent {
                     RegistryRouteEnum.PROJECTS_CONFIGURATION_ACTIVITIES_MOVEMENTS.replace(
                         ':activityId',
                         this.activity().id,
-                    ).replace(':projectId', this.registryFacade.currentProjectId() ?? ''),
+                    ).replace(':projectId', this.sessionFacade.currentProjectId() ?? ''),
                 ).catch(console.error)
             },
         },
@@ -64,7 +64,7 @@ export class ActivityElementComponent extends GenericElementComponent {
             visible: this.actionIsEnable(ElementActionEnum.ACTIVITY_UPDATE),
             command: (): void => {
                 this.router.navigateByUrl(
-                    RegistryRouteEnum.PROJECTS_CONFIGURATION_ACTIVITIES_EDITION.replace(':activityId', this.activity().id).replace(':projectId', this.registryFacade.currentProjectId() ?? ''),
+                    RegistryRouteEnum.PROJECTS_CONFIGURATION_ACTIVITIES_EDITION.replace(':activityId', this.activity().id).replace(':projectId', this.sessionFacade.currentProjectId() ?? ''),
                 ).catch(console.error)
             },
         },

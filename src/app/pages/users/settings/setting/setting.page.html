@@ -4,20 +4,20 @@
             <div [class.me-6]='!uiFacade.tinyScreen()'>
                 <p-avatar icon='pi pi-user' size='large' shape='circle' />
             </div>
-            <h1>{{ (registryFacade.currentUser()?.firstName | titlecase) + ' ' + (registryFacade.currentUser()?.lastName | uppercase) }}</h1>
+            <h1>{{ (sessionFacade.currentUser()?.firstName | titlecase) + ' ' + (sessionFacade.currentUser()?.lastName | uppercase) }}</h1>
         </div>
         <div class='grid search-line mt-2 mb-2'>
             <div>
                 <b>{{ 'settings.birthday' | transloco }}</b>
                 {{
-                    GenericHelper.nonNull(registryFacade.currentUser()?.birthday)
-                    ? (registryFacade.currentUser()!.birthday | dateFormat: 'date')
+                    GenericHelper.nonNull(sessionFacade.currentUser()?.birthday)
+                    ? (sessionFacade.currentUser()!.birthday | dateFormat: 'date')
                     : ('global.not-set' | transloco)
                 }}
             </div>
             <div>
                 <b>{{ 'settings.role' | transloco }} </b>
-                <app-severity-tag [value]='registryFacade.currentUser()?.role?.label' />
+                <app-severity-tag [value]='sessionFacade.currentUser()?.role?.label' />
             </div>
         </div>
     </div>

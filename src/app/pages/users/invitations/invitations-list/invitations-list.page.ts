@@ -35,8 +35,8 @@ import {RouterLink} from '@angular/router'
 })
 export class InvitationsListPage extends GenericListComponent {
     protected readonly hasFilters: Signal<boolean> = computed((): boolean =>
-        StringHelper.isNotNullNorBlank(this.registryFacade.userProjectProfileInvitationsPageTextSearchParam())
-        || GenericHelper.nonNull(this.registryFacade.userProjectProfileInvitationsPageDateTimeSearchParam()),
+        StringHelper.isNotNullNorBlank(this.sessionFacade.userProjectProfileInvitationsPageTextSearchParam())
+        || GenericHelper.nonNull(this.sessionFacade.userProjectProfileInvitationsPageDateTimeSearchParam()),
     )
 
     public constructor() {
@@ -44,19 +44,19 @@ export class InvitationsListPage extends GenericListComponent {
 
         this.form = this.initForm()
 
-        this.registryFacade.fetchProjectProfileInvitationPage(undefined, undefined)
+        this.sessionFacade.fetchProjectProfileInvitationPage(undefined, undefined)
     }
 
     protected initForm(): FormGroup {
         return this.formBuilder.group({
-            textSearched: this.formBuilder.control(this.registryFacade.userProjectProfileInvitationsPageTextSearchParam()),
-            dateTimeSearched: this.formBuilder.control(this.registryFacade.userProjectProfileInvitationsPageDateTimeSearchParam()),
+            textSearched: this.formBuilder.control(this.sessionFacade.userProjectProfileInvitationsPageTextSearchParam()),
+            dateTimeSearched: this.formBuilder.control(this.sessionFacade.userProjectProfileInvitationsPageDateTimeSearchParam()),
         })
     }
 
     protected loadPage(pageEvent: PageEventModel): void {
-        this.registryFacade.inputInvitationsPageSearchParameters(this.textSearched.value, this.dateTimeSearched.value)
-        this.registryFacade.fetchProjectProfileInvitationPage(pageEvent.pageNumber, pageEvent.pageSize)
+        this.sessionFacade.inputInvitationsPageSearchParameters(this.textSearched.value, this.dateTimeSearched.value)
+        this.sessionFacade.fetchProjectProfileInvitationPage(pageEvent.pageNumber, pageEvent.pageSize)
     }
 
     protected get textSearched(): FormControl {

@@ -318,7 +318,7 @@ export class CommunicationFormComponent extends GenericFormComponent<Communicati
             switch (true) {
                 case action.id === CommunicationModulableFieldEnum.ALERT:
                     return GenericHelper.isNull( this.initialAlert() ) && ProjectHelper.hasOption(
-                        this.registryFacade.selectedProject(),
+                        this.sessionFacade.selectedProject(),
                         ProjectOptionEnum.ALERT,
                     )
                 case action.id === CommunicationModulableFieldEnum.MOVEMENT:

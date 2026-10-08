@@ -12,6 +12,7 @@ import {TranslocoService} from '@jsverse/transloco'
 import { catchError, defer, map, mergeMap, Observable, shareReplay, tap, throwError } from 'rxjs'
 import { RegistryConfig } from '@core/config/registry.config'
 import { RegistryFacade } from '@core/registry/state/registry.facade'
+import { SessionFacade } from '@core/registry/state/session.facade'
 import { ErrorModel } from '@shared/models/model/error.model'
 import { GenericHelper } from '@shared/helpers/generic.helper'
 import { CURRENT_USER_ID, SELECT_PROFILE_PROJECT_ID } from '@shared/helpers/request.helper'
@@ -62,11 +63,12 @@ export const backendHandler: HttpInterceptorFn = (
 	}
 
 	const registryFacade: RegistryFacade = inject(RegistryFacade)
+	const sessionFacade: SessionFacade = inject(SessionFacade)
 	const securityApi: SecurityApi = inject(SecurityApi)
 	const translateService: TranslocoService = inject(TranslocoService)
 
 	return defer((): Observable<HttpEvent<unknown>> => {
-		const authenticatedRequest: HttpRequest<unknown> = authenticate(req, registryFacade)
+		const authenticatedRequest: HttpRequest<unknown> = authenticate(req, sessionFacade)
 		const context: InterceptionContext = { request: req, authenticatedRequest, next, registryFacade, securityApi, translateService }
 		return next(authenticatedRequest).pipe(
 			tap(captureCsrfTokenFromEvent),
@@ -75,8 +77,8 @@ export const backendHandler: HttpInterceptorFn = (
 	})
 }
 
-function authenticate(req: HttpRequest<unknown>, registryFacade: RegistryFacade): HttpRequest<unknown> {
-	const url: string = formatUrlIfNeeded(registryFacade, req.url)
+function authenticate(req: HttpRequest<unknown>, sessionFacade: SessionFacade): HttpRequest<unknown> {
+	const url: string = formatUrlIfNeeded(sessionFacade, req.url)
 	return withCsrfToken(req.clone({ url: url, withCredentials: true }))
 }
 
@@ -141,9 +143,9 @@ function captureCsrfToken(headers: HttpHeaders): void {
 	}
 }
 
-function formatUrlIfNeeded(registryFacade: RegistryFacade, url: string): string {
-	const urlWithUserId: string = replacePlaceholder(url, CURRENT_USER_ID, () => registryFacade.currentUser()?.id, 'NO_USER_ID')
-	return replacePlaceholder(urlWithUserId, SELECT_PROFILE_PROJECT_ID, () => registryFacade.currentProjectId(), 'NO_SELECTED_PROJECT')
+function formatUrlIfNeeded(sessionFacade: SessionFacade, url: string): string {
+	const urlWithUserId: string = replacePlaceholder(url, CURRENT_USER_ID, () => sessionFacade.currentUser()?.id, 'NO_USER_ID')
+	return replacePlaceholder(urlWithUserId, SELECT_PROFILE_PROJECT_ID, () => sessionFacade.currentProjectId(), 'NO_SELECTED_PROJECT')
 }
 
 function replacePlaceholder(url: string, placeholder: string, readValue: () => string | undefined, errorKey: string): string {

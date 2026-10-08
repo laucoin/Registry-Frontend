@@ -60,7 +60,7 @@
         <app-group-element [group]='group' />
     </ng-template>
     <ng-template appTemplate='creation'>
-        @if (CurrentUserHelper.hasProjectAuthority(registryFacade.currentUser(), facade.selectedProjectId(), ProjectAuthority.REGISTRY_PROJECT_GROUP_C)) {
+        @if (CurrentUserHelper.hasProjectAuthority(sessionFacade.currentUser(), facade.selectedProjectId(), ProjectAuthority.REGISTRY_PROJECT_GROUP_C)) {
             <p-button class='m-1'
                       severity='success'
                       outlined

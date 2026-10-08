@@ -5,7 +5,7 @@ import { of } from 'rxjs'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
 import { RegistryConfig } from '@core/config/registry.config'
 import { ConfigModel } from '@core/config/model/config.model'
-import { RegistryFacade } from '@core/registry/state/registry.facade'
+import { SessionFacade } from '@core/registry/state/session.facade'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { GroupApi } from '@pages/projects/[projectId]/configuration/groups/data/state/group.api'
 import { GroupFacade } from '@pages/projects/[projectId]/configuration/groups/data/state/group.facade'
@@ -38,7 +38,7 @@ describe( 'GroupFacade', () => {
                 GroupFacade,
                 GroupStore,
                 { provide: GroupApi, useValue: { findGroups, createGroup, addMembersToGroupById, findGroupMembersByGroupId: vi.fn( () => of( EMPTY_PAGE ) ) } },
-                { provide: RegistryFacade, useValue: { currentProjectId: signal( 'p1' ) } },
+                { provide: SessionFacade, useValue: { currentProjectId: signal( 'p1' ) } },
                 { provide: UiFacade, useValue: { notify, setGlobalError: vi.fn() } },
                 { provide: PluralTranslationPipe, useValue: { transform: (key: string, count: number): string => `${key}:${count}` } },
                 { provide: TranslocoService, useValue: { translate: (key: string): string => `t:${key}` } },

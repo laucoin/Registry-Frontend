@@ -158,16 +158,16 @@ export class NavbarComponent extends GenericComponent {
 
     protected readonly displayName: Signal<string> = computed( (): string =>
         StringHelper.truncate(
-            StringHelper.toTitleCase( this.registryFacade.currentUser()?.firstName ) + ' ' + this.registryFacade.currentUser()?.lastName?.toUpperCase(),
+            StringHelper.toTitleCase( this.sessionFacade.currentUser()?.firstName ) + ' ' + this.sessionFacade.currentUser()?.lastName?.toUpperCase(),
             this.maxMenuTextLength,
         ),
     )
     protected readonly initials: Signal<string> = computed( (): string => StringHelper.truncate(
-        this.registryFacade.currentUser()?.firstName,
+        this.sessionFacade.currentUser()?.firstName,
         1,
-    ) + StringHelper.truncate( this.registryFacade.currentUser()?.lastName, 1 ) )
+    ) + StringHelper.truncate( this.sessionFacade.currentUser()?.lastName, 1 ) )
 
-    protected readonly role: Signal<string | undefined> = computed( (): string | undefined => this.registryFacade.currentUser()?.role?.label )
+    protected readonly role: Signal<string | undefined> = computed( (): string | undefined => this.sessionFacade.currentUser()?.role?.label )
 
     private readonly activeRoute: Signal<unknown> = toSignal( this.router.events )
     protected readonly showContextMenu: Signal<boolean> = computed( (): boolean => {
@@ -181,11 +181,11 @@ export class NavbarComponent extends GenericComponent {
     public constructor () {
         super()
         this.menuItems = computed( (): MenuItem[] => this.showContextMenu() ? [] : this.filterMenuItems(
-            this.registryFacade.currentUser(),
+            this.sessionFacade.currentUser(),
             this.allMenuItems(),
         ) )
         this.contextMenuItems = computed( (): MenuItem[] => this.filterMenuItems(
-            this.registryFacade.currentUser(),
+            this.sessionFacade.currentUser(),
             this.allContextMenuItems(),
         ) )
     }
@@ -196,7 +196,7 @@ export class NavbarComponent extends GenericComponent {
         return menuItems
             .filter( (item: MenuItemModel): boolean => CurrentUserHelper.isFeasible(
                 currentUser,
-                this.registryFacade.selectedProject(),
+                this.sessionFacade.selectedProject(),
                 item,
             ) )
             .map( (menuItem: MenuItemModel): MenuItem => ({
@@ -223,7 +223,7 @@ export class NavbarComponent extends GenericComponent {
     }
 
     private projectUrl (route: RegistryRouteEnum): string {
-        return route.replace( ':projectId', this.registryFacade.currentProjectId() ?? '' )
+        return route.replace( ':projectId', this.sessionFacade.currentProjectId() ?? '' )
     }
 
     protected backToProjects (): void {

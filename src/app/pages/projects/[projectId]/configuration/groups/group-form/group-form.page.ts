@@ -104,7 +104,7 @@ export class GroupFormPage extends GenericFormComponent<GroupModel, GroupDto> im
     }
 
     private applyGroup (group: GroupModel | undefined): void {
-        const contextProject: ProjectModel | undefined = group?.project || this.registryFacade.selectedProject()
+        const contextProject: ProjectModel | undefined = group?.project || this.sessionFacade.selectedProject()
         this.addProjectDateValidators( contextProject, this.beginDateTime )
         this.addProjectDateValidators( contextProject, this.endDateTime )
         this.fillForm( group )

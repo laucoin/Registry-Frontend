@@ -135,7 +135,7 @@ export class ParticipantFormComponent extends GenericFormComponent<ParticipantMo
     }
 
     private applyParticipant(participant: ParticipantModel | undefined): void {
-        const contextProject: ProjectModel | undefined = participant?.project || this.registryFacade.selectedProject()
+        const contextProject: ProjectModel | undefined = participant?.project || this.sessionFacade.selectedProject()
         this.addProjectDateValidators(contextProject, this.beginDateTime)
         this.addProjectDateValidators(contextProject, this.endDateTime)
         this.fillForm(participant)

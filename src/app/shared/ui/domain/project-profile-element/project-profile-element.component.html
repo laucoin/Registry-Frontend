@@ -1,7 +1,7 @@
 <app-element-card [element]='profile()'
                   [actionMenuVisible]='actionMenuVisible()'
                   [actions]='actions()'
-                  [icon]='registryFacade.selectedProject()?.id === profile().project.id ? "pi pi-verified" : "pi pi-user"'>
+                  [icon]='sessionFacade.selectedProject()?.id === profile().project.id ? "pi pi-verified" : "pi pi-user"'>
     <div class='element-card'>
         <div class='profile-info flex flex-col justify-center basis-full xl:basis-[30%]'>
             <div class='profile-name flex' [class.justify-center]='uiFacade.tinyScreen()'>
@@ -29,7 +29,7 @@
         <div class='role flex basis-full xl:basis-[15%]' [class.justify-center]='uiFacade.tinyScreen()'>
             <app-severity-tag [value]='profile().role.label!' />
         </div>
-        @if (profile().status.value !== ProfileStatusEnum.INVITED || profile().user.id !== registryFacade.currentUser()!.id) {
+        @if (profile().status.value !== ProfileStatusEnum.INVITED || profile().user.id !== sessionFacade.currentUser()!.id) {
             <div class='status flex basis-full lg:basis-1/2 xl:basis-[30%]' [class.justify-center]='uiFacade.tinyScreen()'>
                 @if (profile().availabilityStatus) {
                     <app-severity-tag [severity]='availabilityStatusSeverity()' [value]='profile().availabilityStatus.label' />

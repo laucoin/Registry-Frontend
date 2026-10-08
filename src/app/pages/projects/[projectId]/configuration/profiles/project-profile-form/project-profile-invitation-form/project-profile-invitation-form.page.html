@@ -1,5 +1,5 @@
 <app-form [form]='form' [loading]='loading()' [error]='error()'>
-    <h2>{{ 'project-profiles.form.title.create' | transloco : { name: registryFacade.selectedProject()?.name } }}</h2>
+    <h2>{{ 'project-profiles.form.title.create' | transloco : { name: sessionFacade.selectedProject()?.name } }}</h2>
     <p-card>
         <form [formGroup]='form'>
             <div class='field'>

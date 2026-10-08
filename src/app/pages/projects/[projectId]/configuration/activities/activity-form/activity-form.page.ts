@@ -117,7 +117,7 @@ export class ActivityFormPage extends GenericFormComponent<ActivityModel, Activi
     }
 
     private applyActivity(activity: ActivityModel | undefined): void {
-        const contextProject: ProjectModel | undefined = activity?.project || this.registryFacade.selectedProject()
+        const contextProject: ProjectModel | undefined = activity?.project || this.sessionFacade.selectedProject()
         this.addProjectDateValidators(contextProject, this.beginDateTime)
         this.addProjectDateValidators(contextProject, this.endDateTime)
         this.fillForm(activity)

@@ -59,9 +59,9 @@ export class ProjectProfileElementComponent extends GenericElementComponent impl
     public readonly profile: InputSignal<ProjectProfileModel> = input.required()
 
     protected readonly actions: Signal<MenuItem[]> = computed((): MenuItem[] => {
-        const currentUser: CurrentUserModel | undefined = this.registryFacade.currentUser()
+        const currentUser: CurrentUserModel | undefined = this.sessionFacade.currentUser()
         const isCurrentUserProfile: boolean = currentUser?.id === this.profile().user.id
-        const isSelectedProfile: boolean = this.registryFacade.selectedProject()?.id === this.profile().project.id
+        const isSelectedProfile: boolean = this.sessionFacade.selectedProject()?.id === this.profile().project.id
 
         return [
             {
@@ -81,7 +81,7 @@ export class ProjectProfileElementComponent extends GenericElementComponent impl
                 visible: !isCurrentUserProfile && this.actionIsEnable(ElementActionEnum.PROJECT_PROFILE_UPDATE),
                 command: (): void => {
                     this.router.navigateByUrl(
-                        RegistryRouteEnum.PROJECTS_CONFIGURATION_PROFILES_EDITION.replace(':profileId', this.profile().id).replace(':projectId', this.registryFacade.currentProjectId() ?? ''),
+                        RegistryRouteEnum.PROJECTS_CONFIGURATION_PROFILES_EDITION.replace(':profileId', this.profile().id).replace(':projectId', this.sessionFacade.currentProjectId() ?? ''),
                     ).catch(console.error)
                 },
             },

@@ -8,6 +8,7 @@ import { ProjectStore } from '@pages/projects/data/state/project/project.store'
 import { ProjectDto } from '@pages/projects/data/dto/project.dto'
 import { ProjectApi } from '@pages/projects/data/state/project.api'
 import { RegistryFacade } from '@core/registry/state/registry.facade'
+import { SessionFacade } from '@core/registry/state/session.facade'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { StateHelper } from '@shared/helpers/state/state.helper'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
@@ -22,6 +23,7 @@ export class ProjectFacade extends GenericFacade {
     private readonly api: ProjectApi = inject( ProjectApi )
     private readonly registryFacade: RegistryFacade = inject( RegistryFacade )
     private readonly uiFacade: UiFacade = inject( UiFacade )
+    private readonly sessionFacade: SessionFacade = inject( SessionFacade )
 
     public readonly projectsPage: Signal<PageModel<ProjectModel> | undefined> = this.store.projects.element
 
@@ -120,7 +122,7 @@ export class ProjectFacade extends GenericFacade {
             notifyOnError( this.uiFacade ),
             tap( (updated: ProjectModel): void => {
                 this.onCommandSuccess( 'edit', updated )
-                if (this.registryFacade.currentProjectId() == updated.id) {
+                if (this.sessionFacade.currentProjectId() == updated.id) {
                     this.registryFacade.fetchCurrentUser()
                 }
             } ),

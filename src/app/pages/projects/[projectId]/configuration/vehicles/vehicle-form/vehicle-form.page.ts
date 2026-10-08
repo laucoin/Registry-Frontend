@@ -103,7 +103,7 @@ export class VehicleFormPage extends GenericFormComponent<VehicleModel, VehicleD
     }
 
     private applyVehicle(vehicle: VehicleModel | undefined): void {
-        const contextProject: ProjectModel | undefined = vehicle?.project || this.registryFacade.selectedProject()
+        const contextProject: ProjectModel | undefined = vehicle?.project || this.sessionFacade.selectedProject()
         this.addProjectDateValidators(contextProject, this.beginDateTime)
         this.addProjectDateValidators(contextProject, this.endDateTime)
         this.fillForm(vehicle)

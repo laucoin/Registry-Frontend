@@ -70,7 +70,7 @@
             </ng-template>
         </p-card>
     }
-    @if (ProjectHelper.hasOption(registryFacade.selectedProject(), ProjectOptionEnum.VEHICLE) && GenericHelper.isNull(facade.vehiclesStatusError())) {
+    @if (ProjectHelper.hasOption(sessionFacade.selectedProject(), ProjectOptionEnum.VEHICLE) && GenericHelper.isNull(facade.vehiclesStatusError())) {
         <p-card class='total-vehicle basis-full md:basis-1/2'>
             <ng-template #title>
                 <div class='flex justify-center items-center'>

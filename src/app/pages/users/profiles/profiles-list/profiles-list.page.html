@@ -1,7 +1,7 @@
 <app-list (updateRequired)='loadPage($event)'
-          [elementPage]='registryFacade.userProjectProfilesPage()'
-          [error]='registryFacade.userProjectProfilesPageError()'
-          [loading]='registryFacade.userProjectProfilesPageLoading()'
+          [elementPage]='sessionFacade.userProjectProfilesPage()'
+          [error]='sessionFacade.userProjectProfilesPageError()'
+          [loading]='sessionFacade.userProjectProfilesPageLoading()'
           emptyMessagePrefix='project-profiles.notifications.EMPTY'>
     <ng-template appTemplate='search' [formGroup]='form' let-pageEvent>
         <div class='field'>
@@ -41,7 +41,7 @@
                       outlined
                       rounded
                       icon='pi pi-search'
-                      [loading]='registryFacade.userProjectProfilesPageLoading() || registryFacade.userProjectProfilesPageSilentLoading()' />
+                      [loading]='sessionFacade.userProjectProfilesPageLoading() || sessionFacade.userProjectProfilesPageSilentLoading()' />
         </div>
     </ng-template>
     <ng-template appTemplate='element' let-profile>

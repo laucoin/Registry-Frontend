@@ -54,7 +54,7 @@ export class UserElementComponent extends GenericElementComponent {
     public readonly user: InputSignal<UserModel> = input.required()
 
     protected readonly actions: Signal<MenuItem[]> = computed((): MenuItem[] => {
-        const isCurrentUser: boolean = this.registryFacade.currentUser()?.id == this.user().id
+        const isCurrentUser: boolean = this.sessionFacade.currentUser()?.id == this.user().id
         return [
             {
                 label: 'users.actions.update-role',

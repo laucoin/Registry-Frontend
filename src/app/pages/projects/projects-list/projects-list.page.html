@@ -36,7 +36,7 @@
             </div>
         </div>
         <div class='flex justify-around'>
-            @if (CurrentUserHelper.hasUserAuthority(registryFacade.currentUser(), UserAuthority.REGISTRY_PROJECT_R)) {
+            @if (CurrentUserHelper.hasUserAuthority(sessionFacade.currentUser(), UserAuthority.REGISTRY_PROJECT_R)) {
                 <div class='flex items-center'>
                     <label for='with-profile-search-field'
                            class='me-2'>{{ 'projects.search-and-filter.with-profile' | transloco }}</label>
@@ -54,7 +54,7 @@
         </div>
     </ng-template>
     <ng-template appTemplate='creation'>
-        @if (CurrentUserHelper.hasUserAuthority(registryFacade.currentUser(), UserAuthority.REGISTRY_PROJECT_C)) {
+        @if (CurrentUserHelper.hasUserAuthority(sessionFacade.currentUser(), UserAuthority.REGISTRY_PROJECT_C)) {
             <p-button class='m-1'
                       severity='success'
                       outlined

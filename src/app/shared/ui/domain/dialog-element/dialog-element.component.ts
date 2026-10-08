@@ -115,7 +115,7 @@ export class DialogElementComponent extends GenericElementComponent {
     )
 
     protected readonly authorIsCurrentUser: Signal<boolean> = computed(
-        (): boolean => this.buildAuthorIsCurrentUser( this.communication(), this.registryFacade.currentUser() ),
+        (): boolean => this.buildAuthorIsCurrentUser( this.communication(), this.sessionFacade.currentUser() ),
     )
 
     protected readonly authorName: Signal<string> = computed( (): string => this.buildAuthorName( this.communication() ) )
