@@ -139,7 +139,7 @@ export class DateHelper {
 
         const formattedValue: Date = new Date()
         const [ hours, minutes, secondsWithMs ]: string[] = time.split( ':' )
-        const [ seconds, milliseconds ]: string[] = secondsWithMs.split( '.' )
+        const [ seconds, milliseconds ]: string[] = (secondsWithMs ?? '0').split( '.' )
 
         formattedValue.setUTCHours(
             parseInt( hours ?? '0' ),
