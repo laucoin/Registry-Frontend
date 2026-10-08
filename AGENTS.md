@@ -52,6 +52,13 @@ The source code is organized into three core directories:
   method calls. The facade may call the api directly instead of the store when there's nothing to persist/share (e.g. a
   redirect-only call) — only work whose result must be persisted in state and shared across components belongs in the
   store.
+- **Core facades:** `UiFacade` exposes what the shell displays (theme, screen, toasts, global loader and error),
+  `SessionFacade` exposes the signed-in user, the selected project and the user's own profiles, and `RegistryFacade`
+  only orchestrates the flows that cross both (sign-in, preferences, project selection). Stores never depend on a
+  facade: they report failures through `ErrorReporter` (`core/registry/state/error-reporter.ts`).
+- **Store methods:** build the repetitive rxMethods with the builders of `shared/helpers/store/paged-store.methods.ts`
+  (`pageFetcher`, `paramsUpdater`, `paramsMerger`, `elementFetcher`, `metadataFetcher`, `movementContentsFetcher`)
+  and inject dependencies as parameters of `withMethods`, never through a public `withProps`.
 - **Placement:** app-wide cross-cutting domains (auth, config, i18n, theme) live in `core/<domain>/`. A domain scoped to
   one routed page's own data lives colocated inside that page's folder under `pages/<page>/`. Reusable presentational
   components with no api/store/facade of their own live in `shared/`.
@@ -67,7 +74,11 @@ The source code is organized into three core directories:
   (`public/settings/config.json` and `public/settings/env.json`) using `provideAppInitializer()`. Environment-specific parameters **must never** be
   hardcoded or statically compiled into the source code bundle.
 - **Backend Abstraction:** Always decouple API responses from domain models. Implement strict DTO-to-Model mappers
-  (`DTO -> model`), even if the structures are identical.
+  (`DTO -> model`), even if the structures are identical. Response DTOs live in `shared/models/dto/response/`
+  (`<name>.response.dto.ts`), mappers in `shared/mappers/` (`<Name>Mapper.toModel`), and every `*.api.ts` pipes its
+  response through them. Metadata lists of `SelectItem` and request DTOs are the only responses not mapped.
+- **Browser access:** `window`, `document`, `location` and `navigator` are reached only through `BrowserService`
+  (`core/browser/browser.service.ts`); storage goes through the storage helpers.
 
 ---
 
@@ -145,6 +156,10 @@ Each reviewing agent must evaluate the proposed changes, provide feedback if nee
 ## 7. Testing Guidelines
 
 - **Framework:** Jest or Vitest.
+- **Coverage:** `pnpm test:coverage` measures the whole `src/app` and enforces the thresholds of `angular.json`.
+  Thresholds only go up: raise them whenever the measured coverage rises.
+- **Fixtures:** shared test data and helpers live in `shared/helpers/testing/` and are excluded from coverage.
+- **Method size:** the 25-line rule applies to specs as well.
 - **Pattern:** Strictly use the **AAA pattern** (`// Arrange`, `// Act`, `// Assert`).
 - **Comments:** Every test must explicitly include these exact section comments with **no additional detail**:
   ```typescript
