@@ -37,7 +37,6 @@ import { UiStore } from '@core/registry/state/ui.store'
 import { NotificationStore } from '@core/registry/state/notification.store'
 import { MetadataStore } from '@core/registry/state/metadata.store'
 import { SessionStore } from '@core/registry/state/session.store'
-import { UserProfileStore } from '@core/registry/state/user-profile.store'
 import { CustomDateFormatPipe } from '@shared/helpers/pipe/custom-date-format.pipe'
 import { ProfileResetService } from '@shared/helpers/store/profile-reset.service'
 import { selectState } from '@shared/helpers/store/state-observable.helper'
@@ -66,7 +65,6 @@ export class RegistryFacade {
     private readonly notifications: InstanceType<typeof NotificationStore> = inject(NotificationStore)
     private readonly metadata: InstanceType<typeof MetadataStore> = inject(MetadataStore)
     private readonly session: InstanceType<typeof SessionStore> = inject(SessionStore)
-    private readonly profiles: InstanceType<typeof UserProfileStore> = inject(UserProfileStore)
 
     private pendingProject: { subscription: Subscription, done: ReplaySubject<void> } | undefined = undefined
 
@@ -125,25 +123,25 @@ export class RegistryFacade {
     )
     public readonly currentProjectId: Signal<string | undefined> = this.session.currentProject.id
 
-    public readonly userProjectProfilesPage: Signal<PageModel<ProjectProfileModel> | undefined> = this.profiles.profiles.element
-    public readonly userProjectProfilesPageLoading: Signal<boolean> = this.profiles.profiles.loading
-    public readonly userProjectProfilesPageSilentLoading: Signal<boolean> = this.profiles.profiles.silentLoading
-    public readonly userProjectProfilesPageError: Signal<ToastMessageOptions | undefined> = this.profiles.profiles.error
-    public readonly userProjectProfilesPageResetSearch: Signal<boolean> = this.profiles.profiles.params.resetSearch
-    public readonly userProjectProfilesPageTextSearchParam: Signal<string | undefined> = this.profiles.profiles.params.textSearched
+    public readonly userProjectProfilesPage: Signal<PageModel<ProjectProfileModel> | undefined> = this.session.profiles.element
+    public readonly userProjectProfilesPageLoading: Signal<boolean> = this.session.profiles.loading
+    public readonly userProjectProfilesPageSilentLoading: Signal<boolean> = this.session.profiles.silentLoading
+    public readonly userProjectProfilesPageError: Signal<ToastMessageOptions | undefined> = this.session.profiles.error
+    public readonly userProjectProfilesPageResetSearch: Signal<boolean> = this.session.profiles.params.resetSearch
+    public readonly userProjectProfilesPageTextSearchParam: Signal<string | undefined> = this.session.profiles.params.textSearched
     public readonly userProjectProfilesPageDateTimeSearchParam: Signal<Date | undefined> = computed((): Date | undefined =>
-        DateHelper.buildDate(this.profiles.profiles.params.dateTimeSearched()),
+        DateHelper.buildDate(this.session.profiles.params.dateTimeSearched()),
     )
-    public readonly userProjectProfilesPageAvailabilitySearchParam: Signal<boolean | undefined> = this.profiles.profiles.params.availabilitySearched
+    public readonly userProjectProfilesPageAvailabilitySearchParam: Signal<boolean | undefined> = this.session.profiles.params.availabilitySearched
 
-    public readonly userProjectProfileInvitationsPage: Signal<PageModel<ProjectProfileModel> | undefined> = this.profiles.invitations.element
-    public readonly userProjectProfileInvitationsPageLoading: Signal<boolean> = this.profiles.invitations.loading
-    public readonly userProjectProfileInvitationsPageSilentLoading: Signal<boolean> = this.profiles.invitations.silentLoading
-    public readonly userProjectProfileInvitationsPageError: Signal<ToastMessageOptions | undefined> = this.profiles.invitations.error
-    public readonly userProjectProfileInvitationsPageResetSearch: Signal<boolean> = this.profiles.invitations.params.resetSearch
-    public readonly userProjectProfileInvitationsPageTextSearchParam: Signal<string | undefined> = this.profiles.invitations.params.textSearched
+    public readonly userProjectProfileInvitationsPage: Signal<PageModel<ProjectProfileModel> | undefined> = this.session.invitations.element
+    public readonly userProjectProfileInvitationsPageLoading: Signal<boolean> = this.session.invitations.loading
+    public readonly userProjectProfileInvitationsPageSilentLoading: Signal<boolean> = this.session.invitations.silentLoading
+    public readonly userProjectProfileInvitationsPageError: Signal<ToastMessageOptions | undefined> = this.session.invitations.error
+    public readonly userProjectProfileInvitationsPageResetSearch: Signal<boolean> = this.session.invitations.params.resetSearch
+    public readonly userProjectProfileInvitationsPageTextSearchParam: Signal<string | undefined> = this.session.invitations.params.textSearched
     public readonly userProjectProfileInvitationsPageDateTimeSearchParam: Signal<Date | undefined> = computed((): Date | undefined =>
-        DateHelper.buildDate(this.profiles.invitations.params.dateTimeSearched()),
+        DateHelper.buildDate(this.session.invitations.params.dateTimeSearched()),
     )
 
     public readonly themesMetadata: Signal<SelectItem<ThemeEnum>[]> = this.metadata.themes
@@ -204,7 +202,6 @@ export class RegistryFacade {
     public login(): void {
         SessionStorageUtils.set(REDIRECT_URI, location.pathname)
         this.session.reset()
-        this.profiles.reset()
 
         this.securityApi.getLoginUri(`${location.origin}/${RegistryRouteEnum.AUTH_CALLBACK}`).pipe(
             initialize((): void => this.ui.startGlobalLoader()),
@@ -272,7 +269,7 @@ export class RegistryFacade {
 
     public fetchProjectProfilesPage(pageNumber: number | undefined, pageSize: number | undefined): void {
         const index: number | undefined = this.userProjectProfilesPageResetSearch() ? 0 : pageNumber
-        this.profiles.fetchProfilesPage({pageNumber: index, pageSize: pageSize})
+        this.session.fetchProfilesPage({pageNumber: index, pageSize: pageSize})
     }
 
     public inputProfilesPageSearchParameters(
@@ -285,7 +282,7 @@ export class RegistryFacade {
             || this.userProjectProfilesPageDateTimeSearchParam() != dateTimeSearched?.toISOString()
 
         if (resetSearch) {
-            this.profiles.updateProfilesPageSearchParams({
+            this.session.updateProfilesPageSearchParams({
                 resetSearch: resetSearch,
                 textSearched: textSearched,
                 availabilitySearched: availabilitySearched,
@@ -296,7 +293,7 @@ export class RegistryFacade {
 
     public fetchProjectProfileInvitationPage(pageNumber: number | undefined, pageSize: number | undefined): void {
         const index: number | undefined = this.userProjectProfileInvitationsPageResetSearch() ? 0 : pageNumber
-        this.profiles.fetchInvitationsPage({pageNumber: index, pageSize: pageSize})
+        this.session.fetchInvitationsPage({pageNumber: index, pageSize: pageSize})
     }
 
     public inputInvitationsPageSearchParameters(
@@ -307,7 +304,7 @@ export class RegistryFacade {
             || this.userProjectProfileInvitationsPageDateTimeSearchParam() != dateTimeSearched?.toISOString()
 
         if (resetSearch) {
-            this.profiles.updateInvitationsPageSearchParams({
+            this.session.updateInvitationsPageSearchParams({
                 resetSearch: resetSearch,
                 textSearched: textSearched,
                 dateTimeSearched: dateTimeSearched?.toISOString(),
@@ -344,8 +341,8 @@ export class RegistryFacade {
 
     public manageProjectInvitationAcceptance(id: string, accepted: boolean): void {
         this.userProjectProfileApi.manageUserProjectProfileAcceptance(id, accepted).pipe(
-            initialize((): void => this.profiles.startProfileLoader()),
-            finalize((): void => this.profiles.stopProfileLoader()),
+            initialize((): void => this.session.startProfileLoader()),
+            finalize((): void => this.session.stopProfileLoader()),
             tap((profile: ProjectProfileModel): void => {
                 this.notifyProfile(
                     `project-profiles.notifications.acceptance.${profile.status.value}.title`,
@@ -389,8 +386,8 @@ export class RegistryFacade {
     public deleteUserProjectProfile(profile: ProjectProfileModel): Observable<void> {
         return this.eager(
             this.userProjectProfileApi.deleteUserProfileById(profile.id).pipe(
-                initialize((): void => this.profiles.startProfileLoader()),
-                finalize((): void => this.profiles.stopProfileLoader()),
+                initialize((): void => this.session.startProfileLoader()),
+                finalize((): void => this.session.stopProfileLoader()),
                 tap((): void => {
                     this.notifyProfile(
                         'project-profiles.notifications.delete.title',
