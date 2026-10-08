@@ -6,6 +6,7 @@
     "start": "ng serve",
     "build": "ng build",
     "lint": "ng lint",
+    "test:coverage": "ng test --watch=false --coverage",
     "test": "ng test",
     "prepare": "husky"
   },
@@ -33,6 +34,7 @@
     "@angular/compiler-cli": "^22.1.5",
     "@eslint/js": "^10.0.1",
     "@tailwindcss/postcss": "^4.3.3",
+    "@vitest/coverage-v8": "4.1.11",
     "angular-eslint": "^22.5.0",
     "eslint": "^10.8.1",
     "husky": "^9.1.7",

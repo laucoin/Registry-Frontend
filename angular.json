@@ -86,7 +86,23 @@
                     "options": {
                         "tsConfig": "tsconfig.spec.json",
                         "runner": "vitest",
-                        "buildTarget": "::development"
+                        "buildTarget": "::development",
+                        "coverageInclude": ["src/app/**/*.ts"],
+                        "coverageExclude": [
+                            "src/app/**/*.spec.ts",
+                            "src/app/**/testing/**",
+                            "src/app/**/*.model.ts",
+                            "src/app/**/*.dto.ts",
+                            "src/app/**/*.enum.ts",
+                            "src/app/**/*.const.ts"
+                        ],
+                        "coverageReporters": ["text-summary", "html"],
+                        "coverageThresholds": {
+                            "statements": 40,
+                            "branches": 42,
+                            "functions": 38,
+                            "lines": 39
+                        }
                     }
                 },
                 "lint": {
