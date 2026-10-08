@@ -30,8 +30,7 @@
                         ],
                         "styles": [
                             "src/tailwind.css",
-                            "src/styles.css",
-                            "bootstrap/scss/bootstrap-grid.scss"
+                            "src/styles.css"
                         ],
                         "scripts": []
                     },
