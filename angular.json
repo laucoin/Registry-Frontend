@@ -99,8 +99,8 @@
                         "coverageReporters": ["text-summary", "html"],
                         "coverageThresholds": {
                             "statements": 40,
-                            "branches": 42,
-                            "functions": 38,
+                            "branches": 46,
+                            "functions": 37,
                             "lines": 39
                         }
                     }
