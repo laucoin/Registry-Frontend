@@ -332,6 +332,7 @@
       "help": "Help"
     },
     "messages": {
+      "loading": "Loading",
       "not-implemented": "🙅‍♂️ Functionality is not implemented.",
       "invalid-form": "🙅‍♂️ The form is not valid.",
       "invalid-action": "🙅‍♂️ The chosen action is not taken care of."

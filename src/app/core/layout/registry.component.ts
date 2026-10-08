@@ -1,7 +1,6 @@
 import { Component, HostListener, inject, OnDestroy} from '@angular/core'
 import {TranslocoPipe} from '@jsverse/transloco'
 import {ConfirmationService, MessageService, ToastMessageOptions} from 'primeng/api'
-import {BlockUIModule} from 'primeng/blockui'
 import {ConfirmDialog} from 'primeng/confirmdialog'
 import {ProgressSpinnerModule} from 'primeng/progressspinner'
 import {ToastModule} from 'primeng/toast'
@@ -25,7 +24,6 @@ import {GenericHelper} from '@shared/helpers/generic.helper'
         TranslocoPipe,
         ConfirmDialog,
         ToastModule,
-        BlockUIModule,
         ProgressSpinnerModule,
         Button,
         Dialog,

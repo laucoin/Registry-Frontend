@@ -1,8 +1,5 @@
-<p-block-ui [blocked]='uiFacade.globalLoading() || GenericHelper.nonNull(uiFacade.globalError())'>
-    @if (uiFacade.globalLoading()) {
-        <p-progress-spinner class='m-auto'></p-progress-spinner>
-    } @else {
-    <div class='m-auto'>
+@if (GenericHelper.nonNull(uiFacade.globalError())) {
+    <div class='flex min-h-screen items-center justify-center' role='alert'>
         <app-severity-information [message]='uiFacade.globalError()'>
             <p-button
                     (onClick)='logout()'
@@ -13,7 +10,6 @@
         </app-severity-information>
     </div>
 }
-</p-block-ui>
 @if (GenericHelper.isNull(uiFacade.globalError())) {
     @defer (on idle) {
         <p-confirm-dialog [breakpoints]='breakPoint'/>
@@ -36,6 +32,11 @@
     <app-navbar/>
     <main class='main'>
         <div class='container mx-auto px-3 pt-4 pb-4'>
+            @if (uiFacade.globalLoading()) {
+                <div class='flex justify-center py-4' role='status' aria-live='polite'>
+                    <p-progress-spinner [attr.aria-label]='"global.messages.loading" | transloco' />
+                </div>
+            }
             <router-outlet/>
         </div>
     </main>
