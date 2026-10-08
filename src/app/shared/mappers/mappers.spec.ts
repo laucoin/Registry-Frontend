@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { HISTORY, PARTICIPANT_DTO, PROJECT_DTO, USER_DTO, WHEN } from '@shared/helpers/testing/response-fixtures'
 import { ActivityMapper } from '@shared/mappers/activity.mapper'
 import { AlertMapper } from '@shared/mappers/alert.mapper'
 import { CommunicationMapper } from '@shared/mappers/communication.mapper'
@@ -25,25 +26,9 @@ import { ProjectProfileResponseDto } from '@shared/models/dto/response/project-p
 import { UserResponseDto } from '@shared/models/dto/response/user.response.dto'
 import { VehicleResponseDto } from '@shared/models/dto/response/vehicle.response.dto'
 
-const WHEN: Date = new Date( '2026-01-05T10:00:00Z' )
-const HISTORY: { dateTime: Date, user: { id: string, firstName: string, lastName: string, email: string } } = {
-    dateTime: WHEN,
-    user: { id: 'u0', firstName: 'Ada', lastName: 'L', email: 'ada@x.test' },
-}
-
-const USER: UserResponseDto = {
-    id: 'u1', visible: true, creation: HISTORY, lastEdition: { dateTime: WHEN, user: undefined },
-    firstName: 'Grace', lastName: 'H', email: 'g@x.test', role: { label: 'Admin', value: 'ADMIN' }, birthday: WHEN, lastLogin: WHEN, purged: false,
-}
-const PROJECT: ProjectResponseDto = {
-    id: 'p1', visible: true, creation: HISTORY, lastEdition: HISTORY, name: 'Camp',
-    status: undefined, begin: { date: '2026-01-01', time: undefined }, end: undefined, options: [],
-}
-const PARTICIPANT: ParticipantResponseDto = {
-    id: 'pa1', visible: true, creation: HISTORY, lastEdition: HISTORY, project: PROJECT,
-    firstName: 'A', lastName: 'B', birthday: '2010-01-01', major: false, type: { label: 'Registered', value: 'REGISTERED' as never },
-    groups: undefined, status: { label: 'In', value: 'IN' as never }, startAvailability: undefined, endAvailability: undefined, user: USER, purged: false,
-}
+const USER: UserResponseDto = USER_DTO
+const PROJECT: ProjectResponseDto = PROJECT_DTO
+const PARTICIPANT: ParticipantResponseDto = PARTICIPANT_DTO
 
 describe( 'mappers', () => {
     it( 'copies the generic fields and the history of a user', () => {
@@ -57,7 +42,7 @@ describe( 'mappers', () => {
         expect( model ).toEqual( dto )
         expect( model ).not.toBe( dto )
         expect( model.creation.user?.email ).toBe( 'ada@x.test' )
-        expect( model.lastEdition.user ).toBeUndefined()
+        expect( model.lastEdition.user?.email ).toBe( 'ada@x.test' )
     } )
 
     it( 'maps the preferences of a current user with its authorities', () => {
