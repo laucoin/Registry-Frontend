@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing'
 import { of } from 'rxjs'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
-import { UiFacade } from '@core/registry/state/ui.facade'
+import { ErrorReporter } from '@core/registry/state/error-reporter'
 import { CommunicationModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
 import { CommunicationApi } from '@pages/projects/[projectId]/movements/communication/data/state/communication.api'
 import { CommunicationStore } from '@pages/projects/[projectId]/movements/communication/data/state/communication.store'
@@ -32,7 +32,7 @@ describe( 'CommunicationStore', () => {
                 CommunicationStore,
                 { provide: CommunicationApi, useValue: { findCommunications, findCommunicationById, searchMovements, searchAlerts } },
                 { provide: DateFormatPipe, useValue: { transform: (): string => '01/01' } },
-                { provide: UiFacade, useValue: { setGlobalError, notify } },
+                { provide: ErrorReporter, useValue: { setGlobalError, notify } },
             ],
         } )
         store = TestBed.inject( CommunicationStore )

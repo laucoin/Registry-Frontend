@@ -3,7 +3,7 @@ import { TranslocoService } from '@jsverse/transloco'
 import { of, Subject } from 'rxjs'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
 import { MetadataApi } from '@core/registry/state/metadata.api'
-import { UiFacade } from '@core/registry/state/ui.facade'
+import { ErrorReporter } from '@core/registry/state/error-reporter'
 import { CommunicationModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
 import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
 import { MovementStore } from '@pages/projects/[projectId]/movements/data/state/movement.store'
@@ -46,7 +46,7 @@ describe( 'MovementStore', () => {
                 MovementStore,
                 { provide: MovementApi, useValue: { findMovements, findMovementsContents, findMovementCommunications, searchParticipantsAndGroups, searchVehicles } },
                 { provide: MetadataApi, useValue: { getMovementsTypes, getParticipantsTypes } },
-                { provide: UiFacade, useValue: { setGlobalError, notify } },
+                { provide: ErrorReporter, useValue: { setGlobalError, notify } },
                 { provide: TranslocoService, useValue: { langChanges$: langChanges.asObservable(), translate: (key: string): string => key } },
                 { provide: PluralTranslationPipe, useValue: { transform: (key: string, count: unknown[]): string => `${key}:${count?.length}` } },
             ],

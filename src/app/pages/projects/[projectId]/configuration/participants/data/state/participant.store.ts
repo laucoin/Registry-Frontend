@@ -1,6 +1,6 @@
 import { inject } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
-import { patchState, signalStore, withHooks, withMethods, withProps, withState } from '@ngrx/signals'
+import { patchState, signalStore, withHooks, withMethods, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import {TranslocoService} from '@jsverse/transloco'
 import { map, Observable, pipe, skip, switchMap, tap } from 'rxjs'
@@ -17,7 +17,7 @@ import { ParticipantStoreModel } from '@pages/projects/[projectId]/configuration
 import { ParticipantApi } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.api'
 import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
 import { MetadataApi } from '@core/registry/state/metadata.api'
-import { UiFacade } from '@core/registry/state/ui.facade'
+import { ErrorReporter } from '@core/registry/state/error-reporter'
 import { UserHelper } from '@shared/helpers/user.helper'
 import { GroupHelper } from '@shared/helpers/group.helper'
 import { UserModel } from '@shared/models/model/user.model'
@@ -86,16 +86,16 @@ export const ParticipantStore = signalStore(
     withProfileScope<ParticipantStoreModel>( defaultParticipantStore, (current: ParticipantStoreModel): Partial<ParticipantStoreModel> => ({
         metadata: { ...defaultParticipantStore.metadata, presencesStatus: current.metadata.presencesStatus },
     }) ),
-    withProps( () => ({
-        api: inject( ParticipantApi ),
-        movementApi: inject( MovementApi ),
-        metadataApi: inject( MetadataApi ),
-        uiFacade: inject( UiFacade ),
-    }) ),
-    withMethods( (store) => {
+    withMethods( (
+        store,
+        api = inject( ParticipantApi ),
+        movementApi = inject( MovementApi ),
+        metadataApi = inject( MetadataApi ),
+        errors = inject( ErrorReporter ),
+    ) => {
         const fetchPresencesStatus = rxMethod<void>( pipe(
-            switchMap( (): Observable<SelectItem<PresenceStatusEnum>[]> => store.metadataApi.getPresencesStatus().pipe(
-                notifyOnError( store.uiFacade ),
+            switchMap( (): Observable<SelectItem<PresenceStatusEnum>[]> => metadataApi.getPresencesStatus().pipe(
+                notifyOnError( errors ),
             ) ),
             tap( (status: SelectItem<PresenceStatusEnum>[]): void => patchState( store, (state: ParticipantStoreModel) => ({
                 metadata: { ...state.metadata, presencesStatus: [ { label: '-', value: undefined }, ...status ] },
@@ -104,11 +104,11 @@ export const ParticipantStore = signalStore(
 
         const fetchMovementsContents = rxMethod<ParticipantMovementsContentsRequest>( pipe(
             switchMap( (request: ParticipantMovementsContentsRequest): Observable<PairModel<MovementContentModel[]>[]> =>
-                store.movementApi.findMovementsContents(
+                movementApi.findMovementsContents(
                     request.projectId,
                     request.movementIds,
                     store.movements.params.currentMovements(),
-                ).pipe( notifyOnError( store.uiFacade ) ),
+                ).pipe( notifyOnError( errors ) ),
             ),
             tap( (contents: PairModel<MovementContentModel[]>[]): void => patchState( store, (state: ParticipantStoreModel) => {
                 if (!state.movements.element) return state
@@ -125,10 +125,10 @@ export const ParticipantStore = signalStore(
         ) )
 
         const searchUsers = rxMethod<SearchRequest>( pipe(
-            switchMap( (request: SearchRequest): Observable<UserModel[]> => store.api.searchUsers(
+            switchMap( (request: SearchRequest): Observable<UserModel[]> => api.searchUsers(
                 request.projectId,
                 request.textSearched,
-            ).pipe( notifyOnError( store.uiFacade ) ) ),
+            ).pipe( notifyOnError( errors ) ) ),
             tap( (users: UserModel[]): void => patchState( store, (state: ParticipantStoreModel) => ({
                 metadata: {
                     ...state.metadata,
@@ -138,10 +138,10 @@ export const ParticipantStore = signalStore(
         ) )
 
         const searchGroups = rxMethod<SearchRequest>( pipe(
-            switchMap( (request: SearchRequest): Observable<GroupModel[]> => store.api.searchGroups(
+            switchMap( (request: SearchRequest): Observable<GroupModel[]> => api.searchGroups(
                 request.projectId,
                 request.textSearched,
-            ).pipe( notifyOnError( store.uiFacade ) ) ),
+            ).pipe( notifyOnError( errors ) ) ),
             tap( (groups: GroupModel[]): void => patchState( store, (state: ParticipantStoreModel) => ({
                 metadata: {
                     ...state.metadata,
@@ -156,13 +156,13 @@ export const ParticipantStore = signalStore(
             searchGroups,
 
             fetchParticipantsPage: rxMethod<ParticipantsPageRequest>( pipe(
-                switchMap( (request: ParticipantsPageRequest): Observable<PageModel<ParticipantModel>> => store.api.findParticipants(
+                switchMap( (request: ParticipantsPageRequest): Observable<PageModel<ParticipantModel>> => api.findParticipants(
                     request.projectId,
                     request.pageNumber,
                     request.pageSize,
                     store.participants.params(),
                 ).pipe(
-                    trackPage( store.uiFacade, pageSlice( store, 'participants' ) ),
+                    trackPage( errors, pageSlice( store, 'participants' ) ),
                 ) ),
                 tap( (page: PageModel<ParticipantModel>): void => patchState( store, (state: ParticipantStoreModel) => ({
                     participants: {
@@ -181,14 +181,14 @@ export const ParticipantStore = signalStore(
                 switchMap( (request: ParticipantMovementsPageRequest): Observable<{
                     request: ParticipantMovementsPageRequest
                     page: PageModel<MovementModel>
-                }> => store.api.findParticipantMovements(
+                }> => api.findParticipantMovements(
                     request.projectId,
                     request.id,
                     request.pageNumber,
                     request.pageSize,
                     store.movements.params(),
                 ).pipe(
-                    trackPage( store.uiFacade, pageSlice( store, 'movements' ) ),
+                    trackPage( errors, pageSlice( store, 'movements' ) ),
                     map( (page: PageModel<MovementModel>) => ({ request, page }) ),
                 ) ),
                 tap( ({ request, page }): void => {

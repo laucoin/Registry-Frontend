@@ -1,5 +1,5 @@
 import { inject } from '@angular/core'
-import { patchState, signalStore, withMethods, withProps, withState } from '@ngrx/signals'
+import { patchState, signalStore, withMethods, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import { finalize, Observable, pipe, switchMap, tap } from 'rxjs'
 import { SelectItem } from 'primeng/api'
@@ -11,7 +11,7 @@ import { CommunicationPageParamsModel } from '@pages/projects/[projectId]/moveme
 import { CommunicationModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
 import { CommunicationStoreModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication-store.model'
 import { CommunicationApi } from '@pages/projects/[projectId]/movements/communication/data/state/communication.api'
-import { UiFacade } from '@core/registry/state/ui.facade'
+import { ErrorReporter } from '@core/registry/state/error-reporter'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
 import { MovementHelper } from '@shared/helpers/movement.helper'
 import { AlertHelper } from '@shared/helpers/alert.helper'
@@ -70,12 +70,12 @@ const defaultCommunicationStore: CommunicationStoreModel = {
 export const CommunicationStore = signalStore(
     withState<CommunicationStoreModel>( defaultCommunicationStore ),
     withProfileScope<CommunicationStoreModel>( defaultCommunicationStore ),
-    withProps( () => ({
-        api: inject( CommunicationApi ),
-        uiFacade: inject( UiFacade ),
-        datePipe: inject( DateFormatPipe ),
-    }) ),
-    withMethods( (store) => {
+    withMethods( (
+        store,
+        api = inject( CommunicationApi ),
+        errors = inject( ErrorReporter ),
+        datePipe = inject( DateFormatPipe ),
+    ) => {
         const trackElementLoader = <T>(source: Observable<T>): Observable<T> => source.pipe(
             initialize( (): void => patchState( store, (state: CommunicationStoreModel) => ({
                 communication: StateHelper.updateElementLoader( state.communication, true ),
@@ -87,13 +87,13 @@ export const CommunicationStore = signalStore(
 
         return {
             fetchCommunicationsPage: rxMethod<CommunicationsPageRequest>( pipe(
-                switchMap( (request: CommunicationsPageRequest): Observable<PageModel<CommunicationModel>> => store.api.findCommunications(
+                switchMap( (request: CommunicationsPageRequest): Observable<PageModel<CommunicationModel>> => api.findCommunications(
                     request.projectId,
                     request.pageNumber,
                     request.pageSize,
                     store.communications.params(),
                 ).pipe(
-                    trackPage( store.uiFacade, pageSlice( store, 'communications' ) ),
+                    trackPage( errors, pageSlice( store, 'communications' ) ),
                 ) ),
                 tap( (page: PageModel<CommunicationModel>): void => patchState( store, (state: CommunicationStoreModel) => ({
                     communications: {
@@ -112,9 +112,9 @@ export const CommunicationStore = signalStore(
 
             fetchCommunication: rxMethod<CommunicationRequest>( pipe(
                 switchMap( (request: CommunicationRequest): Observable<CommunicationModel> =>
-                    store.api.findCommunicationById( request.projectId, request.id ).pipe(
+                    api.findCommunicationById( request.projectId, request.id ).pipe(
                         trackElementLoader,
-                        notifyOnError( store.uiFacade ),
+                        notifyOnError( errors ),
                     ),
                 ),
                 tap( (communication: CommunicationModel): void => patchState( store, (state: CommunicationStoreModel) => ({
@@ -124,16 +124,16 @@ export const CommunicationStore = signalStore(
 
             searchMovements: rxMethod<SearchRequest>( pipe(
                 switchMap( (request: SearchRequest): Observable<MovementModel[]> =>
-                    store.api.searchMovements( request.projectId, request.textSearched ).pipe(
+                    api.searchMovements( request.projectId, request.textSearched ).pipe(
                         trackElementLoader,
-                        notifyOnError( store.uiFacade ),
+                        notifyOnError( errors ),
                     ),
                 ),
                 tap( (movements: MovementModel[]): void => patchState( store, (state: CommunicationStoreModel) => ({
                     metadata: {
                         ...state.metadata,
                         searchedMovements: movements.map( (movement: MovementModel): SelectItem<MovementModel> =>
-                            MovementHelper.toActivitySelectItem( movement, store.datePipe ),
+                            MovementHelper.toActivitySelectItem( movement, datePipe ),
                         ),
                     },
                 }) ) ),
@@ -141,16 +141,16 @@ export const CommunicationStore = signalStore(
 
             searchAlerts: rxMethod<SearchRequest>( pipe(
                 switchMap( (request: SearchRequest): Observable<AlertModel[]> =>
-                    store.api.searchAlerts( request.projectId, request.textSearched ).pipe(
+                    api.searchAlerts( request.projectId, request.textSearched ).pipe(
                         trackElementLoader,
-                        notifyOnError( store.uiFacade ),
+                        notifyOnError( errors ),
                     ),
                 ),
                 tap( (alerts: AlertModel[]): void => patchState( store, (state: CommunicationStoreModel) => ({
                     metadata: {
                         ...state.metadata,
                         searchedAlerts: alerts.map( (alert: AlertModel): SelectItem<AlertModel> =>
-                            AlertHelper.toSelectItem( alert, store.datePipe ),
+                            AlertHelper.toSelectItem( alert, datePipe ),
                         ),
                     },
                 }) ) ),

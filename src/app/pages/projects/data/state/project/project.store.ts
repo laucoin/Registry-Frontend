@@ -1,5 +1,5 @@
 import { inject } from '@angular/core'
-import { patchState, signalStore, withMethods, withProps, withState } from '@ngrx/signals'
+import { patchState, signalStore, withMethods, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import { finalize, Observable, pipe, switchMap, tap } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
@@ -9,7 +9,7 @@ import { ProjectOptionModel } from '@pages/projects/data/model/project-option.mo
 import { ProjectPageParamsModel } from '@pages/projects/data/model/project-page-params.model'
 import { ProjectStoreModel } from '@pages/projects/data/model/project-store.model'
 import { ProjectApi } from '@pages/projects/data/state/project.api'
-import { UiFacade } from '@core/registry/state/ui.facade'
+import { ErrorReporter } from '@core/registry/state/error-reporter'
 import { StateHelper } from '@shared/helpers/state/state.helper'
 import { initialize, notifyOnError } from '@shared/helpers/rx.helper'
 import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
@@ -52,14 +52,14 @@ const defaultProjectStore: ProjectStoreModel = {
  */
 export const ProjectStore = signalStore(
     withState<ProjectStoreModel>( defaultProjectStore ),
-    withProps( () => ({
-        api: inject( ProjectApi ),
-        uiFacade: inject( UiFacade ),
-    }) ),
-    withMethods( (store) => ({
+    withMethods( (
+        store,
+        api = inject( ProjectApi ),
+        errors = inject( ErrorReporter ),
+    ) => ({
         fetchProjectOptions: rxMethod<void>( pipe(
-            switchMap( (): Observable<ProjectOptionModel[]> => store.api.getAvailableProjectOptions().pipe(
-                notifyOnError( store.uiFacade ),
+            switchMap( (): Observable<ProjectOptionModel[]> => api.getAvailableProjectOptions().pipe(
+                notifyOnError( errors ),
             ) ),
             tap( (options: ProjectOptionModel[]): void => patchState( store, (state: ProjectStoreModel) => ({
                 metadata: { ...state.metadata, options: options },
@@ -67,12 +67,12 @@ export const ProjectStore = signalStore(
         ) ),
 
         fetchProjectsPage: rxMethod<ProjectsPageRequest>( pipe(
-            switchMap( (request: ProjectsPageRequest): Observable<PageModel<ProjectModel>> => store.api.findProjects(
+            switchMap( (request: ProjectsPageRequest): Observable<PageModel<ProjectModel>> => api.findProjects(
                 request.pageNumber,
                 request.pageSize,
                 store.projects.params(),
             ).pipe(
-                trackPage( store.uiFacade, pageSlice( store, 'projects' ) ),
+                trackPage( errors, pageSlice( store, 'projects' ) ),
             ) ),
             tap( (page: PageModel<ProjectModel>): void => patchState( store, (state: ProjectStoreModel) => ({
                 projects: {
@@ -96,14 +96,14 @@ export const ProjectStore = signalStore(
         },
 
         fetchProject: rxMethod<string>( pipe(
-            switchMap( (id: string): Observable<ProjectModel> => store.api.findProjectById( id ).pipe(
+            switchMap( (id: string): Observable<ProjectModel> => api.findProjectById( id ).pipe(
                 initialize( (): void => patchState( store, (state: ProjectStoreModel) => ({
                     project: StateHelper.updateElementLoader( state.project, true ),
                 }) ) ),
                 finalize( (): void => patchState( store, (state: ProjectStoreModel) => ({
                     project: StateHelper.updateElementLoader( state.project, false ),
                 }) ) ),
-                notifyOnError( store.uiFacade ),
+                notifyOnError( errors ),
             ) ),
             tap( (project: ProjectModel): void => patchState( store, (state: ProjectStoreModel) => ({
                 project: { ...state.project, element: project },

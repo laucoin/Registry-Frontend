@@ -1,5 +1,5 @@
 import { inject } from '@angular/core'
-import { patchState, signalStore, withMethods, withProps, withState } from '@ngrx/signals'
+import { patchState, signalStore, withMethods, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import { Observable, pipe, switchMap, tap } from 'rxjs'
 import { SelectItem } from 'primeng/api'
@@ -10,7 +10,7 @@ import { GroupPageParamsModel } from '@pages/projects/[projectId]/configuration/
 import { ParticipantPageParamsModel } from '@pages/projects/[projectId]/configuration/participants/data/model/participant-page-params.model'
 import { GroupStoreModel } from '@pages/projects/[projectId]/configuration/groups/data/model/group-store.model'
 import { GroupApi } from '@pages/projects/[projectId]/configuration/groups/data/state/group.api'
-import { UiFacade } from '@core/registry/state/ui.facade'
+import { ErrorReporter } from '@core/registry/state/error-reporter'
 import { ParticipantHelper } from '@shared/helpers/participant.helper'
 import { notifyOnError } from '@shared/helpers/rx.helper'
 import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
@@ -72,19 +72,19 @@ const defaultGroupStore: GroupStoreModel = {
 export const GroupStore = signalStore(
     withState<GroupStoreModel>( defaultGroupStore ),
     withProfileScope<GroupStoreModel>( defaultGroupStore ),
-    withProps( () => ({
-        api: inject( GroupApi ),
-        uiFacade: inject( UiFacade ),
-    }) ),
-    withMethods( (store) => ({
+    withMethods( (
+        store,
+        api = inject( GroupApi ),
+        errors = inject( ErrorReporter ),
+    ) => ({
         fetchGroupsPage: rxMethod<GroupsPageRequest>( pipe(
-            switchMap( (request: GroupsPageRequest): Observable<PageModel<GroupModel>> => store.api.findGroups(
+            switchMap( (request: GroupsPageRequest): Observable<PageModel<GroupModel>> => api.findGroups(
                 request.projectId,
                 request.pageNumber,
                 request.pageSize,
                 store.groups.params(),
             ).pipe(
-                trackPage( store.uiFacade, pageSlice( store, 'groups' ) ),
+                trackPage( errors, pageSlice( store, 'groups' ) ),
             ) ),
             tap( (page: PageModel<GroupModel>): void => patchState( store, (state: GroupStoreModel) => ({
                 groups: {
@@ -105,14 +105,14 @@ export const GroupStore = signalStore(
                     patchState( store, { members: { ...defaultGroupStore.members, groupId: request.id } } )
                 }
             } ),
-            switchMap( (request: GroupMembersPageRequest): Observable<PageModel<ParticipantModel>> => store.api.findGroupMembersByGroupId(
+            switchMap( (request: GroupMembersPageRequest): Observable<PageModel<ParticipantModel>> => api.findGroupMembersByGroupId(
                 request.projectId,
                 request.id,
                 request.pageNumber,
                 request.pageSize,
                 store.members.params(),
             ).pipe(
-                trackPage( store.uiFacade, pageSlice( store, 'members' ) ),
+                trackPage( errors, pageSlice( store, 'members' ) ),
             ) ),
             tap( (page: PageModel<ParticipantModel>): void => patchState( store, (state: GroupStoreModel) => ({
                 members: {
@@ -128,10 +128,10 @@ export const GroupStore = signalStore(
         },
 
         searchParticipants: rxMethod<SearchParticipantsRequest>( pipe(
-            switchMap( (request: SearchParticipantsRequest): Observable<ParticipantModel[]> => store.api.searchParticipants(
+            switchMap( (request: SearchParticipantsRequest): Observable<ParticipantModel[]> => api.searchParticipants(
                 request.projectId,
                 request.textSearched,
-            ).pipe( notifyOnError( store.uiFacade ) ) ),
+            ).pipe( notifyOnError( errors ) ) ),
             tap( (participants: ParticipantModel[]): void => patchState( store, (state: GroupStoreModel) => ({
                 metadata: {
                     ...state.metadata,

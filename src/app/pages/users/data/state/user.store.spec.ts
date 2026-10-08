@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing'
 import { of } from 'rxjs'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
-import { UiFacade } from '@core/registry/state/ui.facade'
+import { ErrorReporter } from '@core/registry/state/error-reporter'
 import { UserApi } from '@pages/users/data/state/user.api'
 import { UserStore } from '@pages/users/data/state/user.store'
 import { ERROR_500, ERROR_503, failing, pageOf } from '@shared/helpers/testing/test-fixtures'
@@ -25,7 +25,7 @@ describe( 'UserStore', () => {
         TestBed.configureTestingModule( {
             providers: [
                 { provide: UserApi, useValue: { findUsers, findUserById, getAssignableUserRoles } },
-                { provide: UiFacade, useValue: { setGlobalError, notify } },
+                { provide: ErrorReporter, useValue: { setGlobalError, notify } },
             ],
         } )
         store = TestBed.inject( UserStore )

@@ -3,7 +3,7 @@ import { TranslocoService } from '@jsverse/transloco'
 import { of, Subject } from 'rxjs'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
 import { MetadataApi } from '@core/registry/state/metadata.api'
-import { UiFacade } from '@core/registry/state/ui.facade'
+import { ErrorReporter } from '@core/registry/state/error-reporter'
 import { AlertStore } from '@pages/projects/[projectId]/alerts/data/state/alert.store'
 import { AlertApi } from '@pages/projects/[projectId]/movements/data/state/alert.api'
 import { ERROR_500, ERROR_503, failing, pageOf } from '@shared/helpers/testing/test-fixtures'
@@ -31,7 +31,7 @@ describe( 'AlertStore', () => {
                 AlertStore,
                 { provide: AlertApi, useValue: { findAlerts, findAlertCommunications } },
                 { provide: MetadataApi, useValue: { getAlertsStatus } },
-                { provide: UiFacade, useValue: { setGlobalError, notify: vi.fn() } },
+                { provide: ErrorReporter, useValue: { setGlobalError, notify: vi.fn() } },
                 { provide: TranslocoService, useValue: { langChanges$: langChanges.asObservable() } },
             ],
         } )

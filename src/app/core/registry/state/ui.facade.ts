@@ -11,7 +11,6 @@ import { ThemeEnum } from '@shared/models/enumeration/theme.enum'
 import { ErrorModel } from '@shared/models/model/error.model'
 import { GenericHelper } from '@shared/helpers/generic.helper'
 import { StateHelper } from '@shared/helpers/state/state.helper'
-import { StringHelper } from '@shared/helpers/string.helper'
 
 /**
  * Purpose: Public entry point for what the shell displays: theme, screen size, global loader and error, toasts, display options.
@@ -101,18 +100,6 @@ export class UiFacade {
     }
 
     public notify (message: ToastMessageOptions): void {
-        if (message.summary?.endsWith( '401' )) {
-            return
-        }
-
-        let formattedMessage: ToastMessageOptions = message
-        if (StringHelper.isNullOrBlank( message.detail ) && StringHelper.isNullOrBlank( message.summary )) {
-            formattedMessage = {
-                ...message,
-                detail: this.translateService.translate( 'global.notifications.UNKNOWN_ERROR' ),
-            }
-        }
-
-        this.notifications.notify( formattedMessage )
+        this.notifications.notify( message )
     }
 }

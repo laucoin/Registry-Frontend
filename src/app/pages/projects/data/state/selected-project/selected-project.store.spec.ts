@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing'
 import { of } from 'rxjs'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
-import { UiFacade } from '@core/registry/state/ui.facade'
+import { ErrorReporter } from '@core/registry/state/error-reporter'
 import { ParticipantApi } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.api'
 import { AlertApi } from '@pages/projects/[projectId]/movements/data/state/alert.api'
 import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
@@ -41,7 +41,7 @@ describe( 'SelectedProjectStore', () => {
                 { provide: MovementApi, useValue: { findMovements, findMovementsContents, findParticipantsStatus, findVehiclesStatus } },
                 { provide: AlertApi, useValue: { findAlerts } },
                 { provide: ParticipantApi, useValue: { findParticipantsBirthdays } },
-                { provide: UiFacade, useValue: { setGlobalError, notify } },
+                { provide: ErrorReporter, useValue: { setGlobalError, notify } },
             ],
         } )
         store = TestBed.inject( SelectedProjectStore )

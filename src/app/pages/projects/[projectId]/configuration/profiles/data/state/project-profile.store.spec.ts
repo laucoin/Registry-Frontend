@@ -3,7 +3,7 @@ import { TranslocoService } from '@jsverse/transloco'
 import { of, Subject } from 'rxjs'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
 import { MetadataApi } from '@core/registry/state/metadata.api'
-import { UiFacade } from '@core/registry/state/ui.facade'
+import { ErrorReporter } from '@core/registry/state/error-reporter'
 import { ProjectProfileApi } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.api'
 import { ProjectProfileStore } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.store'
 import { ERROR_500, ERROR_503, failing, pageOf } from '@shared/helpers/testing/test-fixtures'
@@ -35,7 +35,7 @@ describe( 'ProjectProfileStore', () => {
                 ProjectProfileStore,
                 { provide: ProjectProfileApi, useValue: { findProjectProfiles, searchUsers, getAssignableProjectProfileRoles } },
                 { provide: MetadataApi, useValue: { getProfilesStatus } },
-                { provide: UiFacade, useValue: { setGlobalError, notify } },
+                { provide: ErrorReporter, useValue: { setGlobalError, notify } },
                 { provide: TranslocoService, useValue: { langChanges$: langChanges.asObservable() } },
             ],
         } )

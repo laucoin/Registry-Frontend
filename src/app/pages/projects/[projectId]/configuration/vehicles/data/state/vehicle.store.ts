@@ -1,6 +1,6 @@
 import { inject } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
-import { patchState, signalStore, withHooks, withMethods, withProps, withState } from '@ngrx/signals'
+import { patchState, signalStore, withHooks, withMethods, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import {TranslocoService} from '@jsverse/transloco'
 import { map, Observable, pipe, skip, switchMap, tap } from 'rxjs'
@@ -17,7 +17,7 @@ import { VehicleStoreModel } from '@pages/projects/[projectId]/configuration/veh
 import { VehicleApi } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.api'
 import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
 import { MetadataApi } from '@core/registry/state/metadata.api'
-import { UiFacade } from '@core/registry/state/ui.facade'
+import { ErrorReporter } from '@core/registry/state/error-reporter'
 import { MovementHelper } from '@shared/helpers/movement.helper'
 import { notifyOnError } from '@shared/helpers/rx.helper'
 import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
@@ -81,16 +81,16 @@ export const VehicleStore = signalStore(
     withProfileScope<VehicleStoreModel>( defaultVehicleStore, (current: VehicleStoreModel): Partial<VehicleStoreModel> => ({
         metadata: { ...defaultVehicleStore.metadata, presencesStatus: current.metadata.presencesStatus },
     }) ),
-    withProps( () => ({
-        api: inject( VehicleApi ),
-        movementApi: inject( MovementApi ),
-        metadataApi: inject( MetadataApi ),
-        uiFacade: inject( UiFacade ),
-    }) ),
-    withMethods( (store) => {
+    withMethods( (
+        store,
+        api = inject( VehicleApi ),
+        movementApi = inject( MovementApi ),
+        metadataApi = inject( MetadataApi ),
+        errors = inject( ErrorReporter ),
+    ) => {
         const fetchPresencesStatus = rxMethod<void>( pipe(
-            switchMap( (): Observable<SelectItem<PresenceStatusEnum>[]> => store.metadataApi.getPresencesStatus().pipe(
-                notifyOnError( store.uiFacade ),
+            switchMap( (): Observable<SelectItem<PresenceStatusEnum>[]> => metadataApi.getPresencesStatus().pipe(
+                notifyOnError( errors ),
             ) ),
             tap( (status: SelectItem<PresenceStatusEnum>[]): void => patchState( store, (state: VehicleStoreModel) => ({
                 metadata: { ...state.metadata, presencesStatus: [ { label: '-', value: undefined }, ...status ] },
@@ -99,11 +99,11 @@ export const VehicleStore = signalStore(
 
         const fetchMovementsContents = rxMethod<VehicleMovementsContentsRequest>( pipe(
             switchMap( (request: VehicleMovementsContentsRequest): Observable<PairModel<MovementContentModel[]>[]> =>
-                store.movementApi.findMovementsContents(
+                movementApi.findMovementsContents(
                     request.projectId,
                     request.movementIds,
                     store.movements.params.currentMovements(),
-                ).pipe( notifyOnError( store.uiFacade ) ),
+                ).pipe( notifyOnError( errors ) ),
             ),
             tap( (contents: PairModel<MovementContentModel[]>[]): void => patchState( store, (state: VehicleStoreModel) => {
                 if (!state.movements.element) return state
@@ -123,13 +123,13 @@ export const VehicleStore = signalStore(
             fetchPresencesStatus,
 
             fetchVehiclesPage: rxMethod<VehiclesPageRequest>( pipe(
-                switchMap( (request: VehiclesPageRequest): Observable<PageModel<VehicleModel>> => store.api.findVehicles(
+                switchMap( (request: VehiclesPageRequest): Observable<PageModel<VehicleModel>> => api.findVehicles(
                     request.projectId,
                     request.pageNumber,
                     request.pageSize,
                     store.vehicles.params(),
                 ).pipe(
-                    trackPage( store.uiFacade, pageSlice( store, 'vehicles' ) ),
+                    trackPage( errors, pageSlice( store, 'vehicles' ) ),
                 ) ),
                 tap( (page: PageModel<VehicleModel>): void => patchState( store, (state: VehicleStoreModel) => ({
                     vehicles: {
@@ -148,14 +148,14 @@ export const VehicleStore = signalStore(
                 switchMap( (request: VehicleMovementsPageRequest): Observable<{
                     request: VehicleMovementsPageRequest
                     page: PageModel<MovementModel>
-                }> => store.api.findVehicleMovements(
+                }> => api.findVehicleMovements(
                     request.projectId,
                     request.id,
                     request.pageNumber,
                     request.pageSize,
                     store.movements.params(),
                 ).pipe(
-                    trackPage( store.uiFacade, pageSlice( store, 'movements' ) ),
+                    trackPage( errors, pageSlice( store, 'movements' ) ),
                     map( (page: PageModel<MovementModel>) => ({ request, page }) ),
                 ) ),
                 tap( ({ request, page }): void => {

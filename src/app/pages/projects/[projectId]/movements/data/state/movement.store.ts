@@ -1,6 +1,6 @@
 import { inject } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
-import { patchState, signalStore, withHooks, withMethods, withProps, withState } from '@ngrx/signals'
+import { patchState, signalStore, withHooks, withMethods, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import {TranslocoService} from '@jsverse/transloco'
 import { map, Observable, pipe, skip, switchMap, tap } from 'rxjs'
@@ -22,7 +22,7 @@ import { CommunicationPageParamsModel } from '@pages/projects/[projectId]/moveme
 import { CommunicationModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
 import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
 import { MetadataApi } from '@core/registry/state/metadata.api'
-import { UiFacade } from '@core/registry/state/ui.facade'
+import { ErrorReporter } from '@core/registry/state/error-reporter'
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
 import { GroupHelper } from '@shared/helpers/group.helper'
 import { ParticipantHelper } from '@shared/helpers/participant.helper'
@@ -111,21 +111,21 @@ export const MovementStore = signalStore(
             types: current.metadata.types,
         },
     }) ),
-    withProps( () => ({
-        api: inject( MovementApi ),
-        metadataApi: inject( MetadataApi ),
-        uiFacade: inject( UiFacade ),
-        translateService: inject( TranslocoService ),
-        pluralTranslationPipe: inject( PluralTranslationPipe ),
-    }) ),
-    withMethods( (store) => {
+    withMethods( (
+        store,
+        api = inject( MovementApi ),
+        metadataApi = inject( MetadataApi ),
+        errors = inject( ErrorReporter ),
+        translateService = inject( TranslocoService ),
+        pluralTranslationPipe = inject( PluralTranslationPipe ),
+    ) => {
         const fetchMovementsContents = rxMethod<MovementsContentRequest>( pipe(
             switchMap( (request: MovementsContentRequest): Observable<PairModel<MovementContentModel[]>[]> =>
-                store.api.findMovementsContents(
+                api.findMovementsContents(
                     request.projectId,
                     request.movementIds,
                     store.movements.params.currentMovements(),
-                ).pipe( notifyOnError( store.uiFacade ) ),
+                ).pipe( notifyOnError( errors ) ),
             ),
             tap( (contents: PairModel<MovementContentModel[]>[]): void => patchState( store, (state: MovementStoreModel) => {
                 if (!state.movements.element) return state
@@ -143,8 +143,8 @@ export const MovementStore = signalStore(
 
         return {
             fetchMovementTypes: rxMethod<void>( pipe(
-                switchMap( (): Observable<SelectItem<MovementTypeEnum>[]> => store.metadataApi.getMovementsTypes().pipe(
-                    notifyOnError( store.uiFacade ),
+                switchMap( (): Observable<SelectItem<MovementTypeEnum>[]> => metadataApi.getMovementsTypes().pipe(
+                    notifyOnError( errors ),
                 ) ),
                 tap( (types: SelectItem<MovementTypeEnum>[]): void => patchState( store, (state: MovementStoreModel) => ({
                     metadata: { ...state.metadata, types: [ { label: '-', value: undefined }, ...types ] },
@@ -152,8 +152,8 @@ export const MovementStore = signalStore(
             ) ),
 
             fetchParticipantTypes: rxMethod<void>( pipe(
-                switchMap( (): Observable<SelectItem<ParticipantTypeEnum>[]> => store.metadataApi.getParticipantsTypes().pipe(
-                    notifyOnError( store.uiFacade ),
+                switchMap( (): Observable<SelectItem<ParticipantTypeEnum>[]> => metadataApi.getParticipantsTypes().pipe(
+                    notifyOnError( errors ),
                 ) ),
                 tap( (types: SelectItem<ParticipantTypeEnum>[]): void => patchState( store, (state: MovementStoreModel) => ({
                     metadata: { ...state.metadata, participantTypes: types },
@@ -164,13 +164,13 @@ export const MovementStore = signalStore(
                 switchMap( (request: MovementsPageRequest): Observable<{
                     request: MovementsPageRequest
                     page: PageModel<MovementModel>
-                }> => store.api.findMovements(
+                }> => api.findMovements(
                     request.projectId,
                     request.pageNumber,
                     request.pageSize,
                     store.movements.params(),
                 ).pipe(
-                    trackPage( store.uiFacade, pageSlice( store, 'movements' ) ),
+                    trackPage( errors, pageSlice( store, 'movements' ) ),
                     map( (page: PageModel<MovementModel>) => ({ request, page }) ),
                 ) ),
                 tap( ({ request, page }): void => {
@@ -198,14 +198,14 @@ export const MovementStore = signalStore(
 
             fetchMovementCommunicationsPage: rxMethod<MovementCommunicationsPageRequest>( pipe(
                 switchMap( (request: MovementCommunicationsPageRequest): Observable<PageModel<CommunicationModel>> =>
-                    store.api.findMovementCommunications(
+                    api.findMovementCommunications(
                         request.projectId,
                         request.id,
                         request.pageNumber,
                         request.pageSize,
                         store.movementCommunications.params(),
                     ).pipe(
-                        trackPage( store.uiFacade, pageSlice( store, 'movementCommunications' ) ),
+                        trackPage( errors, pageSlice( store, 'movementCommunications' ) ),
                     ),
                 ),
                 tap( (page: PageModel<CommunicationModel>): void => patchState( store, (state: MovementStoreModel) => ({
@@ -225,12 +225,12 @@ export const MovementStore = signalStore(
 
             searchReasonsAndActivities: rxMethod<SearchReasonsAndActivitiesRequest>( pipe(
                 switchMap( (request: SearchReasonsAndActivitiesRequest): Observable<MovementReasonModel[]> =>
-                    store.api.searchReasonsAndActivities(
+                    api.searchReasonsAndActivities(
                         request.projectId,
                         request.textSearched,
                         request.typeSearched,
                         request.contentTypeSearched,
-                    ).pipe( notifyOnError( store.uiFacade ) ),
+                    ).pipe( notifyOnError( errors ) ),
                 ),
                 tap( (reasonsAndActivities: MovementReasonModel[]): void => patchState( store, (state: MovementStoreModel) => ({
                     metadata: { ...state.metadata, searchedReasonsAndActivities: reasonsAndActivities },
@@ -239,18 +239,18 @@ export const MovementStore = signalStore(
 
             searchParticipantsAndGroups: rxMethod<SearchParticipantsAndGroupsRequest>( pipe(
                 switchMap( (request: SearchParticipantsAndGroupsRequest): Observable<MovementParticipantsAndGroupsModel> =>
-                    store.api.searchParticipantsAndGroups(
+                    api.searchParticipantsAndGroups(
                         request.projectId,
                         request.contentTypeSearched,
                         request.textSearched,
-                    ).pipe( notifyOnError( store.uiFacade ) ),
+                    ).pipe( notifyOnError( errors ) ),
                 ),
                 tap( (participantsAndGroups: MovementParticipantsAndGroupsModel): void => {
                     const searched: SelectItemGroup<ParticipantModel | GroupModel>[] = []
 
                     if (participantsAndGroups.groups.length > 0) {
                         searched.push( {
-                            label: store.translateService.translate( store.pluralTranslationPipe.transform(
+                            label: translateService.translate( pluralTranslationPipe.transform(
                                 'movements.form.content.registered.searched.group',
                                 participantsAndGroups.groups,
                             ) ),
@@ -262,7 +262,7 @@ export const MovementStore = signalStore(
 
                     if (participantsAndGroups.participants?.length > 0) {
                         searched.push( {
-                            label: store.translateService.translate( store.pluralTranslationPipe.transform(
+                            label: translateService.translate( pluralTranslationPipe.transform(
                                 'movements.form.content.registered.searched.participant',
                                 participantsAndGroups.participants,
                             ) ),
@@ -281,7 +281,7 @@ export const MovementStore = signalStore(
 
             searchVehicles: rxMethod<SearchVehiclesRequest>( pipe(
                 switchMap( (request: SearchVehiclesRequest): Observable<VehicleModel[]> =>
-                    store.api.searchVehicles( request.projectId, request.textSearched ).pipe( notifyOnError( store.uiFacade ) ),
+                    api.searchVehicles( request.projectId, request.textSearched ).pipe( notifyOnError( errors ) ),
                 ),
                 tap( (vehicles: VehicleModel[]): void => patchState( store, (state: MovementStoreModel) => ({
                     metadata: {

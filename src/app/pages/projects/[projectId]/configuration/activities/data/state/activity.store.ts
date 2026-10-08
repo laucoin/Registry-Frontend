@@ -1,5 +1,5 @@
 import { inject } from '@angular/core'
-import { patchState, signalStore, withMethods, withProps, withState } from '@ngrx/signals'
+import { patchState, signalStore, withMethods, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import { map, Observable, pipe, switchMap, tap } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
@@ -12,7 +12,7 @@ import { MovementPageParamsModel } from '@shared/models/model/movement-page-para
 import { ActivityStoreModel } from '@pages/projects/[projectId]/configuration/activities/data/model/activity-store.model'
 import { ActivityApi } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.api'
 import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
-import { UiFacade } from '@core/registry/state/ui.facade'
+import { ErrorReporter } from '@core/registry/state/error-reporter'
 import { MovementHelper } from '@shared/helpers/movement.helper'
 import { notifyOnError } from '@shared/helpers/rx.helper'
 import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
@@ -73,19 +73,19 @@ const defaultActivityStore: ActivityStoreModel = {
 export const ActivityStore = signalStore(
     withState<ActivityStoreModel>( defaultActivityStore ),
     withProfileScope<ActivityStoreModel>( defaultActivityStore ),
-    withProps( () => ({
-        api: inject( ActivityApi ),
-        movementApi: inject( MovementApi ),
-        uiFacade: inject( UiFacade ),
-    }) ),
-    withMethods( (store) => {
+    withMethods( (
+        store,
+        api = inject( ActivityApi ),
+        movementApi = inject( MovementApi ),
+        errors = inject( ErrorReporter ),
+    ) => {
         const fetchMovementsContents = rxMethod<ActivityMovementsContentsRequest>( pipe(
             switchMap( (request: ActivityMovementsContentsRequest): Observable<PairModel<MovementContentModel[]>[]> =>
-                store.movementApi.findMovementsContents(
+                movementApi.findMovementsContents(
                     request.projectId,
                     request.movementIds,
                     store.movements.params.currentMovements(),
-                ).pipe( notifyOnError( store.uiFacade ) ),
+                ).pipe( notifyOnError( errors ) ),
             ),
             tap( (contents: PairModel<MovementContentModel[]>[]): void => patchState( store, (state: ActivityStoreModel) => {
                 if (!state.movements.element) return state
@@ -103,13 +103,13 @@ export const ActivityStore = signalStore(
 
         return {
             fetchActivitiesPage: rxMethod<ActivitiesPageRequest>( pipe(
-                switchMap( (request: ActivitiesPageRequest): Observable<PageModel<ActivityModel>> => store.api.findActivities(
+                switchMap( (request: ActivitiesPageRequest): Observable<PageModel<ActivityModel>> => api.findActivities(
                     request.projectId,
                     request.pageNumber,
                     request.pageSize,
                     store.activities.params(),
                 ).pipe(
-                    trackPage( store.uiFacade, pageSlice( store, 'activities' ) ),
+                    trackPage( errors, pageSlice( store, 'activities' ) ),
                 ) ),
                 tap( (page: PageModel<ActivityModel>): void => patchState( store, (state: ActivityStoreModel) => ({
                     activities: {
@@ -128,14 +128,14 @@ export const ActivityStore = signalStore(
                 switchMap( (request: ActivityMovementsPageRequest): Observable<{
                     request: ActivityMovementsPageRequest
                     page: PageModel<MovementModel>
-                }> => store.api.findActivityMovements(
+                }> => api.findActivityMovements(
                     request.projectId,
                     request.id,
                     request.pageNumber,
                     request.pageSize,
                     store.movements.params(),
                 ).pipe(
-                    trackPage( store.uiFacade, pageSlice( store, 'movements' ) ),
+                    trackPage( errors, pageSlice( store, 'movements' ) ),
                     map( (page: PageModel<MovementModel>) => ({ request, page }) ),
                 ) ),
                 tap( ({ request, page }): void => {

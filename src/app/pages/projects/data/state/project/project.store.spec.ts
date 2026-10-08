@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing'
 import { of } from 'rxjs'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
-import { UiFacade } from '@core/registry/state/ui.facade'
+import { ErrorReporter } from '@core/registry/state/error-reporter'
 import { ProjectOptionModel } from '@pages/projects/data/model/project-option.model'
 import { ProjectApi } from '@pages/projects/data/state/project.api'
 import { ProjectStore } from '@pages/projects/data/state/project/project.store'
@@ -27,7 +27,7 @@ describe( 'ProjectStore', () => {
             providers: [
                 ProjectStore,
                 { provide: ProjectApi, useValue: { findProjects, findProjectById, getAvailableProjectOptions } },
-                { provide: UiFacade, useValue: { setGlobalError, notify } },
+                { provide: ErrorReporter, useValue: { setGlobalError, notify } },
             ],
         } )
         store = TestBed.inject( ProjectStore )

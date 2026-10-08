@@ -1,6 +1,6 @@
 import { inject } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
-import { patchState, signalStore, withHooks, withMethods, withProps, withState } from '@ngrx/signals'
+import { patchState, signalStore, withHooks, withMethods, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import {TranslocoService} from '@jsverse/transloco'
 import { Observable, pipe, skip, switchMap, tap } from 'rxjs'
@@ -14,7 +14,7 @@ import { CommunicationModel } from '@pages/projects/[projectId]/movements/commun
 import { AlertStoreModel } from '@pages/projects/[projectId]/alerts/data/model/alert-store.model'
 import { AlertApi } from '@pages/projects/[projectId]/movements/data/state/alert.api'
 import { MetadataApi } from '@core/registry/state/metadata.api'
-import { UiFacade } from '@core/registry/state/ui.facade'
+import { ErrorReporter } from '@core/registry/state/error-reporter'
 import { notifyOnError } from '@shared/helpers/rx.helper'
 import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
 import { pageSlice, trackPage } from '@shared/helpers/store/track-page.operator'
@@ -66,15 +66,15 @@ export const AlertStore = signalStore(
     withProfileScope<AlertStoreModel>( defaultAlertStore, (current: AlertStoreModel): Partial<AlertStoreModel> => ({
         metadata: { ...defaultAlertStore.metadata, status: current.metadata.status },
     }) ),
-    withProps( () => ({
-        api: inject( AlertApi ),
-        metadataApi: inject( MetadataApi ),
-        uiFacade: inject( UiFacade ),
-    }) ),
-    withMethods( (store) => ({
+    withMethods( (
+        store,
+        api = inject( AlertApi ),
+        metadataApi = inject( MetadataApi ),
+        errors = inject( ErrorReporter ),
+    ) => ({
         fetchAlertStatus: rxMethod<void>( pipe(
-            switchMap( (): Observable<SelectItem<AlertStatusEnum>[]> => store.metadataApi.getAlertsStatus().pipe(
-                notifyOnError( store.uiFacade ),
+            switchMap( (): Observable<SelectItem<AlertStatusEnum>[]> => metadataApi.getAlertsStatus().pipe(
+                notifyOnError( errors ),
             ) ),
             tap( (status: SelectItem<AlertStatusEnum>[]): void => patchState( store, (state: AlertStoreModel) => ({
                 metadata: { ...state.metadata, status: [ { label: '-', value: undefined }, ...status ] },
@@ -82,13 +82,13 @@ export const AlertStore = signalStore(
         ) ),
 
         fetchAlertsPage: rxMethod<AlertsPageRequest>( pipe(
-            switchMap( (request: AlertsPageRequest): Observable<PageModel<AlertModel>> => store.api.findAlerts(
+            switchMap( (request: AlertsPageRequest): Observable<PageModel<AlertModel>> => api.findAlerts(
                 request.projectId,
                 request.pageNumber,
                 request.pageSize,
                 store.alerts.params(),
             ).pipe(
-                trackPage( store.uiFacade, pageSlice( store, 'alerts' ) ),
+                trackPage( errors, pageSlice( store, 'alerts' ) ),
             ) ),
             tap( (page: PageModel<AlertModel>): void => patchState( store, (state: AlertStoreModel) => ({
                 alerts: {
@@ -105,14 +105,14 @@ export const AlertStore = signalStore(
 
         fetchAlertCommunicationsPage: rxMethod<AlertCommunicationsPageRequest>( pipe(
             switchMap( (request: AlertCommunicationsPageRequest): Observable<PageModel<CommunicationModel>> =>
-                store.api.findAlertCommunications(
+                api.findAlertCommunications(
                     request.projectId,
                     request.id,
                     request.pageNumber,
                     request.pageSize,
                     store.communications.params(),
                 ).pipe(
-                    trackPage( store.uiFacade, pageSlice( store, 'communications' ) ),
+                    trackPage( errors, pageSlice( store, 'communications' ) ),
                 ),
             ),
             tap( (page: PageModel<CommunicationModel>): void => patchState( store, (state: AlertStoreModel) => ({

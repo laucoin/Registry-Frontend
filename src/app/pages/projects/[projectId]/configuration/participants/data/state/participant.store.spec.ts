@@ -3,7 +3,7 @@ import { TranslocoService } from '@jsverse/transloco'
 import { of, Subject } from 'rxjs'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
 import { MetadataApi } from '@core/registry/state/metadata.api'
-import { UiFacade } from '@core/registry/state/ui.facade'
+import { ErrorReporter } from '@core/registry/state/error-reporter'
 import { ParticipantApi } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.api'
 import { ParticipantStore } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.store'
 import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
@@ -38,7 +38,7 @@ describe( 'ParticipantStore', () => {
                 { provide: ParticipantApi, useValue: { findParticipants, findParticipantMovements, searchUsers, searchGroups } },
                 { provide: MovementApi, useValue: { findMovementsContents } },
                 { provide: MetadataApi, useValue: { getPresencesStatus: vi.fn( () => of( [] ) ) } },
-                { provide: UiFacade, useValue: { setGlobalError, notify } },
+                { provide: ErrorReporter, useValue: { setGlobalError, notify } },
                 { provide: TranslocoService, useValue: { langChanges$: new Subject<string>().asObservable() } },
             ],
         } )

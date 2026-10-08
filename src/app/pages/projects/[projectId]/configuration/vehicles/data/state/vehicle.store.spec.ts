@@ -3,7 +3,7 @@ import { TranslocoService } from '@jsverse/transloco'
 import { of, Subject } from 'rxjs'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
 import { MetadataApi } from '@core/registry/state/metadata.api'
-import { UiFacade } from '@core/registry/state/ui.facade'
+import { ErrorReporter } from '@core/registry/state/error-reporter'
 import { VehicleApi } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.api'
 import { VehicleStore } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.store'
 import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
@@ -36,7 +36,7 @@ describe( 'VehicleStore', () => {
                 { provide: VehicleApi, useValue: { findVehicles, findVehicleMovements } },
                 { provide: MovementApi, useValue: { findMovementsContents } },
                 { provide: MetadataApi, useValue: { getPresencesStatus } },
-                { provide: UiFacade, useValue: { setGlobalError, notify: vi.fn() } },
+                { provide: ErrorReporter, useValue: { setGlobalError, notify: vi.fn() } },
                 { provide: TranslocoService, useValue: { langChanges$: langChanges.asObservable() } },
             ],
         } )

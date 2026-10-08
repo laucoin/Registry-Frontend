@@ -1,5 +1,5 @@
 import { inject } from '@angular/core'
-import { patchState, signalStore, withMethods, withProps, withState } from '@ngrx/signals'
+import { patchState, signalStore, withMethods, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import { catchError, EMPTY, finalize, Observable, pipe, switchMap, tap } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
@@ -67,10 +67,6 @@ const defaultSessionStore: SessionStoreModel = {
 export const SessionStore = signalStore(
     { providedIn: 'root' },
     withState<SessionStoreModel>( defaultSessionStore ),
-    withProps( () => ({
-        api: inject( UserProjectProfileApi ),
-        ui: inject( UiStore ),
-    }) ),
     withMethods( (store) => ({
         setCurrentUser: (currentUser: CurrentUserModel): void => patchState( store, { currentUser: currentUser } ),
         setCurrentUserTheme: (theme: string): void => patchState( store, (state: SessionStoreModel) => (
@@ -85,9 +81,13 @@ export const SessionStore = signalStore(
         stopActionLoader: (): void => patchState( store, { actionLoading: false } ),
         reset: (): void => patchState( store, defaultSessionStore ),
     }) ),
-    withMethods( (store) => {
+    withMethods( (
+        store,
+        api = inject( UserProjectProfileApi ),
+        ui = inject( UiStore ),
+    ) => {
         const pageFetcher = (key: 'profiles' | 'invitations') => rxMethod<PageRequest>( pipe(
-            switchMap( (request: PageRequest): Observable<PageModel<ProjectProfileModel>> => store.api.findUserProjectProfiles(
+            switchMap( (request: PageRequest): Observable<PageModel<ProjectProfileModel>> => api.findUserProjectProfiles(
                 request.pageNumber,
                 request.pageSize,
                 store[key].params(),
@@ -100,7 +100,7 @@ export const SessionStore = signalStore(
                 }) ) ),
                 catchError( (error: ErrorModel): Observable<never> => {
                     if (error.status === 503) {
-                        store.ui.setGlobalError( error )
+                        ui.setGlobalError( error )
                     } else {
                         patchState( store, (state: SessionStoreModel) => ({
                             [key]: PageStateHelper.withError( state[key], error ),

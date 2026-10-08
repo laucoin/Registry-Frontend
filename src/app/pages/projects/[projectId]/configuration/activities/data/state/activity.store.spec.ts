@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing'
 import { of } from 'rxjs'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
-import { UiFacade } from '@core/registry/state/ui.facade'
+import { ErrorReporter } from '@core/registry/state/error-reporter'
 import { ActivityApi } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.api'
 import { ActivityStore } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.store'
 import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
@@ -31,7 +31,7 @@ describe( 'ActivityStore', () => {
                 ActivityStore,
                 { provide: ActivityApi, useValue: { findActivities, findActivityMovements } },
                 { provide: MovementApi, useValue: { findMovementsContents } },
-                { provide: UiFacade, useValue: { setGlobalError, notify } },
+                { provide: ErrorReporter, useValue: { setGlobalError, notify } },
             ],
         } )
         store = TestBed.inject( ActivityStore )

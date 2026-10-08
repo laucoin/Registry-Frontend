@@ -1,5 +1,5 @@
 import { inject } from '@angular/core'
-import { patchState, signalStore, withMethods, withProps, withState } from '@ngrx/signals'
+import { patchState, signalStore, withMethods, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import { finalize, Observable, pipe, switchMap, tap } from 'rxjs'
 import { SelectItem } from 'primeng/api'
@@ -9,7 +9,7 @@ import { ElementRequestInformationModel } from '@shared/models/model/element-req
 import { UserPageParamsModel } from '@pages/users/data/model/user-page-params.model'
 import { UserStoreModel } from '@pages/users/data/model/user-store.model'
 import { UserApi } from '@pages/users/data/state/user.api'
-import { UiFacade } from '@core/registry/state/ui.facade'
+import { ErrorReporter } from '@core/registry/state/error-reporter'
 import { StateHelper } from '@shared/helpers/state/state.helper'
 import { initialize, notifyOnError } from '@shared/helpers/rx.helper'
 import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
@@ -50,18 +50,18 @@ const defaultUserStore: UserStoreModel = {
 export const UserStore = signalStore(
     { providedIn: 'root' },
     withState<UserStoreModel>( defaultUserStore ),
-    withProps( () => ({
-        api: inject( UserApi ),
-        uiFacade: inject( UiFacade ),
-    }) ),
-    withMethods( (store) => ({
+    withMethods( (
+        store,
+        api = inject( UserApi ),
+        errors = inject( ErrorReporter ),
+    ) => ({
         fetchUsersPage: rxMethod<UsersPageRequest>( pipe(
-            switchMap( (request: UsersPageRequest): Observable<PageModel<UserModel>> => store.api.findUsers(
+            switchMap( (request: UsersPageRequest): Observable<PageModel<UserModel>> => api.findUsers(
                 request.pageNumber,
                 request.pageSize,
                 store.users.params(),
             ).pipe(
-                trackPage( store.uiFacade, pageSlice( store, 'users' ) ),
+                trackPage( errors, pageSlice( store, 'users' ) ),
             ) ),
             tap( (page: PageModel<UserModel>): void => patchState( store, (state: UserStoreModel) => ({
                 users: {
@@ -85,14 +85,14 @@ export const UserStore = signalStore(
         },
 
         fetchUser: rxMethod<string>( pipe(
-            switchMap( (id: string): Observable<UserModel> => store.api.findUserById( id ).pipe(
+            switchMap( (id: string): Observable<UserModel> => api.findUserById( id ).pipe(
                 initialize( (): void => patchState( store, (state: UserStoreModel) => ({
                     user: StateHelper.updateElementLoader( state.user, true ),
                 }) ) ),
                 finalize( (): void => patchState( store, (state: UserStoreModel) => ({
                     user: StateHelper.updateElementLoader( state.user, false ),
                 }) ) ),
-                notifyOnError( store.uiFacade ),
+                notifyOnError( errors ),
             ) ),
             tap( (user: UserModel): void => patchState( store, (state: UserStoreModel) => ({
                 user: { ...state.user, element: user },
@@ -104,14 +104,14 @@ export const UserStore = signalStore(
         },
 
         fetchAssignableRoles: rxMethod<void>( pipe(
-            switchMap( (): Observable<SelectItem<string>[]> => store.api.getAssignableUserRoles().pipe(
+            switchMap( (): Observable<SelectItem<string>[]> => api.getAssignableUserRoles().pipe(
                 initialize( (): void => patchState( store, (state: UserStoreModel) => ({
                     user: StateHelper.updateElementLoader( state.user, true ),
                 }) ) ),
                 finalize( (): void => patchState( store, (state: UserStoreModel) => ({
                     user: StateHelper.updateElementLoader( state.user, false ),
                 }) ) ),
-                notifyOnError( store.uiFacade ),
+                notifyOnError( errors ),
             ) ),
             tap( (roles: SelectItem<string>[]): void => patchState( store, (state: UserStoreModel) => ({
                 metadata: { ...state.metadata, assignableRoles: roles },

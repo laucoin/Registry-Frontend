@@ -1,6 +1,6 @@
 import { inject } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
-import { patchState, signalStore, withHooks, withMethods, withProps, withState } from '@ngrx/signals'
+import { patchState, signalStore, withHooks, withMethods, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import {TranslocoService} from '@jsverse/transloco'
 import { Observable, pipe, skip, switchMap, tap } from 'rxjs'
@@ -13,7 +13,7 @@ import { ProjectProfilePageParamsModel } from '@pages/projects/[projectId]/confi
 import { ProjectProfileStoreModel } from '@pages/projects/[projectId]/configuration/profiles/data/model/project-profile-store.model'
 import { ProjectProfileApi } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.api'
 import { MetadataApi } from '@core/registry/state/metadata.api'
-import { UiFacade } from '@core/registry/state/ui.facade'
+import { ErrorReporter } from '@core/registry/state/error-reporter'
 import { UserHelper } from '@shared/helpers/user.helper'
 import { notifyOnError } from '@shared/helpers/rx.helper'
 import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
@@ -57,15 +57,15 @@ const defaultProjectProfileStore: ProjectProfileStoreModel = {
  */
 export const ProjectProfileStore = signalStore(
     withState<ProjectProfileStoreModel>( defaultProjectProfileStore ),
-    withProps( () => ({
-        api: inject( ProjectProfileApi ),
-        metadataApi: inject( MetadataApi ),
-        uiFacade: inject( UiFacade ),
-    }) ),
-    withMethods( (store) => ({
+    withMethods( (
+        store,
+        api = inject( ProjectProfileApi ),
+        metadataApi = inject( MetadataApi ),
+        errors = inject( ErrorReporter ),
+    ) => ({
         fetchProfileStatus: rxMethod<void>( pipe(
-            switchMap( (): Observable<SelectItem<ProfileStatusEnum>[]> => store.metadataApi.getProfilesStatus().pipe(
-                notifyOnError( store.uiFacade ),
+            switchMap( (): Observable<SelectItem<ProfileStatusEnum>[]> => metadataApi.getProfilesStatus().pipe(
+                notifyOnError( errors ),
             ) ),
             tap( (status: SelectItem<ProfileStatusEnum>[]): void => patchState( store, (state: ProjectProfileStoreModel) => ({
                 metadata: { ...state.metadata, status: [ { label: '-', value: undefined }, ...status ] },
@@ -73,13 +73,13 @@ export const ProjectProfileStore = signalStore(
         ) ),
 
         fetchProjectProfilesPage: rxMethod<ProjectProfilesPageRequest>( pipe(
-            switchMap( (request: ProjectProfilesPageRequest): Observable<PageModel<ProjectProfileModel>> => store.api.findProjectProfiles(
+            switchMap( (request: ProjectProfilesPageRequest): Observable<PageModel<ProjectProfileModel>> => api.findProjectProfiles(
                 request.projectId,
                 request.pageNumber,
                 request.pageSize,
                 store.projectProfiles.params(),
             ).pipe(
-                trackPage( store.uiFacade, pageSlice( store, 'projectProfiles' ) ),
+                trackPage( errors, pageSlice( store, 'projectProfiles' ) ),
             ) ),
             tap( (page: PageModel<ProjectProfileModel>): void => patchState( store, (state: ProjectProfileStoreModel) => ({
                 projectProfiles: {
@@ -97,10 +97,10 @@ export const ProjectProfileStore = signalStore(
         },
 
         searchUsers: rxMethod<SearchUsersRequest>( pipe(
-            switchMap( (request: SearchUsersRequest): Observable<UserModel[]> => store.api.searchUsers(
+            switchMap( (request: SearchUsersRequest): Observable<UserModel[]> => api.searchUsers(
                 request.projectId,
                 request.textSearched,
-            ).pipe( notifyOnError( store.uiFacade ) ) ),
+            ).pipe( notifyOnError( errors ) ) ),
             tap( (users: UserModel[]): void => patchState( store, (state: ProjectProfileStoreModel) => ({
                 metadata: {
                     ...state.metadata,
@@ -111,7 +111,7 @@ export const ProjectProfileStore = signalStore(
 
         fetchAssignableRoles: rxMethod<string | undefined>( pipe(
             switchMap( (projectId: string | undefined): Observable<SelectItem<string>[]> =>
-                store.api.getAssignableProjectProfileRoles( projectId ).pipe( notifyOnError( store.uiFacade ) ),
+                api.getAssignableProjectProfileRoles( projectId ).pipe( notifyOnError( errors ) ),
             ),
             tap( (roles: SelectItem<string>[]): void => patchState( store, (state: ProjectProfileStoreModel) => ({
                 metadata: { ...state.metadata, roles: roles },
