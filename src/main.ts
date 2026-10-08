@@ -1,5 +1,5 @@
 import {provideHttpClient, withInterceptors} from '@angular/common/http'
-import {enableProdMode, provideZoneChangeDetection} from '@angular/core'
+import {enableProdMode, provideZonelessChangeDetection} from '@angular/core'
 import {bootstrapApplication} from '@angular/platform-browser'
 import {provideRouter} from '@angular/router'
 import {MessageService} from 'primeng/api'
@@ -25,7 +25,7 @@ import {IntervalPipe} from '@shared/helpers/pipe/interval.pipe'
 
     bootstrapApplication(RegistryComponent, {
         providers: [
-            provideZoneChangeDetection({eventCoalescing: true}),
+            provideZonelessChangeDetection(),
             provideHttpClient(withInterceptors([backendHandler])),
             provideRouter(routes),
             MessageService,
