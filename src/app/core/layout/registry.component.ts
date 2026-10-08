@@ -1,12 +1,11 @@
 import { Component, HostListener, inject, OnDestroy} from '@angular/core'
-import {TranslatePipe} from '@ngx-translate/core'
+import {TranslocoPipe} from '@jsverse/transloco'
 import {ConfirmationService, MessageService, ToastMessageOptions} from 'primeng/api'
 import {BlockUIModule} from 'primeng/blockui'
 import {ConfirmDialogModule} from 'primeng/confirmdialog'
 import {ProgressSpinnerModule} from 'primeng/progressspinner'
 import {ToastModule} from 'primeng/toast'
-import {map, Subscription} from 'rxjs'
-import {RegistryConfig} from '@core/config/registry.config'
+import {Subscription} from 'rxjs'
 import {breakPoint} from '@shared/helpers/breakpoint.const'
 import {PrimeNG} from 'primeng/config'
 import {Button} from 'primeng/button'
@@ -22,7 +21,7 @@ import {GenericHelper} from '@shared/helpers/generic.helper'
 @Component({
     selector: 'app-root',
     imports: [
-        TranslatePipe,
+        TranslocoPipe,
         ConfirmDialogModule,
         ToastModule,
         BlockUIModule,
@@ -60,10 +59,7 @@ export class RegistryComponent extends GenericComponent implements OnDestroy {
     }
 
     private initTranslation(): void {
-        this.translateService.addLangs(RegistryConfig.config.languages)
-        this.translateService.get('prime-ng').pipe(
-            map((lang: object): void => this.primeConfig.setTranslation(lang)),
-        ).subscribe()
+        this.primeConfig.setTranslation(this.translateService.translateObject('prime-ng'))
     }
 
     private handleThemeChanges(): void {

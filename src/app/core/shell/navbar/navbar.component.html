@@ -11,7 +11,7 @@
                        [routerLink]='RegistryRouteEnum.PROJECTS.toString()'
                        [attr.href]='RegistryRouteEnum.PROJECTS.toString()'>
                         <img
-                                [alt]="'menu.project' | translate"
+                                [alt]="'menu.project' | transloco"
                                 [src]='registryFacade.logoPath()!'
                                 class='cursor-pointer'
                                 height='60' />
@@ -25,7 +25,7 @@
                [routerLink]='item.url'
                [attr.href]='item.url'>
                 <i [class]='item.icon'></i>
-                <span>{{ item.label | translate | truncate: maxMenuTextLength }}</span>
+                <span>{{ item.label | transloco | truncate: maxMenuTextLength }}</span>
             </a>
         </ng-template>
         <ng-template #end>
@@ -66,7 +66,7 @@
                    [routerLink]='item.url'
                    [attr.href]='item.url'>
                     <i [class]='item.icon'></i>
-                    <span>{{ item.label | translate | truncate: maxMenuTextLength }}</span>
+                    <span>{{ item.label | transloco | truncate: maxMenuTextLength }}</span>
                     @if (item.items && item.items.length > 0) {
                         <span class='ms-1'> <i class='pi pi-angle-down'></i></span>
                     }
@@ -81,7 +81,7 @@
 <p-dialog
         class='text-justify'
         modal
-        [header]='"global.welcome.title" | translate'
+        [header]='"global.welcome.title" | transloco'
         [breakpoints]='breakpoint'
         [(visible)]='helpDialogOpened'
         [draggable]='false'
@@ -97,7 +97,7 @@
         <ng-template #item let-item>
             <a pRipple class='flex items-center py-2 px-4 cursor-pointer' [routerLink]='item.url'>
                 <span [class]='item.icon'></span>&nbsp;
-                <span class='ms-2'>{{ item.label | translate }}</span>
+                <span class='ms-2'>{{ item.label | transloco }}</span>
             </a>
         </ng-template>
     </p-menu>
@@ -105,7 +105,7 @@
         <p-button
                 size='small'
                 (onClick)='logout()'
-                [label]="'global.actions.sign-out' | translate"
+                [label]="'global.actions.sign-out' | transloco"
                 rounded
                 icon='pi pi-sign-out' />
     </div>

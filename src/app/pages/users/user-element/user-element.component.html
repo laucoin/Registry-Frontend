@@ -30,7 +30,7 @@
             <div class='status flex basis-full xl:basis-[15%]' [class.justify-center]='registryFacade.tinyScreen()'>
                 <app-severity-tag
                         [severity]='user().visible ? SeverityEnum.SUCCESS : SeverityEnum.DANGER'
-                        [value]='user() | visibilityName: "users" | translate' />
+                        [value]='user() | visibilityName: "users" | transloco' />
             </div>
         }
     </div>

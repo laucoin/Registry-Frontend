@@ -3,7 +3,7 @@ import { SelectedProjectFacade } from '@pages/projects/data/state/selected-proje
 import { Carousel, CarouselResponsiveOptions } from 'primeng/carousel'
 import { GenericComponent } from '@shared/ui/base/generic.component'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
-import { TranslatePipe } from '@ngx-translate/core'
+import {TranslocoPipe} from '@jsverse/transloco'
 import { GenericHelper } from '@shared/helpers/generic.helper'
 import { AlertModel } from '@shared/models/model/alert.model'
 import { Button } from 'primeng/button'
@@ -17,7 +17,7 @@ import { AlertFacade } from '@pages/projects/[projectId]/alerts/data/state/alert
     imports: [
         Carousel,
         DateFormatPipe,
-        TranslatePipe,
+        TranslocoPipe,
         Button,
         AlertElementComponent,
         RouterLink,

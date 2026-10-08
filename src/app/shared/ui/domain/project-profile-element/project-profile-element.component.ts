@@ -11,7 +11,7 @@ import {ProjectProfileModel} from '@shared/models/model/project-profile.model'
 import {ChipModule} from 'primeng/chip'
 import {TitleCasePipe, UpperCasePipe} from '@angular/common'
 import {ElementCardComponent} from '@shared/ui/common/element-card/element-card.component'
-import {TranslatePipe} from '@ngx-translate/core'
+import {TranslocoPipe} from '@jsverse/transloco'
 import {BadgeModule} from 'primeng/badge'
 import {Button} from 'primeng/button'
 import {ConfirmationService, MenuItem} from 'primeng/api'
@@ -36,7 +36,7 @@ import {AvailabilityStatusEnum} from '@shared/models/enumeration/availability-st
     imports: [
         ChipModule,
         ElementCardComponent,
-        TranslatePipe,
+        TranslocoPipe,
         BadgeModule,
         Button,
         ConfirmDialogModule,
@@ -165,14 +165,14 @@ export class ProjectProfileElementComponent extends GenericElementComponent impl
 
     protected confirmManageAcceptance(status: ProfileStatusEnum): void {
         this.confirmationService.confirm({
-            header: this.translateService.instant(`project-profiles.actions.confirmations.${status}.title`),
-            message: this.translateService.instant(
+            header: this.translateService.translate(`project-profiles.actions.confirmations.${status}.title`),
+            message: this.translateService.translate(
                 `project-profiles.actions.confirmations.${status}.message`,
                 {element: this.profile()},
             ),
             icon: status === ProfileStatusEnum.ACCEPTED ? 'pi pi-info-circle' : 'pi pi-exclamation-triangle',
-            acceptLabel: this.translateService.instant('global.actions.confirm'),
-            rejectLabel: this.translateService.instant('global.actions.cancel'),
+            acceptLabel: this.translateService.translate('global.actions.confirm'),
+            rejectLabel: this.translateService.translate('global.actions.cancel'),
             acceptButtonStyleClass: `p-button p-button-rounded p-button-outlined ${status === ProfileStatusEnum.ACCEPTED ? 'p-button-success' : 'p-button-danger'}`,
             rejectButtonStyleClass: 'p-button p-button-rounded p-button-text p-button-secondary',
             accept: (): void => this.manageAcceptance(status === ProfileStatusEnum.ACCEPTED),

@@ -5,7 +5,7 @@
           emptyMessagePrefix='projects.notifications.EMPTY'>
     <ng-template appTemplate='search' [formGroup]='form' let-pageEvent>
         <div class='field'>
-            <label for='text-search-field'>{{ 'projects.search-and-filter.text' | translate }}</label>
+            <label for='text-search-field'>{{ 'projects.search-and-filter.text' | transloco }}</label>
             <input id='text-search-field'
                    type='text'
                    fluid
@@ -15,7 +15,7 @@
         </div>
         <div class='grid search-line'>
             <div class='field'>
-                <label for='date-time-search-field'>{{ 'projects.search-and-filter.datetime' | translate }}</label>
+                <label for='date-time-search-field'>{{ 'projects.search-and-filter.datetime' | transloco }}</label>
                 <p-date-picker inputId='date-time-search-field'
                                fluid
                                showButtonBar
@@ -25,7 +25,7 @@
                                [formControl]='dateTimeSearched' />
             </div>
             <div class='field'>
-                <label for='visibility-search-field'>{{ 'projects.search-and-filter.visibility' | translate }}</label>
+                <label for='visibility-search-field'>{{ 'projects.search-and-filter.visibility' | transloco }}</label>
                 <p-select inputId='visibility-search-field'
                           fluid
                           [options]='facade.visibilitiesMetadata()'
@@ -39,14 +39,14 @@
             @if (CurrentUserHelper.hasUserAuthority(registryFacade.currentUser(), UserAuthority.REGISTRY_PROJECT_R)) {
                 <div class='flex items-center'>
                     <label for='with-profile-search-field'
-                           class='me-2'>{{ 'projects.search-and-filter.with-profile' | translate }}</label>
+                           class='me-2'>{{ 'projects.search-and-filter.with-profile' | transloco }}</label>
                     <p-toggle-switch inputId='with-profile-search-field'
                                      (onChange)='loadPage(pageEvent)'
                                      [formControl]='withProfile' />
                 </div>
             }
             <p-button (onClick)='loadPage(pageEvent)'
-                      [label]='"global.actions.search-and-filter" | translate'
+                      [label]='"global.actions.search-and-filter" | transloco'
                       outlined
                       rounded
                       icon='pi pi-search'
@@ -59,7 +59,7 @@
                       severity='success'
                       outlined
                       rounded
-                      [label]='registryFacade.tinyScreen() ? "" : "global.actions.create" | translate'
+                      [label]='registryFacade.tinyScreen() ? "" : "global.actions.create" | transloco'
                       icon='pi pi-plus'
                       [routerLink]='ProjectRoutesEnum.CREATE' />
         }
@@ -70,15 +70,15 @@
     @if (!hasFilters()) {
         <ng-template appTemplate='empty'>
             <div class='p-6'>
-                <h2>{{ 'global.welcome.title' | translate }}</h2>
+                <h2>{{ 'global.welcome.title' | transloco }}</h2>
                 <app-info />
                 <div class='flex flex-col justify-center items-center'>
-                    <p>{{ 'global.welcome.begin' | translate }}</p>
+                    <p>{{ 'global.welcome.begin' | transloco }}</p>
                     <p-button class='m-1'
                               severity='success'
                               outlined
                               rounded
-                              [label]='"global.welcome.create-project" | translate'
+                              [label]='"global.welcome.create-project" | transloco'
                               icon='pi pi-plus'
                               [routerLink]='ProjectRoutesEnum.CREATE' />
                 </div>

@@ -8,7 +8,7 @@ import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
 import { CurrentUserModel } from '@shared/models/model/current-user.model'
 import { ContextMenu } from 'primeng/contextmenu'
 import { Ripple } from 'primeng/ripple'
-import { TranslatePipe } from '@ngx-translate/core'
+import {TranslocoPipe} from '@jsverse/transloco'
 import { CommunicationHelper } from '@shared/helpers/communication.helper'
 import { CommunicationFacade } from '@pages/projects/[projectId]/movements/communication/data/state/communication.facade'
 import { MenuItem } from 'primeng/api'
@@ -29,7 +29,7 @@ import { DateHelper } from '@shared/helpers/date.helper'
         DateFormatPipe,
         ContextMenu,
         Ripple,
-        TranslatePipe,
+        TranslocoPipe,
         MessageComponent,
         SeverityTagComponent,
 
@@ -144,7 +144,7 @@ export class DialogElementComponent extends GenericElementComponent {
                 return `${lastEditor.firstName} ${lastEditor.lastName}`
             }
             default:
-                return this.translateService.instant( 'communications.no-author' )
+                return this.translateService.translate( 'communications.no-author' )
         }
     }
 }

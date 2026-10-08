@@ -50,7 +50,7 @@ export class ActivityFacade extends GenericProjectElementFacade {
         return computed( (): SelectItem<boolean | undefined>[] => items().map(
             (status: SelectItem<boolean | undefined>): SelectItem<boolean | undefined> => ({
                 ...status,
-                label: this.translateService.instant( status.label! ),
+                label: this.translateService.translate( status.label! ),
             }),
         ) )
     }

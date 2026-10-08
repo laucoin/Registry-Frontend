@@ -1,16 +1,16 @@
 <app-form [form]='form' [loading]='loading()' [error]='error()'>
-    <h2>{{ 'project-profiles.form.title.create' | translate : { name: registryFacade.selectedProject()?.name } }}</h2>
+    <h2>{{ 'project-profiles.form.title.create' | transloco : { name: registryFacade.selectedProject()?.name } }}</h2>
     <p-card>
         <form [formGroup]='form'>
             <div class='field'>
-                <label for='role' appRequired>{{ 'project-profiles.form.role' | translate }}</label>
+                <label for='role' appRequired>{{ 'project-profiles.form.role' | transloco }}</label>
                 <p-select
                         inputId='role'
                         fluid
                         [loading]='!facade.projectProfileAssignableRolesMetadata()'
                         [options]='facade.projectProfileAssignableRolesMetadata()'
                         [formControl]='role'
-                        [placeholder]='"project-profiles.form.placeholder.role" | translate: {
+                        [placeholder]='"project-profiles.form.placeholder.role" | transloco: {
                             role: facade.projectProfileAssignableRolesMetadata().length > 0
                                 ? facade.projectProfileAssignableRolesMetadata()[0].label
                                 : ""
@@ -24,33 +24,33 @@
             </div>
             <div class='flex flex-wrap'>
                 <div class='left-field field'>
-                    <label for='begin-date-time'>{{ 'project-profiles.form.begin-datetime' | translate }}</label>
+                    <label for='begin-date-time'>{{ 'project-profiles.form.begin-datetime' | transloco }}</label>
                     <app-date-time-field [formControl]='beginDateTime'
                                          [invalid]='FormHelper.invalid(beginDateTime)'
                                          inputId='begin-date-time'
-                                         [datePlaceholder]='"project-profiles.form.placeholder.date" | translate: {
+                                         [datePlaceholder]='"project-profiles.form.placeholder.date" | transloco: {
                                                             date: startDateExample | dateFormat: "date"
                                                          }'
-                                         [timePlaceholder]='"project-profiles.form.placeholder.time" | translate: {
+                                         [timePlaceholder]='"project-profiles.form.placeholder.time" | transloco: {
                                                             date: startDateExample | dateFormat: "time"
                                                          }' />
-                    <small class='secondary-color'>{{ 'project-profiles.form.hint.begin-date-time' | translate }}</small>
+                    <small class='secondary-color'>{{ 'project-profiles.form.hint.begin-date-time' | transloco }}</small>
                     <app-form-field-error [errors]='beginDateTime.errors'
                                           [invalid]='FormHelper.invalid(beginDateTime)'
                                           translationPrefix='project-profiles.form.error.begin-datetime' />
                 </div>
                 <div class='right-field field'>
-                    <label for='end-date-time'>{{ 'project-profiles.form.end-datetime' | translate }}</label>
+                    <label for='end-date-time'>{{ 'project-profiles.form.end-datetime' | transloco }}</label>
                     <app-date-time-field [formControl]='endDateTime'
                                          [invalid]='FormHelper.invalid(endDateTime)'
                                          inputId='end-date-time'
-                                         [datePlaceholder]='"project-profiles.form.placeholder.date" | translate: {
+                                         [datePlaceholder]='"project-profiles.form.placeholder.date" | transloco: {
                                                             date: startDateExample | dateFormat: "date"
                                                          }'
-                                         [timePlaceholder]='"project-profiles.form.placeholder.time" | translate: {
+                                         [timePlaceholder]='"project-profiles.form.placeholder.time" | transloco: {
                                                             date: startDateExample | dateFormat: "time"
                                                          }' />
-                    <small class='secondary-color'>{{ 'project-profiles.form.hint.end-date-time' | translate }}</small>
+                    <small class='secondary-color'>{{ 'project-profiles.form.hint.end-date-time' | transloco }}</small>
                     <app-form-field-error [errors]='endDateTime.errors'
                                           [invalid]='FormHelper.invalid(endDateTime)'
                                           translationPrefix='project-profiles.form.error.end-datetime' />
@@ -62,16 +62,16 @@
             <p-divider />
             <div class='field'>
                 <span class='label'
-                      appRequired>{{ 'project-profiles.form.users' | pluralTranslation: users.value | translate }}</span>
-                <label for='users' class='secondary-color'>{{ 'project-profiles.form.users.search' | translate }}</label>
+                      appRequired>{{ 'project-profiles.form.users' | pluralTranslation: users.value | transloco }}</span>
+                <label for='users' class='secondary-color'>{{ 'project-profiles.form.users.search' | transloco }}</label>
                 <app-select-elements-field [formControl]='users'
                                            [fluid]='true'
                                            [multiple]='true'
                                            [invalid]='FormHelper.invalid(users)'
                                            [selectionLabel]='"project-profiles.form.users.selected" | pluralTranslation:
-                                           (users.value?.length ?? 0) | translate'
-                                           [emptyMessage]='"project-profiles.form.users.empty" | translate'
-                                           [emptySelectionMessage]='"project-profiles.form.users.empty-search" | translate'
+                                           (users.value?.length ?? 0) | transloco'
+                                           [emptyMessage]='"project-profiles.form.users.empty" | transloco'
+                                           [emptySelectionMessage]='"project-profiles.form.users.empty-search" | transloco'
                                            [suggestions]='facade.searchedUsersMetadata()'
                                            [selectItemBuilder]='UserHelper.toSelectItem'
                                            inputId='users'
@@ -85,13 +85,13 @@
     <div class='flex pt-6 justify-center items-center'>
         <p-button
                 (onClick)='navigateToRedirectUri()'
-                [label]='"global.actions.cancel" | translate'
+                [label]='"global.actions.cancel" | transloco'
                 text
                 rounded />
         <p-button
                 class='ms-2'
                 (onClick)='submit()'
-                [label]='"project-profiles.actions.invite-user" | pluralTranslation: users.value?.length | translate'
+                [label]='"project-profiles.actions.invite-user" | pluralTranslation: users.value?.length | transloco'
                 rounded
                 outlined
                 icon='pi pi-user-plus'

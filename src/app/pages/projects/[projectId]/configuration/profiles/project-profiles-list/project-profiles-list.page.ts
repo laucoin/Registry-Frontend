@@ -4,7 +4,7 @@ import {PageEventModel} from '@shared/models/model/page-event.model'
 import {ProjectProfileFacade} from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.facade'
 import {ListComponent} from '@shared/ui/common/list/list.component'
 import {RegistryTemplateDirective} from '@shared/directives/registry-template.directive'
-import {TranslatePipe} from '@ngx-translate/core'
+import {TranslocoPipe} from '@jsverse/transloco'
 import {InputTextModule} from 'primeng/inputtext'
 import {ToggleButtonModule} from 'primeng/togglebutton'
 import {
@@ -24,7 +24,7 @@ import {GenericListComponent} from '@shared/ui/base/generic-list.component'
         ListComponent,
         RegistryTemplateDirective,
         ReactiveFormsModule,
-        TranslatePipe,
+        TranslocoPipe,
         InputTextModule,
         ToggleButtonModule,
         ProjectProfileElementComponent,

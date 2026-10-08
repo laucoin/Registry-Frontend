@@ -6,25 +6,25 @@
     <app-form-error [error]='error()' />
     <h2>
         {{
-            (("movements.form.title" | formTitle: movement()) + "." + (type.value ?? "none")) | translate: {
+            (("movements.form.title" | formTitle: movement()) + "." + (type.value ?? "none")) | transloco: {
                 datetime: movement()?.dateTime | dateFormat: "datetime"
             }
         }}
     </h2>
     <p-stepper [(value)]='activeTab' [value]='1' [linear]='true'>
         <p-step-item [value]='1'>
-            <p-step>{{ 'movements.form.title.information' | translate }}</p-step>
+            <p-step>{{ 'movements.form.title.information' | transloco }}</p-step>
             <p-step-panel>
                 <ng-template #content let-activateCallback='activateCallback' [formGroup]='informationForm'>
                     <div class='p-2'>
                         <div class='flex flex-wrap'>
                             <div class='left-field field'>
-                                <label for='datetime' appRequired>{{ 'movements.form.datetime' | translate }}</label>
+                                <label for='datetime' appRequired>{{ 'movements.form.datetime' | transloco }}</label>
                                 <p-date-picker [formControl]='dateTime'
                                                showButtonBar
                                                readonlyInput
                                                appendTo='body'
-                                               [placeholder]='"movements.form.placeholder.datetime" | translate: {
+                                               [placeholder]='"movements.form.placeholder.datetime" | transloco: {
                                                    date: now | dateFormat: "date",
                                                    time: now | dateFormat: "time",
                                                }'
@@ -38,13 +38,13 @@
                                                       translationPrefix='movements.form.error.datetime'/>
                             </div>
                             <div class='right-field field'>
-                                <label for='type' appRequired>{{ 'movements.form.type' | translate }}</label>
+                                <label for='type' appRequired>{{ 'movements.form.type' | transloco }}</label>
                                 <p-select
                                         fluid
                                         inputId='type'
                                         appendTo='body'
                                         [options]='facade.movementTypesMetadata()'
-                                        [placeholder]='"movements.form.placeholder.type" | translate'
+                                        [placeholder]='"movements.form.placeholder.type" | transloco'
                                         [formControl]='type'
                                         (onChange)='handleTypeChange($event.value)'
                                         (keydown.enter)='submit()'
@@ -56,7 +56,7 @@
                             </div>
                         </div>
                         <div class='field'>
-                            <span class='label' appRequired>{{ 'movements.form.content-kind' | translate }}</span>
+                            <span class='label' appRequired>{{ 'movements.form.content-kind' | transloco }}</span>
                             <div class='radio-button-group'>
                                 @for (type of facade.participantTypesMetadata(); track type.value) {
                                     <div class='radio-button'>
@@ -75,12 +75,12 @@
                         <div class='flex pt-6 justify-between'>
                             <p-button
                                     (onClick)='navigateToRedirectUri()'
-                                    [label]='"global.actions.cancel" | translate'
+                                    [label]='"global.actions.cancel" | transloco'
                                     text
                                     rounded/>
                             <p-button
                                     (onClick)='FormHelper.isFormValid(informationForm) ? activateCallback(2) : undefined'
-                                    [label]='registryFacade.tinyScreen() ? "" : "global.actions.next" | translate'
+                                    [label]='registryFacade.tinyScreen() ? "" : "global.actions.next" | transloco'
                                     rounded
                                     icon='pi pi-arrow-down'
                                     iconPos='right'/>
@@ -91,13 +91,13 @@
         </p-step-item>
 
         <p-step-item [value]='2'>
-            <p-step>{{ 'movements.form.title.content' | translate }}</p-step>
+            <p-step>{{ 'movements.form.title.content' | transloco }}</p-step>
             <p-step-panel>
                 <ng-template #content let-activateCallback='activateCallback'>
                     <div class='p-2'>
                         @if (reasonRequired()) {
                             <div class='field'>
-                                <label for='reason' appRequired>{{ 'movements.form.reason.name' | translate }}</label>
+                                <label for='reason' appRequired>{{ 'movements.form.reason.name' | transloco }}</label>
                                 <p-auto-complete inputId='reason'
                                                  fluid
                                                  completeOnFocus
@@ -106,7 +106,7 @@
                                                  appendTo='body'
                                                  optionLabel='label'
                                                  optionValue='value'
-                                                 [placeholder]='"movements.form.placeholder.reason" | translate'
+                                                 [placeholder]='"movements.form.placeholder.reason" | transloco'
                                                  [formControl]='reason'
                                                  [suggestions]='facade.searchedReasonAndActivityMetadata()'
                                                  (keydown.enter)='submit()'
@@ -115,7 +115,7 @@
                                                  (onSelect)='selectedReason.set($event.value)'
                                                  (completeMethod)='handleReasonsAndActivitiesSearch($event.query)'>
                                     <ng-template #empty>
-                                        <span>{{ 'movements.form.reason.empty-search' | translate }}</span>
+                                        <span>{{ 'movements.form.reason.empty-search' | transloco }}</span>
                                     </ng-template>
                                 </p-auto-complete>
                                 <app-form-field-error [errors]='reason.errors'
@@ -126,15 +126,15 @@
                         } @if (isContentSelection()) {
                         <div class='field'>
                             <span class='label'
-                                  appRequired>{{ 'movements.form.content.registered' | pluralTranslation: participantContent.value | translate }}</span>
+                                  appRequired>{{ 'movements.form.content.registered' | pluralTranslation: participantContent.value | transloco }}</span>
                             <label for='content'
-                                   class='secondary-color'>{{ 'movements.form.content.registered.search' | translate }}</label>
+                                   class='secondary-color'>{{ 'movements.form.content.registered.search' | transloco }}</label>
                             <app-movement-content-field [formControl]='participantContent'
                                                         [invalid]='FormHelper.invalid(participantContent)'
                                                         [suggestions]='facade.searchedParticipantAndGroupMetadata()'
                                                         [interpretedMovementType]='interpretedMovementType()'
-                                                        [selectionLabel]='"movements.form.content.registered.selected" | pluralTranslation: participantContent.value | translate'
-                                                        [emptyMessage]='"movements.form.content.registered.empty" | translate'
+                                                        [selectionLabel]='"movements.form.content.registered.selected" | pluralTranslation: participantContent.value | transloco'
+                                                        [emptyMessage]='"movements.form.content.registered.empty" | transloco'
                                                         [fluid]='true'
                                                         inputId='content'
                                                         (handleSearch)='handleParticipantsAndGroupsSearch($event.query)'/>
@@ -146,7 +146,7 @@
                         <div class='field'>
                                 <span class='label'>{{
                                         'movements.form.content.guest' | pluralTranslation: guestContent.length |
-                                            translate
+                                            transloco
                                     }}</span>
                             @for (_ of guestContent.controls; track $index) {
                                 <div class='flex flex-row items-center'>
@@ -158,9 +158,9 @@
                                         <div class='flex flex-wrap'>
                                             <div class='left-field field'>
                                                 <label [for]='"first-name_" + $index'
-                                                       appRequired>{{ 'participants.form.firstname' | translate }}</label>
+                                                       appRequired>{{ 'participants.form.firstname' | transloco }}</label>
                                                 <input [formControl]='firstName($index)'
-                                                       [placeholder]='"participants.form.placeholder.firstname" | translate'
+                                                       [placeholder]='"participants.form.placeholder.firstname" | transloco'
                                                        (keydown.enter)='submit()'
                                                        [id]='"first-name_" + $index'
                                                        pSize='small'
@@ -173,10 +173,10 @@
                                             <div class='right-field field'>
                                                 <label [for]='"last-name_" + $index' appRequired>{{
                                                         'participants.form.lastname' |
-                                                            translate
+                                                            transloco
                                                     }}</label>
                                                 <input [formControl]='lastName($index)'
-                                                       [placeholder]='"participants.form.placeholder.lastname" | translate'
+                                                       [placeholder]='"participants.form.placeholder.lastname" | transloco'
                                                        (keydown.enter)='submit()'
                                                        [id]='"last-name_" + $index'
                                                        pSize='small'
@@ -189,14 +189,14 @@
                                         </div>
                                         <div class='field'>
                                             <label [for]='"birthday_" + $index'
-                                                   appRequired>{{ 'participants.form.birthday' | translate }}</label>
+                                                   appRequired>{{ 'participants.form.birthday' | transloco }}</label>
                                             <p-date-picker [formControl]='birthday($index)'
                                                            showButtonBar
                                                            showIcon
                                                            size='small'
                                                            appendTo='body'
                                                            [showOnFocus]='false'
-                                                           [placeholder]='"participants.form.placeholder.birthday" | translate'
+                                                           [placeholder]='"participants.form.placeholder.birthday" | transloco'
                                                            [touchUI]='registryFacade.tinyScreen()'
                                                            (keydown.enter)='submit()'
                                                            [id]='"birthday_" + $index'
@@ -217,7 +217,7 @@
                                       icon='pi pi-plus'
                                       rounded
                                       size='small'
-                                      [label]='"movements.form.content.guest.add" | translate'
+                                      [label]='"movements.form.content.guest.add" | transloco'
                                       severity='secondary'/>
                         </div>
                         <app-form-field-error [errors]='guestContent.errors'
@@ -227,14 +227,14 @@
                         <div class='flex pt-6 justify-between'>
                             <p-button
                                     (onClick)='activateCallback(1)'
-                                    [label]='"global.actions.previous" | translate'
+                                    [label]='"global.actions.previous" | transloco'
                                     icon='pi pi-arrow-up'
                                     text
                                     rounded/>
                             @if (isEligibleToVehicle() && contentType.value === ParticipantTypeEnum.REGISTERED) {
                                 <p-button
                                         (onClick)='FormHelper.isFormValid(contentForm) ? activateCallback(3) : undefined'
-                                        [label]='registryFacade.tinyScreen() ? "" : "global.actions.next" | translate'
+                                        [label]='registryFacade.tinyScreen() ? "" : "global.actions.next" | transloco'
                                         rounded
                                         outlined
                                         icon='pi pi-arrow-down'
@@ -242,7 +242,7 @@
                             } @else {
                             <p-button
                                     (onClick)='submit()'
-                                    [label]='registryFacade.tinyScreen() ? "" : movement() | formButton | translate'
+                                    [label]='registryFacade.tinyScreen() ? "" : movement() | formButton | transloco'
                                     rounded
                                     outlined
                                     [icon]='movement() | formIcon'
@@ -257,14 +257,14 @@
 
         @if (isEligibleToVehicle() && contentType.value === ParticipantTypeEnum.REGISTERED) {
             <p-step-item [value]='3'>
-                <p-step>{{ 'movements.form.title.vehicle' | translate }}</p-step>
+                <p-step>{{ 'movements.form.title.vehicle' | transloco }}</p-step>
                 <p-step-panel>
                     <ng-template #content let-activateCallback='activateCallback'>
                         <div class='p-2'>
                             <div class='field'>
-                                <span class='label'>{{ 'movements.form.vehicles' | pluralTranslation: vehiclesWithDrivers.length | translate }}</span>
+                                <span class='label'>{{ 'movements.form.vehicles' | pluralTranslation: vehiclesWithDrivers.length | transloco }}</span>
                                 <label for='vehicles-drivers'
-                                       class='secondary-color'>{{ 'movements.form.vehicles.search' | translate }}</label>
+                                       class='secondary-color'>{{ 'movements.form.vehicles.search' | transloco }}</label>
                                 <p-auto-complete class='no-autocomplete-item'
                                                  multiple
                                                  inputId='vehicles-drivers'
@@ -274,12 +274,12 @@
                                                  (completeMethod)='handleVehiclesSearch($event.query)'>
                                     <ng-template #selecteditem/>
                                     <ng-template #empty>
-                                        <div class='secondary-color'>{{ 'movements.form.vehicles.empty-search' | translate }}</div>
+                                        <div class='secondary-color'>{{ 'movements.form.vehicles.empty-search' | transloco }}</div>
                                     </ng-template>
                                 </p-auto-complete>
                                 <div class='mt-4 secondary-color'>
                                     {{
-                                        'movements.form.vehicles.selected' | pluralTranslation: vehiclesWithDrivers.value | translate
+                                        'movements.form.vehicles.selected' | pluralTranslation: vehiclesWithDrivers.value | transloco
                                     }}
                                 </div>
                                 @for (_ of vehiclesWithDrivers.controls; track $index) {
@@ -296,7 +296,7 @@
                                                                 <span class='ms-2'>{{
                                                                         ('movements.form.warning.vehicle.' +
                                                                             vehicle($index).value.status.value) |
-                                                                            translate
+                                                                            transloco
                                                                     }}</span>
                                                             }
                                                         </div>
@@ -305,12 +305,12 @@
                                                 <p-select [inputId]='"driver_" + $index' fluid
                                                           [options]='drivers()'
                                                           [formControl]='control'
-                                                          [placeholder]='"movements.form.driver.title" | translate'
+                                                          [placeholder]='"movements.form.driver.title" | transloco'
                                                           appendTo='body'
                                                           optionLabel='label'
                                                           optionValue='value'>
                                                     <ng-template #empty>
-                                                        <div class='secondary-color'>{{ 'movements.form.driver.empty' | translate }}</div>
+                                                        <div class='secondary-color'>{{ 'movements.form.driver.empty' | transloco }}</div>
                                                     </ng-template>
                                                 </p-select>
                                                 <p-inputgroup-addon>
@@ -328,7 +328,7 @@
                                 } @empty {
                                 <div class='list-box mt-2'>
                                     <div class='item empty-message'>
-                                        <div class='ms-2 secondary-color'>{{ 'movements.form.vehicles.empty' | translate }}
+                                        <div class='ms-2 secondary-color'>{{ 'movements.form.vehicles.empty' | transloco }}
                                         </div>
                                     </div>
                                 </div>
@@ -337,14 +337,14 @@
                             <div class='flex pt-6 justify-between'>
                                 <p-button
                                         (onClick)='activateCallback(2)'
-                                        [label]='"global.actions.previous" | translate'
+                                        [label]='"global.actions.previous" | transloco'
                                         icon='pi pi-arrow-up'
                                         text
                                         rounded/>
                                 <p-button
                                         class='ms-2'
                                         (onClick)='FormHelper.isFormValid(vehicleForm) ? submit() : undefined'
-                                        [label]='registryFacade.tinyScreen() ? "" : movement() | formButton | translate'
+                                        [label]='registryFacade.tinyScreen() ? "" : movement() | formButton | transloco'
                                         rounded
                                         outlined
                                         [icon]='movement() | formIcon'

@@ -12,6 +12,6 @@
 
 @if ((facade.alertCommunicationsPage()?.content?.length ?? -1) < (facade.alertCommunicationsPage()?.totalElements ?? 0)) {
     <div class='flex justify-center'>
-        <p class='secondary-color'>{{ 'communications.limited-feature' | translate }}</p>
+        <p class='secondary-color'>{{ 'communications.limited-feature' | transloco }}</p>
     </div>
 }

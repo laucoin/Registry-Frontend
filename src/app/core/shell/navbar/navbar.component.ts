@@ -2,7 +2,7 @@ import { Component, computed, HostListener, inject, signal, Signal, WritableSign
 import { Menubar } from 'primeng/menubar'
 import { GenericComponent } from '@shared/ui/base/generic.component'
 import { Avatar } from 'primeng/avatar'
-import { TranslatePipe } from '@ngx-translate/core'
+import {TranslocoPipe} from '@jsverse/transloco'
 import { RouterEvent, RouterLink } from '@angular/router'
 import { Popover } from 'primeng/popover'
 import { Menu } from 'primeng/menu'
@@ -28,7 +28,7 @@ import { InfoComponent } from '@shared/ui/common/info/info.component'
     imports: [
         Menubar,
         Avatar,
-        TranslatePipe,
+        TranslocoPipe,
         RouterLink,
         Popover,
         Menu,
@@ -47,22 +47,22 @@ export class NavbarComponent extends GenericComponent {
     protected readonly maxMenuTextLength: number = 26
     protected readonly userMenuItems: Signal<MenuItem[]> = computed( (): MenuItem[] => [
         {
-            label: this.translateService.instant( 'global.menu.profiles' ),
+            label: this.translateService.translate( 'global.menu.profiles' ),
             icon: 'pi pi-unlock',
             url: RegistryRouteEnum.USERS_PROFILES,
         },
         {
-            label: this.translateService.instant( 'global.menu.invitations' ),
+            label: this.translateService.translate( 'global.menu.invitations' ),
             icon: 'pi pi-envelope',
             url: RegistryRouteEnum.USERS_INVITATIONS,
         },
         {
-            label: this.translateService.instant( 'global.menu.settings' ),
+            label: this.translateService.translate( 'global.menu.settings' ),
             icon: 'pi pi-cog',
             url: RegistryRouteEnum.USERS_SETTINGS,
         },
         {
-            label: this.translateService.instant( 'global.menu.help' ),
+            label: this.translateService.translate( 'global.menu.help' ),
             icon: 'pi pi-question-circle',
             visible: this.registryFacade.tinyScreen(),
             command: (): void => {

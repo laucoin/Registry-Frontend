@@ -2,8 +2,8 @@ import { inject } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { patchState, signalStore, withHooks, withMethods, withProps, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
-import { TranslateService } from '@ngx-translate/core'
-import { catchError, EMPTY, finalize, map, Observable, pipe, switchMap, tap } from 'rxjs'
+import {TranslocoService} from '@jsverse/transloco'
+import { catchError, EMPTY, finalize, map, Observable, pipe, skip, switchMap, tap } from 'rxjs'
 import { SelectItem } from 'primeng/api'
 import { PageModel } from '@shared/models/model/page.model'
 import { MovementModel } from '@shared/models/model/movement.model'
@@ -244,7 +244,7 @@ export const ParticipantStore = signalStore(
     withHooks( {
         onInit (store): void {
             store.fetchPresencesStatus()
-            inject( TranslateService ).onLangChange.pipe( takeUntilDestroyed() ).subscribe( (): void => {
+            inject( TranslocoService ).langChanges$.pipe( skip( 1 ), takeUntilDestroyed() ).subscribe( (): void => {
                 store.fetchPresencesStatus()
             } )
         },

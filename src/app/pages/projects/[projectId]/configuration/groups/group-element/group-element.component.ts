@@ -2,7 +2,7 @@ import { Component, computed, inject, input, InputSignal, Signal } from '@angula
 import { GroupModel } from '@shared/models/model/group.model'
 import { GroupFacade } from '@pages/projects/[projectId]/configuration/groups/data/state/group.facade'
 import { ElementCardComponent } from '@shared/ui/common/element-card/element-card.component'
-import { TranslatePipe } from '@ngx-translate/core'
+import {TranslocoPipe} from '@jsverse/transloco'
 import { TitleCasePipe } from '@angular/common'
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
 import { SeverityTagComponent } from '@shared/ui/common/severity-tag/severity-tag.component'
@@ -20,7 +20,7 @@ import { AvailabilityStatusEnum } from '@shared/models/enumeration/availability-
     selector: 'app-group-element',
     imports: [
         ElementCardComponent,
-        TranslatePipe,
+        TranslocoPipe,
         TitleCasePipe,
         SeverityTagComponent,
         PluralTranslationPipe,

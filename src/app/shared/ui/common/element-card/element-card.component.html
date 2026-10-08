@@ -33,7 +33,7 @@
                             <ng-template #item let-item>
                                 <a pRipple class='flex items-center py-2 px-4 cursor-pointer'>
                                     <span [class]='item.icon'></span>&nbsp;
-                                    <span class='ms-2'>{{ item.label | translate }}</span>
+                                    <span class='ms-2'>{{ item.label | transloco }}</span>
                                 </a>
                             </ng-template>
                         </p-menu>
@@ -43,7 +43,7 @@
                     </div>
                 </p-popover>
                 <p-button
-                        [ariaLabel]='"menu.options" | translate'
+                        [ariaLabel]='"menu.options" | transloco'
                         (onClick)='$event.stopPropagation(); menu.toggle($event)'
                         rounded
                         text
@@ -59,7 +59,7 @@
             <ng-template #item let-item>
                 <a pRipple class='flex items-center p-2 cursor-pointer'>
                     <span [class]='item.icon'></span>&nbsp;
-                    <span class='ms-2'>{{ item.label | translate }}</span>
+                    <span class='ms-2'>{{ item.label | transloco }}</span>
                 </a>
             </ng-template>
         </p-context-menu>

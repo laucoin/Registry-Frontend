@@ -1,5 +1,5 @@
 import { inject, Pipe, PipeTransform } from '@angular/core'
-import { TranslateService } from '@ngx-translate/core'
+import {TranslocoService} from '@jsverse/transloco'
 import { IntervalModel } from '@shared/models/model/interval.model'
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
 import { SelectItem } from 'primeng/api'
@@ -10,7 +10,7 @@ import { StringHelper } from '@shared/helpers/string.helper'
 } )
 export class IntervalPipe implements PipeTransform {
     private readonly pluralTranslation: PluralTranslationPipe = inject( PluralTranslationPipe )
-    private readonly translateService: TranslateService = inject( TranslateService )
+    private readonly translateService: TranslocoService = inject( TranslocoService )
 
     public transform (
         value: IntervalModel | undefined,
@@ -45,11 +45,11 @@ export class IntervalPipe implements PipeTransform {
     private buildLabel (first: SelectItem<number>, second: SelectItem<number>, translationKey: string): string {
         const firstKey: string = this.pluralTranslation.transform( `${translationKey}.${first.label}`, first.value )
         const secondKey: string = this.pluralTranslation.transform( `${translationKey}.${second.label}`, second.value )
-        return this.translateService.instant(
+        return this.translateService.translate(
             `${translationKey}.interval`,
             {
-                first: this.translateService.instant( firstKey, { count: first.value } ),
-                second: this.translateService.instant( secondKey, { count: second.value } ),
+                first: this.translateService.translate( firstKey, { count: first.value } ),
+                second: this.translateService.translate( secondKey, { count: second.value } ),
             },
         )
     }

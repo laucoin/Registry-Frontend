@@ -1,5 +1,5 @@
 import { Component, input, InputSignal } from '@angular/core'
-import { TranslatePipe } from '@ngx-translate/core'
+import {TranslocoPipe} from '@jsverse/transloco'
 import { ErrorModel } from '@shared/models/model/error.model'
 import { MessageModule } from 'primeng/message'
 
@@ -7,7 +7,7 @@ import { MessageModule } from 'primeng/message'
 	selector: 'app-form-error',
 	imports: [
 		MessageModule,
-		TranslatePipe,
+		TranslocoPipe,
 	],
 	templateUrl: './form-error.component.html',
 })

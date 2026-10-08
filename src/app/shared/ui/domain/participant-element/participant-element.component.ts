@@ -3,7 +3,7 @@ import {ParticipantModel} from '@shared/models/model/participant.model'
 import {ParticipantFacade} from '@pages/projects/[projectId]/configuration/participants/data/state/participant.facade'
 import {ElementCardComponent} from '@shared/ui/common/element-card/element-card.component'
 import {TitleCasePipe, UpperCasePipe} from '@angular/common'
-import {TranslatePipe} from '@ngx-translate/core'
+import {TranslocoPipe} from '@jsverse/transloco'
 import {RegistryRouteEnum} from '@core/routing/registry-route.enum'
 import {Avatar} from 'primeng/avatar'
 import {LayerComponent} from '@shared/ui/common/layer/layer.component'
@@ -28,7 +28,7 @@ import {MenuItem} from 'primeng/api'
         ElementCardComponent,
         TitleCasePipe,
         UpperCasePipe,
-        TranslatePipe,
+        TranslocoPipe,
         Avatar,
         LayerComponent,
         Listbox,

@@ -2,7 +2,7 @@ import { Component } from '@angular/core'
 import { Card } from 'primeng/card'
 import { Avatar } from 'primeng/avatar'
 import { TitleCasePipe, UpperCasePipe } from '@angular/common'
-import { TranslatePipe } from '@ngx-translate/core'
+import {TranslocoPipe} from '@jsverse/transloco'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
 import { SeverityTagComponent } from '@shared/ui/common/severity-tag/severity-tag.component'
 import { SelectButton } from 'primeng/selectbutton'
@@ -19,7 +19,7 @@ import { GenericElementComponent } from '@shared/ui/base/generic-element.compone
         Avatar,
         TitleCasePipe,
         UpperCasePipe,
-        TranslatePipe,
+        TranslocoPipe,
         DateFormatPipe,
         SeverityTagComponent,
         SelectButton,

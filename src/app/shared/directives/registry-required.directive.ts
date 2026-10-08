@@ -1,5 +1,5 @@
 import { Directive, ElementRef, inject, OnInit, Renderer2 } from '@angular/core'
-import { TranslateService } from '@ngx-translate/core'
+import {TranslocoService} from '@jsverse/transloco'
 
 @Directive( {
     selector: '[appRequired]',
@@ -7,7 +7,7 @@ import { TranslateService } from '@ngx-translate/core'
 export class RegistryRequiredDirective implements OnInit {
     private el: ElementRef = inject( ElementRef )
     private renderer: Renderer2 = inject( Renderer2 )
-    private translateService: TranslateService = inject( TranslateService )
+    private translateService: TranslocoService = inject( TranslocoService )
 
     public ngOnInit (): void {
         this.addRequiredSpan()
@@ -15,7 +15,7 @@ export class RegistryRequiredDirective implements OnInit {
 
     private addRequiredSpan (): void {
         const spanElement: unknown = this.renderer.createElement( 'span' )
-        const translatedText: string | unknown = this.translateService.instant( 'global.form.required' )
+        const translatedText: string | unknown = this.translateService.translate( 'global.form.required' )
 
         this.renderer.setProperty( spanElement, 'innerHTML', ` - ${translatedText}` )
         this.setStyle( spanElement )

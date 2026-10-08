@@ -28,7 +28,7 @@
                 <div class='flex justify-end'>
                     <small class='secondary-color'>
                         @if (updated()) {
-                            ({{ 'global.updated' | translate }})
+                            ({{ 'global.updated' | transloco }})
                         }
                         {{ communication().dateTime | dateFormat: 'datetime' }}
                     </small>
@@ -42,7 +42,7 @@
     <ng-template #item let-item>
         <a pRipple class='flex items-center p-2 cursor-pointer'>
             <span [class]='item.icon'></span>&nbsp;
-            <span class='ms-2'>{{ item.label | translate }}</span>
+            <span class='ms-2'>{{ item.label | transloco }}</span>
         </a>
     </ng-template>
 </p-context-menu>

@@ -5,7 +5,7 @@ import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms'
 import {PageEventModel} from '@shared/models/model/page-event.model'
 import {ListComponent} from '@shared/ui/common/list/list.component'
 import {RegistryTemplateDirective} from '@shared/directives/registry-template.directive'
-import {TranslatePipe} from '@ngx-translate/core'
+import {TranslocoPipe} from '@jsverse/transloco'
 import {InputTextModule} from 'primeng/inputtext'
 import {ToggleButtonModule} from 'primeng/togglebutton'
 import {MovementElementComponent} from '@shared/ui/domain/movement-element/movement-element.component'
@@ -29,7 +29,7 @@ import {ElementSkeletonComponent} from '@shared/ui/common/element-skeleton/eleme
         ListComponent,
         RegistryTemplateDirective,
         ReactiveFormsModule,
-        TranslatePipe,
+        TranslocoPipe,
         InputTextModule,
         ToggleButtonModule,
         SelectModule,

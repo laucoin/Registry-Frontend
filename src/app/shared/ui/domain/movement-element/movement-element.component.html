@@ -32,7 +32,7 @@
                                   (onClick)='participantsLayerOpened.set(true)'
                                   (keydown.enter)='participantsLayerOpened.set(true)'
                                   [label]='"movements.content" | pluralTranslation: total() |
-                                    translate: {
+                                    transloco: {
                                     name: (movement().content[0].participant!.firstName | titlecase) + " " + (movement().content[0].participant!.lastName | uppercase) | truncate: 30,
                                     total: total()
                                   }'/>
@@ -46,7 +46,7 @@
                     <p-skeleton width='10rem' borderRadius='1rem'/>
                 } @else {
                 <p-button [icon]='reversedIcon()'
-                          [label]='("movements.actions.reverse." + movement().type.value) | translate'
+                          [label]='("movements.actions.reverse." + movement().type.value) | transloco'
                           styleClass='mt-2'
                           severity='info'
                           size='small'
@@ -61,7 +61,7 @@
         <div class='mt-4 flex items-center' [class.justify-center]='registryFacade.tinyScreen()'>
             <p-button (onClick)='communicationsLayerOpened.set(true)'
                       [icon]='ProjectOptionEnum.COMMUNICATION | optionIcon'
-                      [label]='"movements.communication.see-communication" | translate'
+                      [label]='"movements.communication.see-communication" | transloco'
                       rounded
                       outlined
                       size='small'
@@ -71,22 +71,22 @@
 </app-element-card>
 
 <app-layer [(visible)]='participantsLayerOpened'
-           [title]='"movements.content-layer-title" | pluralTranslation: movement().content | translate'>
+           [title]='"movements.content-layer-title" | pluralTranslation: movement().content | transloco'>
     <p-tabs [(value)]='participantLayerActiveTab' scrollable class='max-panel-height'>
         <p-tablist>
             <p-tab [value]='1'>
                 <p-tag [value]='movement().content.length.toString()' class='me-1'/>
-                {{ 'global.people.all' | translate }}
+                {{ 'global.people.all' | transloco }}
             </p-tab>
             @if (adults().length > 0) {
                 <p-tab [value]='2'>
                     <p-tag [value]='adults().length.toString()' severity='info' class='me-1'/>
-                    {{ 'global.people.major' | pluralTranslation: adults() | translate }}
+                    {{ 'global.people.major' | pluralTranslation: adults() | transloco }}
                 </p-tab>
             } @if (children().length > 0) {
             <p-tab [value]='3'>
                 <p-tag [value]='children().length.toString()' severity='info' class='me-1'/>
-                {{ 'global.people.minor' | pluralTranslation: children() | translate }}
+                {{ 'global.people.minor' | pluralTranslation: children() | transloco }}
             </p-tab>
         } @for (pool of pools() | keyvalue; track pool.key; let i = $index) {
             <p-tab [value]='4 + i'>
@@ -127,7 +127,7 @@
                             @if (reversibleAuthorized()) {
                                 <div>
                                     <p-button [icon]='reversedIcon()'
-                                              [label]='("movements.actions.reverse." + movement().type.value) | translate'
+                                              [label]='("movements.actions.reverse." + movement().type.value) | transloco'
                                               styleClass='mt-2'
                                               severity='info'
                                               size='small'
@@ -228,13 +228,13 @@
             <div class='flex flex-col'>
                 <div class='layer-title'>
                     {{
-                        'movements.communication.layer.title' | translate: {movement: movement().reason?.label}
+                        'movements.communication.layer.title' | transloco: {movement: movement().reason?.label}
                     }}
                 </div>
                 @if (GenericHelper.nonNull(movement().reason)) {
                     <small class='mt-2 secondary-color'>
                         {{
-                            'movements.communication.layer.subtitle' | translate: {
+                            'movements.communication.layer.subtitle' | transloco: {
                                 movement:
                                 movement().reason?.label
                             }
@@ -243,7 +243,7 @@
                 }
             </div>
             <p-button
-                    [ariaLabel]='"menu.options" | translate'
+                    [ariaLabel]='"menu.options" | transloco'
                     (onClick)='$event.stopPropagation(); menu.toggle($event)'
                     rounded
                     text
@@ -268,7 +268,7 @@
             <ng-template #item let-item>
                 <a pRipple class='flex items-center py-2 px-4 cursor-pointer'>
                     <span [class]='item.icon'></span>&nbsp;
-                    <span class='ms-2'>{{ item.label | translate }}</span>
+                    <span class='ms-2'>{{ item.label | transloco }}</span>
                 </a>
             </ng-template>
         </p-menu>

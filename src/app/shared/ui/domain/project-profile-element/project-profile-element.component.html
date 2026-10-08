@@ -41,17 +41,17 @@
         } @else {
             <div class='invitation-form flex basis-full xl:basis-[45%]' [class.justify-center]='registryFacade.tinyScreen()'>
                 <div class='flex flex-col'>
-                    <div>{{ 'project-profiles.manage-acceptance' | translate }}</div>
+                    <div>{{ 'project-profiles.manage-acceptance' | transloco }}</div>
                     <div class='flex justify-center mt-2'>
                         <p-button
-                                [label]='"project-profiles.actions.reject" | translate'
+                                [label]='"project-profiles.actions.reject" | transloco'
                                 rounded
                                 text
                                 severity='danger'
                                 (onClick)='confirmManageAcceptance(ProfileStatusEnum.REJECTED)' />
                         <p-button
                                 class='ms-2'
-                                [label]='"project-profiles.actions.accept" | translate'
+                                [label]='"project-profiles.actions.accept" | transloco'
                                 rounded
                                 text
                                 severity='success'

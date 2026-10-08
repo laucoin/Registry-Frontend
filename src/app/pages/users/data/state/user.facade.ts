@@ -43,7 +43,7 @@ export class UserFacade extends GenericFacade {
     public readonly statusMetadata: Signal<SelectItem<boolean | undefined>[]> = computed( () =>
             this.store.metadata.status().map( (status: SelectItem<boolean | undefined>) => ({
                 ...status,
-                label: this.translateService.instant( status.label! ),
+                label: this.translateService.translate( status.label! ),
             }) ),
         )
 

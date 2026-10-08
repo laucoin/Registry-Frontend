@@ -10,7 +10,7 @@ import { Card } from 'primeng/card'
 import { FormComponent } from '@shared/ui/common/form/form.component'
 import { FormFieldErrorComponent } from '@shared/ui/common/form-field-error/form-field-error.component'
 import { RegistryRequiredDirective } from '@shared/directives/registry-required.directive'
-import { TranslatePipe } from '@ngx-translate/core'
+import {TranslocoPipe} from '@jsverse/transloco'
 import { InputText } from 'primeng/inputtext'
 import { ParticipantModel } from '@shared/models/model/participant.model'
 import { Divider } from 'primeng/divider'
@@ -37,7 +37,7 @@ import { FormIconPipe } from '@shared/helpers/pipe/form-icon.pipe'
         FormComponent,
         FormFieldErrorComponent,
         RegistryRequiredDirective,
-        TranslatePipe,
+        TranslocoPipe,
         InputText,
         ReactiveFormsModule,
         Divider,

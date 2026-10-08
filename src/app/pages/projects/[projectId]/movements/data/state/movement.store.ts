@@ -2,8 +2,8 @@ import { inject } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { patchState, signalStore, withHooks, withMethods, withProps, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
-import { TranslateService } from '@ngx-translate/core'
-import { catchError, EMPTY, finalize, map, Observable, pipe, switchMap, tap } from 'rxjs'
+import {TranslocoService} from '@jsverse/transloco'
+import { catchError, EMPTY, finalize, map, Observable, pipe, skip, switchMap, tap } from 'rxjs'
 import { SelectItem, SelectItemGroup } from 'primeng/api'
 import { PageModel } from '@shared/models/model/page.model'
 import { PairModel } from '@shared/models/model/pair.model'
@@ -111,7 +111,7 @@ export const MovementStore = signalStore(
         api: inject( MovementApi ),
         metadataApi: inject( MetadataApi ),
         registryFacade: inject( RegistryFacade ),
-        translateService: inject( TranslateService ),
+        translateService: inject( TranslocoService ),
         pluralTranslationPipe: inject( PluralTranslationPipe ),
     }) ),
     withMethods( (store) => {
@@ -276,7 +276,7 @@ export const MovementStore = signalStore(
 
                     if (participantsAndGroups.groups.length > 0) {
                         searched.push( {
-                            label: store.translateService.instant( store.pluralTranslationPipe.transform(
+                            label: store.translateService.translate( store.pluralTranslationPipe.transform(
                                 'movements.form.content.registered.searched.group',
                                 participantsAndGroups.participants,
                             ) ),
@@ -288,7 +288,7 @@ export const MovementStore = signalStore(
 
                     if (participantsAndGroups.participants?.length > 0) {
                         searched.push( {
-                            label: store.translateService.instant( store.pluralTranslationPipe.transform(
+                            label: store.translateService.translate( store.pluralTranslationPipe.transform(
                                 'movements.form.content.registered.searched.participant',
                                 participantsAndGroups.participants,
                             ) ),
@@ -324,7 +324,7 @@ export const MovementStore = signalStore(
         onInit (store): void {
             store.fetchMovementTypes()
             store.fetchParticipantTypes()
-            inject( TranslateService ).onLangChange.pipe( takeUntilDestroyed() ).subscribe( (): void => {
+            inject( TranslocoService ).langChanges$.pipe( skip( 1 ), takeUntilDestroyed() ).subscribe( (): void => {
                 store.fetchMovementTypes()
                 store.fetchParticipantTypes()
             } )

@@ -1,5 +1,5 @@
 import { Component, computed, input, InputSignal, Signal} from '@angular/core'
-import {TranslatePipe} from '@ngx-translate/core'
+import {TranslocoPipe} from '@jsverse/transloco'
 import {ToastMessageOptions} from 'primeng/api'
 import {SeverityEnum} from '@shared/models/enumeration/severity.enum'
 import {MessageComponent} from '@shared/ui/common/message/message.component'
@@ -12,7 +12,7 @@ enum InformationImageEnum {
 
 @Component({
     selector: 'app-severity-information',
-    imports: [TranslatePipe, MessageModule, MessageComponent],
+    imports: [TranslocoPipe, MessageModule, MessageComponent],
     templateUrl: './severity-information.component.html',
     styleUrl: './severity-information.component.css',
 })

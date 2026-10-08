@@ -10,7 +10,7 @@
             <ng-template #title>
                 <div class='flex justify-center items-center'>
                     <i class='pi pi-user'></i>
-                    <span class='ms-2'>{{ 'project-home.dashboard.participants.total' | pluralTranslation: totalParticipants() | translate }}</span>
+                    <span class='ms-2'>{{ 'project-home.dashboard.participants.total' | pluralTranslation: totalParticipants() | transloco }}</span>
                 </div>
             </ng-template>
             <div class='flex flex-col items-center'>
@@ -25,7 +25,7 @@
                     <b>
                         {{
                             'project-home.dashboard.participants.present' | pluralTranslation:
-                            (totalPresentRegistered() ?? 0) + (totalGuests() ?? 0) | translate
+                            (totalPresentRegistered() ?? 0) + (totalGuests() ?? 0) | transloco
                         }}
                     </b>
                     <div class='flex'>
@@ -35,7 +35,7 @@
                             } @else {
                                 <h3>{{ totalPresentRegistered() }}</h3>
                             }
-                            <small class='mt-1 secondary-color'>{{ 'project-home.dashboard.participants.registered' | pluralTranslation: totalPresentRegistered() | translate }}</small>
+                            <small class='mt-1 secondary-color'>{{ 'project-home.dashboard.participants.registered' | pluralTranslation: totalPresentRegistered() | transloco }}</small>
                         </div>
                         <p-divider layout='vertical' />
                         <div class='sub-count flex flex-col items-center basis-1/2'>
@@ -44,13 +44,13 @@
                             } @else {
                                 <h3>{{ totalGuests() }}</h3>
                             }
-                            <small class='mt-1 secondary-color'>{{ 'project-home.dashboard.participants.guest' | pluralTranslation: totalGuests() | translate }}</small>
+                            <small class='mt-1 secondary-color'>{{ 'project-home.dashboard.participants.guest' | pluralTranslation: totalGuests() | transloco }}</small>
                         </div>
                     </div>
                 </div>
                 <p-divider layout='vertical' />
                 <div class='sub-count flex flex-col items-center basis-1/2'>
-                    <b>{{ 'project-home.dashboard.participants.absent' | pluralTranslation: totalAbsentRegistered() | translate }}</b>
+                    <b>{{ 'project-home.dashboard.participants.absent' | pluralTranslation: totalAbsentRegistered() | transloco }}</b>
                     @if (facade.participantsStatusLoading()) {
                         <p-skeleton class='mt-2 mb-1' width='5rem' height='1.5rem' borderRadius='1rem' />
                     } @else {
@@ -61,7 +61,7 @@
             <ng-template #footer>
                 <i class='secondary-color last-refresh'>
                     {{
-                        'global.date-and-time-format.last-refresh' | translate
+                        'global.date-and-time-format.last-refresh' | transloco
                             : {
                                 datetime: facade.participantsStatus()?.lastRefresh | dateFormat: 'datetime',
                             }
@@ -75,7 +75,7 @@
             <ng-template #title>
                 <div class='flex justify-center items-center'>
                     <i class='pi pi-car'></i>
-                    <span class='ms-2'>{{ 'project-home.dashboard.vehicles.total' | pluralTranslation: totalVehicles() | translate }}</span>
+                    <span class='ms-2'>{{ 'project-home.dashboard.vehicles.total' | pluralTranslation: totalVehicles() | transloco }}</span>
                 </div>
             </ng-template>
             <div class='flex flex-col items-center'>
@@ -87,7 +87,7 @@
             </div>
             <div class='flex'>
                 <div class='sub-count flex flex-col items-center mb-4 basis-1/2'>
-                    <b>{{ 'project-home.dashboard.vehicles.present' | pluralTranslation: totalPresentVehicles() | translate }}</b>
+                    <b>{{ 'project-home.dashboard.vehicles.present' | pluralTranslation: totalPresentVehicles() | transloco }}</b>
                     @if (facade.vehiclesStatusLoading()) {
                         <p-skeleton class='mt-2 mb-1' width='5rem' height='1.5rem' borderRadius='1rem' />
                     } @else {
@@ -96,7 +96,7 @@
                 </div>
                 <p-divider layout='vertical' />
                 <div class='sub-count flex flex-col items-center mb-4 basis-1/2'>
-                    <b>{{ 'project-home.dashboard.vehicles.absent' | pluralTranslation: totalAbsentVehicles() | translate }}</b>
+                    <b>{{ 'project-home.dashboard.vehicles.absent' | pluralTranslation: totalAbsentVehicles() | transloco }}</b>
                     @if (facade.vehiclesStatusLoading()) {
                         <p-skeleton class='mt-2 mb-1' width='5rem' height='1.5rem' borderRadius='1rem' />
                     } @else {
@@ -107,7 +107,7 @@
             <ng-template #footer>
                 <i class='secondary-color last-refresh'>
                     {{
-                        'global.date-and-time-format.last-refresh' | translate
+                        'global.date-and-time-format.last-refresh' | transloco
                             : {
                                 datetime: facade.vehiclesStatus()?.lastRefresh | dateFormat: 'datetime',
                             }
@@ -124,7 +124,7 @@
             <i class='pi pi-gift'></i>
             <span class='ms-2'>
                 {{
-                    'project-home.dashboard.birthday' | pluralTranslation: facade.participantsBirthdays() | translate
+                    'project-home.dashboard.birthday' | pluralTranslation: facade.participantsBirthdays() | transloco
                 }}
             </span>
         </div>
@@ -154,7 +154,7 @@
 
         } @empty {
             <div class='ms-2 mt-2 mb-2'>
-                {{ 'project-home.dashboard.no-birthday' | translate }}
+                {{ 'project-home.dashboard.no-birthday' | transloco }}
             </div>
         }
     </div>

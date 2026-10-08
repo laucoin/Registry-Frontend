@@ -13,6 +13,6 @@
 
 @if ((facade.movementCommunicationsPage()?.content?.length ?? -1) < (facade.movementCommunicationsPage()?.totalElements ?? 0)) {
     <div class='flex justify-center'>
-        <p class='secondary-color'>{{ 'communications.limited-feature' | translate }}</p>
+        <p class='secondary-color'>{{ 'communications.limited-feature' | transloco }}</p>
     </div>
 }

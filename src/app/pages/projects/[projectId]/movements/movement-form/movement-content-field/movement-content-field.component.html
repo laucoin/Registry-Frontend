@@ -24,7 +24,7 @@
                     <div class='warning-tips'>
                         <i class='pi pi-exclamation-triangle'></i>
                         @if (!registryFacade.tinyScreen()) {
-                            <span class='ms-2'>{{ ('movements.form.warning.participant.' + participant.status.value) | translate }}</span>
+                            <span class='ms-2'>{{ ('movements.form.warning.participant.' + participant.status.value) | transloco }}</span>
                         }
                     </div>
                 }
@@ -47,7 +47,7 @@
 @for (groupName of Object.keys(groups()); track groupName) {
     <div class='w-full flex items-center justify-between'>
         <div>
-            {{ 'movements.form.content.registered.group' | translate: { name: groupName } }}
+            {{ 'movements.form.content.registered.group' | transloco: { name: groupName } }}
         </div>
         <p-button icon='pi pi-times'
                   size='small'

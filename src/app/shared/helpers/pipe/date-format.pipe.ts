@@ -1,5 +1,5 @@
 import { inject, Pipe, PipeTransform } from '@angular/core'
-import { TranslateService } from '@ngx-translate/core'
+import {TranslocoService} from '@jsverse/transloco'
 import { DatePipe } from '@angular/common'
 
 @Pipe( {
@@ -7,13 +7,13 @@ import { DatePipe } from '@angular/common'
 } )
 export class DateFormatPipe implements PipeTransform {
     private readonly datePipe: DatePipe = inject( DatePipe )
-    private readonly translateService: TranslateService = inject( TranslateService )
+    private readonly translateService: TranslocoService = inject( TranslocoService )
 
     public transform (value: Date | string | undefined | null, type: 'date' | 'time' | 'datetime'): string | undefined {
         const translationKey: string = `global.date-and-time-format.${type}`
         return this.datePipe.transform(
             value?.toString(),
-            this.translateService.instant( translationKey ),
+            this.translateService.translate( translationKey ),
         ) ?? undefined
     }
 }

@@ -21,7 +21,7 @@ import { GenericHelper } from '@shared/helpers/generic.helper'
 import { Button } from 'primeng/button'
 import { ParticipantHelper } from '@shared/helpers/participant.helper'
 import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum'
-import { TranslatePipe } from '@ngx-translate/core'
+import {TranslocoPipe} from '@jsverse/transloco'
 import { RegistryFacade } from '@core/registry/state/registry.facade'
 
 @Component( {
@@ -29,7 +29,7 @@ import { RegistryFacade } from '@core/registry/state/registry.facade'
     imports: [
         AutoComplete,
         Button,
-        TranslatePipe,
+        TranslocoPipe,
     ],
     providers: [
         {

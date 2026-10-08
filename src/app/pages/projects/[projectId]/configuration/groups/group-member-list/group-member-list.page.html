@@ -16,7 +16,7 @@
           emptyMessagePrefix='participants.notifications.EMPTY'>
     <ng-template appTemplate='search' [formGroup]='form' let-pageEvent>
         <div class='field'>
-            <label for='text-search-field'>{{ 'participants.search-and-filter.text' | translate }}</label>
+            <label for='text-search-field'>{{ 'participants.search-and-filter.text' | transloco }}</label>
             <input id='text-search-field'
                    type='text'
                    fluid
@@ -26,7 +26,7 @@
         </div>
         <div class='grid search-line'>
             <div class='field'>
-                <label for='status-search-field'>{{ 'participants.search-and-filter.status' | translate }}</label>
+                <label for='status-search-field'>{{ 'participants.search-and-filter.status' | transloco }}</label>
                 <p-select inputId='status-search-field'
                           fluid
                           [options]='participantFacade.presencesStatusMetadata()'
@@ -36,7 +36,7 @@
                           [formControl]='statusSearched' />
             </div>
             <div class='field'>
-                <label for='visibility-search-field'>{{ 'participants.search-and-filter.visibility' | translate }}</label>
+                <label for='visibility-search-field'>{{ 'participants.search-and-filter.visibility' | transloco }}</label>
                 <p-select inputId='visibility-search-field'
                           fluid
                           [options]='participantFacade.visibilitiesMetadata()'
@@ -48,7 +48,7 @@
         </div>
         <div class='flex justify-center'>
             <p-button (onClick)='loadPage(pageEvent)'
-                      [label]='"global.actions.search-and-filter" | translate'
+                      [label]='"global.actions.search-and-filter" | transloco'
                       outlined
                       rounded
                       icon='pi pi-search'
@@ -65,7 +65,7 @@
                       severity='info'
                       rounded
                       outlined
-                      [label]='registryFacade.tinyScreen() ? "" : "groups.actions.add-members" | translate'
+                      [label]='registryFacade.tinyScreen() ? "" : "groups.actions.add-members" | transloco'
                       icon='pi pi-user-plus' />
         }
         @if (CurrentUserHelper.hasProjectAuthority(registryFacade.currentUser(), facade.selectedProjectId(), ProjectAuthority.REGISTRY_PROJECT_PARTICIPANT_C)
@@ -75,28 +75,28 @@
                       severity='success'
                       rounded
                       outlined
-                      [label]='registryFacade.tinyScreen() ? "" : "groups.actions.create-member" | translate'
+                      [label]='registryFacade.tinyScreen() ? "" : "groups.actions.create-member" | transloco'
                       icon='pi pi-plus' />
         }
     </ng-template>
 </app-list>
 
 <app-layer [(visible)]='addMembersFormLayerOpened'
-           [title]='"groups.actions.add-members" | translate'>
+           [title]='"groups.actions.add-members" | transloco'>
     @if (addMembersParticipants) {
         <form>
             <div class='field'>
                 <span class='label'
-                      appRequired>{{ 'groups.form.members' | pluralTranslation: addMembersParticipants.value | translate }}</span>
-                <label for='members' class='secondary-color'>{{ 'groups.form.members.search' | translate }}</label>
+                      appRequired>{{ 'groups.form.members' | pluralTranslation: addMembersParticipants.value | transloco }}</span>
+                <label for='members' class='secondary-color'>{{ 'groups.form.members.search' | transloco }}</label>
                 <app-select-elements-field [formControl]='addMembersParticipants' [suggestions]='facade.searchedParticipantsMetadata()'
                                            [fluid]='true'
                                            [multiple]='true'
                                            [selectItemBuilder]='ParticipantHelper.toSelectItem'
                                            [selectionLabel]='"groups.form.members.selected" | pluralTranslation: addMembersParticipants.value |
-                                       translate'
-                                           [emptyMessage]='"groups.form.members.empty" | translate'
-                                           [emptySelectionMessage]='"groups.form.members.empty-search" | translate'
+                                       transloco'
+                                           [emptyMessage]='"groups.form.members.empty" | transloco'
+                                           [emptySelectionMessage]='"groups.form.members.empty-search" | transloco'
                                            inputId='members'
                                            (handleSearch)='handleSearch($event.query)' />
                 <app-form-field-error [errors]='addMembersParticipants.errors'
@@ -107,13 +107,13 @@
             <div class='flex mt-2 justify-center'>
                 <p-button
                         (onClick)='addMembersFormLayerOpened = false'
-                        [label]='"global.actions.cancel" | translate'
+                        [label]='"global.actions.cancel" | transloco'
                         text
                         rounded />
                 <p-button
                         class='ms-2'
                         (onClick)='addMembers()'
-                        [label]='"groups.actions.add" | translate'
+                        [label]='"groups.actions.add" | transloco'
                         rounded
                         outlined
                         icon='pi pi-user-plus'
@@ -124,6 +124,6 @@
 </app-layer>
 
 <app-layer [(visible)]='createMemberFormLayerOpened'
-           [title]='"groups.actions.create-member" | translate'>
+           [title]='"groups.actions.create-member" | transloco'>
     <app-participant-form [defaultGroup]='group()' [showTitle]='false' [redirect]='false' />
 </app-layer>

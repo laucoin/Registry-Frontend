@@ -20,7 +20,7 @@
                           rounded
                           outlined
                           [severity]='isInProgress() ? "info" : "secondary"' [label]='(isInProgress() ?"alerts.actions.add-communication"
-                       : "alerts.actions.communications") | translate'
+                       : "alerts.actions.communications") | transloco'
                           [icon]='ProjectOptionEnum.COMMUNICATION | optionIcon'
                           (onClick)='communicationsLayerOpened = true'/>
             </div>
@@ -36,7 +36,7 @@
                       rounded
                       outlined
                       [severity]='isInProgress() ? "info" : "secondary"' [label]='(isInProgress() ?"alerts.actions.add-communication"
-                       : "alerts.actions.communications") | translate'
+                       : "alerts.actions.communications") | transloco'
                       [icon]='ProjectOptionEnum.COMMUNICATION | optionIcon'
                       (onClick)='communicationsLayerOpened = true'/>
         </div>
@@ -57,7 +57,7 @@
                 <app-severity-tag [value]='statusLabel()' [severity]='statusSeverity()'/>
             </div>
             <p-button
-                    [ariaLabel]='"menu.options" | translate'
+                    [ariaLabel]='"menu.options" | transloco'
                     (onClick)='$event.stopPropagation(); menu.toggle($event)'
                     rounded
                     text
@@ -83,7 +83,7 @@
             <ng-template #item let-item>
                 <a pRipple class='flex items-center py-2 px-4 cursor-pointer'>
                     <span [class]='item.icon'></span>&nbsp;
-                    <span class='ms-2'>{{ item.label | translate }}</span>
+                    <span class='ms-2'>{{ item.label | transloco }}</span>
                 </a>
             </ng-template>
         </p-menu>

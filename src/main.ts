@@ -39,7 +39,6 @@ import {IntervalPipe} from '@shared/helpers/pipe/interval.pipe'
             RegistryConfig,
             RegistryConfig.providePrimeNg(),
             RegistryConfig.provideTranslatorService(),
-            RegistryConfig.provideTranslatorHttpLoader(),
             PluralTranslationPipe,
         ],
     }).catch((error: Error) => console.error(error))

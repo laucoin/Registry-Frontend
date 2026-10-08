@@ -6,7 +6,7 @@
         <app-severity-information [message]='registryFacade.globalError()'>
             <p-button
                     (onClick)='logout()'
-                    [label]="'global.actions.sign-out' | translate"
+                    [label]="'global.actions.sign-out' | transloco"
                     rounded
                     icon='pi pi-sign-out'
                     severity='danger'/>
@@ -21,11 +21,11 @@
             <div class='flex flex-col items-start w-full'>
                 @if (message.summary) {
                     <div class='toast-title'>
-                        {{ message.summary | translate }}
+                        {{ message.summary | transloco }}
                     </div>
                 } @if (message.detail) {
                 <div class='toast-content'>
-                    {{ message.detail | translate: message.data }}
+                    {{ message.detail | transloco: message.data }}
                 </div>
             }
             </div>
@@ -44,13 +44,13 @@
                   tabindex='1'
                   (click)='showInformationDialog = true'
                   (keydown.enter)='showInformationDialog = true'>
-                                {{ 'global.legal.information.name' | translate }}
+                                {{ 'global.legal.information.name' | transloco }}
                             </span> | 
             <span class='cursor-pointer hover:underline'
                   tabindex='2'
                   (click)='showTermsOfUserDialog = true'
                   (keydown.enter)='showTermsOfUserDialog = true'>
-                                {{ 'global.legal.terms-of-use.name' | translate }}
+                                {{ 'global.legal.terms-of-use.name' | transloco }}
                             </span>
         </p>
     </footer>
@@ -60,14 +60,14 @@
         class='text-justify'
         modal
         [breakpoints]='breakPoint'
-        [header]='"global.legal.information.about" | translate'
+        [header]='"global.legal.information.about" | transloco'
         [(visible)]='showInformationDialog'
         [draggable]='false'
         [resizable]='false'>
-    <p>{{ 'global.legal.information.summary' | translate }}</p>
+    <p>{{ 'global.legal.information.summary' | transloco }}</p>
     <p-divider/>
-    <h4>{{ 'global.legal.information.who.title' | translate }}</h4>
-    <p>{{ 'global.legal.information.who.content' | translate }}</p>
+    <h4>{{ 'global.legal.information.who.title' | transloco }}</h4>
+    <p>{{ 'global.legal.information.who.content' | transloco }}</p>
     <p class='flex flex-wrap justify-center secondary-color'>
         <a href='https://laucoin.fr'
            target='_blank'
@@ -83,43 +83,43 @@
 <p-dialog
         class='text-justify'
         modal
-        [header]='"global.legal.terms-of-use.name" | translate'
+        [header]='"global.legal.terms-of-use.name" | transloco'
         [breakpoints]='breakPoint'
         [(visible)]='showTermsOfUserDialog'
         [draggable]='false'
         [resizable]='false'>
-    <p>{{ 'global.legal.terms-of-use.summary' | translate: {url: currentHost} }}</p>
+    <p>{{ 'global.legal.terms-of-use.summary' | transloco: {url: currentHost} }}</p>
     <p-divider/>
-    <h4>{{ 'global.legal.terms-of-use.service.title' | translate }}</h4>
-    <p>{{ 'global.legal.terms-of-use.service.content' | translate }}</p>
+    <h4>{{ 'global.legal.terms-of-use.service.title' | transloco }}</h4>
+    <p>{{ 'global.legal.terms-of-use.service.content' | transloco }}</p>
     <p-divider/>
-    <h4>{{ 'global.legal.terms-of-use.liability.title' | translate }}</h4>
-    <h5>{{ 'global.legal.terms-of-use.liability.subtitle1' | translate }}</h5>
-    <p [innerHTML]='"global.legal.terms-of-use.liability.content1" | translate'></p>
-    <h5>{{ 'global.legal.terms-of-use.liability.subtitle2' | translate }}</h5>
-    <p [innerHTML]='"global.legal.terms-of-use.liability.content2" | translate'></p>
-    <h5>{{ 'global.legal.terms-of-use.liability.subtitle3' | translate }}</h5>
-    <p [innerHTML]='"global.legal.terms-of-use.liability.content3" | translate'></p>
+    <h4>{{ 'global.legal.terms-of-use.liability.title' | transloco }}</h4>
+    <h5>{{ 'global.legal.terms-of-use.liability.subtitle1' | transloco }}</h5>
+    <p [innerHTML]='"global.legal.terms-of-use.liability.content1" | transloco'></p>
+    <h5>{{ 'global.legal.terms-of-use.liability.subtitle2' | transloco }}</h5>
+    <p [innerHTML]='"global.legal.terms-of-use.liability.content2" | transloco'></p>
+    <h5>{{ 'global.legal.terms-of-use.liability.subtitle3' | transloco }}</h5>
+    <p [innerHTML]='"global.legal.terms-of-use.liability.content3" | transloco'></p>
     <p-divider/>
-    <h4>{{ 'global.legal.terms-of-use.data-usage.title' | translate }}</h4>
-    <p [innerHTML]='"global.legal.terms-of-use.data-usage.content" | translate'></p>
+    <h4>{{ 'global.legal.terms-of-use.data-usage.title' | transloco }}</h4>
+    <p [innerHTML]='"global.legal.terms-of-use.data-usage.content" | transloco'></p>
     <p-divider/>
-    <h4>{{ 'global.legal.terms-of-use.intellectual-ownership.title' | translate }}</h4>
+    <h4>{{ 'global.legal.terms-of-use.intellectual-ownership.title' | transloco }}</h4>
     <p>
-        {{ 'global.legal.terms-of-use.intellectual-ownership.content' | translate }}
+        {{ 'global.legal.terms-of-use.intellectual-ownership.content' | transloco }}
     </p>
     <p-divider/>
-    <h4>{{ 'global.legal.terms-of-use.liability-responsibilities.title' | translate }}</h4>
-    <p>{{ 'global.legal.terms-of-use.liability-responsibilities.content' | translate }}</p>
+    <h4>{{ 'global.legal.terms-of-use.liability-responsibilities.title' | transloco }}</h4>
+    <p>{{ 'global.legal.terms-of-use.liability-responsibilities.content' | transloco }}</p>
     <p-divider/>
-    <h4>{{ 'global.legal.terms-of-use.cancellation.title' | translate }}</h4>
-    <p>{{ 'global.legal.terms-of-use.cancellation.content' | translate }}</p>
+    <h4>{{ 'global.legal.terms-of-use.cancellation.title' | transloco }}</h4>
+    <p>{{ 'global.legal.terms-of-use.cancellation.content' | transloco }}</p>
     <p-divider/>
-    <h4>{{ 'global.legal.terms-of-use.terms-of-use-modification.title' | translate }}</h4>
-    <p>{{ 'global.legal.terms-of-use.terms-of-use-modification.content' | translate }}</p>
+    <h4>{{ 'global.legal.terms-of-use.terms-of-use-modification.title' | transloco }}</h4>
+    <p>{{ 'global.legal.terms-of-use.terms-of-use-modification.content' | transloco }}</p>
     <p-divider/>
-    <h4>{{ 'global.legal.terms-of-use.contact.title' | translate }}</h4>
-    <p [innerHTML]='"global.legal.terms-of-use.contact.content" | translate'></p>
+    <h4>{{ 'global.legal.terms-of-use.contact.title' | transloco }}</h4>
+    <p [innerHTML]='"global.legal.terms-of-use.contact.content" | transloco'></p>
     <p-divider/>
-    <p [innerHTML]='"global.legal.terms-of-use.conclusion" | translate'></p>
+    <p [innerHTML]='"global.legal.terms-of-use.conclusion" | transloco'></p>
 </p-dialog>

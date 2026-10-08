@@ -3,11 +3,11 @@
 }
 <p-tabs [value]='currentTab()' (valueChange)='navigate($event)' scrollable>
     <p-tablist>
-        <p-tab value='dashboard'>{{ 'project-home.dashboard.title' | translate }}</p-tab>
+        <p-tab value='dashboard'>{{ 'project-home.dashboard.title' | transloco }}</p-tab>
         @if (ProjectHelper.hasOption(registryFacade.selectedProject(), ProjectOptionEnum.ACTIVITY)) {
-            <p-tab value='activities'>{{ 'project-home.activity-in-progress.title' | translate }}</p-tab>
+            <p-tab value='activities'>{{ 'project-home.activity-in-progress.title' | transloco }}</p-tab>
         }
-        <p-tab value='movements'>{{ 'project-home.movements-in-progress.title' | translate }}</p-tab>
+        <p-tab value='movements'>{{ 'project-home.movements-in-progress.title' | transloco }}</p-tab>
     </p-tablist>
     <p-tabpanels>
         <p-tabpanel value='dashboard'>

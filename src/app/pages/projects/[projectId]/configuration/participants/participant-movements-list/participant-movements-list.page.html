@@ -16,7 +16,7 @@
     <ng-template appTemplate='search' [formGroup]='form' let-pageEvent>
         <div class='grid search-line'>
             <div class='field'>
-                <label for='start-date-time-search-field'>{{ 'movements.search-and-filter.start-datetime' | translate }}</label>
+                <label for='start-date-time-search-field'>{{ 'movements.search-and-filter.start-datetime' | transloco }}</label>
                 <p-date-picker inputId='start-date-time-search-field'
                                fluid
                                showButtonBar
@@ -26,7 +26,7 @@
                                [formControl]='startDateTimeSearched' />
             </div>
             <div class='field'>
-                <label for='end-date-time-search-field'>{{ 'movements.search-and-filter.end-datetime' | translate }}</label>
+                <label for='end-date-time-search-field'>{{ 'movements.search-and-filter.end-datetime' | transloco }}</label>
                 <p-date-picker inputId='end-date-time-search-field'
                                fluid
                                showButtonBar
@@ -38,7 +38,7 @@
         </div>
         <div class='grid search-line'>
             <div class='field'>
-                <label for='type-search-field'>{{ 'movements.search-and-filter.type' | translate }}</label>
+                <label for='type-search-field'>{{ 'movements.search-and-filter.type' | transloco }}</label>
                 <p-select inputId='type-search-field'
                           fluid
                           [loading]='!movementFacade.movementTypesMetadata()'
@@ -49,7 +49,7 @@
                           [formControl]='typeSearched' />
             </div>
             <div class='field'>
-                <label for='visibility-search-field'>{{ 'movements.search-and-filter.visibility' | translate }}</label>
+                <label for='visibility-search-field'>{{ 'movements.search-and-filter.visibility' | transloco }}</label>
                 <p-select inputId='visibility-search-field'
                           fluid
                           [options]='movementFacade.visibilitiesMetadata()'
@@ -61,7 +61,7 @@
         </div>
         <div class='flex justify-center'>
             <p-button (onClick)='loadPage(pageEvent)'
-                      [label]='"global.actions.search-and-filter" | translate'
+                      [label]='"global.actions.search-and-filter" | transloco'
                       outlined
                       rounded
                       icon='pi pi-search'

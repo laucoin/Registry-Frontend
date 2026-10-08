@@ -9,7 +9,7 @@ import {CardModule} from 'primeng/card'
 import {DividerModule} from 'primeng/divider'
 import {FormFieldErrorComponent} from '@shared/ui/common/form-field-error/form-field-error.component'
 import {InputTextModule} from 'primeng/inputtext'
-import {TranslatePipe} from '@ngx-translate/core'
+import {TranslocoPipe} from '@jsverse/transloco'
 import {MovementContentDto} from '@pages/projects/[projectId]/movements/data/dto/movement-content.dto'
 import {Select, SelectModule} from 'primeng/select'
 import {DatePicker} from 'primeng/datepicker'
@@ -57,13 +57,13 @@ import {FormErrorComponent} from '@shared/ui/common/form-error/form-error.compon
         FormFieldErrorComponent,
         InputTextModule,
         ReactiveFormsModule,
-        TranslatePipe,
+        TranslocoPipe,
         SelectModule,
         Select,
         DatePicker,
         RegistryRequiredDirective,
         MovementContentFieldComponent,
-        TranslatePipe,
+        TranslocoPipe,
         DateFormatPipe,
         MovementContentFieldComponent,
         PluralTranslationPipe,

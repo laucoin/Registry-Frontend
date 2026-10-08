@@ -1,6 +1,6 @@
 import { inject } from '@angular/core'
-import { TranslateService } from '@ngx-translate/core'
+import {TranslocoService} from '@jsverse/transloco'
 
 export abstract class GenericFacade {
-    protected readonly translateService: TranslateService = inject( TranslateService )
+    protected readonly translateService: TranslocoService = inject( TranslocoService )
 }

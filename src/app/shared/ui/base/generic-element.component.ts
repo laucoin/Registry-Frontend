@@ -74,8 +74,8 @@ export abstract class GenericElementComponent extends GenericComponent {
         accept: () => void,
     ): Confirmation {
         return {
-            header: this.translateService.instant(titleTranslationKey, {element: element}),
-            message: this.translateService.instant(messageTranslationKey, {element: element}),
+            header: this.translateService.translate(titleTranslationKey, {element: element}),
+            message: this.translateService.translate(messageTranslationKey, {element: element}),
             icon: icon,
             rejectButtonProps: {
                 severity: SeverityEnum.SECONDARY,

@@ -8,15 +8,15 @@
         </div>
         <div class='grid search-line mt-2 mb-2'>
             <div>
-                <b>{{ 'settings.birthday' | translate }}</b>
+                <b>{{ 'settings.birthday' | transloco }}</b>
                 {{
                     GenericHelper.nonNull(registryFacade.currentUser()?.birthday)
                     ? (registryFacade.currentUser()!.birthday | dateFormat: 'date')
-                    : ('global.not-set' | translate)
+                    : ('global.not-set' | transloco)
                 }}
             </div>
             <div>
-                <b>{{ 'settings.role' | translate }} </b>
+                <b>{{ 'settings.role' | transloco }} </b>
                 <app-severity-tag [value]='registryFacade.currentUser()?.role?.label' />
             </div>
         </div>
@@ -24,10 +24,10 @@
 </p-card>
 <p-card styleClass='mt-4'>
     <div class='ps-6 pe-6 pt-2 pb-2'>
-        <h3>{{ 'settings.configuration.title' | translate }}</h3>
+        <h3>{{ 'settings.configuration.title' | transloco }}</h3>
         <div class='grid search-line mt-2 mb-2'>
             <div class='field'>
-                <label for='app-language'><b>{{ 'settings.configuration.form.language' | translate }}</b></label>
+                <label for='app-language'><b>{{ 'settings.configuration.form.language' | transloco }}</b></label>
                 <p-select [options]='registryFacade.languagesMetadata()'
                           optionLabel='label'
                           optionValue='value'
@@ -37,7 +37,7 @@
                           [formControl]='languageControl' />
             </div>
             <div class='field'>
-                <label for='app-theme'><b>{{ 'settings.configuration.form.theme' | translate }}</b></label>
+                <label for='app-theme'><b>{{ 'settings.configuration.form.theme' | transloco }}</b></label>
                 <p-select-button [options]='registryFacade.themesMetadata()'
                                  id='app-theme'
                                  [formControl]='themeControl'
@@ -54,7 +54,7 @@
 </p-card>
 <p-card styleClass='mt-4'>
     <div class='ps-6 pe-6 pt-2 pb-2'>
-        <h3>{{ 'settings.danger' | translate }}</h3>
+        <h3>{{ 'settings.danger' | transloco }}</h3>
         <div class='field'>
             <p-button id='impersonate'
                       size='small'
@@ -63,7 +63,7 @@
                       outlined
                       rounded
                       (onClick)='confirmImpersonate()'
-                      [label]='"settings.actions.impersonate" | translate' />
+                      [label]='"settings.actions.impersonate" | transloco' />
         </div>
     </div>
 </p-card>

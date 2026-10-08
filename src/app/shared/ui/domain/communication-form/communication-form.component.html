@@ -2,7 +2,7 @@
     @if (GenericHelper.isNull(facade.communication())) {
         @if (movementSelectorVisible()) {
             <div class='field other-field-container'>
-                <label for='movement'>{{ 'communications.form.movement.title' | translate }}</label>
+                <label for='movement'>{{ 'communications.form.movement.title' | transloco }}</label>
                 <div class='flex items-center'>
                     <div class='grow'>
                         <p-auto-complete inputId='movement'
@@ -11,7 +11,7 @@
                                          forceSelection
                                          optionValue='value.id'
                                          optionLabel='label'
-                                         [placeholder]='"communications.form.placeholder.movement" | translate: { date: now | dateFormat: "datetime"}'
+                                         [placeholder]='"communications.form.placeholder.movement" | transloco: { date: now | dateFormat: "datetime"}'
                                          [formControl]='movement'
                                          [suggestions]='facade.searchedMovementsMetadata()'
                                          (keydown.enter)='submit()'
@@ -20,7 +20,7 @@
                                          (onSelect)='handleMovementSelection($event.value)'
                                          (completeMethod)='handleMovementSearch($event)'>
                             <ng-template #empty>
-                                <span>{{ 'communications.form.movement.empty-search' | translate }}</span>
+                                <span>{{ 'communications.form.movement.empty-search' | transloco }}</span>
                             </ng-template>
                         </p-auto-complete>
                     </div>
@@ -38,7 +38,7 @@
         }
         @if (alertSelectorMode() === AlertModulableFieldEnum.SELECT) {
             <div class='field other-field-container'>
-                <label for='alert'>{{ 'communications.form.alert.title' | translate }}</label>
+                <label for='alert'>{{ 'communications.form.alert.title' | transloco }}</label>
                 <div class='flex items-center'>
                     <div class='grow'>
                         <p-auto-complete inputId='alert'
@@ -48,7 +48,7 @@
                                          showClear
                                          optionValue='value.id'
                                          optionLabel='label'
-                                         [placeholder]='"communications.form.placeholder.alert" | translate: { date: now | dateFormat: "datetime"}'
+                                         [placeholder]='"communications.form.placeholder.alert" | transloco: { date: now | dateFormat: "datetime"}'
                                          [formControl]='alert'
                                          [suggestions]='facade.searchedAlertsMetadata()'
                                          (keydown.enter)='submit()'
@@ -57,7 +57,7 @@
                                          (onSelect)='handleAlertSelection($event.value)'
                                          (completeMethod)='handleAlertSearch($event)'>
                             <ng-template #empty>
-                                <span>{{ 'communications.form.alert.empty-search' | translate }}</span>
+                                <span>{{ 'communications.form.alert.empty-search' | transloco }}</span>
                             </ng-template>
                         </p-auto-complete>
                     </div>
@@ -75,14 +75,14 @@
         }
         @if (alertSelectorMode() === AlertModulableFieldEnum.NEW) {
             <div class='field other-field-container'>
-                <label for='alert'>{{ 'alerts.form.title' | translate }}</label>
+                <label for='alert'>{{ 'alerts.form.title' | transloco }}</label>
                 <div class='flex items-center'>
                     <div class='grow'>
                         <input id='alert-title-field'
                                type='text'
                                fluid
                                pInputText
-                               [placeholder]='"alerts.form.placeholder.title" | translate'
+                               [placeholder]='"alerts.form.placeholder.title" | transloco'
                                (keydown.enter)='submit()'
                                [formControl]='newAlertTitle' />
                     </div>
@@ -115,9 +115,9 @@
                           fluid
                           class='message-field'
                           rows='1'
-                          [placeholder]='"communications.form.message" | translate'
+                          [placeholder]='"communications.form.message" | transloco'
                           [formControl]='message'></textarea>
-            <small class='secondary-color'>{{ 'communications.form.hint.message' | translate }}</small>
+            <small class='secondary-color'>{{ 'communications.form.hint.message' | transloco }}</small>
             <app-form-field-error [errors]='message.errors'
                                   [invalid]='FormHelper.invalid(message)'
                                   translationPrefix='communications.form.error.message' />
@@ -136,7 +136,7 @@
     <ng-template #item let-item>
         <a pRipple class='flex items-center py-2 px-4 cursor-pointer'>
             <span [class]='item.icon'></span>&nbsp;
-            <span class='ms-2'>{{ item.label | translate }}</span>
+            <span class='ms-2'>{{ item.label | transloco }}</span>
         </a>
     </ng-template>
 </p-menu>

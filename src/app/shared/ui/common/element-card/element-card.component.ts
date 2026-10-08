@@ -1,5 +1,5 @@
 import { Component, computed, inject, input, InputSignal, Signal} from '@angular/core'
-import {TranslatePipe} from '@ngx-translate/core'
+import {TranslocoPipe} from '@jsverse/transloco'
 import {AvatarModule} from 'primeng/avatar'
 import {Button} from 'primeng/button'
 import {CardModule} from 'primeng/card'
@@ -25,7 +25,7 @@ import {MenuItem} from 'primeng/api'
         ElementSkeletonComponent,
         Button,
         MenuModule,
-        TranslatePipe,
+        TranslocoPipe,
         DialogModule,
         FormsModule,
         InputTextModule,
@@ -58,7 +58,7 @@ export class ElementCardComponent<T extends GenericModel> extends GenericCompone
 
     private buildHistoryItem(history: HistoryModel, translationPrefix: string): string {
         const key: string = `${translationPrefix}${history.user ? '-user' : ''}`
-        return this.translateService.instant(
+        return this.translateService.translate(
             key,
             {
                 datetime: this.datePipe.transform(history.dateTime, 'datetime'),

@@ -32,7 +32,7 @@
                 <span [class.pointer]='nbOfOptions > 1'
                       [class.hover-underline]='nbOfOptions > 1'>
                     {{
-                        'projects.options' | pluralTranslation: project().options | translate: {
+                        'projects.options' | pluralTranslation: project().options | transloco: {
                             name: project().options?.[0]?.label,
                             others: nbOfOptions - 1
                         }
@@ -50,7 +50,7 @@
         <div class='action-button flex lg:basis-[30%] xl:basis-[15%]' [class.justify-center]='registryFacade.tinyScreen()'>
             @if (joinable()) {
                 <p-button icon='pi pi-arrow-right'
-                          [label]='"projects.actions.select" | translate'
+                          [label]='"projects.actions.select" | transloco'
                           [disabled]='!project().visible'
                           severity='info'
                           size='small'
@@ -59,7 +59,7 @@
                           (onClick)='selectProject()' />
             } @else if (supportable()) {
                 <p-button icon='pi pi-user-plus'
-                          [label]='"projects.actions.create-support" | translate'
+                          [label]='"projects.actions.create-support" | transloco'
                           [disabled]='!project().visible'
                           severity='info'
                           size='small'
@@ -72,7 +72,7 @@
 </app-element-card>
 
 <app-layer [(visible)]='layerOpened'
-           [title]='"projects.options.list" | translate'>
+           [title]='"projects.options.list" | transloco'>
     <p-listbox
             styleClass='max-list-box-height'
             readonly

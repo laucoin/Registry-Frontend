@@ -54,7 +54,7 @@ export class CommunicationFacade extends GenericProjectElementFacade {
     public readonly visibilitiesMetadata: Signal<SelectItem<boolean | undefined>[]> = computed( () =>
             this.store.metadata.visibilities().map( (status: SelectItem<boolean | undefined>) => ({
                 ...status,
-                label: this.translateService.instant( status.label! ),
+                label: this.translateService.translate( status.label! ),
             }) ),
         )
 

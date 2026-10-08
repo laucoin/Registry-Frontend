@@ -3,7 +3,7 @@ import { Card } from 'primeng/card'
 import { Divider } from 'primeng/divider'
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
 import { Skeleton } from 'primeng/skeleton'
-import { TranslatePipe } from '@ngx-translate/core'
+import {TranslocoPipe} from '@jsverse/transloco'
 import { GenericComponent } from '@shared/ui/base/generic.component'
 import { GenericHelper } from '@shared/helpers/generic.helper'
 import { SelectedProjectFacade } from '@pages/projects/data/state/selected-project/selected-project.facade'
@@ -28,7 +28,7 @@ import { Subscription, tap } from 'rxjs'
         Divider,
         PluralTranslationPipe,
         Skeleton,
-        TranslatePipe,
+        TranslocoPipe,
         Panel,
         ElementCardComponent,
         SeverityCircleComponent,

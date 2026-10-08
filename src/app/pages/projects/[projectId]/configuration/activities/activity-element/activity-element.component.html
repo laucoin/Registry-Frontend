@@ -29,7 +29,7 @@
         <div class='duration flex basis-1/2 xl:basis-[20%]' [class.justify-center]='registryFacade.tinyScreen()'>
             <p-tag icon='pi pi-users'
                    [value]='activity().allowedParticipants ? activity().allowedParticipants!.lower + "-" +
-                   activity().allowedParticipants!.upper : "activities.participant.zero" | translate' />
+                   activity().allowedParticipants!.upper : "activities.participant.zero" | transloco' />
         </div>
         <div class='status flex basis-1/2 xl:basis-[30%]' [class.justify-center]='registryFacade.tinyScreen()'>
             @if (activity().status) {
@@ -40,7 +40,7 @@
     @if (activity().description) {
         <div class='mt-2'>
             <app-message [severity]='SeverityEnum.SECONDARY' [reverseBackground]='true'>
-                <b>{{ 'activities.description' | translate }}</b>{{ activity().description }}
+                <b>{{ 'activities.description' | transloco }}</b>{{ activity().description }}
             </app-message>
         </div>
     }

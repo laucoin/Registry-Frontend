@@ -3,7 +3,7 @@ import {UserModel} from '@shared/models/model/user.model'
 import {ChipModule} from 'primeng/chip'
 import {TitleCasePipe, UpperCasePipe} from '@angular/common'
 import {ElementCardComponent} from '@shared/ui/common/element-card/element-card.component'
-import {TranslatePipe} from '@ngx-translate/core'
+import {TranslocoPipe} from '@jsverse/transloco'
 import {TagModule} from 'primeng/tag'
 import {ClipboardModule} from '@angular/cdk/clipboard'
 import {ToastModule} from 'primeng/toast'
@@ -29,7 +29,7 @@ import {MenuItem} from 'primeng/api'
     imports: [
         ChipModule,
         ElementCardComponent,
-        TranslatePipe,
+        TranslocoPipe,
         ClipboardModule,
         TitleCasePipe,
         UpperCasePipe,

@@ -12,7 +12,7 @@ import {
     TemplateRef,
     ViewChild,
 } from '@angular/core'
-import {TranslatePipe} from '@ngx-translate/core'
+import {TranslocoPipe} from '@jsverse/transloco'
 import {ToastMessageOptions} from 'primeng/api'
 import {CardModule} from 'primeng/card'
 import {DataView, DataViewModule, DataViewPageEvent} from 'primeng/dataview'
@@ -33,7 +33,7 @@ import {SeverityEnum} from '@shared/models/enumeration/severity.enum'
     selector: 'app-list',
     imports: [
         DataViewModule,
-        TranslatePipe,
+        TranslocoPipe,
         ToggleButtonModule,
         NgTemplateOutlet,
         CardModule,

@@ -1,7 +1,7 @@
 import { Component, computed, inject, input, InputSignal, Signal} from '@angular/core'
 import {ElementCardComponent} from '@shared/ui/common/element-card/element-card.component'
 import {TagModule} from 'primeng/tag'
-import {TranslatePipe} from '@ngx-translate/core'
+import {TranslocoPipe} from '@jsverse/transloco'
 import {ChipModule} from 'primeng/chip'
 import {RegistryRouteEnum} from '@core/routing/registry-route.enum'
 import {ActivityFacade} from '@pages/projects/[projectId]/configuration/activities/data/state/activity.facade'
@@ -24,7 +24,7 @@ import {MessageComponent} from '@shared/ui/common/message/message.component'
     imports: [
         ElementCardComponent,
         TagModule,
-        TranslatePipe,
+        TranslocoPipe,
         ChipModule,
         SeverityTagComponent,
         CustomDateFormatPipe,

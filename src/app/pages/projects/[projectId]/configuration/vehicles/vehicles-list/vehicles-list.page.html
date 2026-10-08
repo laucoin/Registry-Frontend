@@ -6,7 +6,7 @@
     <ng-template appTemplate='search' [formGroup]='form' let-pageEvent>
         <div class='grid search-line'>
             <div class='field'>
-                <label for='text-search-field'>{{ 'vehicles.search-and-filter.text' | translate }}</label>
+                <label for='text-search-field'>{{ 'vehicles.search-and-filter.text' | transloco }}</label>
                 <input id='text-search-field'
                        type='text'
                        fluid
@@ -15,7 +15,7 @@
                        [formControl]='textSearched' />
             </div>
             <div class='field'>
-                <label for='date-time-search-field'>{{ 'vehicles.search-and-filter.datetime' | translate }}</label>
+                <label for='date-time-search-field'>{{ 'vehicles.search-and-filter.datetime' | transloco }}</label>
                 <p-date-picker inputId='date-time-search-field'
                                fluid
                                showButtonBar
@@ -27,7 +27,7 @@
         </div>
         <div class='grid search-line'>
             <div class='field'>
-                <label for='availability-search-field'>{{ 'vehicles.search-and-filter.availability' | translate }}</label>
+                <label for='availability-search-field'>{{ 'vehicles.search-and-filter.availability' | transloco }}</label>
                 <p-select inputId='availability-search-field'
                           fluid
                           [options]='facade.presencesStatusMetadata()'
@@ -37,7 +37,7 @@
                           [formControl]='statusSearched' />
             </div>
             <div class='field'>
-                <label for='visibility-search-field'>{{ 'vehicles.search-and-filter.visibility' | translate }}</label>
+                <label for='visibility-search-field'>{{ 'vehicles.search-and-filter.visibility' | transloco }}</label>
                 <p-select inputId='visibility-search-field'
                           fluid
                           [options]='facade.visibilitiesMetadata()'
@@ -49,7 +49,7 @@
         </div>
         <div class='flex justify-center'>
             <p-button (onClick)='loadPage(pageEvent)'
-                      [label]='"global.actions.search-and-filter" | translate'
+                      [label]='"global.actions.search-and-filter" | transloco'
                       outlined
                       rounded
                       icon='pi pi-search'
@@ -65,7 +65,7 @@
                       severity='success'
                       outlined
                       rounded
-                      [label]='registryFacade.tinyScreen() ? "" : "global.actions.create" | translate'
+                      [label]='registryFacade.tinyScreen() ? "" : "global.actions.create" | transloco'
                       icon='pi pi-plus'
                       [routerLink]='VehicleRoutesEnum.CREATE' />
         }

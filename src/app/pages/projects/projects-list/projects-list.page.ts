@@ -8,7 +8,7 @@ import {ProjectElementComponent} from '@pages/projects/project-element/project-e
 import {Button} from 'primeng/button'
 import {InputTextModule} from 'primeng/inputtext'
 import {ToggleButtonModule} from 'primeng/togglebutton'
-import {TranslatePipe} from '@ngx-translate/core'
+import {TranslocoPipe} from '@jsverse/transloco'
 import {RouterLink} from '@angular/router'
 import {ProjectRoutesEnum} from '@pages/projects/project-routes.enum'
 import {Select} from 'primeng/select'
@@ -29,7 +29,7 @@ import {StringHelper} from '@shared/helpers/string.helper'
         FormsModule,
         InputTextModule,
         ToggleButtonModule,
-        TranslatePipe,
+        TranslocoPipe,
         ReactiveFormsModule,
         RouterLink,
         Select,

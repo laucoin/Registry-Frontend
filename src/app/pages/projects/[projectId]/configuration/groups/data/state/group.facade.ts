@@ -63,14 +63,14 @@ export class GroupFacade extends GenericProjectElementFacade {
     public readonly availabilitiesMetadata: Signal<SelectItem<boolean | undefined>[]> = computed( (): SelectItem<boolean | undefined>[] =>
             this.store.metadata.availabilities().map( (status: SelectItem<boolean | undefined>): SelectItem<boolean | undefined> => ({
                 ...status,
-                label: this.translateService.instant( status.label! ),
+                label: this.translateService.translate( status.label! ),
             }) ),
         )
 
     public readonly visibilitiesMetadata: Signal<SelectItem<boolean | undefined>[]> = computed( (): SelectItem<boolean | undefined>[] =>
             this.store.metadata.visibilities().map( (status: SelectItem<boolean | undefined>): SelectItem<boolean | undefined> => ({
                 ...status,
-                label: this.translateService.instant( status.label! ),
+                label: this.translateService.translate( status.label! ),
             }) ),
         )
 

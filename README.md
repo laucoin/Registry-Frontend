@@ -245,7 +245,7 @@ pnpm lint   # eslint (angular-eslint)
 - TypeScript [documentation](https://www.typescriptlang.org/docs/)
 - NGXS [documentation](https://www.ngxs.io/)
 - PrimeNG [documentation](https://primeng.org/)
-- ngx-translate [documentation](https://github.com/ngx-translate/core)
+- Transloco [documentation](https://jsverse.gitbook.io/transloco)
 
 ## Contributing 💻
 

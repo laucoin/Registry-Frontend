@@ -15,7 +15,7 @@ import { toSignal } from '@angular/core/rxjs-interop'
 import { interval, map } from 'rxjs'
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
 import { Button } from 'primeng/button'
-import { TranslatePipe } from '@ngx-translate/core'
+import {TranslocoPipe} from '@jsverse/transloco'
 import { Dialog } from 'primeng/dialog'
 import {
     AlertCommunicationsListComponent,
@@ -39,7 +39,7 @@ import { IntervalPipe } from '@shared/helpers/pipe/interval.pipe'
         TitleCasePipe,
         DateFormatPipe,
         Button,
-        TranslatePipe,
+        TranslocoPipe,
         Dialog,
         AlertCommunicationsListComponent,
         AlertCommunicationsListComponent,

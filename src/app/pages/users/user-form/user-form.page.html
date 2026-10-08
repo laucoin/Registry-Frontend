@@ -1,9 +1,9 @@
 <app-form [form]='form'
           [loading]='facade.userLoading()'
-          [title]='"users.form.title" | translate: { firstName: facade.user()?.firstName, lastName: facade.user()?.lastName }'>
+          [title]='"users.form.title" | transloco: { firstName: facade.user()?.firstName, lastName: facade.user()?.lastName }'>
     <p-card>
         <div class='field'>
-            <label for='role' appRequired>{{ 'users.form.role' | translate }}</label>
+            <label for='role' appRequired>{{ 'users.form.role' | transloco }}</label>
             <p-select
                     inputId='role'
                     fluid
@@ -12,7 +12,7 @@
                     (keydown.enter)='submit()'
                     optionLabel='label'
                     optionValue='value' />
-            <small class='secondary-color'>{{ 'users.form.hint.role' | translate }}</small>
+            <small class='secondary-color'>{{ 'users.form.hint.role' | transloco }}</small>
             <app-form-field-error [errors]='role.errors'
                                   [invalid]='FormHelper.invalid(role)'
                                   translationPrefix='users.form.error.role' />
@@ -21,13 +21,13 @@
     <div class='flex mt-2 justify-center'>
         <p-button
                 (onClick)='navigateToRedirectUri()'
-                [label]='"global.actions.cancel" | translate'
+                [label]='"global.actions.cancel" | transloco'
                 text
                 rounded />
         <p-button
                 class='ms-2'
                 (onClick)='submit()'
-                [label]='"global.actions.edit" | translate'
+                [label]='"global.actions.edit" | transloco'
                 rounded
                 outlined
                 icon='pi pi-pen-to-square'

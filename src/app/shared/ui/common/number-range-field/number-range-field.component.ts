@@ -4,7 +4,7 @@ import { Button } from 'primeng/button'
 import { InputGroup } from 'primeng/inputgroup'
 import { InputGroupAddon } from 'primeng/inputgroupaddon'
 import { InputNumber } from 'primeng/inputnumber'
-import { TranslateService } from '@ngx-translate/core'
+import {TranslocoService} from '@jsverse/transloco'
 import { NumericRangeModel } from '@pages/projects/[projectId]/configuration/activities/data/model/numeric-range.model'
 import { GenericHelper } from '@shared/helpers/generic.helper'
 import { StringHelper } from '@shared/helpers/string.helper'
@@ -30,14 +30,14 @@ import { StringHelper } from '@shared/helpers/string.helper'
     styleUrl: './number-range-field.component.css',
 } )
 export class NumberRangeFieldComponent implements ControlValueAccessor {
-    private readonly translateService: TranslateService = inject( TranslateService )
+    private readonly translateService: TranslocoService = inject( TranslocoService )
 
     public readonly inputId: InputSignal<string | undefined> = input()
     public readonly invalid: InputSignal<boolean> = input( false )
     public readonly minPlaceholder: InputSignal<string | undefined> = input()
     public readonly maxPlaceholder: InputSignal<string | undefined> = input()
-    public readonly minLabel: InputSignal<string> = input( this.translateService.instant( 'global.form.range.min' ) )
-    public readonly maxLabel: InputSignal<string> = input( this.translateService.instant( 'global.form.range.max' ) )
+    public readonly minLabel: InputSignal<string> = input( this.translateService.translate( 'global.form.range.min' ) )
+    public readonly maxLabel: InputSignal<string> = input( this.translateService.translate( 'global.form.range.max' ) )
 
     protected minValue: number | undefined | null
     protected maxValue: number | undefined | null

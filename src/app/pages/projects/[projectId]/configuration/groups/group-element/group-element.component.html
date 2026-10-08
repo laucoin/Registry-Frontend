@@ -24,7 +24,7 @@
             }
         </div>
         <div class='members flex basis-full md:basis-[33%]' [class.justify-center]='registryFacade.tinyScreen()'>
-            {{ 'groups.member' | pluralTranslation: group().membersCount | translate: { count: group().membersCount } }}
+            {{ 'groups.member' | pluralTranslation: group().membersCount | transloco: { count: group().membersCount } }}
             (
             <app-severity-circle [severity]='SeverityEnum.SUCCESS' />
              {{ group().insideMembersCount }}, 

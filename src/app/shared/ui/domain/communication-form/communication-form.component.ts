@@ -28,7 +28,7 @@ import { Button } from 'primeng/button'
 import { Card } from 'primeng/card'
 import { FormFieldErrorComponent } from '@shared/ui/common/form-field-error/form-field-error.component'
 import { Textarea } from 'primeng/textarea'
-import { TranslatePipe } from '@ngx-translate/core'
+import {TranslocoPipe} from '@jsverse/transloco'
 import { ProjectHelper } from '@shared/helpers/project.helper'
 import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
 import { Menu } from 'primeng/menu'
@@ -62,7 +62,7 @@ import { FormErrorComponent } from '@shared/ui/common/form-error/form-error.comp
         FormFieldErrorComponent,
         FormsModule,
         Textarea,
-        TranslatePipe,
+        TranslocoPipe,
         ReactiveFormsModule,
         Menu,
         Ripple,

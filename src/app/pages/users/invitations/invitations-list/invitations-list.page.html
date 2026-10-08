@@ -6,7 +6,7 @@
     <ng-template appTemplate='search' [formGroup]='form' let-pageEvent>
         <div class='row'>
             <div class='col-12 col-sm-6 col-md-12 col-lg-6 search-field'>
-                <label for='invitation-text-search-field'>{{ 'preferences.search-and-filter.text' | translate }}</label>
+                <label for='invitation-text-search-field'>{{ 'preferences.search-and-filter.text' | transloco }}</label>
                 <input id='invitation-text-search-field'
                        type='text'
                        pInputText
@@ -14,7 +14,7 @@
                        [formControl]='textSearched' />
             </div>
             <div class='col-12 col-sm-6 col-md-12 col-lg-6 search-field'>
-                <label for='invitation-date-time-search-field'>{{ 'preferences.search-and-filter.datetime' | translate }}</label>
+                <label for='invitation-date-time-search-field'>{{ 'preferences.search-and-filter.datetime' | transloco }}</label>
                 <p-date-picker [formControl]='dateTimeSearched'
                                showButtonBar
                                [readonlyInput]='true'
@@ -27,7 +27,7 @@
         </div>
         <div class='flex flex-wrap justify-center pt-2'>
             <p-button (onClick)='loadPage(pageEvent)'
-                      [label]='"global.actions.search-and-filter" | translate'
+                      [label]='"global.actions.search-and-filter" | transloco'
                       outlined
                       rounded
                       icon='pi pi-search'
@@ -41,21 +41,21 @@
         <ng-template appTemplate='empty'>
             <div class='p-6'>
                 <div class='flex flex-col justify-center items-center'>
-                    <h2>{{ 'project-profiles.notifications.EMPTY-INVITATION.message' | translate }}</h2>
-                    <p>{{ 'project-profiles.empty-invitation' | translate }}</p>
+                    <h2>{{ 'project-profiles.notifications.EMPTY-INVITATION.message' | transloco }}</h2>
+                    <p>{{ 'project-profiles.empty-invitation' | transloco }}</p>
                     <div class='flex justify-around'>
                         <p-button class='m-1'
                                   severity='success'
                                   outlined
                                   rounded
-                                  [label]='"project-profiles.actions.create-project" | translate'
+                                  [label]='"project-profiles.actions.create-project" | transloco'
                                   icon='pi pi-plus'
                                   [routerLink]='"/" + RegistryRouteEnum.PROJECTS_CREATION' />
                         <p-button class='m-1'
                                   severity='info'
                                   outlined
                                   rounded
-                                  [label]='"project-profiles.actions.profiles" | translate'
+                                  [label]='"project-profiles.actions.profiles" | transloco'
                                   icon='pi pi-unlock'
                                   [routerLink]='"/" + RegistryRouteEnum.USERS_PROFILES' />
                     </div>

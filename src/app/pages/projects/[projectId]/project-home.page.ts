@@ -1,6 +1,6 @@
 import { Component, computed, Signal } from '@angular/core'
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs'
-import { TranslatePipe } from '@ngx-translate/core'
+import {TranslocoPipe} from '@jsverse/transloco'
 import { DashboardComponent } from '@pages/projects/[projectId]/dashboard/dashboard.component'
 import { CurrentActivitiesComponent } from '@pages/projects/[projectId]/current-activities/current-activities.component'
 import { CurrentMovementsComponent } from '@pages/projects/[projectId]/current-movements/current-movements.component'
@@ -18,7 +18,7 @@ import { CurrentAlertsComponent } from '@pages/projects/[projectId]/current-aler
         Tab,
         TabPanels,
         TabPanel,
-        TranslatePipe,
+        TranslocoPipe,
         DashboardComponent,
         CurrentActivitiesComponent,
         CurrentMovementsComponent,

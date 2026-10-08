@@ -3,7 +3,7 @@ import {FormGroup, ReactiveFormsModule, Validators} from '@angular/forms'
 import {ProjectProfileDto} from '@pages/projects/[projectId]/configuration/profiles/data/dto/project-profile.dto'
 import {ProjectProfileModel} from '@shared/models/model/project-profile.model'
 import {FormHelper} from '@shared/helpers/form.helper'
-import {TranslatePipe} from '@ngx-translate/core'
+import {TranslocoPipe} from '@jsverse/transloco'
 import {CardModule} from 'primeng/card'
 import {FormFieldErrorComponent} from '@shared/ui/common/form-field-error/form-field-error.component'
 import {UserElementComponent} from '@pages/users/user-element/user-element.component'
@@ -19,7 +19,7 @@ import {RegistryValidators} from '@shared/helpers/registry.validator'
 @Component({
     selector: 'app-project-profile-edition-form',
     imports: [
-        TranslatePipe,
+        TranslocoPipe,
         CardModule,
         ReactiveFormsModule,
         SelectModule,

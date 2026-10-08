@@ -9,7 +9,7 @@ import {InputText} from 'primeng/inputtext'
 import {ListComponent} from '@shared/ui/common/list/list.component'
 import {RegistryTemplateDirective} from '@shared/directives/registry-template.directive'
 import {Select} from 'primeng/select'
-import {TranslatePipe} from '@ngx-translate/core'
+import {TranslocoPipe} from '@jsverse/transloco'
 import {AlertElementComponent} from '@shared/ui/domain/alert-element/alert-element.component'
 
 @Component({
@@ -22,7 +22,7 @@ import {AlertElementComponent} from '@shared/ui/domain/alert-element/alert-eleme
         ReactiveFormsModule,
         RegistryTemplateDirective,
         Select,
-        TranslatePipe,
+        TranslocoPipe,
         AlertElementComponent,
     ],
     templateUrl: './alerts-list.page.html',

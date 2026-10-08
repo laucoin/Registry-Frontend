@@ -2,14 +2,14 @@
           [loading]='loading()'
           [error]='error()'
           [showTitle]='showTitle()'
-          [title]='"participants.form.title" | formTitle: participant() | translate : {
+          [title]='"participants.form.title" | formTitle: participant() | transloco : {
               firstName: participant()?.firstName,
               lastName: participant()?.lastName
           }'>
     <p-card>
         @if (!defaultGroup()) {
             <div class='field'>
-                <label for='user'>{{ 'participants.form.user.title' | translate }}</label>
+                <label for='user'>{{ 'participants.form.user.title' | transloco }}</label>
                 <p-auto-complete inputId='user'
                                  fluid
                                  completeOnFocus
@@ -17,7 +17,7 @@
                                  showClear
                                  optionValue='value.id'
                                  optionLabel='label'
-                                 [placeholder]='"participants.form.placeholder.user" | translate'
+                                 [placeholder]='"participants.form.placeholder.user" | transloco'
                                  [formControl]='user'
                                  [suggestions]='facade.searchedUsersMetadata()'
                                  (keydown.enter)='submit()'
@@ -26,7 +26,7 @@
                                  (onSelect)='handleUserSelection($event.value)'
                                  (completeMethod)='handleUserSearch($event)'>
                     <ng-template #empty>
-                        <span>{{ 'participants.form.user.empty-search' | translate }}</span>
+                        <span>{{ 'participants.form.user.empty-search' | transloco }}</span>
                     </ng-template>
                 </p-auto-complete>
             </div>
@@ -34,16 +34,16 @@
         }
         <div class='flex flex-wrap'>
             <div class='left-field field'>
-                <label for='first-name' appRequired>{{ 'participants.form.firstname' | translate }}</label>
+                <label for='first-name' appRequired>{{ 'participants.form.firstname' | transloco }}</label>
                 <input [formControl]='firstName'
-                       [placeholder]='"participants.form.placeholder.firstname" | translate'
+                       [placeholder]='"participants.form.placeholder.firstname" | transloco'
                        (keydown.enter)='submit()'
                        id='first-name'
                        pInputText
                        type='text' />
                 @if (previousFirstName() && previousFirstName() !== firstName.value) {
                     <small class='secondary-color'>
-                        {{ 'participants.form.previous-first-name' | translate: { firstName: previousFirstName() } }}
+                        {{ 'participants.form.previous-first-name' | transloco: { firstName: previousFirstName() } }}
                     </small>
                 }
                 <app-form-field-error [errors]='firstName.errors'
@@ -51,16 +51,16 @@
                                       translationPrefix='participants.form.error.firstname' />
             </div>
             <div class='right-field field'>
-                <label for='last-name' appRequired>{{ 'participants.form.lastname' | translate }}</label>
+                <label for='last-name' appRequired>{{ 'participants.form.lastname' | transloco }}</label>
                 <input [formControl]='lastName'
-                       [placeholder]='"participants.form.placeholder.lastname" | translate'
+                       [placeholder]='"participants.form.placeholder.lastname" | transloco'
                        (keydown.enter)='submit()'
                        id='last-name'
                        pInputText
                        type='text' />
                 @if (previousLastName() && previousLastName() !== lastName.value) {
                     <small class='secondary-color'>
-                        {{ 'participants.form.previous-last-name' | translate: { lastName: previousLastName() } }}
+                        {{ 'participants.form.previous-last-name' | transloco: { lastName: previousLastName() } }}
                     </small>
                 }
                 <app-form-field-error [errors]='lastName.errors'
@@ -69,14 +69,14 @@
             </div>
         </div>
         <div class='field'>
-            <label for='birthday' appRequired>{{ 'participants.form.birthday' | translate }}</label>
+            <label for='birthday' appRequired>{{ 'participants.form.birthday' | transloco }}</label>
             <p-date-picker [formControl]='birthday'
                            showButtonBar
                            showIcon
                            inputmode='numeric'
                            type='text'
                            [showOnFocus]='false'
-                           [placeholder]='"participants.form.placeholder.birthday" | translate'
+                           [placeholder]='"participants.form.placeholder.birthday" | transloco'
                            [touchUI]='registryFacade.tinyScreen()'
                            (keydown.enter)='submit()'
                            id='birthday'
@@ -88,33 +88,33 @@
         @if (!defaultGroup()) {
             <div class='flex flex-wrap'>
                 <div class='left-field field'>
-                    <label for='begin-date-time'>{{ 'participants.form.begin-datetime' | translate }}</label>
+                    <label for='begin-date-time'>{{ 'participants.form.begin-datetime' | transloco }}</label>
                     <app-date-time-field [formControl]='beginDateTime'
                                          [invalid]='FormHelper.invalid(beginDateTime)'
                                          inputId='begin-date-time'
-                                         [datePlaceholder]='"participants.form.placeholder.date" | translate: {
+                                         [datePlaceholder]='"participants.form.placeholder.date" | transloco: {
                                                             date: startDateExample | dateFormat: "date"
                                                          }'
-                                         [timePlaceholder]='"participants.form.placeholder.time" | translate: {
+                                         [timePlaceholder]='"participants.form.placeholder.time" | transloco: {
                                                             date: startDateExample | dateFormat: "time"
                                                          }' />
-                    <small class='secondary-color'>{{ 'participants.form.hint.begin-date-time' | translate }}</small>
+                    <small class='secondary-color'>{{ 'participants.form.hint.begin-date-time' | transloco }}</small>
                     <app-form-field-error [errors]='beginDateTime.errors'
                                           [invalid]='FormHelper.invalid(beginDateTime)'
                                           translationPrefix='participants.form.error.begin-datetime' />
                 </div>
                 <div class='right-field field'>
-                    <label for='end-date-time'>{{ 'participants.form.end-datetime' | translate }}</label>
+                    <label for='end-date-time'>{{ 'participants.form.end-datetime' | transloco }}</label>
                     <app-date-time-field [formControl]='endDateTime'
                                          [invalid]='FormHelper.invalid(endDateTime)'
                                          inputId='end-date-time'
-                                         [datePlaceholder]='"participants.form.placeholder.date" | translate: {
+                                         [datePlaceholder]='"participants.form.placeholder.date" | transloco: {
                                                             date: endDateExample | dateFormat: "date"
                                                          }'
-                                         [timePlaceholder]='"participants.form.placeholder.time" | translate: {
+                                         [timePlaceholder]='"participants.form.placeholder.time" | transloco: {
                                                             date: endDateExample | dateFormat: "time"
                                                          }' />
-                    <small class='secondary-color'>{{ 'participants.form.hint.end-date-time' | translate }}</small>
+                    <small class='secondary-color'>{{ 'participants.form.hint.end-date-time' | transloco }}</small>
                     <app-form-field-error [errors]='endDateTime.errors'
                                           [invalid]='FormHelper.invalid(endDateTime)'
                                           translationPrefix='participants.form.error.end-datetime' />
@@ -125,16 +125,16 @@
                                   translationPrefix='participants.form.error.date-range' />
             <p-divider />
             <div class='field'>
-                <span class='label'>{{ 'participants.form.groups' | pluralTranslation: (groups.value?.length ?? 0)  | translate }}</span>
-                <label for='members' class='secondary-color'>{{ 'participants.form.groups.search' | translate }}</label>
+                <span class='label'>{{ 'participants.form.groups' | pluralTranslation: (groups.value?.length ?? 0)  | transloco }}</span>
+                <label for='members' class='secondary-color'>{{ 'participants.form.groups.search' | transloco }}</label>
                 <app-select-elements-field [formControl]='groups'
                                            [fluid]='true'
                                            [multiple]='true'
                                            [selectItemBuilder]='GroupHelper.toSelectItem'
                                            [selectionLabel]='"participants.form.groups.selected" | pluralTranslation:
-                                           (groups.value?.length ?? 0) | translate'
-                                           [emptyMessage]='"participants.form.groups.empty-search" | translate'
-                                           [emptySelectionMessage]='"participants.form.groups.empty" | translate'
+                                           (groups.value?.length ?? 0) | transloco'
+                                           [emptyMessage]='"participants.form.groups.empty-search" | transloco'
+                                           [emptySelectionMessage]='"participants.form.groups.empty" | transloco'
                                            [suggestions]='facade.searchedGroupsMetadata()'
                                            inputId='groups'
                                            (handleSearch)='handleGroupSearch($event)' />
@@ -144,13 +144,13 @@
     <div class='flex mt-2 justify-center'>
         <p-button
                 (onClick)='navigateToRedirectUri()'
-                [label]='"global.actions.cancel" | translate'
+                [label]='"global.actions.cancel" | transloco'
                 text
                 rounded />
         <p-button
                 class='ms-2'
                 (onClick)='submit()'
-                [label]='participant() | formButton | translate'
+                [label]='participant() | formButton | transloco'
                 rounded
                 outlined
                 [icon]='participant() | formIcon'

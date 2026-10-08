@@ -15,7 +15,7 @@ import { Checkbox, CheckboxChangeEvent } from 'primeng/checkbox'
 import { GenericHelper } from '@shared/helpers/generic.helper'
 import { Step, StepItem, StepPanel, Stepper } from 'primeng/stepper'
 import { Button } from 'primeng/button'
-import { TranslatePipe } from '@ngx-translate/core'
+import {TranslocoPipe} from '@jsverse/transloco'
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
 import { FormFieldErrorComponent } from '@shared/ui/common/form-field-error/form-field-error.component'
 import { DateTimeFieldComponent } from '@shared/ui/common/date-time-field/date-time-field.component'
@@ -39,7 +39,7 @@ import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enu
         Step,
         StepPanel,
         Button,
-        TranslatePipe,
+        TranslocoPipe,
         PluralTranslationPipe,
         ReactiveFormsModule,
         FormFieldErrorComponent,
