@@ -8,14 +8,14 @@ import {RegistryTemplateDirective} from '@shared/directives/registry-template.di
 import {TranslatePipe} from '@ngx-translate/core'
 import {InputTextModule} from 'primeng/inputtext'
 import {ToggleButtonModule} from 'primeng/togglebutton'
-import {MovementElementComponent} from '@shared/ui/movement-element/movement-element.component'
+import {MovementElementComponent} from '@shared/ui/domain/movement-element/movement-element.component'
 import {Select, SelectModule} from 'primeng/select'
 import {Button} from 'primeng/button'
 import {DatePicker} from 'primeng/datepicker'
 import {ParticipantFacade} from '@pages/projects/[projectId]/configuration/participants/data/state/participant.facade'
 import {
     ParticipantElementComponent,
-} from '@shared/ui/participant-element/participant-element.component'
+} from '@shared/ui/domain/participant-element/participant-element.component'
 import {GenericListComponent} from '@shared/ui/base/generic-list.component'
 import {MovementFacade} from '@pages/projects/[projectId]/movements/data/state/movement.facade'
 import {Subscription, tap} from 'rxjs'

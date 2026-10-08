@@ -8,7 +8,7 @@ import {RegistryTemplateDirective} from '@shared/directives/registry-template.di
 import {TranslatePipe} from '@ngx-translate/core'
 import {InputTextModule} from 'primeng/inputtext'
 import {ToggleButtonModule} from 'primeng/togglebutton'
-import {MovementElementComponent} from '@shared/ui/movement-element/movement-element.component'
+import {MovementElementComponent} from '@shared/ui/domain/movement-element/movement-element.component'
 import {Select, SelectModule} from 'primeng/select'
 import {Button} from 'primeng/button'
 import {DatePicker} from 'primeng/datepicker'

@@ -5,7 +5,7 @@ import { GenericComponent } from '@shared/ui/base/generic.component'
 import { Subscription, tap } from 'rxjs'
 import { MovementFacade } from '@pages/projects/[projectId]/movements/data/state/movement.facade'
 import { ListComponent } from '@shared/ui/common/list/list.component'
-import { MovementElementComponent } from '@shared/ui/movement-element/movement-element.component'
+import { MovementElementComponent } from '@shared/ui/domain/movement-element/movement-element.component'
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 
 @Component( {

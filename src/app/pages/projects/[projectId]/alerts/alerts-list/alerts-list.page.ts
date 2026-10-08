@@ -10,7 +10,7 @@ import {ListComponent} from '@shared/ui/common/list/list.component'
 import {RegistryTemplateDirective} from '@shared/directives/registry-template.directive'
 import {Select} from 'primeng/select'
 import {TranslatePipe} from '@ngx-translate/core'
-import {AlertElementComponent} from '@shared/ui/alert-element/alert-element.component'
+import {AlertElementComponent} from '@shared/ui/domain/alert-element/alert-element.component'
 
 @Component({
     selector: 'app-alerts-list',

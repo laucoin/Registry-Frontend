@@ -9,7 +9,7 @@ import {InputTextModule} from 'primeng/inputtext'
 import {ToggleButtonModule} from 'primeng/togglebutton'
 import {
     ProjectProfileElementComponent,
-} from '@shared/ui/project-profile-element/project-profile-element.component'
+} from '@shared/ui/domain/project-profile-element/project-profile-element.component'
 import {RouterLink} from '@angular/router'
 import {ProjectProfileRoutesEnum} from '@pages/projects/[projectId]/configuration/profiles/project-profile-routes.enum'
 import {Select, SelectModule} from 'primeng/select'

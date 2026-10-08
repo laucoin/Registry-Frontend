@@ -19,7 +19,7 @@ on this Angular Client-Side Rendering (CSR) project.
 - **Framework:** Angular (latest version configured for **Client-Side Rendering - CSR**).
 - **Reactivity & State:** Strictly use **Angular Signals** (including `@ngrx/signals` `signalStore`, reactive forms with
   signals, `input()`, `output()`, etc.). Avoid legacy reactive patterns where modern signals are applicable.
-- **Design System:** Ng-Zorro (must be used via an abstraction layer, see Architecture).
+- **Design System:** PrimeNg.
 
 ---
 
@@ -37,9 +37,7 @@ The source code is organized into three core directories:
     - `helpers/`
     - `mappers/`
     - `models/`
-    - `ui/kit/`: **Design System Abstraction Layer.** Components from Ng-Zorro must **never** be imported directly
-      across pages/components. Instead, wrap them inside `shared/ui/kit/` to insulate the codebase from breaking changes
-      or design system swaps. The global theme must also rely on this abstraction rather than direct configuration.
+    - `ui/`
 
 ### Data Flow: api → store → facade
 
@@ -113,8 +111,6 @@ Each reviewing agent must evaluate the proposed changes, provide feedback if nee
 1. **Architecture Agent (`/10`):**
     - Verifies strict adherence to directory layout (`core/`, `pages/`, `shared/`).
     - Ensures strict data flow enforcement (`api` → `store` → `facade`). Components must only talk to facades.
-    - Checks that Ng-Zorro components are strictly isolated inside `shared/ui/kit/` and never directly imported
-      elsewhere.
     - Validates that CSR runtime configuration is properly decoupled and not baked into build artifacts.
 
 2. **TechLead Agent (`/10`):**
@@ -211,7 +207,7 @@ This exception is standing and does not require asking the user each time — ev
   an uncaught error permanently kills that method for every later call, not just the failing one.
 - One HTTP interceptor owns everything that touches the backend: CSRF header + withCredentials, one-shot
   refresh-and-replay on 401, mapping 0/502/503 to a generic unavailable error, redirect to /login on an unrecoverable
-  401. The token-refresh endpoint is explicitly excluded from the refresh-and-retry branch to avoid a self-referential
+  `401`. The token-refresh endpoint is explicitly excluded from the refresh-and-retry branch to avoid a self-referential
   deadlock — don't simplify that exclusion away, don't scatter interceptor logic into services.
 - No environment value is compiled into the bundle. Runtime config is loaded from assets/config/config.json via
   provideAppInitializer () prior to application bootstrap.

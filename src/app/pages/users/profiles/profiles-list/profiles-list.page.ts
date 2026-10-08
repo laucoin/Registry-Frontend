@@ -10,7 +10,7 @@ import {DatePicker} from 'primeng/datepicker'
 import {Button} from 'primeng/button'
 import {
     ProjectProfileElementComponent,
-} from '@shared/ui/project-profile-element/project-profile-element.component'
+} from '@shared/ui/domain/project-profile-element/project-profile-element.component'
 import {RegistryTemplateDirective} from '@shared/directives/registry-template.directive'
 import {ProjectProfileFacade} from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.facade'
 import {Select} from 'primeng/select'

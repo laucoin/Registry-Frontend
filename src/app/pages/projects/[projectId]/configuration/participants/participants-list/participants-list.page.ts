@@ -9,7 +9,7 @@ import {InputTextModule} from 'primeng/inputtext'
 import {ToggleButtonModule} from 'primeng/togglebutton'
 import {
     ParticipantElementComponent,
-} from '@shared/ui/participant-element/participant-element.component'
+} from '@shared/ui/domain/participant-element/participant-element.component'
 import {RouterLink} from '@angular/router'
 import {ParticipantRoutesEnum} from '@pages/projects/[projectId]/configuration/participants/participant-routes.enum'
 import {Button} from 'primeng/button'

@@ -11,7 +11,7 @@ import { InputText } from 'primeng/inputtext'
 import { ListComponent } from '@shared/ui/common/list/list.component'
 import {
     ParticipantElementComponent,
-} from '@shared/ui/participant-element/participant-element.component'
+} from '@shared/ui/domain/participant-element/participant-element.component'
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import { TranslatePipe } from '@ngx-translate/core'
 import { LayerComponent } from '@shared/ui/common/layer/layer.component'
