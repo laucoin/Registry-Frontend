@@ -3,7 +3,7 @@
                   [actions]='actions()'
                   icon='pi pi-users'>
     <div class='element-card'>
-        <div class='group-info'>
+        <div class='group-info basis-full md:basis-[33%]'>
             <div class='group-name flex' [class.justify-center]='registryFacade.tinyScreen()'>
                 <app-severity-circle class='me-2' [severity]='group().visible ? SeverityEnum.SUCCESS : SeverityEnum.DANGER' />
                 {{ (group().name | titlecase) }}
@@ -23,7 +23,7 @@
                 </div>
             }
         </div>
-        <div class='members flex' [class.justify-center]='registryFacade.tinyScreen()'>
+        <div class='members flex basis-full md:basis-[33%]' [class.justify-center]='registryFacade.tinyScreen()'>
             {{ 'groups.member' | pluralTranslation: group().membersCount | translate: { count: group().membersCount } }}
             (
             <app-severity-circle [severity]='SeverityEnum.SUCCESS' />
@@ -31,7 +31,7 @@
             <app-severity-circle [severity]='SeverityEnum.WARNING' />
              {{ group().outsideMembersCount }})
         </div>
-        <div class='status flex' [class.justify-center]='registryFacade.tinyScreen()'>
+        <div class='status flex basis-full md:basis-[33%]' [class.justify-center]='registryFacade.tinyScreen()'>
             @if (group().status) {
                 <app-severity-tag [severity]='statusSeverity()' [value]='group().status!.label' />
             }

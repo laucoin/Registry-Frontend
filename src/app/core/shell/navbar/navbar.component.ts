@@ -39,7 +39,7 @@ import { InfoComponent } from '@shared/ui/common/info/info.component'
         InfoComponent,
     ],
     templateUrl: './navbar.component.html',
-    styleUrl: './navbar.component.scss',
+    styleUrl: './navbar.component.css',
 } )
 export class NavbarComponent extends GenericComponent {
     private readonly iconOption: ProjectOptionIconPipe = inject( ProjectOptionIconPipe )

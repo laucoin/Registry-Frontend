@@ -35,7 +35,7 @@ import { DateHelper } from '@shared/helpers/date.helper'
 
     ],
     templateUrl: './dialog-element.component.html',
-    styleUrl: './dialog-element.component.scss',
+    styleUrl: './dialog-element.component.css',
 } )
 export class DialogElementComponent extends GenericElementComponent {
     protected readonly facade: CommunicationFacade = inject( CommunicationFacade )

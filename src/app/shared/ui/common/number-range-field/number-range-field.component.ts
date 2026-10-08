@@ -27,7 +27,7 @@ import { StringHelper } from '@shared/helpers/string.helper'
         },
     ],
     templateUrl: './number-range-field.component.html',
-    styleUrl: './number-range-field.component.scss',
+    styleUrl: './number-range-field.component.css',
 } )
 export class NumberRangeFieldComponent implements ControlValueAccessor {
     private readonly translateService: TranslateService = inject( TranslateService )

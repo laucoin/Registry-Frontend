@@ -37,7 +37,7 @@ import { GenericHelper } from '@shared/helpers/generic.helper'
         },
     ],
     templateUrl: './select-elements-field.component.html',
-    styleUrl: './select-elements-field.component.scss',
+    styleUrl: './select-elements-field.component.css',
 } )
 export class SelectElementsFieldComponent<T extends BaseModel> implements ControlValueAccessor {
     @ContentChildren( RegistryTemplateDirective ) public templates: QueryList<RegistryTemplateDirective> | undefined

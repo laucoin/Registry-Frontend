@@ -19,7 +19,7 @@ import { TranslatePipe } from '@ngx-translate/core'
         TranslatePipe,
     ],
     templateUrl: './alert-communications-list.component.html',
-    styleUrl: './alert-communications-list.component.scss',
+    styleUrl: './alert-communications-list.component.css',
 } )
 export class AlertCommunicationsListComponent implements OnInit, OnDestroy {
     protected readonly facade: AlertFacade = inject( AlertFacade )

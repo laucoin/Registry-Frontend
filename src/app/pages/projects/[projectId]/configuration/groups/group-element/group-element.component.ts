@@ -28,7 +28,7 @@ import { AvailabilityStatusEnum } from '@shared/models/enumeration/availability-
         SeverityCircleComponent,
     ],
     templateUrl: './group-element.component.html',
-    styleUrl: './group-element.component.scss',
+    styleUrl: './group-element.component.css',
 } )
 export class GroupElementComponent extends GenericElementComponent {
     protected readonly facade: GroupFacade = inject( GroupFacade )

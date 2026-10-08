@@ -39,7 +39,7 @@ import { Subscription, tap } from 'rxjs'
         SeverityInformationComponent,
     ],
     templateUrl: './dashboard.component.html',
-    styleUrl: './dashboard.component.scss',
+    styleUrl: './dashboard.component.css',
 } )
 export class DashboardComponent extends GenericComponent implements OnDestroy {
     protected readonly facade: SelectedProjectFacade = inject( SelectedProjectFacade )

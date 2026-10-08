@@ -75,7 +75,7 @@ import {
         MovementCommunicationsListComponent,
     ],
     templateUrl: './movement-element.component.html',
-    styleUrl: './movement-element.component.scss',
+    styleUrl: './movement-element.component.css',
 })
 export class MovementElementComponent extends GenericElementComponent {
     protected readonly facade: MovementFacade = inject(MovementFacade)

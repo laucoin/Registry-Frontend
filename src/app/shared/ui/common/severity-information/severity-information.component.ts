@@ -14,7 +14,7 @@ enum InformationImageEnum {
     selector: 'app-severity-information',
     imports: [TranslatePipe, MessageModule, MessageComponent],
     templateUrl: './severity-information.component.html',
-    styleUrl: './severity-information.component.scss',
+    styleUrl: './severity-information.component.css',
 })
 export class SeverityInformationComponent {
     public readonly showImage: InputSignal<boolean> = input(true)

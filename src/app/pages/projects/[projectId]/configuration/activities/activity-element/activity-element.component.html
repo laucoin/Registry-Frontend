@@ -3,7 +3,7 @@
                   [actionMenuVisible]='actionMenuVisible()'
                   [icon]='ProjectOptionEnum.ACTIVITY | optionIcon'>
     <div class='element-card'>
-        <div class='activity-info flex flex-col justify-center'>
+        <div class='activity-info flex flex-col justify-center basis-full xl:basis-[30%]'>
             <div class='activity-name flex' [class.justify-center]='registryFacade.tinyScreen()'>
                 <app-severity-circle class='me-2' [severity]='activity().visible ? SeverityEnum.SUCCESS : SeverityEnum.DANGER' />
                 {{ activity().name }}
@@ -23,15 +23,15 @@
                 </div>
             }
         </div>
-        <div class='participants flex' [class.justify-center]='registryFacade.tinyScreen()'>
+        <div class='participants flex basis-1/2 xl:basis-[20%]' [class.justify-center]='registryFacade.tinyScreen()'>
             <p-tag icon='pi pi-hourglass' [value]='activity().duration?.label' />
         </div>
-        <div class='duration flex' [class.justify-center]='registryFacade.tinyScreen()'>
+        <div class='duration flex basis-1/2 xl:basis-[20%]' [class.justify-center]='registryFacade.tinyScreen()'>
             <p-tag icon='pi pi-users'
                    [value]='activity().allowedParticipants ? activity().allowedParticipants!.lower + "-" +
                    activity().allowedParticipants!.upper : "activities.participant.zero" | translate' />
         </div>
-        <div class='status flex' [class.justify-center]='registryFacade.tinyScreen()'>
+        <div class='status flex basis-1/2 xl:basis-[30%]' [class.justify-center]='registryFacade.tinyScreen()'>
             @if (activity().status) {
                 <app-severity-tag [severity]='statusSeverity()' [value]='activity().status!.label' />
             }

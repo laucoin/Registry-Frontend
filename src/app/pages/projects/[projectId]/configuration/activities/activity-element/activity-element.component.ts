@@ -34,7 +34,7 @@ import {MessageComponent} from '@shared/ui/common/message/message.component'
         MessageComponent,
     ],
     templateUrl: './activity-element.component.html',
-    styleUrl: './activity-element.component.scss',
+    styleUrl: './activity-element.component.css',
 })
 export class ActivityElementComponent extends GenericElementComponent {
     protected readonly facade: ActivityFacade = inject(ActivityFacade)

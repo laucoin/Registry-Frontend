@@ -3,7 +3,7 @@
                   [actionMenuVisible]='actionMenuVisible()'
                   icon='pi pi-user'>
     <div class='element-card'>
-        <div class='user-info'>
+        <div class='user-info basis-full xl:basis-[30%]'>
             <div class='user-name flex'
                  [class.justify-center]='registryFacade.tinyScreen()'>
                 <span class='cursor-pointer hover:underline'
@@ -16,18 +16,18 @@
             </div>
         </div>
         @if (GenericHelper.nonNull(user().birthday)) {
-            <div class='birthday flex content-center' [class.justify-center]='registryFacade.tinyScreen()'>
+            <div class='birthday flex content-center basis-full sm:basis-1/2 xl:basis-[25%]' [class.justify-center]='registryFacade.tinyScreen()'>
                 <i class='pi pi-gift'></i>
                 <span class='ms-2'>{{ user().birthday | dateFormat: 'date' }}</span>
             </div>
         }
         @if (GenericHelper.nonNull(user().role)) {
-            <div class='role flex' [class.justify-center]='registryFacade.tinyScreen()'>
+            <div class='role flex basis-full sm:basis-1/2 xl:basis-[30%]' [class.justify-center]='registryFacade.tinyScreen()'>
                 <app-severity-tag [value]='user().role!.label!' />
             </div>
         }
         @if (GenericHelper.nonNull(user().visible)) {
-            <div class='status flex' [class.justify-center]='registryFacade.tinyScreen()'>
+            <div class='status flex basis-full xl:basis-[15%]' [class.justify-center]='registryFacade.tinyScreen()'>
                 <app-severity-tag
                         [severity]='user().visible ? SeverityEnum.SUCCESS : SeverityEnum.DANGER'
                         [value]='user() | visibilityName: "users" | translate' />

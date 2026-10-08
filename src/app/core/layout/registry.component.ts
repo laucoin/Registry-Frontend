@@ -36,7 +36,7 @@ import {GenericHelper} from '@shared/helpers/generic.helper'
     ],
     providers: [ConfirmationService, MessageService],
     templateUrl: './registry.component.html',
-    styleUrl: './registry.component.scss',
+    styleUrl: './registry.component.css',
 })
 export class RegistryComponent extends GenericComponent implements OnDestroy {
     protected readonly breakPoint: Record<string, string> = breakPoint

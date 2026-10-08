@@ -39,7 +39,7 @@ import {MenuItem} from 'primeng/api'
     ],
     providers: [GroupFacade],
     templateUrl: './participant-element.component.html',
-    styleUrl: './participant-element.component.scss',
+    styleUrl: './participant-element.component.css',
 })
 export class ParticipantElementComponent extends GenericElementComponent {
     protected readonly facade: ParticipantFacade = inject(ParticipantFacade)

@@ -1,0 +1,15 @@
+.project-name {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.project-info,
+.options-and-status,
+.action-button {
+  gap: var(--min-spacer);
+  flex-basis: 100%;
+}
+
+::ng-deep .max-list-box-height {
+  height: 100%;
+}

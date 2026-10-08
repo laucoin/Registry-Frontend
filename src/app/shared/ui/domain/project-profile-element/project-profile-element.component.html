@@ -3,7 +3,7 @@
                   [actions]='actions()'
                   [icon]='registryFacade.selectedProject()?.id === profile().project.id ? "pi pi-verified" : "pi pi-user"'>
     <div class='element-card'>
-        <div class='profile-info flex flex-col justify-center'>
+        <div class='profile-info flex flex-col justify-center basis-full xl:basis-[30%]'>
             <div class='profile-name flex' [class.justify-center]='registryFacade.tinyScreen()'>
                 @if (view() === 'user') {
                     {{ profile().project.name }}
@@ -26,20 +26,20 @@
                 </div>
             }
         </div>
-        <div class='role flex' [class.justify-center]='registryFacade.tinyScreen()'>
+        <div class='role flex basis-full xl:basis-[15%]' [class.justify-center]='registryFacade.tinyScreen()'>
             <app-severity-tag [value]='profile().role.label!' />
         </div>
         @if (profile().status.value !== ProfileStatusEnum.INVITED || profile().user.id !== registryFacade.currentUser()!.id) {
-            <div class='status flex' [class.justify-center]='registryFacade.tinyScreen()'>
+            <div class='status flex basis-full lg:basis-1/2 xl:basis-[30%]' [class.justify-center]='registryFacade.tinyScreen()'>
                 @if (profile().availabilityStatus) {
                     <app-severity-tag [severity]='availabilityStatusSeverity()' [value]='profile().availabilityStatus.label' />
                 }
             </div>
-            <div class='invitation-status flex' [class.justify-center]='registryFacade.tinyScreen()'>
+            <div class='invitation-status flex basis-full lg:basis-1/2 xl:basis-[15%]' [class.justify-center]='registryFacade.tinyScreen()'>
                 <app-severity-tag [severity]='statusSeverity()' [value]='profile().status.label!' />
             </div>
         } @else {
-            <div class='invitation-form flex' [class.justify-center]='registryFacade.tinyScreen()'>
+            <div class='invitation-form flex basis-full xl:basis-[45%]' [class.justify-center]='registryFacade.tinyScreen()'>
                 <div class='flex flex-col'>
                     <div>{{ 'project-profiles.manage-acceptance' | translate }}</div>
                     <div class='flex justify-center mt-2'>

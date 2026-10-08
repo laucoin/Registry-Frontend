@@ -45,7 +45,7 @@ import {MenuItem} from 'primeng/api'
         VisibilityNamePipe,
     ],
     templateUrl: './user-element.component.html',
-    styleUrl: './user-element.component.scss',
+    styleUrl: './user-element.component.css',
 })
 export class UserElementComponent extends GenericElementComponent {
     protected readonly facade: UserFacade = inject(UserFacade)

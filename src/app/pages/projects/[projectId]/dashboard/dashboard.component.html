@@ -21,7 +21,7 @@
                 }
             </div>
             <div class='flex'>
-                <div class='sub-count flex flex-col items-center'>
+                <div class='sub-count flex flex-col items-center basis-1/2'>
                     <b>
                         {{
                             'project-home.dashboard.participants.present' | pluralTranslation:
@@ -29,7 +29,7 @@
                         }}
                     </b>
                     <div class='flex'>
-                        <div class='sub-count flex flex-col items-center'>
+                        <div class='sub-count flex flex-col items-center basis-1/2'>
                             @if (facade.participantsStatusLoading()) {
                                 <p-skeleton class='mt-2 mb-1' width='5rem' height='1.5rem' borderRadius='1rem' />
                             } @else {
@@ -38,7 +38,7 @@
                             <small class='mt-1 secondary-color'>{{ 'project-home.dashboard.participants.registered' | pluralTranslation: totalPresentRegistered() | translate }}</small>
                         </div>
                         <p-divider layout='vertical' />
-                        <div class='sub-count flex flex-col items-center'>
+                        <div class='sub-count flex flex-col items-center basis-1/2'>
                             @if (facade.participantsStatusLoading()) {
                                 <p-skeleton class='mt-2 mb-1' width='5rem' height='1.5rem' borderRadius='1rem' />
                             } @else {
@@ -49,7 +49,7 @@
                     </div>
                 </div>
                 <p-divider layout='vertical' />
-                <div class='sub-count flex flex-col items-center'>
+                <div class='sub-count flex flex-col items-center basis-1/2'>
                     <b>{{ 'project-home.dashboard.participants.absent' | pluralTranslation: totalAbsentRegistered() | translate }}</b>
                     @if (facade.participantsStatusLoading()) {
                         <p-skeleton class='mt-2 mb-1' width='5rem' height='1.5rem' borderRadius='1rem' />
@@ -71,7 +71,7 @@
         </p-card>
     }
     @if (ProjectHelper.hasOption(registryFacade.selectedProject(), ProjectOptionEnum.VEHICLE) && GenericHelper.isNull(facade.vehiclesStatusError())) {
-        <p-card class='total-vehicle'>
+        <p-card class='total-vehicle basis-full md:basis-1/2'>
             <ng-template #title>
                 <div class='flex justify-center items-center'>
                     <i class='pi pi-car'></i>
@@ -86,7 +86,7 @@
                 }
             </div>
             <div class='flex'>
-                <div class='sub-count flex flex-col items-center mb-4'>
+                <div class='sub-count flex flex-col items-center mb-4 basis-1/2'>
                     <b>{{ 'project-home.dashboard.vehicles.present' | pluralTranslation: totalPresentVehicles() | translate }}</b>
                     @if (facade.vehiclesStatusLoading()) {
                         <p-skeleton class='mt-2 mb-1' width='5rem' height='1.5rem' borderRadius='1rem' />
@@ -95,7 +95,7 @@
                     }
                 </div>
                 <p-divider layout='vertical' />
-                <div class='sub-count flex flex-col items-center mb-4'>
+                <div class='sub-count flex flex-col items-center mb-4 basis-1/2'>
                     <b>{{ 'project-home.dashboard.vehicles.absent' | pluralTranslation: totalAbsentVehicles() | translate }}</b>
                     @if (facade.vehiclesStatusLoading()) {
                         <p-skeleton class='mt-2 mb-1' width='5rem' height='1.5rem' borderRadius='1rem' />

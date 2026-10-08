@@ -3,7 +3,7 @@
                   [actionMenuVisible]='actionMenuVisible()'
                   [icon]='ProjectOptionEnum.VEHICLE | optionIcon'>
     <div class='element-card'>
-        <div class='vehicle-info flex flex-col justify-center'>
+        <div class='vehicle-info flex flex-col justify-center basis-full md:basis-[33%]'>
             <div class='vehicle-license-plate flex' [class.justify-center]='registryFacade.tinyScreen()'>
                 <app-severity-circle class='me-2' [severity]='vehicle().visible ? SeverityEnum.SUCCESS : SeverityEnum.DANGER' />
                 {{ vehicle().licensePlate }}
@@ -23,10 +23,10 @@
                 </div>
             }
         </div>
-        <div class='vehicle-detail flex' [class.justify-center]='registryFacade.tinyScreen()'>
+        <div class='vehicle-detail flex basis-full md:basis-[33%]' [class.justify-center]='registryFacade.tinyScreen()'>
             {{ vehicle().brand }} {{ vehicle().model }}
         </div>
-        <div class='availability flex' [class.justify-center]='registryFacade.tinyScreen()'>
+        <div class='availability flex basis-full md:basis-[33%]' [class.justify-center]='registryFacade.tinyScreen()'>
             <app-severity-tag [severity]='vehicleStatusSeverity()' [value]='vehicle().status.label' />
         </div>
     </div>

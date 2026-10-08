@@ -44,7 +44,7 @@ import {SeverityEnum} from '@shared/models/enumeration/severity.enum'
         DateFormatPipe,
     ],
     templateUrl: './list.component.html',
-    styleUrl: './list.component.scss',
+    styleUrl: './list.component.css',
 })
 export class ListComponent<T extends GenericModel> extends GenericComponent {
     @ContentChildren(RegistryTemplateDirective) public templates: QueryList<RegistryTemplateDirective> | undefined

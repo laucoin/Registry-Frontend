@@ -28,7 +28,7 @@ import {MenuItem} from 'primeng/api'
         ProjectOptionIconPipe,
     ],
     templateUrl: './vehicle-element.component.html',
-    styleUrl: './vehicle-element.component.scss',
+    styleUrl: './vehicle-element.component.css',
 })
 export class VehicleElementComponent extends GenericElementComponent {
     protected readonly facade: VehicleFacade = inject(VehicleFacade)

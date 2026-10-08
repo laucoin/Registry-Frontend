@@ -58,7 +58,7 @@ import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enu
         FormIconPipe,
     ],
     templateUrl: './project-form.page.html',
-    styleUrl: './project-form.page.scss',
+    styleUrl: './project-form.page.css',
 } )
 export class ProjectFormPage extends GenericFormComponent<ProjectModel, ProjectDto> implements OnDestroy {
     protected readonly facade: ProjectFacade = inject( ProjectFacade )

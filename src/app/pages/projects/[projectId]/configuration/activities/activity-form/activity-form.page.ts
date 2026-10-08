@@ -52,7 +52,7 @@ import {FormIconPipe} from '@shared/helpers/pipe/form-icon.pipe'
         FormIconPipe,
     ],
     templateUrl: './activity-form.page.html',
-    styleUrl: './activity-form.page.scss',
+    styleUrl: './activity-form.page.css',
 })
 export class ActivityFormPage extends GenericFormComponent<ActivityModel, ActivityDto> implements OnDestroy {
     protected readonly facade: ActivityFacade = inject(ActivityFacade)

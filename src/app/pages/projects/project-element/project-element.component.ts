@@ -46,7 +46,7 @@ import {AvailabilityStatusEnum} from '@shared/models/enumeration/availability-st
         SeverityCircleComponent,
     ],
     templateUrl: './project-element.component.html',
-    styleUrl: './project-element.component.scss',
+    styleUrl: './project-element.component.css',
 })
 export class ProjectElementComponent extends GenericElementComponent implements OnDestroy {
     protected readonly facade: ProjectFacade = inject(ProjectFacade)

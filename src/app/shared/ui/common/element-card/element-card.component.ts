@@ -35,7 +35,7 @@ import {MenuItem} from 'primeng/api'
         ContextMenu,
     ],
     templateUrl: './element-card.component.html',
-    styleUrl: './element-card.component.scss',
+    styleUrl: './element-card.component.css',
 })
 export class ElementCardComponent<T extends GenericModel> extends GenericComponent {
     private readonly datePipe: DateFormatPipe = inject(DateFormatPipe)

@@ -26,7 +26,6 @@ import {AlertElementComponent} from '@shared/ui/domain/alert-element/alert-eleme
         AlertElementComponent,
     ],
     templateUrl: './alerts-list.page.html',
-    styleUrl: './alerts-list.page.scss',
 })
 export class AlertsListPage extends GenericListComponent {
     protected readonly facade: AlertFacade = inject(AlertFacade)

@@ -49,7 +49,7 @@ import { IntervalPipe } from '@shared/helpers/pipe/interval.pipe'
         ProjectOptionIconPipe,
     ],
     templateUrl: './alert-element.component.html',
-    styleUrl: './alert-element.component.scss',
+    styleUrl: './alert-element.component.css',
 } )
 export class AlertElementComponent extends GenericElementComponent {
     protected readonly facade: AlertFacade = inject( AlertFacade )

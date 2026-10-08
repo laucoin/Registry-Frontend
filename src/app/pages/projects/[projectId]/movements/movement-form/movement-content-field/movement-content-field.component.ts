@@ -39,7 +39,7 @@ import { RegistryFacade } from '@core/registry/state/registry.facade'
         },
     ],
     templateUrl: './movement-content-field.component.html',
-    styleUrl: './movement-content-field.component.scss',
+    styleUrl: './movement-content-field.component.css',
 } )
 export class MovementContentFieldComponent implements ControlValueAccessor {
     protected readonly registryFacade: RegistryFacade = inject( RegistryFacade )

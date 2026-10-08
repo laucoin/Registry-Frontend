@@ -83,7 +83,7 @@ import {FormErrorComponent} from '@shared/ui/common/form-error/form-error.compon
         FormErrorComponent,
     ],
     templateUrl: './movement-form.page.html',
-    styleUrl: './movement-form.page.scss',
+    styleUrl: './movement-form.page.css',
 })
 export class MovementFormPage extends GenericFormComponent<MovementModel, MovementDto> implements OnDestroy {
     protected readonly facade: MovementFacade = inject(MovementFacade)

@@ -3,7 +3,7 @@
                   [actionMenuVisible]='actionMenuVisible()'
                   [icon]='participant().type.value === ParticipantTypeEnum.REGISTERED ? "pi pi-user" : "pi pi-user-plus"'>
     <div class='element-card'>
-        <div class='participant-info'>
+        <div class='participant-info basis-full 2xl:basis-[30%]'>
             <div class='participant-name flex' [class.justify-center]='registryFacade.tinyScreen()'>
                 <app-severity-circle class='me-2' [severity]='participant().visible ? SeverityEnum.SUCCESS : SeverityEnum.DANGER' />
                 {{ (participant().firstName | titlecase) + ' ' + (participant().lastName | uppercase) }}
@@ -23,7 +23,7 @@
                 </div>
             }
         </div>
-        <div class='groups flex' [class.justify-center]='registryFacade.tinyScreen()'>
+        <div class='groups flex basis-full 2xl:basis-[35%]' [class.justify-center]='registryFacade.tinyScreen()'>
             <div [class.pointer]='additionalTotal() >= 0'
                  [class.hover-underline]='additionalTotal() >= 0'
                  tabindex='1'
@@ -41,7 +41,7 @@
                 }
             </div>
         </div>
-        <div class='status flex' [class.justify-center]='registryFacade.tinyScreen()'>
+        <div class='status flex basis-full 2xl:basis-[35%]' [class.justify-center]='registryFacade.tinyScreen()'>
             <app-severity-tag [severity]='participantStatusSeverity()' [value]='participant().status.label' />
         </div>
     </div>

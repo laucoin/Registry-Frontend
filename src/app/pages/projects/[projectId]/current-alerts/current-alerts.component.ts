@@ -23,7 +23,7 @@ import { AlertFacade } from '@pages/projects/[projectId]/alerts/data/state/alert
         RouterLink,
     ],
     templateUrl: './current-alerts.component.html',
-    styleUrl: './current-alerts.component.scss',
+    styleUrl: './current-alerts.component.css',
 } )
 export class CurrentAlertsComponent extends GenericComponent implements OnDestroy {
     protected readonly facade: SelectedProjectFacade = inject( SelectedProjectFacade )

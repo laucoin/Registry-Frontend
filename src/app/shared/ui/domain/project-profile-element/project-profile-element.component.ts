@@ -47,7 +47,7 @@ import {AvailabilityStatusEnum} from '@shared/models/enumeration/availability-st
     ],
     providers: [ConfirmationService, ProjectProfileFacade],
     templateUrl: './project-profile-element.component.html',
-    styleUrl: './project-profile-element.component.scss',
+    styleUrl: './project-profile-element.component.css',
 })
 export class ProjectProfileElementComponent extends GenericElementComponent implements OnDestroy {
     protected readonly facade: ProjectProfileFacade = inject(ProjectProfileFacade)

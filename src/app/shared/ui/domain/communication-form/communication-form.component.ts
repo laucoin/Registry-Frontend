@@ -72,7 +72,7 @@ import { FormErrorComponent } from '@shared/ui/common/form-error/form-error.comp
         InputText,
     ],
     templateUrl: './communication-form.component.html',
-    styleUrl: './communication-form.component.scss',
+    styleUrl: './communication-form.component.css',
 } )
 export class CommunicationFormComponent extends GenericFormComponent<CommunicationModel, CommunicationDto> implements OnInit, OnDestroy {
     protected readonly facade: CommunicationFacade = inject( CommunicationFacade )

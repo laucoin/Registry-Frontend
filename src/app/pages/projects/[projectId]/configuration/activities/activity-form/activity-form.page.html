@@ -29,14 +29,14 @@
                                   translationPrefix='activities.form.error.description' />
         </div>
         <div class='flex flex-wrap'>
-            <div class='duration field'>
+            <div class='duration field basis-full'>
                 <label for='duration'>{{ 'activities.form.duration' | translate }}</label>
                 <app-duration-field [formControl]='duration'
                                     inputId='duration'
                                     [fluid]='true'
                                     [placeholder]='"activities.form.placeholder.duration" | translate' />
             </div>
-            <div class='allowed-participants field'>
+            <div class='allowed-participants field basis-full'>
                 <label for='allowed-participants'>{{ 'activities.form.allowed-participants' | translate }}</label>
                 <app-number-range-field [formControl]='allowedParticipants'
                                         [invalid]='FormHelper.invalid(allowedParticipants)'
