@@ -99,34 +99,40 @@ export class ProjectProfileFacade extends GenericProjectElementFacade {
         return this.api.createProjectProfiles( this.selectedProjectId(), projectProfiles ).pipe(
             notifyUnavailableOnly( this.uiFacade ),
             tap( (creationStatus: CreatedProjectProfiles): void => {
-                const created: number = creationStatus?.createdUserIds?.length ?? 0
-                const notCreated: number = creationStatus?.notCreatedUserIds?.length ?? 0
-                if (notCreated > 0) {
-                    const prefixKey: string = 'project-profiles.notifications.partial-invitation'
-                    this.notifyMessage(
-                        SeverityEnum.WARNING,
-                        this.pluralTranslationPipe.transform( prefixKey + '.title', created ),
-                        this.pluralTranslationPipe.transform( prefixKey + '.message', created ),
-                        'pi pi-key',
-                        { asked: created + notCreated, created: created },
-                    )
-                } else {
-                    this.notifyMessage(
-                        SeverityEnum.SUCCESS,
-                        this.pluralTranslationPipe.transform(
-                            'project-profiles.notifications.create.title',
-                            creationStatus.createdUserIds,
-                        ),
-                        this.pluralTranslationPipe.transform(
-                            'project-profiles.notifications.create.message',
-                            creationStatus.createdUserIds,
-                        ),
-                        'pi pi-key',
-                        { created: created },
-                    )
-                }
+                this.notifyCreation( creationStatus )
                 this.refreshPage()
             } ),
+        )
+    }
+
+    private notifyCreation (creationStatus: CreatedProjectProfiles): void {
+        const created: number = creationStatus?.createdUserIds?.length ?? 0
+        const notCreated: number = creationStatus?.notCreatedUserIds?.length ?? 0
+        if (notCreated > 0) {
+            this.notifyPartialCreation( created, notCreated )
+        } else {
+            this.notifyFullCreation( creationStatus, created )
+        }
+    }
+
+    private notifyPartialCreation (created: number, notCreated: number): void {
+        const prefixKey: string = 'project-profiles.notifications.partial-invitation'
+        this.notifyMessage(
+            SeverityEnum.WARNING,
+            this.pluralTranslationPipe.transform( prefixKey + '.title', created ),
+            this.pluralTranslationPipe.transform( prefixKey + '.message', created ),
+            'pi pi-key',
+            { asked: created + notCreated, created: created },
+        )
+    }
+
+    private notifyFullCreation (creationStatus: CreatedProjectProfiles, created: number): void {
+        this.notifyMessage(
+            SeverityEnum.SUCCESS,
+            this.pluralTranslationPipe.transform( 'project-profiles.notifications.create.title', creationStatus.createdUserIds ),
+            this.pluralTranslationPipe.transform( 'project-profiles.notifications.create.message', creationStatus.createdUserIds ),
+            'pi pi-key',
+            { created: created },
         )
     }
 

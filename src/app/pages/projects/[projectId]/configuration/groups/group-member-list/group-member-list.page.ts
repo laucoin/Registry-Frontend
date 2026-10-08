@@ -108,30 +108,21 @@ export class GroupMemberListPage extends GenericListComponent implements OnDestr
                 switchMap( (): Observable<GroupModel> => this.facade.fetchGroup( this.route.snapshot.params['groupId'] ) ),
             ).subscribe( (group: GroupModel): void => this.group.set( group ) ),
         )
-
-        this.subscriptions.add(
-            this.participantFacade.handleParticipantFirstPageReload().pipe(
-                tap( (): void => {
-                    this.createMemberFormLayerOpened = false
-                    this.facade.fetchGroupMembersPage(
-                        this.route.snapshot.params['groupId'],
-                        undefined,
-                        undefined)
-                } ),
-            ).subscribe(),
+        this.reloadMembersOn( this.participantFacade.handleParticipantFirstPageReload(), undefined, undefined )
+        this.reloadMembersOn(
+            this.participantFacade.handleParticipantCurrentPageReload(),
+            () => this.facade.groupsPage()?.pageNumber,
+            () => this.facade.groupsPage()?.pageSize,
         )
+    }
 
-        this.subscriptions.add(
-            this.participantFacade.handleParticipantCurrentPageReload().pipe(
-                tap( (): void => {
-                    this.createMemberFormLayerOpened = false
-                    this.facade.fetchGroupMembersPage(
-                        this.route.snapshot.params['groupId'],
-                        this.facade.groupsPage()?.pageNumber,
-                        this.facade.groupsPage()?.pageSize)
-                } ),
-            ).subscribe(),
-        )
+    private reloadMembersOn (events: Observable<unknown>, pageNumber: (() => number | undefined) | undefined, pageSize: (() => number | undefined) | undefined): void {
+        this.subscriptions.add( events.pipe(
+            tap( (): void => {
+                this.createMemberFormLayerOpened = false
+                this.facade.fetchGroupMembersPage( this.route.snapshot.params['groupId'], pageNumber?.(), pageSize?.() )
+            } ),
+        ).subscribe() )
     }
 
     protected initAddMembersForm (): void {

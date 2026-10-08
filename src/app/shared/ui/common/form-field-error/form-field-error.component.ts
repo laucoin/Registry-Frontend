@@ -3,6 +3,19 @@ import {ValidationErrors} from '@angular/forms'
 import {MessageModule} from 'primeng/message'
 import {TranslocoService} from '@jsverse/transloco'
 
+const ERROR_PARAMS: Record<string, [string, string][]> = {
+    min: [['min', 'min'], ['actual', 'actual']],
+    max: [['max', 'max'], ['actual', 'actual']],
+    minlength: [['actualLength', 'actualLength'], ['requiredLength', 'requiredLength']],
+    maxlength: [['actualLength', 'actualLength'], ['requiredLength', 'requiredLength']],
+    minDate: [['min', 'min']],
+    maxDate: [['max', 'max']],
+    rangeMin: [['min', 'min'], ['actual', 'actual']],
+    rangeMax: [['max', 'max'], ['actual', 'actual']],
+    pattern: [['actual', 'actualValue']],
+    incompatibleReason: [['reason', 'reason']],
+}
+
 /**
  * Purpose: Displays the error of one form field.
  * Scope: Translates the first error of the control with its parameters.
@@ -41,66 +54,10 @@ export class FormFieldErrorComponent {
     }
 
     private buildTranslationParams(code: string): object {
-        switch (code) {
-            case 'min':
-                return {
-                    ...this.translationArgs(),
-                    min: this.errorProperty(code, 'min'),
-                    actual: this.errorProperty(code, 'actual'),
-                }
-            case 'max':
-                return {
-                    ...this.translationArgs(),
-                    max: this.errorProperty(code, 'max'),
-                    actual: this.errorProperty(code, 'actual'),
-                }
-            case 'minlength':
-                return {
-                    ...this.translationArgs(),
-                    actualLength: this.errorProperty(code, 'actualLength'),
-                    requiredLength: this.errorProperty(code, 'requiredLength'),
-                }
-            case 'maxlength':
-                return {
-                    ...this.translationArgs(),
-                    actualLength: this.errorProperty(code, 'actualLength'),
-                    requiredLength: this.errorProperty(code, 'requiredLength'),
-                }
-            case 'minDate':
-                return {
-                    ...this.translationArgs(),
-                    min: this.errorProperty(code, 'min'),
-                }
-            case 'maxDate':
-                return {
-                    ...this.translationArgs(),
-                    max: this.errorProperty(code, 'max'),
-                }
-            case 'rangeMin':
-                return {
-                    ...this.translationArgs(),
-                    min: this.errorProperty(code, 'min'),
-                    actual: this.errorProperty(code, 'actual'),
-                }
-            case 'rangeMax':
-                return {
-                    ...this.translationArgs(),
-                    max: this.errorProperty(code, 'max'),
-                    actual: this.errorProperty(code, 'actual'),
-                }
-            case 'pattern':
-                return {
-                    ...this.translationArgs(),
-                    actual: this.errorProperty(code, 'actualValue'),
-                }
-            case 'incompatibleReason':
-                return {
-                    ...this.translationArgs(),
-                    reason: this.errorProperty(code, 'reason'),
-                }
-            default:
-                return this.translationArgs()
-        }
+        const mapped: [string, string][] = (ERROR_PARAMS[code] ?? []).map(
+            ([param, property]: [string, string]): [string, string] => [param, this.errorProperty(code, property)],
+        )
+        return { ...this.translationArgs(), ...Object.fromEntries(mapped) }
     }
 
     private errorProperty(code: string, property: string): string {

@@ -30,21 +30,18 @@ export class IntervalPipe implements PipeTransform {
                 return this.buildLabel( value.monthCount, value.dayCount, translationKey )
             case value.dayCount.value > 0:
                 return this.buildLabel( value.dayCount, value.hourCount, translationKey )
-            case value.hourCount.value > 0: {
-                const formattedHourCount: string = StringHelper.formatDigits( value.hourCount.value, 2 )
-                const formattedMinuteCount: string = StringHelper.formatDigits( value.minuteCount.value, 2 )
-                const formattedSecondCount: string = StringHelper.formatDigits( value.secondCount.value, 2 )
-                return `${formattedHourCount}:${formattedMinuteCount}:${formattedSecondCount}`
-            }
+            case value.hourCount.value > 0:
+                return this.formatClock( [ value.hourCount, value.minuteCount, value.secondCount ] )
             case value.secondCount.value > 0:
-            case value.minuteCount.value > 0: {
-                const formattedMinuteCount: string = StringHelper.formatDigits( value.minuteCount.value, 2 )
-                const formattedSecondCount: string = StringHelper.formatDigits( value.secondCount.value, 2 )
-                return `${formattedMinuteCount}:${formattedSecondCount}`
-            }
+            case value.minuteCount.value > 0:
+                return this.formatClock( [ value.minuteCount, value.secondCount ] )
             default:
                 return undefined
         }
+    }
+
+    private formatClock (units: SelectItem<number>[]): string {
+        return units.map( (unit: SelectItem<number>): string => StringHelper.formatDigits( unit.value, 2 ) ).join( ':' )
     }
 
     private buildLabel (first: SelectItem<number>, second: SelectItem<number>, translationKey: string): string {

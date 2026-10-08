@@ -1,7 +1,7 @@
 import { Component, inject, input, InputSignal, OnDestroy, OnInit } from '@angular/core'
 import { ReactiveFormsModule } from '@angular/forms'
 import { MovementFacade } from '@pages/projects/[projectId]/movements/data/state/movement.facade'
-import { Subscription, tap } from 'rxjs'
+import { Observable, Subscription, tap } from 'rxjs'
 import { CommunicationFacade } from '@pages/projects/[projectId]/movements/communication/data/state/communication.facade'
 import {TranslocoPipe} from '@jsverse/transloco'
 import { MovementModel } from '@shared/models/model/movement.model'
@@ -46,38 +46,25 @@ export class MovementCommunicationsListComponent extends GenericComponent implem
     }
 
     private handleCommunicationActions (): void {
-        this.subscriptions.add(
-            this.communicationFacade.handleCommunicationFirstPageReload().pipe(
-                tap( (): void => {
-                    this.facade.fetchMovementCommunicationsPage(
-                        this.movement().id,
-                        undefined,
-                        undefined)
-                } ),
-            ).subscribe(),
-        )
+        this.reloadFirstPageOn( this.communicationFacade.handleCommunicationFirstPageReload() )
+        this.reloadFirstPageOn( this.alertFacade.handleAlertCreation() )
+        this.reloadCurrentPageOn( this.communicationFacade.handleCommunicationCurrentPageReload() )
+    }
 
-        this.subscriptions.add(
-            this.alertFacade.handleAlertCreation().pipe(
-                tap( (): void => {
-                    this.facade.fetchMovementCommunicationsPage(
-                        this.movement().id,
-                        undefined,
-                        undefined)
-                } ),
-            ).subscribe(),
-        )
+    private reloadFirstPageOn (events: Observable<unknown>): void {
+        this.subscriptions.add( events.pipe(
+            tap( (): void => this.facade.fetchMovementCommunicationsPage( this.movement().id, undefined, undefined ) ),
+        ).subscribe() )
+    }
 
-        this.subscriptions.add(
-            this.communicationFacade.handleCommunicationCurrentPageReload().pipe(
-                tap( (): void => {
-                    this.facade.fetchMovementCommunicationsPage(
-                        this.movement().id,
-                        this.facade.movementCommunicationsPage()?.pageNumber,
-                        this.facade.movementCommunicationsPage()?.pageSize)
-                } ),
-            ).subscribe(),
-        )
+    private reloadCurrentPageOn (events: Observable<unknown>): void {
+        this.subscriptions.add( events.pipe(
+            tap( (): void => this.facade.fetchMovementCommunicationsPage(
+                this.movement().id,
+                this.facade.movementCommunicationsPage()?.pageNumber,
+                this.facade.movementCommunicationsPage()?.pageSize,
+            ) ),
+        ).subscribe() )
     }
 
     protected getPreviousAuthorId (index: number): string | undefined {

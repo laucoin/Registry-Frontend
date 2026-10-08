@@ -3,6 +3,14 @@ import { SplitTimeModel } from '@shared/models/model/split-time.model'
 import { CustomDatetimeModel } from '@shared/models/model/custom-datetime.model'
 import { GenericHelper } from '@shared/helpers/generic.helper'
 import { IntervalModel } from '@shared/models/model/interval.model'
+import { SelectItem } from 'primeng/api'
+
+const SECOND_MS: number = 1000
+const MINUTE_MS: number = 60 * SECOND_MS
+const HOUR_MS: number = 60 * MINUTE_MS
+const DAY_MS: number = 24 * HOUR_MS
+const MONTH_MS: number = 30 * DAY_MS
+const YEAR_MS: number = 12 * MONTH_MS
 
 /**
  * Purpose: Date, time and duration utilities shared by forms, filters and pipes.
@@ -222,43 +230,21 @@ export class DateHelper {
     ): IntervalModel | undefined {
         if (GenericHelper.isNull( start ) || GenericHelper.isNull( end )) return undefined
 
-        const startTime: number = new Date( start! ).getTime()
-        const endTime: number = new Date( end! ).getTime()
-        if (startTime > endTime) return undefined
-
-        const difference: number = endTime - startTime
-        const secondCount: number = Math.floor( difference / 1000 ) % 60
-        const minuteCount: number = Math.floor( difference / (1000 * 60) ) % 60
-        const hourCount: number = Math.floor( difference / (1000 * 60 * 60) ) % 24
-        const dayCount: number = Math.floor( difference / (1000 * 60 * 60 * 24) ) % 30
-        const monthCount: number = Math.floor( difference / (1000 * 60 * 60 * 24 * 30) ) % 12
-        const yearCount: number = Math.floor( difference / (1000 * 60 * 60 * 24 * 30 * 12) )
+        const difference: number = new Date( end! ).getTime() - new Date( start! ).getTime()
+        if (difference < 0) return undefined
 
         return {
-            yearCount: {
-                value: yearCount,
-                label: 'year',
-            },
-            monthCount: {
-                value: monthCount,
-                label: 'month',
-            },
-            dayCount: {
-                value: dayCount,
-                label: 'day',
-            },
-            hourCount: {
-                value: hourCount,
-                label: 'hour',
-            },
-            minuteCount: {
-                value: minuteCount,
-                label: 'minute',
-            },
-            secondCount: {
-                value: secondCount,
-                label: 'second',
-            },
+            yearCount: DateHelper.countUnit( difference, YEAR_MS, undefined, 'year' ),
+            monthCount: DateHelper.countUnit( difference, MONTH_MS, 12, 'month' ),
+            dayCount: DateHelper.countUnit( difference, DAY_MS, 30, 'day' ),
+            hourCount: DateHelper.countUnit( difference, HOUR_MS, 24, 'hour' ),
+            minuteCount: DateHelper.countUnit( difference, MINUTE_MS, 60, 'minute' ),
+            secondCount: DateHelper.countUnit( difference, SECOND_MS, 60, 'second' ),
         }
+    }
+
+    private static countUnit (difference: number, unitMs: number, modulo: number | undefined, label: string): SelectItem<number> {
+        const count: number = Math.floor( difference / unitMs )
+        return { value: modulo ? count % modulo : count, label }
     }
 }

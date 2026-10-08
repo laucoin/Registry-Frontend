@@ -19,6 +19,8 @@ import {
     SeverityInformationComponent,
 } from '@shared/ui/common/severity-information/severity-information.component'
 import { MovementFacade } from '@pages/projects/[projectId]/movements/data/state/movement.facade'
+import { ProjectStatusModel } from '@pages/projects/data/model/project-status.model'
+import { VehicleStatusModel } from '@pages/projects/data/model/vehicle-status.model'
 import { Subscription, tap } from 'rxjs'
 
 /**
@@ -55,62 +57,43 @@ export class DashboardComponent extends GenericComponent implements OnDestroy {
     protected readonly ParticipantTypeEnum: typeof ParticipantTypeEnum = ParticipantTypeEnum
     protected readonly PresenceStatusEnum: typeof PresenceStatusEnum = PresenceStatusEnum
 
-    protected readonly totalParticipants: Signal<number | undefined>
-    protected readonly totalGuests: Signal<number | undefined>
-    protected readonly totalPresentRegistered: Signal<number | undefined>
-    protected readonly totalAbsentRegistered: Signal<number | undefined>
-    protected readonly totalVehicles: Signal<number | undefined>
-    protected readonly totalPresentVehicles: Signal<number | undefined>
-    protected readonly totalAbsentVehicles: Signal<number | undefined>
+    protected readonly totalParticipants: Signal<number | undefined> = this.participantsTotal(
+        (status: ProjectStatusModel): number => status.guests + this.registeredTotal( status ),
+    )
+    protected readonly totalGuests: Signal<number | undefined> = this.participantsTotal( (status: ProjectStatusModel): number => status.guests )
+    protected readonly totalPresentRegistered: Signal<number | undefined> = this.participantsTotal(
+        (status: ProjectStatusModel): number => status.registered.presentMajors + status.registered.presentMinors,
+    )
+    protected readonly totalAbsentRegistered: Signal<number | undefined> = this.participantsTotal(
+        (status: ProjectStatusModel): number => status.registered.absentMajors + status.registered.absentMinors,
+    )
+    protected readonly totalVehicles: Signal<number | undefined> = this.vehiclesTotal( (status: VehicleStatusModel): number => status.present + status.absent )
+    protected readonly totalPresentVehicles: Signal<number | undefined> = this.vehiclesTotal( (status: VehicleStatusModel): number => status.present )
+    protected readonly totalAbsentVehicles: Signal<number | undefined> = this.vehiclesTotal( (status: VehicleStatusModel): number => status.absent )
 
     public constructor () {
         super()
 
         this.facade.loadProjectHomeInformation()
-
-        this.totalParticipants = computed( (): number | undefined => {
-            if (GenericHelper.isNull( this.facade.participantsStatus() )) return undefined
-            return this.facade.participantsStatus()!.guests
-                   + this.facade.participantsStatus()!.registered.presentMajors
-                   + this.facade.participantsStatus()!.registered.presentMinors
-                   + this.facade.participantsStatus()!.registered.absentMajors
-                   + this.facade.participantsStatus()!.registered.absentMinors
-        } )
-
-        this.totalGuests = computed( (): number | undefined => {
-            if (GenericHelper.isNull( this.facade.participantsStatus() )) return undefined
-            return this.facade.participantsStatus()!.guests
-        } )
-
-        this.totalPresentRegistered = computed( (): number | undefined => {
-            if (GenericHelper.isNull( this.facade.participantsStatus() )) return undefined
-            return this.facade.participantsStatus()!.registered.presentMajors
-                   + this.facade.participantsStatus()!.registered.presentMinors
-        } )
-
-        this.totalAbsentRegistered = computed( (): number | undefined => {
-            if (GenericHelper.isNull( this.facade.participantsStatus() )) return undefined
-            return this.facade.participantsStatus()!.registered.absentMajors
-                   + this.facade.participantsStatus()!.registered.absentMinors
-        } )
-
-        this.totalVehicles = computed( (): number | undefined => {
-            if (GenericHelper.isNull( this.facade.vehiclesStatus() )) return undefined
-            return this.facade.vehiclesStatus()!.present
-                   + this.facade.vehiclesStatus()!.absent
-        } )
-
-        this.totalPresentVehicles = computed( (): number | undefined => {
-            if (GenericHelper.isNull( this.facade.vehiclesStatus() )) return undefined
-            return this.facade.vehiclesStatus()!.present
-        } )
-
-        this.totalAbsentVehicles = computed( (): number | undefined => {
-            if (GenericHelper.isNull( this.facade.vehiclesStatus() )) return undefined
-            return this.facade.vehiclesStatus()!.absent
-        } )
-
         this.handleMovementActions()
+    }
+
+    private participantsTotal (total: (status: ProjectStatusModel) => number): Signal<number | undefined> {
+        return computed( (): number | undefined => {
+            const status: ProjectStatusModel | undefined = this.facade.participantsStatus()
+            return GenericHelper.isNull( status ) ? undefined : total( status! )
+        } )
+    }
+
+    private vehiclesTotal (total: (status: VehicleStatusModel) => number): Signal<number | undefined> {
+        return computed( (): number | undefined => {
+            const status: VehicleStatusModel | undefined = this.facade.vehiclesStatus()
+            return GenericHelper.isNull( status ) ? undefined : total( status! )
+        } )
+    }
+
+    private registeredTotal (status: ProjectStatusModel): number {
+        return status.registered.presentMajors + status.registered.presentMinors + status.registered.absentMajors + status.registered.absentMinors
     }
 
     public ngOnDestroy (): void {

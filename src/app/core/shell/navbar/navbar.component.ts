@@ -119,48 +119,61 @@ export class NavbarComponent extends GenericComponent {
             label: 'global.menu.configuration',
             icon: 'pi pi-cog',
             requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_R,
-            items: [
-                {
-                    label: 'global.menu.edit-project',
-                    icon: 'pi pi-pen-to-square',
-                    url: this.projectUrl( RegistryRouteEnum.PROJECTS_EDITION ),
-                    requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_U,
-                },
-                {
-                    label: 'global.menu.project-profiles',
-                    icon: 'pi pi-unlock',
-                    url: this.projectUrl( RegistryRouteEnum.PROJECTS_CONFIGURATION_PROFILES ),
-                    requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_R,
-                },
-                {
-                    label: 'global.menu.participants',
-                    icon: 'pi pi-user',
-                    url: this.projectUrl( RegistryRouteEnum.PROJECTS_CONFIGURATION_PARTICIPANTS ),
-                    requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_R,
-                },
-                {
-                    label: 'global.menu.groups',
-                    icon: 'pi pi-users',
-                    url: this.projectUrl( RegistryRouteEnum.PROJECTS_CONFIGURATION_GROUPS ),
-                    requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_R,
-                },
-                {
-                    label: 'global.menu.vehicles',
-                    icon: this.iconOption.transform( ProjectOptionEnum.VEHICLE ),
-                    url: this.projectUrl( RegistryRouteEnum.PROJECTS_CONFIGURATION_VEHICLES ),
-                    requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_VEHICLE_R,
-                    requiredProjectOption: ProjectOptionEnum.VEHICLE,
-                },
-                {
-                    label: 'global.menu.activities',
-                    icon: this.iconOption.transform( ProjectOptionEnum.ACTIVITY ),
-                    url: this.projectUrl( RegistryRouteEnum.PROJECTS_CONFIGURATION_ACTIVITIES ),
-                    requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_ACTIVITY_R,
-                    requiredProjectOption: ProjectOptionEnum.ACTIVITY,
-                },
-            ],
+            items: this.configurationMenuItems(),
         },
     ] )
+
+    private configurationMenuItems (): MenuItemModel[] {
+        return [ ...this.projectAndPeopleMenuItems(), ...this.optionMenuItems() ]
+    }
+
+    private projectAndPeopleMenuItems (): MenuItemModel[] {
+        return [
+            {
+                label: 'global.menu.edit-project',
+                icon: 'pi pi-pen-to-square',
+                url: this.projectUrl( RegistryRouteEnum.PROJECTS_EDITION ),
+                requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_U,
+            },
+            {
+                label: 'global.menu.project-profiles',
+                icon: 'pi pi-unlock',
+                url: this.projectUrl( RegistryRouteEnum.PROJECTS_CONFIGURATION_PROFILES ),
+                requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_R,
+            },
+            {
+                label: 'global.menu.participants',
+                icon: 'pi pi-user',
+                url: this.projectUrl( RegistryRouteEnum.PROJECTS_CONFIGURATION_PARTICIPANTS ),
+                requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_R,
+            },
+            {
+                label: 'global.menu.groups',
+                icon: 'pi pi-users',
+                url: this.projectUrl( RegistryRouteEnum.PROJECTS_CONFIGURATION_GROUPS ),
+                requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_R,
+            },
+        ]
+    }
+
+    private optionMenuItems (): MenuItemModel[] {
+        return [
+            {
+                label: 'global.menu.vehicles',
+                icon: this.iconOption.transform( ProjectOptionEnum.VEHICLE ),
+                url: this.projectUrl( RegistryRouteEnum.PROJECTS_CONFIGURATION_VEHICLES ),
+                requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_VEHICLE_R,
+                requiredProjectOption: ProjectOptionEnum.VEHICLE,
+            },
+            {
+                label: 'global.menu.activities',
+                icon: this.iconOption.transform( ProjectOptionEnum.ACTIVITY ),
+                url: this.projectUrl( RegistryRouteEnum.PROJECTS_CONFIGURATION_ACTIVITIES ),
+                requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_ACTIVITY_R,
+                requiredProjectOption: ProjectOptionEnum.ACTIVITY,
+            },
+        ]
+    }
     protected readonly contextMenuItems: Signal<MenuItem[]>
 
     protected readonly displayName: Signal<string> = computed( (): string =>
