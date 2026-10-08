@@ -14,7 +14,7 @@ import { RegistryFacade } from '@core/registry/state/registry.facade'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { SessionStore } from '@core/registry/state/session.store'
 import { UiFacade } from '@core/registry/state/ui.facade'
-import { UiStore } from '@core/registry/state/ui.store'
+import { ErrorReporter } from '@core/registry/state/error-reporter'
 import { UserProjectProfileApi } from '@core/registry/state/user-project-profile.api'
 import { UserApi } from '@pages/users/data/state/user.api'
 import { ThemeEnum } from '@shared/models/enumeration/theme.enum'
@@ -113,7 +113,7 @@ describe( 'RegistryFacade', () => {
                         findUserProjectProfiles: findProfilesPage,
                     },
                 },
-                { provide: UiStore, useValue: { setGlobalError } },
+                { provide: ErrorReporter, useValue: { setGlobalError, notify: vi.fn() } },
                 { provide: UiFacade, useValue: { theme, startGlobalLoader, stopGlobalLoader, setGlobalError, updateTheme, updateLanguage, notify } },
                 { provide: BrowserService, useValue: { pathname: '/current', origin: 'http://app.test', redirect } },
                 { provide: Router, useValue: { navigateByUrl } },

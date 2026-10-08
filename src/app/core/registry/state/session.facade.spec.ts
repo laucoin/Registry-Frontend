@@ -5,7 +5,7 @@ import { ConfigModel } from '@core/config/model/config.model'
 import { RegistryConfig } from '@core/config/registry.config'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { SessionStore } from '@core/registry/state/session.store'
-import { UiStore } from '@core/registry/state/ui.store'
+import { ErrorReporter } from '@core/registry/state/error-reporter'
 import { UserProjectProfileApi } from '@core/registry/state/user-project-profile.api'
 import { CurrentUserModel } from '@shared/models/model/current-user.model'
 import { PageModel } from '@shared/models/model/page.model'
@@ -24,7 +24,7 @@ describe( 'SessionFacade', () => {
         TestBed.configureTestingModule( {
             providers: [
                 { provide: UserProjectProfileApi, useValue: { findUserProjectProfiles } },
-                { provide: UiStore, useValue: { setGlobalError: vi.fn() } },
+                { provide: ErrorReporter, useValue: { setGlobalError: vi.fn(), notify: vi.fn() } },
             ],
         } )
         facade = TestBed.inject( SessionFacade )

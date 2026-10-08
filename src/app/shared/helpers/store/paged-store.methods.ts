@@ -86,6 +86,19 @@ export function paramsUpdater<S extends object, K extends keyof S & string> (sto
 }
 
 /**
+ * Purpose: Builds the function that merges search parameters into those of one paged resource.
+ * Scope: Keeps the parameters that are not given, such as a fixed status filter.
+ * Limits: Does not reload the page; callers decide.
+ */
+export function paramsMerger<S extends object, K extends keyof S & string> (store: StoreRef<S>, key: K): (params: Partial<ParamsOf<S[K]>>) => void {
+    return (params: Partial<ParamsOf<S[K]>>): void => {
+        patchState( store, (state: S) => ({
+            [ key ]: { ...state[ key ], params: { ...(state[ key ] as PageBlock).params as object, ...params } },
+        }) as unknown as Partial<S> )
+    }
+}
+
+/**
  * Purpose: Builds the rxMethod that completes a page of movements with their contents.
  * Scope: Fetches the contents of the given movements and merges them into the stored movements page.
  * Limits: Leaves the page untouched when none is stored or when the fetch fails (the failure is notified).

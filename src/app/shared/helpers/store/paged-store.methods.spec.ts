@@ -122,6 +122,19 @@ describe( 'paged store methods', () => {
         } )
     } )
 
+    describe( 'paramsMerger', () => {
+        it( 'keeps the parameters that are not given', () => {
+            // Arrange
+            store.updateItemsParams( { resetSearch: false, text: 'ada' } )
+
+            // Act
+            store.mergeItemsParams( { resetSearch: true } )
+
+            // Assert
+            expect( store.items.params() ).toEqual( { resetSearch: true, text: 'ada' } )
+        } )
+    } )
+
     describe( 'movement contents', () => {
         it( 'fetches the contents of a loaded page and merges them by movement', () => {
             // Arrange

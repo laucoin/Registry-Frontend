@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing'
 import { of, throwError } from 'rxjs'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
 import { SessionStore } from '@core/registry/state/session.store'
-import { UiStore } from '@core/registry/state/ui.store'
+import { ErrorReporter } from '@core/registry/state/error-reporter'
 import { UserProjectProfileApi } from '@core/registry/state/user-project-profile.api'
 import { CurrentUserModel } from '@shared/models/model/current-user.model'
 import { ErrorModel } from '@shared/models/model/error.model'
@@ -29,7 +29,7 @@ describe( 'SessionStore', () => {
         TestBed.configureTestingModule( {
             providers: [
                 { provide: UserProjectProfileApi, useValue: { findUserProjectProfiles } },
-                { provide: UiStore, useValue: { setGlobalError } },
+                { provide: ErrorReporter, useValue: { setGlobalError, notify: vi.fn() } },
             ],
         } )
         store = TestBed.inject( SessionStore )
