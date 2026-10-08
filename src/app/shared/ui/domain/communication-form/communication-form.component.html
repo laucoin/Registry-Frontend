@@ -3,8 +3,8 @@
         @if (movementSelectorVisible()) {
             <div class='field other-field-container'>
                 <label for='movement'>{{ 'communications.form.movement.title' | translate }}</label>
-                <div class='d-flex align-items-center'>
-                    <div class='flex-grow-1'>
+                <div class='flex items-center'>
+                    <div class='grow'>
                         <p-auto-complete inputId='movement'
                                          fluid
                                          completeOnFocus
@@ -39,8 +39,8 @@
         @if (alertSelectorMode() === AlertModulableFieldEnum.SELECT) {
             <div class='field other-field-container'>
                 <label for='alert'>{{ 'communications.form.alert.title' | translate }}</label>
-                <div class='d-flex align-items-center'>
-                    <div class='flex-grow-1'>
+                <div class='flex items-center'>
+                    <div class='grow'>
                         <p-auto-complete inputId='alert'
                                          fluid
                                          completeOnFocus
@@ -76,8 +76,8 @@
         @if (alertSelectorMode() === AlertModulableFieldEnum.NEW) {
             <div class='field other-field-container'>
                 <label for='alert'>{{ 'alerts.form.title' | translate }}</label>
-                <div class='d-flex align-items-center'>
-                    <div class='flex-grow-1'>
+                <div class='flex items-center'>
+                    <div class='grow'>
                         <input id='alert-title-field'
                                type='text'
                                fluid
@@ -103,7 +103,7 @@
         }
     }
     <app-form-error [error]='error()' />
-    <div class='d-flex align-items-top' [formGroup]='form'>
+    <div class='flex items-start' [formGroup]='form'>
         @if (GenericHelper.nonNull(facade.communication())) {
             <p-button (onClick)='resetForm()' class='me-2' icon='pi pi-times' rounded text />
         } @else {
@@ -134,7 +134,7 @@
 
 <p-menu #menu [model]='actions()' appendTo='body' popup>
     <ng-template #item let-item>
-        <a pRipple class='d-flex align-items-center py-2 px-3 pointer'>
+        <a pRipple class='flex items-center py-2 px-4 cursor-pointer'>
             <span [class]='item.icon'></span>&nbsp;
             <span class='ms-2'>{{ item.label | translate }}</span>
         </a>

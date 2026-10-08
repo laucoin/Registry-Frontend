@@ -14,13 +14,13 @@
                 [circular]='false'
                 [responsiveOptions]='carouselBreakpoints'>
         <ng-template let-alert #item>
-            <div class='h-100 p-2'>
+            <div class='h-full p-2'>
                 @if (GenericHelper.nonNull(alert)) {
                     <app-alert-element [alert]='alert' [carouselView]='true' />
                 } @else {
-                    <div class='h-100 d-flex align-items-center'>
+                    <div class='h-full flex items-center'>
                         <p-button severity='secondary' [label]='"project-home.alerts.see-more" | translate' icon='pi pi-search-plus'
-                                  [routerLink]='"/" + RegistryRouteEnum.PROJECTS_ALERTS.replace(":projectId", registryFacade.currentProjectId() ?? "")' class='w-100'
+                                  [routerLink]='"/" + RegistryRouteEnum.PROJECTS_ALERTS.replace(":projectId", registryFacade.currentProjectId() ?? "")' class='w-full'
                                   iconPos='top' />
                     </div>
                 }

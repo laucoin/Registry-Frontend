@@ -3,28 +3,28 @@
                   [actions]='actions()'
                   icon='pi pi-calendar'>
     <div class='element-card'>
-        <div class='project-info d-flex flex-column justify-content-center'>
-            <div class='project-name d-flex mb-2' [class.justify-content-center]='registryFacade.tinyScreen()'>
+        <div class='project-info flex flex-col justify-center'>
+            <div class='project-name flex mb-2' [class.justify-center]='registryFacade.tinyScreen()'>
                 <app-severity-circle class='me-2' [severity]='project().visible ? SeverityEnum.SUCCESS : SeverityEnum.DANGER' />
                 {{ project().name }}
             </div>
             @if (project().begin) {
-                <div class='d-flex mt-1 align-items-center' [class.justify-content-center]='registryFacade.tinyScreen()'>
+                <div class='flex mt-1 items-center' [class.justify-center]='registryFacade.tinyScreen()'>
                     <i class='pi pi-play-circle'></i>
                     <span class='ms-1'>{{ project().begin | customDateFormat }}</span>
                 </div>
             }
             @if (project().end) {
-                <div class='d-flex align-items-center'
-                     [class.justify-content-center]='registryFacade.tinyScreen()'
+                <div class='flex items-center'
+                     [class.justify-center]='registryFacade.tinyScreen()'
                      [class.mt-1]='!project().begin'>
                     <i class='pi pi-stop-circle'></i>
                     <span class='ms-1'>{{ project().end | customDateFormat }}</span>
                 </div>
             }
         </div>
-        <div class='options-and-status d-flex flex-column' [class.justify-content-center]='registryFacade.tinyScreen()'>
-            <div class='d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
+        <div class='options-and-status flex flex-col' [class.justify-center]='registryFacade.tinyScreen()'>
+            <div class='flex' [class.justify-center]='registryFacade.tinyScreen()'>
                 @let nbOfOptions = project().options?.length ?? 0;
                 <app-severity-tag
                         (click)='nbOfOptions > 1 ? layerOpened = true : undefined'
@@ -41,13 +41,13 @@
                 </span>
                 </app-severity-tag>
             </div>
-            <div class='d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
+            <div class='flex' [class.justify-center]='registryFacade.tinyScreen()'>
                 @if (project().status) {
                     <app-severity-tag [severity]='statusSeverity()' [value]='project().status!.label' />
                 }
             </div>
         </div>
-        <div class='action-button d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
+        <div class='action-button flex' [class.justify-center]='registryFacade.tinyScreen()'>
             @if (joinable()) {
                 <p-button icon='pi pi-arrow-right'
                           [label]='"projects.actions.select" | translate'

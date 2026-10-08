@@ -4,13 +4,13 @@
             @if (loading()) {
                 <app-element-skeleton [withIcon]='!!icon' [layout]='registryFacade.tinyScreen() ? "grid" : "list"' />
             } @else {
-                <div class='d-flex align-items-center' [class.flex-column]='registryFacade.tinyScreen()'>
+                <div class='flex items-center' [class.flex-col]='registryFacade.tinyScreen()'>
                     @if (icon()) {
-                        <div [class.me-3]='!registryFacade.tinyScreen()'>
+                        <div [class.me-6]='!registryFacade.tinyScreen()'>
                             <p-avatar [icon]='icon()' size='large' shape='circle' />
                         </div>
                     }
-                    <div class='w-100'
+                    <div class='w-full'
                          [class.mt-2]='registryFacade.tinyScreen()'>
                         <ng-content />
                     </div>
@@ -31,7 +31,7 @@
                                 (click)='menu.toggle($event)'
                                 [model]='actions()'>
                             <ng-template #item let-item>
-                                <a pRipple class='d-flex align-items-center py-2 px-3 pointer'>
+                                <a pRipple class='flex items-center py-2 px-4 cursor-pointer'>
                                     <span [class]='item.icon'></span>&nbsp;
                                     <span class='ms-2'>{{ item.label | translate }}</span>
                                 </a>
@@ -57,7 +57,7 @@
     @if (actions().length > 0 && actionMenuVisible()) {
         <p-context-menu [target]='elementCard' [model]='actions()'>
             <ng-template #item let-item>
-                <a pRipple class='d-flex align-items-center p-2 pointer'>
+                <a pRipple class='flex items-center p-2 cursor-pointer'>
                     <span [class]='item.icon'></span>&nbsp;
                     <span class='ms-2'>{{ item.label | translate }}</span>
                 </a>

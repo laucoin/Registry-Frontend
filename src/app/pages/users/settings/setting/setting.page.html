@@ -1,12 +1,12 @@
 <p-card>
-    <div class='ps-4 pe-4 pt-2 pb-2'>
-        <div class='d-flex align-items-center' [class.flex-column]='registryFacade.tinyScreen()'>
-            <div [class.me-3]='!registryFacade.tinyScreen()'>
+    <div class='ps-6 pe-6 pt-2 pb-2'>
+        <div class='flex items-center' [class.flex-col]='registryFacade.tinyScreen()'>
+            <div [class.me-6]='!registryFacade.tinyScreen()'>
                 <p-avatar icon='pi pi-user' size='large' shape='circle' />
             </div>
             <h1>{{ (registryFacade.currentUser()?.firstName | titlecase) + ' ' + (registryFacade.currentUser()?.lastName | uppercase) }}</h1>
         </div>
-        <div class='d-grid search-line mt-2 mb-2'>
+        <div class='grid search-line mt-2 mb-2'>
             <div>
                 <b>{{ 'settings.birthday' | translate }}</b>
                 {{
@@ -23,9 +23,9 @@
     </div>
 </p-card>
 <p-card styleClass='mt-4'>
-    <div class='ps-4 pe-4 pt-2 pb-2'>
+    <div class='ps-6 pe-6 pt-2 pb-2'>
         <h3>{{ 'settings.configuration.title' | translate }}</h3>
-        <div class='d-grid search-line mt-2 mb-2'>
+        <div class='grid search-line mt-2 mb-2'>
             <div class='field'>
                 <label for='app-language'><b>{{ 'settings.configuration.form.language' | translate }}</b></label>
                 <p-select [options]='registryFacade.languagesMetadata()'
@@ -53,7 +53,7 @@
     </div>
 </p-card>
 <p-card styleClass='mt-4'>
-    <div class='ps-4 pe-4 pt-2 pb-2'>
+    <div class='ps-6 pe-6 pt-2 pb-2'>
         <h3>{{ 'settings.danger' | translate }}</h3>
         <div class='field'>
             <p-button id='impersonate'

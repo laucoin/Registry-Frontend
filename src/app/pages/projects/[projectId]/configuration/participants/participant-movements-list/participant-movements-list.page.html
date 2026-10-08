@@ -14,7 +14,7 @@
           [loading]='facade.participantMovementsPageLoading()'
           emptyMessagePrefix='movements.notifications.EMPTY'>
     <ng-template appTemplate='search' [formGroup]='form' let-pageEvent>
-        <div class='d-grid search-line'>
+        <div class='grid search-line'>
             <div class='field'>
                 <label for='start-date-time-search-field'>{{ 'movements.search-and-filter.start-datetime' | translate }}</label>
                 <p-date-picker inputId='start-date-time-search-field'
@@ -36,7 +36,7 @@
                                [formControl]='endDateTimeSearched' />
             </div>
         </div>
-        <div class='d-grid search-line'>
+        <div class='grid search-line'>
             <div class='field'>
                 <label for='type-search-field'>{{ 'movements.search-and-filter.type' | translate }}</label>
                 <p-select inputId='type-search-field'
@@ -59,7 +59,7 @@
                           [formControl]='visibilitySearched' />
             </div>
         </div>
-        <div class='d-flex justify-content-center'>
+        <div class='flex justify-center'>
             <p-button (onClick)='loadPage(pageEvent)'
                       [label]='"global.actions.search-and-filter" | translate'
                       outlined

@@ -27,7 +27,7 @@
                                       [invalid]='FormHelper.invalid(role)'
                                       translationPrefix='profile.form.error.role' />
             </div>
-            <div class='d-flex flex-wrap'>
+            <div class='flex flex-wrap'>
                 <div class='left-field field'>
                     <label for='begin-date-time'>{{ 'project-profiles.form.begin-datetime' | translate }}</label>
                     <app-date-time-field [formControl]='beginDateTime'
@@ -66,7 +66,7 @@
                                   translationPrefix='project-profiles.form.error.date-range' />
         </form>
     </p-card>
-    <div class='mt-2 d-flex justify-content-center'>
+    <div class='mt-2 flex justify-center'>
         <p-button
                 (onClick)='navigateToRedirectUri()'
                 [label]='"global.actions.cancel" | translate'

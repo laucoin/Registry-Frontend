@@ -15,7 +15,7 @@
                                   [invalid]='FormHelper.invalid(name)'
                                   translationPrefix='groups.form.error.name' />
         </div>
-        <div class='d-flex flex-wrap'>
+        <div class='flex flex-wrap'>
             <div class='left-field field'>
                 <label for='begin-date-time'>{{ 'groups.form.begin-datetime' | translate }}</label>
                 <app-date-time-field [formControl]='beginDateTime'
@@ -72,7 +72,7 @@
                                   translationPrefix='groups.form.error.members' />
         </div>
     </p-card>
-    <div class='d-flex mt-2 justify-content-center'>
+    <div class='flex mt-2 justify-center'>
         <p-button
                 (onClick)='navigateToRedirectUri()'
                 [label]='"global.actions.cancel" | translate'

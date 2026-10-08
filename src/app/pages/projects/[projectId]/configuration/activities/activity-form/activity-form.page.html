@@ -28,7 +28,7 @@
                                   [invalid]='FormHelper.invalid(description)'
                                   translationPrefix='activities.form.error.description' />
         </div>
-        <div class='d-flex flex-wrap'>
+        <div class='flex flex-wrap'>
             <div class='duration field'>
                 <label for='duration'>{{ 'activities.form.duration' | translate }}</label>
                 <app-duration-field [formControl]='duration'
@@ -48,7 +48,7 @@
                                       translationPrefix='activities.form.error.allowed-participants' />
             </div>
         </div>
-        <div class='d-flex flex-wrap'>
+        <div class='flex flex-wrap'>
             <div class='left-field field'>
                 <label for='begin-date-time'>{{ 'activities.form.begin-datetime' | translate }}</label>
                 <app-date-time-field [formControl]='beginDateTime'
@@ -86,7 +86,7 @@
                               [invalid]='FormHelper.invalid(form) && beginDateTime.valid && endDateTime.valid'
                               translationPrefix='activities.form.error.date-range' />
     </p-card>
-    <div class='d-flex mt-2 justify-content-center'>
+    <div class='flex mt-2 justify-center'>
         <p-button
                 (onClick)='navigateToRedirectUri()'
                 [label]='"global.actions.cancel" | translate'

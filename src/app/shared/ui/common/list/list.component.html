@@ -7,9 +7,9 @@
              [totalRecords]='elementPage()?.totalElements'
              (onPage)='updateData($event)'>
     <ng-template #header>
-        <div class='row'>
-            <div class='col-12 order-1 order-sm-2 p-2'>
-                <div class='d-flex align-items-center justify-content-between'>
+        <div class='flex flex-col'>
+            <div class='order-1 sm:order-2 p-2'>
+                <div class='flex items-center justify-between'>
                     @if (elementPage()) {
                         <i class='secondary-color last-refresh'>
                             {{
@@ -30,7 +30,7 @@
                 </div>
             </div>
             @if (GenericHelper.nonNull(getTemplate('search'))) {
-                <div class='col-12 order-2 order-sm-1'>
+                <div class='order-2 sm:order-1'>
                     <p-panel [style]='{ "border": "none" }' [header]='"global.actions.search-and-filter" | translate'
                              toggleable [collapsed]="true">
                         <ng-container [ngTemplateOutlet]='getTemplate("search")'
@@ -62,17 +62,17 @@
             @if (GenericHelper.nonNull(getTemplate('error'))) {
                 <ng-container [ngTemplateOutlet]='getTemplate("error")'/>
             } @else {
-                <div class='p-3 d-flex flex-column justify-content-center align-items-center'>
+                <div class='p-4 flex flex-col justify-center items-center'>
                     <h2>{{ error()!.summary! | translate }}</h2>
                     <p class='error'>{{ error()!.detail! | translate }}</p>
                 </div>
             }
         } @else if (!loading()) {
-        <div class='p-4'>
+        <div class='p-6'>
             @if (getTemplate('empty')) {
                 <ng-container [ngTemplateOutlet]='getTemplate("empty")'/>
             } @else {
-            <div class='p-3 d-flex flex-column justify-content-center align-items-center'>
+            <div class='p-4 flex flex-col justify-center items-center'>
                 <h2>{{ message().summary! | translate }}</h2>
                 <p>{{ message().detail! | translate }}</p>
             </div>

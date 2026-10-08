@@ -8,28 +8,28 @@
     @if (GenericHelper.isNull(facade.participantsStatusError())) {
         <p-card class='total-participant'>
             <ng-template #title>
-                <div class='d-flex justify-content-center align-items-center'>
+                <div class='flex justify-center items-center'>
                     <i class='pi pi-user'></i>
                     <span class='ms-2'>{{ 'project-home.dashboard.participants.total' | pluralTranslation: totalParticipants() | translate }}</span>
                 </div>
             </ng-template>
-            <div class='d-flex flex-column align-items-center'>
+            <div class='flex flex-col items-center'>
                 @if (facade.participantsStatusLoading()) {
-                    <p-skeleton class='mt-2 mb-3' width='5rem' height='1.5rem' borderRadius='1rem' />
+                    <p-skeleton class='mt-2 mb-4' width='5rem' height='1.5rem' borderRadius='1rem' />
                 } @else {
                     <h2>{{ totalParticipants() }}</h2>
                 }
             </div>
-            <div class='d-flex'>
-                <div class='sub-count d-flex flex-column align-items-center'>
+            <div class='flex'>
+                <div class='sub-count flex flex-col items-center'>
                     <b>
                         {{
                             'project-home.dashboard.participants.present' | pluralTranslation:
                             (totalPresentRegistered() ?? 0) + (totalGuests() ?? 0) | translate
                         }}
                     </b>
-                    <div class='d-flex'>
-                        <div class='sub-count d-flex flex-column align-items-center'>
+                    <div class='flex'>
+                        <div class='sub-count flex flex-col items-center'>
                             @if (facade.participantsStatusLoading()) {
                                 <p-skeleton class='mt-2 mb-1' width='5rem' height='1.5rem' borderRadius='1rem' />
                             } @else {
@@ -38,7 +38,7 @@
                             <small class='mt-1 secondary-color'>{{ 'project-home.dashboard.participants.registered' | pluralTranslation: totalPresentRegistered() | translate }}</small>
                         </div>
                         <p-divider layout='vertical' />
-                        <div class='sub-count d-flex flex-column align-items-center'>
+                        <div class='sub-count flex flex-col items-center'>
                             @if (facade.participantsStatusLoading()) {
                                 <p-skeleton class='mt-2 mb-1' width='5rem' height='1.5rem' borderRadius='1rem' />
                             } @else {
@@ -49,7 +49,7 @@
                     </div>
                 </div>
                 <p-divider layout='vertical' />
-                <div class='sub-count d-flex flex-column align-items-center'>
+                <div class='sub-count flex flex-col items-center'>
                     <b>{{ 'project-home.dashboard.participants.absent' | pluralTranslation: totalAbsentRegistered() | translate }}</b>
                     @if (facade.participantsStatusLoading()) {
                         <p-skeleton class='mt-2 mb-1' width='5rem' height='1.5rem' borderRadius='1rem' />
@@ -73,20 +73,20 @@
     @if (ProjectHelper.hasOption(registryFacade.selectedProject(), ProjectOptionEnum.VEHICLE) && GenericHelper.isNull(facade.vehiclesStatusError())) {
         <p-card class='total-vehicle'>
             <ng-template #title>
-                <div class='d-flex justify-content-center align-items-center'>
+                <div class='flex justify-center items-center'>
                     <i class='pi pi-car'></i>
                     <span class='ms-2'>{{ 'project-home.dashboard.vehicles.total' | pluralTranslation: totalVehicles() | translate }}</span>
                 </div>
             </ng-template>
-            <div class='d-flex flex-column align-items-center'>
+            <div class='flex flex-col items-center'>
                 @if (facade.vehiclesStatusLoading()) {
-                    <p-skeleton class='mt-2 mb-3' width='5rem' height='1.5rem' borderRadius='1rem' />
+                    <p-skeleton class='mt-2 mb-4' width='5rem' height='1.5rem' borderRadius='1rem' />
                 } @else {
                     <h2>{{ totalVehicles() }}</h2>
                 }
             </div>
-            <div class='d-flex'>
-                <div class='sub-count d-flex flex-column align-items-center mb-3'>
+            <div class='flex'>
+                <div class='sub-count flex flex-col items-center mb-4'>
                     <b>{{ 'project-home.dashboard.vehicles.present' | pluralTranslation: totalPresentVehicles() | translate }}</b>
                     @if (facade.vehiclesStatusLoading()) {
                         <p-skeleton class='mt-2 mb-1' width='5rem' height='1.5rem' borderRadius='1rem' />
@@ -95,7 +95,7 @@
                     }
                 </div>
                 <p-divider layout='vertical' />
-                <div class='sub-count d-flex flex-column align-items-center mb-3'>
+                <div class='sub-count flex flex-col items-center mb-4'>
                     <b>{{ 'project-home.dashboard.vehicles.absent' | pluralTranslation: totalAbsentVehicles() | translate }}</b>
                     @if (facade.vehiclesStatusLoading()) {
                         <p-skeleton class='mt-2 mb-1' width='5rem' height='1.5rem' borderRadius='1rem' />
@@ -136,16 +136,16 @@
                               [icon]='participant.type.value === ParticipantTypeEnum.REGISTERED ? "pi pi-user" : "pi pi-user-plus"'>
                 <div class='element-card'>
                     <div>
-                        <div class='d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
+                        <div class='flex' [class.justify-center]='registryFacade.tinyScreen()'>
                             <app-severity-circle class='me-2'
                                                  [severity]='participant.visible ? SeverityEnum.SUCCESS : SeverityEnum.DANGER' />
                             {{ (participant.firstName | titlecase) + ' ' + (participant.lastName | uppercase) }}
                         </div>
                     </div>
-                    <div class='d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
+                    <div class='flex' [class.justify-center]='registryFacade.tinyScreen()'>
                         <app-severity-tag [value]='participant.birthday | dateFormat: "date"' />
                     </div>
-                    <div class='status d-flex' [class.justify-content-center]='registryFacade.tinyScreen()'>
+                    <div class='status flex' [class.justify-center]='registryFacade.tinyScreen()'>
                         <app-severity-tag [severity]='participant.status.value === PresenceStatusEnum.OUT ? SeverityEnum.WARNING : SeverityEnum.SUCCESS'
                                           [value]='participant.status.label' />
                     </div>

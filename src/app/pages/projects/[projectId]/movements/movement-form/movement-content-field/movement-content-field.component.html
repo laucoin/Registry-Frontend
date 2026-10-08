@@ -12,13 +12,13 @@
         <div class='secondary-color'>{{ emptyMessage() }}</div>
     </ng-template>
 </p-auto-complete>
-<div class='secondary-color mt-3'>
+<div class='secondary-color mt-4'>
     {{ selectionLabel() }}
 </div>
 <ul class='list-box mt-2' [class.invalid]='invalid()'>
     @for (participant of orphanParticipants(); track participant.id) {
-        <li class='item list-item w-100 d-flex align-items-center justify-content-between' [attr.data-value]='participant.id'>
-            <div class='ms-3 d-flex align-items-center'>
+        <li class='item list-item w-full flex items-center justify-between' [attr.data-value]='participant.id'>
+            <div class='ms-4 flex items-center'>
                 {{ ParticipantHelper.toSelectItem(participant).label }}
                 @if (interpretedMovementType().includes(participant.status.value)) {
                     <div class='warning-tips'>
@@ -45,7 +45,7 @@
     }
 </ul>
 @for (groupName of Object.keys(groups()); track groupName) {
-    <div class='w-100 d-flex align-items-center justify-content-between'>
+    <div class='w-full flex items-center justify-between'>
         <div>
             {{ 'movements.form.content.registered.group' | translate: { name: groupName } }}
         </div>
@@ -58,8 +58,8 @@
     </div>
     <ul class='list-box'>
         @for (member of groups()[groupName]; track member.id) {
-            <li class='item list-item w-100 d-flex align-items-center justify-content-between' [attr.data-value]='member.id'>
-                <div class='ms-3'>{{ ParticipantHelper.toSelectItem(member).label }}</div>
+            <li class='item list-item w-full flex items-center justify-between' [attr.data-value]='member.id'>
+                <div class='ms-4'>{{ ParticipantHelper.toSelectItem(member).label }}</div>
                 <p-button icon='pi pi-times'
                           size='small'
                           severity='danger'

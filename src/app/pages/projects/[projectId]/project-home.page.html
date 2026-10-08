@@ -11,19 +11,19 @@
     </p-tablist>
     <p-tabpanels>
         <p-tabpanel value='dashboard'>
-            <div class='ps-3 pe-3'>
+            <div class='ps-4 pe-4'>
                 <app-dashboard />
             </div>
         </p-tabpanel>
         @if (ProjectHelper.hasOption(registryFacade.selectedProject(), ProjectOptionEnum.ACTIVITY)) {
             <p-tabpanel value='activities'>
-                <div class='ps-3 pe-3'>
+                <div class='ps-4 pe-4'>
                     <app-current-activities />
                 </div>
             </p-tabpanel>
         }
         <p-tabpanel value='movements'>
-            <div class='ps-3 pe-3'>
+            <div class='ps-4 pe-4'>
                 <app-current-movements />
             </div>
         </p-tabpanel>
