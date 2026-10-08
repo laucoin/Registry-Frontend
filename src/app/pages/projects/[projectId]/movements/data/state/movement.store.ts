@@ -3,7 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { patchState, signalStore, withHooks, withMethods, withProps, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import {TranslocoService} from '@jsverse/transloco'
-import { catchError, EMPTY, finalize, map, Observable, pipe, skip, switchMap, tap } from 'rxjs'
+import { map, Observable, pipe, skip, switchMap, tap } from 'rxjs'
 import { SelectItem, SelectItemGroup } from 'primeng/api'
 import { PageModel } from '@shared/models/model/page.model'
 import { PairModel } from '@shared/models/model/pair.model'
@@ -14,7 +14,6 @@ import { MovementParticipantsAndGroupsModel } from '@shared/models/model/movemen
 import { ParticipantModel } from '@shared/models/model/participant.model'
 import { GroupModel } from '@shared/models/model/group.model'
 import { VehicleModel } from '@shared/models/model/vehicle.model'
-import { ErrorModel } from '@shared/models/model/error.model'
 import { ParticipantTypeEnum } from '@shared/models/enumeration/participant-type.enum'
 import { MovementTypeEnum } from '@shared/models/enumeration/movement-type.enum'
 import { MovementReasonModel } from '@pages/projects/[projectId]/movements/data/model/movement-reason.model'
@@ -29,9 +28,9 @@ import { GroupHelper } from '@shared/helpers/group.helper'
 import { ParticipantHelper } from '@shared/helpers/participant.helper'
 import { VehicleHelper } from '@shared/helpers/vehicle.helper'
 import { MovementHelper } from '@shared/helpers/movement.helper'
-import { StateHelper } from '@shared/helpers/state/state.helper'
-import { initialize, notifyOnError, reportError } from '@shared/helpers/rx.helper'
+import { notifyOnError } from '@shared/helpers/rx.helper'
 import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
+import { pageSlice, trackPage } from '@shared/helpers/store/track-page.operator'
 import { withProfileScope } from '@shared/helpers/store/with-profile-scope.feature'
 
 interface MovementsPageRequest {
@@ -166,22 +165,7 @@ export const MovementStore = signalStore(
                     request.pageSize,
                     store.movements.params(),
                 ).pipe(
-                    initialize( (): void => patchState( store, (state: MovementStoreModel) => ({
-                        movements: StateHelper.updatePageLoader( state.movements, true ),
-                    }) ) ),
-                    finalize( (): void => patchState( store, (state: MovementStoreModel) => ({
-                        movements: StateHelper.updatePageLoader( state.movements, false ),
-                    }) ) ),
-                    catchError( (error: ErrorModel): Observable<never> => {
-                        if (error.status === 503) {
-                            reportError( store.registryFacade, error )
-                        } else {
-                            patchState( store, (state: MovementStoreModel) => ({
-                                movements: PageStateHelper.withError( state.movements, error ),
-                            }) )
-                        }
-                        return EMPTY
-                    } ),
+                    trackPage( store.registryFacade, pageSlice( store, 'movements' ) ),
                     map( (page: PageModel<MovementModel>) => ({ request, page }) ),
                 ) ),
                 tap( ({ request, page }): void => {
@@ -216,22 +200,7 @@ export const MovementStore = signalStore(
                         request.pageSize,
                         store.movementCommunications.params(),
                     ).pipe(
-                        initialize( (): void => patchState( store, (state: MovementStoreModel) => ({
-                            movementCommunications: StateHelper.updatePageLoader( state.movementCommunications, true ),
-                        }) ) ),
-                        finalize( (): void => patchState( store, (state: MovementStoreModel) => ({
-                            movementCommunications: StateHelper.updatePageLoader( state.movementCommunications, false ),
-                        }) ) ),
-                        catchError( (error: ErrorModel): Observable<never> => {
-                            if (error.status === 503) {
-                                reportError( store.registryFacade, error )
-                            } else {
-                                patchState( store, (state: MovementStoreModel) => ({
-                                    movementCommunications: PageStateHelper.withError( state.movementCommunications, error ),
-                                }) )
-                            }
-                            return EMPTY
-                        } ),
+                        trackPage( store.registryFacade, pageSlice( store, 'movementCommunications' ) ),
                     ),
                 ),
                 tap( (page: PageModel<CommunicationModel>): void => patchState( store, (state: MovementStoreModel) => ({

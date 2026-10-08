@@ -1,19 +1,19 @@
 import { inject } from '@angular/core'
 import { patchState, signalStore, withMethods, withProps, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
-import { catchError, EMPTY, finalize, Observable, pipe, switchMap, tap } from 'rxjs'
+import { finalize, Observable, pipe, switchMap, tap } from 'rxjs'
 import { SelectItem } from 'primeng/api'
 import { PageModel } from '@shared/models/model/page.model'
 import { UserModel } from '@shared/models/model/user.model'
 import { ElementRequestInformationModel } from '@shared/models/model/element-request-information.model'
-import { ErrorModel } from '@shared/models/model/error.model'
 import { UserPageParamsModel } from '@pages/users/data/model/user-page-params.model'
 import { UserStoreModel } from '@pages/users/data/model/user-store.model'
 import { UserApi } from '@pages/users/data/state/user.api'
 import { RegistryFacade } from '@core/registry/state/registry.facade'
 import { StateHelper } from '@shared/helpers/state/state.helper'
-import { initialize, notifyOnError, reportError } from '@shared/helpers/rx.helper'
+import { initialize, notifyOnError } from '@shared/helpers/rx.helper'
 import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
+import { pageSlice, trackPage } from '@shared/helpers/store/track-page.operator'
 
 interface UsersPageRequest {
     pageNumber: number | undefined
@@ -56,22 +56,7 @@ export const UserStore = signalStore(
                 request.pageSize,
                 store.users.params(),
             ).pipe(
-                initialize( (): void => patchState( store, (state: UserStoreModel) => ({
-                    users: StateHelper.updatePageLoader( state.users, true ),
-                }) ) ),
-                finalize( (): void => patchState( store, (state: UserStoreModel) => ({
-                    users: StateHelper.updatePageLoader( state.users, false ),
-                }) ) ),
-                catchError( (error: ErrorModel): Observable<never> => {
-                    if (error.status === 503) {
-                        reportError( store.registryFacade, error )
-                    } else {
-                        patchState( store, (state: UserStoreModel) => ({
-                            users: PageStateHelper.withError( state.users, error ),
-                        }) )
-                    }
-                    return EMPTY
-                } ),
+                trackPage( store.registryFacade, pageSlice( store, 'users' ) ),
             ) ),
             tap( (page: PageModel<UserModel>): void => patchState( store, (state: UserStoreModel) => ({
                 users: {

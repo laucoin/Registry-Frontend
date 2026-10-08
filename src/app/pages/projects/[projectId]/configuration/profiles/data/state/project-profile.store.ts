@@ -3,10 +3,9 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { patchState, signalStore, withHooks, withMethods, withProps, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import {TranslocoService} from '@jsverse/transloco'
-import { catchError, EMPTY, finalize, Observable, pipe, skip, switchMap, tap } from 'rxjs'
+import { Observable, pipe, skip, switchMap, tap } from 'rxjs'
 import { SelectItem } from 'primeng/api'
 import { PageModel } from '@shared/models/model/page.model'
-import { ErrorModel } from '@shared/models/model/error.model'
 import { UserModel } from '@shared/models/model/user.model'
 import { ProjectProfileModel } from '@shared/models/model/project-profile.model'
 import { ProfileStatusEnum } from '@shared/models/enumeration/profile-status.enum'
@@ -16,9 +15,9 @@ import { ProjectProfileApi } from '@pages/projects/[projectId]/configuration/pro
 import { MetadataApi } from '@core/registry/state/metadata.api'
 import { RegistryFacade } from '@core/registry/state/registry.facade'
 import { UserHelper } from '@shared/helpers/user.helper'
-import { StateHelper } from '@shared/helpers/state/state.helper'
-import { initialize, notifyOnError, reportError } from '@shared/helpers/rx.helper'
+import { notifyOnError } from '@shared/helpers/rx.helper'
 import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
+import { pageSlice, trackPage } from '@shared/helpers/store/track-page.operator'
 
 interface ProjectProfilesPageRequest {
     projectId: string | undefined
@@ -75,22 +74,7 @@ export const ProjectProfileStore = signalStore(
                 request.pageSize,
                 store.projectProfiles.params(),
             ).pipe(
-                initialize( (): void => patchState( store, (state: ProjectProfileStoreModel) => ({
-                    projectProfiles: StateHelper.updatePageLoader( state.projectProfiles, true ),
-                }) ) ),
-                finalize( (): void => patchState( store, (state: ProjectProfileStoreModel) => ({
-                    projectProfiles: StateHelper.updatePageLoader( state.projectProfiles, false ),
-                }) ) ),
-                catchError( (error: ErrorModel): Observable<never> => {
-                    if (error.status === 503) {
-                        reportError( store.registryFacade, error )
-                    } else {
-                        patchState( store, (state: ProjectProfileStoreModel) => ({
-                            projectProfiles: PageStateHelper.withError( state.projectProfiles, error ),
-                        }) )
-                    }
-                    return EMPTY
-                } ),
+                trackPage( store.registryFacade, pageSlice( store, 'projectProfiles' ) ),
             ) ),
             tap( (page: PageModel<ProjectProfileModel>): void => patchState( store, (state: ProjectProfileStoreModel) => ({
                 projectProfiles: {

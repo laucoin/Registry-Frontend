@@ -1,19 +1,19 @@
 import { inject } from '@angular/core'
 import { patchState, signalStore, withMethods, withProps, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
-import { catchError, EMPTY, finalize, Observable, pipe, switchMap, tap } from 'rxjs'
+import { finalize, Observable, pipe, switchMap, tap } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
 import { ProjectModel } from '@shared/models/model/project.model'
 import { ElementRequestInformationModel } from '@shared/models/model/element-request-information.model'
-import { ErrorModel } from '@shared/models/model/error.model'
 import { ProjectOptionModel } from '@pages/projects/data/model/project-option.model'
 import { ProjectPageParamsModel } from '@pages/projects/data/model/project-page-params.model'
 import { ProjectStoreModel } from '@pages/projects/data/model/project-store.model'
 import { ProjectApi } from '@pages/projects/data/state/project.api'
 import { RegistryFacade } from '@core/registry/state/registry.facade'
 import { StateHelper } from '@shared/helpers/state/state.helper'
-import { initialize, notifyOnError, reportError } from '@shared/helpers/rx.helper'
+import { initialize, notifyOnError } from '@shared/helpers/rx.helper'
 import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
+import { pageSlice, trackPage } from '@shared/helpers/store/track-page.operator'
 
 interface ProjectsPageRequest {
     pageNumber: number | undefined
@@ -67,22 +67,7 @@ export const ProjectStore = signalStore(
                 request.pageSize,
                 store.projects.params(),
             ).pipe(
-                initialize( (): void => patchState( store, (state: ProjectStoreModel) => ({
-                    projects: StateHelper.updatePageLoader( state.projects, true ),
-                }) ) ),
-                finalize( (): void => patchState( store, (state: ProjectStoreModel) => ({
-                    projects: StateHelper.updatePageLoader( state.projects, false ),
-                }) ) ),
-                catchError( (error: ErrorModel): Observable<never> => {
-                    if (error.status === 503) {
-                        reportError( store.registryFacade, error )
-                    } else {
-                        patchState( store, (state: ProjectStoreModel) => ({
-                            projects: PageStateHelper.withError( state.projects, error ),
-                        }) )
-                    }
-                    return EMPTY
-                } ),
+                trackPage( store.registryFacade, pageSlice( store, 'projects' ) ),
             ) ),
             tap( (page: PageModel<ProjectModel>): void => patchState( store, (state: ProjectStoreModel) => ({
                 projects: {

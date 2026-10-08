@@ -1,21 +1,20 @@
 import { inject } from '@angular/core'
 import { patchState, signalStore, withMethods, withProps, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
-import { catchError, EMPTY, finalize, Observable, pipe, switchMap, tap } from 'rxjs'
+import { Observable, pipe, switchMap, tap } from 'rxjs'
 import { SelectItem } from 'primeng/api'
 import { PageModel } from '@shared/models/model/page.model'
 import { GroupModel } from '@shared/models/model/group.model'
 import { ParticipantModel } from '@shared/models/model/participant.model'
-import { ErrorModel } from '@shared/models/model/error.model'
 import { GroupPageParamsModel } from '@pages/projects/[projectId]/configuration/groups/data/model/group-page-params.model'
 import { ParticipantPageParamsModel } from '@pages/projects/[projectId]/configuration/participants/data/model/participant-page-params.model'
 import { GroupStoreModel } from '@pages/projects/[projectId]/configuration/groups/data/model/group-store.model'
 import { GroupApi } from '@pages/projects/[projectId]/configuration/groups/data/state/group.api'
 import { RegistryFacade } from '@core/registry/state/registry.facade'
 import { ParticipantHelper } from '@shared/helpers/participant.helper'
-import { StateHelper } from '@shared/helpers/state/state.helper'
-import { initialize, notifyOnError, reportError } from '@shared/helpers/rx.helper'
+import { notifyOnError } from '@shared/helpers/rx.helper'
 import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
+import { pageSlice, trackPage } from '@shared/helpers/store/track-page.operator'
 import { withProfileScope } from '@shared/helpers/store/with-profile-scope.feature'
 
 interface GroupsPageRequest {
@@ -80,22 +79,7 @@ export const GroupStore = signalStore(
                 request.pageSize,
                 store.groups.params(),
             ).pipe(
-                initialize( (): void => patchState( store, (state: GroupStoreModel) => ({
-                    groups: StateHelper.updatePageLoader( state.groups, true ),
-                }) ) ),
-                finalize( (): void => patchState( store, (state: GroupStoreModel) => ({
-                    groups: StateHelper.updatePageLoader( state.groups, false ),
-                }) ) ),
-                catchError( (error: ErrorModel): Observable<never> => {
-                    if (error.status === 503) {
-                        reportError( store.registryFacade, error )
-                    } else {
-                        patchState( store, (state: GroupStoreModel) => ({
-                            groups: PageStateHelper.withError( state.groups, error ),
-                        }) )
-                    }
-                    return EMPTY
-                } ),
+                trackPage( store.registryFacade, pageSlice( store, 'groups' ) ),
             ) ),
             tap( (page: PageModel<GroupModel>): void => patchState( store, (state: GroupStoreModel) => ({
                 groups: {
@@ -123,22 +107,7 @@ export const GroupStore = signalStore(
                 request.pageSize,
                 store.members.params(),
             ).pipe(
-                initialize( (): void => patchState( store, (state: GroupStoreModel) => ({
-                    members: { ...state.members, ...StateHelper.updatePageLoader( state.members, true ) },
-                }) ) ),
-                finalize( (): void => patchState( store, (state: GroupStoreModel) => ({
-                    members: { ...state.members, ...StateHelper.updatePageLoader( state.members, false ) },
-                }) ) ),
-                catchError( (error: ErrorModel): Observable<never> => {
-                    if (error.status === 503) {
-                        reportError( store.registryFacade, error )
-                    } else {
-                        patchState( store, (state: GroupStoreModel) => ({
-                            members: { ...state.members, ...PageStateHelper.withError( state.members, error ) },
-                        }) )
-                    }
-                    return EMPTY
-                } ),
+                trackPage( store.registryFacade, pageSlice( store, 'members' ) ),
             ) ),
             tap( (page: PageModel<ParticipantModel>): void => patchState( store, (state: GroupStoreModel) => ({
                 members: {

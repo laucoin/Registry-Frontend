@@ -1,12 +1,11 @@
 import { inject } from '@angular/core'
 import { patchState, signalStore, withMethods, withProps, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
-import { catchError, EMPTY, finalize, Observable, pipe, switchMap, tap } from 'rxjs'
+import { finalize, Observable, pipe, switchMap, tap } from 'rxjs'
 import { SelectItem } from 'primeng/api'
 import { PageModel } from '@shared/models/model/page.model'
 import { MovementModel } from '@shared/models/model/movement.model'
 import { AlertModel } from '@shared/models/model/alert.model'
-import { ErrorModel } from '@shared/models/model/error.model'
 import { ElementRequestInformationModel } from '@shared/models/model/element-request-information.model'
 import { CommunicationPageParamsModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication-page-params.model'
 import { CommunicationModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
@@ -17,8 +16,9 @@ import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
 import { MovementHelper } from '@shared/helpers/movement.helper'
 import { AlertHelper } from '@shared/helpers/alert.helper'
 import { StateHelper } from '@shared/helpers/state/state.helper'
-import { initialize, notifyOnError, reportError } from '@shared/helpers/rx.helper'
+import { initialize, notifyOnError } from '@shared/helpers/rx.helper'
 import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
+import { pageSlice, trackPage } from '@shared/helpers/store/track-page.operator'
 import { withProfileScope } from '@shared/helpers/store/with-profile-scope.feature'
 
 interface CommunicationsPageRequest {
@@ -88,22 +88,7 @@ export const CommunicationStore = signalStore(
                     request.pageSize,
                     store.communications.params(),
                 ).pipe(
-                    initialize( (): void => patchState( store, (state: CommunicationStoreModel) => ({
-                        communications: StateHelper.updatePageLoader( state.communications, true ),
-                    }) ) ),
-                    finalize( (): void => patchState( store, (state: CommunicationStoreModel) => ({
-                        communications: StateHelper.updatePageLoader( state.communications, false ),
-                    }) ) ),
-                    catchError( (error: ErrorModel): Observable<never> => {
-                        if (error.status === 503) {
-                            reportError( store.registryFacade, error )
-                        } else {
-                            patchState( store, (state: CommunicationStoreModel) => ({
-                                communications: PageStateHelper.withError( state.communications, error ),
-                            }) )
-                        }
-                        return EMPTY
-                    } ),
+                    trackPage( store.registryFacade, pageSlice( store, 'communications' ) ),
                 ) ),
                 tap( (page: PageModel<CommunicationModel>): void => patchState( store, (state: CommunicationStoreModel) => ({
                     communications: {

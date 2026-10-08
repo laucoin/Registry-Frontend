@@ -3,13 +3,12 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { patchState, signalStore, withHooks, withMethods, withProps, withState } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import {TranslocoService} from '@jsverse/transloco'
-import { catchError, EMPTY, finalize, map, Observable, pipe, skip, switchMap, tap } from 'rxjs'
+import { map, Observable, pipe, skip, switchMap, tap } from 'rxjs'
 import { SelectItem } from 'primeng/api'
 import { PageModel } from '@shared/models/model/page.model'
 import { MovementModel } from '@shared/models/model/movement.model'
 import { PairModel } from '@shared/models/model/pair.model'
 import { MovementContentModel } from '@shared/models/model/movement-content.model'
-import { ErrorModel } from '@shared/models/model/error.model'
 import { ParticipantModel } from '@shared/models/model/participant.model'
 import { ParticipantPageParamsModel } from '@pages/projects/[projectId]/configuration/participants/data/model/participant-page-params.model'
 import { MovementPageParamsModel } from '@shared/models/model/movement-page-params.model'
@@ -24,9 +23,9 @@ import { GroupHelper } from '@shared/helpers/group.helper'
 import { UserModel } from '@shared/models/model/user.model'
 import { GroupModel } from '@shared/models/model/group.model'
 import { MovementHelper } from '@shared/helpers/movement.helper'
-import { StateHelper } from '@shared/helpers/state/state.helper'
-import { initialize, notifyOnError, reportError } from '@shared/helpers/rx.helper'
+import { notifyOnError } from '@shared/helpers/rx.helper'
 import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
+import { pageSlice, trackPage } from '@shared/helpers/store/track-page.operator'
 import { withProfileScope } from '@shared/helpers/store/with-profile-scope.feature'
 
 interface ParticipantsPageRequest {
@@ -158,22 +157,7 @@ export const ParticipantStore = signalStore(
                     request.pageSize,
                     store.participants.params(),
                 ).pipe(
-                    initialize( (): void => patchState( store, (state: ParticipantStoreModel) => ({
-                        participants: StateHelper.updatePageLoader( state.participants, true ),
-                    }) ) ),
-                    finalize( (): void => patchState( store, (state: ParticipantStoreModel) => ({
-                        participants: StateHelper.updatePageLoader( state.participants, false ),
-                    }) ) ),
-                    catchError( (error: ErrorModel): Observable<never> => {
-                        if (error.status === 503) {
-                            reportError( store.registryFacade, error )
-                        } else {
-                            patchState( store, (state: ParticipantStoreModel) => ({
-                                participants: PageStateHelper.withError( state.participants, error ),
-                            }) )
-                        }
-                        return EMPTY
-                    } ),
+                    trackPage( store.registryFacade, pageSlice( store, 'participants' ) ),
                 ) ),
                 tap( (page: PageModel<ParticipantModel>): void => patchState( store, (state: ParticipantStoreModel) => ({
                     participants: {
@@ -199,22 +183,7 @@ export const ParticipantStore = signalStore(
                     request.pageSize,
                     store.movements.params(),
                 ).pipe(
-                    initialize( (): void => patchState( store, (state: ParticipantStoreModel) => ({
-                        movements: StateHelper.updatePageLoader( state.movements, true ),
-                    }) ) ),
-                    finalize( (): void => patchState( store, (state: ParticipantStoreModel) => ({
-                        movements: StateHelper.updatePageLoader( state.movements, false ),
-                    }) ) ),
-                    catchError( (error: ErrorModel): Observable<never> => {
-                        if (error.status === 503) {
-                            reportError( store.registryFacade, error )
-                        } else {
-                            patchState( store, (state: ParticipantStoreModel) => ({
-                                movements: PageStateHelper.withError( state.movements, error ),
-                            }) )
-                        }
-                        return EMPTY
-                    } ),
+                    trackPage( store.registryFacade, pageSlice( store, 'movements' ) ),
                     map( (page: PageModel<MovementModel>) => ({ request, page }) ),
                 ) ),
                 tap( ({ request, page }): void => {
