@@ -29,6 +29,7 @@
                             }
                         ],
                         "styles": [
+                            "src/tailwind.css",
                             "src/styles.scss",
                             "bootstrap/scss/bootstrap-grid.scss"
                         ],
