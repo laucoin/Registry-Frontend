@@ -40,8 +40,6 @@ export class SelectedProjectFacade extends GenericFacade {
 
     public readonly currentMovementsPageWithoutActivity: Signal<PageModel<MovementModel> | undefined> = this.store.currentMovements.withoutActivity.element
 
-    private readonly currentMovementsPageWithoutActivityResetSearch: Signal<boolean> = this.store.currentMovements.withoutActivity.params.resetSearch
-
     public readonly currentMovementsPageWithoutActivityStartDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
             DateHelper.buildDate( this.store.currentMovements.withoutActivity.params.startDateTimeSearched() ),
         )
@@ -57,8 +55,6 @@ export class SelectedProjectFacade extends GenericFacade {
     public readonly currentMovementsPageWithActivityError: Signal<ToastMessageOptions | undefined> = this.store.currentMovements.withActivity.error
 
     public readonly currentMovementsPageWithActivity: Signal<PageModel<MovementModel> | undefined> = this.store.currentMovements.withActivity.element
-
-    private readonly currentMovementsPageWithActivityResetSearch: Signal<boolean> = this.store.currentMovements.withActivity.params.resetSearch
 
     public readonly currentMovementsPageWithActivityStartDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
             DateHelper.buildDate( this.store.currentMovements.withActivity.params.startDateTimeSearched() ),
