@@ -23,6 +23,7 @@ import { ParticipantHelper } from '@shared/helpers/participant.helper'
 import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum'
 import {TranslocoPipe} from '@jsverse/transloco'
 import { UiFacade } from '@core/registry/state/ui.facade'
+import { BrowserService } from '@core/browser/browser.service'
 
 @Component( {
     selector: 'app-movement-content-field',
@@ -43,6 +44,7 @@ import { UiFacade } from '@core/registry/state/ui.facade'
 } )
 export class MovementContentFieldComponent implements ControlValueAccessor {
     protected readonly uiFacade: UiFacade = inject( UiFacade )
+    private readonly browser: BrowserService = inject( BrowserService )
     protected readonly ParticipantHelper: typeof ParticipantHelper = ParticipantHelper
     protected readonly Object: typeof Object = Object
 
@@ -144,11 +146,7 @@ export class MovementContentFieldComponent implements ControlValueAccessor {
     }
 
     protected highlightDuplicated (participantId: string): void {
-        const element: HTMLElement | null = document.querySelector( `[data-value="${participantId}"]` )
-        if (element) {
-            element.classList.add( 'highlight' )
-            setTimeout( () => element.classList.remove( 'highlight' ), 1000 )
-        }
+        this.browser.highlightByDataValue( participantId )
     }
 
     private onInputChange (value: MovementContentModel[]): void {

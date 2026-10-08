@@ -41,9 +41,9 @@ export class StringHelper {
         return value.toString().padStart( range, '0' )
     }
 
-    public static isRouteActive (route: RegistryRouteEnum): boolean {
+    public static isRouteActive (route: RegistryRouteEnum, pathname: string): boolean {
         const castedRoute: string = StringHelper.sanitizeRoute( route )
-        const currentUri: string = StringHelper.sanitizeRoute( location.pathname )
+        const currentUri: string = StringHelper.sanitizeRoute( pathname )
         const isUserRoute: boolean = RegistryRouteEnum.USERS.includes( castedRoute )
 
         switch (true) {

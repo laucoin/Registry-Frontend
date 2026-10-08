@@ -3,6 +3,7 @@ import {
     computed,
     ContentChildren,
     forwardRef,
+    inject,
     input,
     InputSignal,
     output,
@@ -19,6 +20,7 @@ import { RegistryTemplateDirective } from '@shared/directives/registry-template.
 import { SelectItem } from 'primeng/api'
 import { BaseModel } from '@shared/models/model/base.model'
 import { GenericHelper } from '@shared/helpers/generic.helper'
+import { BrowserService } from '@core/browser/browser.service'
 
 @Component( {
     selector: 'app-select-elements-field',
@@ -40,6 +42,7 @@ import { GenericHelper } from '@shared/helpers/generic.helper'
     styleUrl: './select-elements-field.component.css',
 } )
 export class SelectElementsFieldComponent<T extends BaseModel> implements ControlValueAccessor {
+    private readonly browser: BrowserService = inject( BrowserService )
     @ContentChildren( RegistryTemplateDirective ) public templates: QueryList<RegistryTemplateDirective> | undefined
 
     protected readonly GenericHelper: typeof GenericHelper = GenericHelper
@@ -96,11 +99,7 @@ export class SelectElementsFieldComponent<T extends BaseModel> implements Contro
     }
 
     protected highlightDuplicated (elementId: string): void {
-        const element: HTMLElement | null = document.querySelector( `[data-value="${elementId}"]` )
-        if (element) {
-            element.classList.add( 'highlight' )
-            setTimeout( () => element.classList.remove( 'highlight' ), 1000 )
-        }
+        this.browser.highlightByDataValue( elementId )
     }
 
     protected onInputChange (value: T | T[] | undefined): void {

@@ -21,7 +21,7 @@
         </ng-template>
         <ng-template #item let-item>
             <a class='menu-item card main-bar-card clickable-card cursor-pointer'
-               [class.router-active-card]='StringHelper.isRouteActive(item.url)'
+               [class.router-active-card]='isRouteActive(item.url)'
                [routerLink]='item.url'
                [attr.href]='item.url'>
                 <i [class]='item.icon'></i>
@@ -62,7 +62,7 @@
         <p-menubar [model]='contextMenuItems()'>
             <ng-template #item let-item>
                 <a class='context-menu-item card clickable-card cursor-pointer'
-                   [class.router-active-card]='GenericHelper.nonNull(item.url) ? StringHelper.isRouteActive(item.url) : false'
+                   [class.router-active-card]='GenericHelper.nonNull(item.url) ? isRouteActive(item.url) : false'
                    [routerLink]='item.url'
                    [attr.href]='item.url'>
                     <i [class]='item.icon'></i>

@@ -90,6 +90,10 @@ export class UiFacade {
         this.ui.updateScreenWidth( screenWidth )
     }
 
+    public updateLanguage (language: string): void {
+        this.ui.updateLanguage( language )
+    }
+
     public updateTheme (theme: ThemeEnum | undefined): void {
         if (GenericHelper.nonNull( theme )) {
             this.ui.updateTheme( theme! )

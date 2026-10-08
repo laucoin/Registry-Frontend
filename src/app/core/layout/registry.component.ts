@@ -12,6 +12,7 @@ import {Button} from 'primeng/button'
 import {Dialog} from 'primeng/dialog'
 import {Divider} from 'primeng/divider'
 import {GenericComponent} from '@shared/ui/base/generic.component'
+import {BrowserService} from '@core/browser/browser.service'
 import {NavbarComponent} from '@core/shell/navbar/navbar.component'
 import {RouterOutlet} from '@angular/router'
 import {ThemeEnum} from '@shared/models/enumeration/theme.enum'
@@ -42,7 +43,8 @@ export class RegistryComponent extends GenericComponent implements OnDestroy {
     private readonly subscriptions: Subscription = new Subscription()
 
     protected readonly currentYear: number = new Date().getFullYear()
-    protected readonly currentHost: string = location.host
+    private readonly browser: BrowserService = inject(BrowserService)
+    protected readonly currentHost: string = this.browser.host
 
     private readonly primeConfig: PrimeNG = inject(PrimeNG)
     private readonly notifyService: MessageService = inject(MessageService)
@@ -60,13 +62,14 @@ export class RegistryComponent extends GenericComponent implements OnDestroy {
 
     private initTranslation(): void {
         this.primeConfig.setTranslation(this.translateService.translateObject('prime-ng'))
+        this.uiFacade.updateLanguage(this.translateService.getActiveLang())
     }
 
     private handleThemeChanges(): void {
-        this.uiFacade.updateTheme(GenericHelper.navigatorTheme)
-        GenericHelper.themeMediaQuery.addEventListener('change', (): void => {
+        this.uiFacade.updateTheme(this.browser.systemTheme)
+        this.browser.onSystemThemeChange((): void => {
             if (GenericHelper.isNull(this.registryFacade.currentUserTheme()) || this.registryFacade.currentUserTheme() === ThemeEnum.SYSTEM) {
-                this.uiFacade.updateTheme(GenericHelper.navigatorTheme)
+                this.uiFacade.updateTheme(this.browser.systemTheme)
             }
         })
     }
@@ -74,12 +77,12 @@ export class RegistryComponent extends GenericComponent implements OnDestroy {
     @HostListener('window:online')
     @HostListener('window:offline')
     public handleNetwork(): void {
-        this.uiFacade.updateNetwork(navigator.onLine)
+        this.uiFacade.updateNetwork(this.browser.online)
     }
 
     @HostListener('window:resize')
     public handleResize(): void {
-        this.uiFacade.updateScreenWidth(window.innerWidth)
+        this.uiFacade.updateScreenWidth(this.browser.viewportWidth)
     }
 
     protected logout(): void {

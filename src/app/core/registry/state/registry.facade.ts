@@ -29,6 +29,7 @@ import { CurrentUserHelper } from '@core/authentication/tool/current-user.helper
 import { UserApi } from '@pages/users/data/state/user.api'
 import { UserProjectProfileApi } from '@core/registry/state/user-project-profile.api'
 import { PreferencesApi } from '@core/registry/state/preferences.api'
+import { BrowserService } from '@core/browser/browser.service'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { SessionStore } from '@core/registry/state/session.store'
@@ -53,6 +54,7 @@ export class RegistryFacade {
     private readonly datePipe: CustomDateFormatPipe = inject(CustomDateFormatPipe)
     private readonly profileReset: ProfileResetService = inject(ProfileResetService)
     private readonly uiFacade: UiFacade = inject(UiFacade)
+    private readonly browser: BrowserService = inject(BrowserService)
     private readonly sessionFacade: SessionFacade = inject(SessionFacade)
 
     private readonly securityApi: SecurityApi = inject(SecurityApi)
@@ -70,25 +72,25 @@ export class RegistryFacade {
     })
 
     public login(): void {
-        SessionStorageUtils.set(REDIRECT_URI, location.pathname)
+        SessionStorageUtils.set(REDIRECT_URI, this.browser.pathname)
         this.session.reset()
 
-        this.securityApi.getLoginUri(`${location.origin}/${RegistryRouteEnum.AUTH_CALLBACK}`).pipe(
+        this.securityApi.getLoginUri(`${this.browser.origin}/${RegistryRouteEnum.AUTH_CALLBACK}`).pipe(
             initialize((): void => this.uiFacade.startGlobalLoader()),
             finalize((): void => this.uiFacade.stopGlobalLoader()),
             tap((uri: AuthenticationUriModel): void => {
-                window.location.href = uri.uri
+                this.browser.redirect(uri.uri)
             }),
             catchError((error: ErrorModel): Observable<never> => this.globalError$(error)),
         ).subscribe()
     }
 
     public logout(): void {
-        this.securityApi.getLogoutUri(location.origin).pipe(
+        this.securityApi.getLogoutUri(this.browser.origin).pipe(
             initialize((): void => this.uiFacade.startGlobalLoader()),
             finalize((): void => this.uiFacade.stopGlobalLoader()),
             tap((uri: AuthenticationUriModel): void => {
-                window.location.href = uri.uri
+                this.browser.redirect(uri.uri)
             }),
             catchError((error: ErrorModel): Observable<never> => this.globalError$(error)),
         ).subscribe()
@@ -97,7 +99,7 @@ export class RegistryFacade {
     public fetchToken(authorizationCode: string): void {
         this.securityApi.fetchToken({
             authorizationCode: authorizationCode,
-            redirectUri: `${location.origin}/${RegistryRouteEnum.AUTH_CALLBACK}`,
+            redirectUri: `${this.browser.origin}/${RegistryRouteEnum.AUTH_CALLBACK}`,
         }).pipe(
             initialize((): void => this.uiFacade.startGlobalLoader()),
             finalize((): void => this.uiFacade.stopGlobalLoader()),
@@ -259,6 +261,7 @@ export class RegistryFacade {
     private applyLanguage(language: string): void {
         this.translateService.load(language).pipe(
             tap((): TranslocoService => this.translateService.setActiveLang(language)),
+            tap((): void => this.uiFacade.updateLanguage(language)),
             tap((): void => this.primeConfig.setTranslation(this.translateService.translateObject('prime-ng'))),
             tap((): void => this.reloadTranslatedData()),
             catchError((error: ErrorModel): Observable<never> => this.reportError$(error)),

@@ -1,5 +1,6 @@
 import {EnvironmentProviders, inject, Injectable, Injector, provideAppInitializer, Provider} from '@angular/core'
 import {EnvironmentModel} from '@core/config/model/environment.model'
+import {BrowserService} from '@core/browser/browser.service'
 import {StringHelper} from '@shared/helpers/string.helper'
 import {PrimeNG, providePrimeNG} from 'primeng/config'
 import {LocalStorageUtils} from '@shared/helpers/local-storage.helper'
@@ -61,7 +62,7 @@ export class RegistryConfig {
         ]
     }
 
-    private static get locale(): string {
+    private static resolveLocale(preferredLanguages: readonly string[]): string {
         let lang: string | undefined = LocalStorageUtils.get(LOCALE)?.toString()
 
         if (GenericHelper.nonNull(lang) && lang && !RegistryConfig.config.languages.includes(lang)) {
@@ -70,7 +71,7 @@ export class RegistryConfig {
         }
 
         if (GenericHelper.isNull(lang) || !RegistryConfig.config.languages.includes(lang!)) {
-            navigator.languages.forEach((nextLang: string): void => {
+            preferredLanguages.forEach((nextLang: string): void => {
                 if (RegistryConfig.config.languages.includes(nextLang) && !lang) {
                     lang = nextLang
                 }
@@ -83,10 +84,10 @@ export class RegistryConfig {
         return lang
     }
 
-    private static get translocoConfig(): TranslocoConfig {
+    private static buildTranslocoConfig(preferredLanguages: readonly string[]): TranslocoConfig {
         return translocoConfig({
             availableLangs: RegistryConfig.config.languages,
-            defaultLang: RegistryConfig.locale,
+            defaultLang: RegistryConfig.resolveLocale(preferredLanguages),
             fallbackLang: RegistryConfig.config.defaultLanguage,
             reRenderOnLangChange: true,
             prodMode: RegistryConfig.environment.production,
@@ -96,7 +97,7 @@ export class RegistryConfig {
     public static provideTranslatorService(): (Provider | EnvironmentProviders)[] {
         return [
             provideTransloco({ config: {}, loader: RegistryTranslationLoader }),
-            { provide: TRANSLOCO_CONFIG, useFactory: (): TranslocoConfig => RegistryConfig.translocoConfig },
+            { provide: TRANSLOCO_CONFIG, useFactory: (): TranslocoConfig => RegistryConfig.buildTranslocoConfig(inject(BrowserService).preferredLanguages) },
             provideAppInitializer(async (): Promise<unknown> => {
                 const injector: Injector = inject(Injector)
                 await RegistryConfig.load()

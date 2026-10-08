@@ -22,6 +22,7 @@ import { toSignal } from '@angular/core/rxjs-interop'
 import { ProjectOptionIconPipe } from '@shared/helpers/pipe/project-option-icon.pipe'
 import { Dialog } from 'primeng/dialog'
 import { InfoComponent } from '@shared/ui/common/info/info.component'
+import { BrowserService } from '@core/browser/browser.service'
 
 @Component( {
     selector: 'app-navbar',
@@ -43,6 +44,7 @@ import { InfoComponent } from '@shared/ui/common/info/info.component'
 } )
 export class NavbarComponent extends GenericComponent {
     private readonly iconOption: ProjectOptionIconPipe = inject( ProjectOptionIconPipe )
+    private readonly browser: BrowserService = inject( BrowserService )
 
     protected readonly maxMenuTextLength: number = 26
     protected readonly userMenuItems: Signal<MenuItem[]> = computed( (): MenuItem[] => [
@@ -207,9 +209,13 @@ export class NavbarComponent extends GenericComponent {
             }) )
     }
 
+    protected isRouteActive (route: RegistryRouteEnum): boolean {
+        return StringHelper.isRouteActive( route, this.browser.pathname )
+    }
+
     @HostListener( 'window:scroll', [] )
     public handleWindowScroll (): void {
-        const currentScrollPosition: number = window.pageYOffset || document.documentElement.scrollTop
+        const currentScrollPosition: number = this.browser.scrollOffset
 
         if (currentScrollPosition > this.lastScrollPosition() && currentScrollPosition > 25) {
             // Scrolling DOWN

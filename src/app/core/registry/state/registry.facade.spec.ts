@@ -7,6 +7,7 @@ import { Observable, of, Subject, throwError } from 'rxjs'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
 import { ConfigModel } from '@core/config/model/config.model'
 import { RegistryConfig } from '@core/config/registry.config'
+import { BrowserService } from '@core/browser/browser.service'
 import { SecurityApi } from '@core/authentication/service/security.api'
 import { PreferencesApi } from '@core/registry/state/preferences.api'
 import { RegistryFacade } from '@core/registry/state/registry.facade'
@@ -63,10 +64,11 @@ describe( 'RegistryFacade', () => {
     let updateTheme: Mock<(theme: ThemeEnum) => void>
     let notify: Mock<(message: unknown) => void>
     let resetAll: Mock<() => void>
+    let updateLanguage: Mock<(language: string) => void>
+    let redirect: Mock<(url: string) => void>
 
     beforeEach( () => {
         sessionStorage.clear()
-        window.location.hash = ''
         RegistryConfig.config = { defaultLanguage: 'fr', languages: [ 'fr', 'en' ], notification: { duration: {} } } as unknown as ConfigModel
 
         getLoginUri = vi.fn( () => of( { uri: '#login' } ) )
@@ -91,6 +93,8 @@ describe( 'RegistryFacade', () => {
         updateTheme = vi.fn()
         notify = vi.fn()
         resetAll = vi.fn()
+        updateLanguage = vi.fn()
+        redirect = vi.fn()
         theme = signal( ThemeEnum.LIGHT )
 
         TestBed.configureTestingModule( {
@@ -110,7 +114,8 @@ describe( 'RegistryFacade', () => {
                     },
                 },
                 { provide: UiStore, useValue: { setGlobalError } },
-                { provide: UiFacade, useValue: { theme, startGlobalLoader, stopGlobalLoader, setGlobalError, updateTheme, notify } },
+                { provide: UiFacade, useValue: { theme, startGlobalLoader, stopGlobalLoader, setGlobalError, updateTheme, updateLanguage, notify } },
+                { provide: BrowserService, useValue: { pathname: '/current', origin: 'http://app.test', redirect } },
                 { provide: Router, useValue: { navigateByUrl } },
                 { provide: PrimeNG, useValue: { setTranslation: vi.fn() } },
                 { provide: CustomDateFormatPipe, useValue: { transform: (): string => 'date' } },
@@ -138,9 +143,9 @@ describe( 'RegistryFacade', () => {
             facade.login()
 
             // Assert
-            expect( sessionStorage.getItem( REDIRECT_URI ) ).toBe( location.pathname )
+            expect( sessionStorage.getItem( REDIRECT_URI ) ).toBe( '/current' )
             expect( session.currentUser() ).toBeUndefined()
-            expect( location.hash ).toBe( '#login' )
+            expect( redirect ).toHaveBeenCalledWith( '#login' )
             expect( startGlobalLoader ).toHaveBeenCalledTimes( 1 )
             expect( stopGlobalLoader ).toHaveBeenCalledTimes( 1 )
         } )
@@ -154,7 +159,7 @@ describe( 'RegistryFacade', () => {
 
             // Assert
             expect( setGlobalError ).toHaveBeenCalledWith( FAILURE )
-            expect( location.hash ).toBe( '' )
+            expect( redirect ).not.toHaveBeenCalled()
             expect( stopGlobalLoader ).toHaveBeenCalledTimes( 1 )
         } )
     } )
@@ -162,13 +167,13 @@ describe( 'RegistryFacade', () => {
     describe( 'logout', () => {
         it( 'redirects to the logout uri', () => {
             // Arrange
-            const expectedHash: string = '#logout'
+            const expectedUrl: string = '#logout'
 
             // Act
             facade.logout()
 
             // Assert
-            expect( location.hash ).toBe( expectedHash )
+            expect( redirect ).toHaveBeenCalledWith( expectedUrl )
         } )
 
         it( 'shows the global error when the logout uri cannot be fetched', () => {
@@ -274,13 +279,13 @@ describe( 'RegistryFacade', () => {
     describe( 'impersonateCurrentUser', () => {
         it( 'signs out once the impersonation succeeded', () => {
             // Arrange
-            const expectedHash: string = '#logout'
+            const expectedUrl: string = '#logout'
 
             // Act
             facade.impersonateCurrentUser()
 
             // Assert
-            expect( location.hash ).toBe( expectedHash )
+            expect( redirect ).toHaveBeenCalledWith( expectedUrl )
         } )
 
         it( 'notifies the failure and ends the action loader', () => {
@@ -292,7 +297,7 @@ describe( 'RegistryFacade', () => {
 
             // Assert
             expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'Title' } ) )
-            expect( location.hash ).toBe( '' )
+            expect( redirect ).not.toHaveBeenCalled()
         } )
     } )
 
@@ -353,6 +358,7 @@ describe( 'RegistryFacade', () => {
 
             // Assert
             expect( setActiveLang ).toHaveBeenCalledWith( 'en' )
+            expect( updateLanguage ).toHaveBeenCalledWith( 'en' )
             expect( updateLanguagePreference ).toHaveBeenCalledWith( 'en' )
             expect( fetchCurrentUser ).toHaveBeenCalledTimes( 1 )
         } )
