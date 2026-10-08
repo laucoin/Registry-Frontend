@@ -19,7 +19,8 @@ on this Angular Client-Side Rendering (CSR) project.
 - **Framework:** Angular (latest version configured for **Client-Side Rendering - CSR**).
 - **Reactivity & State:** Strictly use **Angular Signals** (including `@ngrx/signals` `signalStore`, reactive forms with
   signals, `input()`, `output()`, etc.). Avoid legacy reactive patterns where modern signals are applicable.
-- **Design System:** `@sgdf/ui` (Web Awesome based web components).
+- **Design System:** `@sgdf/ui` (Web Awesome based web components) is the target. PrimeNG is the transitional design
+  system until the migration; do not introduce new PrimeNG-specific abstractions beyond what the current code needs.
 - **Styling:** Tailwind CSS v4 utility classes in templates (default breakpoints), native CSS for the remaining
   component styles. Bootstrap is not used. Beware the spacing scale: Tailwind steps are `n × 0.25rem`.
 
@@ -63,7 +64,7 @@ The source code is organized into three core directories:
 ## 4. Abstraction & Environment Configuration
 
 - **Environment Agnostic (CSR):** Configuration must be fetched dynamically at runtime via a static JSON asset file
-  (e.g. `assets/config/config.json`) using `provideAppInitializer()`. Environment-specific parameters **must never** be
+  (`public/settings/config.json` and `public/settings/env.json`) using `provideAppInitializer()`. Environment-specific parameters **must never** be
   hardcoded or statically compiled into the source code bundle.
 - **Backend Abstraction:** Always decouple API responses from domain models. Implement strict DTO-to-Model mappers
   (`DTO -> model`), even if the structures are identical.
@@ -83,10 +84,9 @@ The source code is organized into three core directories:
     - **Loading State:** Never a single global loading flag. Loading state must be scoped to the specific piece of data
       being fetched (e.g. a signal per resource/section), so the rest of the UI stays interactive and correctly reflects
       what is actually in flight.
-    - **Error Handling:** No default strategy — for each feature, the error-handling approach **must be defined with the
-      developer** before implementation. The two accepted options are: (1) log-only, silent to the user and hide the
-      failed widget loading on the UI, or (2) display a user-friendly frontend message enriched with the backend's error
-      message. Never assume one over the other.
+    - **Error Handling:** The default strategy is to display a user-friendly frontend message enriched with the
+      backend's error message. A feature may instead use log-only (silent to the user, failed widget hidden on the UI),
+      but only when this has been **defined with the developer** before implementation.
     - **No Dead Code:** Remove unused code, methods, imports, and variables rather than leaving them in place "just in
       case."
     - **Method Size:** Methods should be **25 lines or fewer**. Split larger methods into smaller, well-named ones.
@@ -129,7 +129,7 @@ Each reviewing agent must evaluate the proposed changes, provide feedback if nee
 
 4. **UI/UX & Accessibility (a11y) Designer Agent (`/10`):**
     - Checks semantic HTML structure, keyboard navigation, ARIA roles, and accessibility standards.
-    - Ensures visual consistency through `shared/ui/kit/` components and global theme application.
+    - Ensures visual consistency through `shared/ui/` components and global theme application.
     - Validates that user loading states are scoped per widget/section rather than global full-page blocking overlays.
     - Verifies user error message formatting and clarity.
 
@@ -195,9 +195,9 @@ This exception is standing and does not require asking the user each time — ev
 - Commit Breakdown: Commit scopes must be strictly planned and agreed upon with the user before development begins,
   breaking work down into the smallest functionally testable increments.
 - Work-in-progress gate: If a feature already implemented locally covers a complete testable functional scope but hasn't
-  been committed and pushed into a PR yet, the agent refuses to start any new, unrelated feature. Only fixes, review
-  feedback, or adjustments to that pending feature are allowed until it is committed and pushed. Instead, prompt the
-  developer to commit and push it into a PR first — this keeps the eventual review diff small and self-contained.
+  been committed, the agent refuses to start any new, unrelated feature. Only fixes, review feedback, or adjustments to
+  that pending feature are allowed until it is committed. Local commits on the current branch are enough: the developer
+  decides when to push and open the PR, and may ask the agent to keep working on the same branch meanwhile.
 
 ## 11. Non-Negotiable Technical Invariants
 
@@ -211,17 +211,17 @@ This exception is standing and does not require asking the user each time — ev
   refresh-and-replay on 401, mapping 0/502/503 to a generic unavailable error, redirect to /login on an unrecoverable
   `401`. The token-refresh endpoint is explicitly excluded from the refresh-and-retry branch to avoid a self-referential
   deadlock — don't simplify that exclusion away, don't scatter interceptor logic into services.
-- No environment value is compiled into the bundle. Runtime config is loaded from assets/config/config.json via
-  provideAppInitializer () prior to application bootstrap.
-- Theming is two compiled LESS bundles, not runtime data — light always-on, dark toggled at runtime by flipping a
-  disabled <link>. Re-skinning requires a rebuild, not a config change; if that constraint needs lifting, raise it with
-  the user rather than working around it silently.
+- No environment value is compiled into the bundle. Runtime config is loaded from public/settings/config.json and
+  public/settings/env.json via provideAppInitializer() prior to application bootstrap.
+- Theming: the PrimeNG preset is built from `config.json` at runtime, and dark mode is toggled by flipping the
+  `dark-mod` class on `<html>`. This is transitional until the `@sgdf/ui` migration; raise any change to this
+  mechanism with the user rather than working around it silently.
 - The production build enforces bundle budgets — an initial bundle past 1 MB or a component stylesheet past 8 kB is a
   hard failure, not a nuisance.
 - Static Web Serving (CSR): Production output is hosted as pure static assets (e.g. NGINX / Caddy). Ensure web server
   fallback rules (URL rewriting to index.html) are configured for HTML5 client-side routing.
-- No CSP or other hardening headers are set today. Known, accepted gap — flag it rather than assuming protection that
-  isn't there, or unilaterally adding headers without checking with the user first.
+- Hardening headers (including a CSP) are set in `nginx.conf`. The CSP must stay as strict as the app allows: no
+  `unsafe-eval`, and any loosening must be justified and agreed with the user first.
 - semantic-release drives versioning/changelog/tags from Conventional Commits — a non-conventional commit message
   produces a wrong or missing release.
 - Pagination is lazy-loading based, not page-numbered. Lists fetch and append the next batch as the user
