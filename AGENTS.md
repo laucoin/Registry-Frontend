@@ -19,7 +19,7 @@ on this Angular Client-Side Rendering (CSR) project.
 - **Framework:** Angular (latest version configured for **Client-Side Rendering - CSR**).
 - **Reactivity & State:** Strictly use **Angular Signals** (including `@ngrx/signals` `signalStore`, reactive forms with
   signals, `input()`, `output()`, etc.). Avoid legacy reactive patterns where modern signals are applicable.
-- **Design System:** PrimeNg.
+- **Design System:** `@sgdf/ui` (Web Awesome based web components).
 
 ---
 
