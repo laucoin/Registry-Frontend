@@ -98,10 +98,10 @@
                         ],
                         "coverageReporters": ["text-summary", "html"],
                         "coverageThresholds": {
-                            "statements": 40,
-                            "branches": 46,
-                            "functions": 37,
-                            "lines": 39
+                            "statements": 47,
+                            "branches": 54,
+                            "functions": 42,
+                            "lines": 45
                         }
                     }
                 },
