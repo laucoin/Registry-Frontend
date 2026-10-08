@@ -96,6 +96,10 @@ export class RegistryFacade {
         ).subscribe()
     }
 
+    public refreshToken(): Observable<void> {
+        return this.securityApi.refreshToken()
+    }
+
     public fetchToken(authorizationCode: string): void {
         this.securityApi.fetchToken({
             authorizationCode: authorizationCode,

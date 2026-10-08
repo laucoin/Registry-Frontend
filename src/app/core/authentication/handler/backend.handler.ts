@@ -16,16 +16,15 @@ import { SessionFacade } from '@core/registry/state/session.facade'
 import { ErrorModel } from '@shared/models/model/error.model'
 import { GenericHelper } from '@shared/helpers/generic.helper'
 import { CURRENT_USER_ID, SELECT_PROFILE_PROJECT_ID } from '@shared/helpers/request.helper'
-import { SecurityApi } from '@core/authentication/service/security.api'
 
 const CSRF_TOKEN_HEADER: string = 'X-XSRF-TOKEN'
 let csrfToken: string | undefined
 
 let refreshTokenInProgress$: Observable<void> | null = null
 
-function refreshAccessToken(securityApi: SecurityApi, registryFacade: RegistryFacade): Observable<void> {
+function refreshAccessToken(registryFacade: RegistryFacade): Observable<void> {
 	if (!refreshTokenInProgress$) {
-		refreshTokenInProgress$ = securityApi.refreshToken().pipe(
+		refreshTokenInProgress$ = registryFacade.refreshToken().pipe(
 			map((): void => undefined),
 			tap({
 				complete: (): void => {
@@ -48,7 +47,6 @@ interface InterceptionContext {
 	authenticatedRequest: HttpRequest<unknown>
 	next: HttpHandlerFn
 	registryFacade: RegistryFacade
-	securityApi: SecurityApi
 	translateService: TranslocoService
 }
 
@@ -69,12 +67,11 @@ export const backendHandler: HttpInterceptorFn = (
 
 	const registryFacade: RegistryFacade = inject(RegistryFacade)
 	const sessionFacade: SessionFacade = inject(SessionFacade)
-	const securityApi: SecurityApi = inject(SecurityApi)
 	const translateService: TranslocoService = inject(TranslocoService)
 
 	return defer((): Observable<HttpEvent<unknown>> => {
 		const authenticatedRequest: HttpRequest<unknown> = authenticate(req, sessionFacade)
-		const context: InterceptionContext = { request: req, authenticatedRequest, next, registryFacade, securityApi, translateService }
+		const context: InterceptionContext = { request: req, authenticatedRequest, next, registryFacade, translateService }
 		return next(authenticatedRequest).pipe(
 			tap(captureCsrfTokenFromEvent),
 			catchError((error: HttpErrorResponse): Observable<HttpEvent<unknown>> => handleError(error, context)),
@@ -105,7 +102,7 @@ function handleError(error: HttpErrorResponse, context: InterceptionContext): Ob
 }
 
 function refreshAndReplay(error: HttpErrorResponse, context: InterceptionContext): Observable<HttpEvent<unknown>> {
-	return refreshAccessToken(context.securityApi, context.registryFacade).pipe(
+	return refreshAccessToken(context.registryFacade).pipe(
 		catchError((): Observable<never> => throwError((): ErrorModel => new ErrorModel(error))),
 		mergeMap((): Observable<HttpEvent<unknown>> => replay(context)),
 	)

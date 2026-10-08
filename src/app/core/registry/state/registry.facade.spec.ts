@@ -46,6 +46,7 @@ describe( 'RegistryFacade', () => {
     let getLogoutUri: Mock<SecurityApi['getLogoutUri']>
     let fetchToken: Mock<SecurityApi['fetchToken']>
     let fetchCurrentUser: Mock<SecurityApi['fetchCurrentUser']>
+    let refreshToken: Mock<SecurityApi['refreshToken']>
     let impersonateCurrentUser: Mock<UserApi['impersonateCurrentUser']>
     let updateThemePreference: Mock<PreferencesApi['updateTheme']>
     let updateLanguagePreference: Mock<PreferencesApi['updateLanguage']>
@@ -75,6 +76,7 @@ describe( 'RegistryFacade', () => {
         getLogoutUri = vi.fn( () => of( { uri: '#logout' } ) )
         fetchToken = vi.fn( () => of( undefined ) )
         fetchCurrentUser = vi.fn( () => of( USER ) )
+        refreshToken = vi.fn( () => of( undefined ) )
         impersonateCurrentUser = vi.fn( () => of( { id: 'u2' } as UserModel ) )
         updateThemePreference = vi.fn( () => of( { userId: 'u1', theme: 'DARK', language: 'fr' } ) )
         updateLanguagePreference = vi.fn( () => of( { userId: 'u1', theme: 'LIGHT', language: 'en' } ) )
@@ -100,7 +102,7 @@ describe( 'RegistryFacade', () => {
         TestBed.configureTestingModule( {
             providers: [
                 RegistryFacade,
-                { provide: SecurityApi, useValue: { getLoginUri, getLogoutUri, fetchToken, fetchCurrentUser } },
+                { provide: SecurityApi, useValue: { getLoginUri, getLogoutUri, fetchToken, fetchCurrentUser, refreshToken } },
                 { provide: UserApi, useValue: { impersonateCurrentUser } },
                 { provide: PreferencesApi, useValue: { updateTheme: updateThemePreference, updateLanguage: updateLanguagePreference } },
                 {
@@ -223,6 +225,20 @@ describe( 'RegistryFacade', () => {
             // Assert
             expect( setGlobalError ).toHaveBeenCalledWith( FAILURE )
             expect( navigateByUrl ).not.toHaveBeenCalled()
+        } )
+    } )
+
+    describe( 'refreshToken', () => {
+        it( 'asks the security api for a new token', () => {
+            // Arrange
+            let completed: boolean = false
+
+            // Act
+            facade.refreshToken().subscribe( { complete: (): void => { completed = true } } )
+
+            // Assert
+            expect( refreshToken ).toHaveBeenCalledTimes( 1 )
+            expect( completed ).toBe( true )
         } )
     } )
 

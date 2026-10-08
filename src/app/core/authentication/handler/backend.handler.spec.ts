@@ -9,7 +9,6 @@ import { afterEach, beforeEach, describe, expect, it, Mock, vi } from 'vitest'
 import { RegistryConfig } from '@core/config/registry.config'
 import { RegistryFacade } from '@core/registry/state/registry.facade'
 import { SessionFacade } from '@core/registry/state/session.facade'
-import { SecurityApi } from '@core/authentication/service/security.api'
 import { backendHandler } from '@core/authentication/handler/backend.handler'
 import { CurrentUserModel } from '@shared/models/model/current-user.model'
 import { ErrorModel } from '@shared/models/model/error.model'
@@ -38,9 +37,8 @@ describe( 'backendHandler', () => {
             providers: [
                 provideHttpClient( withInterceptors( [ backendHandler ] ) ),
                 provideHttpClientTesting(),
-                MockProvider( RegistryFacade, { login: login } ),
+                MockProvider( RegistryFacade, { login: login, refreshToken: refreshToken } ),
                 MockProvider( SessionFacade, { currentUser: currentUser, currentProjectId: signal( 'project-1' ) } ),
-                MockProvider( SecurityApi, { refreshToken: refreshToken } ),
                 { provide: TranslocoService, useValue: { translate: (key: string): string => key } },
             ],
         } )
