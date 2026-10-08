@@ -247,7 +247,7 @@ export const MovementStore = signalStore(
                         searched.push( {
                             label: store.translateService.translate( store.pluralTranslationPipe.transform(
                                 'movements.form.content.registered.searched.group',
-                                participantsAndGroups.participants,
+                                participantsAndGroups.groups,
                             ) ),
                             items: participantsAndGroups.groups.map( (group: GroupModel): SelectItem<GroupModel> =>
                                 GroupHelper.toSelectItem( group ),
