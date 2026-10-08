@@ -47,22 +47,22 @@ export class NavbarComponent extends GenericComponent {
     protected readonly maxMenuTextLength: number = 26
     protected readonly userMenuItems: Signal<MenuItem[]> = computed( (): MenuItem[] => [
         {
-            label: this.translateService.translate( 'global.menu.profiles' ),
+            label: 'global.menu.profiles',
             icon: 'pi pi-unlock',
             url: RegistryRouteEnum.USERS_PROFILES,
         },
         {
-            label: this.translateService.translate( 'global.menu.invitations' ),
+            label: 'global.menu.invitations',
             icon: 'pi pi-envelope',
             url: RegistryRouteEnum.USERS_INVITATIONS,
         },
         {
-            label: this.translateService.translate( 'global.menu.settings' ),
+            label: 'global.menu.settings',
             icon: 'pi pi-cog',
             url: RegistryRouteEnum.USERS_SETTINGS,
         },
         {
-            label: this.translateService.translate( 'global.menu.help' ),
+            label: 'global.menu.help',
             icon: 'pi pi-question-circle',
             visible: this.registryFacade.tinyScreen(),
             command: (): void => {

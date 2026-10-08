@@ -42,7 +42,7 @@ export class ProjectProfileFacade extends GenericProjectElementFacade {
     public readonly projectProfilesAvailabilitiesMetadata: Signal<SelectItem<boolean | undefined>[]> = computed( (): SelectItem<boolean | undefined>[] =>
         this.store.metadata.availabilities().map( (status: SelectItem<boolean | undefined>): SelectItem<boolean | undefined> => ({
             ...status,
-            label: this.translateService.translate( status.label! ),
+            label: this.translateLabel( status.label! ),
         }) ),
     )
 

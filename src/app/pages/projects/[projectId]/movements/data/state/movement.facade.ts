@@ -86,7 +86,7 @@ export class MovementFacade extends GenericProjectElementFacade {
     public readonly visibilitiesMetadata: Signal<SelectItem<boolean | undefined>[]> = computed( () =>
             this.store.metadata.visibilities().map( (status: SelectItem<boolean | undefined>) => ({
                 ...status,
-                label: this.translateService.translate( status.label! ),
+                label: this.translateLabel( status.label! ),
             }) ),
         )
 

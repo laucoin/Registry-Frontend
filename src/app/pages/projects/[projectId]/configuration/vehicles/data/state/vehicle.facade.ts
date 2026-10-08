@@ -49,7 +49,7 @@ export class VehicleFacade extends GenericProjectElementFacade {
         this.store.metadata.visibilities().map(
             (status: SelectItem<boolean | undefined>): SelectItem<boolean | undefined> => ({
                 ...status,
-                label: this.translateService.translate( status.label! ),
+                label: this.translateLabel( status.label! ),
             }),
         ),
     )
