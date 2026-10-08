@@ -76,7 +76,7 @@
     }
 </div>
 
-<div [style]='{ "height": showContextMenu() ? "140px" : "82px" }'></div>
+<div [class]='showContextMenu() ? "h-[140px]" : "h-[82px]"'></div>
 
 @defer (when helpDialogOpened) {
     <p-dialog
