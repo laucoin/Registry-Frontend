@@ -113,7 +113,7 @@ export class AlertFacade extends GenericProjectElementFacade {
         pageNumber: number | undefined,
         pageSize: number | undefined,
     ): void {
-        const index: number | undefined = this.alertsPageResetSearch() ? 0 : pageNumber
+        const index: number | undefined = this.alertCommunicationsPageResetSearch() ? 0 : pageNumber
         this.store.fetchAlertCommunicationsPage( { projectId: this.selectedProjectId(), id: id, pageNumber: index, pageSize: pageSize } )
     }
 
