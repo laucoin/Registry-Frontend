@@ -9,10 +9,9 @@ import {
 } from '@angular/common/http'
 import { inject } from '@angular/core'
 import {TranslocoService} from '@jsverse/transloco'
-import { catchError, map, mergeMap, Observable, shareReplay, tap, throwError } from 'rxjs'
+import { catchError, defer, map, mergeMap, Observable, shareReplay, tap, throwError } from 'rxjs'
 import { RegistryConfig } from '@core/config/registry.config'
 import { RegistryFacade } from '@core/registry/state/registry.facade'
-import { CurrentUserModel } from '@shared/models/model/current-user.model'
 import { ErrorModel } from '@shared/models/model/error.model'
 import { GenericHelper } from '@shared/helpers/generic.helper'
 import { CURRENT_USER_ID, SELECT_PROFILE_PROJECT_ID } from '@shared/helpers/request.helper'
@@ -43,6 +42,17 @@ function refreshAccessToken(securityApi: SecurityApi, registryFacade: RegistryFa
 	return refreshTokenInProgress$
 }
 
+interface InterceptionContext {
+	request: HttpRequest<unknown>
+	authenticatedRequest: HttpRequest<unknown>
+	next: HttpHandlerFn
+	registryFacade: RegistryFacade
+	securityApi: SecurityApi
+	translateService: TranslocoService
+}
+
+const UNAVAILABLE_STATUSES: number[] = [0, 502, 503]
+
 export const backendHandler: HttpInterceptorFn = (
 	req: HttpRequest<unknown>,
 	next: HttpHandlerFn,
@@ -55,49 +65,73 @@ export const backendHandler: HttpInterceptorFn = (
 	const securityApi: SecurityApi = inject(SecurityApi)
 	const translateService: TranslocoService = inject(TranslocoService)
 
-	const currentUser: CurrentUserModel | undefined = registryFacade.currentUser()
-	const url: string = formatUrlIfNeeded(registryFacade, currentUser, req.url)
-	const authenticatedReq: HttpRequest<unknown> = req.clone({
-		url: url,
-		withCredentials: true,
-		setHeaders: csrfToken ? { [CSRF_TOKEN_HEADER]: csrfToken } : {},
-	})
-
-	return next(authenticatedReq)
-		.pipe(
-			tap((event: HttpEvent<unknown>): void => {
-				if (event instanceof HttpResponse) {
-					captureCsrfToken(event.headers)
-				}
-			}),
-			catchError((error: HttpErrorResponse) => {
-				captureCsrfToken(error.headers)
-
-				if (RegistryConfig.environment.backend.noAuthPaths.some((permitAll: string): boolean => req.url.includes(permitAll)) && error.status === 401) {
-					registryFacade.login()
-					return throwError((): ErrorModel => new ErrorModel(error))
-				}
-
-				switch (error.status) {
-					case 0:
-					case 502:
-					case 503:
-						return throwError((): ErrorModel => ({
-							status: 503,
-							name: 'Service Unavailable',
-							title: translateService.translate('global.notifications.503.title'),
-							message: translateService.translate('global.notifications.503.message'),
-						}))
-					case 401:
-						return refreshAccessToken(securityApi, registryFacade).pipe(
-							mergeMap((): Observable<HttpEvent<unknown>> => next(authenticatedReq)),
-							catchError((): Observable<HttpEvent<unknown>> => throwError((): ErrorModel => new ErrorModel(error))),
-						)
-					default:
-						return throwError((): ErrorModel => new ErrorModel(error))
-				}
-			}),
+	return defer((): Observable<HttpEvent<unknown>> => {
+		const authenticatedRequest: HttpRequest<unknown> = authenticate(req, registryFacade)
+		const context: InterceptionContext = { request: req, authenticatedRequest, next, registryFacade, securityApi, translateService }
+		return next(authenticatedRequest).pipe(
+			tap(captureCsrfTokenFromEvent),
+			catchError((error: HttpErrorResponse): Observable<HttpEvent<unknown>> => handleError(error, context)),
 		)
+	})
+}
+
+function authenticate(req: HttpRequest<unknown>, registryFacade: RegistryFacade): HttpRequest<unknown> {
+	const url: string = formatUrlIfNeeded(registryFacade, req.url)
+	return withCsrfToken(req.clone({ url: url, withCredentials: true }))
+}
+
+function withCsrfToken(req: HttpRequest<unknown>): HttpRequest<unknown> {
+	return csrfToken ? req.clone({ setHeaders: { [CSRF_TOKEN_HEADER]: csrfToken } }) : req
+}
+
+function handleError(error: HttpErrorResponse, context: InterceptionContext): Observable<HttpEvent<unknown>> {
+	captureCsrfToken(error.headers)
+
+	if (error.status === 401 && isNoAuthPath(context.request.url)) {
+		context.registryFacade.login()
+		return throwError((): ErrorModel => new ErrorModel(error))
+	}
+	if (error.status === 401) {
+		return refreshAndReplay(error, context)
+	}
+	return throwError((): ErrorModel => toBackendError(error, context.translateService))
+}
+
+function refreshAndReplay(error: HttpErrorResponse, context: InterceptionContext): Observable<HttpEvent<unknown>> {
+	return refreshAccessToken(context.securityApi, context.registryFacade).pipe(
+		catchError((): Observable<never> => throwError((): ErrorModel => new ErrorModel(error))),
+		mergeMap((): Observable<HttpEvent<unknown>> => replay(context)),
+	)
+}
+
+function replay(context: InterceptionContext): Observable<HttpEvent<unknown>> {
+	return context.next(withCsrfToken(context.authenticatedRequest)).pipe(
+		tap(captureCsrfTokenFromEvent),
+		catchError((error: HttpErrorResponse): Observable<never> => throwError((): ErrorModel => toBackendError(error, context.translateService))),
+	)
+}
+
+function isNoAuthPath(url: string): boolean {
+	return RegistryConfig.environment.backend.noAuthPaths.some((noAuthPath: string): boolean => url.includes(noAuthPath))
+}
+
+function toBackendError(error: HttpErrorResponse, translateService: TranslocoService): ErrorModel {
+	return UNAVAILABLE_STATUSES.includes(error.status) ? unavailableError(translateService) : new ErrorModel(error)
+}
+
+function unavailableError(translateService: TranslocoService): ErrorModel {
+	return {
+		status: 503,
+		name: 'Service Unavailable',
+		title: translateService.translate('global.notifications.503.title'),
+		message: translateService.translate('global.notifications.503.message'),
+	}
+}
+
+function captureCsrfTokenFromEvent(event: HttpEvent<unknown>): void {
+	if (event instanceof HttpResponse) {
+		captureCsrfToken(event.headers)
+	}
 }
 
 function captureCsrfToken(headers: HttpHeaders): void {
@@ -107,32 +141,25 @@ function captureCsrfToken(headers: HttpHeaders): void {
 	}
 }
 
-function formatUrlIfNeeded(registryFacade: RegistryFacade, currentUser: CurrentUserModel | undefined, url: string): string {
-	let formattedUrl: string = url
+function formatUrlIfNeeded(registryFacade: RegistryFacade, url: string): string {
+	const urlWithUserId: string = replacePlaceholder(url, CURRENT_USER_ID, () => registryFacade.currentUser()?.id, 'NO_USER_ID')
+	return replacePlaceholder(urlWithUserId, SELECT_PROFILE_PROJECT_ID, () => registryFacade.currentProjectId(), 'NO_SELECTED_PROJECT')
+}
 
-	if (formattedUrl.includes(CURRENT_USER_ID)) {
-		const userId: string | undefined = currentUser?.id
-		if (GenericHelper.isNull(userId)) {
-			throw {
-				title: 'global.notifications.NO_USER_ID.title',
-				message: 'global.notifications.NO_USER_ID.message',
-			} as ErrorModel
-		} else {
-			formattedUrl = formattedUrl.replace(CURRENT_USER_ID, userId!)
-		}
+function replacePlaceholder(url: string, placeholder: string, readValue: () => string | undefined, errorKey: string): string {
+	if (!url.includes(placeholder)) {
+		return url
 	}
-
-	if (formattedUrl.includes(SELECT_PROFILE_PROJECT_ID)) {
-		const selectedProjectId: string | undefined = registryFacade.currentProjectId()
-		if (GenericHelper.isNull(selectedProjectId)) {
-			throw {
-				title: 'global.notifications.NO_SELECTED_PROJECT.title',
-				message: 'global.notifications.NO_SELECTED_PROJECT.message',
-			} as ErrorModel
-		} else {
-			formattedUrl = formattedUrl.replace(SELECT_PROFILE_PROJECT_ID, selectedProjectId!)
-		}
+	const value: string | undefined = readValue()
+	if (GenericHelper.isNull(value)) {
+		throw missingValueError(errorKey)
 	}
+	return url.replace(placeholder, value!)
+}
 
-	return formattedUrl
+function missingValueError(errorKey: string): ErrorModel {
+	return {
+		title: `global.notifications.${errorKey}.title`,
+		message: `global.notifications.${errorKey}.message`,
+	} as ErrorModel
 }
