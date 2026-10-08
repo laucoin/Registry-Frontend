@@ -8,6 +8,11 @@ import { ProjectModel } from '@shared/models/model/project.model'
 import { ActionableItemModel } from '@shared/models/model/actionable-item.model'
 import { ThemeEnum } from '@shared/models/enumeration/theme.enum'
 
+/**
+ * Purpose: Answers authority, project option and theme questions about the current user.
+ * Scope: Pure functions over the user model: feasibility of an action, authority lookups and theme mapping.
+ * Limits: Never enforces anything; the backend is the only security boundary.
+ */
 export class CurrentUserHelper {
     public static isFeasible (
         currentUser: CurrentUserModel | undefined,

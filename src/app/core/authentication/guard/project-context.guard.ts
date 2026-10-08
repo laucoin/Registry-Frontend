@@ -16,6 +16,11 @@ const PROJECT_ID_PARAM: string = 'projectId'
  * Charge le projet courant depuis le paramètre `:projectId` de l'URL.
  * Redirige vers la liste des projets si l'utilisateur n'a aucun profil sur ce projet.
  */
+/**
+ * Purpose: Selects the project of the `:projectId` route parameter for the routes below it.
+ * Scope: Checks the user has an authority on the project, loads its profile and warns before redirecting to the projects list.
+ * Limits: A usability aid only; the backend re-checks access, and the deactivate guard only clears the selection.
+ */
 export const projectContextGuard: CanActivateFn = (route: ActivatedRouteSnapshot): Observable<boolean | UrlTree> => {
     const registryFacade: RegistryFacade = inject( RegistryFacade )
     const uiFacade: UiFacade = inject( UiFacade )

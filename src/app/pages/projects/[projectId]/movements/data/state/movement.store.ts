@@ -97,6 +97,11 @@ const defaultMovementStore: MovementStoreModel = {
     },
 }
 
+/**
+ * Purpose: Holds the movement state.
+ * Scope: Owns the data of the movement pages and resources with their loading and error flags, and fetches them through the movement api.
+ * Limits: Reached through the movement facade; it does not format data or notify the user of command results.
+ */
 export const MovementStore = signalStore(
     withState<MovementStoreModel>( defaultMovementStore ),
     withProfileScope<MovementStoreModel>( defaultMovementStore, (current: MovementStoreModel): Partial<MovementStoreModel> => ({

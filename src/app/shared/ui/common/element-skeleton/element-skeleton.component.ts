@@ -3,6 +3,11 @@ import { CardModule } from 'primeng/card'
 import { SkeletonModule } from 'primeng/skeleton'
 import { GenericComponent } from '@shared/ui/base/generic.component'
 
+/**
+ * Purpose: Placeholder shown while a list loads.
+ * Scope: Renders skeleton lines in the shape of an element card.
+ * Limits: No data and no behaviour.
+ */
 @Component( {
     selector: 'app-element-skeleton',
     imports: [ SkeletonModule, CardModule ],

@@ -24,6 +24,11 @@ import { Dialog } from 'primeng/dialog'
 import { InfoComponent } from '@shared/ui/common/info/info.component'
 import { BrowserService } from '@core/browser/browser.service'
 
+/**
+ * Purpose: Top navigation bar.
+ * Scope: Owns the menus, the context menu, the user menu and the hide-on-scroll behaviour.
+ * Limits: Filters items by the current user authorities for display only; the backend is the security boundary.
+ */
 @Component( {
     selector: 'app-navbar',
     imports: [

@@ -17,6 +17,11 @@ import {ProjectOptionEnum} from '@shared/models/enumeration/project-option.enum'
 import {SeverityEnum} from '@shared/models/enumeration/severity.enum'
 import {FormHelper} from '@shared/helpers/form.helper'
 
+/**
+ * Purpose: Base class of the components that need the shared facades and helpers.
+ * Scope: Provides the registry, UI and session facades, routing, translation and form builder.
+ * Limits: Abstract; it holds no view logic.
+ */
 export abstract class GenericComponent {
     protected readonly RegistryRouteEnum: typeof RegistryRouteEnum = RegistryRouteEnum
 

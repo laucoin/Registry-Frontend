@@ -6,6 +6,11 @@ import {AuthenticationUriModel} from '@shared/models/model/authentication-uri.mo
 import {CredentialsModel} from '@shared/models/model/credentials.model'
 import {HttpParams} from '@angular/common/http'
 
+/**
+ * Purpose: Sends the HTTP requests of the security domain.
+ * Scope: Builds the urls and the query parameters and returns the backend responses.
+ * Limits: Holds no state and handles no error; stores and facades do.
+ */
 @Injectable({
     providedIn: 'root',
 })

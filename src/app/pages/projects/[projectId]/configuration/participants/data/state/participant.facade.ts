@@ -15,6 +15,11 @@ import { CommandEvent } from '@shared/helpers/facade/command-event.service'
 import { UserModel } from '@shared/models/model/user.model'
 import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum'
 
+/**
+ * Purpose: Public entry point of the participant domain for pages, components and guards.
+ * Scope: Exposes the participant store as signals, forwards its queries and runs the participant commands with their notifications.
+ * Limits: Holds no state of its own and builds no HTTP request itself.
+ */
 @Injectable()
 export class ParticipantFacade extends GenericProjectElementFacade {
     private readonly store: InstanceType<typeof ParticipantStore> = inject( ParticipantStore )

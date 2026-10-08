@@ -10,6 +10,11 @@ import {QueryHelper} from '@shared/helpers/query.helper'
 import {MovementPageParamsModel} from '@shared/models/model/movement-page-params.model'
 import {MovementModel} from '@shared/models/model/movement.model'
 
+/**
+ * Purpose: Sends the HTTP requests of the activity domain.
+ * Scope: Builds the urls and the query parameters and returns the backend responses.
+ * Limits: Holds no state and handles no error; stores and facades do.
+ */
 @Injectable({
     providedIn: 'root',
 })

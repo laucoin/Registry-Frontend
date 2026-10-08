@@ -23,6 +23,11 @@ import {CommunicationPageParamsModel} from '@pages/projects/[projectId]/movement
 import {ProjectStatusModel} from '@pages/projects/data/model/project-status.model'
 import {VehicleStatusModel} from '@pages/projects/data/model/vehicle-status.model'
 
+/**
+ * Purpose: Sends the HTTP requests of the movement domain.
+ * Scope: Builds the urls and the query parameters and returns the backend responses.
+ * Limits: Holds no state and handles no error; stores and facades do.
+ */
 @Injectable({
     providedIn: 'root',
 })

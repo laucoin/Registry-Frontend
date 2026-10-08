@@ -1,6 +1,11 @@
 import { SelectItem } from 'primeng/api'
 import { VehicleModel } from '@shared/models/model/vehicle.model'
 
+/**
+ * Purpose: Builds select items for vehicles.
+ * Scope: Pure mapping from a vehicle to a select item.
+ * Limits: No state and no translation.
+ */
 export class VehicleHelper {
     public static toSelectItem (vehicle: VehicleModel): SelectItem<VehicleModel> {
         return {

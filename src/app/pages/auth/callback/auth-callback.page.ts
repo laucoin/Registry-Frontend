@@ -3,6 +3,11 @@ import { ActivatedRoute, Params } from '@angular/router'
 import { RegistryFacade } from '@core/registry/state/registry.facade'
 import { Subscription } from 'rxjs'
 
+/**
+ * Purpose: Landing page of the identity provider redirect.
+ * Scope: Exchanges the authorization code for a session through the registry facade.
+ * Limits: Shows nothing of its own while the exchange runs.
+ */
 @Component( {
     selector: 'app-auth-callback',
     template: '',

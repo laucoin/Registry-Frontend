@@ -12,6 +12,11 @@ import { CommunicationModel } from '@pages/projects/[projectId]/movements/commun
 import { CommunicationHelper } from '@shared/helpers/communication.helper'
 import { AlertFacade } from '@pages/projects/[projectId]/alerts/data/state/alert.facade'
 
+/**
+ * Purpose: List of the communications of a movement.
+ * Scope: Loads and displays the communications of one movement with search and actions.
+ * Limits: Reads through the movement facade only.
+ */
 @Component( {
     selector: 'app-movement-communications-list',
     imports: [

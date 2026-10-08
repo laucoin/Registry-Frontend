@@ -8,6 +8,11 @@ import { ListComponent } from '@shared/ui/common/list/list.component'
 import { MovementElementComponent } from '@shared/ui/domain/movement-element/movement-element.component'
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 
+/**
+ * Purpose: Widget listing the movements linked to an activity.
+ * Scope: Displays the current movements with an activity and loads more on demand.
+ * Limits: Reads through the selected project facade only.
+ */
 @Component( {
     selector: 'app-current-activities',
     imports: [

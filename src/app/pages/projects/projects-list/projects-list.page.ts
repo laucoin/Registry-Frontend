@@ -19,6 +19,11 @@ import {GenericHelper} from '@shared/helpers/generic.helper'
 import {InfoComponent} from '@shared/ui/common/info/info.component'
 import {StringHelper} from '@shared/helpers/string.helper'
 
+/**
+ * Purpose: Page listing the projects with search and lazy loading.
+ * Scope: Binds the list component to the facade and reloads on command events.
+ * Limits: Holds no domain state and never calls the backend.
+ */
 @Component({
     selector: 'app-projects-list',
     imports: [

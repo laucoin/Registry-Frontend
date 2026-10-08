@@ -11,6 +11,11 @@ import { DateHelper } from '@shared/helpers/date.helper'
 import { ActivityApi } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.api'
 import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/rx.helper'
 
+/**
+ * Purpose: Public entry point of the activity domain for pages, components and guards.
+ * Scope: Exposes the activity store as signals, forwards its queries and runs the activity commands with their notifications.
+ * Limits: Holds no state of its own and builds no HTTP request itself.
+ */
 @Injectable()
 export class ActivityFacade extends GenericProjectElementFacade {
     private readonly api: ActivityApi = inject( ActivityApi )

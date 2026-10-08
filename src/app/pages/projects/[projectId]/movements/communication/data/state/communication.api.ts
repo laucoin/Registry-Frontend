@@ -11,6 +11,11 @@ import {HttpParams} from '@angular/common/http'
 import {MovementModel} from '@shared/models/model/movement.model'
 import {AlertModel} from '@shared/models/model/alert.model'
 
+/**
+ * Purpose: Sends the HTTP requests of the communication domain.
+ * Scope: Builds the urls and the query parameters and returns the backend responses.
+ * Limits: Holds no state and handles no error; stores and facades do.
+ */
 @Injectable({
     providedIn: 'root',
 })

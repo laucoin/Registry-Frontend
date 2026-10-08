@@ -5,6 +5,11 @@ import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.p
 import { SelectItem } from 'primeng/api'
 import { StringHelper } from '@shared/helpers/string.helper'
 
+/**
+ * Purpose: Formats a duration interval for display.
+ * Scope: Shows the two largest units from days up and a clock format below.
+ * Limits: Returns undefined for an empty interval.
+ */
 @Pipe( {
     name: 'intervalFormat', standalone: true,
 } )

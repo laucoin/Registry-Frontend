@@ -11,6 +11,11 @@ import {AlertPageParamsModel} from '@shared/models/model/alert-page-params.model
 import {AlertDto} from '@pages/projects/[projectId]/alerts/data/dto/alert.dto'
 import {AlertStatusEnum} from '@shared/models/enumeration/alert-status.enum'
 
+/**
+ * Purpose: Sends the HTTP requests of the alert domain.
+ * Scope: Builds the urls and the query parameters and returns the backend responses.
+ * Limits: Holds no state and handles no error; stores and facades do.
+ */
 @Injectable({
     providedIn: 'root',
 })

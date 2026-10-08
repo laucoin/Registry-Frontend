@@ -41,6 +41,11 @@ import {
     MovementCommunicationsListComponent,
 } from '@pages/projects/[projectId]/movements/movement-communications-list/movement-communications-list.component'
 
+/**
+ * Purpose: Card presenting one movement with its actions.
+ * Scope: Renders the details, the actions menu and the confirmations of the element.
+ * Limits: Receives the element as an input and calls the facade for commands; it holds no list state.
+ */
 @Component({
     selector: 'app-movement-element',
     imports: [

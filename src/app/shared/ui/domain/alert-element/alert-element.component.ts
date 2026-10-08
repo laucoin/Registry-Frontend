@@ -30,6 +30,11 @@ import { IntervalModel } from '@shared/models/model/interval.model'
 import { DateHelper } from '@shared/helpers/date.helper'
 import { IntervalPipe } from '@shared/helpers/pipe/interval.pipe'
 
+/**
+ * Purpose: Card presenting one alert with its actions.
+ * Scope: Renders the details, the actions menu and the confirmations of the element.
+ * Limits: Receives the element as an input and calls the facade for commands; it holds no list state.
+ */
 @Component( {
     selector: 'app-alert-element',
     imports: [

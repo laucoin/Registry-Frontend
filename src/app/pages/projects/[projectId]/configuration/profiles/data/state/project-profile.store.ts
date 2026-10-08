@@ -50,6 +50,11 @@ const defaultProjectProfileStore: ProjectProfileStoreModel = {
     },
 }
 
+/**
+ * Purpose: Holds the project profile state.
+ * Scope: Owns the data of the project profile pages and resources with their loading and error flags, and fetches them through the project profile api.
+ * Limits: Reached through the project profile facade; it does not format data or notify the user of command results.
+ */
 export const ProjectProfileStore = signalStore(
     withState<ProjectProfileStoreModel>( defaultProjectProfileStore ),
     withProps( () => ({

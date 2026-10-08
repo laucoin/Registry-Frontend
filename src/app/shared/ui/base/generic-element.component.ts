@@ -13,6 +13,11 @@ import {ProjectHelper} from '@shared/helpers/project.helper'
 import {RegistryConfig} from '@core/config/registry.config'
 import {SeverityEnum} from '@shared/models/enumeration/severity.enum'
 
+/**
+ * Purpose: Base class of the element cards of a list.
+ * Scope: Provides action menu handling, confirmation and the layer state shared by element cards.
+ * Limits: Abstract; each card defines its own actions.
+ */
 export abstract class GenericElementComponent extends GenericComponent {
     protected readonly confirmationService: ConfirmationService = inject(ConfirmationService)
 

@@ -62,6 +62,11 @@ const defaultCommunicationStore: CommunicationStoreModel = {
     },
 }
 
+/**
+ * Purpose: Holds the communication state.
+ * Scope: Owns the data of the communication pages and resources with their loading and error flags, and fetches them through the communication api.
+ * Limits: Reached through the communication facade; it does not format data or notify the user of command results.
+ */
 export const CommunicationStore = signalStore(
     withState<CommunicationStoreModel>( defaultCommunicationStore ),
     withProfileScope<CommunicationStoreModel>( defaultCommunicationStore ),

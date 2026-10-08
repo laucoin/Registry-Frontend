@@ -4,6 +4,11 @@ import { AlertModel } from '@shared/models/model/alert.model'
 import { AlertStatusEnum } from '@shared/models/enumeration/alert-status.enum'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 
+/**
+ * Purpose: Presents alerts.
+ * Scope: Builds alert select items and maps an alert status to an icon and a severity.
+ * Limits: No state; the date is formatted by the given pipe.
+ */
 export class AlertHelper {
     public static toSelectItem (alert: AlertModel, datePipe: DateFormatPipe): SelectItem<AlertModel> {
         return {

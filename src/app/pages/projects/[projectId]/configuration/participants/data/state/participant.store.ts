@@ -76,6 +76,11 @@ const defaultParticipantStore: ParticipantStoreModel = {
     },
 }
 
+/**
+ * Purpose: Holds the participant state.
+ * Scope: Owns the data of the participant pages and resources with their loading and error flags, and fetches them through the participant api.
+ * Limits: Reached through the participant facade; it does not format data or notify the user of command results.
+ */
 export const ParticipantStore = signalStore(
     withState<ParticipantStoreModel>( defaultParticipantStore ),
     withProfileScope<ParticipantStoreModel>( defaultParticipantStore, (current: ParticipantStoreModel): Partial<ParticipantStoreModel> => ({

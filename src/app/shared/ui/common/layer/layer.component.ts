@@ -15,6 +15,11 @@ import { RegistryTemplateDirective } from '@shared/directives/registry-template.
 import { DialogModule } from 'primeng/dialog'
 import { GenericComponent } from '@shared/ui/base/generic.component'
 
+/**
+ * Purpose: Modal layer used by element cards and forms.
+ * Scope: Switches between a dialog and a bottom sheet depending on the screen size.
+ * Limits: Owns no content; callers project it.
+ */
 @Component( {
     selector: 'app-layer',
     imports: [

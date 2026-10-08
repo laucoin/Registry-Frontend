@@ -15,6 +15,11 @@ import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { AddedGroupMembersDto } from '@shared/models/dto/added-group-members.dto'
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
 
+/**
+ * Purpose: Public entry point of the group domain for pages, components and guards.
+ * Scope: Exposes the group store as signals, forwards its queries and runs the group commands with their notifications.
+ * Limits: Holds no state of its own and builds no HTTP request itself.
+ */
 @Injectable()
 export class GroupFacade extends GenericProjectElementFacade {
     private readonly store: InstanceType<typeof GroupStore> = inject( GroupStore )

@@ -12,6 +12,11 @@ import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.e
 import { VehicleApi } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.api'
 import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/rx.helper'
 
+/**
+ * Purpose: Public entry point of the vehicle domain for pages, components and guards.
+ * Scope: Exposes the vehicle store as signals, forwards its queries and runs the vehicle commands with their notifications.
+ * Limits: Holds no state of its own and builds no HTTP request itself.
+ */
 @Injectable()
 export class VehicleFacade extends GenericProjectElementFacade {
     private readonly api: VehicleApi = inject( VehicleApi )

@@ -35,6 +35,11 @@ import {DateTimeFieldComponent} from '@shared/ui/common/date-time-field/date-tim
 import {PluralTranslationPipe} from '@shared/helpers/pipe/plural-translation.pipe'
 import {FormIconPipe} from '@shared/helpers/pipe/form-icon.pipe'
 
+/**
+ * Purpose: Form fields of a participant.
+ * Scope: Builds the participant fields shared by creation and edition.
+ * Limits: Does not submit; the participant page does.
+ */
 @Component({
     selector: 'app-participant-form',
     imports: [

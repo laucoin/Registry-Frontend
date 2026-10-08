@@ -14,6 +14,11 @@ import { AlertStatusEnum } from '@shared/models/enumeration/alert-status.enum'
 import { CommunicationModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
 
 
+/**
+ * Purpose: Public entry point of the alert domain for pages, components and guards.
+ * Scope: Exposes the alert store as signals, forwards its queries and runs the alert commands with their notifications.
+ * Limits: Holds no state of its own and builds no HTTP request itself.
+ */
 @Injectable()
 export class AlertFacade extends GenericProjectElementFacade {
     private readonly store: InstanceType<typeof AlertStore> = inject( AlertStore )

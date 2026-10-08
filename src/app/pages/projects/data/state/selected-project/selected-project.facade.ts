@@ -13,6 +13,11 @@ import { ProjectHelper } from '@shared/helpers/project.helper'
 import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
 import { AlertModel } from '@shared/models/model/alert.model'
 
+/**
+ * Purpose: Public entry point of the selected project domain for pages, components and guards.
+ * Scope: Exposes the selected project store as signals, forwards its queries and runs the selected project commands with their notifications.
+ * Limits: Holds no state of its own and builds no HTTP request itself.
+ */
 @Injectable()
 export class SelectedProjectFacade extends GenericFacade {
     private readonly sessionFacade: SessionFacade = inject( SessionFacade )

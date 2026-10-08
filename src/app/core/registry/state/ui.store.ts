@@ -16,6 +16,11 @@ interface UiStoreModel {
 
 const darkModeClass: string = 'dark-mod'
 
+/**
+ * Purpose: Holds the shell display state: theme, screen width, language, network, global loader and error.
+ * Scope: Owns that state and applies the theme class and language on the document through the browser service.
+ * Limits: Knows nothing about the user or the session and does not call the backend.
+ */
 export const UiStore = signalStore(
     { providedIn: 'root' },
     withState<UiStoreModel>( () => {

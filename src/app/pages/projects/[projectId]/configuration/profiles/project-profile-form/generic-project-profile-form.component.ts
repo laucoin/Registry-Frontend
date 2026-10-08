@@ -8,6 +8,11 @@ import { withLoading } from '@shared/helpers/rx.helper'
 import { ProjectProfilesDto } from '@pages/projects/[projectId]/configuration/profiles/data/dto/project-profiles.dto'
 import { GenericHelper } from '@shared/helpers/generic.helper'
 
+/**
+ * Purpose: Shared form of the project profile invitation and edition.
+ * Scope: Builds the common fields and role selection.
+ * Limits: Does not choose between creation and edition; the concrete pages do.
+ */
 export abstract class GenericProjectProfileFormComponent extends GenericFormComponent<ProjectProfileModel, ProjectProfilesDto | ProjectProfileDto> {
     protected readonly facade: ProjectProfileFacade = inject( ProjectProfileFacade )
 

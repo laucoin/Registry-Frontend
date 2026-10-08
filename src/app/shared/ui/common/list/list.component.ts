@@ -29,6 +29,11 @@ import {Skeleton} from 'primeng/skeleton'
 import {DateFormatPipe} from '@shared/helpers/pipe/date-format.pipe'
 import {SeverityEnum} from '@shared/models/enumeration/severity.enum'
 
+/**
+ * Purpose: Generic paged list container.
+ * Scope: Renders the search panel, the skeletons, the elements and the load more trigger.
+ * Limits: Owns no data; the page provides the page model and the events.
+ */
 @Component({
     selector: 'app-list',
     imports: [

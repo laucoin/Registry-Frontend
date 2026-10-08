@@ -5,6 +5,11 @@ import { CustomDatetimeModel } from '@shared/models/model/custom-datetime.model'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { DateHelper } from '@shared/helpers/date.helper'
 
+/**
+ * Purpose: Form field editing a custom date time.
+ * Scope: Splits a date and a time and exposes them as a form value.
+ * Limits: Validation is done by the form validators.
+ */
 @Component( {
     selector: 'app-date-time-field',
     imports: [

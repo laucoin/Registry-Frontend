@@ -12,6 +12,11 @@ import {ParticipantModel} from '@shared/models/model/participant.model'
 import {ParticipantPageParamsModel} from '@pages/projects/[projectId]/configuration/participants/data/model/participant-page-params.model'
 import {AddedGroupMembersDto} from '@shared/models/dto/added-group-members.dto'
 
+/**
+ * Purpose: Sends the HTTP requests of the group domain.
+ * Scope: Builds the urls and the query parameters and returns the backend responses.
+ * Limits: Holds no state and handles no error; stores and facades do.
+ */
 @Injectable({
     providedIn: 'root',
 })

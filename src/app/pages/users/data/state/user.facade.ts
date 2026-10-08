@@ -12,6 +12,11 @@ import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { initialize, notifyOnError } from '@shared/helpers/rx.helper'
 import { UserStore } from '@pages/users/data/state/user.store'
 
+/**
+ * Purpose: Public entry point of the user domain for pages, components and guards.
+ * Scope: Exposes the user store as signals, forwards its queries and runs the user commands with their notifications.
+ * Limits: Holds no state of its own and builds no HTTP request itself.
+ */
 @Injectable()
 export class UserFacade extends GenericFacade {
     private readonly store: InstanceType<typeof UserStore> = inject( UserStore )

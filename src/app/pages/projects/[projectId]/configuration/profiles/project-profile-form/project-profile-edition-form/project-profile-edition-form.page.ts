@@ -16,6 +16,11 @@ import {DateFormatPipe} from '@shared/helpers/pipe/date-format.pipe'
 import {DateTimeFieldComponent} from '@shared/ui/common/date-time-field/date-time-field.component'
 import {RegistryValidators} from '@shared/helpers/registry.validator'
 
+/**
+ * Purpose: Page with the form to create or edit a project profile edition.
+ * Scope: Builds the form, submits it through the facade and navigates back.
+ * Limits: Holds no domain state and never calls the backend.
+ */
 @Component({
     selector: 'app-project-profile-edition-form',
     imports: [

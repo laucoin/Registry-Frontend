@@ -8,6 +8,11 @@ import {ProjectPageParamsModel} from '@pages/projects/data/model/project-page-pa
 import {QueryHelper} from '@shared/helpers/query.helper'
 import {ProjectOptionModel} from '@pages/projects/data/model/project-option.model'
 
+/**
+ * Purpose: Sends the HTTP requests of the project domain.
+ * Scope: Builds the urls and the query parameters and returns the backend responses.
+ * Limits: Holds no state and handles no error; stores and facades do.
+ */
 @Injectable({
     providedIn: 'root',
 })

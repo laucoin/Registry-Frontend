@@ -8,6 +8,11 @@ import {QueryHelper} from '@shared/helpers/query.helper'
 import {SelectItem} from 'primeng/api'
 import {UserPageParamsModel} from '@pages/users/data/model/user-page-params.model'
 
+/**
+ * Purpose: Sends the HTTP requests of the user domain.
+ * Scope: Builds the urls and the query parameters and returns the backend responses.
+ * Limits: Holds no state and handles no error; stores and facades do.
+ */
 @Injectable({
     providedIn: 'root',
 })

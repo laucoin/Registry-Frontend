@@ -25,6 +25,11 @@ import {TranslocoPipe} from '@jsverse/transloco'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { BrowserService } from '@core/browser/browser.service'
 
+/**
+ * Purpose: Form field editing the content of a movement.
+ * Scope: Selects registered participants, groups or guests and their pools.
+ * Limits: Does not save; the movement form does.
+ */
 @Component( {
     selector: 'app-movement-content-field',
     imports: [

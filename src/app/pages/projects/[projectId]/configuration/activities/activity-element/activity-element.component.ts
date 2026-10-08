@@ -19,6 +19,11 @@ import {MenuItem} from 'primeng/api'
 import {AvailabilityStatusEnum} from '@shared/models/enumeration/availability-status.enum'
 import {MessageComponent} from '@shared/ui/common/message/message.component'
 
+/**
+ * Purpose: Card presenting one activity with its actions.
+ * Scope: Renders the details, the actions menu and the confirmations of the element.
+ * Limits: Receives the element as an input and calls the facade for commands; it holds no list state.
+ */
 @Component({
     selector: 'app-activity-element',
     imports: [

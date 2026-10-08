@@ -1,5 +1,10 @@
 import { AbstractControl, FormArray, FormControl, FormGroup } from '@angular/forms'
 
+/**
+ * Purpose: Reactive form utilities.
+ * Scope: Marks controls dirty recursively, validates a form, builds date ranges and exposes error and invalid states.
+ * Limits: Does not define validators; see the registry validators.
+ */
 export class FormHelper {
     public static isFormValid (form: FormGroup): boolean {
         FormHelper.markAllControlsAsDirty( form )

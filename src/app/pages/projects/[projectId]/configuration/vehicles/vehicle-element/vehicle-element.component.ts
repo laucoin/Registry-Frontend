@@ -16,6 +16,11 @@ import {ElementActionEnum} from '@shared/models/enumeration/element-action.enum'
 import {ProjectOptionIconPipe} from '@shared/helpers/pipe/project-option-icon.pipe'
 import {MenuItem} from 'primeng/api'
 
+/**
+ * Purpose: Card presenting one vehicle with its actions.
+ * Scope: Renders the details, the actions menu and the confirmations of the element.
+ * Limits: Receives the element as an input and calls the facade for commands; it holds no list state.
+ */
 @Component({
     selector: 'app-vehicle-element',
     imports: [

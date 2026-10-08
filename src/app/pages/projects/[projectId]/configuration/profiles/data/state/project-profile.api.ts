@@ -13,6 +13,11 @@ import {HttpParams} from '@angular/common/http'
 import {UserModel} from '@shared/models/model/user.model'
 import {SelectItem} from 'primeng/api'
 
+/**
+ * Purpose: Sends the HTTP requests of the project profile domain.
+ * Scope: Builds the urls and the query parameters and returns the backend responses.
+ * Limits: Holds no state and handles no error; stores and facades do.
+ */
 @Injectable({
     providedIn: 'root',
 })

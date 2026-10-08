@@ -8,6 +8,11 @@ interface MetadataStoreModel {
     languages: SelectItem<string>[]
 }
 
+/**
+ * Purpose: Holds the static display options: themes and languages.
+ * Scope: Builds the theme and language option lists from the runtime config.
+ * Limits: Does not translate labels; the UI facade does.
+ */
 export const MetadataStore = signalStore(
     { providedIn: 'root' },
     withState<MetadataStoreModel>( () => ({

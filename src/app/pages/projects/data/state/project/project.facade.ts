@@ -17,6 +17,11 @@ import { ProjectModel } from '@shared/models/model/project.model'
 import { ProjectOptionModel } from '@pages/projects/data/model/project-option.model'
 import { DateHelper } from '@shared/helpers/date.helper'
 
+/**
+ * Purpose: Public entry point of the project domain for pages, components and guards.
+ * Scope: Exposes the project store as signals, forwards its queries and runs the project commands with their notifications.
+ * Limits: Holds no state of its own and builds no HTTP request itself.
+ */
 @Injectable()
 export class ProjectFacade extends GenericFacade {
     private readonly store: InstanceType<typeof ProjectStore> = inject( ProjectStore )

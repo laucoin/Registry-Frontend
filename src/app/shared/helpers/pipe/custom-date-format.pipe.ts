@@ -5,6 +5,11 @@ import { CustomDatetimeModel } from '@shared/models/model/custom-datetime.model'
 import { GenericHelper } from '@shared/helpers/generic.helper'
 import { DateHelper } from '@shared/helpers/date.helper'
 
+/**
+ * Purpose: Formats a custom date time as date, time or both.
+ * Scope: Picks the translated pattern from what the value contains.
+ * Limits: Returns undefined for an empty value.
+ */
 @Pipe( {
     name: 'customDateFormat', standalone: true,
 } )

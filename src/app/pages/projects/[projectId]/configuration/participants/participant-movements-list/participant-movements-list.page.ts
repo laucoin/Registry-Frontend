@@ -22,6 +22,11 @@ import {Subscription, tap} from 'rxjs'
 import {Card} from 'primeng/card'
 import {ElementSkeletonComponent} from '@shared/ui/common/element-skeleton/element-skeleton.component'
 
+/**
+ * Purpose: Page listing the participant movements with search and lazy loading.
+ * Scope: Binds the list component to the facade and reloads on command events.
+ * Limits: Holds no domain state and never calls the backend.
+ */
 @Component({
     selector: 'app-participant-movements-list',
     templateUrl: './participant-movements-list.page.html',

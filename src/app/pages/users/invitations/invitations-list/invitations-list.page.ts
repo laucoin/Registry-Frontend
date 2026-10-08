@@ -16,6 +16,11 @@ import {StringHelper} from '@shared/helpers/string.helper'
 import {GenericHelper} from '@shared/helpers/generic.helper'
 import {RouterLink} from '@angular/router'
 
+/**
+ * Purpose: Page listing the invitations with search and lazy loading.
+ * Scope: Binds the list component to the facade and reloads on command events.
+ * Limits: Holds no domain state and never calls the backend.
+ */
 @Component({
     selector: 'app-invitations-list',
     imports: [

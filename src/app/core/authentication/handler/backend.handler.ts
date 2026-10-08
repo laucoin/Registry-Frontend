@@ -54,6 +54,11 @@ interface InterceptionContext {
 
 const UNAVAILABLE_STATUSES: number[] = [0, 502, 503]
 
+/**
+ * Purpose: Single HTTP interceptor for every request to the backend.
+ * Scope: Adds credentials and the CSRF token, resolves url placeholders, refreshes the token once on a 401 then replays, and maps 0/502/503 to a service unavailable error.
+ * Limits: Does not touch other origins; the refresh endpoint and the no-auth paths are never refreshed or replayed.
+ */
 export const backendHandler: HttpInterceptorFn = (
 	req: HttpRequest<unknown>,
 	next: HttpHandlerFn,

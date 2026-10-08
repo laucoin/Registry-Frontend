@@ -48,6 +48,11 @@ import {PresenceStatusEnum} from '@shared/models/enumeration/presence-status.enu
 import {withLoading} from '@shared/helpers/rx.helper'
 import {FormErrorComponent} from '@shared/ui/common/form-error/form-error.component'
 
+/**
+ * Purpose: Page with the form to create or edit a movement.
+ * Scope: Builds the form, submits it through the facade and navigates back.
+ * Limits: Holds no domain state and never calls the backend.
+ */
 @Component({
     selector: 'app-movement-form',
     imports: [

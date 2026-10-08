@@ -1,6 +1,11 @@
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
 import { GenericHelper } from '@shared/helpers/generic.helper'
 
+/**
+ * Purpose: String and route utilities.
+ * Scope: Cache busting, truncation, blank checks, number conversion, digit padding, title case and active route detection.
+ * Limits: No translation and no browser access; the path is passed in.
+ */
 export class StringHelper {
     public static addCacheBustingToUrl (url: string): string {
         const separator: string = url.includes( '?' ) ? '&' : '?'

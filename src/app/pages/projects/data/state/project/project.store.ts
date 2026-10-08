@@ -45,6 +45,11 @@ const defaultProjectStore: ProjectStoreModel = {
     },
 }
 
+/**
+ * Purpose: Holds the project state.
+ * Scope: Owns the data of the project pages and resources with their loading and error flags, and fetches them through the project api.
+ * Limits: Reached through the project facade; it does not format data or notify the user of command results.
+ */
 export const ProjectStore = signalStore(
     withState<ProjectStoreModel>( defaultProjectStore ),
     withProps( () => ({

@@ -29,6 +29,11 @@ import { DateTimeFieldComponent } from '@shared/ui/common/date-time-field/date-t
 import { GenericHelper } from '@shared/helpers/generic.helper'
 import { FormIconPipe } from '@shared/helpers/pipe/form-icon.pipe'
 
+/**
+ * Purpose: Page with the form to create or edit a group.
+ * Scope: Builds the form, submits it through the facade and navigates back.
+ * Limits: Holds no domain state and never calls the backend.
+ */
 @Component( {
     selector: 'app-group-form',
     imports: [

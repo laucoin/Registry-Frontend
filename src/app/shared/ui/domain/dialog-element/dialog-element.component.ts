@@ -21,6 +21,11 @@ import { MessageComponent } from '@shared/ui/common/message/message.component'
 import { SeverityTagComponent } from '@shared/ui/common/severity-tag/severity-tag.component'
 import { DateHelper } from '@shared/helpers/date.helper'
 
+/**
+ * Purpose: Dialog that presents the details of an element.
+ * Scope: Hosts the projected content in a modal.
+ * Limits: Owns no data; the parent provides it.
+ */
 @Component( {
     selector: 'app-dialog-element',
     imports: [

@@ -16,6 +16,11 @@ import { MovementModel } from '@shared/models/model/movement.model'
 import { AlertModel } from '@shared/models/model/alert.model'
 
 
+/**
+ * Purpose: Public entry point of the communication domain for pages, components and guards.
+ * Scope: Exposes the communication store as signals, forwards its queries and runs the communication commands with their notifications.
+ * Limits: Holds no state of its own and builds no HTTP request itself.
+ */
 @Injectable()
 export class CommunicationFacade extends GenericProjectElementFacade {
     private readonly store: InstanceType<typeof CommunicationStore> = inject( CommunicationStore )

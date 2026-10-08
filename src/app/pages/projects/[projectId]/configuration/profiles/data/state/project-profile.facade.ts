@@ -17,6 +17,11 @@ import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { CreatedProjectProfiles } from '@pages/projects/[projectId]/configuration/profiles/data/dto/created-project-profiles.dto'
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
 
+/**
+ * Purpose: Public entry point of the project profile domain for pages, components and guards.
+ * Scope: Exposes the project profile store as signals, forwards its queries and runs the project profile commands with their notifications.
+ * Limits: Holds no state of its own and builds no HTTP request itself.
+ */
 @Injectable()
 export class ProjectProfileFacade extends GenericProjectElementFacade {
     private readonly api: ProjectProfileApi = inject( ProjectProfileApi )

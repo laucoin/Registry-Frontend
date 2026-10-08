@@ -4,6 +4,11 @@ import { CustomDatetimeModel } from '@shared/models/model/custom-datetime.model'
 import { GenericHelper } from '@shared/helpers/generic.helper'
 import { IntervalModel } from '@shared/models/model/interval.model'
 
+/**
+ * Purpose: Date, time and duration utilities shared by forms, filters and pipes.
+ * Scope: Converts between dates, ISO date, time and duration strings and custom date times, compares and sorts them, and splits a span into units.
+ * Limits: Works on the local clock for display and on UTC for transport; it does not format for the user.
+ */
 export class DateHelper {
     public static getDate (date: Date): string {
         const toFormat: Date = new Date( date )

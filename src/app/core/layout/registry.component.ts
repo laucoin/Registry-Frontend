@@ -18,6 +18,11 @@ import {ThemeEnum} from '@shared/models/enumeration/theme.enum'
 import {SeverityInformationComponent} from '@shared/ui/common/severity-information/severity-information.component'
 import {GenericHelper} from '@shared/helpers/generic.helper'
 
+/**
+ * Purpose: Root component of the application.
+ * Scope: Hosts the navbar, the router outlet, the global loading and error states, the toast and the legal dialogs.
+ * Limits: Holds no domain data; it reads the shell state from the UI and registry facades.
+ */
 @Component({
     selector: 'app-root',
     imports: [

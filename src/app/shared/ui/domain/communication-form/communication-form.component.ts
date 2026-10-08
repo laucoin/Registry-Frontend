@@ -53,6 +53,11 @@ enum AlertModulableFieldEnum {
 
 import { FormErrorComponent } from '@shared/ui/common/form-error/form-error.component'
 
+/**
+ * Purpose: Form to create or edit a communication.
+ * Scope: Links the communication to a movement or an alert and submits through the communication facade.
+ * Limits: Does not decide where to navigate after submit.
+ */
 @Component( {
     selector: 'app-communication-form',
     imports: [

@@ -1,6 +1,11 @@
 import { Directive, ElementRef, inject, OnInit, Renderer2 } from '@angular/core'
 import {TranslocoService} from '@jsverse/transloco'
 
+/**
+ * Purpose: Marks a form control as required for accessibility and styling.
+ * Scope: Binds the required state of the host control.
+ * Limits: Does not validate; validators do.
+ */
 @Directive( {
     selector: '[appRequired]',
 } )

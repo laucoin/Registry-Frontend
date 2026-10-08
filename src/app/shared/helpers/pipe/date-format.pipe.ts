@@ -2,6 +2,11 @@ import { inject, Pipe, PipeTransform } from '@angular/core'
 import {TranslocoService} from '@jsverse/transloco'
 import { DatePipe } from '@angular/common'
 
+/**
+ * Purpose: Formats a date with the translated pattern of a type.
+ * Scope: Supports date, time and datetime.
+ * Limits: Returns undefined for an empty value.
+ */
 @Pipe( {
     name: 'dateFormat', standalone: true,
 } )

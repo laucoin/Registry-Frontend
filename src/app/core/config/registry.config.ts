@@ -13,6 +13,11 @@ import {ConfigModel} from '@core/config/model/config.model';
 import {definePreset} from "@primeuix/themes";
 import Lara from '@primeuix/themes/lara';
 
+/**
+ * Purpose: Loads the runtime configuration and builds the providers that depend on it.
+ * Scope: Owns the config and environment JSON loading, the PrimeNG theme and the Transloco configuration.
+ * Limits: Nothing is compiled into the bundle; it does not read user preferences beyond the browser locale.
+ */
 @Injectable({
     providedIn: 'root',
 })

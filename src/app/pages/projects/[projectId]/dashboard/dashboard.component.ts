@@ -21,6 +21,11 @@ import {
 import { MovementFacade } from '@pages/projects/[projectId]/movements/data/state/movement.facade'
 import { Subscription, tap } from 'rxjs'
 
+/**
+ * Purpose: Dashboard of the selected project.
+ * Scope: Lays out the status, birthdays, current movements and current alerts widgets.
+ * Limits: Each widget loads its own data; it does not fetch anything itself.
+ */
 @Component( {
     selector: 'app-dashboard',
     imports: [

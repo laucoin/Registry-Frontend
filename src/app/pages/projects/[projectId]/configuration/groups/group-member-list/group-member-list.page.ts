@@ -30,6 +30,11 @@ import { ParticipantFormComponent } from '@pages/projects/[projectId]/configurat
 import { ElementSkeletonComponent } from '@shared/ui/common/element-skeleton/element-skeleton.component'
 import { Card } from 'primeng/card'
 
+/**
+ * Purpose: Page listing the group member with search and lazy loading.
+ * Scope: Binds the list component to the facade and reloads on command events.
+ * Limits: Holds no domain state and never calls the backend.
+ */
 @Component( {
     selector: 'app-group-member-list',
     imports: [

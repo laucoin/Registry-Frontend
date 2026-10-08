@@ -12,6 +12,11 @@ import { Button } from 'primeng/button'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { GenericElementComponent } from '@shared/ui/base/generic-element.component'
 
+/**
+ * Purpose: User settings page.
+ * Scope: Lets the user choose a theme and a language.
+ * Limits: Saves through the registry facade only.
+ */
 @Component( {
     selector: 'app-setting',
     imports: [

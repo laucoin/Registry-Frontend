@@ -23,6 +23,11 @@ import { GenericHelper } from '@shared/helpers/generic.helper'
 import { BrowserService } from '@core/browser/browser.service'
 import { TranslocoPipe } from '@jsverse/transloco'
 
+/**
+ * Purpose: Form field selecting one or several searched elements.
+ * Scope: Searches with a debounced query, shows the selection and highlights duplicates.
+ * Limits: Owns no data source; the parent provides the search and the options.
+ */
 @Component( {
     selector: 'app-select-elements-field',
     imports: [

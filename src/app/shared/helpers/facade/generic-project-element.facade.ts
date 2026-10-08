@@ -6,6 +6,11 @@ import { StateHelper } from '@shared/helpers/state/state.helper'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { CommandEvent, CommandEventService } from '@shared/helpers/facade/command-event.service'
 
+/**
+ * Purpose: Base of the facades of project elements.
+ * Scope: Provides the selected project id, the UI and session facades, and success notifications for commands.
+ * Limits: Abstract; each domain facade owns its own state access.
+ */
 export abstract class GenericProjectElementFacade extends GenericFacade {
     protected readonly uiFacade: UiFacade = inject( UiFacade )
     protected readonly sessionFacade: SessionFacade = inject( SessionFacade )

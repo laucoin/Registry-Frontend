@@ -16,6 +16,11 @@ import {Button} from 'primeng/button'
 import {Select, SelectModule} from 'primeng/select'
 import {GenericListComponent} from '@shared/ui/base/generic-list.component'
 
+/**
+ * Purpose: Page listing the participants with search and lazy loading.
+ * Scope: Binds the list component to the facade and reloads on command events.
+ * Limits: Holds no domain state and never calls the backend.
+ */
 @Component({
     selector: 'app-participants-list',
     templateUrl: './participants-list.page.html',

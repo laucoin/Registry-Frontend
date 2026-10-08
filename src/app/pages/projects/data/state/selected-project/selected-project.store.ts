@@ -79,6 +79,11 @@ const defaultSelectedProjectStore: SelectedProjectStoreModel = {
     },
 }
 
+/**
+ * Purpose: Holds the selected project state.
+ * Scope: Owns the data of the selected project pages and resources with their loading and error flags, and fetches them through the selected project api.
+ * Limits: Reached through the selected project facade; it does not format data or notify the user of command results.
+ */
 export const SelectedProjectStore = signalStore(
     withState<SelectedProjectStoreModel>( defaultSelectedProjectStore ),
     withProfileScope<SelectedProjectStoreModel>( defaultSelectedProjectStore ),

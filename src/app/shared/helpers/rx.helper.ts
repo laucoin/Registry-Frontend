@@ -4,6 +4,11 @@ import { UiFacade } from '@core/registry/state/ui.facade'
 import { ErrorModel } from '@shared/models/model/error.model'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 
+/**
+ * Purpose: Shared RxJS operators for stores and facades.
+ * Scope: Reports errors (toast or global state), scopes loading flags and swallows errors so streams stay alive.
+ * Limits: Does not retry or cache.
+ */
 export const initialize = (onSubscribe: () => void) => <T> (source: Observable<T>): Observable<T> => defer( () => {
     onSubscribe()
     return source

@@ -8,6 +8,11 @@ import { MovementElementComponent } from '@shared/ui/domain/movement-element/mov
 import { Subscription, tap } from 'rxjs'
 import { MovementFacade } from '@pages/projects/[projectId]/movements/data/state/movement.facade'
 
+/**
+ * Purpose: Widget listing the current movements without activity.
+ * Scope: Displays the current movements and loads more on demand.
+ * Limits: Reads through the selected project facade only.
+ */
 @Component( {
     selector: 'app-current-movements',
     imports: [

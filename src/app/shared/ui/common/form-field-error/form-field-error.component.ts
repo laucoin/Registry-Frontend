@@ -3,6 +3,11 @@ import {ValidationErrors} from '@angular/forms'
 import {MessageModule} from 'primeng/message'
 import {TranslocoService} from '@jsverse/transloco'
 
+/**
+ * Purpose: Displays the error of one form field.
+ * Scope: Translates the first error of the control with its parameters.
+ * Limits: Shows nothing before the control is touched and edited.
+ */
 @Component({
     selector: 'app-form-field-error',
     imports: [
