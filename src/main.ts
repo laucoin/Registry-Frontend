@@ -1,5 +1,5 @@
 import {provideHttpClient, withInterceptors} from '@angular/common/http'
-import {enableProdMode, provideZonelessChangeDetection} from '@angular/core'
+import {provideZonelessChangeDetection} from '@angular/core'
 import {bootstrapApplication} from '@angular/platform-browser'
 import {provideRouter} from '@angular/router'
 import {MessageService} from 'primeng/api'
@@ -16,30 +16,23 @@ import {CustomDateFormatPipe} from '@shared/helpers/pipe/custom-date-format.pipe
 import {ProjectOptionIconPipe} from '@shared/helpers/pipe/project-option-icon.pipe'
 import {IntervalPipe} from '@shared/helpers/pipe/interval.pipe'
 
-(async (): Promise<void> => {
-    await RegistryConfig.load()
-
-    if (RegistryConfig.environment.production) {
-        enableProdMode()
-    }
-
-    bootstrapApplication(RegistryComponent, {
-        providers: [
-            provideZonelessChangeDetection(),
-            provideHttpClient(withInterceptors([backendHandler])),
-            provideRouter(routes),
-            MessageService,
-            RegistryFacade,
-            UserFacade,
-            DatePipe,
-            DateFormatPipe,
-            IntervalPipe,
-            ProjectOptionIconPipe,
-            CustomDateFormatPipe,
-            RegistryConfig,
-            RegistryConfig.providePrimeNg(),
-            RegistryConfig.provideTranslatorService(),
-            PluralTranslationPipe,
-        ],
-    }).catch((error: Error) => console.error(error))
-})()
+bootstrapApplication(RegistryComponent, {
+    providers: [
+        RegistryConfig.provideRuntimeConfig(),
+        provideZonelessChangeDetection(),
+        provideHttpClient(withInterceptors([backendHandler])),
+        provideRouter(routes),
+        MessageService,
+        RegistryFacade,
+        UserFacade,
+        DatePipe,
+        DateFormatPipe,
+        IntervalPipe,
+        ProjectOptionIconPipe,
+        CustomDateFormatPipe,
+        RegistryConfig,
+        RegistryConfig.providePrimeNg(),
+        RegistryConfig.provideTranslatorService(),
+        PluralTranslationPipe,
+    ],
+}).catch((error: Error) => console.error(error))
