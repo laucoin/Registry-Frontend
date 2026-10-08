@@ -68,6 +68,7 @@ export class RegistryFacade {
         const userTheme: string | undefined = this.sessionFacade.currentUser()?.preferences?.theme
         return GenericHelper.nonNull(userTheme) ? CurrentUserHelper.mapThemeToEnum(userTheme!) : this.uiFacade.theme()
     })
+
     public login(): void {
         SessionStorageUtils.set(REDIRECT_URI, location.pathname)
         this.session.reset()
