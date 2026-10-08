@@ -1,10 +1,14 @@
 import {Injectable} from '@angular/core'
-import {Observable} from 'rxjs'
+import { Observable, map } from 'rxjs'
 import {CurrentUserModel} from '@shared/models/model/current-user.model'
 import {GenericApi} from '@shared/helpers/api/generic.api'
 import {AuthenticationUriModel} from '@shared/models/model/authentication-uri.model'
 import {CredentialsModel} from '@shared/models/model/credentials.model'
 import {HttpParams} from '@angular/common/http'
+import { AuthenticationUriResponseDto } from '@shared/models/dto/response/authentication-uri.response.dto'
+import { CurrentUserResponseDto } from '@shared/models/dto/response/current-user.response.dto'
+import { AuthenticationUriMapper } from '@shared/mappers/authentication-uri.mapper'
+import { CurrentUserMapper } from '@shared/mappers/current-user.mapper'
 
 /**
  * Purpose: Sends the HTTP requests of the security domain.
@@ -20,17 +24,21 @@ export class SecurityApi extends GenericApi {
     }
 
     public getLoginUri(redirectUri: string): Observable<AuthenticationUriModel> {
-        return this.http.get<AuthenticationUriModel>(`${this.baseUrl}/login/uri?${new HttpParams().set(
+        return this.http.get<AuthenticationUriResponseDto>(`${this.baseUrl}/login/uri?${new HttpParams().set(
             'redirectUri',
             redirectUri,
-        ).toString()}`)
+        ).toString()}`).pipe(
+            map( AuthenticationUriMapper.toModel ),
+        )
     }
 
     public getLogoutUri(redirectUri: string): Observable<AuthenticationUriModel> {
-        return this.http.get<AuthenticationUriModel>(`${this.baseUrl}/logout/uri?${new HttpParams().set(
+        return this.http.get<AuthenticationUriResponseDto>(`${this.baseUrl}/logout/uri?${new HttpParams().set(
             'redirectUri',
             redirectUri,
-        ).toString()}`)
+        ).toString()}`).pipe(
+            map( AuthenticationUriMapper.toModel ),
+        )
     }
 
     public fetchToken(credentials: CredentialsModel): Observable<void> {
@@ -42,6 +50,8 @@ export class SecurityApi extends GenericApi {
     }
 
     public fetchCurrentUser(): Observable<CurrentUserModel> {
-        return this.http.get<CurrentUserModel>(`${this.baseUrl}/user/current`)
+        return this.http.get<CurrentUserResponseDto>(`${this.baseUrl}/user/current`).pipe(
+            map( CurrentUserMapper.toModel ),
+        )
     }
 }

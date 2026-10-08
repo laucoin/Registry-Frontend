@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core'
-import {Observable} from 'rxjs'
+import { Observable, map } from 'rxjs'
 import {PageModel} from '@shared/models/model/page.model'
 import {VehicleModel} from '@shared/models/model/vehicle.model'
 import {GenericProjectApi} from '@shared/helpers/api/generic-project.api'
@@ -9,6 +9,12 @@ import {VehiclePageParamsModel} from '@pages/projects/[projectId]/configuration/
 import {QueryHelper} from '@shared/helpers/query.helper'
 import {MovementPageParamsModel} from '@shared/models/model/movement-page-params.model'
 import {MovementModel} from '@shared/models/model/movement.model'
+import { MovementResponseDto } from '@shared/models/dto/response/movement.response.dto'
+import { VehicleResponseDto } from '@shared/models/dto/response/vehicle.response.dto'
+import { MovementMapper } from '@shared/mappers/movement.mapper'
+import { PageMapper } from '@shared/mappers/page.mapper'
+import { VehicleMapper } from '@shared/mappers/vehicle.mapper'
+import { PageResponseDto } from '@shared/models/dto/response/page.response.dto'
 
 /**
  * Purpose: Sends the HTTP requests of the vehicle domain.
@@ -29,17 +35,21 @@ export class VehicleApi extends GenericProjectApi {
         pageSize: number | undefined,
         params: VehiclePageParamsModel,
     ): Observable<PageModel<VehicleModel>> {
-        return this.http.get<PageModel<VehicleModel>>(
+        return this.http.get<PageResponseDto<VehicleResponseDto>>(
             `${this.buildRequestBaseUrl(projectId)}?${QueryHelper.buildQueryParams(
                 pageNumber,
                 pageSize,
                 params,
             ).toString()}`,
+        ).pipe(
+            map( (dto: PageResponseDto<VehicleResponseDto>): PageModel<VehicleModel> => PageMapper.toModel( dto, VehicleMapper.toModel ) ),
         )
     }
 
     public findVehicleById(projectId: string | undefined, id: string): Observable<VehicleModel> {
-        return this.http.get<VehicleModel>(`${this.buildRequestBaseUrl(projectId)}/${id}`)
+        return this.http.get<VehicleResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}`).pipe(
+            map( VehicleMapper.toModel ),
+        )
     }
 
     public findVehicleMovements(
@@ -49,17 +59,21 @@ export class VehicleApi extends GenericProjectApi {
         pageSize: number | undefined,
         params: MovementPageParamsModel,
     ): Observable<PageModel<MovementModel>> {
-        return this.http.get<PageModel<MovementModel>>(
+        return this.http.get<PageResponseDto<MovementResponseDto>>(
             `${this.buildRequestBaseUrl(projectId)}/${id}/movements?${QueryHelper.buildQueryParams(
                 pageNumber,
                 pageSize,
                 params,
             ).toString()}`,
+        ).pipe(
+            map( (dto: PageResponseDto<MovementResponseDto>): PageModel<MovementModel> => PageMapper.toModel( dto, MovementMapper.toModel ) ),
         )
     }
 
     public createVehicle(projectId: string | undefined, vehicle: VehicleDto): Observable<VehicleModel> {
-        return this.http.post<VehicleModel>(`${this.buildRequestBaseUrl(projectId)}`, vehicle)
+        return this.http.post<VehicleResponseDto>(`${this.buildRequestBaseUrl(projectId)}`, vehicle).pipe(
+            map( VehicleMapper.toModel ),
+        )
     }
 
     public updateVehicleById(
@@ -67,15 +81,21 @@ export class VehicleApi extends GenericProjectApi {
         id: string,
         vehicle: VehicleDto,
     ): Observable<VehicleModel> {
-        return this.http.patch<VehicleModel>(`${this.buildRequestBaseUrl(projectId)}/${id}`, vehicle)
+        return this.http.patch<VehicleResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}`, vehicle).pipe(
+            map( VehicleMapper.toModel ),
+        )
     }
 
     public disableVehicleById(projectId: string | undefined, id: string): Observable<VehicleModel> {
-        return this.http.patch<VehicleModel>(`${this.buildRequestBaseUrl(projectId)}/${id}/disable`, null)
+        return this.http.patch<VehicleResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/disable`, null).pipe(
+            map( VehicleMapper.toModel ),
+        )
     }
 
     public enableVehicleById(projectId: string | undefined, id: string): Observable<VehicleModel> {
-        return this.http.patch<VehicleModel>(`${this.buildRequestBaseUrl(projectId)}/${id}/enable`, null)
+        return this.http.patch<VehicleResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/enable`, null).pipe(
+            map( VehicleMapper.toModel ),
+        )
     }
 
     public deleteVehicleById(projectId: string | undefined, id: string): Observable<void> {

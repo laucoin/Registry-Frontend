@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core'
-import {Observable} from 'rxjs'
+import { Observable, map } from 'rxjs'
 import {ProjectProfileModel} from '@shared/models/model/project-profile.model'
 import {PageModel} from '@shared/models/model/page.model'
 import {GenericProjectApi} from '@shared/helpers/api/generic-project.api'
@@ -12,6 +12,12 @@ import {CreatedProjectProfiles} from '@pages/projects/[projectId]/configuration/
 import {HttpParams} from '@angular/common/http'
 import {UserModel} from '@shared/models/model/user.model'
 import {SelectItem} from 'primeng/api'
+import { ProjectProfileResponseDto } from '@shared/models/dto/response/project-profile.response.dto'
+import { UserResponseDto } from '@shared/models/dto/response/user.response.dto'
+import { PageMapper } from '@shared/mappers/page.mapper'
+import { ProjectProfileMapper } from '@shared/mappers/project-profile.mapper'
+import { UserMapper } from '@shared/mappers/user.mapper'
+import { PageResponseDto } from '@shared/models/dto/response/page.response.dto'
 
 /**
  * Purpose: Sends the HTTP requests of the project profile domain.
@@ -32,28 +38,34 @@ export class ProjectProfileApi extends GenericProjectApi {
         pageSize: number | undefined,
         params: ProjectProfilePageParamsModel,
     ): Observable<PageModel<ProjectProfileModel>> {
-        return this.http.get<PageModel<ProjectProfileModel>>(
+        return this.http.get<PageResponseDto<ProjectProfileResponseDto>>(
             `${this.buildRequestBaseUrl(projectId)}?${QueryHelper.buildQueryParams(
                 pageNumber,
                 pageSize,
                 params,
             ).toString()}`,
+        ).pipe(
+            map( (dto: PageResponseDto<ProjectProfileResponseDto>): PageModel<ProjectProfileModel> => PageMapper.toModel( dto, ProjectProfileMapper.toModel ) ),
         )
     }
 
     public findProjectProfileById(projectId: string | undefined, id: string): Observable<ProjectProfileModel> {
-        return this.http.get<ProjectProfileModel>(`${this.buildRequestBaseUrl(projectId)}/${id}`)
+        return this.http.get<ProjectProfileResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}`).pipe(
+            map( ProjectProfileMapper.toModel ),
+        )
     }
 
     public searchUsers(
         projectId: string | undefined,
         textSearched: string | undefined,
     ): Observable<UserModel[]> {
-        return this.http.get<UserModel[]>(
+        return this.http.get<UserResponseDto[]>(
             `${this.buildRequestBaseUrl(projectId)}/search/users${textSearched ? '?' + new HttpParams().set(
                 'textSearched',
                 textSearched,
             ).toString() : ''}`,
+        ).pipe(
+            map( (dtos: UserResponseDto[]): UserModel[] => dtos.map( UserMapper.toModel ) ),
         )
     }
 
@@ -73,15 +85,21 @@ export class ProjectProfileApi extends GenericProjectApi {
         id: string,
         profile: ProjectProfileDto,
     ): Observable<ProjectProfileModel> {
-        return this.http.patch<ProjectProfileModel>(`${this.buildRequestBaseUrl(projectId)}/${id}`, profile)
+        return this.http.patch<ProjectProfileResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}`, profile).pipe(
+            map( ProjectProfileMapper.toModel ),
+        )
     }
 
     public blockProjectProfileById(projectId: string | undefined, id: string): Observable<ProjectProfileModel> {
-        return this.http.patch<ProjectProfileModel>(`${this.buildRequestBaseUrl(projectId)}/${id}/block`, null)
+        return this.http.patch<ProjectProfileResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/block`, null).pipe(
+            map( ProjectProfileMapper.toModel ),
+        )
     }
 
     public unblockProjectProfileById(projectId: string | undefined, id: string): Observable<ProjectProfileModel> {
-        return this.http.patch<ProjectProfileModel>(`${this.buildRequestBaseUrl(projectId)}/${id}/unblock`, null)
+        return this.http.patch<ProjectProfileResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/unblock`, null).pipe(
+            map( ProjectProfileMapper.toModel ),
+        )
     }
 
     public deleteProjectProfileById(projectId: string | undefined, id: string): Observable<void> {

@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core'
-import {Observable} from 'rxjs'
+import { Observable, map } from 'rxjs'
 import {PageModel} from '@shared/models/model/page.model'
 import {GenericProjectApi} from '@shared/helpers/api/generic-project.api'
 import {SELECT_PROFILE_PROJECT_ID} from '@shared/helpers/request.helper'
@@ -10,6 +10,12 @@ import {CommunicationPageParamsModel} from '@pages/projects/[projectId]/movement
 import {AlertPageParamsModel} from '@shared/models/model/alert-page-params.model'
 import {AlertDto} from '@pages/projects/[projectId]/alerts/data/dto/alert.dto'
 import {AlertStatusEnum} from '@shared/models/enumeration/alert-status.enum'
+import { AlertResponseDto } from '@shared/models/dto/response/alert.response.dto'
+import { CommunicationResponseDto } from '@shared/models/dto/response/communication.response.dto'
+import { AlertMapper } from '@shared/mappers/alert.mapper'
+import { CommunicationMapper } from '@shared/mappers/communication.mapper'
+import { PageMapper } from '@shared/mappers/page.mapper'
+import { PageResponseDto } from '@shared/models/dto/response/page.response.dto'
 
 /**
  * Purpose: Sends the HTTP requests of the alert domain.
@@ -30,12 +36,14 @@ export class AlertApi extends GenericProjectApi {
         pageSize: number | undefined,
         params: AlertPageParamsModel,
     ): Observable<PageModel<AlertModel>> {
-        return this.http.get<PageModel<AlertModel>>(
+        return this.http.get<PageResponseDto<AlertResponseDto>>(
             `${this.buildRequestBaseUrl(projectId)}?${QueryHelper.buildQueryParams(
                 pageNumber,
                 pageSize,
                 params,
             ).toString()}`,
+        ).pipe(
+            map( (dto: PageResponseDto<AlertResponseDto>): PageModel<AlertModel> => PageMapper.toModel( dto, AlertMapper.toModel ) ),
         )
     }
 
@@ -46,21 +54,27 @@ export class AlertApi extends GenericProjectApi {
         pageSize: number | undefined,
         params: CommunicationPageParamsModel,
     ): Observable<PageModel<CommunicationModel>> {
-        return this.http.get<PageModel<CommunicationModel>>(
+        return this.http.get<PageResponseDto<CommunicationResponseDto>>(
             `${this.buildRequestBaseUrl(projectId)}/${id}/communications?${QueryHelper.buildQueryParams(
                 pageNumber,
                 pageSize,
                 params,
             ).toString()}`,
+        ).pipe(
+            map( (dto: PageResponseDto<CommunicationResponseDto>): PageModel<CommunicationModel> => PageMapper.toModel( dto, CommunicationMapper.toModel ) ),
         )
     }
 
     public findAlertById(projectId: string | undefined, id: string): Observable<AlertModel> {
-        return this.http.get<AlertModel>(`${this.buildRequestBaseUrl(projectId)}/${id}`)
+        return this.http.get<AlertResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}`).pipe(
+            map( AlertMapper.toModel ),
+        )
     }
 
     public createAlert(projectId: string | undefined, alert: AlertDto): Observable<AlertModel> {
-        return this.http.post<AlertModel>(`${this.buildRequestBaseUrl(projectId)}`, alert)
+        return this.http.post<AlertResponseDto>(`${this.buildRequestBaseUrl(projectId)}`, alert).pipe(
+            map( AlertMapper.toModel ),
+        )
     }
 
     public updateAlertById(
@@ -68,7 +82,9 @@ export class AlertApi extends GenericProjectApi {
         id: string,
         alert: AlertDto,
     ): Observable<AlertModel> {
-        return this.http.patch<AlertModel>(`${this.buildRequestBaseUrl(projectId)}/${id}`, alert)
+        return this.http.patch<AlertResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}`, alert).pipe(
+            map( AlertMapper.toModel ),
+        )
     }
 
     public updateAlertStatusById(
@@ -76,18 +92,24 @@ export class AlertApi extends GenericProjectApi {
         id: string,
         status: AlertStatusEnum,
     ): Observable<AlertModel> {
-        return this.http.patch<AlertModel>(
+        return this.http.patch<AlertResponseDto>(
             `${this.buildRequestBaseUrl(projectId)}/${id}/status/${status}`,
             undefined,
+        ).pipe(
+            map( AlertMapper.toModel ),
         )
     }
 
     public disableAlertById(projectId: string | undefined, id: string): Observable<AlertModel> {
-        return this.http.patch<AlertModel>(`${this.buildRequestBaseUrl(projectId)}/${id}/disable`, null)
+        return this.http.patch<AlertResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/disable`, null).pipe(
+            map( AlertMapper.toModel ),
+        )
     }
 
     public enableAlertById(projectId: string | undefined, id: string): Observable<AlertModel> {
-        return this.http.patch<AlertModel>(`${this.buildRequestBaseUrl(projectId)}/${id}/enable`, null)
+        return this.http.patch<AlertResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/enable`, null).pipe(
+            map( AlertMapper.toModel ),
+        )
     }
 
     public deleteAlertById(projectId: string | undefined, id: string): Observable<void> {
