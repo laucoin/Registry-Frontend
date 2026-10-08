@@ -3,7 +3,7 @@ import {VehicleModel} from '@shared/models/model/vehicle.model'
 import {withLoading} from '@shared/helpers/rx.helper'
 import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms'
 import {PageEventModel} from '@shared/models/model/page-event.model'
-import {ListComponent} from '@shared/ui/list/list.component'
+import {ListComponent} from '@shared/ui/common/list/list.component'
 import {RegistryTemplateDirective} from '@shared/directives/registry-template.directive'
 import {TranslatePipe} from '@ngx-translate/core'
 import {InputTextModule} from 'primeng/inputtext'
@@ -17,7 +17,7 @@ import {VehicleElementComponent} from '@pages/projects/[projectId]/configuration
 import {GenericListComponent} from '@shared/ui/base/generic-list.component'
 import {MovementFacade} from '@pages/projects/[projectId]/movements/data/state/movement.facade'
 import {Subscription, tap} from 'rxjs'
-import {ElementSkeletonComponent} from '@shared/ui/element-skeleton/element-skeleton.component'
+import {ElementSkeletonComponent} from '@shared/ui/common/element-skeleton/element-skeleton.component'
 import {Card} from 'primeng/card'
 
 @Component({

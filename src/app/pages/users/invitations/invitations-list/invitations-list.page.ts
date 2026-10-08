@@ -5,7 +5,7 @@ import {PageEventModel} from '@shared/models/model/page-event.model'
 import {InputTextModule} from 'primeng/inputtext'
 import {ToggleButtonModule} from 'primeng/togglebutton'
 import {GenericListComponent} from '@shared/ui/base/generic-list.component'
-import {ListComponent} from '@shared/ui/list/list.component'
+import {ListComponent} from '@shared/ui/common/list/list.component'
 import {DatePicker} from 'primeng/datepicker'
 import {Button} from 'primeng/button'
 import {

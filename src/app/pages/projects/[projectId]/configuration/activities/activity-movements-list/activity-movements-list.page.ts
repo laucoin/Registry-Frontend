@@ -3,7 +3,7 @@ import {ActivityModel} from '@shared/models/model/activity.model'
 import {withLoading} from '@shared/helpers/rx.helper'
 import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms'
 import {PageEventModel} from '@shared/models/model/page-event.model'
-import {ListComponent} from '@shared/ui/list/list.component'
+import {ListComponent} from '@shared/ui/common/list/list.component'
 import {RegistryTemplateDirective} from '@shared/directives/registry-template.directive'
 import {TranslatePipe} from '@ngx-translate/core'
 import {InputTextModule} from 'primeng/inputtext'
@@ -17,7 +17,7 @@ import {ActivityElementComponent} from '@pages/projects/[projectId]/configuratio
 import {GenericListComponent} from '@shared/ui/base/generic-list.component'
 import {MovementFacade} from '@pages/projects/[projectId]/movements/data/state/movement.facade'
 import {Card} from 'primeng/card'
-import {ElementSkeletonComponent} from '@shared/ui/element-skeleton/element-skeleton.component'
+import {ElementSkeletonComponent} from '@shared/ui/common/element-skeleton/element-skeleton.component'
 import {Subscription, tap} from 'rxjs'
 
 @Component({

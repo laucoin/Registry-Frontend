@@ -7,7 +7,7 @@ import {MovementDto} from '@pages/projects/[projectId]/movements/data/dto/moveme
 import {Button} from 'primeng/button'
 import {CardModule} from 'primeng/card'
 import {DividerModule} from 'primeng/divider'
-import {FormFieldErrorComponent} from '@shared/ui/form-field-error/form-field-error.component'
+import {FormFieldErrorComponent} from '@shared/ui/common/form-field-error/form-field-error.component'
 import {InputTextModule} from 'primeng/inputtext'
 import {TranslatePipe} from '@ngx-translate/core'
 import {MovementContentDto} from '@pages/projects/[projectId]/movements/data/dto/movement-content.dto'
@@ -46,7 +46,7 @@ import {ProjectOptionEnum} from '@shared/models/enumeration/project-option.enum'
 import {PresenceStatusEnum} from '@shared/models/enumeration/presence-status.enum'
 
 import {withLoading} from '@shared/helpers/rx.helper'
-import {FormErrorComponent} from '@shared/ui/form-error/form-error.component'
+import {FormErrorComponent} from '@shared/ui/common/form-error/form-error.component'
 
 @Component({
     selector: 'app-movement-form',

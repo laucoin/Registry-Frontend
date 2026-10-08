@@ -2,7 +2,7 @@ import { Component, input, InputSignal } from '@angular/core'
 import { ProgressSpinnerModule } from 'primeng/progressspinner'
 import { FormGroup } from '@angular/forms'
 import { ErrorModel } from '@shared/models/model/error.model'
-import { FormErrorComponent } from '@shared/ui/form-error/form-error.component'
+import { FormErrorComponent } from '@shared/ui/common/form-error/form-error.component'
 
 @Component( {
     selector: 'app-form',

@@ -26,7 +26,7 @@ import { AlertHelper } from '@shared/helpers/alert.helper'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
 import { Button } from 'primeng/button'
 import { Card } from 'primeng/card'
-import { FormFieldErrorComponent } from '@shared/ui/form-field-error/form-field-error.component'
+import { FormFieldErrorComponent } from '@shared/ui/common/form-field-error/form-field-error.component'
 import { Textarea } from 'primeng/textarea'
 import { TranslatePipe } from '@ngx-translate/core'
 import { ProjectHelper } from '@shared/helpers/project.helper'
@@ -51,7 +51,7 @@ enum AlertModulableFieldEnum {
     NEW = 'NEW',
 }
 
-import { FormErrorComponent } from '@shared/ui/form-error/form-error.component'
+import { FormErrorComponent } from '@shared/ui/common/form-error/form-error.component'
 
 @Component( {
     selector: 'app-communication-form',

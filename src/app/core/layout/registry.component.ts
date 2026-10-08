@@ -16,7 +16,7 @@ import {GenericComponent} from '@shared/ui/base/generic.component'
 import {NavbarComponent} from '@core/shell/navbar/navbar.component'
 import {RouterOutlet} from '@angular/router'
 import {ThemeEnum} from '@shared/models/enumeration/theme.enum'
-import {SeverityInformationComponent} from '@shared/ui/severity-information/severity-information.component'
+import {SeverityInformationComponent} from '@shared/ui/common/severity-information/severity-information.component'
 import {GenericHelper} from '@shared/helpers/generic.helper'
 
 @Component({

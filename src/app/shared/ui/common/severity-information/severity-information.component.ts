@@ -2,7 +2,7 @@ import { Component, computed, input, InputSignal, Signal} from '@angular/core'
 import {TranslatePipe} from '@ngx-translate/core'
 import {ToastMessageOptions} from 'primeng/api'
 import {SeverityEnum} from '@shared/models/enumeration/severity.enum'
-import {MessageComponent} from '@shared/ui/message/message.component'
+import {MessageComponent} from '@shared/ui/common/message/message.component'
 import {MessageModule} from 'primeng/message'
 
 enum InformationImageEnum {

@@ -1,7 +1,7 @@
 import { Component, inject, input, InputSignal } from '@angular/core'
 import { Tag } from 'primeng/tag'
 import { RegistryFacade } from '@core/registry/state/registry.facade'
-import { SeverityCircleComponent } from '@shared/ui/severity-circle/severity-circle.component'
+import { SeverityCircleComponent } from '@shared/ui/common/severity-circle/severity-circle.component'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 
 @Component( {

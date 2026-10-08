@@ -17,8 +17,8 @@ import { ElementActionEnum } from '@shared/models/enumeration/element-action.enu
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { GenericElementComponent } from '@shared/ui/base/generic-element.component'
 import { AlertHelper } from '@shared/helpers/alert.helper'
-import { MessageComponent } from '@shared/ui/message/message.component'
-import { SeverityTagComponent } from '@shared/ui/severity-tag/severity-tag.component'
+import { MessageComponent } from '@shared/ui/common/message/message.component'
+import { SeverityTagComponent } from '@shared/ui/common/severity-tag/severity-tag.component'
 import { DateHelper } from '@shared/helpers/date.helper'
 
 @Component( {

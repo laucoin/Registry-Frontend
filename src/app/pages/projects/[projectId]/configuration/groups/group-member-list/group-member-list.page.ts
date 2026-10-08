@@ -8,26 +8,26 @@ import { GroupFacade } from '@pages/projects/[projectId]/configuration/groups/da
 import { GroupElementComponent } from '@pages/projects/[projectId]/configuration/groups/group-element/group-element.component'
 import { Button } from 'primeng/button'
 import { InputText } from 'primeng/inputtext'
-import { ListComponent } from '@shared/ui/list/list.component'
+import { ListComponent } from '@shared/ui/common/list/list.component'
 import {
     ParticipantElementComponent,
 } from '@shared/ui/participant-element/participant-element.component'
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import { TranslatePipe } from '@ngx-translate/core'
-import { LayerComponent } from '@shared/ui/layer/layer.component'
+import { LayerComponent } from '@shared/ui/common/layer/layer.component'
 import { RegistryRequiredDirective } from '@shared/directives/registry-required.directive'
 import {
     SelectElementsFieldComponent,
-} from '@shared/ui/select-elements-field/select-elements-field.component'
+} from '@shared/ui/common/select-elements-field/select-elements-field.component'
 import { Observable, Subscription, switchMap, tap } from 'rxjs'
-import { FormFieldErrorComponent } from '@shared/ui/form-field-error/form-field-error.component'
+import { FormFieldErrorComponent } from '@shared/ui/common/form-field-error/form-field-error.component'
 import { Select } from 'primeng/select'
 import { GenericListComponent } from '@shared/ui/base/generic-list.component'
 import { ParticipantHelper } from '@shared/helpers/participant.helper'
 import { ParticipantFacade } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.facade'
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
 import { ParticipantFormComponent } from '@pages/projects/[projectId]/configuration/participants/participant-form/participant-form.component'
-import { ElementSkeletonComponent } from '@shared/ui/element-skeleton/element-skeleton.component'
+import { ElementSkeletonComponent } from '@shared/ui/common/element-skeleton/element-skeleton.component'
 import { Card } from 'primeng/card'
 
 @Component( {
