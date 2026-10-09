@@ -1,4 +1,4 @@
-@if (informationForm.untouched && loading()) {
+@if (!form().touched() && loading()) {
     <div class='flex justify-center'>
         <p-progress-spinner></p-progress-spinner>
     </div>
@@ -6,7 +6,7 @@
     <app-form-error [error]='error()' />
     <h2>
         {{
-            (("movements.form.title" | formTitle: movement()) + "." + (type.value ?? "none")) | transloco: {
+            (("movements.form.title" | formTitle: movement()) + "." + (model().information.type || "none")) | transloco: {
                 datetime: movement()?.dateTime | dateFormat: "datetime"
             }
         }}
@@ -15,12 +15,12 @@
         <p-step-item [value]='1'>
             <p-step>{{ 'movements.form.title.information' | transloco }}</p-step>
             <p-step-panel>
-                <ng-template #content let-activateCallback='activateCallback' [formGroup]='informationForm'>
+                <ng-template #content let-activateCallback='activateCallback'>
                     <div class='p-2'>
                         <div class='flex flex-wrap'>
                             <div class='left-field field'>
                                 <label for='datetime' appRequired>{{ 'movements.form.datetime' | transloco }}</label>
-                                <p-date-picker [formControl]='dateTime'
+                                <p-date-picker [formField]='form.information.dateTime'
                                                showButtonBar
                                                readonlyInput
                                                appendTo='body'
@@ -33,9 +33,7 @@
                                                (keydown.enter)='submit()'
                                                inputId='datetime'
                                                fluid/>
-                                <app-form-field-error [errors]='dateTime.errors'
-                                                      [invalid]='FormHelper.invalid(dateTime)'
-                                                      translationPrefix='movements.form.error.datetime'/>
+                                <app-field-error [field]='form.information.dateTime' translationPrefix='movements.form.error.datetime'/>
                             </div>
                             <div class='right-field field'>
                                 <label for='type' appRequired>{{ 'movements.form.type' | transloco }}</label>
@@ -45,14 +43,12 @@
                                         appendTo='body'
                                         [options]='facade.movementTypesMetadata()'
                                         [placeholder]='"movements.form.placeholder.type" | transloco'
-                                        [formControl]='type'
+                                        [formField]='form.information.type'
                                         (onChange)='handleTypeChange($event.value)'
                                         (keydown.enter)='submit()'
                                         optionLabel='label'
                                         optionValue='value'/>
-                                <app-form-field-error [errors]='type.errors'
-                                                      [invalid]='FormHelper.invalid(type)'
-                                                      translationPrefix='movements.form.error.type'/>
+                                <app-field-error [field]='form.information.type' translationPrefix='movements.form.error.type'/>
                             </div>
                         </div>
                         <div class='field'>
@@ -63,7 +59,7 @@
                                         <p-radio-button [inputId]='"contentType_" + type.value'
                                                         [value]='type.value'
                                                         (onClick)='handleContentTypeChange(type.value)'
-                                                        formControlName='contentType'/>
+                                                        [formField]='form.information.contentType'/>
                                         <div>
                                             <label [for]='"contentType_" + type.value'
                                                    class='ml-2'>{{ type.label }}</label>
@@ -79,7 +75,7 @@
                                     text
                                     rounded/>
                             <p-button
-                                    (onClick)='FormHelper.isFormValid(informationForm) ? activateCallback(2) : undefined'
+                                    (onClick)='isFormValid(form.information) ? activateCallback(2) : undefined'
                                     [label]='uiFacade.tinyScreen() ? "" : "global.actions.next" | transloco'
                                     rounded
                                     icon='pi pi-arrow-down'
@@ -105,52 +101,44 @@
                                                  showClear
                                                  appendTo='body'
                                                  optionLabel='label'
-                                                 optionValue='value'
                                                  [placeholder]='"movements.form.placeholder.reason" | transloco'
-                                                 [formControl]='reason'
+                                                 [formField]='form.content.reason'
                                                  [suggestions]='facade.searchedReasonAndActivityMetadata()'
                                                  (keydown.enter)='submit()'
-                                                 (onClear)='selectedReason.set(undefined)'
-                                                 (onUnselect)='selectedReason.set(undefined)'
-                                                 (onSelect)='selectedReason.set($event.value)'
                                                  (completeMethod)='handleReasonsAndActivitiesSearch($event.query)'>
                                     <ng-template #empty>
                                         <span>{{ 'movements.form.reason.empty-search' | transloco }}</span>
                                     </ng-template>
                                 </p-auto-complete>
-                                <app-form-field-error [errors]='reason.errors'
-                                                      [invalid]='FormHelper.invalid(reason)'
-                                                      translationPrefix='movements.form.error.reason'/>
+                                <app-field-error [field]='form.content.reason' translationPrefix='movements.form.error.reason'/>
                             </div>
                             <p-divider/>
                         } @if (isContentSelection()) {
                         <div class='field'>
                             <span class='label'
-                                  appRequired>{{ 'movements.form.content.registered' | pluralTranslation: participantContent.value | transloco }}</span>
+                                  appRequired>{{ 'movements.form.content.registered' | pluralTranslation: model().content.participants | transloco }}</span>
                             <label for='content'
                                    class='secondary-color'>{{ 'movements.form.content.registered.search' | transloco }}</label>
-                            <app-movement-content-field [formControl]='participantContent'
-                                                        [invalid]='FormHelper.invalid(participantContent)'
+                            <app-movement-content-field [formField]='form.content.participants'
+                                                        [invalid]='fieldInvalid(form.content.participants)'
                                                         [suggestions]='facade.searchedParticipantAndGroupMetadata()'
                                                         [interpretedMovementType]='interpretedMovementType()'
-                                                        [selectionLabel]='"movements.form.content.registered.selected" | pluralTranslation: participantContent.value | transloco'
+                                                        [selectionLabel]='"movements.form.content.registered.selected" | pluralTranslation: model().content.participants | transloco'
                                                         [emptyMessage]='"movements.form.content.registered.empty" | transloco'
                                                         [fluid]='true'
                                                         inputId='content'
                                                         (handleSearch)='handleParticipantsAndGroupsSearch($event.query)'/>
-                            <app-form-field-error [errors]='participantContent.errors'
-                                                  [invalid]='FormHelper.invalid(participantContent)'
-                                                  translationPrefix='movements.form.error.participantContent'/>
+                            <app-field-error [field]='form.content.participants' translationPrefix='movements.form.error.participantContent'/>
                         </div>
                     } @else {
                         <div class='field'>
                                 <span class='label'>{{
-                                        'movements.form.content.guest' | pluralTranslation: guestContent.length |
+                                        'movements.form.content.guest' | pluralTranslation: model().content.guests.length |
                                             transloco
                                     }}</span>
-                            @for (_ of guestContent.controls; track $index) {
+                            @for (guest of form.content.guests; track $index) {
                                 <div class='flex flex-row items-center'>
-                                    <p-button [ariaLabel]='"global.actions.remove" | transloco' size='small' [disabled]='participantId($index).value'
+                                    <p-button [ariaLabel]='"global.actions.remove" | transloco' size='small' [disabled]='!!guest.id().value()'
                                               (onClick)='removeGuest($index)'
                                               icon='pi pi-times' text rounded
                                               severity='danger'></p-button>
@@ -159,38 +147,34 @@
                                             <div class='left-field field'>
                                                 <label [for]='"first-name_" + $index'
                                                        appRequired>{{ 'participants.form.firstname' | transloco }}</label>
-                                                <input [formControl]='firstName($index)'
+                                                <input [formField]='guest.firstName'
                                                        [placeholder]='"participants.form.placeholder.firstname" | transloco'
                                                        (keydown.enter)='submit()'
                                                        [id]='"first-name_" + $index'
                                                        pSize='small'
                                                        pInputText
                                                        type='text'/>
-                                                <app-form-field-error [errors]='firstName($index).errors'
-                                                                      [invalid]='FormHelper.invalid(firstName($index))'
-                                                                      translationPrefix='participants.form.error.firstname'/>
+                                                <app-field-error [field]='guest.firstName' translationPrefix='participants.form.error.firstname'/>
                                             </div>
                                             <div class='right-field field'>
                                                 <label [for]='"last-name_" + $index' appRequired>{{
                                                         'participants.form.lastname' |
                                                             transloco
                                                     }}</label>
-                                                <input [formControl]='lastName($index)'
+                                                <input [formField]='guest.lastName'
                                                        [placeholder]='"participants.form.placeholder.lastname" | transloco'
                                                        (keydown.enter)='submit()'
                                                        [id]='"last-name_" + $index'
                                                        pSize='small'
                                                        pInputText
                                                        type='text'/>
-                                                <app-form-field-error [errors]='lastName($index).errors'
-                                                                      [invalid]='FormHelper.invalid(lastName($index))'
-                                                                      translationPrefix='participants.form.error.lastname'/>
+                                                <app-field-error [field]='guest.lastName' translationPrefix='participants.form.error.lastname'/>
                                             </div>
                                         </div>
                                         <div class='field'>
                                             <label [for]='"birthday_" + $index'
                                                    appRequired>{{ 'participants.form.birthday' | transloco }}</label>
-                                            <p-date-picker [formControl]='birthday($index)'
+                                            <p-date-picker [formField]='guest.birthday'
                                                            showButtonBar
                                                            showIcon
                                                            size='small'
@@ -201,9 +185,7 @@
                                                            (keydown.enter)='submit()'
                                                            [id]='"birthday_" + $index'
                                                            fluid/>
-                                            <app-form-field-error [errors]='birthday($index).errors'
-                                                                  [invalid]='FormHelper.invalid(birthday($index))'
-                                                                  translationPrefix='participants.form.error.birthday'/>
+                                            <app-field-error [field]='guest.birthday' translationPrefix='participants.form.error.birthday'/>
                                         </div>
                                     </div>
                                 </div>
@@ -220,9 +202,7 @@
                                       [label]='"movements.form.content.guest.add" | transloco'
                                       severity='secondary'/>
                         </div>
-                        <app-form-field-error [errors]='guestContent.errors'
-                                              [invalid]='FormHelper.invalid(guestContent)'
-                                              translationPrefix='movements.form.error.guestContent'/>
+                        <app-field-error [field]='form.content.guests' translationPrefix='movements.form.error.guestContent'/>
                     }
                         <div class='flex pt-6 justify-between'>
                             <p-button
@@ -231,9 +211,9 @@
                                     icon='pi pi-arrow-up'
                                     text
                                     rounded/>
-                            @if (isEligibleToVehicle() && contentType.value === ParticipantTypeEnum.REGISTERED) {
+                            @if (isEligibleToVehicle() && model().information.contentType === ParticipantTypeEnum.REGISTERED) {
                                 <p-button
-                                        (onClick)='FormHelper.isFormValid(contentForm) ? activateCallback(3) : undefined'
+                                        (onClick)='isFormValid(form.content) ? activateCallback(3) : undefined'
                                         [label]='uiFacade.tinyScreen() ? "" : "global.actions.next" | transloco'
                                         rounded
                                         outlined
@@ -255,14 +235,14 @@
             </p-step-panel>
         </p-step-item>
 
-        @if (isEligibleToVehicle() && contentType.value === ParticipantTypeEnum.REGISTERED) {
+        @if (isEligibleToVehicle() && model().information.contentType === ParticipantTypeEnum.REGISTERED) {
             <p-step-item [value]='3'>
                 <p-step>{{ 'movements.form.title.vehicle' | transloco }}</p-step>
                 <p-step-panel>
                     <ng-template #content let-activateCallback='activateCallback'>
                         <div class='p-2'>
                             <div class='field'>
-                                <span class='label'>{{ 'movements.form.vehicles' | pluralTranslation: vehiclesWithDrivers.length | transloco }}</span>
+                                <span class='label'>{{ 'movements.form.vehicles' | pluralTranslation: model().vehicles.length | transloco }}</span>
                                 <label for='vehicles-drivers'
                                        class='secondary-color'>{{ 'movements.form.vehicles.search' | transloco }}</label>
                                 <p-auto-complete class='no-autocomplete-item'
@@ -279,23 +259,22 @@
                                 </p-auto-complete>
                                 <div class='mt-4 secondary-color'>
                                     {{
-                                        'movements.form.vehicles.selected' | pluralTranslation: vehiclesWithDrivers.value | transloco
+                                        'movements.form.vehicles.selected' | pluralTranslation: model().vehicles | transloco
                                     }}
                                 </div>
-                                @for (_ of vehiclesWithDrivers.controls; track $index) {
-                                    @let control = driver($index);
-                                    <div class='mt-2' [formGroup]='vehicleDriverFormGroup($index)'>
+                                @for (item of form.vehicles; track $index) {
+                                    <div class='mt-2'>
                                         <div class='field'>
                                             <p-inputgroup>
                                                 <p-inputgroup-addon>
-                                                    {{ VehicleHelper.toSelectItem(vehicle($index).value).label }}
-                                                    @if (interpretedMovementType().includes(vehicle($index).value?.status.value)) {
+                                                    {{ VehicleHelper.toSelectItem(item.vehicle().value()).label }}
+                                                    @if (interpretedMovementType().includes(item.vehicle().value().status.value)) {
                                                         <div class='warning-tips'>
                                                             <i class='pi pi-exclamation-triangle'></i>
                                                             @if (!uiFacade.tinyScreen()) {
                                                                 <span class='ms-2'>{{
                                                                         ('movements.form.warning.vehicle.' +
-                                                                            vehicle($index).value.status.value) |
+                                                                            item.vehicle().value().status.value) |
                                                                             transloco
                                                                     }}</span>
                                                             }
@@ -304,7 +283,7 @@
                                                 </p-inputgroup-addon>
                                                 <p-select [inputId]='"driver_" + $index' fluid
                                                           [options]='drivers()'
-                                                          [formControl]='control'
+                                                          [formField]='item.driver'
                                                           [placeholder]='"movements.form.driver.title" | transloco'
                                                           appendTo='body'
                                                           optionLabel='label'
@@ -320,9 +299,7 @@
                                                               severity='danger'/>
                                                 </p-inputgroup-addon>
                                             </p-inputgroup>
-                                            <app-form-field-error [errors]='control.errors'
-                                                                  [invalid]='FormHelper.invalid(control)'
-                                                                  translationPrefix='movements.form.error.driver'/>
+                                            <app-field-error [field]='item.driver' translationPrefix='movements.form.error.driver'/>
                                         </div>
                                     </div>
                                 } @empty {
@@ -343,7 +320,7 @@
                                         rounded/>
                                 <p-button
                                         class='ms-2'
-                                        (onClick)='FormHelper.isFormValid(vehicleForm) ? submit() : undefined'
+                                        (onClick)='isFormValid(form.vehicles) ? submit() : undefined'
                                         [label]='uiFacade.tinyScreen() ? "" : movement() | formButton | transloco'
                                         rounded
                                         outlined

@@ -207,6 +207,17 @@ describe( 'RegistrySchemas', () => {
         expect( errors ).toEqual( [ [ { kind: 'required' } ], [] ] )
     } )
 
+    it( 'requiredList ignores an empty list while its condition is not met', () => {
+        // Arrange
+        const rule = (path: SchemaPath<string[]>): void => RegistrySchemas.requiredList( path, (): boolean => false )
+
+        // Act
+        const errors: object[] = errorsOf( [], rule )
+
+        // Assert
+        expect( errors ).toEqual( [] )
+    } )
+
     it( 'notInTheFuture refuses a date after now only', () => {
         // Arrange
         const now: Date = new Date( 2026, 5, 15 )

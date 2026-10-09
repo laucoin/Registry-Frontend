@@ -55,9 +55,9 @@ export class RegistrySchemas {
         } )
     }
 
-    public static requiredList<T> (path: SchemaPath<T[]>): void {
+    public static requiredList<T> (path: SchemaPath<T[]>, when: (ctx: FieldContext<T[]>) => boolean = (): boolean => true): void {
         validate( path, (ctx: FieldContext<T[]>): RegistryError | null =>
-            ctx.value().length === 0 ? registryError( 'required' ) : null )
+            ctx.value().length === 0 && when( ctx ) ? registryError( 'required' ) : null )
     }
 
     public static projectDateTime (path: SchemaPath<CustomDatetimeModel | null>, context: ProjectDateContext): void {
