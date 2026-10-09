@@ -11,7 +11,7 @@ import { GenericProjectElementFacade } from '@shared/helpers/facade/generic-proj
 import { AlertDto } from '@pages/projects/[projectId]/alerts/data/dto/alert.dto'
 import { AlertModel } from '@shared/models/model/alert.model'
 import { AlertStatusEnum } from '@shared/models/enumeration/alert-status.enum'
-import { CommunicationModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
+import { CommunicationModel } from '@shared/models/model/communication.model'
 
 
 /**

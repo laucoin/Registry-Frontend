@@ -8,7 +8,7 @@ import { MovementModel } from '@shared/models/model/movement.model'
 import { CommunicationFormComponent } from '@shared/ui/domain/communication-form/communication-form.component'
 import { GenericComponent } from '@shared/ui/base/generic.component'
 import { DialogElementComponent } from '@shared/ui/domain/dialog-element/dialog-element.component'
-import { CommunicationModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
+import { CommunicationModel } from '@shared/models/model/communication.model'
 import { CommunicationHelper } from '@shared/helpers/communication.helper'
 import { AlertFacade } from '@pages/projects/[projectId]/alerts/data/state/alert.facade'
 

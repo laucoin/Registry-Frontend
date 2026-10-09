@@ -1,5 +1,5 @@
 import { MovementReasonResponseDto } from '@shared/models/dto/response/movement-reason.response.dto'
-import { MovementReasonModel } from '@pages/projects/[projectId]/movements/data/model/movement-reason.model'
+import { MovementReasonModel } from '@shared/models/model/movement-reason.model'
 
 /**
  * Purpose: Converts a movement reason response of the backend into the movement reason model.

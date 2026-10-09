@@ -1,7 +1,7 @@
 import { inject } from '@angular/core'
 import { patchState, signalStore, withMethods, withState } from '@ngrx/signals'
 import { ErrorReporter } from '@core/registry/state/error-reporter'
-import { ProjectOptionModel } from '@pages/projects/data/model/project-option.model'
+import { ProjectOptionModel } from '@shared/models/model/project-option.model'
 import { ProjectPageParamsModel } from '@pages/projects/data/model/project-page-params.model'
 import { ProjectStoreModel } from '@pages/projects/data/model/project-store.model'
 import { ProjectApi } from '@pages/projects/data/state/project.api'

@@ -1,6 +1,6 @@
 import { Component, computed, inject, input, InputSignal, Signal } from '@angular/core'
 import { Card } from 'primeng/card'
-import { CommunicationModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
+import { CommunicationModel } from '@shared/models/model/communication.model'
 import { Avatar } from 'primeng/avatar'
 import { StringHelper } from '@shared/helpers/string.helper'
 import { HistoryUserModel } from '@shared/models/model/history-user.model'

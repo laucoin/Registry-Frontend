@@ -1,4 +1,4 @@
-import { CommunicationModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
+import { CommunicationModel } from '@shared/models/model/communication.model'
 import { StringHelper } from '@shared/helpers/string.helper'
 
 /**

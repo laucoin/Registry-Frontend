@@ -1,6 +1,6 @@
 import { FormControl, FormGroup, ValidationErrors, ValidatorFn } from '@angular/forms'
 import { describe, expect, it } from 'vitest'
-import { ProjectOptionModel } from '@pages/projects/data/model/project-option.model'
+import { ProjectOptionModel } from '@shared/models/model/project-option.model'
 import { RegistryValidators } from '@shared/helpers/registry.validator'
 import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
 import { CustomDatetimeModel } from '@shared/models/model/custom-datetime.model'

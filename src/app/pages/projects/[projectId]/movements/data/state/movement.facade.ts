@@ -16,10 +16,10 @@ import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
 import { CommandEvent } from '@shared/helpers/facade/command-event.service'
-import { MovementReasonModel } from '@pages/projects/[projectId]/movements/data/model/movement-reason.model'
+import { MovementReasonModel } from '@shared/models/model/movement-reason.model'
 import { ParticipantTypeEnum } from '@shared/models/enumeration/participant-type.enum'
 import { MovementTypeEnum } from '@shared/models/enumeration/movement-type.enum'
-import { CommunicationModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
+import { CommunicationModel } from '@shared/models/model/communication.model'
 
 /**
  * Purpose: Public entry point of the movement domain for pages, components and guards.

@@ -7,7 +7,7 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
 import { RegistryValidators } from '@shared/helpers/registry.validator'
 import { combineLatest, filter, map, Observable, tap } from 'rxjs'
-import { ProjectOptionModel } from '@pages/projects/data/model/project-option.model'
+import { ProjectOptionModel } from '@shared/models/model/project-option.model'
 import { ArrayHelper } from '@shared/helpers/array.helper'
 import { SelectItem } from 'primeng/api'
 import { FormHelper } from '@shared/helpers/form.helper'

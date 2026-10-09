@@ -11,7 +11,7 @@ import {
     WritableSignal,
 } from '@angular/core'
 import { GenericFormComponent } from '@shared/ui/base/generic-form.component'
-import { CommunicationModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
+import { CommunicationModel } from '@shared/models/model/communication.model'
 import { CommunicationDto } from '@pages/projects/[projectId]/movements/communication/data/dto/communication.dto'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { CommunicationFacade } from '@pages/projects/[projectId]/movements/communication/data/state/communication.facade'

@@ -1,4 +1,4 @@
-import { NumericRangeModel } from '@pages/projects/[projectId]/configuration/activities/data/model/numeric-range.model'
+import { NumericRangeModel } from '@shared/models/model/numeric-range.model'
 import { CustomDatetimeModel } from '@shared/models/model/custom-datetime.model'
 
 export interface ActivityDto {

@@ -1,5 +1,5 @@
 import { GenericProjectModel } from '@shared/models/model/generic-project.model'
-import { NumericRangeModel } from '@pages/projects/[projectId]/configuration/activities/data/model/numeric-range.model'
+import { NumericRangeModel } from '@shared/models/model/numeric-range.model'
 import { SelectItem } from 'primeng/api'
 import { CustomDatetimeModel } from '@shared/models/model/custom-datetime.model'
 import { AvailabilityStatusEnum } from '@shared/models/enumeration/availability-status.enum'

@@ -1,4 +1,4 @@
-import { CommunicationModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
+import { CommunicationModel } from '@shared/models/model/communication.model'
 import { CommunicationResponseDto } from '@shared/models/dto/response/communication.response.dto'
 import { AlertMapper } from '@shared/mappers/alert.mapper'
 import { GenericProjectMapper } from '@shared/mappers/generic-project.mapper'

@@ -14,7 +14,7 @@ import { StateHelper } from '@shared/helpers/state/state.helper'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { initialize, notifyOnError } from '@shared/helpers/rx.helper'
 import { ProjectModel } from '@shared/models/model/project.model'
-import { ProjectOptionModel } from '@pages/projects/data/model/project-option.model'
+import { ProjectOptionModel } from '@shared/models/model/project-option.model'
 import { DateHelper } from '@shared/helpers/date.helper'
 
 /**

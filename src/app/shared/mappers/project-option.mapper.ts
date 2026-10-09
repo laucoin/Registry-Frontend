@@ -1,4 +1,4 @@
-import { ProjectOptionModel } from '@pages/projects/data/model/project-option.model'
+import { ProjectOptionModel } from '@shared/models/model/project-option.model'
 import { ProjectOptionResponseDto } from '@shared/models/dto/response/project-option.response.dto'
 
 /**

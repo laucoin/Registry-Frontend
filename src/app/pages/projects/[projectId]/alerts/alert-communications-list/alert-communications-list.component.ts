@@ -4,7 +4,7 @@ import { AlertFacade } from '@pages/projects/[projectId]/alerts/data/state/alert
 import { ReactiveFormsModule } from '@angular/forms'
 import { DialogElementComponent } from '@shared/ui/domain/dialog-element/dialog-element.component'
 import { CommunicationHelper } from '@shared/helpers/communication.helper'
-import { CommunicationModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
+import { CommunicationModel } from '@shared/models/model/communication.model'
 import { CommunicationFormComponent } from '@shared/ui/domain/communication-form/communication-form.component'
 import { Subscription, tap } from 'rxjs'
 import { CommunicationFacade } from '@pages/projects/[projectId]/movements/communication/data/state/communication.facade'
