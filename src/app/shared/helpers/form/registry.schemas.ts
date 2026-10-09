@@ -1,5 +1,6 @@
 import { FieldContext, SchemaPath, validate, ValidationError } from '@angular/forms/signals'
 import { SelectItem } from 'primeng/api'
+import { ProjectModel } from '@shared/models/model/project.model'
 import { ProjectOptionModel } from '@shared/models/model/project-option.model'
 import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
 import { NumericRangeModel } from '@shared/models/model/numeric-range.model'
@@ -11,11 +12,11 @@ import { StringHelper } from '@shared/helpers/string.helper'
 export type RegistryError = ValidationError.WithoutFieldTree & Readonly<Record<string, unknown>>
 
 export interface DateRangeValue {
-    beginDateTime: CustomDatetimeModel | undefined
-    endDateTime: CustomDatetimeModel | undefined
+    beginDateTime: CustomDatetimeModel | null
+    endDateTime: CustomDatetimeModel | null
 }
 
-type DateTimeValue = CustomDatetimeModel | Date | undefined
+type DateTimeValue = CustomDatetimeModel | Date | null
 
 function registryError (kind: string, params: Record<string, unknown> = {}): RegistryError {
     return { kind, ...params }
@@ -31,42 +32,30 @@ function toCustomDateTime (value: CustomDatetimeModel | Date): CustomDatetimeMod
  * Limits: Validates on the client for usability; the backend validates again.
  */
 export class RegistrySchemas {
-    public static nonBlank (path: SchemaPath<string | undefined>): void {
-        validate( path, (ctx: FieldContext<string | undefined>): RegistryError | null =>
+    public static nonBlank (path: SchemaPath<string>): void {
+        validate( path, (ctx: FieldContext<string>): RegistryError | null =>
             StringHelper.isBlank( ctx.value() ) ? registryError( 'blank' ) : null )
     }
 
-    public static minDateTime (
+    public static withinProject (
         path: SchemaPath<DateTimeValue>,
-        min: CustomDatetimeModel,
-        formattedMinDate: string | undefined,
+        project: () => ProjectModel | undefined,
+        format: (date: CustomDatetimeModel) => string | undefined,
     ): void {
         validate( path, (ctx: FieldContext<DateTimeValue>): RegistryError | null => {
             const value: DateTimeValue = ctx.value()
             if (GenericHelper.isNull( value )) return null
-            return DateHelper.isCustomBefore( toCustomDateTime( value! ), min )
-                   ? registryError( 'minDate', { min: formattedMinDate } )
-                   : null
+            const date: CustomDatetimeModel | undefined = toCustomDateTime( value! )
+            const { begin, end }: ProjectModel = project() ?? ({} as ProjectModel)
+            if (begin && DateHelper.isCustomBefore( date, begin )) return registryError( 'minDate', { min: format( begin ) } )
+            if (end && DateHelper.isCustomDateAfter( date, end )) return registryError( 'maxDate', { max: format( end ) } )
+            return null
         } )
     }
 
-    public static maxDateTime (
-        path: SchemaPath<DateTimeValue>,
-        max: CustomDatetimeModel,
-        formattedMaxDate: string | undefined,
-    ): void {
-        validate( path, (ctx: FieldContext<DateTimeValue>): RegistryError | null => {
-            const value: DateTimeValue = ctx.value()
-            if (GenericHelper.isNull( value )) return null
-            return DateHelper.isCustomDateAfter( toCustomDateTime( value! ), max )
-                   ? registryError( 'maxDate', { max: formattedMaxDate } )
-                   : null
-        } )
-    }
-
-    public static dateRequiredForTime (path: SchemaPath<CustomDatetimeModel | undefined>): void {
-        validate( path, (ctx: FieldContext<CustomDatetimeModel | undefined>): RegistryError | null => {
-            const value: CustomDatetimeModel | undefined = ctx.value()
+    public static dateRequiredForTime (path: SchemaPath<CustomDatetimeModel | null>): void {
+        validate( path, (ctx: FieldContext<CustomDatetimeModel | null>): RegistryError | null => {
+            const value: CustomDatetimeModel | null = ctx.value()
             if (!value) return null
             return StringHelper.isNullOrBlank( value.date ) && !StringHelper.isNullOrBlank( value.time )
                    ? registryError( 'dateRequiredForTime' )
@@ -74,9 +63,9 @@ export class RegistrySchemas {
         } )
     }
 
-    public static numericRange (path: SchemaPath<NumericRangeModel | undefined>): void {
-        validate( path, (ctx: FieldContext<NumericRangeModel | undefined>): RegistryError | null => {
-            const value: NumericRangeModel | undefined = ctx.value()
+    public static numericRange (path: SchemaPath<NumericRangeModel | null>): void {
+        validate( path, (ctx: FieldContext<NumericRangeModel | null>): RegistryError | null => {
+            const value: NumericRangeModel | null = ctx.value()
             if (!value || GenericHelper.isNull( value.lower ) || GenericHelper.isNull( value.upper )) return null
             return value.upper! < value.lower!
                    ? registryError( 'rangeMin', { min: value.lower, actual: value.upper } )
@@ -84,25 +73,25 @@ export class RegistrySchemas {
         } )
     }
 
-    public static numericRangeMin (path: SchemaPath<NumericRangeModel | undefined>, min: number): void {
-        validate( path, (ctx: FieldContext<NumericRangeModel | undefined>): RegistryError | null => {
-            const value: NumericRangeModel | undefined = ctx.value()
+    public static numericRangeMin (path: SchemaPath<NumericRangeModel | null>, min: number): void {
+        validate( path, (ctx: FieldContext<NumericRangeModel | null>): RegistryError | null => {
+            const value: NumericRangeModel | null = ctx.value()
             if (!value || GenericHelper.isNull( value.lower )) return null
             return value.lower! < min ? registryError( 'min', { min, actual: value.lower } ) : null
         } )
     }
 
-    public static numericRangeMax (path: SchemaPath<NumericRangeModel | undefined>, max: number): void {
-        validate( path, (ctx: FieldContext<NumericRangeModel | undefined>): RegistryError | null => {
-            const value: NumericRangeModel | undefined = ctx.value()
+    public static numericRangeMax (path: SchemaPath<NumericRangeModel | null>, max: number): void {
+        validate( path, (ctx: FieldContext<NumericRangeModel | null>): RegistryError | null => {
+            const value: NumericRangeModel | null = ctx.value()
             if (!value || GenericHelper.isNull( value.upper )) return null
             return value.upper! > max ? registryError( 'max', { max, actual: value.upper } ) : null
         } )
     }
 
-    public static numericRangeBothDefined (path: SchemaPath<NumericRangeModel | undefined>): void {
-        validate( path, (ctx: FieldContext<NumericRangeModel | undefined>): RegistryError | null => {
-            const value: NumericRangeModel | undefined = ctx.value()
+    public static numericRangeBothDefined (path: SchemaPath<NumericRangeModel | null>): void {
+        validate( path, (ctx: FieldContext<NumericRangeModel | null>): RegistryError | null => {
+            const value: NumericRangeModel | null = ctx.value()
             if (!value) return null
             const lowerDefined: boolean = GenericHelper.nonNull( value.lower )
             const upperDefined: boolean = GenericHelper.nonNull( value.upper )
@@ -114,7 +103,7 @@ export class RegistrySchemas {
         validate( path, (ctx: FieldContext<T>): RegistryError | null => {
             const { beginDateTime, endDateTime }: DateRangeValue = ctx.value()
             const bothDefined: boolean = GenericHelper.nonNull( beginDateTime ) && GenericHelper.nonNull( endDateTime )
-            return bothDefined && DateHelper.isAfterOrEqual( beginDateTime, endDateTime )
+            return bothDefined && DateHelper.isAfterOrEqual( beginDateTime ?? undefined, endDateTime ?? undefined )
                    ? registryError( 'beginDateBeforeEndDate' )
                    : null
         } )

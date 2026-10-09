@@ -2,14 +2,7 @@ import { Component, computed, inject, input, InputSignal, Signal } from '@angula
 import { ValidationError } from '@angular/forms/signals'
 import { MessageModule } from 'primeng/message'
 import { TranslocoService } from '@jsverse/transloco'
-
-export interface FieldErrorState {
-    invalid: () => boolean
-    touched: () => boolean
-    dirty: () => boolean
-    errors: () => readonly ValidationError[]
-    value: () => unknown
-}
+import { FieldErrorState, FieldStateHelper } from '@shared/helpers/form/field-state.helper'
 
 const TRANSLATION_KEYS: Record<string, string> = {
     minLength: 'minlength',
@@ -50,8 +43,8 @@ export class FieldErrorComponent {
 
     public constructor() {
         this.errorText = computed((): string | undefined => {
+            if (!FieldStateHelper.showsError( this.field() )) return undefined
             const state: FieldErrorState = this.field()()
-            if (!state.invalid() || !(state.touched() || state.dirty())) return undefined
             const error: ValidationError | undefined = state.errors()[0]
             return error ? this.translate( error, state.value() ) : undefined
         })

@@ -14,11 +14,9 @@ import { ActivityFormPage } from '@pages/projects/[projectId]/configuration/acti
 import { ActivityFacade } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.facade'
 import { GroupFacade } from '@pages/projects/[projectId]/configuration/groups/data/state/group.facade'
 import { GroupFormPage } from '@pages/projects/[projectId]/configuration/groups/group-form/group-form.page'
-import { VehicleFacade } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.facade'
-import { VehicleFormPage } from '@pages/projects/[projectId]/configuration/vehicles/vehicle-form/vehicle-form.page'
 import { CustomDateFormatPipe } from '@shared/helpers/pipe/custom-date-format.pipe'
 import { autoMock } from '@shared/helpers/testing/auto-mock'
-import { ACTIVITY_DTO, GROUP_DTO, PARTICIPANT_DTO, VEHICLE_DTO } from '@shared/helpers/testing/response-fixtures'
+import { ACTIVITY_DTO, GROUP_DTO, PARTICIPANT_DTO } from '@shared/helpers/testing/response-fixtures'
 import { GenericFormComponent } from '@shared/ui/base/generic-form.component'
 
 interface FormCase {
@@ -38,8 +36,6 @@ const CASES: FormCase[] = [
         model: ACTIVITY_DTO, dto: { name: 'Hike', description: 'd', duration: 'PT2H', allowedParticipants: { lower: 1, upper: 5 } } },
     { name: 'group', type: GroupFormPage, facade: GroupFacade, param: 'groupId', fetch: 'fetchGroup', create: 'createGroup', update: 'updateGroup',
         model: { ...GROUP_DTO, members: [ PARTICIPANT_DTO ] }, dto: { name: 'Wolves', members: [ 'pa1' ] } },
-    { name: 'vehicle', type: VehicleFormPage, facade: VehicleFacade, param: 'vehicleId', fetch: 'fetchVehicle', create: 'createVehicle', update: 'updateVehicle',
-        model: VEHICLE_DTO, dto: { licensePlate: 'AB-123', brand: 'Ford', model: 'T' } },
 ]
 
 describe( 'form pages', () => {

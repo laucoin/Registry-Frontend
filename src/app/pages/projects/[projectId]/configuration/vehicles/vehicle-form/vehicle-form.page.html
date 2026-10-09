@@ -12,42 +12,36 @@
             <p-inputmask mask='aa-999-aa'
                          inputId='license-plate'
                          styleClass='w-100'
-                         [formControl]='licensePlate'
+                         [formField]='form.licensePlate'
                          [placeholder]='"vehicles.form.placeholder.license-plate" | transloco'
                          (keydown.enter)='submit()' />
-            <app-form-field-error [errors]='licensePlate.errors'
-                                  [invalid]='FormHelper.invalid(licensePlate)'
-                                  translationPrefix='vehicles.form.error.license-plate' />
+            <app-field-error [field]='form.licensePlate' translationPrefix='vehicles.form.error.license-plate' />
         </div>
         <div class='field'>
             <label for='brand' appRequired>{{ 'vehicles.form.brand' | transloco }}</label>
-            <input [formControl]='brand'
+            <input [formField]='form.brand'
                    [placeholder]='"vehicles.form.placeholder.brand" | transloco'
                    (keydown.enter)='submit()'
                    id='brand'
                    pInputText
                    type='text' />
-            <app-form-field-error [errors]='brand.errors'
-                                  [invalid]='FormHelper.invalid(brand)'
-                                  translationPrefix='vehicles.form.error.brand' />
+            <app-field-error [field]='form.brand' translationPrefix='vehicles.form.error.brand' />
         </div>
         <div class='field'>
             <label for='model' appRequired>{{ 'vehicles.form.model' | transloco }}</label>
-            <input [formControl]='model'
+            <input [formField]='form.model'
                    [placeholder]='"vehicles.form.placeholder.model" | transloco'
                    (keydown.enter)='submit()'
                    id='model'
                    pInputText
                    type='text' />
-            <app-form-field-error [errors]='model.errors'
-                                  [invalid]='FormHelper.invalid(model)'
-                                  translationPrefix='vehicles.form.error.model' />
+            <app-field-error [field]='form.model' translationPrefix='vehicles.form.error.model' />
         </div>
         <div class='flex flex-wrap'>
             <div class='left-field field'>
                 <label for='begin-date-time'>{{ 'vehicles.form.begin-datetime' | transloco }}</label>
-                <app-date-time-field [formControl]='beginDateTime'
-                                     [invalid]='FormHelper.invalid(beginDateTime)'
+                <app-date-time-field [formField]='form.beginDateTime'
+                                     [invalid]='fieldInvalid(form.beginDateTime)'
                                      inputId='begin-date-time'
                                      [datePlaceholder]='"vehicles.form.placeholder.date" | transloco: {
                                                             date: startDateExample | dateFormat: "date"
@@ -56,14 +50,12 @@
                                                             date: startDateExample | dateFormat: "time"
                                                          }' />
                 <small class='secondary-color'>{{ 'vehicles.form.hint.begin-date-time' | transloco }}</small>
-                <app-form-field-error [errors]='beginDateTime.errors'
-                                      [invalid]='FormHelper.invalid(beginDateTime)'
-                                      translationPrefix='vehicles.form.error.begin-datetime' />
+                <app-field-error [field]='form.beginDateTime' translationPrefix='vehicles.form.error.begin-datetime' />
             </div>
             <div class='right-field field'>
                 <label for='end-date-time'>{{ 'vehicles.form.end-datetime' | transloco }}</label>
-                <app-date-time-field [formControl]='endDateTime'
-                                     [invalid]='FormHelper.invalid(endDateTime)'
+                <app-date-time-field [formField]='form.endDateTime'
+                                     [invalid]='fieldInvalid(form.endDateTime)'
                                      inputId='end-date-time'
                                      [datePlaceholder]='"vehicles.form.placeholder.date" | transloco: {
                                                             date: endDateExample | dateFormat: "date"
@@ -72,14 +64,12 @@
                                                             date: endDateExample | dateFormat: "time"
                                                          }' />
                 <small class='secondary-color'>{{ 'vehicles.form.hint.end-date-time' | transloco }}</small>
-                <app-form-field-error [errors]='endDateTime.errors'
-                                      [invalid]='FormHelper.invalid(endDateTime)'
-                                      translationPrefix='vehicles.form.error.end-datetime' />
+                <app-field-error [field]='form.endDateTime' translationPrefix='vehicles.form.error.end-datetime' />
             </div>
         </div>
-        <app-form-field-error [errors]='form.errors'
-                              [invalid]='FormHelper.invalid(form) && beginDateTime.valid && endDateTime.valid'
-                              translationPrefix='vehicles.form.error.date-range' />
+        @if (form.beginDateTime().valid() && form.endDateTime().valid()) {
+            <app-field-error [field]='form' translationPrefix='vehicles.form.error.date-range' />
+        }
     </p-card>
     <div class='flex mt-2 justify-center'>
         <p-button

@@ -2,7 +2,8 @@ import { TestBed } from '@angular/core/testing'
 import { ValidationError } from '@angular/forms/signals'
 import { TranslocoService } from '@jsverse/transloco'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
-import { FieldErrorComponent, FieldErrorState } from '@shared/ui/common/field-error/field-error.component'
+import { FieldErrorComponent } from '@shared/ui/common/field-error/field-error.component'
+import { FieldErrorState } from '@shared/helpers/form/field-state.helper'
 
 function stateOf (errors: object[], overrides: Partial<Record<'invalid' | 'touched' | 'dirty', boolean>> = {}, value: unknown = ''): () => FieldErrorState {
     const state: FieldErrorState = {

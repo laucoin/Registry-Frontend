@@ -6,6 +6,7 @@ import { RegistrySchemas } from '@shared/helpers/form/registry.schemas'
 import { ProjectOptionModel } from '@shared/models/model/project-option.model'
 import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
 import { CustomDatetimeModel } from '@shared/models/model/custom-datetime.model'
+import { ProjectModel } from '@shared/models/model/project.model'
 import { NumericRangeModel } from '@shared/models/model/numeric-range.model'
 
 const JUNE: CustomDatetimeModel = { date: '2026-06-01', time: '10:00:00' }
@@ -18,10 +19,10 @@ function errorsOf<T> (model: T, rule: (path: SchemaPathTree<T>) => void): object
 }
 
 describe( 'RegistrySchemas', () => {
-    it.each( [ [ '   ', [ { kind: 'blank' } ] ], [ '', [ { kind: 'blank' } ] ], [ 'text', [] ], [ undefined, [] ] ] )(
-        'nonBlank judges %j as %j', (value: string | undefined, expected: object[]) => {
+    it.each( [ [ '   ', [ { kind: 'blank' } ] ], [ '', [ { kind: 'blank' } ] ], [ 'text', [] ] ] )(
+        'nonBlank judges %j as %j', (value: string, expected: object[]) => {
             // Arrange
-            const rule: (path: SchemaPath<string | undefined>) => void = RegistrySchemas.nonBlank
+            const rule: (path: SchemaPath<string>) => void = RegistrySchemas.nonBlank
 
             // Act
             const errors: object[] = errorsOf( value, rule )
@@ -30,51 +31,45 @@ describe( 'RegistrySchemas', () => {
             expect( errors ).toEqual( expected )
         } )
 
-    it( 'minDateTime refuses a date before the minimum and keeps the formatted bound', () => {
+    it( 'withinProject refuses a date outside the project bounds and formats the bound', () => {
         // Arrange
-        const rule = (path: SchemaPath<CustomDatetimeModel | undefined>): void => RegistrySchemas.minDateTime( path, JULY, '01/07/2026' )
+        const project: ProjectModel = { begin: JUNE, end: AUGUST } as ProjectModel
+        const rule = (path: SchemaPath<CustomDatetimeModel | null>): void =>
+            RegistrySchemas.withinProject( path, () => project, (date: CustomDatetimeModel): string => `<${date.date}>` )
+        const tooEarly: CustomDatetimeModel = { date: '2026-05-01', time: '10:00:00' }
+        const tooLate: CustomDatetimeModel = { date: '2026-09-01', time: '10:00:00' }
 
         // Act
-        const errors: object[] = [ ...errorsOf( JUNE, rule ), ...errorsOf( AUGUST, rule ), ...errorsOf( undefined, rule ) ]
+        const errors: object[] = [ tooEarly, tooLate, JULY, null ].flatMap( (value: CustomDatetimeModel | null): object[] => errorsOf( value, rule ) )
 
         // Assert
-        expect( errors ).toEqual( [ { kind: 'minDate', min: '01/07/2026' } ] )
+        expect( errors ).toEqual( [ { kind: 'minDate', min: '<2026-06-01>' }, { kind: 'maxDate', max: '<2026-08-01>' } ] )
     } )
 
-    it( 'maxDateTime refuses a date after the maximum and keeps the formatted bound', () => {
+    it( 'withinProject accepts a native date and follows a project that changes', () => {
         // Arrange
-        const rule = (path: SchemaPath<CustomDatetimeModel | undefined>): void => RegistrySchemas.maxDateTime( path, JULY, '01/07/2026' )
+        const project: WritableSignal<ProjectModel | undefined> = signal( undefined )
+        const rule = (path: SchemaPath<Date | null>): void => RegistrySchemas.withinProject( path, project, (): string => 'bound' )
+        const date: Date = new Date( 2026, 4, 1, 10 )
 
         // Act
-        const errors: object[] = [ ...errorsOf( AUGUST, rule ), ...errorsOf( JUNE, rule ), ...errorsOf( undefined, rule ) ]
+        const withoutProject: object[] = errorsOf( date, rule )
+        project.set( { begin: JUNE } as ProjectModel )
 
         // Assert
-        expect( errors ).toEqual( [ { kind: 'maxDate', max: '01/07/2026' } ] )
-    } )
-
-    it( 'minDateTime and maxDateTime accept a native date', () => {
-        // Arrange
-        const min = (path: SchemaPath<Date | undefined>): void => RegistrySchemas.minDateTime( path, JULY, '01/07/2026' )
-        const max = (path: SchemaPath<Date | undefined>): void => RegistrySchemas.maxDateTime( path, JULY, '01/07/2026' )
-
-        // Act
-        const tooEarly: object[] = errorsOf( new Date( 2026, 5, 1, 10 ), min )
-        const tooLate: object[] = errorsOf( new Date( 2026, 7, 1, 10 ), max )
-
-        // Assert
-        expect( [ tooEarly[0], tooLate[0] ] ).toEqual( [ { kind: 'minDate', min: '01/07/2026' }, { kind: 'maxDate', max: '01/07/2026' } ] )
+        expect( [ withoutProject, errorsOf( date, rule ) ] ).toEqual( [ [], [ { kind: 'minDate', min: 'bound' } ] ] )
     } )
 
     it.each( [
         [ { date: undefined, time: '10:00:00' }, [ { kind: 'dateRequiredForTime' } ] ],
         [ { date: '2026-06-01', time: undefined }, [] ],
-        [ undefined, [] ],
+        [ null, [] ],
     ] )( 'dateRequiredForTime judges %j as %j', (value: unknown, expected: object[]) => {
         // Arrange
-        const rule: (path: SchemaPath<CustomDatetimeModel | undefined>) => void = RegistrySchemas.dateRequiredForTime
+        const rule: (path: SchemaPath<CustomDatetimeModel | null>) => void = RegistrySchemas.dateRequiredForTime
 
         // Act
-        const errors: object[] = errorsOf( value as CustomDatetimeModel | undefined, rule )
+        const errors: object[] = errorsOf( value as CustomDatetimeModel | null, rule )
 
         // Assert
         expect( errors ).toEqual( expected )
@@ -84,13 +79,13 @@ describe( 'RegistrySchemas', () => {
         [ { lower: 5, upper: 2 }, [ { kind: 'rangeMin', min: 5, actual: 2 } ] ],
         [ { lower: 2, upper: 5 }, [] ],
         [ { lower: 2, upper: undefined }, [] ],
-        [ undefined, [] ],
+        [ null, [] ],
     ] )( 'numericRange judges %j as %j', (value: unknown, expected: object[]) => {
         // Arrange
-        const rule: (path: SchemaPath<NumericRangeModel | undefined>) => void = RegistrySchemas.numericRange
+        const rule: (path: SchemaPath<NumericRangeModel | null>) => void = RegistrySchemas.numericRange
 
         // Act
-        const errors: object[] = errorsOf( value as NumericRangeModel | undefined, rule )
+        const errors: object[] = errorsOf( value as NumericRangeModel | null, rule )
 
         // Assert
         expect( errors ).toEqual( expected )
@@ -98,12 +93,12 @@ describe( 'RegistrySchemas', () => {
 
     it( 'numericRangeMin and numericRangeMax refuse the out of bounds side only', () => {
         // Arrange
-        const min = (path: SchemaPath<NumericRangeModel | undefined>): void => RegistrySchemas.numericRangeMin( path, 3 )
-        const max = (path: SchemaPath<NumericRangeModel | undefined>): void => RegistrySchemas.numericRangeMax( path, 8 )
+        const min = (path: SchemaPath<NumericRangeModel | null>): void => RegistrySchemas.numericRangeMin( path, 3 )
+        const max = (path: SchemaPath<NumericRangeModel | null>): void => RegistrySchemas.numericRangeMax( path, 8 )
         const range: NumericRangeModel = { lower: 1, upper: 10 }
 
         // Act
-        const errors: object[] = [ ...errorsOf( range, min ), ...errorsOf( range, max ), ...errorsOf( undefined, min ) ]
+        const errors: object[] = [ ...errorsOf( range, min ), ...errorsOf( range, max ), ...errorsOf( null, min ) ]
 
         // Assert
         expect( errors ).toEqual( [ { kind: 'min', min: 3, actual: 1 }, { kind: 'max', max: 8, actual: 10 } ] )
@@ -116,10 +111,10 @@ describe( 'RegistrySchemas', () => {
         [ { lower: undefined, upper: undefined }, [] ],
     ] )( 'numericRangeBothDefined judges %j as %j', (value: unknown, expected: object[]) => {
         // Arrange
-        const rule: (path: SchemaPath<NumericRangeModel | undefined>) => void = RegistrySchemas.numericRangeBothDefined
+        const rule: (path: SchemaPath<NumericRangeModel | null>) => void = RegistrySchemas.numericRangeBothDefined
 
         // Act
-        const errors: object[] = errorsOf( value as NumericRangeModel | undefined, rule )
+        const errors: object[] = errorsOf( value as NumericRangeModel | null, rule )
 
         // Assert
         expect( errors ).toEqual( expected )
@@ -129,12 +124,12 @@ describe( 'RegistrySchemas', () => {
         [ JULY, JUNE, [ { kind: 'beginDateBeforeEndDate' } ] ],
         [ JULY, JULY, [ { kind: 'beginDateBeforeEndDate' } ] ],
         [ JUNE, JULY, [] ],
-        [ undefined, JULY, [] ],
+        [ null, JULY, [] ],
     ] )( 'beginDateBeforeEndDate judges %j then %j as %j', (beginDateTime: unknown, endDateTime: unknown, expected: object[]) => {
         // Arrange
-        const model: { beginDateTime: CustomDatetimeModel | undefined, endDateTime: CustomDatetimeModel | undefined } = {
-            beginDateTime: beginDateTime as CustomDatetimeModel | undefined,
-            endDateTime: endDateTime as CustomDatetimeModel | undefined,
+        const model: { beginDateTime: CustomDatetimeModel | null, endDateTime: CustomDatetimeModel | null } = {
+            beginDateTime: beginDateTime as CustomDatetimeModel | null,
+            endDateTime: endDateTime as CustomDatetimeModel | null,
         }
 
         // Act
