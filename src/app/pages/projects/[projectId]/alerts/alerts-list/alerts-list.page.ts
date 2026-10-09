@@ -1,7 +1,9 @@
-import { Component, inject} from '@angular/core'
+import { FieldTree, FormField } from '@angular/forms/signals'
+import { createSearchForm } from '@shared/helpers/form/search.form'
+import { AlertsListSearchModel, toAlertsListSearchModel, toAlertsListSearchParams } from './alerts-list.search'
+import { Component, inject, signal, WritableSignal } from '@angular/core'
 import {GenericListComponent} from '@shared/ui/base/generic-list.component'
 import {AlertFacade} from '@pages/projects/[projectId]/alerts/data/state/alert.facade'
-import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms'
 import {PageEventModel} from '@shared/models/model/page-event.model'
 import {Button} from 'primeng/button'
 import {DatePicker} from 'primeng/datepicker'
@@ -24,7 +26,7 @@ import {AlertElementComponent} from '@shared/ui/domain/alert-element/alert-eleme
         DatePicker,
         InputText,
         ListComponent,
-        ReactiveFormsModule,
+        FormField,
         RegistryTemplateDirective,
         Select,
         TranslocoPipe,
@@ -35,22 +37,19 @@ import {AlertElementComponent} from '@shared/ui/domain/alert-element/alert-eleme
 export class AlertsListPage extends GenericListComponent {
     protected readonly facade: AlertFacade = inject(AlertFacade)
 
+    protected readonly model: WritableSignal<AlertsListSearchModel> = signal( toAlertsListSearchModel( {
+        textSearched: this.facade.alertsPageTextSearchedParam(),
+        statusSearched: this.facade.alertsPageStatusSearchedParam(),
+        visibilitySearched: this.facade.alertsPageVisibilitySearchedParam(),
+        startDateTimeSearched: this.facade.alertsPageStartDateTimeSearchedParam(),
+        endDateTimeSearched: this.facade.alertsPageEndDateTimeSearchedParam(),
+    } ) )
+    protected readonly form: FieldTree<AlertsListSearchModel> = createSearchForm( this.model )
+
     public constructor() {
         super()
 
-        this.form = this.initForm()
-
         this.loadData()
-    }
-
-    protected initForm(): FormGroup {
-        return this.formBuilder.group({
-            textSearched: this.formBuilder.control(this.facade.alertsPageTextSearchedParam()),
-            statusSearched: this.formBuilder.control(this.facade.alertsPageStatusSearchedParam()),
-            visibilitySearched: this.formBuilder.control(this.facade.alertsPageVisibilitySearchedParam()),
-            startDateTimeSearched: this.formBuilder.control(this.facade.alertsPageStartDateTimeSearchedParam()),
-            endDateTimeSearched: this.formBuilder.control(this.facade.alertsPageEndDateTimeSearchedParam()),
-        })
     }
 
     protected loadData(): void {
@@ -58,33 +57,15 @@ export class AlertsListPage extends GenericListComponent {
     }
 
     protected loadPage(pageEvent: PageEventModel): void {
+        const search: ReturnType<typeof toAlertsListSearchParams> = toAlertsListSearchParams( this.model() )
         this.facade.inputPageSearchParameters(
-            this.textSearched.value,
-            this.statusSearched.value,
-            this.visibilitySearched.value,
-            this.startDateTimeSearched.value,
-            this.endDateTimeSearched.value,
+            search.textSearched,
+            search.statusSearched,
+            search.visibilitySearched,
+            search.startDateTimeSearched,
+            search.endDateTimeSearched,
         )
         this.facade.fetchAlertsPage(pageEvent.pageNumber, pageEvent.pageSize)
     }
 
-    protected get textSearched(): FormControl {
-        return this.form.get('textSearched') as FormControl
-    }
-
-    protected get statusSearched(): FormControl {
-        return this.form.get('statusSearched') as FormControl
-    }
-
-    protected get visibilitySearched(): FormControl {
-        return this.form.get('visibilitySearched') as FormControl
-    }
-
-    protected get startDateTimeSearched(): FormControl {
-        return this.form.get('startDateTimeSearched') as FormControl
-    }
-
-    protected get endDateTimeSearched(): FormControl {
-        return this.form.get('endDateTimeSearched') as FormControl
-    }
 }

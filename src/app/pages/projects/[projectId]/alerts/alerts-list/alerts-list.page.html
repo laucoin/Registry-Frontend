@@ -3,7 +3,7 @@
           [error]='facade.alertsPageError()'
           [loading]='facade.alertsPageLoading()'
           emptyMessagePrefix='alerts.notifications.EMPTY'>
-    <ng-template appTemplate='search' [formGroup]='form' let-pageEvent>
+    <ng-template appTemplate='search' let-pageEvent>
         <div class='field'>
             <label for='text-search-field'>{{ 'alerts.search-and-filter.text' | transloco }}</label>
             <input id='text-search-field'
@@ -11,7 +11,7 @@
                    fluid
                    pInputText
                    (keydown.enter)='loadPage(pageEvent)'
-                   [formControl]='textSearched' />
+                   [formField]='form.textSearched' />
         </div>
         <div class='grid search-line'>
             <div class='field'>
@@ -22,7 +22,7 @@
                           optionLabel='label'
                           optionValue='value'
                           (onChange)='loadPage(pageEvent)'
-                          [formControl]='statusSearched' />
+                          [formField]='form.statusSearched' />
             </div>
             <div class='field'>
                 <label for='visibility-search-field'>{{ 'alerts.search-and-filter.visibility' | transloco }}</label>
@@ -32,7 +32,7 @@
                           optionLabel='label'
                           optionValue='value'
                           (onChange)='loadPage(pageEvent)'
-                          [formControl]='visibilitySearched' />
+                          [formField]='form.visibilitySearched' />
             </div>
         </div>
         <div class='grid search-line'>
@@ -44,7 +44,7 @@
                                [showTime]='true'
                                [touchUI]='uiFacade.tinyScreen()'
                                (onBlur)='loadPage(pageEvent)'
-                               [formControl]='startDateTimeSearched' />
+                               [formField]='form.startDateTimeSearched' />
             </div>
             <div class='field'>
                 <label for='end-date-time-search-field'>{{ 'alerts.search-and-filter.end-datetime' | transloco }}</label>
@@ -54,7 +54,7 @@
                                [showTime]='true'
                                [touchUI]='uiFacade.tinyScreen()'
                                (onBlur)='loadPage(pageEvent)'
-                               [formControl]='endDateTimeSearched' />
+                               [formField]='form.endDateTimeSearched' />
             </div>
         </div>
         <div class='flex justify-center'>

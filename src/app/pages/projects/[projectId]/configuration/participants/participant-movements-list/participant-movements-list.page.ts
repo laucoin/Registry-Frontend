@@ -1,7 +1,9 @@
+import { FieldTree, FormField } from '@angular/forms/signals'
+import { createSearchForm } from '@shared/helpers/form/search.form'
+import { ParticipantMovementsListSearchModel, toParticipantMovementsListSearchModel, toParticipantMovementsListSearchParams } from './participant-movements-list.search'
 import { Component, inject, OnDestroy, signal, WritableSignal } from '@angular/core'
 import {ParticipantModel} from '@shared/models/model/participant.model'
 import {withLoading} from '@shared/helpers/rx.helper'
-import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms'
 import {PageEventModel} from '@shared/models/model/page-event.model'
 import {ListComponent} from '@shared/ui/common/list/list.component'
 import {RegistryTemplateDirective} from '@shared/directives/registry-template.directive'
@@ -33,7 +35,7 @@ import {ElementSkeletonComponent} from '@shared/ui/common/element-skeleton/eleme
     imports: [
         ListComponent,
         RegistryTemplateDirective,
-        ReactiveFormsModule,
+        FormField,
         TranslocoPipe,
         InputTextModule,
         ToggleButtonModule,
@@ -56,22 +58,19 @@ export class ParticipantMovementsListPage extends GenericListComponent implement
     protected readonly participant: WritableSignal<ParticipantModel | undefined> = signal(undefined)
     protected readonly participantLoading: WritableSignal<boolean> = signal(false)
 
+    protected readonly model: WritableSignal<ParticipantMovementsListSearchModel> = signal( toParticipantMovementsListSearchModel( {
+        typeSearched: this.facade.participantMovementsPageTypeSearchedParam(),
+        startDateTimeSearched: this.facade.participantMovementsPageStartDateTimeSearchedParam(),
+        endDateTimeSearched: this.facade.participantMovementsPageEndDateTimeSearchedParam(),
+        visibilitySearched: this.facade.participantMovementsPageVisibilitySearchedParam(),
+    } ) )
+    protected readonly form: FieldTree<ParticipantMovementsListSearchModel> = createSearchForm( this.model )
+
     public constructor() {
         super()
 
-        this.form = this.initForm()
-
         this.loadData()
         this.handleMovementActions()
-    }
-
-    protected initForm(): FormGroup {
-        return this.formBuilder.group({
-            typeSearched: this.formBuilder.control(this.facade.participantMovementsPageTypeSearchedParam()),
-            startDateTimeSearched: this.formBuilder.control(this.facade.participantMovementsPageStartDateTimeSearchedParam()),
-            endDateTimeSearched: this.formBuilder.control(this.facade.participantMovementsPageEndDateTimeSearchedParam()),
-            visibilitySearched: this.formBuilder.control(this.facade.participantMovementsPageVisibilitySearchedParam()),
-        })
     }
 
     protected loadData(): void {
@@ -109,11 +108,12 @@ export class ParticipantMovementsListPage extends GenericListComponent implement
     }
 
     protected loadPage(pageEvent: PageEventModel): void {
+        const search: ReturnType<typeof toParticipantMovementsListSearchParams> = toParticipantMovementsListSearchParams( this.model() )
         this.facade.inputMovementsPageSearchParameters(
-            this.typeSearched.value,
-            this.startDateTimeSearched.value,
-            this.endDateTimeSearched.value,
-            this.visibilitySearched.value,
+            search.typeSearched,
+            search.startDateTimeSearched,
+            search.endDateTimeSearched,
+            search.visibilitySearched,
         )
         this.facade.fetchParticipantMovementsPage(
             this.route.snapshot.params['participantId'], pageEvent.pageNumber, pageEvent.pageSize)
@@ -123,19 +123,4 @@ export class ParticipantMovementsListPage extends GenericListComponent implement
         this.subscriptions.unsubscribe()
     }
 
-    protected get typeSearched(): FormControl {
-        return this.form.get('typeSearched') as FormControl
-    }
-
-    protected get startDateTimeSearched(): FormControl {
-        return this.form.get('startDateTimeSearched') as FormControl
-    }
-
-    protected get endDateTimeSearched(): FormControl {
-        return this.form.get('endDateTimeSearched') as FormControl
-    }
-
-    protected get visibilitySearched(): FormControl {
-        return this.form.get('visibilitySearched') as FormControl
-    }
 }

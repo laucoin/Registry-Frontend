@@ -13,7 +13,7 @@
           [error]='facade.participantMovementsPageError()'
           [loading]='facade.participantMovementsPageLoading()'
           emptyMessagePrefix='movements.notifications.EMPTY'>
-    <ng-template appTemplate='search' [formGroup]='form' let-pageEvent>
+    <ng-template appTemplate='search' let-pageEvent>
         <div class='grid search-line'>
             <div class='field'>
                 <label for='start-date-time-search-field'>{{ 'movements.search-and-filter.start-datetime' | transloco }}</label>
@@ -23,7 +23,7 @@
                                [showTime]='true'
                                [touchUI]='uiFacade.tinyScreen()'
                                (onBlur)='loadPage(pageEvent)'
-                               [formControl]='startDateTimeSearched' />
+                               [formField]='form.startDateTimeSearched' />
             </div>
             <div class='field'>
                 <label for='end-date-time-search-field'>{{ 'movements.search-and-filter.end-datetime' | transloco }}</label>
@@ -33,7 +33,7 @@
                                [showTime]='true'
                                [touchUI]='uiFacade.tinyScreen()'
                                (onBlur)='loadPage(pageEvent)'
-                               [formControl]='endDateTimeSearched' />
+                               [formField]='form.endDateTimeSearched' />
             </div>
         </div>
         <div class='grid search-line'>
@@ -46,7 +46,7 @@
                           optionLabel='label'
                           optionValue='value'
                           (onChange)='loadPage(pageEvent)'
-                          [formControl]='typeSearched' />
+                          [formField]='form.typeSearched' />
             </div>
             <div class='field'>
                 <label for='visibility-search-field'>{{ 'movements.search-and-filter.visibility' | transloco }}</label>
@@ -56,7 +56,7 @@
                           optionLabel='label'
                           optionValue='value'
                           (onChange)='loadPage(pageEvent)'
-                          [formControl]='visibilitySearched' />
+                          [formField]='form.visibilitySearched' />
             </div>
         </div>
         <div class='flex justify-center'>

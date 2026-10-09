@@ -14,7 +14,7 @@
           [error]='facade.groupMembersPageError()'
           [loading]='facade.groupMembersPageLoading()'
           emptyMessagePrefix='participants.notifications.EMPTY'>
-    <ng-template appTemplate='search' [formGroup]='form' let-pageEvent>
+    <ng-template appTemplate='search' let-pageEvent>
         <div class='field'>
             <label for='text-search-field'>{{ 'participants.search-and-filter.text' | transloco }}</label>
             <input id='text-search-field'
@@ -22,7 +22,7 @@
                    fluid
                    pInputText
                    (keydown.enter)='loadPage(pageEvent)'
-                   [formControl]='textSearched' />
+                   [formField]='form.textSearched' />
         </div>
         <div class='grid search-line'>
             <div class='field'>
@@ -33,7 +33,7 @@
                           optionLabel='label'
                           optionValue='value'
                           (onChange)='loadPage(pageEvent)'
-                          [formControl]='statusSearched' />
+                          [formField]='form.statusSearched' />
             </div>
             <div class='field'>
                 <label for='visibility-search-field'>{{ 'participants.search-and-filter.visibility' | transloco }}</label>
@@ -43,7 +43,7 @@
                           optionLabel='label'
                           optionValue='value'
                           (onChange)='loadPage(pageEvent)'
-                          [formControl]='visibilitySearched' />
+                          [formField]='form.visibilitySearched' />
             </div>
         </div>
         <div class='flex justify-center'>
@@ -83,25 +83,22 @@
 
 <app-layer [(visible)]='addMembersFormLayerOpened'
            [title]='"groups.actions.add-members" | transloco'>
-    @if (addMembersParticipants) {
-        <form>
+    <div>
             <div class='field'>
                 <span class='label'
-                      appRequired>{{ 'groups.form.members' | pluralTranslation: addMembersParticipants.value | transloco }}</span>
+                      appRequired>{{ 'groups.form.members' | pluralTranslation: addMembersModel().participants | transloco }}</span>
                 <label for='members' class='secondary-color'>{{ 'groups.form.members.search' | transloco }}</label>
-                <app-select-elements-field [formControl]='addMembersParticipants' [suggestions]='facade.searchedParticipantsMetadata()'
+                <app-select-elements-field [formField]='addMembersForm.participants' [suggestions]='facade.searchedParticipantsMetadata()'
                                            [fluid]='true'
                                            [multiple]='true'
                                            [selectItemBuilder]='ParticipantHelper.toSelectItem'
-                                           [selectionLabel]='"groups.form.members.selected" | pluralTranslation: addMembersParticipants.value |
+                                           [selectionLabel]='"groups.form.members.selected" | pluralTranslation: addMembersModel().participants |
                                        transloco'
                                            [emptyMessage]='"groups.form.members.empty" | transloco'
                                            [emptySelectionMessage]='"groups.form.members.empty-search" | transloco'
                                            inputId='members'
                                            (handleSearch)='handleSearch($event.query)' />
-                <app-form-field-error [errors]='addMembersParticipants.errors'
-                                      [invalid]='FormHelper.invalid(addMembersParticipants)'
-                                      translationPrefix='groups.form.error.add-members' />
+                <app-field-error [field]='addMembersForm.participants' translationPrefix='groups.form.error.add-members' />
             </div>
 
             <div class='flex mt-2 justify-center'>
@@ -119,8 +116,7 @@
                         icon='pi pi-user-plus'
                         severity='success' />
             </div>
-        </form>
-    }
+    </div>
 </app-layer>
 
 <app-layer [(visible)]='createMemberFormLayerOpened'

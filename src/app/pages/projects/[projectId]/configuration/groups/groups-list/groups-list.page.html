@@ -3,7 +3,7 @@
           [error]='facade.groupsPageError()'
           [loading]='facade.groupsPageLoading()'
           emptyMessagePrefix='groups.notifications.EMPTY'>
-    <ng-template appTemplate='search' [formGroup]='form' let-pageEvent>
+    <ng-template appTemplate='search' let-pageEvent>
         <div class='grid search-line'>
             <div class='field'>
                 <label for='text-search-field'>{{ 'groups.search-and-filter.text' | transloco }}</label>
@@ -12,7 +12,7 @@
                        fluid
                        pInputText
                        (keydown.enter)='loadPage(pageEvent)'
-                       [formControl]='textSearched' />
+                       [formField]='form.textSearched' />
             </div>
             <div class='field'>
                 <label for='date-time-search-field'>{{ 'groups.search-and-filter.datetime' | transloco }}</label>
@@ -22,7 +22,7 @@
                                [showTime]='true'
                                [touchUI]='uiFacade.tinyScreen()'
                                (onBlur)='loadPage(pageEvent)'
-                               [formControl]='dateTimeSearched' />
+                               [formField]='form.dateTimeSearched' />
             </div>
         </div>
         <div class='grid search-line'>
@@ -34,7 +34,7 @@
                           optionLabel='label'
                           optionValue='value'
                           (onChange)='loadPage(pageEvent)'
-                          [formControl]='presenceSearched' />
+                          [formField]='form.presenceSearched' />
             </div>
             <div class='field'>
                 <label for='visibility-search-field'>{{ 'groups.search-and-filter.visibility' | transloco }}</label>
@@ -44,7 +44,7 @@
                           optionLabel='label'
                           optionValue='value'
                           (onChange)='loadPage(pageEvent)'
-                          [formControl]='visibilitySearched' />
+                          [formField]='form.visibilitySearched' />
             </div>
         </div>
         <div class='flex justify-center'>

@@ -1,7 +1,9 @@
-import { Component, inject } from '@angular/core'
+import { FieldTree, FormField } from '@angular/forms/signals'
+import { createSearchForm } from '@shared/helpers/form/search.form'
+import { GroupsListSearchModel, toGroupsListSearchModel, toGroupsListSearchParams } from './groups-list.search'
+import { Component, inject, signal, WritableSignal } from '@angular/core'
 import { GroupRoutesEnum } from '@pages/projects/[projectId]/configuration/groups/group-routes.enum'
 import { GroupFacade } from '@pages/projects/[projectId]/configuration/groups/data/state/group.facade'
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms'
 import { PageEventModel } from '@shared/models/model/page-event.model'
 import { Button } from 'primeng/button'
 import { DatePicker } from 'primeng/datepicker'
@@ -26,7 +28,7 @@ import { GenericListComponent } from '@shared/ui/base/generic-list.component'
         DatePicker,
         InputText,
         ListComponent,
-        ReactiveFormsModule,
+        FormField,
         RegistryTemplateDirective,
         TranslocoPipe,
         RouterLink,
@@ -40,21 +42,18 @@ export class GroupsListPage extends GenericListComponent {
 
     protected readonly GroupRoutesEnum: typeof GroupRoutesEnum = GroupRoutesEnum
 
+    protected readonly model: WritableSignal<GroupsListSearchModel> = signal( toGroupsListSearchModel( {
+        textSearched: this.facade.groupsPageTextSearchedParam(),
+        dateTimeSearched: this.facade.groupsPageDateTimeSearchedParam(),
+        presenceSearched: this.facade.groupsPagePresenceSearchedParam(),
+        visibilitySearched: this.facade.groupsPageVisibilitySearchedParam(),
+    } ) )
+    protected readonly form: FieldTree<GroupsListSearchModel> = createSearchForm( this.model )
+
     public constructor () {
         super()
 
-        this.form = this.initForm()
-
         this.loadData()
-    }
-
-    protected initForm (): FormGroup {
-        return this.formBuilder.group( {
-            textSearched: this.formBuilder.control( this.facade.groupsPageTextSearchedParam() ),
-            dateTimeSearched: this.formBuilder.control( this.facade.groupsPageDateTimeSearchedParam() ),
-            presenceSearched: this.formBuilder.control( this.facade.groupsPagePresenceSearchedParam() ),
-            visibilitySearched: this.formBuilder.control( this.facade.groupsPageVisibilitySearchedParam() ),
-        } )
     }
 
     protected loadData (): void {
@@ -62,28 +61,14 @@ export class GroupsListPage extends GenericListComponent {
     }
 
     protected loadPage (pageEvent: PageEventModel): void {
+        const search: ReturnType<typeof toGroupsListSearchParams> = toGroupsListSearchParams( this.model() )
         this.facade.inputPageSearchParameters(
-            this.textSearched.value,
-            this.dateTimeSearched.value,
-            this.presenceSearched.value,
-            this.visibilitySearched.value,
+            search.textSearched,
+            search.dateTimeSearched,
+            search.presenceSearched,
+            search.visibilitySearched,
         )
         this.facade.fetchGroupsPage( pageEvent.pageNumber, pageEvent.pageSize)
     }
 
-    protected get textSearched (): FormControl {
-        return this.form.get( 'textSearched' ) as FormControl
-    }
-
-    protected get dateTimeSearched (): FormControl {
-        return this.form.get( 'dateTimeSearched' ) as FormControl
-    }
-
-    protected get presenceSearched (): FormControl {
-        return this.form.get( 'presenceSearched' ) as FormControl
-    }
-
-    protected get visibilitySearched (): FormControl {
-        return this.form.get( 'visibilitySearched' ) as FormControl
-    }
 }
