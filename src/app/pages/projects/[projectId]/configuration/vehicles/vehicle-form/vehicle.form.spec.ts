@@ -6,9 +6,9 @@ import {
     createVehicleForm,
     toVehicleDto,
     toVehicleFormModel,
-    VehicleFormContext,
     VehicleFormModel,
 } from '@pages/projects/[projectId]/configuration/vehicles/vehicle-form/vehicle.form'
+import { ProjectDateContext } from '@shared/helpers/form/registry.schemas'
 import { CustomDatetimeModel } from '@shared/models/model/custom-datetime.model'
 import { ProjectModel } from '@shared/models/model/project.model'
 import { VehicleModel } from '@shared/models/model/vehicle.model'
@@ -30,7 +30,7 @@ describe( 'vehicle form', () => {
     function build (initial: VehicleFormModel): void {
         project = signal( undefined )
         model = signal( initial )
-        const context: VehicleFormContext = { project, formatDate: (date: CustomDatetimeModel): string => date.date! }
+        const context: ProjectDateContext = { project, formatDate: (date: CustomDatetimeModel): string => date.date! }
         tree = TestBed.runInInjectionContext( () => createVehicleForm( model, context ) )
     }
 

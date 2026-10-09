@@ -1,4 +1,4 @@
-import { FieldContext, SchemaPath, validate, ValidationError } from '@angular/forms/signals'
+import { FieldContext, maxLength, required, SchemaPath, validate, ValidationError } from '@angular/forms/signals'
 import { SelectItem } from 'primeng/api'
 import { ProjectModel } from '@shared/models/model/project.model'
 import { ProjectOptionModel } from '@shared/models/model/project-option.model'
@@ -10,6 +10,11 @@ import { DateHelper } from '@shared/helpers/date.helper'
 import { StringHelper } from '@shared/helpers/string.helper'
 
 export type RegistryError = ValidationError.WithoutFieldTree & Readonly<Record<string, unknown>>
+
+export interface ProjectDateContext {
+    project: () => ProjectModel | undefined
+    formatDate: (date: CustomDatetimeModel) => string | undefined
+}
 
 export interface DateRangeValue {
     beginDateTime: CustomDatetimeModel | null
@@ -35,6 +40,22 @@ export class RegistrySchemas {
     public static nonBlank (path: SchemaPath<string>): void {
         validate( path, (ctx: FieldContext<string>): RegistryError | null =>
             StringHelper.isBlank( ctx.value() ) ? registryError( 'blank' ) : null )
+    }
+
+    public static requiredText (path: SchemaPath<string>, max: number): void {
+        required( path )
+        maxLength( path, max )
+        RegistrySchemas.nonBlank( path )
+    }
+
+    public static requiredList<T> (path: SchemaPath<T[]>): void {
+        validate( path, (ctx: FieldContext<T[]>): RegistryError | null =>
+            ctx.value().length === 0 ? registryError( 'required' ) : null )
+    }
+
+    public static projectDateTime (path: SchemaPath<CustomDatetimeModel | null>, context: ProjectDateContext): void {
+        RegistrySchemas.dateRequiredForTime( path )
+        RegistrySchemas.withinProject( path, context.project, context.formatDate )
     }
 
     public static withinProject (

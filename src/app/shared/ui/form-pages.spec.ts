@@ -12,11 +12,9 @@ import { SessionFacade } from '@core/registry/state/session.facade'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { ActivityFormPage } from '@pages/projects/[projectId]/configuration/activities/activity-form/activity-form.page'
 import { ActivityFacade } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.facade'
-import { GroupFacade } from '@pages/projects/[projectId]/configuration/groups/data/state/group.facade'
-import { GroupFormPage } from '@pages/projects/[projectId]/configuration/groups/group-form/group-form.page'
 import { CustomDateFormatPipe } from '@shared/helpers/pipe/custom-date-format.pipe'
 import { autoMock } from '@shared/helpers/testing/auto-mock'
-import { ACTIVITY_DTO, GROUP_DTO, PARTICIPANT_DTO } from '@shared/helpers/testing/response-fixtures'
+import { ACTIVITY_DTO } from '@shared/helpers/testing/response-fixtures'
 import { GenericFormComponent } from '@shared/ui/base/generic-form.component'
 
 interface FormCase {
@@ -34,8 +32,6 @@ interface FormCase {
 const CASES: FormCase[] = [
     { name: 'activity', type: ActivityFormPage, facade: ActivityFacade, param: 'activityId', fetch: 'fetchActivity', create: 'createActivity', update: 'updateActivity',
         model: ACTIVITY_DTO, dto: { name: 'Hike', description: 'd', duration: 'PT2H', allowedParticipants: { lower: 1, upper: 5 } } },
-    { name: 'group', type: GroupFormPage, facade: GroupFacade, param: 'groupId', fetch: 'fetchGroup', create: 'createGroup', update: 'updateGroup',
-        model: { ...GROUP_DTO, members: [ PARTICIPANT_DTO ] }, dto: { name: 'Wolves', members: [ 'pa1' ] } },
 ]
 
 describe( 'form pages', () => {

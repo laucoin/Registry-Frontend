@@ -170,4 +170,40 @@ describe( 'RegistrySchemas', () => {
         // Assert
         expect( [ missing, satisfied ] ).toEqual( [ [ { kind: 'preRequiredOptions', for: 'Alerts', missing: 'Movements' } ], [] ] )
     } )
+
+    it( 'requiredText requires, limits and refuses blank texts', () => {
+        // Arrange
+        const rule = (path: SchemaPath<string>): void => RegistrySchemas.requiredText( path, 3 )
+
+        // Act
+        const errors: object[][] = [ '', '  ', 'abcd', 'ok' ].map( (value: string): object[] => errorsOf( value, rule ) )
+
+        // Assert
+        expect( errors ).toEqual( [ [ { kind: 'required' }, { kind: 'blank' } ], [ { kind: 'blank' } ], [ { kind: 'maxLength', maxLength: 3 } ], [] ] )
+    } )
+
+    it( 'projectDateTime combines the time without date rule and the project bounds', () => {
+        // Arrange
+        const project: ProjectModel = { begin: JUNE } as ProjectModel
+        const rule = (path: SchemaPath<CustomDatetimeModel | null>): void =>
+            RegistrySchemas.projectDateTime( path, { project: () => project, formatDate: (date: CustomDatetimeModel): string => date.date! } )
+
+        // Act
+        const errors: object[] = [ { date: undefined, time: '10:00:00' }, { date: '2026-01-01', time: '10:00:00' }, JULY ]
+            .flatMap( (value: CustomDatetimeModel): object[] => errorsOf( value, rule ) )
+
+        // Assert
+        expect( errors.map( (error: object): unknown => (error as { kind: string }).kind ) ).toEqual( [ 'dateRequiredForTime', 'minDate', 'minDate' ] )
+    } )
+
+    it( 'requiredList refuses an empty list only', () => {
+        // Arrange
+        const rule = (path: SchemaPath<string[]>): void => RegistrySchemas.requiredList( path )
+
+        // Act
+        const errors: object[][] = [ [], [ 'a' ] ].map( (value: string[]): object[] => errorsOf( value, rule ) )
+
+        // Assert
+        expect( errors ).toEqual( [ [ { kind: 'required' } ], [] ] )
+    } )
 } )
