@@ -12,8 +12,8 @@ export class GenericMapper {
         return {
             id: dto.id,
             visible: dto.visible,
-            creation: HistoryMapper.toModel( dto.creation ),
-            lastEdition: HistoryMapper.toModel( dto.lastEdition ),
+            creation: dto.creation ? HistoryMapper.toModel( dto.creation ) : undefined,
+            lastEdition: dto.lastEdition ? HistoryMapper.toModel( dto.lastEdition ) : undefined,
         }
     }
 }

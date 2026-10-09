@@ -133,7 +133,7 @@ export class DialogElementComponent extends GenericElementComponent {
         this.communication().alert?.status?.value ) )
 
     protected readonly updated: Signal<boolean> = computed( (): boolean =>
-        DateHelper.isAfter( this.communication().lastEdition.dateTime, this.communication().creation.dateTime ),
+        DateHelper.isAfter( this.communication().lastEdition?.dateTime, this.communication().creation?.dateTime ),
     )
 
     private buildAuthorIsCurrentUser (

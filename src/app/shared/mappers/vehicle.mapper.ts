@@ -10,7 +10,7 @@ import { GenericProjectMapper } from '@shared/mappers/generic-project.mapper'
 export class VehicleMapper {
     public static toModel (dto: VehicleResponseDto): VehicleModel {
         return {
-            ...GenericProjectMapper.toModel( dto ),
+            ...GenericProjectMapper.toOptionalModel( dto ),
             licensePlate: dto.licensePlate,
             brand: dto.brand,
             model: dto.model,

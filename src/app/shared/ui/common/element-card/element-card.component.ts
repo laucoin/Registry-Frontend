@@ -58,7 +58,8 @@ export class ElementCardComponent<T extends GenericModel> extends GenericCompone
         'global.date-and-time-format.element-last-update',
     ))
 
-    private buildHistoryItem(history: HistoryModel, translationPrefix: string): string {
+    private buildHistoryItem(history: HistoryModel | undefined, translationPrefix: string): string {
+        if (!history) return ''
         const key: string = `${translationPrefix}${history.user ? '-user' : ''}`
         return this.translateService.translate(
             key,

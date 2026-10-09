@@ -41,8 +41,8 @@ describe( 'mappers', () => {
         // Assert
         expect( model ).toEqual( dto )
         expect( model ).not.toBe( dto )
-        expect( model.creation.user?.email ).toBe( 'ada@x.test' )
-        expect( model.lastEdition.user?.email ).toBe( 'ada@x.test' )
+        expect( model.creation?.user?.email ).toBe( 'ada@x.test' )
+        expect( model.lastEdition?.user?.email ).toBe( 'ada@x.test' )
     } )
 
     it( 'maps the preferences of a current user with its authorities', () => {
@@ -203,5 +203,19 @@ describe( 'mappers', () => {
         // Assert
         expect( pair.first ).toBe( 'm1' )
         expect( pair.second[ 0 ].email ).toBe( 'g@x.test' )
+    } )
+
+    it( 'maps the light entities nested in a response, which carry no history', () => {
+        // Arrange
+        const lightProject: ProjectResponseDto = { ...PROJECT, creation: undefined, lastEdition: undefined }
+        const lightUser: UserResponseDto = { ...USER, creation: undefined, lastEdition: undefined }
+
+        // Act
+        const project: ReturnType<typeof ProjectMapper.toModel> = ProjectMapper.toModel( lightProject )
+        const user: ReturnType<typeof UserMapper.toModel> = UserMapper.toModel( lightUser )
+
+        // Assert
+        expect( [ project.creation, project.lastEdition, user.creation, user.lastEdition ] ).toEqual( [ undefined, undefined, undefined, undefined ] )
+        expect( project.name ).toBe( PROJECT.name )
     } )
 } )
