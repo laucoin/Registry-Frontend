@@ -9,15 +9,11 @@
                                          fluid
                                          completeOnFocus
                                          forceSelection
-                                         optionValue='value.id'
                                          optionLabel='label'
                                          [placeholder]='"communications.form.placeholder.movement" | transloco: { date: now | dateFormat: "datetime"}'
-                                         [formControl]='movement'
+                                         [formField]='form.movement'
                                          [suggestions]='facade.searchedMovementsMetadata()'
                                          (keydown.enter)='submit()'
-                                         (onClear)='handleMovementSelection(undefined)'
-                                         (onUnselect)='handleMovementSelection(undefined)'
-                                         (onSelect)='handleMovementSelection($event.value)'
                                          (completeMethod)='handleMovementSearch($event)'>
                             <ng-template #empty>
                                 <span>{{ 'communications.form.movement.empty-search' | transloco }}</span>
@@ -31,9 +27,7 @@
                               text
                               (onClick)='removeMovementField()' />
                 </div>
-                <app-form-field-error [errors]='movement.errors'
-                                      [invalid]='FormHelper.invalid(movement)'
-                                      translationPrefix='communications.form.error.movement' />
+                <app-field-error [field]='form.movement' translationPrefix='communications.form.error.movement' />
             </div>
         }
         @if (alertSelectorMode() === AlertModulableFieldEnum.SELECT) {
@@ -46,15 +40,11 @@
                                          completeOnFocus
                                          forceSelection
                                          showClear
-                                         optionValue='value.id'
                                          optionLabel='label'
                                          [placeholder]='"communications.form.placeholder.alert" | transloco: { date: now | dateFormat: "datetime"}'
-                                         [formControl]='alert'
+                                         [formField]='form.alert'
                                          [suggestions]='facade.searchedAlertsMetadata()'
                                          (keydown.enter)='submit()'
-                                         (onClear)='handleAlertSelection(undefined)'
-                                         (onUnselect)='handleAlertSelection(undefined)'
-                                         (onSelect)='handleAlertSelection($event.value)'
                                          (completeMethod)='handleAlertSearch($event)'>
                             <ng-template #empty>
                                 <span>{{ 'communications.form.alert.empty-search' | transloco }}</span>
@@ -68,9 +58,7 @@
                               text
                               (onClick)='removeAlertField()' />
                 </div>
-                <app-form-field-error [errors]='alert.errors'
-                                      [invalid]='FormHelper.invalid(alert)'
-                                      translationPrefix='communications.form.error.alert' />
+                <app-field-error [field]='form.alert' translationPrefix='communications.form.error.alert' />
             </div>
         }
         @if (alertSelectorMode() === AlertModulableFieldEnum.NEW) {
@@ -84,7 +72,7 @@
                                pInputText
                                [placeholder]='"alerts.form.placeholder.title" | transloco'
                                (keydown.enter)='submit()'
-                               [formControl]='newAlertTitle' />
+                               [formField]='form.newAlertTitle' />
                     </div>
                     <p-button [ariaLabel]='"global.actions.remove" | transloco' icon='pi pi-times'
                               size='small'
@@ -93,9 +81,7 @@
                               text
                               (onClick)='removeAlertField()' />
                 </div>
-                <app-form-field-error [errors]='newAlertTitle.errors'
-                                      [invalid]='FormHelper.invalid(newAlertTitle)'
-                                      translationPrefix='alerts.form.error.title' />
+                <app-field-error [field]='form.newAlertTitle' translationPrefix='alerts.form.error.title' />
             </div>
         }
         @if (movementSelectorVisible() || GenericHelper.nonNull(alertSelectorMode())) {
@@ -103,7 +89,7 @@
         }
     }
     <app-form-error [error]='error()' />
-    <div class='flex items-start' [formGroup]='form'>
+    <div class='flex items-start'>
         @if (GenericHelper.nonNull(facade.communication())) {
             <p-button [ariaLabel]='"global.actions.reset" | transloco' (onClick)='resetForm()' class='me-2' icon='pi pi-times' rounded text />
         } @else {
@@ -116,14 +102,10 @@
                           class='message-field'
                           rows='1'
                           [placeholder]='"communications.form.message" | transloco'
-                          [formControl]='message'></textarea>
+                          [formField]='form.message'></textarea>
             <small class='secondary-color'>{{ 'communications.form.hint.message' | transloco }}</small>
-            <app-form-field-error [errors]='message.errors'
-                                  [invalid]='FormHelper.invalid(message)'
-                                  translationPrefix='communications.form.error.message' />
-            <app-form-field-error [errors]='form.errors'
-                                  [invalid]='FormHelper.invalid(form)'
-                                  translationPrefix='communications.form.error.link' />
+            <app-field-error [field]='form.message' translationPrefix='communications.form.error.message' />
+            <app-field-error [field]='form' translationPrefix='communications.form.error.link' />
         </div>
         <p-button [ariaLabel]='(GenericHelper.nonNull(facade.communication()) ? "global.actions.edit" : "global.actions.create") | transloco' class='ms-2' outlined rounded severity='success'
                   [icon]='GenericHelper.nonNull(facade.communication()) ? "pi pi-check" : "pi pi-send"'

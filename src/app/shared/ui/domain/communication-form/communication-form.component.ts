@@ -10,15 +10,20 @@ import {
     signal,
     WritableSignal,
 } from '@angular/core'
-import { GenericFormComponent } from '@shared/ui/base/generic-form.component'
+import { BaseFormComponent } from '@shared/ui/base/base-form.component'
 import { CommunicationModel } from '@shared/models/model/communication.model'
-import { CommunicationDto } from '@pages/projects/[projectId]/movements/communication/data/dto/communication.dto'
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
+import { FieldTree, FormField } from '@angular/forms/signals'
+import {
+    CommunicationFormModel,
+    createCommunicationForm,
+    emptyCommunicationFormModel,
+    toCommunicationDto,
+    toNewAlertDto,
+} from '@shared/ui/domain/communication-form/communication.form'
 import { CommunicationFacade } from '@pages/projects/[projectId]/movements/communication/data/state/communication.facade'
 import { GenericHelper } from '@shared/helpers/generic.helper'
-import { RegistryValidators } from '@shared/helpers/registry.validator'
 import { tap } from 'rxjs'
-import { MenuItem, SelectItem } from 'primeng/api'
+import { MenuItem } from 'primeng/api'
 import { MovementModel } from '@shared/models/model/movement.model'
 import { MovementHelper } from '@shared/helpers/movement.helper'
 import { AlertModel } from '@shared/models/model/alert.model'
@@ -26,7 +31,7 @@ import { AlertHelper } from '@shared/helpers/alert.helper'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
 import { Button } from 'primeng/button'
 import { Card } from 'primeng/card'
-import { FormFieldErrorComponent } from '@shared/ui/common/form-field-error/form-field-error.component'
+import { FieldErrorComponent } from '@shared/ui/common/field-error/field-error.component'
 import { Textarea } from 'primeng/textarea'
 import {TranslocoPipe} from '@jsverse/transloco'
 import { ProjectHelper } from '@shared/helpers/project.helper'
@@ -36,10 +41,10 @@ import { Ripple } from 'primeng/ripple'
 import { ProjectOptionIconPipe } from '@shared/helpers/pipe/project-option-icon.pipe'
 import { AutoComplete, AutoCompleteCompleteEvent } from 'primeng/autocomplete'
 import { Divider } from 'primeng/divider'
-import { FormHelper } from '@shared/helpers/form.helper'
 import { InputText } from 'primeng/inputtext'
-import { AlertFacade } from '@pages/projects/[projectId]/alerts/data/state/alert.facade'
+import { CommunicationDto } from '@pages/projects/[projectId]/movements/communication/data/dto/communication.dto'
 import { AlertDto } from '@pages/projects/[projectId]/alerts/data/dto/alert.dto'
+import { AlertFacade } from '@pages/projects/[projectId]/alerts/data/state/alert.facade'
 
 enum CommunicationModulableFieldEnum {
     MOVEMENT = 'movement',
@@ -64,11 +69,10 @@ import { FormErrorComponent } from '@shared/ui/common/form-error/form-error.comp
         FormErrorComponent,
         Button,
         Card,
-        FormFieldErrorComponent,
-        FormsModule,
+        FieldErrorComponent,
         Textarea,
         TranslocoPipe,
-        ReactiveFormsModule,
+        FormField,
         Menu,
         Ripple,
         AutoComplete,
@@ -79,13 +83,12 @@ import { FormErrorComponent } from '@shared/ui/common/form-error/form-error.comp
     templateUrl: './communication-form.component.html',
     styleUrl: './communication-form.component.css',
 } )
-export class CommunicationFormComponent extends GenericFormComponent<CommunicationModel, CommunicationDto> implements OnInit, OnDestroy {
+export class CommunicationFormComponent extends BaseFormComponent implements OnInit, OnDestroy {
     protected readonly facade: CommunicationFacade = inject( CommunicationFacade )
     protected readonly alertFacade: AlertFacade = inject( AlertFacade )
     protected readonly classicDatePipe: DateFormatPipe = inject( DateFormatPipe )
     protected readonly optionPipe: ProjectOptionIconPipe = inject( ProjectOptionIconPipe )
 
-    protected readonly form: FormGroup
     protected readonly now: Date = new Date()
     protected readonly AlertModulableFieldEnum: typeof AlertModulableFieldEnum = AlertModulableFieldEnum
 
@@ -116,9 +119,6 @@ export class CommunicationFormComponent extends GenericFormComponent<Communicati
             disabled: false,
             command: (): void => {
                 this.alertSelectorMode.set( AlertModulableFieldEnum.NEW )
-                this.newAlertTitle.addValidators( [
-                    Validators.required, RegistryValidators.nonBlank(), Validators.maxLength( 50 ),
-                ] )
             },
         },
     ] )
@@ -128,13 +128,14 @@ export class CommunicationFormComponent extends GenericFormComponent<Communicati
     protected readonly movementSelectorVisible: WritableSignal<boolean> = signal( false )
     protected readonly alertSelectorMode: WritableSignal<AlertModulableFieldEnum | undefined> = signal<AlertModulableFieldEnum | undefined>(
         undefined )
-    protected readonly selectedMovement: WritableSignal<SelectItem<MovementModel> | undefined> = signal( undefined )
-    protected readonly selectedAlert: WritableSignal<SelectItem<AlertModel> | undefined> = signal( undefined )
+
+    protected readonly model: WritableSignal<CommunicationFormModel> = signal( emptyCommunicationFormModel() )
+    protected readonly form: FieldTree<CommunicationFormModel> = createCommunicationForm( this.model, {
+        newAlert: (): boolean => this.alertSelectorMode() === AlertModulableFieldEnum.NEW,
+    } )
 
     public constructor () {
         super()
-
-        this.form = this.initForm()
 
         this.loadData()
 
@@ -142,24 +143,17 @@ export class CommunicationFormComponent extends GenericFormComponent<Communicati
     }
 
     public ngOnInit (): void {
-        this.setAlertIfNecessary()
-        this.setMovementIfNecessary()
+        this.applyInitialLinks()
     }
 
-    private setAlertIfNecessary (): void {
-        this.alert.patchValue( this.initialAlert()?.id )
-        this.handleAlertSelection( GenericHelper.nonNull( this.initialAlert() ) ? AlertHelper.toSelectItem(
-            this.initialAlert()!,
-            this.classicDatePipe,
-        ) : undefined )
-    }
-
-    private setMovementIfNecessary (): void {
-        this.movement.patchValue( this.initialMovement()?.id )
-        this.handleMovementSelection( GenericHelper.nonNull( this.initialMovement() ) ? MovementHelper.toActivitySelectItem(
-            this.initialMovement()!,
-            this.classicDatePipe,
-        ) : undefined )
+    private applyInitialLinks (): void {
+        const alert: AlertModel | undefined = this.initialAlert()
+        const movement: MovementModel | undefined = this.initialMovement()
+        this.model.update( (current: CommunicationFormModel): CommunicationFormModel => ({
+            ...current,
+            alert: alert ? AlertHelper.toSelectItem( alert, this.classicDatePipe ) : current.alert,
+            movement: movement ? MovementHelper.toActivitySelectItem( movement, this.classicDatePipe ) : current.movement,
+        }) )
     }
 
     protected override loadData (): void {
@@ -170,20 +164,6 @@ export class CommunicationFormComponent extends GenericFormComponent<Communicati
         }
     }
 
-    protected override initForm (): FormGroup {
-        return this.formBuilder.group( {
-            movement: this.formBuilder.control( undefined, [] ),
-            alert: this.formBuilder.control( undefined, [] ),
-            newAlertTitle: this.formBuilder.control( undefined, [] ),
-            message: this.formBuilder.control(
-                undefined,
-                [ Validators.required, RegistryValidators.nonBlank(), Validators.maxLength( 250 ) ],
-            ),
-        }, {
-            validators: [ RegistryValidators.atLeastOneRequired( 'movement', 'alert' ) ],
-        } )
-    }
-
     protected handleLoadedElement (): void {
         this.subscriptions.add(
             this.facade.communication$.pipe(
@@ -192,60 +172,30 @@ export class CommunicationFormComponent extends GenericFormComponent<Communicati
         )
     }
 
-    protected override fillForm (element: CommunicationModel | undefined): void {
+    private fillForm (element: CommunicationModel | undefined): void {
         if (!element) return
 
-        if (element?.movement) {
-            const movement: SelectItem<MovementModel> = MovementHelper.toActivitySelectItem(
-                element.movement,
-                this.classicDatePipe,
-            )
-            this.movement.patchValue( movement )
-            this.handleMovementSelection( movement )
-            this.movement.disable()
-        }
-
-        if (element?.alert) {
-            const alert: SelectItem<AlertModel> = AlertHelper.toSelectItem(
-                element.alert,
-                this.classicDatePipe,
-            )
-            this.alert.patchValue( alert )
-            this.handleAlertSelection( alert )
-            this.alert.disable()
-        }
-        this.message.patchValue( element.message )
+        this.model.set( {
+            ...this.model(),
+            message: element.message ?? '',
+            movement: element.movement ? MovementHelper.toActivitySelectItem( element.movement, this.classicDatePipe ) : null,
+            alert: element.alert ? AlertHelper.toSelectItem( element.alert, this.classicDatePipe ) : null,
+        } )
     }
 
     protected resetForm (): void {
         this.facade.resetCommunication()
-        this.form.reset()
-
         this.movementSelectorVisible.set( false )
-        this.handleMovementSelection( undefined )
-        this.movement.enable()
-        this.setMovementIfNecessary()
-
         this.alertSelectorMode.set( undefined )
-        this.newAlertTitle.clearValidators()
-        this.handleAlertSelection( undefined )
-        this.alert.enable()
-        this.setAlertIfNecessary()
-    }
-
-    protected handleMovementSelection (selectedMovement: SelectItem<MovementModel> | undefined): void {
-        this.selectedMovement.set( selectedMovement )
-    }
-
-    protected handleAlertSelection (selectedAlert: SelectItem<AlertModel> | undefined): void {
-        this.selectedAlert.set( selectedAlert )
+        this.form().reset( emptyCommunicationFormModel() )
+        this.applyInitialLinks()
     }
 
     protected submit (): void {
         if (this.saving()) return
 
-        if (!FormHelper.isFormValid( this.form )) {
-            this.logInvalidForm( this.form.value )
+        if (!this.isFormValid( this.form )) {
+            this.logInvalidForm( this.model() )
             return
         }
 
@@ -257,7 +207,7 @@ export class CommunicationFormComponent extends GenericFormComponent<Communicati
     }
 
     private submitCommunication (): void {
-        const dto: CommunicationDto = this.buildDto()
+        const dto: CommunicationDto = toCommunicationDto( this.model(), this.facade.communication() )
         this.save(
             (this.facade.communication()
              ? this.facade.updateCommunication( this.facade.communication()!.id, dto )
@@ -268,31 +218,8 @@ export class CommunicationFormComponent extends GenericFormComponent<Communicati
     }
 
     private submitAlert (): void {
-        this.save( this.alertFacade.createAlert( this.buildAlertDto() ).pipe( tap( (): void => this.resetForm() ) ), false )
-    }
-
-    protected override buildDto (): CommunicationDto {
-        const dateTime: Date = GenericHelper.nonNull( this.facade.communication()?.dateTime )
-                               ? new Date( this.facade.communication()!.dateTime )
-                               : new Date()
-        return {
-            dateTime: dateTime.toISOString(),
-            message: this.message.value,
-            movementId: this.selectedMovement()?.value?.id,
-            alertId: this.selectedAlert()?.value?.id,
-        }
-    }
-
-    private buildAlertDto (): AlertDto {
-        const dateTime: Date = GenericHelper.nonNull( this.facade.communication()?.dateTime )
-                               ? new Date( this.facade.communication()!.dateTime )
-                               : new Date()
-        return {
-            title: this.newAlertTitle.value,
-            dateTime: dateTime.toISOString(),
-            message: this.message.value,
-            movementId: this.selectedMovement()?.value?.id,
-        }
+        const dto: AlertDto = toNewAlertDto( this.model(), this.facade.communication() )
+        this.save( this.alertFacade.createAlert( dto ).pipe( tap( (): void => this.resetForm() ) ), false )
     }
 
     protected handleMovementSearch (searched: AutoCompleteCompleteEvent): void {
@@ -304,13 +231,12 @@ export class CommunicationFormComponent extends GenericFormComponent<Communicati
     }
 
     protected removeMovementField (): void {
-        this.handleMovementSelection( undefined )
+        this.model.update( (current: CommunicationFormModel): CommunicationFormModel => ({ ...current, movement: null }) )
         this.movementSelectorVisible.set( false )
     }
 
     protected removeAlertField (): void {
-        this.handleAlertSelection( undefined )
-        this.newAlertTitle.patchValue( undefined )
+        this.model.update( (current: CommunicationFormModel): CommunicationFormModel => ({ ...current, alert: null, newAlertTitle: '' }) )
         this.alertSelectorMode.set( undefined )
     }
 
@@ -340,21 +266,5 @@ export class CommunicationFormComponent extends GenericFormComponent<Communicati
 
     public ngOnDestroy (): void {
         this.subscriptions.unsubscribe()
-    }
-
-    protected get message (): FormControl {
-        return this.form.get( 'message' ) as FormControl
-    }
-
-    protected get movement (): FormControl {
-        return this.form.get( 'movement' ) as FormControl
-    }
-
-    protected get alert (): FormControl {
-        return this.form.get( 'alert' ) as FormControl
-    }
-
-    protected get newAlertTitle (): FormControl {
-        return this.form.get( 'newAlertTitle' ) as FormControl
     }
 }
