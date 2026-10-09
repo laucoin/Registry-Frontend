@@ -90,7 +90,6 @@
                 <label for='members' class='secondary-color'>{{ 'groups.form.members.search' | transloco }}</label>
                 <app-select-elements-field [formField]='addMembersForm.participants' [suggestions]='facade.searchedParticipantsMetadata()'
                                            [fluid]='true'
-                                           [multiple]='true'
                                            [selectItemBuilder]='ParticipantHelper.toSelectItem'
                                            [selectionLabel]='"groups.form.members.selected" | pluralTranslation: addMembersModel().participants |
                                        transloco'

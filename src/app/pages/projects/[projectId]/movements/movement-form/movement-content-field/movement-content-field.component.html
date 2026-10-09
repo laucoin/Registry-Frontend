@@ -1,5 +1,6 @@
 <p-auto-complete multiple
                  group
+                 [disabled]='disabled()'
                  class='no-autocomplete-item'
                  appendTo='body'
                  [inputId]='inputId()'
@@ -15,7 +16,7 @@
 <div class='secondary-color mt-4'>
     {{ selectionLabel() }}
 </div>
-<ul class='list-box mt-2' [class.invalid]='invalid()'>
+<ul class='list-box mt-2' [class.invalid]='showInvalid()'>
     @for (participant of orphanParticipants(); track participant.id) {
         <li class='item list-item w-full flex items-center justify-between' [attr.data-value]='participant.id'>
             <div class='ms-4 flex items-center'>
@@ -39,7 +40,7 @@
     } @empty {
         <li class='item empty-message'>
             <div class='ms-2 secondary-color'
-                 [class.invalid]='invalid()'>{{ emptyMessage() }}
+                 [class.invalid]='showInvalid()'>{{ emptyMessage() }}
             </div>
         </li>
     }

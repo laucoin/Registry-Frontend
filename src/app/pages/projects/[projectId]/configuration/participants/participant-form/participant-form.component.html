@@ -83,7 +83,6 @@
                 <div class='left-field field'>
                     <label for='begin-date-time'>{{ 'participants.form.begin-datetime' | transloco }}</label>
                     <app-date-time-field [formField]='form.beginDateTime'
-                                         [invalid]='fieldInvalid(form.beginDateTime)'
                                          inputId='begin-date-time'
                                          [datePlaceholder]='"participants.form.placeholder.date" | transloco: {
                                                             date: startDateExample | dateFormat: "date"
@@ -97,7 +96,6 @@
                 <div class='right-field field'>
                     <label for='end-date-time'>{{ 'participants.form.end-datetime' | transloco }}</label>
                     <app-date-time-field [formField]='form.endDateTime'
-                                         [invalid]='fieldInvalid(form.endDateTime)'
                                          inputId='end-date-time'
                                          [datePlaceholder]='"participants.form.placeholder.date" | transloco: {
                                                             date: endDateExample | dateFormat: "date"
@@ -118,7 +116,6 @@
                 <label for='members' class='secondary-color'>{{ 'participants.form.groups.search' | transloco }}</label>
                 <app-select-elements-field [formField]='form.groups'
                                            [fluid]='true'
-                                           [multiple]='true'
                                            [selectItemBuilder]='GroupHelper.toSelectItem'
                                            [selectionLabel]='"participants.form.groups.selected" | pluralTranslation:
                                            model().groups.length | transloco'

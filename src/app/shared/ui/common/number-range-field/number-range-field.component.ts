@@ -1,5 +1,6 @@
-import { Component, forwardRef, inject, input, InputSignal, signal, WritableSignal } from '@angular/core'
-import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms'
+import { Component, computed, inject, input, InputSignal, model, ModelSignal, output, OutputEmitterRef, Signal } from '@angular/core'
+import { FormsModule } from '@angular/forms'
+import { FormValueControl } from '@angular/forms/signals'
 import { Button } from 'primeng/button'
 import { InputGroup } from 'primeng/inputgroup'
 import { InputGroupAddon } from 'primeng/inputgroupaddon'
@@ -12,80 +13,52 @@ import { TranslocoPipe } from '@jsverse/transloco'
 
 /**
  * Purpose: Form field editing a numeric range.
- * Scope: Edits a minimum and a maximum and exposes them as a form value.
- * Limits: Validation is done by the form validators.
+ * Scope: Edits a minimum and a maximum and exposes them as the value of a signal form field.
+ * Limits: Validation is done by the form rules.
  */
 @Component( {
     selector: 'app-number-range-field',
     imports: [
         TranslocoPipe,
         FormsModule,
-        ReactiveFormsModule,
         Button,
         InputGroup,
         InputGroupAddon,
         InputNumber,
     ],
-    providers: [
-        {
-            provide: NG_VALUE_ACCESSOR,
-            useExisting: forwardRef( (): typeof NumberRangeFieldComponent => NumberRangeFieldComponent ),
-            multi: true,
-        },
-    ],
     templateUrl: './number-range-field.component.html',
     styleUrl: './number-range-field.component.css',
 } )
-export class NumberRangeFieldComponent implements ControlValueAccessor {
+export class NumberRangeFieldComponent implements FormValueControl<NumericRangeModel | null> {
     private readonly translateService: TranslocoService = inject( TranslocoService )
 
-    public readonly inputId: InputSignal<string | undefined> = input()
+    public readonly value: ModelSignal<NumericRangeModel | null> = model<NumericRangeModel | null>( null )
+    public readonly disabled: InputSignal<boolean> = input( false )
     public readonly invalid: InputSignal<boolean> = input( false )
+    public readonly touched: InputSignal<boolean> = input( false )
+    public readonly dirty: InputSignal<boolean> = input( false )
+    public readonly touch: OutputEmitterRef<void> = output<void>()
+
+    public readonly inputId: InputSignal<string | undefined> = input()
     public readonly minPlaceholder: InputSignal<string | undefined> = input()
     public readonly maxPlaceholder: InputSignal<string | undefined> = input()
     public readonly minLabel: InputSignal<string> = input( this.translateService.translate( 'global.form.range.min' ) )
     public readonly maxLabel: InputSignal<string> = input( this.translateService.translate( 'global.form.range.max' ) )
 
-    protected minValue: number | undefined | null
-    protected maxValue: number | undefined | null
-    protected readonly value: WritableSignal<NumericRangeModel | undefined> = signal( undefined )
-    protected readonly disabled: WritableSignal<boolean> = signal( false )
+    protected readonly minValue: Signal<number | null> = computed( (): number | null => this.value()?.lower ?? null )
+    protected readonly maxValue: Signal<number | null> = computed( (): number | null => this.value()?.upper ?? null )
+    protected readonly showInvalid: Signal<boolean> = computed( (): boolean => this.invalid() && (this.touched() || this.dirty()) )
 
-    private onChange: ((value: NumericRangeModel | undefined) => void) | undefined = undefined
-    private onTouched: (() => void) | undefined = undefined
-
-    protected onInputMin (min: number | string | null): void {
+    protected onInputMin ( min: number | string | null ): void {
         this.onInputChange( StringHelper.toNumber( min ), this.value()?.upper )
     }
 
-    protected onInputMax (max: number | string | null): void {
+    protected onInputMax ( max: number | string | null ): void {
         this.onInputChange( this.value()?.lower, StringHelper.toNumber( max ) )
     }
 
-    protected onInputChange (min: number | undefined, max: number | undefined): void {
-        const numericRangeModel: NumericRangeModel | undefined =
-            GenericHelper.isNull( min ) && GenericHelper.isNull( max )
-            ? undefined : { lower: min, upper: max }
-        this.value.set( numericRangeModel )
-        this.onChange?.( numericRangeModel )
-        this.onTouched?.()
-    }
-
-    public registerOnChange (fn: (value: NumericRangeModel | undefined) => void): void {
-        this.onChange = fn
-    }
-
-    public registerOnTouched (fn: () => void): void {
-        this.onTouched = fn
-    }
-
-    public setDisabledState (disabled: boolean): void {
-        this.disabled.set( disabled )
-    }
-
-    public writeValue (value: NumericRangeModel | undefined): void {
-        this.value.set( value )
-        this.minValue = value?.lower ?? null
-        this.maxValue = value?.upper ?? null
+    protected onInputChange ( min: number | undefined, max: number | undefined ): void {
+        this.value.set( GenericHelper.isNull( min ) && GenericHelper.isNull( max ) ? null : { lower: min, upper: max } )
+        this.touch.emit()
     }
 }

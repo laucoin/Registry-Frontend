@@ -9,7 +9,6 @@ import { CustomDateFormatPipe } from '@shared/helpers/pipe/custom-date-format.pi
 import { Location } from '@angular/common'
 import { GenericHelper } from '@shared/helpers/generic.helper'
 import { RegistryConfig } from '@core/config/registry.config'
-import { FieldStateHelper } from '@shared/helpers/form/field-state.helper'
 
 /**
  * Purpose: Base class of the create and edit forms built on signal forms.
@@ -27,8 +26,6 @@ export abstract class BaseFormComponent extends GenericComponent {
     protected readonly error: WritableSignal<ErrorModel | undefined> = signal( undefined )
 
     private destroyed: boolean = false
-
-    protected readonly fieldInvalid: typeof FieldStateHelper.showsError = FieldStateHelper.showsError
 
     protected readonly invalidFormMessage: string = this.translateService.translate( 'global.messages.invalid-form' )
     protected readonly startDateExample: Date = BaseFormComponent.startDateExample

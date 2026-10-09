@@ -4,28 +4,17 @@ import { TranslocoService } from '@jsverse/transloco'
 import { Mock, beforeEach, describe, expect, it, vi } from 'vitest'
 import { BrowserService } from '@core/browser/browser.service'
 import { UiFacade } from '@core/registry/state/ui.facade'
+import { MovementContentFieldComponent } from '@pages/projects/[projectId]/movements/movement-form/movement-content-field/movement-content-field.component'
 import { autoMock } from '@shared/helpers/testing/auto-mock'
 import { DateTimeFieldComponent } from '@shared/ui/common/date-time-field/date-time-field.component'
 import { DurationFieldComponent } from '@shared/ui/common/duration-field/duration-field.component'
 import { NumberRangeFieldComponent } from '@shared/ui/common/number-range-field/number-range-field.component'
 import { SelectElementsFieldComponent } from '@shared/ui/common/select-elements-field/select-elements-field.component'
 
-interface ValueField {
-    registerOnChange: (fn: (value: unknown) => void) => void
-    registerOnTouched: (fn: () => void) => void
-    setDisabledState: (disabled: boolean) => void
-    writeValue: (value: unknown) => void
-    disabled: () => boolean
-}
-
 interface Handle<T> {
     fixture: ComponentFixture<T>
-    field: T & ValueField
-}
-
-interface Wired<T> {
-    field: T & ValueField
-    onChange: Mock
+    field: T
+    touched: Mock
 }
 
 interface Element {
@@ -35,7 +24,7 @@ interface Element {
 describe( 'value fields', () => {
     let highlight: Mock<(id: string) => void>
 
-    function create<T> (type: Type<T>): Handle<T> {
+    function create<T> (type: Type<T>, inputs: Record<string, unknown> = {}): Handle<T> {
         highlight = vi.fn()
         TestBed.configureTestingModule( {
             providers: [
@@ -46,7 +35,10 @@ describe( 'value fields', () => {
         } )
         TestBed.overrideComponent( type, { set: { template: '', imports: [] } } )
         const fixture: ComponentFixture<T> = TestBed.createComponent( type )
-        return { fixture, field: fixture.componentInstance as T & ValueField }
+        Object.entries( inputs ).forEach( ([ name, value ]: [ string, unknown ]): void => fixture.componentRef.setInput( name, value ) )
+        const touched: Mock = vi.fn()
+        ;(fixture.componentInstance as unknown as { touch: { subscribe: (fn: () => void) => void } }).touch.subscribe( touched )
+        return { fixture, field: fixture.componentInstance, touched }
     }
 
     beforeEach( () => {
@@ -54,42 +46,51 @@ describe( 'value fields', () => {
     } )
 
     describe.each( [
-        [ 'duration', DurationFieldComponent ],
-        [ 'number range', NumberRangeFieldComponent ],
-        [ 'date time', DateTimeFieldComponent ],
-        [ 'select elements', SelectElementsFieldComponent ],
-    ] as [ string, Type<unknown> ][] )( '%s field', (_name: string, type: Type<unknown>) => {
-        it( 'can be disabled and enabled by the form', () => {
+        [ 'duration', DurationFieldComponent, {} ],
+        [ 'number range', NumberRangeFieldComponent, {} ],
+        [ 'date time', DateTimeFieldComponent, {} ],
+        [ 'select elements', SelectElementsFieldComponent, { selectItemBuilder: (): object => ({}) } ],
+        [ 'movement content', MovementContentFieldComponent, { suggestions: [], selectionLabel: '', interpretedMovementType: [] } ],
+    ] as [ string, Type<unknown>, Record<string, unknown> ][] )( '%s field', (_name: string, type: Type<unknown>, inputs: Record<string, unknown>) => {
+        it.each( [
+            [ 'invalid and touched', { invalid: true, touched: true, dirty: false }, true ],
+            [ 'invalid and dirty', { invalid: true, touched: false, dirty: true }, true ],
+            [ 'invalid but untouched and pristine', { invalid: true, touched: false, dirty: false }, false ],
+            [ 'valid and touched', { invalid: false, touched: true, dirty: true }, false ],
+        ] )( 'shows the invalid state only for a field that is %s', (_label: string, state: Record<string, boolean>, expected: boolean) => {
             // Arrange
-            const { fixture, field }: Handle<unknown> = create( type )
-            if (type === SelectElementsFieldComponent) fixture.componentRef.setInput( 'selectItemBuilder', (): object => ({}) )
+            const { field }: Handle<unknown> = create( type, { ...inputs, ...state } )
 
             // Act
-            field.setDisabledState( true )
-            const disabled: boolean = field.disabled()
-            field.setDisabledState( false )
+            const shown: boolean = (field as unknown as { showInvalid: () => boolean }).showInvalid()
 
             // Assert
-            expect( disabled ).toBe( true )
-            expect( field.disabled() ).toBe( false )
+            expect( shown ).toBe( expected )
+        } )
+
+        it( 'starts without a value and follows the disabled state of the form', () => {
+            // Arrange
+            const { fixture, field }: Handle<unknown> = create( type, inputs )
+
+            // Act
+            fixture.componentRef.setInput( 'disabled', true )
+
+            // Assert
+            expect( (field as unknown as { disabled: () => boolean }).disabled() ).toBe( true )
         } )
     } )
 
     describe( 'duration field', () => {
-        it( 'propagates the chosen duration and marks the field as touched', () => {
+        it( 'publishes the chosen duration and marks the field as touched', () => {
             // Arrange
-            const { field }: Handle<DurationFieldComponent> = create( DurationFieldComponent )
-            const onChange: Mock = vi.fn()
-            const onTouched: Mock = vi.fn()
-            field.registerOnChange( onChange )
-            field.registerOnTouched( onTouched )
+            const { field, touched }: Handle<DurationFieldComponent> = create( DurationFieldComponent )
 
             // Act
             ;(field as never as { onInputChange: (value: object) => void }).onInputChange( { hours: 1, minutes: 30 } )
 
             // Assert
-            expect( onChange ).toHaveBeenCalledWith( { hours: 1, minutes: 30 } )
-            expect( onTouched ).toHaveBeenCalledTimes( 1 )
+            expect( field.value() ).toEqual( { hours: 1, minutes: 30 } )
+            expect( touched ).toHaveBeenCalledTimes( 1 )
         } )
 
         it( 'offers an empty choice then every quarter of an hour from 00h15 to 23h45', () => {
@@ -97,238 +98,218 @@ describe( 'value fields', () => {
             const { field }: Handle<DurationFieldComponent> = create( DurationFieldComponent )
 
             // Act
-            const durations: unknown[] = (field as never as { durations: unknown[] }).durations
+            const durations: { value: unknown }[] = (field as never as { durations: { value: unknown }[] }).durations
 
             // Assert
             expect( durations ).toHaveLength( 1 + 24 * 4 - 1 )
-        } )
-
-        it( 'does not fail before the form registers its callbacks', () => {
-            // Arrange
-            const { field }: Handle<DurationFieldComponent> = create( DurationFieldComponent )
-
-            // Act
-            const act: () => void = (): void => (field as never as { onInputChange: (value: undefined) => void }).onInputChange( undefined )
-
-            // Assert
-            expect( act ).not.toThrow()
+            expect( durations[ 0 ].value ).toBeNull()
         } )
     } )
 
     describe( 'number range field', () => {
-        function range (): { field: NumberRangeFieldComponent & ValueField, onChange: Mock } {
-            const { field }: Handle<NumberRangeFieldComponent> = create( NumberRangeFieldComponent )
-            const onChange: Mock = vi.fn()
-            field.registerOnChange( onChange )
-            return { field, onChange }
-        }
-
-        it( 'writes the bounds from the form', () => {
+        it( 'derives the displayed bounds from the value', () => {
             // Arrange
-            const { field }: Wired<NumberRangeFieldComponent> = range()
+            const { field }: Handle<NumberRangeFieldComponent> = create( NumberRangeFieldComponent )
 
             // Act
-            field.writeValue( { lower: 1, upper: 5 } )
+            field.value.set( { lower: 1, upper: 5 } )
 
             // Assert
-            expect( field[ 'minValue' ] ).toBe( 1 )
-            expect( field[ 'maxValue' ] ).toBe( 5 )
+            expect( field[ 'minValue' ]() ).toBe( 1 )
+            expect( field[ 'maxValue' ]() ).toBe( 5 )
         } )
 
         it( 'combines a new minimum with the current maximum', () => {
             // Arrange
-            const { field, onChange }: Wired<NumberRangeFieldComponent> = range()
-            field.writeValue( { lower: 1, upper: 5 } )
+            const { field, touched }: Handle<NumberRangeFieldComponent> = create( NumberRangeFieldComponent )
+            field.value.set( { lower: 1, upper: 5 } )
 
             // Act
             field[ 'onInputMin' ]( '2' )
 
             // Assert
-            expect( onChange ).toHaveBeenCalledWith( { lower: 2, upper: 5 } )
+            expect( field.value() ).toEqual( { lower: 2, upper: 5 } )
+            expect( touched ).toHaveBeenCalledTimes( 1 )
         } )
 
         it( 'combines a new maximum with the current minimum', () => {
             // Arrange
-            const { field, onChange }: Wired<NumberRangeFieldComponent> = range()
-            field.writeValue( { lower: 1, upper: 5 } )
+            const { field }: Handle<NumberRangeFieldComponent> = create( NumberRangeFieldComponent )
+            field.value.set( { lower: 1, upper: 5 } )
 
             // Act
             field[ 'onInputMax' ]( 8 )
 
             // Assert
-            expect( onChange ).toHaveBeenCalledWith( { lower: 1, upper: 8 } )
+            expect( field.value() ).toEqual( { lower: 1, upper: 8 } )
         } )
 
-        it( 'emits no range when both bounds are cleared', () => {
+        it( 'has no range when both bounds are cleared', () => {
             // Arrange
-            const { field, onChange }: Wired<NumberRangeFieldComponent> = range()
-            field.writeValue( { lower: 1, upper: undefined } )
+            const { field }: Handle<NumberRangeFieldComponent> = create( NumberRangeFieldComponent )
+            field.value.set( { lower: 1, upper: undefined } )
 
             // Act
             field[ 'onInputMin' ]( null )
 
             // Assert
-            expect( onChange ).toHaveBeenCalledWith( undefined )
-        } )
-
-        it( 'clears the bounds when the form resets', () => {
-            // Arrange
-            const { field }: Wired<NumberRangeFieldComponent> = range()
-            field.writeValue( { lower: 1, upper: 5 } )
-
-            // Act
-            field.writeValue( undefined )
-
-            // Assert
-            expect( field[ 'minValue' ] ).toBeNull()
-            expect( field[ 'maxValue' ] ).toBeNull()
+            expect( field.value() ).toBeNull()
+            expect( field[ 'minValue' ]() ).toBeNull()
         } )
     } )
 
     describe( 'date time field', () => {
-        function dateTime (): { field: DateTimeFieldComponent & ValueField, onChange: Mock } {
-            const { field }: Handle<DateTimeFieldComponent> = create( DateTimeFieldComponent )
-            const onChange: Mock = vi.fn()
-            field.registerOnChange( onChange )
-            return { field, onChange }
-        }
-
-        it( 'splits the written value into a date and a time', () => {
+        it( 'splits the value into a date and a time', () => {
             // Arrange
-            const { field }: Wired<DateTimeFieldComponent> = dateTime()
+            const { field }: Handle<DateTimeFieldComponent> = create( DateTimeFieldComponent )
 
             // Act
-            field.writeValue( { date: '2026-03-04', time: '10:30:00.000Z' } )
+            field.value.set( { date: '2026-03-04', time: '10:30:00.000Z' } )
 
             // Assert
-            expect( field[ 'date' ]?.toISOString() ).toBe( '2026-03-04T00:00:00.000Z' )
-            expect( field[ 'time' ]?.getUTCHours() ).toBe( 10 )
+            expect( field[ 'date' ]()?.toISOString() ).toBe( '2026-03-04T00:00:00.000Z' )
+            expect( field[ 'time' ]()?.getUTCHours() ).toBe( 10 )
         } )
 
         it( 'keeps the time when the date changes', () => {
             // Arrange
-            const { field, onChange }: Wired<DateTimeFieldComponent> = dateTime()
-            field.writeValue( { date: '2026-03-04', time: '10:30:00.000Z' } )
-            field[ 'date' ] = new Date( 2026, 4, 6 )
+            const { field, touched }: Handle<DateTimeFieldComponent> = create( DateTimeFieldComponent )
+            field.value.set( { date: '2026-03-04', time: '10:30:00.000Z' } )
 
             // Act
-            field[ 'onDateChange' ]()
+            field[ 'onDateChange' ]( new Date( 2026, 4, 6 ) )
 
             // Assert
-            expect( onChange ).toHaveBeenCalledWith( { date: '2026-05-06', time: '10:30:00.000Z' } )
+            expect( field.value() ).toEqual( { date: '2026-05-06', time: '10:30:00.000Z' } )
+            expect( touched ).toHaveBeenCalledTimes( 1 )
         } )
 
         it( 'keeps the date when the time changes', () => {
             // Arrange
-            const { field, onChange }: Wired<DateTimeFieldComponent> = dateTime()
-            field.writeValue( { date: '2026-03-04', time: undefined } )
-            field[ 'time' ] = new Date( Date.UTC( 2026, 0, 1, 8, 15, 0 ) )
+            const { field }: Handle<DateTimeFieldComponent> = create( DateTimeFieldComponent )
+            field.value.set( { date: '2026-03-04', time: undefined } )
 
             // Act
-            field[ 'onTimeChange' ]()
+            field[ 'onTimeChange' ]( new Date( Date.UTC( 2026, 0, 1, 8, 15, 0 ) ) )
 
             // Assert
-            expect( onChange ).toHaveBeenCalledWith( { date: '2026-03-04', time: '08:15:00.000Z' } )
+            expect( field.value() ).toEqual( { date: '2026-03-04', time: '08:15:00.000Z' } )
         } )
 
-        it( 'empties both parts when the form resets', () => {
+        it( 'has no value when both parts are cleared', () => {
             // Arrange
-            const { field }: Wired<DateTimeFieldComponent> = dateTime()
-            field.writeValue( { date: '2026-03-04', time: '10:30:00.000Z' } )
+            const { field }: Handle<DateTimeFieldComponent> = create( DateTimeFieldComponent )
+            field.value.set( { date: '2026-03-04', time: undefined } )
 
             // Act
-            field.writeValue( undefined )
+            field[ 'onDateChange' ]( null )
 
             // Assert
-            expect( field[ 'date' ] ).toBeUndefined()
-            expect( field[ 'time' ] ).toBeUndefined()
+            expect( field.value() ).toBeNull()
+            expect( field[ 'date' ]() ).toBeUndefined()
         } )
     } )
 
     describe( 'select elements field', () => {
-        function select (multiple: boolean): Wired<SelectElementsFieldComponent<Element>> {
-            const { fixture, field }: Handle<SelectElementsFieldComponent<Element>> = create( SelectElementsFieldComponent<Element> )
-            fixture.componentRef.setInput( 'selectItemBuilder', (element: Element): object => ({ label: element.id, value: element }) )
-            fixture.componentRef.setInput( 'multiple', multiple )
-            const onChange: Mock = vi.fn()
-            field.registerOnChange( onChange )
-            return { field, onChange }
+        function select (): Handle<SelectElementsFieldComponent<Element>> {
+            return create( SelectElementsFieldComponent<Element>, {
+                selectItemBuilder: (element: Element): object => ({ label: element.id, value: element }),
+            } )
         }
 
-        function pick (id: string): { value: { value: Element } } {
-            return { value: { value: { id } } }
+        function pick (id: string): never {
+            return { value: { value: { id } } } as never
         }
 
-        it( 'replaces the selection in single mode', () => {
+        it( 'appends to the selection', () => {
             // Arrange
-            const { field, onChange }: Wired<SelectElementsFieldComponent<Element>> = select( false )
+            const { field, touched }: Handle<SelectElementsFieldComponent<Element>> = select()
+            field.value.set( [ { id: 'a' } ] )
 
             // Act
-            field[ 'handleElementSelection' ]( pick( 'a' ) as never )
+            field[ 'handleElementSelection' ]( pick( 'b' ) )
 
             // Assert
-            expect( onChange ).toHaveBeenCalledWith( { id: 'a' } )
-            expect( field[ 'simpleValue' ]() ).toEqual( { id: 'a' } )
-        } )
-
-        it( 'appends to the selection in multiple mode', () => {
-            // Arrange
-            const { field, onChange }: Wired<SelectElementsFieldComponent<Element>> = select( true )
-            field.writeValue( [ { id: 'a' } ] )
-
-            // Act
-            field[ 'handleElementSelection' ]( pick( 'b' ) as never )
-
-            // Assert
-            expect( onChange ).toHaveBeenCalledWith( [ { id: 'a' }, { id: 'b' } ] )
+            expect( field.value() ).toEqual( [ { id: 'a' }, { id: 'b' } ] )
+            expect( touched ).toHaveBeenCalledTimes( 1 )
         } )
 
         it( 'highlights an element already selected instead of adding it twice', () => {
             // Arrange
-            const { field, onChange }: Wired<SelectElementsFieldComponent<Element>> = select( true )
-            field.writeValue( [ { id: 'a' } ] )
+            const { field, touched }: Handle<SelectElementsFieldComponent<Element>> = select()
+            field.value.set( [ { id: 'a' } ] )
 
             // Act
-            field[ 'handleElementSelection' ]( pick( 'a' ) as never )
+            field[ 'handleElementSelection' ]( pick( 'a' ) )
 
             // Assert
             expect( highlight ).toHaveBeenCalledWith( 'a' )
-            expect( onChange ).not.toHaveBeenCalled()
+            expect( field.value() ).toEqual( [ { id: 'a' } ] )
+            expect( touched ).not.toHaveBeenCalled()
         } )
 
-        it( 'clears the selection in single mode', () => {
+        it( 'removes only the given element', () => {
             // Arrange
-            const { field, onChange }: Wired<SelectElementsFieldComponent<Element>> = select( false )
-            field.writeValue( { id: 'a' } )
+            const { field }: Handle<SelectElementsFieldComponent<Element>> = select()
+            field.value.set( [ { id: 'a' }, { id: 'b' } ] )
 
             // Act
             field[ 'handleElementRemoving' ]( 'a' )
 
             // Assert
-            expect( onChange ).toHaveBeenCalledWith( undefined )
+            expect( field.value() ).toEqual( [ { id: 'b' } ] )
         } )
+    } )
 
-        it( 'removes only the given element in multiple mode', () => {
+    describe( 'movement content field', () => {
+        const ADA: object = { id: 'pa1', firstName: 'Ada' }
+        const GRACE: object = { id: 'pa2', firstName: 'Grace' }
+
+        function content (): Handle<MovementContentFieldComponent> {
+            return create( MovementContentFieldComponent, { suggestions: [], selectionLabel: '', interpretedMovementType: [] } )
+        }
+
+        it( 'adds a participant without pool', () => {
             // Arrange
-            const { field, onChange }: Wired<SelectElementsFieldComponent<Element>> = select( true )
-            field.writeValue( [ { id: 'a' }, { id: 'b' } ] )
+            const { field, touched }: Handle<MovementContentFieldComponent> = content()
 
             // Act
-            field[ 'handleElementRemoving' ]( 'a' )
+            field[ 'handleElementSelection' ]( { label: 'ada', value: ADA } as never )
 
             // Assert
-            expect( onChange ).toHaveBeenCalledWith( [ { id: 'b' } ] )
+            expect( field.value() ).toEqual( [ { poolName: undefined, participant: ADA, vehicle: undefined } ] )
+            expect( touched ).toHaveBeenCalledTimes( 1 )
         } )
 
-        it( 'exposes an empty list in multiple mode before any value', () => {
+        it( 'adds every member of a group under the pool of the group and highlights the duplicates', () => {
             // Arrange
-            const { field }: Wired<SelectElementsFieldComponent<Element>> = select( true )
+            const { field }: Handle<MovementContentFieldComponent> = content()
+            field.value.set( [ { poolName: undefined, participant: ADA, vehicle: undefined } as never ] )
 
             // Act
-            const values: unknown[] = field[ 'multipleValue' ]()
+            field[ 'handleElementSelection' ]( { label: 'wolves', value: { name: 'Wolves', members: [ ADA, GRACE ] } } as never )
 
             // Assert
-            expect( values ).toEqual( [] )
+            expect( field.value().map( (item: { participant: { id: string }, poolName: string | undefined }): string => `${item.poolName}:${item.participant.id}` ) )
+                .toEqual( [ 'undefined:pa1', 'Wolves:pa2' ] )
+            expect( highlight ).toHaveBeenCalledWith( 'pa1' )
+        } )
+
+        it( 'removes a participant, or a whole pool', () => {
+            // Arrange
+            const { field }: Handle<MovementContentFieldComponent> = content()
+            field.value.set( [
+                { poolName: 'Wolves', participant: ADA, vehicle: undefined } as never,
+                { poolName: 'Wolves', participant: GRACE, vehicle: undefined } as never,
+                { poolName: undefined, participant: { id: 'pa3' }, vehicle: undefined } as never,
+            ] )
+
+            // Act
+            field[ 'handleParticipantRemoving' ]( 'pa3' )
+            field[ 'handleGroupRemoving' ]( 'Wolves' )
+
+            // Assert
+            expect( field.value() ).toEqual( [] )
         } )
     } )
 } )

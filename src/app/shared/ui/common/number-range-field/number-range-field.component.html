@@ -1,15 +1,23 @@
-<p-inputgroup [id]='inputId()' [class.invalid]='invalid()'>
+<p-inputgroup [id]='inputId()' [class.invalid]='showInvalid()'>
     <p-inputgroup-addon>{{ minLabel() }}</p-inputgroup-addon>
-    <p-input-number inputId='min' [(ngModel)]='minValue' inputmode='numeric' (onInput)='onInputMin($event.value)'
+    <p-input-number inputId='min'
+                    [ngModel]='minValue()'
+                    [disabled]='disabled()'
+                    inputmode='numeric'
+                    (onInput)='onInputMin($event.value)'
                     [placeholder]='minPlaceholder()' />
     <p-inputgroup-addon>{{ maxLabel() }}</p-inputgroup-addon>
     <p-input-number inputId='max'
-                    [(ngModel)]='maxValue'
+                    [ngModel]='maxValue()'
+                    [disabled]='disabled()'
                     inputmode='numeric'
                     (onInput)='onInputMax($event.value)'
                     [placeholder]='maxPlaceholder()' />
     <p-inputgroup-addon>
-        <p-button [ariaLabel]='"global.actions.clear" | transloco' icon='pi pi-times' severity='secondary' (onClick)='onInputChange(undefined, undefined); minValue = undefined;
-        maxValue = undefined' />
+        <p-button [ariaLabel]='"global.actions.clear" | transloco'
+                  icon='pi pi-times'
+                  severity='secondary'
+                  [disabled]='disabled()'
+                  (onClick)='onInputChange(undefined, undefined)' />
     </p-inputgroup-addon>
 </p-inputgroup>

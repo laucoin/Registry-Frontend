@@ -1,34 +1,27 @@
-import { Component, forwardRef, input, InputSignal, signal, WritableSignal } from '@angular/core'
+import { Component, computed, input, InputSignal, model, ModelSignal, output, OutputEmitterRef, Signal } from '@angular/core'
 import { SelectItem } from 'primeng/api'
 import { SplitTimeModel } from '@shared/models/model/split-time.model'
-import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms'
+import { FormsModule } from '@angular/forms'
+import { FormValueControl } from '@angular/forms/signals'
 import { Select } from 'primeng/select'
 
 /**
  * Purpose: Form field editing a duration.
- * Scope: Edits hours and minutes and exposes an ISO duration.
- * Limits: Validation is done by the form validators.
+ * Scope: Edits hours and minutes and exposes them as the value of a signal form field.
+ * Limits: Validation is done by the form rules.
  */
 @Component( {
     selector: 'app-duration-field',
     imports: [
         Select,
-        ReactiveFormsModule,
         FormsModule,
-    ],
-    providers: [
-        {
-            provide: NG_VALUE_ACCESSOR,
-            useExisting: forwardRef( (): typeof DurationFieldComponent => DurationFieldComponent ),
-            multi: true,
-        },
     ],
     templateUrl: './duration-field.component.html',
     styleUrl: './duration-field.component.css',
 } )
-export class DurationFieldComponent implements ControlValueAccessor {
-    protected readonly durations: SelectItem<SplitTimeModel | undefined>[] = [
-        { label: '-', value: undefined },
+export class DurationFieldComponent implements FormValueControl<SplitTimeModel | null> {
+    protected readonly durations: SelectItem<SplitTimeModel | null>[] = [
+        { label: '-', value: null },
         { label: '00h15', value: { hours: 0, minutes: 15 } },
         { label: '00h30', value: { hours: 0, minutes: 30 } },
         { label: '00h45', value: { hours: 0, minutes: 45 } },
@@ -126,35 +119,21 @@ export class DurationFieldComponent implements ControlValueAccessor {
         { label: '23h45', value: { hours: 23, minutes: 45 } },
     ]
 
-    public readonly inputId: InputSignal<string | undefined> = input()
+    public readonly value: ModelSignal<SplitTimeModel | null> = model<SplitTimeModel | null>( null )
+    public readonly disabled: InputSignal<boolean> = input( false )
     public readonly invalid: InputSignal<boolean> = input( false )
+    public readonly touched: InputSignal<boolean> = input( false )
+    public readonly dirty: InputSignal<boolean> = input( false )
+    public readonly touch: OutputEmitterRef<void> = output<void>()
+
+    public readonly inputId: InputSignal<string | undefined> = input()
     public readonly placeholder: InputSignal<string | undefined> = input()
     public readonly fluid: InputSignal<boolean> = input( false )
 
-    protected value: SplitTimeModel | undefined
-    protected readonly disabled: WritableSignal<boolean> = signal( false )
+    protected readonly showInvalid: Signal<boolean> = computed( (): boolean => this.invalid() && (this.touched() || this.dirty()) )
 
-    private onChange: ((value: SplitTimeModel | undefined) => void) | undefined = undefined
-    private onTouched: (() => void) | undefined = undefined
-
-    protected onInputChange (value: SplitTimeModel | undefined): void {
-        this.onChange?.( value )
-        this.onTouched?.()
-    }
-
-    public registerOnChange (fn: (value: SplitTimeModel | undefined) => void): void {
-        this.onChange = fn
-    }
-
-    public registerOnTouched (fn: () => void): void {
-        this.onTouched = fn
-    }
-
-    public setDisabledState (disabled: boolean): void {
-        this.disabled.set( disabled )
-    }
-
-    public writeValue (value: SplitTimeModel | undefined): void {
-        this.value = value
+    protected onInputChange ( value: SplitTimeModel | null ): void {
+        this.value.set( value )
+        this.touch.emit()
     }
 }

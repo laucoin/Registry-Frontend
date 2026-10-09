@@ -120,7 +120,6 @@
                             <label for='content'
                                    class='secondary-color'>{{ 'movements.form.content.registered.search' | transloco }}</label>
                             <app-movement-content-field [formField]='form.content.participants'
-                                                        [invalid]='fieldInvalid(form.content.participants)'
                                                         [suggestions]='facade.searchedParticipantAndGroupMetadata()'
                                                         [interpretedMovementType]='interpretedMovementType()'
                                                         [selectionLabel]='"movements.form.content.registered.selected" | pluralTranslation: model().content.participants | transloco'

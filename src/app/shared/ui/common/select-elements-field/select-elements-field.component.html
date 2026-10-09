@@ -1,4 +1,4 @@
-<p-auto-complete [multiple]='multiple()'
+<p-auto-complete multiple
                  class='no-autocomplete-item'
                  completeOnFocus
                  [disabled]='disabled()'
@@ -18,15 +18,15 @@
     {{ selectionLabel() }}
 </div>
 <ul class='list-box mt-2 flex flex-col justify-center'
-    [class.invalid]='invalid()'>
-    @for (element of (multiple() ? multipleValue() : GenericHelper.nonNull(simpleValue()) ? [ simpleValue() ] : []); track element!.id) {
-        <li class='item list-item w-full flex items-center justify-between' [attr.data-value]='element!.id'>
-            <div class='ms-4'>{{ selectItemBuilder()(element!).label }}</div>
+    [class.invalid]='showInvalid()'>
+    @for (element of value(); track element.id) {
+        <li class='item list-item w-full flex items-center justify-between' [attr.data-value]='element.id'>
+            <div class='ms-4'>{{ selectItemBuilder()(element).label }}</div>
             <p-button [ariaLabel]='"global.actions.remove" | transloco' icon='pi pi-times'
                       size='small'
                       rounded
                       text
-                      (onClick)='handleElementRemoving(element!.id)' />
+                      (onClick)='handleElementRemoving(element.id)' />
         </li>
     } @empty {
         <li class='item empty-message'>
