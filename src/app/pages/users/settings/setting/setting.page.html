@@ -34,13 +34,13 @@
                           inputId='app-language'
                           fluid
                           (onChange)='registryFacade.updateCurrentUserLanguage($event.value)'
-                          [formControl]='languageControl' />
+                          [formField]='form.language' />
             </div>
             <div class='field'>
                 <label for='app-theme'><b>{{ 'settings.configuration.form.theme' | transloco }}</b></label>
                 <p-select-button [options]='uiFacade.themesMetadata()'
                                  id='app-theme'
-                                 [formControl]='themeControl'
+                                 [formField]='form.theme'
                                  optionValue='value'
                                  [allowEmpty]='false'
                                  (onChange)='registryFacade.updateCurrentUserTheme($event.value)'>

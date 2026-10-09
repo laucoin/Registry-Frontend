@@ -1,4 +1,4 @@
-import { Component } from '@angular/core'
+import { Component, signal, WritableSignal } from '@angular/core'
 import { Card } from 'primeng/card'
 import { Avatar } from 'primeng/avatar'
 import { TitleCasePipe, UpperCasePipe } from '@angular/common'
@@ -6,11 +6,12 @@ import {TranslocoPipe} from '@jsverse/transloco'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
 import { SeverityTagComponent } from '@shared/ui/common/severity-tag/severity-tag.component'
 import { SelectButton } from 'primeng/selectbutton'
-import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms'
+import { FieldTree, FormField } from '@angular/forms/signals'
 import { Select } from 'primeng/select'
 import { Button } from 'primeng/button'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { GenericElementComponent } from '@shared/ui/base/generic-element.component'
+import { createSettingForm, SettingFormModel, toSettingFormModel } from '@pages/users/settings/setting/setting.form'
 
 /**
  * Purpose: User settings page.
@@ -28,16 +29,17 @@ import { GenericElementComponent } from '@shared/ui/base/generic-element.compone
         DateFormatPipe,
         SeverityTagComponent,
         SelectButton,
-        FormsModule,
         Select,
         Button,
-        ReactiveFormsModule,
+        FormField,
     ],
     templateUrl: './setting.page.html',
 } )
 export class SettingPage extends GenericElementComponent {
-    protected themeControl: FormControl = new FormControl( this.registryFacade.currentUserTheme() )
-    protected languageControl: FormControl = new FormControl( this.sessionFacade.currentUserLanguage() )
+    protected readonly model: WritableSignal<SettingFormModel> = signal(
+        toSettingFormModel( this.registryFacade.currentUserTheme(), this.sessionFacade.currentUserLanguage() ),
+    )
+    protected readonly form: FieldTree<SettingFormModel> = createSettingForm( this.model )
 
     protected confirmImpersonate (): void {
         this.confirmationService.confirm(
