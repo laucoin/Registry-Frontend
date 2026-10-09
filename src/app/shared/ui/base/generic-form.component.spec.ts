@@ -1,7 +1,8 @@
 import { Location } from '@angular/common'
-import { createEnvironmentInjector, EnvironmentInjector, runInInjectionContext } from '@angular/core'
+import { createEnvironmentInjector, EnvironmentInjector, runInInjectionContext, signal, WritableSignal } from '@angular/core'
 import { FormControl, FormGroup } from '@angular/forms'
 import { TestBed } from '@angular/core/testing'
+import { FieldTree, form, required, SchemaPathTree } from '@angular/forms/signals'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslocoService } from '@jsverse/transloco'
 import { Observable, Subject, of, throwError } from 'rxjs'
@@ -70,6 +71,10 @@ class TestForm extends GenericFormComponent<object, object> {
         this.addProjectDateValidators( project, control )
     }
 
+    public checkValidity<T> (form: FieldTree<T>): boolean {
+        return this.isFormValid( form )
+    }
+
     public warnAbout (value: unknown): void {
         this.logInvalidForm( value )
     }
@@ -104,6 +109,21 @@ describe( 'GenericFormComponent', () => {
 
     afterEach( () => {
         vi.restoreAllMocks()
+    } )
+
+    it( 'judges a signal form valid only once its rules pass, and reveals the errors', () => {
+        // Arrange
+        const page: TestForm = create()
+        const model: WritableSignal<{ name: string }> = signal( { name: '' } )
+        const tree: FieldTree<{ name: string }> = TestBed.runInInjectionContext( () => form( model, (path: SchemaPathTree<{ name: string }>): void => required( path.name ) ) )
+
+        // Act
+        const whenEmpty: boolean = page.checkValidity( tree )
+        const touchedAfterCheck: boolean = tree.name().touched()
+        model.set( { name: 'Ada' } )
+
+        // Assert
+        expect( [ whenEmpty, touchedAfterCheck, page.checkValidity( tree ) ] ).toEqual( [ false, true, true ] )
     } )
 
     it( 'goes back once a save succeeds', () => {

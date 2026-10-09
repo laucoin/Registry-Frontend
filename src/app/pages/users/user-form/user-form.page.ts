@@ -1,5 +1,5 @@
-import { Component, inject, OnDestroy } from '@angular/core'
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
+import { Component, inject, OnDestroy, signal, WritableSignal } from '@angular/core'
+import { FieldTree, FormField } from '@angular/forms/signals'
 import { UserModel } from '@shared/models/model/user.model'
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
 import { UserFacade } from '@pages/users/data/state/user.facade'
@@ -10,11 +10,10 @@ import { FormComponent } from '@shared/ui/common/form/form.component'
 import { RegistryRequiredDirective } from '@shared/directives/registry-required.directive'
 import {TranslocoPipe} from '@jsverse/transloco'
 import { Select } from 'primeng/select'
-import { GenericFormComponent } from '@shared/ui/base/generic-form.component'
-import { UserDto } from '@shared/models/dto/user.dto'
+import { BaseFormComponent } from '@shared/ui/base/base-form.component'
 import { filter, map } from 'rxjs'
-import { FormHelper } from '@shared/helpers/form.helper'
-import { FormFieldErrorComponent } from '@shared/ui/common/form-field-error/form-field-error.component'
+import { FieldErrorComponent } from '@shared/ui/common/field-error/field-error.component'
+import { createUserForm, toUserFormModel, UserFormModel } from '@pages/users/user-form/user.form'
 
 /**
  * Purpose: Page with the form to create or edit a user.
@@ -27,24 +26,22 @@ import { FormFieldErrorComponent } from '@shared/ui/common/form-field-error/form
         Button,
         Card,
         FormComponent,
-        FormsModule,
         RegistryRequiredDirective,
         TranslocoPipe,
         Select,
-        ReactiveFormsModule,
-        FormFieldErrorComponent,
+        FormField,
+        FieldErrorComponent,
     ],
     templateUrl: './user-form.page.html',
 } )
-export class UserFormPage extends GenericFormComponent<UserModel, UserDto> implements OnDestroy {
+export class UserFormPage extends BaseFormComponent implements OnDestroy {
     protected readonly facade: UserFacade = inject( UserFacade )
 
-    protected readonly form: FormGroup
+    protected readonly model: WritableSignal<UserFormModel> = signal( toUserFormModel() )
+    protected readonly form: FieldTree<UserFormModel> = createUserForm( this.model )
 
     public constructor () {
         super()
-
-        this.form = this.initForm()
 
         this.loadData()
 
@@ -62,12 +59,6 @@ export class UserFormPage extends GenericFormComponent<UserModel, UserDto> imple
         }
     }
 
-    protected initForm (): FormGroup {
-        return this.formBuilder.group( {
-            role: this.formBuilder.control( undefined, [ Validators.required ] ),
-        } )
-    }
-
     protected handleLoadedElement (): void {
         this.subscriptions.add(
             this.facade.user$.pipe(
@@ -78,25 +69,21 @@ export class UserFormPage extends GenericFormComponent<UserModel, UserDto> imple
     }
 
     protected fillForm (element: UserModel): void {
-        this.role.patchValue( element.role?.value )
+        this.model.set( toUserFormModel( element ) )
     }
 
     protected submit (): void {
-        if (!FormHelper.isFormValid( this.form )) {
-            this.logInvalidForm( this.form.value )
+        if (!this.isFormValid( this.form )) {
+            this.logInvalidForm( this.model() )
             return
         }
 
         this.subscriptions.add(
             this.facade.updateUserRole(
                 this.facade.user()!.id,
-                this.role.value,
+                this.model().role,
             ).subscribe( (): void => this.navigateToRedirectUri() ),
         )
-    }
-
-    protected buildDto (): UserDto {
-        throw new Error( this.translateService.translate( 'global.messages.not-implemented' ) )
     }
 
     protected get idParam (): string | undefined {
@@ -105,9 +92,5 @@ export class UserFormPage extends GenericFormComponent<UserModel, UserDto> imple
 
     public ngOnDestroy (): void {
         this.subscriptions.unsubscribe()
-    }
-
-    protected get role (): FormControl {
-        return this.form.get( 'role' ) as FormControl
     }
 }
