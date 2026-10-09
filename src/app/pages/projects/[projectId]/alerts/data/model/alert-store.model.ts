@@ -1,5 +1,5 @@
 import { PageRequestInformationModel } from '@shared/models/model/page-request-information.model'
-import { SelectItem } from 'primeng/api'
+import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { AlertModel } from '@shared/models/model/alert.model'
 import { AlertPageParamsModel } from '@shared/models/model/alert-page-params.model'
 import { AlertStatusEnum } from '@shared/models/enumeration/alert-status.enum'
@@ -10,7 +10,7 @@ export interface AlertStoreModel {
     alerts: PageRequestInformationModel<AlertPageParamsModel, AlertModel>
     communications: PageRequestInformationModel<CommunicationPageParamsModel, CommunicationModel>
     metadata: {
-        status: SelectItem<AlertStatusEnum | undefined>[],
-        visibilities: SelectItem<boolean | undefined>[],
+        status: SelectOptionModel<AlertStatusEnum | undefined>[],
+        visibilities: SelectOptionModel<boolean | undefined>[],
     }
 }

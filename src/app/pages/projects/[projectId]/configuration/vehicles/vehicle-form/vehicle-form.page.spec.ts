@@ -36,7 +36,7 @@ describe( 'VehicleFormPage', () => {
         facade[ 'updateVehicle' ].mockReturnValue( of( VEHICLE_DTO ) )
         facade[ 'createVehicle' ].mockReturnValue( of( VEHICLE_DTO ) )
         RegistryConfig.config = { notification: { duration: {} } } as unknown as ConfigModel
-        RegistryConfig.environment = { production: false, backend: { url: 'http://backend.test', noAuthPaths: [] } }
+        RegistryConfig.environment = { production: false, backend: { url: 'http://backend.test', noAuthPaths: [] }, hosting: { providerName: null, providerAddress: null } }
         TestBed.configureTestingModule( {
             providers: [
                 { provide: VehicleFacade, useValue: facade },

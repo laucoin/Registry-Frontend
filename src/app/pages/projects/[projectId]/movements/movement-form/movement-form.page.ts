@@ -28,7 +28,7 @@ import {InputTextModule} from 'primeng/inputtext'
 import {TranslocoPipe} from '@jsverse/transloco'
 import {Select, SelectModule} from 'primeng/select'
 import {DatePicker} from 'primeng/datepicker'
-import {SelectItem} from 'primeng/api'
+import {SelectOptionModel} from '@shared/models/model/select-option.model'
 import {ParticipantModel} from '@shared/models/model/participant.model'
 import {RegistryRequiredDirective} from '@shared/directives/registry-required.directive'
 import {MovementContentModel} from '@shared/models/model/movement-content.model'
@@ -122,8 +122,8 @@ export class MovementFormPage extends BaseFormComponent implements OnDestroy {
     protected readonly interpretedMovementType: Signal<PresenceStatusEnum[]> = computed(
         (): PresenceStatusEnum[] => interpretedPresence(this.model().information.type),
     )
-    protected readonly drivers: Signal<SelectItem<ParticipantModel>[]> = computed(
-        (): SelectItem<ParticipantModel>[] => driversOf(this.model()),
+    protected readonly drivers: Signal<SelectOptionModel<ParticipantModel>[]> = computed(
+        (): SelectOptionModel<ParticipantModel>[] => driversOf(this.model()),
     )
     private readonly hasVehicleOption: Signal<boolean> = computed((): boolean => ProjectHelper.hasOption(
         this.sessionFacade.selectedProject(),

@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing'
 import { TranslocoService } from '@jsverse/transloco'
-import { ToastMessageOptions } from 'primeng/api'
+import { NotificationModel } from '@shared/models/model/notification.model'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { BrowserService } from '@core/browser/browser.service'
 import { ErrorReporter } from '@core/registry/state/error-reporter'
@@ -15,7 +15,7 @@ describe( 'ErrorReporter', () => {
     beforeEach( () => {
         TestBed.configureTestingModule( {
             providers: [
-                { provide: BrowserService, useValue: { systemTheme: ThemeEnum.LIGHT, viewportWidth: 1024, setRootClass: (): void => undefined, setRootLanguage: (): void => undefined } },
+                { provide: BrowserService, useValue: { systemTheme: ThemeEnum.LIGHT, viewportWidth: 1024, setRootTheme: (): void => undefined, setRootLanguage: (): void => undefined } },
                 { provide: TranslocoService, useValue: { translate: (key: string): string => key } },
             ],
         } )
@@ -35,8 +35,8 @@ describe( 'ErrorReporter', () => {
 
     it( 'relays a notification to the toast', () => {
         // Arrange
-        const received: ToastMessageOptions[] = []
-        TestBed.inject( NotificationStore ).messages$().subscribe( (message: ToastMessageOptions): number => received.push( message ) )
+        const received: NotificationModel[] = []
+        TestBed.inject( NotificationStore ).messages$().subscribe( (message: NotificationModel): number => received.push( message ) )
 
         // Act
         reporter.notify( { severity: 'info', summary: 'Hello', detail: 'there' } )

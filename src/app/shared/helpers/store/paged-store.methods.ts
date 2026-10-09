@@ -1,7 +1,7 @@
 import { patchState, StateSignals, WritableStateSource } from '@ngrx/signals'
 import { RxMethod, rxMethod } from '@ngrx/signals/rxjs-interop'
 import { finalize, map, Observable, pipe, switchMap, tap } from 'rxjs'
-import { SelectItem } from 'primeng/api'
+import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { ErrorSink, initialize, notifyOnError } from '@shared/helpers/rx.helper'
 import { MovementHelper } from '@shared/helpers/movement.helper'
 import { StateHelper } from '@shared/helpers/state/state.helper'
@@ -211,6 +211,6 @@ export function metadataFetcher<S extends { metadata: object }, F extends keyof 
  * Scope: Lets filter dropdowns offer a neutral choice for fetched metadata.
  * Limits: Pure function; the empty option label is not translated here.
  */
-export function withEmptyOption<T> (items: SelectItem<T>[]): SelectItem<T | undefined>[] {
+export function withEmptyOption<T> (items: SelectOptionModel<T>[]): SelectOptionModel<T | undefined>[] {
     return [ { label: '-', value: undefined }, ...items ]
 }

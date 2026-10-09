@@ -21,7 +21,7 @@ import {ParticipantModel} from '@shared/models/model/participant.model'
 import {RegistryRequiredDirective} from '@shared/directives/registry-required.directive'
 import {DatePicker} from 'primeng/datepicker'
 import {AutoComplete, AutoCompleteCompleteEvent} from 'primeng/autocomplete'
-import {SelectItem} from 'primeng/api'
+import {SelectOptionModel} from '@shared/models/model/select-option.model'
 import {GroupModel} from '@shared/models/model/group.model'
 import {
     SelectElementsFieldComponent,
@@ -150,8 +150,8 @@ export class ParticipantFormComponent extends BaseFormComponent implements OnDes
         this.facade.searchGroups(searched.query)
     }
 
-    protected handleUserSelection(selected: SelectItem<UserModel> | null | undefined): void {
-        const user: SelectItem<UserModel> | null = selected ?? null
+    protected handleUserSelection(selected: SelectOptionModel<UserModel> | null | undefined): void {
+        const user: SelectOptionModel<UserModel> | null = selected ?? null
         this.rememberNames(user)
         this.model.update((current: ParticipantFormModel): ParticipantFormModel => withSelectedUser(current, user, {
             firstName: this.previousFirstName(),
@@ -159,7 +159,7 @@ export class ParticipantFormComponent extends BaseFormComponent implements OnDes
         }))
     }
 
-    private rememberNames(user: SelectItem<UserModel> | null): void {
+    private rememberNames(user: SelectOptionModel<UserModel> | null): void {
         if (user?.value.firstName) this.previousFirstName.set(this.model().firstName)
         if (user?.value.lastName) this.previousLastName.set(this.model().lastName)
     }

@@ -7,7 +7,7 @@ import { ThemeEnum } from '@shared/models/enumeration/theme.enum'
 
 describe( 'UiStore', () => {
     let store: InstanceType<typeof UiStore>
-    let setRootClass: Mock<(name: string, enabled: boolean) => void>
+    let setRootTheme: Mock<(theme: ThemeEnum) => void>
     let setRootLanguage: Mock<(language: string) => void>
     let systemTheme: ThemeEnum
 
@@ -19,7 +19,7 @@ describe( 'UiStore', () => {
                     useValue: {
                         get systemTheme (): ThemeEnum { return systemTheme },
                         viewportWidth: 1024,
-                        setRootClass,
+                        setRootTheme,
                         setRootLanguage,
                     },
                 },
@@ -29,7 +29,7 @@ describe( 'UiStore', () => {
     }
 
     beforeEach( () => {
-        setRootClass = vi.fn()
+        setRootTheme = vi.fn()
         setRootLanguage = vi.fn()
         systemTheme = ThemeEnum.LIGHT
     } )
@@ -48,7 +48,7 @@ describe( 'UiStore', () => {
         expect( store.error() ).toBeUndefined()
     } )
 
-    it( 'turns the dark class on for the dark theme', () => {
+    it( 'applies the dark theme on the document', () => {
         // Arrange
         store = createStore()
 
@@ -56,11 +56,11 @@ describe( 'UiStore', () => {
         store.updateTheme( ThemeEnum.DARK )
 
         // Assert
-        expect( setRootClass ).toHaveBeenCalledWith( 'dark-mod', true )
+        expect( setRootTheme ).toHaveBeenCalledWith( ThemeEnum.DARK )
         expect( store.theme() ).toBe( ThemeEnum.DARK )
     } )
 
-    it( 'turns the dark class off for the light theme even when the system is dark', () => {
+    it( 'applies the light theme on the document even when the system is dark', () => {
         // Arrange
         systemTheme = ThemeEnum.DARK
         store = createStore()
@@ -69,10 +69,10 @@ describe( 'UiStore', () => {
         store.updateTheme( ThemeEnum.LIGHT )
 
         // Assert
-        expect( setRootClass ).toHaveBeenCalledWith( 'dark-mod', false )
+        expect( setRootTheme ).toHaveBeenCalledWith( ThemeEnum.LIGHT )
     } )
 
-    it( 'follows the system scheme for the system theme', () => {
+    it( 'hands the system theme over to the document', () => {
         // Arrange
         systemTheme = ThemeEnum.DARK
         store = createStore()
@@ -81,7 +81,7 @@ describe( 'UiStore', () => {
         store.updateTheme( ThemeEnum.SYSTEM )
 
         // Assert
-        expect( setRootClass ).toHaveBeenCalledWith( 'dark-mod', true )
+        expect( setRootTheme ).toHaveBeenCalledWith( ThemeEnum.SYSTEM )
         expect( store.theme() ).toBe( ThemeEnum.SYSTEM )
     } )
 

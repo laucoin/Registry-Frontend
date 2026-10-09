@@ -1,7 +1,7 @@
 import { signal, WritableSignal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { FieldTree } from '@angular/forms/signals'
-import { SelectItem } from 'primeng/api'
+import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { describe, expect, it } from 'vitest'
 import {
     createMovementForm,
@@ -262,7 +262,7 @@ describe( 'movement form', () => {
             ]
 
             // Act
-            const drivers: string[] = driversOf( model ).map( (driver: SelectItem<ParticipantModel>): string => driver.value.id )
+            const drivers: string[] = driversOf( model ).map( (driver: SelectOptionModel<ParticipantModel>): string => driver.value.id )
 
             // Assert
             expect( drivers ).toEqual( [ 'a' ] )

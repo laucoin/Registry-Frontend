@@ -1,4 +1,4 @@
-import { SelectItem } from 'primeng/api'
+import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { UserModel } from '@shared/models/model/user.model'
 
 /**
@@ -7,7 +7,7 @@ import { UserModel } from '@shared/models/model/user.model'
  * Limits: No state and no translation.
  */
 export class UserHelper {
-    public static toSelectItem (user: UserModel): SelectItem<UserModel> {
+    public static toSelectItem (user: UserModel): SelectOptionModel<UserModel> {
         return {
             label: `${user.email} (${user.firstName} ${user.lastName})`,
             value: user,

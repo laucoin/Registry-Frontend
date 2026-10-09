@@ -2,7 +2,9 @@ import { signal, WritableSignal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { TranslocoService } from '@jsverse/transloco'
 import { Subject } from 'rxjs'
-import { ToastMessageOptions } from 'primeng/api'
+import { ConfirmationModel } from '@shared/models/model/confirmation.model'
+import { NotificationModel } from '@shared/models/model/notification.model'
+import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
 import { BrowserService } from '@core/browser/browser.service'
 import { UiFacade } from '@core/registry/state/ui.facade'
@@ -17,8 +19,8 @@ import { ConfigModel } from '@core/config/model/config.model'
 describe( 'UiFacade', () => {
     let facade: UiFacade
     let ui: InstanceType<typeof UiStore>
-    let received: ToastMessageOptions[]
-    let setRootClass: Mock<(name: string, enabled: boolean) => void>
+    let received: NotificationModel[]
+    let setRootTheme: Mock<(theme: ThemeEnum) => void>
     let systemTheme: WritableSignal<ThemeEnum>
 
     beforeEach( () => {
@@ -30,7 +32,7 @@ describe( 'UiFacade', () => {
                 normal: { light: 'light.svg', dark: 'dark.svg' },
             },
         } as unknown as ConfigModel
-        setRootClass = vi.fn()
+        setRootTheme = vi.fn()
         systemTheme = signal( ThemeEnum.LIGHT )
         TestBed.configureTestingModule( {
             providers: [
@@ -40,7 +42,7 @@ describe( 'UiFacade', () => {
                     useValue: {
                         get systemTheme (): ThemeEnum { return systemTheme() },
                         viewportWidth: 1280,
-                        setRootClass,
+                        setRootTheme,
                         setRootLanguage: vi.fn(),
                     },
                 },
@@ -50,7 +52,7 @@ describe( 'UiFacade', () => {
         facade = TestBed.inject( UiFacade )
         ui = TestBed.inject( UiStore )
         received = []
-        TestBed.inject( NotificationStore ).messages$().subscribe( (message: ToastMessageOptions): number => received.push( message ) )
+        TestBed.inject( NotificationStore ).messages$().subscribe( (message: NotificationModel): number => received.push( message ) )
         TestBed.inject( MetadataStore )
     } )
 
@@ -98,14 +100,14 @@ describe( 'UiFacade', () => {
     it( 'ignores an undefined theme and applies a defined one', () => {
         // Arrange
         facade.updateTheme( undefined )
-        const untouched: number = setRootClass.mock.calls.length
+        const untouched: number = setRootTheme.mock.calls.length
 
         // Act
         facade.updateTheme( ThemeEnum.DARK )
 
         // Assert
         expect( untouched ).toBe( 0 )
-        expect( setRootClass ).toHaveBeenCalledWith( 'dark-mod', true )
+        expect( setRootTheme ).toHaveBeenCalledWith( ThemeEnum.DARK )
         expect( facade.theme() ).toBe( ThemeEnum.DARK )
     } )
 
@@ -120,7 +122,7 @@ describe( 'UiFacade', () => {
 
         // Assert
         expect( afterFirst ).toBe( 0 )
-        expect( received.map( (message: ToastMessageOptions): string | undefined => message.summary ) ).toEqual( [
+        expect( received.map( (message: NotificationModel): string | undefined => message.summary ) ).toEqual( [
             'global.notifications.OFFLINE.title',
             'global.notifications.ONLINE.title',
         ] )
@@ -128,7 +130,7 @@ describe( 'UiFacade', () => {
 
     it( 'swallows the notifications of an unauthorized call', () => {
         // Arrange
-        const message: ToastMessageOptions = { summary: 'error 401', detail: 'x' }
+        const message: NotificationModel = { summary: 'error 401', detail: 'x' }
 
         // Act
         facade.notify( message )
@@ -139,7 +141,7 @@ describe( 'UiFacade', () => {
 
     it( 'fills an empty notification with the unknown error text', () => {
         // Arrange
-        const message: ToastMessageOptions = { severity: 'error', summary: ' ', detail: '' }
+        const message: NotificationModel = { severity: 'error', summary: ' ', detail: '' }
 
         // Act
         facade.notify( message )
@@ -150,7 +152,7 @@ describe( 'UiFacade', () => {
 
     it( 'forwards a normal notification as it is', () => {
         // Arrange
-        const message: ToastMessageOptions = { severity: 'success', summary: 'Done', detail: 'ok' }
+        const message: NotificationModel = { severity: 'success', summary: 'Done', detail: 'ok' }
 
         // Act
         facade.notify( message )
@@ -183,5 +185,18 @@ describe( 'UiFacade', () => {
 
         // Assert
         expect( ui.language() ).toBe( 'en' )
+    } )
+
+    it( 'forwards a confirmation request to the listeners of the confirmation stream', () => {
+        // Arrange
+        const requested: ConfirmationModel[] = []
+        const confirmation: ConfirmationModel = { header: 'h', message: 'm', icon: 'i', acceptSeverity: SeverityEnum.WARNING, accept: (): void => undefined }
+        facade.confirmation.subscribe( (it: ConfirmationModel): number => requested.push( it ) )
+
+        // Act
+        facade.confirm( confirmation )
+
+        // Assert
+        expect( requested ).toEqual( [ confirmation ] )
     } )
 } )

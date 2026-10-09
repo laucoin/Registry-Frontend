@@ -11,7 +11,7 @@ import { Ripple } from 'primeng/ripple'
 import {TranslocoPipe} from '@jsverse/transloco'
 import { CommunicationHelper } from '@shared/helpers/communication.helper'
 import { CommunicationFacade } from '@pages/projects/[projectId]/movements/communication/data/state/communication.facade'
-import { MenuItem } from 'primeng/api'
+import { MenuEntryModel } from '@shared/models/model/menu-entry.model'
 import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum'
 import { ElementActionEnum } from '@shared/models/enumeration/element-action.enum'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
@@ -50,14 +50,14 @@ export class DialogElementComponent extends GenericElementComponent {
     public readonly previousAuthorId: InputSignal<string | undefined> = input()
     public readonly nextAuthorId: InputSignal<string | undefined> = input()
 
-    protected readonly actions: Signal<MenuItem[]> = computed( (): MenuItem[] => [
+    protected readonly actions: Signal<MenuEntryModel[]> = computed( (): MenuEntryModel[] => [
         this.editAction(),
         this.disableAction(),
         this.enableAction(),
         this.deleteAction(),
     ] )
 
-    private editAction(): MenuItem {
+    private editAction(): MenuEntryModel {
         return {
             label: 'communications.actions.edit',
             icon: 'pi pi-pen-to-square',
@@ -67,7 +67,7 @@ export class DialogElementComponent extends GenericElementComponent {
         }
     }
 
-    private disableAction(): MenuItem {
+    private disableAction(): MenuEntryModel {
         return {
             label: 'communications.actions.disable',
             icon: 'pi pi-eye-slash',
@@ -83,7 +83,7 @@ export class DialogElementComponent extends GenericElementComponent {
         }
     }
 
-    private enableAction(): MenuItem {
+    private enableAction(): MenuEntryModel {
         return {
             label: 'communications.actions.enable',
             icon: 'pi pi-replay',
@@ -99,7 +99,7 @@ export class DialogElementComponent extends GenericElementComponent {
         }
     }
 
-    private deleteAction(): MenuItem {
+    private deleteAction(): MenuEntryModel {
         return {
             label: 'communications.actions.delete',
             icon: 'pi pi-trash',

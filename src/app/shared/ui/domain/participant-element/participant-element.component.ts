@@ -20,7 +20,7 @@ import {SeverityEnum} from '@shared/models/enumeration/severity.enum'
 import {PresenceStatusEnum} from '@shared/models/enumeration/presence-status.enum'
 import {ProjectAuthorityEnum} from '@shared/models/enumeration/project-authority.enum'
 import {ElementActionEnum} from '@shared/models/enumeration/element-action.enum'
-import {MenuItem} from 'primeng/api'
+import {MenuEntryModel} from '@shared/models/model/menu-entry.model'
 
 /**
  * Purpose: Card presenting one participant with its actions.
@@ -57,7 +57,7 @@ export class ParticipantElementComponent extends GenericElementComponent {
     public readonly groupIdToRemove: InputSignal<string | undefined> = input()
     public readonly participant: InputSignal<ParticipantModel> = input.required()
 
-    protected readonly actions: Signal<MenuItem[]> = computed( (): MenuItem[] => [
+    protected readonly actions: Signal<MenuEntryModel[]> = computed( (): MenuEntryModel[] => [
         this.movementsHistoryAction(),
         this.editAction(),
         this.disableAction(),
@@ -66,7 +66,7 @@ export class ParticipantElementComponent extends GenericElementComponent {
         this.deleteAction(),
     ] )
 
-    private movementsHistoryAction(): MenuItem {
+    private movementsHistoryAction(): MenuEntryModel {
         return {
             label: 'participants.actions.movements-history',
             icon: 'pi pi-history',
@@ -83,7 +83,7 @@ export class ParticipantElementComponent extends GenericElementComponent {
         }
     }
 
-    private editAction(): MenuItem {
+    private editAction(): MenuEntryModel {
         return {
             label: 'participants.actions.edit',
             icon: 'pi pi-pen-to-square',
@@ -100,7 +100,7 @@ export class ParticipantElementComponent extends GenericElementComponent {
         }
     }
 
-    private disableAction(): MenuItem {
+    private disableAction(): MenuEntryModel {
         return {
             label: 'participants.actions.disable',
             icon: 'pi pi-eye-slash',
@@ -116,7 +116,7 @@ export class ParticipantElementComponent extends GenericElementComponent {
         }
     }
 
-    private enableAction(): MenuItem {
+    private enableAction(): MenuEntryModel {
         return {
             label: 'participants.actions.enable',
             icon: 'pi pi-replay',
@@ -132,7 +132,7 @@ export class ParticipantElementComponent extends GenericElementComponent {
         }
     }
 
-    private removeMemberAction(): MenuItem {
+    private removeMemberAction(): MenuEntryModel {
         return {
             label: 'participants.actions.remove-member',
             icon: 'pi pi-user-minus',
@@ -151,7 +151,7 @@ export class ParticipantElementComponent extends GenericElementComponent {
         }
     }
 
-    private deleteAction(): MenuItem {
+    private deleteAction(): MenuEntryModel {
         return {
             label: 'participants.actions.delete',
             icon: 'pi pi-trash',

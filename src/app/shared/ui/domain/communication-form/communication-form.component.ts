@@ -23,7 +23,7 @@ import {
 import { CommunicationFacade } from '@pages/projects/[projectId]/movements/communication/data/state/communication.facade'
 import { GenericHelper } from '@shared/helpers/generic.helper'
 import { tap } from 'rxjs'
-import { MenuItem } from 'primeng/api'
+import { MenuEntryModel } from '@shared/models/model/menu-entry.model'
 import { MovementModel } from '@shared/models/model/movement.model'
 import { MovementHelper } from '@shared/helpers/movement.helper'
 import { AlertModel } from '@shared/models/model/alert.model'
@@ -104,7 +104,7 @@ export class CommunicationFormComponent extends BaseFormComponent implements OnI
     public readonly initialMovement: InputSignal<MovementModel | undefined> = input<MovementModel | undefined>(
         undefined )
 
-    private readonly allActions: Signal<MenuItem[]> = signal( [
+    private readonly allActions: Signal<MenuEntryModel[]> = signal( [
         {
             id: CommunicationModulableFieldEnum.MOVEMENT,
             label: 'communications.form.actions.add-movement',
@@ -130,7 +130,7 @@ export class CommunicationFormComponent extends BaseFormComponent implements OnI
         },
     ] )
 
-    protected readonly actions: Signal<MenuItem[]> = computed( () => this.buildModulableFields( this.allActions() ) )
+    protected readonly actions: Signal<MenuEntryModel[]> = computed( () => this.buildModulableFields( this.allActions() ) )
 
     protected readonly movementSelectorVisible: WritableSignal<boolean> = signal( false )
     protected readonly alertSelectorMode: WritableSignal<AlertModulableFieldEnum | undefined> = signal<AlertModulableFieldEnum | undefined>(
@@ -251,8 +251,8 @@ export class CommunicationFormComponent extends BaseFormComponent implements OnI
         return this.route.snapshot.params['communicationId']
     }
 
-    private buildModulableFields (actions: MenuItem[]): MenuItem[] {
-        return actions.filter( (action: MenuItem): boolean => {
+    private buildModulableFields (actions: MenuEntryModel[]): MenuEntryModel[] {
+        return actions.filter( (action: MenuEntryModel): boolean => {
             switch (true) {
                 case action.id === CommunicationModulableFieldEnum.ALERT:
                     return GenericHelper.isNull( this.initialAlert() ) && ProjectHelper.hasOption(
@@ -264,7 +264,7 @@ export class CommunicationFormComponent extends BaseFormComponent implements OnI
                 default:
                     return true
             }
-        } ).map( (action: MenuItem): MenuItem => ({
+        } ).map( (action: MenuEntryModel): MenuEntryModel => ({
             ...action,
             disabled: action.disabled || (action.id === CommunicationModulableFieldEnum.ALERT && GenericHelper.nonNull(
                 this.alertSelectorMode() )) || (action.id === CommunicationModulableFieldEnum.MOVEMENT && this.movementSelectorVisible()),

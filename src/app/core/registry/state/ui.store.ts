@@ -1,6 +1,6 @@
 import { inject } from '@angular/core'
 import { patchState, signalStore, withMethods, withState } from '@ngrx/signals'
-import { ToastMessageOptions } from 'primeng/api'
+import { NotificationModel } from '@shared/models/model/notification.model'
 import { ThemeEnum } from '@shared/models/enumeration/theme.enum'
 import { BrowserService } from '@core/browser/browser.service'
 import { ErrorModel } from '@shared/models/model/error.model'
@@ -11,14 +11,12 @@ interface UiStoreModel {
     language: string | undefined
     online: boolean | undefined
     loading: boolean
-    error: ToastMessageOptions | undefined
+    error: NotificationModel | undefined
 }
-
-const darkModeClass: string = 'dark-mod'
 
 /**
  * Purpose: Holds the shell display state: theme, screen width, language, network, global loader and error.
- * Scope: Owns that state and applies the theme class and language on the document through the browser service.
+ * Scope: Owns that state and applies the theme and language on the document through the browser service.
  * Limits: Knows nothing about the user or the session and does not call the backend.
  */
 export const UiStore = signalStore(
@@ -53,8 +51,7 @@ export const UiStore = signalStore(
             patchState( store, { language: language } )
         },
         updateTheme: (theme: ThemeEnum): void => {
-            const dark: boolean = theme === ThemeEnum.DARK || (theme !== ThemeEnum.LIGHT && browser.systemTheme === ThemeEnum.DARK)
-            browser.setRootClass( darkModeClass, dark )
+            browser.setRootTheme( theme )
             patchState( store, { theme: theme } )
         },
     }) ),

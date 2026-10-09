@@ -48,17 +48,19 @@ describe( 'BrowserService', () => {
         expect( service.host ).toBe( window.location.host )
     } )
 
-    it( 'adds and removes a class on the root element', () => {
+    it.each( [
+        [ ThemeEnum.DARK, 'dark' ],
+        [ ThemeEnum.LIGHT, 'light' ],
+        [ ThemeEnum.SYSTEM, null ],
+    ] )( 'applies the %s theme on the root element', (theme: ThemeEnum, expected: string | null) => {
         // Arrange
-        service.setRootClass( 'dark-mod', true )
-        const added: boolean = document.documentElement.classList.contains( 'dark-mod' )
+        document.documentElement.setAttribute( 'data-theme', 'dark' )
 
         // Act
-        service.setRootClass( 'dark-mod', false )
+        service.setRootTheme( theme )
 
         // Assert
-        expect( added ).toBe( true )
-        expect( document.documentElement.classList.contains( 'dark-mod' ) ).toBe( false )
+        expect( document.documentElement.getAttribute( 'data-theme' ) ).toBe( expected )
     } )
 
     it( 'sets the language of the root element', () => {

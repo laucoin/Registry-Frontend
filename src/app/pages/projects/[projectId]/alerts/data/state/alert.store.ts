@@ -1,6 +1,6 @@
 import { inject } from '@angular/core'
 import { signalStore, withHooks, withMethods, withState } from '@ngrx/signals'
-import { SelectItem } from 'primeng/api'
+import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { ErrorReporter } from '@core/registry/state/error-reporter'
 import { MetadataApi } from '@core/registry/state/metadata.api'
 import { AlertStoreModel } from '@pages/projects/[projectId]/alerts/data/model/alert-store.model'
@@ -62,7 +62,7 @@ export const AlertStore = signalStore(
         metadata: { ...defaultAlertStore.metadata, status: current.metadata.status },
     }) ),
     withMethods( (store, api = inject( AlertApi ), metadataApi = inject( MetadataApi ), errors = inject( ErrorReporter )) => ({
-        fetchAlertStatus: metadataFetcher<AlertStoreModel, 'status', void, SelectItem<AlertStatusEnum>[]>(
+        fetchAlertStatus: metadataFetcher<AlertStoreModel, 'status', void, SelectOptionModel<AlertStatusEnum>[]>(
             store, 'status', () => metadataApi.getAlertsStatus(), errors, withEmptyOption,
         ),
         fetchAlertsPage: pageFetcher( store, 'alerts', (request: AlertsPageRequest, params: AlertPageParamsModel) =>

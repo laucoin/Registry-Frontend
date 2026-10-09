@@ -1,7 +1,7 @@
 import { inject } from '@angular/core'
 import { TranslocoService } from '@jsverse/transloco'
 import { signalStore, withHooks, withMethods, withState } from '@ngrx/signals'
-import { SelectItem, SelectItemGroup } from 'primeng/api'
+import { SelectOptionModel, SelectOptionGroupModel } from '@shared/models/model/select-option.model'
 import { ErrorReporter } from '@core/registry/state/error-reporter'
 import { MetadataApi } from '@core/registry/state/metadata.api'
 import { CommunicationModel } from '@shared/models/model/communication.model'
@@ -94,8 +94,8 @@ const defaultMovementStore: MovementStoreModel = {
     },
 }
 
-function toSearchedSections (result: MovementParticipantsAndGroupsModel, label: SectionLabel): SelectItemGroup<ParticipantModel | GroupModel>[] {
-    const sections: SelectItemGroup<ParticipantModel | GroupModel>[] = []
+function toSearchedSections (result: MovementParticipantsAndGroupsModel, label: SectionLabel): SelectOptionGroupModel<ParticipantModel | GroupModel>[] {
+    const sections: SelectOptionGroupModel<ParticipantModel | GroupModel>[] = []
     if (result.groups.length > 0) {
         sections.push( {
             label: label( 'movements.form.content.registered.searched.group', result.groups ),
@@ -126,10 +126,10 @@ export const MovementStore = signalStore(
         },
     }) ),
     withMethods( (store, metadataApi = inject( MetadataApi ), movementApi = inject( MovementApi ), errors = inject( ErrorReporter )) => ({
-        fetchMovementTypes: metadataFetcher<MovementStoreModel, 'types', void, SelectItem<MovementTypeEnum>[]>(
+        fetchMovementTypes: metadataFetcher<MovementStoreModel, 'types', void, SelectOptionModel<MovementTypeEnum>[]>(
             store, 'types', () => metadataApi.getMovementsTypes(), errors, withEmptyOption,
         ),
-        fetchParticipantTypes: metadataFetcher<MovementStoreModel, 'participantTypes', void, SelectItem<ParticipantTypeEnum>[]>(
+        fetchParticipantTypes: metadataFetcher<MovementStoreModel, 'participantTypes', void, SelectOptionModel<ParticipantTypeEnum>[]>(
             store, 'participantTypes', () => metadataApi.getParticipantsTypes(), errors,
         ),
         fetchMovementsContents: movementContentsFetcher( store, movementApi, errors ),
@@ -149,14 +149,14 @@ export const MovementStore = signalStore(
         ),
         searchVehicles: metadataFetcher<MovementStoreModel, 'searchedVehicles', SearchVehiclesRequest, VehicleModel[]>(
             store, 'searchedVehicles', (request: SearchVehiclesRequest) => api.searchVehicles( request.projectId, request.textSearched ), errors,
-            (vehicles: VehicleModel[]): SelectItem<VehicleModel>[] => vehicles.map( VehicleHelper.toSelectItem ),
+            (vehicles: VehicleModel[]): SelectOptionModel<VehicleModel>[] => vehicles.map( VehicleHelper.toSelectItem ),
         ),
     }) ),
     withMethods( (store, api = inject( MovementApi ), errors = inject( ErrorReporter ), translateService = inject( TranslocoService ), plural = inject( PluralTranslationPipe )) => ({
         searchParticipantsAndGroups: metadataFetcher<MovementStoreModel, 'searchedParticipantsAndGroups', SearchParticipantsAndGroupsRequest, MovementParticipantsAndGroupsModel>(
             store, 'searchedParticipantsAndGroups', (request: SearchParticipantsAndGroupsRequest) =>
                 api.searchParticipantsAndGroups( request.projectId, request.contentTypeSearched, request.textSearched ), errors,
-            (result: MovementParticipantsAndGroupsModel): SelectItemGroup<ParticipantModel | GroupModel>[] =>
+            (result: MovementParticipantsAndGroupsModel): SelectOptionGroupModel<ParticipantModel | GroupModel>[] =>
                 toSearchedSections( result, (key: string, items: unknown[]): string => translateService.translate( plural.transform( key, items ) ) ),
         ),
     }) ),

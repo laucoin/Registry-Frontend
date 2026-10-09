@@ -5,7 +5,7 @@ import {PageModel} from '@shared/models/model/page.model'
 import {UserModel} from '@shared/models/model/user.model'
 import {GenericApi} from '@shared/helpers/api/generic.api'
 import {QueryHelper} from '@shared/helpers/query.helper'
-import {SelectItem} from 'primeng/api'
+import {SelectOptionModel} from '@shared/models/model/select-option.model'
 import {UserPageParamsModel} from '@pages/users/data/model/user-page-params.model'
 import { UserResponseDto } from '@shared/models/dto/response/user.response.dto'
 import { PageMapper } from '@shared/mappers/page.mapper'
@@ -43,8 +43,8 @@ export class UserApi extends GenericApi {
         )
     }
 
-    public getAssignableUserRoles(): Observable<SelectItem<string>[]> {
-        return this.http.get<SelectItem<string>[]>(`${this.baseUrl}/roles`)
+    public getAssignableUserRoles(): Observable<SelectOptionModel<string>[]> {
+        return this.http.get<SelectOptionModel<string>[]>(`${this.baseUrl}/roles`)
     }
 
     public updateUserRole(id: string, role: string | undefined): Observable<UserModel> {

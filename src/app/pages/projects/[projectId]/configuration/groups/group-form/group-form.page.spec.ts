@@ -36,7 +36,7 @@ describe( 'GroupFormPage', () => {
         facade[ 'updateGroup' ].mockReturnValue( of( GROUP_DTO ) )
         facade[ 'createGroup' ].mockReturnValue( of( GROUP_DTO ) )
         RegistryConfig.config = { notification: { duration: {} } } as unknown as ConfigModel
-        RegistryConfig.environment = { production: false, backend: { url: 'http://backend.test', noAuthPaths: [] } }
+        RegistryConfig.environment = { production: false, backend: { url: 'http://backend.test', noAuthPaths: [] }, hosting: { providerName: null, providerAddress: null } }
         TestBed.configureTestingModule( {
             providers: [
                 { provide: GroupFacade, useValue: facade },

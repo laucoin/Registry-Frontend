@@ -22,6 +22,14 @@ export const routes: Routes = [
         component: AuthCallbackPage,
     },
     {
+        path: RegistryRouteEnum.PRIVACY,
+        loadComponent: () => import('@pages/privacy/privacy.page').then( (m: typeof import('@pages/privacy/privacy.page')) => m.PrivacyPage ),
+    },
+    {
+        path: RegistryRouteEnum.TERMS,
+        loadComponent: () => import('@pages/terms/terms.page').then( (m: typeof import('@pages/terms/terms.page')) => m.TermsPage ),
+    },
+    {
         path: '**',
         redirectTo: RegistryRouteEnum.PROJECTS,
     },

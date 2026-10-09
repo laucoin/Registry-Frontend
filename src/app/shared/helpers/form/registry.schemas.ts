@@ -1,5 +1,5 @@
 import { FieldContext, maxLength, required, SchemaPath, validate, ValidationError } from '@angular/forms/signals'
-import { SelectItem } from 'primeng/api'
+import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { ProjectModel } from '@shared/models/model/project.model'
 import { ProjectOptionModel } from '@shared/models/model/project-option.model'
 import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
@@ -158,8 +158,8 @@ export class RegistrySchemas {
         options: ProjectOptionModel[],
     ): RegistryError | undefined {
         for (const option of options.filter( (it: ProjectOptionModel): boolean => !!selected[it.value] )) {
-            const absent: SelectItem<ProjectOptionEnum> | undefined = option.preRequired.find(
-                (it: SelectItem<ProjectOptionEnum>): boolean => !selected[it.value],
+            const absent: SelectOptionModel<ProjectOptionEnum> | undefined = option.preRequired.find(
+                (it: SelectOptionModel<ProjectOptionEnum>): boolean => !selected[it.value],
             )
             if (absent) return registryError( 'preRequiredOptions', { for: option.label, missing: absent.label } )
         }

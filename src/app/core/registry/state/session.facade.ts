@@ -1,5 +1,5 @@
 import { computed, inject, Injectable, Signal } from '@angular/core'
-import { ToastMessageOptions } from 'primeng/api'
+import { NotificationModel } from '@shared/models/model/notification.model'
 import { filter, map, Observable } from 'rxjs'
 import { RegistryConfig } from '@core/config/registry.config'
 import { SessionStore } from '@core/registry/state/session.store'
@@ -40,7 +40,7 @@ export class SessionFacade {
     public readonly userProjectProfilesPage: Signal<PageModel<ProjectProfileModel> | undefined> = this.session.profiles.element
     public readonly userProjectProfilesPageLoading: Signal<boolean> = this.session.profiles.loading
     public readonly userProjectProfilesPageSilentLoading: Signal<boolean> = this.session.profiles.silentLoading
-    public readonly userProjectProfilesPageError: Signal<ToastMessageOptions | undefined> = this.session.profiles.error
+    public readonly userProjectProfilesPageError: Signal<NotificationModel | undefined> = this.session.profiles.error
     public readonly userProjectProfilesPageResetSearch: Signal<boolean> = this.session.profiles.params.resetSearch
     public readonly userProjectProfilesPageTextSearchParam: Signal<string | undefined> = this.session.profiles.params.textSearched
     public readonly userProjectProfilesPageDateTimeSearchParam: Signal<Date | undefined> = computed((): Date | undefined =>
@@ -51,7 +51,7 @@ export class SessionFacade {
     public readonly userProjectProfileInvitationsPage: Signal<PageModel<ProjectProfileModel> | undefined> = this.session.invitations.element
     public readonly userProjectProfileInvitationsPageLoading: Signal<boolean> = this.session.invitations.loading
     public readonly userProjectProfileInvitationsPageSilentLoading: Signal<boolean> = this.session.invitations.silentLoading
-    public readonly userProjectProfileInvitationsPageError: Signal<ToastMessageOptions | undefined> = this.session.invitations.error
+    public readonly userProjectProfileInvitationsPageError: Signal<NotificationModel | undefined> = this.session.invitations.error
     public readonly userProjectProfileInvitationsPageResetSearch: Signal<boolean> = this.session.invitations.params.resetSearch
     public readonly userProjectProfileInvitationsPageTextSearchParam: Signal<string | undefined> = this.session.invitations.params.textSearched
     public readonly userProjectProfileInvitationsPageDateTimeSearchParam: Signal<Date | undefined> = computed((): Date | undefined =>

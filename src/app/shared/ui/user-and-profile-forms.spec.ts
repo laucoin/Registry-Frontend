@@ -38,7 +38,7 @@ describe( 'user and project profile forms', () => {
         back = vi.fn()
         navigateByUrl = vi.fn( () => Promise.resolve( true ) )
         RegistryConfig.config = { notification: { duration: {} } } as unknown as ConfigModel
-        RegistryConfig.environment = { production: false, backend: { url: 'http://backend.test', noAuthPaths: [] } }
+        RegistryConfig.environment = { production: false, backend: { url: 'http://backend.test', noAuthPaths: [] }, hosting: { providerName: null, providerAddress: null } }
         TestBed.configureTestingModule( {
             providers: [
                 { provide: facadeToken, useValue: facade },

@@ -2,7 +2,7 @@ import { inject } from '@angular/core'
 import { patchState, signalStore, withMethods, withState } from '@ngrx/signals'
 import { RxMethod, rxMethod } from '@ngrx/signals/rxjs-interop'
 import { catchError, EMPTY, finalize, map, Observable, pipe, switchMap, tap } from 'rxjs'
-import { ToastMessageOptions } from 'primeng/api'
+import { NotificationModel } from '@shared/models/model/notification.model'
 import { ErrorReporter } from '@core/registry/state/error-reporter'
 import { ProjectStatusModel } from '@shared/models/model/project-status.model'
 import { SelectedProjectStoreModel } from '@pages/projects/data/model/selected-project-store.model'
@@ -69,7 +69,7 @@ const defaultSelectedProjectStore: SelectedProjectStoreModel = {
     },
 }
 
-const buildToast = (error: ErrorModel): ToastMessageOptions => ({
+const buildToast = (error: ErrorModel): NotificationModel => ({
     severity: 'error',
     summary: error.title,
     detail: error.message,

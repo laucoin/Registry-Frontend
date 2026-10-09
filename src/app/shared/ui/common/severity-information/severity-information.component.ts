@@ -1,6 +1,6 @@
 import { Component, computed, input, InputSignal, Signal} from '@angular/core'
 import {TranslocoPipe} from '@jsverse/transloco'
-import {ToastMessageOptions} from 'primeng/api'
+import {NotificationModel} from '@shared/models/model/notification.model'
 import {SeverityEnum} from '@shared/models/enumeration/severity.enum'
 import {MessageComponent} from '@shared/ui/common/message/message.component'
 import {MessageModule} from 'primeng/message'
@@ -23,7 +23,7 @@ enum InformationImageEnum {
 })
 export class SeverityInformationComponent {
     public readonly showImage: InputSignal<boolean> = input(true)
-    public readonly message: InputSignal<ToastMessageOptions | undefined> = input.required()
+    public readonly message: InputSignal<NotificationModel | undefined> = input.required()
 
     private readonly errorSeverities: string[] = [
         SeverityEnum.DANGER.toString(),

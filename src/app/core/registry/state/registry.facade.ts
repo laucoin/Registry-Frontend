@@ -1,7 +1,6 @@
 import { computed, inject, Injectable, Signal } from '@angular/core'
 import { Router } from '@angular/router'
 import {TranslocoService} from '@jsverse/transloco'
-import { PrimeNG } from 'primeng/config'
 import {
     catchError,
     EMPTY,
@@ -49,7 +48,6 @@ import { initialize, reportError } from '@shared/helpers/rx.helper'
 @Injectable()
 export class RegistryFacade {
     private readonly translateService: TranslocoService = inject(TranslocoService)
-    private readonly primeConfig: PrimeNG = inject(PrimeNG)
     private readonly router: Router = inject(Router)
     private readonly datePipe: CustomDateFormatPipe = inject(CustomDateFormatPipe)
     private readonly profileReset: ProfileResetService = inject(ProfileResetService)
@@ -266,7 +264,6 @@ export class RegistryFacade {
         this.translateService.load(language).pipe(
             tap((): TranslocoService => this.translateService.setActiveLang(language)),
             tap((): void => this.uiFacade.updateLanguage(language)),
-            tap((): void => this.primeConfig.setTranslation(this.translateService.translateObject('prime-ng'))),
             tap((): void => this.reloadTranslatedData()),
             catchError((error: ErrorModel): Observable<never> => this.reportError$(error)),
         ).subscribe()

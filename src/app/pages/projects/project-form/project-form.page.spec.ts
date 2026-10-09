@@ -54,7 +54,7 @@ describe( 'ProjectFormPage', () => {
         facade[ 'createProject' ].mockReturnValue( of( {} ) )
         facade[ 'updateProject' ].mockReturnValue( of( {} ) )
         RegistryConfig.config = { notification: { duration: {} } } as unknown as ConfigModel
-        RegistryConfig.environment = { production: false, backend: { url: 'http://backend.test', noAuthPaths: [] } }
+        RegistryConfig.environment = { production: false, backend: { url: 'http://backend.test', noAuthPaths: [] }, hosting: { providerName: null, providerAddress: null } }
         TestBed.configureTestingModule( {
             providers: [
                 { provide: ProjectFacade, useValue: facade },

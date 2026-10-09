@@ -14,8 +14,7 @@ import {ElementCardComponent} from '@shared/ui/common/element-card/element-card.
 import {TranslocoPipe} from '@jsverse/transloco'
 import {BadgeModule} from 'primeng/badge'
 import {Button} from 'primeng/button'
-import {ConfirmationService, MenuItem} from 'primeng/api'
-import {ConfirmDialogModule} from 'primeng/confirmdialog'
+import {MenuEntryModel} from '@shared/models/model/menu-entry.model'
 import {
     ProjectProfileFacade,
 } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.facade'
@@ -43,13 +42,12 @@ import {AvailabilityStatusEnum} from '@shared/models/enumeration/availability-st
         TranslocoPipe,
         BadgeModule,
         Button,
-        ConfirmDialogModule,
         TitleCasePipe,
         UpperCasePipe,
         SeverityTagComponent,
         CustomDateFormatPipe,
     ],
-    providers: [ConfirmationService, ProjectProfileFacade],
+    providers: [ProjectProfileFacade],
     templateUrl: './project-profile-element.component.html',
     styleUrl: './project-profile-element.component.css',
 })
@@ -65,7 +63,7 @@ export class ProjectProfileElementComponent extends GenericElementComponent impl
     private readonly isCurrentUserProfile: Signal<boolean> = computed((): boolean => this.sessionFacade.currentUser()?.id === this.profile().user.id)
     private readonly isSelectedProfile: Signal<boolean> = computed((): boolean => this.sessionFacade.selectedProject()?.id === this.profile().project.id)
 
-    protected readonly actions: Signal<MenuItem[]> = computed((): MenuItem[] => [
+    protected readonly actions: Signal<MenuEntryModel[]> = computed((): MenuEntryModel[] => [
         this.selectAction(),
         this.editAction(),
         this.disableAction(),
@@ -73,7 +71,7 @@ export class ProjectProfileElementComponent extends GenericElementComponent impl
         this.deleteAction(),
     ])
 
-    private selectAction(): MenuItem {
+    private selectAction(): MenuEntryModel {
         return {
                 label: 'project-profiles.actions.select',
                 icon: 'pi pi-arrow-right',
@@ -86,7 +84,7 @@ export class ProjectProfileElementComponent extends GenericElementComponent impl
             }
     }
 
-    private editAction(): MenuItem {
+    private editAction(): MenuEntryModel {
         return {
                 label: 'project-profiles.actions.edit',
                 icon: 'pi pi-pen-to-square',
@@ -100,7 +98,7 @@ export class ProjectProfileElementComponent extends GenericElementComponent impl
             }
     }
 
-    private disableAction(): MenuItem {
+    private disableAction(): MenuEntryModel {
         return {
                 label: 'project-profiles.actions.disable',
                 icon: 'pi pi-ban',
@@ -116,7 +114,7 @@ export class ProjectProfileElementComponent extends GenericElementComponent impl
             }
     }
 
-    private enableAction(): MenuItem {
+    private enableAction(): MenuEntryModel {
         return {
                 label: 'project-profiles.actions.enable',
                 icon: 'pi pi-replay',
@@ -132,7 +130,7 @@ export class ProjectProfileElementComponent extends GenericElementComponent impl
             }
     }
 
-    private deleteAction(): MenuItem {
+    private deleteAction(): MenuEntryModel {
         return {
                 label: 'project-profiles.actions.delete',
                 icon: 'pi pi-trash',
@@ -173,19 +171,16 @@ export class ProjectProfileElementComponent extends GenericElementComponent impl
     }
 
     protected confirmManageAcceptance(status: ProfileStatusEnum): void {
-        this.confirmationService.confirm({
-            header: this.translateService.translate(`project-profiles.actions.confirmations.${status}.title`),
-            message: this.translateService.translate(
-                `project-profiles.actions.confirmations.${status}.message`,
-                {element: this.profile()},
+        const accepted: boolean = status === ProfileStatusEnum.ACCEPTED
+        this.uiFacade.confirm(
+            this.buildConfirmation(
+                `project-profiles.actions.confirmations.${status}`,
+                accepted ? 'pi pi-info-circle' : 'pi pi-exclamation-triangle',
+                this.profile(),
+                accepted ? SeverityEnum.SUCCESS : SeverityEnum.DANGER,
+                (): void => this.manageAcceptance(accepted),
             ),
-            icon: status === ProfileStatusEnum.ACCEPTED ? 'pi pi-info-circle' : 'pi pi-exclamation-triangle',
-            acceptLabel: this.translateService.translate('global.actions.confirm'),
-            rejectLabel: this.translateService.translate('global.actions.cancel'),
-            acceptButtonStyleClass: `p-button p-button-rounded p-button-outlined ${status === ProfileStatusEnum.ACCEPTED ? 'p-button-success' : 'p-button-danger'}`,
-            rejectButtonStyleClass: 'p-button p-button-rounded p-button-text p-button-secondary',
-            accept: (): void => this.manageAcceptance(status === ProfileStatusEnum.ACCEPTED),
-        })
+        )
     }
 
     protected manageAcceptance(accepted: boolean): void {

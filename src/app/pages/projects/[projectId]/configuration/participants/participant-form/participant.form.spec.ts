@@ -1,7 +1,7 @@
 import { signal, WritableSignal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { FieldTree } from '@angular/forms/signals'
-import { SelectItem } from 'primeng/api'
+import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { describe, expect, it } from 'vitest'
 import {
     createParticipantForm,
@@ -18,8 +18,8 @@ import { UserModel } from '@shared/models/model/user.model'
 
 const JUNE: CustomDatetimeModel = { date: '2026-06-01', time: '10:00:00' }
 const AUGUST: CustomDatetimeModel = { date: '2026-08-01', time: '10:00:00' }
-const GRACE: SelectItem<UserModel> = { label: 'g', value: { id: 'u1', firstName: 'Grace', lastName: 'H' } as UserModel }
-const NO_NAMES: SelectItem<UserModel> = { label: 'n', value: { id: 'u2', firstName: undefined, lastName: undefined } as unknown as UserModel }
+const GRACE: SelectOptionModel<UserModel> = { label: 'g', value: { id: 'u1', firstName: 'Grace', lastName: 'H' } as UserModel }
+const NO_NAMES: SelectOptionModel<UserModel> = { label: 'n', value: { id: 'u2', firstName: undefined, lastName: undefined } as unknown as UserModel }
 const VALID: ParticipantFormModel = {
     firstName: 'Ada', lastName: 'L', birthday: new Date( 2010, 0, 5 ), user: null, groups: [], beginDateTime: null, endDateTime: null,
 }

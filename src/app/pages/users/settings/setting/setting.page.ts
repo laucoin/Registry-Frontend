@@ -42,7 +42,7 @@ export class SettingPage extends GenericElementComponent {
     protected readonly form: FieldTree<SettingFormModel> = createSettingForm( this.model )
 
     protected confirmImpersonate (): void {
-        this.confirmationService.confirm(
+        this.uiFacade.confirm(
             this.buildConfirmation(
                 'settings.actions.confirmations.impersonate',
                 'pi pi-exclamation-triangle',

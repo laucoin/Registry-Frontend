@@ -1,6 +1,8 @@
 import { computed, inject, Injectable, Signal } from '@angular/core'
 import { TranslocoService } from '@jsverse/transloco'
-import { SelectItem, ToastMessageOptions } from 'primeng/api'
+import { SelectOptionModel } from '@shared/models/model/select-option.model'
+import { ConfirmationModel } from '@shared/models/model/confirmation.model'
+import { NotificationModel } from '@shared/models/model/notification.model'
 import { Observable } from 'rxjs'
 import { RegistryConfig } from '@core/config/registry.config'
 import { MetadataStore } from '@core/registry/state/metadata.store'
@@ -24,13 +26,13 @@ export class UiFacade {
     private readonly notifications: InstanceType<typeof NotificationStore> = inject( NotificationStore )
     private readonly metadata: InstanceType<typeof MetadataStore> = inject( MetadataStore )
 
-    private readonly onlineMessage: ToastMessageOptions = StateHelper.buildNotificationMessage(
+    private readonly onlineMessage: NotificationModel = StateHelper.buildNotificationMessage(
         SeverityEnum.SUCCESS,
         'global.notifications.ONLINE.title',
         'global.notifications.ONLINE.message',
         'pi pi-sort-alt',
     )
-    private readonly offlineMessage: ToastMessageOptions = StateHelper.buildNotificationMessage(
+    private readonly offlineMessage: NotificationModel = StateHelper.buildNotificationMessage(
         SeverityEnum.WARNING,
         'global.notifications.OFFLINE.title',
         'global.notifications.OFFLINE.message',
@@ -40,7 +42,7 @@ export class UiFacade {
     public readonly theme: Signal<ThemeEnum> = this.ui.theme
     public readonly tinyScreen: Signal<boolean> = computed( (): boolean => this.ui.screenWidth() < 768 )
     public readonly globalLoading: Signal<boolean> = this.ui.loading
-    public readonly globalError: Signal<ToastMessageOptions | undefined> = this.ui.error
+    public readonly globalError: Signal<NotificationModel | undefined> = this.ui.error
     private readonly online: Signal<boolean | undefined> = this.ui.online
 
     public readonly logoPath: Signal<string> = computed( (): string => {
@@ -56,11 +58,12 @@ export class UiFacade {
         }
     } )
 
-    public readonly notification: Observable<ToastMessageOptions> = this.notifications.messages$()
+    public readonly notification: Observable<NotificationModel> = this.notifications.messages$()
+    public readonly confirmation: Observable<ConfirmationModel> = this.notifications.confirmations$()
 
-    public readonly themesMetadata: Signal<SelectItem<ThemeEnum>[]> = this.metadata.themes
-    public readonly languagesMetadata: Signal<SelectItem<string>[]> = computed( (): SelectItem<string>[] =>
-        this.metadata.languages().map( (lang: SelectItem<string>): SelectItem<string> => ({
+    public readonly themesMetadata: Signal<SelectOptionModel<ThemeEnum>[]> = this.metadata.themes
+    public readonly languagesMetadata: Signal<SelectOptionModel<string>[]> = computed( (): SelectOptionModel<string>[] =>
+        this.metadata.languages().map( (lang: SelectOptionModel<string>): SelectOptionModel<string> => ({
             ...lang,
             label: this.translateService.translate( lang.label! ),
         }) ),
@@ -99,7 +102,11 @@ export class UiFacade {
         }
     }
 
-    public notify (message: ToastMessageOptions): void {
+    public notify (message: NotificationModel): void {
         this.notifications.notify( message )
+    }
+
+    public confirm (confirmation: ConfirmationModel): void {
+        this.notifications.confirm( confirmation )
     }
 }

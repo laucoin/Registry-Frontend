@@ -1,6 +1,6 @@
 import { catchError, defer, EMPTY, finalize, Observable, throwError } from 'rxjs'
 import { WritableSignal } from '@angular/core'
-import { ToastMessageOptions } from 'primeng/api'
+import { NotificationModel } from '@shared/models/model/notification.model'
 import { ErrorModel } from '@shared/models/model/error.model'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 
@@ -12,7 +12,7 @@ import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 export interface ErrorSink {
     setGlobalError (error: ErrorModel): void
 
-    notify (message: ToastMessageOptions): void
+    notify (message: NotificationModel): void
 }
 
 export const initialize = (onSubscribe: () => void) => <T> (source: Observable<T>): Observable<T> => defer( () => {

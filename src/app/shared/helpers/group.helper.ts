@@ -1,5 +1,5 @@
 import { GroupModel } from '@shared/models/model/group.model'
-import { SelectItem } from 'primeng/api'
+import { SelectOptionModel } from '@shared/models/model/select-option.model'
 
 /**
  * Purpose: Builds select items for groups.
@@ -7,7 +7,7 @@ import { SelectItem } from 'primeng/api'
  * Limits: No state and no translation.
  */
 export class GroupHelper {
-    public static toSelectItem (group: GroupModel): SelectItem<GroupModel> {
+    public static toSelectItem (group: GroupModel): SelectOptionModel<GroupModel> {
         return {
             label: group.name,
             value: group,

@@ -1,6 +1,6 @@
 import { inject } from '@angular/core'
 import { signalStore, withHooks, withMethods, withState } from '@ngrx/signals'
-import { SelectItem } from 'primeng/api'
+import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { ErrorReporter } from '@core/registry/state/error-reporter'
 import { MetadataApi } from '@core/registry/state/metadata.api'
 import { ProjectProfilePageParamsModel } from '@pages/projects/[projectId]/configuration/profiles/data/model/project-profile-page-params.model'
@@ -53,7 +53,7 @@ const defaultProjectProfileStore: ProjectProfileStoreModel = {
 export const ProjectProfileStore = signalStore(
     withState<ProjectProfileStoreModel>( defaultProjectProfileStore ),
     withMethods( (store, api = inject( ProjectProfileApi ), metadataApi = inject( MetadataApi ), errors = inject( ErrorReporter )) => ({
-        fetchProfileStatus: metadataFetcher<ProjectProfileStoreModel, 'status', void, SelectItem<ProfileStatusEnum>[]>(
+        fetchProfileStatus: metadataFetcher<ProjectProfileStoreModel, 'status', void, SelectOptionModel<ProfileStatusEnum>[]>(
             store, 'status', () => metadataApi.getProfilesStatus(), errors, withEmptyOption,
         ),
         fetchProjectProfilesPage: pageFetcher( store, 'projectProfiles', (request: ProjectProfilesPageRequest, params: ProjectProfilePageParamsModel) =>
@@ -61,9 +61,9 @@ export const ProjectProfileStore = signalStore(
         updateProjectProfilesPageSearchParams: paramsUpdater( store, 'projectProfiles' ),
         searchUsers: metadataFetcher<ProjectProfileStoreModel, 'searched', SearchUsersRequest, UserModel[]>(
             store, 'searched', (request: SearchUsersRequest) => api.searchUsers( request.projectId, request.textSearched ), errors,
-            (users: UserModel[]): SelectItem<UserModel>[] => users.map( UserHelper.toSelectItem ),
+            (users: UserModel[]): SelectOptionModel<UserModel>[] => users.map( UserHelper.toSelectItem ),
         ),
-        fetchAssignableRoles: metadataFetcher<ProjectProfileStoreModel, 'roles', string | undefined, SelectItem<string>[]>(
+        fetchAssignableRoles: metadataFetcher<ProjectProfileStoreModel, 'roles', string | undefined, SelectOptionModel<string>[]>(
             store, 'roles', (projectId: string | undefined) => api.getAssignableProjectProfileRoles( projectId ), errors,
         ),
     }) ),

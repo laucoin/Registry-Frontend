@@ -67,7 +67,7 @@ describe( 'MovementFormPage', () => {
         facade[ 'createMovement' ].mockReturnValue( of( MOVEMENT_DTO ) )
         facade[ 'updateMovement' ].mockReturnValue( of( MOVEMENT_DTO ) )
         RegistryConfig.config = { notification: { duration: {} } } as unknown as ConfigModel
-        RegistryConfig.environment = { production: false, backend: { url: 'http://backend.test', noAuthPaths: [] } }
+        RegistryConfig.environment = { production: false, backend: { url: 'http://backend.test', noAuthPaths: [] }, hosting: { providerName: null, providerAddress: null } }
         TestBed.configureTestingModule( {
             providers: [
                 { provide: MovementFacade, useValue: facade },

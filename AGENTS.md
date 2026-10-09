@@ -231,11 +231,10 @@ This exception is standing and does not require asking the user each time — ev
   deadlock — don't simplify that exclusion away, don't scatter interceptor logic into services.
 - No environment value is compiled into the bundle. Runtime config is loaded from public/settings/config.json and
   public/settings/env.json via provideAppInitializer() prior to application bootstrap.
-- Theming: while PrimeNG and `@sgdf/ui` coexist, the PrimeNG preset is built from `config.json` at runtime, and dark
-  mode flips both the `dark-mod` class and the `data-theme` attribute on `<html>`, always through `BrowserService`.
-  The SGDF tokens (`--sgdf-*`) belong to `@sgdf/ui`: no theme key is added to `config.json` for them. Once PrimeNG is
-  removed, only `data-theme` remains. Raise any change to this mechanism with the user rather than working around it
-  silently.
+- Theming: `@sgdf/ui` owns the theme. The mode (`light`, `dark`, or no attribute for the system) is set on `<html>` as the `data-theme`
+  attribute, always via `BrowserService`; the `@sgdf/ui` entry point is never imported for it (it would pull the whole library). The SGDF tokens (`--sgdf-*`) belong to `@sgdf/ui`:
+  no theme key is added to `config.json`. PrimeNG ships without theme (`theme: 'none'`) until it is removed. Raise any
+  change to this mechanism with the user rather than working around it silently.
 - The production build enforces bundle budgets — an initial bundle past 1 MB or a component stylesheet past 8 kB is a
   hard failure, not a nuisance.
 - Static Web Serving (CSR): Production output is hosted as pure static assets (e.g. NGINX / Caddy). Ensure web server

@@ -28,6 +28,7 @@ describe( 'backendHandler', () => {
         RegistryConfig.environment = {
             production: false,
             backend: { url: BACKEND_URL, noAuthPaths: [ REFRESH_PATH ] },
+            hosting: { providerName: null, providerAddress: null },
         }
         login = vi.fn()
         refreshToken = vi.fn( (): Observable<void> => of( undefined ) )

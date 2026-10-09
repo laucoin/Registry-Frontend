@@ -3,7 +3,7 @@ import { SplitTimeModel } from '@shared/models/model/split-time.model'
 import { CustomDatetimeModel } from '@shared/models/model/custom-datetime.model'
 import { GenericHelper } from '@shared/helpers/generic.helper'
 import { IntervalModel } from '@shared/models/model/interval.model'
-import { SelectItem } from 'primeng/api'
+import { SelectOptionModel } from '@shared/models/model/select-option.model'
 
 const SECOND_MS: number = 1000
 const MINUTE_MS: number = 60 * SECOND_MS
@@ -243,7 +243,7 @@ export class DateHelper {
         }
     }
 
-    private static countUnit (difference: number, unitMs: number, modulo: number | undefined, label: string): SelectItem<number> {
+    private static countUnit (difference: number, unitMs: number, modulo: number | undefined, label: string): SelectOptionModel<number> {
         const count: number = Math.floor( difference / unitMs )
         return { value: modulo ? count % modulo : count, label }
     }

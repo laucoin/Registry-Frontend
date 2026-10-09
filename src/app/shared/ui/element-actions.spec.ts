@@ -2,7 +2,7 @@ import { signal, Type } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslocoService } from '@jsverse/transloco'
-import { ConfirmationService, MenuItem } from 'primeng/api'
+import { MenuEntryModel } from '@shared/models/model/menu-entry.model'
 import { of } from 'rxjs'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
 import { RegistryConfig } from '@core/config/registry.config'
@@ -84,9 +84,8 @@ describe( 'element action menus', () => {
             providers: [
                 { provide: item.facade, useValue: facade },
                 ...(item.facade === GroupFacade ? [] : [ { provide: GroupFacade, useValue: facadeMock( 'x' ) } ]),
-                { provide: ConfirmationService, useValue: { confirm } },
                 { provide: SessionFacade, useValue: { currentUser: signal( { id: 'u1', authorities: [ 'p1_REGISTRY_PROJECT_ALERT_U' ] } ), selectedProject: signal( { id: 'p1', options: [] } ), currentProjectId: signal( 'p1' ) } },
-                { provide: UiFacade, useValue: { tinyScreen: signal( false ), notify: vi.fn() } },
+                { provide: UiFacade, useValue: { tinyScreen: signal( false ), notify: vi.fn(), confirm } },
                 { provide: RegistryFacade, useValue: {} },
                 { provide: TranslocoService, useValue: { translate: (key: string): string => key } },
                 { provide: Router, useValue: { navigateByUrl: vi.fn( () => Promise.resolve( true ) ) } },
@@ -102,8 +101,8 @@ describe( 'element action menus', () => {
         return fixture.componentInstance
     }
 
-    function actionsOf (component: GenericElementComponent): MenuItem[] {
-        return (component as unknown as { actions: () => MenuItem[] }).actions()
+    function actionsOf (component: GenericElementComponent): MenuEntryModel[] {
+        return (component as unknown as { actions: () => MenuEntryModel[] }).actions()
     }
 
     beforeEach( () => {
@@ -115,7 +114,7 @@ describe( 'element action menus', () => {
         const component: GenericElementComponent = create( item, item.inputs, facadeMock( item.deleteCall ) )
 
         // Act
-        const labels: string[] = actionsOf( component ).map( (action: MenuItem): string => action.label!.split( '.' ).pop()! )
+        const labels: string[] = actionsOf( component ).map( (action: MenuEntryModel): string => action.label!.split( '.' ).pop()! )
 
         // Assert
         expect( labels ).toEqual( item.labels )
@@ -124,16 +123,16 @@ describe( 'element action menus', () => {
     it.each( CASES.filter( (item: ElementCase): boolean => item.labels.includes( 'disable' ) ) )( 'shows disable for a visible $name and enable for a hidden one', (item: ElementCase) => {
         // Arrange
         const visibleAction: GenericElementComponent = create( item, item.inputs, facadeMock( item.deleteCall ) )
-        const visibleMenu: MenuItem[] = actionsOf( visibleAction )
+        const visibleMenu: MenuEntryModel[] = actionsOf( visibleAction )
         TestBed.resetTestingModule()
         const hiddenInputs: Record<string, unknown> = Object.fromEntries( Object.entries( item.inputs ).map( ([ key, value ]: [ string, unknown ]): [ string, unknown ] => [ key, typeof value === 'object' ? { ...(value as object), visible: false } : value ] ) )
         const hiddenAction: GenericElementComponent = create( item, hiddenInputs, facadeMock( item.deleteCall ) )
 
         // Act
-        const hiddenMenu: MenuItem[] = actionsOf( hiddenAction )
+        const hiddenMenu: MenuEntryModel[] = actionsOf( hiddenAction )
 
         // Assert
-        const flag = (menu: MenuItem[], label: string): boolean | undefined => menu.find( (action: MenuItem): boolean => action.label!.endsWith( `.${label}` ) )?.visible
+        const flag = (menu: MenuEntryModel[], label: string): boolean | undefined => menu.find( (action: MenuEntryModel): boolean => action.label!.endsWith( `.${label}` ) )?.visible
         expect( flag( visibleMenu, 'disable' ) ).toBe( true )
         expect( flag( visibleMenu, 'enable' ) ).toBe( false )
         expect( flag( hiddenMenu, 'disable' ) ).toBe( false )
@@ -144,7 +143,7 @@ describe( 'element action menus', () => {
         // Arrange
         const facade: Record<string, Mock> = facadeMock( item.deleteCall )
         const component: GenericElementComponent = create( item, item.inputs, facade )
-        const deleteAction: MenuItem = actionsOf( component ).find( (action: MenuItem): boolean => action.label!.endsWith( '.delete' ) )!
+        const deleteAction: MenuEntryModel = actionsOf( component ).find( (action: MenuEntryModel): boolean => action.label!.endsWith( '.delete' ) )!
 
         // Act
         deleteAction.command!( {} as never )

@@ -2,7 +2,7 @@ import {GenericModel} from '@shared/models/model/generic.model'
 import {PageRequestInformationModel} from '@shared/models/model/page-request-information.model'
 import {PageModel} from '@shared/models/model/page.model'
 import {ElementRequestInformationModel} from '@shared/models/model/element-request-information.model'
-import {ToastMessageOptions} from 'primeng/api'
+import {NotificationModel} from '@shared/models/model/notification.model'
 import {RegistryConfig} from '@core/config/registry.config'
 import {GenericHelper} from '@shared/helpers/generic.helper'
 import {SeverityEnum} from '@shared/models/enumeration/severity.enum'
@@ -55,7 +55,7 @@ export class StateHelper {
         detail: string,
         icon: string | undefined = undefined,
         data: object | undefined = undefined,
-    ): ToastMessageOptions {
+    ): NotificationModel {
         const life: number | undefined = this.notificationLife(severity)
         return {
             severity: severity,

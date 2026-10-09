@@ -3,7 +3,8 @@ import { toObservable } from '@angular/core/rxjs-interop'
 import { finalize, Observable, tap } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
 import { UserModel } from '@shared/models/model/user.model'
-import { SelectItem, ToastMessageOptions } from 'primeng/api'
+import { SelectOptionModel } from '@shared/models/model/select-option.model'
+import { NotificationModel } from '@shared/models/model/notification.model'
 import { GenericFacade } from '@shared/helpers/facade/generic.facade'
 import { UserApi } from '@pages/users/data/state/user.api'
 import { UiFacade } from '@core/registry/state/ui.facade'
@@ -29,7 +30,7 @@ export class UserFacade extends GenericFacade {
 
     public readonly usersPageSilentLoading: Signal<boolean> = this.store.users.silentLoading
 
-    public readonly usersPageError: Signal<ToastMessageOptions | undefined> = this.store.users.error
+    public readonly usersPageError: Signal<NotificationModel | undefined> = this.store.users.error
 
     public readonly usersPageResetSearch: Signal<boolean> = this.store.users.params.resetSearch
 
@@ -43,10 +44,10 @@ export class UserFacade extends GenericFacade {
 
     public readonly userLoading: Signal<boolean> = this.store.user.loading
 
-    public readonly assignableRolesMetadata: Signal<SelectItem<string>[]> = this.store.metadata.assignableRoles
+    public readonly assignableRolesMetadata: Signal<SelectOptionModel<string>[]> = this.store.metadata.assignableRoles
 
-    public readonly statusMetadata: Signal<SelectItem<boolean | undefined>[]> = computed( () =>
-            this.store.metadata.status().map( (status: SelectItem<boolean | undefined>) => ({
+    public readonly statusMetadata: Signal<SelectOptionModel<boolean | undefined>[]> = computed( () =>
+            this.store.metadata.status().map( (status: SelectOptionModel<boolean | undefined>) => ({
                 ...status,
                 label: this.translateLabel( status.label! ),
             }) ),

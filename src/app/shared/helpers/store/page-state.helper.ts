@@ -1,4 +1,4 @@
-import { ToastMessageOptions } from 'primeng/api'
+import { NotificationModel } from '@shared/models/model/notification.model'
 import { GenericModel } from '@shared/models/model/generic.model'
 import { ErrorModel } from '@shared/models/model/error.model'
 import { PageRequestInformationModel } from '@shared/models/model/page-request-information.model'
@@ -17,7 +17,7 @@ export class PageStateHelper {
         block: PageRequestInformationModel<P, M>,
         error: ErrorModel,
     ): PageRequestInformationModel<P, M> {
-        const message: ToastMessageOptions = {
+        const message: NotificationModel = {
             severity: 'error',
             summary: error.title,
             detail: error.message,

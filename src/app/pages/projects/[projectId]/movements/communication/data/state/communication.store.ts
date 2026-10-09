@@ -1,6 +1,6 @@
 import { inject } from '@angular/core'
 import { patchState, signalStore, withMethods, withState } from '@ngrx/signals'
-import { SelectItem } from 'primeng/api'
+import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { ErrorReporter } from '@core/registry/state/error-reporter'
 import { CommunicationPageParamsModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication-page-params.model'
 import { CommunicationStoreModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication-store.model'
@@ -78,13 +78,13 @@ export const CommunicationStore = signalStore(
             store, 'searchedMovements',
             (request: SearchRequest) => api.searchMovements( request.projectId, request.textSearched ).pipe( trackElement( store, 'communication' ) ),
             errors,
-            (movements: MovementModel[]): SelectItem<MovementModel>[] => movements.map( (movement: MovementModel): SelectItem<MovementModel> => MovementHelper.toActivitySelectItem( movement, datePipe ) ),
+            (movements: MovementModel[]): SelectOptionModel<MovementModel>[] => movements.map( (movement: MovementModel): SelectOptionModel<MovementModel> => MovementHelper.toActivitySelectItem( movement, datePipe ) ),
         ),
         searchAlerts: metadataFetcher<CommunicationStoreModel, 'searchedAlerts', SearchRequest, AlertModel[]>(
             store, 'searchedAlerts',
             (request: SearchRequest) => api.searchAlerts( request.projectId, request.textSearched ).pipe( trackElement( store, 'communication' ) ),
             errors,
-            (alerts: AlertModel[]): SelectItem<AlertModel>[] => alerts.map( (alert: AlertModel): SelectItem<AlertModel> => AlertHelper.toSelectItem( alert, datePipe ) ),
+            (alerts: AlertModel[]): SelectOptionModel<AlertModel>[] => alerts.map( (alert: AlertModel): SelectOptionModel<AlertModel> => AlertHelper.toSelectItem( alert, datePipe ) ),
         ),
     }) ),
 )

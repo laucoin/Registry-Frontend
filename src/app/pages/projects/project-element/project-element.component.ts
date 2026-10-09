@@ -18,7 +18,7 @@ import {CustomDateFormatPipe} from '@shared/helpers/pipe/custom-date-format.pipe
 import {SeverityCircleComponent} from '@shared/ui/common/severity-circle/severity-circle.component'
 import {SeverityEnum} from '@shared/models/enumeration/severity.enum'
 import {ElementActionEnum} from '@shared/models/enumeration/element-action.enum'
-import {MenuItem} from 'primeng/api'
+import {MenuEntryModel} from '@shared/models/model/menu-entry.model'
 import {Subscription, tap} from 'rxjs'
 import {AvailabilityStatusEnum} from '@shared/models/enumeration/availability-status.enum'
 
@@ -54,14 +54,14 @@ export class ProjectElementComponent extends GenericElementComponent implements 
     public readonly actionMenuVisible: InputSignal<boolean> = input(true)
     public readonly project: InputSignal<ProjectModel> = input.required()
 
-    protected readonly actions: Signal<MenuItem[]> = computed( (): MenuItem[] => [
+    protected readonly actions: Signal<MenuEntryModel[]> = computed( (): MenuEntryModel[] => [
         this.editAction(),
         this.disableAction(),
         this.enableAction(),
         this.deleteAction(),
     ] )
 
-    private editAction(): MenuItem {
+    private editAction(): MenuEntryModel {
         return {
             label: 'projects.actions.edit',
             icon: 'pi pi-pen-to-square',
@@ -75,7 +75,7 @@ export class ProjectElementComponent extends GenericElementComponent implements 
         }
     }
 
-    private disableAction(): MenuItem {
+    private disableAction(): MenuEntryModel {
         return {
             label: 'projects.actions.disable',
             icon: 'pi pi-eye-slash',
@@ -91,7 +91,7 @@ export class ProjectElementComponent extends GenericElementComponent implements 
         }
     }
 
-    private enableAction(): MenuItem {
+    private enableAction(): MenuEntryModel {
         return {
             label: 'projects.actions.enable',
             icon: 'pi pi-replay',
@@ -107,7 +107,7 @@ export class ProjectElementComponent extends GenericElementComponent implements 
         }
     }
 
-    private deleteAction(): MenuItem {
+    private deleteAction(): MenuEntryModel {
         return {
             label: 'projects.actions.delete',
             icon: 'pi pi-trash',
@@ -145,26 +145,15 @@ export class ProjectElementComponent extends GenericElementComponent implements 
     }
 
     protected confirmSupportProfileCreation(): void {
-        this.confirmationService.confirm({
-            header: this.translateService.translate('projects.actions.confirmations.create-support.title'),
-            message: this.translateService.translate(
-                'projects.actions.confirmations.create-support.message',
-                {element: this.project()},
+        this.uiFacade.confirm(
+            this.buildConfirmation(
+                'projects.actions.confirmations.create-support',
+                'pi pi-exclamation-triangle',
+                this.project(),
+                SeverityEnum.WARNING,
+                (): void => this.createSupportProfile(),
             ),
-            icon: 'pi pi-exclamation-triangle',
-            rejectButtonProps: {
-                severity: SeverityEnum.SECONDARY,
-                outlined: true,
-                rounded: true,
-            },
-            acceptButtonProps: {
-                severity: SeverityEnum.WARNING,
-                outlined: true,
-                rounded: true,
-            },
-            accept: (): void => this.createSupportProfile(),
-        })
-
+        )
     }
 
     private createSupportProfile(): void {

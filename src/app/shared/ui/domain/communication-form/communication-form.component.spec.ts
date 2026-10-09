@@ -3,7 +3,7 @@ import { signal } from '@angular/core'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslocoService } from '@jsverse/transloco'
-import { MenuItem } from 'primeng/api'
+import { MenuEntryModel } from '@shared/models/model/menu-entry.model'
 import { BehaviorSubject, of } from 'rxjs'
 import { Mock, beforeEach, describe, expect, it, vi } from 'vitest'
 import { ConfigModel } from '@core/config/model/config.model'
@@ -32,7 +32,7 @@ interface FieldApi {
 interface CommunicationFormApi {
     model: { (): { message: string, movement: LinkItem, alert: LinkItem, newAlertTitle: string }, set: (value: object) => void }
     form: Record<string, () => FieldApi>
-    actions: () => MenuItem[]
+    actions: () => MenuEntryModel[]
     movementSelectorVisible: { (): boolean, set: (visible: boolean) => void }
     alertSelectorMode: () => string | undefined
     ngOnInit: () => void
@@ -62,7 +62,7 @@ describe( 'CommunicationFormComponent', () => {
         facade[ 'updateCommunication' ].mockReturnValue( of( {} ) )
         alertFacade[ 'createAlert' ].mockReturnValue( of( {} ) )
         RegistryConfig.config = { notification: { duration: {} } } as unknown as ConfigModel
-        RegistryConfig.environment = { production: false, backend: { url: 'http://backend.test', noAuthPaths: [] } }
+        RegistryConfig.environment = { production: false, backend: { url: 'http://backend.test', noAuthPaths: [] }, hosting: { providerName: null, providerAddress: null } }
         TestBed.configureTestingModule( {
             providers: [
                 { provide: CommunicationFacade, useValue: facade },
@@ -85,7 +85,7 @@ describe( 'CommunicationFormComponent', () => {
     }
 
     function actionIds (page: CommunicationFormApi): (string | undefined)[] {
-        return page.actions().map( (action: MenuItem): string | undefined => action.label )
+        return page.actions().map( (action: MenuEntryModel): string | undefined => action.label )
     }
 
     beforeEach( () => {
@@ -148,7 +148,7 @@ describe( 'CommunicationFormComponent', () => {
 
             // Assert
             expect( page.alertSelectorMode() ).toBe( 'SELECT' )
-            expect( page.actions().filter( (a: MenuItem): boolean => !!a.disabled ) ).toHaveLength( 2 )
+            expect( page.actions().filter( (a: MenuEntryModel): boolean => !!a.disabled ) ).toHaveLength( 2 )
         } )
     } )
 

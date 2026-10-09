@@ -2,7 +2,7 @@ import { inject } from '@angular/core'
 import { patchState, signalStore, withMethods, withState } from '@ngrx/signals'
 import { RxMethod, rxMethod } from '@ngrx/signals/rxjs-interop'
 import { Observable, pipe, switchMap, tap } from 'rxjs'
-import { SelectItem } from 'primeng/api'
+import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { ErrorReporter } from '@core/registry/state/error-reporter'
 import { GroupPageParamsModel } from '@pages/projects/[projectId]/configuration/groups/data/model/group-page-params.model'
 import { GroupStoreModel } from '@pages/projects/[projectId]/configuration/groups/data/model/group-store.model'
@@ -90,7 +90,7 @@ function searchParticipants (store: GroupStoreRef, api: GroupApi, errors: ErrorS
             api.searchParticipants( request.projectId, request.textSearched ).pipe( notifyOnError( errors ) ),
         ),
         tap( (participants: ParticipantModel[]): void => patchState( store, (state: GroupStoreModel) => ({
-            metadata: { ...state.metadata, searched: participants.map( ParticipantHelper.toSelectItem ) as SelectItem<ParticipantModel>[] },
+            metadata: { ...state.metadata, searched: participants.map( ParticipantHelper.toSelectItem ) as SelectOptionModel<ParticipantModel>[] },
         }) ) ),
     ) )
 }

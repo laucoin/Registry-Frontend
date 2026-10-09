@@ -13,7 +13,7 @@ import {
     ViewChild,
 } from '@angular/core'
 import {TranslocoPipe} from '@jsverse/transloco'
-import {ToastMessageOptions} from 'primeng/api'
+import {NotificationModel} from '@shared/models/model/notification.model'
 import {CardModule} from 'primeng/card'
 import {DataView, DataViewModule, DataViewPageEvent} from 'primeng/dataview'
 import {ToggleButtonModule} from 'primeng/togglebutton'
@@ -53,11 +53,11 @@ export class ListComponent<T extends GenericModel> extends GenericComponent {
     @ContentChildren(RegistryTemplateDirective) public templates: QueryList<RegistryTemplateDirective> | undefined
     @ViewChild('data') public dataView!: DataView
 
-    protected readonly message: Signal<ToastMessageOptions>
+    protected readonly message: Signal<NotificationModel>
 
     public readonly elementPage: InputSignal<PageModel<T> | undefined> = input.required()
     public readonly loading: InputSignal<boolean> = input.required()
-    public readonly error: InputSignal<ToastMessageOptions | undefined> = input.required()
+    public readonly error: InputSignal<NotificationModel | undefined> = input.required()
     public readonly emptyMessagePrefix: InputSignal<string> = input('global.notifications.EMPTY')
 
     public readonly updateRequired: OutputEmitterRef<PageEventModel> = output()

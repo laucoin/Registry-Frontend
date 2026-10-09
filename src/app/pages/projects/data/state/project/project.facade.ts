@@ -2,7 +2,8 @@ import { computed, inject, Injectable, Signal } from '@angular/core'
 import { toObservable } from '@angular/core/rxjs-interop'
 import { finalize, Observable, switchMap, tap } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
-import { SelectItem, ToastMessageOptions } from 'primeng/api'
+import { SelectOptionModel } from '@shared/models/model/select-option.model'
+import { NotificationModel } from '@shared/models/model/notification.model'
 import { GenericFacade } from '@shared/helpers/facade/generic.facade'
 import { ProjectStore } from '@pages/projects/data/state/project/project.store'
 import { ProjectDto } from '@pages/projects/data/dto/project.dto'
@@ -36,7 +37,7 @@ export class ProjectFacade extends GenericFacade {
 
     public readonly projectsPageSilentLoading: Signal<boolean> = this.store.projects.silentLoading
 
-    public readonly projectsPageError: Signal<ToastMessageOptions | undefined> = this.store.projects.error
+    public readonly projectsPageError: Signal<NotificationModel | undefined> = this.store.projects.error
 
     private readonly projectsPageResetSearch: Signal<boolean> = this.store.projects.params.resetSearch
 
@@ -52,8 +53,8 @@ export class ProjectFacade extends GenericFacade {
 
     public readonly projectOptionsMetadata$: Observable<ProjectOptionModel[]> = toObservable( this.projectOptionsMetadata )
 
-    public readonly visibilitiesMetadata: Signal<SelectItem<boolean | undefined>[]> = computed( (): SelectItem<boolean | undefined>[] =>
-            this.store.metadata.visibilities().map( (item: SelectItem<boolean | undefined>): SelectItem<boolean | undefined> => ({
+    public readonly visibilitiesMetadata: Signal<SelectOptionModel<boolean | undefined>[]> = computed( (): SelectOptionModel<boolean | undefined>[] =>
+            this.store.metadata.visibilities().map( (item: SelectOptionModel<boolean | undefined>): SelectOptionModel<boolean | undefined> => ({
                 ...item,
                 label: this.translateLabel( item.label! ),
             }) ),

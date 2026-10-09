@@ -1,6 +1,8 @@
 import { TestBed } from '@angular/core/testing'
 import { TranslocoService } from '@jsverse/transloco'
-import { ToastMessageOptions } from 'primeng/api'
+import { ConfirmationModel } from '@shared/models/model/confirmation.model'
+import { NotificationModel } from '@shared/models/model/notification.model'
+import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { NotificationStore } from '@core/registry/state/notification.store'
 
@@ -13,7 +15,7 @@ describe( 'NotificationStore', () => {
         // Arrange
         const store: InstanceType<typeof NotificationStore> = TestBed.inject( NotificationStore )
         const received: string[] = []
-        store.messages$().subscribe( (message: ToastMessageOptions): number => received.push( message.summary! ) )
+        store.messages$().subscribe( (message: NotificationModel): number => received.push( message.summary! ) )
 
         // Act
         store.notify( { summary: 'first' } )
@@ -30,7 +32,7 @@ describe( 'NotificationStore', () => {
         const received: string[] = []
 
         // Act
-        store.messages$().subscribe( (message: ToastMessageOptions): number => received.push( message.summary! ) )
+        store.messages$().subscribe( (message: NotificationModel): number => received.push( message.summary! ) )
 
         // Assert
         expect( received ).toEqual( [] )
@@ -39,8 +41,8 @@ describe( 'NotificationStore', () => {
     it( 'drops the notifications of an unauthorized call', () => {
         // Arrange
         const store: InstanceType<typeof NotificationStore> = TestBed.inject( NotificationStore )
-        const received: ToastMessageOptions[] = []
-        store.messages$().subscribe( (message: ToastMessageOptions): number => received.push( message ) )
+        const received: NotificationModel[] = []
+        store.messages$().subscribe( (message: NotificationModel): number => received.push( message ) )
 
         // Act
         store.notify( { summary: 'error 401', detail: 'x' } )
@@ -52,8 +54,8 @@ describe( 'NotificationStore', () => {
     it( 'fills a notification that has neither summary nor detail with the unknown error text', () => {
         // Arrange
         const store: InstanceType<typeof NotificationStore> = TestBed.inject( NotificationStore )
-        const received: ToastMessageOptions[] = []
-        store.messages$().subscribe( (message: ToastMessageOptions): number => received.push( message ) )
+        const received: NotificationModel[] = []
+        store.messages$().subscribe( (message: NotificationModel): number => received.push( message ) )
 
         // Act
         store.notify( { severity: 'error', summary: ' ', detail: '' } )
@@ -65,14 +67,28 @@ describe( 'NotificationStore', () => {
     it( 'forwards a normal notification untouched', () => {
         // Arrange
         const store: InstanceType<typeof NotificationStore> = TestBed.inject( NotificationStore )
-        const received: ToastMessageOptions[] = []
-        store.messages$().subscribe( (message: ToastMessageOptions): number => received.push( message ) )
-        const message: ToastMessageOptions = { severity: 'success', summary: 'Done', detail: 'ok' }
+        const received: NotificationModel[] = []
+        store.messages$().subscribe( (message: NotificationModel): number => received.push( message ) )
+        const message: NotificationModel = { severity: 'success', summary: 'Done', detail: 'ok' }
 
         // Act
         store.notify( message )
 
         // Assert
         expect( received ).toEqual( [ message ] )
+    } )
+
+    it( 'delivers every confirmation request to its listener', () => {
+        // Arrange
+        const store: InstanceType<typeof NotificationStore> = TestBed.inject( NotificationStore )
+        const received: ConfirmationModel[] = []
+        const confirmation: ConfirmationModel = { header: 'h', message: 'm', icon: 'i', acceptSeverity: SeverityEnum.DANGER, accept: (): void => undefined }
+        store.confirmations$().subscribe( (it: ConfirmationModel): number => received.push( it ) )
+
+        // Act
+        store.confirm( confirmation )
+
+        // Assert
+        expect( received ).toEqual( [ confirmation ] )
     } )
 } )

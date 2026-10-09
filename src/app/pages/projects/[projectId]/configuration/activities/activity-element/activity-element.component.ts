@@ -14,7 +14,7 @@ import {ProjectAuthorityEnum} from '@shared/models/enumeration/project-authority
 import {SeverityEnum} from '@shared/models/enumeration/severity.enum'
 import {ElementActionEnum} from '@shared/models/enumeration/element-action.enum'
 import {ProjectOptionIconPipe} from '@shared/helpers/pipe/project-option-icon.pipe'
-import {MenuItem} from 'primeng/api'
+import {MenuEntryModel} from '@shared/models/model/menu-entry.model'
 import {AvailabilityStatusEnum} from '@shared/models/enumeration/availability-status.enum'
 import {MessageComponent} from '@shared/ui/common/message/message.component'
 
@@ -45,7 +45,7 @@ export class ActivityElementComponent extends GenericElementComponent {
     public readonly actionMenuVisible: InputSignal<boolean> = input(true)
     public readonly activity: InputSignal<ActivityModel> = input.required()
 
-    protected readonly actions: Signal<MenuItem[]> = computed( (): MenuItem[] => [
+    protected readonly actions: Signal<MenuEntryModel[]> = computed( (): MenuEntryModel[] => [
         this.movementsHistoryAction(),
         this.editAction(),
         this.disableAction(),
@@ -53,7 +53,7 @@ export class ActivityElementComponent extends GenericElementComponent {
         this.deleteAction(),
     ] )
 
-    private movementsHistoryAction(): MenuItem {
+    private movementsHistoryAction(): MenuEntryModel {
         return {
             label: 'activities.actions.movements-history',
             icon: 'pi pi-history',
@@ -70,7 +70,7 @@ export class ActivityElementComponent extends GenericElementComponent {
         }
     }
 
-    private editAction(): MenuItem {
+    private editAction(): MenuEntryModel {
         return {
             label: 'activities.actions.edit',
             icon: 'pi pi-pen-to-square',
@@ -84,7 +84,7 @@ export class ActivityElementComponent extends GenericElementComponent {
         }
     }
 
-    private disableAction(): MenuItem {
+    private disableAction(): MenuEntryModel {
         return {
             label: 'activities.actions.disable',
             icon: 'pi pi-eye-slash',
@@ -100,7 +100,7 @@ export class ActivityElementComponent extends GenericElementComponent {
         }
     }
 
-    private enableAction(): MenuItem {
+    private enableAction(): MenuEntryModel {
         return {
             label: 'activities.actions.enable',
             icon: 'pi pi-replay',
@@ -116,7 +116,7 @@ export class ActivityElementComponent extends GenericElementComponent {
         }
     }
 
-    private deleteAction(): MenuItem {
+    private deleteAction(): MenuEntryModel {
         return {
             id: ElementActionEnum.ACTIVITY_DELETE,
             label: 'activities.actions.delete',

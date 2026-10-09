@@ -4,91 +4,14 @@
     "fr",
     "en"
   ],
-  "primeNg": {
-    "semantic": {
-      "primary": {
-        "50": "#eef9ff",
-        "100": "#dcf4ff",
-        "200": "#b2ebff",
-        "300": "#6ddcff",
-        "400": "#20cbff",
-        "500": "#00b5ff",
-        "600": "#0091df",
-        "700": "#0073b4",
-        "800": "#006295",
-        "900": "#00507a",
-        "950": "#003a5d"
-      },
-      "colorScheme": {
-        "light": {
-          "primary": {
-            "color": "#003a5d",
-            "contrastColor": "#eef9ff",
-            "hoverColor": "#00507a",
-            "activeColor": "#006295"
-          },
-          "highlight": {
-            "background": "#003a5d",
-            "focusBackground": "#0073b4",
-            "color": "#ffffff",
-            "focusColor": "#ffffff"
-          }
-        },
-        "dark": {
-          "primary": {
-            "color": "#eef9ff",
-            "contrastColor": "#003a5d",
-            "hoverColor": "#dcf4ff",
-            "activeColor": "#b2ebff"
-          },
-          "highlight": {
-            "background": "rgba(250, 250, 250, .16)",
-            "focusBackground": "rgba(250, 250, 250, .24)",
-            "color": "rgba(255,255,255,.87)",
-            "focusColor": "rgba(255,255,255,.87)"
-          }
-        }
-      }
-    },
-    "components": {
-      "card": {
-        "body": {
-          "padding": "1rem"
-        }
-      },
-      "dataview": {
-        "root": {
-          "borderWidth": "0"
-        },
-        "header": {
-          "padding": "0"
-        }
-      },
-      "menu": {
-        "item": {
-          "padding": "0"
-        }
-      },
-      "popover": {
-        "content": {
-          "padding": "0"
-        }
-      },
-      "tabs": {
-        "tabpanel": {
-          "padding": "1rem 0"
-        }
-      }
-    }
-  },
   "logo": {
     "normal": {
-      "light": "img/SGDF/logo.svg",
-      "dark": "img/SGDF/logo.svg"
+      "light": "img/logo.svg",
+      "dark": "img/logo.svg"
     },
     "small": {
-      "light": "img/SGDF/small-logo.svg",
-      "dark": "img/SGDF/small-logo.svg"
+      "light": "img/small-logo.svg",
+      "dark": "img/small-logo.svg"
     }
   },
   "enabledActions": [
@@ -146,6 +69,19 @@
     "ALERT_ENABLE",
     "ALERT_DELETE"
   ],
+  "application": {
+    "name": "Registry",
+    "organization": "Scouts et Guides de France",
+    "creator": {
+      "name": "Luc Aucoin",
+      "email": "luc.aucoin1998@gmail.com",
+      "website": "https://doc.laucoin.fr/resume"
+    },
+    "support": {
+      "documentationUrl": "https://doc.laucoin.fr/registry",
+      "issuesUrl": "https://github.com/laucoin/Registry-Frontend/issues"
+    }
+  },
   "notification": {
     "duration": {
       "info": 5000,

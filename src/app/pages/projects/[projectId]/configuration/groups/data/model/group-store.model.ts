@@ -2,15 +2,15 @@ import { GroupPageParamsModel } from '@pages/projects/[projectId]/configuration/
 import { PageRequestInformationModel } from '@shared/models/model/page-request-information.model'
 import { GroupModel } from '@shared/models/model/group.model'
 import { ParticipantModel } from '@shared/models/model/participant.model'
-import { SelectItem } from 'primeng/api'
+import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { ParticipantPageParamsModel } from '@pages/projects/[projectId]/configuration/participants/data/model/participant-page-params.model'
 
 export interface GroupStoreModel {
     groups: PageRequestInformationModel<GroupPageParamsModel, GroupModel>
     members: PageRequestInformationModel<ParticipantPageParamsModel, ParticipantModel> & { groupId: string | undefined }
     metadata: {
-        searched: SelectItem<ParticipantModel>[]
-        availabilities: SelectItem<boolean | undefined>[]
-        visibilities: SelectItem<boolean | undefined>[]
+        searched: SelectOptionModel<ParticipantModel>[]
+        availabilities: SelectOptionModel<boolean | undefined>[]
+        visibilities: SelectOptionModel<boolean | undefined>[]
     }
 }

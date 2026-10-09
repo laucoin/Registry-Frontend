@@ -32,7 +32,7 @@ class TestProjectApi extends GenericProjectApi {
 
 describe( 'generic apis', () => {
     beforeEach( () => {
-        RegistryConfig.environment = { production: false, backend: { url: 'http://backend.test', noAuthPaths: [] } }
+        RegistryConfig.environment = { production: false, backend: { url: 'http://backend.test', noAuthPaths: [] }, hosting: { providerName: null, providerAddress: null } }
         TestBed.configureTestingModule( { providers: [ provideHttpClient() ] } )
     } )
 

@@ -1,6 +1,6 @@
 import { WritableSignal } from '@angular/core'
 import { disabled, FieldContext, FieldTree, form, required, SchemaPathTree } from '@angular/forms/signals'
-import { SelectItem } from 'primeng/api'
+import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { ParticipantDto } from '@pages/projects/[projectId]/configuration/participants/data/dto/participant.dto'
 import { DateHelper } from '@shared/helpers/date.helper'
 import { FormModelHelper } from '@shared/helpers/form/form-model.helper'
@@ -15,7 +15,7 @@ export interface ParticipantFormModel {
     firstName: string
     lastName: string
     birthday: Date | null
-    user: SelectItem<UserModel> | null
+    user: SelectOptionModel<UserModel> | null
     groups: GroupModel[]
     beginDateTime: CustomDatetimeModel | null
     endDateTime: CustomDatetimeModel | null
@@ -40,7 +40,7 @@ export function toParticipantFormModel (participant?: ParticipantModel): Partici
 
 export function withSelectedUser (
     model: ParticipantFormModel,
-    user: SelectItem<UserModel> | null,
+    user: SelectOptionModel<UserModel> | null,
     previous: PreviousNames,
 ): ParticipantFormModel {
     if (!user) {

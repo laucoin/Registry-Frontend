@@ -1,4 +1,4 @@
-import { SelectItem } from 'primeng/api'
+import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
 import { AlertModel } from '@shared/models/model/alert.model'
 import { AlertStatusEnum } from '@shared/models/enumeration/alert-status.enum'
@@ -10,7 +10,7 @@ import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
  * Limits: No state; the date is formatted by the given pipe.
  */
 export class AlertHelper {
-    public static toSelectItem (alert: AlertModel, datePipe: DateFormatPipe): SelectItem<AlertModel> {
+    public static toSelectItem (alert: AlertModel, datePipe: DateFormatPipe): SelectOptionModel<AlertModel> {
         return {
             label: `${alert.title} (${datePipe.transform( alert.dateTime, 'datetime' )})`,
             value: alert,

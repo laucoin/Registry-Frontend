@@ -1,0 +1,37 @@
+<sgdf-navbar torn label="Navigation, fond plein" subnav-label="Projet, fond plein">
+    <span slot="brand" class="flex items-center gap-3">
+        <a [routerLink]="RegistryRouteEnum.PROJECTS"
+           [attr.aria-label]="application.name"
+           class="flex text-3xl [--picto-color:white]">
+            <sgdf-icon name="communs-tente" library="sgdf-picto"/>
+        </a>
+        <ng-container [ngTemplateOutlet]="title"
+                      [ngTemplateOutletContext]="{ $implicit: application.name, subTitle: application.organization }"/>
+    </span>
+
+    @for (menu of appMenus(); track menu.url) {
+        <ng-container [ngTemplateOutlet]="navItem" [ngTemplateOutletContext]="{ $implicit: menu, slot: 'end' }"/>
+    }
+
+
+    @for (menu of projectMenus(); track menu.url) {
+        <ng-container [ngTemplateOutlet]="navItem" [ngTemplateOutletContext]="{ $implicit: menu, slot: 'subnav' }"/>
+    }
+</sgdf-navbar>
+
+<ng-template #title let-title let-subTitle="subTitle">
+    <span class="flex flex-col">
+        <strong>{{ title }}</strong>
+        <small class="text-xs opacity-80">{{ subTitle }}</small>
+    </span>
+</ng-template>
+
+<ng-template #navItem let-menu let-slot="slot">
+    @let current = activeMenuUrl() === menu.url;
+    <sgdf-nav-item [slot]="slot" [routerLink]="menu.url" [current]="current">
+        @if (menu.icon) {
+            <sgdf-icon slot="icon" [name]="menu.icon.name" [library]="menu.icon.library"></sgdf-icon>
+        }
+        {{ menu.label | transloco }}
+    </sgdf-nav-item>
+</ng-template>

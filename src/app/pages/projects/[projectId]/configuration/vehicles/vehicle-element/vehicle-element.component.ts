@@ -14,7 +14,7 @@ import {PresenceStatusEnum} from '@shared/models/enumeration/presence-status.enu
 import {ProjectAuthorityEnum} from '@shared/models/enumeration/project-authority.enum'
 import {ElementActionEnum} from '@shared/models/enumeration/element-action.enum'
 import {ProjectOptionIconPipe} from '@shared/helpers/pipe/project-option-icon.pipe'
-import {MenuItem} from 'primeng/api'
+import {MenuEntryModel} from '@shared/models/model/menu-entry.model'
 
 /**
  * Purpose: Card presenting one vehicle with its actions.
@@ -41,7 +41,7 @@ export class VehicleElementComponent extends GenericElementComponent {
     public readonly actionMenuVisible: InputSignal<boolean> = input(true)
     public readonly vehicle: InputSignal<VehicleModel> = input.required()
 
-    protected readonly actions: Signal<MenuItem[]> = computed( (): MenuItem[] => [
+    protected readonly actions: Signal<MenuEntryModel[]> = computed( (): MenuEntryModel[] => [
         this.movementsHistoryAction(),
         this.editAction(),
         this.disableAction(),
@@ -49,7 +49,7 @@ export class VehicleElementComponent extends GenericElementComponent {
         this.deleteAction(),
     ] )
 
-    private movementsHistoryAction(): MenuItem {
+    private movementsHistoryAction(): MenuEntryModel {
         return {
             label: 'vehicles.actions.movements-history',
             icon: 'pi pi-history',
@@ -63,7 +63,7 @@ export class VehicleElementComponent extends GenericElementComponent {
         }
     }
 
-    private editAction(): MenuItem {
+    private editAction(): MenuEntryModel {
         return {
             label: 'vehicles.actions.edit',
             icon: 'pi pi-pen-to-square',
@@ -77,7 +77,7 @@ export class VehicleElementComponent extends GenericElementComponent {
         }
     }
 
-    private disableAction(): MenuItem {
+    private disableAction(): MenuEntryModel {
         return {
             label: 'vehicles.actions.disable',
             icon: 'pi pi-eye-slash',
@@ -93,7 +93,7 @@ export class VehicleElementComponent extends GenericElementComponent {
         }
     }
 
-    private enableAction(): MenuItem {
+    private enableAction(): MenuEntryModel {
         return {
             label: 'vehicles.actions.enable',
             icon: 'pi pi-replay',
@@ -109,7 +109,7 @@ export class VehicleElementComponent extends GenericElementComponent {
         }
     }
 
-    private deleteAction(): MenuItem {
+    private deleteAction(): MenuEntryModel {
         return {
             label: 'vehicles.actions.delete',
             icon: 'pi pi-trash',

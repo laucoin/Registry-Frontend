@@ -13,7 +13,7 @@ import {
 import { FormValueControl } from '@angular/forms/signals'
 import { MovementContentModel } from '@shared/models/model/movement-content.model'
 import { AutoComplete, AutoCompleteCompleteEvent } from 'primeng/autocomplete'
-import { SelectItem, SelectItemGroup } from 'primeng/api'
+import { SelectOptionModel, SelectOptionGroupModel } from '@shared/models/model/select-option.model'
 import { ParticipantModel } from '@shared/models/model/participant.model'
 import { GroupModel } from '@shared/models/model/group.model'
 import { GenericHelper } from '@shared/helpers/generic.helper'
@@ -52,7 +52,7 @@ export class MovementContentFieldComponent implements FormValueControl<MovementC
     public readonly dirty: InputSignal<boolean> = input( false )
     public readonly touch: OutputEmitterRef<void> = output<void>()
 
-    public readonly suggestions: InputSignal<SelectItemGroup<ParticipantModel | GroupModel>[]> = input.required()
+    public readonly suggestions: InputSignal<SelectOptionGroupModel<ParticipantModel | GroupModel>[]> = input.required()
     public readonly inputId: InputSignal<string | undefined> = input()
     public readonly fluid: InputSignal<boolean> = input( false )
     public readonly emptyMessage: InputSignal<string | undefined> = input<string | undefined>()
@@ -70,7 +70,7 @@ export class MovementContentFieldComponent implements FormValueControl<MovementC
         this.orphanParticipants = computed( (): ParticipantModel[] => this.extractOrphanParticipants( this.value() ) )
     }
 
-    protected handleElementSelection (element: SelectItem<ParticipantModel | GroupModel>): void {
+    protected handleElementSelection (element: SelectOptionModel<ParticipantModel | GroupModel>): void {
         const selectedContent: MovementContentModel[] = this.buildContent( element.value )
 
         const duplicatedParticipants: string[] = []

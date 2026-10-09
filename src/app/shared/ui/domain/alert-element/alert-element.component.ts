@@ -24,7 +24,7 @@ import { Menu } from 'primeng/menu'
 import { Popover } from 'primeng/popover'
 import { Ripple } from 'primeng/ripple'
 import { ProjectOptionIconPipe } from '@shared/helpers/pipe/project-option-icon.pipe'
-import { MenuItem } from 'primeng/api'
+import { MenuEntryModel } from '@shared/models/model/menu-entry.model'
 import { AlertHelper } from '@shared/helpers/alert.helper'
 import { IntervalModel } from '@shared/models/model/interval.model'
 import { DateHelper } from '@shared/helpers/date.helper'
@@ -68,7 +68,7 @@ export class AlertElementComponent extends GenericElementComponent {
     public readonly carouselView: InputSignal<boolean> = input( false )
     public readonly alert: InputSignal<AlertModel> = input.required()
 
-    protected readonly actions: Signal<MenuItem[]> = computed( (): MenuItem[] => [
+    protected readonly actions: Signal<MenuEntryModel[]> = computed( (): MenuEntryModel[] => [
         this.resolveAction(),
         this.cancelAction(),
         this.reopenAction(),
@@ -77,7 +77,7 @@ export class AlertElementComponent extends GenericElementComponent {
         this.deleteAction(),
     ] )
 
-    private resolveAction(): MenuItem {
+    private resolveAction(): MenuEntryModel {
         return {
             label: 'alerts.actions.resolve',
             icon: 'pi pi-check',
@@ -93,7 +93,7 @@ export class AlertElementComponent extends GenericElementComponent {
         }
     }
 
-    private cancelAction(): MenuItem {
+    private cancelAction(): MenuEntryModel {
         return {
             label: 'alerts.actions.cancel',
             icon: 'pi pi-times',
@@ -109,7 +109,7 @@ export class AlertElementComponent extends GenericElementComponent {
         }
     }
 
-    private reopenAction(): MenuItem {
+    private reopenAction(): MenuEntryModel {
         return {
             label: 'alerts.actions.reopen',
             icon: 'pi pi-replay',
@@ -125,7 +125,7 @@ export class AlertElementComponent extends GenericElementComponent {
         }
     }
 
-    private disableAction(): MenuItem {
+    private disableAction(): MenuEntryModel {
         return {
             label: 'alerts.actions.disable',
             icon: 'pi pi-eye-slash',
@@ -141,7 +141,7 @@ export class AlertElementComponent extends GenericElementComponent {
         }
     }
 
-    private enableAction(): MenuItem {
+    private enableAction(): MenuEntryModel {
         return {
             label: 'alerts.actions.enable',
             icon: 'pi pi-replay',
@@ -157,7 +157,7 @@ export class AlertElementComponent extends GenericElementComponent {
         }
     }
 
-    private deleteAction(): MenuItem {
+    private deleteAction(): MenuEntryModel {
         return {
             id: ElementActionEnum.ALERT_DELETE,
             label: 'alerts.actions.delete',

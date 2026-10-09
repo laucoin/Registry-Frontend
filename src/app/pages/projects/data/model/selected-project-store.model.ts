@@ -1,5 +1,5 @@
 import { PageRequestInformationModel } from '@shared/models/model/page-request-information.model'
-import { ToastMessageOptions } from 'primeng/api'
+import { NotificationModel } from '@shared/models/model/notification.model'
 import { ProjectStatusModel } from '@shared/models/model/project-status.model'
 import { VehicleStatusModel } from '@shared/models/model/vehicle-status.model'
 import { MovementPageParamsModel } from '@shared/models/model/movement-page-params.model'
@@ -13,12 +13,12 @@ export interface SelectedProjectStoreModel {
         participants: {
             element: ProjectStatusModel | undefined
             loading: boolean
-            error: ToastMessageOptions | undefined
+            error: NotificationModel | undefined
         },
         vehicles: {
             element: VehicleStatusModel | undefined
             loading: boolean
-            error: ToastMessageOptions | undefined
+            error: NotificationModel | undefined
         }
     }
     alerts: PageRequestInformationModel<AlertPageParamsModel, AlertModel>

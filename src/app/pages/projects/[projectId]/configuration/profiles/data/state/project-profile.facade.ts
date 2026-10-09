@@ -2,7 +2,8 @@ import { computed, Injectable, Signal, inject } from '@angular/core'
 import { Observable, tap } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
 import { GenericProjectElementFacade } from '@shared/helpers/facade/generic-project-element.facade'
-import { SelectItem, ToastMessageOptions } from 'primeng/api'
+import { SelectOptionModel } from '@shared/models/model/select-option.model'
+import { NotificationModel } from '@shared/models/model/notification.model'
 import { ProjectProfileModel } from '@shared/models/model/project-profile.model'
 import { ProjectProfileStore } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.store'
 import { ProjectProfileDto } from '@pages/projects/[projectId]/configuration/profiles/data/dto/project-profile.dto'
@@ -32,7 +33,7 @@ export class ProjectProfileFacade extends GenericProjectElementFacade {
     public readonly projectProfilesPage: Signal<PageModel<ProjectProfileModel> | undefined> = this.store.projectProfiles.element
     public readonly projectProfilesPageLoading: Signal<boolean> = this.store.projectProfiles.loading
     public readonly projectProfilesPageSilentLoading: Signal<boolean> = this.store.projectProfiles.silentLoading
-    public readonly projectProfilesPageError: Signal<ToastMessageOptions | undefined> = this.store.projectProfiles.error
+    public readonly projectProfilesPageError: Signal<NotificationModel | undefined> = this.store.projectProfiles.error
     private readonly projectProfilesPageResetSearch: Signal<boolean> = this.store.projectProfiles.params.resetSearch
     public readonly projectProfilesPageTextSearchedParam: Signal<string | undefined> = this.store.projectProfiles.params.textSearched
     public readonly projectProfilesPageDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
@@ -41,11 +42,11 @@ export class ProjectProfileFacade extends GenericProjectElementFacade {
     public readonly projectProfilesPageAvailabilitySearchedParam: Signal<boolean | undefined> = this.store.projectProfiles.params.availabilitySearched
     public readonly projectProfilesPageStatusSearchedParam: Signal<string | undefined> = this.store.projectProfiles.params.statusSearched
 
-    public readonly searchedUsersMetadata: Signal<SelectItem<UserModel>[]> = this.store.metadata.searched
-    public readonly projectProfileAssignableRolesMetadata: Signal<SelectItem<string>[]> = this.store.metadata.roles
-    public readonly projectProfilesStatusMetadata: Signal<SelectItem<ProfileStatusEnum | undefined>[]> = this.store.metadata.status
-    public readonly projectProfilesAvailabilitiesMetadata: Signal<SelectItem<boolean | undefined>[]> = computed( (): SelectItem<boolean | undefined>[] =>
-        this.store.metadata.availabilities().map( (status: SelectItem<boolean | undefined>): SelectItem<boolean | undefined> => ({
+    public readonly searchedUsersMetadata: Signal<SelectOptionModel<UserModel>[]> = this.store.metadata.searched
+    public readonly projectProfileAssignableRolesMetadata: Signal<SelectOptionModel<string>[]> = this.store.metadata.roles
+    public readonly projectProfilesStatusMetadata: Signal<SelectOptionModel<ProfileStatusEnum | undefined>[]> = this.store.metadata.status
+    public readonly projectProfilesAvailabilitiesMetadata: Signal<SelectOptionModel<boolean | undefined>[]> = computed( (): SelectOptionModel<boolean | undefined>[] =>
+        this.store.metadata.availabilities().map( (status: SelectOptionModel<boolean | undefined>): SelectOptionModel<boolean | undefined> => ({
             ...status,
             label: this.translateLabel( status.label! ),
         }) ),

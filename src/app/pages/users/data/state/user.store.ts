@@ -1,6 +1,6 @@
 import { inject } from '@angular/core'
 import { patchState, signalStore, withMethods, withState } from '@ngrx/signals'
-import { SelectItem } from 'primeng/api'
+import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { ErrorReporter } from '@core/registry/state/error-reporter'
 import { UserPageParamsModel } from '@pages/users/data/model/user-page-params.model'
 import { UserStoreModel } from '@pages/users/data/model/user-store.model'
@@ -53,7 +53,7 @@ export const UserStore = signalStore(
         stopUserLoader: loaderToggle( store, 'user', false ),
         fetchUser: elementFetcher( store, 'user', (id: string) => api.findUserById( id ), errors ),
         resetUser: (): void => patchState( store, { user: defaultUser } ),
-        fetchAssignableRoles: metadataFetcher<UserStoreModel, 'assignableRoles', void, SelectItem<string>[]>( store, 'assignableRoles', () =>
+        fetchAssignableRoles: metadataFetcher<UserStoreModel, 'assignableRoles', void, SelectOptionModel<string>[]>( store, 'assignableRoles', () =>
             api.getAssignableUserRoles().pipe( trackElement( store, 'user' ) ), errors ),
     }) ),
 )

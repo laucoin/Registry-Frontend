@@ -1,6 +1,6 @@
 import { inject } from '@angular/core'
 import { signalStore, withHooks, withMethods, withState } from '@ngrx/signals'
-import { SelectItem } from 'primeng/api'
+import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { ErrorReporter } from '@core/registry/state/error-reporter'
 import { MetadataApi } from '@core/registry/state/metadata.api'
 import { VehiclePageParamsModel } from '@pages/projects/[projectId]/configuration/vehicles/data/model/vehicle-page-params.model'
@@ -76,7 +76,7 @@ export const VehicleStore = signalStore(
         metadata: { ...defaultVehicleStore.metadata, presencesStatus: current.metadata.presencesStatus },
     }) ),
     withMethods( (store, api = inject( VehicleApi ), movementApi = inject( MovementApi ), metadataApi = inject( MetadataApi ), errors = inject( ErrorReporter )) => ({
-        fetchPresencesStatus: metadataFetcher<VehicleStoreModel, 'presencesStatus', void, SelectItem<PresenceStatusEnum>[]>(
+        fetchPresencesStatus: metadataFetcher<VehicleStoreModel, 'presencesStatus', void, SelectOptionModel<PresenceStatusEnum>[]>(
             store, 'presencesStatus', () => metadataApi.getPresencesStatus(), errors, withEmptyOption,
         ),
         fetchVehiclesPage: pageFetcher( store, 'vehicles', (request: VehiclesPageRequest, params: VehiclePageParamsModel) =>

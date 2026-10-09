@@ -30,7 +30,7 @@ import {Button} from 'primeng/button'
 import {MovementDto} from '@pages/projects/[projectId]/movements/data/dto/movement.dto'
 import {MovementContentDto} from '@pages/projects/[projectId]/movements/data/dto/movement-content.dto'
 import {GenericHelper} from '@shared/helpers/generic.helper'
-import {MenuItem} from 'primeng/api'
+import {MenuEntryModel} from '@shared/models/model/menu-entry.model'
 import {Dialog} from 'primeng/dialog'
 import {Menu} from 'primeng/menu'
 import {Popover} from 'primeng/popover'
@@ -95,14 +95,14 @@ export class MovementElementComponent extends GenericElementComponent {
     public readonly communicable: InputSignal<boolean> = input(false)
     public readonly vehicleId: InputSignal<string | undefined> = input()
 
-    protected readonly actions: Signal<MenuItem[]> = computed( (): MenuItem[] => [
+    protected readonly actions: Signal<MenuEntryModel[]> = computed( (): MenuEntryModel[] => [
         this.editAction(),
         this.disableAction(),
         this.enableAction(),
         this.deleteAction(),
     ] )
 
-    private editAction(): MenuItem {
+    private editAction(): MenuEntryModel {
         return {
             label: 'movements.actions.edit',
             icon: 'pi pi-pen-to-square',
@@ -116,7 +116,7 @@ export class MovementElementComponent extends GenericElementComponent {
         }
     }
 
-    private disableAction(): MenuItem {
+    private disableAction(): MenuEntryModel {
         return {
             label: 'movements.actions.disable',
             icon: 'pi pi-eye-slash',
@@ -132,7 +132,7 @@ export class MovementElementComponent extends GenericElementComponent {
         }
     }
 
-    private enableAction(): MenuItem {
+    private enableAction(): MenuEntryModel {
         return {
             label: 'movements.actions.enable',
             icon: 'pi pi-replay',
@@ -148,7 +148,7 @@ export class MovementElementComponent extends GenericElementComponent {
         }
     }
 
-    private deleteAction(): MenuItem {
+    private deleteAction(): MenuEntryModel {
         return {
             label: 'movements.actions.delete',
             icon: 'pi pi-trash',
@@ -204,7 +204,7 @@ export class MovementElementComponent extends GenericElementComponent {
 
     protected confirmMovementReversion(content: MovementContentModel[]): void {
         const translationKey: string = `movements.actions.confirmations.reverse.${this.movement().type.value}`
-        this.confirmationService.confirm(
+        this.uiFacade.confirm(
             this.buildCustomConfirmation(
                 `${translationKey}.title`,
                 this.pluralTranslation.transform(`${translationKey}.message`, content.length),

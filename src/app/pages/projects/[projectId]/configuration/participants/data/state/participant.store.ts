@@ -1,6 +1,6 @@
 import { inject } from '@angular/core'
 import { signalStore, withHooks, withMethods, withState } from '@ngrx/signals'
-import { SelectItem } from 'primeng/api'
+import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { ErrorReporter } from '@core/registry/state/error-reporter'
 import { MetadataApi } from '@core/registry/state/metadata.api'
 import { ParticipantPageParamsModel } from '@pages/projects/[projectId]/configuration/participants/data/model/participant-page-params.model'
@@ -81,16 +81,16 @@ export const ParticipantStore = signalStore(
         metadata: { ...defaultParticipantStore.metadata, presencesStatus: current.metadata.presencesStatus },
     }) ),
     withMethods( (store, api = inject( ParticipantApi ), metadataApi = inject( MetadataApi ), errors = inject( ErrorReporter )) => ({
-        fetchPresencesStatus: metadataFetcher<ParticipantStoreModel, 'presencesStatus', void, SelectItem<PresenceStatusEnum>[]>(
+        fetchPresencesStatus: metadataFetcher<ParticipantStoreModel, 'presencesStatus', void, SelectOptionModel<PresenceStatusEnum>[]>(
             store, 'presencesStatus', () => metadataApi.getPresencesStatus(), errors, withEmptyOption,
         ),
         searchUsers: metadataFetcher<ParticipantStoreModel, 'searchedUsers', SearchRequest, UserModel[]>(
             store, 'searchedUsers', (request: SearchRequest) => api.searchUsers( request.projectId, request.textSearched ), errors,
-            (users: UserModel[]): SelectItem<UserModel>[] => users.map( UserHelper.toSelectItem ),
+            (users: UserModel[]): SelectOptionModel<UserModel>[] => users.map( UserHelper.toSelectItem ),
         ),
         searchGroups: metadataFetcher<ParticipantStoreModel, 'searchedGroups', SearchRequest, GroupModel[]>(
             store, 'searchedGroups', (request: SearchRequest) => api.searchGroups( request.projectId, request.textSearched ), errors,
-            (groups: GroupModel[]): SelectItem<GroupModel>[] => groups.map( GroupHelper.toSelectItem ),
+            (groups: GroupModel[]): SelectOptionModel<GroupModel>[] => groups.map( GroupHelper.toSelectItem ),
         ),
         fetchParticipantsPage: pageFetcher( store, 'participants', (request: ParticipantsPageRequest, params: ParticipantPageParamsModel) =>
             api.findParticipants( request.projectId, request.pageNumber, request.pageSize, params ), errors ),

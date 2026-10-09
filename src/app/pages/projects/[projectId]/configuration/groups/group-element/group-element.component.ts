@@ -13,7 +13,7 @@ import { SeverityCircleComponent } from '@shared/ui/common/severity-circle/sever
 import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { ElementActionEnum } from '@shared/models/enumeration/element-action.enum'
-import { MenuItem } from 'primeng/api'
+import { MenuEntryModel } from '@shared/models/model/menu-entry.model'
 import { AvailabilityStatusEnum } from '@shared/models/enumeration/availability-status.enum'
 
 /**
@@ -41,7 +41,7 @@ export class GroupElementComponent extends GenericElementComponent {
     public readonly actionMenuVisible: InputSignal<boolean> = input( true )
     public readonly group: InputSignal<GroupModel> = input.required()
 
-    protected readonly actions: Signal<MenuItem[]> = computed( (): MenuItem[] => [
+    protected readonly actions: Signal<MenuEntryModel[]> = computed( (): MenuEntryModel[] => [
         this.membersAction(),
         this.editAction(),
         this.disableAction(),
@@ -49,7 +49,7 @@ export class GroupElementComponent extends GenericElementComponent {
         this.deleteAction(),
     ] )
 
-    private membersAction(): MenuItem {
+    private membersAction(): MenuEntryModel {
         return {
             label: 'groups.actions.members',
             icon: 'pi pi-users',
@@ -63,7 +63,7 @@ export class GroupElementComponent extends GenericElementComponent {
         }
     }
 
-    private editAction(): MenuItem {
+    private editAction(): MenuEntryModel {
         return {
             id: ElementActionEnum.GROUP_UPDATE,
             label: 'groups.actions.edit',
@@ -78,7 +78,7 @@ export class GroupElementComponent extends GenericElementComponent {
         }
     }
 
-    private disableAction(): MenuItem {
+    private disableAction(): MenuEntryModel {
         return {
             label: 'groups.actions.disable',
             icon: 'pi pi-eye-slash',
@@ -94,7 +94,7 @@ export class GroupElementComponent extends GenericElementComponent {
         }
     }
 
-    private enableAction(): MenuItem {
+    private enableAction(): MenuEntryModel {
         return {
             label: 'groups.actions.enable',
             icon: 'pi pi-replay',
@@ -110,7 +110,7 @@ export class GroupElementComponent extends GenericElementComponent {
         }
     }
 
-    private deleteAction(): MenuItem {
+    private deleteAction(): MenuEntryModel {
         return {
             label: 'groups.actions.delete',
             icon: 'pi pi-trash',

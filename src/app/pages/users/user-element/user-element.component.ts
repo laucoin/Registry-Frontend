@@ -21,7 +21,7 @@ import {VisibilityNamePipe} from '@shared/helpers/pipe/visibility.pipe'
 import {SeverityEnum} from '@shared/models/enumeration/severity.enum'
 import {UserAuthorityEnum} from '@shared/models/enumeration/user-authority.enum'
 import {ElementActionEnum} from '@shared/models/enumeration/element-action.enum'
-import {MenuItem} from 'primeng/api'
+import {MenuEntryModel} from '@shared/models/model/menu-entry.model'
 
 /**
  * Purpose: Card presenting one user with its actions.
@@ -58,7 +58,7 @@ export class UserElementComponent extends GenericElementComponent {
 
     private readonly isCurrentUser: Signal<boolean> = computed((): boolean => this.sessionFacade.currentUser()?.id == this.user().id)
 
-    protected readonly actions: Signal<MenuItem[]> = computed((): MenuItem[] => [
+    protected readonly actions: Signal<MenuEntryModel[]> = computed((): MenuEntryModel[] => [
         this.updateRoleAction(),
         this.disableAction(),
         this.enableAction(),
@@ -66,7 +66,7 @@ export class UserElementComponent extends GenericElementComponent {
         this.deleteAction(),
     ])
 
-    private updateRoleAction(): MenuItem {
+    private updateRoleAction(): MenuEntryModel {
         return {
                 label: 'users.actions.update-role',
                 icon: 'pi pi-user-edit',
@@ -80,7 +80,7 @@ export class UserElementComponent extends GenericElementComponent {
             }
     }
 
-    private disableAction(): MenuItem {
+    private disableAction(): MenuEntryModel {
         return {
                 label: 'users.actions.disable',
                 icon: 'pi pi-ban',
@@ -96,7 +96,7 @@ export class UserElementComponent extends GenericElementComponent {
             }
     }
 
-    private enableAction(): MenuItem {
+    private enableAction(): MenuEntryModel {
         return {
                 label: 'users.actions.enable',
                 icon: 'pi pi-replay',
@@ -112,7 +112,7 @@ export class UserElementComponent extends GenericElementComponent {
             }
     }
 
-    private impersonateAction(): MenuItem {
+    private impersonateAction(): MenuEntryModel {
         return {
                 label: 'users.actions.impersonate',
                 icon: 'pi pi-eraser',
@@ -128,7 +128,7 @@ export class UserElementComponent extends GenericElementComponent {
             }
     }
 
-    private deleteAction(): MenuItem {
+    private deleteAction(): MenuEntryModel {
         return {
                 label: 'users.actions.delete',
                 icon: 'pi pi-trash',

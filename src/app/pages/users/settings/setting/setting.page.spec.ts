@@ -2,7 +2,7 @@ import { signal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslocoService } from '@jsverse/transloco'
-import { Confirmation, ConfirmationService } from 'primeng/api'
+import { ConfirmationModel } from '@shared/models/model/confirmation.model'
 import { Mock, beforeEach, describe, expect, it, vi } from 'vitest'
 import { ConfigModel } from '@core/config/model/config.model'
 import { RegistryConfig } from '@core/config/registry.config'
@@ -14,7 +14,7 @@ import { autoMock } from '@shared/helpers/testing/auto-mock'
 
 describe( 'SettingPage', () => {
     let registry: Record<string, Mock>
-    let confirm: Mock<(confirmation: Confirmation) => void>
+    let confirm: Mock<(confirmation: ConfirmationModel) => void>
     let page: SettingPage
 
     beforeEach( () => {
@@ -25,10 +25,9 @@ describe( 'SettingPage', () => {
         RegistryConfig.config = { enabledActions: [] } as unknown as ConfigModel
         TestBed.configureTestingModule( {
             providers: [
-                { provide: ConfirmationService, useValue: { confirm } },
                 { provide: RegistryFacade, useValue: registry },
                 { provide: SessionFacade, useValue: { currentUser: signal( { id: 'u1' } ), currentUserLanguage: (): string => 'fr', selectedProject: signal( undefined ) } },
-                { provide: UiFacade, useValue: autoMock() },
+                { provide: UiFacade, useValue: Object.assign( autoMock(), { confirm } ) },
                 { provide: Router, useValue: {} },
                 { provide: ActivatedRoute, useValue: {} },
                 { provide: TranslocoService, useValue: { translate: (key: string): string => key } },

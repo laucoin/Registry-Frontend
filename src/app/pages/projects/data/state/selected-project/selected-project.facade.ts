@@ -1,6 +1,6 @@
 import { computed, inject, Injectable, Signal } from '@angular/core'
 import { ProjectStatusModel } from '@shared/models/model/project-status.model'
-import { ToastMessageOptions } from 'primeng/api'
+import { NotificationModel } from '@shared/models/model/notification.model'
 import { VehicleStatusModel } from '@shared/models/model/vehicle-status.model'
 import { PageModel } from '@shared/models/model/page.model'
 import { MovementModel } from '@shared/models/model/movement.model'
@@ -27,13 +27,13 @@ export class SelectedProjectFacade extends GenericFacade {
 
     public readonly participantsStatusLoading: Signal<boolean> = this.store.status.participants.loading
 
-    public readonly participantsStatusError: Signal<ToastMessageOptions | undefined> = this.store.status.participants.error
+    public readonly participantsStatusError: Signal<NotificationModel | undefined> = this.store.status.participants.error
 
     public readonly vehiclesStatus: Signal<VehicleStatusModel | undefined> = this.store.status.vehicles.element
 
     public readonly vehiclesStatusLoading: Signal<boolean> = this.store.status.vehicles.loading
 
-    public readonly vehiclesStatusError: Signal<ToastMessageOptions | undefined> = this.store.status.vehicles.error
+    public readonly vehiclesStatusError: Signal<NotificationModel | undefined> = this.store.status.vehicles.error
 
     public readonly participantsBirthdays: Signal<ParticipantModel[]> = this.store.birthdays
 
@@ -41,7 +41,7 @@ export class SelectedProjectFacade extends GenericFacade {
 
     public readonly currentMovementsPageWithoutActivitySilentLoading: Signal<boolean> = this.store.currentMovements.withoutActivity.silentLoading
 
-    public readonly currentMovementsPageWithoutActivityError: Signal<ToastMessageOptions | undefined> = this.store.currentMovements.withoutActivity.error
+    public readonly currentMovementsPageWithoutActivityError: Signal<NotificationModel | undefined> = this.store.currentMovements.withoutActivity.error
 
     public readonly currentMovementsPageWithoutActivity: Signal<PageModel<MovementModel> | undefined> = this.store.currentMovements.withoutActivity.element
 
@@ -57,7 +57,7 @@ export class SelectedProjectFacade extends GenericFacade {
 
     public readonly currentMovementsPageWithActivitySilentLoading: Signal<boolean> = this.store.currentMovements.withActivity.silentLoading
 
-    public readonly currentMovementsPageWithActivityError: Signal<ToastMessageOptions | undefined> = this.store.currentMovements.withActivity.error
+    public readonly currentMovementsPageWithActivityError: Signal<NotificationModel | undefined> = this.store.currentMovements.withActivity.error
 
     public readonly currentMovementsPageWithActivity: Signal<PageModel<MovementModel> | undefined> = this.store.currentMovements.withActivity.element
 
@@ -69,7 +69,7 @@ export class SelectedProjectFacade extends GenericFacade {
             DateHelper.buildDate( this.store.currentMovements.withActivity.params.endDateTimeSearched() ),
         )
 
-    public readonly currentAlertsPageError: Signal<ToastMessageOptions | undefined> = this.store.alerts.error
+    public readonly currentAlertsPageError: Signal<NotificationModel | undefined> = this.store.alerts.error
 
     public readonly currentAlertsPage: Signal<PageModel<AlertModel> | undefined> = this.store.alerts.element
 

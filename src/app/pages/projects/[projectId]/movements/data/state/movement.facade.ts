@@ -1,7 +1,8 @@
 import { computed, inject, Injectable, Signal } from '@angular/core'
 import { Observable, tap } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
-import { SelectItem, SelectItemGroup, ToastMessageOptions } from 'primeng/api'
+import { SelectOptionModel, SelectOptionGroupModel } from '@shared/models/model/select-option.model'
+import { NotificationModel } from '@shared/models/model/notification.model'
 import { GroupModel } from '@shared/models/model/group.model'
 import { MovementStore } from '@pages/projects/[projectId]/movements/data/state/movement.store'
 import { MovementDto } from '@pages/projects/[projectId]/movements/data/dto/movement.dto'
@@ -40,7 +41,7 @@ export class MovementFacade extends GenericProjectElementFacade {
 
     public readonly movementsPageSilentLoading: Signal<boolean> = this.store.movements.silentLoading
 
-    public readonly movementsPageError: Signal<ToastMessageOptions | undefined> = this.store.movements.error
+    public readonly movementsPageError: Signal<NotificationModel | undefined> = this.store.movements.error
 
     private readonly movementsPageResetSearch: Signal<boolean> = this.store.movements.params.resetSearch
 
@@ -62,7 +63,7 @@ export class MovementFacade extends GenericProjectElementFacade {
 
     public readonly movementCommunicationsPageSilentLoading: Signal<boolean> = this.store.movementCommunications.silentLoading
 
-    public readonly movementCommunicationsPageError: Signal<ToastMessageOptions | undefined> = this.store.movementCommunications.error
+    public readonly movementCommunicationsPageError: Signal<NotificationModel | undefined> = this.store.movementCommunications.error
 
     private readonly movementCommunicationsPageResetSearch: Signal<boolean> = this.store.movementCommunications.params.resetSearch
 
@@ -80,16 +81,16 @@ export class MovementFacade extends GenericProjectElementFacade {
 
     public readonly searchedReasonAndActivityMetadata: Signal<MovementReasonModel[]> = this.store.metadata.searchedReasonsAndActivities
 
-    public readonly searchedParticipantAndGroupMetadata: Signal<SelectItemGroup<ParticipantModel | GroupModel>[]> = this.store.metadata.searchedParticipantsAndGroups
+    public readonly searchedParticipantAndGroupMetadata: Signal<SelectOptionGroupModel<ParticipantModel | GroupModel>[]> = this.store.metadata.searchedParticipantsAndGroups
 
-    public readonly searchedVehicleMetadata: Signal<SelectItem<VehicleModel>[]> = this.store.metadata.searchedVehicles
+    public readonly searchedVehicleMetadata: Signal<SelectOptionModel<VehicleModel>[]> = this.store.metadata.searchedVehicles
 
-    public readonly movementTypesMetadata: Signal<SelectItem<MovementTypeEnum | undefined>[]> = this.store.metadata.types
+    public readonly movementTypesMetadata: Signal<SelectOptionModel<MovementTypeEnum | undefined>[]> = this.store.metadata.types
 
-    public readonly participantTypesMetadata: Signal<SelectItem<ParticipantTypeEnum>[]> = this.store.metadata.participantTypes
+    public readonly participantTypesMetadata: Signal<SelectOptionModel<ParticipantTypeEnum>[]> = this.store.metadata.participantTypes
 
-    public readonly visibilitiesMetadata: Signal<SelectItem<boolean | undefined>[]> = computed( () =>
-            this.store.metadata.visibilities().map( (status: SelectItem<boolean | undefined>) => ({
+    public readonly visibilitiesMetadata: Signal<SelectOptionModel<boolean | undefined>[]> = computed( () =>
+            this.store.metadata.visibilities().map( (status: SelectOptionModel<boolean | undefined>) => ({
                 ...status,
                 label: this.translateLabel( status.label! ),
             }) ),

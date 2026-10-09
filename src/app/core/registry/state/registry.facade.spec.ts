@@ -2,7 +2,6 @@ import { signal, WritableSignal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { Router } from '@angular/router'
 import { TranslocoService } from '@jsverse/transloco'
-import { PrimeNG } from 'primeng/config'
 import { Observable, of, Subject, throwError } from 'rxjs'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
 import { ConfigModel } from '@core/config/model/config.model'
@@ -119,7 +118,6 @@ describe( 'RegistryFacade', () => {
                 { provide: UiFacade, useValue: { theme, startGlobalLoader, stopGlobalLoader, setGlobalError, updateTheme, updateLanguage, notify } },
                 { provide: BrowserService, useValue: { pathname: '/current', origin: 'http://app.test', redirect } },
                 { provide: Router, useValue: { navigateByUrl } },
-                { provide: PrimeNG, useValue: { setTranslation: vi.fn() } },
                 { provide: CustomDateFormatPipe, useValue: { transform: (): string => 'date' } },
                 { provide: TranslocoService, useValue: {
                     translate: (key: string): string => key,
