@@ -6,11 +6,12 @@
         }
     </div>
     <div #message class='message chat-bubble' [class.left-chat-bubble]='lastAuthorMessage() && !authorIsCurrentUser()'
-         [class.right-chat-bubble]='lastAuthorMessage() && authorIsCurrentUser()'>
+         [class.right-chat-bubble]='lastAuthorMessage() && authorIsCurrentUser()'
+         [class.own-chat-bubble]='authorIsCurrentUser()'>
         <p-card>
             @if (firstAuthorMessage() && !authorIsCurrentUser()) {
                 <ng-template #title>
-                    <div class='mb-2'>
+                    <div class='author-name mb-2'>
                         {{ authorName() }}
                     </div>
                 </ng-template>
