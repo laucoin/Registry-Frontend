@@ -1,24 +1,27 @@
 import { Component, inject, input, InputSignal, OnDestroy, signal, WritableSignal} from '@angular/core'
 import {ParticipantFacade} from '@pages/projects/[projectId]/configuration/participants/data/state/participant.facade'
-import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidatorFn, Validators} from '@angular/forms'
-import {RegistryValidators} from '@shared/helpers/registry.validator'
-import {ParticipantDto} from '@pages/projects/[projectId]/configuration/participants/data/dto/participant.dto'
+import { FieldTree, FormField } from '@angular/forms/signals'
+import {
+    createParticipantForm,
+    ParticipantFormModel,
+    toParticipantDto,
+    toParticipantFormModel,
+    withSelectedUser,
+} from '@pages/projects/[projectId]/configuration/participants/participant-form/participant.form'
+import {CustomDatetimeModel} from '@shared/models/model/custom-datetime.model'
+import {UserModel} from '@shared/models/model/user.model'
 import {Button} from 'primeng/button'
 import {CardModule} from 'primeng/card'
 import {DividerModule} from 'primeng/divider'
 import {FormComponent} from '@shared/ui/common/form/form.component'
-import {FormFieldErrorComponent} from '@shared/ui/common/form-field-error/form-field-error.component'
+import {FieldErrorComponent} from '@shared/ui/common/field-error/field-error.component'
 import {InputTextModule} from 'primeng/inputtext'
 import {TranslocoPipe} from '@jsverse/transloco'
-import {FormHelper} from '@shared/helpers/form.helper'
 import {ParticipantModel} from '@shared/models/model/participant.model'
-import {UserDto} from '@shared/models/dto/user.dto'
-import {DateHelper} from '@shared/helpers/date.helper'
 import {RegistryRequiredDirective} from '@shared/directives/registry-required.directive'
 import {DatePicker} from 'primeng/datepicker'
 import {AutoComplete, AutoCompleteCompleteEvent} from 'primeng/autocomplete'
 import {SelectItem} from 'primeng/api'
-import {UserHelper} from '@shared/helpers/user.helper'
 import {GroupModel} from '@shared/models/model/group.model'
 import {
     SelectElementsFieldComponent,
@@ -26,7 +29,8 @@ import {
 import {GroupHelper} from '@shared/helpers/group.helper'
 import {ProjectModel} from '@shared/models/model/project.model'
 import {DateFormatPipe} from '@shared/helpers/pipe/date-format.pipe'
-import {GenericFormComponent} from '@shared/ui/base/generic-form.component'
+import {ParticipantDto} from '@pages/projects/[projectId]/configuration/participants/data/dto/participant.dto'
+import {BaseFormComponent} from '@shared/ui/base/base-form.component'
 import {withLoading} from '@shared/helpers/rx.helper'
 import {GenericHelper} from '@shared/helpers/generic.helper'
 import {FormTitlePipe} from '@shared/helpers/pipe/form-title.pipe'
@@ -47,11 +51,10 @@ import {FormIconPipe} from '@shared/helpers/pipe/form-icon.pipe'
         CardModule,
         DividerModule,
         FormComponent,
-        FormFieldErrorComponent,
-        FormsModule,
+        FieldErrorComponent,
         InputTextModule,
         TranslocoPipe,
-        ReactiveFormsModule,
+        FormField,
         RegistryRequiredDirective,
         DatePicker,
         AutoComplete,
@@ -66,26 +69,28 @@ import {FormIconPipe} from '@shared/helpers/pipe/form-icon.pipe'
     ],
     templateUrl: './participant-form.component.html',
 })
-export class ParticipantFormComponent extends GenericFormComponent<ParticipantModel, ParticipantDto> implements OnDestroy {
+export class ParticipantFormComponent extends BaseFormComponent implements OnDestroy {
     protected readonly facade: ParticipantFacade = inject(ParticipantFacade)
 
     protected readonly GroupHelper: typeof GroupHelper = GroupHelper
 
-    protected readonly form: FormGroup
     protected readonly participant: WritableSignal<ParticipantModel | undefined> = signal(undefined)
+    protected readonly contextProject: WritableSignal<ProjectModel | undefined> = signal(undefined)
+    protected readonly model: WritableSignal<ParticipantFormModel> = signal(toParticipantFormModel())
+    protected readonly form: FieldTree<ParticipantFormModel> = createParticipantForm(this.model, {
+        project: this.contextProject,
+        formatDate: (date: CustomDatetimeModel): string | undefined => this.datePipe.transform(date),
+    })
 
     public readonly redirect: InputSignal<boolean> = input(true)
     public readonly showTitle: InputSignal<boolean> = input(true)
     public readonly defaultGroup: InputSignal<GroupModel | undefined> = input()
 
-    protected readonly selectedUser: WritableSignal<SelectItem<UserDto> | undefined> = signal(undefined)
     protected readonly previousFirstName: WritableSignal<string | undefined> = signal(undefined)
     protected readonly previousLastName: WritableSignal<string | undefined> = signal(undefined)
 
     public constructor() {
         super()
-
-        this.form = this.initForm()
 
         this.loadData()
 
@@ -105,31 +110,6 @@ export class ParticipantFormComponent extends GenericFormComponent<ParticipantMo
         }
     }
 
-    protected initForm(): FormGroup {
-        return this.formBuilder.group({
-            firstName: this.nameControl(),
-            lastName: this.nameControl(),
-            birthday: this.formBuilder.control(undefined, [Validators.required, this.notInTheFuture()]),
-            user: this.formBuilder.control(undefined),
-            groups: this.formBuilder.control(undefined),
-            beginDateTime: this.formBuilder.control(undefined, [RegistryValidators.dateRequiredForTime()]),
-            endDateTime: this.formBuilder.control(undefined, [RegistryValidators.dateRequiredForTime()]),
-        }, {
-            validators: [RegistryValidators.beginDateBeforeEndDate('beginDateTime', 'endDateTime')],
-        })
-    }
-
-    private nameControl(): FormControl {
-        return this.formBuilder.control(
-            undefined,
-            [Validators.required, Validators.maxLength(150), RegistryValidators.nonBlank()],
-        )
-    }
-
-    private notInTheFuture(): ValidatorFn {
-        return RegistryValidators.maxDateTime(DateHelper.toCustomDateTime(new Date())!, undefined)
-    }
-
     protected handleLoadedElement(): void {
         if (!GenericHelper.nonNull(this.idParam)) {
             this.applyParticipant(undefined)
@@ -137,26 +117,10 @@ export class ParticipantFormComponent extends GenericFormComponent<ParticipantMo
     }
 
     private applyParticipant(participant: ParticipantModel | undefined): void {
-        const contextProject: ProjectModel | undefined = participant?.project || this.sessionFacade.selectedProject()
-        this.addProjectDateValidators(contextProject, this.beginDateTime)
-        this.addProjectDateValidators(contextProject, this.endDateTime)
-        this.fillForm(participant)
-    }
-
-    protected fillForm(element: ParticipantModel | undefined): void {
-        if (!element) return
-
-        this.firstName.patchValue(element?.firstName)
-        this.lastName.patchValue(element?.lastName)
-        this.birthday.patchValue(element?.birthday ? new Date(element?.birthday) : undefined)
-        if (element?.user) {
-            const user: SelectItem<UserDto> = UserHelper.toSelectItem(element.user)
-            this.user.patchValue(user)
-            this.handleUserSelection(user)
-        }
-        this.groups.patchValue(element?.groups)
-        this.beginDateTime.patchValue(element?.startAvailability)
-        this.endDateTime.patchValue(element?.endAvailability)
+        this.contextProject.set(participant?.project || this.sessionFacade.selectedProject())
+        if (!participant) return
+        this.model.set(toParticipantFormModel(participant))
+        if (participant.user) this.handleUserSelection(this.model().user)
     }
 
     protected submit(): void {
@@ -165,29 +129,13 @@ export class ParticipantFormComponent extends GenericFormComponent<ParticipantMo
         const editing: boolean = GenericHelper.nonNull(this.idParam)
         if (editing && !this.participant()) return
 
-        if (!FormHelper.isFormValid(this.form)) {
-            this.logInvalidForm(this.form.value)
+        if (!this.isFormValid(this.form)) {
+            this.logInvalidForm(this.model())
             return
         }
 
-        const dto: ParticipantDto = this.buildDto()
+        const dto: ParticipantDto = toParticipantDto(this.model(), this.defaultGroup())
         this.save(editing ? this.facade.updateParticipant(this.participant()!.id, dto) : this.facade.createParticipant(dto), this.redirect())
-    }
-
-    protected buildDto(): ParticipantDto {
-        const groupIds: string[] = (this.groups.value ?? []).map((item: GroupModel): string => item.id)
-        if (this.defaultGroup() && !groupIds.includes(this.defaultGroup()!.id)) {
-            groupIds.push(this.defaultGroup()!.id)
-        }
-        return {
-            firstName: this.firstName.value,
-            lastName: this.lastName.value,
-            birthday: DateHelper.getDate(this.birthday.value),
-            userId: this.selectedUser()?.value.id,
-            groupIds: groupIds,
-            startAvailability: this.beginDateTime.value,
-            endAvailability: this.endDateTime.value,
-        }
     }
 
     protected handleUserSearch(searched: AutoCompleteCompleteEvent): void {
@@ -198,27 +146,18 @@ export class ParticipantFormComponent extends GenericFormComponent<ParticipantMo
         this.facade.searchGroups(searched.query)
     }
 
-    protected handleUserSelection(selectedUser: SelectItem<UserDto> | undefined): void {
-        this.selectedUser.set(selectedUser)
+    protected handleUserSelection(selected: SelectItem<UserModel> | null | undefined): void {
+        const user: SelectItem<UserModel> | null = selected ?? null
+        this.rememberNames(user)
+        this.model.update((current: ParticipantFormModel): ParticipantFormModel => withSelectedUser(current, user, {
+            firstName: this.previousFirstName(),
+            lastName: this.previousLastName(),
+        }))
+    }
 
-        const user: UserDto | undefined = this.selectedUser()?.value
-        if (GenericHelper.nonNull(user)) {
-            if (user!.firstName) {
-                this.previousFirstName.set(this.firstName.value)
-                this.firstName.patchValue(user!.firstName)
-                this.firstName.disable()
-            }
-            if (user!.lastName) {
-                this.previousLastName.set(this.lastName.value)
-                this.lastName.patchValue(user!.lastName)
-                this.lastName.disable()
-            }
-        } else {
-            this.firstName.enable()
-            this.firstName.patchValue(this.previousFirstName())
-            this.lastName.enable()
-            this.lastName.patchValue(this.previousLastName())
-        }
+    private rememberNames(user: SelectItem<UserModel> | null): void {
+        if (user?.value.firstName) this.previousFirstName.set(this.model().firstName)
+        if (user?.value.lastName) this.previousLastName.set(this.model().lastName)
     }
 
     protected get idParam(): string | undefined {
@@ -227,33 +166,5 @@ export class ParticipantFormComponent extends GenericFormComponent<ParticipantMo
 
     public ngOnDestroy(): void {
         this.subscriptions.unsubscribe()
-    }
-
-    protected get user(): FormControl {
-        return this.form.get('user') as FormControl
-    }
-
-    protected get firstName(): FormControl {
-        return this.form.get('firstName') as FormControl
-    }
-
-    protected get lastName(): FormControl {
-        return this.form.get('lastName') as FormControl
-    }
-
-    protected get birthday(): FormControl {
-        return this.form.get('birthday') as FormControl
-    }
-
-    protected get beginDateTime(): FormControl {
-        return this.form.get('beginDateTime') as FormControl
-    }
-
-    protected get endDateTime(): FormControl {
-        return this.form.get('endDateTime') as FormControl
-    }
-
-    protected get groups(): FormControl {
-        return this.form.get('groups') as FormControl
     }
 }

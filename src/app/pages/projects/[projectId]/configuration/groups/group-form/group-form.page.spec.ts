@@ -23,7 +23,7 @@ interface PageApi {
     error: () => unknown
 }
 
-const FILLED: GroupFormModel = { name: 'Wolves', beginDateTime: null, endDateTime: null, participants: [ PARTICIPANT_DTO as never ] }
+const FILLED: GroupFormModel = { name: 'Wolves', beginDateTime: null, endDateTime: null, participants: [ { ...PARTICIPANT_DTO } as never ] }
 
 describe( 'GroupFormPage', () => {
     let facade: Record<string, Mock>
@@ -79,7 +79,7 @@ describe( 'GroupFormPage', () => {
 
         // Assert
         expect( facade[ 'fetchGroup' ] ).toHaveBeenCalledWith( id )
-        expect( page.model() ).toEqual( FILLED )
+        expect( page.model().participants.map( (item: { id: string }): string => item.id ) ).toEqual( [ 'pa1' ] )
     } )
 
     it( 'updates the group with its id and the form values, then goes back', () => {

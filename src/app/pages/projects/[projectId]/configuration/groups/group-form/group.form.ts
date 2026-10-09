@@ -1,6 +1,7 @@
 import { WritableSignal } from '@angular/core'
 import { FieldTree, form, SchemaPathTree } from '@angular/forms/signals'
 import { GroupDto } from '@pages/projects/[projectId]/configuration/groups/data/dto/group.dto'
+import { FormModelHelper } from '@shared/helpers/form/form-model.helper'
 import { ProjectDateContext, RegistrySchemas } from '@shared/helpers/form/registry.schemas'
 import { CustomDatetimeModel } from '@shared/models/model/custom-datetime.model'
 import { GroupModel } from '@shared/models/model/group.model'
@@ -18,7 +19,7 @@ export function toGroupFormModel (group?: GroupModel): GroupFormModel {
         name: group?.name ?? '',
         beginDateTime: group?.startAvailability ?? null,
         endDateTime: group?.endAvailability ?? null,
-        participants: group?.members ?? [],
+        participants: FormModelHelper.copyItems( group?.members ),
     }
 }
 

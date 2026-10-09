@@ -1,6 +1,5 @@
 import { Location } from '@angular/common'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
-import { FormGroup } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslocoService } from '@jsverse/transloco'
 import { of } from 'rxjs'
@@ -16,14 +15,18 @@ import { CustomDateFormatPipe } from '@shared/helpers/pipe/custom-date-format.pi
 import { autoMock } from '@shared/helpers/testing/auto-mock'
 import { GROUP_DTO, PARTICIPANT_DTO, USER_DTO } from '@shared/helpers/testing/response-fixtures'
 
+interface FieldApi {
+    disabled: () => boolean
+    valid: () => boolean
+}
+
 interface ParticipantFormApi {
-    form: FormGroup
-    selectedUser: () => { value: object } | undefined
+    model: { (): Record<string, unknown>, set: (value: Record<string, unknown>) => void }
+    form: Record<string, () => FieldApi>
     handleUserSelection: (user: { label: string, value: object } | undefined) => void
     handleUserSearch: (event: { query: string }) => void
     handleGroupSearch: (event: { query: string }) => void
     submit: () => void
-    buildDto: () => Record<string, unknown>
 }
 
 const CHILD: object = { ...PARTICIPANT_DTO, user: undefined, birthday: '2010-01-05', groups: [ { ...GROUP_DTO, id: 'g1' } ] }
@@ -61,7 +64,7 @@ describe( 'ParticipantFormComponent', () => {
     }
 
     function fillIdentity (page: ParticipantFormApi): void {
-        page.form.patchValue( { firstName: 'Ada', lastName: 'L', birthday: new Date( 2010, 0, 5 ) } )
+        page.model.set( { ...page.model(), firstName: 'Ada', lastName: 'L', birthday: new Date( 2010, 0, 5 ) } )
     }
 
     beforeEach( () => {
@@ -76,8 +79,8 @@ describe( 'ParticipantFormComponent', () => {
 
             // Assert
             expect( facade[ 'fetchParticipant' ] ).toHaveBeenCalledWith( 'pa1' )
-            expect( page.form.value ).toMatchObject( { firstName: 'A', lastName: 'B' } )
-            expect( page.form.get( 'groups' )!.value ).toHaveLength( 1 )
+            expect( page.model() ).toMatchObject( { firstName: 'A', lastName: 'B' } )
+            expect( page.model()[ 'groups' ] ).toHaveLength( 1 )
         } )
 
         it( 'locks the names of a participant linked to a user', () => {
@@ -88,9 +91,9 @@ describe( 'ParticipantFormComponent', () => {
             page.handleUserSelection( USER_ITEM )
 
             // Assert
-            expect( page.form.get( 'firstName' )!.disabled ).toBe( true )
-            expect( page.form.get( 'firstName' )!.value ).toBe( 'Grace' )
-            expect( page.selectedUser() ).toBe( USER_ITEM )
+            expect( page.form[ 'firstName' ]().disabled() ).toBe( true )
+            expect( page.model()[ 'firstName' ] ).toBe( 'Grace' )
+            expect( page.model()[ 'user' ] ).toBe( USER_ITEM )
         } )
 
         it( 'restores the names when the user is unselected', () => {
@@ -103,9 +106,8 @@ describe( 'ParticipantFormComponent', () => {
             page.handleUserSelection( undefined )
 
             // Assert
-            expect( page.form.get( 'firstName' )!.enabled ).toBe( true )
-            expect( page.form.get( 'firstName' )!.value ).toBe( 'Ada' )
-            expect( page.form.get( 'lastName' )!.value ).toBe( 'L' )
+            expect( page.form[ 'firstName' ]().disabled() ).toBe( false )
+            expect( page.model() ).toMatchObject( { firstName: 'Ada', lastName: 'L', user: null } )
         } )
 
         it( 'updates the loaded participant', () => {
@@ -139,10 +141,10 @@ describe( 'ParticipantFormComponent', () => {
             fillIdentity( page )
 
             // Act
-            page.form.patchValue( { birthday: new Date( Date.now() + 10 * 86400000 ) } )
+            page.model.set( { ...page.model(), birthday: new Date( Date.now() + 10 * 86400000 ) } )
 
             // Assert
-            expect( page.form.get( 'birthday' )!.valid ).toBe( false )
+            expect( page.form[ 'birthday' ]().valid() ).toBe( false )
         } )
 
         it( 'creates the participant from the form and goes back', () => {
@@ -176,31 +178,17 @@ describe( 'ParticipantFormComponent', () => {
     } )
 
     describe( 'dto', () => {
-        it( 'adds the default group once', () => {
-            // Arrange
-            const page: ParticipantFormApi = create()
-            fillIdentity( page )
-            fixture.componentRef.setInput( 'defaultGroup', { id: 'g9' } )
-            page.form.patchValue( { groups: [ { id: 'g9' }, { id: 'g1' } ] } )
-
-            // Act
-            const dto: Record<string, unknown> = page.buildDto()
-
-            // Assert
-            expect( dto[ 'groupIds' ] ).toEqual( [ 'g9', 'g1' ] )
-        } )
-
-        it( 'appends the default group when it is not selected', () => {
+        it( 'adds the default group when it is not selected', () => {
             // Arrange
             const page: ParticipantFormApi = create()
             fixture.componentRef.setInput( 'defaultGroup', { id: 'g9' } )
             fillIdentity( page )
 
             // Act
-            const dto: Record<string, unknown> = page.buildDto()
+            page.submit()
 
             // Assert
-            expect( dto[ 'groupIds' ] ).toEqual( [ 'g9' ] )
+            expect( facade[ 'createParticipant' ] ).toHaveBeenCalledWith( expect.objectContaining( { groupIds: [ 'g9' ] } ) )
         } )
 
         it( 'sends the selected user id', () => {
@@ -210,10 +198,10 @@ describe( 'ParticipantFormComponent', () => {
             page.handleUserSelection( USER_ITEM )
 
             // Act
-            const dto: Record<string, unknown> = page.buildDto()
+            page.submit()
 
             // Assert
-            expect( dto[ 'userId' ] ).toBe( 'u1' )
+            expect( facade[ 'createParticipant' ] ).toHaveBeenCalledWith( expect.objectContaining( { userId: 'u1' } ) )
         } )
     } )
 

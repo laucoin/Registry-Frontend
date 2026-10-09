@@ -206,4 +206,17 @@ describe( 'RegistrySchemas', () => {
         // Assert
         expect( errors ).toEqual( [ [ { kind: 'required' } ], [] ] )
     } )
+
+    it( 'notInTheFuture refuses a date after now only', () => {
+        // Arrange
+        const now: Date = new Date( 2026, 5, 15 )
+        const rule = (path: SchemaPath<Date | null>): void => RegistrySchemas.notInTheFuture( path, () => now )
+
+        // Act
+        const errors: object[][] = [ new Date( 2026, 5, 16 ), new Date( 2026, 5, 15 ), new Date( 2000, 0, 1 ), null ]
+            .map( (value: Date | null): object[] => errorsOf( value, rule ) )
+
+        // Assert
+        expect( errors ).toEqual( [ [ { kind: 'maxDate', max: undefined } ], [], [], [] ] )
+    } )
 } )

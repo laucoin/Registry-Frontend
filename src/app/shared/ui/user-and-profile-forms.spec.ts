@@ -200,7 +200,7 @@ describe( 'user and project profile forms', () => {
             // Arrange
             facade[ 'createProjectProfiles' ].mockReturnValue( of( { createdUserIds: [ 'u1' ], notCreatedUserIds: [] } ) )
             const page: ProjectProfileInvitationFormPage = create( ProjectProfileInvitationFormPage, ProjectProfileFacade, {} )
-            ;(page as unknown as ModelApi).model.set( { role: 'CHIEF', beginDateTime: null, endDateTime: null, users: [ USER_DTO ] } )
+            ;(page as unknown as ModelApi).model.set( { role: 'CHIEF', beginDateTime: null, endDateTime: null, users: [ { ...USER_DTO } ] } )
 
             // Act
             ;(page as unknown as FormApi).submit()

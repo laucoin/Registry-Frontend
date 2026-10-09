@@ -48,6 +48,13 @@ export class RegistrySchemas {
         RegistrySchemas.nonBlank( path )
     }
 
+    public static notInTheFuture (path: SchemaPath<Date | null>, now: () => Date = (): Date => new Date()): void {
+        validate( path, (ctx: FieldContext<Date | null>): RegistryError | null => {
+            const value: Date | null = ctx.value()
+            return value && value.getTime() > now().getTime() ? registryError( 'maxDate', { max: undefined } ) : null
+        } )
+    }
+
     public static requiredList<T> (path: SchemaPath<T[]>): void {
         validate( path, (ctx: FieldContext<T[]>): RegistryError | null =>
             ctx.value().length === 0 ? registryError( 'required' ) : null )
