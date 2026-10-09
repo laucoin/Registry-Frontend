@@ -1,6 +1,5 @@
 import { Component, computed, input, InputSignal, Signal } from '@angular/core'
 import { ProgressSpinnerModule } from 'primeng/progressspinner'
-import { FormGroup } from '@angular/forms'
 import { ErrorModel } from '@shared/models/model/error.model'
 import { FormErrorComponent } from '@shared/ui/common/form-error/form-error.component'
 
@@ -19,13 +18,10 @@ import { FormErrorComponent } from '@shared/ui/common/form-error/form-error.comp
 } )
 export class FormComponent {
     public readonly loading: InputSignal<boolean> = input.required()
-    public readonly form: InputSignal<FormGroup | (() => { touched: () => boolean })> = input.required()
+    public readonly form: InputSignal<() => { touched: () => boolean }> = input.required()
     public readonly error: InputSignal<ErrorModel | undefined> = input<ErrorModel | undefined>()
     public readonly showTitle: InputSignal<boolean> = input<boolean>( true )
     public readonly title: InputSignal<string | undefined> = input<string | undefined>()
 
-    protected readonly untouched: Signal<boolean> = computed((): boolean => {
-        const form: FormGroup | (() => { touched: () => boolean }) = this.form()
-        return form instanceof FormGroup ? form.untouched : !form().touched()
-    })
+    protected readonly untouched: Signal<boolean> = computed((): boolean => !this.form()().touched())
 }

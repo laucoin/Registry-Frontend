@@ -9,7 +9,6 @@ import {SeverityTagComponent} from '@shared/ui/common/severity-tag/severity-tag.
 import {GenericElementComponent} from '@shared/ui/base/generic-element.component'
 import {ActivityModel} from '@shared/models/model/activity.model'
 import {CustomDateFormatPipe} from '@shared/helpers/pipe/custom-date-format.pipe'
-import {ReactiveFormsModule} from '@angular/forms'
 import {SeverityCircleComponent} from '@shared/ui/common/severity-circle/severity-circle.component'
 import {ProjectAuthorityEnum} from '@shared/models/enumeration/project-authority.enum'
 import {SeverityEnum} from '@shared/models/enumeration/severity.enum'
@@ -33,7 +32,6 @@ import {MessageComponent} from '@shared/ui/common/message/message.component'
         ChipModule,
         SeverityTagComponent,
         CustomDateFormatPipe,
-        ReactiveFormsModule,
         SeverityCircleComponent,
         ProjectOptionIconPipe,
         MessageComponent,

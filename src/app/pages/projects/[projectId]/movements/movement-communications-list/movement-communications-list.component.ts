@@ -1,5 +1,4 @@
 import { Component, inject, input, InputSignal, OnDestroy, OnInit } from '@angular/core'
-import { ReactiveFormsModule } from '@angular/forms'
 import { MovementFacade } from '@pages/projects/[projectId]/movements/data/state/movement.facade'
 import { Observable, Subscription, tap } from 'rxjs'
 import { CommunicationFacade } from '@pages/projects/[projectId]/movements/communication/data/state/communication.facade'
@@ -20,7 +19,6 @@ import { AlertFacade } from '@pages/projects/[projectId]/alerts/data/state/alert
 @Component( {
     selector: 'app-movement-communications-list',
     imports: [
-        ReactiveFormsModule,
         TranslocoPipe,
         CommunicationFormComponent,
         DialogElementComponent,

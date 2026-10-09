@@ -23,7 +23,6 @@ import {PageModel} from '@shared/models/model/page.model'
 import {RegistryTemplateDirective} from '@shared/directives/registry-template.directive'
 import {ElementSkeletonComponent} from '@shared/ui/common/element-skeleton/element-skeleton.component'
 import {Panel} from 'primeng/panel'
-import {FormsModule} from '@angular/forms'
 import {GenericComponent} from '@shared/ui/base/generic.component'
 import {Skeleton} from 'primeng/skeleton'
 import {DateFormatPipe} from '@shared/helpers/pipe/date-format.pipe'
@@ -44,7 +43,6 @@ import {SeverityEnum} from '@shared/models/enumeration/severity.enum'
         CardModule,
         ElementSkeletonComponent,
         Panel,
-        FormsModule,
         Skeleton,
         DateFormatPipe,
     ],

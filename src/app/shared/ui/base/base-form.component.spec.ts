@@ -1,6 +1,5 @@
 import { Location } from '@angular/common'
 import { createEnvironmentInjector, EnvironmentInjector, runInInjectionContext, signal, WritableSignal } from '@angular/core'
-import { FormControl, FormGroup } from '@angular/forms'
 import { TestBed } from '@angular/core/testing'
 import { FieldTree, form, required, SchemaPathTree } from '@angular/forms/signals'
 import { ActivatedRoute, Router } from '@angular/router'
@@ -17,10 +16,9 @@ import { CustomDateFormatPipe } from '@shared/helpers/pipe/custom-date-format.pi
 import { autoMock } from '@shared/helpers/testing/auto-mock'
 import { ERROR_500 } from '@shared/helpers/testing/test-fixtures'
 import { ErrorModel } from '@shared/models/model/error.model'
-import { ProjectModel } from '@shared/models/model/project.model'
-import { GenericFormComponent } from '@shared/ui/base/generic-form.component'
+import { BaseFormComponent } from '@shared/ui/base/base-form.component'
 
-class TestForm extends GenericFormComponent<object, object> {
+class TestForm extends BaseFormComponent {
     public readonly calls: string[] = []
 
     public constructor () {
@@ -31,24 +29,12 @@ class TestForm extends GenericFormComponent<object, object> {
         this.calls.push( 'loadData' )
     }
 
-    protected initForm (): FormGroup {
-        return new FormGroup( {} )
-    }
-
     protected handleLoadedElement (): void {
         this.calls.push( 'handleLoadedElement' )
     }
 
-    protected fillForm (): void {
-        this.calls.push( 'fillForm' )
-    }
-
     protected submit (): void {
         this.calls.push( 'submit' )
-    }
-
-    protected buildDto (): object {
-        return {}
     }
 
     protected get idParam (): string | undefined {
@@ -67,10 +53,6 @@ class TestForm extends GenericFormComponent<object, object> {
         this.navigateToRedirectUri( route )
     }
 
-    public validatorsFor (project: ProjectModel | undefined, control: FormControl): void {
-        this.addProjectDateValidators( project, control )
-    }
-
     public checkValidity<T> (form: FieldTree<T>): boolean {
         return this.isFormValid( form )
     }
@@ -80,7 +62,7 @@ class TestForm extends GenericFormComponent<object, object> {
     }
 }
 
-describe( 'GenericFormComponent', () => {
+describe( 'BaseFormComponent', () => {
     let back: Mock<() => void>
     let navigateByUrl: Mock<(url: string) => Promise<boolean>>
 
@@ -217,33 +199,6 @@ describe( 'GenericFormComponent', () => {
         // Assert
         expect( navigateByUrl ).toHaveBeenCalledWith( RegistryRouteEnum.PROJECTS )
         expect( back ).toHaveBeenCalledTimes( 1 )
-    } )
-
-    it( 'adds the project dates as bounds of a date control', () => {
-        // Arrange
-        const form: TestForm = create()
-        const control: FormControl = new FormControl( { date: '2026-06-01', time: '10:00:00' } )
-        const project: ProjectModel = { begin: { date: '2026-07-01', time: undefined }, end: { date: '2026-07-31', time: undefined } } as ProjectModel
-
-        // Act
-        form.validatorsFor( project, control )
-        control.updateValueAndValidity()
-
-        // Assert
-        expect( control.valid ).toBe( false )
-    } )
-
-    it( 'adds no bound for a project without dates', () => {
-        // Arrange
-        const form: TestForm = create()
-        const control: FormControl = new FormControl( { date: '2026-06-01', time: '10:00:00' } )
-
-        // Act
-        form.validatorsFor( {} as ProjectModel, control )
-        control.updateValueAndValidity()
-
-        // Assert
-        expect( control.valid ).toBe( true )
     } )
 
     it( 'logs an invalid form outside production only', () => {

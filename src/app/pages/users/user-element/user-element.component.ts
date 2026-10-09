@@ -13,7 +13,6 @@ import {IconFieldModule} from 'primeng/iconfield'
 import {InputIconModule} from 'primeng/inputicon'
 import {InputTextModule} from 'primeng/inputtext'
 import {ListboxModule} from 'primeng/listbox'
-import {ReactiveFormsModule} from '@angular/forms'
 import {RegistryRouteEnum} from '@core/routing/registry-route.enum'
 import {SeverityTagComponent} from '@shared/ui/common/severity-tag/severity-tag.component'
 import {GenericElementComponent} from '@shared/ui/base/generic-element.component'
@@ -44,7 +43,6 @@ import {MenuItem} from 'primeng/api'
         InputIconModule,
         InputTextModule,
         ListboxModule,
-        ReactiveFormsModule,
         SeverityTagComponent,
         DateFormatPipe,
         VisibilityNamePipe,

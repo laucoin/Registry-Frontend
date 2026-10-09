@@ -1,7 +1,6 @@
 import { Component, inject, input, InputSignal, OnDestroy, OnInit } from '@angular/core'
 import { AlertModel } from '@shared/models/model/alert.model'
 import { AlertFacade } from '@pages/projects/[projectId]/alerts/data/state/alert.facade'
-import { ReactiveFormsModule } from '@angular/forms'
 import { DialogElementComponent } from '@shared/ui/domain/dialog-element/dialog-element.component'
 import { CommunicationHelper } from '@shared/helpers/communication.helper'
 import { CommunicationModel } from '@shared/models/model/communication.model'
@@ -19,7 +18,6 @@ import {TranslocoPipe} from '@jsverse/transloco'
     selector: 'app-alert-communications-list',
     imports: [
         DialogElementComponent,
-        ReactiveFormsModule,
         CommunicationFormComponent,
         TranslocoPipe,
     ],
