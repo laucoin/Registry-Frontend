@@ -1,7 +1,7 @@
 <p-card>
     <div class='ps-6 pe-6 pt-2 pb-2'>
         <div class='flex items-center' [class.flex-col]='uiFacade.tinyScreen()'>
-            <div [class.me-6]='!uiFacade.tinyScreen()'>
+            <div [class.me-4]='!uiFacade.tinyScreen()'>
                 <p-avatar icon='pi pi-user' size='large' shape='circle' />
             </div>
             <h1>{{ (sessionFacade.currentUser()?.firstName | titlecase) + ' ' + (sessionFacade.currentUser()?.lastName | uppercase) }}</h1>
