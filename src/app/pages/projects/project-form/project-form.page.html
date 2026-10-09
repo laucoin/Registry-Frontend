@@ -4,7 +4,7 @@
     </div>
 } @else {
     <h2>{{ 'projects.form.title' | formTitle: facade.project() | transloco : {name: facade.project()?.name} }}</h2>
-    <p-stepper [(value)]='activeTab' [value]='1' [linear]='true'>
+    <p-stepper [(value)]='activeTab' [linear]='true'>
         <p-step-item [value]='1'>
             <p-step>{{ 'projects.form.subtitle.information' | transloco }}</p-step>
             <p-step-panel>

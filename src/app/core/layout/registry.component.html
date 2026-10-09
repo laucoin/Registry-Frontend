@@ -46,20 +46,20 @@
             <span aria-hidden='true'>|</span>
             <button type='button'
                     class='cursor-pointer hover:underline'
-                    (click)='showInformationDialog = true'>
+                    (click)='showInformationDialog.set(true)'>
                 {{ 'global.legal.information.name' | transloco }}
             </button>
             <span aria-hidden='true'>|</span>
             <button type='button'
                     class='cursor-pointer hover:underline'
-                    (click)='showTermsOfUserDialog = true'>
+                    (click)='showTermsOfUserDialog.set(true)'>
                 {{ 'global.legal.terms-of-use.name' | transloco }}
             </button>
         </p>
     </footer>
 }
 
-@defer (when showInformationDialog) {
+@defer (when showInformationDialog()) {
     <p-dialog
             class='text-justify'
             modal
@@ -85,7 +85,7 @@
     </p-dialog>
 }
 
-@defer (when showTermsOfUserDialog) {
+@defer (when showTermsOfUserDialog()) {
     <p-dialog
             class='text-justify'
             modal

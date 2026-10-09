@@ -28,7 +28,7 @@
                     [class.pointer]='additionalTotal() >= 0'
                     [class.hover-underline]='additionalTotal() >= 0'
                     [disabled]='additionalTotal() < 0'
-                    (click)='layerOpened = true'>
+                    (click)='layerOpened.set(true)'>
                 @if (additionalTotal() === 0) {
                     {{ participant().groups?.[0]?.name }}
                 } @else {

@@ -30,7 +30,7 @@
         </ng-template>
         <ng-template #end>
             @if (!uiFacade.tinyScreen()) {
-                <p-button (onClick)='helpDialogOpened = true'
+                <p-button (onClick)='helpDialogOpened.set(true)'
                           class='information-button'
                           text
                           rounded
@@ -79,7 +79,7 @@
 
 <div [class]='showContextMenu() ? "h-[140px]" : "h-[82px]"'></div>
 
-@defer (when helpDialogOpened) {
+@defer (when helpDialogOpened()) {
     <p-dialog
             class='text-justify'
             modal

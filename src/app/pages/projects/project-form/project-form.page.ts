@@ -1,4 +1,4 @@
-import { Component, computed, inject, linkedSignal, OnDestroy, signal, Signal, WritableSignal } from '@angular/core'
+import { Component, computed, inject, linkedSignal, OnDestroy, signal, Signal, WritableSignal, model, ModelSignal } from '@angular/core'
 import { BaseFormComponent } from '@shared/ui/base/base-form.component'
 import { ProjectModel } from '@shared/models/model/project.model'
 import { ProjectFacade } from '@pages/projects/data/state/project/project.facade'
@@ -83,7 +83,7 @@ export class ProjectFormPage extends BaseFormComponent implements OnDestroy {
     protected readonly allSelectedModel: WritableSignal<boolean> = linkedSignal( (): boolean => this.allSelected() === true )
     protected readonly allSelectedForm: FieldTree<boolean> = form( this.allSelectedModel )
     protected readonly nextNavigation: RegistryRouteEnum = RegistryRouteEnum.PROJECTS
-    protected activeTab: number = 1
+    protected readonly activeTab: ModelSignal<number> = model<number>( 1 )
 
     public constructor () {
         super()

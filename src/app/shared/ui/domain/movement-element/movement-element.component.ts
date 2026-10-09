@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, InputSignal, Signal, signal, WritableSignal} from '@angular/core'
+import { Component, computed, inject, input, InputSignal, Signal, model, ModelSignal } from '@angular/core'
 import {MovementModel} from '@shared/models/model/movement.model'
 import {MovementFacade} from '@pages/projects/[projectId]/movements/data/state/movement.facade'
 import {ElementCardComponent} from '@shared/ui/common/element-card/element-card.component'
@@ -85,9 +85,9 @@ export class MovementElementComponent extends GenericElementComponent {
     protected readonly VehicleHelper: typeof VehicleHelper = VehicleHelper
     protected readonly MovementTypeEnum: typeof MovementTypeEnum = MovementTypeEnum
 
-    protected readonly participantLayerActiveTab: WritableSignal<number> = signal(1)
-    protected readonly participantsLayerOpened: WritableSignal<boolean> = signal(false)
-    protected readonly communicationsLayerOpened: WritableSignal<boolean> = signal(false)
+    protected readonly participantLayerActiveTab: ModelSignal<number> = model<number>( 1 )
+    protected readonly participantsLayerOpened: ModelSignal<boolean> = model<boolean>( false )
+    protected readonly communicationsLayerOpened: ModelSignal<boolean> = model<boolean>( false )
 
     public readonly actionMenuVisible: InputSignal<boolean> = input(true)
     public readonly movement: InputSignal<MovementModel> = input.required()

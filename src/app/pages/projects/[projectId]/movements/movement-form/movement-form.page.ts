@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnDestroy, Signal, signal, WritableSignal} from '@angular/core'
+import { Component, computed, inject, OnDestroy, Signal, signal, WritableSignal, model, ModelSignal } from '@angular/core'
 import {FieldTree, FormField} from '@angular/forms/signals'
 import {MovementFacade} from '@pages/projects/[projectId]/movements/data/state/movement.facade'
 import {MovementModel} from '@shared/models/model/movement.model'
@@ -132,7 +132,7 @@ export class MovementFormPage extends BaseFormComponent implements OnDestroy {
             content.vehicle)) ?? false),
     )
 
-    protected readonly activeTab: WritableSignal<number> = signal(1)
+    protected readonly activeTab: ModelSignal<number> = model<number>( 1 )
 
     public constructor() {
         super()

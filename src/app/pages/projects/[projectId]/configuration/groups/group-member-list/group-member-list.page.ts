@@ -1,7 +1,7 @@
 import { FieldTree, FormField } from '@angular/forms/signals'
 import { createSearchForm } from '@shared/helpers/form/search.form'
 import { GroupMemberListSearchModel, toGroupMemberListSearchModel, toGroupMemberListSearchParams } from './group-member-list.search'
-import { Component, inject, OnDestroy, signal, WritableSignal } from '@angular/core'
+import { Component, inject, OnDestroy, signal, WritableSignal, model, ModelSignal } from '@angular/core'
 import { GroupModel } from '@shared/models/model/group.model'
 import { withLoading } from '@shared/helpers/rx.helper'
 import {
@@ -79,9 +79,9 @@ export class GroupMemberListPage extends GenericListComponent implements OnDestr
 
     protected readonly addMembersModel: WritableSignal<AddMembersFormModel> = signal( emptyAddMembersFormModel() )
     protected readonly addMembersForm: FieldTree<AddMembersFormModel> = createAddMembersForm( this.addMembersModel )
-    protected addMembersFormLayerOpened: boolean = false
+    protected readonly addMembersFormLayerOpened: ModelSignal<boolean> = model<boolean>( false )
 
-    protected createMemberFormLayerOpened: boolean = false
+    protected readonly createMemberFormLayerOpened: ModelSignal<boolean> = model<boolean>( false )
 
     protected readonly model: WritableSignal<GroupMemberListSearchModel> = signal( toGroupMemberListSearchModel( {
         textSearched: this.facade.groupMembersPageTextSearchedParam(),
@@ -124,7 +124,7 @@ export class GroupMemberListPage extends GenericListComponent implements OnDestr
     private reloadMembersOn (events: Observable<unknown>, pageNumber: (() => number | undefined) | undefined, pageSize: (() => number | undefined) | undefined): void {
         this.subscriptions.add( events.pipe(
             tap( (): void => {
-                this.createMemberFormLayerOpened = false
+                this.createMemberFormLayerOpened.set( false )
                 this.facade.fetchGroupMembersPage( this.route.snapshot.params['groupId'], pageNumber?.(), pageSize?.() )
             } ),
         ).subscribe() )
@@ -132,11 +132,11 @@ export class GroupMemberListPage extends GenericListComponent implements OnDestr
 
     protected initAddMembersForm (): void {
         this.addMembersForm().reset( emptyAddMembersFormModel() )
-        this.addMembersFormLayerOpened = true
+        this.addMembersFormLayerOpened.set( true )
     }
 
     protected initCreateMemberForm (): void {
-        this.createMemberFormLayerOpened = true
+        this.createMemberFormLayerOpened.set( true )
     }
 
     protected loadPage (pageEvent: PageEventModel): void {
@@ -167,7 +167,7 @@ export class GroupMemberListPage extends GenericListComponent implements OnDestr
 
         this.subscriptions.add(
             this.facade.addMembersToGroup( groupId, toMemberIds( this.addMembersModel() ) ).subscribe( (): void => {
-                this.addMembersFormLayerOpened = false
+                this.addMembersFormLayerOpened.set( false )
             } ),
         )
     }

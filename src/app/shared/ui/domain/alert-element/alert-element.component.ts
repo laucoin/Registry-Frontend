@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, InputSignal, Signal } from '@angular/core'
+import { Component, computed, inject, input, InputSignal, Signal, model, ModelSignal } from '@angular/core'
 import { ElementActionEnum } from '@shared/models/enumeration/element-action.enum'
 import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
@@ -188,7 +188,7 @@ export class AlertElementComponent extends GenericElementComponent {
         map( (): IntervalModel | undefined => this.getInProgressSince() ),
     ) )
 
-    protected communicationsLayerOpened: boolean = false
+    protected readonly communicationsLayerOpened: ModelSignal<boolean> = model<boolean>( false )
 
     private getInProgressSince (): IntervalModel | undefined {
         if (this.alert().status.value !== AlertStatusEnum.IN_PROGRESS) return undefined
