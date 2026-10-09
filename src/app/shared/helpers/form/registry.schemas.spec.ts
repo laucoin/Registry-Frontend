@@ -161,7 +161,7 @@ describe( 'RegistrySchemas', () => {
             label: 'Alerts',
             preRequired: [ { value: 'MOVEMENTS' as ProjectOptionEnum, label: 'Movements' } ],
         } as unknown as ProjectOptionModel ]
-        const rule = (path: SchemaPath<Record<string, boolean>>): void => RegistrySchemas.preRequiredOptions( path, options )
+        const rule = (path: SchemaPath<Record<string, boolean>>): void => RegistrySchemas.preRequiredOptions( path, () => options )
 
         // Act
         const missing: object[] = errorsOf<Record<string, boolean>>( { ALERTS: true, MOVEMENTS: false }, rule )

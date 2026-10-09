@@ -1,6 +1,5 @@
 import { Location } from '@angular/common'
 import { TestBed } from '@angular/core/testing'
-import { FormGroup } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslocoService } from '@jsverse/transloco'
 import { BehaviorSubject, of } from 'rxjs'
@@ -20,11 +19,11 @@ import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enu
 import { ProjectModel } from '@shared/models/model/project.model'
 
 interface ProjectFormApi {
-    form: FormGroup
-    optionsForm: FormGroup
-    allSelected: boolean | undefined
+    model: { (): Record<string, unknown>, set: (value: object) => void }
+    optionsModel: { (): Record<string, boolean>, set: (value: Record<string, boolean>) => void }
+    optionsForm: () => { errors: () => { kind: string }[] }
+    allSelected: () => boolean | undefined
     submit: () => void
-    buildDto: () => object
     selectAll: (event: { checked: boolean }) => void
 }
 
@@ -74,7 +73,7 @@ describe( 'ProjectFormPage', () => {
     }
 
     function fillName (page: ProjectFormApi): void {
-        page.form.patchValue( { name: 'Camp', beginDateTime: { date: '2026-01-01', time: undefined } } )
+        page.model.set( { ...page.model(), name: 'Camp', beginDateTime: { date: '2026-01-01', time: undefined } } )
     }
 
     beforeEach( () => {
@@ -108,7 +107,7 @@ describe( 'ProjectFormPage', () => {
             const page: ProjectFormApi = create()
 
             // Assert
-            expect( Object.keys( page.optionsForm.controls ) ).toEqual( [ 'VEHICLE', 'ACTIVITY', 'ALERT' ] )
+            expect( Object.keys( page.optionsModel() ) ).toEqual( [ 'VEHICLE', 'ACTIVITY', 'ALERT' ] )
         } )
 
         it( 'fills the form with the loaded project and its options', () => {
@@ -120,8 +119,8 @@ describe( 'ProjectFormPage', () => {
             project$.next( project )
 
             // Assert
-            expect( page.form.value.name ).toBe( 'Camp' )
-            expect( page.optionsForm.value ).toEqual( { VEHICLE: true, ACTIVITY: false, ALERT: false } )
+            expect( page.model()[ 'name' ] ).toBe( 'Camp' )
+            expect( page.optionsModel() ).toEqual( { VEHICLE: true, ACTIVITY: false, ALERT: false } )
         } )
     } )
 
@@ -137,8 +136,8 @@ describe( 'ProjectFormPage', () => {
             page.selectAll( event )
 
             // Assert
-            expect( Object.values( page.optionsForm.value ) ).toEqual( [ expected, expected, expected ] )
-            expect( page.allSelected ).toBe( expected )
+            expect( Object.values( page.optionsModel() ) ).toEqual( [ expected, expected, expected ] )
+            expect( page.allSelected() ).toBe( expected )
         } )
 
         it( 'reports a partial selection as undefined', () => {
@@ -146,10 +145,10 @@ describe( 'ProjectFormPage', () => {
             const page: ProjectFormApi = create()
 
             // Act
-            page.optionsForm.patchValue( { VEHICLE: true } )
+            page.optionsModel.set( { ...page.optionsModel(), VEHICLE: true } )
 
             // Assert
-            expect( page.allSelected ).toBeUndefined()
+            expect( page.allSelected() ).toBeUndefined()
         } )
 
         it( 'rejects an option whose prerequisite is missing', () => {
@@ -157,10 +156,10 @@ describe( 'ProjectFormPage', () => {
             const page: ProjectFormApi = create()
 
             // Act
-            page.optionsForm.patchValue( { ALERT: true } )
+            page.optionsModel.set( { ...page.optionsModel(), ALERT: true } )
 
             // Assert
-            expect( page.optionsForm.errors ).toHaveProperty( 'preRequiredOptions' )
+            expect( page.optionsForm().errors().map( (error: { kind: string }): string => error.kind ) ).toEqual( [ 'preRequiredOptions' ] )
         } )
     } )
 
@@ -180,7 +179,7 @@ describe( 'ProjectFormPage', () => {
             // Arrange
             const page: ProjectFormApi = create()
             fillName( page )
-            page.optionsForm.patchValue( { ALERT: true } )
+            page.optionsModel.set( { ...page.optionsModel(), ALERT: true } )
 
             // Act
             page.submit()
@@ -189,17 +188,19 @@ describe( 'ProjectFormPage', () => {
             expect( facade[ 'createProject' ] ).not.toHaveBeenCalled()
         } )
 
-        it( 'builds the dto with the ticked options only', () => {
+        it( 'sends the ticked options only', () => {
             // Arrange
             const page: ProjectFormApi = create()
             fillName( page )
-            page.optionsForm.patchValue( { VEHICLE: true, ACTIVITY: true } )
+            page.optionsModel.set( { ...page.optionsModel(), VEHICLE: true, ACTIVITY: true } )
 
             // Act
-            const dto: object = page.buildDto()
+            page.submit()
 
             // Assert
-            expect( dto ).toEqual( { name: 'Camp', begin: { date: '2026-01-01', time: undefined }, end: null, options: [ 'VEHICLE', 'ACTIVITY' ] } )
+            expect( facade[ 'createProject' ] ).toHaveBeenCalledWith( {
+                name: 'Camp', begin: { date: '2026-01-01', time: undefined }, end: undefined, options: [ 'VEHICLE', 'ACTIVITY' ],
+            } )
         } )
 
         it( 'creates the project and opens it', () => {

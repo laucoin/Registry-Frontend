@@ -1,4 +1,4 @@
-@if (form.untouched && facade.projectLoading()) {
+@if (!form().touched() && facade.projectLoading()) {
     <div class='flex justify-center'>
         <p-progress-spinner></p-progress-spinner>
     </div>
@@ -12,20 +12,18 @@
                     <div class='p-2'>
                         <div class='field'>
                             <label for='name' appRequired>{{ 'projects.form.name' | transloco }}</label>
-                            <input [formControl]='name'
+                            <input [formField]='form.name'
                                    [placeholder]='"projects.form.placeholder.name" | transloco'
                                    id='name'
                                    pInputText
                                    type='text'/>
-                            <app-form-field-error [errors]='name.errors'
-                                                  [invalid]='FormHelper.invalid(name)'
-                                                  translationPrefix='projects.form.error.name'/>
+                            <app-field-error [field]='form.name' translationPrefix='projects.form.error.name'/>
                         </div>
                         <div class='flex flex-wrap'>
                             <div class='left-field field'>
                                 <label for='begin-date-time'>{{ 'projects.form.begin-datetime' | transloco }}</label>
-                                <app-date-time-field [formControl]='beginDateTime'
-                                                     [invalid]='FormHelper.invalid(beginDateTime)'
+                                <app-date-time-field [formField]='form.beginDateTime'
+                                                     [invalid]='fieldInvalid(form.beginDateTime)'
                                                      inputId='begin-date-time'
                                                      [datePlaceholder]='"projects.form.placeholder.date" | transloco: {
                                                             date: startDateExample | dateFormat: "date"
@@ -33,14 +31,12 @@
                                                      [timePlaceholder]='"projects.form.placeholder.time" | transloco: {
                                                             date: startDateExample | dateFormat: "time"
                                                          }'/>
-                                <app-form-field-error [errors]='beginDateTime.errors'
-                                                      [invalid]='FormHelper.invalid(beginDateTime)'
-                                                      translationPrefix='projects.form.error.begin-datetime'/>
+                                <app-field-error [field]='form.beginDateTime' translationPrefix='projects.form.error.begin-datetime'/>
                             </div>
                             <div class='right-field field'>
                                 <label for='end-date-time'>{{ 'projects.form.end-datetime' | transloco }}</label>
-                                <app-date-time-field [formControl]='endDateTime'
-                                                     [invalid]='FormHelper.invalid(endDateTime)'
+                                <app-date-time-field [formField]='form.endDateTime'
+                                                     [invalid]='fieldInvalid(form.endDateTime)'
                                                      inputId='end-date-time'
                                                      [datePlaceholder]='"projects.form.placeholder.date" | transloco: {
                                                             date: endDateExample | dateFormat: "date"
@@ -48,14 +44,12 @@
                                                      [timePlaceholder]='"projects.form.placeholder.time" | transloco: {
                                                             date: endDateExample | dateFormat: "time"
                                                          }'/>
-                                <app-form-field-error [errors]='endDateTime.errors'
-                                                      [invalid]='FormHelper.invalid(endDateTime)'
-                                                      translationPrefix='projects.form.error.end-datetime'/>
+                                <app-field-error [field]='form.endDateTime' translationPrefix='projects.form.error.end-datetime'/>
                             </div>
                         </div>
-                        <app-form-field-error [errors]='form.errors'
-                                              [invalid]='FormHelper.invalid(form) && beginDateTime.valid && endDateTime.valid'
-                                              translationPrefix='projects.form.error.date-range'/>
+                        @if (form.beginDateTime().valid() && form.endDateTime().valid()) {
+                            <app-field-error [field]='form' translationPrefix='projects.form.error.date-range'/>
+                        }
                         <div class='flex pt-6 justify-between'>
                             <p-button
                                     (onClick)='navigateToRedirectUri()'
@@ -63,7 +57,7 @@
                                     text
                                     rounded/>
                             <p-button
-                                    (onClick)='FormHelper.isFormValid(form) ? activateCallback(2) : undefined'
+                                    (onClick)='isFormValid(form) ? activateCallback(2) : undefined'
                                     [label]='uiFacade.tinyScreen() ? "" : "global.actions.next" | transloco'
                                     rounded
                                     outlined
@@ -86,14 +80,13 @@
                             <label for='select-all'>{{ 'projects.options.select-all' | transloco }}</label>
                             <p-checkbox binary
                                         (onChange)='selectAll($event)'
-                                        [(ngModel)]='allSelected'
-                                        [indeterminate]='allSelected === undefined'
+                                        [formField]='allSelectedForm'
+                                        [indeterminate]='allSelected() === undefined'
                                         inputId='select-all'/>
                         </div>
                         <p-divider/>
-                        <div [formGroup]='optionsForm'>
+                        <div>
                             @for (option of facade.projectOptionsMetadata(); track option.value) {
-                                @let control = getOptionControl(option.value);
                                 <div class='field'>
                                     <div class='switch-field option-field'>
                                         <label [for]='option.value'>
@@ -101,24 +94,21 @@
                                             {{ option.ask }}
                                             <b> ({{ option.label }})</b>
                                         </label>
-                                        <p-checkbox [formControl]='control'
+                                        <p-checkbox [formField]='optionsForm[option.value]'
                                                     binary
                                                     [inputId]='option.value'/>
                                     </div>
-                                    <app-form-field-error [errors]='control.errors'
-                                                          [invalid]='FormHelper.invalid(control)'
-                                                          translationPrefix='projects.form.error.options'/>
                                 </div>
                                 @if (!$last) {
                                     <p-divider/>
                                 }
                             }
                         </div>
-                        @if (optionsForm.hasError('preRequiredOptions')) {
+                        @let missingPreRequired = optionsForm().getError('preRequiredOptions');
+                        @if (missingPreRequired) {
                             <p-message severity='error'
                                        variant='simple'>{{
-                                    'projects.form.error.options.preRequiredOptions' | transloco:
-                                        optionsForm.getError('preRequiredOptions')
+                                    'projects.form.error.options.preRequiredOptions' | transloco: missingPreRequired
                                 }}
                             </p-message>
                         }

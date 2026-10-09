@@ -1,23 +1,31 @@
-import { Component, inject, OnDestroy } from '@angular/core'
-import { GenericFormComponent } from '@shared/ui/base/generic-form.component'
+import { Component, computed, inject, linkedSignal, OnDestroy, signal, Signal, WritableSignal } from '@angular/core'
+import { BaseFormComponent } from '@shared/ui/base/base-form.component'
 import { ProjectModel } from '@shared/models/model/project.model'
-import { ProjectDto } from '@pages/projects/data/dto/project.dto'
 import { ProjectFacade } from '@pages/projects/data/state/project/project.facade'
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
+import { FieldTree, form, FormField } from '@angular/forms/signals'
+import {
+    createProjectForm,
+    createProjectOptionsForm,
+    ProjectFormModel,
+    ProjectOptionsFormModel,
+    selectedOptionsState,
+    toProjectDto,
+    toProjectFormModel,
+    toProjectOptionsFormModel,
+    withAllOptions,
+} from '@pages/projects/project-form/project.form'
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
-import { RegistryValidators } from '@shared/helpers/registry.validator'
 import { combineLatest, filter, map, Observable, tap } from 'rxjs'
+import { ProjectDto } from '@pages/projects/data/dto/project.dto'
 import { ProjectOptionModel } from '@shared/models/model/project-option.model'
 import { ArrayHelper } from '@shared/helpers/array.helper'
-import { SelectItem } from 'primeng/api'
-import { FormHelper } from '@shared/helpers/form.helper'
 import { Checkbox, CheckboxChangeEvent } from 'primeng/checkbox'
 import { GenericHelper } from '@shared/helpers/generic.helper'
 import { Step, StepItem, StepPanel, Stepper } from 'primeng/stepper'
 import { Button } from 'primeng/button'
 import {TranslocoPipe} from '@jsverse/transloco'
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
-import { FormFieldErrorComponent } from '@shared/ui/common/form-field-error/form-field-error.component'
+import { FieldErrorComponent } from '@shared/ui/common/field-error/field-error.component'
 import { DateTimeFieldComponent } from '@shared/ui/common/date-time-field/date-time-field.component'
 import { RegistryRequiredDirective } from '@shared/directives/registry-required.directive'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
@@ -29,7 +37,6 @@ import { FormButtonPipe } from '@shared/helpers/pipe/form-button.pipe'
 import { ProgressSpinner } from 'primeng/progressspinner'
 import { FormTitlePipe } from '@shared/helpers/pipe/form-title.pipe'
 import { FormIconPipe } from '@shared/helpers/pipe/form-icon.pipe'
-import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
 
 /**
  * Purpose: Page with the form to create or edit a project.
@@ -46,8 +53,8 @@ import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enu
         Button,
         TranslocoPipe,
         PluralTranslationPipe,
-        ReactiveFormsModule,
-        FormFieldErrorComponent,
+        FormField,
+        FieldErrorComponent,
         DateTimeFieldComponent,
         RegistryRequiredDirective,
         DateFormatPipe,
@@ -56,7 +63,6 @@ import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enu
         Divider,
         ProjectOptionIconPipe,
         Message,
-        FormsModule,
         FormButtonPipe,
         ProgressSpinner,
         FormTitlePipe,
@@ -65,24 +71,26 @@ import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enu
     templateUrl: './project-form.page.html',
     styleUrl: './project-form.page.css',
 } )
-export class ProjectFormPage extends GenericFormComponent<ProjectModel, ProjectDto> implements OnDestroy {
+export class ProjectFormPage extends BaseFormComponent implements OnDestroy {
     protected readonly facade: ProjectFacade = inject( ProjectFacade )
 
-    protected readonly form: FormGroup
-    protected readonly optionsForm: FormGroup = this.formBuilder.group( {} )
+    protected readonly availableOptions: WritableSignal<ProjectOptionModel[]> = signal( [] )
+    protected readonly model: WritableSignal<ProjectFormModel> = signal( toProjectFormModel() )
+    protected readonly form: FieldTree<ProjectFormModel> = createProjectForm( this.model )
+    protected readonly optionsModel: WritableSignal<ProjectOptionsFormModel> = signal( {} )
+    protected readonly optionsForm: FieldTree<ProjectOptionsFormModel> = createProjectOptionsForm( this.optionsModel, this.availableOptions )
+    protected readonly allSelected: Signal<boolean | undefined> = computed( (): boolean | undefined => selectedOptionsState( this.optionsModel() ) )
+    protected readonly allSelectedModel: WritableSignal<boolean> = linkedSignal( (): boolean => this.allSelected() === true )
+    protected readonly allSelectedForm: FieldTree<boolean> = form( this.allSelectedModel )
     protected readonly nextNavigation: RegistryRouteEnum = RegistryRouteEnum.PROJECTS
-    protected allSelected: boolean | undefined = false
     protected activeTab: number = 1
 
     public constructor () {
         super()
 
-        this.form = this.initForm()
-
         this.loadData()
 
         this.handleLoadedElement()
-        this.handleOptionsChange()
     }
 
     public ngOnDestroy (): void {
@@ -98,74 +106,33 @@ export class ProjectFormPage extends GenericFormComponent<ProjectModel, ProjectD
         }
     }
 
-    protected initForm (): FormGroup {
-        return this.formBuilder.group( {
-            name: this.formBuilder.control(
-                undefined,
-                [ Validators.required, RegistryValidators.nonBlank(), Validators.maxLength( 150 ) ],
-            ),
-            beginDateTime: this.formBuilder.control( undefined, [ RegistryValidators.dateRequiredForTime() ] ),
-            endDateTime: this.formBuilder.control( undefined, [ RegistryValidators.dateRequiredForTime() ] ),
-        }, {
-            validators: [ RegistryValidators.beginDateBeforeEndDate( 'beginDateTime', 'endDateTime' ) ],
-        } )
-    }
-
     protected handleLoadedElement (): void {
         this.subscriptions.add(
             combineLatest( [ this.facade.project$, this.facade.projectOptionsMetadata$ ] ).pipe(
                 filter( ([ , options ]: [ ProjectModel | undefined, ProjectOptionModel[] ]): boolean =>
                     !ArrayHelper.isNullOrEmpty( options ),
                 ),
-                map( ([ project, options ]: [ ProjectModel | undefined, ProjectOptionModel[] ]): void => {
-                    this.addOptionsFieldIfNeeded( options )
-                    this.fillForm( project )
-                } ),
+                map( ([ project, options ]: [ ProjectModel | undefined, ProjectOptionModel[] ]): void =>
+                    this.fillForm( project, options ),
+                ),
             ).subscribe(),
         )
     }
 
-    private addOptionsFieldIfNeeded (options: ProjectOptionModel[]): void {
-        options.forEach( (option: ProjectOptionModel): void => {
-            if (this.optionsForm.get( option.value )) return
-            this.optionsForm.addControl( option.value, this.formBuilder.control( false ) )
-        } )
-        this.optionsForm.addValidators( RegistryValidators.preRequiredOptions( options ) )
-    }
-
-    private handleOptionsChange (): void {
-        this.subscriptions.add(
-            this.optionsForm.valueChanges.pipe(
-                tap( (options: object): void => {
-                    const selectableOptions: boolean[] = Object.values( options )
-                    const selectedOptions: number = selectableOptions.filter( (active: boolean): boolean => active ).length
-                    this.allSelected = selectedOptions === 0 ? false : selectedOptions === selectableOptions.length ? true : undefined
-                } ),
-            ).subscribe(),
-        )
-    }
-
-    protected fillForm (element: ProjectModel | undefined): void {
-        if (!element) return
-
-        this.name.patchValue( element.name )
-        this.beginDateTime.patchValue( element.begin )
-        this.endDateTime.patchValue( element.end )
-        element.options?.forEach( (option: SelectItem<ProjectOptionEnum>): void =>
-            this.getOptionControl( option.value ).patchValue( true ),
-        )
+    private fillForm ( project: ProjectModel | undefined, options: ProjectOptionModel[] ): void {
+        this.availableOptions.set( options )
+        this.optionsModel.set( toProjectOptionsFormModel( options, project?.options ) )
+        if (project) this.model.set( toProjectFormModel( project ) )
     }
 
     protected submit (): void {
-        if (!FormHelper.isFormValid( this.form ) || !FormHelper.isFormValid( this.optionsForm )) {
-            this.logInvalidForm( {
-                ...this.form.value,
-                ...this.optionsForm.value,
-            } )
+        const informationValid: boolean = this.isFormValid( this.form )
+        if (!this.isFormValid( this.optionsForm ) || !informationValid) {
+            this.logInvalidForm( { ...this.model(), options: this.optionsModel() } )
             return
         }
 
-        const dto: ProjectDto = this.buildDto()
+        const dto: ProjectDto = toProjectDto( this.model(), this.optionsModel() )
         const observable: Observable<unknown> =
             this.facade.project()
             ? this.facade.updateProject( this.facade.project()!.id!, dto )
@@ -189,43 +156,11 @@ export class ProjectFormPage extends GenericFormComponent<ProjectModel, ProjectD
         )
     }
 
-    protected buildDto (): ProjectDto {
-        const optionIds: string[] = Object
-            .keys( this.optionsForm.controls )
-            .filter( (key: string): boolean => this.getOptionControl( key as string ).value )
-            .map( (key: string): string => key as string )
-
-        return {
-            name: this.name.value,
-            begin: this.beginDateTime.value,
-            end: this.endDateTime.value,
-            options: optionIds,
-        }
-    }
-
-    protected selectAll (project: CheckboxChangeEvent): void {
-        this.facade.projectOptionsMetadata()?.forEach( (option: SelectItem<ProjectOptionEnum>): void => {
-            this.getOptionControl( option.value ).patchValue( project.checked )
-        } )
+    protected selectAll ( event: CheckboxChangeEvent ): void {
+        this.optionsModel.update( (options: ProjectOptionsFormModel): ProjectOptionsFormModel => withAllOptions( options, event.checked ) )
     }
 
     protected get idParam (): string | undefined {
         return this.route.snapshot.params['projectId']
-    }
-
-    protected get name (): FormControl {
-        return this.form.get( 'name' ) as FormControl
-    }
-
-    protected get beginDateTime (): FormControl {
-        return this.form.get( 'beginDateTime' ) as FormControl
-    }
-
-    protected get endDateTime (): FormControl {
-        return this.form.get( 'endDateTime' ) as FormControl
-    }
-
-    protected getOptionControl (option: string): FormControl {
-        return this.optionsForm.get( option ) as FormControl
     }
 }

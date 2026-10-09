@@ -145,10 +145,10 @@ export class RegistrySchemas {
         } )
     }
 
-    public static preRequiredOptions (path: SchemaPath<Record<string, boolean>>, options: ProjectOptionModel[]): void {
+    public static preRequiredOptions (path: SchemaPath<Record<string, boolean>>, options: () => ProjectOptionModel[]): void {
         validate( path, (ctx: FieldContext<Record<string, boolean>>): RegistryError | null => {
             const selected: Record<string, boolean> = ctx.value()
-            const missing: RegistryError | undefined = RegistrySchemas.firstMissingPreRequired( selected, options )
+            const missing: RegistryError | undefined = RegistrySchemas.firstMissingPreRequired( selected, options() )
             return missing ?? null
         } )
     }
