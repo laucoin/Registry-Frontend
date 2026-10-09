@@ -1,22 +1,26 @@
 import { Component, inject, OnDestroy, signal, WritableSignal } from '@angular/core'
 import {ActivityFacade} from '@pages/projects/[projectId]/configuration/activities/data/state/activity.facade'
-import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidatorFn, Validators} from '@angular/forms'
-import {RegistryValidators} from '@shared/helpers/registry.validator'
+import { FieldTree, FormField } from '@angular/forms/signals'
 import {ActivityDto} from '@pages/projects/[projectId]/configuration/activities/data/dto/activity.dto'
+import {
+    ActivityFormModel,
+    createActivityForm,
+    toActivityDto,
+    toActivityFormModel,
+} from '@pages/projects/[projectId]/configuration/activities/activity-form/activity.form'
+import {CustomDatetimeModel} from '@shared/models/model/custom-datetime.model'
 import {Button} from 'primeng/button'
 import {CardModule} from 'primeng/card'
 import {DividerModule} from 'primeng/divider'
 import {FormComponent} from '@shared/ui/common/form/form.component'
-import {FormFieldErrorComponent} from '@shared/ui/common/form-field-error/form-field-error.component'
+import {FieldErrorComponent} from '@shared/ui/common/field-error/field-error.component'
 import {InputTextModule} from 'primeng/inputtext'
 import {TranslocoPipe} from '@jsverse/transloco'
-import {FormHelper} from '@shared/helpers/form.helper'
 import {ActivityModel} from '@shared/models/model/activity.model'
 import {RegistryRequiredDirective} from '@shared/directives/registry-required.directive'
 import {ProjectModel} from '@shared/models/model/project.model'
-import {DateHelper} from '@shared/helpers/date.helper'
 import {Textarea} from 'primeng/textarea'
-import {GenericFormComponent} from '@shared/ui/base/generic-form.component'
+import {BaseFormComponent} from '@shared/ui/base/base-form.component'
 import {withLoading} from '@shared/helpers/rx.helper'
 import {DurationFieldComponent} from '@shared/ui/common/duration-field/duration-field.component'
 import {
@@ -41,11 +45,10 @@ import {FormIconPipe} from '@shared/helpers/pipe/form-icon.pipe'
         CardModule,
         DividerModule,
         FormComponent,
-        FormFieldErrorComponent,
-        FormsModule,
+        FieldErrorComponent,
         InputTextModule,
         TranslocoPipe,
-        ReactiveFormsModule,
+        FormField,
         RegistryRequiredDirective,
         Textarea,
         DurationFieldComponent,
@@ -59,16 +62,19 @@ import {FormIconPipe} from '@shared/helpers/pipe/form-icon.pipe'
     templateUrl: './activity-form.page.html',
     styleUrl: './activity-form.page.css',
 })
-export class ActivityFormPage extends GenericFormComponent<ActivityModel, ActivityDto> implements OnDestroy {
+export class ActivityFormPage extends BaseFormComponent implements OnDestroy {
     protected readonly facade: ActivityFacade = inject(ActivityFacade)
 
-    protected readonly form: FormGroup
     protected readonly activity: WritableSignal<ActivityModel | undefined> = signal(undefined)
+    protected readonly contextProject: WritableSignal<ProjectModel | undefined> = signal(undefined)
+    protected readonly model: WritableSignal<ActivityFormModel> = signal(toActivityFormModel())
+    protected readonly form: FieldTree<ActivityFormModel> = createActivityForm(this.model, {
+        project: this.contextProject,
+        formatDate: (date: CustomDatetimeModel): string | undefined => this.datePipe.transform(date),
+    })
 
     public constructor() {
         super()
-
-        this.form = this.initForm()
 
         this.loadData()
 
@@ -88,31 +94,6 @@ export class ActivityFormPage extends GenericFormComponent<ActivityModel, Activi
         }
     }
 
-    protected initForm(): FormGroup {
-        return this.formBuilder.group({
-            name: this.formBuilder.control(
-                undefined,
-                [Validators.required, Validators.maxLength(150), RegistryValidators.nonBlank()],
-            ),
-            description: this.formBuilder.control(undefined, [Validators.maxLength(2000)]),
-            duration: this.formBuilder.control(undefined, []),
-            allowedParticipants: this.formBuilder.control(undefined, this.allowedParticipantsValidators()),
-            beginDateTime: this.formBuilder.control(undefined, [RegistryValidators.dateRequiredForTime()]),
-            endDateTime: this.formBuilder.control(undefined, [RegistryValidators.dateRequiredForTime()]),
-        }, {
-            validators: [RegistryValidators.beginDateBeforeEndDate('beginDateTime', 'endDateTime')],
-        })
-    }
-
-    private allowedParticipantsValidators(): ValidatorFn[] {
-        return [
-            RegistryValidators.numericRange(),
-            RegistryValidators.numericRangeMin(1),
-            RegistryValidators.numericRangeMax(2147483647),
-            RegistryValidators.numericRangeBothDefined(),
-        ]
-    }
-
     protected handleLoadedElement(): void {
         if (!GenericHelper.nonNull(this.idParam)) {
             this.applyActivity(undefined)
@@ -120,24 +101,8 @@ export class ActivityFormPage extends GenericFormComponent<ActivityModel, Activi
     }
 
     private applyActivity(activity: ActivityModel | undefined): void {
-        const contextProject: ProjectModel | undefined = activity?.project || this.sessionFacade.selectedProject()
-        this.addProjectDateValidators(contextProject, this.beginDateTime)
-        this.addProjectDateValidators(contextProject, this.endDateTime)
-        this.fillForm(activity)
-    }
-
-    protected fillForm(element: ActivityModel | undefined): void {
-        if (!element) return
-
-        this.name.patchValue(element.name)
-        this.description.patchValue(element.description)
-
-        this.duration.patchValue(DateHelper.parseIsoDuration(element.duration?.value))
-
-        this.allowedParticipants.patchValue(element.allowedParticipants)
-
-        this.beginDateTime.patchValue(element.startAvailability)
-        this.endDateTime.patchValue(element.endAvailability)
+        this.contextProject.set(activity?.project || this.sessionFacade.selectedProject())
+        if (activity) this.model.set(toActivityFormModel(activity))
     }
 
     protected submit(): void {
@@ -146,27 +111,13 @@ export class ActivityFormPage extends GenericFormComponent<ActivityModel, Activi
         const editing: boolean = GenericHelper.nonNull(this.idParam)
         if (editing && !this.activity()) return
 
-        if (!FormHelper.isFormValid(this.form)) {
-            this.logInvalidForm(this.form.value)
+        if (!this.isFormValid(this.form)) {
+            this.logInvalidForm(this.model())
             return
         }
 
-        const dto: ActivityDto = this.buildDto()
+        const dto: ActivityDto = toActivityDto(this.model())
         this.save(editing ? this.facade.updateActivity(this.activity()!.id, dto) : this.facade.createActivity(dto))
-    }
-
-    protected buildDto(): ActivityDto {
-        return {
-            name: this.name.value,
-            description: this.description.value,
-            duration: this.duration.value ? DateHelper.toIsoDuration(
-                this.duration.value.hours,
-                this.duration.value.minutes,
-            ) : undefined,
-            allowedParticipants: this.allowedParticipants.value,
-            startAvailability: this.beginDateTime.value,
-            endAvailability: this.endDateTime.value,
-        }
     }
 
     protected get idParam(): string | undefined {
@@ -175,29 +126,5 @@ export class ActivityFormPage extends GenericFormComponent<ActivityModel, Activi
 
     public ngOnDestroy(): void {
         this.subscriptions.unsubscribe()
-    }
-
-    protected get name(): FormControl {
-        return this.form.get('name') as FormControl
-    }
-
-    protected get description(): FormControl {
-        return this.form.get('description') as FormControl
-    }
-
-    protected get duration(): FormControl {
-        return this.form.get('duration') as FormControl
-    }
-
-    protected get allowedParticipants(): FormControl {
-        return this.form.get('allowedParticipants') as FormControl
-    }
-
-    protected get beginDateTime(): FormControl {
-        return this.form.get('beginDateTime') as FormControl
-    }
-
-    protected get endDateTime(): FormControl {
-        return this.form.get('endDateTime') as FormControl
     }
 }
