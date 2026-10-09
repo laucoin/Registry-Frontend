@@ -47,7 +47,8 @@ describe( 'participant form', () => {
         // Assert
         expect( results[ 0 ] ).toEqual( { ...VALID, firstName: '', lastName: '', birthday: null } )
         expect( results[ 1 ] ).toMatchObject( { firstName: 'A', lastName: 'B', groups: [ { id: 'g1' } ] } )
-        expect( results[ 1 ].user!.value ).toBe( GRACE.value )
+        expect( results[ 1 ].user!.value ).toEqual( GRACE.value )
+        expect( results[ 1 ].user!.value ).not.toBe( GRACE.value )
     } )
 
     it( 'builds the dto with the user id and the default group appended once', () => {

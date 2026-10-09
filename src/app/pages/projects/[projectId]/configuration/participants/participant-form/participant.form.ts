@@ -31,7 +31,7 @@ export function toParticipantFormModel (participant?: ParticipantModel): Partici
         firstName: participant?.firstName ?? '',
         lastName: participant?.lastName ?? '',
         birthday: participant?.birthday ? new Date( participant.birthday ) : null,
-        user: participant?.user ? UserHelper.toSelectItem( participant.user ) : null,
+        user: participant?.user ? FormModelHelper.copy( UserHelper.toSelectItem( participant.user ) ) : null,
         groups: FormModelHelper.copyItems( participant?.groups ),
         beginDateTime: participant?.startAvailability ?? null,
         endDateTime: participant?.endAvailability ?? null,

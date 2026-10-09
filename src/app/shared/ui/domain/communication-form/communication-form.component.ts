@@ -27,6 +27,7 @@ import { MenuItem } from 'primeng/api'
 import { MovementModel } from '@shared/models/model/movement.model'
 import { MovementHelper } from '@shared/helpers/movement.helper'
 import { AlertModel } from '@shared/models/model/alert.model'
+import { FormModelHelper } from '@shared/helpers/form/form-model.helper'
 import { AlertHelper } from '@shared/helpers/alert.helper'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
 import { Button } from 'primeng/button'
@@ -151,8 +152,8 @@ export class CommunicationFormComponent extends BaseFormComponent implements OnI
         const movement: MovementModel | undefined = this.initialMovement()
         this.model.update( (current: CommunicationFormModel): CommunicationFormModel => ({
             ...current,
-            alert: alert ? AlertHelper.toSelectItem( alert, this.classicDatePipe ) : current.alert,
-            movement: movement ? MovementHelper.toActivitySelectItem( movement, this.classicDatePipe ) : current.movement,
+            alert: alert ? FormModelHelper.copy( AlertHelper.toSelectItem( alert, this.classicDatePipe ) ) : current.alert,
+            movement: movement ? FormModelHelper.copy( MovementHelper.toActivitySelectItem( movement, this.classicDatePipe ) ) : current.movement,
         }) )
     }
 
@@ -178,8 +179,8 @@ export class CommunicationFormComponent extends BaseFormComponent implements OnI
         this.model.set( {
             ...this.model(),
             message: element.message ?? '',
-            movement: element.movement ? MovementHelper.toActivitySelectItem( element.movement, this.classicDatePipe ) : null,
-            alert: element.alert ? AlertHelper.toSelectItem( element.alert, this.classicDatePipe ) : null,
+            movement: element.movement ? FormModelHelper.copy( MovementHelper.toActivitySelectItem( element.movement, this.classicDatePipe ) ) : null,
+            alert: element.alert ? FormModelHelper.copy( AlertHelper.toSelectItem( element.alert, this.classicDatePipe ) ) : null,
         } )
     }
 

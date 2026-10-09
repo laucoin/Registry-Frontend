@@ -1,10 +1,14 @@
 /**
  * Purpose: Builds the values a signal form model is made of.
- * Scope: Copies the items of a list so the form can tag them without touching the objects it was fed from.
- * Limits: Shallow copies only; nested objects stay shared.
+ * Scope: Deep copies the objects and lists fed to a form so it can track them without touching their source.
+ * Limits: Handles plain data only; values holding functions cannot be copied.
  */
 export class FormModelHelper {
+    public static copy<T> (value: T): T {
+        return structuredClone( value )
+    }
+
     public static copyItems<T extends object> (items: readonly T[] | undefined): T[] {
-        return (items ?? []).map( (item: T): T => ({ ...item }) )
+        return (items ?? []).map( (item: T): T => FormModelHelper.copy( item ) )
     }
 }
