@@ -23,9 +23,6 @@ import { BaseFormComponent } from '@shared/ui/base/base-form.component'
 
 interface FormApi {
     submit: () => void
-    buildDto: () => unknown
-    fillForm: (model: object) => void
-    form: { value: object, patchValue: (value: object) => void }
 }
 
 interface ModelApi {
@@ -145,7 +142,7 @@ describe( 'user and project profile forms', () => {
             // Assert
             expect( facade[ 'fetchAssignableRoles' ] ).toHaveBeenCalledTimes( 1 )
             expect( facade[ 'fetchProjectProfile' ] ).toHaveBeenCalledWith( 'pp1' )
-            expect( (page as unknown as FormApi).buildDto() ).toEqual( { role: 'CHIEF', startAccess: undefined, endAccess: undefined } )
+            expect( (page as unknown as ModelApi).model() ).toEqual( { role: 'CHIEF', beginDateTime: null, endDateTime: null } )
         } )
 
         it( 'updates the profile with the form values then goes back', () => {
@@ -203,13 +200,13 @@ describe( 'user and project profile forms', () => {
             // Arrange
             facade[ 'createProjectProfiles' ].mockReturnValue( of( { createdUserIds: [ 'u1' ], notCreatedUserIds: [] } ) )
             const page: ProjectProfileInvitationFormPage = create( ProjectProfileInvitationFormPage, ProjectProfileFacade, {} )
-            ;(page as unknown as FormApi).form.patchValue( { role: 'CHIEF', users: [ USER_DTO ] } )
+            ;(page as unknown as ModelApi).model.set( { role: 'CHIEF', beginDateTime: null, endDateTime: null, users: [ USER_DTO ] } )
 
             // Act
             ;(page as unknown as FormApi).submit()
 
             // Assert
-            expect( facade[ 'createProjectProfiles' ] ).toHaveBeenCalledWith( { userIds: [ 'u1' ], role: 'CHIEF', startAccess: null, endAccess: null } )
+            expect( facade[ 'createProjectProfiles' ] ).toHaveBeenCalledWith( { userIds: [ 'u1' ], role: 'CHIEF', startAccess: undefined, endAccess: undefined } )
             expect( back ).toHaveBeenCalledTimes( 1 )
         } )
 

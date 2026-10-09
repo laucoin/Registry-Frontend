@@ -1,12 +1,17 @@
-import { Component, OnDestroy} from '@angular/core'
+import { Component, OnDestroy, signal, WritableSignal } from '@angular/core'
 import {CardModule} from 'primeng/card'
 import {DividerModule} from 'primeng/divider'
 import {InputTextModule} from 'primeng/inputtext'
 import {PaginatorModule} from 'primeng/paginator'
 import {TranslocoPipe} from '@jsverse/transloco'
-import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms'
-import {ProjectProfilesDto} from '@pages/projects/[projectId]/configuration/profiles/data/dto/project-profiles.dto'
-import {FormFieldErrorComponent} from '@shared/ui/common/form-field-error/form-field-error.component'
+import { FieldTree, FormField } from '@angular/forms/signals'
+import {
+    createProjectProfileInvitationForm,
+    ProjectProfileInvitationFormModel,
+    toProjectProfileInvitationFormModel,
+    toProjectProfilesDto,
+} from '@pages/projects/[projectId]/configuration/profiles/project-profile-form/project-profile.form'
+import {FieldErrorComponent} from '@shared/ui/common/field-error/field-error.component'
 import {FormComponent} from '@shared/ui/common/form/form.component'
 import {GenericProjectProfileFormComponent} from '@pages/projects/[projectId]/configuration/profiles/project-profile-form/generic-project-profile-form.component'
 import {RegistryRequiredDirective} from '@shared/directives/registry-required.directive'
@@ -18,12 +23,9 @@ import {
     SelectElementsFieldComponent,
 } from '@shared/ui/common/select-elements-field/select-elements-field.component'
 import {PluralTranslationPipe} from '@shared/helpers/pipe/plural-translation.pipe'
-import {FormHelper} from '@shared/helpers/form.helper'
 import {DateFormatPipe} from '@shared/helpers/pipe/date-format.pipe'
 import {UserHelper} from '@shared/helpers/user.helper'
 import {DateTimeFieldComponent} from '@shared/ui/common/date-time-field/date-time-field.component'
-import {UserModel} from '@shared/models/model/user.model'
-import {RegistryValidators} from '@shared/helpers/registry.validator'
 
 /**
  * Purpose: Page with the form to create or edit a project profile invitation.
@@ -38,8 +40,8 @@ import {RegistryValidators} from '@shared/helpers/registry.validator'
         InputTextModule,
         PaginatorModule,
         TranslocoPipe,
-        ReactiveFormsModule,
-        FormFieldErrorComponent,
+        FormField,
+        FieldErrorComponent,
         FormComponent,
         RegistryRequiredDirective,
         SelectModule,
@@ -56,43 +58,24 @@ import {RegistryValidators} from '@shared/helpers/registry.validator'
 export class ProjectProfileInvitationFormPage extends GenericProjectProfileFormComponent implements OnDestroy {
     protected readonly UserHelper: typeof UserHelper = UserHelper
 
+    protected readonly model: WritableSignal<ProjectProfileInvitationFormModel> = signal(toProjectProfileInvitationFormModel())
+    protected readonly form: FieldTree<ProjectProfileInvitationFormModel> = createProjectProfileInvitationForm(this.model)
+
     public constructor() {
         super()
-    }
 
-    protected initForm(): FormGroup {
-        return this.formBuilder.group({
-            role: this.formBuilder.control(undefined, Validators.required),
-            beginDateTime: this.formBuilder.control(undefined, [RegistryValidators.dateRequiredForTime()]),
-            endDateTime: this.formBuilder.control(undefined, [RegistryValidators.dateRequiredForTime()]),
-            users: this.formBuilder.control([], [Validators.required]),
-        }, {
-            validators: [RegistryValidators.beginDateBeforeEndDate('beginDateTime', 'endDateTime')],
-        })
-    }
-
-    protected fillForm(): void {
-        // do nothing
+        this.loadData()
     }
 
     protected submit(): void {
-        if (!FormHelper.isFormValid(this.form)) {
-            this.logInvalidForm(this.form.value)
+        if (!this.isFormValid(this.form)) {
+            this.logInvalidForm(this.model())
             return
         }
 
         if (this.saving()) return
 
-        this.save(this.facade.createProjectProfiles(this.buildDto()))
-    }
-
-    protected buildDto(): ProjectProfilesDto {
-        return {
-            userIds: this.users.value.map((user: UserModel): string => user.id),
-            role: this.role.value,
-            startAccess: this.beginDateTime.value,
-            endAccess: this.endDateTime.value,
-        }
+        this.save(this.facade.createProjectProfiles(toProjectProfilesDto(this.model())))
     }
 
     protected handleSearch(searched: string | undefined): void {
@@ -101,9 +84,5 @@ export class ProjectProfileInvitationFormPage extends GenericProjectProfileFormC
 
     public ngOnDestroy(): void {
         this.subscriptions.unsubscribe()
-    }
-
-    protected get users(): FormControl {
-        return this.form.get('users') as FormControl
     }
 }

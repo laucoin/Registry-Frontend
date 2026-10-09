@@ -1,11 +1,17 @@
-import { Component, OnDestroy} from '@angular/core'
-import {FormGroup, ReactiveFormsModule, Validators} from '@angular/forms'
-import {ProjectProfileDto} from '@pages/projects/[projectId]/configuration/profiles/data/dto/project-profile.dto'
+import { Component, OnDestroy, signal, WritableSignal } from '@angular/core'
+import { FieldTree, FormField } from '@angular/forms/signals'
+import {
+    createProjectProfileForm,
+    ProjectProfileFormModel,
+    toProjectProfileDto,
+    toProjectProfileFormModel,
+} from '@pages/projects/[projectId]/configuration/profiles/project-profile-form/project-profile.form'
+import {withLoading} from '@shared/helpers/rx.helper'
+import {GenericHelper} from '@shared/helpers/generic.helper'
 import {ProjectProfileModel} from '@shared/models/model/project-profile.model'
-import {FormHelper} from '@shared/helpers/form.helper'
 import {TranslocoPipe} from '@jsverse/transloco'
 import {CardModule} from 'primeng/card'
-import {FormFieldErrorComponent} from '@shared/ui/common/form-field-error/form-field-error.component'
+import {FieldErrorComponent} from '@shared/ui/common/field-error/field-error.component'
 import {UserElementComponent} from '@pages/users/user-element/user-element.component'
 import {FormComponent} from '@shared/ui/common/form/form.component'
 import {GenericProjectProfileFormComponent} from '@pages/projects/[projectId]/configuration/profiles/project-profile-form/generic-project-profile-form.component'
@@ -14,7 +20,6 @@ import {Button} from 'primeng/button'
 import {Select, SelectModule} from 'primeng/select'
 import {DateFormatPipe} from '@shared/helpers/pipe/date-format.pipe'
 import {DateTimeFieldComponent} from '@shared/ui/common/date-time-field/date-time-field.component'
-import {RegistryValidators} from '@shared/helpers/registry.validator'
 
 /**
  * Purpose: Page with the form to create or edit a project profile edition.
@@ -26,9 +31,9 @@ import {RegistryValidators} from '@shared/helpers/registry.validator'
     imports: [
         TranslocoPipe,
         CardModule,
-        ReactiveFormsModule,
+        FormField,
         SelectModule,
-        FormFieldErrorComponent,
+        FieldErrorComponent,
         UserElementComponent,
         FormComponent,
         RegistryRequiredDirective,
@@ -40,40 +45,40 @@ import {RegistryValidators} from '@shared/helpers/registry.validator'
     templateUrl: './project-profile-edition-form.page.html',
 })
 export class ProjectProfileEditionFormPage extends GenericProjectProfileFormComponent implements OnDestroy {
-    protected initForm(): FormGroup {
-        return this.formBuilder.group({
-            role: this.formBuilder.control(undefined, Validators.required),
-            beginDateTime: this.formBuilder.control(undefined, [RegistryValidators.dateRequiredForTime()]),
-            endDateTime: this.formBuilder.control(undefined, [RegistryValidators.dateRequiredForTime()]),
-        }, {
-            validators: [RegistryValidators.beginDateBeforeEndDate('beginDateTime', 'endDateTime')],
-        })
+    protected readonly projectProfile: WritableSignal<ProjectProfileModel | undefined> = signal(undefined)
+    protected readonly model: WritableSignal<ProjectProfileFormModel> = signal(toProjectProfileFormModel())
+    protected readonly form: FieldTree<ProjectProfileFormModel> = createProjectProfileForm(this.model)
+
+    public constructor() {
+        super()
+
+        this.loadData()
     }
 
-    protected fillForm(element: ProjectProfileModel | undefined): void {
-        if (!element) return
-        this.role.patchValue(element?.role.value)
-        this.beginDateTime.patchValue(element?.startAccess)
-        this.endDateTime.patchValue(element?.endAccess)
+    protected override loadData(): void {
+        super.loadData()
+
+        if (GenericHelper.nonNull(this.idParam)) {
+            this.subscriptions.add(
+                this.facade.fetchProjectProfile(this.idParam!).pipe(
+                    withLoading(this.loading),
+                ).subscribe((profile: ProjectProfileModel): void => {
+                    this.projectProfile.set(profile)
+                    this.model.set(toProjectProfileFormModel(profile))
+                }),
+            )
+        }
     }
 
     protected submit(): void {
-        if (!FormHelper.isFormValid(this.form)) {
-            this.logInvalidForm(this.form.value)
+        if (!this.isFormValid(this.form)) {
+            this.logInvalidForm(this.model())
             return
         }
 
         if (this.saving() || this.loading() || !this.projectProfile()) return
 
-        this.save(this.facade.updateProjectProfile(this.projectProfile()!.id, this.buildDto()))
-    }
-
-    protected buildDto(): ProjectProfileDto {
-        return {
-            role: this.role.value,
-            startAccess: this.beginDateTime.value,
-            endAccess: this.endDateTime.value,
-        }
+        this.save(this.facade.updateProjectProfile(this.projectProfile()!.id, toProjectProfileDto(this.model())))
     }
 
     public ngOnDestroy(): void {
