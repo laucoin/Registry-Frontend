@@ -30,8 +30,6 @@ import {Button} from 'primeng/button'
 import {MovementDto} from '@pages/projects/[projectId]/movements/data/dto/movement.dto'
 import {MovementContentDto} from '@pages/projects/[projectId]/movements/data/dto/movement-content.dto'
 import {GenericHelper} from '@shared/helpers/generic.helper'
-import {FormControl, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms'
-import {RegistryValidators} from '@shared/helpers/registry.validator'
 import {MenuItem} from 'primeng/api'
 import {Dialog} from 'primeng/dialog'
 import {Menu} from 'primeng/menu'
@@ -71,8 +69,6 @@ import {
         ProjectOptionIconPipe,
         TruncatePipe,
         Button,
-        FormsModule,
-        ReactiveFormsModule,
         Dialog,
         Menu,
         Popover,
@@ -92,11 +88,6 @@ export class MovementElementComponent extends GenericElementComponent {
     protected readonly participantLayerActiveTab: WritableSignal<number> = signal(1)
     protected readonly participantsLayerOpened: WritableSignal<boolean> = signal(false)
     protected readonly communicationsLayerOpened: WritableSignal<boolean> = signal(false)
-
-    protected readonly message: FormControl = new FormControl(undefined, [
-        RegistryValidators.nonBlank(),
-        Validators.maxLength(250),
-    ])
 
     public readonly actionMenuVisible: InputSignal<boolean> = input(true)
     public readonly movement: InputSignal<MovementModel> = input.required()
