@@ -10,9 +10,10 @@
                                          completeOnFocus
                                          forceSelection
                                          optionLabel='label'
+                                         optionValue='self'
                                          [placeholder]='"communications.form.placeholder.movement" | transloco: { date: now | dateFormat: "datetime"}'
                                          [formField]='form.movement'
-                                         [suggestions]='facade.searchedMovementsMetadata()'
+                                         [suggestions]='movementOptions()'
                                          (keydown.enter)='submit()'
                                          (completeMethod)='handleMovementSearch($event)'>
                             <ng-template #empty>
@@ -41,9 +42,10 @@
                                          forceSelection
                                          showClear
                                          optionLabel='label'
+                                         optionValue='self'
                                          [placeholder]='"communications.form.placeholder.alert" | transloco: { date: now | dateFormat: "datetime"}'
                                          [formField]='form.alert'
-                                         [suggestions]='facade.searchedAlertsMetadata()'
+                                         [suggestions]='alertOptions()'
                                          (keydown.enter)='submit()'
                                          (completeMethod)='handleAlertSearch($event)'>
                             <ng-template #empty>

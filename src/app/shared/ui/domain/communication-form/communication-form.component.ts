@@ -27,7 +27,7 @@ import { MenuItem } from 'primeng/api'
 import { MovementModel } from '@shared/models/model/movement.model'
 import { MovementHelper } from '@shared/helpers/movement.helper'
 import { AlertModel } from '@shared/models/model/alert.model'
-import { FormModelHelper } from '@shared/helpers/form/form-model.helper'
+import { FormModelHelper, SelectableItem } from '@shared/helpers/form/form-model.helper'
 import { AlertHelper } from '@shared/helpers/alert.helper'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
 import { Button } from 'primeng/button'
@@ -90,6 +90,12 @@ export class CommunicationFormComponent extends BaseFormComponent implements OnI
     protected readonly classicDatePipe: DateFormatPipe = inject( DateFormatPipe )
     protected readonly optionPipe: ProjectOptionIconPipe = inject( ProjectOptionIconPipe )
 
+    protected readonly movementOptions: Signal<SelectableItem<MovementModel>[]> = computed(
+        (): SelectableItem<MovementModel>[] => FormModelHelper.selectable( this.facade.searchedMovementsMetadata() ),
+    )
+    protected readonly alertOptions: Signal<SelectableItem<AlertModel>[]> = computed(
+        (): SelectableItem<AlertModel>[] => FormModelHelper.selectable( this.facade.searchedAlertsMetadata() ),
+    )
     protected readonly now: Date = new Date()
     protected readonly AlertModulableFieldEnum: typeof AlertModulableFieldEnum = AlertModulableFieldEnum
 

@@ -19,7 +19,7 @@ import {
     withKind,
 } from '@pages/projects/[projectId]/movements/movement-form/movement.form'
 import {CustomDatetimeModel} from '@shared/models/model/custom-datetime.model'
-import {FormModelHelper} from '@shared/helpers/form/form-model.helper'
+import {FormModelHelper, SelectableItem} from '@shared/helpers/form/form-model.helper'
 import {Button} from 'primeng/button'
 import {CardModule} from 'primeng/card'
 import {DividerModule} from 'primeng/divider'
@@ -114,6 +114,9 @@ export class MovementFormPage extends BaseFormComponent implements OnDestroy {
         editing: (): boolean => GenericHelper.nonNull(this.idParam),
     })
 
+    protected readonly reasonOptions: Signal<SelectableItem<string>[]> = computed(
+        (): SelectableItem<string>[] => FormModelHelper.selectable( this.facade.searchedReasonAndActivityMetadata() ),
+    )
     protected readonly reasonRequired: Signal<boolean> = computed((): boolean => isReasonRequired(this.model().information))
     protected readonly isContentSelection: Signal<boolean> = computed((): boolean => isContentSelection(this.model().information))
     protected readonly interpretedMovementType: Signal<PresenceStatusEnum[]> = computed(

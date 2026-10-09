@@ -101,9 +101,10 @@
                                                  showClear
                                                  appendTo='body'
                                                  optionLabel='label'
+                                                 optionValue='self'
                                                  [placeholder]='"movements.form.placeholder.reason" | transloco'
                                                  [formField]='form.content.reason'
-                                                 [suggestions]='facade.searchedReasonAndActivityMetadata()'
+                                                 [suggestions]='reasonOptions()'
                                                  (keydown.enter)='submit()'
                                                  (completeMethod)='handleReasonsAndActivitiesSearch($event.query)'>
                                     <ng-template #empty>

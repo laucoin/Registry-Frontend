@@ -1,4 +1,4 @@
-import { Component, inject, input, InputSignal, OnDestroy, signal, WritableSignal} from '@angular/core'
+import { Component, computed, inject, input, InputSignal, OnDestroy, Signal, signal, WritableSignal} from '@angular/core'
 import {ParticipantFacade} from '@pages/projects/[projectId]/configuration/participants/data/state/participant.facade'
 import { FieldTree, FormField } from '@angular/forms/signals'
 import {
@@ -30,6 +30,7 @@ import {GroupHelper} from '@shared/helpers/group.helper'
 import {ProjectModel} from '@shared/models/model/project.model'
 import {DateFormatPipe} from '@shared/helpers/pipe/date-format.pipe'
 import {ParticipantDto} from '@pages/projects/[projectId]/configuration/participants/data/dto/participant.dto'
+import {FormModelHelper, SelectableItem} from '@shared/helpers/form/form-model.helper'
 import {BaseFormComponent} from '@shared/ui/base/base-form.component'
 import {withLoading} from '@shared/helpers/rx.helper'
 import {GenericHelper} from '@shared/helpers/generic.helper'
@@ -86,6 +87,9 @@ export class ParticipantFormComponent extends BaseFormComponent implements OnDes
     public readonly showTitle: InputSignal<boolean> = input(true)
     public readonly defaultGroup: InputSignal<GroupModel | undefined> = input()
 
+    protected readonly userOptions: Signal<SelectableItem<UserModel>[]> = computed(
+        (): SelectableItem<UserModel>[] => FormModelHelper.selectable( this.facade.searchedUsersMetadata() ),
+    )
     protected readonly previousFirstName: WritableSignal<string | undefined> = signal(undefined)
     protected readonly previousLastName: WritableSignal<string | undefined> = signal(undefined)
 

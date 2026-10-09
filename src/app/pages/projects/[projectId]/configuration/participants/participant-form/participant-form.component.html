@@ -16,13 +16,14 @@
                                  forceSelection
                                  showClear
                                  optionLabel='label'
+                                 optionValue='self'
                                  [placeholder]='"participants.form.placeholder.user" | transloco'
                                  [formField]='form.user'
-                                 [suggestions]='facade.searchedUsersMetadata()'
+                                 [suggestions]='userOptions()'
                                  (keydown.enter)='submit()'
                                  (onClear)='handleUserSelection(undefined)'
                                  (onUnselect)='handleUserSelection(undefined)'
-                                 (onSelect)='handleUserSelection($event.value)'
+                                 (onSelect)='handleUserSelection($event.value.self)'
                                  (completeMethod)='handleUserSearch($event)'>
                     <ng-template #empty>
                         <span>{{ 'participants.form.user.empty-search' | transloco }}</span>

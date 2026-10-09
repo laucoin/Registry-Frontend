@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { FormModelHelper } from '@shared/helpers/form/form-model.helper'
+import { FormModelHelper, SelectableItem } from '@shared/helpers/form/form-model.helper'
 
 describe( 'FormModelHelper', () => {
     it( 'copies every item deeply so the source objects stay untouched', () => {
@@ -38,5 +38,17 @@ describe( 'FormModelHelper', () => {
         // Assert
         expect( copy ).toEqual( source )
         expect( copy.value.items ).not.toBe( source.value.items )
+    } )
+
+    it( 'exposes each option as its own selected value', () => {
+        // Arrange
+        const options: { label: string, value: number }[] = [ { label: 'one', value: 1 } ]
+
+        // Act
+        const selectable: SelectableItem<number>[] = FormModelHelper.selectable( options )
+
+        // Assert
+        expect( selectable[ 0 ].self ).toBe( options[ 0 ] )
+        expect( selectable[ 0 ].label ).toBe( 'one' )
     } )
 } )
