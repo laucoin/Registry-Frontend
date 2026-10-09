@@ -13,7 +13,7 @@ import { MovementReasonMapper } from '@shared/mappers/movement-reason.mapper'
 export class MovementMapper {
     public static toModel (dto: MovementResponseDto): MovementModel {
         return {
-            ...GenericProjectMapper.toModel( dto ),
+            ...GenericProjectMapper.toOptionalModel( dto ),
             dateTime: dto.dateTime,
             type: dto.type,
             reason: dto.reason ? MovementReasonMapper.toModel( dto.reason ) : undefined,

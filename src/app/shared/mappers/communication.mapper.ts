@@ -12,7 +12,7 @@ import { MovementMapper } from '@shared/mappers/movement.mapper'
 export class CommunicationMapper {
     public static toModel (dto: CommunicationResponseDto): CommunicationModel {
         return {
-            ...GenericProjectMapper.toModel( dto ),
+            ...GenericProjectMapper.toOptionalModel( dto ),
             dateTime: dto.dateTime,
             message: dto.message,
             movement: dto.movement ? MovementMapper.toModel( dto.movement ) : undefined,

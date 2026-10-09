@@ -11,7 +11,7 @@ import { GenericProjectMapper } from '@shared/mappers/generic-project.mapper'
 export class AlertMapper {
     public static toModel (dto: AlertResponseDto): AlertModel {
         return {
-            ...GenericProjectMapper.toModel( dto ),
+            ...GenericProjectMapper.toOptionalModel( dto ),
             dateTime: dto.dateTime,
             title: dto.title,
             status: dto.status,

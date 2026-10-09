@@ -218,4 +218,16 @@ describe( 'mappers', () => {
         expect( [ project.creation, project.lastEdition, user.creation, user.lastEdition ] ).toEqual( [ undefined, undefined, undefined, undefined ] )
         expect( project.name ).toBe( PROJECT.name )
     } )
+
+    it( 'maps a participant whose groups only carry a name, an id and a visibility', () => {
+        // Arrange
+        const lightGroup: object = { id: 'g1', name: 'Wolves', visible: true }
+        const dto: ParticipantResponseDto = { ...PARTICIPANT, groups: [ lightGroup as never ] }
+
+        // Act
+        const model: ReturnType<typeof ParticipantMapper.toModel> = ParticipantMapper.toModel( dto )
+
+        // Assert
+        expect( model.groups?.[ 0 ] ).toMatchObject( { id: 'g1', name: 'Wolves', project: undefined, creation: undefined } )
+    } )
 } )
