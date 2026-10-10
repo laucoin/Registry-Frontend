@@ -4,12 +4,16 @@
             {{ 'global.error.title' | transloco }}
         </sgdf-page-title>
         <sgdf-callout class="w-full" variant="danger" role="alert"
-                      [title]="!!error().summary ? error().summary : 'global.error.unknown.title' | transloco">
+                      [title]="!!error().summary ? error().summary : 'global.notifications.UNKNOWN_ERROR.title' | transloco">
             <div class="flex flex-col gap-2">
                 <small class="uppercase text-xs opacity-80">{{ 'global.error.cause' | transloco }}</small>
-                @if (error().detail; as detail) {
-                    <span>{{ detail }}</span>
-                }
+                <span>
+                    @if (error().detail; as detail) {
+                        {{ detail }}
+                    } @else {
+                        {{ 'global.notifications.UNKNOWN_ERROR.message' | transloco }}
+                    }
+                </span>
             </div>
         </sgdf-callout>
         <sgdf-button variant="primary" size="large" (click)="retry()">

@@ -51,7 +51,7 @@ describe( 'NotificationStore', () => {
         expect( received ).toEqual( [] )
     } )
 
-    it( 'fills a notification that has neither summary nor detail with the unknown error text', () => {
+    it( 'fills a notification that has neither summary nor detail with the unknown error title and detail', () => {
         // Arrange
         const store: InstanceType<typeof NotificationStore> = TestBed.inject( NotificationStore )
         const received: NotificationModel[] = []
@@ -61,7 +61,8 @@ describe( 'NotificationStore', () => {
         store.notify( { severity: 'error', summary: ' ', detail: '' } )
 
         // Assert
-        expect( received[ 0 ].detail ).toBe( 't:global.notifications.UNKNOWN_ERROR' )
+        expect(received[0].summary).toBe('t:global.notifications.UNKNOWN_ERROR.title')
+        expect(received[0].detail).toBe('t:global.notifications.UNKNOWN_ERROR.message')
     } )
 
     it( 'forwards a normal notification untouched', () => {

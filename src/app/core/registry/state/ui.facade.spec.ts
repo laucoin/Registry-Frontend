@@ -144,7 +144,7 @@ describe('UiFacade', () => {
 		expect(received).toEqual([])
 	})
 
-	it('fills an empty notification with the unknown error text', () => {
+	it('fills an empty notification with the unknown error title and detail', () => {
 		// Arrange
 		const message: NotificationModel = { severity: 'error', summary: ' ', detail: '' }
 
@@ -152,7 +152,8 @@ describe('UiFacade', () => {
 		facade.notify(message)
 
 		// Assert
-		expect(received[0].detail).toBe('t:global.notifications.UNKNOWN_ERROR')
+		expect(received[0].summary).toBe('t:global.notifications.UNKNOWN_ERROR.title')
+		expect(received[0].detail).toBe('t:global.notifications.UNKNOWN_ERROR.message')
 	})
 
 	it('forwards a normal notification as it is', () => {

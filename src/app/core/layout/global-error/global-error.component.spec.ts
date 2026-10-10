@@ -38,16 +38,15 @@ describe('GlobalErrorComponent', () => {
 		expect(fixture.nativeElement.querySelector('sgdf-callout').getAttribute('variant')).toBe('danger')
 	})
 
-	it('should omit the detail the error does not provide', () => {
+	it('should fall back to the unknown error message when the error has no detail', () => {
 		// Arrange
 		const error: NotificationModel = { summary: 'Down' }
 
 		// Act
-		const page: HTMLElement = create(error)
+		const text: string = create(error).querySelector('sgdf-callout')!.textContent ?? ''
 
 		// Assert
-		expect(page.querySelector('sgdf-callout')!.getAttribute('title')).toBe('Down')
-		expect(page.querySelector('sgdf-callout span')).toBeNull()
+		expect(text).toContain('global.notifications.UNKNOWN_ERROR.message')
 	})
 
 	it('should fall back to the unknown error title when the error has no title', () => {
@@ -58,7 +57,7 @@ describe('GlobalErrorComponent', () => {
 		const title: string | null = create(error).querySelector('sgdf-callout')!.getAttribute('title')
 
 		// Assert
-		expect(title).toContain('global.error.unknown.title')
+		expect(title).toContain('global.notifications.UNKNOWN_ERROR.title')
 	})
 
 	it('should reload the application when the retry button is clicked', () => {

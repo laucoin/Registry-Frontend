@@ -20,7 +20,7 @@ export const NotificationStore = signalStore(
                 return
             }
             const empty: boolean = StringHelper.isNullOrBlank( message.detail ) && StringHelper.isNullOrBlank( message.summary )
-            store.messages.next( empty ? { ...message, detail: translateService.translate( 'global.notifications.UNKNOWN_ERROR' ) } : message )
+            store.messages.next( empty ? { ...message, summary: translateService.translate( 'global.notifications.UNKNOWN_ERROR.title' ), detail: translateService.translate( 'global.notifications.UNKNOWN_ERROR.message' ) } : message )
         },
         messages$: (): Observable<NotificationModel> => store.messages.asObservable(),
         confirm: (confirmation: ConfirmationModel): void => store.confirmations.next( confirmation ),

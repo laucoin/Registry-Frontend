@@ -289,7 +289,10 @@
         "title": "🥴 Serveur indisponible",
         "message": "Fichtre ! Le serveur semble être indisponible 😭. Recharges la page, réessayes plus tard ou contactes l’administrateur."
       },
-      "UNKNOWN_ERROR": "Une erreur inattendue est survenue, nous travaillons à la résoudre 🛠️. Si l’erreur persiste n’hésites pas à nous remonter cette erreur.",
+      "UNKNOWN_ERROR": {
+        "title": "🛠️ Erreur inattendue",
+        "message": "Une erreur inattendue est survenue, nous travaillons à la résoudre. Si l’erreur persiste n’hésites pas à nous remonter cette erreur."
+      },
       "OFFLINE": {
         "title": "📡 Hors-ligne",
         "message": "Ta connexion est peut-être faible 🐢, rapproches de la box. Si tu es en 4G, rapproches toi d’une fenêtre. Si tu es en 3G, rapproches toi d’un autre siècle."
@@ -320,9 +323,6 @@
       "title": "L'application est momentanément inaccessible",
       "description": "Une erreur empêche l'application de fonctionner. Vous pouvez réessayer ; si le problème persiste, contactez le support.",
       "cause": "Cause de l'erreur",
-      "unknown": {
-        "title": "Erreur inconnue"
-      },
       "retry": "Réessayer"
     }
   },
