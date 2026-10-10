@@ -30,7 +30,7 @@ describe('LoginPage', () => {
 		const page: HTMLElement = create(null, null)
 
 		// Act
-		const title: string | undefined = page.querySelector('h1')?.textContent?.trim()
+		const title: string | undefined = page.querySelector('sgdf-page-title')?.textContent?.trim()
 
 		// Assert
 		expect(title).toContain('privacy.title')

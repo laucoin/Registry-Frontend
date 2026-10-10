@@ -67,7 +67,7 @@ describe('MenuService', () => {
 		const menus: MenuItemModel[] = service.appMenus()
 
 		// Assert
-		expect(labels(menus)).toEqual(['global.menu.projects'])
+		expect(labels(menus)).toEqual(['navbar.app.projects'])
 	})
 
 	it('should show the users menu with the users authority', () => {
@@ -78,7 +78,7 @@ describe('MenuService', () => {
 		const menus: MenuItemModel[] = service.appMenus()
 
 		// Assert
-		expect(labels(menus)).toEqual(['global.menu.projects', 'global.menu.users'])
+		expect(labels(menus)).toEqual(['navbar.app.projects', 'navbar.app.users'])
 	})
 
 	it('should expose no project menu without a selected project', () => {
@@ -105,7 +105,7 @@ describe('MenuService', () => {
 		const menus: MenuItemModel[] = service.projectMenus()
 
 		// Assert
-		expect(labels(menus)).toEqual(['global.menu.project-home', 'global.menu.movements'])
+		expect(labels(menus)).toEqual(['navbar.project.home', 'navbar.project.movements'])
 		expect(menus[1]!.url).toBe('projects/p1/movements')
 	})
 
@@ -124,8 +124,8 @@ describe('MenuService', () => {
 		const withOption: string[] = labels(service.projectMenus())
 
 		// Assert
-		expect(withoutOption).not.toContain('global.menu.alerts')
-		expect(withOption).toContain('global.menu.alerts')
+		expect(withoutOption).not.toContain('navbar.project.alerts')
+		expect(withOption).toContain('navbar.project.alerts')
 	})
 
 	it('should keep only the allowed entries of the configuration menu', () => {
@@ -139,10 +139,10 @@ describe('MenuService', () => {
 
 		// Act
 		const configuration: MenuItemModel | undefined = service.projectMenus()
-			.find((menu: MenuItemModel): boolean => menu.label == 'global.menu.configuration')
+			.find((menu: MenuItemModel): boolean => menu.label == 'navbar.project.configuration.title')
 
 		// Assert
-		expect(labels(configuration?.items ?? [])).toEqual(['global.menu.groups'])
+		expect(labels(configuration?.items ?? [])).toEqual(['navbar.project.configuration.groups'])
 	})
 
 	it('should drop the configuration menu when none of its entries is allowed', () => {
@@ -155,7 +155,7 @@ describe('MenuService', () => {
 		const menus: string[] = labels(service.projectMenus())
 
 		// Assert
-		expect(menus).not.toContain('global.menu.configuration')
+		expect(menus).not.toContain('navbar.project.configuration.title')
 	})
 
 	describe('activeMenuUrl', () => {

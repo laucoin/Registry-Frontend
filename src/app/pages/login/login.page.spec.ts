@@ -1,62 +1,59 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing'
+import { provideRouter } from '@angular/router'
 import { RegistryConfig } from '@core/config/registry.config'
+import { SessionFacade } from '@core/registry/state/session.facade'
 import { TranslocoTestingModule } from '@jsverse/transloco'
-import { PrivacyPage } from '@pages/privacy/privacy.page'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { LoginPage } from '@pages/login/login.page'
+import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
 
 describe('LoginPage', () => {
-	function create(providerName: string | null, providerAddress: string | null): HTMLElement {
-		RegistryConfig.config = {
-			application: {
-				organization: 'Org',
-				creator: { name: 'Creator', email: 'creator@example.org' },
-			},
-		} as typeof RegistryConfig.config
-		RegistryConfig.environment = { hosting: { providerName, providerAddress } } as typeof RegistryConfig.environment
-		TestBed.configureTestingModule({
-			imports: [TranslocoTestingModule.forRoot({ langs: { fr: {} }, translocoConfig: { defaultLang: 'fr' } })],
-		})
-		const fixture: ComponentFixture<PrivacyPage> = TestBed.createComponent(PrivacyPage)
-		fixture.detectChanges()
-		return fixture.nativeElement as HTMLElement
-	}
+	let login: Mock<() => void>
+	let fixture: ComponentFixture<LoginPage>
 
 	beforeEach(() => {
 		TestBed.resetTestingModule()
+		login = vi.fn()
+		RegistryConfig.config = {
+			application: { name: 'Registry', organization: 'Org' },
+		} as typeof RegistryConfig.config
+		TestBed.configureTestingModule({
+			imports: [TranslocoTestingModule.forRoot({ langs: { fr: {} }, translocoConfig: { defaultLang: 'fr' } })],
+			providers: [provideRouter([]), { provide: SessionFacade, useValue: { login } }],
+		})
+		fixture = TestBed.createComponent(LoginPage)
+		fixture.detectChanges()
 	})
 
-	it('renders the document with its title', () => {
+	it('renders the login title', () => {
 		// Arrange
-		const page: HTMLElement = create(null, null)
+		const page: HTMLElement = fixture.nativeElement
 
 		// Act
-		const title: string | undefined = page.querySelector('h1')?.textContent?.trim()
+		const title: string | undefined = page.querySelector('sgdf-page-title')?.textContent?.trim()
 
 		// Assert
-		expect(title).toContain('privacy.title')
+		expect(title).toContain('login.title')
 	})
 
-	it('renders the hosting provider clause when the provider is configured', () => {
+	it('starts the sign-in when the button is clicked', () => {
 		// Arrange
-		const page: HTMLElement = create('Host', '1 rue de Paris')
+		const button: HTMLElement = fixture.nativeElement.querySelector('sgdf-button')
 
 		// Act
-		const text: string = page.textContent ?? ''
+		button.click()
 
 		// Assert
-		expect(text).toContain('lause')
-		expect(text).not.toContain('allback')
+		expect(login).toHaveBeenCalledTimes(1)
 	})
 
-	it('renders the hosting fallback when no provider is configured', () => {
+	it('links to the terms and privacy pages', () => {
 		// Arrange
-		const page: HTMLElement = create(null, null)
+		const links: HTMLAnchorElement[] = Array.from(fixture.nativeElement.querySelectorAll('a'))
 
 		// Act
-		const html: string = page.innerHTML
+		const hrefs: string[] = links.map((link: HTMLAnchorElement): string => link.getAttribute('href') ?? '')
 
 		// Assert
-		expect(html).toContain('allback')
-		expect(html).not.toContain('lause')
+		expect(hrefs).toEqual(['/terms', '/privacy'])
 	})
 })
