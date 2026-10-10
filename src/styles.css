@@ -3,6 +3,7 @@
 :root {
     /* --- Layout constants --- */
     --layout--content-width: 90rem;
+    --layout--min-width: 340px;
 
     /* --- Spacing constants --- */
     --spacing--in-block-small: 0.5rem;
@@ -10,6 +11,10 @@
     --spacing--in-block-large: 1rem;
     --spacing--page-gutter: 1.5rem;
     --spacing--block: 2rem;
+}
+
+html {
+    min-width: var(--layout--min-width);
 }
 
 sgdf-menu-item {
