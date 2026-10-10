@@ -30,12 +30,12 @@
 
 <ng-template #row let-title let-value="value" let-date="date">
     <sgdf-table-row>
-        <sgdf-table-cell row-header class="flex justify-between">
-            <span class="uppercase opacity-80">{{ title }}</span>
+        <sgdf-table-cell row-header class="flex min-w-0 flex-col gap-0.5 sm:flex-row sm:justify-between sm:gap-4">
+            <span class="shrink-0 uppercase opacity-80">{{ title }}</span>
             @if (date) {
                 <sgdf-relative-time [date]="date" sync/>
             } @else if (value) {
-                <span>{{ value }}</span>
+                <span class="min-w-0 [overflow-wrap:anywhere] sm:text-end">{{ value }}</span>
             } @else {
                 <sgdf-skeleton effect="pulse" shape="rounded"/>
             }
