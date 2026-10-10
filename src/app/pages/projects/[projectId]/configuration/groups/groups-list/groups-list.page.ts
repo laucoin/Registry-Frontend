@@ -8,7 +8,7 @@ import { PageEventModel } from '@shared/models/model/page-event.model'
 import { Button } from 'primeng/button'
 import { DatePicker } from 'primeng/datepicker'
 import { InputText } from 'primeng/inputtext'
-import { ListComponent } from '@shared/ui/common/list/list.component'
+import { LegacyListComponent } from '@shared/ui/common/legacy-list/legacy-list.component'
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import {TranslocoPipe} from '@jsverse/transloco'
 import { RouterLink } from '@angular/router'
@@ -27,7 +27,7 @@ import { GenericListComponent } from '@shared/ui/base/generic-list.component'
         Button,
         DatePicker,
         InputText,
-        ListComponent,
+        LegacyListComponent,
         FormField,
         RegistryTemplateDirective,
         TranslocoPipe,

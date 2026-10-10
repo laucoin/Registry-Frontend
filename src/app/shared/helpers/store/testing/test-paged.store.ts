@@ -5,6 +5,7 @@ import { MovementPageParamsModel } from '@shared/models/model/movement-page-para
 import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
 import { ErrorSink } from '@shared/helpers/rx.helper'
 import { contentsRequester, elementFetcher, loaderToggle, metadataFetcher, movementContentsFetcher, pageFetcher, paramsMerger, paramsUpdater } from '@shared/helpers/store/paged-store.methods'
+import { CumulativePageHelper } from '@shared/helpers/store/cumulative-page.helper'
 import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
 import { GenericModel } from '@shared/models/model/generic.model'
 import { MovementModel } from '@shared/models/model/movement.model'
@@ -53,6 +54,9 @@ export const TestPagedStore = signalStore(
     } ),
     withMethods( (store, movementApi = inject( MovementApi ), errors = inject( TEST_ERRORS )) => ({
         fetchItems: pageFetcher( store, 'items', inject( ITEMS_SOURCE ), errors ),
+        fetchAppendedItems: pageFetcher( store, 'items', inject( ITEMS_SOURCE ), errors, {
+            merge: (current, fetched, request) => CumulativePageHelper.merge( current, fetched, { pageNumber: request.n, pageSize: undefined } ),
+        } ),
         updateItemsParams: paramsUpdater( store, 'items' ),
         mergeItemsParams: paramsMerger( store, 'items' ),
         fetchContents: movementContentsFetcher( store, movementApi, errors ),

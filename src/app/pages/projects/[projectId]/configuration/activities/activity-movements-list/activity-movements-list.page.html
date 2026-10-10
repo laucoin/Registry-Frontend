@@ -9,7 +9,7 @@
     }
 </div>
 
-<app-list (updateRequired)='loadPage($event)'
+<app-legacy-list (updateRequired)='loadPage($event)'
           [elementPage]='facade.activityMovementsPage()'
           [error]='facade.activityMovementsPageError()'
           [loading]='facade.activityMovementsPageLoading()'
@@ -72,4 +72,4 @@
     <ng-template appTemplate='element' let-movement>
         <app-movement-element [movement]='movement' [vehicleId]='activity()?.id' />
     </ng-template>
-</app-list>
+</app-legacy-list>

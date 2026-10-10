@@ -15,7 +15,7 @@ import { GroupFacade } from '@pages/projects/[projectId]/configuration/groups/da
 import { GroupElementComponent } from '@pages/projects/[projectId]/configuration/groups/group-element/group-element.component'
 import { Button } from 'primeng/button'
 import { InputText } from 'primeng/inputtext'
-import { ListComponent } from '@shared/ui/common/list/list.component'
+import { LegacyListComponent } from '@shared/ui/common/legacy-list/legacy-list.component'
 import {
     ParticipantElementComponent,
 } from '@shared/ui/domain/participant-element/participant-element.component'
@@ -48,7 +48,7 @@ import { Card } from 'primeng/card'
         GroupElementComponent,
         Button,
         InputText,
-        ListComponent,
+        LegacyListComponent,
         ParticipantElementComponent,
         FormField,
         RegistryTemplateDirective,

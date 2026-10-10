@@ -7,13 +7,10 @@ import { ProjectStoreModel } from '@pages/projects/data/model/project-store.mode
 import { ProjectApi } from '@pages/projects/data/state/project.api'
 import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
 import { elementFetcher, loaderToggle, metadataFetcher, pageFetcher, paramsUpdater } from '@shared/helpers/store/paged-store.methods'
+import { CumulativePageHelper, CumulativePageRequest } from '@shared/helpers/store/cumulative-page.helper'
 import { ElementRequestInformationModel } from '@shared/models/model/element-request-information.model'
 import { ProjectModel } from '@shared/models/model/project.model'
 
-interface ProjectsPageRequest {
-    pageNumber: number | undefined
-    pageSize: number | undefined
-}
 
 const defaultProject: ElementRequestInformationModel<ProjectModel> = {
     element: undefined,
@@ -49,8 +46,8 @@ export const ProjectStore = signalStore(
     withState<ProjectStoreModel>( defaultProjectStore ),
     withMethods( (store, api = inject( ProjectApi ), errors = inject( ErrorReporter )) => ({
         fetchProjectOptions: metadataFetcher<ProjectStoreModel, 'options', void, ProjectOptionModel[]>( store, 'options', () => api.getAvailableProjectOptions(), errors ),
-        fetchProjectsPage: pageFetcher( store, 'projects', (request: ProjectsPageRequest, params: ProjectPageParamsModel) =>
-            api.findProjects( request.pageNumber, request.pageSize, params ), errors ),
+        fetchProjectsPage: pageFetcher( store, 'projects', (request: CumulativePageRequest, params: ProjectPageParamsModel) =>
+            api.findProjects( request.pageNumber, request.pageSize, params ), errors, { merge: CumulativePageHelper.merge } ),
         updateProjectsPageSearchParams: paramsUpdater( store, 'projects' ),
         startProjectLoader: loaderToggle( store, 'project', true ),
         stopProjectLoader: loaderToggle( store, 'project', false ),

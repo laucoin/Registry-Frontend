@@ -1,4 +1,4 @@
-<app-list (updateRequired)='loadPage($event)'
+<app-legacy-list (updateRequired)='loadPage($event)'
           [elementPage]='facade.currentMovementsPageWithoutActivity()'
           [error]='facade.currentMovementsPageWithoutActivityError()'
           [loading]='facade.currentMovementsPageWithoutActivityLoading()'
@@ -6,4 +6,4 @@
     <ng-template appTemplate='element' let-movement>
         <app-movement-element [movement]='movement' [reversible]='true' />
     </ng-template>
-</app-list>
+</app-legacy-list>

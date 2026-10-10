@@ -6,8 +6,6 @@ import { Mock, beforeEach, describe, expect, it, vi } from 'vitest'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { UserProfileFacade } from '@core/registry/state/user-profile.facade'
-import { ProjectFacade } from '@pages/projects/data/state/project/project.facade'
-import { ProjectsListPage } from '@pages/projects/projects-list/projects-list.page'
 import { AlertFacade } from '@pages/projects/[projectId]/alerts/data/state/alert.facade'
 import { AlertsListPage } from '@pages/projects/[projectId]/alerts/alerts-list/alerts-list.page'
 import { ActivitiesListPage } from '@pages/projects/[projectId]/configuration/activities/activities-list/activities-list.page'
@@ -54,7 +52,6 @@ const CASES: ListCase[] = [
     { name: 'vehicle movements', type: VehicleMovementsListPage, facades: [ VehicleFacade, MovementFacade ], owner: VehicleFacade, fetch: 'fetchVehicleMovementsPage', withId: true },
     { name: 'vehicles', type: VehiclesListPage, facades: [ VehicleFacade ], owner: VehicleFacade, fetch: 'fetchVehiclesPage', withId: false },
     { name: 'movements', type: MovementsListPage, facades: [ MovementFacade ], owner: MovementFacade, fetch: 'fetchMovementsPage', withId: false },
-    { name: 'projects', type: ProjectsListPage, facades: [ ProjectFacade ], owner: ProjectFacade, fetch: 'fetchProjectsPage', withId: false },
     { name: 'users', type: UsersListPage, facades: [ UserFacade ], owner: UserFacade, fetch: 'fetchUsersPage', withId: false },
     { name: 'invitations', type: InvitationsListPage, facades: [], owner: UserProfileFacade, fetch: 'fetchProjectProfileInvitationPage', withId: false },
     { name: 'profiles', type: ProfilesListPage, facades: [ ProjectProfileFacade ], owner: UserProfileFacade, fetch: 'fetchProjectProfilesPage', withId: false },

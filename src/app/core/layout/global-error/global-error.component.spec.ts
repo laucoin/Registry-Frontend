@@ -16,6 +16,10 @@ describe('GlobalErrorComponent', () => {
 		return fixture.nativeElement
 	}
 
+	function calloutTitle(): string | undefined {
+		return (fixture.nativeElement.querySelector('sgdf-callout') as HTMLElement & { title?: string }).title
+	}
+
 	beforeEach(() => {
 		TestBed.resetTestingModule()
 		reloadApplication = vi.fn()
@@ -34,7 +38,7 @@ describe('GlobalErrorComponent', () => {
 
 		// Assert
 		expect(text).toContain('The API cannot be reached')
-		expect(fixture.nativeElement.querySelector('sgdf-callout').getAttribute('title')).toBe('Service Unavailable')
+		expect(calloutTitle()).toBe('Service Unavailable')
 		expect(fixture.nativeElement.querySelector('sgdf-callout').getAttribute('variant')).toBe('danger')
 	})
 
@@ -54,10 +58,10 @@ describe('GlobalErrorComponent', () => {
 		const error: NotificationModel = { detail: 'Boom' }
 
 		// Act
-		const title: string | null = create(error).querySelector('sgdf-callout')!.getAttribute('title')
+		create(error)
 
 		// Assert
-		expect(title).toContain('global.notifications.UNKNOWN_ERROR.title')
+		expect(calloutTitle()).toContain('global.notifications.UNKNOWN_ERROR.title')
 	})
 
 	it('should reload the application when the retry button is clicked', () => {
@@ -65,7 +69,7 @@ describe('GlobalErrorComponent', () => {
 		const retry: HTMLElement = create({ summary: 'Down' }).querySelector('sgdf-button')!
 
 		// Act
-		retry.click()
+		retry.dispatchEvent(new MouseEvent('click'))
 
 		// Assert
 		expect(reloadApplication).toHaveBeenCalledTimes(1)

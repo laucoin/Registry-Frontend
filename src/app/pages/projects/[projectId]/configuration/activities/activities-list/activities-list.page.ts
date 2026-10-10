@@ -4,7 +4,7 @@ import { ActivitiesListSearchModel, toActivitiesListSearchModel, toActivitiesLis
 import { Component, inject, signal, WritableSignal } from '@angular/core'
 import {PageEventModel} from '@shared/models/model/page-event.model'
 import {ActivityFacade} from '@pages/projects/[projectId]/configuration/activities/data/state/activity.facade'
-import {ListComponent} from '@shared/ui/common/list/list.component'
+import {LegacyListComponent} from '@shared/ui/common/legacy-list/legacy-list.component'
 import {RegistryTemplateDirective} from '@shared/directives/registry-template.directive'
 import {TranslocoPipe} from '@jsverse/transloco'
 import {InputTextModule} from 'primeng/inputtext'
@@ -26,7 +26,7 @@ import {GenericListComponent} from '@shared/ui/base/generic-list.component'
     selector: 'app-activities-list',
     templateUrl: './activities-list.page.html',
     imports: [
-        ListComponent,
+        LegacyListComponent,
         RegistryTemplateDirective,
         FormField,
         TranslocoPipe,

@@ -45,6 +45,18 @@ describe( 'track-page operator', () => {
         expect( store.items().loading ).toBe( false )
     } )
 
+    it( 'clears the previous error when a new request starts', () => {
+        // Arrange
+        slice.write( { ...slice.read(), error: { summary: 'Old', detail: 'Old' } } )
+        const source: Subject<string> = new Subject<string>()
+
+        // Act
+        source.pipe( trackPage( uiFacade, slice ) ).subscribe()
+
+        // Assert
+        expect( store.items().error ).toBeUndefined()
+    } )
+
     it( 'stores a non-503 error in the block and completes without emitting', () => {
         // Arrange
         const source: Subject<string> = new Subject<string>()

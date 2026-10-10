@@ -109,10 +109,10 @@
               "html"
             ],
             "coverageThresholds": {
-              "statements": 80,
-              "branches": 74,
-              "functions": 77,
-              "lines": 81
+              "statements": 82,
+              "branches": 76,
+              "functions": 80,
+              "lines": 83
             }
           }
         },

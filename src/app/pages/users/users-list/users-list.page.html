@@ -1,4 +1,4 @@
-<app-list (updateRequired)='loadPage($event)'
+<app-legacy-list (updateRequired)='loadPage($event)'
           [elementPage]='facade.usersPage()'
           [error]='facade.usersPageError()'
           [loading]='facade.usersPageLoading()'
@@ -37,4 +37,4 @@
     <ng-template appTemplate='element' let-user>
         <app-user-element [user]='user' />
     </ng-template>
-</app-list>
+</app-legacy-list>

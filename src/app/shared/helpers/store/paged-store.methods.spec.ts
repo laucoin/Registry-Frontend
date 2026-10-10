@@ -53,6 +53,22 @@ describe( 'paged store methods', () => {
         store = TestBed.inject( TestPagedStore )
     } )
 
+    describe( 'pageFetcher merge hook', () => {
+        it( 'stores the shown page merged with the fetched one', () => {
+            // Arrange
+            const first: ReturnType<typeof pageOf<GenericModel>> = { ...pageOf<GenericModel>( [ { id: 'a' } as GenericModel ] ), pageSize: 1 }
+            const second: ReturnType<typeof pageOf<GenericModel>> = { ...pageOf<GenericModel>( [ { id: 'b' } as GenericModel ], 1 ), pageSize: 1 }
+            itemsSource.mockReturnValueOnce( of( first ) ).mockReturnValueOnce( of( second ) )
+            store.fetchAppendedItems( { n: 0 } )
+
+            // Act
+            store.fetchAppendedItems( { n: 1 } )
+
+            // Assert
+            expect( store.items.element()?.content.map( (it: GenericModel): string => it.id ) ).toEqual( [ 'a', 'b' ] )
+        } )
+    } )
+
     describe( 'pageFetcher', () => {
         it( 'runs the source with the request and the current search parameters', () => {
             // Arrange

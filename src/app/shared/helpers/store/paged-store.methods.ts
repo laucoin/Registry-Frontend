@@ -37,11 +37,12 @@ type PageBlock = PageRequestInformationModel<unknown, GenericModel>
 export interface PageFetcherHooks<R, P> {
     before?: (request: R) => void
     after?: (request: R, page: P) => void
+    merge?: (current: P | undefined, fetched: P, request: R) => P
 }
 
 /**
  * Purpose: Builds the rxMethod that loads one paged resource of a signal store.
- * Scope: Runs the given request with the current search parameters, scopes loading and errors to the block, then stores the page and clears the reset flag.
+ * Scope: Runs the given request with the current search parameters, scopes loading and errors to the block, then stores the page (merged with the shown one when a merge hook is given) and clears the reset flag.
  * Limits: Does not know the api; the caller gives the request. Optional hooks run before each request and after the page is stored.
  */
 export function pageFetcher<S extends object, K extends keyof S & string, R> (
@@ -60,11 +61,21 @@ export function pageFetcher<S extends object, K extends keyof S & string, R> (
             trackPage( errors, slice as never ),
             map( (page: PageOf<S[K]>) => ({ request, page }) ),
         ) ),
-        tap( ({ request, page }: { request: R, page: PageOf<S[K]> }): void => {
-            storePage( store, key, page )
-            hooks.after?.( request, page )
-        } ),
+        tap( ({ request, page }: { request: R, page: PageOf<S[K]> }): void => commitPage( store, key, hooks, request, page ) ),
     ) )
+}
+
+function commitPage<S extends object, K extends keyof S & string, R> (
+    store: StoreRef<S>,
+    key: K,
+    hooks: PageFetcherHooks<R, PageOf<S[K]>>,
+    request: R,
+    fetched: PageOf<S[K]>,
+): void {
+    const current: PageOf<S[K]> | undefined = ((store as unknown as Record<K, () => PageBlock>)[ key ]()).element as PageOf<S[K]> | undefined
+    const stored: PageOf<S[K]> = hooks.merge?.( current, fetched, request ) ?? fetched
+    storePage( store, key, stored )
+    hooks.after?.( request, stored )
 }
 
 function storePage<S extends object, K extends keyof S & string> (store: StoreRef<S>, key: K, page: unknown): void {

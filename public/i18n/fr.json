@@ -177,6 +177,18 @@
       "fr": "Français",
       "en": "English"
     },
+    "list": {
+      "active-filters": "{{count}} actif(s)",
+      "loading": "Chargement de la liste",
+      "load-more": "Charger plus",
+      "loaded-count": "{{count}} sur {{total}}",
+      "retry": "Réessayer",
+      "reset-filters": "Réinitialiser les filtres",
+      "no-result": {
+        "title": "Aucun résultat",
+        "message": "Aucun élément ne correspond aux filtres appliqués."
+      }
+    },
     "updated": "Modifié",
     "welcome": {
       "title": "🚀 Bienvenue sur Registry !",
@@ -271,6 +283,7 @@
       "previous": "Précédent",
       "next": "Suivant",
       "search-and-filter": "Rechercher & Filtrer",
+    "search": "Rechercher",
       "sign-out": "Déconnexion",
       "remove": "Retirer",
       "reset": "Réinitialiser",
@@ -479,6 +492,17 @@
     }
   },
   "projects": {
+    "list": {
+      "eyebrow": "Espace applicatif",
+      "title": "Mes projets",
+      "subtitle": "Retrouvez, rejoignez et gérez les projets auxquels vous avez accès.",
+      "permanent": "Projet permanent (pas de fin prévue)"
+    },
+    "hidden-notice": {
+      "title": "Projet masqué",
+      "message": "Le projet “{{name}}” est masqué : il n’est pas possible de le rejoindre. Réactive-le (menu d’actions, « Démasquer ») pour y accéder.",
+      "close": "Compris"
+    },
     "search-and-filter": {
       "text": "Nom",
       "datetime": "Date & Heure",

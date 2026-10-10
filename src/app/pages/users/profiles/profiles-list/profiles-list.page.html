@@ -1,4 +1,4 @@
-<app-list (updateRequired)='loadPage($event)'
+<app-legacy-list (updateRequired)='loadPage($event)'
           [elementPage]='userProfileFacade.userProjectProfilesPage()'
           [error]='userProfileFacade.userProjectProfilesPageError()'
           [loading]='userProfileFacade.userProjectProfilesPageLoading()'
@@ -73,4 +73,4 @@
             </div>
         </ng-template>
     }
-</app-list>
+</app-legacy-list>

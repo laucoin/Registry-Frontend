@@ -4,7 +4,7 @@ import { ParticipantsListSearchModel, toParticipantsListSearchModel, toParticipa
 import { Component, inject, signal, WritableSignal } from '@angular/core'
 import {PageEventModel} from '@shared/models/model/page-event.model'
 import {ParticipantFacade} from '@pages/projects/[projectId]/configuration/participants/data/state/participant.facade'
-import {ListComponent} from '@shared/ui/common/list/list.component'
+import {LegacyListComponent} from '@shared/ui/common/legacy-list/legacy-list.component'
 import {RegistryTemplateDirective} from '@shared/directives/registry-template.directive'
 import {TranslocoPipe} from '@jsverse/transloco'
 import {InputTextModule} from 'primeng/inputtext'
@@ -27,7 +27,7 @@ import {GenericListComponent} from '@shared/ui/base/generic-list.component'
     selector: 'app-participants-list',
     templateUrl: './participants-list.page.html',
     imports: [
-        ListComponent,
+        LegacyListComponent,
         RegistryTemplateDirective,
         FormField,
         TranslocoPipe,

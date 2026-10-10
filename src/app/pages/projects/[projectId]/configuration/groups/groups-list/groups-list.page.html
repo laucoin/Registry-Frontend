@@ -1,4 +1,4 @@
-<app-list (updateRequired)='loadPage($event)'
+<app-legacy-list (updateRequired)='loadPage($event)'
           [elementPage]='facade.groupsPage()'
           [error]='facade.groupsPageError()'
           [loading]='facade.groupsPageLoading()'
@@ -70,4 +70,4 @@
                       [routerLink]='GroupRoutesEnum.CREATE' />
         }
     </ng-template>
-</app-list>
+</app-legacy-list>

@@ -1,4 +1,4 @@
-<app-list (updateRequired)='loadPage($event)'
+<app-legacy-list (updateRequired)='loadPage($event)'
           [elementPage]='facade.movementsPage()'
           [error]='facade.movementsPageError()'
           [loading]='facade.movementsPageLoading()'
@@ -72,4 +72,4 @@
                       [routerLink]='MovementRoutesEnum.CREATE' />
         }
     </ng-template>
-</app-list>
+</app-legacy-list>

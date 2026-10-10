@@ -9,7 +9,7 @@
 </div>
 
 
-<app-list (updateRequired)='loadPage($event)'
+<app-legacy-list (updateRequired)='loadPage($event)'
           [elementPage]='facade.groupMembersPage()'
           [error]='facade.groupMembersPageError()'
           [loading]='facade.groupMembersPageLoading()'
@@ -79,7 +79,7 @@
                       icon='pi pi-plus' />
         }
     </ng-template>
-</app-list>
+</app-legacy-list>
 
 <app-layer [(visible)]='addMembersFormLayerOpened'
            [title]='"groups.actions.add-members" | transloco'>

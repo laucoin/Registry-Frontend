@@ -9,7 +9,6 @@ import { RegistryConfig } from '@core/config/registry.config'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { UserProfileFacade } from '@core/registry/state/user-profile.facade'
-import { ProjectFacade } from '@pages/projects/data/state/project/project.facade'
 import { ActivityFacade } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.facade'
 import { ActivityElementComponent } from '@pages/projects/[projectId]/configuration/activities/activity-element/activity-element.component'
 import { GroupFacade } from '@pages/projects/[projectId]/configuration/groups/data/state/group.facade'
@@ -21,7 +20,6 @@ import { VehicleElementComponent } from '@pages/projects/[projectId]/configurati
 import { CommunicationFacade } from '@pages/projects/[projectId]/movements/communication/data/state/communication.facade'
 import { MovementFacade } from '@pages/projects/[projectId]/movements/data/state/movement.facade'
 import { AlertFacade } from '@pages/projects/[projectId]/alerts/data/state/alert.facade'
-import { ProjectElementComponent } from '@pages/projects/project-element/project-element.component'
 import { UserFacade } from '@pages/users/data/state/user.facade'
 import { UserElementComponent } from '@pages/users/user-element/user-element.component'
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
@@ -53,8 +51,6 @@ const CASES: ElementCase[] = [
         labels: [ 'members', 'edit', 'disable', 'enable', 'delete' ] },
     { name: 'vehicle', type: VehicleElementComponent, facade: VehicleFacade, inputs: { vehicle: VISIBLE }, deleteCall: 'deleteVehicle',
         labels: [ 'movements-history', 'edit', 'disable', 'enable', 'delete' ] },
-    { name: 'project', type: ProjectElementComponent, facade: ProjectFacade, inputs: { project: VISIBLE }, deleteCall: 'deleteProject',
-        labels: [ 'edit', 'disable', 'enable', 'delete' ] },
     { name: 'user', type: UserElementComponent, facade: UserFacade, inputs: { user: VISIBLE }, deleteCall: 'deleteUser',
         labels: [ 'update-role', 'disable', 'enable', 'impersonate', 'delete' ] },
     { name: 'alert', type: AlertElementComponent, facade: AlertFacade, inputs: { alert: VISIBLE }, deleteCall: 'deleteAlert',

@@ -4,7 +4,7 @@ import { MovementsListSearchModel, toMovementsListSearchModel, toMovementsListSe
 import { Component, inject, signal, WritableSignal } from '@angular/core'
 import {MovementFacade} from '@pages/projects/[projectId]/movements/data/state/movement.facade'
 import {PageEventModel} from '@shared/models/model/page-event.model'
-import {ListComponent} from '@shared/ui/common/list/list.component'
+import {LegacyListComponent} from '@shared/ui/common/legacy-list/legacy-list.component'
 import {RegistryTemplateDirective} from '@shared/directives/registry-template.directive'
 import {TranslocoPipe} from '@jsverse/transloco'
 import {InputTextModule} from 'primeng/inputtext'
@@ -26,7 +26,7 @@ import {GenericListComponent} from '@shared/ui/base/generic-list.component'
     selector: 'app-movements-list',
     templateUrl: './movements-list.page.html',
     imports: [
-        ListComponent,
+        LegacyListComponent,
         RegistryTemplateDirective,
         FormField,
         TranslocoPipe,

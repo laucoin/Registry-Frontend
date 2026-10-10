@@ -8,7 +8,7 @@ import {PageEventModel} from '@shared/models/model/page-event.model'
 import {InputTextModule} from 'primeng/inputtext'
 import {ToggleButtonModule} from 'primeng/togglebutton'
 import {GenericListComponent} from '@shared/ui/base/generic-list.component'
-import {ListComponent} from '@shared/ui/common/list/list.component'
+import {LegacyListComponent} from '@shared/ui/common/legacy-list/legacy-list.component'
 import {DatePicker} from 'primeng/datepicker'
 import {Button} from 'primeng/button'
 import {
@@ -31,7 +31,7 @@ import {RouterLink} from '@angular/router'
         InputTextModule,
         ToggleButtonModule,
         FormField,
-        ListComponent,
+        LegacyListComponent,
         DatePicker,
         Button,
         ProjectProfileElementComponent,

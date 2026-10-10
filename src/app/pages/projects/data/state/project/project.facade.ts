@@ -15,6 +15,7 @@ import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { initialize, notifyOnError } from '@shared/helpers/rx.helper'
 import { ProjectModel } from '@shared/models/model/project.model'
 import { ProjectOptionModel } from '@shared/models/model/project-option.model'
+import { CumulativePageHelper } from '@shared/helpers/store/cumulative-page.helper'
 import { DateHelper } from '@shared/helpers/date.helper'
 
 /**
@@ -175,7 +176,6 @@ export class ProjectFacade extends GenericFacade {
             this.sessionFacade.fetchCurrentUser()
         }
 
-        const page: PageModel<ProjectModel> | undefined = this.projectsPage()
-        this.fetchProjectsPage( page?.pageNumber, page?.pageSize )
+        this.store.fetchProjectsPage( CumulativePageHelper.reloadRequest( this.projectsPage() ) )
     }
 }

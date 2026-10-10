@@ -44,7 +44,8 @@ export const trackPage = <B extends PageBlock>(errorSink: ErrorSink, slice: Page
 
 function setLoading<B extends PageBlock>(slice: PageSlice<B>, loading: boolean): void {
     const block: B = slice.read()
-    slice.write( { ...block, ...StateHelper.updatePageLoader( block, loading ) } )
+    const cleared: B = loading ? { ...block, error: undefined } : block
+    slice.write( { ...cleared, ...StateHelper.updatePageLoader( cleared, loading ) } )
 }
 
 function handleFailure<B extends PageBlock>(errorSink: ErrorSink, slice: PageSlice<B>, error: ErrorModel): Observable<never> {

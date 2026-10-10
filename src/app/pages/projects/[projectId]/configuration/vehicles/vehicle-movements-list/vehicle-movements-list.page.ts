@@ -5,7 +5,7 @@ import { Component, inject, OnDestroy, signal, WritableSignal } from '@angular/c
 import {VehicleModel} from '@shared/models/model/vehicle.model'
 import {withLoading} from '@shared/helpers/rx.helper'
 import {PageEventModel} from '@shared/models/model/page-event.model'
-import {ListComponent} from '@shared/ui/common/list/list.component'
+import {LegacyListComponent} from '@shared/ui/common/legacy-list/legacy-list.component'
 import {RegistryTemplateDirective} from '@shared/directives/registry-template.directive'
 import {TranslocoPipe} from '@jsverse/transloco'
 import {InputTextModule} from 'primeng/inputtext'
@@ -31,7 +31,7 @@ import {Card} from 'primeng/card'
     selector: 'app-vehicle-movements-list',
     templateUrl: './vehicle-movements-list.page.html',
     imports: [
-        ListComponent,
+        LegacyListComponent,
         RegistryTemplateDirective,
         FormField,
         TranslocoPipe,

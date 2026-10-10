@@ -1,4 +1,4 @@
-<app-list (updateRequired)='loadPage($event)'
+<app-legacy-list (updateRequired)='loadPage($event)'
           [elementPage]='facade.alertsPage()'
           [error]='facade.alertsPageError()'
           [loading]='facade.alertsPageLoading()'
@@ -69,4 +69,4 @@
     <ng-template appTemplate='element' let-alert>
         <app-alert-element [alert]='alert' />
     </ng-template>
-</app-list>
+</app-legacy-list>

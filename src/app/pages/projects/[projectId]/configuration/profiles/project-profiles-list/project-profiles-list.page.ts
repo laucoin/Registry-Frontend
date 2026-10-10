@@ -5,7 +5,7 @@ import { ProjectProfilesListSearchModel, toProjectProfilesListSearchModel, toPro
 import { Component, inject, signal, WritableSignal } from '@angular/core'
 import {PageEventModel} from '@shared/models/model/page-event.model'
 import {ProjectProfileFacade} from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.facade'
-import {ListComponent} from '@shared/ui/common/list/list.component'
+import {LegacyListComponent} from '@shared/ui/common/legacy-list/legacy-list.component'
 import {RegistryTemplateDirective} from '@shared/directives/registry-template.directive'
 import {TranslocoPipe} from '@jsverse/transloco'
 import {InputTextModule} from 'primeng/inputtext'
@@ -29,7 +29,7 @@ import {GenericListComponent} from '@shared/ui/base/generic-list.component'
     selector: 'app-project-profiles-list',
     templateUrl: './project-profiles-list.page.html',
     imports: [
-        ListComponent,
+        LegacyListComponent,
         RegistryTemplateDirective,
         FormField,
         TranslocoPipe,

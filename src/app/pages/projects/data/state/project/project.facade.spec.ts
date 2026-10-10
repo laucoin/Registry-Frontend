@@ -56,6 +56,19 @@ describe( 'ProjectFacade', () => {
         expect( findProjects ).toHaveBeenCalledWith( 2, 10, expect.anything() )
     } )
 
+    it( 'appends the next batch to the projects already shown', () => {
+        // Arrange
+        findProjects.mockReturnValueOnce( of( pageOf<ProjectModel>( [ { id: 'a' } as ProjectModel ], 0 ) ) )
+            .mockReturnValueOnce( of( pageOf<ProjectModel>( [ { id: 'b' } as ProjectModel ], 1 ) ) )
+        facade.fetchProjectsPage( 0, 10 )
+
+        // Act
+        facade.fetchProjectsPage( 1, 10 )
+
+        // Assert
+        expect( facade.projectsPage()?.content.map( (it: ProjectModel): string => it.id ) ).toEqual( [ 'a', 'b' ] )
+    } )
+
     it( 'restarts from the first page when the search changed', () => {
         // Arrange
         facade.inputPageSearchParameters( 'camp', undefined, true, undefined )
@@ -142,5 +155,16 @@ describe( 'ProjectFacade', () => {
         expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'projects.notifications.disable.title' } ) )
         expect( fetchCurrentUser ).toHaveBeenCalledTimes( 1 )
         expect( findProjects ).toHaveBeenCalledTimes( 1 )
+    } )
+
+    it( 'reloads every batch shown in one request after a command', () => {
+        // Arrange
+        disableProjectById.mockReturnValue( of( { id: 'p1', name: 'Camp' } as ProjectModel ) )
+
+        // Act
+        facade.disableProject( 'p1' )
+
+        // Assert
+        expect( findProjects ).toHaveBeenCalledWith( 0, 20, expect.anything() )
     } )
 } )
