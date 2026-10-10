@@ -1,0 +1,82 @@
+<app-element-card [element]='project()'
+                  [actionMenuVisible]='actionMenuVisible()'
+                  [actions]='actions()'
+                  icon='pi pi-calendar'>
+    <div class='element-card'>
+        <div class='project-info flex flex-col justify-center basis-full lg:basis-full xl:basis-[30%]'>
+            <div class='project-name flex mb-2' [class.justify-center]='uiFacade.tinyScreen()'>
+                <app-severity-circle class='me-2' [severity]='project().visible ? SeverityEnum.SUCCESS : SeverityEnum.DANGER' />
+                {{ project().name }}
+            </div>
+            @if (project().begin) {
+                <div class='flex mt-1 items-center' [class.justify-center]='uiFacade.tinyScreen()'>
+                    <i class='pi pi-play-circle'></i>
+                    <span class='ms-1'>{{ project().begin | customDateFormat }}</span>
+                </div>
+            }
+            @if (project().end) {
+                <div class='flex items-center'
+                     [class.justify-center]='uiFacade.tinyScreen()'
+                     [class.mt-1]='!project().begin'>
+                    <i class='pi pi-stop-circle'></i>
+                    <span class='ms-1'>{{ project().end | customDateFormat }}</span>
+                </div>
+            }
+        </div>
+        <div class='options-and-status flex flex-col basis-full lg:basis-[70%] xl:basis-[55%]' [class.justify-center]='uiFacade.tinyScreen()'>
+            <div class='flex' [class.justify-center]='uiFacade.tinyScreen()'>
+                @let nbOfOptions = project().options?.length ?? 0;
+                <app-severity-tag
+                        (click)='nbOfOptions > 1 ? layerOpened.set(true) : undefined'
+                        (keydown.enter)='nbOfOptions > 1 ? layerOpened.set(true) : undefined'>
+                <span [class.pointer]='nbOfOptions > 1'
+                      [class.hover-underline]='nbOfOptions > 1'>
+                    {{
+                        'projects.options' | pluralTranslation: project().options | transloco: {
+                            name: project().options?.[0]?.label,
+                            others: nbOfOptions - 1
+                        }
+                    }}
+
+                </span>
+                </app-severity-tag>
+            </div>
+            <div class='flex' [class.justify-center]='uiFacade.tinyScreen()'>
+                @if (project().status) {
+                    <app-severity-tag [severity]='statusSeverity()' [value]='project().status!.label' />
+                }
+            </div>
+        </div>
+        <div class='action-button flex basis-full lg:basis-[30%] xl:basis-[15%]' [class.justify-center]='uiFacade.tinyScreen()'>
+            @if (joinable()) {
+                <p-button icon='pi pi-arrow-right'
+                          [label]='"projects.actions.select" | transloco'
+                          [disabled]='!project().visible'
+                          severity='info'
+                          size='small'
+                          outlined
+                          rounded
+                          (onClick)='selectProject()' />
+            } @else if (supportable()) {
+                <p-button icon='pi pi-user-plus'
+                          [label]='"projects.actions.create-support" | transloco'
+                          [disabled]='!project().visible'
+                          severity='info'
+                          size='small'
+                          outlined
+                          rounded
+                          (onClick)='confirmSupportProfileCreation()' />
+            }
+        </div>
+    </div>
+</app-element-card>
+
+<app-layer [(visible)]='layerOpened'
+           [title]='"projects.options.list" | transloco'>
+    <p-listbox
+            styleClass='max-list-box-height'
+            readonly
+            [options]='project().options ?? []'
+            scrollHeight='100%'
+            optionLabel='label' />
+</app-layer>

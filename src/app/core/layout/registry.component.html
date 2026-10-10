@@ -1,0 +1,6 @@
+@if (globalError(); as error) {
+    <app-global-error [error]="error"/>
+} @else {
+    <router-outlet/>
+}
+<sgdf-toast #toast placement="top-right"/>

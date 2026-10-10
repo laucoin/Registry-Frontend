@@ -1,0 +1,73 @@
+<app-list (updateRequired)='loadPage($event)'
+          [elementPage]='facade.vehiclesPage()'
+          [error]='facade.vehiclesPageError()'
+          [loading]='facade.vehiclesPageLoading()'
+          emptyMessagePrefix='vehicles.notifications.EMPTY'>
+    <ng-template appTemplate='search' let-pageEvent>
+        <div class='grid search-line'>
+            <div class='field'>
+                <label for='text-search-field'>{{ 'vehicles.search-and-filter.text' | transloco }}</label>
+                <input id='text-search-field'
+                       type='text'
+                       fluid
+                       pInputText
+                       (keydown.enter)='loadPage(pageEvent)'
+                       [formField]='form.textSearched' />
+            </div>
+            <div class='field'>
+                <label for='date-time-search-field'>{{ 'vehicles.search-and-filter.datetime' | transloco }}</label>
+                <p-date-picker inputId='date-time-search-field'
+                               fluid
+                               showButtonBar
+                               [showTime]='true'
+                               [touchUI]='uiFacade.tinyScreen()'
+                               (onBlur)='loadPage(pageEvent)'
+                               [formField]='form.dateTimeSearched' />
+            </div>
+        </div>
+        <div class='grid search-line'>
+            <div class='field'>
+                <label for='availability-search-field'>{{ 'vehicles.search-and-filter.availability' | transloco }}</label>
+                <p-select inputId='availability-search-field'
+                          fluid
+                          [options]='facade.presencesStatusMetadata()'
+                          optionLabel='label'
+                          optionValue='value'
+                          (onChange)='loadPage(pageEvent)'
+                          [formField]='form.statusSearched' />
+            </div>
+            <div class='field'>
+                <label for='visibility-search-field'>{{ 'vehicles.search-and-filter.visibility' | transloco }}</label>
+                <p-select inputId='visibility-search-field'
+                          fluid
+                          [options]='facade.visibilitiesMetadata()'
+                          optionLabel='label'
+                          optionValue='value'
+                          (onChange)='loadPage(pageEvent)'
+                          [formField]='form.visibilitySearched' />
+            </div>
+        </div>
+        <div class='flex justify-center'>
+            <p-button (onClick)='loadPage(pageEvent)'
+                      [label]='"global.actions.search-and-filter" | transloco'
+                      outlined
+                      rounded
+                      icon='pi pi-search'
+                      [loading]='facade.vehiclesPageLoading() || facade.vehiclesPageSilentLoading()' />
+        </div>
+    </ng-template>
+    <ng-template appTemplate='element' let-vehicle>
+        <app-vehicle-element [vehicle]='vehicle' />
+    </ng-template>
+    <ng-template appTemplate='creation'>
+        @if (CurrentUserHelper.hasProjectAuthority(sessionFacade.currentUser(), facade.selectedProjectId(), ProjectAuthority.REGISTRY_PROJECT_VEHICLE_C)) {
+            <p-button class='m-1'
+                      severity='success'
+                      outlined
+                      rounded
+                      [label]='uiFacade.tinyScreen() ? "" : "global.actions.create" | transloco'
+                      icon='pi pi-plus'
+                      [routerLink]='VehicleRoutesEnum.CREATE' />
+        }
+    </ng-template>
+</app-list>

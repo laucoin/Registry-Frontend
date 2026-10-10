@@ -1,0 +1,48 @@
+<sgdf-table class="h-full [&::part(grid)]:h-full" appearance="soft" [label]="'myAccount.language.title' | transloco">
+    <sgdf-table-row>
+        <sgdf-table-cell header>
+            <sgdf-icon name="language" library="solid"/>
+            {{ 'myAccount.language.title' | transloco }}
+        </sgdf-table-cell>
+    </sgdf-table-row>
+
+    <sgdf-table-row>
+        <sgdf-table-cell row-header>
+            @if (availableLanguages.length <= 2) {
+                <div class="grid grid-flow-col auto-cols-fr gap-2">
+                    @for (language of availableLanguages; track language) {
+                        <sgdf-button variant="primary"
+                                     block
+                                     [appearance]="language === currentLanguage() ? 'solid' : 'outlined'"
+                                     [attr.aria-pressed]="language === currentLanguage()"
+                                     [loading]="pendingLanguage() === language"
+                                     [disabled]="pendingLanguage() !== undefined"
+                                     (click)="select(language)">
+                            {{ ('myAccount.language.' + language) | transloco }}
+                        </sgdf-button>
+                    }
+                </div>
+            } @else {
+                <sgdf-select
+                        appearance="outlined"
+                        without-label
+                        [label]="'myAccount.language.title' | transloco"
+                        [value]="currentLanguage()"
+                        [disabled]="pendingLanguage() !== undefined"
+                        (change)="selectFromEvent($event)">
+                    @for (language of availableLanguages; track language) {
+                        <sgdf-option [value]="language">
+                            {{ ('myAccount.language.' + language) | transloco }}
+                        </sgdf-option>
+                    }
+                </sgdf-select>
+            }
+        </sgdf-table-cell>
+    </sgdf-table-row>
+
+    <sgdf-table-row class="h-full">
+        <sgdf-table-cell class="align-bottom text-xs opacity-80">
+            {{ 'myAccount.language.hint' | transloco }}
+        </sgdf-table-cell>
+    </sgdf-table-row>
+</sgdf-table>

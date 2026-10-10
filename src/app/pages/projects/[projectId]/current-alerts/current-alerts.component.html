@@ -1,0 +1,30 @@
+@if (GenericHelper.nonNull(facade.currentAlertsPage()) && facade.currentAlertsPage()!.content.length > 0) {
+    <h2>{{ 'project-home.alerts.title' | transloco }}</h2>
+    <i class='secondary-color last-refresh'>
+        {{
+            'global.date-and-time-format.last-refresh' | transloco
+                : {
+                    datetime: facade.currentAlertsPage()?.lastRefresh | dateFormat: 'datetime',
+                }
+        }}
+    </i>
+    <p-carousel [value]='content()'
+                [numVisible]='3'
+                [numScroll]='3'
+                [circular]='false'
+                [responsiveOptions]='carouselBreakpoints'>
+        <ng-template let-alert #item>
+            <div class='h-full p-2'>
+                @if (GenericHelper.nonNull(alert)) {
+                    <app-alert-element [alert]='alert' [carouselView]='true' />
+                } @else {
+                    <div class='h-full flex items-center'>
+                        <p-button severity='secondary' [label]='"project-home.alerts.see-more" | transloco' icon='pi pi-search-plus'
+                                  [routerLink]='"/" + RegistryRouteEnum.PROJECTS_ALERTS.replace(":projectId", sessionFacade.currentProjectId() ?? "")' class='w-full'
+                                  iconPos='top' />
+                    </div>
+                }
+            </div>
+        </ng-template>
+    </p-carousel>
+}

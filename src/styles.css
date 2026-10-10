@@ -1,0 +1,17 @@
+@import 'primeicons/primeicons.css';
+
+:root {
+    /* --- Layout constants --- */
+    --layout--content-width: 90rem;
+
+    /* --- Spacing constants --- */
+    --spacing--in-block-small: 0.5rem;
+    --spacing--in-block: 0.75rem;
+    --spacing--in-block-large: 1rem;
+    --spacing--page-gutter: 1.5rem;
+    --spacing--block: 2rem;
+}
+
+sgdf-menu-item {
+    padding: 0.5em 1em;
+}

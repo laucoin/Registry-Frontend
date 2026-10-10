@@ -1,0 +1,41 @@
+import { Component, computed, input, InputSignal, Signal} from '@angular/core'
+import {TranslocoPipe} from '@jsverse/transloco'
+import {NotificationModel} from '@shared/models/model/notification.model'
+import {SeverityEnum} from '@shared/models/enumeration/severity.enum'
+import {MessageComponent} from '@shared/ui/common/message/message.component'
+import {MessageModule} from 'primeng/message'
+
+enum InformationImageEnum {
+    SAD = 'console_someone',
+    DESERT = 'no_data'
+}
+
+/**
+ * Purpose: Illustrated message for an error or an information state.
+ * Scope: Shows an image, a title, a text and projected actions for a severity.
+ * Limits: Purely visual; the message is given by the parent.
+ */
+@Component({
+    selector: 'app-severity-information',
+    imports: [TranslocoPipe, MessageModule, MessageComponent],
+    templateUrl: './severity-information.component.html',
+    styleUrl: './severity-information.component.css',
+})
+export class SeverityInformationComponent {
+    public readonly showImage: InputSignal<boolean> = input(true)
+    public readonly message: InputSignal<NotificationModel | undefined> = input.required()
+
+    private readonly errorSeverities: string[] = [
+        SeverityEnum.DANGER.toString(),
+        SeverityEnum.ERROR?.toString(),
+    ]
+
+    private readonly informationImage: Signal<string> = computed(() =>
+        this.errorSeverities.includes(this.message()?.severity ?? '')
+            ? InformationImageEnum.SAD
+            : InformationImageEnum.DESERT,
+    )
+
+    protected readonly imagePath: Signal<string> = computed((): string => `img/${this.informationImage()}.webp`)
+    protected readonly imageAlt: Signal<string> = computed((): string => `global.img.${this.informationImage()}`)
+}

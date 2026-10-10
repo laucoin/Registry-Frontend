@@ -1,0 +1,159 @@
+import {
+    Component,
+    computed,
+    inject,
+    input,
+    InputSignal,
+    model,
+    ModelSignal,
+    output,
+    OutputEmitterRef,
+    Signal,
+} from '@angular/core'
+import { FormValueControl } from '@angular/forms/signals'
+import { MovementContentModel } from '@shared/models/model/movement-content.model'
+import { AutoComplete, AutoCompleteCompleteEvent } from 'primeng/autocomplete'
+import { SelectOptionModel, SelectOptionGroupModel } from '@shared/models/model/select-option.model'
+import { ParticipantModel } from '@shared/models/model/participant.model'
+import { GroupModel } from '@shared/models/model/group.model'
+import { GenericHelper } from '@shared/helpers/generic.helper'
+import { Button } from 'primeng/button'
+import { ParticipantHelper } from '@shared/helpers/participant.helper'
+import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum'
+import {TranslocoPipe} from '@jsverse/transloco'
+import { UiFacade } from '@core/registry/state/ui.facade'
+import { BrowserService } from '@core/browser/browser.service'
+
+/**
+ * Purpose: Form field editing the content of a movement.
+ * Scope: Selects registered participants and groups and exposes their pools as the value of a signal form field.
+ * Limits: Does not save; the movement form does.
+ */
+@Component( {
+    selector: 'app-movement-content-field',
+    imports: [
+        AutoComplete,
+        Button,
+        TranslocoPipe,
+    ],
+    templateUrl: './movement-content-field.component.html',
+    styleUrl: './movement-content-field.component.css',
+} )
+export class MovementContentFieldComponent implements FormValueControl<MovementContentModel[]> {
+    protected readonly uiFacade: UiFacade = inject( UiFacade )
+    private readonly browser: BrowserService = inject( BrowserService )
+    protected readonly ParticipantHelper: typeof ParticipantHelper = ParticipantHelper
+    protected readonly Object: typeof Object = Object
+
+    public readonly value: ModelSignal<MovementContentModel[]> = model<MovementContentModel[]>( [] )
+    public readonly disabled: InputSignal<boolean> = input( false )
+    public readonly invalid: InputSignal<boolean> = input( false )
+    public readonly touched: InputSignal<boolean> = input( false )
+    public readonly dirty: InputSignal<boolean> = input( false )
+    public readonly touch: OutputEmitterRef<void> = output<void>()
+
+    public readonly suggestions: InputSignal<SelectOptionGroupModel<ParticipantModel | GroupModel>[]> = input.required()
+    public readonly inputId: InputSignal<string | undefined> = input()
+    public readonly fluid: InputSignal<boolean> = input( false )
+    public readonly emptyMessage: InputSignal<string | undefined> = input<string | undefined>()
+    public readonly selectionLabel: InputSignal<string | undefined> = input.required()
+    public readonly interpretedMovementType: InputSignal<PresenceStatusEnum[]> = input.required()
+
+    public readonly handleSearch: OutputEmitterRef<AutoCompleteCompleteEvent> = output()
+
+    protected readonly groups: Signal<Record<string, ParticipantModel[]>>
+    protected readonly orphanParticipants: Signal<ParticipantModel[]>
+    protected readonly showInvalid: Signal<boolean> = computed( (): boolean => this.invalid() && (this.touched() || this.dirty()) )
+
+    public constructor () {
+        this.groups = computed( (): Record<string, ParticipantModel[]> => this.groupByPoolName( this.value() ) )
+        this.orphanParticipants = computed( (): ParticipantModel[] => this.extractOrphanParticipants( this.value() ) )
+    }
+
+    protected handleElementSelection (element: SelectOptionModel<ParticipantModel | GroupModel>): void {
+        const selectedContent: MovementContentModel[] = this.buildContent( element.value )
+
+        const duplicatedParticipants: string[] = []
+        const contentToAdd: MovementContentModel[] = selectedContent.filter(
+            (content: MovementContentModel): boolean => {
+                if (this.isDuplicates( content )) {
+                    duplicatedParticipants.push( content.participant.id )
+                    return false
+                }
+                return true
+            },
+        )
+
+        this.onInputChange( [ ...this.value(), ...contentToAdd ] )
+
+        if (duplicatedParticipants.length > 0) {
+            duplicatedParticipants.forEach( (id: string): void => this.highlightDuplicated( id ) )
+        }
+    }
+
+    protected handleParticipantRemoving (participantId: string): void {
+        this.onInputChange(
+            this.value().filter( (content: MovementContentModel): boolean => content.participant.id !== participantId ),
+        )
+    }
+
+    protected handleGroupRemoving (groupName: string): void {
+        this.onInputChange(
+            this.value().filter( (content: MovementContentModel): boolean => content.poolName !== groupName ),
+        )
+    }
+
+    private groupByPoolName (content: MovementContentModel[]): Record<string, ParticipantModel[]> {
+        return content.filter( (value: MovementContentModel): boolean => GenericHelper.nonNull( value.poolName ) )
+                      .reduce( (
+                          acc: Record<string, ParticipantModel[]>,
+                          value: MovementContentModel,
+                      ): Record<string, ParticipantModel[]> => {
+                          (acc[value.poolName!] ||= []).push( value.participant )
+                          return acc
+                      }, {} )
+    }
+
+    private extractOrphanParticipants (content: MovementContentModel[]): ParticipantModel[] {
+        return content.filter( (value: MovementContentModel): boolean => GenericHelper.isNull( value.poolName ) )
+                      .map( (value: MovementContentModel): ParticipantModel => value.participant )
+    }
+
+    private isDuplicates (content: MovementContentModel): boolean {
+        return this.value().some( (value: MovementContentModel): boolean => value.participant.id === content.participant.id )
+    }
+
+    private buildContent (element: ParticipantModel | GroupModel): MovementContentModel[] {
+        if (this.isGroup( element )) {
+            const group: GroupModel = element as GroupModel
+            return group.members?.map(
+                (member: ParticipantModel): MovementContentModel => ({
+                    poolName: group.name,
+                    participant: member,
+                    vehicle: undefined,
+                }),
+            ) ?? []
+        } else {
+            return [
+                {
+                    poolName: undefined,
+                    participant: element as ParticipantModel,
+                    vehicle: undefined,
+                },
+            ]
+        }
+    }
+
+    protected highlightDuplicated (participantId: string): void {
+        this.browser.highlightByDataValue( participantId )
+    }
+
+    private onInputChange (value: MovementContentModel[]): void {
+        this.value.set( value )
+        this.touch.emit()
+    }
+
+    private isGroup (element: ParticipantModel | GroupModel): boolean {
+        return 'name' in element
+    }
+}

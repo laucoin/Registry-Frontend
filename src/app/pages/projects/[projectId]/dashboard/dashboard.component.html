@@ -1,0 +1,161 @@
+<div class='dashboard'>
+    @if (GenericHelper.nonNull(facade.participantsStatusError())) {
+        <app-severity-information [showImage]='false' [message]='facade.participantsStatusError()' />
+    }
+    @if (GenericHelper.nonNull(facade.vehiclesStatusError())) {
+        <app-severity-information [showImage]='false' [message]='facade.vehiclesStatusError()' />
+    }
+    @if (GenericHelper.isNull(facade.participantsStatusError())) {
+        <p-card class='total-participant'>
+            <ng-template #title>
+                <div class='flex justify-center items-center'>
+                    <i class='pi pi-user'></i>
+                    <span class='ms-2'>{{ 'project-home.dashboard.participants.total' | pluralTranslation: totalParticipants() | transloco }}</span>
+                </div>
+            </ng-template>
+            <div class='flex flex-col items-center'>
+                @if (facade.participantsStatusLoading()) {
+                    <p-skeleton class='mt-2 mb-4' width='5rem' height='1.5rem' borderRadius='1rem' />
+                } @else {
+                    <h2>{{ totalParticipants() }}</h2>
+                }
+            </div>
+            <div class='flex'>
+                <div class='sub-count flex flex-col items-center basis-1/2'>
+                    <b>
+                        {{
+                            'project-home.dashboard.participants.present' | pluralTranslation:
+                            (totalPresentRegistered() ?? 0) + (totalGuests() ?? 0) | transloco
+                        }}
+                    </b>
+                    <div class='flex'>
+                        <div class='sub-count flex flex-col items-center basis-1/2'>
+                            @if (facade.participantsStatusLoading()) {
+                                <p-skeleton class='mt-2 mb-1' width='5rem' height='1.5rem' borderRadius='1rem' />
+                            } @else {
+                                <h3>{{ totalPresentRegistered() }}</h3>
+                            }
+                            <small class='mt-1 secondary-color'>{{ 'project-home.dashboard.participants.registered' | pluralTranslation: totalPresentRegistered() | transloco }}</small>
+                        </div>
+                        <p-divider layout='vertical' />
+                        <div class='sub-count flex flex-col items-center basis-1/2'>
+                            @if (facade.participantsStatusLoading()) {
+                                <p-skeleton class='mt-2 mb-1' width='5rem' height='1.5rem' borderRadius='1rem' />
+                            } @else {
+                                <h3>{{ totalGuests() }}</h3>
+                            }
+                            <small class='mt-1 secondary-color'>{{ 'project-home.dashboard.participants.guest' | pluralTranslation: totalGuests() | transloco }}</small>
+                        </div>
+                    </div>
+                </div>
+                <p-divider layout='vertical' />
+                <div class='sub-count flex flex-col items-center basis-1/2'>
+                    <b>{{ 'project-home.dashboard.participants.absent' | pluralTranslation: totalAbsentRegistered() | transloco }}</b>
+                    @if (facade.participantsStatusLoading()) {
+                        <p-skeleton class='mt-2 mb-1' width='5rem' height='1.5rem' borderRadius='1rem' />
+                    } @else {
+                        <h3>{{ totalAbsentRegistered() }}</h3>
+                    }
+                </div>
+            </div>
+            <ng-template #footer>
+                <i class='secondary-color last-refresh'>
+                    {{
+                        'global.date-and-time-format.last-refresh' | transloco
+                            : {
+                                datetime: facade.participantsStatus()?.lastRefresh | dateFormat: 'datetime',
+                            }
+                    }}
+                </i>
+            </ng-template>
+        </p-card>
+    }
+    @if (ProjectHelper.hasOption(sessionFacade.selectedProject(), ProjectOptionEnum.VEHICLE) && GenericHelper.isNull(facade.vehiclesStatusError())) {
+        <p-card class='total-vehicle basis-full md:basis-1/2'>
+            <ng-template #title>
+                <div class='flex justify-center items-center'>
+                    <i class='pi pi-car'></i>
+                    <span class='ms-2'>{{ 'project-home.dashboard.vehicles.total' | pluralTranslation: totalVehicles() | transloco }}</span>
+                </div>
+            </ng-template>
+            <div class='flex flex-col items-center'>
+                @if (facade.vehiclesStatusLoading()) {
+                    <p-skeleton class='mt-2 mb-4' width='5rem' height='1.5rem' borderRadius='1rem' />
+                } @else {
+                    <h2>{{ totalVehicles() }}</h2>
+                }
+            </div>
+            <div class='flex'>
+                <div class='sub-count flex flex-col items-center mb-4 basis-1/2'>
+                    <b>{{ 'project-home.dashboard.vehicles.present' | pluralTranslation: totalPresentVehicles() | transloco }}</b>
+                    @if (facade.vehiclesStatusLoading()) {
+                        <p-skeleton class='mt-2 mb-1' width='5rem' height='1.5rem' borderRadius='1rem' />
+                    } @else {
+                        <h3>{{ totalPresentVehicles() }}</h3>
+                    }
+                </div>
+                <p-divider layout='vertical' />
+                <div class='sub-count flex flex-col items-center mb-4 basis-1/2'>
+                    <b>{{ 'project-home.dashboard.vehicles.absent' | pluralTranslation: totalAbsentVehicles() | transloco }}</b>
+                    @if (facade.vehiclesStatusLoading()) {
+                        <p-skeleton class='mt-2 mb-1' width='5rem' height='1.5rem' borderRadius='1rem' />
+                    } @else {
+                        <h3>{{ totalAbsentVehicles() }}</h3>
+                    }
+                </div>
+            </div>
+            <ng-template #footer>
+                <i class='secondary-color last-refresh'>
+                    {{
+                        'global.date-and-time-format.last-refresh' | transloco
+                            : {
+                                datetime: facade.vehiclesStatus()?.lastRefresh | dateFormat: 'datetime',
+                            }
+                    }}
+                </i>
+            </ng-template>
+        </p-card>
+    }
+</div>
+
+<p-panel styleClass='mt-2'>
+    <ng-template #header>
+        <div class='header-title'>
+            <i class='pi pi-gift'></i>
+            <span class='ms-2'>
+                {{
+                    'project-home.dashboard.birthday' | pluralTranslation: facade.participantsBirthdays() | transloco
+                }}
+            </span>
+        </div>
+    </ng-template>
+    <div class='birthdays'>
+        @for (participant of facade.participantsBirthdays(); track participant.id; ) {
+            <app-element-card [element]='participant'
+                              [actionMenuVisible]='false'
+                              [icon]='participant.type.value === ParticipantTypeEnum.REGISTERED ? "pi pi-user" : "pi pi-user-plus"'>
+                <div class='element-card'>
+                    <div>
+                        <div class='flex' [class.justify-center]='uiFacade.tinyScreen()'>
+                            <app-severity-circle class='me-2'
+                                                 [severity]='participant.visible ? SeverityEnum.SUCCESS : SeverityEnum.DANGER' />
+                            {{ (participant.firstName | titlecase) + ' ' + (participant.lastName | uppercase) }}
+                        </div>
+                    </div>
+                    <div class='flex' [class.justify-center]='uiFacade.tinyScreen()'>
+                        <app-severity-tag [value]='participant.birthday | dateFormat: "date"' />
+                    </div>
+                    <div class='status flex' [class.justify-center]='uiFacade.tinyScreen()'>
+                        <app-severity-tag [severity]='participant.status.value === PresenceStatusEnum.OUT ? SeverityEnum.WARNING : SeverityEnum.SUCCESS'
+                                          [value]='participant.status.label' />
+                    </div>
+                </div>
+            </app-element-card>
+
+        } @empty {
+            <div class='ms-2 mt-2 mb-2'>
+                {{ 'project-home.dashboard.no-birthday' | transloco }}
+            </div>
+        }
+    </div>
+</p-panel>

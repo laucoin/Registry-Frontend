@@ -1,0 +1,57 @@
+<sgdf-table appearance="soft" [label]="'myAccount.personalData.title' | transloco">
+    <sgdf-table-row>
+        <sgdf-table-cell header>
+            <sgdf-icon name="shield-halved" library="solid"/>
+            {{ 'myAccount.personalData.title' | transloco }}
+        </sgdf-table-cell>
+    </sgdf-table-row>
+
+    <sgdf-table-row>
+        <sgdf-table-cell row-header>
+            <div class="grid gap-4 md:grid-cols-2">
+                <div class="flex flex-col gap-3 rounded-md border border-solid border-(--sgdf-color-bg-neutral-active) p-4 md:col-span-2">
+                    <p class="m-0 text-xs text-(--sgdf-color-text-light)">
+                        {{ 'myAccount.personalData.gdprLabel' | transloco }}
+                    </p>
+                    <a class="inline-flex items-center gap-2 text-xs font-semibold text-(--sgdf-color-text-primary) no-underline! hover:underline!"
+                       [routerLink]="privacyRoute">
+                        <sgdf-icon name="shield-halved" library="solid"/>
+                        {{ 'myAccount.personalData.learnMore' | transloco }}
+                    </a>
+                </div>
+
+                <section
+                        class="flex flex-col items-start gap-3 rounded-md border border-solid border-(--sgdf-color-bg-neutral-active) p-4"
+                        aria-labelledby="personal-data-extract-title">
+                    <h3 id="personal-data-extract-title"
+                        class="m-0! font-[inherit]! text-sm! leading-5! font-bold! text-(--sgdf-color-text-heading)">
+                        {{ 'myAccount.personalData.extract.title' | transloco }}
+                    </h3>
+                    <p class="m-0 text-xs text-(--sgdf-color-text-light)">
+                        {{ 'myAccount.personalData.extract.description' | transloco }}
+                    </p>
+                    <sgdf-button class="mt-auto self-center md:self-start" variant="neutral" appearance="outlined">
+                        <sgdf-icon slot="prefix" name="download" library="solid"/>
+                        {{ 'myAccount.personalData.extract.action' | transloco }}
+                    </sgdf-button>
+                </section>
+
+                <section
+                        class="flex flex-col items-start gap-3 rounded-md border border-solid border-(--sgdf-color-bg-neutral-active) p-4"
+                        aria-labelledby="personal-data-delete-title">
+                    <h3 id="personal-data-delete-title"
+                        class="m-0! font-[inherit]! text-sm! leading-5! font-bold! text-(--sgdf-color-text-heading)">
+                        {{ 'myAccount.personalData.delete.title' | transloco }}
+                    </h3>
+                    <p class="m-0 text-xs text-(--sgdf-color-text-light)">
+                        {{ 'myAccount.personalData.delete.description' | transloco }}
+                    </p>
+                    <sgdf-button class="mt-auto self-center md:self-start" variant="danger" appearance="solid">
+                        <sgdf-icon slot="prefix" name="trash" library="solid"/>
+                        {{ 'myAccount.personalData.delete.action' | transloco }}
+                    </sgdf-button>
+                </section>
+            </div>
+        </sgdf-table-cell>
+    </sgdf-table-row>
+</sgdf-table>

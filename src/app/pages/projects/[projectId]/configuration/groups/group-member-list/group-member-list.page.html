@@ -1,0 +1,124 @@
+<div class='mb-2'>
+    @if (groupLoading()) {
+        <p-card>
+            <app-element-skeleton [withIcon]='true' [layout]='uiFacade.tinyScreen() ? "grid" : "list"' />
+        </p-card>
+    } @else if (group()) {
+        <app-group-element [group]='group()!' [actionMenuVisible]='false' />
+    }
+</div>
+
+
+<app-list (updateRequired)='loadPage($event)'
+          [elementPage]='facade.groupMembersPage()'
+          [error]='facade.groupMembersPageError()'
+          [loading]='facade.groupMembersPageLoading()'
+          emptyMessagePrefix='participants.notifications.EMPTY'>
+    <ng-template appTemplate='search' let-pageEvent>
+        <div class='field'>
+            <label for='text-search-field'>{{ 'participants.search-and-filter.text' | transloco }}</label>
+            <input id='text-search-field'
+                   type='text'
+                   fluid
+                   pInputText
+                   (keydown.enter)='loadPage(pageEvent)'
+                   [formField]='form.textSearched' />
+        </div>
+        <div class='grid search-line'>
+            <div class='field'>
+                <label for='status-search-field'>{{ 'participants.search-and-filter.status' | transloco }}</label>
+                <p-select inputId='status-search-field'
+                          fluid
+                          [options]='participantFacade.presencesStatusMetadata()'
+                          optionLabel='label'
+                          optionValue='value'
+                          (onChange)='loadPage(pageEvent)'
+                          [formField]='form.statusSearched' />
+            </div>
+            <div class='field'>
+                <label for='visibility-search-field'>{{ 'participants.search-and-filter.visibility' | transloco }}</label>
+                <p-select inputId='visibility-search-field'
+                          fluid
+                          [options]='participantFacade.visibilitiesMetadata()'
+                          optionLabel='label'
+                          optionValue='value'
+                          (onChange)='loadPage(pageEvent)'
+                          [formField]='form.visibilitySearched' />
+            </div>
+        </div>
+        <div class='flex justify-center'>
+            <p-button (onClick)='loadPage(pageEvent)'
+                      [label]='"global.actions.search-and-filter" | transloco'
+                      outlined
+                      rounded
+                      icon='pi pi-search'
+                      [loading]='facade.groupMembersPageLoading() || facade.groupMembersPageSilentLoading()' />
+        </div>
+    </ng-template>
+    <ng-template appTemplate='element' let-participant>
+        <app-participant-element [participant]='participant' [groupIdToRemove]='group()?.id' />
+    </ng-template>
+    <ng-template appTemplate='creation'>
+        @if (CurrentUserHelper.hasProjectAuthority(sessionFacade.currentUser(), facade.selectedProjectId(), ProjectAuthority.REGISTRY_PROJECT_GROUP_U)) {
+            <p-button (onClick)='initAddMembersForm()'
+                      class='m-1'
+                      severity='info'
+                      rounded
+                      outlined
+                      [label]='uiFacade.tinyScreen() ? "" : "groups.actions.add-members" | transloco'
+                      icon='pi pi-user-plus' />
+        }
+        @if (CurrentUserHelper.hasProjectAuthority(sessionFacade.currentUser(), facade.selectedProjectId(), ProjectAuthority.REGISTRY_PROJECT_PARTICIPANT_C)
+             && CurrentUserHelper.hasProjectAuthority(sessionFacade.currentUser(), facade.selectedProjectId(), ProjectAuthority.REGISTRY_PROJECT_GROUP_U)) {
+            <p-button (onClick)='initCreateMemberForm()'
+                      class='m-1'
+                      severity='success'
+                      rounded
+                      outlined
+                      [label]='uiFacade.tinyScreen() ? "" : "groups.actions.create-member" | transloco'
+                      icon='pi pi-plus' />
+        }
+    </ng-template>
+</app-list>
+
+<app-layer [(visible)]='addMembersFormLayerOpened'
+           [title]='"groups.actions.add-members" | transloco'>
+    <div>
+            <div class='field'>
+                <span class='label'
+                      appRequired>{{ 'groups.form.members' | pluralTranslation: addMembersModel().participants | transloco }}</span>
+                <label for='members' class='secondary-color'>{{ 'groups.form.members.search' | transloco }}</label>
+                <app-select-elements-field [formField]='addMembersForm.participants' [suggestions]='facade.searchedParticipantsMetadata()'
+                                           [fluid]='true'
+                                           [selectItemBuilder]='ParticipantHelper.toSelectItem'
+                                           [selectionLabel]='"groups.form.members.selected" | pluralTranslation: addMembersModel().participants |
+                                       transloco'
+                                           [emptyMessage]='"groups.form.members.empty" | transloco'
+                                           [emptySelectionMessage]='"groups.form.members.empty-search" | transloco'
+                                           inputId='members'
+                                           (handleSearch)='handleSearch($event.query)' />
+                <app-field-error [field]='addMembersForm.participants' translationPrefix='groups.form.error.add-members' />
+            </div>
+
+            <div class='flex mt-2 justify-center'>
+                <p-button
+                        (onClick)='addMembersFormLayerOpened.set(false)'
+                        [label]='"global.actions.cancel" | transloco'
+                        text
+                        rounded />
+                <p-button
+                        class='ms-2'
+                        (onClick)='addMembers()'
+                        [label]='"groups.actions.add" | transloco'
+                        rounded
+                        outlined
+                        icon='pi pi-user-plus'
+                        severity='success' />
+            </div>
+    </div>
+</app-layer>
+
+<app-layer [(visible)]='createMemberFormLayerOpened'
+           [title]='"groups.actions.create-member" | transloco'>
+    <app-participant-form [defaultGroup]='group()' [showTitle]='false' [redirect]='false' />
+</app-layer>

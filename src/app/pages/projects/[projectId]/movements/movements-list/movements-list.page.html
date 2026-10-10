@@ -1,0 +1,75 @@
+<app-list (updateRequired)='loadPage($event)'
+          [elementPage]='facade.movementsPage()'
+          [error]='facade.movementsPageError()'
+          [loading]='facade.movementsPageLoading()'
+          emptyMessagePrefix='movements.notifications.EMPTY'>
+    <ng-template appTemplate='search' let-pageEvent>
+        <div class='grid search-line'>
+            <div class='field'>
+                <label for='start-date-time-search-field'>{{ 'movements.search-and-filter.start-datetime' | transloco }}</label>
+                <p-date-picker inputId='start-date-time-search-field'
+                               fluid
+                               showButtonBar
+                               [showTime]='true'
+                               [touchUI]='uiFacade.tinyScreen()'
+                               (onBlur)='loadPage(pageEvent)'
+                               [formField]='form.startDateTimeSearched' />
+            </div>
+            <div class='field'>
+                <label for='end-date-time-search-field'>{{ 'movements.search-and-filter.end-datetime' | transloco }}</label>
+                <p-date-picker inputId='end-date-time-search-field'
+                               fluid
+                               showButtonBar
+                               [showTime]='true'
+                               [touchUI]='uiFacade.tinyScreen()'
+                               (onBlur)='loadPage(pageEvent)'
+                               [formField]='form.endDateTimeSearched' />
+            </div>
+        </div>
+        <div class='grid search-line'>
+            <div class='field'>
+                <label for='type-search-field'>{{ 'movements.search-and-filter.type' | transloco }}</label>
+                <p-select inputId='type-search-field'
+                          fluid
+                          [loading]='!facade.movementTypesMetadata()'
+                          [options]='facade.movementTypesMetadata()'
+                          optionLabel='label'
+                          optionValue='value'
+                          (onChange)='loadPage(pageEvent)'
+                          [formField]='form.typeSearched' />
+            </div>
+            <div class='field'>
+                <label for='visibility-search-field'>{{ 'movements.search-and-filter.visibility' | transloco }}</label>
+                <p-select inputId='visibility-search-field'
+                          fluid
+                          [options]='facade.visibilitiesMetadata()'
+                          optionLabel='label'
+                          optionValue='value'
+                          (onChange)='loadPage(pageEvent)'
+                          [formField]='form.visibilitySearched' />
+            </div>
+        </div>
+        <div class='flex justify-center'>
+            <p-button (onClick)='loadPage(pageEvent)'
+                      [label]='"global.actions.search-and-filter" | transloco'
+                      outlined
+                      rounded
+                      icon='pi pi-search'
+                      [loading]='facade.movementsPageLoading() || facade.movementsPageSilentLoading()' />
+        </div>
+    </ng-template>
+    <ng-template appTemplate='element' let-movement>
+        <app-movement-element [movement]='movement' />
+    </ng-template>
+    <ng-template appTemplate='creation'>
+        @if (CurrentUserHelper.hasProjectAuthority(sessionFacade.currentUser(), facade.selectedProjectId(), ProjectAuthority.REGISTRY_PROJECT_MOVEMENT_C)) {
+            <p-button class='m-1'
+                      severity='success'
+                      outlined
+                      rounded
+                      [label]='uiFacade.tinyScreen() ? "" : "global.actions.create" | transloco'
+                      icon='pi pi-plus'
+                      [routerLink]='MovementRoutesEnum.CREATE' />
+        }
+    </ng-template>
+</app-list>

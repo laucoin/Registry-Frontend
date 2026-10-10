@@ -1,0 +1,74 @@
+<app-list (updateRequired)='loadPage($event)'
+          [elementPage]='facade.activitiesPage()'
+          [error]='facade.activitiesPageError()'
+          [loading]='facade.activitiesPageLoading()'
+          emptyMessagePrefix='activities.notifications.EMPTY'>
+    <ng-template appTemplate='search' let-pageEvent>
+        <div class='grid search-line'>
+            <div class='field'>
+                <label for='text-search-field'>{{ 'activities.search-and-filter.text' | transloco }}</label>
+                <input id='text-search-field'
+                       type='text'
+                       fluid
+                       pInputText
+                       (keydown.enter)='loadPage(pageEvent)'
+                       [formField]='form.textSearched' />
+            </div>
+            <div class='field'>
+                <label for='date-time-search-field'>{{ 'activities.search-and-filter.datetime' | transloco }}</label>
+                <p-date-picker inputId='date-time-search-field'
+                               fluid
+                               showButtonBar
+                               [showTime]='true'
+                               [touchUI]='uiFacade.tinyScreen()'
+                               (onBlur)='loadPage(pageEvent)'
+                               [formField]='form.dateTimeSearched' />
+            </div>
+        </div>
+        <div class='grid search-line'>
+            <div class='field'>
+                <label for='availability-search-field'>{{ 'activities.search-and-filter.availability' | transloco }}</label>
+                <p-select inputId='availability-search-field'
+                          fluid
+                          [options]='facade.availabilitiesMetadata()'
+                          optionLabel='label'
+                          optionValue='value'
+                          (onChange)='loadPage(pageEvent)'
+                          [formField]='form.availabilitySearched' />
+            </div>
+            <div class='field'>
+                <label for='visibility-search-field'>{{ 'activities.search-and-filter.visibility' | transloco }}</label>
+                <p-select inputId='visibility-search-field'
+                          fluid
+                          [options]='facade.visibilitiesMetadata()'
+                          optionLabel='label'
+                          optionValue='value'
+                          (onChange)='loadPage(pageEvent)'
+                          [formField]='form.visibilitySearched' />
+            </div>
+        </div>
+        <div class='flex justify-center'>
+            <p-button (onClick)='loadPage(pageEvent)'
+                      [label]='"global.actions.search-and-filter" | transloco'
+                      outlined
+                      rounded
+                      icon='pi pi-search'
+                      [loading]='facade.activitiesPageLoading() || facade.activitiesPageSilentLoading()' />
+        </div>
+    </ng-template>
+    <ng-template appTemplate='element' let-activity>
+        <app-activity-element [activity]='activity' />
+    </ng-template>
+    <ng-template appTemplate='creation'>
+        @if (CurrentUserHelper.hasProjectAuthority(sessionFacade.currentUser(), facade.selectedProjectId(),
+                                                 ProjectAuthority.REGISTRY_PROJECT_ACTIVITY_C)) {
+            <p-button class='m-1'
+                      severity='success'
+                      outlined
+                      rounded
+                      [label]='uiFacade.tinyScreen() ? "" : "global.actions.create" | transloco'
+                      icon='pi pi-plus'
+                      [routerLink]='ActivityRoutesEnum.CREATE' />
+        }
+    </ng-template>
+</app-list>

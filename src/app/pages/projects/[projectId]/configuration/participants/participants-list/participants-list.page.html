@@ -1,0 +1,61 @@
+<app-list (updateRequired)='loadPage($event)'
+          [elementPage]='facade.participantsPage()'
+          [error]='facade.participantsPageError()'
+          [loading]='facade.participantsPageLoading()'
+          emptyMessagePrefix='participants.notifications.EMPTY'>
+    <ng-template appTemplate='search' let-pageEvent>
+        <div class='field'>
+            <label for='text-search-field'>{{ 'participants.search-and-filter.text' | transloco }}</label>
+            <input id='text-search-field'
+                   type='text'
+                   fluid
+                   pInputText
+                   (keydown.enter)='loadPage(pageEvent)'
+                   [formField]='form.textSearched' />
+        </div>
+        <div class='grid search-line'>
+            <div class='field'>
+                <label for='status-search-field'>{{ 'participants.search-and-filter.status' | transloco }}</label>
+                <p-select inputId='status-search-field'
+                          fluid
+                          [options]='facade.presencesStatusMetadata()'
+                          optionLabel='label'
+                          optionValue='value'
+                          (onChange)='loadPage(pageEvent)'
+                          [formField]='form.statusSearched' />
+            </div>
+            <div class='field'>
+                <label for='visibility-search-field'>{{ 'participants.search-and-filter.visibility' | transloco }}</label>
+                <p-select inputId='visibility-search-field'
+                          fluid
+                          [options]='facade.visibilitiesMetadata()'
+                          optionLabel='label'
+                          optionValue='value'
+                          (onChange)='loadPage(pageEvent)'
+                          [formField]='form.visibilitySearched' />
+            </div>
+        </div>
+        <div class='flex justify-center'>
+            <p-button (onClick)='loadPage(pageEvent)'
+                      [label]='"global.actions.search-and-filter" | transloco'
+                      outlined
+                      rounded
+                      icon='pi pi-search'
+                      [loading]='facade.participantsPageLoading() || facade.participantsPageSilentLoading()' />
+        </div>
+    </ng-template>
+    <ng-template appTemplate='element' let-participant>
+        <app-participant-element [participant]='participant' />
+    </ng-template>
+    <ng-template appTemplate='creation'>
+        @if (CurrentUserHelper.hasProjectAuthority(sessionFacade.currentUser(), facade.selectedProjectId(), ProjectAuthority.REGISTRY_PROJECT_PARTICIPANT_C)) {
+            <p-button class='m-1'
+                      severity='success'
+                      outlined
+                      rounded
+                      [label]='uiFacade.tinyScreen() ? "" : "global.actions.create" | transloco'
+                      icon='pi pi-plus'
+                      [routerLink]='ParticipantRoutesEnum.CREATE' />
+        }
+    </ng-template>
+</app-list>

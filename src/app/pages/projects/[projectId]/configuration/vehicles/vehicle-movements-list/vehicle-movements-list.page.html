@@ -1,0 +1,75 @@
+<div class='mb-2'>
+    @if (vehicleLoading()) {
+        <p-card>
+            <app-element-skeleton [withIcon]='true' [layout]='uiFacade.tinyScreen() ? "grid" : "list"' />
+        </p-card>
+    } @else if (vehicle()) {
+        <app-vehicle-element [vehicle]='vehicle()!'
+                             [actionMenuVisible]='false' />
+    }
+</div>
+
+<app-list (updateRequired)='loadPage($event)'
+          [elementPage]='facade.vehicleMovementsPage()'
+          [error]='facade.vehicleMovementsPageError()'
+          [loading]='facade.vehicleMovementsPageLoading()'
+          emptyMessagePrefix='movements.notifications.EMPTY'>
+    <ng-template appTemplate='search' let-pageEvent>
+        <div class='grid search-line'>
+            <div class='field'>
+                <label for='start-date-time-search-field'>{{ 'movements.search-and-filter.start-datetime' | transloco }}</label>
+                <p-date-picker inputId='start-date-time-search-field'
+                               fluid
+                               showButtonBar
+                               [showTime]='true'
+                               [touchUI]='uiFacade.tinyScreen()'
+                               (onBlur)='loadPage(pageEvent)'
+                               [formField]='form.startDateTimeSearched' />
+            </div>
+            <div class='field'>
+                <label for='end-date-time-search-field'>{{ 'movements.search-and-filter.end-datetime' | transloco }}</label>
+                <p-date-picker inputId='end-date-time-search-field'
+                               fluid
+                               showButtonBar
+                               [showTime]='true'
+                               [touchUI]='uiFacade.tinyScreen()'
+                               (onBlur)='loadPage(pageEvent)'
+                               [formField]='form.endDateTimeSearched' />
+            </div>
+        </div>
+        <div class='grid search-line'>
+            <div class='field'>
+                <label for='type-search-field'>{{ 'movements.search-and-filter.type' | transloco }}</label>
+                <p-select inputId='type-search-field'
+                          fluid
+                          [loading]='!movementFacade.movementTypesMetadata()'
+                          [options]='movementFacade.movementTypesMetadata()'
+                          optionLabel='label'
+                          optionValue='value'
+                          (onChange)='loadPage(pageEvent)'
+                          [formField]='form.typeSearched' />
+            </div>
+            <div class='field'>
+                <label for='visibility-search-field'>{{ 'movements.search-and-filter.visibility' | transloco }}</label>
+                <p-select inputId='visibility-search-field'
+                          fluid
+                          [options]='facade.visibilitiesMetadata()'
+                          optionLabel='label'
+                          optionValue='value'
+                          (onChange)='loadPage(pageEvent)'
+                          [formField]='form.visibilitySearched' />
+            </div>
+        </div>
+        <div class='flex justify-center'>
+            <p-button (onClick)='loadPage(pageEvent)'
+                      [label]='"global.actions.search-and-filter" | transloco'
+                      outlined
+                      rounded
+                      icon='pi pi-search'
+                      [loading]='facade.vehicleMovementsPageLoading() || facade.vehicleMovementsPageSilentLoading()' />
+        </div>
+    </ng-template>
+    <ng-template appTemplate='element' let-movement>
+        <app-movement-element [movement]='movement' [vehicleId]='vehicle()?.id' />
+    </ng-template>
+</app-list>

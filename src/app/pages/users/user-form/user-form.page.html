@@ -1,0 +1,34 @@
+<app-form [form]='form'
+          [loading]='facade.userLoading()'
+          [title]='"users.form.title" | transloco: { firstName: facade.user()?.firstName, lastName: facade.user()?.lastName }'>
+    <p-card>
+        <div class='field'>
+            <label for='role' appRequired>{{ 'users.form.role' | transloco }}</label>
+            <p-select
+                    inputId='role'
+                    fluid
+                    [options]='facade.assignableRolesMetadata()'
+                    [formField]='form.role'
+                    (keydown.enter)='submit()'
+                    optionLabel='label'
+                    optionValue='value' />
+            <small class='secondary-color'>{{ 'users.form.hint.role' | transloco }}</small>
+            <app-field-error [field]='form.role' translationPrefix='users.form.error.role' />
+        </div>
+    </p-card>
+    <div class='flex mt-2 justify-center'>
+        <p-button
+                (onClick)='navigateToRedirectUri()'
+                [label]='"global.actions.cancel" | transloco'
+                text
+                rounded />
+        <p-button
+                class='ms-2'
+                (onClick)='submit()'
+                [label]='"global.actions.edit" | transloco'
+                rounded
+                outlined
+                icon='pi pi-pen-to-square'
+                severity='success' />
+    </div>
+</app-form>

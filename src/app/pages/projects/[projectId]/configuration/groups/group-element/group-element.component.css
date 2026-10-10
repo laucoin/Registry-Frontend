@@ -1,0 +1,8 @@
+.group-name {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+::ng-deep .max-list-box-height {
+  height: 100%;
+}

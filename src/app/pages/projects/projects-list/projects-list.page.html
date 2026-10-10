@@ -1,0 +1,88 @@
+<app-list (updateRequired)='loadPage($event)'
+          [elementPage]='facade.projectsPage()'
+          [error]='facade.projectsPageError()'
+          [loading]='facade.projectsPageLoading()'
+          emptyMessagePrefix='projects.notifications.EMPTY'>
+    <ng-template appTemplate='search' let-pageEvent>
+        <div class='field'>
+            <label for='text-search-field'>{{ 'projects.search-and-filter.text' | transloco }}</label>
+            <input id='text-search-field'
+                   type='text'
+                   fluid
+                   pInputText
+                   (keydown.enter)='loadPage(pageEvent)'
+                   [formField]='form.textSearched' />
+        </div>
+        <div class='grid search-line'>
+            <div class='field'>
+                <label for='date-time-search-field'>{{ 'projects.search-and-filter.datetime' | transloco }}</label>
+                <p-date-picker inputId='date-time-search-field'
+                               fluid
+                               showButtonBar
+                               [showTime]='true'
+                               [touchUI]='uiFacade.tinyScreen()'
+                               (onBlur)='loadPage(pageEvent)'
+                               [formField]='form.dateTimeSearched' />
+            </div>
+            <div class='field'>
+                <label for='visibility-search-field'>{{ 'projects.search-and-filter.visibility' | transloco }}</label>
+                <p-select inputId='visibility-search-field'
+                          fluid
+                          [options]='facade.visibilitiesMetadata()'
+                          optionLabel='label'
+                          optionValue='value'
+                          (onChange)='loadPage(pageEvent)'
+                          [formField]='form.visibilitySearched' />
+            </div>
+        </div>
+        <div class='flex justify-around'>
+            @if (CurrentUserHelper.hasUserAuthority(sessionFacade.currentUser(), UserAuthority.REGISTRY_PROJECT_R)) {
+                <div class='flex items-center'>
+                    <label for='with-profile-search-field'
+                           class='me-2'>{{ 'projects.search-and-filter.with-profile' | transloco }}</label>
+                    <p-toggle-switch inputId='with-profile-search-field'
+                                     (onChange)='loadPage(pageEvent)'
+                                     [formField]='form.withProfile' />
+                </div>
+            }
+            <p-button (onClick)='loadPage(pageEvent)'
+                      [label]='"global.actions.search-and-filter" | transloco'
+                      outlined
+                      rounded
+                      icon='pi pi-search'
+                      [loading]='facade.projectsPageLoading() || facade.projectsPageSilentLoading()' />
+        </div>
+    </ng-template>
+    <ng-template appTemplate='creation'>
+        @if (CurrentUserHelper.hasUserAuthority(sessionFacade.currentUser(), UserAuthority.REGISTRY_PROJECT_C)) {
+            <p-button class='m-1'
+                      severity='success'
+                      outlined
+                      rounded
+                      [label]='uiFacade.tinyScreen() ? "" : "global.actions.create" | transloco'
+                      icon='pi pi-plus'
+                      [routerLink]='ProjectRoutesEnum.CREATE' />
+        }
+    </ng-template>
+    <ng-template appTemplate='element' let-project>
+        <app-project-element [project]='project' />
+    </ng-template>
+    @if (!hasFilters()) {
+        <ng-template appTemplate='empty'>
+            <div class='p-6'>
+                <h2>{{ 'global.welcome.title' | transloco }}</h2>
+                <app-info />
+                <div class='flex flex-col justify-center items-center'>
+                    <p>{{ 'global.welcome.begin' | transloco }}</p>
+                    <p-button class='m-1'
+                              severity='success'
+                              outlined
+                              rounded
+                              [label]='"global.welcome.create-project" | transloco'
+                              icon='pi pi-plus'
+                              [routerLink]='ProjectRoutesEnum.CREATE' />
+                </div>
+            </div>
+        </ng-template>
+    }
+</app-list>

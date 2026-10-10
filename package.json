@@ -5,7 +5,10 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "test:coverage": "ng test --watch=false --coverage",
+    "test": "ng test",
+    "prepare": "husky"
   },
   "private": true,
   "packageManager": "pnpm@12.4.1",
@@ -17,26 +20,33 @@
     "@angular/forms": "^22.1.5",
     "@angular/platform-browser": "^22.1.5",
     "@angular/router": "^22.1.5",
-    "@ngx-translate/core": "^18.0.0",
-    "@ngx-translate/http-loader": "^18.0.0",
-    "@ngxs/store": "^22.0.0",
-    "@primeuix/themes": "^3.0.0",
-    "angular-eslint": "^22.2.0",
-    "bootstrap": "^5.3.8",
-    "primeicons": "^8.0.0",
-    "primeng": "^22.1.0",
+    "@awesome.me/webawesome": "~3.14.0",
+    "@jsverse/transloco": "^8.4.0",
+    "@ngrx/signals": "^22.0.1",
+    "@sgdf/ui": "file:/private/tmp/claude-501/-Users-laucoin-Documents-Development-Personal-Registry-Registry-Frontend/a1ca2eec-201b-4b02-bb83-d398516c1fca/scratchpad/sgdf-ui-local-2.tgz",
+    "primeicons": "^8.0.2",
+    "primeng": "^22.1.2",
     "rxjs": "~7.8.2",
-    "tslib": "^2.8.1",
-    "zone.js": "~0.16.3"
+    "tslib": "^2.8.1"
   },
   "devDependencies": {
+    "@angular-devkit/schematics": "^22.2.2",
     "@angular/build": "^22.1.7",
     "@angular/cli": "^22.1.7",
     "@angular/compiler-cli": "^22.1.5",
     "@eslint/js": "^10.0.1",
-    "@ngxs/devtools-plugin": "^22.0.0",
+    "@schematics/angular": "22.2.2",
+    "@tailwindcss/postcss": "^4.3.3",
+    "@vitest/coverage-v8": "4.1.11",
+    "angular-eslint": "^22.5.0",
     "eslint": "^10.8.1",
+    "husky": "^9.1.7",
+    "jsdom": "^30.1.2",
+    "ng-mocks": "^14.18.1",
+    "postcss": "^8.5.29",
+    "tailwindcss": "^4.3.3",
     "typescript": "~6.0.3",
-    "typescript-eslint": "^8.69.0"
+    "typescript-eslint": "^8.69.0",
+    "vitest": "^4.1.11"
   }
 }

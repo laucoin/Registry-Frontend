@@ -1,0 +1,65 @@
+<app-element-card [element]='participant()'
+                  [actions]='actions()'
+                  [actionMenuVisible]='actionMenuVisible()'
+                  [icon]='participant().type.value === ParticipantTypeEnum.REGISTERED ? "pi pi-user" : "pi pi-user-plus"'>
+    <div class='element-card'>
+        <div class='participant-info basis-full 2xl:basis-[30%]'>
+            <div class='participant-name flex' [class.justify-center]='uiFacade.tinyScreen()'>
+                <app-severity-circle class='me-2' [severity]='participant().visible ? SeverityEnum.SUCCESS : SeverityEnum.DANGER' />
+                {{ (participant().firstName | titlecase) + ' ' + (participant().lastName | uppercase) }}
+            </div>
+            @if (participant().startAvailability) {
+                <div class='flex mt-1 content-center' [class.justify-center]='uiFacade.tinyScreen()'>
+                    <i class='pi pi-play-circle'></i>
+                    <span class='ms-1'> {{ participant().startAvailability | customDateFormat }}</span>
+                </div>
+            }
+            @if (participant().endAvailability) {
+                <div class='flex content-center'
+                     [class.justify-center]='uiFacade.tinyScreen()'
+                     [class.mt-1]='!participant().startAvailability'>
+                    <i class='pi pi-stop-circle'></i>
+                    <span class='ms-1'> {{ participant().endAvailability | customDateFormat }}</span>
+                </div>
+            }
+        </div>
+        <div class='groups flex basis-full 2xl:basis-[35%]' [class.justify-center]='uiFacade.tinyScreen()'>
+            <button type='button'
+                    [class.pointer]='additionalTotal() >= 0'
+                    [class.hover-underline]='additionalTotal() >= 0'
+                    [disabled]='additionalTotal() < 0'
+                    (click)='layerOpened.set(true)'>
+                @if (additionalTotal() === 0) {
+                    {{ participant().groups?.[0]?.name }}
+                } @else {
+                    {{
+                        'participants.group' | pluralTranslation: additionalTotal() + 1 | transloco: {
+                            name: participant().groups?.[0]?.name,
+                            others: additionalTotal(),
+                        }
+                    }}
+                }
+            </button>
+        </div>
+        <div class='status flex basis-full 2xl:basis-[35%]' [class.justify-center]='uiFacade.tinyScreen()'>
+            <app-severity-tag [severity]='participantStatusSeverity()' [value]='participant().status.label' />
+        </div>
+    </div>
+</app-element-card>
+
+<app-layer [(visible)]='layerOpened'
+           [title]='"participants.group-layer-title" | pluralTranslation: participant().groups | transloco'>
+    <p-listbox
+            styleClass='max-list-box-height'
+            scrollHeight='100%'
+            [options]='participant().groups ?? []'
+            readonly
+            optionLabel='name'>
+        <ng-template #item let-group>
+            <div class='flex items-center'>
+                <p-avatar icon='pi pi-sitemap' class='me-2' shape='circle' />
+                <div>{{ group.name }}</div>
+            </div>
+        </ng-template>
+    </p-listbox>
+</app-layer>

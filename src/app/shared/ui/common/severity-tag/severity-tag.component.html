@@ -1,0 +1,12 @@
+@if (uiFacade.theme()) {
+    <p-tag [severity]='uiFacade.theme() === "dark" ? undefined : "secondary"'>
+        @if (severity()) {
+            <app-severity-circle [severity]='severity()' />
+        }
+        @if (value()) {
+            <span>{{ value() }}</span>
+        } @else {
+            <ng-content />
+        }
+    </p-tag>
+}

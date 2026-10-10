@@ -1,0 +1,13 @@
+:host {
+    display: block;
+}
+
+.login-hero {
+    background: linear-gradient(160deg, var(--sgdf-color-bleu-institutionnel-600) 0%, var(--sgdf-color-bleu-institutionnel-800) 45%, var(--sgdf-color-bleu-institutionnel-950) 100%);
+}
+
+.login-hero__scrim {
+    background:
+        radial-gradient(circle at 20% 15%, rgb(255 255 255 / 0.1), transparent 40%),
+        linear-gradient(to top, rgb(4 18 27 / 0.88) 0%, rgb(8 30 44 / 0.45) 28%, transparent 55%);
+}

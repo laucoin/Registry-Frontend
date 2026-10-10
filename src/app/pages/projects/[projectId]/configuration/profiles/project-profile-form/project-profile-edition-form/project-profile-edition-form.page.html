@@ -1,0 +1,77 @@
+<app-form [form]='form'
+          [loading]='loading()'
+          [error]='error()'
+          [title]='"project-profiles.form.title.edit" | transloco: {
+                firstName: projectProfile()?.user?.firstName,
+                lastName: projectProfile()?.user?.lastName,
+          }'>
+    @if (projectProfile()) {
+        <div class='mb-2'>
+            <app-user-element [user]='projectProfile()!.user!' [actionMenuVisible]='false' />
+        </div>
+    }
+    <p-card>
+        <div>
+            <div class='field'>
+                <label for='roles' appRequired>{{ 'project-profiles.form.role' | transloco }}</label>
+                <p-select
+                        inputId='roles'
+                        fluid
+                        [options]='facade.projectProfileAssignableRolesMetadata()'
+                        [formField]='form.role'
+                        (keydown.enter)='submit()'
+                        optionLabel='label'
+                        optionValue='value' />
+                <small class='secondary-color'>{{ 'project-profiles.form.hint.role' | transloco }}</small>
+                <app-field-error [field]='form.role' translationPrefix='project-profiles.form.error.role' />
+            </div>
+            <div class='flex flex-wrap'>
+                <div class='left-field field'>
+                    <label for='begin-date-time'>{{ 'project-profiles.form.begin-datetime' | transloco }}</label>
+                    <app-date-time-field [formField]='form.beginDateTime'
+                                         inputId='begin-date-time'
+                                         [datePlaceholder]='"project-profiles.form.placeholder.date" | transloco: {
+                                                            date: startDateExample | dateFormat: "date"
+                                                         }'
+                                         [timePlaceholder]='"project-profiles.form.placeholder.time" | transloco: {
+                                                            date: startDateExample | dateFormat: "time"
+                                                         }' />
+                    <small class='secondary-color'>{{ 'project-profiles.form.hint.begin-date-time' | transloco }}</small>
+                    <app-field-error [field]='form.beginDateTime' translationPrefix='project-profiles.form.error.begin-datetime' />
+                </div>
+                <div class='right-field field'>
+                    <label for='end-date-time'>{{ 'project-profiles.form.end-datetime' | transloco }}</label>
+                    <app-date-time-field [formField]='form.endDateTime'
+                                         inputId='end-date-time'
+                                         [datePlaceholder]='"project-profiles.form.placeholder.date" | transloco: {
+                                                            date: startDateExample | dateFormat: "date"
+                                                         }'
+                                         [timePlaceholder]='"project-profiles.form.placeholder.time" | transloco: {
+                                                            date: startDateExample | dateFormat: "time"
+                                                         }' />
+                    <small class='secondary-color'>{{ 'project-profiles.form.hint.end-date-time' | transloco }}</small>
+                    <app-field-error [field]='form.endDateTime' translationPrefix='project-profiles.form.error.end-datetime' />
+                </div>
+            </div>
+            @if (form.beginDateTime().valid() && form.endDateTime().valid()) {
+                <app-field-error [field]='form' translationPrefix='project-profiles.form.error.date-range' />
+            }
+        </div>
+    </p-card>
+    <div class='mt-2 flex justify-center'>
+        <p-button
+                (onClick)='navigateToRedirectUri()'
+                [label]='"global.actions.cancel" | transloco'
+                text
+                rounded />
+        <p-button
+                class='ms-2'
+                (onClick)='submit()'
+                [label]='"global.actions.edit" | transloco'
+                rounded
+                outlined
+                icon='pi pi-pen-to-square'
+                [disabled]='saving()'
+                severity='success' />
+    </div>
+</app-form>

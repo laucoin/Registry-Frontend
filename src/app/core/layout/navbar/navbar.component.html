@@ -1,0 +1,66 @@
+<sgdf-navbar torn label="Navigation, fond plein" subnav-label="Projet, fond plein">
+    <a slot="brand" [routerLink]="RegistryRouteEnum.PROJECTS"
+       [attr.aria-label]="application.name"
+       class="flex items-center gap-3 no-underline!">
+        <sgdf-icon class="text-3xl [--picto-color:white]" name="logo-symbole" library="sgdf-picto"/>
+        <ng-container class="hidden flex-col md:flex"
+                      [ngTemplateOutlet]="title"
+                      [ngTemplateOutletContext]="{ $implicit: application.name, subTitle: application.organization }"/>
+    </a>
+
+    @for (menu of appMenus(); track menu.url) {
+        <ng-container [ngTemplateOutlet]="navItem" [ngTemplateOutletContext]="{ $implicit: menu, slot: 'end' }"/>
+    }
+
+
+    @for (menu of projectMenus(); track menu.url) {
+        <ng-container [ngTemplateOutlet]="navItem" [ngTemplateOutletContext]="{ $implicit: menu, slot: 'subnav' }"/>
+    }
+    @if (currentUser(); as user) {
+        <sgdf-menu slot="actions" placement="bottom-end">
+            <button slot="trigger"
+                    type="button"
+                    class="flex cursor-pointer items-center gap-3 border-0 bg-transparent p-0 text-left font-[inherit] text-inherit"
+                    [attr.aria-label]="'navbar.user.menu' | transloco: { name: userFullName() }">
+                <sgdf-avatar [attr.initials]="userInitials()" variant="info" appearance="solid"/>
+                <span class="hidden flex-col md:flex">
+                    <strong>{{ userFullName() }}</strong>
+                    @if (user.role?.label; as roleLabel) {
+                        <small class="text-xs opacity-80">{{ roleLabel }}</small>
+                    }
+                </span>
+                <sgdf-icon name="chevron-down" library="solid"/>
+            </button>
+            @for (menu of userMenus(); track menu.url) {
+                <ng-container [ngTemplateOutlet]="menuItem" [ngTemplateOutletContext]="{ $implicit: menu }"/>
+            }
+            <sgdf-divider/>
+            <ng-container [ngTemplateOutlet]="menuItem"
+                          [ngTemplateOutletContext]="{ $implicit: logoutMenu, variant: 'danger', action: logout }"/>
+        </sgdf-menu>
+    }
+</sgdf-navbar>
+
+<ng-template #title let-title let-subTitle="subTitle">
+    <span class="flex flex-col text-white">
+        <strong>{{ title }}</strong>
+        <small class="text-xs opacity-80">{{ subTitle }}</small>
+    </span>
+</ng-template>
+
+<ng-template #navItem let-menu let-slot="slot">
+    @let current = activeMenuUrl() === menu.url;
+    <sgdf-nav-item [slot]="slot" [routerLink]="menu.url" [current]="current">
+        @if (menu.icon) {
+            <sgdf-icon slot="icon" [attr.name]="menu.icon.name" [library]="menu.icon.library"></sgdf-icon>
+        }
+        {{ menu.label | transloco }}
+    </sgdf-nav-item>
+</ng-template>
+
+<ng-template #menuItem let-menu let-variant="variant" let-action="action">
+    <sgdf-menu-item [routerLink]="menu.url" [attr.variant]="variant" (click)="action?.()">
+        <sgdf-icon slot="icon" [attr.name]="menu.icon.name" [library]="menu.icon.library"></sgdf-icon>
+        {{ menu.label | transloco }}
+    </sgdf-menu-item>
+</ng-template>

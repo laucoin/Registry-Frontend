@@ -1,0 +1,40 @@
+<app-element-card [element]='group()'
+                  [actionMenuVisible]='actionMenuVisible()'
+                  [actions]='actions()'
+                  icon='pi pi-users'>
+    <div class='element-card'>
+        <div class='group-info basis-full md:basis-[33%]'>
+            <div class='group-name flex' [class.justify-center]='uiFacade.tinyScreen()'>
+                <app-severity-circle class='me-2' [severity]='group().visible ? SeverityEnum.SUCCESS : SeverityEnum.DANGER' />
+                {{ (group().name | titlecase) }}
+            </div>
+            @if (group().startAvailability) {
+                <div class='flex mt-1 content-center' [class.justify-center]='uiFacade.tinyScreen()'>
+                    <i class='pi pi-play-circle'></i>
+                    <span class='ms-1'> {{ group().startAvailability | customDateFormat }}</span>
+                </div>
+            }
+            @if (group().endAvailability) {
+                <div class='flex content-center'
+                     [class.justify-center]='uiFacade.tinyScreen()'
+                     [class.mt-1]='!group().startAvailability'>
+                    <i class='pi pi-stop-circle'></i>
+                    <span class='ms-1'> {{ group().endAvailability | customDateFormat }}</span>
+                </div>
+            }
+        </div>
+        <div class='members flex basis-full md:basis-[33%]' [class.justify-center]='uiFacade.tinyScreen()'>
+            {{ 'groups.member' | pluralTranslation: group().membersCount | transloco: { count: group().membersCount } }}
+            (
+            <app-severity-circle [severity]='SeverityEnum.SUCCESS' />
+             {{ group().insideMembersCount }}, 
+            <app-severity-circle [severity]='SeverityEnum.WARNING' />
+             {{ group().outsideMembersCount }})
+        </div>
+        <div class='status flex basis-full md:basis-[33%]' [class.justify-center]='uiFacade.tinyScreen()'>
+            @if (group().status) {
+                <app-severity-tag [severity]='statusSeverity()' [value]='group().status!.label' />
+            }
+        </div>
+    </div>
+</app-element-card>

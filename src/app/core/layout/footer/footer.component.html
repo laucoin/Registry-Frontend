@@ -1,0 +1,33 @@
+<sgdf-footer torn variant="primary">
+    <span slot="brand" class="flex items-center gap-3">
+        <sgdf-avatar [initials]="application.name.at(0)" shape="rounded" [label]="application.name"/>
+        <span class="flex flex-col">
+            <strong>{{ application.name }}</strong>
+            <small class="text-xs opacity-80">{{ application.organization }}</small>
+        </span>
+   </span>
+    <span slot="legal">
+        © {{ creationYear }} - {{ currentYear }} 
+        @let creator = application.creator;
+        @if (creator?.website; as website) {
+            <a [href]="website" target="_blank" rel="noopener noreferrer">{{ creator?.name }}</a>
+        } @else {
+            {{ creator?.name }}
+        }
+    </span>
+    @if (application.version) {
+        <span slot="legal">
+            {{ 'footer.version' | transloco : { version: application.version } }}
+        </span>
+    }
+    <a slot="legal" [routerLink]="privacyRoute">{{ 'footer.privacy.name' | transloco }}</a>
+    <a slot="legal" [routerLink]="termsRoute">{{ 'footer.terms.name' | transloco }}</a>
+    @if (application.support.documentationUrl; as documentationUrl) {
+        <a slot="legal" [href]="documentationUrl" target="_blank"
+           rel="noopener noreferrer">{{ 'footer.documentation' | transloco }}</a>
+    }
+    @if (application.support.issuesUrl; as issuesUrl) {
+        <a slot="legal" [href]="issuesUrl" target="_blank"
+           rel="noopener noreferrer">{{ 'footer.support' | transloco }}</a>
+    }
+</sgdf-footer>

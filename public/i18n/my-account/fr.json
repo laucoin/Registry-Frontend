@@ -1,0 +1,41 @@
+{
+  "eyebrow": "Paramètres",
+  "title": "Mon compte",
+  "subtitle": "Consultez vos informations et réglez la langue et le thème de l’application.",
+  "info": {
+    "title": "Informations du compte",
+    "name": "Nom complet",
+    "email": "Adresse e-mail",
+    "role": "Rôle",
+    "lastLogin": "Dernière connexion",
+    "hint": "Ces informations sont fournies par {{origin}} et ne sont pas modifiables ici. Rapproches-toi de {{origin}} si des modifications sont nécessaires."
+  },
+  "language": {
+    "title": "Langue",
+    "fr": "Français",
+    "en": "English",
+    "hint": "Langue d'affichage de l'interface."
+  },
+  "theme": {
+    "title": "Thème",
+    "light": "Clair",
+    "dark": "Sombre",
+    "system": "Système",
+    "hint": "« Système » suit le réglage de votre appareil."
+  },
+  "personalData": {
+    "title": "Mes données personnelles",
+    "gdprLabel": "RGPD · GDPR",
+    "learnMore": "En savoir plus sur l’usage de tes données",
+    "extract": {
+      "title": "Demander un extrait de mes données",
+      "description": "Tu recevras par courriel une archive contenant l’ensemble des données liées à ton compte : profil, accès aux projets, présences, mouvements et communications.",
+      "action": "Demander l’extrait"
+    },
+    "delete": {
+      "title": "Supprimer mon compte",
+      "description": "La suppression efface ton profil et tes accès. Les enregistrements devant être conservés pour des raisons légales sont anonymisés.",
+      "action": "Supprimer mon compte"
+    }
+  }
+}

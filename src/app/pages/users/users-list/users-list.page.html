@@ -1,0 +1,40 @@
+<app-list (updateRequired)='loadPage($event)'
+          [elementPage]='facade.usersPage()'
+          [error]='facade.usersPageError()'
+          [loading]='facade.usersPageLoading()'
+          emptyMessagePrefix='users.notifications.EMPTY'>
+    <ng-template appTemplate='search' let-pageEvent>
+        <div class='grid search-line'>
+            <div class='field'>
+                <label for='text-search-field'>{{ 'users.search-and-filter.text' | transloco }}</label>
+                <input id='text-search-field'
+                       type='text'
+                       fluid
+                       pInputText
+                       (keydown.enter)='loadPage(pageEvent)'
+                       [formField]='form.textSearched' />
+            </div>
+            <div class='field'>
+                <label for='visibility-search-field'>{{ 'users.search-and-filter.visibility' | transloco }}</label>
+                <p-select inputId='visibility-search-field'
+                          fluid
+                          [options]='facade.statusMetadata()'
+                          optionLabel='label'
+                          optionValue='value'
+                          (onChange)='loadPage(pageEvent)'
+                          [formField]='form.visibilitySearched' />
+            </div>
+        </div>
+        <div class='flex justify-center'>
+            <p-button (onClick)='loadPage(pageEvent)'
+                      [label]='"global.actions.search-and-filter" | transloco'
+                      outlined
+                      rounded
+                      icon='pi pi-search'
+                      [loading]='facade.usersPageLoading() || facade.usersPageSilentLoading()' />
+        </div>
+    </ng-template>
+    <ng-template appTemplate='element' let-user>
+        <app-user-element [user]='user' />
+    </ng-template>
+</app-list>

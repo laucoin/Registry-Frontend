@@ -1,0 +1,69 @@
+<p-card>
+    <div class='ps-6 pe-6 pt-2 pb-2'>
+        <div class='flex items-center' [class.flex-col]='uiFacade.tinyScreen()'>
+            <div [class.me-4]='!uiFacade.tinyScreen()'>
+                <p-avatar icon='pi pi-user' size='large' shape='circle' />
+            </div>
+            <h1>{{ (sessionFacade.currentUser()?.firstName | titlecase) + ' ' + (sessionFacade.currentUser()?.lastName | uppercase) }}</h1>
+        </div>
+        <div class='grid search-line mt-2 mb-2'>
+            <div>
+                <b>{{ 'settings.birthday' | transloco }}</b>
+                {{
+                    GenericHelper.nonNull(sessionFacade.currentUser()?.birthday)
+                    ? (sessionFacade.currentUser()!.birthday | dateFormat: 'date')
+                    : ('global.not-set' | transloco)
+                }}
+            </div>
+            <div>
+                <b>{{ 'settings.role' | transloco }} </b>
+                <app-severity-tag [value]='sessionFacade.currentUser()?.role?.label' />
+            </div>
+        </div>
+    </div>
+</p-card>
+<p-card styleClass='mt-4'>
+    <div class='ps-6 pe-6 pt-2 pb-2'>
+        <h3>{{ 'settings.configuration.title' | transloco }}</h3>
+        <div class='grid search-line mt-2 mb-2'>
+            <div class='field'>
+                <label for='app-language'><b>{{ 'settings.configuration.form.language' | transloco }}</b></label>
+                <p-select [options]='uiFacade.languagesMetadata()'
+                          optionLabel='label'
+                          optionValue='value'
+                          inputId='app-language'
+                          fluid
+                          (onChange)='sessionFacade.updateCurrentUserLanguage($event.value)'
+                          [formField]='form.language' />
+            </div>
+            <div class='field'>
+                <label for='app-theme'><b>{{ 'settings.configuration.form.theme' | transloco }}</b></label>
+                <p-select-button [options]='uiFacade.themesMetadata()'
+                                 id='app-theme'
+                                 [formField]='form.theme'
+                                 optionValue='value'
+                                 [allowEmpty]='false'
+                                 (onChange)='sessionFacade.updateCurrentUserTheme($event.value)'>
+                    <ng-template #item let-item>
+                        <i [class]='item.icon'></i>
+                    </ng-template>
+                </p-select-button>
+            </div>
+        </div>
+    </div>
+</p-card>
+<p-card styleClass='mt-4'>
+    <div class='ps-6 pe-6 pt-2 pb-2'>
+        <h3>{{ 'settings.danger' | transloco }}</h3>
+        <div class='field'>
+            <p-button id='impersonate'
+                      size='small'
+                      severity='danger'
+                      icon='pi pi-eraser'
+                      outlined
+                      rounded
+                      (onClick)='confirmImpersonate()'
+                      [label]='"settings.actions.impersonate" | transloco' />
+        </div>
+    </div>
+</p-card>

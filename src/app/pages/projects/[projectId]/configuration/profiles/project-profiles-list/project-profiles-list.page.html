@@ -1,0 +1,74 @@
+<app-list (updateRequired)='loadPage($event)'
+          [elementPage]='facade.projectProfilesPage()'
+          [error]='facade.projectProfilesPageError()'
+          [loading]='facade.projectProfilesPageLoading()'
+          emptyMessagePrefix='project-profiles.notifications.EMPTY'>
+    <ng-template appTemplate='search' let-pageEvent>
+        <div class='grid search-line'>
+            <div class='field'>
+                <label for='text-search-field'>{{ 'project-profiles.search-and-filter.text.user' | transloco }}</label>
+                <input id='text-search-field'
+                       type='text'
+                       fluid
+                       pInputText
+                       (keydown.enter)='loadPage(pageEvent)'
+                       [formField]='form.textSearched' />
+            </div>
+            <div class='field'>
+                <label for='date-time-search-field'>{{ 'project-profiles.search-and-filter.datetime' | transloco }}</label>
+                <p-date-picker inputId='date-time-search-field'
+                               fluid
+                               showButtonBar
+                               [showTime]='true'
+                               [touchUI]='uiFacade.tinyScreen()'
+                               (onBlur)='loadPage(pageEvent)'
+                               [formField]='form.dateTimeSearched' />
+            </div>
+        </div>
+        <div class='grid search-line'>
+            <div class='field'>
+                <label for='status-search-field'>{{ 'project-profiles.search-and-filter.status' | transloco }}</label>
+                <p-select inputId='status-search-field'
+                          fluid
+                          [loading]='!facade.projectProfilesStatusMetadata()'
+                          [options]='facade.projectProfilesStatusMetadata()'
+                          optionLabel='label'
+                          optionValue='value'
+                          (onChange)='loadPage(pageEvent)'
+                          [formField]='form.statusSearched' />
+            </div>
+            <div class='field'>
+                <label for='availability-search-field'>{{ 'project-profiles.search-and-filter.visibility' | transloco }}</label>
+                <p-select inputId='availability-search-field'
+                          fluid
+                          [options]='facade.projectProfilesAvailabilitiesMetadata()'
+                          optionLabel='label'
+                          optionValue='value'
+                          (onChange)='loadPage(pageEvent)'
+                          [formField]='form.availabilitySearched' />
+            </div>
+        </div>
+        <div class='flex justify-center'>
+            <p-button (onClick)='loadPage(pageEvent)'
+                      [label]='"global.actions.search-and-filter" | transloco'
+                      outlined
+                      rounded
+                      icon='pi pi-search'
+                      [loading]='facade.projectProfilesPageLoading() || facade.projectProfilesPageSilentLoading()' />
+        </div>
+    </ng-template>
+    <ng-template appTemplate='creation'>
+        @if (CurrentUserHelper.hasProjectAuthority(sessionFacade.currentUser(), facade.selectedProjectId(), ProjectAuthority.REGISTRY_PROJECT_PROFILE_C)) {
+            <p-button class='m-1'
+                      severity='success'
+                      outlined
+                      rounded
+                      [label]='uiFacade.tinyScreen() ? "" : "project-profiles.actions.invite-user.few" | transloco'
+                      icon='pi pi-user-plus'
+                      [routerLink]='ProjectProfileRoutesEnum.INVITE' />
+        }
+    </ng-template>
+    <ng-template appTemplate='element' let-profile>
+        <app-project-profile-element [profile]='profile' view='project' />
+    </ng-template>
+</app-list>

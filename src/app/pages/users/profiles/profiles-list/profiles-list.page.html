@@ -1,0 +1,76 @@
+<app-list (updateRequired)='loadPage($event)'
+          [elementPage]='userProfileFacade.userProjectProfilesPage()'
+          [error]='userProfileFacade.userProjectProfilesPageError()'
+          [loading]='userProfileFacade.userProjectProfilesPageLoading()'
+          emptyMessagePrefix='project-profiles.notifications.EMPTY'>
+    <ng-template appTemplate='search' let-pageEvent>
+        <div class='field'>
+            <label for='profile-text-search-field'>{{ 'preferences.search-and-filter.text' | transloco }}</label>
+            <input id='profile-text-search-field'
+                   type='text'
+                   pInputText
+                   (keydown.enter)='loadPage(pageEvent)'
+                   [formField]='form.textSearched' />
+        </div>
+        <div class='grid search-line'>
+            <div class='field'>
+                <label for='availability-search-field'>{{ 'project-profiles.search-and-filter.visibility' | transloco }}</label>
+                <p-select inputId='availability-search-field'
+                          fluid
+                          [options]='facade.projectProfilesAvailabilitiesMetadata()'
+                          optionLabel='label'
+                          optionValue='value'
+                          (onChange)='loadPage(pageEvent)'
+                          [formField]='form.availabilitySearched' />
+            </div>
+            <div class='field'>
+                <label for='profile-date-time-search-field'>{{ 'preferences.search-and-filter.datetime' | transloco }}</label>
+                <p-date-picker [formField]='form.dateTimeSearched'
+                               showButtonBar
+                               [readonlyInput]='true'
+                               [showTime]='true'
+                               [touchUI]='uiFacade.tinyScreen()'
+                               inputId='profile-date-time-search-field'
+                               selectionMode='range'
+                               fluid />
+            </div>
+        </div>
+        <div class='flex flex-wrap justify-center pt-2'>
+            <p-button (onClick)='loadPage(pageEvent)'
+                      [label]='"global.actions.search-and-filter" | transloco'
+                      outlined
+                      rounded
+                      icon='pi pi-search'
+                      [loading]='userProfileFacade.userProjectProfilesPageLoading() || userProfileFacade.userProjectProfilesPageSilentLoading()' />
+        </div>
+    </ng-template>
+    <ng-template appTemplate='element' let-profile>
+        <app-project-profile-element [profile]='profile' view='user' />
+    </ng-template>
+    @if (!hasFilters()) {
+        <ng-template appTemplate='empty'>
+            <div class='p-6'>
+                <div class='flex flex-col justify-center items-center'>
+                    <h2>{{ 'project-profiles.notifications.EMPTY.message' | transloco }}</h2>
+                    <p>{{ 'project-profiles.empty' | transloco }}</p>
+                    <div class='flex justify-around'>
+                        <p-button class='m-1'
+                                  severity='success'
+                                  outlined
+                                  rounded
+                                  [label]='"project-profiles.actions.create-project" | transloco'
+                                  icon='pi pi-plus'
+                                  [routerLink]='"/" + RegistryRouteEnum.PROJECTS_CREATION' />
+                        <p-button class='m-1'
+                                  severity='info'
+                                  outlined
+                                  rounded
+                                  [label]='"project-profiles.actions.invitations" | transloco'
+                                  icon='pi pi-envelope'
+                                  [routerLink]='"/" + RegistryRouteEnum.USERS_INVITATIONS' />
+                    </div>
+                </div>
+            </div>
+        </ng-template>
+    }
+</app-list>

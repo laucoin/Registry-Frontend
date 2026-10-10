@@ -28,7 +28,7 @@ Review the change I point you at (a diff, a file, or the current branch vs `main
 **UX / UI (see AGENTS.md § UX/UI)**
 - Every action gives feedback (loading, disabled-while-pending, success/error, empty states) — no dead clicks or silent failures.
 - Reuses `shared/util-ui` + PrimeNG patterns for consistency; forms validate inline and preserve input on error; responsive across breakpoints.
-- User-facing strings go through `@ngx-translate`, not hardcoded.
+- User-facing strings go through `@jsverse/transloco`, not hardcoded.
 
 **Performance (see AGENTS.md § Performance)**
 - Routes/features lazy-loaded; no needless initial-bundle bloat.

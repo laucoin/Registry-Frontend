@@ -1,0 +1,33 @@
+<app-element-card [element]='vehicle()'
+                  [actions]='actions()'
+                  [actionMenuVisible]='actionMenuVisible()'
+                  [icon]='ProjectOptionEnum.VEHICLE | optionIcon'>
+    <div class='element-card'>
+        <div class='vehicle-info flex flex-col justify-center basis-full md:basis-[33%]'>
+            <div class='vehicle-license-plate flex' [class.justify-center]='uiFacade.tinyScreen()'>
+                <app-severity-circle class='me-2' [severity]='vehicle().visible ? SeverityEnum.SUCCESS : SeverityEnum.DANGER' />
+                {{ vehicle().licensePlate }}
+            </div>
+            @if (vehicle().startAvailability) {
+                <div class='flex mt-1 items-center' [class.justify-center]='uiFacade.tinyScreen()'>
+                    <i class='pi pi-play-circle'></i>
+                    <span class='ms-1'>{{ vehicle().startAvailability | customDateFormat }}</span>
+                </div>
+            }
+            @if (vehicle().endAvailability) {
+                <div class='flex items-center'
+                     [class.justify-center]='uiFacade.tinyScreen()'
+                     [class.mt-1]='!vehicle().startAvailability'>
+                    <i class='pi pi-stop-circle'></i>
+                    <span class='ms-1'>{{ vehicle().endAvailability | customDateFormat }}</span>
+                </div>
+            }
+        </div>
+        <div class='vehicle-detail flex basis-full md:basis-[33%]' [class.justify-center]='uiFacade.tinyScreen()'>
+            {{ vehicle().brand }} {{ vehicle().model }}
+        </div>
+        <div class='availability flex basis-full md:basis-[33%]' [class.justify-center]='uiFacade.tinyScreen()'>
+            <app-severity-tag [severity]='vehicleStatusSeverity()' [value]='vehicle().status.label' />
+        </div>
+    </div>
+</app-element-card>
