@@ -23,10 +23,10 @@
                     class="flex cursor-pointer items-center gap-3 border-0 bg-transparent p-0 text-left font-[inherit] text-inherit"
                     [attr.aria-label]="'navbar.user.menu' | transloco: { name: userFullName() }">
                 <sgdf-avatar [attr.initials]="userInitials()" variant="info" appearance="solid"/>
-                <span class="hidden flex-col md:flex">
-                    <strong>{{ userFullName() }}</strong>
+                <span class="hidden min-w-0 max-w-56 flex-col md:flex">
+                    <strong class="truncate" [attr.title]="userFullName()">{{ userFullName() }}</strong>
                     @if (user.role?.label; as roleLabel) {
-                        <small class="text-xs opacity-80">{{ roleLabel }}</small>
+                        <small class="truncate text-xs opacity-80" [attr.title]="roleLabel">{{ roleLabel }}</small>
                     }
                 </span>
                 <sgdf-icon name="chevron-down" library="solid"/>
