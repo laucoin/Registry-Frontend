@@ -1,4 +1,4 @@
-<sgdf-table class="h-full [&::part(grid)]:h-full" appearance="soft" [label]="'myAccount.info.title' | transloco">
+<sgdf-table class="h-full [&::part(grid)]:h-full [&::part(grid)]:table-fixed" appearance="soft" [label]="'myAccount.info.title' | transloco">
     <sgdf-table-row>
         <sgdf-table-cell header>
             <sgdf-icon name="user" library="solid"/>
@@ -35,7 +35,7 @@
             @if (date) {
                 <sgdf-relative-time [date]="date" sync/>
             } @else if (value) {
-                <span class="min-w-0 [overflow-wrap:anywhere] sm:text-end">{{ value }}</span>
+                <span class="min-w-0 truncate sm:text-end" [attr.title]="value">{{ value }}</span>
             } @else {
                 <sgdf-skeleton effect="pulse" shape="rounded"/>
             }
