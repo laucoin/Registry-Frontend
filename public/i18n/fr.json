@@ -320,6 +320,9 @@
       "title": "L'application est momentanément inaccessible",
       "description": "Une erreur empêche l'application de fonctionner. Vous pouvez réessayer ; si le problème persiste, contactez le support.",
       "cause": "Cause de l'erreur",
+      "unknown": {
+        "title": "Erreur inconnue"
+      },
       "retry": "Réessayer"
     }
   },

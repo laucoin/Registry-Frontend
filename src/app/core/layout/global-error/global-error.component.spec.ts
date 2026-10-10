@@ -25,19 +25,20 @@ describe('GlobalErrorComponent', () => {
 		})
 	})
 
-	it('should show the title and the detail of the error as its cause', () => {
+	it('should show the title and the detail of the error in a danger callout', () => {
 		// Arrange
 		const error: NotificationModel = { summary: 'Service Unavailable', detail: 'The API cannot be reached' }
 
 		// Act
-		const text: string = create(error).querySelector('[role="alert"]')!.textContent ?? ''
+		const text: string = create(error).querySelector('sgdf-callout')!.textContent ?? ''
 
 		// Assert
-		expect(text).toContain('Service Unavailable')
 		expect(text).toContain('The API cannot be reached')
+		expect(fixture.nativeElement.querySelector('sgdf-callout').getAttribute('title')).toBe('Service Unavailable')
+		expect(fixture.nativeElement.querySelector('sgdf-callout').getAttribute('variant')).toBe('danger')
 	})
 
-	it('should omit the cause lines the error does not provide', () => {
+	it('should omit the detail the error does not provide', () => {
 		// Arrange
 		const error: NotificationModel = { summary: 'Down' }
 
@@ -45,8 +46,19 @@ describe('GlobalErrorComponent', () => {
 		const page: HTMLElement = create(error)
 
 		// Assert
-		expect(page.querySelectorAll('strong')).toHaveLength(1)
-		expect(page.querySelectorAll('span')).toHaveLength(0)
+		expect(page.querySelector('sgdf-callout')!.getAttribute('title')).toBe('Down')
+		expect(page.querySelector('sgdf-callout span')).toBeNull()
+	})
+
+	it('should fall back to the unknown error title when the error has no title', () => {
+		// Arrange
+		const error: NotificationModel = { detail: 'Boom' }
+
+		// Act
+		const title: string | null = create(error).querySelector('sgdf-callout')!.getAttribute('title')
+
+		// Assert
+		expect(title).toContain('global.error.unknown.title')
 	})
 
 	it('should reload the application when the retry button is clicked', () => {

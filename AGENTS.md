@@ -23,6 +23,12 @@ on this Angular Client-Side Rendering (CSR) project.
   system until the migration; do not introduce new PrimeNG-specific abstractions beyond what the current code needs.
 - **Styling:** Tailwind CSS v4 utility classes in templates (default breakpoints), native CSS for the remaining
   component styles. Bootstrap is not used. Beware the spacing scale: Tailwind steps are `n × 0.25rem`.
+- **`@sgdf/ui` first:** before building any UI, check what `@sgdf/ui` already provides (`custom-elements.json` and the
+  `.d.ts` of `node_modules/@sgdf/ui`): a component for the need (e.g. `sgdf-callout` for a message or an error) and its
+  `variant`, `appearance`, slots and CSS properties for the look. Tailwind is for layout and spacing only: never use it
+  to recolor an `@sgdf/ui` component or to rebuild one (no `--sgdf-*` tokens in utility classes for colors). If what is
+  needed is not possible with `@sgdf/ui`, do not work around it: suggest a change to `@sgdf/ui` when it makes sense
+  architecturally, and fall back to a custom implementation only if the developer declines or it is not relevant.
 
 ---
 
