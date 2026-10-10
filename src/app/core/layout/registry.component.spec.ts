@@ -12,19 +12,17 @@ describe('RegistryComponent', () => {
 	let notifications: Subject<NotificationModel>
 	let create: Mock
 	let globalError: WritableSignal<NotificationModel | undefined>
-	let reloadApplication: Mock<() => void>
 	let fixture: ComponentFixture<RegistryComponent>
 
 	beforeEach(async () => {
 		notifications = new Subject<NotificationModel>()
 		create = vi.fn()
 		globalError = signal<NotificationModel | undefined>(undefined)
-		reloadApplication = vi.fn()
 		TestBed.configureTestingModule({
 			imports: [TranslocoTestingModule.forRoot({ langs: { fr: {} }, translocoConfig: { defaultLang: 'fr' } })],
 			providers: [
 				provideRouter([]),
-				{ provide: UiFacade, useValue: { notification: notifications.asObservable(), globalError, reloadApplication } },
+				{ provide: UiFacade, useValue: { notification: notifications.asObservable(), globalError } },
 			],
 		})
 		fixture = TestBed.createComponent(RegistryComponent)
@@ -70,36 +68,21 @@ describe('RegistryComponent', () => {
 		const page: HTMLElement = fixture.nativeElement
 
 		// Act
-		const hasError: boolean = page.querySelector('[role="alert"]') !== null
+		const hasError: boolean = page.querySelector('app-global-error') !== null
 
 		// Assert
 		expect(hasError).toBe(false)
 	})
 
-	it('should replace the pages with the error and its cause when the application is blocked', async () => {
-		// Arrange
-		globalError.set({ severity: 'error', summary: 'Service Unavailable', detail: 'The API cannot be reached' })
-
-		// Act
-		await fixture.whenStable()
-		const text: string = fixture.nativeElement.querySelector('[role="alert"]').textContent
-
-		// Assert
-		expect(text).toContain('Service Unavailable')
-		expect(text).toContain('The API cannot be reached')
-		expect(fixture.nativeElement.querySelector('router-outlet')).toBeNull()
-	})
-
-	it('should reload the application when the retry button is clicked', async () => {
+	it('should replace the routed pages with the global error when the application is blocked', async () => {
 		// Arrange
 		globalError.set({ severity: 'error', summary: 'Down' })
-		await fixture.whenStable()
-		const retry: HTMLElement = fixture.nativeElement.querySelector('sgdf-button')
 
 		// Act
-		retry.click()
+		await fixture.whenStable()
 
 		// Assert
-		expect(reloadApplication).toHaveBeenCalledTimes(1)
+		expect(fixture.nativeElement.querySelector('app-global-error')).not.toBeNull()
+		expect(fixture.nativeElement.querySelector('router-outlet')).toBeNull()
 	})
 })

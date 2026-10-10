@@ -1,25 +1,5 @@
 @if (globalError(); as error) {
-    <main class="flex min-h-screen items-center justify-center bg-(--sgdf-color-bg-page) px-8 py-12" role="alert">
-        <section class="flex w-full max-w-xl flex-col items-start gap-6">
-            <sgdf-icon class="text-5xl text-(--sgdf-color-text-primary)" name="triangle-exclamation" library="solid"/>
-            <sgdf-page-title [lede]="'global.error.description' | transloco">
-                {{ 'global.error.title' | transloco }}
-            </sgdf-page-title>
-            <div class="flex flex-col gap-1 border-l-4 border-(--sgdf-color-text-primary) pl-4">
-                <small class="text-xs opacity-80">{{ 'global.error.cause' | transloco }}</small>
-                @if (error.summary; as summary) {
-                    <strong>{{ summary }}</strong>
-                }
-                @if (error.detail; as detail) {
-                    <span>{{ detail }}</span>
-                }
-            </div>
-            <sgdf-button variant="primary" size="large" (click)="retry()">
-                <sgdf-icon slot="prefix" name="rotate-right" library="solid"/>
-                {{ 'global.error.retry' | transloco }}
-            </sgdf-button>
-        </section>
-    </main>
+    <app-global-error [error]="error"/>
 } @else {
     <router-outlet/>
 }
