@@ -8,7 +8,6 @@ import { Observable, Subject, of, throwError } from 'rxjs'
 import { Mock, afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { ConfigModel } from '@core/config/model/config.model'
 import { RegistryConfig } from '@core/config/registry.config'
-import { RegistryFacade } from '@core/registry/state/registry.facade'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
@@ -82,7 +81,6 @@ describe( 'BaseFormComponent', () => {
                 { provide: ActivatedRoute, useValue: {} },
                 { provide: SessionFacade, useValue: autoMock() },
                 { provide: UiFacade, useValue: autoMock() },
-                { provide: RegistryFacade, useValue: autoMock() },
                 { provide: CustomDateFormatPipe, useValue: { transform: (value: { date?: string } | undefined): string => value?.date ?? '' } },
                 { provide: TranslocoService, useValue: { translate: (key: string): string => `t:${key}` } },
             ],

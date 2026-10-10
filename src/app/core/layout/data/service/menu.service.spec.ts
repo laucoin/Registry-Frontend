@@ -235,4 +235,27 @@ describe('MenuService', () => {
 			expect(freshService.activeMenuUrl()).toBe('projects/p2')
 		})
 	})
+
+	it('should expose the account menus of the signed-in user', () => {
+		// Arrange
+		currentUser.set(userWith())
+
+		// Act
+		const menus: MenuItemModel[] = service.userMenus()
+
+		// Assert
+		expect(labels(menus)).toEqual(['navbar.user.my-acccount', 'navbar.user.profiles', 'navbar.user.invitations'])
+	})
+
+	it('should expose the logout menu without any url', () => {
+		// Arrange
+		const menu: MenuItemModel = service.logoutMenu
+
+		// Act
+		const url: string | undefined = menu.url
+
+		// Assert
+		expect(menu.label).toBe('navbar.user.logout')
+		expect(url).toBeUndefined()
+	})
 })

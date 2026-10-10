@@ -7,7 +7,6 @@ import { Observable, Subject } from 'rxjs'
 import { Mock, beforeEach, describe, expect, it, vi } from 'vitest'
 import { ConfigModel } from '@core/config/model/config.model'
 import { RegistryConfig } from '@core/config/registry.config'
-import { RegistryFacade } from '@core/registry/state/registry.facade'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { autoMock } from '@shared/helpers/testing/auto-mock'
@@ -71,7 +70,6 @@ describe( 'GenericElementComponent', () => {
                     },
                 },
                 { provide: UiFacade, useValue: Object.assign( autoMock(), { confirm } ) },
-                { provide: RegistryFacade, useValue: autoMock() },
                 { provide: Router, useValue: {} },
                 { provide: ActivatedRoute, useValue: {} },
                 { provide: TranslocoService, useValue: { translate: (key: string, params?: object): string => `${key}${params ? JSON.stringify( params ) : ''}` } },

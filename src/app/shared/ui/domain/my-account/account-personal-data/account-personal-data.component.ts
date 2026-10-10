@@ -1,6 +1,7 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { RouterLink } from "@angular/router";
 import { RegistryRouteEnum } from "@core/routing/registry-route.enum";
+import { RouteHelper } from "@shared/helpers/route.helper";
 import { provideTranslocoScope, TranslocoPipe } from "@jsverse/transloco";
 
 /**
@@ -20,5 +21,5 @@ import { provideTranslocoScope, TranslocoPipe } from "@jsverse/transloco";
 	templateUrl: './account-personal-data.component.html',
 })
 export class AccountPersonalDataComponent {
-	protected readonly privacyRoute: string = `/${RegistryRouteEnum.PRIVACY}`
+	protected readonly privacyRoute: string = RouteHelper.absolute(RegistryRouteEnum.PRIVACY)
 }

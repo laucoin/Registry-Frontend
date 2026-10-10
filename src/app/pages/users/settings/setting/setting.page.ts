@@ -37,7 +37,7 @@ import { createSettingForm, SettingFormModel, toSettingFormModel } from '@pages/
 } )
 export class SettingPage extends GenericElementComponent {
     protected readonly model: WritableSignal<SettingFormModel> = signal(
-        toSettingFormModel( this.registryFacade.currentUserTheme(), this.sessionFacade.currentUserLanguage() ),
+        toSettingFormModel( this.sessionFacade.currentUserTheme(), this.sessionFacade.currentUserLanguage() ),
     )
     protected readonly form: FieldTree<SettingFormModel> = createSettingForm( this.model )
 
@@ -48,7 +48,7 @@ export class SettingPage extends GenericElementComponent {
                 'pi pi-exclamation-triangle',
                 this.sessionFacade.currentUser(),
                 SeverityEnum.DANGER,
-                (): void => this.registryFacade.impersonateCurrentUser(),
+                (): void => this.sessionFacade.impersonateCurrentUser(),
             ),
         )
     }

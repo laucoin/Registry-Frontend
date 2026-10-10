@@ -5,7 +5,6 @@ import { firstValueFrom, Observable, of, Subject } from 'rxjs'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
 import { projectContextDeactivateGuard, projectContextGuard } from '@core/authentication/guard/project-context.guard'
 import { RegistryConfig } from '@core/config/registry.config'
-import { RegistryFacade } from '@core/registry/state/registry.facade'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { provideTestConfig } from '@shared/helpers/testing/test-fixtures'
@@ -18,7 +17,7 @@ const PROJECTS_TREE: UrlTree = { toString: (): string => '/projects' } as unknow
 describe( 'projectContextGuard', () => {
     let selectedProject: WritableSignal<ProjectModel | undefined>
     let currentUser$: Subject<CurrentUserModel>
-    let setCurrentProject: Mock<RegistryFacade['setCurrentProject']>
+    let setCurrentProject: Mock<SessionFacade['setCurrentProject']>
     let notify: Mock<(message: unknown) => void>
     let parseUrl: Mock<(url: string) => UrlTree>
 
@@ -43,8 +42,7 @@ describe( 'projectContextGuard', () => {
         parseUrl = vi.fn( () => PROJECTS_TREE )
         TestBed.configureTestingModule( {
             providers: [
-                { provide: SessionFacade, useValue: { currentUser$, selectedProject } },
-                { provide: RegistryFacade, useValue: { setCurrentProject } },
+                { provide: SessionFacade, useValue: { currentUser$, selectedProject, setCurrentProject } },
                 { provide: UiFacade, useValue: { notify } },
                 { provide: Router, useValue: { parseUrl } },
             ],

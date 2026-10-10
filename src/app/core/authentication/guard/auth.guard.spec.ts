@@ -4,7 +4,6 @@ import { ActivatedRouteSnapshot, Router, RouterStateSnapshot, UrlTree } from '@a
 import { firstValueFrom, Observable, of } from 'rxjs'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
 import { authGuard } from '@core/authentication/guard/auth.guard'
-import { RegistryFacade } from '@core/registry/state/registry.facade'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { CurrentUserModel } from '@shared/models/model/current-user.model'
 
@@ -24,8 +23,7 @@ describe( 'authGuard', () => {
         fetchCurrentUser = vi.fn( () => of( undefined ) )
         TestBed.configureTestingModule( {
             providers: [
-                { provide: SessionFacade, useValue: { currentUser } },
-                { provide: RegistryFacade, useValue: { fetchCurrentUser } },
+                { provide: SessionFacade, useValue: { currentUser, fetchCurrentUser } },
                 { provide: Router, useValue: { parseUrl: (): UrlTree => LOGIN_TREE } },
             ],
         } )

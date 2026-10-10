@@ -1,6 +1,6 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core'
 import { ActivatedRoute, Params } from '@angular/router'
-import { RegistryFacade } from '@core/registry/state/registry.facade'
+import { SessionFacade } from '@core/registry/state/session.facade'
 import { Subscription } from 'rxjs'
 
 /**
@@ -15,7 +15,7 @@ import { Subscription } from 'rxjs'
 export class AuthCallbackPage implements OnInit, OnDestroy {
     private readonly subscriptions: Subscription = new Subscription()
 
-    private readonly facade: RegistryFacade = inject( RegistryFacade )
+    private readonly facade: SessionFacade = inject( SessionFacade )
     private readonly route: ActivatedRoute = inject( ActivatedRoute )
 
     public ngOnInit (): void {

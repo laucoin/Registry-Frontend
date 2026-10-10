@@ -16,6 +16,29 @@ export const APP_LEVEL_MENUS: MenuItemModel[] = [
 	},
 ]
 
+export const USER_LEVEL_MENUS: MenuItemModel[] = [
+	{
+		label: 'navbar.user.my-acccount',
+		icon: { library: 'solid', name: 'gear' },
+		url: RegistryRouteEnum.MY_ACCOUNT,
+	},
+	{
+		label: 'navbar.user.profiles',
+		icon: { library: 'solid', name: 'id-badge' },
+		url: RegistryRouteEnum.USERS_PROFILES,
+	},
+	{
+		label: 'navbar.user.invitations',
+		icon: { library: 'solid', name: 'envelope' },
+		url: RegistryRouteEnum.USERS_INVITATIONS,
+	},
+]
+
+export const LOGOUT_MENU: MenuItemModel = {
+	label: 'navbar.user.logout',
+	icon: { library: 'solid', name: 'right-from-bracket' },
+}
+
 export const PROJECT_LEVEL_MENUS: MenuItemModel[] = [
 	{
 		label: 'navbar.project.home',

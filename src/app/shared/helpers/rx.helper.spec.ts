@@ -1,8 +1,8 @@
 import { signal, WritableSignal } from '@angular/core'
-import { EMPTY, of, Subject, throwError } from 'rxjs'
+import { EMPTY, Observable, of, Subject, throwError } from 'rxjs'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
 import { UiFacade } from '@core/registry/state/ui.facade'
-import { initialize, notifyOnError, notifyUnavailableOnly, reportError, withLoading } from '@shared/helpers/rx.helper'
+import { eager, initialize, notifyOnError, notifyUnavailableOnly, reportError, withLoading } from '@shared/helpers/rx.helper'
 import { ERROR_500, ERROR_503 } from '@shared/helpers/testing/test-fixtures'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { ErrorModel } from '@shared/models/model/error.model'
@@ -139,6 +139,32 @@ describe( 'rx helpers', () => {
 
             // Assert
             expect( loading() ).toBe( false )
+        } )
+    } )
+
+    describe( 'eager', () => {
+        it( 'runs the source without any subscriber', () => {
+            // Arrange
+            const run: Mock<() => void> = vi.fn()
+            const source: Observable<number> = of( 1 ).pipe( initialize( run ) )
+
+            // Act
+            eager( source )
+
+            // Assert
+            expect( run ).toHaveBeenCalledTimes( 1 )
+        } )
+
+        it( 'replays the outcome to a late subscriber', () => {
+            // Arrange
+            const emitted: number[] = []
+            const result: Observable<number> = eager( of( 7 ) )
+
+            // Act
+            result.subscribe( (value: number): number => emitted.push( value ) )
+
+            // Assert
+            expect( emitted ).toEqual( [ 7 ] )
         } )
     } )
 } )

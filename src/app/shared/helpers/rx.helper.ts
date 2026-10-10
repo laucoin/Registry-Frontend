@@ -1,4 +1,4 @@
-import { catchError, defer, EMPTY, finalize, Observable, throwError } from 'rxjs'
+import { catchError, defer, EMPTY, finalize, Observable, ReplaySubject, throwError } from 'rxjs'
 import { WritableSignal } from '@angular/core'
 import { NotificationModel } from '@shared/models/model/notification.model'
 import { ErrorModel } from '@shared/models/model/error.model'
@@ -58,3 +58,10 @@ export const notifyUnavailableOnly = (errorSink: ErrorSink) => <T> (source: Obse
         return EMPTY
     } ),
 )
+
+// Runs the source right away and replays its outcome, like a dispatched action: callers may ignore or chain on the result.
+export const eager = <T> (source: Observable<T>): Observable<T> => {
+    const result: ReplaySubject<T> = new ReplaySubject<T>()
+    source.subscribe( result )
+    return result.asObservable()
+}

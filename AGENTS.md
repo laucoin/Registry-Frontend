@@ -56,9 +56,12 @@ The source code is organized into three core directories:
   domain facades and models from `pages/`, which is the only accepted `shared` to `pages` dependency (the 29 existing
   imports). They are reworked with the `@sgdf/ui` migration; do not add new `shared` to `pages` imports elsewhere.
 - **Core facades:** `UiFacade` exposes what the shell displays (theme, screen, toasts, global loader and error),
-  `SessionFacade` exposes the signed-in user, the selected project and the user's own profiles, and `RegistryFacade`
-  only orchestrates the flows that cross both (sign-in, preferences, project selection). Stores never depend on a
-  facade: they report failures through `ErrorReporter` (`core/registry/state/error-reporter.ts`).
+  `SessionFacade` owns the signed-in user and the session (sign-in and sign-out, current user, selected project, theme
+  and language preferences, and the choices offered for them), and `UserProfileFacade` owns the user's own project
+  profiles and invitations and the commands acting on them. `UserProfileFacade` depends on `SessionFacade`, never the
+  other way around. Components, guards and interceptors read the choices and menus to display from a facade or
+  service, and leave redundant-call filtering to the facade. Stores never depend on a facade: they report failures
+  through `ErrorReporter` (`core/registry/state/error-reporter.ts`).
 - **Store methods:** build the repetitive rxMethods with the builders of `shared/helpers/store/paged-store.methods.ts`
   (`pageFetcher`, `paramsUpdater`, `paramsMerger`, `elementFetcher`, `metadataFetcher`, `movementContentsFetcher`)
   and inject dependencies as parameters of `withMethods`, never through a public `withProps`.

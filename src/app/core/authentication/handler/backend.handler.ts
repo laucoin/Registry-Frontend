@@ -12,7 +12,6 @@ import {TranslocoService} from '@jsverse/transloco'
 import { catchError, defer, map, mergeMap, Observable, shareReplay, tap, throwError } from 'rxjs'
 import { RegistryConfig } from '@core/config/registry.config'
 import { LanguageService } from '@core/language/language.service'
-import { RegistryFacade } from '@core/registry/state/registry.facade'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { ErrorModel } from '@shared/models/model/error.model'
 import { GenericHelper } from '@shared/helpers/generic.helper'
@@ -24,9 +23,9 @@ let csrfToken: string | undefined
 
 let refreshTokenInProgress$: Observable<void> | null = null
 
-function refreshAccessToken(registryFacade: RegistryFacade): Observable<void> {
+function refreshAccessToken(sessionFacade: SessionFacade): Observable<void> {
 	if (!refreshTokenInProgress$) {
-		refreshTokenInProgress$ = registryFacade.refreshToken().pipe(
+		refreshTokenInProgress$ = sessionFacade.refreshToken().pipe(
 			map((): void => undefined),
 			tap({
 				complete: (): void => {
@@ -35,7 +34,7 @@ function refreshAccessToken(registryFacade: RegistryFacade): Observable<void> {
 			}),
 			catchError((refreshError: unknown): Observable<never> => {
 				refreshTokenInProgress$ = null
-				registryFacade.redirectToLogin()
+				sessionFacade.redirectToLogin()
 				return throwError((): unknown => refreshError)
 			}),
 			shareReplay(1),
@@ -48,7 +47,7 @@ interface InterceptionContext {
 	request: HttpRequest<unknown>
 	authenticatedRequest: HttpRequest<unknown>
 	next: HttpHandlerFn
-	registryFacade: RegistryFacade
+	sessionFacade: SessionFacade
 	translateService: TranslocoService
 }
 
@@ -67,14 +66,13 @@ export const backendHandler: HttpInterceptorFn = (
 		return next(req)
 	}
 
-	const registryFacade: RegistryFacade = inject(RegistryFacade)
 	const sessionFacade: SessionFacade = inject(SessionFacade)
 	const translateService: TranslocoService = inject(TranslocoService)
 	const languageService: LanguageService = inject(LanguageService)
 
 	return defer((): Observable<HttpEvent<unknown>> => {
 		const authenticatedRequest: HttpRequest<unknown> = authenticate(req, sessionFacade, languageService.activeLanguage)
-		const context: InterceptionContext = { request: req, authenticatedRequest, next, registryFacade, translateService }
+		const context: InterceptionContext = { request: req, authenticatedRequest, next, sessionFacade, translateService }
 		return next(authenticatedRequest).pipe(
 			tap(captureCsrfTokenFromEvent),
 			catchError((error: HttpErrorResponse): Observable<HttpEvent<unknown>> => handleError(error, context)),
@@ -100,7 +98,7 @@ function handleError(error: HttpErrorResponse, context: InterceptionContext): Ob
 	captureCsrfToken(error.headers)
 
 	if (error.status === 401 && isNoAuthPath(context.request.url)) {
-		context.registryFacade.redirectToLogin()
+		context.sessionFacade.redirectToLogin()
 		return throwError((): ErrorModel => new ErrorModel(error))
 	}
 	if (error.status === 401) {
@@ -110,7 +108,7 @@ function handleError(error: HttpErrorResponse, context: InterceptionContext): Ob
 }
 
 function refreshAndReplay(error: HttpErrorResponse, context: InterceptionContext): Observable<HttpEvent<unknown>> {
-	return refreshAccessToken(context.registryFacade).pipe(
+	return refreshAccessToken(context.sessionFacade).pipe(
 		catchError((): Observable<never> => throwError((): ErrorModel => new ErrorModel(error))),
 		mergeMap((): Observable<HttpEvent<unknown>> => replay(context)),
 	)

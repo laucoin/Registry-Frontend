@@ -1,22 +1,23 @@
 import { signal, WritableSignal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { RegistryFacade } from '@core/registry/state/registry.facade';
+import { SessionFacade } from '@core/registry/state/session.facade';
 import { TranslocoPipe } from '@jsverse/transloco';
+import { THEME_CHOICES } from '@shared/helpers/theme-choices.const';
 import { ThemeEnum } from '@shared/models/enumeration/theme.enum';
 import { MockBuilder } from 'ng-mocks';
 import { AccountThemeComponent } from './account-theme.component';
 
 describe('AccountThemeComponent', () => {
-	let theme: WritableSignal<ThemeEnum | undefined>;
+	let theme: WritableSignal<ThemeEnum>;
 	let updateCurrentUserTheme: ReturnType<typeof vi.fn>;
 	let fixture: ComponentFixture<AccountThemeComponent>;
 
 	beforeEach(async () => {
-		theme = signal<ThemeEnum | undefined>(ThemeEnum.LIGHT);
+		theme = signal<ThemeEnum>(ThemeEnum.LIGHT);
 		updateCurrentUserTheme = vi.fn();
 		await MockBuilder(AccountThemeComponent)
 			.mock(TranslocoPipe, (key: string): string => key)
-			.provide({ provide: RegistryFacade, useValue: { currentUserTheme: theme, updateCurrentUserTheme } });
+			.provide({ provide: SessionFacade, useValue: { currentUserTheme: theme, themeChoices: THEME_CHOICES, updateCurrentUserTheme } });
 		fixture = TestBed.createComponent(AccountThemeComponent);
 		await fixture.whenStable();
 	});
@@ -32,7 +33,7 @@ describe('AccountThemeComponent', () => {
 		expect(pressed).toEqual(['true', 'false', 'false']);
 	});
 
-	it('should apply a theme different from the current one', () => {
+	it('should forward the clicked theme to the facade', () => {
 		// Arrange
 		const dark: HTMLElement = fixture.nativeElement.querySelectorAll('sgdf-button')[1];
 
@@ -43,14 +44,14 @@ describe('AccountThemeComponent', () => {
 		expect(updateCurrentUserTheme).toHaveBeenCalledWith(ThemeEnum.DARK);
 	});
 
-	it('should ignore the current theme', () => {
+	it('should render one button per choice of the facade', () => {
 		// Arrange
-		const light: HTMLElement = fixture.nativeElement.querySelectorAll('sgdf-button')[0];
+		const buttons: NodeListOf<HTMLElement> = fixture.nativeElement.querySelectorAll('sgdf-button');
 
 		// Act
-		light.click();
+		const count: number = buttons.length;
 
 		// Assert
-		expect(updateCurrentUserTheme).not.toHaveBeenCalled();
+		expect(count).toBe(THEME_CHOICES.length);
 	});
 });

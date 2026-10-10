@@ -1,9 +1,9 @@
 import { inject } from '@angular/core'
 import { CanActivateFn, Router, UrlTree } from '@angular/router'
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
-import { RegistryFacade } from '@core/registry/state/registry.facade'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { GenericHelper } from '@shared/helpers/generic.helper'
+import { RouteHelper } from '@shared/helpers/route.helper'
 import { map, Observable, of } from 'rxjs'
 
 /**
@@ -12,13 +12,12 @@ import { map, Observable, of } from 'rxjs'
  * Limits: A usability aid only; the backend re-checks every request.
  */
 export const authGuard: CanActivateFn = (): Observable<boolean | UrlTree> => {
-    const facade: RegistryFacade = inject( RegistryFacade )
     const sessionFacade: SessionFacade = inject( SessionFacade )
-    const loginRoute: UrlTree = inject( Router ).parseUrl( `/${RegistryRouteEnum.LOGIN}` )
+    const loginRoute: UrlTree = inject( Router ).parseUrl( RouteHelper.absolute( RegistryRouteEnum.LOGIN ) )
     if (GenericHelper.nonNull( sessionFacade.currentUser() )) {
         return of( true )
     }
-    return facade.fetchCurrentUser().pipe(
+    return sessionFacade.fetchCurrentUser().pipe(
         map( (): boolean | UrlTree => GenericHelper.nonNull( sessionFacade.currentUser() ) || loginRoute ),
     )
 }

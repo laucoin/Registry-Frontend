@@ -5,7 +5,6 @@ import { ConfigModel } from "@core/config/model/config.model";
 import { RegistryConfig } from "@core/config/registry.config";
 import { MenuItemModel } from '@core/layout/data/model/menu-item.model'
 import { MenuService } from '@core/layout/data/service/menu.service'
-import { RegistryFacade } from '@core/registry/state/registry.facade'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
 import { TranslocoPipe } from '@jsverse/transloco'
@@ -13,7 +12,7 @@ import { CurrentUserModel } from '@shared/models/model/current-user.model'
 
 /**
  * Purpose: Top navigation bar of the application.
- * Scope: Renders the application menus, the project sub-navigation the user is allowed to see and the signed-in user's account menu.
+ * Scope: Renders the application menus, the project sub-navigation and the account menu the user is allowed to see.
  * Limits: Does not decide which menus are visible; the menu service does, for display only.
  */
 @Component({
@@ -26,13 +25,14 @@ import { CurrentUserModel } from '@shared/models/model/current-user.model'
 export class NavbarComponent {
 	private readonly menuService: MenuService = inject(MenuService)
 	private readonly sessionFacade: SessionFacade = inject(SessionFacade)
-	private readonly registryFacade: RegistryFacade = inject(RegistryFacade)
 
 	protected readonly RegistryRouteEnum: typeof RegistryRouteEnum = RegistryRouteEnum
 	protected readonly application: ConfigModel['application'] = RegistryConfig.config.application;
 
 	protected readonly activeMenuUrl: Signal<string | undefined> = this.menuService.activeMenuUrl
 	protected readonly appMenus: Signal<MenuItemModel[]> = this.menuService.appMenus
+	protected readonly userMenus: Signal<MenuItemModel[]> = this.menuService.userMenus
+	protected readonly logoutMenu: MenuItemModel = this.menuService.logoutMenu
 	protected readonly projectMenus: Signal<MenuItemModel[]> = computed((): MenuItemModel[] =>
 		this.menuService.projectMenus().flatMap((menu: MenuItemModel): MenuItemModel[] => menu.items ?? [menu]),
 	)
@@ -48,7 +48,5 @@ export class NavbarComponent {
 		return (initials || user?.email?.charAt(0) || '').toUpperCase()
 	})
 
-	protected logout(): void {
-		this.registryFacade.logout()
-	}
+	protected readonly logout: () => void = (): void => this.sessionFacade.logout()
 }

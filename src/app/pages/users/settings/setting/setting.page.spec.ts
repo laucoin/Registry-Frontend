@@ -6,7 +6,6 @@ import { ConfirmationModel } from '@shared/models/model/confirmation.model'
 import { Mock, beforeEach, describe, expect, it, vi } from 'vitest'
 import { ConfigModel } from '@core/config/model/config.model'
 import { RegistryConfig } from '@core/config/registry.config'
-import { RegistryFacade } from '@core/registry/state/registry.facade'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { SettingPage } from '@pages/users/settings/setting/setting.page'
@@ -25,8 +24,7 @@ describe( 'SettingPage', () => {
         RegistryConfig.config = { enabledActions: [] } as unknown as ConfigModel
         TestBed.configureTestingModule( {
             providers: [
-                { provide: RegistryFacade, useValue: registry },
-                { provide: SessionFacade, useValue: { currentUser: signal( { id: 'u1' } ), currentUserLanguage: (): string => 'fr', selectedProject: signal( undefined ) } },
+                { provide: SessionFacade, useValue: Object.assign( registry, { currentUser: signal( { id: 'u1' } ), currentUserLanguage: (): string => 'fr', selectedProject: signal( undefined ) } ) },
                 { provide: UiFacade, useValue: Object.assign( autoMock(), { confirm } ) },
                 { provide: Router, useValue: {} },
                 { provide: ActivatedRoute, useValue: {} },

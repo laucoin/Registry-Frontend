@@ -2,7 +2,7 @@ import { computed, inject, Injectable, Signal } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { NavigationEnd, Router } from '@angular/router'
 import { CurrentUserHelper } from '@core/authentication/tool/current-user.helper'
-import { APP_LEVEL_MENUS, PROJECT_LEVEL_MENUS } from '@core/layout/data/menu.definitions'
+import { APP_LEVEL_MENUS, LOGOUT_MENU, PROJECT_LEVEL_MENUS, USER_LEVEL_MENUS } from '@core/layout/data/menu.definitions'
 import { MenuItemModel } from '@core/layout/data/model/menu-item.model'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { CurrentUserModel } from '@shared/models/model/current-user.model'
@@ -34,6 +34,12 @@ export class MenuService {
 	public readonly projectMenus: Signal<MenuItemModel[]> = computed((): MenuItemModel[] =>
 		this.filterMenus(PROJECT_LEVEL_MENUS),
 	)
+
+	public readonly userMenus: Signal<MenuItemModel[]> = computed((): MenuItemModel[] =>
+		this.filterMenus(USER_LEVEL_MENUS),
+	)
+
+	public readonly logoutMenu: MenuItemModel = LOGOUT_MENU
 
 	public readonly activeMenuUrl: Signal<string | undefined> = computed((): string | undefined =>
 		this.flatten([...this.appMenus(), ...this.projectMenus()])

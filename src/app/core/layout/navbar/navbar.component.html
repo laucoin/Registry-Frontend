@@ -31,23 +31,12 @@
                 </span>
                 <sgdf-icon name="chevron-down" library="solid"/>
             </button>
-            <sgdf-menu-item [routerLink]="RegistryRouteEnum.MY_ACCOUNT">
-                <sgdf-icon slot="icon" name="gear" library="solid"/>
-                {{ 'navbar.user.my-acccount' | transloco }}
-            </sgdf-menu-item>
-            <sgdf-menu-item [routerLink]="RegistryRouteEnum.USERS_PROFILES">
-                <sgdf-icon slot="icon" name="id-badge" library="solid"/>
-                {{ 'navbar.user.profiles' | transloco }}
-            </sgdf-menu-item>
-            <sgdf-menu-item [routerLink]="RegistryRouteEnum.USERS_INVITATIONS">
-                <sgdf-icon slot="icon" name="envelope" library="solid"/>
-                {{ 'navbar.user.invitations' | transloco }}
-            </sgdf-menu-item>
+            @for (menu of userMenus(); track menu.url) {
+                <ng-container [ngTemplateOutlet]="menuItem" [ngTemplateOutletContext]="{ $implicit: menu }"/>
+            }
             <sgdf-divider/>
-            <sgdf-menu-item variant="danger" (click)="logout()">
-                <sgdf-icon slot="icon" name="right-from-bracket" library="solid"/>
-                {{ 'navbar.user.logout' | transloco }}
-            </sgdf-menu-item>
+            <ng-container [ngTemplateOutlet]="menuItem"
+                          [ngTemplateOutletContext]="{ $implicit: logoutMenu, variant: 'danger', action: logout }"/>
         </sgdf-menu>
     }
 </sgdf-navbar>
@@ -67,4 +56,11 @@
         }
         {{ menu.label | transloco }}
     </sgdf-nav-item>
+</ng-template>
+
+<ng-template #menuItem let-menu let-variant="variant" let-action="action">
+    <sgdf-menu-item [routerLink]="menu.url" [attr.variant]="variant" (click)="action?.()">
+        <sgdf-icon slot="icon" [attr.name]="menu.icon.name" [library]="menu.icon.library"></sgdf-icon>
+        {{ menu.label | transloco }}
+    </sgdf-menu-item>
 </ng-template>

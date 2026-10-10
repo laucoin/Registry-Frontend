@@ -7,6 +7,7 @@ import {
     OnDestroy,
     Signal,
 } from '@angular/core'
+import { UserProfileFacade } from '@core/registry/state/user-profile.facade'
 import {ProjectProfileModel} from '@shared/models/model/project-profile.model'
 import {ChipModule} from 'primeng/chip'
 import {TitleCasePipe, UpperCasePipe} from '@angular/common'
@@ -53,6 +54,7 @@ import {AvailabilityStatusEnum} from '@shared/models/enumeration/availability-st
 })
 export class ProjectProfileElementComponent extends GenericElementComponent implements OnDestroy {
     protected readonly facade: ProjectProfileFacade = inject(ProjectProfileFacade)
+    private readonly userProfileFacade: UserProfileFacade = inject(UserProfileFacade)
     protected readonly ProfileStatusEnum: typeof ProfileStatusEnum = ProfileStatusEnum
     protected readonly subscriptions: Subscription = new Subscription()
 
@@ -184,6 +186,6 @@ export class ProjectProfileElementComponent extends GenericElementComponent impl
     }
 
     protected manageAcceptance(accepted: boolean): void {
-        this.registryFacade.manageProjectInvitationAcceptance(this.profile().id, accepted)
+        this.userProfileFacade.manageProjectInvitationAcceptance(this.profile().id, accepted)
     }
 }

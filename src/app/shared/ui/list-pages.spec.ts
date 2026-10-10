@@ -3,9 +3,9 @@ import { TestBed } from '@angular/core/testing'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslocoService } from '@jsverse/transloco'
 import { Mock, beforeEach, describe, expect, it, vi } from 'vitest'
-import { RegistryFacade } from '@core/registry/state/registry.facade'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { UiFacade } from '@core/registry/state/ui.facade'
+import { UserProfileFacade } from '@core/registry/state/user-profile.facade'
 import { ProjectFacade } from '@pages/projects/data/state/project/project.facade'
 import { ProjectsListPage } from '@pages/projects/projects-list/projects-list.page'
 import { AlertFacade } from '@pages/projects/[projectId]/alerts/data/state/alert.facade'
@@ -56,8 +56,8 @@ const CASES: ListCase[] = [
     { name: 'movements', type: MovementsListPage, facades: [ MovementFacade ], owner: MovementFacade, fetch: 'fetchMovementsPage', withId: false },
     { name: 'projects', type: ProjectsListPage, facades: [ ProjectFacade ], owner: ProjectFacade, fetch: 'fetchProjectsPage', withId: false },
     { name: 'users', type: UsersListPage, facades: [ UserFacade ], owner: UserFacade, fetch: 'fetchUsersPage', withId: false },
-    { name: 'invitations', type: InvitationsListPage, facades: [], owner: SessionFacade, fetch: 'fetchProjectProfileInvitationPage', withId: false },
-    { name: 'profiles', type: ProfilesListPage, facades: [ ProjectProfileFacade ], owner: SessionFacade, fetch: 'fetchProjectProfilesPage', withId: false },
+    { name: 'invitations', type: InvitationsListPage, facades: [], owner: UserProfileFacade, fetch: 'fetchProjectProfileInvitationPage', withId: false },
+    { name: 'profiles', type: ProfilesListPage, facades: [ ProjectProfileFacade ], owner: UserProfileFacade, fetch: 'fetchProjectProfilesPage', withId: false },
 ]
 
 function withUnsetSearchParams (facade: Record<string, Mock>): Record<string, Mock> {
@@ -72,7 +72,7 @@ describe( 'list pages', () => {
 
     function create (item: ListCase): GenericListComponent {
         mocks = new Map<Type<unknown>, Record<string, Mock>>()
-        const types: Type<unknown>[] = [ ...new Set( [ ...item.facades, item.owner, SessionFacade, UiFacade, RegistryFacade ] ) ]
+        const types: Type<unknown>[] = [ ...new Set( [ ...item.facades, item.owner, SessionFacade, UiFacade ] ) ]
         types.forEach( (facade: Type<unknown>): void => { mocks.set( facade, withUnsetSearchParams( autoMock() ) ) } )
         TestBed.configureTestingModule( {
             providers: [

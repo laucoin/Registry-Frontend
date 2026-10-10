@@ -3,7 +3,6 @@ import { TestBed } from '@angular/core/testing'
 import { TranslocoService } from '@jsverse/transloco'
 import { of } from 'rxjs'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
-import { RegistryFacade } from '@core/registry/state/registry.facade'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { ProjectApi } from '@pages/projects/data/state/project.api'
@@ -18,7 +17,7 @@ describe( 'ProjectFacade', () => {
     let createProject: Mock<ProjectApi['createProject']>
     let updateProjectById: Mock<ProjectApi['updateProjectById']>
     let disableProjectById: Mock<ProjectApi['disableProjectById']>
-    let fetchCurrentUser: Mock<RegistryFacade['fetchCurrentUser']>
+    let fetchCurrentUser: Mock<SessionFacade['fetchCurrentUser']>
     let notify: Mock<(message: unknown) => void>
     let currentProjectId: WritableSignal<string | undefined>
 
@@ -36,8 +35,7 @@ describe( 'ProjectFacade', () => {
                 ProjectFacade,
                 ProjectStore,
                 { provide: ProjectApi, useValue: { findProjects, createProject, updateProjectById, disableProjectById } },
-                { provide: RegistryFacade, useValue: { fetchCurrentUser } },
-                { provide: SessionFacade, useValue: { currentProjectId } },
+                { provide: SessionFacade, useValue: { currentProjectId, fetchCurrentUser } },
                 { provide: UiFacade, useValue: { notify, setGlobalError: vi.fn() } },
                 { provide: TranslocoService, useValue: { translate: (key: string): string => `t:${key}` } },
             ],

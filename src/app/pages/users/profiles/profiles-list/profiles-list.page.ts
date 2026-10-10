@@ -1,4 +1,5 @@
 import { FieldTree, FormField } from '@angular/forms/signals'
+import { UserProfileFacade } from '@core/registry/state/user-profile.facade'
 import { createSearchForm } from '@shared/helpers/form/search.form'
 import { ProfilesListSearchModel, toProfilesListSearchModel, toProfilesListSearchParams } from './profiles-list.search'
 import { Component, computed, inject, Signal, signal, WritableSignal } from '@angular/core'
@@ -44,35 +45,36 @@ import {RouterLink} from '@angular/router'
     templateUrl: './profiles-list.page.html',
 })
 export class ProfilesListPage extends GenericListComponent {
+    protected readonly userProfileFacade: UserProfileFacade = inject(UserProfileFacade)
     protected readonly facade: ProjectProfileFacade = inject(ProjectProfileFacade)
 
     protected readonly hasFilters: Signal<boolean> = computed((): boolean =>
-        StringHelper.isNotNullNorBlank(this.sessionFacade.userProjectProfilesPageTextSearchParam())
-        || GenericHelper.nonNull(this.sessionFacade.userProjectProfilesPageDateTimeSearchParam())
-        || GenericHelper.nonNull(this.sessionFacade.userProjectProfilesPageAvailabilitySearchParam()),
+        StringHelper.isNotNullNorBlank(this.userProfileFacade.userProjectProfilesPageTextSearchParam())
+        || GenericHelper.nonNull(this.userProfileFacade.userProjectProfilesPageDateTimeSearchParam())
+        || GenericHelper.nonNull(this.userProfileFacade.userProjectProfilesPageAvailabilitySearchParam()),
     )
 
     protected readonly model: WritableSignal<ProfilesListSearchModel> = signal( toProfilesListSearchModel( {
-        textSearched: this.sessionFacade.userProjectProfilesPageTextSearchParam(),
-        dateTimeSearched: this.sessionFacade.userProjectProfilesPageDateTimeSearchParam(),
-        availabilitySearched: this.sessionFacade.userProjectProfilesPageAvailabilitySearchParam(),
+        textSearched: this.userProfileFacade.userProjectProfilesPageTextSearchParam(),
+        dateTimeSearched: this.userProfileFacade.userProjectProfilesPageDateTimeSearchParam(),
+        availabilitySearched: this.userProfileFacade.userProjectProfilesPageAvailabilitySearchParam(),
     } ) )
     protected readonly form: FieldTree<ProfilesListSearchModel> = createSearchForm( this.model )
 
     public constructor() {
         super()
 
-        this.sessionFacade.fetchProjectProfilesPage(undefined, undefined)
+        this.userProfileFacade.fetchProjectProfilesPage(undefined, undefined)
     }
 
     protected loadPage(pageEvent: PageEventModel): void {
         const search: ReturnType<typeof toProfilesListSearchParams> = toProfilesListSearchParams( this.model() )
-        this.sessionFacade.inputProfilesPageSearchParameters(
+        this.userProfileFacade.inputProfilesPageSearchParameters(
             search.textSearched,
             search.availabilitySearched,
             search.dateTimeSearched,
         )
-        this.sessionFacade.fetchProjectProfilesPage(pageEvent.pageNumber, pageEvent.pageSize)
+        this.userProfileFacade.fetchProjectProfilesPage(pageEvent.pageNumber, pageEvent.pageSize)
     }
 
 }

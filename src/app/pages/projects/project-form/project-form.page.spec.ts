@@ -6,7 +6,6 @@ import { BehaviorSubject, of } from 'rxjs'
 import { Mock, beforeEach, describe, expect, it, vi } from 'vitest'
 import { ConfigModel } from '@core/config/model/config.model'
 import { RegistryConfig } from '@core/config/registry.config'
-import { RegistryFacade } from '@core/registry/state/registry.facade'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { ProjectOptionModel } from '@shared/models/model/project-option.model'
@@ -63,7 +62,6 @@ describe( 'ProjectFormPage', () => {
                 { provide: ActivatedRoute, useValue: { snapshot: { params: id ? { projectId: id } : {} } } },
                 { provide: SessionFacade, useValue: { selectedProject: (): undefined => undefined, currentUser: (): undefined => undefined } },
                 { provide: UiFacade, useValue: autoMock() },
-                { provide: RegistryFacade, useValue: autoMock() },
                 { provide: CustomDateFormatPipe, useValue: { transform: (): string => '' } },
                 { provide: TranslocoService, useValue: { translate: (key: string): string => key } },
             ],

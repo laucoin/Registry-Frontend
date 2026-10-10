@@ -1,7 +1,8 @@
 import { FieldTree, FormField } from '@angular/forms/signals'
+import { UserProfileFacade } from '@core/registry/state/user-profile.facade'
 import { createSearchForm } from '@shared/helpers/form/search.form'
 import { InvitationsListSearchModel, toInvitationsListSearchModel, toInvitationsListSearchParams } from './invitations-list.search'
-import { Component, computed, Signal, signal, WritableSignal } from '@angular/core'
+import { Component, computed, inject, Signal, signal, WritableSignal } from '@angular/core'
 import {TranslocoPipe} from '@jsverse/transloco'
 import {PageEventModel} from '@shared/models/model/page-event.model'
 import {InputTextModule} from 'primeng/inputtext'
@@ -40,27 +41,28 @@ import {RouterLink} from '@angular/router'
     templateUrl: './invitations-list.page.html',
 })
 export class InvitationsListPage extends GenericListComponent {
+    protected readonly userProfileFacade: UserProfileFacade = inject(UserProfileFacade)
     protected readonly hasFilters: Signal<boolean> = computed((): boolean =>
-        StringHelper.isNotNullNorBlank(this.sessionFacade.userProjectProfileInvitationsPageTextSearchParam())
-        || GenericHelper.nonNull(this.sessionFacade.userProjectProfileInvitationsPageDateTimeSearchParam()),
+        StringHelper.isNotNullNorBlank(this.userProfileFacade.userProjectProfileInvitationsPageTextSearchParam())
+        || GenericHelper.nonNull(this.userProfileFacade.userProjectProfileInvitationsPageDateTimeSearchParam()),
     )
 
     protected readonly model: WritableSignal<InvitationsListSearchModel> = signal( toInvitationsListSearchModel( {
-        textSearched: this.sessionFacade.userProjectProfileInvitationsPageTextSearchParam(),
-        dateTimeSearched: this.sessionFacade.userProjectProfileInvitationsPageDateTimeSearchParam(),
+        textSearched: this.userProfileFacade.userProjectProfileInvitationsPageTextSearchParam(),
+        dateTimeSearched: this.userProfileFacade.userProjectProfileInvitationsPageDateTimeSearchParam(),
     } ) )
     protected readonly form: FieldTree<InvitationsListSearchModel> = createSearchForm( this.model )
 
     public constructor() {
         super()
 
-        this.sessionFacade.fetchProjectProfileInvitationPage(undefined, undefined)
+        this.userProfileFacade.fetchProjectProfileInvitationPage(undefined, undefined)
     }
 
     protected loadPage(pageEvent: PageEventModel): void {
         const search: ReturnType<typeof toInvitationsListSearchParams> = toInvitationsListSearchParams( this.model() )
-        this.sessionFacade.inputInvitationsPageSearchParameters(search.textSearched, search.dateTimeSearched)
-        this.sessionFacade.fetchProjectProfileInvitationPage(pageEvent.pageNumber, pageEvent.pageSize)
+        this.userProfileFacade.inputInvitationsPageSearchParameters(search.textSearched, search.dateTimeSearched)
+        this.userProfileFacade.fetchProjectProfileInvitationPage(pageEvent.pageNumber, pageEvent.pageSize)
     }
 
 }

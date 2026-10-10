@@ -1,9 +1,6 @@
 import { signal, WritableSignal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { RegistryConfig } from '@core/config/registry.config';
-import { RegistryFacade } from '@core/registry/state/registry.facade';
 import { SessionFacade } from '@core/registry/state/session.facade';
-import { UiFacade } from '@core/registry/state/ui.facade';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { MockBuilder } from 'ng-mocks';
 import { AccountLanguageComponent } from './account-language.component';
@@ -12,10 +9,11 @@ describe('AccountLanguageComponent', () => {
 	let language: WritableSignal<string>;
 	let pending: WritableSignal<string | undefined>;
 	let updateCurrentUserLanguage: ReturnType<typeof vi.fn>;
+	let facade: { availableLanguages: string[] };
 	let fixture: ComponentFixture<AccountLanguageComponent>;
 
 	const createComponent = async (languages: string[]): Promise<void> => {
-		RegistryConfig.config = { languages } as typeof RegistryConfig.config;
+		facade.availableLanguages = languages;
 		fixture = TestBed.createComponent(AccountLanguageComponent);
 		await fixture.whenStable();
 	};
@@ -24,11 +22,13 @@ describe('AccountLanguageComponent', () => {
 		language = signal('fr');
 		pending = signal<string | undefined>(undefined);
 		updateCurrentUserLanguage = vi.fn();
+		facade = { availableLanguages: [] };
 		await MockBuilder(AccountLanguageComponent)
 			.mock(TranslocoPipe, (key: string): string => key)
-			.provide({ provide: SessionFacade, useValue: { currentUserLanguage: language } })
-			.provide({ provide: UiFacade, useValue: { pendingLanguage: pending } })
-			.provide({ provide: RegistryFacade, useValue: { updateCurrentUserLanguage } });
+			.provide({
+				provide: SessionFacade,
+				useValue: Object.assign(facade, { currentUserLanguage: language, pendingLanguage: pending, updateCurrentUserLanguage }),
+			});
 		await createComponent(['fr', 'en']);
 	});
 

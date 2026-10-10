@@ -1,3 +1,4 @@
+import { UserProfileFacade } from '@core/registry/state/user-profile.facade'
 import { Component, computed, inject, input, InputSignal, OnDestroy, Signal, model, ModelSignal } from '@angular/core'
 import {ProjectModel} from '@shared/models/model/project.model'
 import {ElementCardComponent} from '@shared/ui/common/element-card/element-card.component'
@@ -47,6 +48,7 @@ import {AvailabilityStatusEnum} from '@shared/models/enumeration/availability-st
 })
 export class ProjectElementComponent extends GenericElementComponent implements OnDestroy {
     protected readonly facade: ProjectFacade = inject(ProjectFacade)
+    private readonly userProfileFacade: UserProfileFacade = inject(UserProfileFacade)
     protected readonly subscriptions: Subscription = new Subscription()
 
     protected readonly layerOpened: ModelSignal<boolean> = model<boolean>( false )
@@ -158,7 +160,7 @@ export class ProjectElementComponent extends GenericElementComponent implements 
 
     private createSupportProfile(): void {
         this.subscriptions.add(
-            this.registryFacade.createSupportProjectProfile(this.project().id).pipe(
+            this.userProfileFacade.createSupportProjectProfile(this.project().id).pipe(
                 tap(() => this.selectProject()),
             ).subscribe(),
         )

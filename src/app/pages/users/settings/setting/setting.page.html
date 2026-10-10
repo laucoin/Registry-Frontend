@@ -33,7 +33,7 @@
                           optionValue='value'
                           inputId='app-language'
                           fluid
-                          (onChange)='registryFacade.updateCurrentUserLanguage($event.value)'
+                          (onChange)='sessionFacade.updateCurrentUserLanguage($event.value)'
                           [formField]='form.language' />
             </div>
             <div class='field'>
@@ -43,7 +43,7 @@
                                  [formField]='form.theme'
                                  optionValue='value'
                                  [allowEmpty]='false'
-                                 (onChange)='registryFacade.updateCurrentUserTheme($event.value)'>
+                                 (onChange)='sessionFacade.updateCurrentUserTheme($event.value)'>
                     <ng-template #item let-item>
                         <i [class]='item.icon'></i>
                     </ng-template>

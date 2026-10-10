@@ -6,9 +6,9 @@ import { MenuEntryModel } from '@shared/models/model/menu-entry.model'
 import { of } from 'rxjs'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
 import { RegistryConfig } from '@core/config/registry.config'
-import { RegistryFacade } from '@core/registry/state/registry.facade'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { UiFacade } from '@core/registry/state/ui.facade'
+import { UserProfileFacade } from '@core/registry/state/user-profile.facade'
 import { ProjectFacade } from '@pages/projects/data/state/project/project.facade'
 import { ActivityFacade } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.facade'
 import { ActivityElementComponent } from '@pages/projects/[projectId]/configuration/activities/activity-element/activity-element.component'
@@ -85,8 +85,8 @@ describe( 'element action menus', () => {
                 { provide: item.facade, useValue: facade },
                 ...(item.facade === GroupFacade ? [] : [ { provide: GroupFacade, useValue: facadeMock( 'x' ) } ]),
                 { provide: SessionFacade, useValue: { currentUser: signal( { id: 'u1', authorities: [ 'p1_REGISTRY_PROJECT_ALERT_U' ] } ), selectedProject: signal( { id: 'p1', options: [] } ), currentProjectId: signal( 'p1' ) } },
+                { provide: UserProfileFacade, useValue: {} },
                 { provide: UiFacade, useValue: { tinyScreen: signal( false ), notify: vi.fn(), confirm } },
-                { provide: RegistryFacade, useValue: {} },
                 { provide: TranslocoService, useValue: { translate: (key: string): string => key } },
                 { provide: Router, useValue: { navigateByUrl: vi.fn( () => Promise.resolve( true ) ) } },
                 { provide: ActivatedRoute, useValue: {} },

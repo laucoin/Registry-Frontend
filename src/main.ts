@@ -6,7 +6,7 @@ import { provideRouter } from '@angular/router'
 import { backendHandler } from '@core/authentication/handler/backend.handler'
 import { RegistryConfig } from '@core/config/registry.config'
 import { RegistryComponent } from '@core/layout/registry.component'
-import { RegistryFacade } from '@core/registry/state/registry.facade'
+import { UserProfileFacade } from '@core/registry/state/user-profile.facade'
 import { routes } from '@core/routing/registry.routes'
 import { UserFacade } from '@pages/users/data/state/user.facade'
 import { CustomDateFormatPipe } from '@shared/helpers/pipe/custom-date-format.pipe'
@@ -39,7 +39,7 @@ bootstrapApplication(RegistryComponent, {
 		provideZonelessChangeDetection(),
 		provideHttpClient(withInterceptors([backendHandler])),
 		provideRouter(routes),
-		RegistryFacade,
+		UserProfileFacade,
 		UserFacade,
 		DatePipe,
 		DateFormatPipe,

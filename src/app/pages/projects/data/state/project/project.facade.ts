@@ -8,7 +8,6 @@ import { GenericFacade } from '@shared/helpers/facade/generic.facade'
 import { ProjectStore } from '@pages/projects/data/state/project/project.store'
 import { ProjectDto } from '@pages/projects/data/dto/project.dto'
 import { ProjectApi } from '@pages/projects/data/state/project.api'
-import { RegistryFacade } from '@core/registry/state/registry.facade'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { StateHelper } from '@shared/helpers/state/state.helper'
@@ -27,7 +26,6 @@ import { DateHelper } from '@shared/helpers/date.helper'
 export class ProjectFacade extends GenericFacade {
     private readonly store: InstanceType<typeof ProjectStore> = inject( ProjectStore )
     private readonly api: ProjectApi = inject( ProjectApi )
-    private readonly registryFacade: RegistryFacade = inject( RegistryFacade )
     private readonly uiFacade: UiFacade = inject( UiFacade )
     private readonly sessionFacade: SessionFacade = inject( SessionFacade )
 
@@ -118,7 +116,7 @@ export class ProjectFacade extends GenericFacade {
                 this.store.setCreatedProjectId( created.id )
                 this.onCommandSuccess( 'create', created )
             } ),
-            switchMap( (): Observable<unknown> => this.registryFacade.fetchCurrentUser() ),
+            switchMap( (): Observable<unknown> => this.sessionFacade.fetchCurrentUser() ),
         )
     }
 
@@ -129,7 +127,7 @@ export class ProjectFacade extends GenericFacade {
             tap( (updated: ProjectModel): void => {
                 this.onCommandSuccess( 'edit', updated )
                 if (this.sessionFacade.currentProjectId() == updated.id) {
-                    this.registryFacade.fetchCurrentUser()
+                    this.sessionFacade.fetchCurrentUser()
                 }
             } ),
         )
@@ -174,7 +172,7 @@ export class ProjectFacade extends GenericFacade {
         ) )
 
         if (refreshUser) {
-            this.registryFacade.fetchCurrentUser()
+            this.sessionFacade.fetchCurrentUser()
         }
 
         const page: PageModel<ProjectModel> | undefined = this.projectsPage()

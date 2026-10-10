@@ -8,7 +8,6 @@ import { Observable, of, throwError } from 'rxjs'
 import { afterEach, beforeEach, describe, expect, it, Mock, vi } from 'vitest'
 import { RegistryConfig } from '@core/config/registry.config'
 import { LanguageService } from '@core/language/language.service'
-import { RegistryFacade } from '@core/registry/state/registry.facade'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { backendHandler } from '@core/authentication/handler/backend.handler'
 import { CurrentUserModel } from '@shared/models/model/current-user.model'
@@ -39,8 +38,7 @@ describe( 'backendHandler', () => {
             providers: [
                 provideHttpClient( withInterceptors( [ backendHandler ] ) ),
                 provideHttpClientTesting(),
-                MockProvider( RegistryFacade, { redirectToLogin: redirectToLogin, refreshToken: refreshToken } ),
-                MockProvider( SessionFacade, { currentUser: currentUser, currentProjectId: signal( 'project-1' ) } ),
+                MockProvider( SessionFacade, { currentUser: currentUser, currentProjectId: signal( 'project-1' ), redirectToLogin: redirectToLogin, refreshToken: refreshToken } ),
                 { provide: LanguageService, useValue: { activeLanguage: 'en' } },
                 { provide: TranslocoService, useValue: { translate: (key: string): string => key } },
             ],

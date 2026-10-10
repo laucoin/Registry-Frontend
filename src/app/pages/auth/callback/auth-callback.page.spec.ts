@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing'
 import { ActivatedRoute } from '@angular/router'
 import { BehaviorSubject } from 'rxjs'
 import { Mock, beforeEach, describe, expect, it, vi } from 'vitest'
-import { RegistryFacade } from '@core/registry/state/registry.facade'
+import { SessionFacade } from '@core/registry/state/session.facade'
 import { AuthCallbackPage } from '@pages/auth/callback/auth-callback.page'
 import { autoMock } from '@shared/helpers/testing/auto-mock'
 
@@ -15,7 +15,7 @@ describe( 'AuthCallbackPage', () => {
         queryParams = new BehaviorSubject<object>( params )
         TestBed.configureTestingModule( {
             providers: [
-                { provide: RegistryFacade, useValue: facade },
+                { provide: SessionFacade, useValue: facade },
                 { provide: ActivatedRoute, useValue: { queryParams } },
             ],
         } )
