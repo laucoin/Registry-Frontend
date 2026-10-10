@@ -1,0 +1,41 @@
+{
+  "eyebrow": "Settings",
+  "title": "My account",
+  "subtitle": "Review your information and set the language and theme of the application.",
+  "info": {
+    "title": "Account information",
+    "name": "Full name",
+    "email": "Email address",
+    "role": "Role",
+    "lastLogin": "Last sign-in",
+    "hint": "This information is provided by {{origin}} and cannot be changed here. Please contact {{origin}} if changes are needed."
+  },
+  "language": {
+    "title": "Language",
+    "fr": "Français",
+    "en": "English",
+    "hint": "Display language of the interface."
+  },
+  "theme": {
+    "title": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "hint": "\"System\" follows your device setting."
+  },
+  "personalData": {
+    "title": "My personal data",
+    "gdprLabel": "GDPR",
+    "learnMore": "Learn how your data is used",
+    "extract": {
+      "title": "Request an extract of my data",
+      "description": "You will receive by e-mail an archive containing all the data linked to your account: profile, project access, attendance, movements and communications.",
+      "action": "Request the extract"
+    },
+    "delete": {
+      "title": "Delete my account",
+      "description": "Deleting removes your profile and your access. Records that must be kept for legal reasons are anonymized.",
+      "action": "Delete my account"
+    }
+  }
+}

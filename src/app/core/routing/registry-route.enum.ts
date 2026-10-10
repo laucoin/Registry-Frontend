@@ -3,7 +3,7 @@ import { ConfigurationRoutesEnum } from '@pages/projects/[projectId]/configurati
 import { GroupRoutesEnum } from '@pages/projects/[projectId]/configuration/groups/group-routes.enum'
 import { ParticipantRoutesEnum } from '@pages/projects/[projectId]/configuration/participants/participant-routes.enum'
 import {
-    ProjectProfileRoutesEnum
+	ProjectProfileRoutesEnum
 } from '@pages/projects/[projectId]/configuration/profiles/project-profile-routes.enum'
 import { VehicleRoutesEnum } from '@pages/projects/[projectId]/configuration/vehicles/vehicle-routes.enum'
 import { MovementRoutesEnum } from '@pages/projects/[projectId]/movements/movement-routes.enum'
@@ -11,10 +11,13 @@ import { ProjectRoutesEnum } from '@pages/projects/project-routes.enum'
 import { UserRoutesEnum } from '@pages/users/user-routes.enum'
 
 export enum RegistryRouteEnum {
+	LOGIN = 'login',
 	AUTH_CALLBACK = 'auth/callback',
 
 	PRIVACY = 'privacy',
 	TERMS = 'terms',
+
+	MY_ACCOUNT = 'my-account',
 
 	USERS = 'users',
 	USERS_EDITION = `${USERS}/${UserRoutesEnum.EDIT}`,

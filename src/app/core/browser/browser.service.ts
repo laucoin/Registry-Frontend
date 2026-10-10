@@ -54,6 +54,10 @@ export class BrowserService {
         window.location.href = url
     }
 
+    public reload (): void {
+        location.reload()
+    }
+
     public setRootTheme (theme: ThemeEnum): void {
         if (theme === ThemeEnum.SYSTEM) {
             document.documentElement.removeAttribute( THEME_ATTRIBUTE )

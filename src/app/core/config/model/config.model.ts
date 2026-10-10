@@ -3,16 +3,6 @@ import { ElementActionEnum } from '@shared/models/enumeration/element-action.enu
 export interface ConfigModel {
 	defaultLanguage: string
 	languages: string[]
-	logo: {
-		normal: {
-			light: string
-			dark: string
-		}
-		small: {
-			light: string
-			dark: string
-		}
-	}
 	application: {
 		name: string
 		organization: string

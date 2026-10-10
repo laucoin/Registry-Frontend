@@ -1,6 +1,5 @@
-import { computed, inject, Injectable, Signal } from '@angular/core'
+import { inject, Injectable, Signal } from '@angular/core'
 import { Router } from '@angular/router'
-import {TranslocoService} from '@jsverse/transloco'
 import {
     catchError,
     EMPTY,
@@ -29,6 +28,7 @@ import { UserApi } from '@pages/users/data/state/user.api'
 import { UserProjectProfileApi } from '@core/registry/state/user-project-profile.api'
 import { PreferencesApi } from '@core/registry/state/preferences.api'
 import { BrowserService } from '@core/browser/browser.service'
+import { LanguageService } from '@core/language/language.service'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { SessionStore } from '@core/registry/state/session.store'
@@ -47,7 +47,7 @@ import { initialize, reportError } from '@shared/helpers/rx.helper'
  */
 @Injectable()
 export class RegistryFacade {
-    private readonly translateService: TranslocoService = inject(TranslocoService)
+    private readonly languageService: LanguageService = inject(LanguageService)
     private readonly router: Router = inject(Router)
     private readonly datePipe: CustomDateFormatPipe = inject(CustomDateFormatPipe)
     private readonly profileReset: ProfileResetService = inject(ProfileResetService)
@@ -64,13 +64,15 @@ export class RegistryFacade {
 
     private pendingProject: { subscription: Subscription, done: ReplaySubject<void> } | undefined = undefined
 
-    public readonly currentUserTheme: Signal<ThemeEnum | undefined> = computed((): ThemeEnum | undefined => {
-        const userTheme: string | undefined = this.sessionFacade.currentUser()?.preferences?.theme
-        return GenericHelper.nonNull(userTheme) ? CurrentUserHelper.mapThemeToEnum(userTheme!) : this.uiFacade.theme()
-    })
+    public readonly currentUserTheme: Signal<ThemeEnum> = this.uiFacade.theme
+
+    public redirectToLogin(): void {
+        SessionStorageUtils.set(REDIRECT_URI, this.browser.pathname)
+        this.session.reset()
+        this.router.navigateByUrl(`/${RegistryRouteEnum.LOGIN}`)
+    }
 
     public login(): void {
-        SessionStorageUtils.set(REDIRECT_URI, this.browser.pathname)
         this.session.reset()
 
         this.securityApi.getLoginUri(`${this.browser.origin}/${RegistryRouteEnum.AUTH_CALLBACK}`).pipe(
@@ -147,7 +149,7 @@ export class RegistryFacade {
         this.uiFacade.updateTheme(theme!)
         this.preferencesApi.updateTheme(CurrentUserHelper.mapThemeToString(theme!)).pipe(
             tap((preferences: PreferencesModel): void => this.session.setCurrentUserTheme(preferences.theme)),
-            catchError((error: ErrorModel): Observable<never> => this.reportError$(error)),
+            catchError((error: ErrorModel): Observable<never> => this.themeSaveFailed$(error)),
         ).subscribe()
     }
 
@@ -156,9 +158,13 @@ export class RegistryFacade {
     }
 
     public updateCurrentUserLanguage(language: string): void {
-        this.applyLanguage(language)
+        if (language === this.sessionFacade.currentUserLanguage()) return
+
         this.preferencesApi.updateLanguage(language).pipe(
-            catchError((error: ErrorModel): Observable<never> => this.reportError$(error)),
+            initialize((): void => this.uiFacade.startLanguageChange(language)),
+            tap((): void => this.languageService.remember(language)),
+            tap((): void => this.browser.reload()),
+            catchError((error: ErrorModel): Observable<never> => this.languageChangeFailed$(error)),
         ).subscribe()
     }
 
@@ -255,15 +261,13 @@ export class RegistryFacade {
         }
 
         const userLanguage: string | undefined = currentUser.preferences.language
-        if (GenericHelper.nonNull(userLanguage) && userLanguage !== this.translateService.getActiveLang()) {
-            this.applyLanguage(userLanguage)
+        if (GenericHelper.nonNull(userLanguage) && userLanguage !== this.languageService.activeLanguage) {
+            this.applyUserLanguage(userLanguage!)
         }
     }
 
-    private applyLanguage(language: string): void {
-        this.translateService.load(language).pipe(
-            tap((): TranslocoService => this.translateService.setActiveLang(language)),
-            tap((): void => this.uiFacade.updateLanguage(language)),
+    private applyUserLanguage(language: string): void {
+        this.languageService.apply(language).pipe(
             tap((): void => this.reloadTranslatedData()),
             catchError((error: ErrorModel): Observable<never> => this.reportError$(error)),
         ).subscribe()
@@ -301,6 +305,28 @@ export class RegistryFacade {
     private globalError$(error: ErrorModel): Observable<never> {
         this.uiFacade.setGlobalError(error)
         return EMPTY
+    }
+
+    private languageChangeFailed$(error: ErrorModel): Observable<never> {
+        this.uiFacade.stopLanguageChange()
+        return this.reportError$(error)
+    }
+
+    private themeSaveFailed$(error: ErrorModel): Observable<never> {
+        if (error.status === 503) return this.reportError$(error)
+
+        this.notifyThemeNotSaved(error)
+        return EMPTY
+    }
+
+    private notifyThemeNotSaved(error: ErrorModel): void {
+        this.uiFacade.notify(StateHelper.buildNotificationMessage(
+            SeverityEnum.ERROR,
+            'global.notifications.THEME_SAVE_FAILED.title',
+            'global.notifications.THEME_SAVE_FAILED.message',
+            undefined,
+            { reason: error.message },
+        ))
     }
 
     private reportError$(error: ErrorModel): Observable<never> {

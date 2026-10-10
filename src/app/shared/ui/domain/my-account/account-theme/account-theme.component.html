@@ -1,0 +1,31 @@
+<sgdf-table class="h-full [&::part(grid)]:h-full" appearance="soft" [label]="'myAccount.theme.title' | transloco">
+    <sgdf-table-row>
+        <sgdf-table-cell header>
+            <sgdf-icon name="palette" library="solid"/>
+            {{ 'myAccount.theme.title' | transloco }}
+        </sgdf-table-cell>
+    </sgdf-table-row>
+
+    <sgdf-table-row>
+        <sgdf-table-cell row-header>
+            <div class="grid grid-flow-col auto-cols-fr gap-2">
+                @for (choice of choices; track choice.theme) {
+                    <sgdf-button variant="primary"
+                                 block
+                                 [appearance]="choice.theme === currentTheme() ? 'solid' : 'outlined'"
+                                 [attr.aria-pressed]="choice.theme === currentTheme()"
+                                 (click)="select(choice.theme)">
+                        <sgdf-icon slot="prefix" [name]="choice.icon" library="solid"/>
+                        {{ choice.labelKey | transloco }}
+                    </sgdf-button>
+                }
+            </div>
+        </sgdf-table-cell>
+    </sgdf-table-row>
+
+    <sgdf-table-row class="h-full">
+        <sgdf-table-cell class="align-bottom text-xs opacity-80">
+            {{ 'myAccount.theme.hint' | transloco }}
+        </sgdf-table-cell>
+    </sgdf-table-row>
+</sgdf-table>

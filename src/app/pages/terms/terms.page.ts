@@ -3,6 +3,7 @@ import { ConfigModel } from '@core/config/model/config.model'
 import { EnvironmentModel } from '@core/config/model/environment.model'
 import { RegistryConfig } from '@core/config/registry.config'
 import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco'
+import { BackNavigationDirective } from '@shared/directives/back-navigation.directive'
 
 /**
  * Purpose: Static terms-of-service page, personalized with the organization, creator and hosting information.
@@ -12,7 +13,7 @@ import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco'
 @Component({
 	selector: 'app-terms',
 	schemas: [CUSTOM_ELEMENTS_SCHEMA],
-	imports: [TranslocoPipe],
+	imports: [TranslocoPipe, BackNavigationDirective],
 	providers: [provideTranslocoScope('terms')],
 	templateUrl: './terms.page.html',
 	styleUrl: '../../shared/ui/common/legal-document/legal-document.css',

@@ -1,5 +1,12 @@
 {
   "navbar": {
+    "user": {
+      "menu": "Menu du compte de {{name}}",
+      "my-acccount": "Mon compte",
+      "profiles": "Mes profils",
+      "invitations": "Mes invitations",
+      "logout": "Se déconnecter"
+    },
     "app": {
       "projects": "Projets",
       "users": "Utilisateurs"
@@ -29,5 +36,13 @@
     },
     "documentation": "Documentation",
     "support": "Support"
+  },
+  "global": {
+    "notifications": {
+      "THEME_SAVE_FAILED": {
+        "title": "Thème non enregistré",
+        "message": "Le thème est appliqué sur cet appareil uniquement. Impossible de l'enregistrer sur votre compte : {{reason}}"
+      }
+    }
   }
 }

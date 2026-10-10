@@ -200,8 +200,8 @@ importers:
         specifier: ^22.0.1
         version: 22.0.1(@angular/core@22.2.1(@angular/compiler@22.2.1)(rxjs@7.8.2))(rxjs@7.8.2)
       '@sgdf/ui':
-        specifier: ^1.3.0
-        version: 1.3.0(@awesome.me/webawesome@3.14.0(@floating-ui/utils@0.2.12))
+        specifier: file:/private/tmp/claude-501/-Users-laucoin-Documents-Development-Personal-Registry-Registry-Frontend/a1ca2eec-201b-4b02-bb83-d398516c1fca/scratchpad/sgdf-ui-local-2.tgz
+        version: file:../../../../../../../private/tmp/claude-501/-Users-laucoin-Documents-Development-Personal-Registry-Registry-Frontend/a1ca2eec-201b-4b02-bb83-d398516c1fca/scratchpad/sgdf-ui-local-2.tgz(@awesome.me/webawesome@3.14.0(@floating-ui/utils@0.2.12))
       primeicons:
         specifier: ^8.0.2
         version: 8.0.2
@@ -230,6 +230,9 @@ importers:
       '@eslint/js':
         specifier: ^10.0.1
         version: 10.0.1(eslint@10.12.0(jiti@2.7.0)(supports-color@8.1.1))
+      '@schematics/angular':
+        specifier: 22.2.2
+        version: 22.2.2(chokidar@5.0.0)
       '@tailwindcss/postcss':
         specifier: ^4.3.3
         version: 4.3.3
@@ -1718,8 +1721,9 @@ packages:
     resolution: {integrity: sha512-JxpXKpxdmQcRsJbriWJOhB7HeVTzz9CEsPNw6fQ0LOuPFnvtyUIXLxyFbKv/LfoFUz8wFADCtNU5sjowME5Mvg==}
     engines: {node: ^22.22.3 || ^24.15.0 || >=26.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
 
-  '@sgdf/ui@1.3.0':
-    resolution: {integrity: sha1-zxiKhbA1KSqy3KEI9DurAwqC4T8=, tarball: https://gitlab.com/api/v4/projects/85654219/packages/npm/@sgdf/ui/-/@sgdf/ui-1.3.0.tgz}
+  '@sgdf/ui@file:../../../../../../../private/tmp/claude-501/-Users-laucoin-Documents-Development-Personal-Registry-Registry-Frontend/a1ca2eec-201b-4b02-bb83-d398516c1fca/scratchpad/sgdf-ui-local-2.tgz':
+    resolution: {integrity: sha512-EXAwZ3D1e4zUKR/He69fLoW1/5bjEqItHVDGGQqnpOzzL89q9Q3k53B1nOYWF59rLy2DLtR6b9iUZuUQggLr1w==, tarball: file:../../../../../../../private/tmp/claude-501/-Users-laucoin-Documents-Development-Personal-Registry-Registry-Frontend/a1ca2eec-201b-4b02-bb83-d398516c1fca/scratchpad/sgdf-ui-local-2.tgz}
+    version: 1.3.0
     peerDependencies:
       '@awesome.me/webawesome': ~3.14.0
 
@@ -4614,7 +4618,7 @@ snapshots:
     transitivePeerDependencies:
       - chokidar
 
-  '@sgdf/ui@1.3.0(@awesome.me/webawesome@3.14.0(@floating-ui/utils@0.2.12))':
+  '@sgdf/ui@file:../../../../../../../private/tmp/claude-501/-Users-laucoin-Documents-Development-Personal-Registry-Registry-Frontend/a1ca2eec-201b-4b02-bb83-d398516c1fca/scratchpad/sgdf-ui-local-2.tgz(@awesome.me/webawesome@3.14.0(@floating-ui/utils@0.2.12))':
     dependencies:
       '@awesome.me/webawesome': 3.14.0(@floating-ui/utils@0.2.12)
       lit: 3.3.3

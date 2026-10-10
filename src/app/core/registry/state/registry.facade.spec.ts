@@ -1,12 +1,12 @@
 import { signal, WritableSignal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { Router } from '@angular/router'
-import { TranslocoService } from '@jsverse/transloco'
 import { Observable, of, Subject, throwError } from 'rxjs'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
 import { ConfigModel } from '@core/config/model/config.model'
 import { RegistryConfig } from '@core/config/registry.config'
 import { BrowserService } from '@core/browser/browser.service'
+import { LanguageService } from '@core/language/language.service'
 import { SecurityApi } from '@core/authentication/service/security.api'
 import { PreferencesApi } from '@core/registry/state/preferences.api'
 import { RegistryFacade } from '@core/registry/state/registry.facade'
@@ -56,15 +56,17 @@ describe( 'RegistryFacade', () => {
     let findProfilesPage: Mock<UserProjectProfileApi['findUserProjectProfiles']>
 
     let navigateByUrl: Mock<Router['navigateByUrl']>
-    let loadLanguage: Mock<TranslocoService['load']>
-    let setActiveLang: Mock<TranslocoService['setActiveLang']>
+    let applyLanguage: Mock<LanguageService['apply']>
+    let rememberLanguage: Mock<LanguageService['remember']>
+    let reload: Mock<() => void>
+    let startLanguageChange: Mock<(language: string) => void>
+    let stopLanguageChange: Mock<() => void>
     let startGlobalLoader: Mock<() => void>
     let stopGlobalLoader: Mock<() => void>
     let setGlobalError: Mock<(error: ErrorModel) => void>
     let updateTheme: Mock<(theme: ThemeEnum) => void>
     let notify: Mock<(message: unknown) => void>
     let resetAll: Mock<() => void>
-    let updateLanguage: Mock<(language: string) => void>
     let redirect: Mock<(url: string) => void>
 
     beforeEach( () => {
@@ -86,15 +88,17 @@ describe( 'RegistryFacade', () => {
         findProfilesPage = vi.fn()
 
         navigateByUrl = vi.fn( () => Promise.resolve( true ) )
-        loadLanguage = vi.fn( () => of( {} ) )
-        setActiveLang = vi.fn()
+        applyLanguage = vi.fn( () => of( {} ) )
+        rememberLanguage = vi.fn()
+        reload = vi.fn()
+        startLanguageChange = vi.fn()
+        stopLanguageChange = vi.fn()
         startGlobalLoader = vi.fn()
         stopGlobalLoader = vi.fn()
         setGlobalError = vi.fn()
         updateTheme = vi.fn()
         notify = vi.fn()
         resetAll = vi.fn()
-        updateLanguage = vi.fn()
         redirect = vi.fn()
         theme = signal( ThemeEnum.LIGHT )
 
@@ -115,17 +119,11 @@ describe( 'RegistryFacade', () => {
                     },
                 },
                 { provide: ErrorReporter, useValue: { setGlobalError, notify: vi.fn() } },
-                { provide: UiFacade, useValue: { theme, startGlobalLoader, stopGlobalLoader, setGlobalError, updateTheme, updateLanguage, notify } },
-                { provide: BrowserService, useValue: { pathname: '/current', origin: 'http://app.test', redirect } },
+                { provide: UiFacade, useValue: { theme, startGlobalLoader, stopGlobalLoader, setGlobalError, updateTheme, notify, startLanguageChange, stopLanguageChange } },
+                { provide: BrowserService, useValue: { pathname: '/current', origin: 'http://app.test', redirect, reload } },
                 { provide: Router, useValue: { navigateByUrl } },
                 { provide: CustomDateFormatPipe, useValue: { transform: (): string => 'date' } },
-                { provide: TranslocoService, useValue: {
-                    translate: (key: string): string => key,
-                    translateObject: (): object => ({}),
-                    getActiveLang: (): string => 'fr',
-                    load: loadLanguage,
-                    setActiveLang,
-                } },
+                { provide: LanguageService, useValue: { activeLanguage: 'fr', apply: applyLanguage, remember: rememberLanguage } },
                 { provide: ProfileResetService, useValue: { resetAll } },
             ],
         } )
@@ -134,8 +132,23 @@ describe( 'RegistryFacade', () => {
         sessionFacade = TestBed.inject( SessionFacade )
     } )
 
+    describe( 'redirectToLogin', () => {
+        it( 'remembers the current path, clears the session and navigates to the login page', () => {
+            // Arrange
+            session.setCurrentUser( USER )
+
+            // Act
+            facade.redirectToLogin()
+
+            // Assert
+            expect( sessionStorage.getItem( REDIRECT_URI ) ).toBe( '/current' )
+            expect( session.currentUser() ).toBeUndefined()
+            expect( navigateByUrl ).toHaveBeenCalledWith( '/login' )
+        } )
+    } )
+
     describe( 'login', () => {
-        it( 'remembers the current path, clears the session and redirects to the identity provider', () => {
+        it( 'clears the session and redirects to the identity provider', () => {
             // Arrange
             session.setCurrentUser( USER )
 
@@ -143,7 +156,6 @@ describe( 'RegistryFacade', () => {
             facade.login()
 
             // Assert
-            expect( sessionStorage.getItem( REDIRECT_URI ) ).toBe( '/current' )
             expect( session.currentUser() ).toBeUndefined()
             expect( redirect ).toHaveBeenCalledWith( '#login' )
             expect( startGlobalLoader ).toHaveBeenCalledTimes( 1 )
@@ -272,8 +284,7 @@ describe( 'RegistryFacade', () => {
             facade.fetchCurrentUser()
 
             // Assert
-            expect( loadLanguage ).toHaveBeenCalledWith( 'en' )
-            expect( setActiveLang ).toHaveBeenCalledWith( 'en' )
+            expect( applyLanguage ).toHaveBeenCalledWith( 'en' )
         } )
 
         it( 'shows the global error yet still completes when the fetch fails', () => {
@@ -338,21 +349,20 @@ describe( 'RegistryFacade', () => {
             // Assert
             expect( updateTheme ).toHaveBeenCalledWith( ThemeEnum.DARK )
             expect( updateThemePreference ).toHaveBeenCalledWith( 'DARK' )
-            expect( facade.currentUserTheme() ).toBe( ThemeEnum.DARK )
         } )
 
-        it( 'falls back to the UI theme when the user has no stored theme', () => {
+        it( 'exposes the theme displayed, saved or not', () => {
             // Arrange
             theme.set( ThemeEnum.DARK )
 
             // Act
-            const current: ThemeEnum | undefined = facade.currentUserTheme()
+            const current: ThemeEnum = facade.currentUserTheme()
 
             // Assert
             expect( current ).toBe( ThemeEnum.DARK )
         } )
 
-        it( 'notifies when saving the theme fails', () => {
+        it( 'keeps the theme and explains why it is not saved when saving fails', () => {
             // Arrange
             updateThemePreference.mockReturnValue( failing( FAILURE ) )
 
@@ -360,10 +370,26 @@ describe( 'RegistryFacade', () => {
             facade.updateCurrentUserTheme( ThemeEnum.DARK )
 
             // Assert
-            expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'Title' } ) )
+            expect( updateTheme ).toHaveBeenCalledWith( ThemeEnum.DARK )
+            expect( notify ).toHaveBeenCalledWith( expect.objectContaining( {
+                summary: 'global.notifications.THEME_SAVE_FAILED.title',
+                data: { reason: 'Message' },
+            } ) )
         } )
 
-        it( 'switches the language and saves it', () => {
+        it( 'reports an unavailable backend globally when saving the theme fails', () => {
+            // Arrange
+            updateThemePreference.mockReturnValue( failing( UNAVAILABLE ) )
+
+            // Act
+            facade.updateCurrentUserTheme( ThemeEnum.DARK )
+
+            // Assert
+            expect( setGlobalError ).toHaveBeenCalledWith( UNAVAILABLE )
+            expect( notify ).not.toHaveBeenCalled()
+        } )
+
+        it( 'saves the language, remembers it and reloads the page', () => {
             // Arrange
             const language: string = 'en'
 
@@ -371,10 +397,36 @@ describe( 'RegistryFacade', () => {
             facade.updateCurrentUserLanguage( language )
 
             // Assert
-            expect( setActiveLang ).toHaveBeenCalledWith( 'en' )
-            expect( updateLanguage ).toHaveBeenCalledWith( 'en' )
             expect( updateLanguagePreference ).toHaveBeenCalledWith( 'en' )
-            expect( fetchCurrentUser ).toHaveBeenCalledTimes( 1 )
+            expect( rememberLanguage ).toHaveBeenCalledWith( 'en' )
+            expect( startLanguageChange ).toHaveBeenCalledWith( 'en' )
+            expect( reload ).toHaveBeenCalledOnce()
+        } )
+
+        it( 'does nothing when the language is already the user one', () => {
+            // Arrange
+            session.setCurrentUser( USER )
+
+            // Act
+            facade.updateCurrentUserLanguage( 'fr' )
+
+            // Assert
+            expect( updateLanguagePreference ).not.toHaveBeenCalled()
+            expect( reload ).not.toHaveBeenCalled()
+        } )
+
+        it( 'neither remembers the language nor reloads when the save fails', () => {
+            // Arrange
+            updateLanguagePreference.mockReturnValue( failing( FAILURE ) )
+
+            // Act
+            facade.updateCurrentUserLanguage( 'en' )
+
+            // Assert
+            expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'Title' } ) )
+            expect( stopLanguageChange ).toHaveBeenCalledOnce()
+            expect( rememberLanguage ).not.toHaveBeenCalled()
+            expect( reload ).not.toHaveBeenCalled()
         } )
     } )
 

@@ -100,7 +100,10 @@ export class RegistryConfig {
 				await RegistryConfig.load()
 				const translateService: TranslocoService = injector.get(TranslocoService)
 
-				return firstValueFrom(translateService.load(translateService.getActiveLang()))
+				const activeLang: string = translateService.getActiveLang()
+				injector.get(BrowserService).setRootLanguage(activeLang)
+
+				return firstValueFrom(translateService.load(activeLang))
 			}),
 		]
 	}

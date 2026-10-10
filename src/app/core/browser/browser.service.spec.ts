@@ -35,6 +35,19 @@ describe( 'BrowserService', () => {
         expect( location.hash ).toBe( target )
     } )
 
+    it( 'reloads the page', () => {
+        // Arrange
+        const reload: Mock = vi.fn()
+        vi.stubGlobal( 'location', { reload } )
+
+        // Act
+        service.reload()
+
+        // Assert
+        expect( reload ).toHaveBeenCalledOnce()
+        vi.unstubAllGlobals()
+    } )
+
     it( 'exposes the current location', () => {
         // Arrange
         const expectedOrigin: string = window.location.origin

@@ -1,4 +1,13 @@
 {
+  "navbar": {
+    "user": {
+      "menu": "Account menu of {{name}}",
+      "settings": "Settings",
+      "profiles": "My profiles",
+      "invitations": "My invitations",
+      "logout": "Sign out"
+    }
+  },
   "global": {
     "language": {
       "fr": "Français",
@@ -189,6 +198,10 @@
       "NO_SELECTED_PROJECT": {
         "title": "🕵️‍♂️ No selected project",
         "message": "No project has been selected. You have to select a project to carry out this action."
+      },
+      "THEME_SAVE_FAILED": {
+        "title": "Theme not saved",
+        "message": "The theme is applied on this device only. We could not save it to your account: {{reason}}"
       }
     },
     "not-set": "Undefined"

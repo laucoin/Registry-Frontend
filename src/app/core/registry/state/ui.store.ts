@@ -8,15 +8,15 @@ import { ErrorModel } from '@shared/models/model/error.model'
 interface UiStoreModel {
     theme: ThemeEnum
     screenWidth: number
-    language: string | undefined
     online: boolean | undefined
+    pendingLanguage: string | undefined
     loading: boolean
     error: NotificationModel | undefined
 }
 
 /**
- * Purpose: Holds the shell display state: theme, screen width, language, network, global loader and error.
- * Scope: Owns that state and applies the theme and language on the document through the browser service.
+ * Purpose: Holds the shell display state: theme, screen width, network, language change in flight, global loader and error.
+ * Scope: Owns that state and applies the theme on the document through the browser service.
  * Limits: Knows nothing about the user or the session and does not call the backend.
  */
 export const UiStore = signalStore(
@@ -26,8 +26,8 @@ export const UiStore = signalStore(
         return {
             theme: browser.systemTheme,
             screenWidth: browser.viewportWidth,
-            language: undefined,
             online: undefined,
+            pendingLanguage: undefined,
             loading: false,
             error: undefined,
         }
@@ -44,12 +44,10 @@ export const UiStore = signalStore(
                 closable: true,
             },
         } ),
+        startLanguageChange: (language: string): void => patchState( store, { pendingLanguage: language } ),
+        stopLanguageChange: (): void => patchState( store, { pendingLanguage: undefined } ),
         updateNetwork: (online: boolean): void => patchState( store, { online: online } ),
         updateScreenWidth: (screenWidth: number): void => patchState( store, { screenWidth: screenWidth } ),
-        updateLanguage: (language: string): void => {
-            browser.setRootLanguage( language )
-            patchState( store, { language: language } )
-        },
         updateTheme: (theme: ThemeEnum): void => {
             browser.setRootTheme( theme )
             patchState( store, { theme: theme } )

@@ -4,16 +4,6 @@
     "fr",
     "en"
   ],
-  "logo": {
-    "normal": {
-      "light": "img/logo.svg",
-      "dark": "img/logo.svg"
-    },
-    "small": {
-      "light": "img/small-logo.svg",
-      "dark": "img/small-logo.svg"
-    }
-  },
   "enabledActions": [
     "USER_UPDATE",
     "USER_BLOCK",

@@ -11,6 +11,7 @@ import { inject } from '@angular/core'
 import {TranslocoService} from '@jsverse/transloco'
 import { catchError, defer, map, mergeMap, Observable, shareReplay, tap, throwError } from 'rxjs'
 import { RegistryConfig } from '@core/config/registry.config'
+import { LanguageService } from '@core/language/language.service'
 import { RegistryFacade } from '@core/registry/state/registry.facade'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { ErrorModel } from '@shared/models/model/error.model'
@@ -18,6 +19,7 @@ import { GenericHelper } from '@shared/helpers/generic.helper'
 import { CURRENT_USER_ID, SELECT_PROFILE_PROJECT_ID } from '@shared/helpers/request.helper'
 
 const CSRF_TOKEN_HEADER: string = 'X-XSRF-TOKEN'
+const ACCEPT_LANGUAGE_HEADER: string = 'Accept-Language'
 let csrfToken: string | undefined
 
 let refreshTokenInProgress$: Observable<void> | null = null
@@ -33,7 +35,7 @@ function refreshAccessToken(registryFacade: RegistryFacade): Observable<void> {
 			}),
 			catchError((refreshError: unknown): Observable<never> => {
 				refreshTokenInProgress$ = null
-				registryFacade.login()
+				registryFacade.redirectToLogin()
 				return throwError((): unknown => refreshError)
 			}),
 			shareReplay(1),
@@ -54,7 +56,7 @@ const UNAVAILABLE_STATUSES: number[] = [0, 502, 503]
 
 /**
  * Purpose: Single HTTP interceptor for every request to the backend.
- * Scope: Adds credentials and the CSRF token, resolves url placeholders, refreshes the token once on a 401 then replays, and maps 0/502/503 to a service unavailable error.
+ * Scope: Adds credentials, the CSRF token and the display language, resolves url placeholders, refreshes the token once on a 401 then replays, and maps 0/502/503 to a service unavailable error.
  * Limits: Does not touch other origins; the refresh endpoint and the no-auth paths are never refreshed or replayed.
  */
 export const backendHandler: HttpInterceptorFn = (
@@ -68,9 +70,10 @@ export const backendHandler: HttpInterceptorFn = (
 	const registryFacade: RegistryFacade = inject(RegistryFacade)
 	const sessionFacade: SessionFacade = inject(SessionFacade)
 	const translateService: TranslocoService = inject(TranslocoService)
+	const languageService: LanguageService = inject(LanguageService)
 
 	return defer((): Observable<HttpEvent<unknown>> => {
-		const authenticatedRequest: HttpRequest<unknown> = authenticate(req, sessionFacade)
+		const authenticatedRequest: HttpRequest<unknown> = authenticate(req, sessionFacade, languageService.activeLanguage)
 		const context: InterceptionContext = { request: req, authenticatedRequest, next, registryFacade, translateService }
 		return next(authenticatedRequest).pipe(
 			tap(captureCsrfTokenFromEvent),
@@ -79,9 +82,14 @@ export const backendHandler: HttpInterceptorFn = (
 	})
 }
 
-function authenticate(req: HttpRequest<unknown>, sessionFacade: SessionFacade): HttpRequest<unknown> {
+function authenticate(req: HttpRequest<unknown>, sessionFacade: SessionFacade, language: string): HttpRequest<unknown> {
 	const url: string = formatUrlIfNeeded(sessionFacade, req.url)
-	return withCsrfToken(req.clone({ url: url, withCredentials: true }))
+	const localizedRequest: HttpRequest<unknown> = req.clone({
+		url: url,
+		withCredentials: true,
+		setHeaders: { [ACCEPT_LANGUAGE_HEADER]: language },
+	})
+	return withCsrfToken(localizedRequest)
 }
 
 function withCsrfToken(req: HttpRequest<unknown>): HttpRequest<unknown> {
@@ -92,7 +100,7 @@ function handleError(error: HttpErrorResponse, context: InterceptionContext): Ob
 	captureCsrfToken(error.headers)
 
 	if (error.status === 401 && isNoAuthPath(context.request.url)) {
-		context.registryFacade.login()
+		context.registryFacade.redirectToLogin()
 		return throwError((): ErrorModel => new ErrorModel(error))
 	}
 	if (error.status === 401) {

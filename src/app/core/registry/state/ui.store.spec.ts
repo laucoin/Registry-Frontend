@@ -85,16 +85,18 @@ describe( 'UiStore', () => {
         expect( store.theme() ).toBe( ThemeEnum.SYSTEM )
     } )
 
-    it( 'tells the document which language is displayed', () => {
+    it( 'tracks the language being saved until the change stops', () => {
         // Arrange
         store = createStore()
 
         // Act
-        store.updateLanguage( 'fr' )
+        store.startLanguageChange( 'en' )
+        const pending: string | undefined = store.pendingLanguage()
+        store.stopLanguageChange()
 
         // Assert
-        expect( setRootLanguage ).toHaveBeenCalledWith( 'fr' )
-        expect( store.language() ).toBe( 'fr' )
+        expect( pending ).toBe( 'en' )
+        expect( store.pendingLanguage() ).toBeUndefined()
     } )
 
     it( 'builds the global error toast from the error title and message', () => {

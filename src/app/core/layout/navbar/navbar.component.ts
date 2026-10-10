@@ -5,12 +5,15 @@ import { ConfigModel } from "@core/config/model/config.model";
 import { RegistryConfig } from "@core/config/registry.config";
 import { MenuItemModel } from '@core/layout/data/model/menu-item.model'
 import { MenuService } from '@core/layout/data/service/menu.service'
+import { RegistryFacade } from '@core/registry/state/registry.facade'
+import { SessionFacade } from '@core/registry/state/session.facade'
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
 import { TranslocoPipe } from '@jsverse/transloco'
+import { CurrentUserModel } from '@shared/models/model/current-user.model'
 
 /**
  * Purpose: Top navigation bar of the application.
- * Scope: Renders the application menus and the project sub-navigation the user is allowed to see.
+ * Scope: Renders the application menus, the project sub-navigation the user is allowed to see and the signed-in user's account menu.
  * Limits: Does not decide which menus are visible; the menu service does, for display only.
  */
 @Component({
@@ -22,6 +25,8 @@ import { TranslocoPipe } from '@jsverse/transloco'
 })
 export class NavbarComponent {
 	private readonly menuService: MenuService = inject(MenuService)
+	private readonly sessionFacade: SessionFacade = inject(SessionFacade)
+	private readonly registryFacade: RegistryFacade = inject(RegistryFacade)
 
 	protected readonly RegistryRouteEnum: typeof RegistryRouteEnum = RegistryRouteEnum
 	protected readonly application: ConfigModel['application'] = RegistryConfig.config.application;
@@ -31,4 +36,19 @@ export class NavbarComponent {
 	protected readonly projectMenus: Signal<MenuItemModel[]> = computed((): MenuItemModel[] =>
 		this.menuService.projectMenus().flatMap((menu: MenuItemModel): MenuItemModel[] => menu.items ?? [menu]),
 	)
+
+	protected readonly currentUser: Signal<CurrentUserModel | undefined> = this.sessionFacade.currentUser
+	protected readonly userFullName: Signal<string> = computed((): string => {
+		const user: CurrentUserModel | undefined = this.currentUser()
+		return [user?.firstName, user?.lastName].filter(Boolean).join(' ') || (user?.email ?? '')
+	})
+	protected readonly userInitials: Signal<string> = computed((): string => {
+		const user: CurrentUserModel | undefined = this.currentUser()
+		const initials: string = [user?.firstName, user?.lastName].map((name: string | undefined): string => name?.charAt(0) ?? '').join('')
+		return (initials || user?.email?.charAt(0) || '').toUpperCase()
+	})
+
+	protected logout(): void {
+		this.registryFacade.logout()
+	}
 }

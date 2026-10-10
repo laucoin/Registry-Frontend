@@ -1,0 +1,55 @@
+<main class="flex min-h-screen bg-(--sgdf-color-bg-page)">
+    <section class="flex min-w-0 flex-[1_1_30rem] items-center justify-center px-8 py-12">
+        <div class="w-full max-w-90">
+            <header class="mb-14 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <sgdf-icon class="text-4xl text-(--sgdf-color-text-primary)" name="logo-symbole"
+                               library="sgdf-picto"/>
+                    <div class="flex flex-col leading-tight">
+                        <strong class="text-[0.9375rem] text-(--sgdf-color-text-heading)">{{ application.name }}</strong>
+                        <span class="text-xs text-(--sgdf-color-text-light)">{{ 'login.tagline' | transloco }}</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-1.5 text-[0.6875rem] font-bold tracking-wide text-(--sgdf-color-text-primary)"
+                     aria-hidden="true">
+                    <sgdf-icon name="mountain" library="solid"/>
+                    <span>{{ application.organization }}</span>
+                </div>
+            </header>
+
+            <sgdf-page-title
+                    [eyebrow]="'login.eyebrow' | transloco"
+                    [lede]="'login.subtitle' | transloco: { organizationName: application.organization }">
+                {{ 'login.title' | transloco }}
+            </sgdf-page-title>
+
+            <sgdf-button class="mt-6 w-full" variant="primary" size="large" (click)="login()">
+                {{ 'login.submit' | transloco }}
+            </sgdf-button>
+
+            <p class="mt-7 text-center text-xs leading-relaxed text-(--sgdf-color-text-light)">
+                {{ 'login.legalPrefix' | transloco }}
+                <a class="underline hover:text-(--sgdf-color-text-primary)"
+                   [routerLink]="termsRoute">{{ 'login.terms' | transloco }}</a>
+                {{ 'login.legalMiddle' | transloco }}
+                <a class="underline hover:text-(--sgdf-color-text-primary)"
+                   [routerLink]="privacyRoute">{{ 'login.privacy' | transloco }}</a>.
+            </p>
+        </div>
+    </section>
+
+    <section class="login-hero relative hidden flex-[1_1_55%] flex-col justify-end overflow-hidden p-12 lg:flex">
+        <img ngSrc="img/login-hero.webp"
+             fill
+             priority
+             alt=""
+             class="object-cover transition-opacity duration-600"
+             [class.opacity-0]="!heroPhotoLoaded()"
+             (load)="heroPhotoLoaded.set(true)"/>
+        <div class="login-hero__scrim pointer-events-none absolute inset-0"></div>
+        <p class="relative mb-3 text-xs font-bold tracking-[0.12em] text-white/85 uppercase">{{ 'login.heroCaption' | transloco }}</p>
+        <blockquote
+                class="relative max-w-130 text-3xl leading-tight font-bold text-white">{{ 'login.heroQuote' | transloco }}
+        </blockquote>
+    </section>
+</main>

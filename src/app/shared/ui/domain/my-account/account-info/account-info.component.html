@@ -1,0 +1,44 @@
+<sgdf-table class="h-full [&::part(grid)]:h-full" appearance="soft" [label]="'myAccount.info.title' | transloco">
+    <sgdf-table-row>
+        <sgdf-table-cell header>
+            <sgdf-icon name="user" library="solid"/>
+            {{ 'myAccount.info.title' | transloco }}
+        </sgdf-table-cell>
+    </sgdf-table-row>
+
+    <ng-container [ngTemplateOutlet]="row"
+                  [ngTemplateOutletContext]="{ $implicit: 'myAccount.info.name' | transloco, value: fullName() }"/>
+
+    <ng-container [ngTemplateOutlet]="row"
+                  [ngTemplateOutletContext]="{ $implicit: 'myAccount.info.email' | transloco, value: currentUser()?.email }"/>
+
+    <ng-container [ngTemplateOutlet]="row"
+                  [ngTemplateOutletContext]="{ $implicit: 'myAccount.info.role' | transloco, value: currentUser()?.role?.label }"/>
+
+    <ng-container [ngTemplateOutlet]="row"
+                  [ngTemplateOutletContext]="{
+                      $implicit: 'myAccount.info.lastLogin' | transloco,
+                      date: currentUser()?.lastLogin
+                  }"/>
+
+    <sgdf-table-row class="h-full">
+        <sgdf-table-cell class="align-bottom text-xs opacity-80">
+            {{ 'myAccount.info.hint' | transloco: { origin: organization } }}
+        </sgdf-table-cell>
+    </sgdf-table-row>
+</sgdf-table>
+
+<ng-template #row let-title let-value="value" let-date="date">
+    <sgdf-table-row>
+        <sgdf-table-cell row-header class="flex justify-between">
+            <span class="uppercase opacity-80">{{ title }}</span>
+            @if (date) {
+                <sgdf-relative-time [date]="date" sync/>
+            } @else if (value) {
+                <span>{{ value }}</span>
+            } @else {
+                <sgdf-skeleton effect="pulse" shape="rounded"/>
+            }
+        </sgdf-table-cell>
+    </sgdf-table-row>
+</ng-template>
