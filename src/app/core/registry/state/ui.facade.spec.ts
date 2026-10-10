@@ -21,6 +21,7 @@ describe('UiFacade', () => {
 	let ui: InstanceType<typeof UiStore>
 	let received: NotificationModel[]
 	let setRootTheme: Mock<(theme: ThemeEnum) => void>
+	let reload: Mock<() => void>
 	let systemTheme: WritableSignal<ThemeEnum>
 
 	beforeEach(() => {
@@ -33,6 +34,7 @@ describe('UiFacade', () => {
 			},
 		} as unknown as ConfigModel
 		setRootTheme = vi.fn()
+		reload = vi.fn()
 		systemTheme = signal(ThemeEnum.LIGHT)
 		TestBed.configureTestingModule({
 			providers: [
@@ -43,6 +45,7 @@ describe('UiFacade', () => {
 						get systemTheme(): ThemeEnum { return systemTheme() },
 						viewportWidth: 1280,
 						setRootTheme,
+						reload,
 						setRootLanguage: vi.fn(),
 					},
 				},
@@ -86,6 +89,17 @@ describe('UiFacade', () => {
 
 		// Assert
 		expect(labels).toEqual(expected)
+	})
+
+	it('reloads the application', () => {
+		// Arrange
+		const expectedCalls: number = 1
+
+		// Act
+		facade.reloadApplication()
+
+		// Assert
+		expect(reload).toHaveBeenCalledTimes(expectedCalls)
 	})
 
 	it('ignores an undefined theme and applies a defined one', () => {

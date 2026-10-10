@@ -1,7 +1,7 @@
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, inject, Signal, viewChild } from '@angular/core'
 import { RouterOutlet } from '@angular/router'
-import { TranslocoService } from '@jsverse/transloco'
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { NotificationModel } from '@shared/models/model/notification.model'
@@ -21,25 +21,31 @@ const VARIANTS: Record<string, string> = {
 }
 
 /**
- * Purpose: Root component of the application: hosts the routed pages and shows the notifications as toasts.
- * Scope: Translates each notification of the UI facade and displays it in a sgdf-toast with the variant of its severity.
- * Limits: Does not decide what is notified, and does not show the global error or the confirmations.
+ * Purpose: Root component of the application: hosts the routed pages, shows the notifications as toasts and replaces the pages with a full-page error when the whole application is blocked.
+ * Scope: Translates each notification of the UI facade into a sgdf-toast, and displays the global error with its cause and a retry button.
+ * Limits: Does not decide what is notified or what blocks the application, does not show the confirmations, and retrying reloads the application.
  */
 @Component({
 	selector: 'app-root',
 	templateUrl: './registry.component.html',
 	schemas: [CUSTOM_ELEMENTS_SCHEMA],
 	imports: [
-		RouterOutlet
+		RouterOutlet,
+		TranslocoPipe,
 	]
 })
 export class RegistryComponent {
 	private readonly uiFacade: UiFacade = inject(UiFacade)
 	private readonly translateService: TranslocoService = inject(TranslocoService)
+	protected readonly globalError: Signal<NotificationModel | undefined> = this.uiFacade.globalError
 	private readonly toast: Signal<ElementRef<ToastHost>> = viewChild.required<ElementRef<ToastHost>>('toast')
 
 	public constructor() {
 		this.uiFacade.notification.pipe(takeUntilDestroyed()).subscribe((it: NotificationModel): void => this.show(it))
+	}
+
+	protected retry(): void {
+		this.uiFacade.reloadApplication()
 	}
 
 	private show(notification: NotificationModel): void {

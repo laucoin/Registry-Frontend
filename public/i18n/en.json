@@ -204,7 +204,13 @@
         "message": "The theme is applied on this device only. We could not save it to your account: {{reason}}"
       }
     },
-    "not-set": "Undefined"
+    "not-set": "Undefined",
+    "error": {
+      "title": "The application is temporarily unavailable",
+      "description": "An error prevents the application from working. You can try again; if the problem persists, contact the support.",
+      "cause": "Cause of the error",
+      "retry": "Try again"
+    }
   },
   "settings": {
     "birthday": "Date of birth :",

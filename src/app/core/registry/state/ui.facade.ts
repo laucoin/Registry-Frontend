@@ -1,4 +1,5 @@
 import { computed, inject, Injectable, Signal } from '@angular/core'
+import { BrowserService } from '@core/browser/browser.service'
 import { MetadataStore } from '@core/registry/state/metadata.store'
 import { NotificationStore } from '@core/registry/state/notification.store'
 import { UiStore } from '@core/registry/state/ui.store'
@@ -21,6 +22,7 @@ import { Observable } from 'rxjs'
 @Injectable({ providedIn: 'root' })
 export class UiFacade {
 	private readonly translateService: TranslocoService = inject(TranslocoService)
+	private readonly browser: BrowserService = inject(BrowserService)
 	private readonly ui: InstanceType<typeof UiStore> = inject(UiStore)
 	private readonly notifications: InstanceType<typeof NotificationStore> = inject(NotificationStore)
 	private readonly metadata: InstanceType<typeof MetadataStore> = inject(MetadataStore)
@@ -74,6 +76,10 @@ export class UiFacade {
 
 	public setGlobalError(error: ErrorModel): void {
 		this.ui.setGlobalError(error)
+	}
+
+	public reloadApplication(): void {
+		this.browser.reload()
 	}
 
 	public updateNetwork(online: boolean): void {

@@ -43,6 +43,12 @@
         "title": "Thème non enregistré",
         "message": "Le thème est appliqué sur cet appareil uniquement. Impossible de l'enregistrer sur votre compte : {{reason}}"
       }
+    },
+    "error": {
+      "title": "L'application est momentanément inaccessible",
+      "description": "Une erreur empêche l'application de fonctionner. Vous pouvez réessayer ; si le problème persiste, contactez le support.",
+      "cause": "Cause de l'erreur",
+      "retry": "Réessayer"
     }
   }
 }
