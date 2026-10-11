@@ -6,7 +6,6 @@ import { RegistryConfig } from '@core/config/registry.config'
 import { MetadataStore } from '@core/registry/state/metadata.store'
 import { NotificationStore } from '@core/registry/state/notification.store'
 import { UiFacade } from '@core/registry/state/ui.facade'
-import { UiStore } from '@core/registry/state/ui.store'
 import { TranslocoService } from '@jsverse/transloco'
 import { ERROR_500, provideTestConfig } from '@shared/helpers/testing/test-fixtures'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
@@ -18,11 +17,11 @@ import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
 
 describe('UiFacade', () => {
 	let facade: UiFacade
-	let ui: InstanceType<typeof UiStore>
 	let received: NotificationModel[]
 	let setRootTheme: Mock<(theme: ThemeEnum) => void>
 	let reload: Mock<() => void>
 	let systemTheme: WritableSignal<ThemeEnum>
+	let resize: (width: number) => void
 
 	function provideBrowser(): Provider {
 		return {
@@ -30,7 +29,7 @@ describe('UiFacade', () => {
 			useValue: {
 				get systemTheme(): ThemeEnum { return systemTheme() },
 				viewportWidth: 1280,
-				onViewportResize: (): void => undefined,
+				onViewportResize: (listener: (width: number) => void): (() => void) => { resize = listener; return (): void => undefined },
 				setRootTheme,
 				reload,
 				setRootLanguage: vi.fn(),
@@ -66,7 +65,6 @@ describe('UiFacade', () => {
 		systemTheme = signal(ThemeEnum.LIGHT)
 		TestBed.configureTestingModule({ providers: [UiFacade, provideBrowser(), provideTransloco()] })
 		facade = TestBed.inject(UiFacade)
-		ui = TestBed.inject(UiStore)
 		received = []
 		TestBed.inject(NotificationStore).messages$().subscribe((message: NotificationModel): number => received.push(message))
 		TestBed.inject(MetadataStore)
@@ -74,11 +72,11 @@ describe('UiFacade', () => {
 
 	it('considers screens narrower than 768 pixels tiny', () => {
 		// Arrange
-		ui.updateScreenWidth(767)
+		resize(767)
 		const tiny: boolean = facade.tinyScreen()
 
 		// Act
-		ui.updateScreenWidth(768)
+		resize(768)
 
 		// Assert
 		expect(tiny).toBe(true)

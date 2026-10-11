@@ -80,10 +80,6 @@ export class UiFacade {
 		this.ui.updateNetwork(online)
 	}
 
-	public updateScreenWidth(screenWidth: number): void {
-		this.ui.updateScreenWidth(screenWidth)
-	}
-
 	public updateTheme(theme: ThemeEnum | undefined): void {
 		if (GenericHelper.nonNull(theme)) {
 			this.ui.updateTheme(theme!)

@@ -188,4 +188,17 @@ describe( 'BrowserService', () => {
         // Assert
         expect( listener ).toHaveBeenCalledWith( window.innerWidth )
     } )
+
+    it( 'stops reporting the viewport width once the listener is removed', () => {
+        // Arrange
+        const listener: (width: number) => void = vi.fn()
+        const stop: () => void = service.onViewportResize( listener )
+
+        // Act
+        stop()
+        window.dispatchEvent( new Event( 'resize' ) )
+
+        // Assert
+        expect( listener ).not.toHaveBeenCalled()
+    } )
 } )

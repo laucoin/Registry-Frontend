@@ -1,5 +1,5 @@
 
-<div class="messages">
+<div class="messages" role="log" aria-live="polite">
     @for (communication of facade.alertCommunicationsPage()?.content; track communication.id; ) {
         <app-dialog-element [communication]='communication'
                             [previousAuthorId]='getPreviousAuthorId($index)'
@@ -9,6 +9,6 @@
 
 @if ((facade.alertCommunicationsPage()?.content?.length ?? -1) < (facade.alertCommunicationsPage()?.totalElements ?? 0)) {
     <div class='flex justify-center'>
-        <p class='secondary-color'>{{ 'communications.limited-feature' | transloco }}</p>
+        <p class="limited">{{ 'communications.limited-feature' | transloco }}</p>
     </div>
 }

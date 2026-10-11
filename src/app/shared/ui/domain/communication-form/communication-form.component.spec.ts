@@ -342,5 +342,29 @@ describe( 'CommunicationFormComponent', () => {
             // Assert
             expect( page.model().alert.value.id ).toBe( 'a1' )
         } )
+
+        it( 'unlinks the movement when the chosen key is not among the found ones', () => {
+            // Arrange
+            const page: CommunicationFormApi = create()
+            facade[ 'searchedMovementsMetadata' ].mockReturnValue( [] )
+
+            // Act
+            page.selectMovement( 'unknown' )
+
+            // Assert
+            expect( page.selectedMovementKey() ).toBe( '' )
+        } )
+
+        it( 'unlinks the alert when the chosen key is not among the found ones', () => {
+            // Arrange
+            const page: CommunicationFormApi = create()
+            facade[ 'searchedAlertsMetadata' ].mockReturnValue( [] )
+
+            // Act
+            page.selectAlert( 'unknown' )
+
+            // Assert
+            expect( page.model().alert ).toBeNull()
+        } )
     } )
 } )

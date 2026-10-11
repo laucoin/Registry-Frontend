@@ -43,13 +43,18 @@ export const UiStore = signalStore(
         startLanguageChange: (language: string): void => patchState( store, { pendingLanguage: language } ),
         stopLanguageChange: (): void => patchState( store, { pendingLanguage: undefined } ),
         updateNetwork: (online: boolean): void => patchState( store, { online: online } ),
-        updateScreenWidth: (screenWidth: number): void => patchState( store, { screenWidth: screenWidth } ),
         updateTheme: (theme: ThemeEnum): void => {
             browser.setRootTheme( theme )
             patchState( store, { theme: theme } )
         },
     }) ),
-    withHooks( {
-        onInit: (store, browser: BrowserService = inject( BrowserService )): void => browser.onViewportResize( (width: number): void => patchState( store, { screenWidth: width } ) ),
+    withHooks( (store, browser: BrowserService = inject( BrowserService )) => {
+        let stopFollowingViewport: (() => void) | undefined
+        return {
+            onInit: (): void => {
+                stopFollowingViewport = browser.onViewportResize( (width: number): void => patchState( store, { screenWidth: width } ) )
+            },
+            onDestroy: (): void => stopFollowingViewport?.(),
+        }
     } ),
 )

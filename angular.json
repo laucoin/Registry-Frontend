@@ -114,8 +114,8 @@
             "coverageThresholds": {
               "statements": 87,
               "branches": 79,
-              "functions": 83,
-              "lines": 88
+              "functions": 84,
+              "lines": 89
             }
           }
         },

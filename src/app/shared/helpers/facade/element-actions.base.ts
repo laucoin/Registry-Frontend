@@ -22,7 +22,7 @@ export interface ElementActionSpec {
 /**
  * Purpose: Base of the services that tell which commands a list element offers.
  * Scope: Turns the action specs of an element into menu actions, keeps those shown and enabled by the configuration, disables the unauthorised ones, puts the confirmation in front of the commands that need one and gives the subclasses the project authority check and the command runner.
- * Limits: Abstract; each domain says which actions exist, who may run them and what they do, and may pass a context (such as the group a member is listed in). The backend still checks every command.
+ * Limits: Abstract; the commands it runs report their own failures through the facade; each domain says which actions exist, who may run them and what they do, and may pass a context (such as the group a member is listed in). The backend still checks every command.
  */
 export abstract class ElementActionsBase<T, C = void> {
     protected readonly confirmation: ElementConfirmationService = inject(ElementConfirmationService)

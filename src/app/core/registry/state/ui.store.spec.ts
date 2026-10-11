@@ -11,6 +11,7 @@ describe( 'UiStore', () => {
     let setRootLanguage: Mock<(language: string) => void>
     let systemTheme: ThemeEnum
     let resize: (width: number) => void
+    let stopResize: Mock<() => void>
 
     function createStore (): InstanceType<typeof UiStore> {
         TestBed.configureTestingModule( {
@@ -22,7 +23,7 @@ describe( 'UiStore', () => {
                         viewportWidth: 1024,
                         setRootTheme,
                         setRootLanguage,
-                        onViewportResize: (listener: (width: number) => void): void => { resize = listener },
+                        onViewportResize: (listener: (width: number) => void): (() => void) => { resize = listener; return stopResize },
                     },
                 },
             ],
@@ -33,6 +34,7 @@ describe( 'UiStore', () => {
     beforeEach( () => {
         setRootTheme = vi.fn()
         setRootLanguage = vi.fn()
+        stopResize = vi.fn()
         systemTheme = ThemeEnum.LIGHT
     } )
 
@@ -111,17 +113,15 @@ describe( 'UiStore', () => {
         expect( store.error() ).toEqual( expect.objectContaining( { severity: 'error', summary: 'Title', detail: 'Message', closable: true } ) )
     } )
 
-    it( 'tracks the network state and the screen width', () => {
+    it( 'tracks the network state', () => {
         // Arrange
         store = createStore()
 
         // Act
         store.updateNetwork( false )
-        store.updateScreenWidth( 500 )
 
         // Assert
         expect( store.online() ).toBe( false )
-        expect( store.screenWidth() ).toBe( 500 )
     } )
 
     it( 'follows the viewport width when the window is resized', () => {
@@ -133,5 +133,16 @@ describe( 'UiStore', () => {
 
         // Assert
         expect( store.screenWidth() ).toBe( 500 )
+    } )
+
+    it( 'stops following the viewport when the store is destroyed', () => {
+        // Arrange
+        store = createStore()
+
+        // Act
+        TestBed.resetTestingModule()
+
+        // Assert
+        expect( stopResize ).toHaveBeenCalledTimes( 1 )
     } )
 } )

@@ -15,7 +15,7 @@ describe('AlertCommunicationsListComponent', () => {
     beforeEach(() => {
         firstPageReload = new Subject<unknown>()
         currentPageReload = new Subject<unknown>()
-        facade = { fetchAlertCommunicationsPage: vi.fn(), alertCommunicationsPage: vi.fn(() => ({ pageNumber: 2, pageSize: 10, content: [] })) }
+        facade = { fetchAlertCommunicationsPage: vi.fn(), alertCommunicationsPage: vi.fn(() => ({ pageNumber: 2, pageSize: 10, content: [ { lastEdition: { user: { id: 'u1', firstName: 'Ada' } } }, { lastEdition: { user: { id: 'u2', firstName: 'Bo' } } } ] })) }
         TestBed.configureTestingModule({
             providers: [
                 { provide: AlertFacade, useValue: facade },
@@ -61,5 +61,29 @@ describe('AlertCommunicationsListComponent', () => {
 
         // Assert
         expect(facade['fetchAlertCommunicationsPage']).not.toHaveBeenCalled()
+    })
+
+    it('gives the author of the previous and of the next message to group a conversation', () => {
+        // Arrange
+        const list: { getPreviousAuthorId: (index: number) => string | undefined, getNextAuthorId: (index: number) => string | undefined } = component as never
+
+        // Act
+        const previous: string | undefined = list.getPreviousAuthorId(1)
+        const next: string | undefined = list.getNextAuthorId(0)
+
+        // Assert
+        expect(previous).toBe('u1')
+        expect(next).toBe('u2')
+    })
+
+    it('loads the first batch of communications when it opens', () => {
+        // Arrange
+        facade['fetchAlertCommunicationsPage'].mockClear()
+
+        // Act
+        component.ngOnInit()
+
+        // Assert
+        expect(facade['fetchAlertCommunicationsPage']).toHaveBeenCalledWith('x1', undefined, undefined)
     })
 })

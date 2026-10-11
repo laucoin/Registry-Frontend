@@ -11,7 +11,7 @@
     @if (GenericHelper.isNull(facade.communication())) {
         @if (movementSelectorVisible()) {
             <div class="field">
-                <span class="field-label">{{ 'communications.form.movement.title' | transloco }}</span>
+                <span class="field-label" aria-hidden="true">{{ 'communications.form.movement.title' | transloco }}</span>
                 <div class="field-row">
                     <div class="field-control">
                         <sgdf-select without-label with-search without-filter placement="top"
@@ -33,7 +33,7 @@
         }
         @if (alertSelectorMode() === AlertModulableFieldEnum.SELECT) {
             <div class="field">
-                <span class="field-label">{{ 'communications.form.alert.title' | transloco }}</span>
+                <span class="field-label" aria-hidden="true">{{ 'communications.form.alert.title' | transloco }}</span>
                 <div class="field-row">
                     <div class="field-control">
                         <sgdf-select without-label with-search without-filter placement="top"
@@ -55,7 +55,7 @@
         }
         @if (alertSelectorMode() === AlertModulableFieldEnum.NEW) {
             <div class="field">
-                <span class="field-label">{{ 'alerts.form.title' | transloco }}</span>
+                <span class="field-label" aria-hidden="true">{{ 'alerts.form.title' | transloco }}</span>
                 <div class="field-row">
                     <div class="field-control">
                         <sgdf-input appSgdfField without-label
@@ -70,7 +70,7 @@
         }
     }
     @if (hasLinkField()) {
-        <span class="field-label">{{ 'communications.form.message' | transloco }}</span>
+        <span class="field-label" aria-hidden="true">{{ 'communications.form.message' | transloco }}</span>
     }
     <div class="composer-row">
         @if (GenericHelper.nonNull(facade.communication())) {

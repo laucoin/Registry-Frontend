@@ -20,7 +20,7 @@ describe('MovementCommunicationsListComponent', () => {
     beforeEach(() => {
         firstPageReload = new Subject<unknown>()
         currentPageReload = new Subject<unknown>()
-        facade = { fetchMovementCommunicationsPage: vi.fn(), movementCommunicationsPage: vi.fn(() => ({ pageNumber: 2, pageSize: 10, content: [] })) }
+        facade = { fetchMovementCommunicationsPage: vi.fn(), movementCommunicationsPage: vi.fn(() => ({ pageNumber: 2, pageSize: 10, content: [ { lastEdition: { user: { id: 'u1', firstName: 'Ada' } } }, { lastEdition: { user: { id: 'u2', firstName: 'Bo' } } } ] })) }
         TestBed.configureTestingModule({
             providers: [
                 { provide: UiFacade, useValue: {} },
@@ -72,5 +72,29 @@ describe('MovementCommunicationsListComponent', () => {
 
         // Assert
         expect(facade['fetchMovementCommunicationsPage']).not.toHaveBeenCalled()
+    })
+
+    it('gives the author of the previous and of the next message to group a conversation', () => {
+        // Arrange
+        const list: { getPreviousAuthorId: (index: number) => string | undefined, getNextAuthorId: (index: number) => string | undefined } = component as never
+
+        // Act
+        const previous: string | undefined = list.getPreviousAuthorId(1)
+        const next: string | undefined = list.getNextAuthorId(0)
+
+        // Assert
+        expect(previous).toBe('u1')
+        expect(next).toBe('u2')
+    })
+
+    it('loads the first batch of communications when it opens', () => {
+        // Arrange
+        facade['fetchMovementCommunicationsPage'].mockClear()
+
+        // Act
+        component.ngOnInit()
+
+        // Assert
+        expect(facade['fetchMovementCommunicationsPage']).toHaveBeenCalledWith('x1', undefined, undefined)
     })
 })
