@@ -1825,6 +1825,9 @@
       "projects": "Projets",
       "users": "Utilisateurs"
     },
+    "context": {
+      "project": "Projet"
+    },
     "project": {
       "home": "Accueil",
       "movements": "Mouvements",

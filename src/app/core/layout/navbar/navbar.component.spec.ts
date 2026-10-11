@@ -7,6 +7,7 @@ import { MenuService } from '@core/layout/data/service/menu.service';
 import { SessionFacade } from '@core/registry/state/session.facade';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { CurrentUserModel } from '@shared/models/model/current-user.model';
+import { ProjectModel } from '@shared/models/model/project.model';
 import { MockBuilder } from 'ng-mocks';
 import { NavbarComponent } from './navbar.component';
 
@@ -15,6 +16,7 @@ describe('NavbarComponent', () => {
 	const PROJECT_MENU: MenuItemModel = { label: 'menu.project', url: '/projects/1', icon: { library: 'solid', name: 'folder' } };
 	let currentUser: WritableSignal<CurrentUserModel | undefined>;
 	let projectMenus: WritableSignal<MenuItemModel[]>;
+	let selectedProject: WritableSignal<ProjectModel | undefined>;
 	let logout: ReturnType<typeof vi.fn>;
 	let fixture: ComponentFixture<NavbarComponent>;
 
@@ -32,6 +34,7 @@ describe('NavbarComponent', () => {
 		RegistryConfig.config = { application: { name: 'Registry', organization: 'Org' } } as typeof RegistryConfig.config;
 		currentUser = signal<CurrentUserModel | undefined>(undefined);
 		projectMenus = signal<MenuItemModel[]>([]);
+		selectedProject = signal<ProjectModel | undefined>(undefined);
 		logout = vi.fn();
 		await MockBuilder(NavbarComponent)
 			.keep(NgTemplateOutlet)
@@ -46,7 +49,7 @@ describe('NavbarComponent', () => {
 					logoutMenu: LOGOUT_MENU,
 				},
 			})
-			.provide({ provide: SessionFacade, useValue: { currentUser, logout } });
+			.provide({ provide: SessionFacade, useValue: { currentUser, selectedProject, logout } });
 	});
 
 	it('should show the full name and the initials of the user', async () => {
@@ -118,6 +121,29 @@ describe('NavbarComponent', () => {
 
 		// Assert
 		expect(labels).toEqual(['menu.project', 'menu.other']);
+	});
+
+	it('should show the selected project in the context slot', async () => {
+		// Arrange
+		selectedProject.set({ name: 'Summer camp' } as ProjectModel);
+		await render(undefined);
+
+		// Act
+		const context: HTMLElement | null = fixture.nativeElement.querySelector('[slot="context"]');
+
+		// Assert
+		expect(context?.querySelector('strong')?.textContent).toBe('Summer camp');
+	});
+
+	it('should hide the context slot when no project is selected', async () => {
+		// Arrange
+		await render(undefined);
+
+		// Act
+		const context: HTMLElement | null = fixture.nativeElement.querySelector('[slot="context"]');
+
+		// Assert
+		expect(context).toBeNull();
 	});
 
 	it('should sign the user out from the logout menu item', async () => {

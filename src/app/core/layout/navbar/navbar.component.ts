@@ -9,6 +9,7 @@ import { SessionFacade } from '@core/registry/state/session.facade'
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
 import { TranslocoPipe } from '@jsverse/transloco'
 import { CurrentUserModel } from '@shared/models/model/current-user.model'
+import { ProjectModel } from '@shared/models/model/project.model'
 import '@sgdf/ui/avatar'
 import '@sgdf/ui/divider'
 import '@sgdf/ui/icon'
@@ -44,6 +45,7 @@ export class NavbarComponent {
 		this.menuService.projectMenus().flatMap((menu: MenuItemModel): MenuItemModel[] => menu.items ?? [menu]),
 	)
 
+	protected readonly selectedProject: Signal<ProjectModel | undefined> = this.sessionFacade.selectedProject
 	protected readonly currentUser: Signal<CurrentUserModel | undefined> = this.sessionFacade.currentUser
 	protected readonly userFullName: Signal<string> = computed((): string => {
 		const user: CurrentUserModel | undefined = this.currentUser()
