@@ -9,11 +9,9 @@
 
     @if (selectedProject(); as project) {
         <div slot="context" class="flex min-w-0 items-center gap-3 text-white">
-            <sgdf-icon class="hidden opacity-80 md:block" name="chevron-right" library="solid" aria-hidden="true"/>
-            <div class="flex min-w-0 max-w-64 flex-col">
-                <small class="text-xs uppercase opacity-80">{{ 'navbar.context.project' | transloco }}</small>
-                <strong class="truncate" [attr.title]="project.name">{{ project.name }}</strong>
-            </div>
+            <span class="hidden opacity-60 md:block" aria-hidden="true">/</span>
+            <span class="sr-only">{{ 'navbar.context.project' | transloco }}</span>
+            <strong class="max-w-64 truncate" [attr.title]="project.name">{{ project.name }}</strong>
         </div>
     }
 
