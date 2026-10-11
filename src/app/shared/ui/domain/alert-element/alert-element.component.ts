@@ -1,6 +1,10 @@
-import { Component, computed, inject, input, InputSignal, Signal, model, ModelSignal } from '@angular/core'
-import { ElementActionEnum } from '@shared/models/enumeration/element-action.enum'
-import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum'
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, input, InputSignal, Signal, model, ModelSignal } from '@angular/core'
+import '@sgdf/ui/avatar'
+import '@sgdf/ui/button'
+import '@sgdf/ui/drawer'
+import '@sgdf/ui/icon'
+import '@sgdf/ui/list-item'
+import '@sgdf/ui/tag'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { AlertStatusEnum } from '@shared/models/enumeration/alert-status.enum'
 import { AlertFacade } from '@pages/projects/[projectId]/alerts/data/state/alert.facade'
@@ -8,36 +12,54 @@ import { GenericElementComponent } from '@shared/ui/base/generic-element.compone
 import { AlertModel } from '@shared/models/model/alert.model'
 import { ElementCardComponent } from '@shared/ui/common/element-card/element-card.component'
 import { SeverityCircleComponent } from '@shared/ui/common/severity-circle/severity-circle.component'
+import { CommunicationFormComponent } from '@shared/ui/domain/communication-form/communication-form.component'
 import { SeverityTagComponent } from '@shared/ui/common/severity-tag/severity-tag.component'
 import { TitleCasePipe } from '@angular/common'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { interval, map } from 'rxjs'
-import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
 import { Button } from 'primeng/button'
 import {TranslocoPipe} from '@jsverse/transloco'
-import { Dialog } from 'primeng/dialog'
 import {
     AlertCommunicationsListComponent,
-} from '@pages/projects/[projectId]/alerts/alert-communications-list/alert-communications-list.component'
-import { Menu } from 'primeng/menu'
-import { Popover } from 'primeng/popover'
-import { Ripple } from 'primeng/ripple'
+} from '@shared/ui/domain/alert-communications-list/alert-communications-list.component'
+import { ElementActionsComponent } from '@shared/ui/common/element-actions/element-actions.component'
 import { ProjectOptionIconPipe } from '@shared/helpers/pipe/project-option-icon.pipe'
+import { AlertActions } from '@shared/ui/domain/alert-element/alert-actions.service'
+import { ElementActionModel } from '@shared/models/model/element-action.model'
 import { MenuEntryModel } from '@shared/models/model/menu-entry.model'
+import { EventHelper } from '@shared/helpers/event.helper'
 import { AlertHelper } from '@shared/helpers/alert.helper'
 import { IntervalModel } from '@shared/models/model/interval.model'
 import { DateHelper } from '@shared/helpers/date.helper'
 import { IntervalPipe } from '@shared/helpers/pipe/interval.pipe'
 
+// TODO: remove with the PrimeNG carousel card once the dashboard moves to @sgdf/ui
+const CARD_ICONS: Record<string, string> = {
+    'check': 'pi pi-check',
+    'xmark': 'pi pi-times',
+    'rotate-right': 'pi pi-replay',
+    'eye-slash': 'pi pi-eye-slash',
+    'trash': 'pi pi-trash',
+}
+
+const STATUS_ICONS: Record<string, string> = {
+    [ AlertStatusEnum.IN_PROGRESS ]: 'triangle-exclamation',
+    [ AlertStatusEnum.CANCELED ]: 'xmark',
+    [ AlertStatusEnum.RESOLVED ]: 'circle-check',
+}
+
 /**
- * Purpose: Card presenting one alert with its actions.
- * Scope: Renders the details, the actions menu and the confirmations of the element.
+ * Purpose: Presents one alert with its actions, as a list item (attribute of `sgdf-list-item`) or as a card in the carousel.
+ * Scope: Renders the details, the action menu, the confirmations and the drawer listing the communications of the alert.
  * Limits: Receives the element as an input and calls the facade for commands; it holds no list state.
  */
 @Component( {
-    selector: 'app-alert-element',
+    selector: 'sgdf-list-item[appAlertElement], app-alert-element',
+    providers: [AlertActions],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
     imports: [
+        ElementActionsComponent,
         ElementCardComponent,
         SeverityCircleComponent,
         SeverityTagComponent,
@@ -45,20 +67,15 @@ import { IntervalPipe } from '@shared/helpers/pipe/interval.pipe'
         DateFormatPipe,
         Button,
         TranslocoPipe,
-        Dialog,
         AlertCommunicationsListComponent,
-        AlertCommunicationsListComponent,
-        Menu,
-        Popover,
-        Ripple,
+        CommunicationFormComponent,
         ProjectOptionIconPipe,
     ],
     templateUrl: './alert-element.component.html',
-    styleUrl: './alert-element.component.css',
 } )
 export class AlertElementComponent extends GenericElementComponent {
     protected readonly facade: AlertFacade = inject( AlertFacade )
-    protected readonly pluralTranslation: PluralTranslationPipe = inject( PluralTranslationPipe )
+    private readonly actionsService: AlertActions = inject( AlertActions )
     protected readonly intervalPipe: IntervalPipe = inject( IntervalPipe )
 
     protected readonly AlertStatusEnum: typeof AlertStatusEnum = AlertStatusEnum
@@ -68,113 +85,22 @@ export class AlertElementComponent extends GenericElementComponent {
     public readonly carouselView: InputSignal<boolean> = input( false )
     public readonly alert: InputSignal<AlertModel> = input.required()
 
-    protected readonly actions: Signal<MenuEntryModel[]> = computed( (): MenuEntryModel[] => [
-        this.resolveAction(),
-        this.cancelAction(),
-        this.reopenAction(),
-        this.disableAction(),
-        this.enableAction(),
-        this.deleteAction(),
-    ] )
+    protected readonly actions: Signal<ElementActionModel[]> = computed( (): ElementActionModel[] => this.actionsService.actionsFor( this.alert() ) )
 
-    private resolveAction(): MenuEntryModel {
-        return {
-            label: 'alerts.actions.resolve',
-            icon: 'pi pi-check',
-            disabled: this.busy() || !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_ALERT_U ),
-            visible: this.actionIsEnable( ElementActionEnum.ALERT_RESOLVE ) && this.isInProgress() && this.alert().visible,
-            command: this.confirmThen(
-                `alerts.actions.confirmations.status.${AlertStatusEnum.RESOLVED}`,
-                'pi pi-info-circle',
-                this.alert(),
-                SeverityEnum.INFO,
-                (): void => this.run(this.facade.updateAlertStatus( this.alert().id, AlertStatusEnum.RESOLVED )),
-            ),
-        }
-    }
-
-    private cancelAction(): MenuEntryModel {
-        return {
-            label: 'alerts.actions.cancel',
-            icon: 'pi pi-times',
-            disabled: this.busy() || !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_ALERT_U ),
-            visible: this.actionIsEnable( ElementActionEnum.ALERT_CANCEL ) && this.isInProgress() && this.alert().visible,
-            command: this.confirmThen(
-                `alerts.actions.confirmations.status.${AlertStatusEnum.CANCELED}`,
-                'pi pi-info-circle',
-                this.alert(),
-                SeverityEnum.INFO,
-                (): void => this.run(this.facade.updateAlertStatus( this.alert().id, AlertStatusEnum.CANCELED )),
-            ),
-        }
-    }
-
-    private reopenAction(): MenuEntryModel {
-        return {
-            label: 'alerts.actions.reopen',
-            icon: 'pi pi-replay',
-            disabled: this.busy() || !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_ALERT_U ),
-            visible: this.actionIsEnable( ElementActionEnum.ALERT_REOPEN ) && !this.isInProgress() && this.alert().visible,
-            command: this.confirmThen(
-                `alerts.actions.confirmations.status.${AlertStatusEnum.IN_PROGRESS}`,
-                'pi pi-info-circle',
-                this.alert(),
-                SeverityEnum.INFO,
-                (): void => this.run(this.facade.updateAlertStatus( this.alert().id, AlertStatusEnum.IN_PROGRESS )),
-            ),
-        }
-    }
-
-    private disableAction(): MenuEntryModel {
-        return {
-            label: 'alerts.actions.disable',
-            icon: 'pi pi-eye-slash',
-            disabled: this.busy() || !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_ALERT_U ),
-            visible: this.actionIsEnable(ElementActionEnum.ALERT_DISABLE ) && this.alert().visible,
-            command: this.confirmThen(
-                'alerts.actions.confirmations.disable',
-                'pi pi-exclamation-triangle',
-                this.alert(),
-                SeverityEnum.WARNING,
-                (): void => this.run(this.facade.disableAlert(this.alert().id)),
-            ),
-        }
-    }
-
-    private enableAction(): MenuEntryModel {
-        return {
-            label: 'alerts.actions.enable',
-            icon: 'pi pi-replay',
-            disabled: this.busy() || !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_ALERT_U ),
-            visible: this.actionIsEnable(ElementActionEnum.ALERT_ENABLE ) && !this.alert().visible,
-            command: this.confirmThen(
-                'alerts.actions.confirmations.enable',
-                'pi pi-info-circle',
-                this.alert(),
-                SeverityEnum.INFO,
-                (): void => this.run(this.facade.enableAlert(this.alert().id)),
-            ),
-        }
-    }
-
-    private deleteAction(): MenuEntryModel {
-        return {
-            id: ElementActionEnum.ALERT_DELETE,
-            label: 'alerts.actions.delete',
-            icon: 'pi pi-trash',
-            disabled: this.busy() || !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_ALERT_D ),
-            visible: this.actionIsEnable(ElementActionEnum.ALERT_DELETE ),
-            command: this.confirmThen(
-                'alerts.actions.confirmations.delete',
-                'pi pi-exclamation-triangle',
-                this.alert(),
-                SeverityEnum.DANGER,
-                (): void => this.run(this.facade.deleteAlert(this.alert())),
-            ),
-        }
-    }
+    protected readonly cardActions: Signal<MenuEntryModel[]> = computed( (): MenuEntryModel[] =>
+        this.actions().map( (action: ElementActionModel): MenuEntryModel => ({
+            label: action.label,
+            icon: CARD_ICONS[ action.icon ],
+            disabled: action.disabled,
+            command: action.run,
+        }) ),
+    )
 
     protected readonly isInProgress: Signal<boolean> = computed( (): boolean => this.alert().status.value === AlertStatusEnum.IN_PROGRESS )
+
+    protected readonly statusIconName: Signal<string> = computed( (): string => STATUS_ICONS[ this.alert().status.value ] ?? 'circle-check' )
+    protected readonly statusVariant: Signal<'warning' | 'neutral' | 'success'> = computed( (): 'warning' | 'neutral' | 'success' =>
+        AlertHelper.getTagVariant( this.alert().status.value ) )
 
     protected readonly statusIcon: Signal<string> = computed( (): string => AlertHelper.getIconFromStatus( this.alert().status.value ) )
     protected readonly statusSeverity: Signal<SeverityEnum> = computed( (): SeverityEnum => AlertHelper.getSeverityFromStatus(
@@ -193,5 +119,11 @@ export class AlertElementComponent extends GenericElementComponent {
     private getInProgressSince (): IntervalModel | undefined {
         if (this.alert().status.value !== AlertStatusEnum.IN_PROGRESS) return undefined
         return DateHelper.buildDateInterval( this.alert().dateTime, new Date() )
+    }
+
+    protected closeCommunications(event: Event): void {
+        if (EventHelper.isFromHost(event)) {
+            this.communicationsLayerOpened.set(false)
+        }
     }
 }

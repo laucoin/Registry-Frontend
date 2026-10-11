@@ -9,10 +9,10 @@ import { SessionFacade } from '@core/registry/state/session.facade'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { UserProfileFacade } from '@core/registry/state/user-profile.facade'
 import { ProjectFacade } from '@pages/projects/data/state/project/project.facade'
-import { ProjectActionModel } from '@pages/projects/projects-list/project-action.model'
 import { ProjectActions } from '@pages/projects/projects-list/project-actions.service'
 import { ElementActionEnum } from '@shared/models/enumeration/element-action.enum'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
+import { ElementActionModel } from '@shared/models/model/element-action.model'
 import { ProjectModel } from '@shared/models/model/project.model'
 
 const PROJECT: ProjectModel = { id: 'p1', visible: true, name: 'Camp' } as ProjectModel
@@ -47,8 +47,8 @@ describe('ProjectActions', () => {
         actions = TestBed.inject(ProjectActions)
     })
 
-    function find(project: ProjectModel, id: string): ProjectActionModel | undefined {
-        return actions.actionsFor(project).find((action: ProjectActionModel): boolean => action.id === id)
+    function find(project: ProjectModel, id: string): ElementActionModel | undefined {
+        return actions.actionsFor(project).find((action: ElementActionModel): boolean => action.id === id)
     }
 
     it('offers edit, disable and delete for a visible project', () => {
@@ -56,7 +56,7 @@ describe('ProjectActions', () => {
         const project: ProjectModel = PROJECT
 
         // Act
-        const ids: string[] = actions.actionsFor(project).map((action: ProjectActionModel): string => action.id)
+        const ids: string[] = actions.actionsFor(project).map((action: ElementActionModel): string => action.id)
 
         // Assert
         expect(ids).toEqual(['edit', 'disable', 'delete'])
@@ -67,7 +67,7 @@ describe('ProjectActions', () => {
         const project: ProjectModel = HIDDEN
 
         // Act
-        const ids: string[] = actions.actionsFor(project).map((action: ProjectActionModel): string => action.id)
+        const ids: string[] = actions.actionsFor(project).map((action: ElementActionModel): string => action.id)
 
         // Assert
         expect(ids).toEqual(['edit', 'enable', 'delete'])
@@ -78,7 +78,7 @@ describe('ProjectActions', () => {
         RegistryConfig.config = { enabledActions: [ElementActionEnum.PROJECT_UPDATE] } as never
 
         // Act
-        const ids: string[] = actions.actionsFor(PROJECT).map((action: ProjectActionModel): string => action.id)
+        const ids: string[] = actions.actionsFor(PROJECT).map((action: ElementActionModel): string => action.id)
 
         // Assert
         expect(ids).toEqual(['edit'])
@@ -97,7 +97,7 @@ describe('ProjectActions', () => {
 
     it('opens the edition route of the project', () => {
         // Arrange
-        const edit: ProjectActionModel = find(PROJECT, 'edit')!
+        const edit: ElementActionModel = find(PROJECT, 'edit')!
 
         // Act
         edit.run()
@@ -112,7 +112,7 @@ describe('ProjectActions', () => {
         ['delete', 'deleteProject', SeverityEnum.DANGER, PROJECT],
     ])('asks for a confirmation before running %s, then calls the facade', (id: string, call: string, severity: SeverityEnum, project: ProjectModel) => {
         // Arrange
-        const action: ProjectActionModel = find(project, id)!
+        const action: ElementActionModel = find(project, id)!
 
         // Act
         action.run()

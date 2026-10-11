@@ -1,8 +1,8 @@
-<sgdf-table class="h-full [&::part(grid)]:h-full [&::part(grid)]:table-fixed" appearance="soft" [label]="'myAccount.info.title' | transloco">
+<sgdf-table class="h-full [&::part(grid)]:h-full [&::part(grid)]:table-fixed" appearance="soft" [attr.aria-busy]="!currentUser()">
     <sgdf-table-row>
         <sgdf-table-cell header>
             <sgdf-icon name="user" library="solid"/>
-            {{ 'myAccount.info.title' | transloco }}
+            <h2>{{ 'myAccount.info.title' | transloco }}</h2>
         </sgdf-table-cell>
     </sgdf-table-row>
 
@@ -32,12 +32,14 @@
     <sgdf-table-row>
         <sgdf-table-cell row-header class="flex min-w-0 flex-col gap-0.5 sm:flex-row sm:justify-between sm:gap-4">
             <span class="shrink-0 uppercase opacity-80">{{ title }}</span>
-            @if (date) {
+            @if (!currentUser()) {
+                <sgdf-skeleton effect="pulse" shape="rounded"/>
+            } @else if (date) {
                 <sgdf-relative-time [date]="date" sync/>
             } @else if (value) {
                 <span class="min-w-0 truncate sm:text-end" [attr.title]="value">{{ value }}</span>
             } @else {
-                <sgdf-skeleton effect="pulse" shape="rounded"/>
+                <span class="min-w-0 sm:text-end">{{ 'myAccount.info.empty' | transloco }}</span>
             }
         </sgdf-table-cell>
     </sgdf-table-row>

@@ -61,7 +61,11 @@ The source code is organized into three core directories:
 - **Documented exception:** `shared/ui/domain/` holds the cards and forms of the business entities. They read their
   domain facades and models from `pages/`, which is the only accepted `shared` to `pages` dependency (the 29 existing
   imports). They are reworked with the `@sgdf/ui` migration; do not add new `shared` to `pages` imports elsewhere.
-- **Core facades:** `UiFacade` exposes what the shell displays (theme, screen, toasts, global loader and error),
+- **Documented exception (routing):** `core/routing/registry-route.enum.ts` composes the URLs of the whole application and
+  imports the route enums of each page; `core/routing/registry.routes.ts` lazy loads the pages. They are the only accepted
+  `core` to `pages` dependencies. Stores, facades, apis and models of `core` never import from `pages/`: shared models
+  live in `shared/models/`, and the stores of a page are provided by that page's own routes.
+- **Core facades:** `UiFacade` exposes what the shell displays (theme, screen, toasts and global error),
   `SessionFacade` owns the signed-in user and the session (sign-in and sign-out, current user, selected project, theme
   and language preferences, and the choices offered for them), and `UserProfileFacade` owns the user's own project
   profiles and invitations and the commands acting on them. `UserProfileFacade` depends on `SessionFacade`, never the

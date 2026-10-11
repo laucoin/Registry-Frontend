@@ -15,6 +15,7 @@ import { CommandEvent } from '@shared/helpers/facade/command-event.service'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { AddedGroupMembersDto } from '@shared/models/dto/added-group-members.dto'
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
+import { CumulativePageHelper } from '@shared/helpers/store/cumulative-page.helper'
 
 /**
  * Purpose: Public entry point of the group domain for pages, components and guards.
@@ -188,8 +189,7 @@ export class GroupFacade extends GenericProjectElementFacade {
     private onCommandSuccess (command: CommandEvent, group: GroupModel): void {
         this.onCommandSucceeded( 'group', command, 'groups.notifications', 'pi pi-users', { name: group?.name } )
 
-        const page: PageModel<GroupModel> | undefined = this.groupsPage()
-        this.fetchGroupsPage( page?.pageNumber, page?.pageSize )
+        this.store.fetchGroupsPage( { projectId: this.selectedProjectId(), ...CumulativePageHelper.reloadRequest( this.groupsPage() ) } )
     }
 
     public addMembersToGroup (id: string, memberIds: string[]): Observable<AddedGroupMembersDto> {
@@ -229,9 +229,12 @@ export class GroupFacade extends GenericProjectElementFacade {
         return this.commandEvents.on( 'group', 'members' )
     }
 
+    public reloadGroupMembersPage (id: string): void {
+        this.store.fetchGroupMembersPage( { projectId: this.selectedProjectId(), id: id, ...CumulativePageHelper.reloadRequest( this.groupMembersPage() ) } )
+    }
+
     private onMembersChanged (id: string): void {
-        const page: PageModel<ParticipantModel> | undefined = this.groupMembersPage()
-        this.fetchGroupMembersPage( id, page?.pageNumber, page?.pageSize )
+        this.reloadGroupMembersPage( id )
         this.commandEvents.emit( 'group', 'members' )
     }
 }

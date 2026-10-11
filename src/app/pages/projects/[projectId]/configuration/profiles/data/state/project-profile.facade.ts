@@ -17,6 +17,7 @@ import { CommandEvent } from '@shared/helpers/facade/command-event.service'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { CreatedProjectProfiles } from '@pages/projects/[projectId]/configuration/profiles/data/dto/created-project-profiles.dto'
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
+import { CumulativePageHelper } from '@shared/helpers/store/cumulative-page.helper'
 
 /**
  * Purpose: Public entry point of the project profile domain for pages, components and guards.
@@ -183,7 +184,6 @@ export class ProjectProfileFacade extends GenericProjectElementFacade {
     }
 
     private refreshPage (): void {
-        const page: PageModel<ProjectProfileModel> | undefined = this.projectProfilesPage()
-        this.fetchProjectProfilesPage( page?.pageNumber, page?.pageSize )
+        this.store.fetchProjectProfilesPage( { projectId: this.selectedProjectId(), ...CumulativePageHelper.reloadRequest( this.projectProfilesPage() ) } )
     }
 }

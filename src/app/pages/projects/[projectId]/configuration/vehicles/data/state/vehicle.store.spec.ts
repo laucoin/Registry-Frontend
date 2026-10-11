@@ -68,6 +68,20 @@ describe( 'VehicleStore', () => {
         expect( getPresencesStatus ).toHaveBeenCalledTimes( 2 )
     } )
 
+    it( 'appends the next batch to the vehicles already shown', () => {
+        // Arrange
+        findVehicles
+            .mockReturnValueOnce( of( { ...pageOf<VehicleModel>( [ { id: 'a1' } as VehicleModel ] ), pageSize: 1, totalPages: 2 } ) )
+            .mockReturnValueOnce( of( { ...pageOf<VehicleModel>( [ { id: 'a2' } as VehicleModel ], 1 ), pageSize: 1, totalPages: 2 } ) )
+        store.fetchVehiclesPage( { projectId: 'p1', pageNumber: 0, pageSize: 1 } )
+
+        // Act
+        store.fetchVehiclesPage( { projectId: 'p1', pageNumber: 1, pageSize: 1 } )
+
+        // Assert
+        expect( store.vehicles.element()?.content.map( (element: VehicleModel): string => element.id ) ).toEqual( [ 'a1', 'a2' ] )
+    } )
+
     it( 'stores the fetched vehicles page', () => {
         // Arrange
         findVehicles.mockReturnValue( of( pageOf<VehicleModel>( [ { id: 'v1' } as VehicleModel ] ) ) )

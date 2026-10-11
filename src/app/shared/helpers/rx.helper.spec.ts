@@ -31,6 +31,17 @@ describe( 'rx helpers', () => {
             expect( notify ).not.toHaveBeenCalled()
         } )
 
+        it( 'falls back on the unknown error title when the failure has none', () => {
+            // Arrange
+            const error: ErrorModel = new Error( 'hook failed' ) as unknown as ErrorModel
+
+            // Act
+            reportError( uiFacade, error )
+
+            // Assert
+            expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'global.notifications.UNKNOWN_ERROR.title', detail: 'hook failed' } ) )
+        } )
+
         it( 'shows any other error as a sticky error toast', () => {
             // Arrange
             const error: ErrorModel = ERROR_500

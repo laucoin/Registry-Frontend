@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core'
 import { Observable, map } from 'rxjs'
 import {
     ProjectProfilePageParamsModel,
-} from '@pages/projects/[projectId]/configuration/profiles/data/model/project-profile-page-params.model'
+} from '@shared/models/model/project-profile-page-params.model'
 import {ProjectProfileModel} from '@shared/models/model/project-profile.model'
 import {PageModel} from '@shared/models/model/page.model'
 import {GenericApi} from '@shared/helpers/api/generic.api'

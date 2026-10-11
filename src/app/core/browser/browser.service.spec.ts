@@ -61,6 +61,30 @@ describe( 'BrowserService', () => {
         expect( service.host ).toBe( window.location.host )
     } )
 
+    it( 'exposes the viewport, the network state and the preferred languages', () => {
+        // Arrange
+        const expectedWidth: number = window.innerWidth
+
+        // Act
+        const width: number = service.viewportWidth
+
+        // Assert
+        expect( width ).toBe( expectedWidth )
+        expect( service.online ).toBe( navigator.onLine )
+        expect( service.preferredLanguages ).toBe( navigator.languages )
+    } )
+
+    it( 'reads the vertical scroll offset of the page', () => {
+        // Arrange
+        vi.spyOn( window, 'pageYOffset', 'get' ).mockReturnValue( 120 )
+
+        // Act
+        const offset: number = service.scrollOffset
+
+        // Assert
+        expect( offset ).toBe( 120 )
+    } )
+
     it.each( [
         [ ThemeEnum.DARK, 'dark' ],
         [ ThemeEnum.LIGHT, 'light' ],
@@ -151,5 +175,17 @@ describe( 'BrowserService', () => {
 
         // Assert
         expect( call ).not.toThrow()
+    } )
+
+    it( 'reports the viewport width each time the window is resized', () => {
+        // Arrange
+        const listener: (width: number) => void = vi.fn()
+        service.onViewportResize( listener )
+
+        // Act
+        window.dispatchEvent( new Event( 'resize' ) )
+
+        // Assert
+        expect( listener ).toHaveBeenCalledWith( window.innerWidth )
     } )
 } )

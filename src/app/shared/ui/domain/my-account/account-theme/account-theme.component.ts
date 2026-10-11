@@ -3,6 +3,12 @@ import { SessionFacade } from "@core/registry/state/session.facade";
 import { provideTranslocoScope, TranslocoPipe } from "@jsverse/transloco";
 import { ThemeEnum } from "@shared/models/enumeration/theme.enum";
 import { ThemeChoiceModel } from "@shared/models/model/theme-choice.model";
+import '@sgdf/ui/button'
+import '@sgdf/ui/button-group'
+import '@sgdf/ui/icon'
+import '@sgdf/ui/table'
+import '@sgdf/ui/table-cell'
+import '@sgdf/ui/table-row'
 
 /**
  * Purpose: Lets the signed-in user pick the light, dark or system theme of the application.

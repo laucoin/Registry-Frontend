@@ -1,126 +1,99 @@
-<p-card styleClass='mb-3'>
+<div class="composer">
+    <app-form-error [error]='error()' />
+    <app-field-error [field]='form.movement' translationPrefix='communications.form.error.movement' />
+    <app-field-error [field]='form.alert' translationPrefix='communications.form.error.alert' />
+    <app-field-error [field]='form.newAlertTitle' translationPrefix='alerts.form.error.title' />
+    <app-field-error [field]="form.message" translationPrefix="communications.form.error.message"/>
+    <app-field-error [field]="form" translationPrefix="communications.form.error.link"/>
+    @if (movementSelectorVisible() || GenericHelper.nonNull(alertSelectorMode())) {
+        <sgdf-divider/>
+    }
     @if (GenericHelper.isNull(facade.communication())) {
         @if (movementSelectorVisible()) {
-            <div class='field other-field-container'>
-                <label for='movement'>{{ 'communications.form.movement.title' | transloco }}</label>
-                <div class='flex items-center'>
-                    <div class='grow'>
-                        <p-auto-complete inputId='movement'
-                                         fluid
-                                         completeOnFocus
-                                         forceSelection
-                                         optionLabel='label'
-                                         optionValue='self'
-                                         [placeholder]='"communications.form.placeholder.movement" | transloco: { date: now | dateFormat: "datetime"}'
-                                         [formField]='form.movement'
-                                         [suggestions]='movementOptions()'
-                                         (keydown.enter)='submit()'
-                                         (completeMethod)='handleMovementSearch($event)'>
-                            <ng-template #empty>
-                                <span>{{ 'communications.form.movement.empty-search' | transloco }}</span>
-                            </ng-template>
-                        </p-auto-complete>
+            <div class="field">
+                <span class="field-label">{{ 'communications.form.movement.title' | transloco }}</span>
+                <div class="field-row">
+                    <div class="field-control">
+                        <sgdf-select without-label with-search without-filter placement="top"
+                                     [label]="'communications.form.movement.title' | transloco"
+                                     [placeholder]="'communications.form.placeholder.movement' | transloco: { date: now | dateFormat: 'datetime' }"
+                                     [attr.no-results-label]="'communications.form.movement.empty-search' | transloco"
+                                     [value]="selectedMovementKey()"
+                                     (sgdf-search)="handleMovementSearch($any($event).detail)"
+                                     (change)="selectMovement($any($event.target).value)"
+                                     (focusout)="form.movement().markAsTouched()">
+                            @for (option of movementChoices(); track option.value.id) {
+                                <sgdf-option [value]="option.value.id">{{ option.label }}</sgdf-option>
+                            }
+                        </sgdf-select>
                     </div>
-                    <p-button [ariaLabel]='"global.actions.remove" | transloco' icon='pi pi-times'
-                              size='small'
-                              severity='danger'
-                              rounded
-                              text
-                              (onClick)='removeMovementField()' />
+                    <sgdf-icon-button name="xmark" library="solid" variant="danger" [label]="'communications.form.actions.remove-movement' | transloco" (click)="removeMovementField()"/>
                 </div>
-                <app-field-error [field]='form.movement' translationPrefix='communications.form.error.movement' />
             </div>
         }
         @if (alertSelectorMode() === AlertModulableFieldEnum.SELECT) {
-            <div class='field other-field-container'>
-                <label for='alert'>{{ 'communications.form.alert.title' | transloco }}</label>
-                <div class='flex items-center'>
-                    <div class='grow'>
-                        <p-auto-complete inputId='alert'
-                                         fluid
-                                         completeOnFocus
-                                         forceSelection
-                                         showClear
-                                         optionLabel='label'
-                                         optionValue='self'
-                                         [placeholder]='"communications.form.placeholder.alert" | transloco: { date: now | dateFormat: "datetime"}'
-                                         [formField]='form.alert'
-                                         [suggestions]='alertOptions()'
-                                         (keydown.enter)='submit()'
-                                         (completeMethod)='handleAlertSearch($event)'>
-                            <ng-template #empty>
-                                <span>{{ 'communications.form.alert.empty-search' | transloco }}</span>
-                            </ng-template>
-                        </p-auto-complete>
+            <div class="field">
+                <span class="field-label">{{ 'communications.form.alert.title' | transloco }}</span>
+                <div class="field-row">
+                    <div class="field-control">
+                        <sgdf-select without-label with-search without-filter placement="top"
+                                     [label]="'communications.form.alert.title' | transloco"
+                                     [placeholder]="'communications.form.placeholder.alert' | transloco: { date: now | dateFormat: 'datetime' }"
+                                     [attr.no-results-label]="'communications.form.alert.empty-search' | transloco"
+                                     [value]="selectedAlertKey()"
+                                     (sgdf-search)="handleAlertSearch($any($event).detail)"
+                                     (change)="selectAlert($any($event.target).value)"
+                                     (focusout)="form.alert().markAsTouched()">
+                            @for (option of alertChoices(); track option.value.id) {
+                                <sgdf-option [value]="option.value.id">{{ option.label }}</sgdf-option>
+                            }
+                        </sgdf-select>
                     </div>
-                    <p-button [ariaLabel]='"global.actions.remove" | transloco' icon='pi pi-times'
-                              size='small'
-                              severity='danger'
-                              rounded
-                              text
-                              (onClick)='removeAlertField()' />
+                    <sgdf-icon-button name="xmark" library="solid" variant="danger" [label]="'communications.form.actions.remove-alert' | transloco" (click)="removeAlertField()"/>
                 </div>
-                <app-field-error [field]='form.alert' translationPrefix='communications.form.error.alert' />
             </div>
         }
         @if (alertSelectorMode() === AlertModulableFieldEnum.NEW) {
-            <div class='field other-field-container'>
-                <label for='alert'>{{ 'alerts.form.title' | transloco }}</label>
-                <div class='flex items-center'>
-                    <div class='grow'>
-                        <input id='alert-title-field'
-                               type='text'
-                               fluid
-                               pInputText
-                               [placeholder]='"alerts.form.placeholder.title" | transloco'
-                               (keydown.enter)='submit()'
-                               [formField]='form.newAlertTitle' />
+            <div class="field">
+                <span class="field-label">{{ 'alerts.form.title' | transloco }}</span>
+                <div class="field-row">
+                    <div class="field-control">
+                        <sgdf-input appSgdfField without-label
+                               [label]="'alerts.form.title' | transloco"
+                               [placeholder]="'alerts.form.placeholder.title' | transloco"
+                               [formField]="form.newAlertTitle"
+                               (keydown.enter)="submit()"/>
                     </div>
-                    <p-button [ariaLabel]='"global.actions.remove" | transloco' icon='pi pi-times'
-                              size='small'
-                              severity='danger'
-                              rounded
-                              text
-                              (onClick)='removeAlertField()' />
+                    <sgdf-icon-button name="xmark" library="solid" variant="danger" [label]="'communications.form.actions.remove-alert' | transloco" (click)="removeAlertField()"/>
                 </div>
-                <app-field-error [field]='form.newAlertTitle' translationPrefix='alerts.form.error.title' />
             </div>
         }
-        @if (movementSelectorVisible() || GenericHelper.nonNull(alertSelectorMode())) {
-            <p-divider styleClass='other-field-container field-container' />
-        }
     }
-    <app-form-error [error]='error()' />
-    <div class='flex items-start'>
+    @if (hasLinkField()) {
+        <span class="field-label">{{ 'communications.form.message' | transloco }}</span>
+    }
+    <div class="composer-row">
         @if (GenericHelper.nonNull(facade.communication())) {
-            <p-button [ariaLabel]='"global.actions.reset" | transloco' (onClick)='resetForm()' class='me-2' icon='pi pi-times' rounded text />
-        } @else {
-            <p-button [ariaLabel]='"global.actions.add" | transloco' [disabled]='actions().length === 0' (onClick)='menu.toggle($event)' class='me-2' icon='pi pi-plus' rounded
-                      text />
+            <sgdf-icon-button name="xmark" library="solid" [label]="'global.actions.reset' | transloco" (click)="resetForm()"/>
+        } @else if (actions().length > 0) {
+            <sgdf-menu placement="top-start">
+                <sgdf-icon-button slot="trigger" name="plus" library="solid" [label]="'communications.form.actions.add-to-message' | transloco"/>
+                @for (action of actions(); track action.label) {
+                    <sgdf-menu-item [disabled]="action.disabled" (click)="action.command!($any($event))">
+                        <sgdf-icon slot="icon" [attr.name]="action.icon" library="solid"/>
+                        {{ action.label | transloco }}
+                    </sgdf-menu-item>
+                }
+            </sgdf-menu>
         }
-        <div class='field-container'>
-                <textarea pTextarea
-                          fluid
-                          class='message-field'
-                          rows='1'
-                          [placeholder]='"communications.form.message" | transloco'
-                          [formField]='form.message'></textarea>
-            <small class='secondary-color'>{{ 'communications.form.hint.message' | transloco }}</small>
-            <app-field-error [field]='form.message' translationPrefix='communications.form.error.message' />
-            <app-field-error [field]='form' translationPrefix='communications.form.error.link' />
-        </div>
-        <p-button [ariaLabel]='(GenericHelper.nonNull(facade.communication()) ? "global.actions.edit" : "global.actions.create") | transloco' class='ms-2' outlined rounded severity='success'
-                  [icon]='GenericHelper.nonNull(facade.communication()) ? "pi pi-check" : "pi pi-send"'
-                  [disabled]='saving()'
-                  (onClick)='submit()' />
+        <sgdf-textarea appSgdfField rows="1" resize="auto" without-label
+                       [label]="('communications.form.message' | transloco) + '. ' + ('communications.form.hint.message' | transloco)"
+                       [placeholder]="'communications.form.message' | transloco"
+                       [formField]="form.message"/>
+        <sgdf-icon-button variant="primary" library="solid" [disabled]="saving()"
+                          [name]="GenericHelper.nonNull(facade.communication()) ? 'check' : 'paper-plane'"
+                          [label]="(GenericHelper.nonNull(facade.communication()) ? 'global.actions.edit' : 'global.actions.create') | transloco"
+                          (click)="submit()"/>
     </div>
-</p-card>
-
-<p-menu #menu [model]='actions()' appendTo='body' popup>
-    <ng-template #item let-item>
-        <a pRipple class='flex items-center py-2 px-4 cursor-pointer'>
-            <span [class]='item.icon'></span>&nbsp;
-            <span class='ms-2'>{{ item.label | transloco }}</span>
-        </a>
-    </ng-template>
-</p-menu>
+    <small class="hint" aria-hidden="true">{{ 'communications.form.hint.message' | transloco }}</small>
+</div>

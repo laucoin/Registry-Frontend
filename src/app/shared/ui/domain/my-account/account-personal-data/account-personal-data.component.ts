@@ -3,6 +3,13 @@ import { RouterLink } from "@angular/router";
 import { RegistryRouteEnum } from "@core/routing/registry-route.enum";
 import { RouteHelper } from "@shared/helpers/route.helper";
 import { provideTranslocoScope, TranslocoPipe } from "@jsverse/transloco";
+import '@sgdf/ui/button'
+import '@sgdf/ui/callout'
+import '@sgdf/ui/icon'
+import '@sgdf/ui/table'
+import '@sgdf/ui/table-cell'
+import '@sgdf/ui/table-row'
+import '@sgdf/ui/tag'
 
 /**
  * Purpose: Presents the GDPR rights of the signed-in user: the data extract and the account deletion.
@@ -17,7 +24,6 @@ import { provideTranslocoScope, TranslocoPipe } from "@jsverse/transloco";
 	schemas: [CUSTOM_ELEMENTS_SCHEMA],
 	providers: [provideTranslocoScope('my-account')],
 	selector: 'app-account-personal-data',
-	styleUrl: './account-personal-data.component.css',
 	templateUrl: './account-personal-data.component.html',
 })
 export class AccountPersonalDataComponent {

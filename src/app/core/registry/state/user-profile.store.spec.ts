@@ -47,6 +47,24 @@ describe( 'UserProfileStore', () => {
         expect( store.profiles.loading() ).toBe( false )
     } )
 
+    it( 'appends the next batch to the profiles and to the invitations already shown', () => {
+        // Arrange
+        const first: PageModel<ProjectProfileModel> = { ...PAGE, pageSize: 1, totalPages: 2 }
+        const second: PageModel<ProjectProfileModel> = { ...first, pageNumber: 1, content: [ { id: 'pp2' } as ProjectProfileModel ] }
+        findUserProjectProfiles.mockReturnValueOnce( of( first ) ).mockReturnValueOnce( of( first ) )
+            .mockReturnValueOnce( of( second ) ).mockReturnValueOnce( of( second ) )
+        store.fetchProfilesPage( { pageNumber: 0, pageSize: 1 } )
+        store.fetchInvitationsPage( { pageNumber: 0, pageSize: 1 } )
+
+        // Act
+        store.fetchProfilesPage( { pageNumber: 1, pageSize: 1 } )
+        store.fetchInvitationsPage( { pageNumber: 1, pageSize: 1 } )
+
+        // Assert
+        const ids: string[][] = [ store.profiles.element(), store.invitations.element() ].map( (shown: PageModel<ProjectProfileModel> | undefined): string[] => shown!.content.map( (profile: ProjectProfileModel): string => profile.id ) )
+        expect( ids ).toEqual( [ [ 'pp1', 'pp2' ], [ 'pp1', 'pp2' ] ] )
+    } )
+
     it( 'keeps the error of a failed invitations fetch in the invitations block', () => {
         // Arrange
         findUserProjectProfiles.mockReturnValue( throwError( (): ErrorModel => ({ status: 500, title: 'Title', message: 'Message' }) as ErrorModel ) )

@@ -22,11 +22,10 @@ import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.e
 import { MovementModel } from '@shared/models/model/movement.model'
 import { MovementPageParamsModel } from '@shared/models/model/movement-page-params.model'
 import { VehicleModel } from '@shared/models/model/vehicle.model'
+import { CumulativePageHelper, CumulativePageRequest } from '@shared/helpers/store/cumulative-page.helper'
 
-interface VehiclesPageRequest {
+interface VehiclesPageRequest extends CumulativePageRequest {
     projectId: string | undefined
-    pageNumber: number | undefined
-    pageSize: number | undefined
 }
 
 interface VehicleMovementsPageRequest extends VehiclesPageRequest {
@@ -80,7 +79,7 @@ export const VehicleStore = signalStore(
             store, 'presencesStatus', () => metadataApi.getPresencesStatus(), errors, withEmptyOption,
         ),
         fetchVehiclesPage: pageFetcher( store, 'vehicles', (request: VehiclesPageRequest, params: VehiclePageParamsModel) =>
-            api.findVehicles( request.projectId, request.pageNumber, request.pageSize, params ), errors ),
+            api.findVehicles( request.projectId, request.pageNumber, request.pageSize, params ), errors, { merge: CumulativePageHelper.merge } ),
         updateVehiclesPageSearchParams: paramsUpdater( store, 'vehicles' ),
         updateVehicleMovementsPageSearchParams: paramsUpdater( store, 'movements' ),
         fetchVehicleMovementsContents: movementContentsFetcher( store, movementApi, errors ),
@@ -88,6 +87,7 @@ export const VehicleStore = signalStore(
     withMethods( (store, api = inject( VehicleApi ), errors = inject( ErrorReporter )) => ({
         fetchVehicleMovementsPage: pageFetcher( store, 'movements', (request: VehicleMovementsPageRequest, params: MovementPageParamsModel) =>
             api.findVehicleMovements( request.projectId, request.id, request.pageNumber, request.pageSize, params ), errors, {
+            merge: CumulativePageHelper.merge,
             after: contentsRequester( store.fetchVehicleMovementsContents ),
         } ),
     }) ),

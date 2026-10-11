@@ -11,6 +11,7 @@ import { MovementModel } from '@shared/models/model/movement.model'
 import { DateHelper } from '@shared/helpers/date.helper'
 import { ActivityApi } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.api'
 import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/rx.helper'
+import { CumulativePageHelper } from '@shared/helpers/store/cumulative-page.helper'
 
 /**
  * Purpose: Public entry point of the activity domain for pages, components and guards.
@@ -100,6 +101,10 @@ export class ActivityFacade extends GenericProjectElementFacade {
         this.store.fetchActivityMovementsPage( { projectId: this.selectedProjectId(), id: id, pageNumber: index, pageSize: pageSize } )
     }
 
+    public reloadActivityMovementsPage (id: string): void {
+        this.store.fetchActivityMovementsPage( { projectId: this.selectedProjectId(), id: id, ...CumulativePageHelper.reloadRequest( this.activityMovementsPage() ) } )
+    }
+
     public fetchActivityMovementsContent (movementIds: string[]): void {
         this.store.fetchActivityMovementsContents( { projectId: this.selectedProjectId(), movementIds: movementIds } )
     }
@@ -172,7 +177,6 @@ export class ActivityFacade extends GenericProjectElementFacade {
     private onCommandSuccess (command: string, activity: ActivityModel): void {
         this.notifySuccess( `activities.notifications.${ command }`, 'pi pi-users', { name: activity?.name } )
 
-        const page: PageModel<ActivityModel> | undefined = this.activitiesPage()
-        this.fetchActivitiesPage( page?.pageNumber, page?.pageSize )
+        this.store.fetchActivitiesPage( { projectId: this.selectedProjectId(), ...CumulativePageHelper.reloadRequest( this.activitiesPage() ) } )
     }
 }

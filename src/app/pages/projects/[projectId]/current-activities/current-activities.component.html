@@ -1,9 +1,10 @@
-<app-legacy-list (updateRequired)='loadPage($event)'
-          [elementPage]='facade.currentMovementsPageWithActivity()'
-          [error]='facade.currentMovementsPageWithActivityError()'
-          [loading]='facade.currentMovementsPageWithActivityLoading()'
-          emptyMessagePrefix='activities.notifications.EMPTY'>
-    <ng-template appTemplate='element' let-movement>
-        <app-movement-element [movement]='movement' [reversible]='true' [communicable]='true' />
+<app-list emptyMessagePrefix="activities.notifications.EMPTY"
+          [elementPage]="facade.currentMovementsPageWithActivity()"
+          [error]="facade.currentMovementsPageWithActivityError()"
+          [loading]="facade.currentMovementsPageWithActivityLoading()"
+          [loadingMore]="facade.currentMovementsPageWithActivitySilentLoading()"
+          (updateRequired)="loadBatch($event)">
+    <ng-template appTemplate="element" let-movement>
+        <sgdf-list-item appMovementElement [movement]="movement" [reversible]="true" [communicable]="true"/>
     </ng-template>
-</app-legacy-list>
+</app-list>

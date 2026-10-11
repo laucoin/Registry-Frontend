@@ -1,4 +1,4 @@
-import { signal, WritableSignal } from '@angular/core'
+import { Provider, signal, WritableSignal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { Observable, of } from 'rxjs'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
@@ -37,8 +37,7 @@ describe( 'UserProfileFacade', () => {
     let notify: Mock<(message: unknown) => void>
     let resetAll: Mock<() => void>
 
-    beforeEach( () => {
-        RegistryConfig.config = { notification: { duration: {} } } as unknown as ConfigModel
+    function mockCollaborators (): void {
         manageAcceptance = vi.fn( () => of( { id: 'pp1', status: { value: 'ACCEPTED' } } as unknown as ProjectProfileModel ) )
         deleteProfile = vi.fn( () => of( undefined ) )
         createSupport = vi.fn( () => of( { id: 'pp2', project: { name: 'Camp' } } as ProjectProfileModel ) )
@@ -48,26 +47,34 @@ describe( 'UserProfileFacade', () => {
         notify = vi.fn()
         resetAll = vi.fn()
         currentUser = signal<CurrentUserModel | undefined>( USER )
+    }
 
-        TestBed.configureTestingModule( {
-            providers: [
-                UserProfileFacade,
-                {
-                    provide: UserProjectProfileApi,
-                    useValue: {
-                        manageUserProjectProfileAcceptance: manageAcceptance,
-                        deleteUserProfileById: deleteProfile,
-                        createSupportProjectProfile: createSupport,
-                        findUserProjectProfiles: findProfilesPage,
-                    },
-                },
-                { provide: SessionFacade, useValue: { currentUser, fetchCurrentUser } },
-                { provide: ErrorReporter, useValue: { setGlobalError, notify: vi.fn() } },
-                { provide: UiFacade, useValue: { setGlobalError, notify } },
-                { provide: CustomDateFormatPipe, useValue: { transform: (): string => 'date' } },
-                { provide: ProfileResetService, useValue: { resetAll } },
-            ],
-        } )
+    function provideProfileApi (): Provider {
+        return {
+            provide: UserProjectProfileApi,
+            useValue: {
+                manageUserProjectProfileAcceptance: manageAcceptance,
+                deleteUserProfileById: deleteProfile,
+                createSupportProjectProfile: createSupport,
+                findUserProjectProfiles: findProfilesPage,
+            },
+        }
+    }
+
+    function provideCollaborators (): Provider[] {
+        return [
+            { provide: SessionFacade, useValue: { currentUser, fetchCurrentUser } },
+            { provide: ErrorReporter, useValue: { setGlobalError, notify: vi.fn() } },
+            { provide: UiFacade, useValue: { setGlobalError, notify } },
+            { provide: CustomDateFormatPipe, useValue: { transform: (): string => 'date' } },
+            { provide: ProfileResetService, useValue: { resetAll } },
+        ]
+    }
+
+    beforeEach( () => {
+        RegistryConfig.config = { notification: { duration: {} } } as unknown as ConfigModel
+        mockCollaborators()
+        TestBed.configureTestingModule( { providers: [ UserProfileFacade, provideProfileApi(), ...provideCollaborators() ] } )
         facade = TestBed.inject( UserProfileFacade )
         store = TestBed.inject( UserProfileStore )
     } )
@@ -210,5 +217,18 @@ describe( 'UserProfileFacade', () => {
             // Assert
             expect( setGlobalError ).toHaveBeenCalledWith( UNAVAILABLE )
         } )
+    } )
+
+    it( 'reloads every shown batch of the profiles in one request after a profile is deleted', () => {
+        // Arrange
+        findProfilesPage.mockReturnValue( of( { ...EMPTY_PAGE, pageNumber: 2 } ) )
+        facade.fetchProjectProfilesPage( 2, 10 )
+        findProfilesPage.mockClear()
+
+        // Act
+        facade.deleteUserProjectProfile( { id: 'pp1', project: { name: 'Camp' } } as ProjectProfileModel ).subscribe()
+
+        // Assert
+        expect( findProfilesPage ).toHaveBeenCalledWith( 0, 30, expect.anything() )
     } )
 } )

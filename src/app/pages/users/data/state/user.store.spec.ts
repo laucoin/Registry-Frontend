@@ -45,6 +45,20 @@ describe( 'UserStore', () => {
         expect( store.users.loading() ).toBe( false )
     } )
 
+    it( 'appends the next batch to the users already shown', () => {
+        // Arrange
+        findUsers
+            .mockReturnValueOnce( of( { ...pageOf<UserModel>( [ { id: 'u1' } as UserModel ] ), pageSize: 1, totalPages: 2 } ) )
+            .mockReturnValueOnce( of( { ...pageOf<UserModel>( [ { id: 'u2' } as UserModel ], 1 ), pageSize: 1, totalPages: 2 } ) )
+        store.fetchUsersPage( { pageNumber: 0, pageSize: 1 } )
+
+        // Act
+        store.fetchUsersPage( { pageNumber: 1, pageSize: 1 } )
+
+        // Assert
+        expect( store.users.element()?.content.map( (user: UserModel): string => user.id ) ).toEqual( [ 'u1', 'u2' ] )
+    } )
+
     it( 'keeps the error of a failed users fetch in the users block', () => {
         // Arrange
         findUsers.mockReturnValue( failing( ERROR_500 ) )

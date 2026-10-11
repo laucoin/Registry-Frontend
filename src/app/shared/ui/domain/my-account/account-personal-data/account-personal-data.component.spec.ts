@@ -37,4 +37,38 @@ describe('AccountPersonalDataComponent', () => {
 		// Assert
 		expect(buttons).toBe(expected);
 	});
+
+	it('should disable both actions while the backend does not offer them', () => {
+		// Arrange
+		const buttons: HTMLElement[] = Array.from(fixture.nativeElement.querySelectorAll('sgdf-button'));
+
+		// Act
+		const disabled: boolean[] = buttons.map((button: HTMLElement): boolean => button.hasAttribute('disabled'));
+
+		// Assert
+		expect(disabled).toEqual([true, true]);
+	});
+
+	it('should tag each action as coming soon', () => {
+		// Arrange
+		const expected: string = 'myAccount.personalData.comingSoon';
+
+		// Act
+		const tags: string[] = Array.from<HTMLElement>(fixture.nativeElement.querySelectorAll('sgdf-tag'))
+			.map((tag: HTMLElement): string => tag.textContent!.trim());
+
+		// Assert
+		expect(tags).toEqual([expected, expected]);
+	});
+
+	it('should title the section with a level two heading', () => {
+		// Arrange
+		const heading: HTMLElement = fixture.nativeElement.querySelector('sgdf-table-cell[header] > h2');
+
+		// Act
+		const title: string = heading.textContent!.trim();
+
+		// Assert
+		expect(title).toBe('myAccount.personalData.title');
+	});
 });

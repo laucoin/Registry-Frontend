@@ -26,11 +26,10 @@ import { MovementModel } from '@shared/models/model/movement.model'
 import { MovementPageParamsModel } from '@shared/models/model/movement-page-params.model'
 import { ParticipantModel } from '@shared/models/model/participant.model'
 import { UserModel } from '@shared/models/model/user.model'
+import { CumulativePageHelper, CumulativePageRequest } from '@shared/helpers/store/cumulative-page.helper'
 
-interface ParticipantsPageRequest {
+interface ParticipantsPageRequest extends CumulativePageRequest {
     projectId: string | undefined
-    pageNumber: number | undefined
-    pageSize: number | undefined
 }
 
 interface ParticipantMovementsPageRequest extends ParticipantsPageRequest {
@@ -93,7 +92,7 @@ export const ParticipantStore = signalStore(
             (groups: GroupModel[]): SelectOptionModel<GroupModel>[] => groups.map( GroupHelper.toSelectItem ),
         ),
         fetchParticipantsPage: pageFetcher( store, 'participants', (request: ParticipantsPageRequest, params: ParticipantPageParamsModel) =>
-            api.findParticipants( request.projectId, request.pageNumber, request.pageSize, params ), errors ),
+            api.findParticipants( request.projectId, request.pageNumber, request.pageSize, params ), errors, { merge: CumulativePageHelper.merge } ),
         updateParticipantsPageSearchParams: paramsUpdater( store, 'participants' ),
     }) ),
     withMethods( (store, movementApi = inject( MovementApi ), errors = inject( ErrorReporter )) => ({
@@ -103,6 +102,7 @@ export const ParticipantStore = signalStore(
     withMethods( (store, api = inject( ParticipantApi ), errors = inject( ErrorReporter )) => ({
         fetchParticipantMovementsPage: pageFetcher( store, 'movements', (request: ParticipantMovementsPageRequest, params: MovementPageParamsModel) =>
             api.findParticipantMovements( request.projectId, request.id, request.pageNumber, request.pageSize, params ), errors, {
+            merge: CumulativePageHelper.merge,
             after: contentsRequester( store.fetchParticipantMovementsContents ),
         } ),
     }) ),

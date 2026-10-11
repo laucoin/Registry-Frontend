@@ -17,6 +17,17 @@ html {
     min-width: var(--layout--min-width);
 }
 
+sgdf-table-cell[header] > h2 {
+    display: inline;
+    margin: 0;
+    color: inherit;
+    font: inherit;
+}
+
 sgdf-menu-item {
     padding: 0.5em 1em;
+}
+
+sgdf-drawer.drawer-sheet {
+    --size: calc(100dvh - 3rem);
 }

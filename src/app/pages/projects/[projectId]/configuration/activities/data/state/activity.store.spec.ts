@@ -37,6 +37,20 @@ describe( 'ActivityStore', () => {
         store = TestBed.inject( ActivityStore )
     } )
 
+    it( 'appends the next batch to the activities already shown', () => {
+        // Arrange
+        findActivities
+            .mockReturnValueOnce( of( { ...pageOf<ActivityModel>( [ { id: 'a1' } as ActivityModel ] ), pageSize: 1, totalPages: 2 } ) )
+            .mockReturnValueOnce( of( { ...pageOf<ActivityModel>( [ { id: 'a2' } as ActivityModel ], 1 ), pageSize: 1, totalPages: 2 } ) )
+        store.fetchActivitiesPage( { projectId: 'p1', pageNumber: 0, pageSize: 1 } )
+
+        // Act
+        store.fetchActivitiesPage( { projectId: 'p1', pageNumber: 1, pageSize: 1 } )
+
+        // Assert
+        expect( store.activities.element()?.content.map( (element: ActivityModel): string => element.id ) ).toEqual( [ 'a1', 'a2' ] )
+    } )
+
     it( 'stores the fetched activities page', () => {
         // Arrange
         findActivities.mockReturnValue( of( pageOf<ActivityModel>( [ { id: 'a1' } as ActivityModel ] ) ) )

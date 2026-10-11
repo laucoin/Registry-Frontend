@@ -4,7 +4,6 @@ import { ProjectProfileModel } from '@shared/models/model/project-profile.model'
 
 interface SessionStoreModel {
     currentUser: CurrentUserModel | undefined
-    actionLoading: boolean
     currentProject: {
         id: string | undefined
         profile: ProjectProfileModel | undefined
@@ -13,7 +12,6 @@ interface SessionStoreModel {
 
 const defaultSessionStore: SessionStoreModel = {
     currentUser: undefined,
-    actionLoading: false,
     currentProject: { id: undefined, profile: undefined },
 }
 
@@ -35,8 +33,6 @@ export const SessionStore = signalStore(
         setCurrentProject: (id: string | undefined, profile: ProjectProfileModel | undefined): void => {
             patchState( store, { currentProject: { id: id, profile: profile } } )
         },
-        startActionLoader: (): void => patchState( store, { actionLoading: true } ),
-        stopActionLoader: (): void => patchState( store, { actionLoading: false } ),
         reset: (): void => patchState( store, defaultSessionStore ),
     }) ),
 )

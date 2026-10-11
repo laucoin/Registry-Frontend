@@ -35,17 +35,4 @@ describe( 'SessionStore', () => {
         expect( store.currentUser() ).toBeUndefined()
         expect( store.currentProject.id() ).toBeUndefined()
     } )
-
-    it( 'raises and lowers the action loader', () => {
-        // Arrange
-        store.startActionLoader()
-        const whileRunning: boolean = store.actionLoading()
-
-        // Act
-        store.stopActionLoader()
-
-        // Assert
-        expect( whileRunning ).toBe( true )
-        expect( store.actionLoading() ).toBe( false )
-    } )
 } )

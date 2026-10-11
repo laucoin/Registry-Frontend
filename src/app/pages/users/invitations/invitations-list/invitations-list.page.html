@@ -1,66 +1,56 @@
-<app-legacy-list (updateRequired)='loadPage($event)'
-          [elementPage]='userProfileFacade.userProjectProfileInvitationsPage()'
-          [error]='userProfileFacade.userProjectProfileInvitationsPageError()'
-          [loading]='userProfileFacade.userProjectProfileInvitationsPageLoading()'
-          emptyMessagePrefix='project-profiles.notifications.EMPTY'>
-    <ng-template appTemplate='search' let-pageEvent>
-        <div class='row'>
-            <div class='col-12 col-sm-6 col-md-12 col-lg-6 search-field'>
-                <label for='invitation-text-search-field'>{{ 'preferences.search-and-filter.text' | transloco }}</label>
-                <input id='invitation-text-search-field'
-                       type='text'
-                       pInputText
-                       (keydown.enter)='loadPage(pageEvent)'
-                       [formField]='form.textSearched' />
+<sgdf-page-title [eyebrow]="'project-profiles.pages.invitations.eyebrow' | transloco"
+                 [lede]="'project-profiles.pages.invitations.subtitle' | transloco">
+    {{ 'project-profiles.pages.invitations.title' | transloco }}
+</sgdf-page-title>
+
+<app-project-profile-row #row view="user"/>
+
+<app-list class="mt-(--spacing--block) block"
+          emptyMessagePrefix="project-profiles.notifications.EMPTY"
+          [elementPage]="userProfileFacade.userProjectProfileInvitationsPage()"
+          [error]="userProfileFacade.userProjectProfileInvitationsPageError()"
+          [loading]="userProfileFacade.userProjectProfileInvitationsPageLoading()"
+          [loadingMore]="userProfileFacade.userProjectProfileInvitationsPageSilentLoading()"
+          [activeFilters]="activeFilters()"
+          (updateRequired)="loadBatch($event)"
+          (filtersReset)="resetFilters()">
+    <ng-template appTemplate="search">
+        <form class="grid grid-cols-1 items-end gap-(--spacing--in-block-large) md:grid-cols-2"
+              (submit)="$event.preventDefault(); search()">
+            <sgdf-input appSgdfField [label]="'preferences.search-and-filter.text' | transloco"
+                        [formField]="form.textSearched"/>
+            <sgdf-date-time-picker appSgdfField with-time
+                                   [label]="'preferences.search-and-filter.datetime' | transloco"
+                                   [formField]="form.dateTimeSearched"/>
+            <div class="flex justify-end md:col-span-2">
+                <sgdf-button variant="primary" appearance="outlined" submit
+                             [loading]="userProfileFacade.userProjectProfileInvitationsPageLoading()">
+                    <sgdf-icon slot="prefix" name="magnifying-glass" library="solid"/>
+                    {{ 'global.actions.search' | transloco }}
+                </sgdf-button>
             </div>
-            <div class='col-12 col-sm-6 col-md-12 col-lg-6 search-field'>
-                <label for='invitation-date-time-search-field'>{{ 'preferences.search-and-filter.datetime' | transloco }}</label>
-                <p-date-picker [formField]='form.dateTimeSearched'
-                               showButtonBar
-                               [readonlyInput]='true'
-                               [showTime]='true'
-                               [touchUI]='uiFacade.tinyScreen()'
-                               inputId='invitation-date-time-search-field'
-                               selectionMode='range'
-                               fluid />
-            </div>
-        </div>
-        <div class='flex flex-wrap justify-center pt-2'>
-            <p-button (onClick)='loadPage(pageEvent)'
-                      [label]='"global.actions.search-and-filter" | transloco'
-                      outlined
-                      rounded
-                      icon='pi pi-search'
-                      [loading]='userProfileFacade.userProjectProfileInvitationsPageLoading() || userProfileFacade.userProjectProfileInvitationsPageSilentLoading()' />
-        </div>
+        </form>
     </ng-template>
-    <ng-template appTemplate='element' let-profile>
-        <app-project-profile-element [profile]='profile' view='user' />
+
+    <ng-template appTemplate="element" let-profile>
+        <ng-container [ngTemplateOutlet]="row.template()" [ngTemplateOutletContext]="{ $implicit: profile }"/>
     </ng-template>
-    @if (!hasFilters()) {
-        <ng-template appTemplate='empty'>
-            <div class='p-6'>
-                <div class='flex flex-col justify-center items-center'>
-                    <h2>{{ 'project-profiles.notifications.EMPTY-INVITATION.message' | transloco }}</h2>
-                    <p>{{ 'project-profiles.empty-invitation' | transloco }}</p>
-                    <div class='flex justify-around'>
-                        <p-button class='m-1'
-                                  severity='success'
-                                  outlined
-                                  rounded
-                                  [label]='"project-profiles.actions.create-project" | transloco'
-                                  icon='pi pi-plus'
-                                  [routerLink]='"/" + RegistryRouteEnum.PROJECTS_CREATION' />
-                        <p-button class='m-1'
-                                  severity='info'
-                                  outlined
-                                  rounded
-                                  [label]='"project-profiles.actions.profiles" | transloco'
-                                  icon='pi pi-unlock'
-                                  [routerLink]='"/" + RegistryRouteEnum.USERS_PROFILES' />
-                    </div>
-                </div>
+
+    <ng-template appTemplate="empty">
+        <sgdf-callout variant="neutral" [title]="'project-profiles.notifications.EMPTY-INVITATION.message' | transloco">
+            <div class="flex flex-wrap items-center justify-between gap-(--spacing--in-block)">
+                <span>{{ 'project-profiles.empty-invitation' | transloco }}</span>
+                <span class="flex flex-wrap items-center gap-2">
+                    <sgdf-button size="small" variant="primary" [routerLink]="createRoute">
+                        <sgdf-icon slot="prefix" name="plus" library="solid"/>
+                        {{ 'project-profiles.actions.create-project' | transloco }}
+                    </sgdf-button>
+                    <sgdf-button size="small" appearance="outlined" [routerLink]="profilesRoute">
+                        <sgdf-icon slot="prefix" name="unlock" library="solid"/>
+                        {{ 'project-profiles.actions.profiles' | transloco }}
+                    </sgdf-button>
+                </span>
             </div>
-        </ng-template>
-    }
-</app-legacy-list>
+        </sgdf-callout>
+    </ng-template>
+</app-list>

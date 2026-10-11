@@ -7,6 +7,6 @@ export interface UserResponseDto extends GenericResponseDto {
     email: string
     role: SelectOptionModel<string> | undefined
     birthday: Date
-    lastLogin: Date
+    lastLogin?: Date
     purged: boolean
 }

@@ -1,119 +1,47 @@
-import { Component, computed, inject, input, InputSignal, Signal } from '@angular/core'
-import { Card } from 'primeng/card'
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, input, InputSignal, Signal } from '@angular/core'
 import { CommunicationModel } from '@shared/models/model/communication.model'
-import { Avatar } from 'primeng/avatar'
 import { StringHelper } from '@shared/helpers/string.helper'
 import { HistoryUserModel } from '@shared/models/model/history-user.model'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
 import { CurrentUserModel } from '@shared/models/model/current-user.model'
-import { ContextMenu } from 'primeng/contextmenu'
-import { Ripple } from 'primeng/ripple'
 import {TranslocoPipe} from '@jsverse/transloco'
 import { CommunicationHelper } from '@shared/helpers/communication.helper'
-import { CommunicationFacade } from '@pages/projects/[projectId]/movements/communication/data/state/communication.facade'
-import { MenuEntryModel } from '@shared/models/model/menu-entry.model'
-import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum'
-import { ElementActionEnum } from '@shared/models/enumeration/element-action.enum'
-import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { GenericElementComponent } from '@shared/ui/base/generic-element.component'
+import '@sgdf/ui/avatar'
+import '@sgdf/ui/icon'
+import '@sgdf/ui/tag'
 import { AlertHelper } from '@shared/helpers/alert.helper'
-import { MessageComponent } from '@shared/ui/common/message/message.component'
-import { SeverityTagComponent } from '@shared/ui/common/severity-tag/severity-tag.component'
+import { CommunicationActions } from '@shared/ui/domain/dialog-element/communication-actions.service'
+import { ElementActionModel } from '@shared/models/model/element-action.model'
+import { ElementActionsComponent } from '@shared/ui/common/element-actions/element-actions.component'
 import { DateHelper } from '@shared/helpers/date.helper'
 
 /**
- * Purpose: Dialog that presents the details of an element.
- * Scope: Hosts the projected content in a modal.
- * Limits: Owns no data; the parent provides it.
+ * Purpose: Chat bubble presenting one communication, aligned to the side of its author.
+ * Scope: Renders the author, the linked alert, the message, its date and the action menu of the communication.
+ * Limits: Owns no list state; the parent gives the neighbouring authors so consecutive messages are grouped.
  */
 @Component( {
     selector: 'app-dialog-element',
+    providers: [CommunicationActions],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
     imports: [
-        Card,
-        Avatar,
         DateFormatPipe,
-        ContextMenu,
-        Ripple,
+        ElementActionsComponent,
         TranslocoPipe,
-        MessageComponent,
-        SeverityTagComponent,
-
     ],
     templateUrl: './dialog-element.component.html',
     styleUrl: './dialog-element.component.css',
 } )
 export class DialogElementComponent extends GenericElementComponent {
-    protected readonly facade: CommunicationFacade = inject( CommunicationFacade )
+    private readonly actionsService: CommunicationActions = inject( CommunicationActions )
 
     public readonly alertVisible: InputSignal<boolean> = input( false )
     public readonly communication: InputSignal<CommunicationModel> = input.required()
     public readonly previousAuthorId: InputSignal<string | undefined> = input()
     public readonly nextAuthorId: InputSignal<string | undefined> = input()
 
-    protected readonly actions: Signal<MenuEntryModel[]> = computed( (): MenuEntryModel[] => [
-        this.editAction(),
-        this.disableAction(),
-        this.enableAction(),
-        this.deleteAction(),
-    ] )
-
-    private editAction(): MenuEntryModel {
-        return {
-            label: 'communications.actions.edit',
-            icon: 'pi pi-pen-to-square',
-            disabled: !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_COMMUNICATION_U ),
-            visible: this.actionIsEnable( ElementActionEnum.COMMUNICATION_UPDATE ),
-            command: (): void => this.facade.fetchCommunication( this.communication().id ),
-        }
-    }
-
-    private disableAction(): MenuEntryModel {
-        return {
-            label: 'communications.actions.disable',
-            icon: 'pi pi-eye-slash',
-            disabled: this.busy() || !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_COMMUNICATION_U ),
-            visible: this.actionIsEnable(ElementActionEnum.COMMUNICATION_DISABLE ) && this.communication().visible,
-            command: this.confirmThen(
-                'communications.actions.confirmations.disable',
-                'pi pi-exclamation-triangle',
-                this.communication(),
-                SeverityEnum.WARNING,
-                (): void => this.run(this.facade.disableCommunication(this.communication().id)),
-            ),
-        }
-    }
-
-    private enableAction(): MenuEntryModel {
-        return {
-            label: 'communications.actions.enable',
-            icon: 'pi pi-replay',
-            disabled: this.busy() || !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_COMMUNICATION_U ),
-            visible: this.actionIsEnable(ElementActionEnum.COMMUNICATION_ENABLE ) && !this.communication().visible,
-            command: this.confirmThen(
-                'communications.actions.confirmations.enable',
-                'pi pi-info-circle',
-                this.communication(),
-                SeverityEnum.INFO,
-                (): void => this.run(this.facade.enableCommunication(this.communication().id)),
-            ),
-        }
-    }
-
-    private deleteAction(): MenuEntryModel {
-        return {
-            label: 'communications.actions.delete',
-            icon: 'pi pi-trash',
-            disabled: this.busy() || !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_COMMUNICATION_D ),
-            visible: this.actionIsEnable(ElementActionEnum.COMMUNICATION_DELETE ),
-            command: this.confirmThen(
-                'communications.actions.confirmations.delete',
-                'pi pi-exclamation-triangle',
-                this.communication(),
-                SeverityEnum.INFO,
-                (): void => this.run(this.facade.deleteCommunication(this.communication())),
-            ),
-        }
-    }
+    protected readonly actions: Signal<ElementActionModel[]> = computed( (): ElementActionModel[] => this.actionsService.actionsFor( this.communication() ) )
 
     protected readonly firstAuthorMessage: Signal<boolean> = computed( (): boolean =>
         CommunicationHelper.getAuthorId( this.communication() ) !== this.previousAuthorId(),
@@ -129,8 +57,8 @@ export class DialogElementComponent extends GenericElementComponent {
 
     protected readonly authorName: Signal<string> = computed( (): string => this.buildAuthorName( this.communication() ) )
 
-    protected readonly alertSeverity: Signal<SeverityEnum | undefined> = computed( (): SeverityEnum | undefined => AlertHelper.getSeverityFromStatus(
-        this.communication().alert?.status?.value ) )
+    protected readonly alertVariant: Signal<'warning' | 'neutral' | 'success'> = computed( (): 'warning' | 'neutral' | 'success' =>
+        AlertHelper.getTagVariant( this.communication().alert?.status?.value ) )
 
     protected readonly updated: Signal<boolean> = computed( (): boolean =>
         DateHelper.isAfter( this.communication().lastEdition?.dateTime, this.communication().creation?.dateTime ),
@@ -142,7 +70,6 @@ export class DialogElementComponent extends GenericElementComponent {
     ): boolean {
         return StringHelper.isNullOrBlank( communication.movement?.reason?.label ) && communication?.lastEdition?.user?.id === currentUser?.id
     }
-
 
     private buildAuthorName (communication: CommunicationModel): string {
         switch (true) {

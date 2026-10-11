@@ -46,6 +46,10 @@ export class BrowserService {
         return this.lightSchemeQuery?.matches === false ? ThemeEnum.DARK : ThemeEnum.LIGHT
     }
 
+    public onViewportResize (listener: (width: number) => void): void {
+        window.addEventListener( 'resize', (): void => listener( window.innerWidth ) )
+    }
+
     public onSystemThemeChange (listener: () => void): void {
         this.lightSchemeQuery?.addEventListener( 'change', listener )
     }

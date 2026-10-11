@@ -172,7 +172,7 @@ describe( 'MovementFacade', () => {
 
         // Assert
         expect( changes ).toEqual( [ 'disable' ] )
-        expect( findMovements ).toHaveBeenCalledWith( 'p1', 2, 10, expect.anything() )
+        expect( findMovements ).toHaveBeenCalledWith( 'p1', 0, 30, expect.anything() )
     } )
 
     it( 'lets the form handle a creation error other than 503', () => {
@@ -186,5 +186,18 @@ describe( 'MovementFacade', () => {
         // Assert
         expect( received ).toBe( ERROR_500 )
         expect( notify ).not.toHaveBeenCalled()
+    } )
+
+    it( 'reloads every shown batch of the movements in one request', () => {
+        // Arrange
+        findMovements.mockReturnValue( of( pageOf<MovementModel>( [], 1 ) ) )
+        facade.fetchMovementsPage( 1, 10 )
+        findMovements.mockClear()
+
+        // Act
+        facade.reloadMovementsPage()
+
+        // Assert
+        expect( findMovements ).toHaveBeenCalledWith( 'p1', 0, facade.movementsPage()!.pageSize * 2, expect.anything() )
     } )
 } )

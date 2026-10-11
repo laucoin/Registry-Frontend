@@ -1,124 +1,134 @@
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, OnDestroy, signal, Signal, WritableSignal } from '@angular/core'
 import { FieldTree, FormField } from '@angular/forms/signals'
+import { ActivatedRoute } from '@angular/router'
+import { TranslocoPipe } from '@jsverse/transloco'
+import '@sgdf/ui/button'
+import '@sgdf/ui/date-time-picker'
+import '@sgdf/ui/icon'
+import '@sgdf/ui/list-item'
+import '@sgdf/ui/option'
+import '@sgdf/ui/page-title'
+import '@sgdf/ui/select'
+import '@sgdf/ui/skeleton'
+import { Subscription, tap } from 'rxjs'
+import { ActivityFacade } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.facade'
+import {
+    ActivityMovementsListSearchModel,
+    toActivityMovementsListSearchModel,
+    toActivityMovementsListSearchParams,
+} from '@pages/projects/[projectId]/configuration/activities/activity-movements-list/activity-movements-list.search'
+import { MovementFacade } from '@pages/projects/[projectId]/movements/data/state/movement.facade'
+import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
+import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
 import { createSearchForm } from '@shared/helpers/form/search.form'
-import { ActivityMovementsListSearchModel, toActivityMovementsListSearchModel, toActivityMovementsListSearchParams } from './activity-movements-list.search'
-import { Component, inject, OnDestroy, signal, WritableSignal } from '@angular/core'
-import {ActivityModel} from '@shared/models/model/activity.model'
-import {withLoading} from '@shared/helpers/rx.helper'
-import {PageEventModel} from '@shared/models/model/page-event.model'
-import {LegacyListComponent} from '@shared/ui/common/legacy-list/legacy-list.component'
-import {RegistryTemplateDirective} from '@shared/directives/registry-template.directive'
-import {TranslocoPipe} from '@jsverse/transloco'
-import {InputTextModule} from 'primeng/inputtext'
-import {ToggleButtonModule} from 'primeng/togglebutton'
-import {MovementElementComponent} from '@shared/ui/domain/movement-element/movement-element.component'
-import {Select, SelectModule} from 'primeng/select'
-import {Button} from 'primeng/button'
-import {DatePicker} from 'primeng/datepicker'
-import {ActivityFacade} from '@pages/projects/[projectId]/configuration/activities/data/state/activity.facade'
-import {ActivityElementComponent} from '@pages/projects/[projectId]/configuration/activities/activity-element/activity-element.component'
-import {GenericListComponent} from '@shared/ui/base/generic-list.component'
-import {MovementFacade} from '@pages/projects/[projectId]/movements/data/state/movement.facade'
-import {Card} from 'primeng/card'
-import {ElementSkeletonComponent} from '@shared/ui/common/element-skeleton/element-skeleton.component'
-import {Subscription, tap} from 'rxjs'
+import { BooleanChoicePipe } from '@shared/helpers/pipe/boolean-choice.pipe'
+import { withLoading } from '@shared/helpers/rx.helper'
+import { PageEventModel } from '@shared/models/model/page-event.model'
+import { ActivityModel } from '@shared/models/model/activity.model'
+import { ListComponent } from '@shared/ui/common/list/list.component'
+import { MovementElementComponent } from '@shared/ui/domain/movement-element/movement-element.component'
 
 /**
- * Purpose: Page listing the activity movements with search and lazy loading.
- * Scope: Binds the list component to the facade and reloads on command events.
+ * Purpose: Page listing the movements of one activity with search and a "load more" trigger.
+ * Scope: Binds the list component to the activity facade, owns the search form, shows the name of the activity and reloads when a movement changes.
  * Limits: Holds no domain state and never calls the backend.
  */
 @Component({
     selector: 'app-activity-movements-list',
-    templateUrl: './activity-movements-list.page.html',
     imports: [
-        LegacyListComponent,
-        RegistryTemplateDirective,
-        FormField,
-        TranslocoPipe,
-        InputTextModule,
-        ToggleButtonModule,
-        SelectModule,
+        ListComponent,
         MovementElementComponent,
-        Select,
-        Button,
-        DatePicker,
-        ActivityElementComponent,
-        Card,
-        ElementSkeletonComponent,
+        RegistryTemplateDirective,
+        SgdfFieldDirective,
+        BooleanChoicePipe,
+        TranslocoPipe,
+        FormField,
     ],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    templateUrl: './activity-movements-list.page.html',
 })
-export class ActivityMovementsListPage extends GenericListComponent implements OnDestroy {
+export class ActivityMovementsListPage implements OnDestroy {
     protected readonly facade: ActivityFacade = inject(ActivityFacade)
     protected readonly movementFacade: MovementFacade = inject(MovementFacade)
+    private readonly route: ActivatedRoute = inject(ActivatedRoute)
 
     private readonly subscriptions: Subscription = new Subscription()
 
-    protected readonly activity: WritableSignal<ActivityModel | undefined> = signal(undefined)
-    protected readonly activityLoading: WritableSignal<boolean> = signal(false)
+    protected readonly entity: WritableSignal<ActivityModel | undefined> = signal(undefined)
+    protected readonly entityLoading: WritableSignal<boolean> = signal(false)
 
-    protected readonly model: WritableSignal<ActivityMovementsListSearchModel> = signal( toActivityMovementsListSearchModel( {
+    protected readonly title: Signal<string> = computed((): string => {
+        const entity: ActivityModel | undefined = this.entity()
+        return entity ? entity.name : ''
+    })
+
+    protected readonly activeFilters: Signal<number> = computed((): number => [
+        this.facade.activityMovementsPageTypeSearchedParam() !== undefined,
+        this.facade.activityMovementsPageStartDateTimeSearchedParam() !== undefined,
+        this.facade.activityMovementsPageEndDateTimeSearchedParam() !== undefined,
+        this.facade.activityMovementsPageVisibilitySearchedParam() !== undefined,
+    ].filter(Boolean).length)
+
+    protected readonly model: WritableSignal<ActivityMovementsListSearchModel> = signal(toActivityMovementsListSearchModel({
         typeSearched: this.facade.activityMovementsPageTypeSearchedParam(),
         startDateTimeSearched: this.facade.activityMovementsPageStartDateTimeSearchedParam(),
         endDateTimeSearched: this.facade.activityMovementsPageEndDateTimeSearchedParam(),
         visibilitySearched: this.facade.activityMovementsPageVisibilitySearchedParam(),
-    } ) )
-    protected readonly form: FieldTree<ActivityMovementsListSearchModel> = createSearchForm( this.model )
+    }))
+    protected readonly form: FieldTree<ActivityMovementsListSearchModel> = createSearchForm(this.model)
 
     public constructor() {
-        super()
-
         this.loadData()
         this.handleMovementActions()
     }
 
     protected loadData(): void {
-        const id: string | undefined = this.route.snapshot.params['activityId']
         this.subscriptions.add(
-            this.facade.fetchActivity(id!).pipe(
-                withLoading(this.activityLoading),
-            ).subscribe( (activity: ActivityModel): void => this.activity.set(activity) ),
+            this.facade.fetchActivity(this.id()).pipe(
+                withLoading(this.entityLoading),
+            ).subscribe((entity: ActivityModel): void => this.entity.set(entity)),
         )
-        this.facade.fetchActivityMovementsPage(id!, undefined, undefined)
+        this.facade.fetchActivityMovementsPage(this.id(), undefined, undefined)
     }
 
     private handleMovementActions(): void {
         this.subscriptions.add(
             this.movementFacade.handleMovementFirstPageReload().pipe(
-                tap((): void => {
-                    this.facade.fetchActivityMovementsPage(
-                        this.route.snapshot.params['activityId'],
-                        undefined,
-                        undefined)
-                }),
+                tap((): void => this.facade.fetchActivityMovementsPage(this.id(), 0, undefined)),
             ).subscribe(),
         )
-
         this.subscriptions.add(
             this.movementFacade.handleMovementCurrentPageReload().pipe(
-                tap((): void => {
-                    this.facade.fetchActivityMovementsPage(
-                        this.route.snapshot.params['activityId'],
-                        this.facade.activityMovementsPage()?.pageNumber,
-                        this.facade.activityMovementsPage()?.pageSize)
-                }),
+                tap((): void => this.facade.reloadActivityMovementsPage(this.id())),
             ).subscribe(),
         )
     }
 
-    protected loadPage(pageEvent: PageEventModel): void {
-        const search: ReturnType<typeof toActivityMovementsListSearchParams> = toActivityMovementsListSearchParams( this.model() )
+    protected search(): void {
+        const search: ReturnType<typeof toActivityMovementsListSearchParams> = toActivityMovementsListSearchParams(this.model())
         this.facade.inputMovementsPageSearchParameters(
             search.typeSearched,
             search.startDateTimeSearched,
             search.endDateTimeSearched,
             search.visibilitySearched,
         )
-        this.facade.fetchActivityMovementsPage(
-            this.route.snapshot.params['activityId'], pageEvent.pageNumber, pageEvent.pageSize)
+        this.facade.fetchActivityMovementsPage(this.id(), 0, undefined)
+    }
+
+    protected resetFilters(): void {
+        this.model.set({ typeSearched: '', startDateTimeSearched: null, endDateTimeSearched: null, visibilitySearched: '' })
+        this.search()
+    }
+
+    protected loadBatch(pageEvent: PageEventModel): void {
+        this.facade.fetchActivityMovementsPage(this.id(), pageEvent.pageNumber, pageEvent.pageSize)
     }
 
     public ngOnDestroy(): void {
         this.subscriptions.unsubscribe()
     }
 
+    private id(): string {
+        return this.route.snapshot.params['activityId']
+    }
 }

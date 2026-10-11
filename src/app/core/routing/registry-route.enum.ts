@@ -23,7 +23,6 @@ export enum RegistryRouteEnum {
 	USERS_EDITION = `${USERS}/${UserRoutesEnum.EDIT}`,
 	USERS_PROFILES = `${USERS}/${UserRoutesEnum.PROFILES}`,
 	USERS_INVITATIONS = `${USERS}/${UserRoutesEnum.INVITATIONS}`,
-	USERS_SETTINGS = `${USERS}/${UserRoutesEnum.SETTINGS}`,
 
 	PROJECTS = 'projects',
 	PROJECTS_CREATION = `${PROJECTS}/${ProjectRoutesEnum.CREATE}`,

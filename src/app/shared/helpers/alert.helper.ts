@@ -6,7 +6,7 @@ import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 
 /**
  * Purpose: Presents alerts.
- * Scope: Builds alert select items and maps an alert status to an icon and a severity.
+ * Scope: Builds alert select items and maps an alert status to an icon, a severity and a tag variant.
  * Limits: No state; the date is formatted by the given pipe.
  */
 export class AlertHelper {
@@ -36,6 +36,17 @@ export class AlertHelper {
                 return SeverityEnum.SECONDARY
             default:
                 return SeverityEnum.SUCCESS
+        }
+    }
+
+    public static getTagVariant (status: AlertStatusEnum | undefined): 'warning' | 'neutral' | 'success' {
+        switch (status) {
+            case AlertStatusEnum.IN_PROGRESS:
+                return 'warning'
+            case AlertStatusEnum.CANCELED:
+                return 'neutral'
+            default:
+                return 'success'
         }
     }
 }

@@ -1,8 +1,13 @@
-import { Component, signal, WritableSignal } from '@angular/core'
+import { Component, CUSTOM_ELEMENTS_SCHEMA, signal, WritableSignal } from '@angular/core'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { FieldTree, form, FormField } from '@angular/forms/signals'
 import { describe, expect, it, vi } from 'vitest'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
+import '@sgdf/ui/date-time-picker'
+import '@sgdf/ui/input'
+import '@sgdf/ui/option'
+import '@sgdf/ui/select'
+import '@sgdf/ui/switch'
 
 interface HostModel {
     text: string
@@ -13,11 +18,15 @@ interface HostModel {
 
 @Component({
     imports: [FormField, SgdfFieldDirective],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
     template: `
         <sgdf-input appSgdfField [formField]="tree.text"></sgdf-input>
         <sgdf-switch appSgdfField [formField]="tree.on"></sgdf-switch>
-        <sgdf-date-time-picker appSgdfField [formField]="tree.when"></sgdf-date-time-picker>
-        <sgdf-select appSgdfField [formField]="tree.choice"></sgdf-select>
+        <sgdf-date-time-picker appSgdfField with-time [formField]="tree.when"></sgdf-date-time-picker>
+        <sgdf-select appSgdfField [formField]="tree.choice">
+            <sgdf-option value="a">A</sgdf-option>
+            <sgdf-option value="b">B</sgdf-option>
+        </sgdf-select>
     `,
 })
 class HostComponent {
@@ -50,7 +59,7 @@ describe('SgdfFieldDirective', () => {
             expect(element('sgdf-switch').checked).toBe(true)
             expect(element('sgdf-date-time-picker').value).toBe('2026-10-03T14:05')
             expect(element('sgdf-select').value).toBe('b')
-        }, { timeout: 5000 })
+        }, { timeout: 3000 })
     })
 
     it('reads the element values back into the model', async () => {

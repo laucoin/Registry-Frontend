@@ -7,7 +7,15 @@ import { SessionFacade } from '@core/registry/state/session.facade'
 import { RegistryRouteEnum } from "@core/routing/registry-route.enum";
 import { RouteHelper } from "@shared/helpers/route.helper";
 import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco'
+import '@sgdf/ui/button'
+import '@sgdf/ui/icon'
+import '@sgdf/ui/page-title'
 
+/**
+ * Purpose: Sign-in page of the application.
+ * Scope: Presents the application and starts the sign-in through the session facade.
+ * Limits: Does not handle the identity provider callback; the auth callback page does.
+ */
 @Component({
 	schemas: [CUSTOM_ELEMENTS_SCHEMA],
 	imports: [TranslocoPipe, NgOptimizedImage, RouterLink],
@@ -23,7 +31,10 @@ export class LoginPage {
 
 	private readonly facade: SessionFacade = inject(SessionFacade)
 
+	protected readonly redirecting: WritableSignal<boolean> = signal(false);
+
 	protected login(): void {
+		this.redirecting.set(true)
 		this.facade.login()
 	}
 }

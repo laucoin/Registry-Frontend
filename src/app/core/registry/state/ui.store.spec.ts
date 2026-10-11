@@ -10,6 +10,7 @@ describe( 'UiStore', () => {
     let setRootTheme: Mock<(theme: ThemeEnum) => void>
     let setRootLanguage: Mock<(language: string) => void>
     let systemTheme: ThemeEnum
+    let resize: (width: number) => void
 
     function createStore (): InstanceType<typeof UiStore> {
         TestBed.configureTestingModule( {
@@ -21,6 +22,7 @@ describe( 'UiStore', () => {
                         viewportWidth: 1024,
                         setRootTheme,
                         setRootLanguage,
+                        onViewportResize: (listener: (width: number) => void): void => { resize = listener },
                     },
                 },
             ],
@@ -44,7 +46,6 @@ describe( 'UiStore', () => {
         // Assert
         expect( store.theme() ).toBe( ThemeEnum.DARK )
         expect( store.screenWidth() ).toBe( 1024 )
-        expect( store.loading() ).toBe( false )
         expect( store.error() ).toBeUndefined()
     } )
 
@@ -110,20 +111,6 @@ describe( 'UiStore', () => {
         expect( store.error() ).toEqual( expect.objectContaining( { severity: 'error', summary: 'Title', detail: 'Message', closable: true } ) )
     } )
 
-    it( 'toggles the global loader', () => {
-        // Arrange
-        store = createStore()
-        store.startGlobalLoader()
-        const running: boolean = store.loading()
-
-        // Act
-        store.stopGlobalLoader()
-
-        // Assert
-        expect( running ).toBe( true )
-        expect( store.loading() ).toBe( false )
-    } )
-
     it( 'tracks the network state and the screen width', () => {
         // Arrange
         store = createStore()
@@ -134,6 +121,17 @@ describe( 'UiStore', () => {
 
         // Assert
         expect( store.online() ).toBe( false )
+        expect( store.screenWidth() ).toBe( 500 )
+    } )
+
+    it( 'follows the viewport width when the window is resized', () => {
+        // Arrange
+        store = createStore()
+
+        // Act
+        resize( 500 )
+
+        // Assert
         expect( store.screenWidth() ).toBe( 500 )
     } )
 } )

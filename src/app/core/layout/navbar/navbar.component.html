@@ -1,10 +1,9 @@
-<sgdf-navbar torn label="Navigation, fond plein" subnav-label="Projet, fond plein">
+<sgdf-navbar torn label="Navigation principale" subnav-label="Navigation du projet">
     <a slot="brand" [routerLink]="RegistryRouteEnum.PROJECTS"
        [attr.aria-label]="application.name"
        class="flex items-center gap-3 no-underline!">
         <sgdf-icon class="text-3xl [--picto-color:white]" name="logo-symbole" library="sgdf-picto"/>
-        <ng-container class="hidden flex-col md:flex"
-                      [ngTemplateOutlet]="title"
+        <ng-container [ngTemplateOutlet]="title"
                       [ngTemplateOutletContext]="{ $implicit: application.name, subTitle: application.organization }"/>
     </a>
 
@@ -42,7 +41,7 @@
 </sgdf-navbar>
 
 <ng-template #title let-title let-subTitle="subTitle">
-    <span class="flex flex-col text-white">
+    <span class="hidden flex-col text-white md:flex">
         <strong>{{ title }}</strong>
         <small class="text-xs opacity-80">{{ subTitle }}</small>
     </span>

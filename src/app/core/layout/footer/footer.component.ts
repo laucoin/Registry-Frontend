@@ -5,7 +5,14 @@ import { RegistryConfig } from "@core/config/registry.config";
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
 import { RouteHelper } from '@shared/helpers/route.helper'
 import { TranslocoPipe } from "@jsverse/transloco";
+import '@sgdf/ui/avatar'
+import '@sgdf/ui/footer'
 
+/**
+ * Purpose: Footer of the application.
+ * Scope: Shows the legal links, the optional support link and the creator credits from the runtime configuration.
+ * Limits: Holds no state and does not fetch anything; the links come from the configuration and the routes.
+ */
 @Component({
 	selector: 'app-footer',
 	schemas: [CUSTOM_ELEMENTS_SCHEMA],

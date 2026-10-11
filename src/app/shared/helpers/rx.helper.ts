@@ -5,9 +5,9 @@ import { ErrorModel } from '@shared/models/model/error.model'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 
 /**
- * Purpose: Shared RxJS operators for stores and facades.
- * Scope: Reports errors (toast or global state), scopes loading flags and swallows errors so streams stay alive.
- * Limits: Does not retry or cache.
+ * Purpose: Contract of what stores and facades use to report a failure to the user.
+ * Scope: Offers the full-page error state and the notification toast.
+ * Limits: Declares the two commands only; the implementations live in the UI state.
  */
 export interface ErrorSink {
     setGlobalError (error: ErrorModel): void
@@ -15,23 +15,38 @@ export interface ErrorSink {
     notify (message: NotificationModel): void
 }
 
+/**
+ * Purpose: Runs a callback each time the source is subscribed.
+ * Scope: Defers the subscription so the callback runs first.
+ * Limits: Does not run anything when the source completes; use finalize for that.
+ */
 export const initialize = (onSubscribe: () => void) => <T> (source: Observable<T>): Observable<T> => defer( () => {
     onSubscribe()
     return source
 } )
 
+/**
+ * Purpose: Scopes a loading flag to a source.
+ * Scope: Raises the flag on subscription and lowers it when the source ends, fails or is cancelled.
+ * Limits: Does not handle the error; the source still fails.
+ */
 export const withLoading = (loading: WritableSignal<boolean>) => <T> (source: Observable<T>): Observable<T> => defer( () => {
     loading.set( true )
     return source.pipe( finalize( (): void => loading.set( false ) ) )
 } )
 
+/**
+ * Purpose: Shows a failure to the user.
+ * Scope: Opens the full-page error state on a 503 and a sticky error toast otherwise.
+ * Limits: Does not stop or recover the stream; the caller does.
+ */
 export const reportError = (errorSink: ErrorSink, error: ErrorModel): void => {
     if (error.status === 503) {
         errorSink.setGlobalError( error )
     } else {
         errorSink.notify( {
             severity: SeverityEnum.ERROR,
-            summary: error.title,
+            summary: error.title ?? 'global.notifications.UNKNOWN_ERROR.title',
             detail: error.message,
             icon: 'pi pi-exclamation-triangle',
             closable: true,
@@ -40,7 +55,11 @@ export const reportError = (errorSink: ErrorSink, error: ErrorModel): void => {
     }
 }
 
-// Reports the error (toast, or full-page state on 503) and completes without emitting.
+/**
+ * Purpose: Reports a failed source and completes it without emitting.
+ * Scope: Shows a toast, or the full-page state on a 503.
+ * Limits: Does not retry.
+ */
 export const notifyOnError = (errorSink: ErrorSink) => <T> (source: Observable<T>): Observable<T> => source.pipe(
     catchError( (error: ErrorModel): Observable<never> => {
         reportError( errorSink, error )
@@ -48,7 +67,11 @@ export const notifyOnError = (errorSink: ErrorSink) => <T> (source: Observable<T
     } ),
 )
 
-// For forms: only a 503 is global (completes silently); any other error is rethrown for the form to display.
+/**
+ * Purpose: Handles the errors of a form submission.
+ * Scope: Reports a 503 and completes silently; rethrows any other error for the form to display.
+ * Limits: Does not display the rethrown error.
+ */
 export const notifyUnavailableOnly = (errorSink: ErrorSink) => <T> (source: Observable<T>): Observable<T> => source.pipe(
     catchError( (error: ErrorModel): Observable<never> => {
         if (error.status !== 503) {
@@ -59,7 +82,11 @@ export const notifyUnavailableOnly = (errorSink: ErrorSink) => <T> (source: Obse
     } ),
 )
 
-// Runs the source right away and replays its outcome, like a dispatched action: callers may ignore or chain on the result.
+/**
+ * Purpose: Runs a source right away, like a dispatched action.
+ * Scope: Replays the outcome to the callers, who may ignore it or chain on it.
+ * Limits: Does not cancel the source when the callers unsubscribe.
+ */
 export const eager = <T> (source: Observable<T>): Observable<T> => {
     const result: ReplaySubject<T> = new ReplaySubject<T>()
     source.subscribe( result )

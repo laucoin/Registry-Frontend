@@ -1,4 +1,4 @@
-import { signal, WritableSignal } from '@angular/core'
+import { Provider, signal, WritableSignal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { BrowserService } from '@core/browser/browser.service'
 import { ConfigModel } from '@core/config/model/config.model'
@@ -24,7 +24,31 @@ describe('UiFacade', () => {
 	let reload: Mock<() => void>
 	let systemTheme: WritableSignal<ThemeEnum>
 
-	beforeEach(() => {
+	function provideBrowser(): Provider {
+		return {
+			provide: BrowserService,
+			useValue: {
+				get systemTheme(): ThemeEnum { return systemTheme() },
+				viewportWidth: 1280,
+				onViewportResize: (): void => undefined,
+				setRootTheme,
+				reload,
+				setRootLanguage: vi.fn(),
+			},
+		}
+	}
+
+	function provideTransloco(): Provider {
+		return {
+			provide: TranslocoService,
+			useValue: {
+				translate: (key: string): string => `t:${key}`,
+				langChanges$: new Subject<string>().asObservable(),
+			},
+		}
+	}
+
+	function configureConfig(): void {
 		provideTestConfig()
 		RegistryConfig.config = {
 			...RegistryConfig.config,
@@ -33,31 +57,14 @@ describe('UiFacade', () => {
 				normal: { light: 'light.svg', dark: 'dark.svg' },
 			},
 		} as unknown as ConfigModel
+	}
+
+	beforeEach(() => {
+		configureConfig()
 		setRootTheme = vi.fn()
 		reload = vi.fn()
 		systemTheme = signal(ThemeEnum.LIGHT)
-		TestBed.configureTestingModule({
-			providers: [
-				UiFacade,
-				{
-					provide: BrowserService,
-					useValue: {
-						get systemTheme(): ThemeEnum { return systemTheme() },
-						viewportWidth: 1280,
-						setRootTheme,
-						reload,
-						setRootLanguage: vi.fn(),
-					},
-				},
-				{
-					provide: TranslocoService,
-					useValue: {
-						translate: (key: string): string => `t:${key}`,
-						langChanges$: new Subject<string>().asObservable()
-					}
-				},
-			],
-		})
+		TestBed.configureTestingModule({ providers: [UiFacade, provideBrowser(), provideTransloco()] })
 		facade = TestBed.inject(UiFacade)
 		ui = TestBed.inject(UiStore)
 		received = []
@@ -167,18 +174,12 @@ describe('UiFacade', () => {
 		expect(received).toEqual([message])
 	})
 
-	it('exposes the global loader and error', () => {
+	it('exposes the global error', () => {
 		// Arrange
-		facade.startGlobalLoader()
-		const loading: boolean = facade.globalLoading()
-
 		// Act
-		facade.stopGlobalLoader()
 		facade.setGlobalError(ERROR_500)
 
 		// Assert
-		expect(loading).toBe(true)
-		expect(facade.globalLoading()).toBe(false)
 		expect(facade.globalError()?.summary).toBe('Title')
 	})
 

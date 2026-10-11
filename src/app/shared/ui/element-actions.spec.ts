@@ -9,27 +9,11 @@ import { RegistryConfig } from '@core/config/registry.config'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { UserProfileFacade } from '@core/registry/state/user-profile.facade'
-import { ActivityFacade } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.facade'
-import { ActivityElementComponent } from '@pages/projects/[projectId]/configuration/activities/activity-element/activity-element.component'
-import { GroupFacade } from '@pages/projects/[projectId]/configuration/groups/data/state/group.facade'
-import { GroupElementComponent } from '@pages/projects/[projectId]/configuration/groups/group-element/group-element.component'
-import { ParticipantFacade } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.facade'
-import { ProjectProfileFacade } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.facade'
-import { VehicleFacade } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.facade'
-import { VehicleElementComponent } from '@pages/projects/[projectId]/configuration/vehicles/vehicle-element/vehicle-element.component'
-import { CommunicationFacade } from '@pages/projects/[projectId]/movements/communication/data/state/communication.facade'
-import { MovementFacade } from '@pages/projects/[projectId]/movements/data/state/movement.facade'
-import { AlertFacade } from '@pages/projects/[projectId]/alerts/data/state/alert.facade'
 import { UserFacade } from '@pages/users/data/state/user.facade'
 import { UserElementComponent } from '@pages/users/user-element/user-element.component'
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
 import { IntervalPipe } from '@shared/helpers/pipe/interval.pipe'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
-import { AlertElementComponent } from '@shared/ui/domain/alert-element/alert-element.component'
-import { DialogElementComponent } from '@shared/ui/domain/dialog-element/dialog-element.component'
-import { MovementElementComponent } from '@shared/ui/domain/movement-element/movement-element.component'
-import { ParticipantElementComponent } from '@shared/ui/domain/participant-element/participant-element.component'
-import { ProjectProfileElementComponent } from '@shared/ui/domain/project-profile-element/project-profile-element.component'
 import { GenericElementComponent } from '@shared/ui/base/generic-element.component'
 import { ElementActionEnum } from '@shared/models/enumeration/element-action.enum'
 
@@ -45,24 +29,8 @@ interface ElementCase {
 const VISIBLE: object = { id: 'e1', visible: true, name: 'x', type: { value: 'IN' }, status: { value: 'IN_PROGRESS', label: 'x' }, firstName: 'A', lastName: 'B', content: [] }
 
 const CASES: ElementCase[] = [
-    { name: 'activity', type: ActivityElementComponent, facade: ActivityFacade, inputs: { activity: VISIBLE }, deleteCall: 'deleteActivity',
-        labels: [ 'movements-history', 'edit', 'disable', 'enable', 'delete' ] },
-    { name: 'group', type: GroupElementComponent, facade: GroupFacade, inputs: { group: VISIBLE }, deleteCall: 'deleteGroup',
-        labels: [ 'members', 'edit', 'disable', 'enable', 'delete' ] },
-    { name: 'vehicle', type: VehicleElementComponent, facade: VehicleFacade, inputs: { vehicle: VISIBLE }, deleteCall: 'deleteVehicle',
-        labels: [ 'movements-history', 'edit', 'disable', 'enable', 'delete' ] },
     { name: 'user', type: UserElementComponent, facade: UserFacade, inputs: { user: VISIBLE }, deleteCall: 'deleteUser',
         labels: [ 'update-role', 'disable', 'enable', 'impersonate', 'delete' ] },
-    { name: 'alert', type: AlertElementComponent, facade: AlertFacade, inputs: { alert: VISIBLE }, deleteCall: 'deleteAlert',
-        labels: [ 'resolve', 'cancel', 'reopen', 'disable', 'enable', 'delete' ] },
-    { name: 'communication', type: DialogElementComponent, facade: CommunicationFacade, inputs: { communication: VISIBLE }, deleteCall: 'deleteCommunication',
-        labels: [ 'edit', 'disable', 'enable', 'delete' ] },
-    { name: 'movement', type: MovementElementComponent, facade: MovementFacade, inputs: { movement: VISIBLE }, deleteCall: 'deleteMovement',
-        labels: [ 'edit', 'disable', 'enable', 'delete' ] },
-    { name: 'participant', type: ParticipantElementComponent, facade: ParticipantFacade, inputs: { participant: VISIBLE }, deleteCall: 'deleteParticipant',
-        labels: [ 'movements-history', 'edit', 'disable', 'enable', 'remove-member', 'delete' ] },
-    { name: 'project profile', type: ProjectProfileElementComponent, facade: ProjectProfileFacade, inputs: { profile: { ...VISIBLE, status: { value: 'ACCEPTED', label: 'x' }, user: { id: 'other' }, project: { id: 'p1' } }, view: 'project' }, deleteCall: 'deleteProjectProfile',
-        labels: [ 'select', 'edit', 'disable', 'enable', 'delete' ] },
 ]
 
 describe( 'element action menus', () => {
@@ -79,7 +47,6 @@ describe( 'element action menus', () => {
         TestBed.configureTestingModule( {
             providers: [
                 { provide: item.facade, useValue: facade },
-                ...(item.facade === GroupFacade ? [] : [ { provide: GroupFacade, useValue: facadeMock( 'x' ) } ]),
                 { provide: SessionFacade, useValue: { currentUser: signal( { id: 'u1', authorities: [ 'p1_REGISTRY_PROJECT_ALERT_U' ] } ), selectedProject: signal( { id: 'p1', options: [] } ), currentProjectId: signal( 'p1' ) } },
                 { provide: UserProfileFacade, useValue: {} },
                 { provide: UiFacade, useValue: { tinyScreen: signal( false ), notify: vi.fn(), confirm } },

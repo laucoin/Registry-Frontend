@@ -215,7 +215,7 @@ describe('MenuService', () => {
 			const freshService: MenuService = TestBed.inject(MenuService)
 
 			// Act
-			navigateTo('/usersettings')
+			navigateTo('/usersarchive')
 
 			// Assert
 			expect(freshService.activeMenuUrl()).toBeUndefined()

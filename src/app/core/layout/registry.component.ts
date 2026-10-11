@@ -6,6 +6,7 @@ import { GlobalErrorComponent } from '@core/layout/global-error/global-error.com
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { NotificationModel } from '@shared/models/model/notification.model'
+import '@sgdf/ui/toast'
 
 interface ToastHost {
 	create(message: string, options: { variant: string, title: string, duration?: number }): unknown

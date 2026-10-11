@@ -6,7 +6,13 @@ import {
 	AccountPersonalDataComponent
 } from "@shared/ui/domain/my-account/account-personal-data/account-personal-data.component";
 import { AccountThemeComponent } from "@shared/ui/domain/my-account/account-theme/account-theme.component";
+import '@sgdf/ui/page-title'
 
+/**
+ * Purpose: Account page of the signed-in user.
+ * Scope: Composes the information, language, theme and personal data sections.
+ * Limits: Holds no state of its own; each section reads the session through its own component.
+ */
 @Component({
 	imports: [
 		TranslocoPipe,

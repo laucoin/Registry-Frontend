@@ -75,12 +75,6 @@ export class UserApi extends GenericApi {
         )
     }
 
-    public impersonateCurrentUser(): Observable<UserModel> {
-        return this.http.patch<UserResponseDto>(`${this.baseUrl}/impersonate`, null).pipe(
-            map( UserMapper.toModel ),
-        )
-    }
-
     public deleteUserById(id: string): Observable<void> {
         return this.http.delete<void>(`${this.baseUrl}/${id}`)
     }

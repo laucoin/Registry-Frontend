@@ -88,7 +88,7 @@ describe( 'VehicleFacade', () => {
 
         // Assert
         expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'vehicles.notifications.create.title', data: expect.objectContaining( { registration: 'AB-123' } ) } ) )
-        expect( findVehicles ).toHaveBeenCalledWith( 'p1', 2, 10, expect.anything() )
+        expect( findVehicles ).toHaveBeenCalledWith( 'p1', 0, 30, expect.anything() )
     } )
 
     it( 'lets the form handle a creation error other than 503', () => {
@@ -126,5 +126,19 @@ describe( 'VehicleFacade', () => {
         // Assert
         expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'Title' } ) )
         expect( completed ).toBe( true )
+    } )
+
+    it( 'reloads every shown batch of the movements of a vehicle in one request', () => {
+        // Arrange
+        const finder: Mock = vi.fn( () => of( pageOf<never>( [], 1 ) ) )
+        ;(TestBed.inject( VehicleApi ) as unknown as Record<string, Mock>)[ 'findVehicleMovements' ] = finder
+        facade.fetchVehicleMovementsPage( 'e1', 1, 10 )
+        finder.mockClear()
+
+        // Act
+        facade.reloadVehicleMovementsPage( 'e1' )
+
+        // Assert
+        expect( finder ).toHaveBeenCalledWith( 'p1', 'e1', 0, expect.any( Number ), expect.anything() )
     } )
 } )

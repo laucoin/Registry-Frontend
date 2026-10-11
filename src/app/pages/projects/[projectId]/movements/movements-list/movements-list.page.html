@@ -1,75 +1,55 @@
-<app-legacy-list (updateRequired)='loadPage($event)'
-          [elementPage]='facade.movementsPage()'
-          [error]='facade.movementsPageError()'
-          [loading]='facade.movementsPageLoading()'
-          emptyMessagePrefix='movements.notifications.EMPTY'>
-    <ng-template appTemplate='search' let-pageEvent>
-        <div class='grid search-line'>
-            <div class='field'>
-                <label for='start-date-time-search-field'>{{ 'movements.search-and-filter.start-datetime' | transloco }}</label>
-                <p-date-picker inputId='start-date-time-search-field'
-                               fluid
-                               showButtonBar
-                               [showTime]='true'
-                               [touchUI]='uiFacade.tinyScreen()'
-                               (onBlur)='loadPage(pageEvent)'
-                               [formField]='form.startDateTimeSearched' />
+<sgdf-page-title [eyebrow]="'movements.list.eyebrow' | transloco"
+                 [lede]="'movements.list.subtitle' | transloco">
+    {{ 'movements.list.title' | transloco }}
+    @if (canCreate()) {
+        <sgdf-button slot="actions" variant="primary" [routerLink]="createRoute">
+            <sgdf-icon slot="prefix" name="plus" library="solid"/>
+            {{ 'global.actions.create' | transloco }}
+        </sgdf-button>
+    }
+</sgdf-page-title>
+
+<app-list class="mt-(--spacing--block) block"
+          emptyMessagePrefix="movements.notifications.EMPTY"
+          [elementPage]="facade.movementsPage()"
+          [error]="facade.movementsPageError()"
+          [loading]="facade.movementsPageLoading()"
+          [loadingMore]="facade.movementsPageSilentLoading()"
+          [activeFilters]="activeFilters()"
+          (updateRequired)="loadBatch($event)"
+          (filtersReset)="resetFilters()">
+    <ng-template appTemplate="search">
+        <form class="grid grid-cols-1 items-end gap-(--spacing--in-block-large) md:grid-cols-2"
+              (submit)="$event.preventDefault(); search()">
+            <sgdf-date-time-picker appSgdfField with-time
+                                   [label]="'movements.search-and-filter.start-datetime' | transloco"
+                                   [formField]="form.startDateTimeSearched"/>
+            <sgdf-date-time-picker appSgdfField with-time
+                                   [label]="'movements.search-and-filter.end-datetime' | transloco"
+                                   [formField]="form.endDateTimeSearched"/>
+            <sgdf-select appSgdfField [label]="'movements.search-and-filter.type' | transloco"
+                         [formField]="form.typeSearched">
+                @for (item of facade.movementTypesMetadata(); track item.label) {
+                    <sgdf-option [value]="item.value ?? ''">{{ item.label }}</sgdf-option>
+                }
+            </sgdf-select>
+            <sgdf-select appSgdfField [label]="'movements.search-and-filter.visibility' | transloco"
+                         [formField]="form.visibilitySearched">
+                @for (item of facade.visibilitiesMetadata(); track item.label) {
+                    <sgdf-option [value]="item.value | booleanChoice">{{ item.label }}</sgdf-option>
+                }
+            </sgdf-select>
+            <div class="flex justify-end md:col-span-2">
+                <sgdf-button variant="primary" appearance="outlined" submit
+                             [loading]="facade.movementsPageLoading()">
+                    <sgdf-icon slot="prefix" name="magnifying-glass" library="solid"/>
+                    {{ 'global.actions.search' | transloco }}
+                </sgdf-button>
             </div>
-            <div class='field'>
-                <label for='end-date-time-search-field'>{{ 'movements.search-and-filter.end-datetime' | transloco }}</label>
-                <p-date-picker inputId='end-date-time-search-field'
-                               fluid
-                               showButtonBar
-                               [showTime]='true'
-                               [touchUI]='uiFacade.tinyScreen()'
-                               (onBlur)='loadPage(pageEvent)'
-                               [formField]='form.endDateTimeSearched' />
-            </div>
-        </div>
-        <div class='grid search-line'>
-            <div class='field'>
-                <label for='type-search-field'>{{ 'movements.search-and-filter.type' | transloco }}</label>
-                <p-select inputId='type-search-field'
-                          fluid
-                          [loading]='!facade.movementTypesMetadata()'
-                          [options]='facade.movementTypesMetadata()'
-                          optionLabel='label'
-                          optionValue='value'
-                          (onChange)='loadPage(pageEvent)'
-                          [formField]='form.typeSearched' />
-            </div>
-            <div class='field'>
-                <label for='visibility-search-field'>{{ 'movements.search-and-filter.visibility' | transloco }}</label>
-                <p-select inputId='visibility-search-field'
-                          fluid
-                          [options]='facade.visibilitiesMetadata()'
-                          optionLabel='label'
-                          optionValue='value'
-                          (onChange)='loadPage(pageEvent)'
-                          [formField]='form.visibilitySearched' />
-            </div>
-        </div>
-        <div class='flex justify-center'>
-            <p-button (onClick)='loadPage(pageEvent)'
-                      [label]='"global.actions.search-and-filter" | transloco'
-                      outlined
-                      rounded
-                      icon='pi pi-search'
-                      [loading]='facade.movementsPageLoading() || facade.movementsPageSilentLoading()' />
-        </div>
+        </form>
     </ng-template>
-    <ng-template appTemplate='element' let-movement>
-        <app-movement-element [movement]='movement' />
+
+    <ng-template appTemplate="element" let-movement>
+        <sgdf-list-item appMovementElement [movement]="movement"/>
     </ng-template>
-    <ng-template appTemplate='creation'>
-        @if (CurrentUserHelper.hasProjectAuthority(sessionFacade.currentUser(), facade.selectedProjectId(), ProjectAuthority.REGISTRY_PROJECT_MOVEMENT_C)) {
-            <p-button class='m-1'
-                      severity='success'
-                      outlined
-                      rounded
-                      [label]='uiFacade.tinyScreen() ? "" : "global.actions.create" | transloco'
-                      icon='pi pi-plus'
-                      [routerLink]='MovementRoutesEnum.CREATE' />
-        }
-    </ng-template>
-</app-legacy-list>
+</app-list>

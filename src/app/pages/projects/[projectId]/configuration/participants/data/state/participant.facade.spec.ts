@@ -120,6 +120,20 @@ describe( 'ParticipantFacade', () => {
         // Assert
         expect( deleteParticipantById ).toHaveBeenCalledWith( undefined, 'pa1' )
         expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'participants.notifications.delete.title' } ) )
-        expect( findParticipants ).toHaveBeenCalledWith( 'p1', 2, 10, expect.anything() )
+        expect( findParticipants ).toHaveBeenCalledWith( 'p1', 0, 30, expect.anything() )
+    } )
+
+    it( 'reloads every shown batch of the movements of a participant in one request', () => {
+        // Arrange
+        const finder: Mock = vi.fn( () => of( pageOf<never>( [], 1 ) ) )
+        ;(TestBed.inject( ParticipantApi ) as unknown as Record<string, Mock>)[ 'findParticipantMovements' ] = finder
+        facade.fetchParticipantMovementsPage( 'e1', 1, 10 )
+        finder.mockClear()
+
+        // Act
+        facade.reloadParticipantMovementsPage( 'e1' )
+
+        // Assert
+        expect( finder ).toHaveBeenCalledWith( 'p1', 'e1', 0, expect.any( Number ), expect.anything() )
     } )
 } )

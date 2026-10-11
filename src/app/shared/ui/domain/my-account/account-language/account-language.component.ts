@@ -1,6 +1,14 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, inject, Signal } from '@angular/core';
 import { SessionFacade } from "@core/registry/state/session.facade";
 import { provideTranslocoScope, TranslocoPipe } from "@jsverse/transloco";
+import '@sgdf/ui/button'
+import '@sgdf/ui/button-group'
+import '@sgdf/ui/icon'
+import '@sgdf/ui/option'
+import '@sgdf/ui/select'
+import '@sgdf/ui/table'
+import '@sgdf/ui/table-cell'
+import '@sgdf/ui/table-row'
 
 /**
  * Purpose: Lets the signed-in user pick the display language of the application.

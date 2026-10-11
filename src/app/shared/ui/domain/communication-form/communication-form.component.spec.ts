@@ -41,6 +41,10 @@ interface CommunicationFormApi {
     removeAlertField: () => void
     handleMovementSearch: (event: { query: string }) => void
     handleAlertSearch: (event: { query: string }) => void
+    selectMovement: (key: string) => void
+    selectAlert: (key: string) => void
+    movementChoices: () => { label: string, value: { id: string } }[]
+    selectedMovementKey: () => string
 }
 
 describe( 'CommunicationFormComponent', () => {
@@ -298,6 +302,45 @@ describe( 'CommunicationFormComponent', () => {
             // Assert
             expect( facade[ 'searchMovements' ] ).toHaveBeenCalledWith( 'mo' )
             expect( facade[ 'searchAlerts' ] ).toHaveBeenCalledWith( 'al' )
+        } )
+
+        it( 'links the movement chosen among the found ones and keeps it listed after a new search', () => {
+            // Arrange
+            const page: CommunicationFormApi = create()
+            facade[ 'searchedMovementsMetadata' ].mockReturnValue( [ { label: 'First', value: { id: 'm1' } } ] )
+
+            // Act
+            page.selectMovement( 'm1' )
+            facade[ 'searchedMovementsMetadata' ].mockReturnValue( [] )
+
+            // Assert
+            expect( page.selectedMovementKey() ).toBe( 'm1' )
+            expect( page.movementChoices().map( (option: { value: { id: string } }): string => option.value.id ) ).toEqual( [ 'm1' ] )
+        } )
+
+        it( 'unlinks the movement when the choice is cleared', () => {
+            // Arrange
+            const page: CommunicationFormApi = create()
+            facade[ 'searchedMovementsMetadata' ].mockReturnValue( [ { label: 'First', value: { id: 'm1' } } ] )
+            page.selectMovement( 'm1' )
+
+            // Act
+            page.selectMovement( '' )
+
+            // Assert
+            expect( page.selectedMovementKey() ).toBe( '' )
+        } )
+
+        it( 'links the alert chosen among the found ones', () => {
+            // Arrange
+            const page: CommunicationFormApi = create()
+            facade[ 'searchedAlertsMetadata' ].mockReturnValue( [ { label: 'Fire', value: { id: 'a1' } } ] )
+
+            // Act
+            page.selectAlert( 'a1' )
+
+            // Assert
+            expect( page.model().alert.value.id ).toBe( 'a1' )
         } )
     } )
 } )

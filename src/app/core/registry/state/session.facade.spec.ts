@@ -1,4 +1,4 @@
-import { signal, WritableSignal } from '@angular/core'
+import { Provider, signal, WritableSignal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { Router } from '@angular/router'
 import { Observable, of, Subject, throwError } from 'rxjs'
@@ -14,13 +14,11 @@ import { SessionStore } from '@core/registry/state/session.store'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { ErrorReporter } from '@core/registry/state/error-reporter'
 import { UserProjectProfileApi } from '@core/registry/state/user-project-profile.api'
-import { UserApi } from '@pages/users/data/state/user.api'
 import { ThemeEnum } from '@shared/models/enumeration/theme.enum'
 import { CurrentUserModel } from '@shared/models/model/current-user.model'
 import { ErrorModel } from '@shared/models/model/error.model'
 import { ProjectProfileModel } from '@shared/models/model/project-profile.model'
 import { ThemeChoiceModel } from '@shared/models/model/theme-choice.model'
-import { UserModel } from '@shared/models/model/user.model'
 import { REDIRECT_URI } from '@shared/helpers/request.helper'
 import { ProfileResetService } from '@shared/helpers/store/profile-reset.service'
 
@@ -42,7 +40,6 @@ describe( 'SessionFacade', () => {
     let fetchToken: Mock<SecurityApi['fetchToken']>
     let fetchCurrentUser: Mock<SecurityApi['fetchCurrentUser']>
     let refreshToken: Mock<SecurityApi['refreshToken']>
-    let impersonateCurrentUser: Mock<UserApi['impersonateCurrentUser']>
     let updateThemePreference: Mock<PreferencesApi['updateTheme']>
     let updateLanguagePreference: Mock<PreferencesApi['updateLanguage']>
     let findByProjectId: Mock<UserProjectProfileApi['findUserProjectProfileByProjectId']>
@@ -53,57 +50,63 @@ describe( 'SessionFacade', () => {
     let reload: Mock<() => void>
     let startLanguageChange: Mock<(language: string) => void>
     let stopLanguageChange: Mock<() => void>
-    let startGlobalLoader: Mock<() => void>
-    let stopGlobalLoader: Mock<() => void>
     let setGlobalError: Mock<(error: ErrorModel) => void>
     let updateTheme: Mock<(theme: ThemeEnum) => void>
     let notify: Mock<(message: unknown) => void>
     let resetAll: Mock<() => void>
     let redirect: Mock<(url: string) => void>
 
-    beforeEach( () => {
-        sessionStorage.clear()
-        RegistryConfig.config = { defaultLanguage: 'fr', languages: [ 'fr', 'en' ], notification: { duration: {} } } as unknown as ConfigModel
-
+    function mockApis (): void {
         getLoginUri = vi.fn( () => of( { uri: '#login' } ) )
         getLogoutUri = vi.fn( () => of( { uri: '#logout' } ) )
         fetchToken = vi.fn( () => of( undefined ) )
         fetchCurrentUser = vi.fn( () => of( USER ) )
         refreshToken = vi.fn( () => of( undefined ) )
-        impersonateCurrentUser = vi.fn( () => of( { id: 'u2' } as UserModel ) )
         updateThemePreference = vi.fn( () => of( { userId: 'u1', theme: 'DARK', language: 'fr' } ) )
         updateLanguagePreference = vi.fn( () => of( { userId: 'u1', theme: 'LIGHT', language: 'en' } ) )
         findByProjectId = vi.fn( () => of( { id: 'pp1' } as ProjectProfileModel ) )
+    }
 
+    function mockCollaborators (): void {
         navigateByUrl = vi.fn( () => Promise.resolve( true ) )
         applyLanguage = vi.fn( () => of( {} ) )
         rememberLanguage = vi.fn()
         reload = vi.fn()
         startLanguageChange = vi.fn()
         stopLanguageChange = vi.fn()
-        startGlobalLoader = vi.fn()
-        stopGlobalLoader = vi.fn()
         setGlobalError = vi.fn()
         updateTheme = vi.fn()
         notify = vi.fn()
         resetAll = vi.fn()
         redirect = vi.fn()
         theme = signal( ThemeEnum.LIGHT )
+    }
 
-        TestBed.configureTestingModule( {
-            providers: [
-                { provide: SecurityApi, useValue: { getLoginUri, getLogoutUri, fetchToken, fetchCurrentUser, refreshToken } },
-                { provide: UserApi, useValue: { impersonateCurrentUser } },
-                { provide: PreferencesApi, useValue: { updateTheme: updateThemePreference, updateLanguage: updateLanguagePreference } },
-                { provide: UserProjectProfileApi, useValue: { findUserProjectProfileByProjectId: findByProjectId } },
-                { provide: ErrorReporter, useValue: { setGlobalError, notify: vi.fn() } },
-                { provide: UiFacade, useValue: { theme, startGlobalLoader, stopGlobalLoader, setGlobalError, updateTheme, notify, startLanguageChange, stopLanguageChange } },
-                { provide: BrowserService, useValue: { pathname: '/current', origin: 'http://app.test', redirect, reload } },
-                { provide: Router, useValue: { navigateByUrl } },
-                { provide: LanguageService, useValue: { activeLanguage: 'fr', apply: applyLanguage, remember: rememberLanguage } },
-                { provide: ProfileResetService, useValue: { resetAll } },
-            ],
-        } )
+    function provideApis (): Provider[] {
+        return [
+            { provide: SecurityApi, useValue: { getLoginUri, getLogoutUri, fetchToken, fetchCurrentUser, refreshToken } },
+            { provide: PreferencesApi, useValue: { updateTheme: updateThemePreference, updateLanguage: updateLanguagePreference } },
+            { provide: UserProjectProfileApi, useValue: { findUserProjectProfileByProjectId: findByProjectId } },
+        ]
+    }
+
+    function provideCollaborators (): Provider[] {
+        return [
+            { provide: ErrorReporter, useValue: { setGlobalError, notify: vi.fn() } },
+            { provide: UiFacade, useValue: { theme, setGlobalError, updateTheme, notify, startLanguageChange, stopLanguageChange } },
+            { provide: BrowserService, useValue: { pathname: '/current', origin: 'http://app.test', redirect, reload } },
+            { provide: Router, useValue: { navigateByUrl } },
+            { provide: LanguageService, useValue: { activeLanguage: 'fr', apply: applyLanguage, remember: rememberLanguage } },
+            { provide: ProfileResetService, useValue: { resetAll } },
+        ]
+    }
+
+    beforeEach( () => {
+        sessionStorage.clear()
+        RegistryConfig.config = { defaultLanguage: 'fr', languages: [ 'fr', 'en' ], notification: { duration: {} } } as unknown as ConfigModel
+        mockApis()
+        mockCollaborators()
+        TestBed.configureTestingModule( { providers: [ ...provideApis(), ...provideCollaborators() ] } )
         facade = TestBed.inject( SessionFacade )
         session = TestBed.inject( SessionStore )
     } )
@@ -134,8 +137,6 @@ describe( 'SessionFacade', () => {
             // Assert
             expect( session.currentUser() ).toBeUndefined()
             expect( redirect ).toHaveBeenCalledWith( '#login' )
-            expect( startGlobalLoader ).toHaveBeenCalledTimes( 1 )
-            expect( stopGlobalLoader ).toHaveBeenCalledTimes( 1 )
         } )
 
         it( 'shows the global error and stays put when the login uri cannot be fetched', () => {
@@ -148,7 +149,6 @@ describe( 'SessionFacade', () => {
             // Assert
             expect( setGlobalError ).toHaveBeenCalledWith( FAILURE )
             expect( redirect ).not.toHaveBeenCalled()
-            expect( stopGlobalLoader ).toHaveBeenCalledTimes( 1 )
         } )
     } )
 
@@ -274,31 +274,6 @@ describe( 'SessionFacade', () => {
             // Assert
             expect( setGlobalError ).toHaveBeenCalledWith( FAILURE )
             expect( completed ).toBe( true )
-        } )
-    } )
-
-    describe( 'impersonateCurrentUser', () => {
-        it( 'signs out once the impersonation succeeded', () => {
-            // Arrange
-            const expectedUrl: string = '#logout'
-
-            // Act
-            facade.impersonateCurrentUser()
-
-            // Assert
-            expect( redirect ).toHaveBeenCalledWith( expectedUrl )
-        } )
-
-        it( 'notifies the failure and ends the action loader', () => {
-            // Arrange
-            impersonateCurrentUser.mockReturnValue( failing( FAILURE ) )
-
-            // Act
-            facade.impersonateCurrentUser()
-
-            // Assert
-            expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'Title' } ) )
-            expect( redirect ).not.toHaveBeenCalled()
         } )
     } )
 

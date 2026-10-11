@@ -214,7 +214,6 @@
       "activities": "Activités",
       "profiles": "Profils d’accès",
       "invitations": "Invitations",
-      "settings": "Paramètres",
       "help": "Aide",
       "options": "Ouvrir le menu d’options"
     },
@@ -283,7 +282,8 @@
       "previous": "Précédent",
       "next": "Suivant",
       "search-and-filter": "Rechercher & Filtrer",
-    "search": "Rechercher",
+      "search": "Rechercher",
+      "skip-to-content": "Aller au contenu",
       "sign-out": "Déconnexion",
       "remove": "Retirer",
       "reset": "Réinitialiser",
@@ -328,37 +328,16 @@
       },
       "THEME_SAVE_FAILED": {
         "title": "Thème non enregistré",
-        "message": "Le thème est appliqué sur cet appareil uniquement. Impossible de l'enregistrer sur votre compte : {{reason}}"
+        "message": "Le thème est appliqué sur cet appareil uniquement. Impossible de l'enregistrer sur votre compte : {{reason}}"
       }
     },
     "not-set": "Non défini",
     "error": {
       "eyebrow": "Pas très pratique 😩",
       "title": "L'application est momentanément inaccessible",
-      "description": "Une erreur empêche l'application de fonctionner. Vous pouvez réessayer ; si le problème persiste, contactez le support.",
+      "description": "Une erreur empêche l'application de fonctionner. Vous pouvez réessayer ; si le problème persiste, contactez le support.",
       "cause": "Cause de l'erreur",
       "retry": "Réessayer"
-    }
-  },
-  "settings": {
-    "birthday": "Date de naissance :",
-    "role": "Rôle :",
-    "configuration": {
-      "title": "Configuration",
-      "form": {
-        "theme": "Thème :",
-        "language": "Langue :"
-      }
-    },
-    "danger": "Actions irreversibles",
-    "actions": {
-      "impersonate": "Demande d’anonymisation",
-      "confirmations": {
-        "impersonate": {
-          "title": "Anonymiser mon compte",
-          "message": "Attention ! Tu vas anonymiser ton compte. Cette action irréversible entrainera ta déconnexion et t’empêcheras de te connecter à nouveau. À titre informatif, ton utilisateur sera anonmysé immédiatement, les participants a qui tu es liés seront anonymisés à la fin du projet. Cependant, si tu as conduit des véhicules dans le cadre d’un projet, ton participant sera anonymisé 1 an après la fin du projet."
-        }
-      }
     }
   },
   "project-home": {
@@ -418,6 +397,11 @@
     }
   },
   "users": {
+    "list": {
+      "eyebrow": "Espace applicatif",
+      "title": "Utilisateurs",
+      "subtitle": "Les comptes sont créés par le fournisseur d’identité : il n’est pas possible d’ajouter un utilisateur ici. Vous pouvez bloquer un accès ou supprimer définitivement un compte."
+    },
     "search-and-filter": {
       "text": "Prénom, nom, email",
       "visibility": "Statut"
@@ -439,6 +423,7 @@
       }
     },
     "actions": {
+      "copy-email": "Copier l’adresse email de {{element.firstName}} {{element.lastName}}",
       "update-role": "Changer son rôle",
       "enable": "Débloquer",
       "disable": "Bloquer",
@@ -489,9 +474,14 @@
         "title": "🕵️‍♀️ Aucun utilisateur",
         "message": "Aucun utilisateur n’a été trouvé."
       }
+    },
+    "last-login": {
+      "label": "Dernière connexion :",
+      "never": "Jamais connecté"
     }
   },
   "projects": {
+    "options-open": "Voir toutes les options de {{name}}",
     "list": {
       "eyebrow": "Espace applicatif",
       "title": "Mes projets",
@@ -500,7 +490,7 @@
     },
     "hidden-notice": {
       "title": "Projet masqué",
-      "message": "Le projet “{{name}}” est masqué : il n’est pas possible de le rejoindre. Réactive-le (menu d’actions, « Démasquer ») pour y accéder.",
+      "message": "Le projet “{{name}}” est masqué : il n’est pas possible de le rejoindre. Réactive-le (menu d’actions, « Démasquer ») pour y accéder.",
       "close": "Compris"
     },
     "search-and-filter": {
@@ -619,6 +609,23 @@
     }
   },
   "project-profiles": {
+    "pages": {
+      "profiles": {
+        "eyebrow": "Mon espace",
+        "title": "Mes profils d’accès",
+        "subtitle": "Les projets auxquels vous avez accès et le rôle que vous y tenez."
+      },
+      "invitations": {
+        "eyebrow": "Mon espace",
+        "title": "Mes invitations",
+        "subtitle": "Les invitations à rejoindre un projet : acceptez-les ou refusez-les."
+      },
+      "project": {
+        "eyebrow": "Configuration du projet",
+        "title": "Profils d’accès",
+        "subtitle": "Les personnes qui ont accès au projet, leur rôle et leur période d’accès."
+      }
+    },
     "search-and-filter": {
       "text": {
         "project": "Nom",
@@ -785,6 +792,15 @@
     }
   },
   "movements": {
+    "list": {
+      "eyebrow": "Projet",
+      "title": "Mouvements",
+      "subtitle": "Tous les mouvements du projet, avec ou sans activité rattachée."
+    },
+    "history-page": {
+      "eyebrow": "Historique des mouvements",
+      "subtitle": "Les mouvements du projet qui concernent cet élément."
+    },
     "search-and-filter": {
       "start-datetime": "Après le",
       "end-datetime": "Avant le",
@@ -1021,9 +1037,18 @@
         "title": "🕵️‍♀️ Aucun mouvement",
         "message": "Aucun mouvement n’a été trouvé."
       }
+    },
+    "vehicles-count": {
+      "one": "{{count}} véhicule",
+      "few": "{{count}} véhicules"
     }
   },
   "participants": {
+    "list": {
+      "eyebrow": "Configuration du projet",
+      "title": "Participants",
+      "subtitle": "Les inscrits et les invités du projet. Un participant sans mouvement depuis 12 mois peut être supprimé définitivement ; sinon il reste consultable et peut être masqué."
+    },
     "search-and-filter": {
       "text": "Prénom, nom, email",
       "status": "Statut",
@@ -1165,6 +1190,15 @@
     }
   },
   "groups": {
+    "members-page": {
+      "eyebrow": "Groupe",
+      "subtitle": "Les participants rattachés au groupe."
+    },
+    "list": {
+      "eyebrow": "Configuration du projet",
+      "title": "Groupes",
+      "subtitle": "Les unités, équipes et affectations du projet."
+    },
     "search-and-filter": {
       "text": "Nom",
       "datetime": "Date & Heure",
@@ -1314,6 +1348,11 @@
     }
   },
   "vehicles": {
+    "list": {
+      "eyebrow": "Configuration du projet",
+      "title": "Véhicules",
+      "subtitle": "Le parc du projet : conducteurs, capacités et disponibilités."
+    },
     "search-and-filter": {
       "text": "Immatriculation, modèle, marque",
       "datetime": "Date & Heure",
@@ -1429,6 +1468,11 @@
     }
   },
   "activities": {
+    "list": {
+      "eyebrow": "Configuration du projet",
+      "title": "Activités",
+      "subtitle": "Le programme du projet et les cadres de mouvements."
+    },
     "search-and-filter": {
       "text": "Nom",
       "datetime": "Date & Heure",
@@ -1588,7 +1632,10 @@
       "actions": {
         "add-movement": "Lier une activité",
         "add-alert": "Créer une alerte",
-        "link-alert": "Lier une alerte"
+        "link-alert": "Lier une alerte",
+        "remove-movement": "Retirer le mouvement lié",
+        "remove-alert": "Retirer l’alerte liée",
+        "add-to-message": "Ajouter un élément à la communication"
       },
       "error": {
         "movement": {
@@ -1652,7 +1699,8 @@
         "title": "🕵️‍♀️ Aucune communication",
         "message": "Aucune communication n’a été trouvée."
       }
-    }
+    },
+    "hidden": "Masqué"
   },
   "preferences": {
     "search-and-filter": {
@@ -1667,6 +1715,11 @@
     }
   },
   "alerts": {
+    "list": {
+      "eyebrow": "Projet",
+      "title": "Alertes",
+      "subtitle": "Les alertes du projet : suivez celles en cours, ajoutez des communications, résolvez-les ou annulez-les."
+    },
     "search-and-filter": {
       "text": "Titre",
       "start-datetime": "Après le",
@@ -1796,6 +1849,7 @@
       "name": "Conditions d’utilisation"
     },
     "documentation": "Documentation",
-    "support": "Support"
+    "support": "Support",
+    "new-tab": "s’ouvre dans un nouvel onglet"
   }
 }

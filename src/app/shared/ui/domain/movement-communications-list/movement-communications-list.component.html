@@ -1,0 +1,15 @@
+
+<div class="messages">
+    @for (communication of facade.movementCommunicationsPage()?.content; track communication.id; ) {
+        <app-dialog-element [communication]='communication'
+                            [alertVisible]='true'
+                            [previousAuthorId]='getPreviousAuthorId($index)'
+                            [nextAuthorId]='getNextAuthorId($index)' />
+    }
+</div>
+
+@if ((facade.movementCommunicationsPage()?.content?.length ?? -1) < (facade.movementCommunicationsPage()?.totalElements ?? 0)) {
+    <div class='flex justify-center'>
+        <p class='secondary-color'>{{ 'communications.limited-feature' | transloco }}</p>
+    </div>
+}

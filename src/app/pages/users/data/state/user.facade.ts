@@ -12,6 +12,7 @@ import { StateHelper } from '@shared/helpers/state/state.helper'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { initialize, notifyOnError } from '@shared/helpers/rx.helper'
 import { UserStore } from '@pages/users/data/state/user.store'
+import { CumulativePageHelper } from '@shared/helpers/store/cumulative-page.helper'
 
 /**
  * Purpose: Public entry point of the user domain for pages, components and guards.
@@ -143,7 +144,6 @@ export class UserFacade extends GenericFacade {
             { firstName: user.firstName, lastName: user.lastName },
         ) )
 
-        const page: PageModel<UserModel> | undefined = this.usersPage()
-        this.fetchUsersPage( page?.pageNumber, page?.pageSize )
+        this.store.fetchUsersPage( CumulativePageHelper.reloadRequest( this.usersPage() ) )
     }
 }

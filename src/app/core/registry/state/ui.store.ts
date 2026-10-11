@@ -1,5 +1,5 @@
 import { inject } from '@angular/core'
-import { patchState, signalStore, withMethods, withState } from '@ngrx/signals'
+import { patchState, signalStore, withHooks, withMethods, withState } from '@ngrx/signals'
 import { NotificationModel } from '@shared/models/model/notification.model'
 import { ThemeEnum } from '@shared/models/enumeration/theme.enum'
 import { BrowserService } from '@core/browser/browser.service'
@@ -10,13 +10,12 @@ interface UiStoreModel {
     screenWidth: number
     online: boolean | undefined
     pendingLanguage: string | undefined
-    loading: boolean
     error: NotificationModel | undefined
 }
 
 /**
- * Purpose: Holds the shell display state: theme, screen width, network, language change in flight, global loader and error.
- * Scope: Owns that state and applies the theme on the document through the browser service.
+ * Purpose: Holds the shell display state: theme, screen width, network, language change in flight and error.
+ * Scope: Owns that state, follows the viewport width and applies the theme on the document through the browser service.
  * Limits: Knows nothing about the user or the session and does not call the backend.
  */
 export const UiStore = signalStore(
@@ -28,13 +27,10 @@ export const UiStore = signalStore(
             screenWidth: browser.viewportWidth,
             online: undefined,
             pendingLanguage: undefined,
-            loading: false,
             error: undefined,
         }
     } ),
     withMethods( (store, browser: BrowserService = inject( BrowserService )) => ({
-        startGlobalLoader: (): void => patchState( store, { loading: true } ),
-        stopGlobalLoader: (): void => patchState( store, { loading: false } ),
         setGlobalError: (error: ErrorModel): void => patchState( store, {
             error: {
                 severity: 'error',
@@ -53,4 +49,7 @@ export const UiStore = signalStore(
             patchState( store, { theme: theme } )
         },
     }) ),
+    withHooks( {
+        onInit: (store, browser: BrowserService = inject( BrowserService )): void => browser.onViewportResize( (width: number): void => patchState( store, { screenWidth: width } ) ),
+    } ),
 )

@@ -3,7 +3,7 @@ import { signalStore, withHooks, withMethods, withState } from '@ngrx/signals'
 import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { ErrorReporter } from '@core/registry/state/error-reporter'
 import { MetadataApi } from '@core/registry/state/metadata.api'
-import { ProjectProfilePageParamsModel } from '@pages/projects/[projectId]/configuration/profiles/data/model/project-profile-page-params.model'
+import { ProjectProfilePageParamsModel } from '@shared/models/model/project-profile-page-params.model'
 import { ProjectProfileStoreModel } from '@pages/projects/[projectId]/configuration/profiles/data/model/project-profile-store.model'
 import { ProjectProfileApi } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.api'
 import { refreshOnLanguageChange } from '@shared/helpers/store/language-refresh'
@@ -13,11 +13,10 @@ import { UserHelper } from '@shared/helpers/user.helper'
 import { ProfileStatusEnum } from '@shared/models/enumeration/profile-status.enum'
 import { ProjectProfileModel } from '@shared/models/model/project-profile.model'
 import { UserModel } from '@shared/models/model/user.model'
+import { CumulativePageHelper, CumulativePageRequest } from '@shared/helpers/store/cumulative-page.helper'
 
-interface ProjectProfilesPageRequest {
+interface ProjectProfilesPageRequest extends CumulativePageRequest {
     projectId: string | undefined
-    pageNumber: number | undefined
-    pageSize: number | undefined
 }
 
 interface SearchUsersRequest {
@@ -57,7 +56,7 @@ export const ProjectProfileStore = signalStore(
             store, 'status', () => metadataApi.getProfilesStatus(), errors, withEmptyOption,
         ),
         fetchProjectProfilesPage: pageFetcher( store, 'projectProfiles', (request: ProjectProfilesPageRequest, params: ProjectProfilePageParamsModel) =>
-            api.findProjectProfiles( request.projectId, request.pageNumber, request.pageSize, params ), errors ),
+            api.findProjectProfiles( request.projectId, request.pageNumber, request.pageSize, params ), errors, { merge: CumulativePageHelper.merge } ),
         updateProjectProfilesPageSearchParams: paramsUpdater( store, 'projectProfiles' ),
         searchUsers: metadataFetcher<ProjectProfileStoreModel, 'searched', SearchUsersRequest, UserModel[]>(
             store, 'searched', (request: SearchUsersRequest) => api.searchUsers( request.projectId, request.textSearched ), errors,

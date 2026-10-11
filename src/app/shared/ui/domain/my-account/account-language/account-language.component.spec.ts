@@ -91,4 +91,39 @@ describe('AccountLanguageComponent', () => {
 		// Assert
 		expect(updateCurrentUserLanguage).toHaveBeenCalledWith('de');
 	});
+
+	it('should tell screen readers which language is selected', () => {
+		// Arrange
+		const buttons: HTMLElement[] = Array.from(fixture.nativeElement.querySelectorAll('sgdf-button'));
+
+		// Act
+		const hints: number = buttons.filter((button: HTMLElement): boolean => button.querySelector('.sr-only')?.textContent?.trim() === '(myAccount.selected)').length;
+
+		// Assert
+		expect(hints).toBe(1);
+	});
+
+	it('should only say that no other language is available when there is a single one', async () => {
+		// Arrange
+		await createComponent(['fr']);
+
+		// Act
+		const message: string | undefined = fixture.nativeElement.querySelector('p')?.textContent?.trim();
+
+		// Assert
+		expect(message).toBe('myAccount.language.only');
+		expect(fixture.nativeElement.querySelector('sgdf-button')).toBeNull();
+		expect(fixture.nativeElement.querySelector('sgdf-select')).toBeNull();
+	});
+
+	it('should also say it when no language is configured', async () => {
+		// Arrange
+		await createComponent([]);
+
+		// Act
+		const message: string | undefined = fixture.nativeElement.querySelector('p')?.textContent?.trim();
+
+		// Assert
+		expect(message).toBe('myAccount.language.only');
+	});
 });

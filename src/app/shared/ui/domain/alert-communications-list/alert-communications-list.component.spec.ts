@@ -1,0 +1,65 @@
+import { ComponentFixture, TestBed } from '@angular/core/testing'
+import { Subject } from 'rxjs'
+import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
+import { AlertFacade } from '@pages/projects/[projectId]/alerts/data/state/alert.facade'
+import { AlertModel } from '@shared/models/model/alert.model'
+import { CommunicationFacade } from '@pages/projects/[projectId]/movements/communication/data/state/communication.facade'
+import { AlertCommunicationsListComponent } from '@shared/ui/domain/alert-communications-list/alert-communications-list.component'
+
+describe('AlertCommunicationsListComponent', () => {
+    let facade: Record<string, Mock>
+    let firstPageReload: Subject<unknown>
+    let currentPageReload: Subject<unknown>
+    let component: AlertCommunicationsListComponent
+
+    beforeEach(() => {
+        firstPageReload = new Subject<unknown>()
+        currentPageReload = new Subject<unknown>()
+        facade = { fetchAlertCommunicationsPage: vi.fn(), alertCommunicationsPage: vi.fn(() => ({ pageNumber: 2, pageSize: 10, content: [] })) }
+        TestBed.configureTestingModule({
+            providers: [
+                { provide: AlertFacade, useValue: facade },
+                { provide: CommunicationFacade, useValue: { handleCommunicationFirstPageReload: (): unknown => firstPageReload, handleCommunicationCurrentPageReload: (): unknown => currentPageReload } },
+            ],
+        })
+        TestBed.overrideComponent(AlertCommunicationsListComponent, { set: { template: '', imports: [], providers: [] } })
+        const fixture: ComponentFixture<AlertCommunicationsListComponent> = TestBed.createComponent(AlertCommunicationsListComponent)
+        fixture.componentRef.setInput('alert', { id: 'x1' } as unknown as AlertModel)
+        component = fixture.componentInstance
+        component.ngOnInit()
+        facade['fetchAlertCommunicationsPage'].mockClear()
+    })
+
+    it('reloads the first batch when a communication is created or removed', () => {
+        // Arrange
+        const expectedId: string = 'x1'
+
+        // Act
+        firstPageReload.next(undefined)
+
+        // Assert
+        expect(facade['fetchAlertCommunicationsPage']).toHaveBeenCalledWith(expectedId, undefined, undefined)
+    })
+
+    it('reloads the page already shown when a communication changes', () => {
+        // Arrange
+        const expectedId: string = 'x1'
+
+        // Act
+        currentPageReload.next(undefined)
+
+        // Assert
+        expect(facade['fetchAlertCommunicationsPage']).toHaveBeenCalledWith(expectedId, 2, 10)
+    })
+
+    it('stops reloading once the list is destroyed', () => {
+        // Arrange
+        component.ngOnDestroy()
+
+        // Act
+        firstPageReload.next(undefined)
+
+        // Assert
+        expect(facade['fetchAlertCommunicationsPage']).not.toHaveBeenCalled()
+    })
+})

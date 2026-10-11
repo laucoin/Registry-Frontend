@@ -4,7 +4,6 @@ import {
     catchError,
     EMPTY,
     filter,
-    finalize,
     map,
     mergeMap,
     Observable,
@@ -24,7 +23,6 @@ import { SessionStore } from '@core/registry/state/session.store'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { UserProjectProfileApi } from '@core/registry/state/user-project-profile.api'
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
-import { UserApi } from '@pages/users/data/state/user.api'
 import { GenericHelper } from '@shared/helpers/generic.helper'
 import { REDIRECT_URI } from '@shared/helpers/request.helper'
 import { eager, initialize, reportError } from '@shared/helpers/rx.helper'
@@ -59,7 +57,6 @@ export class SessionFacade {
     private readonly profileReset: ProfileResetService = inject(ProfileResetService)
 
     private readonly securityApi: SecurityApi = inject(SecurityApi)
-    private readonly userApi: UserApi = inject(UserApi)
     private readonly userProjectProfileApi: UserProjectProfileApi = inject(UserProjectProfileApi)
     private readonly preferencesApi: PreferencesApi = inject(PreferencesApi)
 
@@ -97,8 +94,6 @@ export class SessionFacade {
         this.session.reset()
 
         this.securityApi.getLoginUri(`${this.browser.origin}/${RegistryRouteEnum.AUTH_CALLBACK}`).pipe(
-            initialize((): void => this.uiFacade.startGlobalLoader()),
-            finalize((): void => this.uiFacade.stopGlobalLoader()),
             tap((uri: AuthenticationUriModel): void => this.browser.redirect(uri.uri)),
             catchError((error: ErrorModel): Observable<never> => this.globalError$(error)),
         ).subscribe()
@@ -106,8 +101,6 @@ export class SessionFacade {
 
     public logout(): void {
         this.securityApi.getLogoutUri(this.browser.origin).pipe(
-            initialize((): void => this.uiFacade.startGlobalLoader()),
-            finalize((): void => this.uiFacade.stopGlobalLoader()),
             tap((uri: AuthenticationUriModel): void => this.browser.redirect(uri.uri)),
             catchError((error: ErrorModel): Observable<never> => this.globalError$(error)),
         ).subscribe()
@@ -122,8 +115,6 @@ export class SessionFacade {
             authorizationCode: authorizationCode,
             redirectUri: `${this.browser.origin}/${RegistryRouteEnum.AUTH_CALLBACK}`,
         }).pipe(
-            initialize((): void => this.uiFacade.startGlobalLoader()),
-            finalize((): void => this.uiFacade.stopGlobalLoader()),
             mergeMap((): Observable<CurrentUserModel> => this.securityApi.fetchCurrentUser()),
             tap((currentUser: CurrentUserModel): void => this.onCurrentUser(currentUser)),
             tap((): void => this.navigateAfterSignIn()),
@@ -134,22 +125,11 @@ export class SessionFacade {
     public fetchCurrentUser(): Observable<void> {
         return eager(
             this.securityApi.fetchCurrentUser().pipe(
-                initialize((): void => this.uiFacade.startGlobalLoader()),
-                finalize((): void => this.uiFacade.stopGlobalLoader()),
                 tap((currentUser: CurrentUserModel): void => this.onCurrentUser(currentUser)),
                 map((): void => undefined),
                 catchError((error: ErrorModel): Observable<void> => this.globalErrorCompleted$(error)),
             ),
         )
-    }
-
-    public impersonateCurrentUser(): void {
-        this.userApi.impersonateCurrentUser().pipe(
-            initialize((): void => this.session.startActionLoader()),
-            finalize((): void => this.session.stopActionLoader()),
-            tap((): void => this.logout()),
-            catchError((error: ErrorModel): Observable<never> => this.reportError$(error)),
-        ).subscribe()
     }
 
     public updateCurrentUserTheme(theme: ThemeEnum | undefined): void {
@@ -173,7 +153,6 @@ export class SessionFacade {
         ).subscribe()
     }
 
-    // Cancels any previous call, like the former `cancelUncompleted` action; the replaced caller is released.
     public setCurrentProject(projectId: string | undefined): Observable<void> {
         this.profileReset.resetAll()
         this.releasePendingProject()
@@ -192,8 +171,6 @@ export class SessionFacade {
 
     private fetchProjectProfile$(projectId: string): Observable<void> {
         return this.userProjectProfileApi.findUserProjectProfileByProjectId(projectId).pipe(
-            initialize((): void => this.uiFacade.startGlobalLoader()),
-            finalize((): void => this.uiFacade.stopGlobalLoader()),
             tap((profile: ProjectProfileModel): void => this.session.setCurrentProject(projectId, profile)),
             map((): void => undefined),
             catchError((error: ErrorModel): Observable<void> => this.globalErrorCompleted$(error)),

@@ -8,6 +8,7 @@ import { CommunicationModel } from '@shared/models/model/communication.model'
 import { CommunicationPageParamsModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication-page-params.model'
 import { AlertApi } from '@pages/projects/[projectId]/movements/data/state/alert.api'
 import { refreshOnLanguageChange } from '@shared/helpers/store/language-refresh'
+import { CumulativePageHelper, CumulativePageRequest } from '@shared/helpers/store/cumulative-page.helper'
 import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
 import { metadataFetcher, pageFetcher, paramsUpdater, withEmptyOption } from '@shared/helpers/store/paged-store.methods'
 import { withProfileScope } from '@shared/helpers/store/with-profile-scope.feature'
@@ -15,10 +16,8 @@ import { AlertStatusEnum } from '@shared/models/enumeration/alert-status.enum'
 import { AlertModel } from '@shared/models/model/alert.model'
 import { AlertPageParamsModel } from '@shared/models/model/alert-page-params.model'
 
-interface AlertsPageRequest {
+interface AlertsPageRequest extends CumulativePageRequest {
     projectId: string | undefined
-    pageNumber: number | undefined
-    pageSize: number | undefined
 }
 
 interface AlertCommunicationsPageRequest extends AlertsPageRequest {
@@ -66,7 +65,7 @@ export const AlertStore = signalStore(
             store, 'status', () => metadataApi.getAlertsStatus(), errors, withEmptyOption,
         ),
         fetchAlertsPage: pageFetcher( store, 'alerts', (request: AlertsPageRequest, params: AlertPageParamsModel) =>
-            api.findAlerts( request.projectId, request.pageNumber, request.pageSize, params ), errors ),
+            api.findAlerts( request.projectId, request.pageNumber, request.pageSize, params ), errors, { merge: CumulativePageHelper.merge } ),
         updateAlertsPageSearchParams: paramsUpdater( store, 'alerts' ),
         fetchAlertCommunicationsPage: pageFetcher( store, 'communications', (request: AlertCommunicationsPageRequest, params: CommunicationPageParamsModel) =>
             api.findAlertCommunications( request.projectId, request.id, request.pageNumber, request.pageSize, params ), errors ),

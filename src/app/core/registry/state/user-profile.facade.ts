@@ -12,6 +12,7 @@ import { ProfileResetService } from '@shared/helpers/store/profile-reset.service
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { ErrorModel } from '@shared/models/model/error.model'
 import { NotificationModel } from '@shared/models/model/notification.model'
+import { CumulativePageHelper } from '@shared/helpers/store/cumulative-page.helper'
 import { PageModel } from '@shared/models/model/page.model'
 import { ProjectProfileModel } from '@shared/models/model/project-profile.model'
 
@@ -172,13 +173,11 @@ export class UserProfileFacade {
     }
 
     private refreshProfilesPage(): void {
-        const page: PageModel<ProjectProfileModel> | undefined = this.userProjectProfilesPage()
-        this.fetchProjectProfilesPage(page?.pageNumber, page?.pageSize)
+        this.store.fetchProfilesPage(CumulativePageHelper.reloadRequest(this.userProjectProfilesPage()))
     }
 
     private refreshInvitationsPage(): void {
-        const page: PageModel<ProjectProfileModel> | undefined = this.userProjectProfileInvitationsPage()
-        this.fetchProjectProfileInvitationPage(page?.pageNumber, page?.pageSize)
+        this.store.fetchInvitationsPage(CumulativePageHelper.reloadRequest(this.userProjectProfileInvitationsPage()))
     }
 
     private reportError$(error: ErrorModel): Observable<never> {

@@ -20,6 +20,11 @@ export interface PageSlice<B extends PageBlock> {
     write: (block: B) => void
 }
 
+/**
+ * Purpose: Gives a page block of a store the read and write access the page operators need.
+ * Scope: Reads the block of a key and patches it back.
+ * Limits: Only wraps the store; it does not fetch anything.
+ */
 export function pageSlice<S extends object, K extends keyof S & string>(
     store: WritableStateSource<S> & { [P in K]: Signal<S[P]> },
     key: K,
@@ -42,12 +47,22 @@ export const trackPage = <B extends PageBlock>(errorSink: ErrorSink, slice: Page
         catchError( (error: ErrorModel): Observable<never> => handleFailure( errorSink, slice, error ) ),
     )
 
+/**
+ * Purpose: Starts or stops the loading state of a page block.
+ * Scope: Clears the previous error when a load starts.
+ * Limits: Does not touch the page itself.
+ */
 function setLoading<B extends PageBlock>(slice: PageSlice<B>, loading: boolean): void {
     const block: B = slice.read()
     const cleared: B = loading ? { ...block, error: undefined } : block
     slice.write( { ...cleared, ...StateHelper.updatePageLoader( cleared, loading ) } )
 }
 
+/**
+ * Purpose: Keeps a page fetch failure in its block, or reports an unavailable backend globally.
+ * Scope: Splits the 503 errors from the others.
+ * Limits: Always ends the stream without a value so the calling method stays usable.
+ */
 function handleFailure<B extends PageBlock>(errorSink: ErrorSink, slice: PageSlice<B>, error: ErrorModel): Observable<never> {
     if (error.status === 503) {
         reportError( errorSink, error )

@@ -12,6 +12,7 @@ import { GenericProjectElementFacade } from '@shared/helpers/facade/generic-proj
 import { AlertDto } from '@pages/projects/[projectId]/alerts/data/dto/alert.dto'
 import { AlertModel } from '@shared/models/model/alert.model'
 import { AlertStatusEnum } from '@shared/models/enumeration/alert-status.enum'
+import { CumulativePageHelper } from '@shared/helpers/store/cumulative-page.helper'
 import { CommunicationModel } from '@shared/models/model/communication.model'
 
 
@@ -38,7 +39,7 @@ export class AlertFacade extends GenericProjectElementFacade {
 
     public readonly alertsPageTextSearchedParam: Signal<string | undefined> = this.store.alerts.params.textSearched
 
-    public readonly alertsPageStatusSearchedParam: Signal<AlertStatusEnum | undefined> = this.store.alerts.params.statusSearched
+    public readonly alertsPageStatusSearchedParam: Signal<string | undefined> = this.store.alerts.params.statusSearched
 
     public readonly alertsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.alerts.params.visibilitySearched
 
@@ -91,7 +92,7 @@ export class AlertFacade extends GenericProjectElementFacade {
 
     public inputPageSearchParameters (
         textSearched: string | undefined,
-        statusSearched: AlertStatusEnum | undefined,
+        statusSearched: string | undefined,
         visibilitySearched: boolean | undefined,
         startDateTimeSearched: Date | undefined,
         endDateTimeSearched: Date | undefined,
@@ -212,7 +213,10 @@ export class AlertFacade extends GenericProjectElementFacade {
     private onCommandSuccess (command: CommandEvent, alert: AlertModel): void {
         this.onCommandSucceeded( 'alert', command, 'alerts.notifications', 'pi pi-sort-alt', { title: alert?.title, status: alert?.status?.label } )
 
-        const page: PageModel<AlertModel> | undefined = this.alertsPage()
-        this.fetchAlertsPage( page?.pageNumber, page?.pageSize )
+        this.reloadAlertsPage()
+    }
+
+    public reloadAlertsPage (): void {
+        this.store.fetchAlertsPage( { projectId: this.selectedProjectId(), ...CumulativePageHelper.reloadRequest( this.alertsPage() ) } )
     }
 }

@@ -12,6 +12,7 @@ import { DateHelper } from '@shared/helpers/date.helper'
 import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum'
 import { VehicleApi } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.api'
 import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/rx.helper'
+import { CumulativePageHelper } from '@shared/helpers/store/cumulative-page.helper'
 
 /**
  * Purpose: Public entry point of the vehicle domain for pages, components and guards.
@@ -33,7 +34,7 @@ export class VehicleFacade extends GenericProjectElementFacade {
     public readonly vehiclesPageDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
         DateHelper.buildDate( this.store.vehicles.params.dateTimeSearched() ),
     )
-    public readonly vehiclesPageStatusSearchedParam: Signal<boolean | undefined> = this.store.vehicles.params.statusSearched
+    public readonly vehiclesPageStatusSearchedParam: Signal<string | undefined> = this.store.vehicles.params.statusSearched
     public readonly vehiclesPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.vehicles.params.visibilitySearched
 
     public readonly vehicleMovementsPage: Signal<PageModel<MovementModel> | undefined> = this.store.movements.element
@@ -71,7 +72,7 @@ export class VehicleFacade extends GenericProjectElementFacade {
     public inputPageSearchParameters (
         textSearched: string | undefined,
         dateTimeSearched: Date | undefined,
-        statusSearched: boolean | undefined,
+        statusSearched: string | undefined,
         visibilitySearched: boolean | undefined,
     ): void {
         const resetSearch: boolean = this.vehiclesPageTextSearchedParam() != textSearched
@@ -97,6 +98,10 @@ export class VehicleFacade extends GenericProjectElementFacade {
     ): void {
         const index: number | undefined = this.vehicleMovementsPageResetSearch() ? 0 : pageNumber
         this.store.fetchVehicleMovementsPage( { projectId: this.selectedProjectId(), id: id, pageNumber: index, pageSize: pageSize } )
+    }
+
+    public reloadVehicleMovementsPage (id: string): void {
+        this.store.fetchVehicleMovementsPage( { projectId: this.selectedProjectId(), id: id, ...CumulativePageHelper.reloadRequest( this.vehicleMovementsPage() ) } )
     }
 
     public fetchVehicleMovementsContent (movementIds: string[]): void {
@@ -175,7 +180,6 @@ export class VehicleFacade extends GenericProjectElementFacade {
             model: vehicle?.model,
         } )
 
-        const page: PageModel<VehicleModel> | undefined = this.vehiclesPage()
-        this.fetchVehiclesPage( page?.pageNumber, page?.pageSize )
+        this.store.fetchVehiclesPage( { projectId: this.selectedProjectId(), ...CumulativePageHelper.reloadRequest( this.vehiclesPage() ) } )
     }
 }

@@ -1,49 +1,33 @@
-<div class='message-container justify-start mb-1' [class.flex-row-reverse]='authorIsCurrentUser()'
-     [class.mb-4]='lastAuthorMessage()'>
-    <div class='avatar flex' [class.flex-row-reverse]='authorIsCurrentUser()'>
-        @if (lastAuthorMessage()) {
-            <p-avatar icon='pi pi-user' shape='circle' />
+<div class="message" [class.own]="authorIsCurrentUser()" [class.grouped]="!firstAuthorMessage()">
+    @if (!authorIsCurrentUser()) {
+        <div class="avatar" aria-hidden="true">
+            @if (lastAuthorMessage()) {
+                <sgdf-avatar size="small" variant="primary">
+                    <sgdf-icon slot="icon" name="user" library="solid"/>
+                </sgdf-avatar>
+            }
+        </div>
+    }
+    <div class="bubble" [class.tail]="lastAuthorMessage()" [class.hidden-message]="!communication().visible">
+        @if (!communication().visible) {
+            <span class="sr-only">{{ 'communications.hidden' | transloco }}</span>
         }
-    </div>
-    <div #message class='message chat-bubble' [class.left-chat-bubble]='lastAuthorMessage() && !authorIsCurrentUser()'
-         [class.right-chat-bubble]='lastAuthorMessage() && authorIsCurrentUser()'
-         [class.own-chat-bubble]='authorIsCurrentUser()'>
-        <p-card>
-            @if (firstAuthorMessage() && !authorIsCurrentUser()) {
-                <ng-template #title>
-                    <div class='author-name mb-2'>
-                        {{ authorName() }}
-                    </div>
-                </ng-template>
+        @if (firstAuthorMessage() && !authorIsCurrentUser()) {
+            <div class="author">{{ authorName() }}</div>
+        }
+        @if (communication().alert && alertVisible()) {
+            <blockquote class="quote">
+                <div class="quote-title">{{ communication().alert!.title }}</div>
+                <sgdf-tag size="small" appearance="soft" pill [variant]="alertVariant()">{{ communication().alert!.status!.label }}</sgdf-tag>
+            </blockquote>
+        }
+        <div class="content">{{ communication().message }}</div>
+        <div class="meta">
+            @if (updated()) {
+                <span>({{ 'global.updated' | transloco }})</span>
             }
-            @if (GenericHelper.nonNull(communication().alert) && alertVisible()) {
-                <div class='mb-2'>
-                    <app-message [severity]='alertSeverity()' [reverseBackground]='true'>
-                        <div class='response-title mb-2'>{{ communication().alert!.title }}</div>
-                        <app-severity-tag [value]='communication().alert!.status!.label' />
-                    </app-message>
-                </div>
-            }
-            <div class='content'>{{ communication().message }}</div>
-            <ng-template #footer>
-                <div class='flex justify-end'>
-                    <small class='secondary-color'>
-                        @if (updated()) {
-                            ({{ 'global.updated' | transloco }})
-                        }
-                        {{ communication().dateTime | dateFormat: 'datetime' }}
-                    </small>
-                </div>
-            </ng-template>
-        </p-card>
+            <time [attr.datetime]="communication().dateTime">{{ communication().dateTime | dateFormat: 'datetime' }}</time>
+            <app-element-actions [subject]="authorName()" [actions]="actions()"/>
+        </div>
     </div>
 </div>
-
-<p-context-menu [target]='message' appendTo='body' [model]='actions()'>
-    <ng-template #item let-item>
-        <a pRipple class='flex items-center p-2 cursor-pointer'>
-            <span [class]='item.icon'></span>&nbsp;
-            <span class='ms-2'>{{ item.label | transloco }}</span>
-        </a>
-    </ng-template>
-</p-context-menu>

@@ -19,7 +19,6 @@ interface ProjectsListApi {
     search: () => void
     resetFilters: () => void
     loadBatch: (event: { pageNumber: number, pageSize: number }) => void
-    visibilityValue: (value: boolean | undefined) => string
     initials: (project: ProjectModel) => string
     isAvailable: (project: ProjectModel) => boolean
     hiddenProject: WritableSignal<ProjectModel | undefined>
@@ -134,17 +133,6 @@ describe('ProjectsListPage', () => {
 
         // Assert
         expect(rights).toEqual([false, true])
-    })
-
-    it.each([[undefined, ''], [true, 'true'], [false, 'false']])('maps the visibility %s to the option value "%s"', (value: boolean | undefined, expected: string) => {
-        // Arrange
-        const page: ProjectsListApi = create()
-
-        // Act
-        const mapped: string = page.visibilityValue(value)
-
-        // Assert
-        expect(mapped).toBe(expected)
     })
 
     it.each([['  vercors 2026', 'V2'], ['Camp d\'été Vercors', 'CD'], ['Rallye', 'RA']])('builds the avatar initials of "%s"', (name: string, expected: string) => {

@@ -1,6 +1,6 @@
 <sgdf-footer torn variant="primary">
     <span slot="brand" class="flex items-center gap-3">
-        <sgdf-avatar [initials]="application.name.at(0)" shape="rounded" [label]="application.name"/>
+        <sgdf-avatar aria-hidden="true" [initials]="application.name.at(0)" shape="rounded"/>
         <span class="flex flex-col">
             <strong>{{ application.name }}</strong>
             <small class="text-xs opacity-80">{{ application.organization }}</small>
@@ -10,7 +10,7 @@
         © {{ creationYear }} - {{ currentYear }} 
         @let creator = application.creator;
         @if (creator?.website; as website) {
-            <a [href]="website" target="_blank" rel="noopener noreferrer">{{ creator?.name }}</a>
+            <a [href]="website" target="_blank" rel="noopener noreferrer">{{ creator?.name }}<span class="sr-only"> ({{ 'footer.new-tab' | transloco }})</span></a>
         } @else {
             {{ creator?.name }}
         }
@@ -24,10 +24,10 @@
     <a slot="legal" [routerLink]="termsRoute">{{ 'footer.terms.name' | transloco }}</a>
     @if (application.support.documentationUrl; as documentationUrl) {
         <a slot="legal" [href]="documentationUrl" target="_blank"
-           rel="noopener noreferrer">{{ 'footer.documentation' | transloco }}</a>
+           rel="noopener noreferrer">{{ 'footer.documentation' | transloco }}<span class="sr-only"> ({{ 'footer.new-tab' | transloco }})</span></a>
     }
     @if (application.support.issuesUrl; as issuesUrl) {
         <a slot="legal" [href]="issuesUrl" target="_blank"
-           rel="noopener noreferrer">{{ 'footer.support' | transloco }}</a>
+           rel="noopener noreferrer">{{ 'footer.support' | transloco }}<span class="sr-only"> ({{ 'footer.new-tab' | transloco }})</span></a>
     }
 </sgdf-footer>

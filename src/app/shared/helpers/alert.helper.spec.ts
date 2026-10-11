@@ -35,4 +35,20 @@ describe( 'AlertHelper', () => {
         expect( shownIcon ).toBe( icon )
         expect( shownSeverity ).toBe( severity )
     } )
+
+    it.each( [
+        [ AlertStatusEnum.IN_PROGRESS, 'warning' ],
+        [ AlertStatusEnum.CANCELED, 'neutral' ],
+        [ AlertStatusEnum.RESOLVED, 'success' ],
+        [ undefined, 'success' ],
+    ] )( 'maps the status %s to the %s tag variant', (status: AlertStatusEnum | undefined, variant: string) => {
+        // Arrange
+        const current: AlertStatusEnum | undefined = status
+
+        // Act
+        const shown: string = AlertHelper.getTagVariant( current )
+
+        // Assert
+        expect( shown ).toBe( variant )
+    } )
 } )

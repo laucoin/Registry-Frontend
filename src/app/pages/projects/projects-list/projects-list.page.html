@@ -22,15 +22,14 @@
         <form class="grid grid-cols-1 items-end gap-(--spacing--in-block-large) md:grid-cols-3"
               (submit)="$event.preventDefault(); search()">
             <sgdf-input appSgdfField [label]="'projects.search-and-filter.text' | transloco"
-                        [formField]="form.textSearched"
-                        (keydown.enter)="search()"/>
+                        [formField]="form.textSearched"/>
             <sgdf-date-time-picker appSgdfField with-time
                                    [label]="'projects.search-and-filter.datetime' | transloco"
                                    [formField]="form.dateTimeSearched"/>
             <sgdf-select appSgdfField [label]="'projects.search-and-filter.visibility' | transloco"
                          [formField]="form.visibilitySearched">
                 @for (item of facade.visibilitiesMetadata(); track item.label) {
-                    <sgdf-option [value]="visibilityValue(item.value)">{{ item.label }}</sgdf-option>
+                    <sgdf-option [value]="item.value | booleanChoice">{{ item.label }}</sgdf-option>
                 }
             </sgdf-select>
             <div class="flex flex-wrap items-center justify-between gap-(--spacing--in-block) md:col-span-3">
@@ -39,9 +38,8 @@
                         {{ 'projects.search-and-filter.with-profile' | transloco }}
                     </sgdf-switch>
                 }
-                <sgdf-button class="ms-auto" variant="primary" appearance="outlined"
-                             [loading]="facade.projectsPageLoading()"
-                             (click)="search()">
+                <sgdf-button class="ms-auto" variant="primary" appearance="outlined" submit
+                             [loading]="facade.projectsPageLoading()">
                     <sgdf-icon slot="prefix" name="magnifying-glass" library="solid"/>
                     {{ 'global.actions.search' | transloco }}
                 </sgdf-button>
@@ -54,8 +52,8 @@
         @let options = project.options ?? [];
         <sgdf-list-item [disabled]="!project.visible">
             <sgdf-avatar slot="start" shape="rounded" variant="primary"
-                         [initials]="initials(project)"
-                         [label]="project.name"/>
+                         aria-hidden="true"
+                         [initials]="initials(project)"/>
             <span class="block truncate" [attr.title]="project.name">{{ project.name }}</span>
             @if (!project.visible) {
                 <span class="sr-only">({{ 'projects.visible.false' | transloco }})</span>
@@ -63,7 +61,7 @@
             <span slot="description" class="flex flex-wrap items-center gap-x-2">
                 @if (project.begin || project.end) {
                     <span>{{ project.begin ? (project.begin | customDateFormat) : '...' }}</span>
-                    <sgdf-icon name="angles-right" library="solid"/>
+                    <sgdf-icon name="arrow-right-long" library="solid"/>
                     <span>{{ project.end ? (project.end | customDateFormat) : '...' }}</span>
                 } @else {
                     <span>{{ 'projects.list.permanent' | transloco }}</span>
@@ -76,17 +74,17 @@
                                   [variant]="isAvailable(project) ? 'success' : 'info'">{{ status.label }}</sgdf-tag>
                     }
                     @if (options.length > 1) {
-                        <button type="button" class="cursor-pointer border-0 bg-transparent p-0 font-[inherit]"
-                                (click)="optionsProject.set(project)">
-                            <sgdf-tag class="cursor-pointer" appearance="outlined" pill>
-                                {{
-                                    'projects.options' | pluralTranslation: options | transloco: {
-                                        name: options[0].label,
-                                        others: options.length - 1
-                                    }
-                                }}
-                            </sgdf-tag>
-                        </button>
+                        <sgdf-button size="small" variant="neutral" appearance="outlined"
+                                     (click)="optionsProject.set(project)">
+                            {{
+                                'projects.options' | pluralTranslation: options | transloco: {
+                                    name: options[0].label,
+                                    others: options.length - 1
+                                }
+                            }}
+                            <span class="sr-only">({{ 'projects.options-open' | transloco: { name: project.name } }}
+                                )</span>
+                        </sgdf-button>
                     } @else {
                         <sgdf-tag appearance="outlined" pill>
                             {{
@@ -98,7 +96,7 @@
                         </sgdf-tag>
                     }
                 </span>
-                <span class="flex items-center gap-2 max-[560px]:basis-full">
+                <span class="flex items-center gap-2 max-sm:basis-full">
                     @if (projectActions.canJoin(project)) {
                         <sgdf-button size="small" appearance="outlined"
                                      [variant]="project.visible ? 'primary' : 'neutral'"
@@ -116,20 +114,7 @@
                     }
                 </span>
             </span>
-            @if (actions.length > 0) {
-                <sgdf-menu slot="actions" placement="bottom-end">
-                    <sgdf-icon-button slot="trigger" name="ellipsis-vertical" library="solid"
-                                      [label]="'global.menu.options' | transloco"/>
-                    @for (action of actions; track action.id) {
-                        <sgdf-menu-item [disabled]="action.disabled"
-                                        [attr.variant]="action.danger ? 'danger' : null"
-                                        (click)="action.run()">
-                            <sgdf-icon slot="icon" [attr.name]="action.icon" library="solid"/>
-                            {{ action.label | transloco }}
-                        </sgdf-menu-item>
-                    }
-                </sgdf-menu>
-            }
+            <app-element-actions slot="actions" [subject]="project.name" [actions]="actions"/>
         </sgdf-list-item>
     </ng-template>
 
@@ -152,7 +137,7 @@
              [open]="!!optionsProject()"
              [title]="'projects.options.list' | transloco"
              (sgdf-hide)="closeDialog($event, optionsProject)">
-    <sgdf-list [label]="'projects.options.list' | transloco">
+    <sgdf-list [label]="'projects.options.list' | transloco" appearance="text">
         @for (option of optionsProject()?.options; track option.value) {
             <sgdf-list-item>{{ option.label }}</sgdf-list-item>
         }

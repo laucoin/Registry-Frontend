@@ -32,11 +32,10 @@ import { MovementPageParamsModel } from '@shared/models/model/movement-page-para
 import { MovementParticipantsAndGroupsModel } from '@shared/models/model/movement-participants-and-groups.model'
 import { ParticipantModel } from '@shared/models/model/participant.model'
 import { VehicleModel } from '@shared/models/model/vehicle.model'
+import { CumulativePageHelper, CumulativePageRequest } from '@shared/helpers/store/cumulative-page.helper'
 
-interface MovementsPageRequest {
+interface MovementsPageRequest extends CumulativePageRequest {
     projectId: string | undefined
-    pageNumber: number | undefined
-    pageSize: number | undefined
 }
 
 interface MovementCommunicationsPageRequest extends MovementsPageRequest {
@@ -139,6 +138,7 @@ export const MovementStore = signalStore(
     withMethods( (store, api = inject( MovementApi ), errors = inject( ErrorReporter )) => ({
         fetchMovementsPage: pageFetcher( store, 'movements', (request: MovementsPageRequest, params: MovementPageParamsModel) =>
             api.findMovements( request.projectId, request.pageNumber, request.pageSize, params ), errors, {
+            merge: CumulativePageHelper.merge,
             after: contentsRequester( store.fetchMovementsContents ),
         } ),
         fetchMovementCommunicationsPage: pageFetcher( store, 'movementCommunications', (request: MovementCommunicationsPageRequest, params: CommunicationPageParamsModel) =>

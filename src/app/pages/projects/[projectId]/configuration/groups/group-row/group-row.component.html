@@ -1,0 +1,36 @@
+<ng-template #row let-group>
+    <sgdf-list-item>
+        <sgdf-avatar slot="start" variant="primary" shape="rounded" aria-hidden="true" [initials]="initials(group)"/>
+        <span class="block truncate" [attr.title]="group.name">{{ group.name }}</span>
+        <span slot="description" class="flex flex-wrap items-center gap-x-3">
+            <span>
+                {{ 'groups.member' | pluralTranslation: group.membersCount | transloco: { count: group.membersCount } }}
+                ({{ group.insideMembersCount }} · {{ group.outsideMembersCount }})
+            </span>
+            @if (group.startAvailability || group.endAvailability) {
+                <span class="inline-flex flex-wrap items-center gap-x-2">
+                    <span>{{ group.startAvailability ? (group.startAvailability | customDateFormat) : '...' }}</span>
+                    <sgdf-icon name="arrow-right-long" library="solid"/>
+                    <span>{{ group.endAvailability ? (group.endAvailability | customDateFormat) : '...' }}</span>
+                </span>
+            }
+        </span>
+        <span slot="end" class="flex flex-wrap items-center gap-2">
+            @if (!group.visible) {
+                <sgdf-tag appearance="outlined" pill>{{ 'groups.visible.false' | transloco }}</sgdf-tag>
+            }
+            @if (group.status; as status) {
+                <sgdf-tag appearance="soft" pill [variant]="statusVariant(group)">{{ status.label }}</sgdf-tag>
+            }
+            @if (actions.primaryFor(group); as primary) {
+                <sgdf-button size="small" appearance="outlined" variant="primary"
+                             [attr.aria-disabled]="primary.disabled ? 'true' : null"
+                             (click)="primary.disabled ? null : primary.run()">
+                    <sgdf-icon slot="prefix" [name]="primary.icon" library="solid"/>
+                    {{ primary.label | transloco }}
+                </sgdf-button>
+            }
+        </span>
+        <app-element-actions slot="actions" [subject]="group.name" [actions]="actions.menuFor(group)"/>
+    </sgdf-list-item>
+</ng-template>

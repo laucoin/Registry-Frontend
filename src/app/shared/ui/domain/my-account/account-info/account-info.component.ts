@@ -4,6 +4,12 @@ import { RegistryConfig } from "@core/config/registry.config";
 import { SessionFacade } from "@core/registry/state/session.facade";
 import { provideTranslocoScope, TranslocoPipe } from "@jsverse/transloco";
 import { CurrentUserModel } from "@shared/models/model/current-user.model";
+import '@sgdf/ui/icon'
+import '@sgdf/ui/relative-time'
+import '@sgdf/ui/skeleton'
+import '@sgdf/ui/table'
+import '@sgdf/ui/table-cell'
+import '@sgdf/ui/table-row'
 
 /**
  * Purpose: Shows the read-only identity of the signed-in user: name, e-mail, role and last sign-in.

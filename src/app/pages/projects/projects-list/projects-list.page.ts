@@ -6,10 +6,7 @@ import '@sgdf/ui/avatar'
 import '@sgdf/ui/date-time-picker'
 import '@sgdf/ui/dialog'
 import '@sgdf/ui/icon'
-import '@sgdf/ui/icon-button'
 import '@sgdf/ui/input'
-import '@sgdf/ui/menu'
-import '@sgdf/ui/menu-item'
 import '@sgdf/ui/option'
 import '@sgdf/ui/page-title'
 import '@sgdf/ui/select'
@@ -23,18 +20,19 @@ import {
     ProjectsListSearchModel,
     toProjectsListSearchModel,
     toProjectsListSearchParams,
-    VisibilityChoice,
 } from '@pages/projects/projects-list/projects-list.search'
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
 import { createSearchForm } from '@shared/helpers/form/search.form'
 import { CustomDateFormatPipe } from '@shared/helpers/pipe/custom-date-format.pipe'
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
+import { BooleanChoicePipe } from '@shared/helpers/pipe/boolean-choice.pipe'
 import { StringHelper } from '@shared/helpers/string.helper'
 import { AvailabilityStatusEnum } from '@shared/models/enumeration/availability-status.enum'
 import { UserAuthorityEnum } from '@shared/models/enumeration/user-authority.enum'
 import { PageEventModel } from '@shared/models/model/page-event.model'
 import { ProjectModel } from '@shared/models/model/project.model'
+import { ElementActionsComponent } from '@shared/ui/common/element-actions/element-actions.component'
 import { InfoComponent } from '@shared/ui/common/info/info.component'
 import { ListComponent } from '@shared/ui/common/list/list.component'
 
@@ -52,11 +50,13 @@ const INITIALS_LENGTH: number = 2
         RegistryTemplateDirective,
         SgdfFieldDirective,
         InfoComponent,
+        ElementActionsComponent,
         TranslocoPipe,
         FormField,
         RouterLink,
         CustomDateFormatPipe,
         PluralTranslationPipe,
+        BooleanChoicePipe,
     ],
     providers: [ProjectActions],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -116,10 +116,6 @@ export class ProjectsListPage {
 
     protected loadBatch(pageEvent: PageEventModel): void {
         this.facade.fetchProjectsPage(pageEvent.pageNumber, pageEvent.pageSize)
-    }
-
-    protected visibilityValue(value: boolean | undefined): VisibilityChoice {
-        return value === undefined ? '' : value ? 'true' : 'false'
     }
 
     protected initials(project: ProjectModel): string {

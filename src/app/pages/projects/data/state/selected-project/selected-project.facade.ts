@@ -12,6 +12,7 @@ import { ParticipantModel } from '@shared/models/model/participant.model'
 import { ProjectHelper } from '@shared/helpers/project.helper'
 import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
 import { AlertModel } from '@shared/models/model/alert.model'
+import { CumulativePageHelper } from '@shared/helpers/store/cumulative-page.helper'
 
 /**
  * Purpose: Public entry point of the selected project domain for pages, components and guards.
@@ -94,6 +95,10 @@ export class SelectedProjectFacade extends GenericFacade {
         } )
     }
 
+    public reloadCurrentMovementsPageWithoutActivity (): void {
+        this.store.fetchCurrentMovementsPageWithoutActivity( { projectId: this.selectedProjectId(), ...CumulativePageHelper.reloadRequest( this.currentMovementsPageWithoutActivity() ) } )
+    }
+
     public fetchCurrentMovementsWithoutActivityDetails (movementIds: string[]): void {
         this.store.fetchCurrentMovementsWithoutActivityContents( { projectId: this.selectedProjectId(), movementIds: movementIds } )
     }
@@ -104,6 +109,10 @@ export class SelectedProjectFacade extends GenericFacade {
             pageNumber: pageNumber,
             pageSize: pageSize,
         } )
+    }
+
+    public reloadCurrentMovementsPageWithActivity (): void {
+        this.store.fetchCurrentMovementsPageWithActivity( { projectId: this.selectedProjectId(), ...CumulativePageHelper.reloadRequest( this.currentMovementsPageWithActivity() ) } )
     }
 
     public fetchCurrentMovementsWithActivityDetails (movementIds: string[]): void {

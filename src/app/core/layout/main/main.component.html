@@ -1,7 +1,10 @@
 <div class="main-layout">
+    <a class="sr-only focus:not-sr-only focus:p-2" href="#main-content" (click)="focusContent($event, content)">
+        {{ 'global.actions.skip-to-content' | transloco }}
+    </a>
     <app-navbar/>
 
-    <main id="main-content" class="main-layout__content">
+    <main #content id="main-content" tabindex="-1" class="main-layout__content">
         <router-outlet/>
     </main>
 

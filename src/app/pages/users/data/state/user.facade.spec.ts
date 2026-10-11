@@ -81,7 +81,7 @@ describe( 'UserFacade', () => {
         expect( labels ).toEqual( expected )
     } )
 
-    it( 'notifies and refreshes the current page after blocking a user', () => {
+    it( 'notifies and reloads the batches already shown after blocking a user', () => {
         // Arrange
         blockUserById.mockReturnValue( of( { id: 'u1', firstName: 'Ada', lastName: 'L' } as UserModel ) )
 
@@ -90,7 +90,7 @@ describe( 'UserFacade', () => {
 
         // Assert
         expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'users.notifications.disable.title' } ) )
-        expect( findUsers ).toHaveBeenCalledWith( 2, 10, expect.anything() )
+        expect( findUsers ).toHaveBeenCalledWith( 0, 30, expect.anything() )
         expect( facade.userLoading() ).toBe( false )
     } )
 

@@ -1,17 +1,21 @@
-<sgdf-table class="h-full [&::part(grid)]:h-full" appearance="soft" [label]="'myAccount.language.title' | transloco">
+<sgdf-table class="h-full [&::part(grid)]:h-full" appearance="soft">
     <sgdf-table-row>
         <sgdf-table-cell header>
             <sgdf-icon name="language" library="solid"/>
-            {{ 'myAccount.language.title' | transloco }}
+            <h2>{{ 'myAccount.language.title' | transloco }}</h2>
         </sgdf-table-cell>
     </sgdf-table-row>
 
     <sgdf-table-row>
         <sgdf-table-cell row-header>
-            @if (availableLanguages.length <= 2) {
-                <div class="grid grid-flow-col auto-cols-fr gap-2">
+            @if (availableLanguages.length <= 1) {
+                <p class="m-0">
+                    {{ 'myAccount.language.only' | transloco: { language: ('myAccount.language.' + currentLanguage()) | transloco } }}
+                </p>
+            } @else if (availableLanguages.length === 2) {
+                <sgdf-button-group class="flex w-full" [label]="'myAccount.language.choose' | transloco">
                     @for (language of availableLanguages; track language) {
-                        <sgdf-button variant="primary"
+                        <sgdf-button class="flex-1" variant="primary"
                                      block
                                      [appearance]="language === currentLanguage() ? 'solid' : 'outlined'"
                                      [attr.aria-pressed]="language === currentLanguage()"
@@ -19,9 +23,12 @@
                                      [disabled]="pendingLanguage() !== undefined"
                                      (click)="select(language)">
                             {{ ('myAccount.language.' + language) | transloco }}
+                            @if (language === currentLanguage()) {
+                                <span class="sr-only">({{ 'myAccount.selected' | transloco }})</span>
+                            }
                         </sgdf-button>
                     }
-                </div>
+                </sgdf-button-group>
             } @else {
                 <sgdf-select
                         appearance="outlined"

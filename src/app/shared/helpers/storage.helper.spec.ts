@@ -71,6 +71,18 @@ describe( 'StorageUtils', () => {
         expect( StorageUtils.check( localStorage, 'drop' ) ).toBe( false )
     } )
 
+    it( 'does not restore a kept key that held no value', () => {
+        // Arrange
+        StorageUtils.set( localStorage, 'drop', 'd' )
+
+        // Act
+        StorageUtils.clear( localStorage, [ 'missing' ] )
+
+        // Assert
+        expect( StorageUtils.check( localStorage, 'missing' ) ).toBe( false )
+        expect( StorageUtils.check( localStorage, 'drop' ) ).toBe( false )
+    } )
+
     it( 'clears everything when nothing is kept', () => {
         // Arrange
         StorageUtils.set( localStorage, 'a', '1' )

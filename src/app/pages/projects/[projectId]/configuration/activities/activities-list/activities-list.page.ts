@@ -1,77 +1,98 @@
+import { NgTemplateOutlet } from '@angular/common'
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, signal, Signal, WritableSignal } from '@angular/core'
 import { FieldTree, FormField } from '@angular/forms/signals'
+import { RouterLink } from '@angular/router'
+import { CurrentUserHelper } from '@core/authentication/tool/current-user.helper'
+import { SessionFacade } from '@core/registry/state/session.facade'
+import { TranslocoPipe } from '@jsverse/transloco'
+import '@sgdf/ui/button'
+import '@sgdf/ui/date-time-picker'
+import '@sgdf/ui/icon'
+import '@sgdf/ui/input'
+import '@sgdf/ui/option'
+import '@sgdf/ui/page-title'
+import '@sgdf/ui/select'
+import { ActivityFacade } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.facade'
+import { ActivityRoutesEnum } from '@pages/projects/[projectId]/configuration/activities/activity-routes.enum'
+import { ActivityRowComponent } from '@pages/projects/[projectId]/configuration/activities/activity-row/activity-row.component'
+import {
+    ActivitiesListSearchModel,
+    toActivitiesListSearchModel,
+    toActivitiesListSearchParams,
+} from '@pages/projects/[projectId]/configuration/activities/activities-list/activities-list.search'
+import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
+import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
 import { createSearchForm } from '@shared/helpers/form/search.form'
-import { ActivitiesListSearchModel, toActivitiesListSearchModel, toActivitiesListSearchParams } from './activities-list.search'
-import { Component, inject, signal, WritableSignal } from '@angular/core'
-import {PageEventModel} from '@shared/models/model/page-event.model'
-import {ActivityFacade} from '@pages/projects/[projectId]/configuration/activities/data/state/activity.facade'
-import {LegacyListComponent} from '@shared/ui/common/legacy-list/legacy-list.component'
-import {RegistryTemplateDirective} from '@shared/directives/registry-template.directive'
-import {TranslocoPipe} from '@jsverse/transloco'
-import {InputTextModule} from 'primeng/inputtext'
-import {ToggleButtonModule} from 'primeng/togglebutton'
-import {RouterLink} from '@angular/router'
-import {ActivityRoutesEnum} from '@pages/projects/[projectId]/configuration/activities/activity-routes.enum'
-import {Button} from 'primeng/button'
-import {DatePicker} from 'primeng/datepicker'
-import {ActivityElementComponent} from '@pages/projects/[projectId]/configuration/activities/activity-element/activity-element.component'
-import {Select, SelectModule} from 'primeng/select'
-import {GenericListComponent} from '@shared/ui/base/generic-list.component'
+import { BooleanChoicePipe } from '@shared/helpers/pipe/boolean-choice.pipe'
+import { StringHelper } from '@shared/helpers/string.helper'
+import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum'
+import { PageEventModel } from '@shared/models/model/page-event.model'
+import { ListComponent } from '@shared/ui/common/list/list.component'
 
 /**
- * Purpose: Page listing the activities with search and lazy loading.
- * Scope: Binds the list component to the facade and reloads on command events.
+ * Purpose: Page listing the activities of the selected project with search and a "load more" trigger.
+ * Scope: Binds the list component to the group facade, owns the search form and gives the list the row template of a activity.
  * Limits: Holds no domain state and never calls the backend.
  */
 @Component({
     selector: 'app-activities-list',
-    templateUrl: './activities-list.page.html',
     imports: [
-        LegacyListComponent,
+        ListComponent,
+        ActivityRowComponent,
         RegistryTemplateDirective,
-        FormField,
+        SgdfFieldDirective,
         TranslocoPipe,
-        InputTextModule,
-        SelectModule,
-        ToggleButtonModule,
+        FormField,
         RouterLink,
-        Button,
-        DatePicker,
-        ActivityElementComponent,
-        Select,
+        BooleanChoicePipe,
+        NgTemplateOutlet,
     ],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    templateUrl: './activities-list.page.html',
 })
-export class ActivitiesListPage extends GenericListComponent {
+export class ActivitiesListPage {
     protected readonly facade: ActivityFacade = inject(ActivityFacade)
+    private readonly sessionFacade: SessionFacade = inject(SessionFacade)
 
-    protected readonly ActivityRoutesEnum: typeof ActivityRoutesEnum = ActivityRoutesEnum
+    protected readonly createRoute: ActivityRoutesEnum = ActivityRoutesEnum.CREATE
 
-    protected readonly model: WritableSignal<ActivitiesListSearchModel> = signal( toActivitiesListSearchModel( {
+    protected readonly canCreate: Signal<boolean> = computed((): boolean => CurrentUserHelper.hasProjectAuthority(
+        this.sessionFacade.currentUser(),
+        this.facade.selectedProjectId(),
+        ProjectAuthorityEnum.REGISTRY_PROJECT_ACTIVITY_C,
+    ))
+
+    protected readonly activeFilters: Signal<number> = computed((): number => [
+        StringHelper.isNotNullNorBlank(this.facade.activitiesPageTextSearchedParam()),
+        this.facade.activitiesPageDateTimeSearchedParam() !== undefined,
+        this.facade.activitiesPageAvailabilitySearchedParam() !== undefined,
+        this.facade.activitiesPageVisibilitySearchedParam() !== undefined,
+    ].filter(Boolean).length)
+
+    protected readonly model: WritableSignal<ActivitiesListSearchModel> = signal(toActivitiesListSearchModel({
         textSearched: this.facade.activitiesPageTextSearchedParam(),
         dateTimeSearched: this.facade.activitiesPageDateTimeSearchedParam(),
         availabilitySearched: this.facade.activitiesPageAvailabilitySearchedParam(),
         visibilitySearched: this.facade.activitiesPageVisibilitySearchedParam(),
-    } ) )
-    protected readonly form: FieldTree<ActivitiesListSearchModel> = createSearchForm( this.model )
+    }))
+    protected readonly form: FieldTree<ActivitiesListSearchModel> = createSearchForm(this.model)
 
     public constructor() {
-        super()
-
-        this.loadData()
-    }
-
-    protected loadData(): void {
         this.facade.fetchActivitiesPage(undefined, undefined)
     }
 
-    protected loadPage(pageEvent: PageEventModel): void {
-        const search: ReturnType<typeof toActivitiesListSearchParams> = toActivitiesListSearchParams( this.model() )
-        this.facade.inputPageSearchParameters(
-            search.textSearched,
-            search.dateTimeSearched,
-            search.availabilitySearched,
-            search.visibilitySearched,
-        )
-        this.facade.fetchActivitiesPage(pageEvent.pageNumber, pageEvent.pageSize)
+    protected search(): void {
+        const search: ReturnType<typeof toActivitiesListSearchParams> = toActivitiesListSearchParams(this.model())
+        this.facade.inputPageSearchParameters(search.textSearched, search.dateTimeSearched, search.availabilitySearched, search.visibilitySearched)
+        this.facade.fetchActivitiesPage(0, undefined)
     }
 
+    protected resetFilters(): void {
+        this.model.set({ textSearched: '', dateTimeSearched: null, availabilitySearched: '', visibilitySearched: '' })
+        this.search()
+    }
+
+    protected loadBatch(pageEvent: PageEventModel): void {
+        this.facade.fetchActivitiesPage(pageEvent.pageNumber, pageEvent.pageSize)
+    }
 }

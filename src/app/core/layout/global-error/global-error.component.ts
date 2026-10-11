@@ -2,6 +2,10 @@ import { Component, CUSTOM_ELEMENTS_SCHEMA, inject, input, InputSignal } from '@
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { TranslocoPipe } from '@jsverse/transloco'
 import { NotificationModel } from '@shared/models/model/notification.model'
+import '@sgdf/ui/button'
+import '@sgdf/ui/callout'
+import '@sgdf/ui/icon'
+import '@sgdf/ui/page-title'
 
 /**
  * Purpose: Full-page error shown when the whole application is blocked.

@@ -67,4 +67,29 @@ describe('AccountInfoComponent', () => {
 		// Assert
 		expect(fixture.componentInstance['fullName']()).toBe('grace@example.test');
 	});
+
+	it('should show a placeholder instead of a skeleton for a value the user does not have', async () => {
+		// Arrange
+		user.set({ ...buildUser('Grace', 'Hopper'), role: undefined, lastLogin: undefined } as unknown as CurrentUserModel);
+
+		// Act
+		await fixture.whenStable();
+
+		// Assert
+		expect(fixture.nativeElement.querySelector('sgdf-skeleton')).toBeNull();
+		expect(fixture.nativeElement.textContent).toContain('myAccount.info.empty');
+	});
+
+	it('should flag the table as busy only while the user is loading', async () => {
+		// Arrange
+		const busyWhileLoading: string | null = fixture.nativeElement.querySelector('sgdf-table').getAttribute('aria-busy');
+
+		// Act
+		user.set(buildUser('Grace', 'Hopper'));
+		await fixture.whenStable();
+
+		// Assert
+		expect(busyWhileLoading).toBe('true');
+		expect(fixture.nativeElement.querySelector('sgdf-table').getAttribute('aria-busy')).toBe('false');
+	});
 });

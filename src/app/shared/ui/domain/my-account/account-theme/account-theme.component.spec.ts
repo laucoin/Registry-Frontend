@@ -54,4 +54,15 @@ describe('AccountThemeComponent', () => {
 		// Assert
 		expect(count).toBe(THEME_CHOICES.length);
 	});
+
+	it('should tell screen readers which theme is selected', () => {
+		// Arrange
+		const buttons: HTMLElement[] = Array.from(fixture.nativeElement.querySelectorAll('sgdf-button'));
+
+		// Act
+		const hints: (string | undefined)[] = buttons.map((button: HTMLElement): string | undefined => button.querySelector('.sr-only')?.textContent?.trim());
+
+		// Assert
+		expect(hints).toEqual(['(myAccount.selected)', undefined, undefined]);
+	});
 });

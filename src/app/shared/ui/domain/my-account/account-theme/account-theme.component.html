@@ -1,25 +1,28 @@
-<sgdf-table class="h-full [&::part(grid)]:h-full" appearance="soft" [label]="'myAccount.theme.title' | transloco">
+<sgdf-table class="h-full [&::part(grid)]:h-full" appearance="soft">
     <sgdf-table-row>
         <sgdf-table-cell header>
             <sgdf-icon name="palette" library="solid"/>
-            {{ 'myAccount.theme.title' | transloco }}
+            <h2>{{ 'myAccount.theme.title' | transloco }}</h2>
         </sgdf-table-cell>
     </sgdf-table-row>
 
     <sgdf-table-row>
         <sgdf-table-cell row-header>
-            <div class="grid grid-flow-col auto-cols-fr gap-2">
+            <sgdf-button-group class="flex w-full" [label]="'myAccount.theme.choose' | transloco">
                 @for (choice of choices; track choice.theme) {
-                    <sgdf-button variant="primary"
+                    <sgdf-button class="flex-1" variant="primary"
                                  block
                                  [appearance]="choice.theme === currentTheme() ? 'solid' : 'outlined'"
                                  [attr.aria-pressed]="choice.theme === currentTheme()"
                                  (click)="select(choice.theme)">
-                        <sgdf-icon slot="prefix" [name]="choice.icon" library="solid"/>
+                        <sgdf-icon class="max-sm:hidden" slot="prefix" [name]="choice.icon" library="solid"/>
                         {{ choice.labelKey | transloco }}
+                        @if (choice.theme === currentTheme()) {
+                            <span class="sr-only">({{ 'myAccount.selected' | transloco }})</span>
+                        }
                     </sgdf-button>
                 }
-            </div>
+            </sgdf-button-group>
         </sgdf-table-cell>
     </sgdf-table-row>
 

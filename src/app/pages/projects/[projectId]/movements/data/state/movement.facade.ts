@@ -21,6 +21,7 @@ import { MovementReasonModel } from '@shared/models/model/movement-reason.model'
 import { ParticipantTypeEnum } from '@shared/models/enumeration/participant-type.enum'
 import { MovementTypeEnum } from '@shared/models/enumeration/movement-type.enum'
 import { CommunicationModel } from '@shared/models/model/communication.model'
+import { CumulativePageHelper } from '@shared/helpers/store/cumulative-page.helper'
 
 /**
  * Purpose: Public entry point of the movement domain for pages, components and guards.
@@ -280,7 +281,10 @@ export class MovementFacade extends GenericProjectElementFacade {
         )
         this.commandEvents.emit( 'movement', command )
 
-        const page: PageModel<MovementModel> | undefined = this.movementsPage()
-        this.fetchMovementsPage( page?.pageNumber, page?.pageSize )
+        this.reloadMovementsPage()
+    }
+
+    public reloadMovementsPage (): void {
+        this.store.fetchMovementsPage( { projectId: this.selectedProjectId(), ...CumulativePageHelper.reloadRequest( this.movementsPage() ) } )
     }
 }

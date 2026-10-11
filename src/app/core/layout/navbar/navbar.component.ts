@@ -9,6 +9,13 @@ import { SessionFacade } from '@core/registry/state/session.facade'
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
 import { TranslocoPipe } from '@jsverse/transloco'
 import { CurrentUserModel } from '@shared/models/model/current-user.model'
+import '@sgdf/ui/avatar'
+import '@sgdf/ui/divider'
+import '@sgdf/ui/icon'
+import '@sgdf/ui/menu'
+import '@sgdf/ui/menu-item'
+import '@sgdf/ui/nav-item'
+import '@sgdf/ui/navbar'
 
 /**
  * Purpose: Top navigation bar of the application.

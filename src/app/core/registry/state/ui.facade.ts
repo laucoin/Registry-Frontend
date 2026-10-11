@@ -42,7 +42,6 @@ export class UiFacade {
 
 	public readonly theme: Signal<ThemeEnum> = this.ui.theme
 	public readonly tinyScreen: Signal<boolean> = computed((): boolean => this.ui.screenWidth() < 768)
-	public readonly globalLoading: Signal<boolean> = this.ui.loading
 	public readonly pendingLanguage: Signal<string | undefined> = this.ui.pendingLanguage
 	public readonly globalError: Signal<NotificationModel | undefined> = this.ui.error
 	private readonly online: Signal<boolean | undefined> = this.ui.online
@@ -57,14 +56,6 @@ export class UiFacade {
 			label: this.translateService.translate(lang.label!),
 		})),
 	)
-
-	public startGlobalLoader(): void {
-		this.ui.startGlobalLoader()
-	}
-
-	public stopGlobalLoader(): void {
-		this.ui.stopGlobalLoader()
-	}
 
 	public startLanguageChange(language: string): void {
 		this.ui.startLanguageChange(language)

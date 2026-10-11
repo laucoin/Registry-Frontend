@@ -15,11 +15,10 @@ import { pageFetcher, paramsUpdater, StoreRef } from '@shared/helpers/store/page
 import { withProfileScope } from '@shared/helpers/store/with-profile-scope.feature'
 import { GroupModel } from '@shared/models/model/group.model'
 import { ParticipantModel } from '@shared/models/model/participant.model'
+import { CumulativePageHelper, CumulativePageRequest } from '@shared/helpers/store/cumulative-page.helper'
 
-interface GroupsPageRequest {
+interface GroupsPageRequest extends CumulativePageRequest {
     projectId: string | undefined
-    pageNumber: number | undefined
-    pageSize: number | undefined
 }
 
 interface GroupMembersPageRequest extends GroupsPageRequest {
@@ -74,7 +73,7 @@ function fetchGroupMembersPage (store: GroupStoreRef, api: GroupApi, errors: Err
         (request: GroupMembersPageRequest, params: ParticipantPageParamsModel) =>
             api.findGroupMembersByGroupId( request.projectId, request.id, request.pageNumber, request.pageSize, params ),
         errors,
-        { before: (request: GroupMembersPageRequest): void => resetMembersOnGroupChange( store, request.id ) },
+        { before: (request: GroupMembersPageRequest): void => resetMembersOnGroupChange( store, request.id ), merge: CumulativePageHelper.merge },
     )
 }
 
@@ -105,7 +104,7 @@ export const GroupStore = signalStore(
     withProfileScope<GroupStoreModel>( defaultGroupStore ),
     withMethods( (store, api = inject( GroupApi ), errors = inject( ErrorReporter )) => ({
         fetchGroupsPage: pageFetcher( store, 'groups', (request: GroupsPageRequest, params: GroupPageParamsModel) =>
-            api.findGroups( request.projectId, request.pageNumber, request.pageSize, params ), errors ),
+            api.findGroups( request.projectId, request.pageNumber, request.pageSize, params ), errors, { merge: CumulativePageHelper.merge } ),
         updateGroupsPageSearchParams: paramsUpdater( store, 'groups' ),
         fetchGroupMembersPage: fetchGroupMembersPage( store, api, errors ),
         updateGroupMembersPageSearchParams: paramsUpdater( store, 'members' ),

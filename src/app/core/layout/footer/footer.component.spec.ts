@@ -49,6 +49,19 @@ describe( 'FooterComponent', () => {
         // Assert
         expect( support?.getAttribute( 'target' ) ).toBe( '_blank' )
         expect( support?.getAttribute( 'rel' ) ).toBe( 'noopener noreferrer' )
+        expect( support?.querySelector( '.sr-only' )?.textContent ).toContain( 'footer.new-tab' )
+    } )
+
+    it( 'announces every external link as opening in a new tab', () => {
+        // Arrange
+        const footer: HTMLElement = create( 'https://example.org/issues' )
+
+        // Act
+        const hints: (string | undefined)[] = Array.from( footer.querySelectorAll( 'a[target="_blank"]' ) )
+            .map( (link: Element): string | undefined => link.querySelector( '.sr-only' )?.textContent?.trim() )
+
+        // Assert
+        expect( hints ).toEqual( [ '(fr.footer.new-tab)', '(fr.footer.new-tab)' ] )
     } )
 
     it( 'hides the support link when no support url is configured', () => {

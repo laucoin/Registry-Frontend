@@ -56,4 +56,16 @@ describe('LoginPage', () => {
 		// Assert
 		expect(hrefs).toEqual(['/terms', '/privacy'])
 	})
+
+	it('shows the sign-in as in progress once the button is clicked', () => {
+		// Arrange
+		const button: HTMLElement & { loading: boolean } = fixture.nativeElement.querySelector('sgdf-button')
+
+		// Act
+		button.click()
+		fixture.detectChanges()
+
+		// Assert
+		expect(button.loading).toBe(true)
+	})
 })

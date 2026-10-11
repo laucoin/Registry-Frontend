@@ -12,7 +12,7 @@ interface SgdfFieldElement extends HTMLElement {
 const LOCAL_DATE_TIME: RegExp = /^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2}))?$/
 
 /**
- * Purpose: Lets signal forms (`[formField]`) drive the `@sgdf/ui` form elements: `sgdf-input`, `sgdf-select`, `sgdf-switch` and `sgdf-date-time-picker`.
+ * Purpose: Lets signal forms (`[formField]`) drive the `@sgdf/ui` form elements: `sgdf-input`, `sgdf-textarea`, `sgdf-select`, `sgdf-switch` and `sgdf-date-time-picker`.
  * Scope: Applied with the `appSgdfField` attribute next to `[formField]`. Writes the model value to the element, reads it back on `input` and `change`, reports touch on focus out and the disabled state. The switch holds a boolean and the date time picker a local `Date`.
  * Limits: Maps no value of its own: a select holds the string of its option, and the picker uses the combined value format.
  */

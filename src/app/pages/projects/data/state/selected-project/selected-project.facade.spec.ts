@@ -120,4 +120,19 @@ describe( 'SelectedProjectFacade', () => {
         expect( findAlerts ).toHaveBeenCalledWith( 'p1', 0, 5, expect.anything() )
         expect( facade.currentAlertsPage() ).toBeDefined()
     } )
+
+    it( 'reloads every shown batch of each current movements list in one request', () => {
+        // Arrange
+        facade.fetchCurrentMovementsPageWithActivity( 1, 5 )
+        facade.fetchCurrentMovementsPageWithoutActivity( 1, 5 )
+        findMovements.mockClear()
+
+        // Act
+        facade.reloadCurrentMovementsPageWithActivity()
+        facade.reloadCurrentMovementsPageWithoutActivity()
+
+        // Assert
+        expect( findMovements ).toHaveBeenNthCalledWith( 1, 'p1', 0, expect.any( Number ), expect.objectContaining( { linkedToActivity: true } ) )
+        expect( findMovements ).toHaveBeenNthCalledWith( 2, 'p1', 0, expect.any( Number ), expect.objectContaining( { linkedToActivity: false } ) )
+    } )
 } )

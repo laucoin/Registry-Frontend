@@ -15,6 +15,7 @@ import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/rx.helper'
 import { CommandEvent } from '@shared/helpers/facade/command-event.service'
 import { UserModel } from '@shared/models/model/user.model'
 import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum'
+import { CumulativePageHelper } from '@shared/helpers/store/cumulative-page.helper'
 
 /**
  * Purpose: Public entry point of the participant domain for pages, components and guards.
@@ -114,6 +115,10 @@ export class ParticipantFacade extends GenericProjectElementFacade {
         this.store.fetchParticipantMovementsPage( { projectId: this.selectedProjectId(), id: id, pageNumber: index, pageSize: pageSize } )
     }
 
+    public reloadParticipantMovementsPage (id: string): void {
+        this.store.fetchParticipantMovementsPage( { projectId: this.selectedProjectId(), id: id, ...CumulativePageHelper.reloadRequest( this.participantMovementsPage() ) } )
+    }
+
     public fetchParticipantMovementsContent (movementIds: string[]): void {
         this.store.fetchParticipantMovementsContents( { projectId: this.selectedProjectId(), movementIds: movementIds } )
     }
@@ -206,7 +211,6 @@ export class ParticipantFacade extends GenericProjectElementFacade {
     private onCommandSuccess (command: CommandEvent, participant: ParticipantModel): void {
         this.onCommandSucceeded( 'participant', command, 'participants.notifications', 'pi pi-users', { firstName: participant?.firstName, lastName: participant?.lastName } )
 
-        const page: PageModel<ParticipantModel> | undefined = this.participantsPage()
-        this.fetchParticipantsPage( page?.pageNumber, page?.pageSize )
+        this.store.fetchParticipantsPage( { projectId: this.selectedProjectId(), ...CumulativePageHelper.reloadRequest( this.participantsPage() ) } )
     }
 }

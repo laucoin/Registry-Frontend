@@ -1,6 +1,6 @@
 import { patchState, StateSignals, WritableStateSource } from '@ngrx/signals'
 import { RxMethod, rxMethod } from '@ngrx/signals/rxjs-interop'
-import { finalize, map, Observable, pipe, switchMap, tap } from 'rxjs'
+import { defer, finalize, Observable, pipe, switchMap, tap } from 'rxjs'
 import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { ErrorSink, initialize, notifyOnError } from '@shared/helpers/rx.helper'
 import { MovementHelper } from '@shared/helpers/movement.helper'
@@ -17,9 +17,9 @@ import { PairModel } from '@shared/models/model/pair.model'
 
 export type StoreRef<S extends object> = WritableStateSource<S> & StateSignals<S>
 
-export type ParamsOf<B> = B extends PageRequestInformationModel<infer P, GenericModel> ? P : never
+type ParamsOf<B> = B extends PageRequestInformationModel<infer P, GenericModel> ? P : never
 
-export type PageOf<B> = B extends PageRequestInformationModel<object, infer M extends GenericModel> ? PageModel<M> : never
+type PageOf<B> = B extends PageRequestInformationModel<object, infer M extends GenericModel> ? PageModel<M> : never
 
 export interface MovementContentsApi {
     findMovementsContents (projectId: string | undefined, movementIds: string[], currentMovements: boolean): Observable<PairModel<MovementContentModel[]>[]>
@@ -34,16 +34,24 @@ type MovementsBlock = PageRequestInformationModel<MovementPageParamsModel, Movem
 
 type PageBlock = PageRequestInformationModel<unknown, GenericModel>
 
-export interface PageFetcherHooks<R, P> {
+interface PageFetcherHooks<R, P> {
     before?: (request: R) => void
     after?: (request: R, page: P) => void
     merge?: (current: P | undefined, fetched: P, request: R) => P
 }
 
+interface PageFetch<S extends object, K extends keyof S & string, R> {
+    store: StoreRef<S>
+    key: K
+    source: (request: R, params: ParamsOf<S[K]>) => Observable<PageOf<S[K]>>
+    errors: ErrorSink
+    hooks: PageFetcherHooks<R, PageOf<S[K]>>
+}
+
 /**
  * Purpose: Builds the rxMethod that loads one paged resource of a signal store.
  * Scope: Runs the given request with the current search parameters, scopes loading and errors to the block, then stores the page (merged with the shown one when a merge hook is given) and clears the reset flag.
- * Limits: Does not know the api; the caller gives the request. Optional hooks run before each request and after the page is stored.
+ * Limits: Does not know the api; the caller gives the request. Optional hooks run before each request and after the page is stored; a hook that throws is reported and does not stop the method.
  */
 export function pageFetcher<S extends object, K extends keyof S & string, R> (
     store: StoreRef<S>,
@@ -52,32 +60,69 @@ export function pageFetcher<S extends object, K extends keyof S & string, R> (
     errors: ErrorSink,
     hooks: PageFetcherHooks<R, PageOf<S[K]>> = {},
 ): RxMethod<R> {
-    const block: () => S[K] & PageBlock = (): S[K] & PageBlock => (store as unknown as Record<K, () => S[K] & PageBlock>)[ key ]()
-    const slice: ReturnType<typeof pageSlice> = pageSlice( store as never, key as never )
+    const fetch: PageFetch<S, K, R> = { store, key, source, errors, hooks }
 
     return rxMethod<R>( pipe(
-        tap( (request: R): void => hooks.before?.( request ) ),
-        switchMap( (request: R): Observable<{ request: R, page: PageOf<S[K]> }> => source( request, block().params as ParamsOf<S[K]> ).pipe(
-            trackPage( errors, slice as never ),
-            map( (page: PageOf<S[K]>) => ({ request, page }) ),
-        ) ),
-        tap( ({ request, page }: { request: R, page: PageOf<S[K]> }): void => commitPage( store, key, hooks, request, page ) ),
+        switchMap( (request: R): Observable<PageOf<S[K]>> => fetchPage( fetch, request ) ),
     ) )
 }
 
-function commitPage<S extends object, K extends keyof S & string, R> (
-    store: StoreRef<S>,
-    key: K,
-    hooks: PageFetcherHooks<R, PageOf<S[K]>>,
-    request: R,
-    fetched: PageOf<S[K]>,
-): void {
-    const current: PageOf<S[K]> | undefined = ((store as unknown as Record<K, () => PageBlock>)[ key ]()).element as PageOf<S[K]> | undefined
-    const stored: PageOf<S[K]> = hooks.merge?.( current, fetched, request ) ?? fetched
-    storePage( store, key, stored )
-    hooks.after?.( request, stored )
+/**
+ * Purpose: Runs one page request of a paged resource.
+ * Scope: Orders the before hook, the page loading, the commit and the error report.
+ * Limits: The before hook runs inside the inner flow, so its exceptions are reported and never stop the method.
+ */
+function fetchPage<S extends object, K extends keyof S & string, R> (fetch: PageFetch<S, K, R>, request: R): Observable<PageOf<S[K]>> {
+    return defer( (): Observable<PageOf<S[K]>> => {
+        fetch.hooks.before?.( request )
+        return loadPage( fetch, request )
+    } ).pipe(
+        tap( (page: PageOf<S[K]>): void => commitPage( fetch, request, page ) ),
+        notifyOnError( fetch.errors ),
+    )
 }
 
+/**
+ * Purpose: Fetches the page of one request with the block's loading and error state.
+ * Scope: Reads the search parameters when the request starts, after the before hook, and scopes loading to the block.
+ * Limits: Does not store the page; the commit does.
+ */
+function loadPage<S extends object, K extends keyof S & string, R> (fetch: PageFetch<S, K, R>, request: R): Observable<PageOf<S[K]>> {
+    const slice: ReturnType<typeof pageSlice> = pageSlice( fetch.store as never, fetch.key as never )
+
+    return defer(
+        (): Observable<PageOf<S[K]>> => fetch.source( request, readBlock( fetch.store, fetch.key ).params as ParamsOf<S[K]> ),
+    ).pipe(
+        trackPage( fetch.errors, slice as never ),
+    )
+}
+
+/**
+ * Purpose: Reads the current state of one paged block of a store.
+ * Scope: Returns the block under the given key.
+ * Limits: Does not copy or narrow the block.
+ */
+function readBlock<S extends object, K extends keyof S & string> (store: StoreRef<S>, key: K): PageBlock {
+    return (store as unknown as Record<K, () => PageBlock>)[ key ]()
+}
+
+/**
+ * Purpose: Stores a fetched page in its block.
+ * Scope: Merges it with the shown page when a merge hook is given, stores it, then calls the after hook.
+ * Limits: Does not handle errors; the caller reports them.
+ */
+function commitPage<S extends object, K extends keyof S & string, R> (fetch: PageFetch<S, K, R>, request: R, fetched: PageOf<S[K]>): void {
+    const current: PageOf<S[K]> | undefined = readBlock( fetch.store, fetch.key ).element as PageOf<S[K]> | undefined
+    const stored: PageOf<S[K]> = fetch.hooks.merge?.( current, fetched, request ) ?? fetched
+    storePage( fetch.store, fetch.key, stored )
+    fetch.hooks.after?.( request, stored )
+}
+
+/**
+ * Purpose: Writes a page in its block and clears the reset flag.
+ * Scope: Keeps the other fields of the block.
+ * Limits: Does not merge pages.
+ */
 function storePage<S extends object, K extends keyof S & string> (store: StoreRef<S>, key: K, page: unknown): void {
     patchState( store, (state: S) => ({
         [ key ]: {
@@ -134,6 +179,11 @@ export function movementContentsFetcher<S extends { movements: MovementsBlock }>
     ) )
 }
 
+/**
+ * Purpose: Merges fetched movement contents into the movements of the shown page.
+ * Scope: Rebuilds the stored page with the fetched contents of its movements.
+ * Limits: Returns the state unchanged when no page is stored.
+ */
 function mergeContents<S extends { movements: MovementsBlock }> (state: S, contents: PairModel<MovementContentModel[]>[]): Partial<S> | S {
     if (!state.movements.element) return state
     const content: MovementModel[] = MovementHelper.rebuildPageWithContent( state.movements.element.content, contents )
@@ -153,7 +203,7 @@ export function contentsRequester (fetchContents: (request: MovementContentsRequ
     }
 }
 
-export type ElementOf<B> = B extends ElementRequestInformationModel<infer M> ? M : never
+type ElementOf<B> = B extends ElementRequestInformationModel<infer M> ? M : never
 
 type ElementBlock = ElementRequestInformationModel<unknown>
 
@@ -169,6 +219,11 @@ export function trackElement<S extends object, K extends keyof S & string> (stor
     )
 }
 
+/**
+ * Purpose: Raises or lowers the loading flag of one element block.
+ * Scope: Keeps the rest of the block.
+ * Limits: Does not start or cancel any request.
+ */
 function setElementLoading<S extends object, K extends keyof S & string> (store: StoreRef<S>, key: K, loading: boolean): void {
     patchState( store, (state: S) => ({ [ key ]: StateHelper.updateElementLoader( state[ key ] as ElementBlock as never, loading ) }) as unknown as Partial<S> )
 }

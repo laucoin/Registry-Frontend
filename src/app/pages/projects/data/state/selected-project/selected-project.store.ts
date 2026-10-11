@@ -26,16 +26,15 @@ import { MovementPageParamsModel } from '@shared/models/model/movement-page-para
 import { PageModel } from '@shared/models/model/page.model'
 import { PairModel } from '@shared/models/model/pair.model'
 import { ParticipantModel } from '@shared/models/model/participant.model'
+import { CumulativePageHelper, CumulativePageRequest } from '@shared/helpers/store/cumulative-page.helper'
 
 type CurrentMovementsKey = keyof SelectedProjectStoreModel['currentMovements']
 type StatusKey = keyof SelectedProjectStoreModel['status']
 type MovementsBlock = SelectedProjectStoreModel['currentMovements'][CurrentMovementsKey]
 type Ref = StoreRef<SelectedProjectStoreModel>
 
-interface CurrentPageRequest {
+interface CurrentPageRequest extends CumulativePageRequest {
     projectId: string | undefined
-    pageNumber: number | undefined
-    pageSize: number | undefined
 }
 
 const currentMovementsBlock = (linkedToActivity: boolean): MovementsBlock =>
@@ -144,7 +143,7 @@ function currentMovementsPage (
             fetchCurrentMovements( store, key, movementApi, errors, request ),
         ),
         tap( ({ request, page }: { request: CurrentPageRequest, page: PageModel<MovementModel> }): void => {
-            patchCurrentMovements( store, key, (block: MovementsBlock): MovementsBlock => ({ ...block, element: page }) )
+            patchCurrentMovements( store, key, (block: MovementsBlock): MovementsBlock => ({ ...block, element: CumulativePageHelper.merge( block.element, page, request ) }) )
             requestContents( fetchContents, request, page )
         } ),
     ) )

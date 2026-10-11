@@ -2,10 +2,11 @@ import { inject } from '@angular/core'
 import { patchState, signalStore, withMethods, withState } from '@ngrx/signals'
 import { ErrorReporter } from '@core/registry/state/error-reporter'
 import { UserProjectProfileApi } from '@core/registry/state/user-project-profile.api'
-import { UserProjectProfilePageParamsModel } from '@pages/projects/[projectId]/configuration/profiles/data/model/user-project-profile-page-params.model'
+import { UserProjectProfilePageParamsModel } from '@shared/models/model/user-project-profile-page-params.model'
 import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
 import { loaderToggle, pageFetcher, paramsMerger } from '@shared/helpers/store/paged-store.methods'
 import { ProfileStatusEnum } from '@shared/models/enumeration/profile-status.enum'
+import { CumulativePageHelper, CumulativePageRequest } from '@shared/helpers/store/cumulative-page.helper'
 import { ElementRequestInformationModel } from '@shared/models/model/element-request-information.model'
 import { PageRequestInformationModel } from '@shared/models/model/page-request-information.model'
 import { ProjectProfileModel } from '@shared/models/model/project-profile.model'
@@ -18,11 +19,11 @@ interface UserProfileState {
     profile: ElementRequestInformationModel<ProjectProfileModel>
 }
 
-interface PageRequest {
-    pageNumber: number | undefined
-    pageSize: number | undefined
-}
-
+/**
+ * Purpose: Builds the search parameters of the profiles list of one status.
+ * Scope: Fills the other criteria with their empty values.
+ * Limits: Does not read the store.
+ */
 const pageParams = (statusSearched: ProfileStatusEnum): UserProjectProfilePageParamsModel => ({
     resetSearch: false,
     availabilitySearched: undefined,
@@ -46,10 +47,10 @@ export const UserProfileStore = signalStore(
     { providedIn: 'root' },
     withState<UserProfileState>( defaultUserProfileState ),
     withMethods( (store, api = inject( UserProjectProfileApi ), errors = inject( ErrorReporter )) => ({
-        fetchProfilesPage: pageFetcher( store, 'profiles', (request: PageRequest, params: UserProjectProfilePageParamsModel) =>
-            api.findUserProjectProfiles( request.pageNumber, request.pageSize, params ), errors ),
-        fetchInvitationsPage: pageFetcher( store, 'invitations', (request: PageRequest, params: UserProjectProfilePageParamsModel) =>
-            api.findUserProjectProfiles( request.pageNumber, request.pageSize, params ), errors ),
+        fetchProfilesPage: pageFetcher( store, 'profiles', (request: CumulativePageRequest, params: UserProjectProfilePageParamsModel) =>
+            api.findUserProjectProfiles( request.pageNumber, request.pageSize, params ), errors, { merge: CumulativePageHelper.merge } ),
+        fetchInvitationsPage: pageFetcher( store, 'invitations', (request: CumulativePageRequest, params: UserProjectProfilePageParamsModel) =>
+            api.findUserProjectProfiles( request.pageNumber, request.pageSize, params ), errors, { merge: CumulativePageHelper.merge } ),
         updateProfilesPageSearchParams: paramsMerger( store, 'profiles' ),
         updateInvitationsPageSearchParams: paramsMerger( store, 'invitations' ),
         startProfileLoader: loaderToggle( store, 'profile', true ),

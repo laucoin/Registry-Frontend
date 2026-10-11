@@ -1,5 +1,6 @@
 import {
     Component,
+    CUSTOM_ELEMENTS_SCHEMA,
     computed,
     inject,
     input,
@@ -26,26 +27,30 @@ import { tap } from 'rxjs'
 import { MenuEntryModel } from '@shared/models/model/menu-entry.model'
 import { MovementModel } from '@shared/models/model/movement.model'
 import { MovementHelper } from '@shared/helpers/movement.helper'
+import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { AlertModel } from '@shared/models/model/alert.model'
-import { FormModelHelper, SelectableItem } from '@shared/helpers/form/form-model.helper'
+import { FormModelHelper } from '@shared/helpers/form/form-model.helper'
 import { AlertHelper } from '@shared/helpers/alert.helper'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
-import { Button } from 'primeng/button'
-import { Card } from 'primeng/card'
 import { FieldErrorComponent } from '@shared/ui/common/field-error/field-error.component'
-import { Textarea } from 'primeng/textarea'
 import {TranslocoPipe} from '@jsverse/transloco'
 import { ProjectHelper } from '@shared/helpers/project.helper'
 import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
-import { Menu } from 'primeng/menu'
-import { Ripple } from 'primeng/ripple'
-import { ProjectOptionIconPipe } from '@shared/helpers/pipe/project-option-icon.pipe'
-import { AutoComplete, AutoCompleteCompleteEvent } from 'primeng/autocomplete'
-import { Divider } from 'primeng/divider'
-import { InputText } from 'primeng/inputtext'
 import { CommunicationDto } from '@pages/projects/[projectId]/movements/communication/data/dto/communication.dto'
 import { AlertDto } from '@pages/projects/[projectId]/alerts/data/dto/alert.dto'
 import { AlertFacade } from '@pages/projects/[projectId]/alerts/data/state/alert.facade'
+
+import '@sgdf/ui/divider'
+import '@sgdf/ui/icon'
+import '@sgdf/ui/icon-button'
+import '@sgdf/ui/input'
+import '@sgdf/ui/menu'
+import '@sgdf/ui/menu-item'
+import '@sgdf/ui/option'
+import '@sgdf/ui/select'
+import '@sgdf/ui/textarea'
+import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
+import { FormErrorComponent } from '@shared/ui/common/form-error/form-error.component'
 
 enum CommunicationModulableFieldEnum {
     MOVEMENT = 'movement',
@@ -57,7 +62,6 @@ enum AlertModulableFieldEnum {
     NEW = 'NEW',
 }
 
-import { FormErrorComponent } from '@shared/ui/common/form-error/form-error.component'
 
 /**
  * Purpose: Form to create or edit a communication.
@@ -68,19 +72,13 @@ import { FormErrorComponent } from '@shared/ui/common/form-error/form-error.comp
     selector: 'app-communication-form',
     imports: [
         FormErrorComponent,
-        Button,
-        Card,
         FieldErrorComponent,
-        Textarea,
         TranslocoPipe,
         FormField,
-        Menu,
-        Ripple,
-        AutoComplete,
+        SgdfFieldDirective,
         DateFormatPipe,
-        Divider,
-        InputText,
     ],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
     templateUrl: './communication-form.component.html',
     styleUrl: './communication-form.component.css',
 } )
@@ -88,14 +86,18 @@ export class CommunicationFormComponent extends BaseFormComponent implements OnI
     protected readonly facade: CommunicationFacade = inject( CommunicationFacade )
     protected readonly alertFacade: AlertFacade = inject( AlertFacade )
     protected readonly classicDatePipe: DateFormatPipe = inject( DateFormatPipe )
-    protected readonly optionPipe: ProjectOptionIconPipe = inject( ProjectOptionIconPipe )
 
-    protected readonly movementOptions: Signal<SelectableItem<MovementModel>[]> = computed(
-        (): SelectableItem<MovementModel>[] => FormModelHelper.selectable( this.facade.searchedMovementsMetadata() ),
+    protected readonly movementChoices: Signal<SelectOptionModel<MovementModel>[]> = computed(
+        (): SelectOptionModel<MovementModel>[] => this.withSelected( this.facade.searchedMovementsMetadata(), this.model().movement ),
     )
-    protected readonly alertOptions: Signal<SelectableItem<AlertModel>[]> = computed(
-        (): SelectableItem<AlertModel>[] => FormModelHelper.selectable( this.facade.searchedAlertsMetadata() ),
+    protected readonly alertChoices: Signal<SelectOptionModel<AlertModel>[]> = computed(
+        (): SelectOptionModel<AlertModel>[] => this.withSelected( this.facade.searchedAlertsMetadata(), this.model().alert ),
     )
+    protected readonly hasLinkField: Signal<boolean> = computed( (): boolean =>
+        GenericHelper.isNull( this.facade.communication() ) && (this.movementSelectorVisible() || GenericHelper.nonNull( this.alertSelectorMode() )),
+    )
+    protected readonly selectedMovementKey: Signal<string> = computed( (): string => this.model().movement?.value.id ?? '' )
+    protected readonly selectedAlertKey: Signal<string> = computed( (): string => this.model().alert?.value.id ?? '' )
     protected readonly now: Date = new Date()
     protected readonly AlertModulableFieldEnum: typeof AlertModulableFieldEnum = AlertModulableFieldEnum
 
@@ -108,21 +110,21 @@ export class CommunicationFormComponent extends BaseFormComponent implements OnI
         {
             id: CommunicationModulableFieldEnum.MOVEMENT,
             label: 'communications.form.actions.add-movement',
-            icon: 'pi pi-sort-alt',
+            icon: 'right-left',
             disabled: false,
             command: (): void => this.movementSelectorVisible.set( true ),
         },
         {
             id: CommunicationModulableFieldEnum.ALERT,
             label: 'communications.form.actions.link-alert',
-            icon: this.optionPipe.transform( ProjectOptionEnum.ALERT ),
+            icon: 'triangle-exclamation',
             disabled: false,
             command: (): void => this.alertSelectorMode.set( AlertModulableFieldEnum.SELECT ),
         },
         {
             id: CommunicationModulableFieldEnum.ALERT,
             label: 'communications.form.actions.add-alert',
-            icon: this.optionPipe.transform( ProjectOptionEnum.ALERT ),
+            icon: 'triangle-exclamation',
             disabled: false,
             command: (): void => {
                 this.alertSelectorMode.set( AlertModulableFieldEnum.NEW )
@@ -229,12 +231,27 @@ export class CommunicationFormComponent extends BaseFormComponent implements OnI
         this.save( this.alertFacade.createAlert( dto ).pipe( tap( (): void => this.resetForm() ) ), false )
     }
 
-    protected handleMovementSearch (searched: AutoCompleteCompleteEvent): void {
+    protected handleMovementSearch (searched: { query: string }): void {
         this.facade.searchMovements( searched.query )
     }
 
-    protected handleAlertSearch (searched: AutoCompleteCompleteEvent): void {
+    protected handleAlertSearch (searched: { query: string }): void {
         this.facade.searchAlerts( searched.query )
+    }
+
+    protected selectMovement (key: string): void {
+        const chosen: SelectOptionModel<MovementModel> | undefined = this.movementChoices().find( (option: SelectOptionModel<MovementModel>): boolean => option.value.id === key )
+        this.model.update( (current: CommunicationFormModel): CommunicationFormModel => ({ ...current, movement: chosen ? FormModelHelper.copy( chosen ) : null }) )
+    }
+
+    protected selectAlert (key: string): void {
+        const chosen: SelectOptionModel<AlertModel> | undefined = this.alertChoices().find( (option: SelectOptionModel<AlertModel>): boolean => option.value.id === key )
+        this.model.update( (current: CommunicationFormModel): CommunicationFormModel => ({ ...current, alert: chosen ? FormModelHelper.copy( chosen ) : null }) )
+    }
+
+    private withSelected<T extends { id: string }> (found: SelectOptionModel<T>[], selected: SelectOptionModel<T> | null): SelectOptionModel<T>[] {
+        const isSelectedListed: boolean = !selected || found.some( (option: SelectOptionModel<T>): boolean => option.value.id === selected.value.id )
+        return isSelectedListed ? found : [ selected!, ...found ]
     }
 
     protected removeMovementField (): void {

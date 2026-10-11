@@ -2,11 +2,12 @@ import { Routes } from '@angular/router'
 import { authGuard } from '@core/authentication/guard/auth.guard'
 import { MainComponent } from '@core/layout/main/main.component'
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
-import { AuthCallbackPage } from '@pages/auth/callback/auth-callback.page'
-import { MyAccountPage } from "@pages/my-account/my-account.page";
-import { ProjectFacade } from '@pages/projects/data/state/project/project.facade'
-import { ProjectStore } from '@pages/projects/data/state/project/project.store'
 
+/**
+ * Purpose: Declares the top-level routes of the application.
+ * Scope: Lazy loads each page and applies the authentication guard to the signed-in areas.
+ * Limits: Holds no navigation logic; the guards and the pages own it.
+ */
 export const routes: Routes = [
 	{
 		path: RegistryRouteEnum.LOGIN,
@@ -14,7 +15,7 @@ export const routes: Routes = [
 	},
 	{
 		path: RegistryRouteEnum.AUTH_CALLBACK,
-		component: AuthCallbackPage,
+		loadComponent: () => import('@pages/auth/callback/auth-callback.page').then((m: typeof import('@pages/auth/callback/auth-callback.page')) => m.AuthCallbackPage),
 	},
 	{
 		path: '',
@@ -22,14 +23,13 @@ export const routes: Routes = [
 		children: [
 			{
 				path: RegistryRouteEnum.MY_ACCOUNT,
-				component: MyAccountPage,
+				loadComponent: () => import('@pages/my-account/my-account.page').then((m: typeof import('@pages/my-account/my-account.page')) => m.MyAccountPage),
 				canActivate: [authGuard],
 			},
 			{
 				path: RegistryRouteEnum.PROJECTS,
 				loadChildren: () => import('@pages/projects/project.routes').then((m: typeof import('@pages/projects/project.routes')) => m.projectRoutes),
 				canActivate: [authGuard],
-				providers: [ProjectFacade, ProjectStore],
 			},
 			{
 				path: RegistryRouteEnum.USERS,
