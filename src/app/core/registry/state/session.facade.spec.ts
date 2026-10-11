@@ -14,6 +14,7 @@ import { SessionStore } from '@core/registry/state/session.store'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { ErrorReporter } from '@core/registry/state/error-reporter'
 import { UserProjectProfileApi } from '@core/registry/state/user-project-profile.api'
+import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
 import { ThemeEnum } from '@shared/models/enumeration/theme.enum'
 import { CurrentUserModel } from '@shared/models/model/current-user.model'
 import { ErrorModel } from '@shared/models/model/error.model'
@@ -495,6 +496,39 @@ describe( 'SessionFacade', () => {
             // Assert
             expect( projectId ).toBe( 'p1' )
             expect( facade.currentProjectId() ).toBe( 'p1' )
+        } )
+
+        it( 'tells that the selected project has an option it enables', () => {
+            // Arrange
+            session.setCurrentProject( 'p1', { id: 'pp1', project: { id: 'p1', options: [ { label: 'Vehicles', value: ProjectOptionEnum.VEHICLE } ] } } as unknown as ProjectProfileModel )
+
+            // Act
+            const result: boolean = facade.selectedProjectHasOption( ProjectOptionEnum.VEHICLE )
+
+            // Assert
+            expect( result ).toBe( true )
+        } )
+
+        it( 'tells that the selected project lacks an option it does not enable', () => {
+            // Arrange
+            session.setCurrentProject( 'p1', { id: 'pp1', project: { id: 'p1', options: [ { label: 'Alerts', value: ProjectOptionEnum.ALERT } ] } } as unknown as ProjectProfileModel )
+
+            // Act
+            const result: boolean = facade.selectedProjectHasOption( ProjectOptionEnum.VEHICLE )
+
+            // Assert
+            expect( result ).toBe( false )
+        } )
+
+        it( 'tells that no option is available when no project is selected', () => {
+            // Arrange
+            session.setCurrentProject( undefined, undefined )
+
+            // Act
+            const result: boolean = facade.selectedProjectHasOption( ProjectOptionEnum.VEHICLE )
+
+            // Assert
+            expect( result ).toBe( false )
         } )
 
         it( 'emits the current user once it is known', () => {

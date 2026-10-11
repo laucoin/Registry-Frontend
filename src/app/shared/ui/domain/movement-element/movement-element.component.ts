@@ -99,7 +99,7 @@ export class MovementElementComponent extends GenericElementComponent {
     )
 
     protected readonly communication: Signal<boolean> = computed((): boolean =>
-        this.communicable() && this.projectHasOption(ProjectOptionEnum.COMMUNICATION),
+        this.communicable() && this.sessionFacade.selectedProjectHasOption(ProjectOptionEnum.COMMUNICATION),
     )
 
     protected readonly typeAndReason: Signal<string> = computed((): string => {

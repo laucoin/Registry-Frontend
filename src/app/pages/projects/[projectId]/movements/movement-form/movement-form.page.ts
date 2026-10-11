@@ -34,7 +34,6 @@ import {RegistryRequiredDirective} from '@shared/directives/registry-required.di
 import {MovementContentModel} from '@shared/models/model/movement-content.model'
 import {ProjectModel} from '@shared/models/model/project.model'
 import {VehicleModel} from '@shared/models/model/vehicle.model'
-import {ProjectHelper} from '@shared/helpers/project.helper'
 import {DateFormatPipe} from '@shared/helpers/pipe/date-format.pipe'
 import {BaseFormComponent} from '@shared/ui/base/base-form.component'
 import {MovementContentFieldComponent} from '@pages/projects/[projectId]/movements/movement-form/movement-content-field/movement-content-field.component'
@@ -125,10 +124,7 @@ export class MovementFormPage extends BaseFormComponent implements OnDestroy {
     protected readonly drivers: Signal<SelectOptionModel<ParticipantModel>[]> = computed(
         (): SelectOptionModel<ParticipantModel>[] => driversOf(this.model()),
     )
-    private readonly hasVehicleOption: Signal<boolean> = computed((): boolean => ProjectHelper.hasOption(
-        this.sessionFacade.selectedProject(),
-        ProjectOptionEnum.VEHICLE,
-    ))
+    private readonly hasVehicleOption: Signal<boolean> = computed((): boolean => this.sessionFacade.selectedProjectHasOption(ProjectOptionEnum.VEHICLE))
     protected readonly isEligibleToVehicle: Signal<boolean> = computed((): boolean =>
         this.hasVehicleOption()
         || (this.movement()?.content.some((content: MovementContentModel): boolean => GenericHelper.nonNull(

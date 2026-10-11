@@ -1,5 +1,5 @@
 import { Location } from '@angular/common'
-import { signal } from '@angular/core'
+import { signal, WritableSignal } from '@angular/core'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslocoService } from '@jsverse/transloco'
@@ -16,6 +16,8 @@ import { CustomDateFormatPipe } from '@shared/helpers/pipe/custom-date-format.pi
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
 import { ProjectOptionIconPipe } from '@shared/helpers/pipe/project-option-icon.pipe'
 import { autoMock } from '@shared/helpers/testing/auto-mock'
+import { projectOptionChecker } from '@shared/helpers/testing/test-fixtures'
+import { ProjectModel } from '@shared/models/model/project.model'
 import { ALERT_DTO, COMMUNICATION_DTO, MOVEMENT_DTO } from '@shared/helpers/testing/response-fixtures'
 import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
 import { CommunicationFormComponent } from '@shared/ui/domain/communication-form/communication-form.component'
@@ -66,6 +68,7 @@ describe( 'CommunicationFormComponent', () => {
         alertFacade[ 'createAlert' ].mockReturnValue( of( {} ) )
         RegistryConfig.config = { notification: { duration: {} } } as unknown as ConfigModel
         RegistryConfig.environment = { production: false, backend: { url: 'http://backend.test', noAuthPaths: [] }, hosting: { providerName: null, providerAddress: null } }
+        const project: WritableSignal<ProjectModel | undefined> = signal<ProjectModel | undefined>( { id: 'p1', options: options.map( (value: ProjectOptionEnum) => ({ label: value, value }) ) } as unknown as ProjectModel )
         TestBed.configureTestingModule( {
             providers: [
                 { provide: CommunicationFacade, useValue: facade },
@@ -75,7 +78,7 @@ describe( 'CommunicationFormComponent', () => {
                 { provide: Location, useValue: { back: vi.fn() } },
                 { provide: Router, useValue: {} },
                 { provide: ActivatedRoute, useValue: { snapshot: { params: id ? { communicationId: id } : {} } } },
-                { provide: SessionFacade, useValue: { selectedProject: signal( { id: 'p1', options: options.map( (value: ProjectOptionEnum) => ({ label: value, value }) ) } ), currentUser: signal( undefined ) } },
+                { provide: SessionFacade, useValue: { selectedProject: project, selectedProjectHasOption: projectOptionChecker( project ), currentUser: signal( undefined ) } },
                 { provide: UiFacade, useValue: autoMock() },
                 { provide: CustomDateFormatPipe, useValue: { transform: (): string => '' } },
                 { provide: TranslocoService, useValue: { translate: (key: string): string => key } },

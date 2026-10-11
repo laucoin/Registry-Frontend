@@ -24,6 +24,7 @@ import { UiFacade } from '@core/registry/state/ui.facade'
 import { UserProjectProfileApi } from '@core/registry/state/user-project-profile.api'
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
 import { GenericHelper } from '@shared/helpers/generic.helper'
+import { ProjectHelper } from '@shared/helpers/project.helper'
 import { REDIRECT_URI } from '@shared/helpers/request.helper'
 import { eager, initialize, reportError } from '@shared/helpers/rx.helper'
 import { RouteHelper } from '@shared/helpers/route.helper'
@@ -39,6 +40,7 @@ import { CurrentUserModel } from '@shared/models/model/current-user.model'
 import { ErrorModel } from '@shared/models/model/error.model'
 import { PreferencesModel } from '@shared/models/model/preferences.model'
 import { ProjectModel } from '@shared/models/model/project.model'
+import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
 import { ProjectProfileModel } from '@shared/models/model/project-profile.model'
 import { ThemeChoiceModel } from '@shared/models/model/theme-choice.model'
 
@@ -83,6 +85,11 @@ export class SessionFacade {
         this.session.currentProject.profile()?.project,
     )
     public readonly currentProjectId: Signal<string | undefined> = this.session.currentProject.id
+
+    public selectedProjectHasOption(option: ProjectOptionEnum): boolean {
+        const project: ProjectModel | undefined = this.selectedProject()
+        return GenericHelper.nonNull(project) && ProjectHelper.hasOption(project, option)
+    }
 
     public redirectToLogin(): void {
         SessionStorageUtils.set(REDIRECT_URI, this.browser.pathname)

@@ -3,9 +3,7 @@ import { CanActivateFn } from '@angular/router'
 import { map, Observable } from 'rxjs'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { GenericHelper } from '@shared/helpers/generic.helper'
-import { ProjectHelper } from '@shared/helpers/project.helper'
 import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
-import { ProjectModel } from '@shared/models/model/project.model'
 
 /**
  * Purpose: Builds route guards that only let through projects having a given option enabled.
@@ -25,8 +23,7 @@ export function projectOptionGuard (option: ProjectOptionEnum): CanActivateFn {
 }
 
 function hasOption (sessionFacade: SessionFacade, option: ProjectOptionEnum): boolean {
-    const project: ProjectModel | undefined = sessionFacade.selectedProject()
-    return GenericHelper.nonNull( project ) && ProjectHelper.hasOption( project, option )
+    return sessionFacade.selectedProjectHasOption( option )
 }
 
 export const activityOptionGuard: CanActivateFn = projectOptionGuard( ProjectOptionEnum.ACTIVITY )

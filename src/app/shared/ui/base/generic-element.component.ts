@@ -1,6 +1,5 @@
 import {GenericComponent} from '@shared/ui/base/generic.component'
 import {CurrentUserHelper} from '@core/authentication/tool/current-user.helper'
-import {ProjectModel} from '@shared/models/model/project.model'
 import {signal, WritableSignal} from '@angular/core'
 import {Observable} from 'rxjs'
 import {withLoading} from '@shared/helpers/rx.helper'
@@ -9,8 +8,6 @@ import {ConfirmationModel} from '@shared/models/model/confirmation.model'
 import {ElementActionModel} from '@shared/models/model/element-action.model'
 import {ProjectAuthorityEnum} from '@shared/models/enumeration/project-authority.enum'
 import {UserAuthorityEnum} from '@shared/models/enumeration/user-authority.enum'
-import {ProjectOptionEnum} from '@shared/models/enumeration/project-option.enum'
-import {ProjectHelper} from '@shared/helpers/project.helper'
 import {RegistryConfig} from '@core/config/registry.config'
 import {SeverityEnum} from '@shared/models/enumeration/severity.enum'
 
@@ -47,13 +44,6 @@ export abstract class GenericElementComponent extends GenericComponent {
 
     protected actionIsEnable(action: ElementActionEnum): boolean {
         return RegistryConfig.config.enabledActions.includes(action)
-    }
-
-    protected projectHasOption(
-        option: ProjectOptionEnum,
-        project: ProjectModel | undefined = this.sessionFacade.selectedProject(),
-    ): boolean {
-        return ProjectHelper.hasOption(project, option)
     }
 
     protected confirmThen(

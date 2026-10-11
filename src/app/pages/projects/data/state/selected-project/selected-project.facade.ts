@@ -9,7 +9,6 @@ import { SessionFacade } from '@core/registry/state/session.facade'
 import { GenericFacade } from '@shared/helpers/facade/generic.facade'
 import { SelectedProjectStore } from '@pages/projects/data/state/selected-project/selected-project.store'
 import { ParticipantModel } from '@shared/models/model/participant.model'
-import { ProjectHelper } from '@shared/helpers/project.helper'
 import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
 import { AlertModel } from '@shared/models/model/alert.model'
 import { CumulativePageHelper } from '@shared/helpers/store/cumulative-page.helper'
@@ -78,7 +77,7 @@ export class SelectedProjectFacade extends GenericFacade {
         const projectId: string | undefined = this.selectedProjectId()
         this.store.fetchParticipantsStatus( projectId )
         this.store.fetchParticipantsBirthdays( projectId )
-        if (ProjectHelper.hasOption( this.sessionFacade.selectedProject(), ProjectOptionEnum.VEHICLE )) {
+        if (this.sessionFacade.selectedProjectHasOption( ProjectOptionEnum.VEHICLE )) {
             this.store.fetchVehiclesStatus( projectId )
         }
     }

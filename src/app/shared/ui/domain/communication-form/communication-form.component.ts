@@ -34,7 +34,6 @@ import { AlertHelper } from '@shared/helpers/alert.helper'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
 import { FieldErrorComponent } from '@shared/ui/common/field-error/field-error.component'
 import {TranslocoPipe} from '@jsverse/transloco'
-import { ProjectHelper } from '@shared/helpers/project.helper'
 import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
 import { CommunicationDto } from '@pages/projects/[projectId]/movements/communication/data/dto/communication.dto'
 import { AlertDto } from '@pages/projects/[projectId]/alerts/data/dto/alert.dto'
@@ -272,10 +271,7 @@ export class CommunicationFormComponent extends BaseFormComponent implements OnI
         return actions.filter( (action: MenuEntryModel): boolean => {
             switch (true) {
                 case action.id === CommunicationModulableFieldEnum.ALERT:
-                    return GenericHelper.isNull( this.initialAlert() ) && ProjectHelper.hasOption(
-                        this.sessionFacade.selectedProject(),
-                        ProjectOptionEnum.ALERT,
-                    )
+                    return GenericHelper.isNull( this.initialAlert() ) && this.sessionFacade.selectedProjectHasOption( ProjectOptionEnum.ALERT )
                 case action.id === CommunicationModulableFieldEnum.MOVEMENT:
                     return GenericHelper.isNull( this.initialMovement() )
                 default:

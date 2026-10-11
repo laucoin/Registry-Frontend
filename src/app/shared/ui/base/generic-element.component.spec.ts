@@ -40,10 +40,6 @@ class TestElement extends GenericElementComponent {
         return this.actionIsEnable( action )
     }
 
-    public optionAvailable (option: ProjectOptionEnum): boolean {
-        return this.projectHasOption( option )
-    }
-
     public confirmation (accept: () => void): ConfirmationModel {
         return this.buildConfirmation( 'groups.confirm', 'pi pi-info', { name: 'Wolves' }, SeverityEnum.DANGER, accept )
     }
@@ -121,17 +117,6 @@ describe( 'GenericElementComponent', () => {
 
         // Act
         const results: boolean[] = [ element.enabled( enabled ), element.enabled( other ) ]
-
-        // Assert
-        expect( results ).toEqual( [ true, false ] )
-    } )
-
-    it( 'tells whether the selected project has an option', () => {
-        // Arrange
-        const results: boolean[] = []
-
-        // Act
-        results.push( element.optionAvailable( ProjectOptionEnum.ALERT ), element.optionAvailable( ProjectOptionEnum.VEHICLE ) )
 
         // Assert
         expect( results ).toEqual( [ true, false ] )

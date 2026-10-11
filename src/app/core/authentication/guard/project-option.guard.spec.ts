@@ -5,6 +5,7 @@ import { firstValueFrom, Observable, Subject } from 'rxjs'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { activityOptionGuard, alertOptionGuard, projectOptionGuard, vehicleOptionGuard } from '@core/authentication/guard/project-option.guard'
 import { SessionFacade } from '@core/registry/state/session.facade'
+import { projectOptionChecker } from '@shared/helpers/testing/test-fixtures'
 import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
 import { CurrentUserModel } from '@shared/models/model/current-user.model'
 import { ProjectModel } from '@shared/models/model/project.model'
@@ -27,7 +28,7 @@ describe( 'projectOptionGuard', () => {
         currentUser$ = new Subject<CurrentUserModel>()
         selectedProject = signal<ProjectModel | undefined>( undefined )
         TestBed.configureTestingModule( {
-            providers: [ { provide: SessionFacade, useValue: { currentUser, currentUser$, selectedProject } } ],
+            providers: [ { provide: SessionFacade, useValue: { currentUser, currentUser$, selectedProjectHasOption: projectOptionChecker( selectedProject ) } } ],
         } )
     } )
 
