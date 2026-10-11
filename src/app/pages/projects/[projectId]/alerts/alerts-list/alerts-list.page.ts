@@ -15,6 +15,7 @@ import {
     toAlertsListSearchModel,
     toAlertsListSearchParams,
 } from '@pages/projects/[projectId]/alerts/alerts-list/alerts-list.search'
+import { ProjectEyebrowDirective } from '@shared/directives/project-eyebrow.directive'
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
 import { createSearchForm } from '@shared/helpers/form/search.form'
@@ -31,6 +32,7 @@ import { AlertElementComponent } from '@shared/ui/domain/alert-element/alert-ele
 @Component({
     selector: 'app-alerts-list',
     imports: [
+        ProjectEyebrowDirective,
         ListComponent,
         AlertElementComponent,
         RegistryTemplateDirective,

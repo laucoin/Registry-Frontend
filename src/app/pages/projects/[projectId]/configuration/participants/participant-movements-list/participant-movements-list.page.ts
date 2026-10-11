@@ -18,6 +18,7 @@ import {
     toParticipantMovementsListSearchParams,
 } from '@pages/projects/[projectId]/configuration/participants/participant-movements-list/participant-movements-list.search'
 import { MovementFacade } from '@pages/projects/[projectId]/movements/data/state/movement.facade'
+import { ProjectEyebrowDirective } from '@shared/directives/project-eyebrow.directive'
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
 import { createSearchForm } from '@shared/helpers/form/search.form'
@@ -36,6 +37,7 @@ import { MovementElementComponent } from '@shared/ui/domain/movement-element/mov
 @Component({
     selector: 'app-participant-movements-list',
     imports: [
+        ProjectEyebrowDirective,
         ListComponent,
         MovementElementComponent,
         RegistryTemplateDirective,

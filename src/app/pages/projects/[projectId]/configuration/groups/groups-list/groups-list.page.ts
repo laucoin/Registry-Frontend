@@ -20,6 +20,7 @@ import {
     toGroupsListSearchModel,
     toGroupsListSearchParams,
 } from '@pages/projects/[projectId]/configuration/groups/groups-list/groups-list.search'
+import { ProjectEyebrowDirective } from '@shared/directives/project-eyebrow.directive'
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
 import { createSearchForm } from '@shared/helpers/form/search.form'
@@ -37,6 +38,7 @@ import { ListComponent } from '@shared/ui/common/list/list.component'
 @Component({
     selector: 'app-groups-list',
     imports: [
+        ProjectEyebrowDirective,
         ListComponent,
         GroupRowComponent,
         RegistryTemplateDirective,

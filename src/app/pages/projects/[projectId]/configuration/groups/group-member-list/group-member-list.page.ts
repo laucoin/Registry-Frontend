@@ -30,6 +30,7 @@ import '@sgdf/ui/option'
 import '@sgdf/ui/page-title'
 import '@sgdf/ui/select'
 import '@sgdf/ui/skeleton'
+import { ProjectEyebrowDirective } from '@shared/directives/project-eyebrow.directive'
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import {TranslocoPipe} from '@jsverse/transloco'
 import { LayerComponent } from '@shared/ui/common/layer/layer.component'
@@ -52,6 +53,7 @@ import { ParticipantFormComponent } from '@pages/projects/[projectId]/configurat
 @Component( {
     selector: 'app-group-member-list',
     imports: [
+        ProjectEyebrowDirective,
         ListComponent,
         ParticipantRowComponent,
         RegistryTemplateDirective,

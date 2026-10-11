@@ -18,6 +18,7 @@ import {
     toMovementsListSearchModel,
     toMovementsListSearchParams,
 } from '@pages/projects/[projectId]/movements/movements-list/movements-list.search'
+import { ProjectEyebrowDirective } from '@shared/directives/project-eyebrow.directive'
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
 import { createSearchForm } from '@shared/helpers/form/search.form'
@@ -35,6 +36,7 @@ import { MovementElementComponent } from '@shared/ui/domain/movement-element/mov
 @Component({
     selector: 'app-movements-list',
     imports: [
+        ProjectEyebrowDirective,
         ListComponent,
         MovementElementComponent,
         RegistryTemplateDirective,

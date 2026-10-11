@@ -621,7 +621,6 @@
         "subtitle": "Les invitations à rejoindre un projet : acceptez-les ou refusez-les."
       },
       "project": {
-        "eyebrow": "Configuration du projet",
         "title": "Profils d’accès",
         "subtitle": "Les personnes qui ont accès au projet, leur rôle et leur période d’accès."
       }
@@ -793,12 +792,10 @@
   },
   "movements": {
     "list": {
-      "eyebrow": "Projet",
       "title": "Mouvements",
       "subtitle": "Tous les mouvements du projet, avec ou sans activité rattachée."
     },
     "history-page": {
-      "eyebrow": "Historique des mouvements",
       "subtitle": "Les mouvements du projet qui concernent cet élément."
     },
     "search-and-filter": {
@@ -1045,7 +1042,6 @@
   },
   "participants": {
     "list": {
-      "eyebrow": "Configuration du projet",
       "title": "Participants",
       "subtitle": "Les inscrits et les invités du projet. Un participant sans mouvement depuis 12 mois peut être supprimé définitivement ; sinon il reste consultable et peut être masqué."
     },
@@ -1191,11 +1187,9 @@
   },
   "groups": {
     "members-page": {
-      "eyebrow": "Groupe",
       "subtitle": "Les participants rattachés au groupe."
     },
     "list": {
-      "eyebrow": "Configuration du projet",
       "title": "Groupes",
       "subtitle": "Les unités, équipes et affectations du projet."
     },
@@ -1349,7 +1343,6 @@
   },
   "vehicles": {
     "list": {
-      "eyebrow": "Configuration du projet",
       "title": "Véhicules",
       "subtitle": "Le parc du projet : conducteurs, capacités et disponibilités."
     },
@@ -1469,7 +1462,6 @@
   },
   "activities": {
     "list": {
-      "eyebrow": "Configuration du projet",
       "title": "Activités",
       "subtitle": "Le programme du projet et les cadres de mouvements."
     },
@@ -1716,7 +1708,6 @@
   },
   "alerts": {
     "list": {
-      "eyebrow": "Projet",
       "title": "Alertes",
       "subtitle": "Les alertes du projet : suivez celles en cours, ajoutez des communications, résolvez-les ou annulez-les."
     },
