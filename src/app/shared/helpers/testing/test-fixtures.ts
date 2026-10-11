@@ -1,3 +1,4 @@
+import { computed, Signal } from '@angular/core'
 import { Observable, throwError } from 'rxjs'
 import { ConfigModel } from '@core/config/model/config.model'
 import { RegistryConfig } from '@core/config/registry.config'
@@ -14,8 +15,8 @@ export function pageOf<T extends GenericModel> (content: T[], pageNumber: number
     return { pageNumber, pageSize: 10, totalElements: content.length, totalPages: 1, content, lastRefresh: new Date() }
 }
 
-export function projectOptionChecker (project: () => ProjectModel | undefined): (option: ProjectOptionEnum) => boolean {
-    return (option: ProjectOptionEnum): boolean => project()?.options?.some( (item): boolean => item.value === option ) ?? false
+export function projectOptionChecker (project: () => ProjectModel | undefined): (option: ProjectOptionEnum) => Signal<boolean> {
+    return (option: ProjectOptionEnum): Signal<boolean> => computed( (): boolean => project()?.options?.some( (item): boolean => item.value === option ) ?? false )
 }
 
 export function failing<T = never> (error: ErrorModel): Observable<T> {

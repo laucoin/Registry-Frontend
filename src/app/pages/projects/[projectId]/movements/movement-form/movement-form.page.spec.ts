@@ -1,5 +1,5 @@
 import { Location } from '@angular/common'
-import { signal } from '@angular/core'
+import { Signal, signal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslocoService } from '@jsverse/transloco'
@@ -73,7 +73,7 @@ describe( 'MovementFormPage', () => {
                 { provide: Location, useValue: { back } },
                 { provide: Router, useValue: { navigateByUrl: vi.fn( () => Promise.resolve( true ) ) } },
                 { provide: ActivatedRoute, useValue: { snapshot: { params: id ? { movementId: id } : {} } } },
-                { provide: SessionFacade, useValue: { selectedProject: signal( undefined ), currentUser: signal( undefined ) } },
+                { provide: SessionFacade, useValue: { selectedProject: signal( undefined ), selectedProjectHasOption: (): Signal<boolean> => signal( false ), currentUser: signal( undefined ) } },
                 { provide: UiFacade, useValue: autoMock() },
                 { provide: CustomDateFormatPipe, useValue: { transform: (): string => '' } },
                 { provide: TranslocoService, useValue: { translate: (key: string): string => key } },

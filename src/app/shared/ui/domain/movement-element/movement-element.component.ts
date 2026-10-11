@@ -98,8 +98,10 @@ export class MovementElementComponent extends GenericElementComponent {
         this.movement().type.value === MovementTypeEnum.OUT ? 'arrow-up' : 'arrow-down',
     )
 
+    private readonly hasCommunicationOption: Signal<boolean> = this.sessionFacade.selectedProjectHasOption(ProjectOptionEnum.COMMUNICATION)
+
     protected readonly communication: Signal<boolean> = computed((): boolean =>
-        this.communicable() && this.sessionFacade.selectedProjectHasOption(ProjectOptionEnum.COMMUNICATION),
+        this.communicable() && this.hasCommunicationOption(),
     )
 
     protected readonly typeAndReason: Signal<string> = computed((): string => {

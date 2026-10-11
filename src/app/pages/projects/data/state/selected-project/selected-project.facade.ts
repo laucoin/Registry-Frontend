@@ -23,6 +23,8 @@ export class SelectedProjectFacade extends GenericFacade {
     private readonly sessionFacade: SessionFacade = inject( SessionFacade )
     private readonly store: InstanceType<typeof SelectedProjectStore> = inject( SelectedProjectStore )
 
+    private readonly hasVehicleOption: Signal<boolean> = this.sessionFacade.selectedProjectHasOption( ProjectOptionEnum.VEHICLE )
+
     public readonly participantsStatus: Signal<ProjectStatusModel | undefined> = this.store.status.participants.element
 
     public readonly participantsStatusLoading: Signal<boolean> = this.store.status.participants.loading
@@ -77,7 +79,7 @@ export class SelectedProjectFacade extends GenericFacade {
         const projectId: string | undefined = this.selectedProjectId()
         this.store.fetchParticipantsStatus( projectId )
         this.store.fetchParticipantsBirthdays( projectId )
-        if (this.sessionFacade.selectedProjectHasOption( ProjectOptionEnum.VEHICLE )) {
+        if (this.hasVehicleOption()) {
             this.store.fetchVehiclesStatus( projectId )
         }
     }

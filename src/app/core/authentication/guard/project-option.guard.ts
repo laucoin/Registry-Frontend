@@ -23,7 +23,7 @@ export function projectOptionGuard (option: ProjectOptionEnum): CanActivateFn {
 }
 
 function hasOption (sessionFacade: SessionFacade, option: ProjectOptionEnum): boolean {
-    return sessionFacade.selectedProjectHasOption( option )
+    return sessionFacade.selectedProjectHasOption( option )()
 }
 
 export const activityOptionGuard: CanActivateFn = projectOptionGuard( ProjectOptionEnum.ACTIVITY )

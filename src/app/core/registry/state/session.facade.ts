@@ -86,9 +86,11 @@ export class SessionFacade {
     )
     public readonly currentProjectId: Signal<string | undefined> = this.session.currentProject.id
 
-    public selectedProjectHasOption(option: ProjectOptionEnum): boolean {
-        const project: ProjectModel | undefined = this.selectedProject()
-        return GenericHelper.nonNull(project) && ProjectHelper.hasOption(project, option)
+    public selectedProjectHasOption(option: ProjectOptionEnum): Signal<boolean> {
+        return computed((): boolean => {
+            const project: ProjectModel | undefined = this.selectedProject()
+            return GenericHelper.nonNull(project) && ProjectHelper.hasOption(project, option)
+        })
     }
 
     public redirectToLogin(): void {

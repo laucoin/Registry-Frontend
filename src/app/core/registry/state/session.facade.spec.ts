@@ -503,7 +503,7 @@ describe( 'SessionFacade', () => {
             session.setCurrentProject( 'p1', { id: 'pp1', project: { id: 'p1', options: [ { label: 'Vehicles', value: ProjectOptionEnum.VEHICLE } ] } } as unknown as ProjectProfileModel )
 
             // Act
-            const result: boolean = facade.selectedProjectHasOption( ProjectOptionEnum.VEHICLE )
+            const result: boolean = facade.selectedProjectHasOption( ProjectOptionEnum.VEHICLE )()
 
             // Assert
             expect( result ).toBe( true )
@@ -514,7 +514,7 @@ describe( 'SessionFacade', () => {
             session.setCurrentProject( 'p1', { id: 'pp1', project: { id: 'p1', options: [ { label: 'Alerts', value: ProjectOptionEnum.ALERT } ] } } as unknown as ProjectProfileModel )
 
             // Act
-            const result: boolean = facade.selectedProjectHasOption( ProjectOptionEnum.VEHICLE )
+            const result: boolean = facade.selectedProjectHasOption( ProjectOptionEnum.VEHICLE )()
 
             // Assert
             expect( result ).toBe( false )
@@ -525,7 +525,7 @@ describe( 'SessionFacade', () => {
             session.setCurrentProject( undefined, undefined )
 
             // Act
-            const result: boolean = facade.selectedProjectHasOption( ProjectOptionEnum.VEHICLE )
+            const result: boolean = facade.selectedProjectHasOption( ProjectOptionEnum.VEHICLE )()
 
             // Assert
             expect( result ).toBe( false )

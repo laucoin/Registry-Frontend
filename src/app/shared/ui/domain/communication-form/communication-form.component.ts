@@ -131,6 +131,8 @@ export class CommunicationFormComponent extends BaseFormComponent implements OnI
         },
     ] )
 
+    private readonly hasAlertOption: Signal<boolean> = this.sessionFacade.selectedProjectHasOption( ProjectOptionEnum.ALERT )
+
     protected readonly actions: Signal<MenuEntryModel[]> = computed( () => this.buildModulableFields( this.allActions() ) )
 
     protected readonly movementSelectorVisible: WritableSignal<boolean> = signal( false )
@@ -271,7 +273,7 @@ export class CommunicationFormComponent extends BaseFormComponent implements OnI
         return actions.filter( (action: MenuEntryModel): boolean => {
             switch (true) {
                 case action.id === CommunicationModulableFieldEnum.ALERT:
-                    return GenericHelper.isNull( this.initialAlert() ) && this.sessionFacade.selectedProjectHasOption( ProjectOptionEnum.ALERT )
+                    return GenericHelper.isNull( this.initialAlert() ) && this.hasAlertOption()
                 case action.id === CommunicationModulableFieldEnum.MOVEMENT:
                     return GenericHelper.isNull( this.initialMovement() )
                 default:
