@@ -2,7 +2,7 @@ import { VehicleApi } from '@pages/projects/[projectId]/configuration/vehicles/d
 import { ApiCase, PAGE_QUERY, describeApi, expectMapped, expectMappedPage } from '@shared/helpers/testing/api-test.helper'
 import { MOVEMENT_DTO, VEHICLE_DTO, pageDto } from '@shared/helpers/testing/response-fixtures'
 
-const BASE: string = '/api/v1/projects/p1/vehicles'
+const BASE: string = '/api/v2/projects/p1/vehicles'
 const PARAMS: never = { resetSearch: false, textSearched: 'x' } as never
 
 const CASES: ApiCase<VehicleApi>[] = [

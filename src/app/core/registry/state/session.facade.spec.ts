@@ -13,12 +13,12 @@ import { SessionFacade } from '@core/registry/state/session.facade'
 import { SessionStore } from '@core/registry/state/session.store'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { ErrorReporter } from '@core/registry/state/error-reporter'
-import { UserProjectProfileApi } from '@core/registry/state/user-project-profile.api'
+import { ProjectApi } from '@pages/projects/data/state/project.api'
 import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
 import { ThemeEnum } from '@shared/models/enumeration/theme.enum'
 import { CurrentUserModel } from '@shared/models/model/current-user.model'
 import { ErrorModel } from '@shared/models/model/error.model'
-import { ProjectProfileModel } from '@shared/models/model/project-profile.model'
+import { ProjectModel } from '@shared/models/model/project.model'
 import { ThemeChoiceModel } from '@shared/models/model/theme-choice.model'
 import { REDIRECT_URI } from '@shared/helpers/request.helper'
 import { ProfileResetService } from '@shared/helpers/store/profile-reset.service'
@@ -43,7 +43,7 @@ describe( 'SessionFacade', () => {
     let refreshToken: Mock<SecurityApi['refreshToken']>
     let updateThemePreference: Mock<PreferencesApi['updateTheme']>
     let updateLanguagePreference: Mock<PreferencesApi['updateLanguage']>
-    let findByProjectId: Mock<UserProjectProfileApi['findUserProjectProfileByProjectId']>
+    let findProjectById: Mock<ProjectApi['findProjectById']>
 
     let navigateByUrl: Mock<Router['navigateByUrl']>
     let applyLanguage: Mock<LanguageService['apply']>
@@ -65,7 +65,7 @@ describe( 'SessionFacade', () => {
         refreshToken = vi.fn( () => of( undefined ) )
         updateThemePreference = vi.fn( () => of( { userId: 'u1', theme: 'DARK', language: 'fr' } ) )
         updateLanguagePreference = vi.fn( () => of( { userId: 'u1', theme: 'LIGHT', language: 'en' } ) )
-        findByProjectId = vi.fn( () => of( { id: 'pp1' } as ProjectProfileModel ) )
+        findProjectById = vi.fn( () => of( { id: 'p1' } as ProjectModel ) )
     }
 
     function mockCollaborators (): void {
@@ -87,7 +87,7 @@ describe( 'SessionFacade', () => {
         return [
             { provide: SecurityApi, useValue: { getLoginUri, getLogoutUri, fetchToken, fetchCurrentUser, refreshToken } },
             { provide: PreferencesApi, useValue: { updateTheme: updateThemePreference, updateLanguage: updateLanguagePreference } },
-            { provide: UserProjectProfileApi, useValue: { findUserProjectProfileByProjectId: findByProjectId } },
+            { provide: ProjectApi, useValue: { findProjectById: findProjectById } },
         ]
     }
 
@@ -419,7 +419,7 @@ describe( 'SessionFacade', () => {
     describe( 'setCurrentProject', () => {
         it( 'clears the project and completes at once when no id is given', () => {
             // Arrange
-            session.setCurrentProject( 'p1', { id: 'pp1' } as ProjectProfileModel )
+            session.setCurrentProject( 'p1', { id: 'p1' } as ProjectModel )
             let completed: boolean = false
 
             // Act
@@ -439,21 +439,21 @@ describe( 'SessionFacade', () => {
             facade.setCurrentProject( 'p1' ).subscribe( { complete: (): void => { completed = true } } )
 
             // Assert
-            expect( findByProjectId ).toHaveBeenCalledWith( 'p1' )
+            expect( findProjectById ).toHaveBeenCalledWith( 'p1' )
             expect( facade.currentProjectId() ).toBe( 'p1' )
             expect( completed ).toBe( true )
         } )
 
         it( 'releases the caller of a superseded call without keeping its result', () => {
             // Arrange
-            const slow: Subject<ProjectProfileModel> = new Subject<ProjectProfileModel>()
-            findByProjectId.mockReturnValueOnce( slow )
+            const slow: Subject<ProjectModel> = new Subject<ProjectModel>()
+            findProjectById.mockReturnValueOnce( slow )
             let firstCompleted: boolean = false
             facade.setCurrentProject( 'p1' ).subscribe( { complete: (): void => { firstCompleted = true } } )
 
             // Act
             facade.setCurrentProject( 'p2' ).subscribe()
-            slow.next( { id: 'late' } as ProjectProfileModel )
+            slow.next( { id: 'late' } as ProjectModel )
 
             // Assert
             expect( firstCompleted ).toBe( true )
@@ -462,7 +462,7 @@ describe( 'SessionFacade', () => {
 
         it( 'shows the global error and completes when the profile cannot be loaded', () => {
             // Arrange
-            findByProjectId.mockReturnValue( failing( FAILURE ) )
+            findProjectById.mockReturnValue( failing( FAILURE ) )
             let completed: boolean = false
 
             // Act
@@ -486,9 +486,9 @@ describe( 'SessionFacade', () => {
             expect( language ).toBe( 'fr' )
         } )
 
-        it( 'exposes the project of the selected profile', () => {
+        it( 'exposes the selected project', () => {
             // Arrange
-            session.setCurrentProject( 'p1', { id: 'pp1', project: { id: 'p1' } } as ProjectProfileModel )
+            session.setCurrentProject( 'p1', { id: 'p1' } as ProjectModel )
 
             // Act
             const projectId: string | undefined = facade.selectedProject()?.id
@@ -500,7 +500,7 @@ describe( 'SessionFacade', () => {
 
         it( 'tells that the selected project has an option it enables', () => {
             // Arrange
-            session.setCurrentProject( 'p1', { id: 'pp1', project: { id: 'p1', options: [ { label: 'Vehicles', value: ProjectOptionEnum.VEHICLE } ] } } as unknown as ProjectProfileModel )
+            session.setCurrentProject( 'p1', { id: 'p1', options: [ { label: 'Vehicles', value: ProjectOptionEnum.VEHICLE } ] } as unknown as ProjectModel )
 
             // Act
             const result: boolean = facade.selectedProjectHasOption( ProjectOptionEnum.VEHICLE )()
@@ -511,7 +511,7 @@ describe( 'SessionFacade', () => {
 
         it( 'tells that the selected project lacks an option it does not enable', () => {
             // Arrange
-            session.setCurrentProject( 'p1', { id: 'pp1', project: { id: 'p1', options: [ { label: 'Alerts', value: ProjectOptionEnum.ALERT } ] } } as unknown as ProjectProfileModel )
+            session.setCurrentProject( 'p1', { id: 'p1', options: [ { label: 'Alerts', value: ProjectOptionEnum.ALERT } ] } as unknown as ProjectModel )
 
             // Act
             const result: boolean = facade.selectedProjectHasOption( ProjectOptionEnum.VEHICLE )()

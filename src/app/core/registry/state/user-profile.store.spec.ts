@@ -6,14 +6,14 @@ import { UserProfileStore } from '@core/registry/state/user-profile.store'
 import { UserProjectProfileApi } from '@core/registry/state/user-project-profile.api'
 import { ErrorModel } from '@shared/models/model/error.model'
 import { PageModel } from '@shared/models/model/page.model'
-import { ProjectProfileModel } from '@shared/models/model/project-profile.model'
+import { UserInvitationModel } from '@shared/models/model/user-invitation.model'
 
-const PAGE: PageModel<ProjectProfileModel> = {
+const PAGE: PageModel<UserInvitationModel> = {
     pageNumber: 0,
     pageSize: 10,
     totalElements: 1,
     totalPages: 1,
-    content: [ { id: 'pp1' } as ProjectProfileModel ],
+    content: [ { id: 'pp1' } as UserInvitationModel ],
     lastRefresh: new Date(),
 }
 
@@ -49,8 +49,8 @@ describe( 'UserProfileStore', () => {
 
     it( 'appends the next batch to the profiles and to the invitations already shown', () => {
         // Arrange
-        const first: PageModel<ProjectProfileModel> = { ...PAGE, pageSize: 1, totalPages: 2 }
-        const second: PageModel<ProjectProfileModel> = { ...first, pageNumber: 1, content: [ { id: 'pp2' } as ProjectProfileModel ] }
+        const first: PageModel<UserInvitationModel> = { ...PAGE, pageSize: 1, totalPages: 2 }
+        const second: PageModel<UserInvitationModel> = { ...first, pageNumber: 1, content: [ { id: 'pp2' } as UserInvitationModel ] }
         findUserProjectProfiles.mockReturnValueOnce( of( first ) ).mockReturnValueOnce( of( first ) )
             .mockReturnValueOnce( of( second ) ).mockReturnValueOnce( of( second ) )
         store.fetchProfilesPage( { pageNumber: 0, pageSize: 1 } )
@@ -61,7 +61,7 @@ describe( 'UserProfileStore', () => {
         store.fetchInvitationsPage( { pageNumber: 1, pageSize: 1 } )
 
         // Assert
-        const ids: string[][] = [ store.profiles.element(), store.invitations.element() ].map( (shown: PageModel<ProjectProfileModel> | undefined): string[] => shown!.content.map( (profile: ProjectProfileModel): string => profile.id ) )
+        const ids: string[][] = [ store.profiles.element(), store.invitations.element() ].map( (shown: PageModel<UserInvitationModel> | undefined): string[] => shown!.content.map( (profile: UserInvitationModel): string => profile.id ) )
         expect( ids ).toEqual( [ [ 'pp1', 'pp2' ], [ 'pp1', 'pp2' ] ] )
     } )
 

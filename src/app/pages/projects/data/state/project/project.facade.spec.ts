@@ -71,7 +71,7 @@ describe( 'ProjectFacade', () => {
 
     it( 'restarts from the first page when the search changed', () => {
         // Arrange
-        facade.inputPageSearchParameters( 'camp', undefined, true, undefined )
+        facade.inputPageSearchParameters( 'camp', undefined, undefined )
 
         // Act
         facade.fetchProjectsPage( 3, 10 )
@@ -82,7 +82,7 @@ describe( 'ProjectFacade', () => {
 
     it( 'keeps the requested page when the search criteria are the same', () => {
         // Arrange
-        facade.inputPageSearchParameters( undefined, undefined, true, undefined )
+        facade.inputPageSearchParameters( undefined, undefined, undefined )
 
         // Act
         facade.fetchProjectsPage( 3, 10 )

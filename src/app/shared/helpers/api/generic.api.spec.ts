@@ -22,7 +22,7 @@ class TestApi extends GenericApi {
 
 class TestProjectApi extends GenericProjectApi {
     public constructor () {
-        super( `/api/v1/projects/${SELECT_PROFILE_PROJECT_ID}/things` )
+        super( `/api/v2/projects/${SELECT_PROFILE_PROJECT_ID}/things` )
     }
 
     public urlFor (projectId: string | undefined): string {
@@ -68,7 +68,7 @@ describe( 'generic apis', () => {
         const withProject: string = api.urlFor( 'p1' )
 
         // Assert
-        expect( withProject ).toBe( 'http://backend.test/api/v1/projects/p1/things' )
+        expect( withProject ).toBe( 'http://backend.test/api/v2/projects/p1/things' )
     } )
 
     it( 'leaves the project placeholder for the interceptor when no project id is given', () => {
@@ -79,6 +79,6 @@ describe( 'generic apis', () => {
         const withoutProject: string = api.urlFor( undefined )
 
         // Assert
-        expect( withoutProject ).toBe( `http://backend.test/api/v1/projects/${SELECT_PROFILE_PROJECT_ID}/things` )
+        expect( withoutProject ).toBe( `http://backend.test/api/v2/projects/${SELECT_PROFILE_PROJECT_ID}/things` )
     } )
 } )

@@ -1,7 +1,7 @@
 import { AlertModel } from '@shared/models/model/alert.model'
 import { AlertResponseDto } from '@shared/models/dto/response/alert.response.dto'
 import { CommunicationMapper } from '@shared/mappers/communication.mapper'
-import { GenericProjectMapper } from '@shared/mappers/generic-project.mapper'
+import { GenericMapper } from '@shared/mappers/generic.mapper'
 
 /**
  * Purpose: Converts a Alert response of the backend into the Alert model.
@@ -11,7 +11,7 @@ import { GenericProjectMapper } from '@shared/mappers/generic-project.mapper'
 export class AlertMapper {
     public static toModel (dto: AlertResponseDto): AlertModel {
         return {
-            ...GenericProjectMapper.toOptionalModel( dto ),
+            ...GenericMapper.toModel( dto ),
             dateTime: dto.dateTime,
             title: dto.title,
             status: dto.status,

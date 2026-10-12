@@ -106,10 +106,10 @@ corepack enable pnpm
         "backend": {
             "url": "<backend-url>",
             "noAuthPaths": [
-                "/api/v1/authentication/login/uri",
-                "/api/v1/authentication/logout/uri",
-                "/api/v1/authentication/token",
-                "/api/v1/authentication/token/refresh"
+                "/api/v2/authentication/login/uri",
+                "/api/v2/authentication/logout/uri",
+                "/api/v2/authentication/token",
+                "/api/v2/authentication/token/refresh"
             ]
         }
     }

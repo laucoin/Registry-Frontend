@@ -3,13 +3,16 @@ import { Observable, map } from 'rxjs'
 import {
     ProjectProfilePageParamsModel,
 } from '@shared/models/model/project-profile-page-params.model'
-import {ProjectProfileModel} from '@shared/models/model/project-profile.model'
+import {UserInvitationModel} from '@shared/models/model/user-invitation.model'
+import {ProjectModel} from '@shared/models/model/project.model'
 import {PageModel} from '@shared/models/model/page.model'
 import {GenericApi} from '@shared/helpers/api/generic.api'
 import {QueryHelper} from '@shared/helpers/query.helper'
-import { ProjectProfileResponseDto } from '@shared/models/dto/response/project-profile.response.dto'
+import { UserInvitationResponseDto } from '@shared/models/dto/response/user-invitation.response.dto'
+import { ProjectResponseDto } from '@shared/models/dto/response/project.response.dto'
 import { PageMapper } from '@shared/mappers/page.mapper'
-import { ProjectProfileMapper } from '@shared/mappers/project-profile.mapper'
+import { UserInvitationMapper } from '@shared/mappers/user-invitation.mapper'
+import { ProjectMapper } from '@shared/mappers/project.mapper'
 import { PageResponseDto } from '@shared/models/dto/response/page.response.dto'
 
 /**
@@ -22,36 +25,30 @@ import { PageResponseDto } from '@shared/models/dto/response/page.response.dto'
 })
 export class UserProjectProfileApi extends GenericApi {
     public constructor() {
-        super('/api/v1/users/profiles')
+        super('/api/v2/users/profiles')
     }
 
     public findUserProjectProfiles(
         pageNumber: number | undefined,
         pageSize: number | undefined,
         params: ProjectProfilePageParamsModel,
-    ): Observable<PageModel<ProjectProfileModel>> {
-        return this.http.get<PageResponseDto<ProjectProfileResponseDto>>(
+    ): Observable<PageModel<UserInvitationModel>> {
+        return this.http.get<PageResponseDto<UserInvitationResponseDto>>(
             `${this.baseUrl}?${QueryHelper.buildQueryParams(pageNumber, pageSize, params).toString()}`,
         ).pipe(
-            map( (dto: PageResponseDto<ProjectProfileResponseDto>): PageModel<ProjectProfileModel> => PageMapper.toModel( dto, ProjectProfileMapper.toModel ) ),
+            map( (dto: PageResponseDto<UserInvitationResponseDto>): PageModel<UserInvitationModel> => PageMapper.toModel( dto, UserInvitationMapper.toModel ) ),
         )
     }
 
-    public findUserProjectProfileByProjectId(projectId: string): Observable<ProjectProfileModel> {
-        return this.http.get<ProjectProfileResponseDto>(`${this.baseUrl}/project/${projectId}`).pipe(
-            map( ProjectProfileMapper.toModel ),
+    public manageUserProjectProfileAcceptance(id: string, accepted: boolean): Observable<UserInvitationModel> {
+        return this.http.post<UserInvitationResponseDto>(`${this.baseUrl}/${id}/accept/${accepted}`, null).pipe(
+            map( UserInvitationMapper.toModel ),
         )
     }
 
-    public manageUserProjectProfileAcceptance(id: string, accepted: boolean): Observable<ProjectProfileModel> {
-        return this.http.post<ProjectProfileResponseDto>(`${this.baseUrl}/${id}/accept/${accepted}`, null).pipe(
-            map( ProjectProfileMapper.toModel ),
-        )
-    }
-
-    public createSupportProjectProfile(projectId: string): Observable<ProjectProfileModel> {
-        return this.http.post<ProjectProfileResponseDto>(`${this.baseUrl}/${projectId}/support`, null).pipe(
-            map( ProjectProfileMapper.toModel ),
+    public createSupportProjectProfile(projectId: string): Observable<ProjectModel> {
+        return this.http.post<ProjectResponseDto>(`${this.baseUrl}/${projectId}/support`, null).pipe(
+            map( ProjectMapper.toModel ),
         )
     }
 

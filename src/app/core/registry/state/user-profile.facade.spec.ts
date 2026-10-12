@@ -16,10 +16,11 @@ import { failing } from '@shared/helpers/testing/test-fixtures'
 import { CurrentUserModel } from '@shared/models/model/current-user.model'
 import { ErrorModel } from '@shared/models/model/error.model'
 import { PageModel } from '@shared/models/model/page.model'
-import { ProjectProfileModel } from '@shared/models/model/project-profile.model'
+import { ProjectModel } from '@shared/models/model/project.model'
+import { UserInvitationModel } from '@shared/models/model/user-invitation.model'
 
 const USER: CurrentUserModel = { id: 'u1' } as CurrentUserModel
-const EMPTY_PAGE: PageModel<ProjectProfileModel> = { content: [], pageNumber: 0, pageSize: 10, totalElements: 0, totalPages: 1, lastRefresh: new Date() }
+const EMPTY_PAGE: PageModel<UserInvitationModel> = { content: [], pageNumber: 0, pageSize: 10, totalElements: 0, totalPages: 1, lastRefresh: new Date() }
 const FAILURE: ErrorModel = { status: 500, title: 'Title', message: 'Message' } as ErrorModel
 const UNAVAILABLE: ErrorModel = { status: 503, title: 'Down', message: 'Down' } as ErrorModel
 
@@ -38,9 +39,9 @@ describe( 'UserProfileFacade', () => {
     let resetAll: Mock<() => void>
 
     function mockCollaborators (): void {
-        manageAcceptance = vi.fn( () => of( { id: 'pp1', status: { value: 'ACCEPTED' } } as unknown as ProjectProfileModel ) )
+        manageAcceptance = vi.fn( () => of( { id: 'pp1', status: { value: 'ACCEPTED' } } as unknown as UserInvitationModel ) )
         deleteProfile = vi.fn( () => of( undefined ) )
-        createSupport = vi.fn( () => of( { id: 'pp2', project: { name: 'Camp' } } as ProjectProfileModel ) )
+        createSupport = vi.fn( () => of( { id: 'p1', name: 'Camp', profile: { id: 'pp2' } } as ProjectModel ) )
         findProfilesPage = vi.fn( () => of( EMPTY_PAGE ) )
         fetchCurrentUser = vi.fn( () => of( undefined ) )
         setGlobalError = vi.fn()
@@ -171,7 +172,7 @@ describe( 'UserProfileFacade', () => {
             let completed: boolean = false
 
             // Act
-            facade.deleteUserProjectProfile( { id: 'pp1', project: { name: 'Camp' } } as ProjectProfileModel ).subscribe( { complete: (): void => { completed = true } } )
+            facade.deleteUserProjectProfile( { id: 'pp1', project: { name: 'Camp' } } as UserInvitationModel ).subscribe( { complete: (): void => { completed = true } } )
 
             // Assert
             expect( deleteProfile ).toHaveBeenCalledWith( 'pp1' )
@@ -185,7 +186,7 @@ describe( 'UserProfileFacade', () => {
             let completed: boolean = false
 
             // Act
-            facade.deleteUserProjectProfile( { id: 'pp1', project: { name: 'Camp' } } as ProjectProfileModel ).subscribe( { complete: (): void => { completed = true } } )
+            facade.deleteUserProjectProfile( { id: 'pp1', project: { name: 'Camp' } } as UserInvitationModel ).subscribe( { complete: (): void => { completed = true } } )
 
             // Assert
             expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'Title' } ) )
@@ -226,7 +227,7 @@ describe( 'UserProfileFacade', () => {
         findProfilesPage.mockClear()
 
         // Act
-        facade.deleteUserProjectProfile( { id: 'pp1', project: { name: 'Camp' } } as ProjectProfileModel ).subscribe()
+        facade.deleteUserProjectProfile( { id: 'pp1', project: { name: 'Camp' } } as UserInvitationModel ).subscribe()
 
         // Assert
         expect( findProfilesPage ).toHaveBeenCalledWith( 0, 30, expect.anything() )

@@ -2,7 +2,7 @@ import { UserApi } from '@pages/users/data/state/user.api'
 import { ApiCase, describeApi, expectMapped, expectMappedPage, PAGE_QUERY } from '@shared/helpers/testing/api-test.helper'
 import { USER_DTO, pageDto } from '@shared/helpers/testing/response-fixtures'
 
-const BASE: string = '/api/v1/users'
+const BASE: string = '/api/v2/users'
 
 const CASES: ApiCase<UserApi>[] = [
     { name: 'pages the users with the search parameters', method: 'GET', url: new RegExp( `${BASE}\\?${PAGE_QUERY}&textSearched=ada$` ),

@@ -2,7 +2,7 @@ import { SecurityApi } from '@core/authentication/service/security.api'
 import { ApiCase, describeApi, expectMapped } from '@shared/helpers/testing/api-test.helper'
 import { USER_DTO } from '@shared/helpers/testing/response-fixtures'
 
-const BASE: string = '/api/v1/authentication'
+const BASE: string = '/api/v2/authentication'
 const CURRENT_USER: object = { ...USER_DTO, authorities: [ 'REGISTRY_USER_R' ], preferences: { userId: 'u1', theme: 'DARK', language: 'fr' } }
 
 const CASES: ApiCase<SecurityApi>[] = [

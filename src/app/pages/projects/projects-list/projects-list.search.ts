@@ -3,14 +3,12 @@ import { fromBooleanChoice, toBooleanChoice, BooleanChoice } from '@shared/helpe
 interface ProjectsListSearch {
     textSearched: string | undefined
     dateTimeSearched: Date | undefined
-    withProfile: boolean | undefined
     visibilitySearched: boolean | undefined
 }
 
 export interface ProjectsListSearchModel {
     textSearched: string
     dateTimeSearched: Date | null
-    withProfile: boolean
     visibilitySearched: BooleanChoice
 }
 
@@ -23,7 +21,6 @@ export function toProjectsListSearchModel (params: ProjectsListSearch): Projects
     return {
         textSearched: params.textSearched ?? '',
         dateTimeSearched: params.dateTimeSearched ?? null,
-        withProfile: params.withProfile ?? false,
         visibilitySearched: toBooleanChoice(params.visibilitySearched),
     }
 }
@@ -37,7 +34,6 @@ export function toProjectsListSearchParams (model: ProjectsListSearchModel): Pro
     return {
         textSearched: model.textSearched === '' ? undefined : model.textSearched,
         dateTimeSearched: model.dateTimeSearched ?? undefined,
-        withProfile: model.withProfile,
         visibilitySearched: fromBooleanChoice(model.visibilitySearched),
     }
 }

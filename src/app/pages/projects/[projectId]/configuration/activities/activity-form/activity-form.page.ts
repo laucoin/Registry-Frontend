@@ -101,7 +101,7 @@ export class ActivityFormPage extends BaseFormComponent implements OnDestroy {
     }
 
     private applyActivity(activity: ActivityModel | undefined): void {
-        this.contextProject.set(activity?.project || this.sessionFacade.selectedProject())
+        this.contextProject.set( this.sessionFacade.selectedProject() )
         if (activity) this.model.set(toActivityFormModel(activity))
     }
 

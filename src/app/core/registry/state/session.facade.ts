@@ -21,7 +21,7 @@ import { LanguageService } from '@core/language/language.service'
 import { PreferencesApi } from '@core/registry/state/preferences.api'
 import { SessionStore } from '@core/registry/state/session.store'
 import { UiFacade } from '@core/registry/state/ui.facade'
-import { UserProjectProfileApi } from '@core/registry/state/user-project-profile.api'
+import { ProjectApi } from '@pages/projects/data/state/project.api'
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
 import { GenericHelper } from '@shared/helpers/generic.helper'
 import { ProjectHelper } from '@shared/helpers/project.helper'
@@ -41,7 +41,6 @@ import { ErrorModel } from '@shared/models/model/error.model'
 import { PreferencesModel } from '@shared/models/model/preferences.model'
 import { ProjectModel } from '@shared/models/model/project.model'
 import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
-import { ProjectProfileModel } from '@shared/models/model/project-profile.model'
 import { ThemeChoiceModel } from '@shared/models/model/theme-choice.model'
 
 /**
@@ -59,7 +58,7 @@ export class SessionFacade {
     private readonly profileReset: ProfileResetService = inject(ProfileResetService)
 
     private readonly securityApi: SecurityApi = inject(SecurityApi)
-    private readonly userProjectProfileApi: UserProjectProfileApi = inject(UserProjectProfileApi)
+    private readonly projectApi: ProjectApi = inject(ProjectApi)
     private readonly preferencesApi: PreferencesApi = inject(PreferencesApi)
 
     private pendingProject: { subscription: Subscription, done: ReplaySubject<void> } | undefined = undefined
@@ -82,7 +81,7 @@ export class SessionFacade {
     public readonly pendingLanguage: Signal<string | undefined> = this.uiFacade.pendingLanguage
 
     public readonly selectedProject: Signal<ProjectModel | undefined> = computed((): ProjectModel | undefined =>
-        this.session.currentProject.profile()?.project,
+        this.session.currentProject.project(),
     )
     public readonly currentProjectId: Signal<string | undefined> = this.session.currentProject.id
 
@@ -172,15 +171,15 @@ export class SessionFacade {
         }
 
         const done: ReplaySubject<void> = new ReplaySubject<void>(1)
-        const subscription: Subscription = this.fetchProjectProfile$(projectId!).subscribe(done)
+        const subscription: Subscription = this.fetchProject$(projectId!).subscribe(done)
         this.pendingProject = {subscription: subscription, done: done}
 
         return done.asObservable()
     }
 
-    private fetchProjectProfile$(projectId: string): Observable<void> {
-        return this.userProjectProfileApi.findUserProjectProfileByProjectId(projectId).pipe(
-            tap((profile: ProjectProfileModel): void => this.session.setCurrentProject(projectId, profile)),
+    private fetchProject$(projectId: string): Observable<void> {
+        return this.projectApi.findProjectById(projectId).pipe(
+            tap((project: ProjectModel): void => this.session.setCurrentProject(projectId, project)),
             map((): void => undefined),
             catchError((error: ErrorModel): Observable<void> => this.globalErrorCompleted$(error)),
         )

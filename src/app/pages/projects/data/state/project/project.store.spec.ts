@@ -33,17 +33,6 @@ describe( 'ProjectStore', () => {
         store = TestBed.inject( ProjectStore )
     } )
 
-    it( 'starts looking for the projects the user has a profile on', () => {
-        // Arrange
-        const expected: boolean = true
-
-        // Act
-        const withProfile: boolean | undefined = store.projects.params.withProfile()
-
-        // Assert
-        expect( withProfile ).toBe( expected )
-    } )
-
     it( 'stores the fetched projects page', () => {
         // Arrange
         findProjects.mockReturnValue( of( pageOf<ProjectModel>( [ { id: 'p1' } as ProjectModel ] ) ) )

@@ -2,7 +2,7 @@ import { AlertApi } from '@pages/projects/[projectId]/movements/data/state/alert
 import { ApiCase, PAGE_QUERY, describeApi, expectMapped, expectMappedPage } from '@shared/helpers/testing/api-test.helper'
 import { ALERT_DTO, COMMUNICATION_DTO, pageDto } from '@shared/helpers/testing/response-fixtures'
 
-const BASE: string = '/api/v1/projects/p1/alerts'
+const BASE: string = '/api/v2/projects/p1/alerts'
 const PARAMS: never = { resetSearch: false, textSearched: 'x' } as never
 
 const CASES: ApiCase<AlertApi>[] = [

@@ -33,7 +33,6 @@ describe('ProjectsListPage', () => {
         facade = autoMock()
         facade['projectsPageTextSearchedParam'].mockReturnValue(undefined)
         facade['projectsPageDateTimeSearchedParam'].mockReturnValue(undefined)
-        facade['projectsPageWithProfileSearchedParam'].mockReturnValue(true)
         facade['projectsPageVisibilitySearchedParam'].mockReturnValue(undefined)
         authorities = signal(['REGISTRY_PROJECT_C', 'REGISTRY_PROJECT_R'])
         TestBed.configureTestingModule({
@@ -68,34 +67,34 @@ describe('ProjectsListPage', () => {
         const model: ProjectsListSearchModel = page.model()
 
         // Assert
-        expect(model).toEqual({ textSearched: '', dateTimeSearched: null, withProfile: true, visibilitySearched: '' })
+        expect(model).toEqual({ textSearched: '', dateTimeSearched: null, visibilitySearched: '' })
     })
 
     it('sends the typed filters to the facade and restarts from the first batch', () => {
         // Arrange
         const page: ProjectsListApi = create()
         const when: Date = new Date(2026, 9, 3)
-        page.model.set({ textSearched: 'camp', dateTimeSearched: when, withProfile: false, visibilitySearched: 'false' })
+        page.model.set({ textSearched: 'camp', dateTimeSearched: when, visibilitySearched: 'false' })
 
         // Act
         page.search()
 
         // Assert
-        expect(facade['inputPageSearchParameters']).toHaveBeenCalledWith('camp', when, false, false)
+        expect(facade['inputPageSearchParameters']).toHaveBeenCalledWith('camp', when, false)
         expect(facade['fetchProjectsPage']).toHaveBeenLastCalledWith(0, undefined)
     })
 
-    it('clears the filters but keeps the profile switch when they are reset, then searches again', () => {
+    it('clears the filters when they are reset, then searches again', () => {
         // Arrange
         const page: ProjectsListApi = create()
-        page.model.set({ textSearched: 'camp', dateTimeSearched: new Date(), withProfile: false, visibilitySearched: 'true' })
+        page.model.set({ textSearched: 'camp', dateTimeSearched: new Date(), visibilitySearched: 'true' })
 
         // Act
         page.resetFilters()
 
         // Assert
-        expect(page.model()).toEqual({ textSearched: '', dateTimeSearched: null, withProfile: false, visibilitySearched: '' })
-        expect(facade['inputPageSearchParameters']).toHaveBeenCalledWith(undefined, undefined, false, undefined)
+        expect(page.model()).toEqual({ textSearched: '', dateTimeSearched: null, visibilitySearched: '' })
+        expect(facade['inputPageSearchParameters']).toHaveBeenCalledWith(undefined, undefined, undefined)
     })
 
     it('asks the facade for the requested batch without touching the search parameters', () => {
@@ -123,16 +122,16 @@ describe('ProjectsListPage', () => {
         expect(count).toBe(2)
     })
 
-    it('reads the creation and profile search rights from the session', () => {
+    it('reads the creation right from the session', () => {
         // Arrange
         const page: ProjectsListApi = create()
         authorities.set(['REGISTRY_PROJECT_R'])
 
         // Act
-        const rights: boolean[] = [page.canCreate(), page.canFilterByProfile()]
+        const rights: boolean[] = [page.canCreate()]
 
         // Assert
-        expect(rights).toEqual([false, true])
+        expect(rights).toEqual([false])
     })
 
     it.each([['  vercors 2026', 'V2'], ['Camp d\'été Vercors', 'CD'], ['Rallye', 'RA']])('builds the avatar initials of "%s"', (name: string, expected: string) => {

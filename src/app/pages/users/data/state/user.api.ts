@@ -22,7 +22,7 @@ import { PageResponseDto } from '@shared/models/dto/response/page.response.dto'
 })
 export class UserApi extends GenericApi {
     public constructor() {
-        super('/api/v1/users')
+        super('/api/v2/users')
     }
 
     public findUsers(

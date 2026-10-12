@@ -53,7 +53,7 @@ import { PairResponseDto } from '@shared/models/dto/response/pair.response.dto'
 })
 export class MovementApi extends GenericProjectApi {
     public constructor() {
-        super(`/api/v1/projects/${SELECT_PROFILE_PROJECT_ID}/movements`)
+        super(`/api/v2/projects/${SELECT_PROFILE_PROJECT_ID}/movements`)
     }
 
     public findMovements(

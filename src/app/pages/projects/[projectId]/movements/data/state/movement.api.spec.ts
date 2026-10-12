@@ -2,7 +2,7 @@ import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/mo
 import { ApiCase, describeApi, expectMapped, expectMappedList, expectMappedPage, PAGE_QUERY } from '@shared/helpers/testing/api-test.helper'
 import { COMMUNICATION_DTO, GROUP_DTO, MOVEMENT_DTO, PARTICIPANT_DTO, VEHICLE_DTO, WHEN, pageDto } from '@shared/helpers/testing/response-fixtures'
 
-const BASE: string = '/api/v1/projects/p1/movements'
+const BASE: string = '/api/v2/projects/p1/movements'
 const PARAMS: never = { resetSearch: false, currentMovements: false } as never
 
 const CASES: ApiCase<MovementApi>[] = [

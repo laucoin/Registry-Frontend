@@ -496,8 +496,7 @@
     "search-and-filter": {
       "text": "Nom",
       "datetime": "Date & Heure",
-      "visibility": "Visibilité",
-      "with-profile": "Avec un profil"
+      "visibility": "Visibilité"
     },
     "visible": {
       "true": "Visible",

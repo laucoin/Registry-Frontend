@@ -9,14 +9,14 @@ import { ProfileStatusEnum } from '@shared/models/enumeration/profile-status.enu
 import { CumulativePageHelper, CumulativePageRequest } from '@shared/helpers/store/cumulative-page.helper'
 import { ElementRequestInformationModel } from '@shared/models/model/element-request-information.model'
 import { PageRequestInformationModel } from '@shared/models/model/page-request-information.model'
-import { ProjectProfileModel } from '@shared/models/model/project-profile.model'
+import { UserInvitationModel } from '@shared/models/model/user-invitation.model'
 
-type ProfilesPage = PageRequestInformationModel<UserProjectProfilePageParamsModel, ProjectProfileModel>
+type ProfilesPage = PageRequestInformationModel<UserProjectProfilePageParamsModel, UserInvitationModel>
 
 interface UserProfileState {
     profiles: ProfilesPage
     invitations: ProfilesPage
-    profile: ElementRequestInformationModel<ProjectProfileModel>
+    profile: ElementRequestInformationModel<UserInvitationModel>
 }
 
 /**
@@ -33,8 +33,8 @@ const pageParams = (statusSearched: ProfileStatusEnum): UserProjectProfilePagePa
 })
 
 const defaultUserProfileState: UserProfileState = {
-    profiles: PageStateHelper.initial<UserProjectProfilePageParamsModel, ProjectProfileModel>( pageParams( ProfileStatusEnum.ACCEPTED ) ),
-    invitations: PageStateHelper.initial<UserProjectProfilePageParamsModel, ProjectProfileModel>( pageParams( ProfileStatusEnum.INVITED ) ),
+    profiles: PageStateHelper.initial<UserProjectProfilePageParamsModel, UserInvitationModel>( pageParams( ProfileStatusEnum.ACCEPTED ) ),
+    invitations: PageStateHelper.initial<UserProjectProfilePageParamsModel, UserInvitationModel>( pageParams( ProfileStatusEnum.INVITED ) ),
     profile: { element: undefined, loading: false },
 }
 

@@ -4,18 +4,18 @@ import { toProjectsListSearchModel, toProjectsListSearchParams } from '@pages/pr
 describe('projects list search mapping', () => {
     it('turns absent parameters into empty form values', () => {
         // Arrange
-        const params: Parameters<typeof toProjectsListSearchModel>[0] = { textSearched: undefined, dateTimeSearched: undefined, withProfile: undefined, visibilitySearched: undefined }
+        const params: Parameters<typeof toProjectsListSearchModel>[0] = { textSearched: undefined, dateTimeSearched: undefined, visibilitySearched: undefined }
 
         // Act
         const model: ReturnType<typeof toProjectsListSearchModel> = toProjectsListSearchModel(params)
 
         // Assert
-        expect(model).toEqual({ textSearched: '', dateTimeSearched: null, withProfile: false, visibilitySearched: '' })
+        expect(model).toEqual({ textSearched: '', dateTimeSearched: null, visibilitySearched: '' })
     })
 
     it('turns the visibility into the value of its select option and back', () => {
         // Arrange
-        const hidden: Parameters<typeof toProjectsListSearchModel>[0] = { textSearched: 'a', dateTimeSearched: undefined, withProfile: true, visibilitySearched: false }
+        const hidden: Parameters<typeof toProjectsListSearchModel>[0] = { textSearched: 'a', dateTimeSearched: undefined, visibilitySearched: false }
 
         // Act
         const model: ReturnType<typeof toProjectsListSearchModel> = toProjectsListSearchModel(hidden)
@@ -27,12 +27,12 @@ describe('projects list search mapping', () => {
 
     it('turns empty form values into absent parameters', () => {
         // Arrange
-        const model: ReturnType<typeof toProjectsListSearchModel> = { textSearched: '', dateTimeSearched: null, withProfile: true, visibilitySearched: '' }
+        const model: ReturnType<typeof toProjectsListSearchModel> = { textSearched: '', dateTimeSearched: null, visibilitySearched: '' }
 
         // Act
         const params: ReturnType<typeof toProjectsListSearchParams> = toProjectsListSearchParams(model)
 
         // Assert
-        expect(params).toEqual({ textSearched: undefined, dateTimeSearched: undefined, withProfile: true, visibilitySearched: undefined })
+        expect(params).toEqual({ textSearched: undefined, dateTimeSearched: undefined, visibilitySearched: undefined })
     })
 })

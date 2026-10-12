@@ -2,7 +2,7 @@ import { ActivityApi } from '@pages/projects/[projectId]/configuration/activitie
 import { ApiCase, PAGE_QUERY, describeApi, expectMapped, expectMappedPage } from '@shared/helpers/testing/api-test.helper'
 import { ACTIVITY_DTO, MOVEMENT_DTO, pageDto } from '@shared/helpers/testing/response-fixtures'
 
-const BASE: string = '/api/v1/projects/p1/activities'
+const BASE: string = '/api/v2/projects/p1/activities'
 const PARAMS: never = { resetSearch: false, textSearched: 'x' } as never
 
 const CASES: ApiCase<ActivityApi>[] = [

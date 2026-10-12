@@ -2,7 +2,7 @@ import { expect } from 'vitest'
 import { MetadataApi } from '@core/registry/state/metadata.api'
 import { ApiCase, describeApi } from '@shared/helpers/testing/api-test.helper'
 
-const BASE: string = '/api/v1/metadata'
+const BASE: string = '/api/v2/metadata'
 const OPTIONS: object[] = [ { label: 'A', value: 'A' } ]
 const same = (result: unknown): void => expect( result ).toEqual( OPTIONS )
 

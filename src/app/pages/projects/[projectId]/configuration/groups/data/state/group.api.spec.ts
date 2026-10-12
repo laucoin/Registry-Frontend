@@ -2,7 +2,7 @@ import { GroupApi } from '@pages/projects/[projectId]/configuration/groups/data/
 import { ApiCase, describeApi, expectMapped, expectMappedList, expectMappedPage, PAGE_QUERY } from '@shared/helpers/testing/api-test.helper'
 import { GROUP_DTO, PARTICIPANT_DTO, pageDto } from '@shared/helpers/testing/response-fixtures'
 
-const BASE: string = '/api/v1/projects/p1/groups'
+const BASE: string = '/api/v2/projects/p1/groups'
 const PARAMS: never = { resetSearch: false, textSearched: 'wolves' } as never
 
 const CASES: ApiCase<GroupApi>[] = [

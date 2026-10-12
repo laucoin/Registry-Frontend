@@ -22,7 +22,6 @@ const defaultProjectStore: ProjectStoreModel = {
         resetSearch: false,
         textSearched: undefined,
         visibilitySearched: undefined,
-        withProfile: true,
         dateTimeSearched: undefined,
     } ),
     project: defaultProject,

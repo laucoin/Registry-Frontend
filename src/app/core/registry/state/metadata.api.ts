@@ -18,7 +18,7 @@ import {AlertStatusEnum} from '@shared/models/enumeration/alert-status.enum'
 })
 export class MetadataApi extends GenericApi {
     public constructor() {
-        super('/api/v1/metadata')
+        super('/api/v2/metadata')
     }
 
     public getPresencesStatus(): Observable<SelectOptionModel<PresenceStatusEnum>[]> {

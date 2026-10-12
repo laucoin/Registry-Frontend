@@ -4,6 +4,7 @@ import { PageModel } from '@shared/models/model/page.model'
 import { GenericProjectElementFacade } from '@shared/helpers/facade/generic-project-element.facade'
 import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { NotificationModel } from '@shared/models/model/notification.model'
+import { isProjectProfile, ListedProfileModel } from '@shared/models/model/listed-profile.model'
 import { ProjectProfileModel } from '@shared/models/model/project-profile.model'
 import { ProjectProfileStore } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.store'
 import { ProjectProfileDto } from '@pages/projects/[projectId]/configuration/profiles/data/dto/project-profile.dto'
@@ -159,14 +160,14 @@ export class ProjectProfileFacade extends GenericProjectElementFacade {
         )
     }
 
-    public deleteProjectProfile (profile: ProjectProfileModel): Observable<void> {
+    public deleteProjectProfile (profile: ListedProfileModel): Observable<void> {
         return this.api.deleteProjectProfileById( undefined, profile.id ).pipe(
             notifyOnError( this.uiFacade ),
             tap( (): void => this.onCommandSuccess( 'delete', profile ) ),
         )
     }
 
-    private onCommandSuccess (command: CommandEvent, profile: ProjectProfileModel): void {
+    private onCommandSuccess (command: CommandEvent, profile: ListedProfileModel): void {
         this.notifyMessage(
             SeverityEnum.SUCCESS,
             `project-profiles.notifications.${ command === 'update' ? 'edit' : command }.title`,
@@ -175,9 +176,9 @@ export class ProjectProfileFacade extends GenericProjectElementFacade {
             : `project-profiles.notifications.${ command === 'update' ? 'edit' : command }.message`,
             'pi pi-key',
             {
-                firstName: profile?.user?.firstName,
-                lastName: profile?.user?.lastName,
-                name: profile?.project?.name,
+                firstName: isProjectProfile( profile ) ? profile.user?.firstName : undefined,
+                lastName: isProjectProfile( profile ) ? profile.user?.lastName : undefined,
+                name: this.sessionFacade.selectedProject()?.name,
             },
         )
         this.refreshPage()

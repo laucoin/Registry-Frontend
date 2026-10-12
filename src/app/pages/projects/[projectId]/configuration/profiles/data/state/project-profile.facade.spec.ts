@@ -16,7 +16,7 @@ import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { ErrorModel } from '@shared/models/model/error.model'
 import { ProjectProfileModel } from '@shared/models/model/project-profile.model'
 
-const PROFILE: ProjectProfileModel = { id: 'pp1', user: { firstName: 'Ada', lastName: 'L' }, project: { name: 'Camp' } } as ProjectProfileModel
+const PROFILE: ProjectProfileModel = { id: 'pp1', user: { firstName: 'Ada', lastName: 'L' } } as ProjectProfileModel
 
 describe( 'ProjectProfileFacade', () => {
     let facade: ProjectProfileFacade
@@ -40,7 +40,7 @@ describe( 'ProjectProfileFacade', () => {
                 { provide: ProjectProfileApi, useValue: { findProjectProfiles, createProjectProfiles, blockProjectProfileById, deleteProjectProfileById } },
                 { provide: MetadataApi, useValue: { getProfilesStatus: vi.fn( () => of( [] ) ) } },
                 { provide: PluralTranslationPipe, useValue: { transform: (key: string, count: number | unknown[]): string => `${key}:${Array.isArray( count ) ? count.length : count}` } },
-                { provide: SessionFacade, useValue: { currentProjectId: signal( 'p1' ) } },
+                { provide: SessionFacade, useValue: { currentProjectId: signal( 'p1' ), selectedProject: (): unknown => ({ name: 'Camp' }) } },
                 { provide: UiFacade, useValue: { notify, setGlobalError: vi.fn() } },
                 { provide: TranslocoService, useValue: { translate: (key: string): string => `t:${key}`, langChanges$: new Subject<string>().asObservable() } },
             ],

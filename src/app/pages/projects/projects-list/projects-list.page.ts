@@ -73,7 +73,6 @@ export class ProjectsListPage {
     protected readonly hiddenProject: WritableSignal<ProjectModel | undefined> = signal(undefined)
 
     protected readonly canCreate: Signal<boolean> = this.canWith(UserAuthorityEnum.REGISTRY_PROJECT_C)
-    protected readonly canFilterByProfile: Signal<boolean> = this.canWith(UserAuthorityEnum.REGISTRY_PROJECT_R)
 
     protected readonly activeFilters: Signal<number> = computed((): number => [
         StringHelper.isNotNullNorBlank(this.facade.projectsPageTextSearchedParam()),
@@ -84,7 +83,6 @@ export class ProjectsListPage {
     protected readonly model: WritableSignal<ProjectsListSearchModel> = signal(toProjectsListSearchModel({
         textSearched: this.facade.projectsPageTextSearchedParam(),
         dateTimeSearched: this.facade.projectsPageDateTimeSearchedParam(),
-        withProfile: this.facade.projectsPageWithProfileSearchedParam(),
         visibilitySearched: this.facade.projectsPageVisibilitySearchedParam(),
     }))
     protected readonly form: FieldTree<ProjectsListSearchModel> = createSearchForm(this.model)
@@ -98,7 +96,6 @@ export class ProjectsListPage {
         this.facade.inputPageSearchParameters(
             search.textSearched,
             search.dateTimeSearched,
-            search.withProfile ?? false,
             search.visibilitySearched,
         )
         this.facade.fetchProjectsPage(0, undefined)

@@ -14,7 +14,8 @@ import { ErrorModel } from '@shared/models/model/error.model'
 import { NotificationModel } from '@shared/models/model/notification.model'
 import { CumulativePageHelper } from '@shared/helpers/store/cumulative-page.helper'
 import { PageModel } from '@shared/models/model/page.model'
-import { ProjectProfileModel } from '@shared/models/model/project-profile.model'
+import { UserInvitationModel } from '@shared/models/model/user-invitation.model'
+import { ProjectModel } from '@shared/models/model/project.model'
 
 /**
  * Purpose: Public entry point for the project profiles and invitations of the signed-in user and the commands acting on them.
@@ -30,7 +31,7 @@ export class UserProfileFacade {
     private readonly profileReset: ProfileResetService = inject(ProfileResetService)
     private readonly userProjectProfileApi: UserProjectProfileApi = inject(UserProjectProfileApi)
 
-    public readonly userProjectProfilesPage: Signal<PageModel<ProjectProfileModel> | undefined> = this.store.profiles.element
+    public readonly userProjectProfilesPage: Signal<PageModel<UserInvitationModel> | undefined> = this.store.profiles.element
     public readonly userProjectProfilesPageLoading: Signal<boolean> = this.store.profiles.loading
     public readonly userProjectProfilesPageSilentLoading: Signal<boolean> = this.store.profiles.silentLoading
     public readonly userProjectProfilesPageError: Signal<NotificationModel | undefined> = this.store.profiles.error
@@ -41,7 +42,7 @@ export class UserProfileFacade {
     )
     public readonly userProjectProfilesPageAvailabilitySearchParam: Signal<boolean | undefined> = this.store.profiles.params.availabilitySearched
 
-    public readonly userProjectProfileInvitationsPage: Signal<PageModel<ProjectProfileModel> | undefined> = this.store.invitations.element
+    public readonly userProjectProfileInvitationsPage: Signal<PageModel<UserInvitationModel> | undefined> = this.store.invitations.element
     public readonly userProjectProfileInvitationsPageLoading: Signal<boolean> = this.store.invitations.loading
     public readonly userProjectProfileInvitationsPageSilentLoading: Signal<boolean> = this.store.invitations.silentLoading
     public readonly userProjectProfileInvitationsPageError: Signal<NotificationModel | undefined> = this.store.invitations.error
@@ -106,12 +107,12 @@ export class UserProfileFacade {
         this.userProjectProfileApi.manageUserProjectProfileAcceptance(id, accepted).pipe(
             initialize((): void => this.store.startProfileLoader()),
             finalize((): void => this.store.stopProfileLoader()),
-            tap((profile: ProjectProfileModel): void => this.onInvitationManaged(profile)),
+            tap((profile: UserInvitationModel): void => this.onInvitationManaged(profile)),
             catchError((error: ErrorModel): Observable<never> => this.reportError$(error)),
         ).subscribe()
     }
 
-    public deleteUserProjectProfile(profile: ProjectProfileModel): Observable<void> {
+    public deleteUserProjectProfile(profile: UserInvitationModel): Observable<void> {
         return eager(
             this.userProjectProfileApi.deleteUserProfileById(profile.id).pipe(
                 initialize((): void => this.store.startProfileLoader()),
@@ -127,14 +128,14 @@ export class UserProfileFacade {
 
         return eager(
             this.userProjectProfileApi.createSupportProjectProfile(projectId).pipe(
-                tap((profile: ProjectProfileModel): void => this.onSupportProfileCreated(profile)),
+                tap((project: ProjectModel): void => this.onSupportProfileCreated(project)),
                 switchMap((): Observable<void> => this.sessionFacade.fetchCurrentUser()),
                 catchError((error: ErrorModel): Observable<void> => this.reportError$(error)),
             ),
         )
     }
 
-    private onInvitationManaged(profile: ProjectProfileModel): void {
+    private onInvitationManaged(profile: UserInvitationModel): void {
         this.notifyProfile(
             `project-profiles.notifications.acceptance.${profile.status.value}.title`,
             `project-profiles.notifications.acceptance.${profile.status.value}.message`,
@@ -145,25 +146,25 @@ export class UserProfileFacade {
         this.refreshInvitationsPage()
     }
 
-    private onProfileDeleted(profile: ProjectProfileModel): void {
+    private onProfileDeleted(profile: UserInvitationModel): void {
         this.notifyProfile(
             'project-profiles.notifications.delete.title',
             'project-profiles.notifications.delete.message.myself',
             'pi pi-user',
-            {name: profile.project.name},
+            {name: profile.project?.name},
         )
         this.sessionFacade.fetchCurrentUser()
         this.refreshProfilesPage()
     }
 
-    private onSupportProfileCreated(profile: ProjectProfileModel): void {
+    private onSupportProfileCreated(project: ProjectModel): void {
         this.notifyProfile(
             'projects.notifications.create-support.title',
             'projects.notifications.create-support.message',
             'pi pi-user-plus',
             {
-                name: profile?.project?.name,
-                end: this.datePipe.transform(profile?.endAccess),
+                name: project?.name,
+                end: this.datePipe.transform(project?.profile?.endAccess),
             },
         )
     }

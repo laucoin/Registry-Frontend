@@ -102,7 +102,7 @@ export class GroupFormPage extends BaseFormComponent implements OnDestroy {
     }
 
     private applyGroup (group: GroupModel | undefined): void {
-        this.contextProject.set( group?.project || this.sessionFacade.selectedProject() )
+        this.contextProject.set( this.sessionFacade.selectedProject() )
         if (group) this.model.set( toGroupFormModel( group ) )
     }
 

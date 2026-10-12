@@ -175,7 +175,7 @@ export class MovementFormPage extends BaseFormComponent implements OnDestroy {
     }
 
     private applyMovement(movement: MovementModel | undefined): void {
-        this.contextProject.set(movement?.project || this.sessionFacade.selectedProject())
+        this.contextProject.set( this.sessionFacade.selectedProject() )
         if (movement) this.model.set(toMovementFormModel(movement))
     }
 

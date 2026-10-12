@@ -1,6 +1,6 @@
 import { GroupModel } from '@shared/models/model/group.model'
 import { GroupResponseDto } from '@shared/models/dto/response/group.response.dto'
-import { GenericProjectMapper } from '@shared/mappers/generic-project.mapper'
+import { GenericMapper } from '@shared/mappers/generic.mapper'
 import { ParticipantMapper } from '@shared/mappers/participant.mapper'
 
 /**
@@ -11,7 +11,7 @@ import { ParticipantMapper } from '@shared/mappers/participant.mapper'
 export class GroupMapper {
     public static toModel (dto: GroupResponseDto): GroupModel {
         return {
-            ...GenericProjectMapper.toOptionalModel( dto ),
+            ...GenericMapper.toModel( dto ),
             name: dto.name,
             status: dto.status,
             startAvailability: dto.startAvailability,

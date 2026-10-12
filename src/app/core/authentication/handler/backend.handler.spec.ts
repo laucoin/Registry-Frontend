@@ -15,7 +15,7 @@ import { ErrorModel } from '@shared/models/model/error.model'
 import { CURRENT_USER_ID, SELECT_PROFILE_PROJECT_ID } from '@shared/helpers/request.helper'
 
 const BACKEND_URL: string = 'http://backend.test'
-const REFRESH_PATH: string = '/api/v1/authentication/token/refresh'
+const REFRESH_PATH: string = '/api/v2/authentication/token/refresh'
 
 describe( 'backendHandler', () => {
     let http: HttpClient

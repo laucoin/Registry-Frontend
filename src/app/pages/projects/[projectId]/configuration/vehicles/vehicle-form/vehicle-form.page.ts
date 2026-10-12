@@ -94,7 +94,7 @@ export class VehicleFormPage extends BaseFormComponent implements OnDestroy {
     }
 
     private applyVehicle(vehicle: VehicleModel | undefined): void {
-        this.contextProject.set(vehicle?.project || this.sessionFacade.selectedProject())
+        this.contextProject.set( this.sessionFacade.selectedProject() )
         if (vehicle) this.model.set(toVehicleFormModel(vehicle))
     }
 

@@ -11,6 +11,8 @@ import { ProjectProfileRowComponent } from '@pages/projects/[projectId]/configur
 import { AvailabilityStatusEnum } from '@shared/models/enumeration/availability-status.enum'
 import { ProfileStatusEnum } from '@shared/models/enumeration/profile-status.enum'
 import { ProjectProfileModel } from '@shared/models/model/project-profile.model'
+import { ListedProfileModel } from '@shared/models/model/listed-profile.model'
+import { UserInvitationModel } from '@shared/models/model/user-invitation.model'
 
 @Component({
     imports: [ProjectProfileRowComponent, NgTemplateOutlet],
@@ -22,20 +24,32 @@ import { ProjectProfileModel } from '@shared/models/model/project-profile.model'
 })
 class HostComponent {
     public readonly view: WritableSignal<'user' | 'project'> = signal('user')
-    public readonly profile: WritableSignal<ProjectProfileModel> = signal(PROFILE)
+    public readonly profile: WritableSignal<ListedProfileModel> = signal<ListedProfileModel>(PROFILE)
 }
 
 const PROFILE: ProjectProfileModel = {
     id: 'pp1',
     visible: true,
     user: { id: 'u2', firstName: 'Ada', lastName: 'Lovelace', email: 'ada@example.org' },
-    project: { id: 'p1', name: 'Camp Vercors' },
+    projectId: 'p1',
     role: { value: 'ADMIN', label: 'Administrator' },
     status: { value: ProfileStatusEnum.ACCEPTED, label: 'Accepted' },
     availabilityStatus: { value: AvailabilityStatusEnum.AVAILABLE, label: 'Available' },
     startAccess: undefined,
     endAccess: undefined,
 } as unknown as ProjectProfileModel
+
+const INVITATION: UserInvitationModel = {
+    id: 'pp1',
+    visible: true,
+    projectId: 'p1',
+    project: { id: 'p1', name: 'Camp Vercors' },
+    role: { value: 'ADMIN', label: 'Administrator' },
+    status: { value: ProfileStatusEnum.ACCEPTED, label: 'Accepted' },
+    availabilityStatus: { value: AvailabilityStatusEnum.AVAILABLE, label: 'Available' },
+    startAccess: undefined,
+    endAccess: undefined,
+} as unknown as UserInvitationModel
 
 describe('ProjectProfileRowComponent', () => {
     let fixture: ComponentFixture<HostComponent>
@@ -44,7 +58,7 @@ describe('ProjectProfileRowComponent', () => {
     const text = (selector: string): string | undefined => fixture.nativeElement.querySelector(selector)?.textContent?.trim()
     const tags = (): string[] => Array.from<HTMLElement>(fixture.nativeElement.querySelectorAll('sgdf-tag')).map((tag: HTMLElement): string => tag.textContent!.trim())
 
-    async function render(profile: ProjectProfileModel, view: 'user' | 'project' = 'user'): Promise<void> {
+    async function render(profile: ListedProfileModel, view: 'user' | 'project' = 'user'): Promise<void> {
         fixture.componentInstance.profile.set(profile)
         fixture.componentInstance.view.set(view)
         await fixture.whenStable()
@@ -69,7 +83,7 @@ describe('ProjectProfileRowComponent', () => {
 
     it('should title the row with the project from the user side', async () => {
         // Arrange
-        await render(PROFILE, 'user')
+        await render(INVITATION, 'user')
 
         // Act
         const title: string | undefined = text('sgdf-list-item > span.block')

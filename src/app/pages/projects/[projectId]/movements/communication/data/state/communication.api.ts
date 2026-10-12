@@ -29,7 +29,7 @@ import { PageResponseDto } from '@shared/models/dto/response/page.response.dto'
 })
 export class CommunicationApi extends GenericProjectApi {
     public constructor() {
-        super(`/api/v1/projects/${SELECT_PROFILE_PROJECT_ID}/communications`)
+        super(`/api/v2/projects/${SELECT_PROFILE_PROJECT_ID}/communications`)
     }
 
     public findCommunications(

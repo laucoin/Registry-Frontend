@@ -27,7 +27,7 @@ import { PageResponseDto } from '@shared/models/dto/response/page.response.dto'
 })
 export class AlertApi extends GenericProjectApi {
     public constructor() {
-        super(`/api/v1/projects/${SELECT_PROFILE_PROJECT_ID}/alerts`)
+        super(`/api/v2/projects/${SELECT_PROFILE_PROJECT_ID}/alerts`)
     }
 
     public findAlerts(

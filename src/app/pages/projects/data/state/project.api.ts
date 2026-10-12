@@ -1,3 +1,4 @@
+import { RegistryConfig } from '@core/config/registry.config'
 import {Injectable} from '@angular/core'
 import { Observable, map } from 'rxjs'
 import {ProjectModel} from '@shared/models/model/project.model'
@@ -24,7 +25,7 @@ import { PageResponseDto } from '@shared/models/dto/response/page.response.dto'
 })
 export class ProjectApi extends GenericApi {
     public constructor() {
-        super('/api/v1/projects')
+        super('/api/v2/projects')
     }
 
     public findProjects(
@@ -46,7 +47,7 @@ export class ProjectApi extends GenericApi {
     }
 
     public getAvailableProjectOptions(): Observable<ProjectOptionModel[]> {
-        return this.http.get<ProjectOptionResponseDto[]>(`${this.baseUrl}/options`).pipe(
+        return this.http.get<ProjectOptionResponseDto[]>(`${RegistryConfig.environment.backend.url}/api/v2/metadata/projects/options`).pipe(
             map( (dtos: ProjectOptionResponseDto[]): ProjectOptionModel[] => dtos.map( ProjectOptionMapper.toModel ) ),
         )
     }

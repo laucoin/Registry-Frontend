@@ -2,7 +2,7 @@ import { ProjectProfileApi } from '@pages/projects/[projectId]/configuration/pro
 import { ApiCase, describeApi, expectMapped, expectMappedList, expectMappedPage, PAGE_QUERY } from '@shared/helpers/testing/api-test.helper'
 import { PROFILE_DTO, USER_DTO, pageDto } from '@shared/helpers/testing/response-fixtures'
 
-const BASE: string = '/api/v1/projects/p1/profiles'
+const BASE: string = '/api/v2/projects/p1/profiles'
 const PARAMS: never = { resetSearch: false, textSearched: 'x' } as never
 
 const CASES: ApiCase<ProjectProfileApi>[] = [

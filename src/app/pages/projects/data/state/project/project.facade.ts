@@ -44,7 +44,6 @@ export class ProjectFacade extends GenericFacade {
 
     public readonly projectsPageDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined => DateHelper.buildDate( this.store.projects.params.dateTimeSearched() ) )
 
-    public readonly projectsPageWithProfileSearchedParam: Signal<boolean | undefined> = this.store.projects.params.withProfile
 
     public readonly projectsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.projects.params.visibilitySearched
 
@@ -82,12 +81,10 @@ export class ProjectFacade extends GenericFacade {
     public inputPageSearchParameters (
         textSearched: string | undefined,
         dateTimeSearched: Date | undefined,
-        withProfile: boolean,
         visibilitySearched: boolean | undefined,
     ): void {
         const resetSearch: boolean = this.projectsPageTextSearchedParam() != textSearched
                                      || this.projectsPageDateTimeSearchedParam() != dateTimeSearched?.toISOString()
-                                     || this.projectsPageWithProfileSearchedParam() != withProfile
                                      || this.projectsPageVisibilitySearchedParam() != visibilitySearched
 
         if (resetSearch) {
@@ -95,7 +92,6 @@ export class ProjectFacade extends GenericFacade {
                 resetSearch: resetSearch,
                 visibilitySearched: visibilitySearched,
                 textSearched: textSearched,
-                withProfile: withProfile,
                 dateTimeSearched: dateTimeSearched?.toISOString(),
             } )
         }

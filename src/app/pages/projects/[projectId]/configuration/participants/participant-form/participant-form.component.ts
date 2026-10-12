@@ -121,7 +121,7 @@ export class ParticipantFormComponent extends BaseFormComponent implements OnDes
     }
 
     private applyParticipant(participant: ParticipantModel | undefined): void {
-        this.contextProject.set(participant?.project || this.sessionFacade.selectedProject())
+        this.contextProject.set( this.sessionFacade.selectedProject() )
         if (!participant) return
         this.model.set(toParticipantFormModel(participant))
         if (participant.user) this.handleUserSelection(this.model().user)
