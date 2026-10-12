@@ -1,0 +1,105 @@
+<sgdf-page-title appProjectEyebrow
+                 [lede]="'groups.members-page.subtitle' | transloco">
+    @if (group(); as current) {
+        {{ current.name }}
+    } @else {
+        <sgdf-skeleton effect="pulse" shape="rounded" class="inline-block w-48 h-8"/>
+    }
+    @if (canAddMembers()) {
+        <sgdf-button slot="actions" variant="primary" (click)="initAddMembersForm()">
+            <sgdf-icon slot="prefix" name="user-plus" library="solid"/>
+            {{ 'groups.actions.add-members' | transloco }}
+        </sgdf-button>
+    }
+    @if (canCreateMember()) {
+        <sgdf-button slot="actions" appearance="outlined" (click)="initCreateMemberForm()">
+            <sgdf-icon slot="prefix" name="plus" library="solid"/>
+            {{ 'groups.actions.create-member' | transloco }}
+        </sgdf-button>
+    }
+</sgdf-page-title>
+
+<app-participant-row #row [groupId]="group()?.id"/>
+
+<app-list class="mt-(--spacing--block) block"
+          emptyMessagePrefix="participants.notifications.EMPTY"
+          [elementPage]="facade.groupMembersPage()"
+          [error]="facade.groupMembersPageError()"
+          [loading]="facade.groupMembersPageLoading()"
+          [loadingMore]="facade.groupMembersPageSilentLoading()"
+          [activeFilters]="activeFilters()"
+          (updateRequired)="loadBatch($event)"
+          (filtersReset)="resetFilters()">
+    <ng-template appTemplate="search">
+        <form class="grid grid-cols-1 items-end gap-(--spacing--in-block-large) md:grid-cols-3"
+              (submit)="$event.preventDefault(); search()">
+            <sgdf-input appSgdfField [label]="'participants.search-and-filter.text' | transloco"
+                        [formField]="form.textSearched"/>
+            <sgdf-select appSgdfField [label]="'participants.search-and-filter.status' | transloco"
+                         [formField]="form.statusSearched">
+                @for (item of participantFacade.presencesStatusMetadata(); track item.label) {
+                    <sgdf-option [value]="item.value ?? ''">{{ item.label }}</sgdf-option>
+                }
+            </sgdf-select>
+            <sgdf-select appSgdfField [label]="'participants.search-and-filter.visibility' | transloco"
+                         [formField]="form.visibilitySearched">
+                @for (item of participantFacade.visibilitiesMetadata(); track item.label) {
+                    <sgdf-option [value]="item.value | booleanChoice">{{ item.label }}</sgdf-option>
+                }
+            </sgdf-select>
+            <div class="flex justify-end md:col-span-3">
+                <sgdf-button variant="primary" appearance="outlined" submit
+                             [loading]="facade.groupMembersPageLoading()">
+                    <sgdf-icon slot="prefix" name="magnifying-glass" library="solid"/>
+                    {{ 'global.actions.search' | transloco }}
+                </sgdf-button>
+            </div>
+        </form>
+    </ng-template>
+
+    <ng-template appTemplate="element" let-participant>
+        <ng-container [ngTemplateOutlet]="row.template()" [ngTemplateOutletContext]="{ $implicit: participant }"/>
+    </ng-template>
+</app-list>
+
+<app-layer [(visible)]='addMembersFormLayerOpened'
+           [title]='"groups.actions.add-members" | transloco'>
+    <div>
+            <div class='field'>
+                <span class='label'
+                      appRequired>{{ 'groups.form.members' | pluralTranslation: addMembersModel().participants | transloco }}</span>
+                <label for='members' class='secondary-color'>{{ 'groups.form.members.search' | transloco }}</label>
+                <app-select-elements-field [formField]='addMembersForm.participants' [suggestions]='facade.searchedParticipantsMetadata()'
+                                           [fluid]='true'
+                                           [selectItemBuilder]='ParticipantHelper.toSelectItem'
+                                           [selectionLabel]='"groups.form.members.selected" | pluralTranslation: addMembersModel().participants |
+                                       transloco'
+                                           [emptyMessage]='"groups.form.members.empty" | transloco'
+                                           [emptySelectionMessage]='"groups.form.members.empty-search" | transloco'
+                                           inputId='members'
+                                           (handleSearch)='handleSearch($event.query)' />
+                <app-field-error [field]='addMembersForm.participants' translationPrefix='groups.form.error.add-members' />
+            </div>
+
+            <div class='flex mt-2 justify-center'>
+                <p-button
+                        (onClick)='addMembersFormLayerOpened.set(false)'
+                        [label]='"global.actions.cancel" | transloco'
+                        text
+                        rounded />
+                <p-button
+                        class='ms-2'
+                        (onClick)='addMembers()'
+                        [label]='"groups.actions.add" | transloco'
+                        rounded
+                        outlined
+                        icon='pi pi-user-plus'
+                        severity='success' />
+            </div>
+    </div>
+</app-layer>
+
+<app-layer [(visible)]='createMemberFormLayerOpened'
+           [title]='"groups.actions.create-member" | transloco'>
+    <app-participant-form [defaultGroup]='group()' [showTitle]='false' [redirect]='false' />
+</app-layer>

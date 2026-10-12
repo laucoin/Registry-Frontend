@@ -1,0 +1,37 @@
+<sgdf-table class="h-full [&::part(grid)]:h-full [&::part(grid)]:table-fixed" appearance="soft">
+    <sgdf-table-row>
+        <sgdf-table-cell header class="flex items-center gap-1">
+            <sgdf-icon name="bell" library="solid"/>
+            <h2 class="text-sm font-semibold uppercase">{{ 'projectHome.activeAlert.title' | transloco }}</h2>
+            <sgdf-tag class="ml-auto" size="small" variant="info" appearance="soft">{{ alerts.length }}</sgdf-tag>
+        </sgdf-table-cell>
+    </sgdf-table-row>
+
+    <sgdf-table-row>
+        <sgdf-table-cell class="text-sm">
+            {{ 'projectHome.activeAlert.criticalityHint' | transloco }}
+        </sgdf-table-cell>
+    </sgdf-table-row>
+
+    <sgdf-table-row>
+        <sgdf-table-cell class="grid grid-cols-1 gap-3 md:grid-cols-3">
+            @for (alert of alerts; track alert.title) {
+                <sgdf-callout [variant]="alert.variant" [title]="alert.title">
+                    <p>{{ alert.criticalityKey | transloco }} · {{ alert.age }}</p>
+                    <p>{{ alert.message }}</p>
+                    <sgdf-button size="small" appearance="outlined" [variant]="alert.variant">
+                        <sgdf-icon slot="prefix" name="comments" library="regular"/>
+                        {{ 'projectHome.communicate' | transloco }}
+                    </sgdf-button>
+                </sgdf-callout>
+            }
+        </sgdf-table-cell>
+    </sgdf-table-row>
+
+    <sgdf-table-row>
+        <sgdf-table-cell>
+            <sgdf-button block size="small" appearance="text">{{ 'projectHome.activeAlert.seeAll' | transloco }}
+            </sgdf-button>
+        </sgdf-table-cell>
+    </sgdf-table-row>
+</sgdf-table>

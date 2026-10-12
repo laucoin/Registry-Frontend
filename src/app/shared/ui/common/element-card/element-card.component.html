@@ -1,0 +1,67 @@
+<p-card>
+    <div #elementCard class='element-actions-container'>
+        <div [class]='uiFacade.tinyScreen() ? "card-content-grid" : "card-content-list"'>
+            @if (loading()) {
+                <app-element-skeleton [withIcon]='!!icon' [layout]='uiFacade.tinyScreen() ? "grid" : "list"' />
+            } @else {
+                <div class='flex items-center' [class.flex-col]='uiFacade.tinyScreen()'>
+                    @if (icon()) {
+                        <div [class.me-4]='!uiFacade.tinyScreen()'>
+                            <p-avatar [icon]='icon()' size='large' shape='circle' />
+                        </div>
+                    }
+                    <div class='w-full'
+                         [class.mt-2]='uiFacade.tinyScreen()'>
+                        <ng-content />
+                    </div>
+                </div>
+            }
+        </div>
+
+        @if ((actions().length > 0 || element().creation || element().lastEdition) && actionMenuVisible()) {
+            <div class='option-button'>
+                <p-popover #menu appendTo='body'>
+                    @if (actions()!.length > 0) {
+                        <p-menu [style]='{
+                                        "border-radius": "0",
+                                        "border-top": "none",
+                                        "border-left": "none",
+                                        "border-right": "none"
+                                    }'
+                                (click)='menu.toggle($event)'
+                                [model]='actions()'>
+                            <ng-template #item let-item>
+                                <a pRipple class='flex items-center py-2 px-4 cursor-pointer'>
+                                    <span [class]='item.icon'></span>&nbsp;
+                                    <span class='ms-2'>{{ item.label | transloco }}</span>
+                                </a>
+                            </ng-template>
+                        </p-menu>
+                    }
+                    <div class='m-1 secondary-color'>
+                        <small>{{ creationLabel() }}</small><br /><small>{{ lastEditionLabel() }}</small>
+                    </div>
+                </p-popover>
+                <p-button
+                        [ariaLabel]='"global.menu.options" | transloco'
+                        (onClick)='$event.stopPropagation(); menu.toggle($event)'
+                        rounded
+                        text
+                        icon='pi pi-ellipsis-v' />
+            </div>
+        }
+    </div>
+</p-card>
+
+@if (!uiFacade.tinyScreen()) {
+    @if (actions().length > 0 && actionMenuVisible()) {
+        <p-context-menu [target]='elementCard' [model]='actions()'>
+            <ng-template #item let-item>
+                <a pRipple class='flex items-center p-2 cursor-pointer'>
+                    <span [class]='item.icon'></span>&nbsp;
+                    <span class='ms-2'>{{ item.label | transloco }}</span>
+                </a>
+            </ng-template>
+        </p-context-menu>
+    }
+}

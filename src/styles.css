@@ -1,0 +1,42 @@
+@import 'primeicons/primeicons.css';
+
+:root {
+    /* --- Layout constants --- */
+    --layout--content-width: 90rem;
+    --layout--min-width: 340px;
+
+    /* --- Spacing constants --- */
+    --spacing--in-block-small: 0.5rem;
+    --spacing--in-block: 0.75rem;
+    --spacing--in-block-large: 1rem;
+    --spacing--page-gutter: 1.5rem;
+    --spacing--block: 2rem;
+}
+
+html {
+    min-width: var(--layout--min-width);
+}
+
+:root {
+    background-color: var(--sgdf-nav-bg, var(--sgdf-color-default));
+}
+
+body {
+    min-height: 100vh;
+    background-color: var(--sgdf-color-bg-default);
+}
+
+sgdf-table-cell[header] > h2 {
+    display: inline;
+    margin: 0;
+    color: inherit;
+    font: inherit;
+}
+
+sgdf-menu-item {
+    padding: 0.5em 1em;
+}
+
+sgdf-drawer.drawer-sheet {
+    --size: calc(100dvh - 3rem);
+}

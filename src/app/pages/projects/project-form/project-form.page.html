@@ -1,0 +1,134 @@
+@if (!form().touched() && facade.projectLoading()) {
+    <div class='flex justify-center'>
+        <p-progress-spinner></p-progress-spinner>
+    </div>
+} @else {
+    <h2>{{ 'projects.form.title' | formTitle: facade.project() | transloco : {name: facade.project()?.name} }}</h2>
+    <p-stepper [(value)]='activeTab' [linear]='true'>
+        <p-step-item [value]='1'>
+            <p-step>{{ 'projects.form.subtitle.information' | transloco }}</p-step>
+            <p-step-panel>
+                <ng-template #content let-activateCallback='activateCallback'>
+                    <div class='p-2'>
+                        <div class='field'>
+                            <label for='name' appRequired>{{ 'projects.form.name' | transloco }}</label>
+                            <input [formField]='form.name'
+                                   [placeholder]='"projects.form.placeholder.name" | transloco'
+                                   id='name'
+                                   pInputText
+                                   type='text'/>
+                            <app-field-error [field]='form.name' translationPrefix='projects.form.error.name'/>
+                        </div>
+                        <div class='flex flex-wrap'>
+                            <div class='left-field field'>
+                                <label for='begin-date-time'>{{ 'projects.form.begin-datetime' | transloco }}</label>
+                                <app-date-time-field [formField]='form.beginDateTime'
+                                                     inputId='begin-date-time'
+                                                     [datePlaceholder]='"projects.form.placeholder.date" | transloco: {
+                                                            date: startDateExample | dateFormat: "date"
+                                                         }'
+                                                     [timePlaceholder]='"projects.form.placeholder.time" | transloco: {
+                                                            date: startDateExample | dateFormat: "time"
+                                                         }'/>
+                                <app-field-error [field]='form.beginDateTime' translationPrefix='projects.form.error.begin-datetime'/>
+                            </div>
+                            <div class='right-field field'>
+                                <label for='end-date-time'>{{ 'projects.form.end-datetime' | transloco }}</label>
+                                <app-date-time-field [formField]='form.endDateTime'
+                                                     inputId='end-date-time'
+                                                     [datePlaceholder]='"projects.form.placeholder.date" | transloco: {
+                                                            date: endDateExample | dateFormat: "date"
+                                                         }'
+                                                     [timePlaceholder]='"projects.form.placeholder.time" | transloco: {
+                                                            date: endDateExample | dateFormat: "time"
+                                                         }'/>
+                                <app-field-error [field]='form.endDateTime' translationPrefix='projects.form.error.end-datetime'/>
+                            </div>
+                        </div>
+                        @if (form.beginDateTime().valid() && form.endDateTime().valid()) {
+                            <app-field-error [field]='form' translationPrefix='projects.form.error.date-range'/>
+                        }
+                        <div class='flex pt-6 justify-between'>
+                            <p-button
+                                    (onClick)='navigateToRedirectUri()'
+                                    [label]='"global.actions.cancel" | transloco'
+                                    text
+                                    rounded/>
+                            <p-button
+                                    (onClick)='isFormValid(form) ? activateCallback(2) : undefined'
+                                    [label]='uiFacade.tinyScreen() ? "" : "global.actions.next" | transloco'
+                                    rounded
+                                    outlined
+                                    icon='pi pi-arrow-down'
+                                    iconPos='right'/>
+                        </div>
+                    </div>
+                </ng-template>
+            </p-step-panel>
+        </p-step-item>
+
+        <p-step-item [value]='2'>
+            <p-step>
+                {{ 'projects.form.subtitle.option' | pluralTranslation: facade.projectOptionsMetadata() | transloco }}
+            </p-step>
+            <p-step-panel>
+                <ng-template #content let-activateCallback='activateCallback'>
+                    <div class='p-2'>
+                        <div class='switch-field select-all-field'>
+                            <label for='select-all'>{{ 'projects.options.select-all' | transloco }}</label>
+                            <p-checkbox binary
+                                        (onChange)='selectAll($event)'
+                                        [formField]='allSelectedForm'
+                                        [indeterminate]='allSelected() === undefined'
+                                        inputId='select-all'/>
+                        </div>
+                        <p-divider/>
+                        <div>
+                            @for (option of facade.projectOptionsMetadata(); track option.value) {
+                                <div class='field'>
+                                    <div class='switch-field option-field'>
+                                        <label [for]='option.value'>
+                                            <i [class]='option.value | optionIcon'></i>
+                                            {{ option.ask }}
+                                            <b> ({{ option.label }})</b>
+                                        </label>
+                                        <p-checkbox [formField]='optionsForm[option.value]'
+                                                    binary
+                                                    [inputId]='option.value'/>
+                                    </div>
+                                </div>
+                                @if (!$last) {
+                                    <p-divider/>
+                                }
+                            }
+                        </div>
+                        @let missingPreRequired = optionsForm().getError('preRequiredOptions');
+                        @if (missingPreRequired) {
+                            <p-message severity='error'
+                                       variant='simple'>{{
+                                    'projects.form.error.options.preRequiredOptions' | transloco: missingPreRequired
+                                }}
+                            </p-message>
+                        }
+                        <div class='flex pt-6 justify-between'>
+                            <p-button
+                                    (onClick)='activateCallback(1)'
+                                    [label]='uiFacade.tinyScreen() ? "" :"global.actions.previous" | transloco'
+                                    icon='pi pi-arrow-up'
+                                    text
+                                    rounded/>
+                            <p-button
+                                    class='ms-2'
+                                    (onClick)='submit()'
+                                    [label]='uiFacade.tinyScreen() ? "" : facade.project() | formButton | transloco'
+                                    rounded
+                                    outlined
+                                    [icon]='facade.project() | formIcon'
+                                    severity='success'/>
+                        </div>
+                    </div>
+                </ng-template>
+            </p-step-panel>
+        </p-step-item>
+    </p-stepper>
+}

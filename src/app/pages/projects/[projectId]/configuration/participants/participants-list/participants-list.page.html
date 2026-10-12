@@ -1,0 +1,53 @@
+<sgdf-page-title appProjectEyebrow
+                 [lede]="'participants.list.subtitle' | transloco">
+    {{ 'participants.list.title' | transloco }}
+    @if (canCreate()) {
+        <sgdf-button slot="actions" variant="primary" [routerLink]="createRoute">
+            <sgdf-icon slot="prefix" name="plus" library="solid"/>
+            {{ 'global.actions.create' | transloco }}
+        </sgdf-button>
+    }
+</sgdf-page-title>
+
+<app-participant-row #row/>
+
+<app-list class="mt-(--spacing--block) block"
+          emptyMessagePrefix="participants.notifications.EMPTY"
+          [elementPage]="facade.participantsPage()"
+          [error]="facade.participantsPageError()"
+          [loading]="facade.participantsPageLoading()"
+          [loadingMore]="facade.participantsPageSilentLoading()"
+          [activeFilters]="activeFilters()"
+          (updateRequired)="loadBatch($event)"
+          (filtersReset)="resetFilters()">
+    <ng-template appTemplate="search">
+        <form class="grid grid-cols-1 items-end gap-(--spacing--in-block-large) md:grid-cols-3"
+              (submit)="$event.preventDefault(); search()">
+            <sgdf-input appSgdfField [label]="'participants.search-and-filter.text' | transloco"
+                        [formField]="form.textSearched"/>
+            <sgdf-select appSgdfField [label]="'participants.search-and-filter.status' | transloco"
+                         [formField]="form.statusSearched">
+                @for (item of facade.presencesStatusMetadata(); track item.label) {
+                    <sgdf-option [value]="item.value ?? ''">{{ item.label }}</sgdf-option>
+                }
+            </sgdf-select>
+            <sgdf-select appSgdfField [label]="'participants.search-and-filter.visibility' | transloco"
+                         [formField]="form.visibilitySearched">
+                @for (item of facade.visibilitiesMetadata(); track item.label) {
+                    <sgdf-option [value]="item.value | booleanChoice">{{ item.label }}</sgdf-option>
+                }
+            </sgdf-select>
+            <div class="flex justify-end md:col-span-3">
+                <sgdf-button variant="primary" appearance="outlined" submit
+                             [loading]="facade.participantsPageLoading()">
+                    <sgdf-icon slot="prefix" name="magnifying-glass" library="solid"/>
+                    {{ 'global.actions.search' | transloco }}
+                </sgdf-button>
+            </div>
+        </form>
+    </ng-template>
+
+    <ng-template appTemplate="element" let-participant>
+        <ng-container [ngTemplateOutlet]="row.template()" [ngTemplateOutletContext]="{ $implicit: participant }"/>
+    </ng-template>
+</app-list>

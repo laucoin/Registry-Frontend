@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "RegistryPage",
+  "title": "Registry Page Options Schema",
+  "type": "object",
+  "description": "Generates a routed page (*.page.ts) under src/app/pages.",
+  "additionalProperties": false,
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The name for the new page.",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      },
+      "x-prompt": "What name would you like to use for the page?"
+    },
+    "project": {
+      "type": "string",
+      "description": "The name of the project where the page should be added.",
+      "$default": {
+        "$source": "projectName"
+      }
+    },
+    "path": {
+      "type": "string",
+      "format": "path",
+      "description": "The path where the page files should be created, relative to the workspace root. Defaults to src/app/pages.",
+      "visible": false
+    },
+    "skipTests": {
+      "type": "boolean",
+      "description": "Skip the generation of unit test files `spec.ts`.",
+      "default": false
+    }
+  },
+  "required": ["name", "project"]
+}

@@ -1,0 +1,30 @@
+.legal-doc {
+    width: 100%;
+    line-height: 1.6;
+}
+
+.legal-doc p,
+.legal-doc li {
+    margin: 0 0 0.75rem;
+    text-align: justify;
+}
+
+.legal-doc ul {
+    margin: 0 0 1.25rem;
+    padding-left: 1.375rem;
+    list-style: disc;
+}
+
+.legal-doc section {
+    margin-top: 2rem;
+}
+
+.legal-doc h2 {
+    margin: 0 0 0.75rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+
+.legal-doc a {
+    text-decoration: underline;
+}

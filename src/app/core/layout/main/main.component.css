@@ -1,0 +1,21 @@
+:host {
+    display: block;
+}
+
+.main-layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.main-layout__content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    box-sizing: border-box;
+    max-width: calc(var(--layout--content-width) + 2 * var(--spacing--page-gutter));
+    width: 100%;
+    margin: var(--spacing--block) auto;
+    padding: 0 var(--spacing--page-gutter);
+    flex: 1;
+}

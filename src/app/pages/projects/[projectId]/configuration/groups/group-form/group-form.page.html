@@ -1,0 +1,80 @@
+<app-form [form]='form'
+          [loading]='loading()'
+          [error]='error()'
+          [title]='"groups.form.title" | formTitle: group() | transloco: { name: group()?.name }'>
+    <p-card>
+        <div class='field'>
+            <label for='name' appRequired>{{ 'groups.form.name' | transloco }}</label>
+            <input [formField]='form.name'
+                   [placeholder]='"groups.form.placeholder.name" | transloco'
+                   (keydown.enter)='submit()'
+                   id='name'
+                   pInputText
+                   type='text' />
+            <app-field-error [field]='form.name' translationPrefix='groups.form.error.name' />
+        </div>
+        <div class='flex flex-wrap'>
+            <div class='left-field field'>
+                <label for='begin-date-time'>{{ 'groups.form.begin-datetime' | transloco }}</label>
+                <app-date-time-field [formField]='form.beginDateTime'
+                                     inputId='begin-date-time'
+                                     [datePlaceholder]='"groups.form.placeholder.date" | transloco: {
+                                                            date: startDateExample | dateFormat: "date"
+                                                         }'
+                                     [timePlaceholder]='"groups.form.placeholder.time" | transloco: {
+                                                            date: startDateExample | dateFormat: "time"
+                                                         }' />
+                <small class='secondary-color'>{{ 'groups.form.hint.begin-date-time' | transloco }}</small>
+                <app-field-error [field]='form.beginDateTime' translationPrefix='groups.form.error.begin-datetime' />
+            </div>
+            <div class='right-field field'>
+                <label for='end-date-time'>{{ 'groups.form.end-datetime' | transloco }}</label>
+                <app-date-time-field [formField]='form.endDateTime'
+                                     inputId='end-date-time'
+                                     [datePlaceholder]='"groups.form.placeholder.date" | transloco: {
+                                                            date: endDateExample | dateFormat: "date"
+                                                         }'
+                                     [timePlaceholder]='"groups.form.placeholder.time" | transloco: {
+                                                            date: endDateExample | dateFormat: "time"
+                                                         }' />
+                <small class='secondary-color'>{{ 'groups.form.hint.end-date-time' | transloco }}</small>
+                <app-field-error [field]='form.endDateTime' translationPrefix='groups.form.error.end-datetime' />
+            </div>
+        </div>
+        @if (form.beginDateTime().valid() && form.endDateTime().valid()) {
+            <app-field-error [field]='form' translationPrefix='groups.form.error.date-range' />
+        }
+        <p-divider />
+        <div class='field'>
+            <span class='label' appRequired>{{ 'groups.form.members' | pluralTranslation: model().participants | transloco }}</span>
+            <label for='members' class='secondary-color'>{{ 'groups.form.members.search' | transloco }}</label>
+            <app-select-elements-field [formField]='form.participants'
+                                       [suggestions]='facade.searchedParticipantsMetadata()'
+                                       [fluid]='true'
+                                       [selectItemBuilder]='ParticipantHelper.toSelectItem'
+                                       [selectionLabel]='"groups.form.members.selected" | pluralTranslation: model().participants |
+                                       transloco'
+                                       [emptyMessage]='"groups.form.members.empty" | transloco'
+                                       [emptySelectionMessage]='"groups.form.members.empty-search" | transloco'
+                                       inputId='members'
+                                       (handleSearch)='handleSearch($event.query)' />
+            <app-field-error [field]='form.participants' translationPrefix='groups.form.error.members' />
+        </div>
+    </p-card>
+    <div class='flex mt-2 justify-center'>
+        <p-button
+                (onClick)='navigateToRedirectUri()'
+                [label]='"global.actions.cancel" | transloco'
+                text
+                rounded />
+        <p-button
+                class='ms-2'
+                (onClick)='submit()'
+                [label]='group() | formButton | transloco'
+                rounded
+                outlined
+                [icon]='group() | formIcon'
+                [disabled]='saving()'
+                severity='success' />
+    </div>
+</app-form>

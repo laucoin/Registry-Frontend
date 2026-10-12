@@ -1,0 +1,32 @@
+@if (message()) {
+    <div class='container mx-auto px-3'>
+        <div class='grid grid-cols-12 gap-x-6'>
+            @if (showImage()) {
+                <div class='col-span-12 order-2 sm:col-span-6 sm:order-1 md:col-span-12 md:order-2 lg:col-span-6 lg:order-1'>
+                    <img [src]='imagePath()' class='w-full max-w-[400px]' [alt]='imageAlt() | transloco' />
+                </div>
+            }
+            <div class='col-span-12 order-1 sm:col-span-6 sm:order-2 md:col-span-12 md:order-1 lg:col-span-6 lg:order-2 flex flex-col justify-center'>
+                <div class='w-full'>
+                    <app-message [severity]='message()!.severity'>
+                        <div class='flex flex-col items-start'>
+                            @if (message()!.summary) {
+                                <div class='message-title'>
+                                    {{ message()!.summary! | transloco }}
+                                </div>
+                            }
+                            @if (message()!.detail) {
+                                <div class='message-content mt-1'>
+                                    {{ message()!.detail! | transloco: message()!.data }}
+                                </div>
+                            }
+                        </div>
+                    </app-message>
+                </div>
+                <div class='mt-2'>
+                    <ng-content />
+                </div>
+            </div>
+        </div>
+    </div>
+}

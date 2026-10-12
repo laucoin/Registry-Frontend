@@ -1,0 +1,46 @@
+<sgdf-table appearance="soft">
+    <sgdf-table-row>
+        <sgdf-table-cell header class="flex items-center gap-1">
+            <sgdf-icon name="shield-halved" library="solid"/>
+            <h2>{{ 'myAccount.personalData.title' | transloco }}</h2>
+        </sgdf-table-cell>
+    </sgdf-table-row>
+
+    <sgdf-table-row>
+        <sgdf-table-cell row-header>
+            <div class="grid gap-4 md:grid-cols-2">
+                <sgdf-callout class="md:col-span-2" variant="info" without-icon
+                              [title]="'myAccount.personalData.gdprLabel' | transloco">
+                    <a class="inline-flex items-center gap-2 font-semibold" [routerLink]="privacyRoute">
+                        <sgdf-icon name="shield-halved" library="solid"/>
+                        {{ 'myAccount.personalData.learnMore' | transloco }}
+                    </a>
+                </sgdf-callout>
+
+                <sgdf-callout variant="info" without-icon>
+                    <span slot="title" class="inline-flex flex-wrap items-center gap-2">
+                        {{ 'myAccount.personalData.extract.title' | transloco }}
+                        <sgdf-tag variant="neutral">{{ 'myAccount.personalData.comingSoon' | transloco }}</sgdf-tag>
+                    </span>
+                    <p class="mt-0 mb-3 font-normal">{{ 'myAccount.personalData.extract.description' | transloco }}</p>
+                    <sgdf-button variant="neutral" appearance="outlined" disabled>
+                        <sgdf-icon slot="prefix" name="download" library="solid"/>
+                        {{ 'myAccount.personalData.extract.action' | transloco }}
+                    </sgdf-button>
+                </sgdf-callout>
+
+                <sgdf-callout variant="info" without-icon>
+                    <span slot="title" class="inline-flex flex-wrap items-center gap-2">
+                        {{ 'myAccount.personalData.delete.title' | transloco }}
+                        <sgdf-tag variant="neutral">{{ 'myAccount.personalData.comingSoon' | transloco }}</sgdf-tag>
+                    </span>
+                    <p class="mt-0 mb-3 font-normal">{{ 'myAccount.personalData.delete.description' | transloco }}</p>
+                    <sgdf-button variant="danger" appearance="solid" disabled>
+                        <sgdf-icon slot="prefix" name="trash" library="solid"/>
+                        {{ 'myAccount.personalData.delete.action' | transloco }}
+                    </sgdf-button>
+                </sgdf-callout>
+            </div>
+        </sgdf-table-cell>
+    </sgdf-table-row>
+</sgdf-table>

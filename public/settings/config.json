@@ -1,0 +1,84 @@
+{
+  "defaultLanguage": "fr",
+  "languages": [
+    "fr"
+  ],
+  "enabledActions": [
+    "USER_UPDATE",
+    "USER_BLOCK",
+    "USER_UNBLOCK",
+    "USER_IMPERSONATE",
+    "USER_DELETE",
+    "PROJECT_SELECT_PROFILE",
+    "PROJECT_CREATE_SUPPORT_PROFILE",
+    "PROJECT_UPDATE",
+    "PROJECT_DISABLE",
+    "PROJECT_ENABLE",
+    "PROJECT_DELETE",
+    "PROJECT_PROFILE_SELECT",
+    "PROJECT_PROFILE_UPDATE",
+    "PROJECT_PROFILE_BLOCK",
+    "PROJECT_PROFILE_UNBLOCK",
+    "PROJECT_PROFILE_DELETE",
+    "PARTICIPANT_CONSULT_MOVEMENTS",
+    "PARTICIPANT_UPDATE",
+    "PARTICIPANT_DISABLE",
+    "PARTICIPANT_ENABLE",
+    "PARTICIPANT_REMOVE_FROM_GROUP",
+    "PARTICIPANT_DELETE",
+    "MOVEMENT_REVERSE",
+    "MOVEMENT_UPDATE",
+    "MOVEMENT_DISABLE",
+    "MOVEMENT_ENABLE",
+    "MOVEMENT_DELETE",
+    "GROUP_CONSULT_MEMBERS",
+    "GROUP_UPDATE",
+    "GROUP_DISABLE",
+    "GROUP_ENABLE",
+    "GROUP_DELETE",
+    "VEHICLE_CONSULT_MOVEMENTS",
+    "VEHICLE_UPDATE",
+    "VEHICLE_DISABLE",
+    "VEHICLE_ENABLE",
+    "VEHICLE_DELETE",
+    "ACTIVITY_CONSULT_MOVEMENTS",
+    "ACTIVITY_UPDATE",
+    "ACTIVITY_DISABLE",
+    "ACTIVITY_ENABLE",
+    "ACTIVITY_DELETE",
+    "COMMUNICATION_UPDATE",
+    "COMMUNICATION_DISABLE",
+    "COMMUNICATION_ENABLE",
+    "COMMUNICATION_DELETE",
+    "ALERT_RESOLVE",
+    "ALERT_CANCEL",
+    "ALERT_REOPEN",
+    "ALERT_UPDATE",
+    "ALERT_DISABLE",
+    "ALERT_ENABLE",
+    "ALERT_DELETE"
+  ],
+  "application": {
+    "name": "Registry",
+    "organization": "Scouts et Guides de France",
+    "creator": {
+      "name": "Luc Aucoin",
+      "email": "luc.aucoin1998@gmail.com",
+      "website": "https://doc.laucoin.fr/resume"
+    },
+    "support": {
+      "documentationUrl": "https://doc.laucoin.fr/registry",
+      "issuesUrl": "https://github.com/laucoin/Registry-Frontend/issues"
+    }
+  },
+  "notification": {
+    "duration": {
+      "info": 5000,
+      "success": 3000,
+      "warn": 8000,
+      "error": 15000,
+      "secondary": 5000,
+      "contrast": 5000
+    }
+  }
+}

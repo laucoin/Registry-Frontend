@@ -1,0 +1,19 @@
+<sgdf-page-title [eyebrow]="'projectHome.eyebrow' | transloco" [lede]="'projectHome.subtitle' | transloco">
+    {{ project()?.name }}
+</sgdf-page-title>
+
+<section class="grid grid-cols-1 gap-(--spacing--block) lg:grid-cols-12">
+    <app-project-participant-overview [class]="hasVehicleOption() ? 'lg:col-span-5 block' : 'lg:col-span-6 block'"/>
+    @if (hasVehicleOption()) {
+        <app-project-vehicle-overview class="lg:col-span-3 block"/>
+    }
+    <app-project-participant-regularization
+            [class]="hasVehicleOption() ? 'lg:col-span-4 block' : 'lg:col-span-6 block'"/>
+    @if (hasAlertOption()) {
+        <app-project-active-alert class="lg:col-span-12 block"/>
+    }
+    <app-project-upcoming-arrival class="lg:col-span-4 block"/>
+    <app-project-upcoming-departure class="lg:col-span-4 block"/>
+    <app-project-birthday class="lg:col-span-4 block"/>
+    <app-project-operational-monitoring class="lg:col-span-12 block"/>
+</section>

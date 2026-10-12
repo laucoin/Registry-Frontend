@@ -1,0 +1,56 @@
+<sgdf-page-title appProjectEyebrow
+                 [lede]="'activities.list.subtitle' | transloco">
+    {{ 'activities.list.title' | transloco }}
+    @if (canCreate()) {
+        <sgdf-button slot="actions" variant="primary" [routerLink]="createRoute">
+            <sgdf-icon slot="prefix" name="plus" library="solid"/>
+            {{ 'global.actions.create' | transloco }}
+        </sgdf-button>
+    }
+</sgdf-page-title>
+
+<app-activity-row #row/>
+
+<app-list class="mt-(--spacing--block) block"
+          emptyMessagePrefix="activities.notifications.EMPTY"
+          [elementPage]="facade.activitiesPage()"
+          [error]="facade.activitiesPageError()"
+          [loading]="facade.activitiesPageLoading()"
+          [loadingMore]="facade.activitiesPageSilentLoading()"
+          [activeFilters]="activeFilters()"
+          (updateRequired)="loadBatch($event)"
+          (filtersReset)="resetFilters()">
+    <ng-template appTemplate="search">
+        <form class="grid grid-cols-1 items-end gap-(--spacing--in-block-large) md:grid-cols-2"
+              (submit)="$event.preventDefault(); search()">
+            <sgdf-input appSgdfField [label]="'activities.search-and-filter.text' | transloco"
+                        [formField]="form.textSearched"/>
+            <sgdf-date-time-picker appSgdfField with-time
+                                   [label]="'activities.search-and-filter.datetime' | transloco"
+                                   [formField]="form.dateTimeSearched"/>
+            <sgdf-select appSgdfField [label]="'activities.search-and-filter.availability' | transloco"
+                         [formField]="form.availabilitySearched">
+                @for (item of facade.availabilitiesMetadata(); track item.label) {
+                    <sgdf-option [value]="item.value | booleanChoice">{{ item.label }}</sgdf-option>
+                }
+            </sgdf-select>
+            <sgdf-select appSgdfField [label]="'activities.search-and-filter.visibility' | transloco"
+                         [formField]="form.visibilitySearched">
+                @for (item of facade.visibilitiesMetadata(); track item.label) {
+                    <sgdf-option [value]="item.value | booleanChoice">{{ item.label }}</sgdf-option>
+                }
+            </sgdf-select>
+            <div class="flex justify-end md:col-span-2">
+                <sgdf-button variant="primary" appearance="outlined" submit
+                             [loading]="facade.activitiesPageLoading()">
+                    <sgdf-icon slot="prefix" name="magnifying-glass" library="solid"/>
+                    {{ 'global.actions.search' | transloco }}
+                </sgdf-button>
+            </div>
+        </form>
+    </ng-template>
+
+    <ng-template appTemplate="element" let-activity>
+        <ng-container [ngTemplateOutlet]="row.template()" [ngTemplateOutletContext]="{ $implicit: activity }"/>
+    </ng-template>
+</app-list>

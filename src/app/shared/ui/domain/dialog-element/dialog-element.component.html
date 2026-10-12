@@ -1,0 +1,33 @@
+<div class="message" [class.own]="authorIsCurrentUser()" [class.grouped]="!firstAuthorMessage()">
+    @if (!authorIsCurrentUser()) {
+        <div class="avatar" aria-hidden="true">
+            @if (lastAuthorMessage()) {
+                <sgdf-avatar size="small" variant="primary">
+                    <sgdf-icon slot="icon" name="user" library="solid"/>
+                </sgdf-avatar>
+            }
+        </div>
+    }
+    <div class="bubble" [class.tail]="lastAuthorMessage()" [class.hidden-message]="!communication().visible">
+        @if (!communication().visible) {
+            <span class="sr-only">{{ 'communications.hidden' | transloco }}</span>
+        }
+        @if (firstAuthorMessage() && !authorIsCurrentUser()) {
+            <div class="author">{{ authorName() }}</div>
+        }
+        @if (communication().alert && alertVisible()) {
+            <blockquote class="quote">
+                <div class="quote-title">{{ communication().alert!.title }}</div>
+                <sgdf-tag size="small" appearance="soft" pill [variant]="alertVariant()">{{ communication().alert!.status!.label }}</sgdf-tag>
+            </blockquote>
+        }
+        <div class="content">{{ communication().message }}</div>
+        <div class="meta">
+            @if (updated()) {
+                <span>({{ 'global.updated' | transloco }})</span>
+            }
+            <time [attr.datetime]="communication().dateTime">{{ communication().dateTime | dateFormat: 'datetime' }}</time>
+            <app-element-actions [subject]="authorName()" [actions]="actions()"/>
+        </div>
+    </div>
+</div>

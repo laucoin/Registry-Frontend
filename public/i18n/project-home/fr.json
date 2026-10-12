@@ -1,0 +1,59 @@
+{
+  "eyebrow": "Tableau de bord",
+  "subtitle": "Vue opérationnelle du projet",
+  "seeMore": "Voir plus",
+  "communicate": "Communiquer",
+  "participantOverview": {
+    "title": "Participants",
+    "total": "{{count}} au total",
+    "registeredPresent": "Inscrits présents",
+    "registeredOut": "Inscrits en sortie",
+    "guestsPresent": "Invités présents",
+    "seeIndividualStatus": "Voir le statut individuel"
+  },
+  "vehicleOverview": {
+    "title": "Véhicules",
+    "total": "{{count}} au total",
+    "present": "Présents",
+    "out": "En sortie",
+    "seeVehicleStatus": "Voir le statut des véhicules"
+  },
+  "participantRegularization": {
+    "title": "Présences à régulariser",
+    "seeAll": "Voir toutes les présences à régulariser"
+  },
+  "activeAlert": {
+    "title": "Alertes ouvertes",
+    "criticalityHint": "Criticité automatique selon l'ancienneté : récente < 6 h · renforcée 6–18 h · élevée > 18 h",
+    "seeAll": "Voir toutes les alertes",
+    "criticality": {
+      "high": "Élevée",
+      "reinforced": "Renforcée",
+      "recent": "Récente"
+    }
+  },
+  "upcomingArrival": {
+    "title": "Arrivées du jour",
+    "total": "{{count}} arrivées"
+  },
+  "upcomingDeparture": {
+    "title": "Départs du jour",
+    "total": "{{count}} départs"
+  },
+  "birthday": {
+    "title": "Anniversaires du jour",
+    "age": "{{count}} ans"
+  },
+  "operationalMonitoring": {
+    "title": "Suivi opérationnel",
+    "tabs": {
+      "activities": "Activités en cours",
+      "idleMovements": "Mouvements sans activité",
+      "individualStatus": "Statut individuel",
+      "groupStatus": "Statut par groupe",
+      "vehicleStatus": "Statut des véhicules"
+    },
+    "overdue": "Durée estimée dépassée",
+    "lastCommunication": "Dernière communication {{value}}"
+  }
+}

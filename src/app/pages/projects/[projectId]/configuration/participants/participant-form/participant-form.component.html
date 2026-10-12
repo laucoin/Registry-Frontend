@@ -1,0 +1,147 @@
+<app-form [form]='form'
+          [loading]='loading()'
+          [error]='error()'
+          [showTitle]='showTitle()'
+          [title]='"participants.form.title" | formTitle: participant() | transloco : {
+              firstName: participant()?.firstName,
+              lastName: participant()?.lastName
+          }'>
+    <p-card>
+        @if (!defaultGroup()) {
+            <div class='field'>
+                <label for='user'>{{ 'participants.form.user.title' | transloco }}</label>
+                <p-auto-complete inputId='user'
+                                 fluid
+                                 completeOnFocus
+                                 forceSelection
+                                 showClear
+                                 optionLabel='label'
+                                 optionValue='self'
+                                 [placeholder]='"participants.form.placeholder.user" | transloco'
+                                 [formField]='form.user'
+                                 [suggestions]='userOptions()'
+                                 (keydown.enter)='submit()'
+                                 (onClear)='handleUserSelection(undefined)'
+                                 (onUnselect)='handleUserSelection(undefined)'
+                                 (onSelect)='handleUserSelection($event.value.self)'
+                                 (completeMethod)='handleUserSearch($event)'>
+                    <ng-template #empty>
+                        <span>{{ 'participants.form.user.empty-search' | transloco }}</span>
+                    </ng-template>
+                </p-auto-complete>
+            </div>
+            <p-divider align='center' />
+        }
+        <div class='flex flex-wrap'>
+            <div class='left-field field'>
+                <label for='first-name' appRequired>{{ 'participants.form.firstname' | transloco }}</label>
+                <input [formField]='form.firstName'
+                       [placeholder]='"participants.form.placeholder.firstname" | transloco'
+                       (keydown.enter)='submit()'
+                       id='first-name'
+                       pInputText
+                       type='text' />
+                @if (previousFirstName() && previousFirstName() !== model().firstName) {
+                    <small class='secondary-color'>
+                        {{ 'participants.form.previous-first-name' | transloco: { firstName: previousFirstName() } }}
+                    </small>
+                }
+                <app-field-error [field]='form.firstName' translationPrefix='participants.form.error.firstname' />
+            </div>
+            <div class='right-field field'>
+                <label for='last-name' appRequired>{{ 'participants.form.lastname' | transloco }}</label>
+                <input [formField]='form.lastName'
+                       [placeholder]='"participants.form.placeholder.lastname" | transloco'
+                       (keydown.enter)='submit()'
+                       id='last-name'
+                       pInputText
+                       type='text' />
+                @if (previousLastName() && previousLastName() !== model().lastName) {
+                    <small class='secondary-color'>
+                        {{ 'participants.form.previous-last-name' | transloco: { lastName: previousLastName() } }}
+                    </small>
+                }
+                <app-field-error [field]='form.lastName' translationPrefix='participants.form.error.lastname' />
+            </div>
+        </div>
+        <div class='field'>
+            <label for='birthday' appRequired>{{ 'participants.form.birthday' | transloco }}</label>
+            <p-date-picker [formField]='form.birthday'
+                           showButtonBar
+                           showIcon
+                           inputmode='numeric'
+                           type='text'
+                           [showOnFocus]='false'
+                           [placeholder]='"participants.form.placeholder.birthday" | transloco'
+                           [touchUI]='uiFacade.tinyScreen()'
+                           (keydown.enter)='submit()'
+                           id='birthday'
+                           fluid />
+            <app-field-error [field]='form.birthday' translationPrefix='participants.form.error.birthday' />
+        </div>
+        @if (!defaultGroup()) {
+            <div class='flex flex-wrap'>
+                <div class='left-field field'>
+                    <label for='begin-date-time'>{{ 'participants.form.begin-datetime' | transloco }}</label>
+                    <app-date-time-field [formField]='form.beginDateTime'
+                                         inputId='begin-date-time'
+                                         [datePlaceholder]='"participants.form.placeholder.date" | transloco: {
+                                                            date: startDateExample | dateFormat: "date"
+                                                         }'
+                                         [timePlaceholder]='"participants.form.placeholder.time" | transloco: {
+                                                            date: startDateExample | dateFormat: "time"
+                                                         }' />
+                    <small class='secondary-color'>{{ 'participants.form.hint.begin-date-time' | transloco }}</small>
+                    <app-field-error [field]='form.beginDateTime' translationPrefix='participants.form.error.begin-datetime' />
+                </div>
+                <div class='right-field field'>
+                    <label for='end-date-time'>{{ 'participants.form.end-datetime' | transloco }}</label>
+                    <app-date-time-field [formField]='form.endDateTime'
+                                         inputId='end-date-time'
+                                         [datePlaceholder]='"participants.form.placeholder.date" | transloco: {
+                                                            date: endDateExample | dateFormat: "date"
+                                                         }'
+                                         [timePlaceholder]='"participants.form.placeholder.time" | transloco: {
+                                                            date: endDateExample | dateFormat: "time"
+                                                         }' />
+                    <small class='secondary-color'>{{ 'participants.form.hint.end-date-time' | transloco }}</small>
+                    <app-field-error [field]='form.endDateTime' translationPrefix='participants.form.error.end-datetime' />
+                </div>
+            </div>
+            @if (form.beginDateTime().valid() && form.endDateTime().valid()) {
+                <app-field-error [field]='form' translationPrefix='participants.form.error.date-range' />
+            }
+            <p-divider />
+            <div class='field'>
+                <span class='label'>{{ 'participants.form.groups' | pluralTranslation: model().groups.length  | transloco }}</span>
+                <label for='members' class='secondary-color'>{{ 'participants.form.groups.search' | transloco }}</label>
+                <app-select-elements-field [formField]='form.groups'
+                                           [fluid]='true'
+                                           [selectItemBuilder]='GroupHelper.toSelectItem'
+                                           [selectionLabel]='"participants.form.groups.selected" | pluralTranslation:
+                                           model().groups.length | transloco'
+                                           [emptyMessage]='"participants.form.groups.empty-search" | transloco'
+                                           [emptySelectionMessage]='"participants.form.groups.empty" | transloco'
+                                           [suggestions]='facade.searchedGroupsMetadata()'
+                                           inputId='groups'
+                                           (handleSearch)='handleGroupSearch($event)' />
+            </div>
+        }
+    </p-card>
+    <div class='flex mt-2 justify-center'>
+        <p-button
+                (onClick)='navigateToRedirectUri()'
+                [label]='"global.actions.cancel" | transloco'
+                text
+                rounded />
+        <p-button
+                class='ms-2'
+                (onClick)='submit()'
+                [label]='participant() | formButton | transloco'
+                rounded
+                outlined
+                [icon]='participant() | formIcon'
+                [disabled]='saving()'
+                severity='success' />
+    </div>
+</app-form>

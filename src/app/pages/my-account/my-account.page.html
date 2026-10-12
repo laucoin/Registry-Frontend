@@ -1,0 +1,11 @@
+<sgdf-page-title [eyebrow]="'myAccount.eyebrow' | transloco"
+                 [lede]="'myAccount.subtitle' | transloco">
+    {{ 'myAccount.title' | transloco }}
+</sgdf-page-title>
+
+<section class="grid grid-cols-1 gap-(--spacing--block) lg:grid-cols-12">
+    <app-account-info class="lg:col-span-7 lg:row-span-2 block"/>
+    <app-account-language class="lg:col-span-5 block"/>
+    <app-account-theme class="lg:col-span-5 block"/>
+    <app-account-personal-data class="lg:col-span-12"/>
+</section>

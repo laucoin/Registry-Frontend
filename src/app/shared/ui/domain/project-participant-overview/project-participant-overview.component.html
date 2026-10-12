@@ -1,0 +1,36 @@
+<sgdf-table class="h-full [&::part(grid)]:h-full [&::part(grid)]:table-fixed" appearance="soft">
+    <sgdf-table-row>
+        <sgdf-table-cell header class="flex items-center gap-1">
+            <sgdf-icon name="people-group" library="solid"/>
+            <h2 class="text-sm font-semibold uppercase">{{ 'projectHome.participantOverview.title' | transloco }}</h2>
+            <sgdf-tag class="ml-auto" size="small" variant="info" appearance="soft">
+                {{ 'projectHome.participantOverview.total' | transloco: { count: total() } }}
+            </sgdf-tag>
+        </sgdf-table-cell>
+    </sgdf-table-row>
+
+    <sgdf-table-row>
+        <sgdf-table-cell class="h-full p-0 align-top">
+            <div class="flex h-full flex-col min-[500px]:flex-row">
+                @for (stat of stats; track stat.labelKey) {
+                    @if (!$first) {
+                        <sgdf-divider class="m-0 min-[500px]:hidden" appearance="soft"/>
+                        <sgdf-divider class="h-auto shrink-0 self-stretch max-[499px]:hidden" appearance="soft" orientation="vertical"/>
+                    }
+                    <div class="flex min-w-0 flex-1 flex-col items-start gap-1 p-4">
+                        <span class="text-xs uppercase">{{ 'projectHome.participantOverview.' + stat.labelKey | transloco }}</span>
+                        <strong class="text-3xl font-bold">{{ stat.value }}</strong>
+                    </div>
+                }
+            </div>
+        </sgdf-table-cell>
+    </sgdf-table-row>
+
+    <sgdf-table-row>
+        <sgdf-table-cell class="align-bottom">
+            <sgdf-button block size="small" appearance="text">
+                {{ 'projectHome.activeAlert.seeAll' | transloco }}
+            </sgdf-button>
+        </sgdf-table-cell>
+    </sgdf-table-row>
+</sgdf-table>

@@ -1,0 +1,11 @@
+@if (untouched() && loading()) {
+    <div class='flex justify-center'>
+        <p-progress-spinner></p-progress-spinner>
+    </div>
+} @else {
+    @if (title() && showTitle()) {
+        <h2>{{ title() }}</h2>
+    }
+    <app-form-error [error]='error()' />
+    <ng-content/>
+}

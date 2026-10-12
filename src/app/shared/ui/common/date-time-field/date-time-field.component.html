@@ -1,0 +1,34 @@
+<div class='flex'>
+    <div class='date'>
+        <p-date-picker [touchUI]='uiFacade.tinyScreen()'
+                       [class.invalid]='showInvalid()'
+                       [placeholder]='datePlaceholder()'
+                       [inputId]='inputId() + "_date"'
+                       [showOnFocus]='false'
+                       [disabled]='disabled()'
+                       [ngModel]='date()'
+                       (ngModelChange)='onDateChange($event)'
+                       inputmode='numeric'
+                       type='text'
+                       appendTo='body'
+                       fluid
+                       showIcon />
+    </div>
+    <div class='time'>
+        <p-date-picker [touchUI]='uiFacade.tinyScreen()'
+                       [class.invalid]='showInvalid()'
+                       [placeholder]='timePlaceholder()'
+                       [inputId]='inputId() + "_time"'
+                       [showOnFocus]='false'
+                       [disabled]='disabled()'
+                       [ngModel]='time()'
+                       (ngModelChange)='onTimeChange($event)'
+                       inputmode='numeric'
+                       type='text'
+                       icon='pi pi-clock'
+                       appendTo='body'
+                       fluid
+                       showIcon
+                       timeOnly />
+    </div>
+</div>

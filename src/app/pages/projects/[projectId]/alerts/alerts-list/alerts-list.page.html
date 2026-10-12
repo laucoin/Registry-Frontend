@@ -1,0 +1,51 @@
+<sgdf-page-title appProjectEyebrow
+                 [lede]="'alerts.list.subtitle' | transloco">
+    {{ 'alerts.list.title' | transloco }}
+</sgdf-page-title>
+
+<app-list class="mt-(--spacing--block) block"
+          emptyMessagePrefix="alerts.notifications.EMPTY"
+          [elementPage]="facade.alertsPage()"
+          [error]="facade.alertsPageError()"
+          [loading]="facade.alertsPageLoading()"
+          [loadingMore]="facade.alertsPageSilentLoading()"
+          [activeFilters]="activeFilters()"
+          (updateRequired)="loadBatch($event)"
+          (filtersReset)="resetFilters()">
+    <ng-template appTemplate="search">
+        <form class="grid grid-cols-1 items-end gap-(--spacing--in-block-large) md:grid-cols-2"
+              (submit)="$event.preventDefault(); search()">
+            <sgdf-input appSgdfField class="md:col-span-2" [label]="'alerts.search-and-filter.text' | transloco"
+                        [formField]="form.textSearched"/>
+            <sgdf-select appSgdfField [label]="'alerts.search-and-filter.status' | transloco"
+                         [formField]="form.statusSearched">
+                @for (item of facade.alertStatusMetadata(); track item.label) {
+                    <sgdf-option [value]="item.value ?? ''">{{ item.label }}</sgdf-option>
+                }
+            </sgdf-select>
+            <sgdf-select appSgdfField [label]="'alerts.search-and-filter.visibility' | transloco"
+                         [formField]="form.visibilitySearched">
+                @for (item of facade.visibilitiesMetadata(); track item.label) {
+                    <sgdf-option [value]="item.value | booleanChoice">{{ item.label }}</sgdf-option>
+                }
+            </sgdf-select>
+            <sgdf-date-time-picker appSgdfField with-time
+                                   [label]="'alerts.search-and-filter.start-datetime' | transloco"
+                                   [formField]="form.startDateTimeSearched"/>
+            <sgdf-date-time-picker appSgdfField with-time
+                                   [label]="'alerts.search-and-filter.end-datetime' | transloco"
+                                   [formField]="form.endDateTimeSearched"/>
+            <div class="flex justify-end md:col-span-2">
+                <sgdf-button variant="primary" appearance="outlined" submit
+                             [loading]="facade.alertsPageLoading()">
+                    <sgdf-icon slot="prefix" name="magnifying-glass" library="solid"/>
+                    {{ 'global.actions.search' | transloco }}
+                </sgdf-button>
+            </div>
+        </form>
+    </ng-template>
+
+    <ng-template appTemplate="element" let-alert>
+        <sgdf-list-item appAlertElement [alert]="alert"/>
+    </ng-template>
+</app-list>
