@@ -26,7 +26,7 @@ describe('MainComponent', () => {
 
 	it('should move the focus to the content when the skip link is used', () => {
 		// Arrange
-		const link: HTMLAnchorElement = fixture.nativeElement.querySelector('a[href="#main-content"]');
+		const link: HTMLElement = fixture.nativeElement.querySelector('sgdf-button[href="#main-content"]');
 		const content: HTMLElement = fixture.nativeElement.querySelector('#main-content');
 		document.body.appendChild(fixture.nativeElement);
 

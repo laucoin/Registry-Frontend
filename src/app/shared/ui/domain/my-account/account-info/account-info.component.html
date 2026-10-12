@@ -1,6 +1,7 @@
-<sgdf-table class="h-full [&::part(grid)]:h-full [&::part(grid)]:table-fixed" appearance="soft" [attr.aria-busy]="!currentUser()">
+<sgdf-table class="h-full [&::part(grid)]:h-full [&::part(grid)]:table-fixed" appearance="soft"
+            [attr.aria-busy]="!currentUser()">
     <sgdf-table-row>
-        <sgdf-table-cell header>
+        <sgdf-table-cell header class="flex items-center gap-1">
             <sgdf-icon name="user" library="solid"/>
             <h2>{{ 'myAccount.info.title' | transloco }}</h2>
         </sgdf-table-cell>

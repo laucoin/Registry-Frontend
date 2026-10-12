@@ -1,31 +1,19 @@
-@if (ProjectHelper.hasOption(sessionFacade.selectedProject(), ProjectOptionEnum.ALERT)) {
-    <app-current-alerts />
-}
-<p-tabs [value]='currentTab()' (valueChange)='navigate($event)' scrollable>
-    <p-tablist>
-        <p-tab value='dashboard'>{{ 'project-home.dashboard.title' | transloco }}</p-tab>
-        @if (ProjectHelper.hasOption(sessionFacade.selectedProject(), ProjectOptionEnum.ACTIVITY)) {
-            <p-tab value='activities'>{{ 'project-home.activity-in-progress.title' | transloco }}</p-tab>
-        }
-        <p-tab value='movements'>{{ 'project-home.movements-in-progress.title' | transloco }}</p-tab>
-    </p-tablist>
-    <p-tabpanels>
-        <p-tabpanel value='dashboard'>
-            <div class='ps-4 pe-4'>
-                <app-dashboard />
-            </div>
-        </p-tabpanel>
-        @if (ProjectHelper.hasOption(sessionFacade.selectedProject(), ProjectOptionEnum.ACTIVITY)) {
-            <p-tabpanel value='activities'>
-                <div class='ps-4 pe-4'>
-                    <app-current-activities />
-                </div>
-            </p-tabpanel>
-        }
-        <p-tabpanel value='movements'>
-            <div class='ps-4 pe-4'>
-                <app-current-movements />
-            </div>
-        </p-tabpanel>
-    </p-tabpanels>
-</p-tabs>
+<sgdf-page-title [eyebrow]="'projectHome.eyebrow' | transloco" [lede]="'projectHome.subtitle' | transloco">
+    {{ project()?.name }}
+</sgdf-page-title>
+
+<section class="grid grid-cols-1 gap-(--spacing--block) lg:grid-cols-12">
+    <app-project-participant-overview [class]="hasVehicleOption() ? 'lg:col-span-5 block' : 'lg:col-span-6 block'"/>
+    @if (hasVehicleOption()) {
+        <app-project-vehicle-overview class="lg:col-span-3 block"/>
+    }
+    <app-project-participant-regularization
+            [class]="hasVehicleOption() ? 'lg:col-span-4 block' : 'lg:col-span-6 block'"/>
+    @if (hasAlertOption()) {
+        <app-project-active-alert class="lg:col-span-12 block"/>
+    }
+    <app-project-upcoming-arrival class="lg:col-span-4 block"/>
+    <app-project-upcoming-departure class="lg:col-span-4 block"/>
+    <app-project-birthday class="lg:col-span-4 block"/>
+    <app-project-operational-monitoring class="lg:col-span-12 block"/>
+</section>

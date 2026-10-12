@@ -1,0 +1,34 @@
+<sgdf-table class="h-full [&::part(grid)]:h-full [&::part(grid)]:table-fixed" appearance="soft">
+    <sgdf-table-row>
+        <sgdf-table-cell header class="flex items-center gap-1">
+            <sgdf-icon name="plane-arrival" library="solid"/>
+            <h2 class="text-sm font-semibold uppercase">{{ 'projectHome.upcomingArrival.title' | transloco }}</h2>
+            <sgdf-tag class="ml-auto" size="small" variant="info" appearance="soft">
+                {{ 'projectHome.upcomingArrival.total' | transloco: { count: arrivals.length } }}
+            </sgdf-tag>
+        </sgdf-table-cell>
+    </sgdf-table-row>
+
+    <sgdf-table-row>
+        <sgdf-table-cell class="h-full p-0 align-top">
+            <sgdf-list appearance="text" [label]="'projectHome.upcomingArrival.title' | transloco">
+                @for (arrival of arrivals; track arrival.name) {
+                    <sgdf-list-item>
+                        <sgdf-avatar slot="start" variant="success" aria-hidden="true">
+                            <sgdf-icon slot="icon" name="arrow-down-left" library="solid"/>
+                        </sgdf-avatar>
+                        {{ arrival.name }}
+                        <span slot="description" class="text-xs">{{ arrival.detail }}</span>
+                        <span slot="end" class="flex items-baseline gap-2 text-xs">{{ arrival.place }} <strong class="text-base">{{ arrival.time }}</strong></span>
+                    </sgdf-list-item>
+                }
+            </sgdf-list>
+        </sgdf-table-cell>
+    </sgdf-table-row>
+
+    <sgdf-table-row>
+        <sgdf-table-cell class="align-bottom">
+            <sgdf-button block size="small" appearance="text">{{ 'projectHome.seeMore' | transloco }}</sgdf-button>
+        </sgdf-table-cell>
+    </sgdf-table-row>
+</sgdf-table>
