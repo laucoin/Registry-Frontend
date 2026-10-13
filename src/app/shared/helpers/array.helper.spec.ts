@@ -29,4 +29,28 @@ describe( 'ArrayHelper', () => {
         expect( present ).toBe( true )
         expect( absent ).toBe( false )
     } )
+
+    it( 'splits an array into chunks of the given size', () => {
+        // Arrange
+        const array: number[] = [ 1, 2, 3, 4, 5 ]
+
+        // Act
+        const chunks: number[][] = ArrayHelper.chunk( array, 2 )
+
+        // Assert
+        expect( chunks ).toEqual( [ [ 1, 2 ], [ 3, 4 ], [ 5 ] ] )
+    } )
+
+    it( 'keeps a single empty chunk for a missing or empty array', () => {
+        // Arrange
+        const missing: number[] | undefined = undefined
+
+        // Act
+        const missingChunks: number[][] = ArrayHelper.chunk( missing, 2 )
+        const emptyChunks: number[][] = ArrayHelper.chunk( [], 2 )
+
+        // Assert
+        expect( missingChunks ).toEqual( [ [] ] )
+        expect( emptyChunks ).toEqual( [ [] ] )
+    } )
 } )

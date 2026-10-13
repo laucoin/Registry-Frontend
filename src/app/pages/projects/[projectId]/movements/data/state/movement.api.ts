@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core'
-import { Observable, map } from 'rxjs'
+import { Observable, forkJoin, map } from 'rxjs'
 import {PageModel} from '@shared/models/model/page.model'
 import {GenericProjectApi} from '@shared/helpers/api/generic-project.api'
 import {SELECT_PROFILE_PROJECT_ID} from '@shared/helpers/request.helper'
@@ -14,6 +14,7 @@ import {
 import {VehicleModel} from '@shared/models/model/vehicle.model'
 import {MovementContentModel} from '@shared/models/model/movement-content.model'
 import {PairModel} from '@shared/models/model/pair.model'
+import {ArrayHelper} from '@shared/helpers/array.helper'
 import {GenericHelper} from '@shared/helpers/generic.helper'
 import {StringHelper} from '@shared/helpers/string.helper'
 import {MovementReasonModel} from '@shared/models/model/movement-reason.model'
@@ -52,6 +53,8 @@ import { PairResponseDto } from '@shared/models/dto/response/pair.response.dto'
     providedIn: 'root',
 })
 export class MovementApi extends GenericProjectApi {
+    private static readonly MAX_CONTENT_IDS: number = 100
+
     public constructor() {
         super(`/api/v2/projects/${SELECT_PROFILE_PROJECT_ID}/movements`)
     }
@@ -78,12 +81,22 @@ export class MovementApi extends GenericProjectApi {
         movementIds: string[],
         isCurrent: boolean,
     ): Observable<PairModel<MovementContentModel[]>[]> {
+        return forkJoin(
+            ArrayHelper.chunk( movementIds, MovementApi.MAX_CONTENT_IDS ).map( (ids: string[]): Observable<PairModel<MovementContentModel[]>[]> => this.findContentsChunk( projectId, ids, isCurrent ) ),
+        ).pipe(
+            map( (chunks: PairModel<MovementContentModel[]>[][]): PairModel<MovementContentModel[]>[] => chunks.flat() ),
+        )
+    }
+
+    private findContentsChunk(
+        projectId: string | undefined,
+        movementIds: string[],
+        isCurrent: boolean,
+    ): Observable<PairModel<MovementContentModel[]>[]> {
         let builtParams: HttpParams = new HttpParams().set('isCurrent', isCurrent)
-        if (GenericHelper.nonNull(movementIds)) {
-            movementIds.forEach((movementId: string): void => {
-                builtParams = builtParams.append('movementIds', movementId)
-            })
-        }
+        movementIds.forEach((movementId: string): void => {
+            builtParams = builtParams.append('movementIds', movementId)
+        })
 
         return this.http.get<PairResponseDto<MovementContentResponseDto[]>[]>(
             `${this.buildRequestBaseUrl(projectId)}/contents?${builtParams.toString()}`,
