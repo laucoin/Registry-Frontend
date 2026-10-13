@@ -22,8 +22,8 @@ const CASES: ApiCase<ProjectProfileApi>[] = [
         verify: (result: unknown): void => expect( result ).toEqual( { createdUserIds: [ 'u1' ], notCreatedUserIds: [] } ) },
     { name: 'updates a profile', method: 'PATCH', url: `${BASE}/pp1`, body: { role: 'CHIEF' },
         call: (api: ProjectProfileApi) => api.updateProjectProfileById( 'p1', 'pp1', { role: 'CHIEF' } as never ), response: PROFILE_DTO, verify: expectMapped },
-    { name: 'blocks a profile', method: 'PATCH', url: `${BASE}/pp1/block`, call: (api: ProjectProfileApi) => api.blockProjectProfileById( 'p1', 'pp1' ), response: PROFILE_DTO, verify: expectMapped },
-    { name: 'unblocks a profile', method: 'PATCH', url: `${BASE}/pp1/unblock`, call: (api: ProjectProfileApi) => api.unblockProjectProfileById( 'p1', 'pp1' ), response: PROFILE_DTO, verify: expectMapped },
+    { name: 'blocks a profile', method: 'POST', url: `${BASE}/pp1/block`, call: (api: ProjectProfileApi) => api.blockProjectProfileById( 'p1', 'pp1' ), response: PROFILE_DTO, verify: expectMapped },
+    { name: 'unblocks a profile', method: 'POST', url: `${BASE}/pp1/unblock`, call: (api: ProjectProfileApi) => api.unblockProjectProfileById( 'p1', 'pp1' ), response: PROFILE_DTO, verify: expectMapped },
     { name: 'deletes a profile', method: 'DELETE', url: `${BASE}/pp1`, call: (api: ProjectProfileApi) => api.deleteProjectProfileById( 'p1', 'pp1' ) },
 ]
 

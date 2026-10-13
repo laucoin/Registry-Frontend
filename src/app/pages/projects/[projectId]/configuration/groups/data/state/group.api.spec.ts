@@ -20,13 +20,13 @@ const CASES: ApiCase<GroupApi>[] = [
         call: (api: GroupApi) => api.createGroup( 'p1', { name: 'Wolves' } as never ), response: GROUP_DTO, verify: expectMapped },
     { name: 'updates a group', method: 'PATCH', url: `${BASE}/g1`, body: { name: 'Pack' },
         call: (api: GroupApi) => api.updateGroupById( 'p1', 'g1', { name: 'Pack' } as never ), response: GROUP_DTO, verify: expectMapped },
-    { name: 'adds members to a group', method: 'PATCH', url: `${BASE}/g1/members`, body: [ 'pa1' ],
+    { name: 'adds members to a group', method: 'POST', url: `${BASE}/g1/members`, body: [ 'pa1' ],
         call: (api: GroupApi) => api.addMembersToGroupById( 'p1', 'g1', [ 'pa1' ] ), response: { members: [ 'pa1' ], notAddedMemberIds: [] },
         verify: (result: unknown) => expect( result ).toEqual( { members: [ 'pa1' ], notAddedMemberIds: [] } ) },
     { name: 'removes a member from a group', method: 'DELETE', url: `${BASE}/g1/members/pa1`,
-        call: (api: GroupApi) => api.removeMemberFromGroupById( 'p1', 'g1', 'pa1' ), response: GROUP_DTO, verify: expectMapped },
-    { name: 'disables a group', method: 'PATCH', url: `${BASE}/g1/disable`, call: (api: GroupApi) => api.disableGroupById( 'p1', 'g1' ), response: GROUP_DTO, verify: expectMapped },
-    { name: 'enables a group', method: 'PATCH', url: `${BASE}/g1/enable`, call: (api: GroupApi) => api.enableGroupById( 'p1', 'g1' ), response: GROUP_DTO, verify: expectMapped },
+        call: (api: GroupApi) => api.removeMemberFromGroupById( 'p1', 'g1', 'pa1' ) },
+    { name: 'disables a group', method: 'POST', url: `${BASE}/g1/disable`, call: (api: GroupApi) => api.disableGroupById( 'p1', 'g1' ), response: GROUP_DTO, verify: expectMapped },
+    { name: 'enables a group', method: 'POST', url: `${BASE}/g1/enable`, call: (api: GroupApi) => api.enableGroupById( 'p1', 'g1' ), response: GROUP_DTO, verify: expectMapped },
     { name: 'deletes a group', method: 'DELETE', url: `${BASE}/g1`, call: (api: GroupApi) => api.deleteGroupById( 'p1', 'g1' ) },
 ]
 

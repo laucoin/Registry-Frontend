@@ -87,13 +87,13 @@ export class ActivityApi extends GenericProjectApi {
     }
 
     public disableActivityById(projectId: string | undefined, id: string): Observable<ActivityModel> {
-        return this.http.patch<ActivityResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/disable`, null).pipe(
+        return this.http.post<ActivityResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/disable`, null).pipe(
             map( ActivityMapper.toModel ),
         )
     }
 
     public enableActivityById(projectId: string | undefined, id: string): Observable<ActivityModel> {
-        return this.http.patch<ActivityResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/enable`, null).pipe(
+        return this.http.post<ActivityResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/enable`, null).pipe(
             map( ActivityMapper.toModel ),
         )
     }

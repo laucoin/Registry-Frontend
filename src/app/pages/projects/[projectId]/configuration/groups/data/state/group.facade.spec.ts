@@ -16,6 +16,7 @@ import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.p
 import { AddedGroupMembersDto } from '@shared/models/dto/added-group-members.dto'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { GroupModel } from '@shared/models/model/group.model'
+import { ParticipantModel } from '@shared/models/model/participant.model'
 import { PageModel } from '@shared/models/model/page.model'
 
 const EMPTY_PAGE: PageModel<GroupModel> = { page: 2, size: 10, totalElements: 0, totalPages: 1, content: [], lastRefresh: new Date() }
@@ -25,6 +26,7 @@ describe( 'GroupFacade', () => {
     let findGroups: Mock<GroupApi['findGroups']>
     let createGroup: Mock<GroupApi['createGroup']>
     let addMembersToGroupById: Mock<GroupApi['addMembersToGroupById']>
+    let removeMemberFromGroupById: Mock<GroupApi['removeMemberFromGroupById']>
     let notify: Mock<(message: unknown) => void>
     let commandEvents: CommandEventService
 
@@ -33,12 +35,13 @@ describe( 'GroupFacade', () => {
         findGroups = vi.fn( () => of( EMPTY_PAGE ) )
         createGroup = vi.fn()
         addMembersToGroupById = vi.fn()
+        removeMemberFromGroupById = vi.fn( () => of( undefined ) )
         notify = vi.fn()
         TestBed.configureTestingModule( {
             providers: [
                 GroupFacade,
                 GroupStore,
-                { provide: GroupApi, useValue: { findGroups, createGroup, addMembersToGroupById, findGroupMembersByGroupId: vi.fn( () => of( EMPTY_PAGE ) ) } },
+                { provide: GroupApi, useValue: { findGroups, createGroup, addMembersToGroupById, removeMemberFromGroupById, findGroupMembersByGroupId: vi.fn( () => of( EMPTY_PAGE ) ) } },
                 { provide: SessionFacade, useValue: { currentProjectId: signal( 'p1' ) } },
                 { provide: UiFacade, useValue: { notify, setGlobalError: vi.fn() } },
                 { provide: PluralTranslationPipe, useValue: { transform: (key: string, count: number): string => `${key}:${count}` } },
@@ -131,6 +134,18 @@ describe( 'GroupFacade', () => {
         facade.addMembersToGroup( 'g1', [ 'm1' ] ).subscribe()
 
         // Assert
+        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { severity: SeverityEnum.SUCCESS } ) )
+    } )
+
+    it( 'names the group shown on the participant in the removal notification', () => {
+        // Arrange
+        const participant: ParticipantModel = { id: 'm1', firstName: 'Ada', lastName: 'Lovelace', groups: [ { id: 'g1', name: 'Scouts' } as GroupModel ] } as ParticipantModel
+
+        // Act
+        facade.removeMemberFromGroup( 'g1', participant ).subscribe()
+
+        // Assert
+        expect( removeMemberFromGroupById ).toHaveBeenCalledWith( 'p1', 'g1', 'm1' )
         expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { severity: SeverityEnum.SUCCESS } ) )
     } )
 

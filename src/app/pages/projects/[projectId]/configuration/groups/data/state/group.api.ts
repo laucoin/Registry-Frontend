@@ -107,7 +107,7 @@ export class GroupApi extends GenericProjectApi {
         id: string,
         memberIds: string[],
     ): Observable<AddedGroupMembersDto> {
-        return this.http.patch<AddedGroupMembersDto>(
+        return this.http.post<AddedGroupMembersDto>(
             `${this.buildRequestBaseUrl(projectId)}/${id}/members`,
             memberIds,
         )
@@ -117,20 +117,18 @@ export class GroupApi extends GenericProjectApi {
         projectId: string | undefined,
         id: string,
         memberId: string,
-    ): Observable<GroupModel> {
-        return this.http.delete<GroupResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/members/${memberId}`).pipe(
-            map( GroupMapper.toModel ),
-        )
+    ): Observable<void> {
+        return this.http.delete<void>(`${this.buildRequestBaseUrl(projectId)}/${id}/members/${memberId}`)
     }
 
     public disableGroupById(projectId: string | undefined, id: string): Observable<GroupModel> {
-        return this.http.patch<GroupResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/disable`, null).pipe(
+        return this.http.post<GroupResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/disable`, null).pipe(
             map( GroupMapper.toModel ),
         )
     }
 
     public enableGroupById(projectId: string | undefined, id: string): Observable<GroupModel> {
-        return this.http.patch<GroupResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/enable`, null).pipe(
+        return this.http.post<GroupResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/enable`, null).pipe(
             map( GroupMapper.toModel ),
         )
     }

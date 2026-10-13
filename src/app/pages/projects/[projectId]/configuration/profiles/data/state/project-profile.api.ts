@@ -91,13 +91,13 @@ export class ProjectProfileApi extends GenericProjectApi {
     }
 
     public blockProjectProfileById(projectId: string | undefined, id: string): Observable<ProjectProfileModel> {
-        return this.http.patch<ProjectProfileResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/block`, null).pipe(
+        return this.http.post<ProjectProfileResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/block`, null).pipe(
             map( ProjectProfileMapper.toModel ),
         )
     }
 
     public unblockProjectProfileById(projectId: string | undefined, id: string): Observable<ProjectProfileModel> {
-        return this.http.patch<ProjectProfileResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/unblock`, null).pipe(
+        return this.http.post<ProjectProfileResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/unblock`, null).pipe(
             map( ProjectProfileMapper.toModel ),
         )
     }

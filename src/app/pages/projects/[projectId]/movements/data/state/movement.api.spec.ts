@@ -46,8 +46,8 @@ const CASES: ApiCase<MovementApi>[] = [
         call: (api: MovementApi) => api.createGuestsMovement( 'p1', { reason: 'r1' } as never ), response: MOVEMENT_DTO, verify: expectMapped },
     { name: 'updates a movement of guests', method: 'PATCH', url: `${BASE}/guests/m1`, body: { reason: 'r2' },
         call: (api: MovementApi) => api.updateGuestsMovementById( 'p1', 'm1', { reason: 'r2' } as never ), response: MOVEMENT_DTO, verify: expectMapped },
-    { name: 'disables a movement', method: 'PATCH', url: `${BASE}/m1/disable`, call: (api: MovementApi) => api.disableMovementById( 'p1', 'm1' ), response: MOVEMENT_DTO, verify: expectMapped },
-    { name: 'enables a movement', method: 'PATCH', url: `${BASE}/m1/enable`, call: (api: MovementApi) => api.enableMovementById( 'p1', 'm1' ), response: MOVEMENT_DTO, verify: expectMapped },
+    { name: 'disables a movement', method: 'POST', url: `${BASE}/m1/disable`, call: (api: MovementApi) => api.disableMovementById( 'p1', 'm1' ), response: MOVEMENT_DTO, verify: expectMapped },
+    { name: 'enables a movement', method: 'POST', url: `${BASE}/m1/enable`, call: (api: MovementApi) => api.enableMovementById( 'p1', 'm1' ), response: MOVEMENT_DTO, verify: expectMapped },
     { name: 'deletes a movement', method: 'DELETE', url: `${BASE}/m1`, call: (api: MovementApi) => api.deleteMovementById( 'p1', 'm1' ) },
 ]
 

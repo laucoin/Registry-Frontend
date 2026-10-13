@@ -1,4 +1,3 @@
-import {HttpParams} from '@angular/common/http'
 import {Injectable} from '@angular/core'
 import { Observable, map } from 'rxjs'
 import {PageModel} from '@shared/models/model/page.model'
@@ -48,23 +47,19 @@ export class UserApi extends GenericApi {
     }
 
     public updateUserRole(id: string, role: string | undefined): Observable<UserModel> {
-        let params: HttpParams = new HttpParams()
-        if (role) {
-            params = params.set('role', role)
-        }
-        return this.http.patch<UserResponseDto>(`${this.baseUrl}/${id}/role?${params.toString()}`, null).pipe(
+        return this.http.patch<UserResponseDto>(`${this.baseUrl}/${id}/role`, { role: role ?? null }).pipe(
             map( UserMapper.toModel ),
         )
     }
 
     public blockUserById(id: string): Observable<UserModel> {
-        return this.http.patch<UserResponseDto>(`${this.baseUrl}/${id}/block`, null).pipe(
+        return this.http.post<UserResponseDto>(`${this.baseUrl}/${id}/block`, null).pipe(
             map( UserMapper.toModel ),
         )
     }
 
     public unblockUserById(id: string): Observable<UserModel> {
-        return this.http.patch<UserResponseDto>(`${this.baseUrl}/${id}/unblock`, null).pipe(
+        return this.http.post<UserResponseDto>(`${this.baseUrl}/${id}/unblock`, null).pipe(
             map( UserMapper.toModel ),
         )
     }

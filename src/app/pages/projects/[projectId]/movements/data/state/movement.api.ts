@@ -217,13 +217,13 @@ export class MovementApi extends GenericProjectApi {
     }
 
     public disableMovementById(projectId: string | undefined, id: string): Observable<MovementModel> {
-        return this.http.patch<MovementResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/disable`, null).pipe(
+        return this.http.post<MovementResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/disable`, null).pipe(
             map( MovementMapper.toModel ),
         )
     }
 
     public enableMovementById(projectId: string | undefined, id: string): Observable<MovementModel> {
-        return this.http.patch<MovementResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/enable`, null).pipe(
+        return this.http.post<MovementResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/enable`, null).pipe(
             map( MovementMapper.toModel ),
         )
     }

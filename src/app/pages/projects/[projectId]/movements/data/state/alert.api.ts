@@ -101,13 +101,13 @@ export class AlertApi extends GenericProjectApi {
     }
 
     public disableAlertById(projectId: string | undefined, id: string): Observable<AlertModel> {
-        return this.http.patch<AlertResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/disable`, null).pipe(
+        return this.http.post<AlertResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/disable`, null).pipe(
             map( AlertMapper.toModel ),
         )
     }
 
     public enableAlertById(projectId: string | undefined, id: string): Observable<AlertModel> {
-        return this.http.patch<AlertResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/enable`, null).pipe(
+        return this.http.post<AlertResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/enable`, null).pipe(
             map( AlertMapper.toModel ),
         )
     }

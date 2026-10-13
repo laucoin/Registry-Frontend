@@ -133,13 +133,13 @@ export class ParticipantApi extends GenericProjectApi {
     }
 
     public disableParticipantById(projectId: string | undefined, id: string): Observable<ParticipantModel> {
-        return this.http.patch<ParticipantResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/disable`, null).pipe(
+        return this.http.post<ParticipantResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/disable`, null).pipe(
             map( ParticipantMapper.toModel ),
         )
     }
 
     public enableParticipantById(projectId: string | undefined, id: string): Observable<ParticipantModel> {
-        return this.http.patch<ParticipantResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/enable`, null).pipe(
+        return this.http.post<ParticipantResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/enable`, null).pipe(
             map( ParticipantMapper.toModel ),
         )
     }

@@ -10,8 +10,8 @@ const CASES: ApiCase<VehicleApi>[] = [
     { name: 'finds an element by id', method: 'GET', url: `${BASE}/v1`, call: (api: VehicleApi) => api.findVehicleById( 'p1', 'v1' ), response: VEHICLE_DTO, verify: expectMapped },
     { name: 'creates an element', method: 'POST', url: BASE, body: { name: 'x' }, call: (api: VehicleApi) => api.createVehicle( 'p1', { name: 'x' } as never ), response: VEHICLE_DTO, verify: expectMapped },
     { name: 'updates an element', method: 'PATCH', url: `${BASE}/v1`, body: { name: 'y' }, call: (api: VehicleApi) => api.updateVehicleById( 'p1', 'v1', { name: 'y' } as never ), response: VEHICLE_DTO, verify: expectMapped },
-    { name: 'disables an element', method: 'PATCH', url: `${BASE}/v1/disable`, call: (api: VehicleApi) => api.disableVehicleById( 'p1', 'v1' ), response: VEHICLE_DTO, verify: expectMapped },
-    { name: 'enables an element', method: 'PATCH', url: `${BASE}/v1/enable`, call: (api: VehicleApi) => api.enableVehicleById( 'p1', 'v1' ), response: VEHICLE_DTO, verify: expectMapped },
+    { name: 'disables an element', method: 'POST', url: `${BASE}/v1/disable`, call: (api: VehicleApi) => api.disableVehicleById( 'p1', 'v1' ), response: VEHICLE_DTO, verify: expectMapped },
+    { name: 'enables an element', method: 'POST', url: `${BASE}/v1/enable`, call: (api: VehicleApi) => api.enableVehicleById( 'p1', 'v1' ), response: VEHICLE_DTO, verify: expectMapped },
     { name: 'deletes an element', method: 'DELETE', url: `${BASE}/v1`, call: (api: VehicleApi) => api.deleteVehicleById( 'p1', 'v1' ) },
     { name: 'pages the movements of a vehicle', method: 'GET', url: new RegExp( `${BASE}/v1/movements\\?${PAGE_QUERY}` ), call: (api: VehicleApi) => api.findVehicleMovements( 'p1', 'v1', 0, 10, PARAMS ), response: pageDto( [ MOVEMENT_DTO ] ), verify: expectMappedPage },
 ]

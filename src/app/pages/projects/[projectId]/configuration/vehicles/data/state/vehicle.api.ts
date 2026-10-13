@@ -87,13 +87,13 @@ export class VehicleApi extends GenericProjectApi {
     }
 
     public disableVehicleById(projectId: string | undefined, id: string): Observable<VehicleModel> {
-        return this.http.patch<VehicleResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/disable`, null).pipe(
+        return this.http.post<VehicleResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/disable`, null).pipe(
             map( VehicleMapper.toModel ),
         )
     }
 
     public enableVehicleById(projectId: string | undefined, id: string): Observable<VehicleModel> {
-        return this.http.patch<VehicleResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/enable`, null).pipe(
+        return this.http.post<VehicleResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/enable`, null).pipe(
             map( VehicleMapper.toModel ),
         )
     }

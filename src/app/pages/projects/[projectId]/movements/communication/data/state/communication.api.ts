@@ -103,13 +103,13 @@ export class CommunicationApi extends GenericProjectApi {
     }
 
     public disableCommunicationById(projectId: string | undefined, id: string): Observable<CommunicationModel> {
-        return this.http.patch<CommunicationResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/disable`, null).pipe(
+        return this.http.post<CommunicationResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/disable`, null).pipe(
             map( CommunicationMapper.toModel ),
         )
     }
 
     public enableCommunicationById(projectId: string | undefined, id: string): Observable<CommunicationModel> {
-        return this.http.patch<CommunicationResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/enable`, null).pipe(
+        return this.http.post<CommunicationResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/enable`, null).pipe(
             map( CommunicationMapper.toModel ),
         )
     }

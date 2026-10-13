@@ -65,13 +65,13 @@ export class ProjectApi extends GenericApi {
     }
 
     public disableProjectById(id: string): Observable<ProjectModel> {
-        return this.http.patch<ProjectResponseDto>(`${this.baseUrl}/${id}/disable`, null).pipe(
+        return this.http.post<ProjectResponseDto>(`${this.baseUrl}/${id}/disable`, null).pipe(
             map( ProjectMapper.toModel ),
         )
     }
 
     public enableProjectById(id: string): Observable<ProjectModel> {
-        return this.http.patch<ProjectResponseDto>(`${this.baseUrl}/${id}/enable`, null).pipe(
+        return this.http.post<ProjectResponseDto>(`${this.baseUrl}/${id}/enable`, null).pipe(
             map( ProjectMapper.toModel ),
         )
     }

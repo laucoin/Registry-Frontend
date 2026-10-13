@@ -211,12 +211,12 @@ export class GroupFacade extends GenericProjectElementFacade {
         )
     }
 
-    public removeMemberFromGroup (id: string, participant: ParticipantModel): Observable<GroupModel> {
+    public removeMemberFromGroup (id: string, participant: ParticipantModel): Observable<void> {
         return this.api.removeMemberFromGroupById( this.selectedProjectId(), id, participant.id ).pipe(
             notifyOnError( this.uiFacade ),
-            tap( (group: GroupModel): void => {
+            tap( (): void => {
                 this.notifySuccess( 'groups.notifications.remove-member', 'pi pi-user-minus', {
-                    name: group?.name,
+                    name: participant.groups?.find( (group: GroupModel): boolean => group.id === id )?.name,
                     firstName: participant.firstName,
                     lastName: participant.lastName,
                 } )
