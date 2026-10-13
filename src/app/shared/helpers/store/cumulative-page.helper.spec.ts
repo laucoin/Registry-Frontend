@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { CumulativePageHelper } from '@shared/helpers/store/cumulative-page.helper'
+import { CumulativePageHelper, CumulativePageRequest } from '@shared/helpers/store/cumulative-page.helper'
 import { GenericModel } from '@shared/models/model/generic.model'
 import { PageModel } from '@shared/models/model/page.model'
 
@@ -98,6 +98,41 @@ describe( 'CumulativePageHelper', () => {
 
             // Act
             const request: ReturnType<typeof CumulativePageHelper.reloadRequest> = CumulativePageHelper.reloadRequest( current )
+
+            // Assert
+            expect( request ).toEqual( { page: undefined, size: undefined } )
+        } )
+    } )
+
+    describe( 'reloadRequest', () => {
+        it( 'asks for every shown batch in one request', () => {
+            // Arrange
+            const current: PageModel<GenericModel> = page( [ 'a', 'b' ], 2, 20, 100 )
+
+            // Act
+            const request: CumulativePageRequest = CumulativePageHelper.reloadRequest( current )
+
+            // Assert
+            expect( request ).toEqual( { page: 0, size: 60, batchSize: 20 } )
+        } )
+
+        it( 'stays under the page size cap of the backend, on a whole batch', () => {
+            // Arrange
+            const current: PageModel<GenericModel> = page( [ 'a' ], 11, 30, 1000 )
+
+            // Act
+            const request: CumulativePageRequest = CumulativePageHelper.reloadRequest( current )
+
+            // Assert
+            expect( request ).toEqual( { page: 0, size: 180, batchSize: 30 } )
+        } )
+
+        it( 'asks for nothing specific when no page is shown', () => {
+            // Arrange
+            const current: PageModel<GenericModel> | undefined = undefined
+
+            // Act
+            const request: CumulativePageRequest = CumulativePageHelper.reloadRequest( current )
 
             // Assert
             expect( request ).toEqual( { page: undefined, size: undefined } )

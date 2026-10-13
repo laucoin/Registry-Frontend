@@ -10,9 +10,11 @@ export interface CumulativePageRequest {
 /**
  * Purpose: Builds the page shown by a list that loads its elements batch after batch.
  * Scope: Appends a freshly fetched batch to the page already shown, or rebuilds the shown page from a single reload request.
- * Limits: Pure functions; the store decides when to use them and the api still serves plain pages.
+ * Limits: Pure functions; a reload never asks for more rows than the backend page size cap, so a long list is reloaded up to the last whole batch under that cap.
  */
 export class CumulativePageHelper {
+    private static readonly MAX_PAGE_SIZE: number = 200
+
     public static merge<M extends GenericModel> (
         current: PageModel<M> | undefined,
         fetched: PageModel<M>,
@@ -33,9 +35,14 @@ export class CumulativePageHelper {
         }
         return {
             page: 0,
-            size: current.size * (current.page + 1),
+            size: CumulativePageHelper.reloadSize( current ),
             batchSize: current.size,
         }
+    }
+
+    private static reloadSize (current: PageModel<GenericModel>): number {
+        const wholeBatches: number = Math.max( 1, Math.floor( CumulativePageHelper.MAX_PAGE_SIZE / current.size ) )
+        return current.size * Math.min( current.page + 1, wholeBatches )
     }
 
     public static hasMore (page: PageModel<GenericModel> | undefined): boolean {

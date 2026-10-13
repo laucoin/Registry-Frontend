@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core'
-import { Observable, forkJoin, map } from 'rxjs'
+import { Observable, forkJoin, map, of } from 'rxjs'
 import {PageModel} from '@shared/models/model/page.model'
 import {GenericProjectApi} from '@shared/helpers/api/generic-project.api'
 import {SELECT_PROFILE_PROJECT_ID} from '@shared/helpers/request.helper'
@@ -82,6 +82,8 @@ export class MovementApi extends GenericProjectApi {
         movementIds: string[],
         isCurrent: boolean,
     ): Observable<PairModel<MovementContentModel[]>[]> {
+        if (ArrayHelper.isNullOrEmpty( movementIds )) return of( [] )
+
         return forkJoin(
             ArrayHelper.chunk( movementIds, MovementApi.MAX_CONTENT_IDS ).map( (ids: string[]): Observable<PairModel<MovementContentModel[]>[]> => this.findContentsChunk( projectId, ids, isCurrent ) ),
         ).pipe(

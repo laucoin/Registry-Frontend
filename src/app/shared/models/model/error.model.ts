@@ -14,6 +14,6 @@ export class ErrorModel extends Error {
         this.name = error.name
         this.code = error.error?.code
         this.title = error.error?.title
-        this.message = error.error?.detail
+        this.message = error.error?.detail ?? error.message
     }
 }

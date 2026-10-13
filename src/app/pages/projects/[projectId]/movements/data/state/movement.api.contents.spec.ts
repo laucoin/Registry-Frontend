@@ -32,4 +32,28 @@ describe( 'MovementApi contents batching', (): void => {
         expect( requests.map( (request: TestRequest): number => request.request.urlWithParams.split( 'movementIds=' ).length - 1 ) ).toEqual( [ 100, 100, 50 ] )
         expect( result.map( (pair: PairModel<MovementContentModel[]>): unknown => pair.first ) ).toEqual( [ 'chunk0', 'chunk1', 'chunk2' ] )
     } )
+
+    it( 'sends no request without movement ids', () => {
+        // Arrange
+        let result: PairModel<MovementContentModel[]>[] | undefined
+
+        // Act
+        api.findMovementsContents( 'p1', [], false ).subscribe( (pairs: PairModel<MovementContentModel[]>[]): void => { result = pairs } )
+
+        // Assert
+        controller.expectNone( (request: HttpRequest<unknown>): boolean => request.url.includes( '/contents' ) )
+        expect( result ).toEqual( [] )
+    } )
+
+    it( 'keeps the current flag on every batch', () => {
+        // Arrange
+        const ids: string[] = Array.from( { length: 150 }, (_: unknown, index: number): string => `m${index}` )
+
+        // Act
+        api.findMovementsContents( 'p1', ids, true ).subscribe()
+        const requests: TestRequest[] = controller.match( (request: HttpRequest<unknown>): boolean => request.url.includes( '/contents' ) )
+
+        // Assert
+        expect( requests.map( (request: TestRequest): boolean => request.request.urlWithParams.includes( 'isCurrent=true' ) ) ).toEqual( [ true, true ] )
+    } )
 } )

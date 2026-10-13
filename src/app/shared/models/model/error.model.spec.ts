@@ -37,6 +37,6 @@ describe( 'ErrorModel', (): void => {
         // Assert
         expect( error.status ).toBe( 502 )
         expect( error.code ).toBeUndefined()
-        expect( error.message ).toBeUndefined()
+        expect( error.message ).toContain( '502' )
     } )
 } )
