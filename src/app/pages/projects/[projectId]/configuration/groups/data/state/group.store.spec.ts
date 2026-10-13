@@ -10,7 +10,7 @@ import { PageModel } from '@shared/models/model/page.model'
 import { ParticipantModel } from '@shared/models/model/participant.model'
 
 function pageOf<T extends GroupModel | ParticipantModel> (content: T[]): PageModel<T> {
-    return { page: 0, size: 10, totalElements: content.length, totalPages: 1, content: content, lastRefresh: new Date() }
+    return { page: 0, size: 10, totalElements: content.length, totalPages: 1, hasNext: false, content: content, lastRefresh: new Date() }
 }
 
 describe( 'GroupStore', () => {

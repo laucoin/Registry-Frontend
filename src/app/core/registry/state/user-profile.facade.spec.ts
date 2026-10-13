@@ -20,7 +20,7 @@ import { ProjectModel } from '@shared/models/model/project.model'
 import { UserInvitationModel } from '@shared/models/model/user-invitation.model'
 
 const USER: CurrentUserModel = { id: 'u1' } as CurrentUserModel
-const EMPTY_PAGE: PageModel<UserInvitationModel> = { content: [], page: 0, size: 10, totalElements: 0, totalPages: 1, lastRefresh: new Date() }
+const EMPTY_PAGE: PageModel<UserInvitationModel> = { content: [], page: 0, size: 10, totalElements: 0, totalPages: 1, hasNext: false, lastRefresh: new Date() }
 const FAILURE: ErrorModel = { status: 500, title: 'Title', message: 'Message' } as ErrorModel
 const UNAVAILABLE: ErrorModel = { status: 503, title: 'Down', message: 'Down' } as ErrorModel
 

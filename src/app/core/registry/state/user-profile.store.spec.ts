@@ -13,6 +13,7 @@ const PAGE: PageModel<UserInvitationModel> = {
     size: 10,
     totalElements: 1,
     totalPages: 1,
+    hasNext: false,
     content: [ { id: 'pp1' } as UserInvitationModel ],
     lastRefresh: new Date(),
 }

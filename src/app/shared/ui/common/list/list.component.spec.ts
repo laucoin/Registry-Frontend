@@ -45,6 +45,7 @@ const pageOf = (ids: string[], page: number, totalElements: number): PageModel<G
     size: 2,
     totalElements,
     totalPages: Math.ceil(totalElements / 2),
+    hasNext: page + 1 < Math.ceil(totalElements / 2),
     content: ids.map((id: string): GenericModel => ({ id }) as GenericModel),
     lastRefresh: new Date(),
 })

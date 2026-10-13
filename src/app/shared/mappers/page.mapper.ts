@@ -14,6 +14,7 @@ export class PageMapper {
             size: dto.size,
             totalElements: dto.totalElements,
             totalPages: dto.totalPages,
+            hasNext: dto.hasNext,
             content: dto.content.map( mapContent ),
             lastRefresh: dto.lastRefresh,
         }

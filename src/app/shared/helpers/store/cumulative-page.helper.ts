@@ -39,7 +39,7 @@ export class CumulativePageHelper {
     }
 
     public static hasMore (page: PageModel<GenericModel> | undefined): boolean {
-        return !!page && page.page + 1 < page.totalPages
+        return !!page && page.hasNext
     }
 
     private static appended<M extends GenericModel> (current: PageModel<M>, fetched: PageModel<M>): PageModel<M> {

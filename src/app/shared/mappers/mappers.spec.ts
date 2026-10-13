@@ -184,14 +184,14 @@ describe( 'mappers', () => {
 
     it( 'maps the elements of a page and keeps the paging fields', () => {
         // Arrange
-        const dto: PageResponseDto<ProjectResponseDto> = { page: 2, size: 10, totalElements: 21, totalPages: 3, content: [ PROJECT ], lastRefresh: WHEN }
+        const dto: PageResponseDto<ProjectResponseDto> = { page: 2, size: 10, totalElements: 21, totalPages: 3, hasNext: true, content: [ PROJECT ], lastRefresh: WHEN }
 
         // Act
         const page: ReturnType<typeof PageMapper.toModel<ProjectResponseDto, ReturnType<typeof ProjectMapper.toModel>>> = PageMapper.toModel( dto, ProjectMapper.toModel )
 
         // Assert
         expect( page.content[ 0 ].name ).toBe( 'Camp' )
-        expect( [ page.page, page.size, page.totalElements, page.totalPages ] ).toEqual( [ 2, 10, 21, 3 ] )
+        expect( [ page.page, page.size, page.totalElements, page.totalPages, page.hasNext ] ).toEqual( [ 2, 10, 21, 3, true ] )
         expect( page.lastRefresh ).toBe( WHEN )
     } )
 

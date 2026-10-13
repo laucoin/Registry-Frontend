@@ -10,6 +10,7 @@ const page = (ids: string[], page: number, size: number, totalElements: number):
     size,
     totalElements,
     totalPages: Math.ceil( totalElements / size ),
+    hasNext: page + 1 < Math.ceil( totalElements / size ),
     content: ids.map( item ),
     lastRefresh: new Date(),
 })
@@ -64,6 +65,7 @@ describe( 'CumulativePageHelper', () => {
             expect( merged.size ).toBe( 2 )
             expect( merged.page ).toBe( 1 )
             expect( merged.totalPages ).toBe( 3 )
+            expect( merged.hasNext ).toBe( true )
         } )
 
         it( 'keeps one batch when a reload comes back empty', () => {
