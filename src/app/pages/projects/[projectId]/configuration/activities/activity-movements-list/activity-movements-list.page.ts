@@ -65,17 +65,17 @@ export class ActivityMovementsListPage implements OnDestroy {
     })
 
     protected readonly activeFilters: Signal<number> = computed((): number => [
-        this.facade.activityMovementsPageTypeSearchedParam() !== undefined,
-        this.facade.activityMovementsPageStartDateTimeSearchedParam() !== undefined,
-        this.facade.activityMovementsPageEndDateTimeSearchedParam() !== undefined,
-        this.facade.activityMovementsPageVisibilitySearchedParam() !== undefined,
+        this.facade.activityMovementsPageTypeParam() !== undefined,
+        this.facade.activityMovementsPageFromParam() !== undefined,
+        this.facade.activityMovementsPageToParam() !== undefined,
+        this.facade.activityMovementsPageIsVisibleParam() !== undefined,
     ].filter(Boolean).length)
 
     protected readonly model: WritableSignal<ActivityMovementsListSearchModel> = signal(toActivityMovementsListSearchModel({
-        type: this.facade.activityMovementsPageTypeSearchedParam(),
-        from: this.facade.activityMovementsPageStartDateTimeSearchedParam(),
-        to: this.facade.activityMovementsPageEndDateTimeSearchedParam(),
-        isVisible: this.facade.activityMovementsPageVisibilitySearchedParam(),
+        type: this.facade.activityMovementsPageTypeParam(),
+        from: this.facade.activityMovementsPageFromParam(),
+        to: this.facade.activityMovementsPageToParam(),
+        isVisible: this.facade.activityMovementsPageIsVisibleParam(),
     }))
     protected readonly form: FieldTree<ActivityMovementsListSearchModel> = createSearchForm(this.model)
 

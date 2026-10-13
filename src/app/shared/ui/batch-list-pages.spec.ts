@@ -68,7 +68,7 @@ const CASES: BatchListCase[] = [
 function withUnsetSearchParams (facade: Record<string, Mock>): Record<string, Mock> {
     return new Proxy( facade, {
         get: (target: Record<string, Mock>, key: string | symbol): Mock | undefined =>
-            typeof key === 'string' && /Search(ed)?Param$/.test( key ) ? vi.fn( (): undefined => undefined ) : target[ key as string ],
+            typeof key === 'string' && /(Query|At|From|To|IsVisible|IsPresent|IsAvailable|Status|Type)Param$/.test( key ) ? vi.fn( (): undefined => undefined ) : target[ key as string ],
     } )
 }
 

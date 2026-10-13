@@ -98,15 +98,15 @@ export class GroupMemberListPage implements OnDestroy {
     )
 
     protected readonly activeFilters: Signal<number> = computed( (): number => [
-        StringHelper.isNotNullNorBlank( this.facade.groupMembersPageTextSearchedParam() ),
-        this.facade.groupMembersPageStatusSearchedParam() !== undefined,
-        this.facade.groupMembersPageVisibilitySearchedParam() !== undefined,
+        StringHelper.isNotNullNorBlank( this.facade.groupMembersPageQueryParam() ),
+        this.facade.groupMembersPageStatusParam() !== undefined,
+        this.facade.groupMembersPageIsVisibleParam() !== undefined,
     ].filter( Boolean ).length )
 
     protected readonly model: WritableSignal<GroupMemberListSearchModel> = signal( toGroupMemberListSearchModel( {
-        q: this.facade.groupMembersPageTextSearchedParam(),
-        status: this.facade.groupMembersPageStatusSearchedParam(),
-        isVisible: this.facade.groupMembersPageVisibilitySearchedParam(),
+        q: this.facade.groupMembersPageQueryParam(),
+        status: this.facade.groupMembersPageStatusParam(),
+        isVisible: this.facade.groupMembersPageIsVisibleParam(),
     } ) )
     protected readonly form: FieldTree<GroupMemberListSearchModel> = createSearchForm( this.model )
 

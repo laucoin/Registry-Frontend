@@ -74,6 +74,20 @@ describe( 'GroupFacade', () => {
         expect( findGroups ).toHaveBeenCalledWith( 'p1', 0, 10, expect.anything() )
     } )
 
+    it( 'keeps the shown page when the same date is searched again', () => {
+        // Arrange
+        const at: Date = new Date( '2026-10-13T10:00:00.000Z' )
+        facade.inputPageSearchParameters( undefined, at, undefined, undefined )
+        facade.fetchGroupsPage( 0, 10 )
+
+        // Act
+        facade.inputPageSearchParameters( undefined, new Date( at ), undefined, undefined )
+        facade.fetchGroupsPage( 3, 10 )
+
+        // Assert
+        expect( findGroups ).toHaveBeenLastCalledWith( 'p1', 3, 10, expect.anything() )
+    } )
+
     it( 'does not touch the search parameters when nothing changed', () => {
         // Arrange
         facade.inputPageSearchParameters( 'scouts', undefined, undefined, undefined )
@@ -83,7 +97,7 @@ describe( 'GroupFacade', () => {
         facade.inputPageSearchParameters( 'scouts', undefined, undefined, undefined )
 
         // Assert
-        expect( facade.groupsPageTextSearchedParam() ).toBe( 'scouts' )
+        expect( facade.groupsPageQueryParam() ).toBe( 'scouts' )
         expect( facade.groupsPageResetSearch() ).toBe( false )
     } )
 

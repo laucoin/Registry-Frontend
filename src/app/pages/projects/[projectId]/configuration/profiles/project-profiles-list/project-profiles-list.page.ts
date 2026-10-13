@@ -66,17 +66,17 @@ export class ProjectProfilesListPage {
     ))
 
     protected readonly activeFilters: Signal<number> = computed((): number => [
-        StringHelper.isNotNullNorBlank(this.facade.projectProfilesPageTextSearchedParam()),
-        this.facade.projectProfilesPageDateTimeSearchedParam() !== undefined,
-        this.facade.projectProfilesPageStatusSearchedParam() !== undefined,
-        this.facade.projectProfilesPageAvailabilitySearchedParam() !== undefined,
+        StringHelper.isNotNullNorBlank(this.facade.projectProfilesPageQueryParam()),
+        this.facade.projectProfilesPageAtParam() !== undefined,
+        this.facade.projectProfilesPageStatusParam() !== undefined,
+        this.facade.projectProfilesPageIsAvailableParam() !== undefined,
     ].filter(Boolean).length)
 
     protected readonly model: WritableSignal<ProjectProfilesListSearchModel> = signal(toProjectProfilesListSearchModel({
-        q: this.facade.projectProfilesPageTextSearchedParam(),
-        at: this.facade.projectProfilesPageDateTimeSearchedParam(),
-        status: this.facade.projectProfilesPageStatusSearchedParam(),
-        isAvailable: this.facade.projectProfilesPageAvailabilitySearchedParam(),
+        q: this.facade.projectProfilesPageQueryParam(),
+        at: this.facade.projectProfilesPageAtParam(),
+        status: this.facade.projectProfilesPageStatusParam(),
+        isAvailable: this.facade.projectProfilesPageIsAvailableParam(),
     }))
     protected readonly form: FieldTree<ProjectProfilesListSearchModel> = createSearchForm(this.model)
 

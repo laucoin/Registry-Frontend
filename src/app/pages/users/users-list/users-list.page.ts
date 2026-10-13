@@ -54,13 +54,13 @@ export class UsersListPage {
     protected readonly userActions: UserActions = inject(UserActions)
 
     protected readonly activeFilters: Signal<number> = computed((): number => [
-        StringHelper.isNotNullNorBlank(this.facade.usersPageTextSearchedParam()),
-        this.facade.actualUsersPageVisibilitySearchedParam() !== undefined,
+        StringHelper.isNotNullNorBlank(this.facade.usersPageQueryParam()),
+        this.facade.actualUsersPageIsVisibleParam() !== undefined,
     ].filter(Boolean).length)
 
     protected readonly model: WritableSignal<UsersListSearchModel> = signal(toUsersListSearchModel({
-        q: this.facade.usersPageTextSearchedParam(),
-        isVisible: this.facade.actualUsersPageVisibilitySearchedParam(),
+        q: this.facade.usersPageQueryParam(),
+        isVisible: this.facade.actualUsersPageIsVisibleParam(),
     }))
     protected readonly form: FieldTree<UsersListSearchModel> = createSearchForm(this.model)
 

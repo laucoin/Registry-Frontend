@@ -40,12 +40,12 @@ export class ProjectFacade extends GenericFacade {
 
     private readonly projectsPageResetSearch: Signal<boolean> = this.store.projects.params.resetSearch
 
-    public readonly projectsPageTextSearchedParam: Signal<string | undefined> = this.store.projects.params.q
+    public readonly projectsPageQueryParam: Signal<string | undefined> = this.store.projects.params.q
 
-    public readonly projectsPageDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined => DateHelper.buildDate( this.store.projects.params.at() ) )
+    public readonly projectsPageAtParam: Signal<Date | undefined> = computed( (): Date | undefined => DateHelper.buildDate( this.store.projects.params.at() ) )
 
 
-    public readonly projectsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.projects.params.isVisible
+    public readonly projectsPageIsVisibleParam: Signal<boolean | undefined> = this.store.projects.params.isVisible
 
     public readonly projectOptionsMetadata: Signal<ProjectOptionModel[]> = this.store.metadata.options
 
@@ -83,9 +83,9 @@ export class ProjectFacade extends GenericFacade {
         at: Date | undefined,
         isVisible: boolean | undefined,
     ): void {
-        const resetSearch: boolean = this.projectsPageTextSearchedParam() != q
-                                     || this.projectsPageDateTimeSearchedParam() != at?.toISOString()
-                                     || this.projectsPageVisibilitySearchedParam() != isVisible
+        const resetSearch: boolean = this.projectsPageQueryParam() != q
+                                     || this.projectsPageAtParam()?.toISOString() != at?.toISOString()
+                                     || this.projectsPageIsVisibleParam() != isVisible
 
         if (resetSearch) {
             this.store.updateProjectsPageSearchParams( {

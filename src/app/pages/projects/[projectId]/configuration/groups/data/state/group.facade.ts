@@ -39,15 +39,15 @@ export class GroupFacade extends GenericProjectElementFacade {
 
     public readonly groupsPageResetSearch: Signal<boolean> = this.store.groups.params.resetSearch
 
-    public readonly groupsPageTextSearchedParam: Signal<string | undefined> = this.store.groups.params.q
+    public readonly groupsPageQueryParam: Signal<string | undefined> = this.store.groups.params.q
 
-    public readonly groupsPageDateTimeSearchedParam: Signal<Date | undefined> = computed( () =>
+    public readonly groupsPageAtParam: Signal<Date | undefined> = computed( () =>
             DateHelper.buildDate( this.store.groups.params.at() ),
         )
 
-    public readonly groupsPagePresenceSearchedParam: Signal<boolean | undefined> = this.store.groups.params.isPresent
+    public readonly groupsPageIsPresentParam: Signal<boolean | undefined> = this.store.groups.params.isPresent
 
-    public readonly groupsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.groups.params.isVisible
+    public readonly groupsPageIsVisibleParam: Signal<boolean | undefined> = this.store.groups.params.isVisible
 
     public readonly groupMembersPage: Signal<PageModel<ParticipantModel> | undefined> = this.store.members.element
 
@@ -59,11 +59,11 @@ export class GroupFacade extends GenericProjectElementFacade {
 
     public readonly groupMembersPageResetSearch: Signal<boolean> = this.store.members.params.resetSearch
 
-    public readonly groupMembersPageTextSearchedParam: Signal<string | undefined> = this.store.members.params.q
+    public readonly groupMembersPageQueryParam: Signal<string | undefined> = this.store.members.params.q
 
-    public readonly groupMembersPageStatusSearchedParam: Signal<string | undefined> = this.store.members.params.status
+    public readonly groupMembersPageStatusParam: Signal<string | undefined> = this.store.members.params.status
 
-    public readonly groupMembersPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.members.params.isVisible
+    public readonly groupMembersPageIsVisibleParam: Signal<boolean | undefined> = this.store.members.params.isVisible
 
     public readonly searchedParticipantsMetadata: Signal<SelectOptionModel<ParticipantModel>[]> = this.store.metadata.searched
 
@@ -95,10 +95,10 @@ export class GroupFacade extends GenericProjectElementFacade {
         isPresent: boolean | undefined,
         isVisible: boolean | undefined,
     ): void {
-        const resetSearch: boolean = this.groupsPageTextSearchedParam() != q
-                                     || this.groupsPagePresenceSearchedParam() != isPresent
-                                     || this.groupsPageDateTimeSearchedParam() != at?.toISOString()
-                                     || this.groupsPageVisibilitySearchedParam() != isVisible
+        const resetSearch: boolean = this.groupsPageQueryParam() != q
+                                     || this.groupsPageIsPresentParam() != isPresent
+                                     || this.groupsPageAtParam()?.toISOString() != at?.toISOString()
+                                     || this.groupsPageIsVisibleParam() != isVisible
 
         if (resetSearch) {
             this.store.updateGroupsPageSearchParams( {
@@ -125,9 +125,9 @@ export class GroupFacade extends GenericProjectElementFacade {
         status: string | undefined,
         isVisible: boolean | undefined,
     ): void {
-        const resetSearch: boolean = this.groupMembersPageTextSearchedParam() != q
-                                     || this.groupMembersPageStatusSearchedParam() != status
-                                     || this.groupMembersPageVisibilitySearchedParam() != isVisible
+        const resetSearch: boolean = this.groupMembersPageQueryParam() != q
+                                     || this.groupMembersPageStatusParam() != status
+                                     || this.groupMembersPageIsVisibleParam() != isVisible
 
         if (resetSearch) {
             this.store.updateGroupMembersPageSearchParams( {

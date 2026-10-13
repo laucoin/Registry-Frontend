@@ -64,15 +64,15 @@ export class ParticipantsListPage {
     ))
 
     protected readonly activeFilters: Signal<number> = computed((): number => [
-        StringHelper.isNotNullNorBlank(this.facade.participantsPageTextSearchedParam()),
-        this.facade.participantsPageStatusSearchedParam() !== undefined,
-        this.facade.participantsPageVisibilitySearchedParam() !== undefined,
+        StringHelper.isNotNullNorBlank(this.facade.participantsPageQueryParam()),
+        this.facade.participantsPageStatusParam() !== undefined,
+        this.facade.participantsPageIsVisibleParam() !== undefined,
     ].filter(Boolean).length)
 
     protected readonly model: WritableSignal<ParticipantsListSearchModel> = signal(toParticipantsListSearchModel({
-        q: this.facade.participantsPageTextSearchedParam(),
-        status: this.facade.participantsPageStatusSearchedParam(),
-        isVisible: this.facade.participantsPageVisibilitySearchedParam(),
+        q: this.facade.participantsPageQueryParam(),
+        status: this.facade.participantsPageStatusParam(),
+        isVisible: this.facade.participantsPageIsVisibleParam(),
     }))
     protected readonly form: FieldTree<ParticipantsListSearchModel> = createSearchForm(this.model)
 

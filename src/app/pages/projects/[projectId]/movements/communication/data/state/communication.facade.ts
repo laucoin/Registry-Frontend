@@ -39,15 +39,15 @@ export class CommunicationFacade extends GenericProjectElementFacade {
 
     private readonly communicationsPageResetSearch: Signal<boolean> = this.store.communications.params.resetSearch
 
-    public readonly communicationsPageTextSearchedParam: Signal<string | undefined> = this.store.communications.params.q
+    public readonly communicationsPageQueryParam: Signal<string | undefined> = this.store.communications.params.q
 
-    public readonly communicationsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.communications.params.isVisible
+    public readonly communicationsPageIsVisibleParam: Signal<boolean | undefined> = this.store.communications.params.isVisible
 
-    public readonly communicationsPageStartDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
+    public readonly communicationsPageFromParam: Signal<Date | undefined> = computed( (): Date | undefined =>
             DateHelper.buildDate( this.store.communications.params.from() ),
         )
 
-    public readonly communicationsPageEndDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
+    public readonly communicationsPageToParam: Signal<Date | undefined> = computed( (): Date | undefined =>
             DateHelper.buildDate( this.store.communications.params.to() ),
         )
 
@@ -82,10 +82,10 @@ export class CommunicationFacade extends GenericProjectElementFacade {
         from: Date | undefined,
         to: Date | undefined,
     ): void {
-        const resetSearch: boolean = this.communicationsPageTextSearchedParam() != q
-                                     || this.communicationsPageVisibilitySearchedParam() != isVisible
-                                     || this.communicationsPageStartDateTimeSearchedParam() != from?.toISOString()
-                                     || this.communicationsPageEndDateTimeSearchedParam() != to?.toISOString()
+        const resetSearch: boolean = this.communicationsPageQueryParam() != q
+                                     || this.communicationsPageIsVisibleParam() != isVisible
+                                     || this.communicationsPageFromParam()?.toISOString() != from?.toISOString()
+                                     || this.communicationsPageToParam()?.toISOString() != to?.toISOString()
 
         if (resetSearch) {
             this.store.updateCommunicationsPageSearchParams( {

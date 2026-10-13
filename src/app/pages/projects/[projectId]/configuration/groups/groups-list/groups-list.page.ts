@@ -65,17 +65,17 @@ export class GroupsListPage {
     ))
 
     protected readonly activeFilters: Signal<number> = computed((): number => [
-        StringHelper.isNotNullNorBlank(this.facade.groupsPageTextSearchedParam()),
-        this.facade.groupsPageDateTimeSearchedParam() !== undefined,
-        this.facade.groupsPagePresenceSearchedParam() !== undefined,
-        this.facade.groupsPageVisibilitySearchedParam() !== undefined,
+        StringHelper.isNotNullNorBlank(this.facade.groupsPageQueryParam()),
+        this.facade.groupsPageAtParam() !== undefined,
+        this.facade.groupsPageIsPresentParam() !== undefined,
+        this.facade.groupsPageIsVisibleParam() !== undefined,
     ].filter(Boolean).length)
 
     protected readonly model: WritableSignal<GroupsListSearchModel> = signal(toGroupsListSearchModel({
-        q: this.facade.groupsPageTextSearchedParam(),
-        at: this.facade.groupsPageDateTimeSearchedParam(),
-        isPresent: this.facade.groupsPagePresenceSearchedParam(),
-        isVisible: this.facade.groupsPageVisibilitySearchedParam(),
+        q: this.facade.groupsPageQueryParam(),
+        at: this.facade.groupsPageAtParam(),
+        isPresent: this.facade.groupsPageIsPresentParam(),
+        isVisible: this.facade.groupsPageIsVisibleParam(),
     }))
     protected readonly form: FieldTree<GroupsListSearchModel> = createSearchForm(this.model)
 

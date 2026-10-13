@@ -48,19 +48,19 @@ export class AlertsListPage {
     protected readonly facade: AlertFacade = inject(AlertFacade)
 
     protected readonly activeFilters: Signal<number> = computed((): number => [
-        this.facade.alertsPageTextSearchedParam() !== undefined,
-        this.facade.alertsPageStatusSearchedParam() !== undefined,
-        this.facade.alertsPageVisibilitySearchedParam() !== undefined,
-        this.facade.alertsPageStartDateTimeSearchedParam() !== undefined,
-        this.facade.alertsPageEndDateTimeSearchedParam() !== undefined,
+        this.facade.alertsPageQueryParam() !== undefined,
+        this.facade.alertsPageStatusParam() !== undefined,
+        this.facade.alertsPageIsVisibleParam() !== undefined,
+        this.facade.alertsPageFromParam() !== undefined,
+        this.facade.alertsPageToParam() !== undefined,
     ].filter(Boolean).length)
 
     protected readonly model: WritableSignal<AlertsListSearchModel> = signal(toAlertsListSearchModel({
-        q: this.facade.alertsPageTextSearchedParam(),
-        status: this.facade.alertsPageStatusSearchedParam(),
-        isVisible: this.facade.alertsPageVisibilitySearchedParam(),
-        from: this.facade.alertsPageStartDateTimeSearchedParam(),
-        to: this.facade.alertsPageEndDateTimeSearchedParam(),
+        q: this.facade.alertsPageQueryParam(),
+        status: this.facade.alertsPageStatusParam(),
+        isVisible: this.facade.alertsPageIsVisibleParam(),
+        from: this.facade.alertsPageFromParam(),
+        to: this.facade.alertsPageToParam(),
     }))
     protected readonly form: FieldTree<AlertsListSearchModel> = createSearchForm(this.model)
 

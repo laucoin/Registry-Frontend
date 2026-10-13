@@ -37,12 +37,12 @@ export class ProjectProfileFacade extends GenericProjectElementFacade {
     public readonly projectProfilesPageSilentLoading: Signal<boolean> = this.store.projectProfiles.silentLoading
     public readonly projectProfilesPageError: Signal<NotificationModel | undefined> = this.store.projectProfiles.error
     private readonly projectProfilesPageResetSearch: Signal<boolean> = this.store.projectProfiles.params.resetSearch
-    public readonly projectProfilesPageTextSearchedParam: Signal<string | undefined> = this.store.projectProfiles.params.q
-    public readonly projectProfilesPageDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
+    public readonly projectProfilesPageQueryParam: Signal<string | undefined> = this.store.projectProfiles.params.q
+    public readonly projectProfilesPageAtParam: Signal<Date | undefined> = computed( (): Date | undefined =>
         DateHelper.buildDate( this.store.projectProfiles.params.at() ),
     )
-    public readonly projectProfilesPageAvailabilitySearchedParam: Signal<boolean | undefined> = this.store.projectProfiles.params.isAvailable
-    public readonly projectProfilesPageStatusSearchedParam: Signal<string | undefined> = this.store.projectProfiles.params.status
+    public readonly projectProfilesPageIsAvailableParam: Signal<boolean | undefined> = this.store.projectProfiles.params.isAvailable
+    public readonly projectProfilesPageStatusParam: Signal<string | undefined> = this.store.projectProfiles.params.status
 
     public readonly searchedUsersMetadata: Signal<SelectOptionModel<UserModel>[]> = this.store.metadata.searched
     public readonly projectProfileAssignableRolesMetadata: Signal<SelectOptionModel<string>[]> = this.store.metadata.roles
@@ -68,10 +68,10 @@ export class ProjectProfileFacade extends GenericProjectElementFacade {
         status: ProfileStatusEnum | undefined,
         isAvailable: boolean | undefined,
     ): void {
-        const resetSearch: boolean = this.projectProfilesPageTextSearchedParam() != q
-                                     || this.projectProfilesPageDateTimeSearchedParam() != at?.toISOString()
-                                     || this.projectProfilesPageStatusSearchedParam() != status
-                                     || this.projectProfilesPageAvailabilitySearchedParam() != isAvailable
+        const resetSearch: boolean = this.projectProfilesPageQueryParam() != q
+                                     || this.projectProfilesPageAtParam()?.toISOString() != at?.toISOString()
+                                     || this.projectProfilesPageStatusParam() != status
+                                     || this.projectProfilesPageIsAvailableParam() != isAvailable
 
         if (resetSearch) {
             this.store.updateProjectProfilesPageSearchParams( {

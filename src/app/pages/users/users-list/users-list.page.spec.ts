@@ -20,8 +20,8 @@ describe('UsersListPage', () => {
 
     function create(): UsersListApi {
         facade = autoMock()
-        facade['usersPageTextSearchedParam'].mockReturnValue(undefined)
-        facade['actualUsersPageVisibilitySearchedParam'].mockReturnValue(undefined)
+        facade['usersPageQueryParam'].mockReturnValue(undefined)
+        facade['actualUsersPageIsVisibleParam'].mockReturnValue(undefined)
         TestBed.configureTestingModule({
             providers: [
                 { provide: UserFacade, useValue: facade },
@@ -40,7 +40,7 @@ describe('UsersListPage', () => {
         // Arrange
         facade = autoMock()
         const page: UsersListApi = create()
-        facade['usersPageTextSearchedParam'].mockReturnValue('ada')
+        facade['usersPageQueryParam'].mockReturnValue('ada')
 
         // Act
         const model: UsersListSearchModel = page.model()
@@ -52,8 +52,8 @@ describe('UsersListPage', () => {
     it('counts the filters applied by the facade', () => {
         // Arrange
         const page: UsersListApi = create()
-        facade['usersPageTextSearchedParam'].mockReturnValue('ada')
-        facade['actualUsersPageVisibilitySearchedParam'].mockReturnValue(false)
+        facade['usersPageQueryParam'].mockReturnValue('ada')
+        facade['actualUsersPageIsVisibleParam'].mockReturnValue(false)
 
         // Act
         const count: number = page.activeFilters()

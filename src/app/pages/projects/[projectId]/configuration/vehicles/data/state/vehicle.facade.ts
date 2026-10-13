@@ -30,26 +30,26 @@ export class VehicleFacade extends GenericProjectElementFacade {
     public readonly vehiclesPageSilentLoading: Signal<boolean> = this.store.vehicles.silentLoading
     public readonly vehiclesPageError: Signal<NotificationModel | undefined> = this.store.vehicles.error
     public readonly vehiclesPageResetSearch: Signal<boolean> = this.store.vehicles.params.resetSearch
-    public readonly vehiclesPageTextSearchedParam: Signal<string | undefined> = this.store.vehicles.params.q
-    public readonly vehiclesPageDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
+    public readonly vehiclesPageQueryParam: Signal<string | undefined> = this.store.vehicles.params.q
+    public readonly vehiclesPageAtParam: Signal<Date | undefined> = computed( (): Date | undefined =>
         DateHelper.buildDate( this.store.vehicles.params.at() ),
     )
-    public readonly vehiclesPageStatusSearchedParam: Signal<string | undefined> = this.store.vehicles.params.status
-    public readonly vehiclesPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.vehicles.params.isVisible
+    public readonly vehiclesPageStatusParam: Signal<string | undefined> = this.store.vehicles.params.status
+    public readonly vehiclesPageIsVisibleParam: Signal<boolean | undefined> = this.store.vehicles.params.isVisible
 
     public readonly vehicleMovementsPage: Signal<PageModel<MovementModel> | undefined> = this.store.movements.element
     public readonly vehicleMovementsPageLoading: Signal<boolean> = this.store.movements.loading
     public readonly vehicleMovementsPageSilentLoading: Signal<boolean> = this.store.movements.silentLoading
     public readonly vehicleMovementsPageError: Signal<NotificationModel | undefined> = this.store.movements.error
     private readonly vehicleMovementsPageResetSearch: Signal<boolean> = this.store.movements.params.resetSearch
-    public readonly vehicleMovementsPageTypeSearchedParam: Signal<string | undefined> = this.store.movements.params.type
-    public readonly vehicleMovementsPageStartDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
+    public readonly vehicleMovementsPageTypeParam: Signal<string | undefined> = this.store.movements.params.type
+    public readonly vehicleMovementsPageFromParam: Signal<Date | undefined> = computed( (): Date | undefined =>
         DateHelper.buildDate( this.store.movements.params.from() ),
     )
-    public readonly vehicleMovementsPageEndDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
+    public readonly vehicleMovementsPageToParam: Signal<Date | undefined> = computed( (): Date | undefined =>
         DateHelper.buildDate( this.store.movements.params.to() ),
     )
-    public readonly vehicleMovementsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.movements.params.isVisible
+    public readonly vehicleMovementsPageIsVisibleParam: Signal<boolean | undefined> = this.store.movements.params.isVisible
 
     public readonly presencesStatusMetadata: Signal<SelectOptionModel<PresenceStatusEnum | undefined>[]> = this.store.metadata.presencesStatus
     public readonly visibilitiesMetadata: Signal<SelectOptionModel<boolean | undefined>[]> = computed( (): SelectOptionModel<boolean | undefined>[] =>
@@ -75,10 +75,10 @@ export class VehicleFacade extends GenericProjectElementFacade {
         status: string | undefined,
         isVisible: boolean | undefined,
     ): void {
-        const resetSearch: boolean = this.vehiclesPageTextSearchedParam() != q
-                                     || this.vehiclesPageDateTimeSearchedParam() != at?.toISOString()
-                                     || this.vehiclesPageStatusSearchedParam() != status
-                                     || this.vehiclesPageVisibilitySearchedParam() != isVisible
+        const resetSearch: boolean = this.vehiclesPageQueryParam() != q
+                                     || this.vehiclesPageAtParam()?.toISOString() != at?.toISOString()
+                                     || this.vehiclesPageStatusParam() != status
+                                     || this.vehiclesPageIsVisibleParam() != isVisible
 
         if (resetSearch) {
             this.store.updateVehiclesPageSearchParams( {
@@ -114,10 +114,10 @@ export class VehicleFacade extends GenericProjectElementFacade {
         to: Date | undefined,
         isVisible: boolean | undefined,
     ): void {
-        const resetSearch: boolean = this.vehicleMovementsPageTypeSearchedParam() != type
-                                     || this.vehicleMovementsPageStartDateTimeSearchedParam() != from?.toISOString()
-                                     || this.vehicleMovementsPageEndDateTimeSearchedParam() != to?.toISOString()
-                                     || this.vehicleMovementsPageVisibilitySearchedParam() != isVisible
+        const resetSearch: boolean = this.vehicleMovementsPageTypeParam() != type
+                                     || this.vehicleMovementsPageFromParam()?.toISOString() != from?.toISOString()
+                                     || this.vehicleMovementsPageToParam()?.toISOString() != to?.toISOString()
+                                     || this.vehicleMovementsPageIsVisibleParam() != isVisible
 
         if (resetSearch) {
             this.store.updateVehicleMovementsPageSearchParams( {

@@ -65,17 +65,17 @@ export class VehiclesListPage {
     ))
 
     protected readonly activeFilters: Signal<number> = computed((): number => [
-        StringHelper.isNotNullNorBlank(this.facade.vehiclesPageTextSearchedParam()),
-        this.facade.vehiclesPageDateTimeSearchedParam() !== undefined,
-        this.facade.vehiclesPageStatusSearchedParam() !== undefined,
-        this.facade.vehiclesPageVisibilitySearchedParam() !== undefined,
+        StringHelper.isNotNullNorBlank(this.facade.vehiclesPageQueryParam()),
+        this.facade.vehiclesPageAtParam() !== undefined,
+        this.facade.vehiclesPageStatusParam() !== undefined,
+        this.facade.vehiclesPageIsVisibleParam() !== undefined,
     ].filter(Boolean).length)
 
     protected readonly model: WritableSignal<VehiclesListSearchModel> = signal(toVehiclesListSearchModel({
-        q: this.facade.vehiclesPageTextSearchedParam(),
-        at: this.facade.vehiclesPageDateTimeSearchedParam(),
-        status: this.facade.vehiclesPageStatusSearchedParam(),
-        isVisible: this.facade.vehiclesPageVisibilitySearchedParam(),
+        q: this.facade.vehiclesPageQueryParam(),
+        at: this.facade.vehiclesPageAtParam(),
+        status: this.facade.vehiclesPageStatusParam(),
+        isVisible: this.facade.vehiclesPageIsVisibleParam(),
     }))
     protected readonly form: FieldTree<VehiclesListSearchModel> = createSearchForm(this.model)
 

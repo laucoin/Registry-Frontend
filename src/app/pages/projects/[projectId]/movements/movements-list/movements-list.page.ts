@@ -62,17 +62,17 @@ export class MovementsListPage {
     ))
 
     protected readonly activeFilters: Signal<number> = computed((): number => [
-        this.facade.movementsPageTypeSearchedParam() !== undefined,
-        this.facade.movementsPageStartDateTimeSearchedParam() !== undefined,
-        this.facade.movementsPageEndDateTimeSearchedParam() !== undefined,
-        this.facade.movementsPageVisibilitySearchedParam() !== undefined,
+        this.facade.movementsPageTypeParam() !== undefined,
+        this.facade.movementsPageFromParam() !== undefined,
+        this.facade.movementsPageToParam() !== undefined,
+        this.facade.movementsPageIsVisibleParam() !== undefined,
     ].filter(Boolean).length)
 
     protected readonly model: WritableSignal<MovementsListSearchModel> = signal(toMovementsListSearchModel({
-        type: this.facade.movementsPageTypeSearchedParam(),
-        from: this.facade.movementsPageStartDateTimeSearchedParam(),
-        to: this.facade.movementsPageEndDateTimeSearchedParam(),
-        isVisible: this.facade.movementsPageVisibilitySearchedParam(),
+        type: this.facade.movementsPageTypeParam(),
+        from: this.facade.movementsPageFromParam(),
+        to: this.facade.movementsPageToParam(),
+        isVisible: this.facade.movementsPageIsVisibleParam(),
     }))
     protected readonly form: FieldTree<MovementsListSearchModel> = createSearchForm(this.model)
 

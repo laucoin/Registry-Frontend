@@ -47,13 +47,13 @@ export class InvitationsListPage {
     protected readonly profilesRoute: string = `/${RegistryRouteEnum.USERS_PROFILES}`
 
     protected readonly activeFilters: Signal<number> = computed((): number => [
-        StringHelper.isNotNullNorBlank(this.userProfileFacade.userProjectProfileInvitationsPageTextSearchParam()),
-        this.userProfileFacade.userProjectProfileInvitationsPageDateTimeSearchParam() !== undefined,
+        StringHelper.isNotNullNorBlank(this.userProfileFacade.userProjectProfileInvitationsPageQueryParam()),
+        this.userProfileFacade.userProjectProfileInvitationsPageAtParam() !== undefined,
     ].filter(Boolean).length)
 
     protected readonly model: WritableSignal<InvitationsListSearchModel> = signal(toInvitationsListSearchModel({
-        q: this.userProfileFacade.userProjectProfileInvitationsPageTextSearchParam(),
-        at: this.userProfileFacade.userProjectProfileInvitationsPageDateTimeSearchParam(),
+        q: this.userProfileFacade.userProjectProfileInvitationsPageQueryParam(),
+        at: this.userProfileFacade.userProjectProfileInvitationsPageAtParam(),
     }))
     protected readonly form: FieldTree<InvitationsListSearchModel> = createSearchForm(this.model)
 

@@ -46,17 +46,17 @@ export class MovementFacade extends GenericProjectElementFacade {
 
     private readonly movementsPageResetSearch: Signal<boolean> = this.store.movements.params.resetSearch
 
-    public readonly movementsPageTypeSearchedParam: Signal<string | undefined> = this.store.movements.params.type
+    public readonly movementsPageTypeParam: Signal<string | undefined> = this.store.movements.params.type
 
-    public readonly movementsPageStartDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
+    public readonly movementsPageFromParam: Signal<Date | undefined> = computed( (): Date | undefined =>
             DateHelper.buildDate( this.store.movements.params.from() ),
         )
 
-    public readonly movementsPageEndDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
+    public readonly movementsPageToParam: Signal<Date | undefined> = computed( (): Date | undefined =>
             DateHelper.buildDate( this.store.movements.params.to() ),
         )
 
-    public readonly movementsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.movements.params.isVisible
+    public readonly movementsPageIsVisibleParam: Signal<boolean | undefined> = this.store.movements.params.isVisible
 
     public readonly movementCommunicationsPage: Signal<PageModel<CommunicationModel> | undefined> = this.store.movementCommunications.element
 
@@ -68,15 +68,15 @@ export class MovementFacade extends GenericProjectElementFacade {
 
     private readonly movementCommunicationsPageResetSearch: Signal<boolean> = this.store.movementCommunications.params.resetSearch
 
-    public readonly movementCommunicationsPageTextSearchedParam: Signal<string | undefined> = this.store.movementCommunications.params.q
+    public readonly movementCommunicationsPageQueryParam: Signal<string | undefined> = this.store.movementCommunications.params.q
 
-    public readonly movementCommunicationsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.movementCommunications.params.isVisible
+    public readonly movementCommunicationsPageIsVisibleParam: Signal<boolean | undefined> = this.store.movementCommunications.params.isVisible
 
-    public readonly movementCommunicationsPageStartDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
+    public readonly movementCommunicationsPageFromParam: Signal<Date | undefined> = computed( (): Date | undefined =>
             DateHelper.buildDate( this.store.movementCommunications.params.from() ),
         )
 
-    public readonly movementCommunicationsPageEndDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
+    public readonly movementCommunicationsPageToParam: Signal<Date | undefined> = computed( (): Date | undefined =>
             DateHelper.buildDate( this.store.movementCommunications.params.to() ),
         )
 
@@ -115,10 +115,10 @@ export class MovementFacade extends GenericProjectElementFacade {
         to: Date | undefined,
         isVisible: boolean | undefined,
     ): void {
-        const resetSearch: boolean = this.movementsPageTypeSearchedParam() != type
-                                     || this.movementsPageStartDateTimeSearchedParam() != from?.toISOString()
-                                     || this.movementsPageEndDateTimeSearchedParam() != to?.toISOString()
-                                     || this.movementsPageVisibilitySearchedParam() != isVisible
+        const resetSearch: boolean = this.movementsPageTypeParam() != type
+                                     || this.movementsPageFromParam()?.toISOString() != from?.toISOString()
+                                     || this.movementsPageToParam()?.toISOString() != to?.toISOString()
+                                     || this.movementsPageIsVisibleParam() != isVisible
 
         if (resetSearch) {
             this.store.updateMovementsPageSearchParams( {
@@ -148,10 +148,10 @@ export class MovementFacade extends GenericProjectElementFacade {
         from: Date | undefined,
         to: Date | undefined,
     ): void {
-        const resetSearch: boolean = this.movementCommunicationsPageTextSearchedParam() != q
-                                     || this.movementCommunicationsPageVisibilitySearchedParam() != isVisible
-                                     || this.movementCommunicationsPageStartDateTimeSearchedParam() != from?.toISOString()
-                                     || this.movementCommunicationsPageEndDateTimeSearchedParam() != to?.toISOString()
+        const resetSearch: boolean = this.movementCommunicationsPageQueryParam() != q
+                                     || this.movementCommunicationsPageIsVisibleParam() != isVisible
+                                     || this.movementCommunicationsPageFromParam()?.toISOString() != from?.toISOString()
+                                     || this.movementCommunicationsPageToParam()?.toISOString() != to?.toISOString()
 
         if (resetSearch) {
             this.store.updateMovementCommunicationsPageSearchParams( {

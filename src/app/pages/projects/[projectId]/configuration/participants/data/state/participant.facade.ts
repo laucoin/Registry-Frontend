@@ -41,11 +41,11 @@ export class ParticipantFacade extends GenericProjectElementFacade {
 
     public readonly participantsPageResetSearch: Signal<boolean> = this.store.participants.params.resetSearch
 
-    public readonly participantsPageTextSearchedParam: Signal<string | undefined> = this.store.participants.params.q
+    public readonly participantsPageQueryParam: Signal<string | undefined> = this.store.participants.params.q
 
-    public readonly participantsPageStatusSearchedParam: Signal<string | undefined> = this.store.participants.params.status
+    public readonly participantsPageStatusParam: Signal<string | undefined> = this.store.participants.params.status
 
-    public readonly participantsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.participants.params.isVisible
+    public readonly participantsPageIsVisibleParam: Signal<boolean | undefined> = this.store.participants.params.isVisible
 
     public readonly participantMovementsPage: Signal<PageModel<MovementModel> | undefined> = this.store.movements.element
 
@@ -57,17 +57,17 @@ export class ParticipantFacade extends GenericProjectElementFacade {
 
     public readonly participantMovementsPageResetSearch: Signal<boolean> = this.store.movements.params.resetSearch
 
-    public readonly participantMovementsPageTypeSearchedParam: Signal<string | undefined> = this.store.movements.params.type
+    public readonly participantMovementsPageTypeParam: Signal<string | undefined> = this.store.movements.params.type
 
-    public readonly participantMovementsPageStartDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
+    public readonly participantMovementsPageFromParam: Signal<Date | undefined> = computed( (): Date | undefined =>
             DateHelper.buildDate( this.store.movements.params.from() ),
         )
 
-    public readonly participantMovementsPageEndDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
+    public readonly participantMovementsPageToParam: Signal<Date | undefined> = computed( (): Date | undefined =>
             DateHelper.buildDate( this.store.movements.params.to() ),
         )
 
-    public readonly participantMovementsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.movements.params.isVisible
+    public readonly participantMovementsPageIsVisibleParam: Signal<boolean | undefined> = this.store.movements.params.isVisible
 
     public readonly searchedUsersMetadata: Signal<SelectOptionModel<UserModel>[]> = this.store.metadata.searchedUsers
 
@@ -95,9 +95,9 @@ export class ParticipantFacade extends GenericProjectElementFacade {
         status: string | undefined,
         isVisible: boolean | undefined,
     ): void {
-        const resetSearch: boolean = this.participantsPageTextSearchedParam() != q
-                                     || this.participantsPageStatusSearchedParam() != status
-                                     || this.participantsPageVisibilitySearchedParam() != isVisible
+        const resetSearch: boolean = this.participantsPageQueryParam() != q
+                                     || this.participantsPageStatusParam() != status
+                                     || this.participantsPageIsVisibleParam() != isVisible
 
         if (resetSearch) {
             this.store.updateParticipantsPageSearchParams( {
@@ -132,10 +132,10 @@ export class ParticipantFacade extends GenericProjectElementFacade {
         to: Date | undefined,
         isVisible: boolean | undefined,
     ): void {
-        const resetSearch: boolean = this.participantMovementsPageTypeSearchedParam() != type
-                                     || this.participantMovementsPageStartDateTimeSearchedParam() != from?.toISOString()
-                                     || this.participantMovementsPageEndDateTimeSearchedParam() != to?.toISOString()
-                                     || this.participantMovementsPageVisibilitySearchedParam() != isVisible
+        const resetSearch: boolean = this.participantMovementsPageTypeParam() != type
+                                     || this.participantMovementsPageFromParam()?.toISOString() != from?.toISOString()
+                                     || this.participantMovementsPageToParam()?.toISOString() != to?.toISOString()
+                                     || this.participantMovementsPageIsVisibleParam() != isVisible
 
         if (resetSearch) {
             this.store.updateParticipantMovementsPageSearchParams( {

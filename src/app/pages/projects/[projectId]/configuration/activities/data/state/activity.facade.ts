@@ -29,26 +29,26 @@ export class ActivityFacade extends GenericProjectElementFacade {
     public readonly activitiesPageSilentLoading: Signal<boolean> = this.store.activities.silentLoading
     public readonly activitiesPageError: Signal<NotificationModel | undefined> = this.store.activities.error
     private readonly activitiesPageResetSearch: Signal<boolean> = this.store.activities.params.resetSearch
-    public readonly activitiesPageTextSearchedParam: Signal<string | undefined> = this.store.activities.params.q
-    public readonly activitiesPageDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
+    public readonly activitiesPageQueryParam: Signal<string | undefined> = this.store.activities.params.q
+    public readonly activitiesPageAtParam: Signal<Date | undefined> = computed( (): Date | undefined =>
         DateHelper.buildDate( this.store.activities.params.at() ),
     )
-    public readonly activitiesPageAvailabilitySearchedParam: Signal<boolean | undefined> = this.store.activities.params.isAvailable
-    public readonly activitiesPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.activities.params.isVisible
+    public readonly activitiesPageIsAvailableParam: Signal<boolean | undefined> = this.store.activities.params.isAvailable
+    public readonly activitiesPageIsVisibleParam: Signal<boolean | undefined> = this.store.activities.params.isVisible
 
     public readonly activityMovementsPage: Signal<PageModel<MovementModel> | undefined> = this.store.movements.element
     public readonly activityMovementsPageLoading: Signal<boolean> = this.store.movements.loading
     public readonly activityMovementsPageSilentLoading: Signal<boolean> = this.store.movements.silentLoading
     public readonly activityMovementsPageError: Signal<NotificationModel | undefined> = this.store.movements.error
     public readonly activityMovementsPageResetSearch: Signal<boolean> = this.store.movements.params.resetSearch
-    public readonly activityMovementsPageTypeSearchedParam: Signal<string | undefined> = this.store.movements.params.type
-    public readonly activityMovementsPageStartDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
+    public readonly activityMovementsPageTypeParam: Signal<string | undefined> = this.store.movements.params.type
+    public readonly activityMovementsPageFromParam: Signal<Date | undefined> = computed( (): Date | undefined =>
         DateHelper.buildDate( this.store.movements.params.from() ),
     )
-    public readonly activityMovementsPageEndDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
+    public readonly activityMovementsPageToParam: Signal<Date | undefined> = computed( (): Date | undefined =>
         DateHelper.buildDate( this.store.movements.params.to() ),
     )
-    public readonly activityMovementsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.movements.params.isVisible
+    public readonly activityMovementsPageIsVisibleParam: Signal<boolean | undefined> = this.store.movements.params.isVisible
 
     public readonly availabilitiesMetadata: Signal<SelectOptionModel<boolean | undefined>[]> = this.translated( this.store.metadata.availabilities )
     public readonly visibilitiesMetadata: Signal<SelectOptionModel<boolean | undefined>[]> = this.translated( this.store.metadata.visibilities )
@@ -76,10 +76,10 @@ export class ActivityFacade extends GenericProjectElementFacade {
         isAvailable: boolean | undefined,
         isVisible: boolean | undefined,
     ): void {
-        const resetSearch: boolean = this.activitiesPageTextSearchedParam() != q
-                                     || this.activitiesPageDateTimeSearchedParam() != at?.toISOString()
-                                     || this.activitiesPageAvailabilitySearchedParam() != isAvailable
-                                     || this.activitiesPageVisibilitySearchedParam() != isVisible
+        const resetSearch: boolean = this.activitiesPageQueryParam() != q
+                                     || this.activitiesPageAtParam()?.toISOString() != at?.toISOString()
+                                     || this.activitiesPageIsAvailableParam() != isAvailable
+                                     || this.activitiesPageIsVisibleParam() != isVisible
 
         if (resetSearch) {
             this.store.updateActivitiesPageSearchParams( {
@@ -115,10 +115,10 @@ export class ActivityFacade extends GenericProjectElementFacade {
         to: Date | undefined,
         isVisible: boolean | undefined,
     ): void {
-        const resetSearch: boolean = this.activityMovementsPageTypeSearchedParam() != type
-                                     || this.activityMovementsPageStartDateTimeSearchedParam() != from?.toISOString()
-                                     || this.activityMovementsPageEndDateTimeSearchedParam() != to?.toISOString()
-                                     || this.activityMovementsPageVisibilitySearchedParam() != isVisible
+        const resetSearch: boolean = this.activityMovementsPageTypeParam() != type
+                                     || this.activityMovementsPageFromParam()?.toISOString() != from?.toISOString()
+                                     || this.activityMovementsPageToParam()?.toISOString() != to?.toISOString()
+                                     || this.activityMovementsPageIsVisibleParam() != isVisible
 
         if (resetSearch) {
             this.store.updateActivityMovementsPageSearchParams( {

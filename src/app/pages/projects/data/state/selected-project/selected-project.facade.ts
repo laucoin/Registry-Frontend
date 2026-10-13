@@ -47,11 +47,11 @@ export class SelectedProjectFacade extends GenericFacade {
 
     public readonly currentMovementsPageWithoutActivity: Signal<PageModel<MovementModel> | undefined> = this.store.isCurrent.withoutActivity.element
 
-    public readonly currentMovementsPageWithoutActivityStartDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
+    public readonly currentMovementsPageWithoutActivityFromParam: Signal<Date | undefined> = computed( (): Date | undefined =>
             DateHelper.buildDate( this.store.isCurrent.withoutActivity.params.from() ),
         )
 
-    public readonly currentMovementsPageWithoutActivityEndDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
+    public readonly currentMovementsPageWithoutActivityToParam: Signal<Date | undefined> = computed( (): Date | undefined =>
             DateHelper.buildDate( this.store.isCurrent.withoutActivity.params.to() ),
         )
 
@@ -63,11 +63,11 @@ export class SelectedProjectFacade extends GenericFacade {
 
     public readonly currentMovementsPageWithActivity: Signal<PageModel<MovementModel> | undefined> = this.store.isCurrent.withActivity.element
 
-    public readonly currentMovementsPageWithActivityStartDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
+    public readonly currentMovementsPageWithActivityFromParam: Signal<Date | undefined> = computed( (): Date | undefined =>
             DateHelper.buildDate( this.store.isCurrent.withActivity.params.from() ),
         )
 
-    public readonly currentMovementsPageWithActivityEndDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
+    public readonly currentMovementsPageWithActivityToParam: Signal<Date | undefined> = computed( (): Date | undefined =>
             DateHelper.buildDate( this.store.isCurrent.withActivity.params.to() ),
         )
 

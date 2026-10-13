@@ -65,17 +65,17 @@ export class ActivitiesListPage {
     ))
 
     protected readonly activeFilters: Signal<number> = computed((): number => [
-        StringHelper.isNotNullNorBlank(this.facade.activitiesPageTextSearchedParam()),
-        this.facade.activitiesPageDateTimeSearchedParam() !== undefined,
-        this.facade.activitiesPageAvailabilitySearchedParam() !== undefined,
-        this.facade.activitiesPageVisibilitySearchedParam() !== undefined,
+        StringHelper.isNotNullNorBlank(this.facade.activitiesPageQueryParam()),
+        this.facade.activitiesPageAtParam() !== undefined,
+        this.facade.activitiesPageIsAvailableParam() !== undefined,
+        this.facade.activitiesPageIsVisibleParam() !== undefined,
     ].filter(Boolean).length)
 
     protected readonly model: WritableSignal<ActivitiesListSearchModel> = signal(toActivitiesListSearchModel({
-        q: this.facade.activitiesPageTextSearchedParam(),
-        at: this.facade.activitiesPageDateTimeSearchedParam(),
-        isAvailable: this.facade.activitiesPageAvailabilitySearchedParam(),
-        isVisible: this.facade.activitiesPageVisibilitySearchedParam(),
+        q: this.facade.activitiesPageQueryParam(),
+        at: this.facade.activitiesPageAtParam(),
+        isAvailable: this.facade.activitiesPageIsAvailableParam(),
+        isVisible: this.facade.activitiesPageIsVisibleParam(),
     }))
     protected readonly form: FieldTree<ActivitiesListSearchModel> = createSearchForm(this.model)
 

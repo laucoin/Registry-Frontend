@@ -31,9 +31,9 @@ describe('ProjectsListPage', () => {
 
     function create(): ProjectsListApi {
         facade = autoMock()
-        facade['projectsPageTextSearchedParam'].mockReturnValue(undefined)
-        facade['projectsPageDateTimeSearchedParam'].mockReturnValue(undefined)
-        facade['projectsPageVisibilitySearchedParam'].mockReturnValue(undefined)
+        facade['projectsPageQueryParam'].mockReturnValue(undefined)
+        facade['projectsPageAtParam'].mockReturnValue(undefined)
+        facade['projectsPageIsVisibleParam'].mockReturnValue(undefined)
         authorities = signal(['REGISTRY_PROJECT_C', 'REGISTRY_PROJECT_R'])
         TestBed.configureTestingModule({
             providers: [
@@ -112,8 +112,8 @@ describe('ProjectsListPage', () => {
     it('counts the filters applied by the facade, leaving out the profile switch', () => {
         // Arrange
         const page: ProjectsListApi = create()
-        facade['projectsPageTextSearchedParam'].mockReturnValue('camp')
-        facade['projectsPageVisibilitySearchedParam'].mockReturnValue(false)
+        facade['projectsPageQueryParam'].mockReturnValue('camp')
+        facade['projectsPageIsVisibleParam'].mockReturnValue(false)
 
         // Act
         const count: number = page.activeFilters()

@@ -113,7 +113,7 @@ describe( 'UserProfileFacade', () => {
 
             // Assert
             expect( facade.userProjectProfileInvitationsPageResetSearch() ).toBe( false )
-            expect( facade.userProjectProfileInvitationsPageTextSearchParam() ).toBe( 'wolves' )
+            expect( facade.userProjectProfileInvitationsPageQueryParam() ).toBe( 'wolves' )
         } )
 
         it( 'forgets the loaded profiles once the user is gone', () => {
