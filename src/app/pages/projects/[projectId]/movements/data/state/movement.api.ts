@@ -43,6 +43,7 @@ import { VehicleMapper } from '@shared/mappers/vehicle.mapper'
 import { VehicleStatusMapper } from '@shared/mappers/vehicle-status.mapper'
 import { PageResponseDto } from '@shared/models/dto/response/page.response.dto'
 import { PairResponseDto } from '@shared/models/dto/response/pair.response.dto'
+import { ETagHelper } from '@shared/helpers/etag.helper'
 
 /**
  * Purpose: Sends the HTTP requests of the movement domain.
@@ -207,8 +208,9 @@ export class MovementApi extends GenericProjectApi {
         projectId: string | undefined,
         id: string,
         movement: MovementDto,
+        ifMatch?: string,
     ): Observable<MovementModel> {
-        return this.http.patch<MovementResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}`, movement).pipe(
+        return this.http.patch<MovementResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}`, movement, ETagHelper.options(ifMatch)).pipe(
             map( MovementMapper.toModel ),
         )
     }
@@ -223,8 +225,9 @@ export class MovementApi extends GenericProjectApi {
         projectId: string | undefined,
         id: string,
         movement: MovementDto,
+        ifMatch?: string,
     ): Observable<MovementModel> {
-        return this.http.patch<MovementResponseDto>(`${this.buildRequestBaseUrl(projectId)}/guests/${id}`, movement).pipe(
+        return this.http.patch<MovementResponseDto>(`${this.buildRequestBaseUrl(projectId)}/guests/${id}`, movement, ETagHelper.options(ifMatch)).pipe(
             map( MovementMapper.toModel ),
         )
     }

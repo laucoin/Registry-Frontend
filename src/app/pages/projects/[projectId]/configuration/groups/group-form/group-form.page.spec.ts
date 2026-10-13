@@ -88,7 +88,7 @@ describe( 'GroupFormPage', () => {
         page.submit()
 
         // Assert
-        expect( facade[ 'updateGroup' ] ).toHaveBeenCalledWith( 'g1', expect.objectContaining( { name: 'Wolves', members: [ 'pa1' ] } ) )
+        expect( facade[ 'updateGroup' ] ).toHaveBeenCalledWith( 'g1', expect.objectContaining( { name: 'Wolves', members: [ 'pa1' ] } ), expect.stringMatching( /^"\d+"$/ ) )
         expect( facade[ 'createGroup' ] ).not.toHaveBeenCalled()
         expect( back ).toHaveBeenCalledTimes( 1 )
     } )

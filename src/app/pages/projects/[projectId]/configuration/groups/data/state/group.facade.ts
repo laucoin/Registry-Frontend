@@ -158,8 +158,8 @@ export class GroupFacade extends GenericProjectElementFacade {
         )
     }
 
-    public updateGroup (id: string, group: GroupDto): Observable<GroupModel> {
-        return this.api.updateGroupById( this.selectedProjectId(), id, group ).pipe(
+    public updateGroup (id: string, group: GroupDto, ifMatch?: string): Observable<GroupModel> {
+        return this.api.updateGroupById( this.selectedProjectId(), id, group, ifMatch ).pipe(
             notifyUnavailableOnly( this.uiFacade ),
             tap( (updated: GroupModel): void => this.onCommandSuccess( 'update', updated ) ),
         )

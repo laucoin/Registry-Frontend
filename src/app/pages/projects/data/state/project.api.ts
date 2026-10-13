@@ -14,6 +14,7 @@ import { PageMapper } from '@shared/mappers/page.mapper'
 import { ProjectMapper } from '@shared/mappers/project.mapper'
 import { ProjectOptionMapper } from '@shared/mappers/project-option.mapper'
 import { PageResponseDto } from '@shared/models/dto/response/page.response.dto'
+import { ETagHelper } from '@shared/helpers/etag.helper'
 
 /**
  * Purpose: Sends the HTTP requests of the project domain.
@@ -58,8 +59,10 @@ export class ProjectApi extends GenericApi {
         )
     }
 
-    public updateProjectById(id: string, project: ProjectDto): Observable<ProjectModel> {
-        return this.http.patch<ProjectResponseDto>(`${this.baseUrl}/${id}`, project).pipe(
+    public updateProjectById(id: string, project: ProjectDto,
+        ifMatch?: string,
+    ): Observable<ProjectModel> {
+        return this.http.patch<ProjectResponseDto>(`${this.baseUrl}/${id}`, project, ETagHelper.options(ifMatch)).pipe(
             map( ProjectMapper.toModel ),
         )
     }

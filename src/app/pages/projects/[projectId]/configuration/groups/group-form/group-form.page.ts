@@ -32,6 +32,7 @@ import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.p
 import { DateTimeFieldComponent } from '@shared/ui/common/date-time-field/date-time-field.component'
 import { GenericHelper } from '@shared/helpers/generic.helper'
 import { FormIconPipe } from '@shared/helpers/pipe/form-icon.pipe'
+import { ETagHelper } from '@shared/helpers/etag.helper'
 
 /**
  * Purpose: Page with the form to create or edit a group.
@@ -118,7 +119,7 @@ export class GroupFormPage extends BaseFormComponent implements OnDestroy {
         }
 
         const dto: GroupDto = toGroupDto( this.model() )
-        this.save( editing ? this.facade.updateGroup( this.group()!.id, dto ) : this.facade.createGroup( dto ) )
+        this.save( editing ? this.facade.updateGroup( this.group()!.id, dto, ETagHelper.ifMatch( this.group() ) ) : this.facade.createGroup( dto ) )
     }
 
     protected handleSearch (searched: string | undefined): void {

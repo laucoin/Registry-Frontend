@@ -37,6 +37,7 @@ import { FormButtonPipe } from '@shared/helpers/pipe/form-button.pipe'
 import { ProgressSpinner } from 'primeng/progressspinner'
 import { FormTitlePipe } from '@shared/helpers/pipe/form-title.pipe'
 import { FormIconPipe } from '@shared/helpers/pipe/form-icon.pipe'
+import { ETagHelper } from '@shared/helpers/etag.helper'
 
 /**
  * Purpose: Page with the form to create or edit a project.
@@ -135,7 +136,7 @@ export class ProjectFormPage extends BaseFormComponent implements OnDestroy {
         const dto: ProjectDto = toProjectDto( this.model(), this.optionsModel() )
         const observable: Observable<unknown> =
             this.facade.project()
-            ? this.facade.updateProject( this.facade.project()!.id!, dto )
+            ? this.facade.updateProject( this.facade.project()!.id!, dto, ETagHelper.ifMatch( this.facade.project() ) )
             : this.facade.createProject( dto )
 
         this.subscriptions.add(

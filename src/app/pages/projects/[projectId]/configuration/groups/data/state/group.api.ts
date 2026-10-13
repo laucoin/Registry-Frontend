@@ -17,6 +17,7 @@ import { GroupMapper } from '@shared/mappers/group.mapper'
 import { PageMapper } from '@shared/mappers/page.mapper'
 import { ParticipantMapper } from '@shared/mappers/participant.mapper'
 import { PageResponseDto } from '@shared/models/dto/response/page.response.dto'
+import { ETagHelper } from '@shared/helpers/etag.helper'
 
 /**
  * Purpose: Sends the HTTP requests of the group domain.
@@ -96,8 +97,9 @@ export class GroupApi extends GenericProjectApi {
         projectId: string | undefined,
         id: string,
         group: GroupDto,
+        ifMatch?: string,
     ): Observable<GroupModel> {
-        return this.http.patch<GroupResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}`, group).pipe(
+        return this.http.patch<GroupResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}`, group, ETagHelper.options(ifMatch)).pipe(
             map( GroupMapper.toModel ),
         )
     }

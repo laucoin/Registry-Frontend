@@ -18,6 +18,7 @@ import { CommunicationMapper } from '@shared/mappers/communication.mapper'
 import { MovementMapper } from '@shared/mappers/movement.mapper'
 import { PageMapper } from '@shared/mappers/page.mapper'
 import { PageResponseDto } from '@shared/models/dto/response/page.response.dto'
+import { ETagHelper } from '@shared/helpers/etag.helper'
 
 /**
  * Purpose: Sends the HTTP requests of the communication domain.
@@ -96,8 +97,9 @@ export class CommunicationApi extends GenericProjectApi {
         projectId: string | undefined,
         id: string,
         communication: CommunicationDto,
+        ifMatch?: string,
     ): Observable<CommunicationModel> {
-        return this.http.patch<CommunicationResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}`, communication).pipe(
+        return this.http.patch<CommunicationResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}`, communication, ETagHelper.options(ifMatch)).pipe(
             map( CommunicationMapper.toModel ),
         )
     }

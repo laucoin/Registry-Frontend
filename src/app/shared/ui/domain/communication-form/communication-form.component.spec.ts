@@ -223,7 +223,7 @@ describe( 'CommunicationFormComponent', () => {
             page.submit()
 
             // Assert
-            expect( facade[ 'updateCommunication' ] ).toHaveBeenCalledWith( 'c1', expect.objectContaining( { dateTime: '2026-01-01T10:00:00.000Z' } ) )
+            expect( facade[ 'updateCommunication' ] ).toHaveBeenCalledWith( 'c1', expect.objectContaining( { dateTime: '2026-01-01T10:00:00.000Z' } ), expect.stringMatching( /^"\d+"$/ ) )
         } )
 
         it( 'creates a new alert when the user asked for one', () => {

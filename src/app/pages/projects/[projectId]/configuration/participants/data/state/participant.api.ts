@@ -22,6 +22,7 @@ import { PageMapper } from '@shared/mappers/page.mapper'
 import { ParticipantMapper } from '@shared/mappers/participant.mapper'
 import { UserMapper } from '@shared/mappers/user.mapper'
 import { PageResponseDto } from '@shared/models/dto/response/page.response.dto'
+import { ETagHelper } from '@shared/helpers/etag.helper'
 
 /**
  * Purpose: Sends the HTTP requests of the participant domain.
@@ -126,8 +127,9 @@ export class ParticipantApi extends GenericProjectApi {
         projectId: string | undefined,
         id: string,
         participant: ParticipantDto,
+        ifMatch?: string,
     ): Observable<ParticipantModel> {
-        return this.http.patch<ParticipantResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}`, participant).pipe(
+        return this.http.patch<ParticipantResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}`, participant, ETagHelper.options(ifMatch)).pipe(
             map( ParticipantMapper.toModel ),
         )
     }

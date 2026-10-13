@@ -183,8 +183,8 @@ export class ParticipantFacade extends GenericProjectElementFacade {
         )
     }
 
-    public updateParticipant (id: string, participant: ParticipantDto): Observable<ParticipantModel> {
-        return this.api.updateParticipantById( this.selectedProjectId(), id, participant ).pipe(
+    public updateParticipant (id: string, participant: ParticipantDto, ifMatch?: string): Observable<ParticipantModel> {
+        return this.api.updateParticipantById( this.selectedProjectId(), id, participant, ifMatch ).pipe(
             notifyUnavailableOnly( this.uiFacade ),
             tap( (updated: ParticipantModel): void => this.onCommandSuccess( 'update', updated ) ),
         )

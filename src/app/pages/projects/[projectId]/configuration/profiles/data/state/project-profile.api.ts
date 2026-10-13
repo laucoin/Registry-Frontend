@@ -18,6 +18,7 @@ import { PageMapper } from '@shared/mappers/page.mapper'
 import { ProjectProfileMapper } from '@shared/mappers/project-profile.mapper'
 import { UserMapper } from '@shared/mappers/user.mapper'
 import { PageResponseDto } from '@shared/models/dto/response/page.response.dto'
+import { ETagHelper } from '@shared/helpers/etag.helper'
 
 /**
  * Purpose: Sends the HTTP requests of the project profile domain.
@@ -84,8 +85,9 @@ export class ProjectProfileApi extends GenericProjectApi {
         projectId: string | undefined,
         id: string,
         profile: ProjectProfileDto,
+        ifMatch?: string,
     ): Observable<ProjectProfileModel> {
-        return this.http.patch<ProjectProfileResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}`, profile).pipe(
+        return this.http.patch<ProjectProfileResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}`, profile, ETagHelper.options(ifMatch)).pipe(
             map( ProjectProfileMapper.toModel ),
         )
     }

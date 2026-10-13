@@ -32,6 +32,7 @@ import {FormButtonPipe} from '@shared/helpers/pipe/form-button.pipe'
 import {GenericHelper} from '@shared/helpers/generic.helper'
 import {DateTimeFieldComponent} from '@shared/ui/common/date-time-field/date-time-field.component'
 import {FormIconPipe} from '@shared/helpers/pipe/form-icon.pipe'
+import { ETagHelper } from '@shared/helpers/etag.helper'
 
 /**
  * Purpose: Page with the form to create or edit a activity.
@@ -117,7 +118,7 @@ export class ActivityFormPage extends BaseFormComponent implements OnDestroy {
         }
 
         const dto: ActivityDto = toActivityDto(this.model())
-        this.save(editing ? this.facade.updateActivity(this.activity()!.id, dto) : this.facade.createActivity(dto))
+        this.save(editing ? this.facade.updateActivity(this.activity()!.id, dto, ETagHelper.ifMatch(this.activity())) : this.facade.createActivity(dto))
     }
 
     protected get idParam(): string | undefined {

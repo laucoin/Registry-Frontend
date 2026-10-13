@@ -316,7 +316,7 @@ describe( 'MovementFormPage', () => {
             page.submit()
 
             // Assert
-            expect( facade[ 'updateMovement' ] ).toHaveBeenCalledWith( 'm1', expect.objectContaining( { type: 'IN' } ) )
+            expect( facade[ 'updateMovement' ] ).toHaveBeenCalledWith( 'm1', expect.objectContaining( { type: 'IN' } ), expect.stringMatching( /^"\d+"$/ ) )
             expect( facade[ 'createMovement' ] ).not.toHaveBeenCalled()
         } )
     } )

@@ -133,8 +133,8 @@ export class CommunicationFacade extends GenericProjectElementFacade {
         )
     }
 
-    public updateCommunication (id: string, communication: CommunicationDto): Observable<CommunicationModel> {
-        return this.api.updateCommunicationById( this.selectedProjectId(), id, communication ).pipe(
+    public updateCommunication (id: string, communication: CommunicationDto, ifMatch?: string): Observable<CommunicationModel> {
+        return this.api.updateCommunicationById( this.selectedProjectId(), id, communication, ifMatch ).pipe(
             notifyUnavailableOnly( this.uiFacade ),
             tap( (updated: CommunicationModel): void => this.onCommandSuccess( 'update', updated ) ),
         )

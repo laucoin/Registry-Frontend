@@ -224,7 +224,7 @@ describe( 'ProjectFormPage', () => {
             page.submit()
 
             // Assert
-            expect( facade[ 'updateProject' ] ).toHaveBeenCalledWith( 'p1', expect.objectContaining( { name: 'Camp' } ) )
+            expect( facade[ 'updateProject' ] ).toHaveBeenCalledWith( 'p1', expect.objectContaining( { name: 'Camp' } ), expect.stringMatching( /^"\d+"$/ ) )
             expect( back ).toHaveBeenCalledTimes( 1 )
         } )
     } )

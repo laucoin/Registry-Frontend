@@ -88,7 +88,7 @@ describe( 'ActivityFormPage', () => {
         page.submit()
 
         // Assert
-        expect( facade[ 'updateActivity' ] ).toHaveBeenCalledWith( 'a1', expect.objectContaining( { name: 'Hike', description: 'd', duration: 'PT2H', allowedParticipants: { lower: 1, upper: 5 } } ) )
+        expect( facade[ 'updateActivity' ] ).toHaveBeenCalledWith( 'a1', expect.objectContaining( { name: 'Hike', description: 'd', duration: 'PT2H', allowedParticipants: { lower: 1, upper: 5 } } ), expect.stringMatching( /^"\d+"$/ ) )
         expect( facade[ 'createActivity' ] ).not.toHaveBeenCalled()
         expect( back ).toHaveBeenCalledTimes( 1 )
     } )

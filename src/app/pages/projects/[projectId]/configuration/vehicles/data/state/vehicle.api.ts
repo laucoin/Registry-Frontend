@@ -15,6 +15,7 @@ import { MovementMapper } from '@shared/mappers/movement.mapper'
 import { PageMapper } from '@shared/mappers/page.mapper'
 import { VehicleMapper } from '@shared/mappers/vehicle.mapper'
 import { PageResponseDto } from '@shared/models/dto/response/page.response.dto'
+import { ETagHelper } from '@shared/helpers/etag.helper'
 
 /**
  * Purpose: Sends the HTTP requests of the vehicle domain.
@@ -80,8 +81,9 @@ export class VehicleApi extends GenericProjectApi {
         projectId: string | undefined,
         id: string,
         vehicle: VehicleDto,
+        ifMatch?: string,
     ): Observable<VehicleModel> {
-        return this.http.patch<VehicleResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}`, vehicle).pipe(
+        return this.http.patch<VehicleResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}`, vehicle, ETagHelper.options(ifMatch)).pipe(
             map( VehicleMapper.toModel ),
         )
     }

@@ -146,8 +146,8 @@ export class ActivityFacade extends GenericProjectElementFacade {
         )
     }
 
-    public updateActivity (id: string, activity: ActivityDto): Observable<ActivityModel> {
-        return this.api.updateActivityById( this.selectedProjectId(), id, activity ).pipe(
+    public updateActivity (id: string, activity: ActivityDto, ifMatch?: string): Observable<ActivityModel> {
+        return this.api.updateActivityById( this.selectedProjectId(), id, activity, ifMatch ).pipe(
             notifyUnavailableOnly( this.uiFacade ),
             tap( (updated: ActivityModel): void => this.onCommandSuccess( 'edit', updated ) ),
         )

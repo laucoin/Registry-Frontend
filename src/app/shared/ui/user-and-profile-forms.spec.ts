@@ -153,7 +153,7 @@ describe( 'user and project profile forms', () => {
             ;(page as unknown as FormApi).submit()
 
             // Assert
-            expect( facade[ 'updateProjectProfile' ] ).toHaveBeenCalledWith( 'pp1', expect.objectContaining( { role: 'CHIEF' } ) )
+            expect( facade[ 'updateProjectProfile' ] ).toHaveBeenCalledWith( 'pp1', expect.objectContaining( { role: 'CHIEF' } ), expect.stringMatching( /^"\d+"$/ ) )
             expect( back ).toHaveBeenCalledTimes( 1 )
         } )
 

@@ -233,10 +233,10 @@ export class MovementFacade extends GenericProjectElementFacade {
         )
     }
 
-    public updateMovement (id: string, movement: MovementDto): Observable<MovementModel> {
+    public updateMovement (id: string, movement: MovementDto, ifMatch?: string): Observable<MovementModel> {
         const request: Observable<MovementModel> = movement.contentType === ParticipantTypeEnum.REGISTERED
-            ? this.api.updateMovementById( this.selectedProjectId(), id, movement )
-            : this.api.updateGuestsMovementById( this.selectedProjectId(), id, movement )
+            ? this.api.updateMovementById( this.selectedProjectId(), id, movement, ifMatch )
+            : this.api.updateGuestsMovementById( this.selectedProjectId(), id, movement, ifMatch )
 
         return request.pipe(
             notifyUnavailableOnly( this.uiFacade ),

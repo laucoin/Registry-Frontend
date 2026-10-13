@@ -145,8 +145,8 @@ export class VehicleFacade extends GenericProjectElementFacade {
         )
     }
 
-    public updateVehicle (id: string, vehicle: VehicleDto): Observable<VehicleModel> {
-        return this.api.updateVehicleById( this.selectedProjectId(), id, vehicle ).pipe(
+    public updateVehicle (id: string, vehicle: VehicleDto, ifMatch?: string): Observable<VehicleModel> {
+        return this.api.updateVehicleById( this.selectedProjectId(), id, vehicle, ifMatch ).pipe(
             notifyUnavailableOnly( this.uiFacade ),
             tap( (updated: VehicleModel): void => this.onCommandSuccess( 'edit', updated ) ),
         )

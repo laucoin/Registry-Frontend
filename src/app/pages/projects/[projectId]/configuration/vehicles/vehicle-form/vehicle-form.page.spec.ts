@@ -88,7 +88,7 @@ describe( 'VehicleFormPage', () => {
         page.submit()
 
         // Assert
-        expect( facade[ 'updateVehicle' ] ).toHaveBeenCalledWith( 'v1', expect.objectContaining( { licensePlate: 'AB-123', brand: 'Ford', model: 'T' } ) )
+        expect( facade[ 'updateVehicle' ] ).toHaveBeenCalledWith( 'v1', expect.objectContaining( { licensePlate: 'AB-123', brand: 'Ford', model: 'T' } ), expect.stringMatching( /^"\d+"$/ ) )
         expect( facade[ 'createVehicle' ] ).not.toHaveBeenCalled()
         expect( back ).toHaveBeenCalledTimes( 1 )
     } )

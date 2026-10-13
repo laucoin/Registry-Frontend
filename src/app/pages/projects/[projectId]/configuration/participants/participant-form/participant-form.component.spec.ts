@@ -116,7 +116,7 @@ describe( 'ParticipantFormComponent', () => {
             page.submit()
 
             // Assert
-            expect( facade[ 'updateParticipant' ] ).toHaveBeenCalledWith( 'pa1', expect.objectContaining( { groupIds: [ 'g1' ] } ) )
+            expect( facade[ 'updateParticipant' ] ).toHaveBeenCalledWith( 'pa1', expect.objectContaining( { groupIds: [ 'g1' ] } ), expect.stringMatching( /^"\d+"$/ ) )
             expect( facade[ 'createParticipant' ] ).not.toHaveBeenCalled()
         } )
     } )

@@ -50,6 +50,7 @@ import '@sgdf/ui/select'
 import '@sgdf/ui/textarea'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
 import { FormErrorComponent } from '@shared/ui/common/form-error/form-error.component'
+import { ETagHelper } from '@shared/helpers/etag.helper'
 
 enum CommunicationModulableFieldEnum {
     MOVEMENT = 'movement',
@@ -220,7 +221,7 @@ export class CommunicationFormComponent extends BaseFormComponent implements OnI
         const dto: CommunicationDto = toCommunicationDto( this.model(), this.facade.communication() )
         this.save(
             (this.facade.communication()
-             ? this.facade.updateCommunication( this.facade.communication()!.id, dto )
+             ? this.facade.updateCommunication( this.facade.communication()!.id, dto, ETagHelper.ifMatch( this.facade.communication() ) )
              : this.facade.createCommunication( dto )
             ).pipe( tap( (): void => this.resetForm() ) ),
             false,

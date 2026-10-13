@@ -139,8 +139,8 @@ export class ProjectProfileFacade extends GenericProjectElementFacade {
         )
     }
 
-    public updateProjectProfile (id: string, projectProfile: ProjectProfileDto): Observable<ProjectProfileModel> {
-        return this.api.updateProjectProfileById( this.selectedProjectId(), id, projectProfile ).pipe(
+    public updateProjectProfile (id: string, projectProfile: ProjectProfileDto, ifMatch?: string): Observable<ProjectProfileModel> {
+        return this.api.updateProjectProfileById( this.selectedProjectId(), id, projectProfile, ifMatch ).pipe(
             notifyUnavailableOnly( this.uiFacade ),
             tap( (updated: ProjectProfileModel): void => this.onCommandSuccess( 'update', updated ) ),
         )

@@ -117,8 +117,8 @@ export class ProjectFacade extends GenericFacade {
         )
     }
 
-    public updateProject (id: string, project: ProjectDto): Observable<ProjectModel> {
-        return this.api.updateProjectById( id, project ).pipe(
+    public updateProject (id: string, project: ProjectDto, ifMatch?: string): Observable<ProjectModel> {
+        return this.api.updateProjectById( id, project, ifMatch ).pipe(
             this.trackProjectLoader,
             notifyOnError( this.uiFacade ),
             tap( (updated: ProjectModel): void => {

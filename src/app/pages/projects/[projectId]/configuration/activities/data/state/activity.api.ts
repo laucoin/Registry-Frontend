@@ -15,6 +15,7 @@ import { ActivityMapper } from '@shared/mappers/activity.mapper'
 import { MovementMapper } from '@shared/mappers/movement.mapper'
 import { PageMapper } from '@shared/mappers/page.mapper'
 import { PageResponseDto } from '@shared/models/dto/response/page.response.dto'
+import { ETagHelper } from '@shared/helpers/etag.helper'
 
 /**
  * Purpose: Sends the HTTP requests of the activity domain.
@@ -80,8 +81,9 @@ export class ActivityApi extends GenericProjectApi {
         projectId: string | undefined,
         id: string,
         activity: ActivityDto,
+        ifMatch?: string,
     ): Observable<ActivityModel> {
-        return this.http.patch<ActivityResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}`, activity).pipe(
+        return this.http.patch<ActivityResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}`, activity, ETagHelper.options(ifMatch)).pipe(
             map( ActivityMapper.toModel ),
         )
     }

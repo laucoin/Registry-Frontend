@@ -28,6 +28,7 @@ import {FormButtonPipe} from '@shared/helpers/pipe/form-button.pipe'
 import {GenericHelper} from '@shared/helpers/generic.helper'
 import {DateTimeFieldComponent} from '@shared/ui/common/date-time-field/date-time-field.component'
 import {FormIconPipe} from '@shared/helpers/pipe/form-icon.pipe'
+import { ETagHelper } from '@shared/helpers/etag.helper'
 
 /**
  * Purpose: Page with the form to create or edit a vehicle.
@@ -110,7 +111,7 @@ export class VehicleFormPage extends BaseFormComponent implements OnDestroy {
         }
 
         const dto: VehicleDto = toVehicleDto(this.model())
-        this.save(editing ? this.facade.updateVehicle(this.vehicle()!.id, dto) : this.facade.createVehicle(dto))
+        this.save(editing ? this.facade.updateVehicle(this.vehicle()!.id, dto, ETagHelper.ifMatch(this.vehicle())) : this.facade.createVehicle(dto))
     }
 
     protected get idParam(): string | undefined {
