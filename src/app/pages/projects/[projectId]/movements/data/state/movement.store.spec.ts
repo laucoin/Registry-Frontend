@@ -87,7 +87,7 @@ describe( 'MovementStore', () => {
         findMovementsContents.mockReturnValue( of( [ { first: 'm2', second: [ { id: 'c' } as unknown as MovementContentModel ] } ] ) )
 
         // Act
-        store.fetchMovementsPage( { projectId: 'p1', pageNumber: 0, pageSize: 10 } )
+        store.fetchMovementsPage( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
         expect( findMovementsContents ).toHaveBeenCalledWith( 'p1', [ 'm1', 'm2' ], false )
@@ -100,7 +100,7 @@ describe( 'MovementStore', () => {
         findMovements.mockReturnValue( of( pageOf<MovementModel>( [] ) ) )
 
         // Act
-        store.fetchMovementsPage( { projectId: 'p1', pageNumber: 0, pageSize: 10 } )
+        store.fetchMovementsPage( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
         expect( findMovementsContents ).not.toHaveBeenCalled()
@@ -111,7 +111,7 @@ describe( 'MovementStore', () => {
         findMovements.mockReturnValue( failing( ERROR_500 ) )
 
         // Act
-        store.fetchMovementsPage( { projectId: 'p1', pageNumber: 0, pageSize: 10 } )
+        store.fetchMovementsPage( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
         expect( store.movements.error()?.summary ).toBe( 'Title' )
@@ -123,7 +123,7 @@ describe( 'MovementStore', () => {
         findMovements.mockReturnValue( failing( ERROR_503 ) )
 
         // Act
-        store.fetchMovementsPage( { projectId: 'p1', pageNumber: 0, pageSize: 10 } )
+        store.fetchMovementsPage( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
         expect( setGlobalError ).toHaveBeenCalledWith( ERROR_503 )
@@ -134,7 +134,7 @@ describe( 'MovementStore', () => {
         const expected: boolean = true
 
         // Act
-        const visibility: boolean | undefined = store.movementCommunications.params.visibilitySearched()
+        const visibility: boolean | undefined = store.movementCommunications.params.isVisible()
 
         // Assert
         expect( visibility ).toBe( expected )
@@ -145,7 +145,7 @@ describe( 'MovementStore', () => {
         findMovementCommunications.mockReturnValue( of( pageOf<CommunicationModel>( [ { id: 'c1' } as CommunicationModel ] ) ) )
 
         // Act
-        store.fetchMovementCommunicationsPage( { projectId: 'p1', id: 'm1', pageNumber: 0, pageSize: 10 } )
+        store.fetchMovementCommunicationsPage( { projectId: 'p1', id: 'm1', page: 0, size: 10 } )
 
         // Assert
         expect( store.movementCommunications.element()?.content ).toHaveLength( 1 )
@@ -160,7 +160,7 @@ describe( 'MovementStore', () => {
         } ) )
 
         // Act
-        store.searchParticipantsAndGroups( { projectId: 'p1', contentTypeSearched: ParticipantTypeEnum.REGISTERED, textSearched: 'a' } )
+        store.searchParticipantsAndGroups( { projectId: 'p1', contentType: ParticipantTypeEnum.REGISTERED, q: 'a' } )
 
         // Assert
         const labels: (string | undefined)[] = store.metadata.searchedParticipantsAndGroups().map( (group: { label?: string }): string | undefined => group.label )
@@ -175,7 +175,7 @@ describe( 'MovementStore', () => {
         searchParticipantsAndGroups.mockReturnValue( of( { participants: [], groups: [] } ) )
 
         // Act
-        store.searchParticipantsAndGroups( { projectId: 'p1', contentTypeSearched: ParticipantTypeEnum.REGISTERED, textSearched: 'a' } )
+        store.searchParticipantsAndGroups( { projectId: 'p1', contentType: ParticipantTypeEnum.REGISTERED, q: 'a' } )
 
         // Assert
         expect( store.metadata.searchedParticipantsAndGroups() ).toEqual( [] )
@@ -186,7 +186,7 @@ describe( 'MovementStore', () => {
         searchVehicles.mockReturnValue( of( [ { id: 'v1', licensePlate: 'AB-123', brand: 'Ford', model: 'T' } as VehicleModel ] ) )
 
         // Act
-        store.searchVehicles( { projectId: 'p1', textSearched: 'ab' } )
+        store.searchVehicles( { projectId: 'p1', q: 'ab' } )
 
         // Assert
         expect( store.metadata.searchedVehicles() ).toHaveLength( 1 )
@@ -196,10 +196,10 @@ describe( 'MovementStore', () => {
         // Arrange
         searchVehicles.mockReturnValueOnce( of( [ { id: 'v1', licensePlate: 'AB-123' } as VehicleModel ] ) )
         searchVehicles.mockReturnValueOnce( failing( ERROR_500 ) )
-        store.searchVehicles( { projectId: 'p1', textSearched: 'a' } )
+        store.searchVehicles( { projectId: 'p1', q: 'a' } )
 
         // Act
-        store.searchVehicles( { projectId: 'p1', textSearched: 'ab' } )
+        store.searchVehicles( { projectId: 'p1', q: 'ab' } )
 
         // Assert
         expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'Title' } ) )

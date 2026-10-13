@@ -37,7 +37,7 @@ describe( 'UserStore', () => {
         findUsers.mockReturnValue( of( pageOf<UserModel>( [ { id: 'u1' } as UserModel ] ) ) )
 
         // Act
-        store.fetchUsersPage( { pageNumber: 0, pageSize: 10 } )
+        store.fetchUsersPage( { page: 0, size: 10 } )
 
         // Assert
         expect( store.users.element()?.content ).toHaveLength( 1 )
@@ -48,12 +48,12 @@ describe( 'UserStore', () => {
     it( 'appends the next batch to the users already shown', () => {
         // Arrange
         findUsers
-            .mockReturnValueOnce( of( { ...pageOf<UserModel>( [ { id: 'u1' } as UserModel ] ), pageSize: 1, totalPages: 2 } ) )
-            .mockReturnValueOnce( of( { ...pageOf<UserModel>( [ { id: 'u2' } as UserModel ], 1 ), pageSize: 1, totalPages: 2 } ) )
-        store.fetchUsersPage( { pageNumber: 0, pageSize: 1 } )
+            .mockReturnValueOnce( of( { ...pageOf<UserModel>( [ { id: 'u1' } as UserModel ] ), size: 1, totalPages: 2 } ) )
+            .mockReturnValueOnce( of( { ...pageOf<UserModel>( [ { id: 'u2' } as UserModel ], 1 ), size: 1, totalPages: 2 } ) )
+        store.fetchUsersPage( { page: 0, size: 1 } )
 
         // Act
-        store.fetchUsersPage( { pageNumber: 1, pageSize: 1 } )
+        store.fetchUsersPage( { page: 1, size: 1 } )
 
         // Assert
         expect( store.users.element()?.content.map( (user: UserModel): string => user.id ) ).toEqual( [ 'u1', 'u2' ] )
@@ -64,7 +64,7 @@ describe( 'UserStore', () => {
         findUsers.mockReturnValue( failing( ERROR_500 ) )
 
         // Act
-        store.fetchUsersPage( { pageNumber: 0, pageSize: 10 } )
+        store.fetchUsersPage( { page: 0, size: 10 } )
 
         // Assert
         expect( store.users.error()?.summary ).toBe( 'Title' )
@@ -76,7 +76,7 @@ describe( 'UserStore', () => {
         findUsers.mockReturnValue( failing( ERROR_503 ) )
 
         // Act
-        store.fetchUsersPage( { pageNumber: 0, pageSize: 10 } )
+        store.fetchUsersPage( { page: 0, size: 10 } )
 
         // Assert
         expect( setGlobalError ).toHaveBeenCalledWith( ERROR_503 )

@@ -32,14 +32,14 @@ export class AlertApi extends GenericProjectApi {
 
     public findAlerts(
         projectId: string | undefined,
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
         params: AlertPageParamsModel,
     ): Observable<PageModel<AlertModel>> {
         return this.http.get<PageResponseDto<AlertResponseDto>>(
             `${this.buildRequestBaseUrl(projectId)}?${QueryHelper.buildQueryParams(
-                pageNumber,
-                pageSize,
+                page,
+                size,
                 params,
             ).toString()}`,
         ).pipe(
@@ -50,14 +50,14 @@ export class AlertApi extends GenericProjectApi {
     public findAlertCommunications(
         projectId: string | undefined,
         id: string,
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
         params: CommunicationPageParamsModel,
     ): Observable<PageModel<CommunicationModel>> {
         return this.http.get<PageResponseDto<CommunicationResponseDto>>(
             `${this.buildRequestBaseUrl(projectId)}/${id}/communications?${QueryHelper.buildQueryParams(
-                pageNumber,
-                pageSize,
+                page,
+                size,
                 params,
             ).toString()}`,
         ).pipe(

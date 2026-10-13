@@ -57,8 +57,8 @@ export class MovementCommunicationsListComponent extends GenericComponent implem
         this.subscriptions.add( events.pipe(
             tap( (): void => this.facade.fetchMovementCommunicationsPage(
                 this.movement().id,
-                this.facade.movementCommunicationsPage()?.pageNumber,
-                this.facade.movementCommunicationsPage()?.pageSize,
+                this.facade.movementCommunicationsPage()?.page,
+                this.facade.movementCommunicationsPage()?.size,
             ) ),
         ).subscribe() )
     }

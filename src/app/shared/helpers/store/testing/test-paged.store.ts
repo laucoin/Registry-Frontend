@@ -52,12 +52,12 @@ export const TestPagedStore = signalStore(
         items: PageStateHelper.initial<TestItemsParams, GenericModel>( { resetSearch: true, text: undefined } ),
         movements: PageStateHelper.initial<MovementPageParamsModel, MovementModel>( {
             resetSearch: false,
-            currentMovements: true,
-            linkedToActivity: undefined,
-            visibilitySearched: undefined,
-            typeSearched: undefined,
-            startDateTimeSearched: undefined,
-            endDateTimeSearched: undefined,
+            isCurrent: true,
+            hasActivity: undefined,
+            isVisible: undefined,
+            type: undefined,
+            from: undefined,
+            to: undefined,
         } ),
         item: { element: undefined, loading: false },
         metadata: { labels: [] },
@@ -65,7 +65,7 @@ export const TestPagedStore = signalStore(
     withMethods( (store, movementApi = inject( MOVEMENT_CONTENTS_API ), errors = inject( TEST_ERRORS )) => ({
         fetchItems: pageFetcher( store, 'items', inject( ITEMS_SOURCE ), errors ),
         fetchAppendedItems: pageFetcher( store, 'items', inject( ITEMS_SOURCE ), errors, {
-            merge: (current, fetched, request) => CumulativePageHelper.merge( current, fetched, { pageNumber: request.n, pageSize: undefined } ),
+            merge: (current, fetched, request) => CumulativePageHelper.merge( current, fetched, { page: request.n, size: undefined } ),
         } ),
         fetchGuardedItems: pageFetcher( store, 'items', inject( ITEMS_SOURCE ), errors, {
             before: (request): void => { if (request.n < 0) throw new Error( 'hook failed' ) },

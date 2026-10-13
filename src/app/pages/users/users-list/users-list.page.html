@@ -16,9 +16,9 @@
         <form class="grid grid-cols-1 items-end gap-(--spacing--in-block-large) md:grid-cols-2"
               (submit)="$event.preventDefault(); search()">
             <sgdf-input appSgdfField [label]="'users.search-and-filter.text' | transloco"
-                        [formField]="form.textSearched"/>
+                        [formField]="form.q"/>
             <sgdf-select appSgdfField [label]="'users.search-and-filter.visibility' | transloco"
-                         [formField]="form.visibilitySearched">
+                         [formField]="form.isVisible">
                 @for (item of facade.statusMetadata(); track item.label) {
                     <sgdf-option [value]="item.value | booleanChoice">{{ item.label }}</sgdf-option>
                 }

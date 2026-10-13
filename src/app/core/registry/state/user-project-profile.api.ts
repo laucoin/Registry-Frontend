@@ -29,12 +29,12 @@ export class UserProjectProfileApi extends GenericApi {
     }
 
     public findUserProjectProfiles(
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
         params: ProjectProfilePageParamsModel,
     ): Observable<PageModel<UserInvitationModel>> {
         return this.http.get<PageResponseDto<UserInvitationResponseDto>>(
-            `${this.baseUrl}?${QueryHelper.buildQueryParams(pageNumber, pageSize, params).toString()}`,
+            `${this.baseUrl}?${QueryHelper.buildQueryParams(page, size, params).toString()}`,
         ).pipe(
             map( (dto: PageResponseDto<UserInvitationResponseDto>): PageModel<UserInvitationModel> => PageMapper.toModel( dto, UserInvitationMapper.toModel ) ),
         )

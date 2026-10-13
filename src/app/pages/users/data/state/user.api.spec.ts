@@ -5,8 +5,8 @@ import { USER_DTO, pageDto } from '@shared/helpers/testing/response-fixtures'
 const BASE: string = '/api/v2/users'
 
 const CASES: ApiCase<UserApi>[] = [
-    { name: 'pages the users with the search parameters', method: 'GET', url: new RegExp( `${BASE}\\?${PAGE_QUERY}&textSearched=ada$` ),
-        call: (api: UserApi) => api.findUsers( 0, 10, { resetSearch: false, textSearched: 'ada' } as never ), response: pageDto( [ USER_DTO ] ), verify: expectMappedPage },
+    { name: 'pages the users with the search parameters', method: 'GET', url: new RegExp( `${BASE}\\?${PAGE_QUERY}&q=ada$` ),
+        call: (api: UserApi) => api.findUsers( 0, 10, { resetSearch: false, q: 'ada' } as never ), response: pageDto( [ USER_DTO ] ), verify: expectMappedPage },
     { name: 'finds a user by id', method: 'GET', url: `${BASE}/u1`, call: (api: UserApi) => api.findUserById( 'u1' ), response: USER_DTO, verify: expectMapped },
     { name: 'lists the assignable roles', method: 'GET', url: `${BASE}/roles`, call: (api: UserApi) => api.getAssignableUserRoles(), response: [ { label: 'Admin', value: 'ADMIN' } ],
         verify: (result: unknown): void => expect( result ).toEqual( [ { label: 'Admin', value: 'ADMIN' } ] ) },

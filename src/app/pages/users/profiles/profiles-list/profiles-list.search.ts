@@ -1,15 +1,15 @@
 import { BooleanChoice, fromBooleanChoice, toBooleanChoice } from '@shared/helpers/form/boolean-choice'
 
 interface ProfilesListSearch {
-    textSearched: string | undefined
-    dateTimeSearched: Date | undefined
-    availabilitySearched: boolean | undefined
+    q: string | undefined
+    at: Date | undefined
+    isAvailable: boolean | undefined
 }
 
 export interface ProfilesListSearchModel {
-    textSearched: string
-    dateTimeSearched: Date | null
-    availabilitySearched: BooleanChoice
+    q: string
+    at: Date | null
+    isAvailable: BooleanChoice
 }
 
 /**
@@ -19,9 +19,9 @@ export interface ProfilesListSearchModel {
  */
 export function toProfilesListSearchModel (params: ProfilesListSearch): ProfilesListSearchModel {
     return {
-        textSearched: params.textSearched ?? '',
-        dateTimeSearched: params.dateTimeSearched ?? null,
-        availabilitySearched: toBooleanChoice( params.availabilitySearched ),
+        q: params.q ?? '',
+        at: params.at ?? null,
+        isAvailable: toBooleanChoice( params.isAvailable ),
     }
 }
 
@@ -32,8 +32,8 @@ export function toProfilesListSearchModel (params: ProfilesListSearch): Profiles
  */
 export function toProfilesListSearchParams (model: ProfilesListSearchModel): ProfilesListSearch {
     return {
-        textSearched: model.textSearched === '' ? undefined : model.textSearched,
-        dateTimeSearched: model.dateTimeSearched ?? undefined,
-        availabilitySearched: fromBooleanChoice( model.availabilitySearched ),
+        q: model.q === '' ? undefined : model.q,
+        at: model.at ?? undefined,
+        isAvailable: fromBooleanChoice( model.isAvailable ),
     }
 }

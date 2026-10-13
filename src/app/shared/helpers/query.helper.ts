@@ -8,13 +8,13 @@ import { GenericHelper } from '@shared/helpers/generic.helper'
  */
 export class QueryHelper {
     public static buildQueryParams (
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
         params: object | undefined,
     ): HttpParams {
         let builtParams: HttpParams = new HttpParams()
-            .set( 'pageNumber', pageNumber ?? 0 )
-            .set( 'pageSize', pageSize ?? 20 )
+            .set( 'page', page ?? 0 )
+            .set( 'size', size ?? 20 )
 
         if (GenericHelper.isNull( params )) return builtParams
 

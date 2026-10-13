@@ -20,7 +20,7 @@ import { ProjectModel } from '@shared/models/model/project.model'
 import { UserInvitationModel } from '@shared/models/model/user-invitation.model'
 
 const USER: CurrentUserModel = { id: 'u1' } as CurrentUserModel
-const EMPTY_PAGE: PageModel<UserInvitationModel> = { content: [], pageNumber: 0, pageSize: 10, totalElements: 0, totalPages: 1, lastRefresh: new Date() }
+const EMPTY_PAGE: PageModel<UserInvitationModel> = { content: [], page: 0, size: 10, totalElements: 0, totalPages: 1, lastRefresh: new Date() }
 const FAILURE: ErrorModel = { status: 500, title: 'Title', message: 'Message' } as ErrorModel
 const UNAVAILABLE: ErrorModel = { status: 503, title: 'Down', message: 'Down' } as ErrorModel
 
@@ -83,10 +83,10 @@ describe( 'UserProfileFacade', () => {
     describe( 'pages', () => {
         it( 'fetches the requested profiles page', () => {
             // Arrange
-            const pageNumber: number = 3
+            const page: number = 3
 
             // Act
-            facade.fetchProjectProfilesPage( pageNumber, 10 )
+            facade.fetchProjectProfilesPage( page, 10 )
 
             // Assert
             expect( findProfilesPage ).toHaveBeenCalledWith( 3, 10, expect.anything() )
@@ -222,7 +222,7 @@ describe( 'UserProfileFacade', () => {
 
     it( 'reloads every shown batch of the profiles in one request after a profile is deleted', () => {
         // Arrange
-        findProfilesPage.mockReturnValue( of( { ...EMPTY_PAGE, pageNumber: 2 } ) )
+        findProfilesPage.mockReturnValue( of( { ...EMPTY_PAGE, page: 2 } ) )
         facade.fetchProjectProfilesPage( 2, 10 )
         findProfilesPage.mockClear()
 

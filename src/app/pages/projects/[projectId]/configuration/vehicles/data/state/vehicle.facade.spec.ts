@@ -48,10 +48,10 @@ describe( 'VehicleFacade', () => {
 
     it( 'fetches the requested page for the selected project', () => {
         // Arrange
-        const pageNumber: number = 3
+        const page: number = 3
 
         // Act
-        facade.fetchVehiclesPage( pageNumber, 10 )
+        facade.fetchVehiclesPage( page, 10 )
 
         // Assert
         expect( findVehicles ).toHaveBeenCalledWith( 'p1', 3, 10, expect.anything() )

@@ -1,15 +1,15 @@
 import { fromBooleanChoice, toBooleanChoice, BooleanChoice } from '@shared/helpers/form/boolean-choice'
 
 interface ProjectsListSearch {
-    textSearched: string | undefined
-    dateTimeSearched: Date | undefined
-    visibilitySearched: boolean | undefined
+    q: string | undefined
+    at: Date | undefined
+    isVisible: boolean | undefined
 }
 
 export interface ProjectsListSearchModel {
-    textSearched: string
-    dateTimeSearched: Date | null
-    visibilitySearched: BooleanChoice
+    q: string
+    at: Date | null
+    isVisible: BooleanChoice
 }
 
 /**
@@ -19,9 +19,9 @@ export interface ProjectsListSearchModel {
  */
 export function toProjectsListSearchModel (params: ProjectsListSearch): ProjectsListSearchModel {
     return {
-        textSearched: params.textSearched ?? '',
-        dateTimeSearched: params.dateTimeSearched ?? null,
-        visibilitySearched: toBooleanChoice(params.visibilitySearched),
+        q: params.q ?? '',
+        at: params.at ?? null,
+        isVisible: toBooleanChoice(params.isVisible),
     }
 }
 
@@ -32,8 +32,8 @@ export function toProjectsListSearchModel (params: ProjectsListSearch): Projects
  */
 export function toProjectsListSearchParams (model: ProjectsListSearchModel): ProjectsListSearch {
     return {
-        textSearched: model.textSearched === '' ? undefined : model.textSearched,
-        dateTimeSearched: model.dateTimeSearched ?? undefined,
-        visibilitySearched: fromBooleanChoice(model.visibilitySearched),
+        q: model.q === '' ? undefined : model.q,
+        at: model.at ?? undefined,
+        isVisible: fromBooleanChoice(model.isVisible),
     }
 }

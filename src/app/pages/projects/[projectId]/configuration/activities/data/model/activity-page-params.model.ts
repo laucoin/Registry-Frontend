@@ -1,7 +1,7 @@
 export interface ActivityPageParamsModel {
     resetSearch: boolean
-    visibilitySearched: boolean | undefined
-    textSearched: string | undefined
-    availabilitySearched: boolean | undefined
-    dateTimeSearched: string | undefined
+    isVisible: boolean | undefined
+    q: string | undefined
+    isAvailable: boolean | undefined
+    at: string | undefined
 }

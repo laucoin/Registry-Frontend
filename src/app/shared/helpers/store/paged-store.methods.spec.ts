@@ -57,8 +57,8 @@ describe( 'paged store methods', () => {
     describe( 'pageFetcher merge hook', () => {
         it( 'stores the shown page merged with the fetched one', () => {
             // Arrange
-            const first: ReturnType<typeof pageOf<GenericModel>> = { ...pageOf<GenericModel>( [ { id: 'a' } as GenericModel ] ), pageSize: 1 }
-            const second: ReturnType<typeof pageOf<GenericModel>> = { ...pageOf<GenericModel>( [ { id: 'b' } as GenericModel ], 1 ), pageSize: 1 }
+            const first: ReturnType<typeof pageOf<GenericModel>> = { ...pageOf<GenericModel>( [ { id: 'a' } as GenericModel ] ), size: 1 }
+            const second: ReturnType<typeof pageOf<GenericModel>> = { ...pageOf<GenericModel>( [ { id: 'b' } as GenericModel ], 1 ), size: 1 }
             itemsSource.mockReturnValueOnce( of( first ) ).mockReturnValueOnce( of( second ) )
             store.fetchAppendedItems( { n: 0 } )
 

@@ -38,7 +38,7 @@ describe( 'ProjectStore', () => {
         findProjects.mockReturnValue( of( pageOf<ProjectModel>( [ { id: 'p1' } as ProjectModel ] ) ) )
 
         // Act
-        store.fetchProjectsPage( { pageNumber: 0, pageSize: 10 } )
+        store.fetchProjectsPage( { page: 0, size: 10 } )
 
         // Assert
         expect( store.projects.element()?.content ).toHaveLength( 1 )
@@ -50,7 +50,7 @@ describe( 'ProjectStore', () => {
         findProjects.mockReturnValue( failing( ERROR_500 ) )
 
         // Act
-        store.fetchProjectsPage( { pageNumber: 0, pageSize: 10 } )
+        store.fetchProjectsPage( { page: 0, size: 10 } )
 
         // Assert
         expect( store.projects.error()?.summary ).toBe( 'Title' )
@@ -61,7 +61,7 @@ describe( 'ProjectStore', () => {
         findProjects.mockReturnValue( failing( ERROR_503 ) )
 
         // Act
-        store.fetchProjectsPage( { pageNumber: 0, pageSize: 10 } )
+        store.fetchProjectsPage( { page: 0, size: 10 } )
 
         // Assert
         expect( setGlobalError ).toHaveBeenCalledWith( ERROR_503 )

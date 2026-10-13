@@ -36,20 +36,20 @@ export class UserProfileFacade {
     public readonly userProjectProfilesPageSilentLoading: Signal<boolean> = this.store.profiles.silentLoading
     public readonly userProjectProfilesPageError: Signal<NotificationModel | undefined> = this.store.profiles.error
     public readonly userProjectProfilesPageResetSearch: Signal<boolean> = this.store.profiles.params.resetSearch
-    public readonly userProjectProfilesPageTextSearchParam: Signal<string | undefined> = this.store.profiles.params.textSearched
+    public readonly userProjectProfilesPageTextSearchParam: Signal<string | undefined> = this.store.profiles.params.q
     public readonly userProjectProfilesPageDateTimeSearchParam: Signal<Date | undefined> = computed((): Date | undefined =>
-        DateHelper.buildDate(this.store.profiles.params.dateTimeSearched()),
+        DateHelper.buildDate(this.store.profiles.params.at()),
     )
-    public readonly userProjectProfilesPageAvailabilitySearchParam: Signal<boolean | undefined> = this.store.profiles.params.availabilitySearched
+    public readonly userProjectProfilesPageAvailabilitySearchParam: Signal<boolean | undefined> = this.store.profiles.params.isAvailable
 
     public readonly userProjectProfileInvitationsPage: Signal<PageModel<UserInvitationModel> | undefined> = this.store.invitations.element
     public readonly userProjectProfileInvitationsPageLoading: Signal<boolean> = this.store.invitations.loading
     public readonly userProjectProfileInvitationsPageSilentLoading: Signal<boolean> = this.store.invitations.silentLoading
     public readonly userProjectProfileInvitationsPageError: Signal<NotificationModel | undefined> = this.store.invitations.error
     public readonly userProjectProfileInvitationsPageResetSearch: Signal<boolean> = this.store.invitations.params.resetSearch
-    public readonly userProjectProfileInvitationsPageTextSearchParam: Signal<string | undefined> = this.store.invitations.params.textSearched
+    public readonly userProjectProfileInvitationsPageTextSearchParam: Signal<string | undefined> = this.store.invitations.params.q
     public readonly userProjectProfileInvitationsPageDateTimeSearchParam: Signal<Date | undefined> = computed((): Date | undefined =>
-        DateHelper.buildDate(this.store.invitations.params.dateTimeSearched()),
+        DateHelper.buildDate(this.store.invitations.params.at()),
     )
 
     public constructor() {
@@ -58,47 +58,47 @@ export class UserProfileFacade {
         })
     }
 
-    public fetchProjectProfilesPage(pageNumber: number | undefined, pageSize: number | undefined): void {
-        const index: number | undefined = this.userProjectProfilesPageResetSearch() ? 0 : pageNumber
-        this.store.fetchProfilesPage({pageNumber: index, pageSize: pageSize})
+    public fetchProjectProfilesPage(page: number | undefined, size: number | undefined): void {
+        const index: number | undefined = this.userProjectProfilesPageResetSearch() ? 0 : page
+        this.store.fetchProfilesPage({page: index, size: size})
     }
 
     public inputProfilesPageSearchParameters(
-        textSearched: string | undefined,
-        availabilitySearched: boolean | undefined,
-        dateTimeSearched: Date | undefined,
+        q: string | undefined,
+        isAvailable: boolean | undefined,
+        at: Date | undefined,
     ): void {
-        const resetSearch: boolean = this.userProjectProfilesPageTextSearchParam() != textSearched
-            || this.userProjectProfilesPageAvailabilitySearchParam() != availabilitySearched
-            || this.userProjectProfilesPageDateTimeSearchParam() != dateTimeSearched?.toISOString()
+        const resetSearch: boolean = this.userProjectProfilesPageTextSearchParam() != q
+            || this.userProjectProfilesPageAvailabilitySearchParam() != isAvailable
+            || this.userProjectProfilesPageDateTimeSearchParam() != at?.toISOString()
 
         if (resetSearch) {
             this.store.updateProfilesPageSearchParams({
                 resetSearch: resetSearch,
-                textSearched: textSearched,
-                availabilitySearched: availabilitySearched,
-                dateTimeSearched: dateTimeSearched?.toISOString(),
+                q: q,
+                isAvailable: isAvailable,
+                at: at?.toISOString(),
             })
         }
     }
 
-    public fetchProjectProfileInvitationPage(pageNumber: number | undefined, pageSize: number | undefined): void {
-        const index: number | undefined = this.userProjectProfileInvitationsPageResetSearch() ? 0 : pageNumber
-        this.store.fetchInvitationsPage({pageNumber: index, pageSize: pageSize})
+    public fetchProjectProfileInvitationPage(page: number | undefined, size: number | undefined): void {
+        const index: number | undefined = this.userProjectProfileInvitationsPageResetSearch() ? 0 : page
+        this.store.fetchInvitationsPage({page: index, size: size})
     }
 
     public inputInvitationsPageSearchParameters(
-        textSearched: string | undefined,
-        dateTimeSearched: Date | undefined,
+        q: string | undefined,
+        at: Date | undefined,
     ): void {
-        const resetSearch: boolean = this.userProjectProfileInvitationsPageTextSearchParam() != textSearched
-            || this.userProjectProfileInvitationsPageDateTimeSearchParam() != dateTimeSearched?.toISOString()
+        const resetSearch: boolean = this.userProjectProfileInvitationsPageTextSearchParam() != q
+            || this.userProjectProfileInvitationsPageDateTimeSearchParam() != at?.toISOString()
 
         if (resetSearch) {
             this.store.updateInvitationsPageSearchParams({
                 resetSearch: resetSearch,
-                textSearched: textSearched,
-                dateTimeSearched: dateTimeSearched?.toISOString(),
+                q: q,
+                at: at?.toISOString(),
             })
         }
     }

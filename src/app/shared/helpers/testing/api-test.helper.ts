@@ -83,4 +83,4 @@ export function expectMappedPage (result: unknown, response: unknown): void {
     expect( page.content[ 0 ] ).not.toBe( dto.content[ 0 ] )
 }
 
-export const PAGE_QUERY: string = 'pageNumber=0&pageSize=10'
+export const PAGE_QUERY: string = 'page=0&size=10'

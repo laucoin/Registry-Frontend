@@ -23,7 +23,7 @@ export interface SelectedProjectStoreModel {
     }
     alerts: PageRequestInformationModel<AlertPageParamsModel, AlertModel>
     birthdays: ParticipantModel[]
-    currentMovements: {
+    isCurrent: {
         withoutActivity: PageRequestInformationModel<MovementPageParamsModel, MovementModel>
         withActivity: PageRequestInformationModel<MovementPageParamsModel, MovementModel>
     }

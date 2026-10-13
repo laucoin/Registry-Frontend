@@ -79,5 +79,5 @@ export const INVITATION_DTO: UserInvitationResponseDto = {
 }
 
 export function pageDto<T> (content: T[]): PageResponseDto<T> {
-    return { pageNumber: 0, pageSize: 10, totalElements: content.length, totalPages: 1, content, lastRefresh: WHEN }
+    return { page: 0, size: 10, totalElements: content.length, totalPages: 1, content, lastRefresh: WHEN }
 }

@@ -40,9 +40,9 @@ class HostComponent {
     public resets: number = 0
 }
 
-const pageOf = (ids: string[], pageNumber: number, totalElements: number): PageModel<GenericModel> => ({
-    pageNumber,
-    pageSize: 2,
+const pageOf = (ids: string[], page: number, totalElements: number): PageModel<GenericModel> => ({
+    page,
+    size: 2,
     totalElements,
     totalPages: Math.ceil(totalElements / 2),
     content: ids.map((id: string): GenericModel => ({ id }) as GenericModel),
@@ -179,7 +179,7 @@ describe('ListComponent', () => {
         button().click()
 
         // Assert
-        expect(host.events).toEqual([{ pageNumber: 0, pageSize: 20 }])
+        expect(host.events).toEqual([{ page: 0, size: 20 }])
     })
 
     it('retries the batch that failed after the shown ones', async () => {
@@ -192,7 +192,7 @@ describe('ListComponent', () => {
         queryAll('sgdf-callout sgdf-button')[0].click()
 
         // Assert
-        expect(host.events).toEqual([{ pageNumber: 1, pageSize: 2 }])
+        expect(host.events).toEqual([{ page: 1, size: 2 }])
     })
 
     it('asks for the next batch when "load more" is clicked while batches remain', async () => {
@@ -204,7 +204,7 @@ describe('ListComponent', () => {
         queryAll('sgdf-button').at(-1)!.click()
 
         // Assert
-        expect(host.events).toEqual([{ pageNumber: 1, pageSize: 2 }])
+        expect(host.events).toEqual([{ page: 1, size: 2 }])
     })
 
     it('hides "load more" on the last batch', async () => {

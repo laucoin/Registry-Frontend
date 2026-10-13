@@ -70,9 +70,9 @@ export class ParticipantsListPage {
     ].filter(Boolean).length)
 
     protected readonly model: WritableSignal<ParticipantsListSearchModel> = signal(toParticipantsListSearchModel({
-        textSearched: this.facade.participantsPageTextSearchedParam(),
-        statusSearched: this.facade.participantsPageStatusSearchedParam(),
-        visibilitySearched: this.facade.participantsPageVisibilitySearchedParam(),
+        q: this.facade.participantsPageTextSearchedParam(),
+        status: this.facade.participantsPageStatusSearchedParam(),
+        isVisible: this.facade.participantsPageVisibilitySearchedParam(),
     }))
     protected readonly form: FieldTree<ParticipantsListSearchModel> = createSearchForm(this.model)
 
@@ -82,16 +82,16 @@ export class ParticipantsListPage {
 
     protected search(): void {
         const search: ReturnType<typeof toParticipantsListSearchParams> = toParticipantsListSearchParams(this.model())
-        this.facade.inputPageSearchParameters(search.textSearched, search.statusSearched, search.visibilitySearched)
+        this.facade.inputPageSearchParameters(search.q, search.status, search.isVisible)
         this.facade.fetchParticipantsPage(0, undefined)
     }
 
     protected resetFilters(): void {
-        this.model.set({ textSearched: '', statusSearched: '', visibilitySearched: '' })
+        this.model.set({ q: '', status: '', isVisible: '' })
         this.search()
     }
 
     protected loadBatch(pageEvent: PageEventModel): void {
-        this.facade.fetchParticipantsPage(pageEvent.pageNumber, pageEvent.pageSize)
+        this.facade.fetchParticipantsPage(pageEvent.page, pageEvent.size)
     }
 }

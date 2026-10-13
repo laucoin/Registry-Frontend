@@ -46,7 +46,7 @@ describe('UsersListPage', () => {
         const model: UsersListSearchModel = page.model()
 
         // Assert
-        expect(model).toEqual({ textSearched: '', visibilitySearched: '' })
+        expect(model).toEqual({ q: '', isVisible: '' })
     })
 
     it('counts the filters applied by the facade', () => {

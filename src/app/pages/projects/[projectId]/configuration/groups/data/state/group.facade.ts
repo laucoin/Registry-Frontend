@@ -39,15 +39,15 @@ export class GroupFacade extends GenericProjectElementFacade {
 
     public readonly groupsPageResetSearch: Signal<boolean> = this.store.groups.params.resetSearch
 
-    public readonly groupsPageTextSearchedParam: Signal<string | undefined> = this.store.groups.params.textSearched
+    public readonly groupsPageTextSearchedParam: Signal<string | undefined> = this.store.groups.params.q
 
     public readonly groupsPageDateTimeSearchedParam: Signal<Date | undefined> = computed( () =>
-            DateHelper.buildDate( this.store.groups.params.dateTimeSearched() ),
+            DateHelper.buildDate( this.store.groups.params.at() ),
         )
 
-    public readonly groupsPagePresenceSearchedParam: Signal<boolean | undefined> = this.store.groups.params.presenceSearched
+    public readonly groupsPagePresenceSearchedParam: Signal<boolean | undefined> = this.store.groups.params.isPresent
 
-    public readonly groupsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.groups.params.visibilitySearched
+    public readonly groupsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.groups.params.isVisible
 
     public readonly groupMembersPage: Signal<PageModel<ParticipantModel> | undefined> = this.store.members.element
 
@@ -59,11 +59,11 @@ export class GroupFacade extends GenericProjectElementFacade {
 
     public readonly groupMembersPageResetSearch: Signal<boolean> = this.store.members.params.resetSearch
 
-    public readonly groupMembersPageTextSearchedParam: Signal<string | undefined> = this.store.members.params.textSearched
+    public readonly groupMembersPageTextSearchedParam: Signal<string | undefined> = this.store.members.params.q
 
-    public readonly groupMembersPageStatusSearchedParam: Signal<string | undefined> = this.store.members.params.statusSearched
+    public readonly groupMembersPageStatusSearchedParam: Signal<string | undefined> = this.store.members.params.status
 
-    public readonly groupMembersPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.members.params.visibilitySearched
+    public readonly groupMembersPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.members.params.isVisible
 
     public readonly searchedParticipantsMetadata: Signal<SelectOptionModel<ParticipantModel>[]> = this.store.metadata.searched
 
@@ -82,67 +82,67 @@ export class GroupFacade extends GenericProjectElementFacade {
         )
 
     public fetchGroupsPage (
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
     ): void {
-        const index: number | undefined = this.groupsPageResetSearch() ? 0 : pageNumber
-        this.store.fetchGroupsPage( { projectId: this.selectedProjectId(), pageNumber: index, pageSize: pageSize } )
+        const index: number | undefined = this.groupsPageResetSearch() ? 0 : page
+        this.store.fetchGroupsPage( { projectId: this.selectedProjectId(), page: index, size: size } )
     }
 
     public inputPageSearchParameters (
-        textSearched: string | undefined,
-        dateTimeSearched: Date | undefined,
-        presenceSearched: boolean | undefined,
-        visibilitySearched: boolean | undefined,
+        q: string | undefined,
+        at: Date | undefined,
+        isPresent: boolean | undefined,
+        isVisible: boolean | undefined,
     ): void {
-        const resetSearch: boolean = this.groupsPageTextSearchedParam() != textSearched
-                                     || this.groupsPagePresenceSearchedParam() != presenceSearched
-                                     || this.groupsPageDateTimeSearchedParam() != dateTimeSearched?.toISOString()
-                                     || this.groupsPageVisibilitySearchedParam() != visibilitySearched
+        const resetSearch: boolean = this.groupsPageTextSearchedParam() != q
+                                     || this.groupsPagePresenceSearchedParam() != isPresent
+                                     || this.groupsPageDateTimeSearchedParam() != at?.toISOString()
+                                     || this.groupsPageVisibilitySearchedParam() != isVisible
 
         if (resetSearch) {
             this.store.updateGroupsPageSearchParams( {
                 resetSearch: resetSearch,
-                textSearched: textSearched,
-                presenceSearched: presenceSearched,
-                visibilitySearched: visibilitySearched,
-                dateTimeSearched: dateTimeSearched?.toISOString(),
+                q: q,
+                isPresent: isPresent,
+                isVisible: isVisible,
+                at: at?.toISOString(),
             } )
         }
     }
 
     public fetchGroupMembersPage (
         id: string,
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
     ): void {
-        const index: number | undefined = this.groupMembersPageResetSearch() ? 0 : pageNumber
-        this.store.fetchGroupMembersPage( { projectId: this.selectedProjectId(), id: id, pageNumber: index, pageSize: pageSize } )
+        const index: number | undefined = this.groupMembersPageResetSearch() ? 0 : page
+        this.store.fetchGroupMembersPage( { projectId: this.selectedProjectId(), id: id, page: index, size: size } )
     }
 
     public inputMembersPageSearchParameters (
-        textSearched: string | undefined,
-        statusSearched: string | undefined,
-        visibilitySearched: boolean | undefined,
+        q: string | undefined,
+        status: string | undefined,
+        isVisible: boolean | undefined,
     ): void {
-        const resetSearch: boolean = this.groupMembersPageTextSearchedParam() != textSearched
-                                     || this.groupMembersPageStatusSearchedParam() != statusSearched
-                                     || this.groupMembersPageVisibilitySearchedParam() != visibilitySearched
+        const resetSearch: boolean = this.groupMembersPageTextSearchedParam() != q
+                                     || this.groupMembersPageStatusSearchedParam() != status
+                                     || this.groupMembersPageVisibilitySearchedParam() != isVisible
 
         if (resetSearch) {
             this.store.updateGroupMembersPageSearchParams( {
                 resetSearch: resetSearch,
-                visibilitySearched: visibilitySearched,
-                statusSearched: statusSearched,
-                textSearched: textSearched,
+                isVisible: isVisible,
+                status: status,
+                q: q,
             } )
         }
     }
 
     public searchParticipants (
-        textSearched: string | undefined = undefined,
+        q: string | undefined = undefined,
     ): void {
-        this.store.searchParticipants( { projectId: this.selectedProjectId(), textSearched: textSearched } )
+        this.store.searchParticipants( { projectId: this.selectedProjectId(), q: q } )
     }
 
     public fetchGroup (id: string): Observable<GroupModel> {

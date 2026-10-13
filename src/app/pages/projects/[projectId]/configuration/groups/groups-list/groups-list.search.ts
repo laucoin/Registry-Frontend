@@ -1,17 +1,17 @@
 import { BooleanChoice, fromBooleanChoice, toBooleanChoice } from '@shared/helpers/form/boolean-choice'
 
 interface GroupsListSearch {
-    textSearched: string | undefined
-    dateTimeSearched: Date | undefined
-    presenceSearched: boolean | undefined
-    visibilitySearched: boolean | undefined
+    q: string | undefined
+    at: Date | undefined
+    isPresent: boolean | undefined
+    isVisible: boolean | undefined
 }
 
 export interface GroupsListSearchModel {
-    textSearched: string
-    dateTimeSearched: Date | null
-    presenceSearched: BooleanChoice
-    visibilitySearched: BooleanChoice
+    q: string
+    at: Date | null
+    isPresent: BooleanChoice
+    isVisible: BooleanChoice
 }
 
 /**
@@ -21,10 +21,10 @@ export interface GroupsListSearchModel {
  */
 export function toGroupsListSearchModel (params: GroupsListSearch): GroupsListSearchModel {
     return {
-        textSearched: params.textSearched ?? '',
-        dateTimeSearched: params.dateTimeSearched ?? null,
-        presenceSearched: toBooleanChoice( params.presenceSearched ),
-        visibilitySearched: toBooleanChoice( params.visibilitySearched ),
+        q: params.q ?? '',
+        at: params.at ?? null,
+        isPresent: toBooleanChoice( params.isPresent ),
+        isVisible: toBooleanChoice( params.isVisible ),
     }
 }
 
@@ -35,9 +35,9 @@ export function toGroupsListSearchModel (params: GroupsListSearch): GroupsListSe
  */
 export function toGroupsListSearchParams (model: GroupsListSearchModel): GroupsListSearch {
     return {
-        textSearched: model.textSearched === '' ? undefined : model.textSearched,
-        dateTimeSearched: model.dateTimeSearched ?? undefined,
-        presenceSearched: fromBooleanChoice( model.presenceSearched ),
-        visibilitySearched: fromBooleanChoice( model.visibilitySearched ),
+        q: model.q === '' ? undefined : model.q,
+        at: model.at ?? undefined,
+        isPresent: fromBooleanChoice( model.isPresent ),
+        isVisible: fromBooleanChoice( model.isVisible ),
     }
 }

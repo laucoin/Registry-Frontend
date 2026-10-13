@@ -43,10 +43,10 @@ describe( 'UserFacade', () => {
 
     it( 'fetches the requested page', () => {
         // Arrange
-        const pageNumber: number = 3
+        const page: number = 3
 
         // Act
-        facade.fetchUsersPage( pageNumber, 10 )
+        facade.fetchUsersPage( page, 10 )
 
         // Assert
         expect( findUsers ).toHaveBeenCalledWith( 3, 10, expect.anything() )

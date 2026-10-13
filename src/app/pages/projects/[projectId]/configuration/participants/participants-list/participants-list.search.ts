@@ -1,15 +1,15 @@
 import { BooleanChoice, fromBooleanChoice, toBooleanChoice } from '@shared/helpers/form/boolean-choice'
 
 interface ParticipantsListSearch {
-    textSearched: string | undefined
-    statusSearched: string | undefined
-    visibilitySearched: boolean | undefined
+    q: string | undefined
+    status: string | undefined
+    isVisible: boolean | undefined
 }
 
 export interface ParticipantsListSearchModel {
-    textSearched: string
-    statusSearched: string
-    visibilitySearched: BooleanChoice
+    q: string
+    status: string
+    isVisible: BooleanChoice
 }
 
 /**
@@ -19,9 +19,9 @@ export interface ParticipantsListSearchModel {
  */
 export function toParticipantsListSearchModel (params: ParticipantsListSearch): ParticipantsListSearchModel {
     return {
-        textSearched: params.textSearched ?? '',
-        statusSearched: params.statusSearched ?? '',
-        visibilitySearched: toBooleanChoice( params.visibilitySearched ),
+        q: params.q ?? '',
+        status: params.status ?? '',
+        isVisible: toBooleanChoice( params.isVisible ),
     }
 }
 
@@ -32,8 +32,8 @@ export function toParticipantsListSearchModel (params: ParticipantsListSearch): 
  */
 export function toParticipantsListSearchParams (model: ParticipantsListSearchModel): ParticipantsListSearch {
     return {
-        textSearched: model.textSearched === '' ? undefined : model.textSearched,
-        statusSearched: model.statusSearched === '' ? undefined : model.statusSearched,
-        visibilitySearched: fromBooleanChoice( model.visibilitySearched ),
+        q: model.q === '' ? undefined : model.q,
+        status: model.status === '' ? undefined : model.status,
+        isVisible: fromBooleanChoice( model.isVisible ),
     }
 }

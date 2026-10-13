@@ -48,12 +48,12 @@ describe( 'ParticipantStore', () => {
     it( 'appends the next batch to the participants already shown', () => {
         // Arrange
         findParticipants
-            .mockReturnValueOnce( of( { ...pageOf<ParticipantModel>( [ { id: 'a1' } as ParticipantModel ] ), pageSize: 1, totalPages: 2 } ) )
-            .mockReturnValueOnce( of( { ...pageOf<ParticipantModel>( [ { id: 'a2' } as ParticipantModel ], 1 ), pageSize: 1, totalPages: 2 } ) )
-        store.fetchParticipantsPage( { projectId: 'p1', pageNumber: 0, pageSize: 1 } )
+            .mockReturnValueOnce( of( { ...pageOf<ParticipantModel>( [ { id: 'a1' } as ParticipantModel ] ), size: 1, totalPages: 2 } ) )
+            .mockReturnValueOnce( of( { ...pageOf<ParticipantModel>( [ { id: 'a2' } as ParticipantModel ], 1 ), size: 1, totalPages: 2 } ) )
+        store.fetchParticipantsPage( { projectId: 'p1', page: 0, size: 1 } )
 
         // Act
-        store.fetchParticipantsPage( { projectId: 'p1', pageNumber: 1, pageSize: 1 } )
+        store.fetchParticipantsPage( { projectId: 'p1', page: 1, size: 1 } )
 
         // Assert
         expect( store.participants.element()?.content.map( (element: ParticipantModel): string => element.id ) ).toEqual( [ 'a1', 'a2' ] )
@@ -64,7 +64,7 @@ describe( 'ParticipantStore', () => {
         findParticipants.mockReturnValue( of( pageOf<ParticipantModel>( [ { id: 'pa1' } as ParticipantModel ] ) ) )
 
         // Act
-        store.fetchParticipantsPage( { projectId: 'p1', pageNumber: 0, pageSize: 10 } )
+        store.fetchParticipantsPage( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
         expect( store.participants.element()?.content ).toHaveLength( 1 )
@@ -76,7 +76,7 @@ describe( 'ParticipantStore', () => {
         findParticipants.mockReturnValue( failing( ERROR_500 ) )
 
         // Act
-        store.fetchParticipantsPage( { projectId: 'p1', pageNumber: 0, pageSize: 10 } )
+        store.fetchParticipantsPage( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
         expect( store.participants.error()?.summary ).toBe( 'Title' )
@@ -87,7 +87,7 @@ describe( 'ParticipantStore', () => {
         findParticipants.mockReturnValue( failing( ERROR_503 ) )
 
         // Act
-        store.fetchParticipantsPage( { projectId: 'p1', pageNumber: 0, pageSize: 10 } )
+        store.fetchParticipantsPage( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
         expect( setGlobalError ).toHaveBeenCalledWith( ERROR_503 )
@@ -98,7 +98,7 @@ describe( 'ParticipantStore', () => {
         searchUsers.mockReturnValue( of( [ { id: 'u1', email: 'a@b.c', firstName: 'Ada', lastName: 'L' } as UserModel ] ) )
 
         // Act
-        store.searchUsers( { projectId: 'p1', textSearched: 'ada' } )
+        store.searchUsers( { projectId: 'p1', q: 'ada' } )
 
         // Assert
         expect( store.metadata.searchedUsers() ).toEqual( [ { label: 'a@b.c (Ada L)', value: expect.objectContaining( { id: 'u1' } ) } ] )
@@ -109,7 +109,7 @@ describe( 'ParticipantStore', () => {
         searchGroups.mockReturnValue( of( [ { id: 'g1', name: 'Wolves' } as GroupModel ] ) )
 
         // Act
-        store.searchGroups( { projectId: 'p1', textSearched: 'wo' } )
+        store.searchGroups( { projectId: 'p1', q: 'wo' } )
 
         // Assert
         expect( store.metadata.searchedGroups()[ 0 ].label ).toBe( 'Wolves' )
@@ -119,10 +119,10 @@ describe( 'ParticipantStore', () => {
         // Arrange
         searchUsers.mockReturnValueOnce( of( [ { id: 'u1', email: 'a@b.c', firstName: 'A', lastName: 'B' } as UserModel ] ) )
         searchUsers.mockReturnValueOnce( failing( ERROR_500 ) )
-        store.searchUsers( { projectId: 'p1', textSearched: 'a' } )
+        store.searchUsers( { projectId: 'p1', q: 'a' } )
 
         // Act
-        store.searchUsers( { projectId: 'p1', textSearched: 'ab' } )
+        store.searchUsers( { projectId: 'p1', q: 'ab' } )
 
         // Assert
         expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'Title' } ) )
@@ -134,7 +134,7 @@ describe( 'ParticipantStore', () => {
         findParticipantMovements.mockReturnValue( of( pageOf<MovementModel>( [ { id: 'm1' } as MovementModel ] ) ) )
 
         // Act
-        store.fetchParticipantMovementsPage( { projectId: 'p1', id: 'pa1', pageNumber: 0, pageSize: 10 } )
+        store.fetchParticipantMovementsPage( { projectId: 'p1', id: 'pa1', page: 0, size: 10 } )
 
         // Assert
         expect( findMovementsContents ).toHaveBeenCalledWith( 'p1', [ 'm1' ], false )
@@ -146,7 +146,7 @@ describe( 'ParticipantStore', () => {
         findParticipantMovements.mockReturnValue( failing( ERROR_500 ) )
 
         // Act
-        store.fetchParticipantMovementsPage( { projectId: 'p1', id: 'pa1', pageNumber: 0, pageSize: 10 } )
+        store.fetchParticipantMovementsPage( { projectId: 'p1', id: 'pa1', page: 0, size: 10 } )
 
         // Assert
         expect( store.movements.error()?.summary ).toBe( 'Title' )

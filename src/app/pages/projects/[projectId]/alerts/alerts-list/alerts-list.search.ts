@@ -1,19 +1,19 @@
 import { BooleanChoice, fromBooleanChoice, toBooleanChoice } from '@shared/helpers/form/boolean-choice'
 
 interface AlertsListSearch {
-    textSearched: string | undefined
-    statusSearched: string | undefined
-    visibilitySearched: boolean | undefined
-    startDateTimeSearched: Date | undefined
-    endDateTimeSearched: Date | undefined
+    q: string | undefined
+    status: string | undefined
+    isVisible: boolean | undefined
+    from: Date | undefined
+    to: Date | undefined
 }
 
 export interface AlertsListSearchModel {
-    textSearched: string
-    statusSearched: string
-    visibilitySearched: BooleanChoice
-    startDateTimeSearched: Date | null
-    endDateTimeSearched: Date | null
+    q: string
+    status: string
+    isVisible: BooleanChoice
+    from: Date | null
+    to: Date | null
 }
 
 /**
@@ -23,11 +23,11 @@ export interface AlertsListSearchModel {
  */
 export function toAlertsListSearchModel (params: AlertsListSearch): AlertsListSearchModel {
     return {
-        textSearched: params.textSearched ?? '',
-        statusSearched: params.statusSearched ?? '',
-        visibilitySearched: toBooleanChoice( params.visibilitySearched ),
-        startDateTimeSearched: params.startDateTimeSearched ?? null,
-        endDateTimeSearched: params.endDateTimeSearched ?? null,
+        q: params.q ?? '',
+        status: params.status ?? '',
+        isVisible: toBooleanChoice( params.isVisible ),
+        from: params.from ?? null,
+        to: params.to ?? null,
     }
 }
 
@@ -38,10 +38,10 @@ export function toAlertsListSearchModel (params: AlertsListSearch): AlertsListSe
  */
 export function toAlertsListSearchParams (model: AlertsListSearchModel): AlertsListSearch {
     return {
-        textSearched: model.textSearched === '' ? undefined : model.textSearched,
-        statusSearched: model.statusSearched === '' ? undefined : model.statusSearched,
-        visibilitySearched: fromBooleanChoice( model.visibilitySearched ),
-        startDateTimeSearched: model.startDateTimeSearched ?? undefined,
-        endDateTimeSearched: model.endDateTimeSearched ?? undefined,
+        q: model.q === '' ? undefined : model.q,
+        status: model.status === '' ? undefined : model.status,
+        isVisible: fromBooleanChoice( model.isVisible ),
+        from: model.from ?? undefined,
+        to: model.to ?? undefined,
     }
 }

@@ -10,7 +10,7 @@ import { StringHelper } from '@shared/helpers/string.helper'
     name: 'truncate', standalone: true,
 } )
 export class TruncatePipe implements PipeTransform {
-    public transform (value: string, pageSize: number = 20, trail: string = '…'): string {
-        return StringHelper.truncate( value, pageSize, trail )
+    public transform (value: string, size: number = 20, trail: string = '…'): string {
+        return StringHelper.truncate( value, size, trail )
     }
 }

@@ -202,18 +202,18 @@ export class MovementFormPage extends BaseFormComponent implements OnDestroy {
         return validity.every(Boolean)
     }
 
-    protected handleReasonsAndActivitiesSearch(textSearched: string | undefined): void {
+    protected handleReasonsAndActivitiesSearch(q: string | undefined): void {
         this.facade.searchReasonsAndActivities(
-            textSearched,
+            q,
             this.model().information.type,
             this.model().information.contentType,
         )
     }
 
-    protected handleParticipantsAndGroupsSearch(textSearched: string | undefined): void {
+    protected handleParticipantsAndGroupsSearch(q: string | undefined): void {
         this.facade.searchParticipantsAndGroups(
             this.model().information.contentType,
-            textSearched,
+            q,
         )
     }
 

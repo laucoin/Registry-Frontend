@@ -34,14 +34,14 @@ export class CommunicationApi extends GenericProjectApi {
 
     public findCommunications(
         projectId: string | undefined,
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
         params: CommunicationPageParamsModel,
     ): Observable<PageModel<CommunicationModel>> {
         return this.http.get<PageResponseDto<CommunicationResponseDto>>(
             `${this.buildRequestBaseUrl(projectId)}?${QueryHelper.buildQueryParams(
-                pageNumber,
-                pageSize,
+                page,
+                size,
                 params,
             ).toString()}`,
         ).pipe(
@@ -57,12 +57,12 @@ export class CommunicationApi extends GenericProjectApi {
 
     public searchMovements(
         projectId: string | undefined,
-        textSearched: string | undefined,
+        q: string | undefined,
     ): Observable<MovementModel[]> {
         return this.http.get<MovementResponseDto[]>(
-            `${this.buildRequestBaseUrl(projectId)}/search/movements${textSearched ? '?' + new HttpParams().set(
-                'textSearched',
-                textSearched,
+            `${this.buildRequestBaseUrl(projectId)}/search/movements${q ? '?' + new HttpParams().set(
+                'q',
+                q,
             ).toString() : ''}`,
         ).pipe(
             map( (dtos: MovementResponseDto[]): MovementModel[] => dtos.map( MovementMapper.toModel ) ),
@@ -71,12 +71,12 @@ export class CommunicationApi extends GenericProjectApi {
 
     public searchAlerts(
         projectId: string | undefined,
-        textSearched: string | undefined,
+        q: string | undefined,
     ): Observable<AlertModel[]> {
         return this.http.get<AlertResponseDto[]>(
-            `${this.buildRequestBaseUrl(projectId)}/search/alerts${textSearched ? '?' + new HttpParams().set(
-                'textSearched',
-                textSearched,
+            `${this.buildRequestBaseUrl(projectId)}/search/alerts${q ? '?' + new HttpParams().set(
+                'q',
+                q,
             ).toString() : ''}`,
         ).pipe(
             map( (dtos: AlertResponseDto[]): AlertModel[] => dtos.map( AlertMapper.toModel ) ),

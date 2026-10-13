@@ -39,16 +39,16 @@ export class CommunicationFacade extends GenericProjectElementFacade {
 
     private readonly communicationsPageResetSearch: Signal<boolean> = this.store.communications.params.resetSearch
 
-    public readonly communicationsPageTextSearchedParam: Signal<string | undefined> = this.store.communications.params.textSearched
+    public readonly communicationsPageTextSearchedParam: Signal<string | undefined> = this.store.communications.params.q
 
-    public readonly communicationsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.communications.params.visibilitySearched
+    public readonly communicationsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.communications.params.isVisible
 
     public readonly communicationsPageStartDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
-            DateHelper.buildDate( this.store.communications.params.startDateTimeSearched() ),
+            DateHelper.buildDate( this.store.communications.params.from() ),
         )
 
     public readonly communicationsPageEndDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
-            DateHelper.buildDate( this.store.communications.params.endDateTimeSearched() ),
+            DateHelper.buildDate( this.store.communications.params.to() ),
         )
 
     public readonly communication: Signal<CommunicationModel | undefined> = this.store.communication.element
@@ -69,31 +69,31 @@ export class CommunicationFacade extends GenericProjectElementFacade {
     public readonly searchedAlertsMetadata: Signal<SelectOptionModel<AlertModel>[]> = this.store.metadata.searchedAlerts
 
     public fetchCommunicationsPage (
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
     ): void {
-        const index: number | undefined = this.communicationsPageResetSearch() ? 0 : pageNumber
-        this.store.fetchCommunicationsPage( { projectId: this.selectedProjectId(), pageNumber: index, pageSize: pageSize } )
+        const index: number | undefined = this.communicationsPageResetSearch() ? 0 : page
+        this.store.fetchCommunicationsPage( { projectId: this.selectedProjectId(), page: index, size: size } )
     }
 
     public inputPageSearchParameters (
-        textSearched: string | undefined,
-        visibilitySearched: boolean | undefined,
-        startDateTimeSearched: Date | undefined,
-        endDateTimeSearched: Date | undefined,
+        q: string | undefined,
+        isVisible: boolean | undefined,
+        from: Date | undefined,
+        to: Date | undefined,
     ): void {
-        const resetSearch: boolean = this.communicationsPageTextSearchedParam() != textSearched
-                                     || this.communicationsPageVisibilitySearchedParam() != visibilitySearched
-                                     || this.communicationsPageStartDateTimeSearchedParam() != startDateTimeSearched?.toISOString()
-                                     || this.communicationsPageEndDateTimeSearchedParam() != endDateTimeSearched?.toISOString()
+        const resetSearch: boolean = this.communicationsPageTextSearchedParam() != q
+                                     || this.communicationsPageVisibilitySearchedParam() != isVisible
+                                     || this.communicationsPageStartDateTimeSearchedParam() != from?.toISOString()
+                                     || this.communicationsPageEndDateTimeSearchedParam() != to?.toISOString()
 
         if (resetSearch) {
             this.store.updateCommunicationsPageSearchParams( {
                 resetSearch: resetSearch,
-                textSearched: textSearched,
-                visibilitySearched: visibilitySearched,
-                startDateTimeSearched: startDateTimeSearched?.toISOString(),
-                endDateTimeSearched: endDateTimeSearched?.toISOString(),
+                q: q,
+                isVisible: isVisible,
+                from: from?.toISOString(),
+                to: to?.toISOString(),
             } )
         }
     }
@@ -103,15 +103,15 @@ export class CommunicationFacade extends GenericProjectElementFacade {
     }
 
     public searchMovements (
-        textSearched: string | undefined = undefined,
+        q: string | undefined = undefined,
     ): void {
-        this.store.searchMovements( { projectId: this.selectedProjectId(), textSearched: textSearched } )
+        this.store.searchMovements( { projectId: this.selectedProjectId(), q: q } )
     }
 
     public searchAlerts (
-        textSearched: string | undefined = undefined,
+        q: string | undefined = undefined,
     ): void {
-        this.store.searchAlerts( { projectId: this.selectedProjectId(), textSearched: textSearched } )
+        this.store.searchAlerts( { projectId: this.selectedProjectId(), q: q } )
     }
 
     public resetCommunication (): void {
@@ -176,6 +176,6 @@ export class CommunicationFacade extends GenericProjectElementFacade {
         }
 
         const page: PageModel<CommunicationModel> | undefined = this.communicationsPage()
-        this.fetchCommunicationsPage( page?.pageNumber, page?.pageSize )
+        this.fetchCommunicationsPage( page?.page, page?.size )
     }
 }

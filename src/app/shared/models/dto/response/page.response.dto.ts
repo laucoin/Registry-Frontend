@@ -1,6 +1,6 @@
 export interface PageResponseDto<T> {
-    pageNumber: number
-    pageSize: number
+    page: number
+    size: number
     totalElements: number
     totalPages: number
     content: T[]

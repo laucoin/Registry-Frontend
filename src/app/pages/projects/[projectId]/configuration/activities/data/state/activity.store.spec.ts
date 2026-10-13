@@ -40,12 +40,12 @@ describe( 'ActivityStore', () => {
     it( 'appends the next batch to the activities already shown', () => {
         // Arrange
         findActivities
-            .mockReturnValueOnce( of( { ...pageOf<ActivityModel>( [ { id: 'a1' } as ActivityModel ] ), pageSize: 1, totalPages: 2 } ) )
-            .mockReturnValueOnce( of( { ...pageOf<ActivityModel>( [ { id: 'a2' } as ActivityModel ], 1 ), pageSize: 1, totalPages: 2 } ) )
-        store.fetchActivitiesPage( { projectId: 'p1', pageNumber: 0, pageSize: 1 } )
+            .mockReturnValueOnce( of( { ...pageOf<ActivityModel>( [ { id: 'a1' } as ActivityModel ] ), size: 1, totalPages: 2 } ) )
+            .mockReturnValueOnce( of( { ...pageOf<ActivityModel>( [ { id: 'a2' } as ActivityModel ], 1 ), size: 1, totalPages: 2 } ) )
+        store.fetchActivitiesPage( { projectId: 'p1', page: 0, size: 1 } )
 
         // Act
-        store.fetchActivitiesPage( { projectId: 'p1', pageNumber: 1, pageSize: 1 } )
+        store.fetchActivitiesPage( { projectId: 'p1', page: 1, size: 1 } )
 
         // Assert
         expect( store.activities.element()?.content.map( (element: ActivityModel): string => element.id ) ).toEqual( [ 'a1', 'a2' ] )
@@ -56,7 +56,7 @@ describe( 'ActivityStore', () => {
         findActivities.mockReturnValue( of( pageOf<ActivityModel>( [ { id: 'a1' } as ActivityModel ] ) ) )
 
         // Act
-        store.fetchActivitiesPage( { projectId: 'p1', pageNumber: 0, pageSize: 10 } )
+        store.fetchActivitiesPage( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
         expect( store.activities.element()?.content ).toHaveLength( 1 )
@@ -68,7 +68,7 @@ describe( 'ActivityStore', () => {
         findActivities.mockReturnValue( failing( ERROR_500 ) )
 
         // Act
-        store.fetchActivitiesPage( { projectId: 'p1', pageNumber: 0, pageSize: 10 } )
+        store.fetchActivitiesPage( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
         expect( store.activities.error()?.summary ).toBe( 'Title' )
@@ -80,7 +80,7 @@ describe( 'ActivityStore', () => {
         findActivities.mockReturnValue( failing( ERROR_503 ) )
 
         // Act
-        store.fetchActivitiesPage( { projectId: 'p1', pageNumber: 0, pageSize: 10 } )
+        store.fetchActivitiesPage( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
         expect( setGlobalError ).toHaveBeenCalledWith( ERROR_503 )
@@ -93,7 +93,7 @@ describe( 'ActivityStore', () => {
         findMovementsContents.mockReturnValue( of( contents ) )
 
         // Act
-        store.fetchActivityMovementsPage( { projectId: 'p1', id: 'a1', pageNumber: 0, pageSize: 10 } )
+        store.fetchActivityMovementsPage( { projectId: 'p1', id: 'a1', page: 0, size: 10 } )
 
         // Assert
         expect( findMovementsContents ).toHaveBeenCalledWith( 'p1', [ 'm1', 'm2' ], false )
@@ -106,7 +106,7 @@ describe( 'ActivityStore', () => {
         findActivityMovements.mockReturnValue( of( pageOf<MovementModel>( [] ) ) )
 
         // Act
-        store.fetchActivityMovementsPage( { projectId: 'p1', id: 'a1', pageNumber: 0, pageSize: 10 } )
+        store.fetchActivityMovementsPage( { projectId: 'p1', id: 'a1', page: 0, size: 10 } )
 
         // Assert
         expect( findMovementsContents ).not.toHaveBeenCalled()
@@ -118,7 +118,7 @@ describe( 'ActivityStore', () => {
         findActivityMovements.mockReturnValue( failing( ERROR_500 ) )
 
         // Act
-        store.fetchActivityMovementsPage( { projectId: 'p1', id: 'a1', pageNumber: 0, pageSize: 10 } )
+        store.fetchActivityMovementsPage( { projectId: 'p1', id: 'a1', page: 0, size: 10 } )
 
         // Assert
         expect( store.movements.error()?.summary ).toBe( 'Title' )
@@ -131,7 +131,7 @@ describe( 'ActivityStore', () => {
         findMovementsContents.mockReturnValue( failing( ERROR_500 ) )
 
         // Act
-        store.fetchActivityMovementsPage( { projectId: 'p1', id: 'a1', pageNumber: 0, pageSize: 10 } )
+        store.fetchActivityMovementsPage( { projectId: 'p1', id: 'a1', page: 0, size: 10 } )
 
         // Assert
         expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'Title' } ) )
@@ -140,13 +140,13 @@ describe( 'ActivityStore', () => {
 
     it( 'replaces the search parameters of both blocks independently', () => {
         // Arrange
-        const activitiesParams: ReturnType<typeof store.activities.params> = { ...store.activities.params(), textSearched: 'camp' }
+        const activitiesParams: ReturnType<typeof store.activities.params> = { ...store.activities.params(), q: 'camp' }
 
         // Act
         store.updateActivitiesPageSearchParams( activitiesParams )
 
         // Assert
-        expect( store.activities.params.textSearched() ).toBe( 'camp' )
-        expect( store.movements.params.typeSearched() ).toBeUndefined()
+        expect( store.activities.params.q() ).toBe( 'camp' )
+        expect( store.movements.params.type() ).toBeUndefined()
     } )
 } )

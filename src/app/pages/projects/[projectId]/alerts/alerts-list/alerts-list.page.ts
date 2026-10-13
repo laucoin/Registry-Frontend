@@ -56,11 +56,11 @@ export class AlertsListPage {
     ].filter(Boolean).length)
 
     protected readonly model: WritableSignal<AlertsListSearchModel> = signal(toAlertsListSearchModel({
-        textSearched: this.facade.alertsPageTextSearchedParam(),
-        statusSearched: this.facade.alertsPageStatusSearchedParam(),
-        visibilitySearched: this.facade.alertsPageVisibilitySearchedParam(),
-        startDateTimeSearched: this.facade.alertsPageStartDateTimeSearchedParam(),
-        endDateTimeSearched: this.facade.alertsPageEndDateTimeSearchedParam(),
+        q: this.facade.alertsPageTextSearchedParam(),
+        status: this.facade.alertsPageStatusSearchedParam(),
+        isVisible: this.facade.alertsPageVisibilitySearchedParam(),
+        from: this.facade.alertsPageStartDateTimeSearchedParam(),
+        to: this.facade.alertsPageEndDateTimeSearchedParam(),
     }))
     protected readonly form: FieldTree<AlertsListSearchModel> = createSearchForm(this.model)
 
@@ -71,21 +71,21 @@ export class AlertsListPage {
     protected search(): void {
         const search: ReturnType<typeof toAlertsListSearchParams> = toAlertsListSearchParams(this.model())
         this.facade.inputPageSearchParameters(
-            search.textSearched,
-            search.statusSearched,
-            search.visibilitySearched,
-            search.startDateTimeSearched,
-            search.endDateTimeSearched,
+            search.q,
+            search.status,
+            search.isVisible,
+            search.from,
+            search.to,
         )
         this.facade.fetchAlertsPage(0, undefined)
     }
 
     protected resetFilters(): void {
-        this.model.set({ textSearched: '', statusSearched: '', visibilitySearched: '', startDateTimeSearched: null, endDateTimeSearched: null })
+        this.model.set({ q: '', status: '', isVisible: '', from: null, to: null })
         this.search()
     }
 
     protected loadBatch(pageEvent: PageEventModel): void {
-        this.facade.fetchAlertsPage(pageEvent.pageNumber, pageEvent.pageSize)
+        this.facade.fetchAlertsPage(pageEvent.page, pageEvent.size)
     }
 }

@@ -52,8 +52,8 @@ export class InvitationsListPage {
     ].filter(Boolean).length)
 
     protected readonly model: WritableSignal<InvitationsListSearchModel> = signal(toInvitationsListSearchModel({
-        textSearched: this.userProfileFacade.userProjectProfileInvitationsPageTextSearchParam(),
-        dateTimeSearched: this.userProfileFacade.userProjectProfileInvitationsPageDateTimeSearchParam(),
+        q: this.userProfileFacade.userProjectProfileInvitationsPageTextSearchParam(),
+        at: this.userProfileFacade.userProjectProfileInvitationsPageDateTimeSearchParam(),
     }))
     protected readonly form: FieldTree<InvitationsListSearchModel> = createSearchForm(this.model)
 
@@ -63,16 +63,16 @@ export class InvitationsListPage {
 
     protected search(): void {
         const search: ReturnType<typeof toInvitationsListSearchParams> = toInvitationsListSearchParams(this.model())
-        this.userProfileFacade.inputInvitationsPageSearchParameters(search.textSearched, search.dateTimeSearched)
+        this.userProfileFacade.inputInvitationsPageSearchParameters(search.q, search.at)
         this.userProfileFacade.fetchProjectProfileInvitationPage(0, undefined)
     }
 
     protected resetFilters(): void {
-        this.model.set({ textSearched: '', dateTimeSearched: null })
+        this.model.set({ q: '', at: null })
         this.search()
     }
 
     protected loadBatch(pageEvent: PageEventModel): void {
-        this.userProfileFacade.fetchProjectProfileInvitationPage(pageEvent.pageNumber, pageEvent.pageSize)
+        this.userProfileFacade.fetchProjectProfileInvitationPage(pageEvent.page, pageEvent.size)
     }
 }

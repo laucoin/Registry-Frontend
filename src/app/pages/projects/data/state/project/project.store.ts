@@ -20,9 +20,9 @@ const defaultProject: ElementRequestInformationModel<ProjectModel> = {
 const defaultProjectStore: ProjectStoreModel = {
     projects: PageStateHelper.initial<ProjectPageParamsModel, ProjectModel>( {
         resetSearch: false,
-        textSearched: undefined,
-        visibilitySearched: undefined,
-        dateTimeSearched: undefined,
+        q: undefined,
+        isVisible: undefined,
+        at: undefined,
     } ),
     project: defaultProject,
     createdProjectId: undefined,
@@ -46,7 +46,7 @@ export const ProjectStore = signalStore(
     withMethods( (store, api = inject( ProjectApi ), errors = inject( ErrorReporter )) => ({
         fetchProjectOptions: metadataFetcher<ProjectStoreModel, 'options', void, ProjectOptionModel[]>( store, 'options', () => api.getAvailableProjectOptions(), errors ),
         fetchProjectsPage: pageFetcher( store, 'projects', (request: CumulativePageRequest, params: ProjectPageParamsModel) =>
-            api.findProjects( request.pageNumber, request.pageSize, params ), errors, { merge: CumulativePageHelper.merge } ),
+            api.findProjects( request.page, request.size, params ), errors, { merge: CumulativePageHelper.merge } ),
         updateProjectsPageSearchParams: paramsUpdater( store, 'projects' ),
         startProjectLoader: loaderToggle( store, 'project', true ),
         stopProjectLoader: loaderToggle( store, 'project', false ),

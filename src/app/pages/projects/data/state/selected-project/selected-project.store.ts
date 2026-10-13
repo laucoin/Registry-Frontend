@@ -28,24 +28,24 @@ import { PairModel } from '@shared/models/model/pair.model'
 import { ParticipantModel } from '@shared/models/model/participant.model'
 import { CumulativePageHelper, CumulativePageRequest } from '@shared/helpers/store/cumulative-page.helper'
 
-type CurrentMovementsKey = keyof SelectedProjectStoreModel['currentMovements']
+type CurrentMovementsKey = keyof SelectedProjectStoreModel['isCurrent']
 type StatusKey = keyof SelectedProjectStoreModel['status']
-type MovementsBlock = SelectedProjectStoreModel['currentMovements'][CurrentMovementsKey]
+type MovementsBlock = SelectedProjectStoreModel['isCurrent'][CurrentMovementsKey]
 type Ref = StoreRef<SelectedProjectStoreModel>
 
 interface CurrentPageRequest extends CumulativePageRequest {
     projectId: string | undefined
 }
 
-const currentMovementsBlock = (linkedToActivity: boolean): MovementsBlock =>
+const currentMovementsBlock = (hasActivity: boolean): MovementsBlock =>
     PageStateHelper.initial<MovementPageParamsModel, MovementModel>( {
         resetSearch: false,
-        currentMovements: true,
-        linkedToActivity: linkedToActivity,
-        visibilitySearched: undefined,
-        typeSearched: undefined,
-        startDateTimeSearched: undefined,
-        endDateTimeSearched: undefined,
+        isCurrent: true,
+        hasActivity: hasActivity,
+        isVisible: undefined,
+        type: undefined,
+        from: undefined,
+        to: undefined,
     } )
 
 const defaultSelectedProjectStore: SelectedProjectStoreModel = {
@@ -55,14 +55,14 @@ const defaultSelectedProjectStore: SelectedProjectStoreModel = {
     },
     alerts: PageStateHelper.initial<AlertPageParamsModel, AlertModel>( {
         resetSearch: false,
-        textSearched: undefined,
-        statusSearched: AlertStatusEnum.IN_PROGRESS,
-        visibilitySearched: true,
-        startDateTimeSearched: undefined,
-        endDateTimeSearched: undefined,
+        q: undefined,
+        status: AlertStatusEnum.IN_PROGRESS,
+        isVisible: true,
+        from: undefined,
+        to: undefined,
     } ),
     birthdays: [],
-    currentMovements: {
+    isCurrent: {
         withoutActivity: currentMovementsBlock( false ),
         withActivity: currentMovementsBlock( true ),
     },
@@ -84,13 +84,13 @@ function patchStatus (store: Ref, key: StatusKey, patch: Partial<SelectedProject
 
 function patchCurrentMovements (store: Ref, key: CurrentMovementsKey, update: (block: MovementsBlock) => MovementsBlock): void {
     patchState( store, (state: SelectedProjectStoreModel) => ({
-        currentMovements: { ...state.currentMovements, [ key ]: update( state.currentMovements[ key ] ) },
+        isCurrent: { ...state.isCurrent, [ key ]: update( state.isCurrent[ key ] ) },
     }) )
 }
 
 function currentMovementsSlice (store: Ref, key: CurrentMovementsKey): PageSlice<MovementsBlock> {
     return {
-        read: (): MovementsBlock => store.currentMovements()[ key ],
+        read: (): MovementsBlock => store.isCurrent()[ key ],
         write: (block: MovementsBlock): void => patchCurrentMovements( store, key, (): MovementsBlock => block ),
     }
 }
@@ -120,7 +120,7 @@ function currentMovementsContents (store: Ref, key: CurrentMovementsKey, movemen
         switchMap( (request: MovementContentsRequest): Observable<PairModel<MovementContentModel[]>[]> => movementApi.findMovementsContents(
             request.projectId,
             request.movementIds,
-            store.currentMovements()[ key ].params.currentMovements,
+            store.isCurrent()[ key ].params.isCurrent,
         ).pipe( notifyOnError( errors ) ) ),
         tap( (contents: PairModel<MovementContentModel[]>[]): void => patchCurrentMovements( store, key, (block: MovementsBlock) => mergeContents( block, contents ) ) ),
     ) )
@@ -156,8 +156,8 @@ function fetchCurrentMovements (
     errors: ErrorSink,
     request: CurrentPageRequest,
 ): Observable<{ request: CurrentPageRequest, page: PageModel<MovementModel> }> {
-    const params: MovementPageParamsModel = store.currentMovements()[ key ].params
-    return movementApi.findMovements( request.projectId, request.pageNumber, request.pageSize, params ).pipe(
+    const params: MovementPageParamsModel = store.isCurrent()[ key ].params
+    return movementApi.findMovements( request.projectId, request.page, request.size, params ).pipe(
         trackPage( errors, currentMovementsSlice( store, key ) ),
         map( (page: PageModel<MovementModel>) => ({ request, page }) ),
     )
@@ -200,6 +200,6 @@ export const SelectedProjectStore = signalStore(
         fetchCurrentMovementsPageWithoutActivity: currentMovementsPage( store, 'withoutActivity', movementApi, errors, store.fetchCurrentMovementsWithoutActivityContents ),
         fetchCurrentMovementsPageWithActivity: currentMovementsPage( store, 'withActivity', movementApi, errors, store.fetchCurrentMovementsWithActivityContents ),
         fetchCurrentAlertsPage: pageFetcher( store, 'alerts', (request: CurrentPageRequest, params: AlertPageParamsModel) =>
-            alertApi.findAlerts( request.projectId, request.pageNumber, request.pageSize, params ), errors ),
+            alertApi.findAlerts( request.projectId, request.page, request.size, params ), errors ),
     }) ),
 )

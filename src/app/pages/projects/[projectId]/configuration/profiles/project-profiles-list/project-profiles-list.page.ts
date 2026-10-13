@@ -73,10 +73,10 @@ export class ProjectProfilesListPage {
     ].filter(Boolean).length)
 
     protected readonly model: WritableSignal<ProjectProfilesListSearchModel> = signal(toProjectProfilesListSearchModel({
-        textSearched: this.facade.projectProfilesPageTextSearchedParam(),
-        dateTimeSearched: this.facade.projectProfilesPageDateTimeSearchedParam(),
-        statusSearched: this.facade.projectProfilesPageStatusSearchedParam(),
-        availabilitySearched: this.facade.projectProfilesPageAvailabilitySearchedParam(),
+        q: this.facade.projectProfilesPageTextSearchedParam(),
+        at: this.facade.projectProfilesPageDateTimeSearchedParam(),
+        status: this.facade.projectProfilesPageStatusSearchedParam(),
+        isAvailable: this.facade.projectProfilesPageAvailabilitySearchedParam(),
     }))
     protected readonly form: FieldTree<ProjectProfilesListSearchModel> = createSearchForm(this.model)
 
@@ -87,20 +87,20 @@ export class ProjectProfilesListPage {
     protected search(): void {
         const search: ReturnType<typeof toProjectProfilesListSearchParams> = toProjectProfilesListSearchParams(this.model())
         this.facade.inputPageSearchParameters(
-            search.textSearched,
-            search.dateTimeSearched,
-            search.statusSearched as ProfileStatusEnum | undefined,
-            search.availabilitySearched,
+            search.q,
+            search.at,
+            search.status as ProfileStatusEnum | undefined,
+            search.isAvailable,
         )
         this.facade.fetchProjectProfilesPage(0, undefined)
     }
 
     protected resetFilters(): void {
-        this.model.set({ textSearched: '', dateTimeSearched: null, statusSearched: '', availabilitySearched: '' })
+        this.model.set({ q: '', at: null, status: '', isAvailable: '' })
         this.search()
     }
 
     protected loadBatch(pageEvent: PageEventModel): void {
-        this.facade.fetchProjectProfilesPage(pageEvent.pageNumber, pageEvent.pageSize)
+        this.facade.fetchProjectProfilesPage(pageEvent.page, pageEvent.size)
     }
 }

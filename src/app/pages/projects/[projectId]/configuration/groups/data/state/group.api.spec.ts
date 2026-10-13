@@ -3,16 +3,16 @@ import { ApiCase, describeApi, expectMapped, expectMappedList, expectMappedPage,
 import { GROUP_DTO, PARTICIPANT_DTO, pageDto } from '@shared/helpers/testing/response-fixtures'
 
 const BASE: string = '/api/v2/projects/p1/groups'
-const PARAMS: never = { resetSearch: false, textSearched: 'wolves' } as never
+const PARAMS: never = { resetSearch: false, q: 'wolves' } as never
 
 const CASES: ApiCase<GroupApi>[] = [
-    { name: 'pages the groups with the search parameters', method: 'GET', url: new RegExp( `${BASE}\\?${PAGE_QUERY}&textSearched=wolves$` ),
+    { name: 'pages the groups with the search parameters', method: 'GET', url: new RegExp( `${BASE}\\?${PAGE_QUERY}&q=wolves$` ),
         call: (api: GroupApi) => api.findGroups( 'p1', 0, 10, PARAMS ), response: pageDto( [ GROUP_DTO ] ), verify: expectMappedPage },
     { name: 'pages the members of a group', method: 'GET', url: new RegExp( `${BASE}/g1/members\\?${PAGE_QUERY}` ),
         call: (api: GroupApi) => api.findGroupMembersByGroupId( 'p1', 'g1', 0, 10, PARAMS ), response: pageDto( [ PARTICIPANT_DTO ] ), verify: expectMappedPage },
     { name: 'finds a group by id', method: 'GET', url: `${BASE}/g1`,
         call: (api: GroupApi) => api.findGroupById( 'p1', 'g1' ), response: GROUP_DTO, verify: expectMapped },
-    { name: 'searches participants with a text', method: 'GET', url: `${BASE}/search/participants?textSearched=ada`,
+    { name: 'searches participants with a text', method: 'GET', url: `${BASE}/search/participants?q=ada`,
         call: (api: GroupApi) => api.searchParticipants( 'p1', 'ada' ), response: [ PARTICIPANT_DTO ], verify: expectMappedList },
     { name: 'searches participants without a text', method: 'GET', url: `${BASE}/search/participants`,
         call: (api: GroupApi) => api.searchParticipants( 'p1', undefined ), response: [ PARTICIPANT_DTO ], verify: expectMappedList },

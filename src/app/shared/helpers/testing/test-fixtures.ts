@@ -12,8 +12,8 @@ import { ProjectModel } from '@shared/models/model/project.model'
 export const ERROR_500: ErrorModel = { status: 500, title: 'Title', message: 'Message' } as ErrorModel
 export const ERROR_503: ErrorModel = { status: 503, title: 'Down', message: 'Down' } as ErrorModel
 
-export function pageOf<T extends GenericModel> (content: T[], pageNumber: number = 0): PageModel<T> {
-    return { pageNumber, pageSize: 10, totalElements: content.length, totalPages: 1, content, lastRefresh: new Date() }
+export function pageOf<T extends GenericModel> (content: T[], page: number = 0): PageModel<T> {
+    return { page, size: 10, totalElements: content.length, totalPages: 1, content, lastRefresh: new Date() }
 }
 
 export function projectOptionChecker (project: () => ProjectModel | undefined): (option: ProjectOptionEnum) => Signal<boolean> {

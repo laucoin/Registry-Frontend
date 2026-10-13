@@ -72,10 +72,10 @@ export class ParticipantMovementsListPage implements OnDestroy {
     ].filter(Boolean).length)
 
     protected readonly model: WritableSignal<ParticipantMovementsListSearchModel> = signal(toParticipantMovementsListSearchModel({
-        typeSearched: this.facade.participantMovementsPageTypeSearchedParam(),
-        startDateTimeSearched: this.facade.participantMovementsPageStartDateTimeSearchedParam(),
-        endDateTimeSearched: this.facade.participantMovementsPageEndDateTimeSearchedParam(),
-        visibilitySearched: this.facade.participantMovementsPageVisibilitySearchedParam(),
+        type: this.facade.participantMovementsPageTypeSearchedParam(),
+        from: this.facade.participantMovementsPageStartDateTimeSearchedParam(),
+        to: this.facade.participantMovementsPageEndDateTimeSearchedParam(),
+        isVisible: this.facade.participantMovementsPageVisibilitySearchedParam(),
     }))
     protected readonly form: FieldTree<ParticipantMovementsListSearchModel> = createSearchForm(this.model)
 
@@ -109,21 +109,21 @@ export class ParticipantMovementsListPage implements OnDestroy {
     protected search(): void {
         const search: ReturnType<typeof toParticipantMovementsListSearchParams> = toParticipantMovementsListSearchParams(this.model())
         this.facade.inputMovementsPageSearchParameters(
-            search.typeSearched,
-            search.startDateTimeSearched,
-            search.endDateTimeSearched,
-            search.visibilitySearched,
+            search.type,
+            search.from,
+            search.to,
+            search.isVisible,
         )
         this.facade.fetchParticipantMovementsPage(this.id(), 0, undefined)
     }
 
     protected resetFilters(): void {
-        this.model.set({ typeSearched: '', startDateTimeSearched: null, endDateTimeSearched: null, visibilitySearched: '' })
+        this.model.set({ type: '', from: null, to: null, isVisible: '' })
         this.search()
     }
 
     protected loadBatch(pageEvent: PageEventModel): void {
-        this.facade.fetchParticipantMovementsPage(this.id(), pageEvent.pageNumber, pageEvent.pageSize)
+        this.facade.fetchParticipantMovementsPage(this.id(), pageEvent.page, pageEvent.size)
     }
 
     public ngOnDestroy(): void {

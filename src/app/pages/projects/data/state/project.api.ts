@@ -29,12 +29,12 @@ export class ProjectApi extends GenericApi {
     }
 
     public findProjects(
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
         params: ProjectPageParamsModel,
     ): Observable<PageModel<ProjectModel>> {
         return this.http.get<PageResponseDto<ProjectResponseDto>>(
-            `${this.baseUrl}?${QueryHelper.buildQueryParams(pageNumber, pageSize, params).toString()}`,
+            `${this.baseUrl}?${QueryHelper.buildQueryParams(page, size, params).toString()}`,
         ).pipe(
             map( (dto: PageResponseDto<ProjectResponseDto>): PageModel<ProjectModel> => PageMapper.toModel( dto, ProjectMapper.toModel ) ),
         )

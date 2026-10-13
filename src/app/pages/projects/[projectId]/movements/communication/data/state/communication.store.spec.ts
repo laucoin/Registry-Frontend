@@ -43,7 +43,7 @@ describe( 'CommunicationStore', () => {
         findCommunications.mockReturnValue( of( pageOf<CommunicationModel>( [ { id: 'c1' } as CommunicationModel ] ) ) )
 
         // Act
-        store.fetchCommunicationsPage( { projectId: 'p1', pageNumber: 0, pageSize: 10 } )
+        store.fetchCommunicationsPage( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
         expect( store.communications.element()?.content ).toHaveLength( 1 )
@@ -55,7 +55,7 @@ describe( 'CommunicationStore', () => {
         findCommunications.mockReturnValue( failing( ERROR_500 ) )
 
         // Act
-        store.fetchCommunicationsPage( { projectId: 'p1', pageNumber: 0, pageSize: 10 } )
+        store.fetchCommunicationsPage( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
         expect( store.communications.error()?.summary ).toBe( 'Title' )
@@ -66,7 +66,7 @@ describe( 'CommunicationStore', () => {
         findCommunications.mockReturnValue( failing( ERROR_503 ) )
 
         // Act
-        store.fetchCommunicationsPage( { projectId: 'p1', pageNumber: 0, pageSize: 10 } )
+        store.fetchCommunicationsPage( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
         expect( setGlobalError ).toHaveBeenCalledWith( ERROR_503 )
@@ -114,7 +114,7 @@ describe( 'CommunicationStore', () => {
         searchMovements.mockReturnValue( of( [ { id: 'm1', reason: { label: 'Arrival' } } as MovementModel ] ) )
 
         // Act
-        store.searchMovements( { projectId: 'p1', textSearched: 'arr' } )
+        store.searchMovements( { projectId: 'p1', q: 'arr' } )
 
         // Assert
         expect( store.metadata.searchedMovements()[ 0 ].label ).toBe( 'Arrival (01/01)' )
@@ -125,7 +125,7 @@ describe( 'CommunicationStore', () => {
         searchAlerts.mockReturnValue( of( [ { id: 'al1', title: 'Fire' } as AlertModel ] ) )
 
         // Act
-        store.searchAlerts( { projectId: 'p1', textSearched: 'fi' } )
+        store.searchAlerts( { projectId: 'p1', q: 'fi' } )
 
         // Assert
         expect( store.metadata.searchedAlerts()[ 0 ].label ).toBe( 'Fire (01/01)' )

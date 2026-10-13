@@ -1,17 +1,17 @@
 import { BooleanChoice, fromBooleanChoice, toBooleanChoice } from '@shared/helpers/form/boolean-choice'
 
 interface VehiclesListSearch {
-    textSearched: string | undefined
-    dateTimeSearched: Date | undefined
-    statusSearched: string | undefined
-    visibilitySearched: boolean | undefined
+    q: string | undefined
+    at: Date | undefined
+    status: string | undefined
+    isVisible: boolean | undefined
 }
 
 export interface VehiclesListSearchModel {
-    textSearched: string
-    dateTimeSearched: Date | null
-    statusSearched: string
-    visibilitySearched: BooleanChoice
+    q: string
+    at: Date | null
+    status: string
+    isVisible: BooleanChoice
 }
 
 /**
@@ -21,10 +21,10 @@ export interface VehiclesListSearchModel {
  */
 export function toVehiclesListSearchModel (params: VehiclesListSearch): VehiclesListSearchModel {
     return {
-        textSearched: params.textSearched ?? '',
-        dateTimeSearched: params.dateTimeSearched ?? null,
-        statusSearched: params.statusSearched ?? '',
-        visibilitySearched: toBooleanChoice( params.visibilitySearched ),
+        q: params.q ?? '',
+        at: params.at ?? null,
+        status: params.status ?? '',
+        isVisible: toBooleanChoice( params.isVisible ),
     }
 }
 
@@ -35,9 +35,9 @@ export function toVehiclesListSearchModel (params: VehiclesListSearch): Vehicles
  */
 export function toVehiclesListSearchParams (model: VehiclesListSearchModel): VehiclesListSearch {
     return {
-        textSearched: model.textSearched === '' ? undefined : model.textSearched,
-        dateTimeSearched: model.dateTimeSearched ?? undefined,
-        statusSearched: model.statusSearched === '' ? undefined : model.statusSearched,
-        visibilitySearched: fromBooleanChoice( model.visibilitySearched ),
+        q: model.q === '' ? undefined : model.q,
+        at: model.at ?? undefined,
+        status: model.status === '' ? undefined : model.status,
+        isVisible: fromBooleanChoice( model.isVisible ),
     }
 }

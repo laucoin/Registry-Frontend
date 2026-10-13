@@ -18,7 +18,7 @@ import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { GroupModel } from '@shared/models/model/group.model'
 import { PageModel } from '@shared/models/model/page.model'
 
-const EMPTY_PAGE: PageModel<GroupModel> = { pageNumber: 2, pageSize: 10, totalElements: 0, totalPages: 1, content: [], lastRefresh: new Date() }
+const EMPTY_PAGE: PageModel<GroupModel> = { page: 2, size: 10, totalElements: 0, totalPages: 1, content: [], lastRefresh: new Date() }
 
 describe( 'GroupFacade', () => {
     let facade: GroupFacade
@@ -51,10 +51,10 @@ describe( 'GroupFacade', () => {
 
     it( 'fetches the requested groups page for the selected project', () => {
         // Arrange
-        const pageNumber: number = 3
+        const page: number = 3
 
         // Act
-        facade.fetchGroupsPage( pageNumber, 10 )
+        facade.fetchGroupsPage( page, 10 )
 
         // Assert
         expect( findGroups ).toHaveBeenCalledWith( 'p1', 3, 10, expect.anything() )

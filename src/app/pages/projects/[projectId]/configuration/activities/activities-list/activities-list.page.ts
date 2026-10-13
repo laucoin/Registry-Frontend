@@ -72,10 +72,10 @@ export class ActivitiesListPage {
     ].filter(Boolean).length)
 
     protected readonly model: WritableSignal<ActivitiesListSearchModel> = signal(toActivitiesListSearchModel({
-        textSearched: this.facade.activitiesPageTextSearchedParam(),
-        dateTimeSearched: this.facade.activitiesPageDateTimeSearchedParam(),
-        availabilitySearched: this.facade.activitiesPageAvailabilitySearchedParam(),
-        visibilitySearched: this.facade.activitiesPageVisibilitySearchedParam(),
+        q: this.facade.activitiesPageTextSearchedParam(),
+        at: this.facade.activitiesPageDateTimeSearchedParam(),
+        isAvailable: this.facade.activitiesPageAvailabilitySearchedParam(),
+        isVisible: this.facade.activitiesPageVisibilitySearchedParam(),
     }))
     protected readonly form: FieldTree<ActivitiesListSearchModel> = createSearchForm(this.model)
 
@@ -85,16 +85,16 @@ export class ActivitiesListPage {
 
     protected search(): void {
         const search: ReturnType<typeof toActivitiesListSearchParams> = toActivitiesListSearchParams(this.model())
-        this.facade.inputPageSearchParameters(search.textSearched, search.dateTimeSearched, search.availabilitySearched, search.visibilitySearched)
+        this.facade.inputPageSearchParameters(search.q, search.at, search.isAvailable, search.isVisible)
         this.facade.fetchActivitiesPage(0, undefined)
     }
 
     protected resetFilters(): void {
-        this.model.set({ textSearched: '', dateTimeSearched: null, availabilitySearched: '', visibilitySearched: '' })
+        this.model.set({ q: '', at: null, isAvailable: '', isVisible: '' })
         this.search()
     }
 
     protected loadBatch(pageEvent: PageEventModel): void {
-        this.facade.fetchActivitiesPage(pageEvent.pageNumber, pageEvent.pageSize)
+        this.facade.fetchActivitiesPage(pageEvent.page, pageEvent.size)
     }
 }

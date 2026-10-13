@@ -35,19 +35,19 @@ interface VehicleMovementsPageRequest extends VehiclesPageRequest {
 const defaultVehicleStore: VehicleStoreModel = {
     vehicles: PageStateHelper.initial<VehiclePageParamsModel, VehicleModel>( {
         resetSearch: false,
-        visibilitySearched: undefined,
-        textSearched: undefined,
-        statusSearched: undefined,
-        dateTimeSearched: undefined,
+        isVisible: undefined,
+        q: undefined,
+        status: undefined,
+        at: undefined,
     } ),
     movements: PageStateHelper.initial<MovementPageParamsModel, MovementModel>( {
         resetSearch: false,
-        currentMovements: false,
-        visibilitySearched: undefined,
-        linkedToActivity: undefined,
-        typeSearched: undefined,
-        startDateTimeSearched: undefined,
-        endDateTimeSearched: undefined,
+        isCurrent: false,
+        isVisible: undefined,
+        hasActivity: undefined,
+        type: undefined,
+        from: undefined,
+        to: undefined,
     } ),
     metadata: {
         availabilities: [
@@ -79,14 +79,14 @@ export const VehicleStore = signalStore(
             store, 'presencesStatus', () => metadataApi.getPresencesStatus(), errors, withEmptyOption,
         ),
         fetchVehiclesPage: pageFetcher( store, 'vehicles', (request: VehiclesPageRequest, params: VehiclePageParamsModel) =>
-            api.findVehicles( request.projectId, request.pageNumber, request.pageSize, params ), errors, { merge: CumulativePageHelper.merge } ),
+            api.findVehicles( request.projectId, request.page, request.size, params ), errors, { merge: CumulativePageHelper.merge } ),
         updateVehiclesPageSearchParams: paramsUpdater( store, 'vehicles' ),
         updateVehicleMovementsPageSearchParams: paramsUpdater( store, 'movements' ),
         fetchVehicleMovementsContents: movementContentsFetcher( store, movementApi, errors ),
     }) ),
     withMethods( (store, api = inject( VehicleApi ), errors = inject( ErrorReporter )) => ({
         fetchVehicleMovementsPage: pageFetcher( store, 'movements', (request: VehicleMovementsPageRequest, params: MovementPageParamsModel) =>
-            api.findVehicleMovements( request.projectId, request.id, request.pageNumber, request.pageSize, params ), errors, {
+            api.findVehicleMovements( request.projectId, request.id, request.page, request.size, params ), errors, {
             merge: CumulativePageHelper.merge,
             after: contentsRequester( store.fetchVehicleMovementsContents ),
         } ),

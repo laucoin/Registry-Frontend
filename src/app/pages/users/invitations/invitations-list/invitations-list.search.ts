@@ -1,11 +1,11 @@
 interface InvitationsListSearch {
-    textSearched: string | undefined
-    dateTimeSearched: Date | undefined
+    q: string | undefined
+    at: Date | undefined
 }
 
 export interface InvitationsListSearchModel {
-    textSearched: string
-    dateTimeSearched: Date | null
+    q: string
+    at: Date | null
 }
 
 /**
@@ -15,8 +15,8 @@ export interface InvitationsListSearchModel {
  */
 export function toInvitationsListSearchModel (params: InvitationsListSearch): InvitationsListSearchModel {
     return {
-        textSearched: params.textSearched ?? '',
-        dateTimeSearched: params.dateTimeSearched ?? null,
+        q: params.q ?? '',
+        at: params.at ?? null,
     }
 }
 
@@ -27,7 +27,7 @@ export function toInvitationsListSearchModel (params: InvitationsListSearch): In
  */
 export function toInvitationsListSearchParams (model: InvitationsListSearchModel): InvitationsListSearch {
     return {
-        textSearched: model.textSearched === '' ? undefined : model.textSearched,
-        dateTimeSearched: model.dateTimeSearched ?? undefined,
+        q: model.q === '' ? undefined : model.q,
+        at: model.at ?? undefined,
     }
 }

@@ -37,12 +37,12 @@ export class ProjectProfileFacade extends GenericProjectElementFacade {
     public readonly projectProfilesPageSilentLoading: Signal<boolean> = this.store.projectProfiles.silentLoading
     public readonly projectProfilesPageError: Signal<NotificationModel | undefined> = this.store.projectProfiles.error
     private readonly projectProfilesPageResetSearch: Signal<boolean> = this.store.projectProfiles.params.resetSearch
-    public readonly projectProfilesPageTextSearchedParam: Signal<string | undefined> = this.store.projectProfiles.params.textSearched
+    public readonly projectProfilesPageTextSearchedParam: Signal<string | undefined> = this.store.projectProfiles.params.q
     public readonly projectProfilesPageDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
-        DateHelper.buildDate( this.store.projectProfiles.params.dateTimeSearched() ),
+        DateHelper.buildDate( this.store.projectProfiles.params.at() ),
     )
-    public readonly projectProfilesPageAvailabilitySearchedParam: Signal<boolean | undefined> = this.store.projectProfiles.params.availabilitySearched
-    public readonly projectProfilesPageStatusSearchedParam: Signal<string | undefined> = this.store.projectProfiles.params.statusSearched
+    public readonly projectProfilesPageAvailabilitySearchedParam: Signal<boolean | undefined> = this.store.projectProfiles.params.isAvailable
+    public readonly projectProfilesPageStatusSearchedParam: Signal<string | undefined> = this.store.projectProfiles.params.status
 
     public readonly searchedUsersMetadata: Signal<SelectOptionModel<UserModel>[]> = this.store.metadata.searched
     public readonly projectProfileAssignableRolesMetadata: Signal<SelectOptionModel<string>[]> = this.store.metadata.roles
@@ -55,37 +55,37 @@ export class ProjectProfileFacade extends GenericProjectElementFacade {
     )
 
     public fetchProjectProfilesPage (
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
     ): void {
-        const index: number | undefined = this.projectProfilesPageResetSearch() ? 0 : pageNumber
-        this.store.fetchProjectProfilesPage( { projectId: this.selectedProjectId(), pageNumber: index, pageSize: pageSize } )
+        const index: number | undefined = this.projectProfilesPageResetSearch() ? 0 : page
+        this.store.fetchProjectProfilesPage( { projectId: this.selectedProjectId(), page: index, size: size } )
     }
 
     public inputPageSearchParameters (
-        textSearched: string | undefined,
-        dateTimeSearched: Date | undefined,
-        statusSearched: ProfileStatusEnum | undefined,
-        availabilitySearched: boolean | undefined,
+        q: string | undefined,
+        at: Date | undefined,
+        status: ProfileStatusEnum | undefined,
+        isAvailable: boolean | undefined,
     ): void {
-        const resetSearch: boolean = this.projectProfilesPageTextSearchedParam() != textSearched
-                                     || this.projectProfilesPageDateTimeSearchedParam() != dateTimeSearched?.toISOString()
-                                     || this.projectProfilesPageStatusSearchedParam() != statusSearched
-                                     || this.projectProfilesPageAvailabilitySearchedParam() != availabilitySearched
+        const resetSearch: boolean = this.projectProfilesPageTextSearchedParam() != q
+                                     || this.projectProfilesPageDateTimeSearchedParam() != at?.toISOString()
+                                     || this.projectProfilesPageStatusSearchedParam() != status
+                                     || this.projectProfilesPageAvailabilitySearchedParam() != isAvailable
 
         if (resetSearch) {
             this.store.updateProjectProfilesPageSearchParams( {
                 resetSearch: resetSearch,
-                statusSearched: statusSearched,
-                availabilitySearched: availabilitySearched,
-                textSearched: textSearched,
-                dateTimeSearched: dateTimeSearched?.toISOString(),
+                status: status,
+                isAvailable: isAvailable,
+                q: q,
+                at: at?.toISOString(),
             } )
         }
     }
 
-    public searchUsers (textSearched: string | undefined = undefined): void {
-        this.store.searchUsers( { projectId: this.selectedProjectId(), textSearched: textSearched } )
+    public searchUsers (q: string | undefined = undefined): void {
+        this.store.searchUsers( { projectId: this.selectedProjectId(), q: q } )
     }
 
     public fetchAssignableRoles (): void {

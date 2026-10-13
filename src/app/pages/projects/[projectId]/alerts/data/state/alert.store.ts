@@ -27,18 +27,18 @@ interface AlertCommunicationsPageRequest extends AlertsPageRequest {
 const defaultAlertStore: AlertStoreModel = {
     alerts: PageStateHelper.initial<AlertPageParamsModel, AlertModel>( {
         resetSearch: false,
-        textSearched: undefined,
-        statusSearched: undefined,
-        visibilitySearched: undefined,
-        startDateTimeSearched: undefined,
-        endDateTimeSearched: undefined,
+        q: undefined,
+        status: undefined,
+        isVisible: undefined,
+        from: undefined,
+        to: undefined,
     } ),
     communications: PageStateHelper.initial<CommunicationPageParamsModel, CommunicationModel>( {
         resetSearch: false,
-        textSearched: undefined,
-        visibilitySearched: undefined,
-        startDateTimeSearched: undefined,
-        endDateTimeSearched: undefined,
+        q: undefined,
+        isVisible: undefined,
+        from: undefined,
+        to: undefined,
     } ),
     metadata: {
         status: [],
@@ -65,10 +65,10 @@ export const AlertStore = signalStore(
             store, 'status', () => metadataApi.getAlertsStatus(), errors, withEmptyOption,
         ),
         fetchAlertsPage: pageFetcher( store, 'alerts', (request: AlertsPageRequest, params: AlertPageParamsModel) =>
-            api.findAlerts( request.projectId, request.pageNumber, request.pageSize, params ), errors, { merge: CumulativePageHelper.merge } ),
+            api.findAlerts( request.projectId, request.page, request.size, params ), errors, { merge: CumulativePageHelper.merge } ),
         updateAlertsPageSearchParams: paramsUpdater( store, 'alerts' ),
         fetchAlertCommunicationsPage: pageFetcher( store, 'communications', (request: AlertCommunicationsPageRequest, params: CommunicationPageParamsModel) =>
-            api.findAlertCommunications( request.projectId, request.id, request.pageNumber, request.pageSize, params ), errors ),
+            api.findAlertCommunications( request.projectId, request.id, request.page, request.size, params ), errors ),
         updateAlertCommunicationsPageSearchParams: paramsUpdater( store, 'communications' ),
     }) ),
     withHooks( {

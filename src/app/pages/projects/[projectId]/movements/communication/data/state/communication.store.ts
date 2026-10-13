@@ -18,8 +18,8 @@ import { MovementModel } from '@shared/models/model/movement.model'
 
 interface CommunicationsPageRequest {
     projectId: string | undefined
-    pageNumber: number | undefined
-    pageSize: number | undefined
+    page: number | undefined
+    size: number | undefined
 }
 
 interface CommunicationRequest {
@@ -29,7 +29,7 @@ interface CommunicationRequest {
 
 interface SearchRequest {
     projectId: string | undefined
-    textSearched: string | undefined
+    q: string | undefined
 }
 
 const defaultCommunication: ElementRequestInformationModel<CommunicationModel> = {
@@ -40,10 +40,10 @@ const defaultCommunication: ElementRequestInformationModel<CommunicationModel> =
 const defaultCommunicationStore: CommunicationStoreModel = {
     communications: PageStateHelper.initial<CommunicationPageParamsModel, CommunicationModel>( {
         resetSearch: false,
-        textSearched: undefined,
-        visibilitySearched: undefined,
-        startDateTimeSearched: undefined,
-        endDateTimeSearched: undefined,
+        q: undefined,
+        isVisible: undefined,
+        from: undefined,
+        to: undefined,
     } ),
     communication: defaultCommunication,
     metadata: {
@@ -67,7 +67,7 @@ export const CommunicationStore = signalStore(
     withProfileScope<CommunicationStoreModel>( defaultCommunicationStore ),
     withMethods( (store, api = inject( CommunicationApi ), errors = inject( ErrorReporter )) => ({
         fetchCommunicationsPage: pageFetcher( store, 'communications', (request: CommunicationsPageRequest, params: CommunicationPageParamsModel) =>
-            api.findCommunications( request.projectId, request.pageNumber, request.pageSize, params ), errors ),
+            api.findCommunications( request.projectId, request.page, request.size, params ), errors ),
         updateCommunicationsPageSearchParams: paramsUpdater( store, 'communications' ),
         fetchCommunication: elementFetcher( store, 'communication', (request: CommunicationRequest) =>
             api.findCommunicationById( request.projectId, request.id ), errors ),
@@ -76,13 +76,13 @@ export const CommunicationStore = signalStore(
     withMethods( (store, api = inject( CommunicationApi ), errors = inject( ErrorReporter ), datePipe = inject( DateFormatPipe )) => ({
         searchMovements: metadataFetcher<CommunicationStoreModel, 'searchedMovements', SearchRequest, MovementModel[]>(
             store, 'searchedMovements',
-            (request: SearchRequest) => api.searchMovements( request.projectId, request.textSearched ).pipe( trackElement( store, 'communication' ) ),
+            (request: SearchRequest) => api.searchMovements( request.projectId, request.q ).pipe( trackElement( store, 'communication' ) ),
             errors,
             (movements: MovementModel[]): SelectOptionModel<MovementModel>[] => movements.map( (movement: MovementModel): SelectOptionModel<MovementModel> => MovementHelper.toActivitySelectItem( movement, datePipe ) ),
         ),
         searchAlerts: metadataFetcher<CommunicationStoreModel, 'searchedAlerts', SearchRequest, AlertModel[]>(
             store, 'searchedAlerts',
-            (request: SearchRequest) => api.searchAlerts( request.projectId, request.textSearched ).pipe( trackElement( store, 'communication' ) ),
+            (request: SearchRequest) => api.searchAlerts( request.projectId, request.q ).pipe( trackElement( store, 'communication' ) ),
             errors,
             (alerts: AlertModel[]): SelectOptionModel<AlertModel>[] => alerts.map( (alert: AlertModel): SelectOptionModel<AlertModel> => AlertHelper.toSelectItem( alert, datePipe ) ),
         ),

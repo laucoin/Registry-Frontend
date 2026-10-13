@@ -3,10 +3,10 @@ import { ApiCase, PAGE_QUERY, describeApi, expectMapped, expectMappedPage } from
 import { ALERT_DTO, COMMUNICATION_DTO, pageDto } from '@shared/helpers/testing/response-fixtures'
 
 const BASE: string = '/api/v2/projects/p1/alerts'
-const PARAMS: never = { resetSearch: false, textSearched: 'x' } as never
+const PARAMS: never = { resetSearch: false, q: 'x' } as never
 
 const CASES: ApiCase<AlertApi>[] = [
-    { name: 'pages the elements with the search parameters', method: 'GET', url: new RegExp( `${BASE}\\?${PAGE_QUERY}&textSearched=x$` ), call: (api: AlertApi) => api.findAlerts( 'p1', 0, 10, PARAMS ), response: pageDto( [ ALERT_DTO ] ), verify: expectMappedPage },
+    { name: 'pages the elements with the search parameters', method: 'GET', url: new RegExp( `${BASE}\\?${PAGE_QUERY}&q=x$` ), call: (api: AlertApi) => api.findAlerts( 'p1', 0, 10, PARAMS ), response: pageDto( [ ALERT_DTO ] ), verify: expectMappedPage },
     { name: 'finds an element by id', method: 'GET', url: `${BASE}/al1`, call: (api: AlertApi) => api.findAlertById( 'p1', 'al1' ), response: ALERT_DTO, verify: expectMapped },
     { name: 'creates an element', method: 'POST', url: BASE, body: { name: 'x' }, call: (api: AlertApi) => api.createAlert( 'p1', { name: 'x' } as never ), response: ALERT_DTO, verify: expectMapped },
     { name: 'updates an element', method: 'PATCH', url: `${BASE}/al1`, body: { name: 'y' }, call: (api: AlertApi) => api.updateAlertById( 'p1', 'al1', { name: 'y' } as never ), response: ALERT_DTO, verify: expectMapped },

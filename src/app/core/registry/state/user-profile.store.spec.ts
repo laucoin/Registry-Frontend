@@ -9,8 +9,8 @@ import { PageModel } from '@shared/models/model/page.model'
 import { UserInvitationModel } from '@shared/models/model/user-invitation.model'
 
 const PAGE: PageModel<UserInvitationModel> = {
-    pageNumber: 0,
-    pageSize: 10,
+    page: 0,
+    size: 10,
     totalElements: 1,
     totalPages: 1,
     content: [ { id: 'pp1' } as UserInvitationModel ],
@@ -39,7 +39,7 @@ describe( 'UserProfileStore', () => {
         findUserProjectProfiles.mockReturnValue( of( PAGE ) )
 
         // Act
-        store.fetchProfilesPage( { pageNumber: 0, pageSize: 10 } )
+        store.fetchProfilesPage( { page: 0, size: 10 } )
 
         // Assert
         expect( store.profiles.element() ).toEqual( PAGE )
@@ -49,16 +49,16 @@ describe( 'UserProfileStore', () => {
 
     it( 'appends the next batch to the profiles and to the invitations already shown', () => {
         // Arrange
-        const first: PageModel<UserInvitationModel> = { ...PAGE, pageSize: 1, totalPages: 2 }
-        const second: PageModel<UserInvitationModel> = { ...first, pageNumber: 1, content: [ { id: 'pp2' } as UserInvitationModel ] }
+        const first: PageModel<UserInvitationModel> = { ...PAGE, size: 1, totalPages: 2 }
+        const second: PageModel<UserInvitationModel> = { ...first, page: 1, content: [ { id: 'pp2' } as UserInvitationModel ] }
         findUserProjectProfiles.mockReturnValueOnce( of( first ) ).mockReturnValueOnce( of( first ) )
             .mockReturnValueOnce( of( second ) ).mockReturnValueOnce( of( second ) )
-        store.fetchProfilesPage( { pageNumber: 0, pageSize: 1 } )
-        store.fetchInvitationsPage( { pageNumber: 0, pageSize: 1 } )
+        store.fetchProfilesPage( { page: 0, size: 1 } )
+        store.fetchInvitationsPage( { page: 0, size: 1 } )
 
         // Act
-        store.fetchProfilesPage( { pageNumber: 1, pageSize: 1 } )
-        store.fetchInvitationsPage( { pageNumber: 1, pageSize: 1 } )
+        store.fetchProfilesPage( { page: 1, size: 1 } )
+        store.fetchInvitationsPage( { page: 1, size: 1 } )
 
         // Assert
         const ids: string[][] = [ store.profiles.element(), store.invitations.element() ].map( (shown: PageModel<UserInvitationModel> | undefined): string[] => shown!.content.map( (profile: UserInvitationModel): string => profile.id ) )
@@ -70,7 +70,7 @@ describe( 'UserProfileStore', () => {
         findUserProjectProfiles.mockReturnValue( throwError( (): ErrorModel => ({ status: 500, title: 'Title', message: 'Message' }) as ErrorModel ) )
 
         // Act
-        store.fetchInvitationsPage( { pageNumber: 0, pageSize: 10 } )
+        store.fetchInvitationsPage( { page: 0, size: 10 } )
 
         // Assert
         expect( store.invitations.error()?.summary ).toBe( 'Title' )
@@ -83,7 +83,7 @@ describe( 'UserProfileStore', () => {
         findUserProjectProfiles.mockReturnValue( throwError( (): ErrorModel => error ) )
 
         // Act
-        store.fetchProfilesPage( { pageNumber: 0, pageSize: 10 } )
+        store.fetchProfilesPage( { page: 0, size: 10 } )
 
         // Assert
         expect( setGlobalError ).toHaveBeenCalledWith( error )
@@ -92,14 +92,14 @@ describe( 'UserProfileStore', () => {
 
     it( 'merges the search parameters of the profiles page', () => {
         // Arrange
-        const params: { textSearched: string, resetSearch: boolean } = { textSearched: 'wolves', resetSearch: true }
+        const params: { q: string, resetSearch: boolean } = { q: 'wolves', resetSearch: true }
 
         // Act
         store.updateProfilesPageSearchParams( params )
 
         // Assert
-        expect( store.profiles.params.textSearched() ).toBe( 'wolves' )
-        expect( store.profiles.params.statusSearched() ).toBeDefined()
+        expect( store.profiles.params.q() ).toBe( 'wolves' )
+        expect( store.profiles.params.status() ).toBeDefined()
     } )
 
     it( 'toggles the profile loader', () => {
@@ -118,7 +118,7 @@ describe( 'UserProfileStore', () => {
     it( 'forgets the loaded profiles on reset', () => {
         // Arrange
         findUserProjectProfiles.mockReturnValue( of( PAGE ) )
-        store.fetchProfilesPage( { pageNumber: 0, pageSize: 10 } )
+        store.fetchProfilesPage( { page: 0, size: 10 } )
 
         // Act
         store.reset()

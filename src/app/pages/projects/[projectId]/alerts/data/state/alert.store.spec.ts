@@ -68,7 +68,7 @@ describe( 'AlertStore', () => {
         findAlerts.mockReturnValue( of( pageOf<AlertModel>( [ { id: 'al1' } as AlertModel ] ) ) )
 
         // Act
-        store.fetchAlertsPage( { projectId: 'p1', pageNumber: 0, pageSize: 10 } )
+        store.fetchAlertsPage( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
         expect( store.alerts.element()?.content ).toHaveLength( 1 )
@@ -80,7 +80,7 @@ describe( 'AlertStore', () => {
         findAlerts.mockReturnValue( failing( ERROR_500 ) )
 
         // Act
-        store.fetchAlertsPage( { projectId: 'p1', pageNumber: 0, pageSize: 10 } )
+        store.fetchAlertsPage( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
         expect( store.alerts.error()?.summary ).toBe( 'Title' )
@@ -92,7 +92,7 @@ describe( 'AlertStore', () => {
         findAlerts.mockReturnValue( failing( ERROR_503 ) )
 
         // Act
-        store.fetchAlertsPage( { projectId: 'p1', pageNumber: 0, pageSize: 10 } )
+        store.fetchAlertsPage( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
         expect( setGlobalError ).toHaveBeenCalledWith( ERROR_503 )
@@ -103,7 +103,7 @@ describe( 'AlertStore', () => {
         findAlertCommunications.mockReturnValue( of( pageOf<CommunicationModel>( [ { id: 'c1' } as CommunicationModel ] ) ) )
 
         // Act
-        store.fetchAlertCommunicationsPage( { projectId: 'p1', id: 'al1', pageNumber: 0, pageSize: 10 } )
+        store.fetchAlertCommunicationsPage( { projectId: 'p1', id: 'al1', page: 0, size: 10 } )
 
         // Assert
         expect( store.communications.element()?.content ).toHaveLength( 1 )
@@ -115,7 +115,7 @@ describe( 'AlertStore', () => {
         findAlertCommunications.mockReturnValue( failing( ERROR_500 ) )
 
         // Act
-        store.fetchAlertCommunicationsPage( { projectId: 'p1', id: 'al1', pageNumber: 0, pageSize: 10 } )
+        store.fetchAlertCommunicationsPage( { projectId: 'p1', id: 'al1', page: 0, size: 10 } )
 
         // Assert
         expect( store.communications.error()?.summary ).toBe( 'Title' )

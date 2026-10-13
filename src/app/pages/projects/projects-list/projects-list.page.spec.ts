@@ -18,7 +18,7 @@ interface ProjectsListApi {
     activeFilters: () => number
     search: () => void
     resetFilters: () => void
-    loadBatch: (event: { pageNumber: number, pageSize: number }) => void
+    loadBatch: (event: { page: number, size: number }) => void
     initials: (project: ProjectModel) => string
     isAvailable: (project: ProjectModel) => boolean
     hiddenProject: WritableSignal<ProjectModel | undefined>
@@ -67,14 +67,14 @@ describe('ProjectsListPage', () => {
         const model: ProjectsListSearchModel = page.model()
 
         // Assert
-        expect(model).toEqual({ textSearched: '', dateTimeSearched: null, visibilitySearched: '' })
+        expect(model).toEqual({ q: '', at: null, isVisible: '' })
     })
 
     it('sends the typed filters to the facade and restarts from the first batch', () => {
         // Arrange
         const page: ProjectsListApi = create()
         const when: Date = new Date(2026, 9, 3)
-        page.model.set({ textSearched: 'camp', dateTimeSearched: when, visibilitySearched: 'false' })
+        page.model.set({ q: 'camp', at: when, isVisible: 'false' })
 
         // Act
         page.search()
@@ -87,13 +87,13 @@ describe('ProjectsListPage', () => {
     it('clears the filters when they are reset, then searches again', () => {
         // Arrange
         const page: ProjectsListApi = create()
-        page.model.set({ textSearched: 'camp', dateTimeSearched: new Date(), visibilitySearched: 'true' })
+        page.model.set({ q: 'camp', at: new Date(), isVisible: 'true' })
 
         // Act
         page.resetFilters()
 
         // Assert
-        expect(page.model()).toEqual({ textSearched: '', dateTimeSearched: null, visibilitySearched: '' })
+        expect(page.model()).toEqual({ q: '', at: null, isVisible: '' })
         expect(facade['inputPageSearchParameters']).toHaveBeenCalledWith(undefined, undefined, undefined)
     })
 
@@ -102,7 +102,7 @@ describe('ProjectsListPage', () => {
         const page: ProjectsListApi = create()
 
         // Act
-        page.loadBatch({ pageNumber: 2, pageSize: 20 })
+        page.loadBatch({ page: 2, size: 20 })
 
         // Assert
         expect(facade['fetchProjectsPage']).toHaveBeenLastCalledWith(2, 20)

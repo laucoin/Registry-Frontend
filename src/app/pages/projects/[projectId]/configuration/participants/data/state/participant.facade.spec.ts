@@ -53,10 +53,10 @@ describe( 'ParticipantFacade', () => {
 
     it( 'fetches the requested page for the selected project', () => {
         // Arrange
-        const pageNumber: number = 3
+        const page: number = 3
 
         // Act
-        facade.fetchParticipantsPage( pageNumber, 10 )
+        facade.fetchParticipantsPage( page, 10 )
 
         // Assert
         expect( findParticipants ).toHaveBeenCalledWith( 'p1', 3, 10, expect.anything() )

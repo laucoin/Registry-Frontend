@@ -98,23 +98,23 @@ describe( 'SelectedProjectFacade', () => {
 
     it( 'fetches each current movements page with its own activity filter', () => {
         // Arrange
-        const pageNumber: number = 1
+        const page: number = 1
 
         // Act
-        facade.fetchCurrentMovementsPageWithActivity( pageNumber, 5 )
-        facade.fetchCurrentMovementsPageWithoutActivity( pageNumber, 5 )
+        facade.fetchCurrentMovementsPageWithActivity( page, 5 )
+        facade.fetchCurrentMovementsPageWithoutActivity( page, 5 )
 
         // Assert
-        expect( findMovements ).toHaveBeenNthCalledWith( 1, 'p1', 1, 5, expect.objectContaining( { linkedToActivity: true } ) )
-        expect( findMovements ).toHaveBeenNthCalledWith( 2, 'p1', 1, 5, expect.objectContaining( { linkedToActivity: false } ) )
+        expect( findMovements ).toHaveBeenNthCalledWith( 1, 'p1', 1, 5, expect.objectContaining( { hasActivity: true } ) )
+        expect( findMovements ).toHaveBeenNthCalledWith( 2, 'p1', 1, 5, expect.objectContaining( { hasActivity: false } ) )
     } )
 
     it( 'fetches the current alerts page for the selected project', () => {
         // Arrange
-        const pageSize: number = 5
+        const size: number = 5
 
         // Act
-        facade.fetchCurrentAlertsPage( 0, pageSize )
+        facade.fetchCurrentAlertsPage( 0, size )
 
         // Assert
         expect( findAlerts ).toHaveBeenCalledWith( 'p1', 0, 5, expect.anything() )
@@ -132,7 +132,7 @@ describe( 'SelectedProjectFacade', () => {
         facade.reloadCurrentMovementsPageWithoutActivity()
 
         // Assert
-        expect( findMovements ).toHaveBeenNthCalledWith( 1, 'p1', 0, expect.any( Number ), expect.objectContaining( { linkedToActivity: true } ) )
-        expect( findMovements ).toHaveBeenNthCalledWith( 2, 'p1', 0, expect.any( Number ), expect.objectContaining( { linkedToActivity: false } ) )
+        expect( findMovements ).toHaveBeenNthCalledWith( 1, 'p1', 0, expect.any( Number ), expect.objectContaining( { hasActivity: true } ) )
+        expect( findMovements ).toHaveBeenNthCalledWith( 2, 'p1', 0, expect.any( Number ), expect.objectContaining( { hasActivity: false } ) )
     } )
 } )

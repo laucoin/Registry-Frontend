@@ -30,26 +30,26 @@ export class VehicleFacade extends GenericProjectElementFacade {
     public readonly vehiclesPageSilentLoading: Signal<boolean> = this.store.vehicles.silentLoading
     public readonly vehiclesPageError: Signal<NotificationModel | undefined> = this.store.vehicles.error
     public readonly vehiclesPageResetSearch: Signal<boolean> = this.store.vehicles.params.resetSearch
-    public readonly vehiclesPageTextSearchedParam: Signal<string | undefined> = this.store.vehicles.params.textSearched
+    public readonly vehiclesPageTextSearchedParam: Signal<string | undefined> = this.store.vehicles.params.q
     public readonly vehiclesPageDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
-        DateHelper.buildDate( this.store.vehicles.params.dateTimeSearched() ),
+        DateHelper.buildDate( this.store.vehicles.params.at() ),
     )
-    public readonly vehiclesPageStatusSearchedParam: Signal<string | undefined> = this.store.vehicles.params.statusSearched
-    public readonly vehiclesPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.vehicles.params.visibilitySearched
+    public readonly vehiclesPageStatusSearchedParam: Signal<string | undefined> = this.store.vehicles.params.status
+    public readonly vehiclesPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.vehicles.params.isVisible
 
     public readonly vehicleMovementsPage: Signal<PageModel<MovementModel> | undefined> = this.store.movements.element
     public readonly vehicleMovementsPageLoading: Signal<boolean> = this.store.movements.loading
     public readonly vehicleMovementsPageSilentLoading: Signal<boolean> = this.store.movements.silentLoading
     public readonly vehicleMovementsPageError: Signal<NotificationModel | undefined> = this.store.movements.error
     private readonly vehicleMovementsPageResetSearch: Signal<boolean> = this.store.movements.params.resetSearch
-    public readonly vehicleMovementsPageTypeSearchedParam: Signal<string | undefined> = this.store.movements.params.typeSearched
+    public readonly vehicleMovementsPageTypeSearchedParam: Signal<string | undefined> = this.store.movements.params.type
     public readonly vehicleMovementsPageStartDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
-        DateHelper.buildDate( this.store.movements.params.startDateTimeSearched() ),
+        DateHelper.buildDate( this.store.movements.params.from() ),
     )
     public readonly vehicleMovementsPageEndDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
-        DateHelper.buildDate( this.store.movements.params.endDateTimeSearched() ),
+        DateHelper.buildDate( this.store.movements.params.to() ),
     )
-    public readonly vehicleMovementsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.movements.params.visibilitySearched
+    public readonly vehicleMovementsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.movements.params.isVisible
 
     public readonly presencesStatusMetadata: Signal<SelectOptionModel<PresenceStatusEnum | undefined>[]> = this.store.metadata.presencesStatus
     public readonly visibilitiesMetadata: Signal<SelectOptionModel<boolean | undefined>[]> = computed( (): SelectOptionModel<boolean | undefined>[] =>
@@ -62,42 +62,42 @@ export class VehicleFacade extends GenericProjectElementFacade {
     )
 
     public fetchVehiclesPage (
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
     ): void {
-        const index: number | undefined = this.vehiclesPageResetSearch() ? 0 : pageNumber
-        this.store.fetchVehiclesPage( { projectId: this.selectedProjectId(), pageNumber: index, pageSize: pageSize } )
+        const index: number | undefined = this.vehiclesPageResetSearch() ? 0 : page
+        this.store.fetchVehiclesPage( { projectId: this.selectedProjectId(), page: index, size: size } )
     }
 
     public inputPageSearchParameters (
-        textSearched: string | undefined,
-        dateTimeSearched: Date | undefined,
-        statusSearched: string | undefined,
-        visibilitySearched: boolean | undefined,
+        q: string | undefined,
+        at: Date | undefined,
+        status: string | undefined,
+        isVisible: boolean | undefined,
     ): void {
-        const resetSearch: boolean = this.vehiclesPageTextSearchedParam() != textSearched
-                                     || this.vehiclesPageDateTimeSearchedParam() != dateTimeSearched?.toISOString()
-                                     || this.vehiclesPageStatusSearchedParam() != statusSearched
-                                     || this.vehiclesPageVisibilitySearchedParam() != visibilitySearched
+        const resetSearch: boolean = this.vehiclesPageTextSearchedParam() != q
+                                     || this.vehiclesPageDateTimeSearchedParam() != at?.toISOString()
+                                     || this.vehiclesPageStatusSearchedParam() != status
+                                     || this.vehiclesPageVisibilitySearchedParam() != isVisible
 
         if (resetSearch) {
             this.store.updateVehiclesPageSearchParams( {
                 resetSearch: resetSearch,
-                visibilitySearched: visibilitySearched,
-                textSearched: textSearched,
-                statusSearched: statusSearched,
-                dateTimeSearched: dateTimeSearched?.toISOString(),
+                isVisible: isVisible,
+                q: q,
+                status: status,
+                at: at?.toISOString(),
             } )
         }
     }
 
     public fetchVehicleMovementsPage (
         id: string,
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
     ): void {
-        const index: number | undefined = this.vehicleMovementsPageResetSearch() ? 0 : pageNumber
-        this.store.fetchVehicleMovementsPage( { projectId: this.selectedProjectId(), id: id, pageNumber: index, pageSize: pageSize } )
+        const index: number | undefined = this.vehicleMovementsPageResetSearch() ? 0 : page
+        this.store.fetchVehicleMovementsPage( { projectId: this.selectedProjectId(), id: id, page: index, size: size } )
     }
 
     public reloadVehicleMovementsPage (id: string): void {
@@ -109,25 +109,25 @@ export class VehicleFacade extends GenericProjectElementFacade {
     }
 
     public inputMovementsPageSearchParameters (
-        typeSearched: string | undefined,
-        startDateTimeSearched: Date | undefined,
-        endDateTimeSearched: Date | undefined,
-        visibilitySearched: boolean | undefined,
+        type: string | undefined,
+        from: Date | undefined,
+        to: Date | undefined,
+        isVisible: boolean | undefined,
     ): void {
-        const resetSearch: boolean = this.vehicleMovementsPageTypeSearchedParam() != typeSearched
-                                     || this.vehicleMovementsPageStartDateTimeSearchedParam() != startDateTimeSearched?.toISOString()
-                                     || this.vehicleMovementsPageEndDateTimeSearchedParam() != endDateTimeSearched?.toISOString()
-                                     || this.vehicleMovementsPageVisibilitySearchedParam() != visibilitySearched
+        const resetSearch: boolean = this.vehicleMovementsPageTypeSearchedParam() != type
+                                     || this.vehicleMovementsPageStartDateTimeSearchedParam() != from?.toISOString()
+                                     || this.vehicleMovementsPageEndDateTimeSearchedParam() != to?.toISOString()
+                                     || this.vehicleMovementsPageVisibilitySearchedParam() != isVisible
 
         if (resetSearch) {
             this.store.updateVehicleMovementsPageSearchParams( {
                 resetSearch: resetSearch,
-                visibilitySearched: visibilitySearched,
-                currentMovements: false,
-                linkedToActivity: undefined,
-                typeSearched: typeSearched,
-                startDateTimeSearched: startDateTimeSearched?.toISOString(),
-                endDateTimeSearched: endDateTimeSearched?.toISOString(),
+                isVisible: isVisible,
+                isCurrent: false,
+                hasActivity: undefined,
+                type: type,
+                from: from?.toISOString(),
+                to: to?.toISOString(),
             } )
         }
     }

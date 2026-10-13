@@ -69,10 +69,10 @@ export class MovementsListPage {
     ].filter(Boolean).length)
 
     protected readonly model: WritableSignal<MovementsListSearchModel> = signal(toMovementsListSearchModel({
-        typeSearched: this.facade.movementsPageTypeSearchedParam(),
-        startDateTimeSearched: this.facade.movementsPageStartDateTimeSearchedParam(),
-        endDateTimeSearched: this.facade.movementsPageEndDateTimeSearchedParam(),
-        visibilitySearched: this.facade.movementsPageVisibilitySearchedParam(),
+        type: this.facade.movementsPageTypeSearchedParam(),
+        from: this.facade.movementsPageStartDateTimeSearchedParam(),
+        to: this.facade.movementsPageEndDateTimeSearchedParam(),
+        isVisible: this.facade.movementsPageVisibilitySearchedParam(),
     }))
     protected readonly form: FieldTree<MovementsListSearchModel> = createSearchForm(this.model)
 
@@ -82,16 +82,16 @@ export class MovementsListPage {
 
     protected search(): void {
         const search: ReturnType<typeof toMovementsListSearchParams> = toMovementsListSearchParams(this.model())
-        this.facade.inputPageSearchParameters(search.typeSearched, search.startDateTimeSearched, search.endDateTimeSearched, search.visibilitySearched)
+        this.facade.inputPageSearchParameters(search.type, search.from, search.to, search.isVisible)
         this.facade.fetchMovementsPage(0, undefined)
     }
 
     protected resetFilters(): void {
-        this.model.set({ typeSearched: '', startDateTimeSearched: null, endDateTimeSearched: null, visibilitySearched: '' })
+        this.model.set({ type: '', from: null, to: null, isVisible: '' })
         this.search()
     }
 
     protected loadBatch(pageEvent: PageEventModel): void {
-        this.facade.fetchMovementsPage(pageEvent.pageNumber, pageEvent.pageSize)
+        this.facade.fetchMovementsPage(pageEvent.page, pageEvent.size)
     }
 }

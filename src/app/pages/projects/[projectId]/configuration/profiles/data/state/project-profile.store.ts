@@ -21,16 +21,16 @@ interface ProjectProfilesPageRequest extends CumulativePageRequest {
 
 interface SearchUsersRequest {
     projectId: string | undefined
-    textSearched: string | undefined
+    q: string | undefined
 }
 
 const defaultProjectProfileStore: ProjectProfileStoreModel = {
     projectProfiles: PageStateHelper.initial<ProjectProfilePageParamsModel, ProjectProfileModel>( {
         resetSearch: false,
-        availabilitySearched: undefined,
-        statusSearched: undefined,
-        textSearched: undefined,
-        dateTimeSearched: undefined,
+        isAvailable: undefined,
+        status: undefined,
+        q: undefined,
+        at: undefined,
     } ),
     metadata: {
         roles: [],
@@ -56,10 +56,10 @@ export const ProjectProfileStore = signalStore(
             store, 'status', () => metadataApi.getProfilesStatus(), errors, withEmptyOption,
         ),
         fetchProjectProfilesPage: pageFetcher( store, 'projectProfiles', (request: ProjectProfilesPageRequest, params: ProjectProfilePageParamsModel) =>
-            api.findProjectProfiles( request.projectId, request.pageNumber, request.pageSize, params ), errors, { merge: CumulativePageHelper.merge } ),
+            api.findProjectProfiles( request.projectId, request.page, request.size, params ), errors, { merge: CumulativePageHelper.merge } ),
         updateProjectProfilesPageSearchParams: paramsUpdater( store, 'projectProfiles' ),
         searchUsers: metadataFetcher<ProjectProfileStoreModel, 'searched', SearchUsersRequest, UserModel[]>(
-            store, 'searched', (request: SearchUsersRequest) => api.searchUsers( request.projectId, request.textSearched ), errors,
+            store, 'searched', (request: SearchUsersRequest) => api.searchUsers( request.projectId, request.q ), errors,
             (users: UserModel[]): SelectOptionModel<UserModel>[] => users.map( UserHelper.toSelectItem ),
         ),
         fetchAssignableRoles: metadataFetcher<ProjectProfileStoreModel, 'roles', string | undefined, SelectOptionModel<string>[]>(

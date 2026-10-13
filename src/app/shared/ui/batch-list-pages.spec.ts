@@ -34,7 +34,7 @@ import { autoMock } from '@shared/helpers/testing/auto-mock'
 interface BatchListApi {
     search: () => void
     resetFilters: () => void
-    loadBatch: (event: { pageNumber: number, pageSize: number }) => void
+    loadBatch: (event: { page: number, size: number }) => void
     model: { (): Record<string, unknown>, set: (value: Record<string, unknown>) => void }
 }
 
@@ -117,7 +117,7 @@ describe( 'batch list pages', () => {
         fetched( item ).mockClear()
 
         // Act
-        page.loadBatch( { pageNumber: 3, pageSize: 5 } )
+        page.loadBatch( { page: 3, size: 5 } )
 
         // Assert
         expect( fetched( item ).mock.calls[ 0 ].slice( -2 ) ).toEqual( [ 3, 5 ] )

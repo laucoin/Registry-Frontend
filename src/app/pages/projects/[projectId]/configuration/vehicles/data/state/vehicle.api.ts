@@ -31,14 +31,14 @@ export class VehicleApi extends GenericProjectApi {
 
     public findVehicles(
         projectId: string | undefined,
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
         params: VehiclePageParamsModel,
     ): Observable<PageModel<VehicleModel>> {
         return this.http.get<PageResponseDto<VehicleResponseDto>>(
             `${this.buildRequestBaseUrl(projectId)}?${QueryHelper.buildQueryParams(
-                pageNumber,
-                pageSize,
+                page,
+                size,
                 params,
             ).toString()}`,
         ).pipe(
@@ -55,14 +55,14 @@ export class VehicleApi extends GenericProjectApi {
     public findVehicleMovements(
         projectId: string | undefined,
         id: string,
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
         params: MovementPageParamsModel,
     ): Observable<PageModel<MovementModel>> {
         return this.http.get<PageResponseDto<MovementResponseDto>>(
             `${this.buildRequestBaseUrl(projectId)}/${id}/movements?${QueryHelper.buildQueryParams(
-                pageNumber,
-                pageSize,
+                page,
+                size,
                 params,
             ).toString()}`,
         ).pipe(

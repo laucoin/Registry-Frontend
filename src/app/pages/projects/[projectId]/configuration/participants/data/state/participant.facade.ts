@@ -41,11 +41,11 @@ export class ParticipantFacade extends GenericProjectElementFacade {
 
     public readonly participantsPageResetSearch: Signal<boolean> = this.store.participants.params.resetSearch
 
-    public readonly participantsPageTextSearchedParam: Signal<string | undefined> = this.store.participants.params.textSearched
+    public readonly participantsPageTextSearchedParam: Signal<string | undefined> = this.store.participants.params.q
 
-    public readonly participantsPageStatusSearchedParam: Signal<string | undefined> = this.store.participants.params.statusSearched
+    public readonly participantsPageStatusSearchedParam: Signal<string | undefined> = this.store.participants.params.status
 
-    public readonly participantsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.participants.params.visibilitySearched
+    public readonly participantsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.participants.params.isVisible
 
     public readonly participantMovementsPage: Signal<PageModel<MovementModel> | undefined> = this.store.movements.element
 
@@ -57,17 +57,17 @@ export class ParticipantFacade extends GenericProjectElementFacade {
 
     public readonly participantMovementsPageResetSearch: Signal<boolean> = this.store.movements.params.resetSearch
 
-    public readonly participantMovementsPageTypeSearchedParam: Signal<string | undefined> = this.store.movements.params.typeSearched
+    public readonly participantMovementsPageTypeSearchedParam: Signal<string | undefined> = this.store.movements.params.type
 
     public readonly participantMovementsPageStartDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
-            DateHelper.buildDate( this.store.movements.params.startDateTimeSearched() ),
+            DateHelper.buildDate( this.store.movements.params.from() ),
         )
 
     public readonly participantMovementsPageEndDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
-            DateHelper.buildDate( this.store.movements.params.endDateTimeSearched() ),
+            DateHelper.buildDate( this.store.movements.params.to() ),
         )
 
-    public readonly participantMovementsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.movements.params.visibilitySearched
+    public readonly participantMovementsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.movements.params.isVisible
 
     public readonly searchedUsersMetadata: Signal<SelectOptionModel<UserModel>[]> = this.store.metadata.searchedUsers
 
@@ -83,39 +83,39 @@ export class ParticipantFacade extends GenericProjectElementFacade {
         )
 
     public fetchParticipantsPage (
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
     ): void {
-        const index: number | undefined = this.participantsPageResetSearch() ? 0 : pageNumber
-        this.store.fetchParticipantsPage( { projectId: this.selectedProjectId(), pageNumber: index, pageSize: pageSize } )
+        const index: number | undefined = this.participantsPageResetSearch() ? 0 : page
+        this.store.fetchParticipantsPage( { projectId: this.selectedProjectId(), page: index, size: size } )
     }
 
     public inputPageSearchParameters (
-        textSearched: string | undefined,
-        statusSearched: string | undefined,
-        visibilitySearched: boolean | undefined,
+        q: string | undefined,
+        status: string | undefined,
+        isVisible: boolean | undefined,
     ): void {
-        const resetSearch: boolean = this.participantsPageTextSearchedParam() != textSearched
-                                     || this.participantsPageStatusSearchedParam() != statusSearched
-                                     || this.participantsPageVisibilitySearchedParam() != visibilitySearched
+        const resetSearch: boolean = this.participantsPageTextSearchedParam() != q
+                                     || this.participantsPageStatusSearchedParam() != status
+                                     || this.participantsPageVisibilitySearchedParam() != isVisible
 
         if (resetSearch) {
             this.store.updateParticipantsPageSearchParams( {
                 resetSearch: resetSearch,
-                visibilitySearched: visibilitySearched,
-                statusSearched: statusSearched,
-                textSearched: textSearched,
+                isVisible: isVisible,
+                status: status,
+                q: q,
             } )
         }
     }
 
     public fetchParticipantMovementsPage (
         id: string,
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
     ): void {
-        const index: number | undefined = this.participantMovementsPageResetSearch() ? 0 : pageNumber
-        this.store.fetchParticipantMovementsPage( { projectId: this.selectedProjectId(), id: id, pageNumber: index, pageSize: pageSize } )
+        const index: number | undefined = this.participantMovementsPageResetSearch() ? 0 : page
+        this.store.fetchParticipantMovementsPage( { projectId: this.selectedProjectId(), id: id, page: index, size: size } )
     }
 
     public reloadParticipantMovementsPage (id: string): void {
@@ -127,39 +127,39 @@ export class ParticipantFacade extends GenericProjectElementFacade {
     }
 
     public inputMovementsPageSearchParameters (
-        typeSearched: string | undefined,
-        startDateTimeSearched: Date | undefined,
-        endDateTimeSearched: Date | undefined,
-        visibilitySearched: boolean | undefined,
+        type: string | undefined,
+        from: Date | undefined,
+        to: Date | undefined,
+        isVisible: boolean | undefined,
     ): void {
-        const resetSearch: boolean = this.participantMovementsPageTypeSearchedParam() != typeSearched
-                                     || this.participantMovementsPageStartDateTimeSearchedParam() != startDateTimeSearched?.toISOString()
-                                     || this.participantMovementsPageEndDateTimeSearchedParam() != endDateTimeSearched?.toISOString()
-                                     || this.participantMovementsPageVisibilitySearchedParam() != visibilitySearched
+        const resetSearch: boolean = this.participantMovementsPageTypeSearchedParam() != type
+                                     || this.participantMovementsPageStartDateTimeSearchedParam() != from?.toISOString()
+                                     || this.participantMovementsPageEndDateTimeSearchedParam() != to?.toISOString()
+                                     || this.participantMovementsPageVisibilitySearchedParam() != isVisible
 
         if (resetSearch) {
             this.store.updateParticipantMovementsPageSearchParams( {
                 resetSearch: resetSearch,
-                visibilitySearched: visibilitySearched,
-                currentMovements: false,
-                linkedToActivity: undefined,
-                typeSearched: typeSearched,
-                startDateTimeSearched: startDateTimeSearched?.toISOString(),
-                endDateTimeSearched: endDateTimeSearched?.toISOString(),
+                isVisible: isVisible,
+                isCurrent: false,
+                hasActivity: undefined,
+                type: type,
+                from: from?.toISOString(),
+                to: to?.toISOString(),
             } )
         }
     }
 
     public searchUsers (
-        textSearched: string | undefined = undefined,
+        q: string | undefined = undefined,
     ): void {
-        this.store.searchUsers( { projectId: this.selectedProjectId(), textSearched: textSearched } )
+        this.store.searchUsers( { projectId: this.selectedProjectId(), q: q } )
     }
 
     public searchGroups (
-        textSearched: string | undefined = undefined,
+        q: string | undefined = undefined,
     ): void {
-        this.store.searchGroups( { projectId: this.selectedProjectId(), textSearched: textSearched } )
+        this.store.searchGroups( { projectId: this.selectedProjectId(), q: q } )
     }
 
     public handleParticipantFirstPageReload (): Observable<unknown> {

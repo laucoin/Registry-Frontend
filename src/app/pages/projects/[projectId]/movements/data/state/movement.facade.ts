@@ -46,17 +46,17 @@ export class MovementFacade extends GenericProjectElementFacade {
 
     private readonly movementsPageResetSearch: Signal<boolean> = this.store.movements.params.resetSearch
 
-    public readonly movementsPageTypeSearchedParam: Signal<string | undefined> = this.store.movements.params.typeSearched
+    public readonly movementsPageTypeSearchedParam: Signal<string | undefined> = this.store.movements.params.type
 
     public readonly movementsPageStartDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
-            DateHelper.buildDate( this.store.movements.params.startDateTimeSearched() ),
+            DateHelper.buildDate( this.store.movements.params.from() ),
         )
 
     public readonly movementsPageEndDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
-            DateHelper.buildDate( this.store.movements.params.endDateTimeSearched() ),
+            DateHelper.buildDate( this.store.movements.params.to() ),
         )
 
-    public readonly movementsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.movements.params.visibilitySearched
+    public readonly movementsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.movements.params.isVisible
 
     public readonly movementCommunicationsPage: Signal<PageModel<CommunicationModel> | undefined> = this.store.movementCommunications.element
 
@@ -68,16 +68,16 @@ export class MovementFacade extends GenericProjectElementFacade {
 
     private readonly movementCommunicationsPageResetSearch: Signal<boolean> = this.store.movementCommunications.params.resetSearch
 
-    public readonly movementCommunicationsPageTextSearchedParam: Signal<string | undefined> = this.store.movementCommunications.params.textSearched
+    public readonly movementCommunicationsPageTextSearchedParam: Signal<string | undefined> = this.store.movementCommunications.params.q
 
-    public readonly movementCommunicationsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.movementCommunications.params.visibilitySearched
+    public readonly movementCommunicationsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.movementCommunications.params.isVisible
 
     public readonly movementCommunicationsPageStartDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
-            DateHelper.buildDate( this.store.movementCommunications.params.startDateTimeSearched() ),
+            DateHelper.buildDate( this.store.movementCommunications.params.from() ),
         )
 
     public readonly movementCommunicationsPageEndDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
-            DateHelper.buildDate( this.store.movementCommunications.params.endDateTimeSearched() ),
+            DateHelper.buildDate( this.store.movementCommunications.params.to() ),
         )
 
     public readonly searchedReasonAndActivityMetadata: Signal<MovementReasonModel[]> = this.store.metadata.searchedReasonsAndActivities
@@ -98,11 +98,11 @@ export class MovementFacade extends GenericProjectElementFacade {
         )
 
     public fetchMovementsPage (
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
     ): void {
-        const index: number | undefined = this.movementsPageResetSearch() ? 0 : pageNumber
-        this.store.fetchMovementsPage( { projectId: this.selectedProjectId(), pageNumber: index, pageSize: pageSize } )
+        const index: number | undefined = this.movementsPageResetSearch() ? 0 : page
+        this.store.fetchMovementsPage( { projectId: this.selectedProjectId(), page: index, size: size } )
     }
 
     public fetchMovementsContents (movementIds: string[]): void {
@@ -110,86 +110,86 @@ export class MovementFacade extends GenericProjectElementFacade {
     }
 
     public inputPageSearchParameters (
-        typeSearched: string | undefined,
-        startDateTimeSearched: Date | undefined,
-        endDateTimeSearched: Date | undefined,
-        visibilitySearched: boolean | undefined,
+        type: string | undefined,
+        from: Date | undefined,
+        to: Date | undefined,
+        isVisible: boolean | undefined,
     ): void {
-        const resetSearch: boolean = this.movementsPageTypeSearchedParam() != typeSearched
-                                     || this.movementsPageStartDateTimeSearchedParam() != startDateTimeSearched?.toISOString()
-                                     || this.movementsPageEndDateTimeSearchedParam() != endDateTimeSearched?.toISOString()
-                                     || this.movementsPageVisibilitySearchedParam() != visibilitySearched
+        const resetSearch: boolean = this.movementsPageTypeSearchedParam() != type
+                                     || this.movementsPageStartDateTimeSearchedParam() != from?.toISOString()
+                                     || this.movementsPageEndDateTimeSearchedParam() != to?.toISOString()
+                                     || this.movementsPageVisibilitySearchedParam() != isVisible
 
         if (resetSearch) {
             this.store.updateMovementsPageSearchParams( {
                 resetSearch: resetSearch,
-                visibilitySearched: visibilitySearched,
-                currentMovements: false,
-                linkedToActivity: undefined,
-                typeSearched: typeSearched,
-                startDateTimeSearched: startDateTimeSearched?.toISOString(),
-                endDateTimeSearched: endDateTimeSearched?.toISOString(),
+                isVisible: isVisible,
+                isCurrent: false,
+                hasActivity: undefined,
+                type: type,
+                from: from?.toISOString(),
+                to: to?.toISOString(),
             } )
         }
     }
 
     public fetchMovementCommunicationsPage (
         id: string,
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
     ): void {
-        const index: number | undefined = this.movementCommunicationsPageResetSearch() ? 0 : pageNumber
-        this.store.fetchMovementCommunicationsPage( { projectId: this.selectedProjectId(), id: id, pageNumber: index, pageSize: pageSize } )
+        const index: number | undefined = this.movementCommunicationsPageResetSearch() ? 0 : page
+        this.store.fetchMovementCommunicationsPage( { projectId: this.selectedProjectId(), id: id, page: index, size: size } )
     }
 
     public inputMovementCommunicationsPageSearchParameters (
-        textSearched: string | undefined,
-        visibilitySearched: boolean | undefined,
-        startDateTimeSearched: Date | undefined,
-        endDateTimeSearched: Date | undefined,
+        q: string | undefined,
+        isVisible: boolean | undefined,
+        from: Date | undefined,
+        to: Date | undefined,
     ): void {
-        const resetSearch: boolean = this.movementCommunicationsPageTextSearchedParam() != textSearched
-                                     || this.movementCommunicationsPageVisibilitySearchedParam() != visibilitySearched
-                                     || this.movementCommunicationsPageStartDateTimeSearchedParam() != startDateTimeSearched?.toISOString()
-                                     || this.movementCommunicationsPageEndDateTimeSearchedParam() != endDateTimeSearched?.toISOString()
+        const resetSearch: boolean = this.movementCommunicationsPageTextSearchedParam() != q
+                                     || this.movementCommunicationsPageVisibilitySearchedParam() != isVisible
+                                     || this.movementCommunicationsPageStartDateTimeSearchedParam() != from?.toISOString()
+                                     || this.movementCommunicationsPageEndDateTimeSearchedParam() != to?.toISOString()
 
         if (resetSearch) {
             this.store.updateMovementCommunicationsPageSearchParams( {
                 resetSearch: resetSearch,
-                visibilitySearched: visibilitySearched,
-                textSearched: textSearched,
-                startDateTimeSearched: startDateTimeSearched?.toISOString(),
-                endDateTimeSearched: endDateTimeSearched?.toISOString(),
+                isVisible: isVisible,
+                q: q,
+                from: from?.toISOString(),
+                to: to?.toISOString(),
             } )
         }
     }
 
     public searchReasonsAndActivities (
-        textSearched: string | undefined = undefined,
-        typeSearched: string,
-        contentTypeSearched: ParticipantTypeEnum,
+        q: string | undefined = undefined,
+        type: string,
+        contentType: ParticipantTypeEnum,
     ): void {
         this.store.searchReasonsAndActivities( {
             projectId: this.selectedProjectId(),
-            textSearched: textSearched,
-            typeSearched: typeSearched,
-            contentTypeSearched: contentTypeSearched,
+            q: q,
+            type: type,
+            contentType: contentType,
         } )
     }
 
     public searchParticipantsAndGroups (
-        contentTypeSearched: ParticipantTypeEnum,
-        textSearched: string | undefined = undefined,
+        contentType: ParticipantTypeEnum,
+        q: string | undefined = undefined,
     ): void {
         this.store.searchParticipantsAndGroups( {
             projectId: this.selectedProjectId(),
-            contentTypeSearched: contentTypeSearched,
-            textSearched: textSearched,
+            contentType: contentType,
+            q: q,
         } )
     }
 
-    public searchVehicles (textSearched: string | undefined = undefined): void {
-        this.store.searchVehicles( { projectId: this.selectedProjectId(), textSearched: textSearched } )
+    public searchVehicles (q: string | undefined = undefined): void {
+        this.store.searchVehicles( { projectId: this.selectedProjectId(), q: q } )
     }
 
     public fetchMovementTypes (): void {

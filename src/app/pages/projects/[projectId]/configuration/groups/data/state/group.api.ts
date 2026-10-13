@@ -33,14 +33,14 @@ export class GroupApi extends GenericProjectApi {
 
     public findGroups(
         projectId: string | undefined,
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
         params: GroupPageParamsModel,
     ): Observable<PageModel<GroupModel>> {
         return this.http.get<PageResponseDto<GroupResponseDto>>(
             `${this.buildRequestBaseUrl(projectId)}?${QueryHelper.buildQueryParams(
-                pageNumber,
-                pageSize,
+                page,
+                size,
                 params,
             ).toString()}`,
         ).pipe(
@@ -51,14 +51,14 @@ export class GroupApi extends GenericProjectApi {
     public findGroupMembersByGroupId(
         projectId: string | undefined,
         id: string | undefined,
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
         params: ParticipantPageParamsModel,
     ): Observable<PageModel<ParticipantModel>> {
         return this.http.get<PageResponseDto<ParticipantResponseDto>>(
             `${this.buildRequestBaseUrl(projectId)}/${id}/members?${QueryHelper.buildQueryParams(
-                pageNumber,
-                pageSize,
+                page,
+                size,
                 params,
             ).toString()}`,
         ).pipe(
@@ -74,12 +74,12 @@ export class GroupApi extends GenericProjectApi {
 
     public searchParticipants(
         projectId: string | undefined,
-        textSearched: string | undefined,
+        q: string | undefined,
     ): Observable<ParticipantModel[]> {
         return this.http.get<ParticipantResponseDto[]>(
-            `${this.buildRequestBaseUrl(projectId)}/search/participants${textSearched ? '?' + new HttpParams().set(
-                'textSearched',
-                textSearched,
+            `${this.buildRequestBaseUrl(projectId)}/search/participants${q ? '?' + new HttpParams().set(
+                'q',
+                q,
             ).toString() : ''}`,
         ).pipe(
             map( (dtos: ParticipantResponseDto[]): ParticipantModel[] => dtos.map( ParticipantMapper.toModel ) ),

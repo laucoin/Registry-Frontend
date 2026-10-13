@@ -81,9 +81,9 @@ export class ProjectsListPage {
     ].filter(Boolean).length)
 
     protected readonly model: WritableSignal<ProjectsListSearchModel> = signal(toProjectsListSearchModel({
-        textSearched: this.facade.projectsPageTextSearchedParam(),
-        dateTimeSearched: this.facade.projectsPageDateTimeSearchedParam(),
-        visibilitySearched: this.facade.projectsPageVisibilitySearchedParam(),
+        q: this.facade.projectsPageTextSearchedParam(),
+        at: this.facade.projectsPageDateTimeSearchedParam(),
+        isVisible: this.facade.projectsPageVisibilitySearchedParam(),
     }))
     protected readonly form: FieldTree<ProjectsListSearchModel> = createSearchForm(this.model)
 
@@ -94,9 +94,9 @@ export class ProjectsListPage {
     protected search(): void {
         const search: ReturnType<typeof toProjectsListSearchParams> = toProjectsListSearchParams(this.model())
         this.facade.inputPageSearchParameters(
-            search.textSearched,
-            search.dateTimeSearched,
-            search.visibilitySearched,
+            search.q,
+            search.at,
+            search.isVisible,
         )
         this.facade.fetchProjectsPage(0, undefined)
     }
@@ -104,15 +104,15 @@ export class ProjectsListPage {
     protected resetFilters(): void {
         this.model.update((model: ProjectsListSearchModel): ProjectsListSearchModel => ({
             ...model,
-            textSearched: '',
-            dateTimeSearched: null,
-            visibilitySearched: '',
+            q: '',
+            at: null,
+            isVisible: '',
         }))
         this.search()
     }
 
     protected loadBatch(pageEvent: PageEventModel): void {
-        this.facade.fetchProjectsPage(pageEvent.pageNumber, pageEvent.pageSize)
+        this.facade.fetchProjectsPage(pageEvent.page, pageEvent.size)
     }
 
     protected initials(project: ProjectModel): string {

@@ -72,10 +72,10 @@ export class VehicleMovementsListPage implements OnDestroy {
     ].filter(Boolean).length)
 
     protected readonly model: WritableSignal<VehicleMovementsListSearchModel> = signal(toVehicleMovementsListSearchModel({
-        typeSearched: this.facade.vehicleMovementsPageTypeSearchedParam(),
-        startDateTimeSearched: this.facade.vehicleMovementsPageStartDateTimeSearchedParam(),
-        endDateTimeSearched: this.facade.vehicleMovementsPageEndDateTimeSearchedParam(),
-        visibilitySearched: this.facade.vehicleMovementsPageVisibilitySearchedParam(),
+        type: this.facade.vehicleMovementsPageTypeSearchedParam(),
+        from: this.facade.vehicleMovementsPageStartDateTimeSearchedParam(),
+        to: this.facade.vehicleMovementsPageEndDateTimeSearchedParam(),
+        isVisible: this.facade.vehicleMovementsPageVisibilitySearchedParam(),
     }))
     protected readonly form: FieldTree<VehicleMovementsListSearchModel> = createSearchForm(this.model)
 
@@ -109,21 +109,21 @@ export class VehicleMovementsListPage implements OnDestroy {
     protected search(): void {
         const search: ReturnType<typeof toVehicleMovementsListSearchParams> = toVehicleMovementsListSearchParams(this.model())
         this.facade.inputMovementsPageSearchParameters(
-            search.typeSearched,
-            search.startDateTimeSearched,
-            search.endDateTimeSearched,
-            search.visibilitySearched,
+            search.type,
+            search.from,
+            search.to,
+            search.isVisible,
         )
         this.facade.fetchVehicleMovementsPage(this.id(), 0, undefined)
     }
 
     protected resetFilters(): void {
-        this.model.set({ typeSearched: '', startDateTimeSearched: null, endDateTimeSearched: null, visibilitySearched: '' })
+        this.model.set({ type: '', from: null, to: null, isVisible: '' })
         this.search()
     }
 
     protected loadBatch(pageEvent: PageEventModel): void {
-        this.facade.fetchVehicleMovementsPage(this.id(), pageEvent.pageNumber, pageEvent.pageSize)
+        this.facade.fetchVehicleMovementsPage(this.id(), pageEvent.page, pageEvent.size)
     }
 
     public ngOnDestroy(): void {

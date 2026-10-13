@@ -22,12 +22,12 @@
         <form class="grid grid-cols-1 items-end gap-(--spacing--in-block-large) md:grid-cols-3"
               (submit)="$event.preventDefault(); search()">
             <sgdf-input appSgdfField [label]="'projects.search-and-filter.text' | transloco"
-                        [formField]="form.textSearched"/>
+                        [formField]="form.q"/>
             <sgdf-date-time-picker appSgdfField with-time
                                    [label]="'projects.search-and-filter.datetime' | transloco"
-                                   [formField]="form.dateTimeSearched"/>
+                                   [formField]="form.at"/>
             <sgdf-select appSgdfField [label]="'projects.search-and-filter.visibility' | transloco"
-                         [formField]="form.visibilitySearched">
+                         [formField]="form.isVisible">
                 @for (item of facade.visibilitiesMetadata(); track item.label) {
                     <sgdf-option [value]="item.value | booleanChoice">{{ item.label }}</sgdf-option>
                 }

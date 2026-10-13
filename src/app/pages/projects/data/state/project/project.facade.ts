@@ -40,12 +40,12 @@ export class ProjectFacade extends GenericFacade {
 
     private readonly projectsPageResetSearch: Signal<boolean> = this.store.projects.params.resetSearch
 
-    public readonly projectsPageTextSearchedParam: Signal<string | undefined> = this.store.projects.params.textSearched
+    public readonly projectsPageTextSearchedParam: Signal<string | undefined> = this.store.projects.params.q
 
-    public readonly projectsPageDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined => DateHelper.buildDate( this.store.projects.params.dateTimeSearched() ) )
+    public readonly projectsPageDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined => DateHelper.buildDate( this.store.projects.params.at() ) )
 
 
-    public readonly projectsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.projects.params.visibilitySearched
+    public readonly projectsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.projects.params.isVisible
 
     public readonly projectOptionsMetadata: Signal<ProjectOptionModel[]> = this.store.metadata.options
 
@@ -71,28 +71,28 @@ export class ProjectFacade extends GenericFacade {
     }
 
     public fetchProjectsPage (
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
     ): void {
-        const index: number | undefined = this.projectsPageResetSearch() ? 0 : pageNumber
-        this.store.fetchProjectsPage( { pageNumber: index, pageSize: pageSize } )
+        const index: number | undefined = this.projectsPageResetSearch() ? 0 : page
+        this.store.fetchProjectsPage( { page: index, size: size } )
     }
 
     public inputPageSearchParameters (
-        textSearched: string | undefined,
-        dateTimeSearched: Date | undefined,
-        visibilitySearched: boolean | undefined,
+        q: string | undefined,
+        at: Date | undefined,
+        isVisible: boolean | undefined,
     ): void {
-        const resetSearch: boolean = this.projectsPageTextSearchedParam() != textSearched
-                                     || this.projectsPageDateTimeSearchedParam() != dateTimeSearched?.toISOString()
-                                     || this.projectsPageVisibilitySearchedParam() != visibilitySearched
+        const resetSearch: boolean = this.projectsPageTextSearchedParam() != q
+                                     || this.projectsPageDateTimeSearchedParam() != at?.toISOString()
+                                     || this.projectsPageVisibilitySearchedParam() != isVisible
 
         if (resetSearch) {
             this.store.updateProjectsPageSearchParams( {
                 resetSearch: resetSearch,
-                visibilitySearched: visibilitySearched,
-                textSearched: textSearched,
-                dateTimeSearched: dateTimeSearched?.toISOString(),
+                isVisible: isVisible,
+                q: q,
+                at: at?.toISOString(),
             } )
         }
     }

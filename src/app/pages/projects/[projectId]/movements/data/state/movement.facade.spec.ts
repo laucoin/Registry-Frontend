@@ -66,10 +66,10 @@ describe( 'MovementFacade', () => {
 
     it( 'fetches the requested page for the selected project', () => {
         // Arrange
-        const pageNumber: number = 3
+        const page: number = 3
 
         // Act
-        facade.fetchMovementsPage( pageNumber, 10 )
+        facade.fetchMovementsPage( page, 10 )
 
         // Assert
         expect( findMovements ).toHaveBeenCalledWith( 'p1', 3, 10, expect.anything() )
@@ -198,6 +198,6 @@ describe( 'MovementFacade', () => {
         facade.reloadMovementsPage()
 
         // Assert
-        expect( findMovements ).toHaveBeenCalledWith( 'p1', 0, facade.movementsPage()!.pageSize * 2, expect.anything() )
+        expect( findMovements ).toHaveBeenCalledWith( 'p1', 0, facade.movementsPage()!.size * 2, expect.anything() )
     } )
 } )

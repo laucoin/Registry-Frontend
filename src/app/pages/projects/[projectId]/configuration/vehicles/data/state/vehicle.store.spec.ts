@@ -71,12 +71,12 @@ describe( 'VehicleStore', () => {
     it( 'appends the next batch to the vehicles already shown', () => {
         // Arrange
         findVehicles
-            .mockReturnValueOnce( of( { ...pageOf<VehicleModel>( [ { id: 'a1' } as VehicleModel ] ), pageSize: 1, totalPages: 2 } ) )
-            .mockReturnValueOnce( of( { ...pageOf<VehicleModel>( [ { id: 'a2' } as VehicleModel ], 1 ), pageSize: 1, totalPages: 2 } ) )
-        store.fetchVehiclesPage( { projectId: 'p1', pageNumber: 0, pageSize: 1 } )
+            .mockReturnValueOnce( of( { ...pageOf<VehicleModel>( [ { id: 'a1' } as VehicleModel ] ), size: 1, totalPages: 2 } ) )
+            .mockReturnValueOnce( of( { ...pageOf<VehicleModel>( [ { id: 'a2' } as VehicleModel ], 1 ), size: 1, totalPages: 2 } ) )
+        store.fetchVehiclesPage( { projectId: 'p1', page: 0, size: 1 } )
 
         // Act
-        store.fetchVehiclesPage( { projectId: 'p1', pageNumber: 1, pageSize: 1 } )
+        store.fetchVehiclesPage( { projectId: 'p1', page: 1, size: 1 } )
 
         // Assert
         expect( store.vehicles.element()?.content.map( (element: VehicleModel): string => element.id ) ).toEqual( [ 'a1', 'a2' ] )
@@ -87,7 +87,7 @@ describe( 'VehicleStore', () => {
         findVehicles.mockReturnValue( of( pageOf<VehicleModel>( [ { id: 'v1' } as VehicleModel ] ) ) )
 
         // Act
-        store.fetchVehiclesPage( { projectId: 'p1', pageNumber: 0, pageSize: 10 } )
+        store.fetchVehiclesPage( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
         expect( store.vehicles.element()?.content ).toHaveLength( 1 )
@@ -99,7 +99,7 @@ describe( 'VehicleStore', () => {
         findVehicles.mockReturnValue( failing( ERROR_500 ) )
 
         // Act
-        store.fetchVehiclesPage( { projectId: 'p1', pageNumber: 0, pageSize: 10 } )
+        store.fetchVehiclesPage( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
         expect( store.vehicles.error()?.summary ).toBe( 'Title' )
@@ -110,7 +110,7 @@ describe( 'VehicleStore', () => {
         findVehicles.mockReturnValue( failing( ERROR_503 ) )
 
         // Act
-        store.fetchVehiclesPage( { projectId: 'p1', pageNumber: 0, pageSize: 10 } )
+        store.fetchVehiclesPage( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
         expect( setGlobalError ).toHaveBeenCalledWith( ERROR_503 )
@@ -122,7 +122,7 @@ describe( 'VehicleStore', () => {
         findMovementsContents.mockReturnValue( of( [ { first: 'm1', second: [ { id: 'c1' } as unknown as MovementContentModel ] } ] ) )
 
         // Act
-        store.fetchVehicleMovementsPage( { projectId: 'p1', id: 'v1', pageNumber: 0, pageSize: 10 } )
+        store.fetchVehicleMovementsPage( { projectId: 'p1', id: 'v1', page: 0, size: 10 } )
 
         // Assert
         expect( findMovementsContents ).toHaveBeenCalledWith( 'p1', [ 'm1' ], false )
@@ -134,7 +134,7 @@ describe( 'VehicleStore', () => {
         findVehicleMovements.mockReturnValue( failing( ERROR_500 ) )
 
         // Act
-        store.fetchVehicleMovementsPage( { projectId: 'p1', id: 'v1', pageNumber: 0, pageSize: 10 } )
+        store.fetchVehicleMovementsPage( { projectId: 'p1', id: 'v1', page: 0, size: 10 } )
 
         // Assert
         expect( store.movements.error()?.summary ).toBe( 'Title' )

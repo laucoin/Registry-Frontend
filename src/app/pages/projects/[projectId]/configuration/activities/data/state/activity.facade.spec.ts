@@ -48,10 +48,10 @@ describe( 'ActivityFacade', () => {
 
     it( 'fetches the requested page for the selected project', () => {
         // Arrange
-        const pageNumber: number = 3
+        const page: number = 3
 
         // Act
-        facade.fetchActivitiesPage( pageNumber, 10 )
+        facade.fetchActivitiesPage( page, 10 )
 
         // Assert
         expect( findActivities ).toHaveBeenCalledWith( 'p1', 3, 10, expect.anything() )

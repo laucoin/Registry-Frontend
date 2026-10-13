@@ -37,9 +37,9 @@ export class UserFacade extends GenericFacade {
 
     public readonly usersPageResetSearch: Signal<boolean> = this.store.users.params.resetSearch
 
-    public readonly usersPageTextSearchedParam: Signal<string | undefined> = this.store.users.params.textSearched
+    public readonly usersPageTextSearchedParam: Signal<string | undefined> = this.store.users.params.q
 
-    public readonly actualUsersPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.users.params.visibilitySearched
+    public readonly actualUsersPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.users.params.isVisible
 
     public readonly user: Signal<UserModel | undefined> = this.store.user.element
 
@@ -57,25 +57,25 @@ export class UserFacade extends GenericFacade {
         )
 
     public fetchUsersPage (
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
     ): void {
-        const index: number | undefined = this.usersPageResetSearch() ? 0 : pageNumber
-        this.store.fetchUsersPage( { pageNumber: index, pageSize: pageSize } )
+        const index: number | undefined = this.usersPageResetSearch() ? 0 : page
+        this.store.fetchUsersPage( { page: index, size: size } )
     }
 
     public inputPageSearchParameters (
-        textSearched: string | undefined,
-        visibilitySearched: boolean | undefined,
+        q: string | undefined,
+        isVisible: boolean | undefined,
     ): void {
-        const resetSearch: boolean = this.usersPageTextSearchedParam() != textSearched
-                                     || this.actualUsersPageVisibilitySearchedParam() != visibilitySearched
+        const resetSearch: boolean = this.usersPageTextSearchedParam() != q
+                                     || this.actualUsersPageVisibilitySearchedParam() != isVisible
 
         if (resetSearch) {
             this.store.updateUsersPageSearchParams( {
                 resetSearch: resetSearch,
-                textSearched: textSearched,
-                visibilitySearched: visibilitySearched,
+                q: q,
+                isVisible: isVisible,
             } )
         }
     }

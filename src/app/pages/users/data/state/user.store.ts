@@ -19,8 +19,8 @@ const defaultUser: ElementRequestInformationModel<UserModel> = {
 const defaultUserStore: UserStoreModel = {
     users: PageStateHelper.initial<UserPageParamsModel, UserModel>( {
         resetSearch: false,
-        textSearched: undefined,
-        visibilitySearched: undefined,
+        q: undefined,
+        isVisible: undefined,
     } ),
     user: defaultUser,
     metadata: {
@@ -43,7 +43,7 @@ export const UserStore = signalStore(
     withState<UserStoreModel>( defaultUserStore ),
     withMethods( (store, api = inject( UserApi ), errors = inject( ErrorReporter )) => ({
         fetchUsersPage: pageFetcher( store, 'users', (request: CumulativePageRequest, params: UserPageParamsModel) =>
-            api.findUsers( request.pageNumber, request.pageSize, params ), errors, { merge: CumulativePageHelper.merge } ),
+            api.findUsers( request.page, request.size, params ), errors, { merge: CumulativePageHelper.merge } ),
         updateUsersPageSearchParams: paramsUpdater( store, 'users' ),
         startUserLoader: loaderToggle( store, 'user', true ),
         stopUserLoader: loaderToggle( store, 'user', false ),

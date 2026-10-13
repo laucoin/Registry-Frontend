@@ -72,10 +72,10 @@ export class GroupsListPage {
     ].filter(Boolean).length)
 
     protected readonly model: WritableSignal<GroupsListSearchModel> = signal(toGroupsListSearchModel({
-        textSearched: this.facade.groupsPageTextSearchedParam(),
-        dateTimeSearched: this.facade.groupsPageDateTimeSearchedParam(),
-        presenceSearched: this.facade.groupsPagePresenceSearchedParam(),
-        visibilitySearched: this.facade.groupsPageVisibilitySearchedParam(),
+        q: this.facade.groupsPageTextSearchedParam(),
+        at: this.facade.groupsPageDateTimeSearchedParam(),
+        isPresent: this.facade.groupsPagePresenceSearchedParam(),
+        isVisible: this.facade.groupsPageVisibilitySearchedParam(),
     }))
     protected readonly form: FieldTree<GroupsListSearchModel> = createSearchForm(this.model)
 
@@ -85,16 +85,16 @@ export class GroupsListPage {
 
     protected search(): void {
         const search: ReturnType<typeof toGroupsListSearchParams> = toGroupsListSearchParams(this.model())
-        this.facade.inputPageSearchParameters(search.textSearched, search.dateTimeSearched, search.presenceSearched, search.visibilitySearched)
+        this.facade.inputPageSearchParameters(search.q, search.at, search.isPresent, search.isVisible)
         this.facade.fetchGroupsPage(0, undefined)
     }
 
     protected resetFilters(): void {
-        this.model.set({ textSearched: '', dateTimeSearched: null, presenceSearched: '', visibilitySearched: '' })
+        this.model.set({ q: '', at: null, isPresent: '', isVisible: '' })
         this.search()
     }
 
     protected loadBatch(pageEvent: PageEventModel): void {
-        this.facade.fetchGroupsPage(pageEvent.pageNumber, pageEvent.pageSize)
+        this.facade.fetchGroupsPage(pageEvent.page, pageEvent.size)
     }
 }

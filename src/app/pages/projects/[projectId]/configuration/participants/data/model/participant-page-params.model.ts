@@ -1,6 +1,6 @@
 export interface ParticipantPageParamsModel {
     resetSearch: boolean
-    visibilitySearched: boolean | undefined
-    statusSearched: string | undefined
-    textSearched: string | undefined
+    isVisible: boolean | undefined
+    status: string | undefined
+    q: string | undefined
 }

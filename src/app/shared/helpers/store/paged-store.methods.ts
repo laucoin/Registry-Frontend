@@ -22,7 +22,7 @@ type ParamsOf<B> = B extends PageRequestInformationModel<infer P, GenericModel> 
 type PageOf<B> = B extends PageRequestInformationModel<object, infer M extends GenericModel> ? PageModel<M> : never
 
 export interface MovementContentsApi {
-    findMovementsContents (projectId: string | undefined, movementIds: string[], currentMovements: boolean): Observable<PairModel<MovementContentModel[]>[]>
+    findMovementsContents (projectId: string | undefined, movementIds: string[], isCurrent: boolean): Observable<PairModel<MovementContentModel[]>[]>
 }
 
 export interface MovementContentsRequest {
@@ -173,7 +173,7 @@ export function movementContentsFetcher<S extends { movements: MovementsBlock }>
         switchMap( (request: MovementContentsRequest): Observable<PairModel<MovementContentModel[]>[]> => movementApi.findMovementsContents(
             request.projectId,
             request.movementIds,
-            movements().params.currentMovements,
+            movements().params.isCurrent,
         ).pipe( notifyOnError( errors ) ) ),
         tap( (contents: PairModel<MovementContentModel[]>[]): void => patchState( store, (state: S) => mergeContents( state, contents ) ) ),
     ) )

@@ -3,10 +3,10 @@ import { ApiCase, PAGE_QUERY, describeApi, expectMapped, expectMappedPage } from
 import { ACTIVITY_DTO, MOVEMENT_DTO, pageDto } from '@shared/helpers/testing/response-fixtures'
 
 const BASE: string = '/api/v2/projects/p1/activities'
-const PARAMS: never = { resetSearch: false, textSearched: 'x' } as never
+const PARAMS: never = { resetSearch: false, q: 'x' } as never
 
 const CASES: ApiCase<ActivityApi>[] = [
-    { name: 'pages the elements with the search parameters', method: 'GET', url: new RegExp( `${BASE}\\?${PAGE_QUERY}&textSearched=x$` ), call: (api: ActivityApi) => api.findActivities( 'p1', 0, 10, PARAMS ), response: pageDto( [ ACTIVITY_DTO ] ), verify: expectMappedPage },
+    { name: 'pages the elements with the search parameters', method: 'GET', url: new RegExp( `${BASE}\\?${PAGE_QUERY}&q=x$` ), call: (api: ActivityApi) => api.findActivities( 'p1', 0, 10, PARAMS ), response: pageDto( [ ACTIVITY_DTO ] ), verify: expectMappedPage },
     { name: 'finds an element by id', method: 'GET', url: `${BASE}/a1`, call: (api: ActivityApi) => api.findActivityById( 'p1', 'a1' ), response: ACTIVITY_DTO, verify: expectMapped },
     { name: 'creates an element', method: 'POST', url: BASE, body: { name: 'x' }, call: (api: ActivityApi) => api.createActivity( 'p1', { name: 'x' } as never ), response: ACTIVITY_DTO, verify: expectMapped },
     { name: 'updates an element', method: 'PATCH', url: `${BASE}/a1`, body: { name: 'y' }, call: (api: ActivityApi) => api.updateActivityById( 'p1', 'a1', { name: 'y' } as never ), response: ACTIVITY_DTO, verify: expectMapped },

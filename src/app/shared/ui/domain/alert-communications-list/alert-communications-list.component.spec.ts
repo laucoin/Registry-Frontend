@@ -15,7 +15,7 @@ describe('AlertCommunicationsListComponent', () => {
     beforeEach(() => {
         firstPageReload = new Subject<unknown>()
         currentPageReload = new Subject<unknown>()
-        facade = { fetchAlertCommunicationsPage: vi.fn(), alertCommunicationsPage: vi.fn(() => ({ pageNumber: 2, pageSize: 10, content: [ { lastEdition: { user: { id: 'u1', firstName: 'Ada' } } }, { lastEdition: { user: { id: 'u2', firstName: 'Bo' } } } ] })) }
+        facade = { fetchAlertCommunicationsPage: vi.fn(), alertCommunicationsPage: vi.fn(() => ({ page: 2, size: 10, content: [ { lastEdition: { user: { id: 'u1', firstName: 'Ada' } } }, { lastEdition: { user: { id: 'u2', firstName: 'Bo' } } } ] })) }
         TestBed.configureTestingModule({
             providers: [
                 { provide: AlertFacade, useValue: facade },

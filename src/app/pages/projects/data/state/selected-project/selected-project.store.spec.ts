@@ -55,8 +55,8 @@ describe( 'SelectedProjectStore', () => {
         const params: ReturnType<typeof store.alerts.params> = store.alerts.params()
 
         // Assert
-        expect( params.statusSearched ).toBe( expectedStatus )
-        expect( params.visibilitySearched ).toBe( true )
+        expect( params.status ).toBe( expectedStatus )
+        expect( params.isVisible ).toBe( true )
     } )
 
     it( 'stores the participants status and ends its loading state', () => {
@@ -128,13 +128,13 @@ describe( 'SelectedProjectStore', () => {
         findMovementsContents.mockReturnValue( of( [ { first: 'm1', second: [ { id: 'c1' } as unknown as MovementContentModel ] } ] ) )
 
         // Act
-        store.fetchCurrentMovementsPageWithoutActivity( { projectId: 'p1', pageNumber: 0, pageSize: 10 } )
+        store.fetchCurrentMovementsPageWithoutActivity( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
-        expect( findMovements ).toHaveBeenCalledWith( 'p1', 0, 10, expect.objectContaining( { currentMovements: true, linkedToActivity: false } ) )
+        expect( findMovements ).toHaveBeenCalledWith( 'p1', 0, 10, expect.objectContaining( { isCurrent: true, hasActivity: false } ) )
         expect( findMovementsContents ).toHaveBeenCalledWith( 'p1', [ 'm1' ], true )
-        expect( store.currentMovements.withoutActivity.element()?.content[ 0 ].content ).toHaveLength( 1 )
-        expect( store.currentMovements.withActivity.element() ).toBeUndefined()
+        expect( store.isCurrent.withoutActivity.element()?.content[ 0 ].content ).toHaveLength( 1 )
+        expect( store.isCurrent.withActivity.element() ).toBeUndefined()
     } )
 
     it( 'asks for the movements linked to an activity for the with-activity block', () => {
@@ -142,10 +142,10 @@ describe( 'SelectedProjectStore', () => {
         findMovements.mockReturnValue( of( pageOf<MovementModel>( [] ) ) )
 
         // Act
-        store.fetchCurrentMovementsPageWithActivity( { projectId: 'p1', pageNumber: 0, pageSize: 10 } )
+        store.fetchCurrentMovementsPageWithActivity( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
-        expect( findMovements ).toHaveBeenCalledWith( 'p1', 0, 10, expect.objectContaining( { linkedToActivity: true } ) )
+        expect( findMovements ).toHaveBeenCalledWith( 'p1', 0, 10, expect.objectContaining( { hasActivity: true } ) )
         expect( findMovementsContents ).not.toHaveBeenCalled()
     } )
 
@@ -154,12 +154,12 @@ describe( 'SelectedProjectStore', () => {
         findMovements.mockReturnValue( failing( ERROR_500 ) )
 
         // Act
-        store.fetchCurrentMovementsPageWithActivity( { projectId: 'p1', pageNumber: 0, pageSize: 10 } )
+        store.fetchCurrentMovementsPageWithActivity( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
-        expect( store.currentMovements.withActivity.error()?.summary ).toBe( 'Title' )
-        expect( store.currentMovements.withoutActivity.error() ).toBeUndefined()
-        expect( store.currentMovements.withActivity.loading() ).toBe( false )
+        expect( store.isCurrent.withActivity.error()?.summary ).toBe( 'Title' )
+        expect( store.isCurrent.withoutActivity.error() ).toBeUndefined()
+        expect( store.isCurrent.withActivity.loading() ).toBe( false )
     } )
 
     it( 'notifies a failed contents fetch and leaves the movements page as it was', () => {
@@ -168,11 +168,11 @@ describe( 'SelectedProjectStore', () => {
         findMovementsContents.mockReturnValue( failing( ERROR_500 ) )
 
         // Act
-        store.fetchCurrentMovementsPageWithoutActivity( { projectId: 'p1', pageNumber: 0, pageSize: 10 } )
+        store.fetchCurrentMovementsPageWithoutActivity( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
         expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'Title' } ) )
-        expect( store.currentMovements.withoutActivity.element()?.content[ 0 ].id ).toBe( 'm1' )
+        expect( store.isCurrent.withoutActivity.element()?.content[ 0 ].id ).toBe( 'm1' )
     } )
 
     it( 'stores the current alerts page', () => {
@@ -180,7 +180,7 @@ describe( 'SelectedProjectStore', () => {
         findAlerts.mockReturnValue( of( pageOf<AlertModel>( [ { id: 'al1' } as AlertModel ] ) ) )
 
         // Act
-        store.fetchCurrentAlertsPage( { projectId: 'p1', pageNumber: 0, pageSize: 10 } )
+        store.fetchCurrentAlertsPage( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
         expect( store.alerts.element()?.content ).toHaveLength( 1 )
@@ -192,9 +192,9 @@ describe( 'SelectedProjectStore', () => {
         findAlerts.mockReturnValueOnce( failing( ERROR_503 ) )
 
         // Act
-        store.fetchCurrentAlertsPage( { projectId: 'p1', pageNumber: 0, pageSize: 10 } )
+        store.fetchCurrentAlertsPage( { projectId: 'p1', page: 0, size: 10 } )
         const keptError: string | undefined = store.alerts.error()?.summary
-        store.fetchCurrentAlertsPage( { projectId: 'p1', pageNumber: 0, pageSize: 10 } )
+        store.fetchCurrentAlertsPage( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
         expect( keptError ).toBe( 'Title' )

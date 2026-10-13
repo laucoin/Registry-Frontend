@@ -37,18 +37,18 @@ export class AlertFacade extends GenericProjectElementFacade {
 
     private readonly alertsPageResetSearch: Signal<boolean> = this.store.alerts.params.resetSearch
 
-    public readonly alertsPageTextSearchedParam: Signal<string | undefined> = this.store.alerts.params.textSearched
+    public readonly alertsPageTextSearchedParam: Signal<string | undefined> = this.store.alerts.params.q
 
-    public readonly alertsPageStatusSearchedParam: Signal<string | undefined> = this.store.alerts.params.statusSearched
+    public readonly alertsPageStatusSearchedParam: Signal<string | undefined> = this.store.alerts.params.status
 
-    public readonly alertsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.alerts.params.visibilitySearched
+    public readonly alertsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.alerts.params.isVisible
 
     public readonly alertsPageStartDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
-            DateHelper.buildDate( this.store.alerts.params.startDateTimeSearched() ),
+            DateHelper.buildDate( this.store.alerts.params.from() ),
         )
 
     public readonly alertsPageEndDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
-            DateHelper.buildDate( this.store.alerts.params.endDateTimeSearched() ),
+            DateHelper.buildDate( this.store.alerts.params.to() ),
         )
 
     public readonly alertCommunicationsPage: Signal<PageModel<CommunicationModel> | undefined> = this.store.communications.element
@@ -61,16 +61,16 @@ export class AlertFacade extends GenericProjectElementFacade {
 
     private readonly alertCommunicationsPageResetSearch: Signal<boolean> = this.store.communications.params.resetSearch
 
-    public readonly alertCommunicationsPageTextSearchedParam: Signal<string | undefined> = this.store.communications.params.textSearched
+    public readonly alertCommunicationsPageTextSearchedParam: Signal<string | undefined> = this.store.communications.params.q
 
-    public readonly alertCommunicationsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.communications.params.visibilitySearched
+    public readonly alertCommunicationsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.communications.params.isVisible
 
     public readonly alertCommunicationsPageStartDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
-            DateHelper.buildDate( this.store.communications.params.startDateTimeSearched() ),
+            DateHelper.buildDate( this.store.communications.params.from() ),
         )
 
     public readonly alertCommunicationsPageEndDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
-            DateHelper.buildDate( this.store.communications.params.endDateTimeSearched() ),
+            DateHelper.buildDate( this.store.communications.params.to() ),
         )
 
     public readonly visibilitiesMetadata: Signal<SelectOptionModel<boolean | undefined>[]> = computed( () =>
@@ -83,65 +83,65 @@ export class AlertFacade extends GenericProjectElementFacade {
     public readonly alertStatusMetadata: Signal<SelectOptionModel<AlertStatusEnum | undefined>[]> = this.store.metadata.status
 
     public fetchAlertsPage (
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
     ): void {
-        const index: number | undefined = this.alertsPageResetSearch() ? 0 : pageNumber
-        this.store.fetchAlertsPage( { projectId: this.selectedProjectId(), pageNumber: index, pageSize: pageSize } )
+        const index: number | undefined = this.alertsPageResetSearch() ? 0 : page
+        this.store.fetchAlertsPage( { projectId: this.selectedProjectId(), page: index, size: size } )
     }
 
     public inputPageSearchParameters (
-        textSearched: string | undefined,
-        statusSearched: string | undefined,
-        visibilitySearched: boolean | undefined,
-        startDateTimeSearched: Date | undefined,
-        endDateTimeSearched: Date | undefined,
+        q: string | undefined,
+        status: string | undefined,
+        isVisible: boolean | undefined,
+        from: Date | undefined,
+        to: Date | undefined,
     ): void {
-        const resetSearch: boolean = this.alertsPageTextSearchedParam() != textSearched
-                                     || this.alertsPageStatusSearchedParam() != statusSearched
-                                     || this.alertsPageVisibilitySearchedParam() != visibilitySearched
-                                     || this.alertsPageStartDateTimeSearchedParam() != startDateTimeSearched?.toISOString()
-                                     || this.alertsPageEndDateTimeSearchedParam() != endDateTimeSearched?.toISOString()
+        const resetSearch: boolean = this.alertsPageTextSearchedParam() != q
+                                     || this.alertsPageStatusSearchedParam() != status
+                                     || this.alertsPageVisibilitySearchedParam() != isVisible
+                                     || this.alertsPageStartDateTimeSearchedParam() != from?.toISOString()
+                                     || this.alertsPageEndDateTimeSearchedParam() != to?.toISOString()
 
         if (resetSearch) {
             this.store.updateAlertsPageSearchParams( {
                 resetSearch: resetSearch,
-                textSearched: textSearched,
-                statusSearched: statusSearched,
-                visibilitySearched: visibilitySearched,
-                startDateTimeSearched: startDateTimeSearched?.toISOString(),
-                endDateTimeSearched: endDateTimeSearched?.toISOString(),
+                q: q,
+                status: status,
+                isVisible: isVisible,
+                from: from?.toISOString(),
+                to: to?.toISOString(),
             } )
         }
     }
 
     public fetchAlertCommunicationsPage (
         id: string,
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
     ): void {
-        const index: number | undefined = this.alertCommunicationsPageResetSearch() ? 0 : pageNumber
-        this.store.fetchAlertCommunicationsPage( { projectId: this.selectedProjectId(), id: id, pageNumber: index, pageSize: pageSize } )
+        const index: number | undefined = this.alertCommunicationsPageResetSearch() ? 0 : page
+        this.store.fetchAlertCommunicationsPage( { projectId: this.selectedProjectId(), id: id, page: index, size: size } )
     }
 
     public inputCommunicationsPageSearchParameters (
-        textSearched: string | undefined,
-        visibilitySearched: boolean | undefined,
-        startDateTimeSearched: Date | undefined,
-        endDateTimeSearched: Date | undefined,
+        q: string | undefined,
+        isVisible: boolean | undefined,
+        from: Date | undefined,
+        to: Date | undefined,
     ): void {
-        const resetSearch: boolean = this.alertCommunicationsPageTextSearchedParam() != textSearched
-                                     || this.alertCommunicationsPageVisibilitySearchedParam() != visibilitySearched
-                                     || this.alertCommunicationsPageStartDateTimeSearchedParam() != startDateTimeSearched?.toISOString()
-                                     || this.alertCommunicationsPageEndDateTimeSearchedParam() != endDateTimeSearched?.toISOString()
+        const resetSearch: boolean = this.alertCommunicationsPageTextSearchedParam() != q
+                                     || this.alertCommunicationsPageVisibilitySearchedParam() != isVisible
+                                     || this.alertCommunicationsPageStartDateTimeSearchedParam() != from?.toISOString()
+                                     || this.alertCommunicationsPageEndDateTimeSearchedParam() != to?.toISOString()
 
         if (resetSearch) {
             this.store.updateAlertCommunicationsPageSearchParams( {
                 resetSearch: resetSearch,
-                textSearched: textSearched,
-                visibilitySearched: visibilitySearched,
-                startDateTimeSearched: startDateTimeSearched?.toISOString(),
-                endDateTimeSearched: endDateTimeSearched?.toISOString(),
+                q: q,
+                isVisible: isVisible,
+                from: from?.toISOString(),
+                to: to?.toISOString(),
             } )
         }
     }

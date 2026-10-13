@@ -38,14 +38,14 @@ export class ParticipantApi extends GenericProjectApi {
 
     public findParticipants(
         projectId: string | undefined,
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
         params: ParticipantPageParamsModel,
     ): Observable<PageModel<ParticipantModel>> {
         return this.http.get<PageResponseDto<ParticipantResponseDto>>(
             `${this.buildRequestBaseUrl(projectId)}?${QueryHelper.buildQueryParams(
-                pageNumber,
-                pageSize,
+                page,
+                size,
                 params,
             ).toString()}`,
         ).pipe(
@@ -61,12 +61,12 @@ export class ParticipantApi extends GenericProjectApi {
 
     public searchUsers(
         projectId: string | undefined,
-        textSearched: string | undefined,
+        q: string | undefined,
     ): Observable<UserModel[]> {
         return this.http.get<UserResponseDto[]>(
-            `${this.buildRequestBaseUrl(projectId)}/search/users${textSearched ? '?' + new HttpParams().set(
-                'textSearched',
-                textSearched,
+            `${this.buildRequestBaseUrl(projectId)}/search/users${q ? '?' + new HttpParams().set(
+                'q',
+                q,
             ).toString() : ''}`,
         ).pipe(
             map( (dtos: UserResponseDto[]): UserModel[] => dtos.map( UserMapper.toModel ) ),
@@ -75,12 +75,12 @@ export class ParticipantApi extends GenericProjectApi {
 
     public searchGroups(
         projectId: string | undefined,
-        textSearched: string | undefined,
+        q: string | undefined,
     ): Observable<GroupModel[]> {
         return this.http.get<GroupResponseDto[]>(
-            `${this.buildRequestBaseUrl(projectId)}/search/groups${textSearched ? '?' + new HttpParams().set(
-                'textSearched',
-                textSearched,
+            `${this.buildRequestBaseUrl(projectId)}/search/groups${q ? '?' + new HttpParams().set(
+                'q',
+                q,
             ).toString() : ''}`,
         ).pipe(
             map( (dtos: GroupResponseDto[]): GroupModel[] => dtos.map( GroupMapper.toModel ) ),
@@ -90,14 +90,14 @@ export class ParticipantApi extends GenericProjectApi {
     public findParticipantMovements(
         projectId: string | undefined,
         id: string,
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
         params: MovementPageParamsModel,
     ): Observable<PageModel<MovementModel>> {
         return this.http.get<PageResponseDto<MovementResponseDto>>(
             `${this.buildRequestBaseUrl(projectId)}/${id}/movements?${QueryHelper.buildQueryParams(
-                pageNumber,
-                pageSize,
+                page,
+                size,
                 params,
             ).toString()}`,
         ).pipe(

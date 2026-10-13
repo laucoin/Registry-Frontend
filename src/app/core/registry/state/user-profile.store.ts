@@ -24,12 +24,12 @@ interface UserProfileState {
  * Scope: Fills the other criteria with their empty values.
  * Limits: Does not read the store.
  */
-const pageParams = (statusSearched: ProfileStatusEnum): UserProjectProfilePageParamsModel => ({
+const pageParams = (status: ProfileStatusEnum): UserProjectProfilePageParamsModel => ({
     resetSearch: false,
-    availabilitySearched: undefined,
-    statusSearched: statusSearched,
-    textSearched: undefined,
-    dateTimeSearched: undefined,
+    isAvailable: undefined,
+    status: status,
+    q: undefined,
+    at: undefined,
 })
 
 const defaultUserProfileState: UserProfileState = {
@@ -48,9 +48,9 @@ export const UserProfileStore = signalStore(
     withState<UserProfileState>( defaultUserProfileState ),
     withMethods( (store, api = inject( UserProjectProfileApi ), errors = inject( ErrorReporter )) => ({
         fetchProfilesPage: pageFetcher( store, 'profiles', (request: CumulativePageRequest, params: UserProjectProfilePageParamsModel) =>
-            api.findUserProjectProfiles( request.pageNumber, request.pageSize, params ), errors, { merge: CumulativePageHelper.merge } ),
+            api.findUserProjectProfiles( request.page, request.size, params ), errors, { merge: CumulativePageHelper.merge } ),
         fetchInvitationsPage: pageFetcher( store, 'invitations', (request: CumulativePageRequest, params: UserProjectProfilePageParamsModel) =>
-            api.findUserProjectProfiles( request.pageNumber, request.pageSize, params ), errors, { merge: CumulativePageHelper.merge } ),
+            api.findUserProjectProfiles( request.page, request.size, params ), errors, { merge: CumulativePageHelper.merge } ),
         updateProfilesPageSearchParams: paramsMerger( store, 'profiles' ),
         updateInvitationsPageSearchParams: paramsMerger( store, 'invitations' ),
         startProfileLoader: loaderToggle( store, 'profile', true ),

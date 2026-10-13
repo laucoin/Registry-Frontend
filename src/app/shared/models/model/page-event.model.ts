@@ -1,4 +1,4 @@
 export interface PageEventModel {
-    pageNumber: number
-    pageSize: number
+    page: number
+    size: number
 }

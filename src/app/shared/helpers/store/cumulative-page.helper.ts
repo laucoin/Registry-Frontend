@@ -2,8 +2,8 @@ import { GenericModel } from '@shared/models/model/generic.model'
 import { PageModel } from '@shared/models/model/page.model'
 
 export interface CumulativePageRequest {
-    pageNumber: number | undefined
-    pageSize: number | undefined
+    page: number | undefined
+    size: number | undefined
     batchSize?: number
 }
 
@@ -21,7 +21,7 @@ export class CumulativePageHelper {
         if (request.batchSize !== undefined) {
             return CumulativePageHelper.rebuilt( fetched, request.batchSize )
         }
-        if (current && request.pageNumber === current.pageNumber + 1) {
+        if (current && request.page === current.page + 1) {
             return CumulativePageHelper.appended( current, fetched )
         }
         return fetched
@@ -29,23 +29,23 @@ export class CumulativePageHelper {
 
     public static reloadRequest (current: PageModel<GenericModel> | undefined): CumulativePageRequest {
         if (!current) {
-            return { pageNumber: undefined, pageSize: undefined }
+            return { page: undefined, size: undefined }
         }
         return {
-            pageNumber: 0,
-            pageSize: current.pageSize * (current.pageNumber + 1),
-            batchSize: current.pageSize,
+            page: 0,
+            size: current.size * (current.page + 1),
+            batchSize: current.size,
         }
     }
 
     public static hasMore (page: PageModel<GenericModel> | undefined): boolean {
-        return !!page && page.pageNumber + 1 < page.totalPages
+        return !!page && page.page + 1 < page.totalPages
     }
 
     private static appended<M extends GenericModel> (current: PageModel<M>, fetched: PageModel<M>): PageModel<M> {
         return {
             ...fetched,
-            pageSize: current.pageSize,
+            size: current.size,
             content: [ ...current.content, ...fetched.content ],
         }
     }
@@ -54,8 +54,8 @@ export class CumulativePageHelper {
         const batches: number = Math.max( 1, Math.ceil( fetched.content.length / batchSize ) )
         return {
             ...fetched,
-            pageSize: batchSize,
-            pageNumber: batches - 1,
+            size: batchSize,
+            page: batches - 1,
             totalPages: Math.ceil( fetched.totalElements / batchSize ),
         }
     }

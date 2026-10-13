@@ -47,10 +47,10 @@ describe( 'ProjectFacade', () => {
 
     it( 'fetches the requested projects page', () => {
         // Arrange
-        const pageNumber: number = 2
+        const page: number = 2
 
         // Act
-        facade.fetchProjectsPage( pageNumber, 10 )
+        facade.fetchProjectsPage( page, 10 )
 
         // Assert
         expect( findProjects ).toHaveBeenCalledWith( 2, 10, expect.anything() )

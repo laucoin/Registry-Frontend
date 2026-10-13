@@ -34,14 +34,14 @@ export class ProjectProfileApi extends GenericProjectApi {
 
     public findProjectProfiles(
         projectId: string | undefined,
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
         params: ProjectProfilePageParamsModel,
     ): Observable<PageModel<ProjectProfileModel>> {
         return this.http.get<PageResponseDto<ProjectProfileResponseDto>>(
             `${this.buildRequestBaseUrl(projectId)}?${QueryHelper.buildQueryParams(
-                pageNumber,
-                pageSize,
+                page,
+                size,
                 params,
             ).toString()}`,
         ).pipe(
@@ -57,12 +57,12 @@ export class ProjectProfileApi extends GenericProjectApi {
 
     public searchUsers(
         projectId: string | undefined,
-        textSearched: string | undefined,
+        q: string | undefined,
     ): Observable<UserModel[]> {
         return this.http.get<UserResponseDto[]>(
-            `${this.buildRequestBaseUrl(projectId)}/search/users${textSearched ? '?' + new HttpParams().set(
-                'textSearched',
-                textSearched,
+            `${this.buildRequestBaseUrl(projectId)}/search/users${q ? '?' + new HttpParams().set(
+                'q',
+                q,
             ).toString() : ''}`,
         ).pipe(
             map( (dtos: UserResponseDto[]): UserModel[] => dtos.map( UserMapper.toModel ) ),

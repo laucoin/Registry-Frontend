@@ -48,10 +48,10 @@ describe( 'AlertFacade', () => {
 
     it( 'fetches the requested alerts page for the selected project', () => {
         // Arrange
-        const pageNumber: number = 3
+        const page: number = 3
 
         // Act
-        facade.fetchAlertsPage( pageNumber, 10 )
+        facade.fetchAlertsPage( page, 10 )
 
         // Assert
         expect( findAlerts ).toHaveBeenCalledWith( 'p1', 3, 10, expect.anything() )
@@ -142,7 +142,7 @@ describe( 'AlertFacade', () => {
         facade.reloadAlertsPage()
 
         // Assert
-        expect( findAlerts ).toHaveBeenCalledWith( expectedProjectId, 0, facade.alertsPage()!.pageSize * 3, expect.anything() )
+        expect( findAlerts ).toHaveBeenCalledWith( expectedProjectId, 0, facade.alertsPage()!.size * 3, expect.anything() )
     } )
 
     it( 'appends the next batch of alerts to the ones already shown', () => {

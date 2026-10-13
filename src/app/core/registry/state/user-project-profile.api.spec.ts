@@ -5,8 +5,8 @@ import { INVITATION_DTO, PROJECT_DTO, pageDto } from '@shared/helpers/testing/re
 const BASE: string = '/api/v2/users/profiles'
 
 const CASES: ApiCase<UserProjectProfileApi>[] = [
-    { name: 'pages the profiles of the user', method: 'GET', url: new RegExp( `${BASE}\\?${PAGE_QUERY}&statusSearched=ACCEPTED$` ),
-        call: (api: UserProjectProfileApi) => api.findUserProjectProfiles( 0, 10, { resetSearch: false, statusSearched: 'ACCEPTED' } as never ), response: pageDto( [ INVITATION_DTO ] ), verify: expectMappedPage },
+    { name: 'pages the profiles of the user', method: 'GET', url: new RegExp( `${BASE}\\?${PAGE_QUERY}&status=ACCEPTED$` ),
+        call: (api: UserProjectProfileApi) => api.findUserProjectProfiles( 0, 10, { resetSearch: false, status: 'ACCEPTED' } as never ), response: pageDto( [ INVITATION_DTO ] ), verify: expectMappedPage },
     { name: 'accepts an invitation', method: 'POST', url: `${BASE}/pp1/accept/true`,
         call: (api: UserProjectProfileApi) => api.manageUserProjectProfileAcceptance( 'pp1', true ), response: INVITATION_DTO, verify: expectMapped },
     { name: 'rejects an invitation', method: 'POST', url: `${BASE}/pp1/accept/false`,

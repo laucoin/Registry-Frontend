@@ -3,14 +3,14 @@ import { ApiCase, describeApi, expectMapped, expectMappedList, expectMappedPage,
 import { PROFILE_DTO, USER_DTO, pageDto } from '@shared/helpers/testing/response-fixtures'
 
 const BASE: string = '/api/v2/projects/p1/profiles'
-const PARAMS: never = { resetSearch: false, textSearched: 'x' } as never
+const PARAMS: never = { resetSearch: false, q: 'x' } as never
 
 const CASES: ApiCase<ProjectProfileApi>[] = [
-    { name: 'pages the profiles of a project', method: 'GET', url: new RegExp( `${BASE}\\?${PAGE_QUERY}&textSearched=x$` ),
+    { name: 'pages the profiles of a project', method: 'GET', url: new RegExp( `${BASE}\\?${PAGE_QUERY}&q=x$` ),
         call: (api: ProjectProfileApi) => api.findProjectProfiles( 'p1', 0, 10, PARAMS ), response: pageDto( [ PROFILE_DTO ] ), verify: expectMappedPage },
     { name: 'finds a profile by id', method: 'GET', url: `${BASE}/pp1`,
         call: (api: ProjectProfileApi) => api.findProjectProfileById( 'p1', 'pp1' ), response: PROFILE_DTO, verify: expectMapped },
-    { name: 'searches users with a text', method: 'GET', url: `${BASE}/search/users?textSearched=ada`,
+    { name: 'searches users with a text', method: 'GET', url: `${BASE}/search/users?q=ada`,
         call: (api: ProjectProfileApi) => api.searchUsers( 'p1', 'ada' ), response: [ USER_DTO ], verify: expectMappedList },
     { name: 'searches users without a text', method: 'GET', url: `${BASE}/search/users`,
         call: (api: ProjectProfileApi) => api.searchUsers( 'p1', undefined ), response: [ USER_DTO ], verify: expectMappedList },
