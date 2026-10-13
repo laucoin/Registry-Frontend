@@ -12,6 +12,7 @@ import { UserResponseDto } from '@shared/models/dto/response/user.response.dto'
 import { VehicleResponseDto } from '@shared/models/dto/response/vehicle.response.dto'
 
 export const WHEN: Date = new Date( '2026-01-05T10:00:00Z' )
+export const WHEN_ETAG: string = `"${WHEN.getTime()}"`
 
 export const HISTORY: { dateTime: Date, user: { id: string, firstName: string, lastName: string, email: string } } = {
     dateTime: WHEN,

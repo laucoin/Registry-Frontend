@@ -13,7 +13,7 @@ import { MovementFormPage } from '@pages/projects/[projectId]/movements/movement
 import { MovementFacade } from '@pages/projects/[projectId]/movements/data/state/movement.facade'
 import { CustomDateFormatPipe } from '@shared/helpers/pipe/custom-date-format.pipe'
 import { autoMock } from '@shared/helpers/testing/auto-mock'
-import { MOVEMENT_DTO, PARTICIPANT_DTO, VEHICLE_DTO } from '@shared/helpers/testing/response-fixtures'
+import { MOVEMENT_DTO, PARTICIPANT_DTO, VEHICLE_DTO, WHEN_ETAG } from '@shared/helpers/testing/response-fixtures'
 import { MovementTypeEnum } from '@shared/models/enumeration/movement-type.enum'
 import { ParticipantTypeEnum } from '@shared/models/enumeration/participant-type.enum'
 import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum'
@@ -316,7 +316,7 @@ describe( 'MovementFormPage', () => {
             page.submit()
 
             // Assert
-            expect( facade[ 'updateMovement' ] ).toHaveBeenCalledWith( 'm1', expect.objectContaining( { type: 'IN' } ), expect.stringMatching( /^"\d+"$/ ) )
+            expect( facade[ 'updateMovement' ] ).toHaveBeenCalledWith( 'm1', expect.objectContaining( { type: 'IN' } ), WHEN_ETAG )
             expect( facade[ 'createMovement' ] ).not.toHaveBeenCalled()
         } )
     } )

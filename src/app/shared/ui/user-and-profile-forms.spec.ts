@@ -17,7 +17,7 @@ import { UserFacade } from '@pages/users/data/state/user.facade'
 import { UserFormPage } from '@pages/users/user-form/user-form.page'
 import { CustomDateFormatPipe } from '@shared/helpers/pipe/custom-date-format.pipe'
 import { autoMock } from '@shared/helpers/testing/auto-mock'
-import { PROFILE_DTO, USER_DTO } from '@shared/helpers/testing/response-fixtures'
+import { PROFILE_DTO, USER_DTO, WHEN_ETAG } from '@shared/helpers/testing/response-fixtures'
 import { BaseFormComponent } from '@shared/ui/base/base-form.component'
 
 interface FormApi {
@@ -153,7 +153,7 @@ describe( 'user and project profile forms', () => {
             ;(page as unknown as FormApi).submit()
 
             // Assert
-            expect( facade[ 'updateProjectProfile' ] ).toHaveBeenCalledWith( 'pp1', expect.objectContaining( { role: 'CHIEF' } ), expect.stringMatching( /^"\d+"$/ ) )
+            expect( facade[ 'updateProjectProfile' ] ).toHaveBeenCalledWith( 'pp1', expect.objectContaining( { role: 'CHIEF' } ), WHEN_ETAG )
             expect( back ).toHaveBeenCalledTimes( 1 )
         } )
 

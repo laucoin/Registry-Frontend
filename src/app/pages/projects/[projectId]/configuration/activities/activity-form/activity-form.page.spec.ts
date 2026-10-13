@@ -14,7 +14,7 @@ import { ActivityFormPage } from '@pages/projects/[projectId]/configuration/acti
 import { ActivityFormModel } from '@pages/projects/[projectId]/configuration/activities/activity-form/activity.form'
 import { CustomDateFormatPipe } from '@shared/helpers/pipe/custom-date-format.pipe'
 import { autoMock } from '@shared/helpers/testing/auto-mock'
-import { ACTIVITY_DTO } from '@shared/helpers/testing/response-fixtures'
+import { ACTIVITY_DTO, WHEN_ETAG } from '@shared/helpers/testing/response-fixtures'
 
 interface PageApi {
     submit: () => void
@@ -88,7 +88,7 @@ describe( 'ActivityFormPage', () => {
         page.submit()
 
         // Assert
-        expect( facade[ 'updateActivity' ] ).toHaveBeenCalledWith( 'a1', expect.objectContaining( { name: 'Hike', description: 'd', duration: 'PT2H', allowedParticipants: { lower: 1, upper: 5 } } ), expect.stringMatching( /^"\d+"$/ ) )
+        expect( facade[ 'updateActivity' ] ).toHaveBeenCalledWith( 'a1', expect.objectContaining( { name: 'Hike', description: 'd', duration: 'PT2H', allowedParticipants: { lower: 1, upper: 5 } } ), WHEN_ETAG )
         expect( facade[ 'createActivity' ] ).not.toHaveBeenCalled()
         expect( back ).toHaveBeenCalledTimes( 1 )
     } )

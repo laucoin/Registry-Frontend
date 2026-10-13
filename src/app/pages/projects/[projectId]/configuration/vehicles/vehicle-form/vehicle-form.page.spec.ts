@@ -14,7 +14,7 @@ import { VehicleFormPage } from '@pages/projects/[projectId]/configuration/vehic
 import { VehicleFormModel } from '@pages/projects/[projectId]/configuration/vehicles/vehicle-form/vehicle.form'
 import { CustomDateFormatPipe } from '@shared/helpers/pipe/custom-date-format.pipe'
 import { autoMock } from '@shared/helpers/testing/auto-mock'
-import { VEHICLE_DTO } from '@shared/helpers/testing/response-fixtures'
+import { VEHICLE_DTO, WHEN_ETAG } from '@shared/helpers/testing/response-fixtures'
 
 interface PageApi {
     submit: () => void
@@ -88,7 +88,7 @@ describe( 'VehicleFormPage', () => {
         page.submit()
 
         // Assert
-        expect( facade[ 'updateVehicle' ] ).toHaveBeenCalledWith( 'v1', expect.objectContaining( { licensePlate: 'AB-123', brand: 'Ford', model: 'T' } ), expect.stringMatching( /^"\d+"$/ ) )
+        expect( facade[ 'updateVehicle' ] ).toHaveBeenCalledWith( 'v1', expect.objectContaining( { licensePlate: 'AB-123', brand: 'Ford', model: 'T' } ), WHEN_ETAG )
         expect( facade[ 'createVehicle' ] ).not.toHaveBeenCalled()
         expect( back ).toHaveBeenCalledTimes( 1 )
     } )

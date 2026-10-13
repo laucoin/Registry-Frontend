@@ -18,7 +18,7 @@ import { ProjectOptionIconPipe } from '@shared/helpers/pipe/project-option-icon.
 import { autoMock } from '@shared/helpers/testing/auto-mock'
 import { projectOptionChecker } from '@shared/helpers/testing/test-fixtures'
 import { ProjectModel } from '@shared/models/model/project.model'
-import { ALERT_DTO, COMMUNICATION_DTO, MOVEMENT_DTO } from '@shared/helpers/testing/response-fixtures'
+import { ALERT_DTO, COMMUNICATION_DTO, MOVEMENT_DTO, WHEN_ETAG } from '@shared/helpers/testing/response-fixtures'
 import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
 import { CommunicationFormComponent } from '@shared/ui/domain/communication-form/communication-form.component'
 
@@ -223,7 +223,7 @@ describe( 'CommunicationFormComponent', () => {
             page.submit()
 
             // Assert
-            expect( facade[ 'updateCommunication' ] ).toHaveBeenCalledWith( 'c1', expect.objectContaining( { dateTime: '2026-01-01T10:00:00.000Z' } ), expect.stringMatching( /^"\d+"$/ ) )
+            expect( facade[ 'updateCommunication' ] ).toHaveBeenCalledWith( 'c1', expect.objectContaining( { dateTime: '2026-01-01T10:00:00.000Z' } ), WHEN_ETAG )
         } )
 
         it( 'creates a new alert when the user asked for one', () => {

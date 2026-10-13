@@ -13,7 +13,7 @@ import { ProjectFacade } from '@pages/projects/data/state/project/project.facade
 import { ProjectFormPage } from '@pages/projects/project-form/project-form.page'
 import { CustomDateFormatPipe } from '@shared/helpers/pipe/custom-date-format.pipe'
 import { autoMock } from '@shared/helpers/testing/auto-mock'
-import { PROJECT_DTO } from '@shared/helpers/testing/response-fixtures'
+import { PROJECT_DTO, WHEN_ETAG } from '@shared/helpers/testing/response-fixtures'
 import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
 import { ProjectModel } from '@shared/models/model/project.model'
 
@@ -224,7 +224,7 @@ describe( 'ProjectFormPage', () => {
             page.submit()
 
             // Assert
-            expect( facade[ 'updateProject' ] ).toHaveBeenCalledWith( 'p1', expect.objectContaining( { name: 'Camp' } ), expect.stringMatching( /^"\d+"$/ ) )
+            expect( facade[ 'updateProject' ] ).toHaveBeenCalledWith( 'p1', expect.objectContaining( { name: 'Camp' } ), WHEN_ETAG )
             expect( back ).toHaveBeenCalledTimes( 1 )
         } )
     } )
