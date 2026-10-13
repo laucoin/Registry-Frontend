@@ -2,8 +2,15 @@ import { inject } from '@angular/core'
 import { patchState, signalStore, withHooks, withMethods, withState } from '@ngrx/signals'
 import { NotificationModel } from '@shared/models/model/notification.model'
 import { ThemeEnum } from '@shared/models/enumeration/theme.enum'
-import { BrowserService } from '@core/browser/browser.service'
+import { BrowserService, PREFERENCE_COOKIE_MAX_AGE_SECONDS } from '@core/browser/browser.service'
 import { ErrorModel } from '@shared/models/model/error.model'
+
+const THEME_COOKIE: string = 'registry-theme'
+
+function storedTheme(browser: BrowserService): ThemeEnum | undefined {
+    const stored: string | undefined = browser.readCookie( THEME_COOKIE )
+    return Object.values( ThemeEnum ).find( (it: ThemeEnum): boolean => it === stored )
+}
 
 interface UiStoreModel {
     theme: ThemeEnum
@@ -15,7 +22,7 @@ interface UiStoreModel {
 
 /**
  * Purpose: Holds the shell display state: theme, screen width, network, language change in flight and error.
- * Scope: Owns that state, follows the viewport width and applies the theme on the document through the browser service.
+ * Scope: Owns that state, remembers the theme in a cookie for the next visit, follows the viewport width and applies the theme on the document through the browser service.
  * Limits: Knows nothing about the user or the session and does not call the backend.
  */
 export const UiStore = signalStore(
@@ -23,7 +30,7 @@ export const UiStore = signalStore(
     withState<UiStoreModel>( () => {
         const browser: BrowserService = inject( BrowserService )
         return {
-            theme: browser.systemTheme,
+            theme: storedTheme( browser ) ?? browser.systemTheme,
             screenWidth: browser.viewportWidth,
             online: undefined,
             pendingLanguage: undefined,
@@ -45,6 +52,7 @@ export const UiStore = signalStore(
         updateNetwork: (online: boolean): void => patchState( store, { online: online } ),
         updateTheme: (theme: ThemeEnum): void => {
             browser.setRootTheme( theme )
+            browser.writeCookie( THEME_COOKIE, theme, PREFERENCE_COOKIE_MAX_AGE_SECONDS )
             patchState( store, { theme: theme } )
         },
     }) ),
@@ -52,6 +60,10 @@ export const UiStore = signalStore(
         let stopFollowingViewport: (() => void) | undefined
         return {
             onInit: (): void => {
+                const remembered: ThemeEnum | undefined = storedTheme( browser )
+                if (remembered) {
+                    browser.setRootTheme( remembered )
+                }
                 stopFollowingViewport = browser.onViewportResize( (width: number): void => patchState( store, { screenWidth: width } ) )
             },
             onDestroy: (): void => stopFollowingViewport?.(),

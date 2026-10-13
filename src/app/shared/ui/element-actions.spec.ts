@@ -30,7 +30,7 @@ const VISIBLE: object = { id: 'e1', visible: true, name: 'x', type: { value: 'IN
 
 const CASES: ElementCase[] = [
     { name: 'user', type: UserElementComponent, facade: UserFacade, inputs: { user: VISIBLE }, deleteCall: 'deleteUser',
-        labels: [ 'update-role', 'disable', 'enable', 'impersonate', 'delete' ] },
+        labels: [ 'update-role', 'disable', 'enable', 'export', 'delete' ] },
 ]
 
 describe( 'element action menus', () => {

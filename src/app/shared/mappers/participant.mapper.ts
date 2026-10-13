@@ -23,7 +23,6 @@ export class ParticipantMapper {
             startAvailability: dto.startAvailability,
             endAvailability: dto.endAvailability,
             user: dto.user ? UserMapper.toModel( dto.user ) : undefined,
-            purged: dto.purged,
         }
     }
 }

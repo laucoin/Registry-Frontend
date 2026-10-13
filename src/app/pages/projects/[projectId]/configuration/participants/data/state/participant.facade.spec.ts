@@ -1,5 +1,6 @@
 import { signal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
+import { BrowserService } from '@core/browser/browser.service'
 import { TranslocoService } from '@jsverse/transloco'
 import { of, Subject } from 'rxjs'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
@@ -20,6 +21,8 @@ describe( 'ParticipantFacade', () => {
     let createParticipant: Mock<ParticipantApi['createParticipant']>
     let updateParticipantById: Mock<ParticipantApi['updateParticipantById']>
     let deleteParticipantById: Mock<ParticipantApi['deleteParticipantById']>
+    let exportParticipantById: Mock<ParticipantApi['exportParticipantById']>
+    let downloadJson: Mock<BrowserService['downloadJson']>
     let notify: Mock<(message: unknown) => void>
 
     beforeEach( () => {
@@ -28,12 +31,14 @@ describe( 'ParticipantFacade', () => {
         createParticipant = vi.fn()
         updateParticipantById = vi.fn()
         deleteParticipantById = vi.fn()
+        exportParticipantById = vi.fn()
+        downloadJson = vi.spyOn( BrowserService.prototype, 'downloadJson' ).mockReset()
         notify = vi.fn()
         TestBed.configureTestingModule( {
             providers: [
                 ParticipantFacade,
                 ParticipantStore,
-                { provide: ParticipantApi, useValue: { findParticipants, createParticipant, updateParticipantById, deleteParticipantById } },
+                { provide: ParticipantApi, useValue: { findParticipants, createParticipant, updateParticipantById, deleteParticipantById, exportParticipantById } },
                 { provide: MovementApi, useValue: { findMovementsContents: vi.fn( () => of( [] ) ) } },
                 { provide: MetadataApi, useValue: { getPresencesStatus: vi.fn( () => of( [] ) ) } },
                 { provide: SessionFacade, useValue: { currentProjectId: signal( 'p1' ) } },
@@ -121,6 +126,19 @@ describe( 'ParticipantFacade', () => {
         expect( deleteParticipantById ).toHaveBeenCalledWith( undefined, 'pa1' )
         expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'participants.notifications.delete.title' } ) )
         expect( findParticipants ).toHaveBeenCalledWith( 'p1', 0, 30, expect.anything() )
+    } )
+
+    it( 'downloads the export of a participant of the selected project', () => {
+        // Arrange
+        const data: unknown = { subjectType: 'PARTICIPANT' }
+        exportParticipantById.mockReturnValue( of( data ) )
+
+        // Act
+        facade.exportParticipant( { id: 'pa1' } as ParticipantModel ).subscribe()
+
+        // Assert
+        expect( exportParticipantById ).toHaveBeenCalledWith( 'p1', 'pa1' )
+        expect( downloadJson ).toHaveBeenCalledWith( data, 'registry-participant-pa1.json' )
     } )
 
     it( 'reloads every shown batch of the movements of a participant in one request', () => {

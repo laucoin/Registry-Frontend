@@ -10,6 +10,8 @@ describe( 'UiStore', () => {
     let setRootTheme: Mock<(theme: ThemeEnum) => void>
     let setRootLanguage: Mock<(language: string) => void>
     let systemTheme: ThemeEnum
+    let readCookie: Mock<(name: string) => string | undefined>
+    let writeCookie: Mock<(name: string, value: string, maxAge: number) => void>
     let resize: (width: number) => void
     let stopResize: Mock<() => void>
 
@@ -22,6 +24,8 @@ describe( 'UiStore', () => {
                         get systemTheme (): ThemeEnum { return systemTheme },
                         viewportWidth: 1024,
                         setRootTheme,
+                        readCookie,
+                        writeCookie,
                         setRootLanguage,
                         onViewportResize: (listener: (width: number) => void): (() => void) => { resize = listener; return stopResize },
                     },
@@ -33,6 +37,8 @@ describe( 'UiStore', () => {
 
     beforeEach( () => {
         setRootTheme = vi.fn()
+        readCookie = vi.fn( (): string | undefined => undefined )
+        writeCookie = vi.fn()
         setRootLanguage = vi.fn()
         stopResize = vi.fn()
         systemTheme = ThemeEnum.LIGHT
@@ -144,5 +150,42 @@ describe( 'UiStore', () => {
 
         // Assert
         expect( stopResize ).toHaveBeenCalledTimes( 1 )
+    } )
+
+    it( 'starts with the theme remembered in the cookie and applies it on the document', () => {
+        // Arrange
+        readCookie.mockReturnValue( ThemeEnum.DARK )
+        systemTheme = ThemeEnum.LIGHT
+
+        // Act
+        store = createStore()
+
+        // Assert
+        expect( store.theme() ).toBe( ThemeEnum.DARK )
+        expect( setRootTheme ).toHaveBeenCalledWith( ThemeEnum.DARK )
+    } )
+
+    it( 'falls back to the system theme and leaves the document untouched when the cookie is unknown', () => {
+        // Arrange
+        readCookie.mockReturnValue( 'unknown' )
+        systemTheme = ThemeEnum.DARK
+
+        // Act
+        store = createStore()
+
+        // Assert
+        expect( store.theme() ).toBe( ThemeEnum.DARK )
+        expect( setRootTheme ).not.toHaveBeenCalled()
+    } )
+
+    it( 'remembers the chosen theme in a cookie', () => {
+        // Arrange
+        store = createStore()
+
+        // Act
+        store.updateTheme( ThemeEnum.LIGHT )
+
+        // Assert
+        expect( writeCookie ).toHaveBeenCalledWith( 'registry-theme', ThemeEnum.LIGHT, 31536000 )
     } )
 } )

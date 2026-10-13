@@ -1,5 +1,6 @@
 import { computed, inject, Injectable, Signal } from '@angular/core'
 import { Observable, tap } from 'rxjs'
+import { BrowserService } from '@core/browser/browser.service'
 import { PageModel } from '@shared/models/model/page.model'
 import { ParticipantModel } from '@shared/models/model/participant.model'
 import { ParticipantDto } from '@pages/projects/[projectId]/configuration/participants/data/dto/participant.dto'
@@ -27,6 +28,8 @@ export class ParticipantFacade extends GenericProjectElementFacade {
     private readonly store: InstanceType<typeof ParticipantStore> = inject( ParticipantStore )
 
     private readonly api: ParticipantApi = inject( ParticipantApi )
+
+    private readonly browser: BrowserService = inject( BrowserService )
 
     public readonly participantsPage: Signal<PageModel<ParticipantModel> | undefined> = this.store.participants.element
 
@@ -198,6 +201,13 @@ export class ParticipantFacade extends GenericProjectElementFacade {
         return this.api.enableParticipantById( this.selectedProjectId(), id ).pipe(
             notifyOnError( this.uiFacade ),
             tap( (enabled: ParticipantModel): void => this.onCommandSuccess( 'enable', enabled ) ),
+        )
+    }
+
+    public exportParticipant (participant: ParticipantModel): Observable<unknown> {
+        return this.api.exportParticipantById( this.selectedProjectId(), participant.id ).pipe(
+            notifyOnError( this.uiFacade ),
+            tap( (data: unknown): void => this.browser.downloadJson( data, `registry-participant-${ participant.id }.json` ) ),
         )
     }
 

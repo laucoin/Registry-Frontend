@@ -144,6 +144,10 @@ export class ParticipantApi extends GenericProjectApi {
         )
     }
 
+    public exportParticipantById(projectId: string | undefined, id: string): Observable<unknown> {
+        return this.http.get<unknown>(`${this.buildRequestBaseUrl(projectId)}/${id}/export`)
+    }
+
     public deleteParticipantById(projectId: string | undefined, id: string): Observable<void> {
         return this.http.delete<void>(`${this.buildRequestBaseUrl(projectId)}/${id}`)
     }

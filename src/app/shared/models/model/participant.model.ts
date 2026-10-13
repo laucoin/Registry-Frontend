@@ -17,5 +17,4 @@ export interface ParticipantModel extends GenericModel {
     startAvailability: CustomDatetimeModel | undefined
     endAvailability: CustomDatetimeModel | undefined
     user: UserModel | undefined
-    purged: boolean
 }

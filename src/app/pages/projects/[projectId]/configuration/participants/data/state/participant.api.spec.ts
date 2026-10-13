@@ -12,6 +12,7 @@ const CASES: ApiCase<ParticipantApi>[] = [
     { name: 'updates an element', method: 'PATCH', url: `${BASE}/pa1`, body: { name: 'y' }, call: (api: ParticipantApi) => api.updateParticipantById( 'p1', 'pa1', { name: 'y' } as never ), response: PARTICIPANT_DTO, verify: expectMapped },
     { name: 'disables an element', method: 'PATCH', url: `${BASE}/pa1/disable`, call: (api: ParticipantApi) => api.disableParticipantById( 'p1', 'pa1' ), response: PARTICIPANT_DTO, verify: expectMapped },
     { name: 'enables an element', method: 'PATCH', url: `${BASE}/pa1/enable`, call: (api: ParticipantApi) => api.enableParticipantById( 'p1', 'pa1' ), response: PARTICIPANT_DTO, verify: expectMapped },
+    { name: 'exports an element', method: 'GET', url: `${BASE}/pa1/export`, call: (api: ParticipantApi) => api.exportParticipantById( 'p1', 'pa1' ) },
     { name: 'deletes an element', method: 'DELETE', url: `${BASE}/pa1`, call: (api: ParticipantApi) => api.deleteParticipantById( 'p1', 'pa1' ) },
     { name: 'searches users with a text', method: 'GET', url: `${BASE}/search/users?textSearched=ada`, call: (api: ParticipantApi) => api.searchUsers( 'p1', 'ada' ), response: [ USER_DTO ], verify: expectMappedList },
     { name: 'searches users without a text', method: 'GET', url: `${BASE}/search/users`, call: (api: ParticipantApi) => api.searchUsers( 'p1', undefined ), response: [ USER_DTO ], verify: expectMappedList },

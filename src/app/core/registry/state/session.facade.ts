@@ -22,6 +22,7 @@ import { PreferencesApi } from '@core/registry/state/preferences.api'
 import { SessionStore } from '@core/registry/state/session.store'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { ProjectApi } from '@pages/projects/data/state/project.api'
+import { UserApi } from '@pages/users/data/state/user.api'
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
 import { GenericHelper } from '@shared/helpers/generic.helper'
 import { ProjectHelper } from '@shared/helpers/project.helper'
@@ -60,6 +61,7 @@ export class SessionFacade {
     private readonly securityApi: SecurityApi = inject(SecurityApi)
     private readonly projectApi: ProjectApi = inject(ProjectApi)
     private readonly preferencesApi: PreferencesApi = inject(PreferencesApi)
+    private readonly userApi: UserApi = inject(UserApi)
 
     private pendingProject: { subscription: Subscription, done: ReplaySubject<void> } | undefined = undefined
 
@@ -111,6 +113,20 @@ export class SessionFacade {
         this.securityApi.getLogoutUri(this.browser.origin).pipe(
             tap((uri: AuthenticationUriModel): void => this.browser.redirect(uri.uri)),
             catchError((error: ErrorModel): Observable<never> => this.globalError$(error)),
+        ).subscribe()
+    }
+
+    public exportAccount(): void {
+        this.userApi.exportCurrentUser().pipe(
+            tap((data: unknown): void => this.browser.downloadJson(data, 'registry-my-data.json')),
+            catchError((error: ErrorModel): Observable<never> => this.reportError$(error)),
+        ).subscribe()
+    }
+
+    public deleteAccount(): void {
+        this.userApi.deleteCurrentUser().pipe(
+            tap((): void => this.logout()),
+            catchError((error: ErrorModel): Observable<never> => this.reportError$(error)),
         ).subscribe()
     }
 

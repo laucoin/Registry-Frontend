@@ -11,7 +11,7 @@ import { UserModel } from '@shared/models/model/user.model'
 
 /**
  * Purpose: Tells which commands a user of the list offers to the signed-in user and runs them.
- * Scope: Builds the action menu (change the role, block, unblock, anonymise, delete) with its confirmations; nobody can act on their own account.
+ * Scope: Builds the action menu (change the role, block, unblock, delete) with its confirmations; nobody can act on their own account.
  * Limits: Holds no state; it only reads the session and calls the user facade. The backend still checks every command.
  */
 @Injectable()
@@ -27,7 +27,6 @@ export class UserActions extends ElementActionsBase<UserModel> {
             this.updateRoleSpec(user, others),
             this.blockSpec(user, others),
             this.unblockSpec(user, others),
-            this.impersonateSpec(user, others),
             this.deleteSpec(user, others),
         ]
     }
@@ -64,17 +63,6 @@ export class UserActions extends ElementActionsBase<UserModel> {
             shown: others && !user.visible,
             allowed: this.hasAuthority(UserAuthorityEnum.REGISTRY_USER_U),
             confirmation: { severity: SeverityEnum.INFO, icon: 'pi pi-info-circle', accept: (): void => this.facade.unblockUser(user.id) },
-        }
-    }
-
-    private impersonateSpec(user: UserModel, others: boolean): ElementActionSpec {
-        return {
-            id: 'impersonate',
-            icon: 'eraser',
-            enabledAction: ElementActionEnum.USER_IMPERSONATE,
-            shown: others,
-            allowed: this.hasAuthority(UserAuthorityEnum.REGISTRY_USER_D),
-            confirmation: { severity: SeverityEnum.DANGER, icon: 'pi pi-exclamation-circle', accept: (): void => this.facade.impersonateUser(user) },
         }
     }
 

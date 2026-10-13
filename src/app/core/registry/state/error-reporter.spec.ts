@@ -15,7 +15,7 @@ describe( 'ErrorReporter', () => {
     beforeEach( () => {
         TestBed.configureTestingModule( {
             providers: [
-                { provide: BrowserService, useValue: { systemTheme: ThemeEnum.LIGHT, viewportWidth: 1024, onViewportResize: (): void => undefined, setRootTheme: (): void => undefined, setRootLanguage: (): void => undefined } },
+                { provide: BrowserService, useValue: { systemTheme: ThemeEnum.LIGHT, viewportWidth: 1024, onViewportResize: (): void => undefined, setRootTheme: (): void => undefined, readCookie: (): undefined => undefined, writeCookie: (): void => undefined, setRootLanguage: (): void => undefined } },
                 { provide: TranslocoService, useValue: { translate: (key: string): string => key } },
             ],
         } )

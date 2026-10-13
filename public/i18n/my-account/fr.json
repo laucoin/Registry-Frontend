@@ -31,17 +31,33 @@
   "personalData": {
     "title": "Mes données personnelles",
     "gdprLabel": "RGPD",
-    "comingSoon": "Bientôt disponible",
     "learnMore": "En savoir plus sur l’usage de tes données",
     "extract": {
-      "title": "Demander un extrait de mes données",
+      "title": "Obtenir un extrait de mes données",
       "description": "Tu recevras par courriel une archive contenant l’ensemble des données liées à ton compte : profil, accès aux projets, présences, mouvements et communications.",
-      "action": "Demander l’extrait"
+      "action": "Télécharger mes données"
     },
     "delete": {
       "title": "Supprimer mon compte",
-      "description": "La suppression efface ton profil et tes accès. Les enregistrements devant être conservés pour des raisons légales sont anonymisés.",
-      "action": "Supprimer mon compte"
+      "description": "Supprime définitivement ton compte Registry : ton profil, tes préférences et tes accès à tes projets seront effacés. Une confirmation te sera demandée.",
+      "adminNote": "Impossible si tu es le dernier administrateur de l’application ou d’un projet : nomme d’abord un autre administrateur, ou supprime le projet.",
+      "action": "Supprimer mon compte",
+      "confirmation": {
+        "title": "Supprimer mon compte",
+        "phrase": "supprimer mon compte",
+        "typeToConfirm": "Pour confirmer, tape « {{phrase}} »",
+        "cancel": "Annuler",
+        "accept": "Supprimer définitivement",
+        "intro": "Tu es sur le point de supprimer définitivement ton compte Registry.",
+        "listIntro": "Seront effacés :",
+        "items": {
+          "profile": "ton profil et tes préférences",
+          "access": "tes accès à tous tes projets (les projets eux-mêmes ne sont pas supprimés)"
+        },
+        "irreversible": "Ces données ne pourront pas être récupérées.",
+        "scope": "Seul ton compte Registry est concerné, pas ton compte auprès de {{organization}}.",
+        "reconnect": "Si tu te reconnectes plus tard, un compte vierge sera créé : tu repartiras de zéro, sans aucun accès à tes anciens projets."
+      }
     }
   }
 }

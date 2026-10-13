@@ -17,5 +17,4 @@ export interface ParticipantResponseDto extends GenericResponseDto {
     startAvailability: CustomDatetimeModel | undefined
     endAvailability: CustomDatetimeModel | undefined
     user: UserResponseDto | undefined
-    purged: boolean
 }

@@ -7,6 +7,7 @@ import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { NotificationModel } from '@shared/models/model/notification.model'
 import { GenericFacade } from '@shared/helpers/facade/generic.facade'
 import { UserApi } from '@pages/users/data/state/user.api'
+import { BrowserService } from '@core/browser/browser.service'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { StateHelper } from '@shared/helpers/state/state.helper'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
@@ -24,6 +25,7 @@ export class UserFacade extends GenericFacade {
     private readonly store: InstanceType<typeof UserStore> = inject( UserStore )
     private readonly api: UserApi = inject( UserApi )
     private readonly uiFacade: UiFacade = inject( UiFacade )
+    private readonly browser: BrowserService = inject( BrowserService )
 
     public readonly usersPage: Signal<PageModel<UserModel> | undefined> = this.store.users.element
 
@@ -114,11 +116,10 @@ export class UserFacade extends GenericFacade {
         ).subscribe()
     }
 
-    public impersonateUser (user: UserModel): void {
-        this.api.impersonateUserById( user.id ).pipe(
-            this.trackUserLoader,
+    public exportUser (user: UserModel): void {
+        this.api.exportUserById( user.id ).pipe(
             notifyOnError( this.uiFacade ),
-            tap( (): void => this.onCommandSuccess( 'impersonate', user ) ),
+            tap( (data: unknown): void => this.browser.downloadJson( data, `registry-user-${ user.id }.json` ) ),
         ).subscribe()
     }
 

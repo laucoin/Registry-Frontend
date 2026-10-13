@@ -14,6 +14,7 @@ import { SessionStore } from '@core/registry/state/session.store'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { ErrorReporter } from '@core/registry/state/error-reporter'
 import { ProjectApi } from '@pages/projects/data/state/project.api'
+import { UserApi } from '@pages/users/data/state/user.api'
 import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
 import { ThemeEnum } from '@shared/models/enumeration/theme.enum'
 import { CurrentUserModel } from '@shared/models/model/current-user.model'
@@ -44,6 +45,9 @@ describe( 'SessionFacade', () => {
     let updateThemePreference: Mock<PreferencesApi['updateTheme']>
     let updateLanguagePreference: Mock<PreferencesApi['updateLanguage']>
     let findProjectById: Mock<ProjectApi['findProjectById']>
+    let deleteCurrentUser: Mock<UserApi['deleteCurrentUser']>
+    let exportCurrentUser: Mock<UserApi['exportCurrentUser']>
+    let downloadJson: Mock<BrowserService['downloadJson']>
 
     let navigateByUrl: Mock<Router['navigateByUrl']>
     let applyLanguage: Mock<LanguageService['apply']>
@@ -66,6 +70,9 @@ describe( 'SessionFacade', () => {
         updateThemePreference = vi.fn( () => of( { userId: 'u1', theme: 'DARK', language: 'fr' } ) )
         updateLanguagePreference = vi.fn( () => of( { userId: 'u1', theme: 'LIGHT', language: 'en' } ) )
         findProjectById = vi.fn( () => of( { id: 'p1' } as ProjectModel ) )
+        deleteCurrentUser = vi.fn( () => of( undefined ) )
+        exportCurrentUser = vi.fn( () => of( { subjectType: 'USER' } ) )
+        downloadJson = vi.fn()
     }
 
     function mockCollaborators (): void {
@@ -88,6 +95,7 @@ describe( 'SessionFacade', () => {
             { provide: SecurityApi, useValue: { getLoginUri, getLogoutUri, fetchToken, fetchCurrentUser, refreshToken } },
             { provide: PreferencesApi, useValue: { updateTheme: updateThemePreference, updateLanguage: updateLanguagePreference } },
             { provide: ProjectApi, useValue: { findProjectById: findProjectById } },
+            { provide: UserApi, useValue: { deleteCurrentUser, exportCurrentUser } },
         ]
     }
 
@@ -95,7 +103,7 @@ describe( 'SessionFacade', () => {
         return [
             { provide: ErrorReporter, useValue: { setGlobalError, notify: vi.fn() } },
             { provide: UiFacade, useValue: { theme, setGlobalError, updateTheme, notify, startLanguageChange, stopLanguageChange } },
-            { provide: BrowserService, useValue: { pathname: '/current', origin: 'http://app.test', redirect, reload } },
+            { provide: BrowserService, useValue: { pathname: '/current', origin: 'http://app.test', redirect, reload, downloadJson } },
             { provide: Router, useValue: { navigateByUrl } },
             { provide: LanguageService, useValue: { activeLanguage: 'fr', apply: applyLanguage, remember: rememberLanguage } },
             { provide: ProfileResetService, useValue: { resetAll } },
@@ -149,6 +157,57 @@ describe( 'SessionFacade', () => {
 
             // Assert
             expect( setGlobalError ).toHaveBeenCalledWith( FAILURE )
+            expect( redirect ).not.toHaveBeenCalled()
+        } )
+    } )
+
+    describe( 'exportAccount', () => {
+        it( 'downloads the data of the signed-in user', () => {
+            // Arrange
+            const expectedFile: string = 'registry-my-data.json'
+
+            // Act
+            facade.exportAccount()
+
+            // Assert
+            expect( downloadJson ).toHaveBeenCalledWith( { subjectType: 'USER' }, expectedFile )
+        } )
+
+        it( 'notifies the error and downloads nothing when the export fails', () => {
+            // Arrange
+            exportCurrentUser.mockReturnValue( failing( FAILURE ) )
+
+            // Act
+            facade.exportAccount()
+
+            // Assert
+            expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { detail: FAILURE.message } ) )
+            expect( downloadJson ).not.toHaveBeenCalled()
+        } )
+    } )
+
+    describe( 'deleteAccount', () => {
+        it( 'deletes the account then signs out', () => {
+            // Arrange
+            const expectedUrl: string = '#logout'
+
+            // Act
+            facade.deleteAccount()
+
+            // Assert
+            expect( deleteCurrentUser ).toHaveBeenCalledOnce()
+            expect( redirect ).toHaveBeenCalledWith( expectedUrl )
+        } )
+
+        it( 'notifies the error and stays signed in when the deletion fails', () => {
+            // Arrange
+            deleteCurrentUser.mockReturnValue( failing( FAILURE ) )
+
+            // Act
+            facade.deleteAccount()
+
+            // Assert
+            expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { detail: FAILURE.message } ) )
             expect( redirect ).not.toHaveBeenCalled()
         } )
     } )

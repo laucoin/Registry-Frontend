@@ -7,20 +7,22 @@ import { TranslocoService } from '@jsverse/transloco'
 import { RegistryConfig } from '@core/config/registry.config'
 import { ConfigModel } from '@core/config/model/config.model'
 import { EnvironmentModel } from '@core/config/model/environment.model'
-import { LocalStorageUtils } from '@shared/helpers/local-storage.helper'
-import { LOCALE } from '@shared/helpers/request.helper'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 interface RegistryConfigInternals {
     loading: Promise<unknown> | undefined
     load: () => Promise<unknown>
-    resolveLocale: (preferredLanguages: readonly string[]) => string
+    resolveLocale: (browser: Partial<BrowserService>) => string
 }
 
 describe( 'RegistryConfig', () => {
     const internals: RegistryConfigInternals = RegistryConfig as unknown as RegistryConfigInternals
     const CONFIG: ConfigModel = { defaultLanguage: 'fr', languages: [ 'fr', 'en' ], application: { name: 'Registry' } } as unknown as ConfigModel
     const ENVIRONMENT: EnvironmentModel = { production: true } as unknown as EnvironmentModel
+
+    function fakeBrowser (remembered: string | undefined, preferredLanguages: string[]): Partial<BrowserService> {
+        return { readCookie: (): string | undefined => remembered, writeCookie: vi.fn(), preferredLanguages }
+    }
 
     function stubFetch (ok: boolean = true): void {
         vi.stubGlobal( 'fetch', vi.fn( (url: string) => Promise.resolve( {
@@ -33,7 +35,6 @@ describe( 'RegistryConfig', () => {
     beforeEach( () => {
         internals.loading = undefined
         RegistryConfig.config = CONFIG
-        localStorage.clear()
     } )
 
     afterEach( () => {
@@ -75,12 +76,12 @@ describe( 'RegistryConfig', () => {
         await expect( loading ).rejects.toThrow( 'Unable to load settings/config.json (404)' )
     } )
 
-    it( 'keeps the language remembered in the local storage when it is available', () => {
+    it( 'keeps the language remembered in the cookie when it is available', () => {
         // Arrange
-        LocalStorageUtils.set( LOCALE, 'en' )
+        const browser: Partial<BrowserService> = fakeBrowser( 'en', [ 'fr' ] )
 
         // Act
-        const locale: string = internals.resolveLocale( [ 'fr' ] )
+        const locale: string = internals.resolveLocale( browser )
 
         // Assert
         expect( locale ).toBe( 'en' )
@@ -88,10 +89,10 @@ describe( 'RegistryConfig', () => {
 
     it( 'forgets a remembered language that is no longer available', () => {
         // Arrange
-        LocalStorageUtils.set( LOCALE, 'de' )
+        const browser: Partial<BrowserService> = fakeBrowser( 'de', [ 'en' ] )
 
         // Act
-        const locale: string = internals.resolveLocale( [ 'en' ] )
+        const locale: string = internals.resolveLocale( browser )
 
         // Assert
         expect( locale ).toBe( 'en' )
@@ -99,10 +100,10 @@ describe( 'RegistryConfig', () => {
 
     it( 'falls back on the default language when no preferred language is available', () => {
         // Arrange
-        const preferredLanguages: string[] = [ 'de', 'es' ]
+        const browser: Partial<BrowserService> = fakeBrowser( undefined, [ 'de', 'es' ] )
 
         // Act
-        const locale: string = internals.resolveLocale( preferredLanguages )
+        const locale: string = internals.resolveLocale( browser )
 
         // Assert
         expect( locale ).toBe( 'fr' )
@@ -116,7 +117,7 @@ describe( 'RegistryConfig', () => {
             providers: [
                 provideHttpClient(),
                 provideHttpClientTesting(),
-                { provide: BrowserService, useValue: { preferredLanguages: [ 'en' ], setRootLanguage } },
+                { provide: BrowserService, useValue: { preferredLanguages: [ 'en' ], setRootLanguage, readCookie: (): undefined => undefined, writeCookie: vi.fn() } },
                 ...RegistryConfig.provideTranslatorService(),
             ],
         } )

@@ -73,6 +73,18 @@ describe( 'backendHandler', () => {
         expect( request.request.withCredentials ).toBe( true )
     } )
 
+    it( 'sends the metadata requests without credentials', () => {
+        // Arrange
+        const url: string = `${BACKEND_URL}/api/v2/metadata/profiles/status`
+
+        // Act
+        http.get( url ).subscribe()
+        const request: TestRequest = controller.expectOne( url )
+
+        // Assert
+        expect( request.request.withCredentials ).toBe( false )
+    } )
+
     it( 'asks the backend for the active display language', () => {
         // Arrange
         const url: string = `${BACKEND_URL}/data`

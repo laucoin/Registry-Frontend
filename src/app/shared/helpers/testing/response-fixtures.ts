@@ -23,7 +23,7 @@ const GENERIC: { id: string, visible: boolean, creation: typeof HISTORY, lastEdi
 }
 
 export const USER_DTO: UserResponseDto = {
-    ...GENERIC, id: 'u1', firstName: 'Grace', lastName: 'H', email: 'g@x.test', role: { label: 'Admin', value: 'ADMIN' }, birthday: WHEN, lastLogin: WHEN, purged: false,
+    ...GENERIC, id: 'u1', firstName: 'Grace', lastName: 'H', email: 'g@x.test', role: { label: 'Admin', value: 'ADMIN' }, birthday: WHEN, lastLogin: WHEN,
 }
 
 export const PROJECT_DTO: ProjectResponseDto = {
@@ -33,7 +33,7 @@ export const PROJECT_DTO: ProjectResponseDto = {
 export const PARTICIPANT_DTO: ParticipantResponseDto = {
     ...GENERIC, id: 'pa1', firstName: 'A', lastName: 'B', birthday: '2010-01-01', major: false,
     type: { label: 'Registered', value: 'REGISTERED' as never }, groups: undefined, status: { label: 'In', value: 'IN' as never },
-    startAvailability: undefined, endAvailability: undefined, user: USER_DTO, purged: false,
+    startAvailability: undefined, endAvailability: undefined, user: USER_DTO,
 }
 
 export const GROUP_DTO: GroupResponseDto = {

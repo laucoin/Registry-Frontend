@@ -8,5 +8,4 @@ export interface UserResponseDto extends GenericResponseDto {
     role: SelectOptionModel<string> | undefined
     birthday: Date
     lastLogin?: Date
-    purged: boolean
 }

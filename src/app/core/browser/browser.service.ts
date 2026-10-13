@@ -4,10 +4,11 @@ import { ThemeEnum } from '@shared/models/enumeration/theme.enum'
 const THEME_ATTRIBUTE: string = 'data-theme'
 const HIGHLIGHT_CLASS: string = 'highlight'
 const HIGHLIGHT_DURATION_MS: number = 1000
+export const PREFERENCE_COOKIE_MAX_AGE_SECONDS: number = 60 * 60 * 24 * 365
 
 /**
  * Purpose: Single access point to the browser globals the application depends on.
- * Scope: Wraps location, viewport, scroll, color scheme, root element attributes and element lookup.
+ * Scope: Wraps location, viewport, scroll, color scheme, cookies, root element attributes and element lookup.
  * Limits: Holds no state and applies no application logic; it does not manage storage (see the storage helpers).
  */
 @Injectable( { providedIn: 'root' } )
@@ -60,6 +61,15 @@ export class BrowserService {
         window.location.href = url
     }
 
+    public downloadJson (content: unknown, filename: string): void {
+        const url: string = URL.createObjectURL( new Blob( [ JSON.stringify( content, null, 2 ) ], { type: 'application/json' } ) )
+        const link: HTMLAnchorElement = document.createElement( 'a' )
+        link.href = url
+        link.download = filename
+        link.click()
+        URL.revokeObjectURL( url )
+    }
+
     public reload (): void {
         location.reload()
     }
@@ -70,6 +80,17 @@ export class BrowserService {
         } else {
             document.documentElement.setAttribute( THEME_ATTRIBUTE, theme )
         }
+    }
+
+    public readCookie (name: string): string | undefined {
+        const prefix: string = `${ name }=`
+        const entry: string | undefined = document.cookie.split( '; ' ).find( (it: string): boolean => it.startsWith( prefix ) )
+        return entry ? decodeURIComponent( entry.substring( prefix.length ) ) : undefined
+    }
+
+    public writeCookie (name: string, value: string, maxAgeSeconds: number): void {
+        const secure: string = location.protocol === 'https:' ? '; Secure' : ''
+        document.cookie = `${ name }=${ encodeURIComponent( value ) }; Path=/; Max-Age=${ maxAgeSeconds }; SameSite=Lax${ secure }`
     }
 
     public setRootLanguage (language: string): void {

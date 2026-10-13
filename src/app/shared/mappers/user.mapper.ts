@@ -17,7 +17,6 @@ export class UserMapper {
             role: dto.role,
             birthday: dto.birthday,
             lastLogin: dto.lastLogin,
-            purged: dto.purged,
         }
     }
 }
