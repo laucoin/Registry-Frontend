@@ -208,6 +208,21 @@ describe( 'paged store methods', () => {
             expect( findMovementsContents ).toHaveBeenCalledWith( 'p1', [ 'm2' ], true )
         } )
 
+        it( 'keeps the contents already loaded when the next page arrives', () => {
+            // Arrange
+            movementsSource.mockReturnValueOnce( of( pageOf<MovementModel>( [ { id: 'm1' } as MovementModel ] ) ) )
+            movementsSource.mockReturnValueOnce( of( pageOf<MovementModel>( [ { id: 'm2' } as MovementModel ], 1 ) ) )
+            findMovementsContents.mockReturnValueOnce( of( [ { first: 'm1', second: [ { id: 'c' } as unknown as MovementContentModel ] } ] ) )
+            store.fetchMovements( { projectId: 'p1' } )
+
+            // Act
+            store.fetchMovements( { projectId: 'p1' } )
+
+            // Assert
+            expect( store.movements.element()?.content[ 0 ].content ).toHaveLength( 1 )
+            expect( store.movements.element()?.content[ 1 ].content ).toEqual( [] )
+        } )
+
         it( 'does not fetch contents for an empty page', () => {
             // Arrange
             movementsSource.mockReturnValue( of( pageOf<MovementModel>( [] ) ) )

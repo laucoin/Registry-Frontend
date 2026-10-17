@@ -16,7 +16,7 @@ export class MovementHelper {
     ): MovementModel[] {
         return movements.map( (movement: MovementModel): MovementModel => ({
             ...movement,
-            content: contents.find( (content: PairModel<MovementContentModel[]>): boolean => content.first === movement.id )?.second ?? [],
+            content: contents.find( (content: PairModel<MovementContentModel[]>): boolean => content.first === movement.id )?.second ?? movement.content ?? [],
         }) )
     }
 

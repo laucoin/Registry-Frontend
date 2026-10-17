@@ -14,7 +14,7 @@ function movementWith (...contents: MovementContentModel[]): MovementModel {
 }
 
 describe( 'MovementHelper', () => {
-    it( 'rebuilds every movement with its own content and an empty list when none matches', () => {
+    it( 'rebuilds every movement with its own content and an empty list when none is loaded or fetched', () => {
         // Arrange
         const movements: MovementModel[] = [ { id: 'm1' } as MovementModel, { id: 'm2' } as MovementModel ]
         const contents: PairModel<MovementContentModel[]>[] = [ { first: 'm2', second: [ content( 'c1', true ) ] } ]
@@ -24,6 +24,20 @@ describe( 'MovementHelper', () => {
 
         // Assert
         expect( rebuilt[ 0 ].content ).toEqual( [] )
+        expect( rebuilt[ 1 ].content ).toHaveLength( 1 )
+    } )
+
+    it( 'keeps the loaded content of the movements absent from the fetched contents', () => {
+        // Arrange
+        const loaded: MovementContentModel[] = [ content( 'c0', true ) ]
+        const movements: MovementModel[] = [ { id: 'm1', content: loaded } as MovementModel, { id: 'm2' } as MovementModel ]
+        const contents: PairModel<MovementContentModel[]>[] = [ { first: 'm2', second: [ content( 'c1', true ) ] } ]
+
+        // Act
+        const rebuilt: MovementModel[] = MovementHelper.rebuildPageWithContent( movements, contents )
+
+        // Assert
+        expect( rebuilt[ 0 ].content ).toBe( loaded )
         expect( rebuilt[ 1 ].content ).toHaveLength( 1 )
     } )
 
