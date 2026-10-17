@@ -7,7 +7,6 @@ import { ActivityStore } from '@pages/projects/[projectId]/configuration/activit
 import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
 import { ERROR_500, ERROR_503, failing, pageOf } from '@shared/helpers/testing/test-fixtures'
 import { ActivityModel } from '@shared/models/model/activity.model'
-import { ErrorModel } from '@shared/models/model/error.model'
 import { MovementContentModel } from '@shared/models/model/movement-content.model'
 import { MovementModel } from '@shared/models/model/movement.model'
 import { PairModel } from '@shared/models/model/pair.model'
@@ -17,21 +16,19 @@ describe( 'ActivityStore', () => {
     let findActivities: Mock<ActivityApi['findActivities']>
     let findActivityMovements: Mock<ActivityApi['findActivityMovements']>
     let findMovementsContents: Mock<MovementApi['findMovementsContents']>
-    let setGlobalError: Mock<(error: ErrorModel) => void>
     let notify: Mock<(message: unknown) => void>
 
     beforeEach( () => {
         findActivities = vi.fn()
         findActivityMovements = vi.fn()
         findMovementsContents = vi.fn( () => of( [] ) )
-        setGlobalError = vi.fn()
         notify = vi.fn()
         TestBed.configureTestingModule( {
             providers: [
                 ActivityStore,
                 { provide: ActivityApi, useValue: { findActivities, findActivityMovements } },
                 { provide: MovementApi, useValue: { findMovementsContents } },
-                { provide: ErrorReporter, useValue: { setGlobalError, notify } },
+                { provide: ErrorReporter, useValue: { notify } },
             ],
         } )
         store = TestBed.inject( ActivityStore )
@@ -75,7 +72,7 @@ describe( 'ActivityStore', () => {
         expect( store.movements.error() ).toBeUndefined()
     } )
 
-    it( 'reports a 503 on the activities fetch as the global error', () => {
+    it( 'keeps a 503 failure in its block', () => {
         // Arrange
         findActivities.mockReturnValue( failing( ERROR_503 ) )
 
@@ -83,7 +80,7 @@ describe( 'ActivityStore', () => {
         store.fetchActivitiesPage( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
-        expect( setGlobalError ).toHaveBeenCalledWith( ERROR_503 )
+        expect( store.activities.error() ).toBeDefined()
     } )
 
     it( 'loads the movements of an activity then fetches their contents', () => {

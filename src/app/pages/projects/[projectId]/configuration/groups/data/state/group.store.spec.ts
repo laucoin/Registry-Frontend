@@ -17,17 +17,15 @@ describe( 'GroupStore', () => {
     let store: InstanceType<typeof GroupStore>
     let findGroups: Mock<GroupApi['findGroups']>
     let findGroupMembersByGroupId: Mock<GroupApi['findGroupMembersByGroupId']>
-    let setGlobalError: Mock<(error: ErrorModel) => void>
 
     beforeEach( () => {
         findGroups = vi.fn()
         findGroupMembersByGroupId = vi.fn()
-        setGlobalError = vi.fn()
         TestBed.configureTestingModule( {
             providers: [
                 GroupStore,
                 { provide: GroupApi, useValue: { findGroups, findGroupMembersByGroupId } },
-                { provide: ErrorReporter, useValue: { setGlobalError, notify: vi.fn() } },
+                { provide: ErrorReporter, useValue: { notify: vi.fn() } },
             ],
         } )
         store = TestBed.inject( GroupStore )
@@ -74,7 +72,7 @@ describe( 'GroupStore', () => {
         expect( store.groups.loading() ).toBe( false )
     } )
 
-    it( 'reports a 503 globally and leaves the groups block untouched', () => {
+    it( 'keeps a 503 failure in its block', () => {
         // Arrange
         const error: ErrorModel = { status: 503, title: 'Down', message: 'Down' } as ErrorModel
         findGroups.mockReturnValue( throwError( (): ErrorModel => error ) )
@@ -83,8 +81,7 @@ describe( 'GroupStore', () => {
         store.fetchGroupsPage( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
-        expect( setGlobalError ).toHaveBeenCalledWith( error )
-        expect( store.groups.error() ).toBeUndefined()
+        expect( store.groups.error() ).toBeDefined()
     } )
 
     it( 'keeps fetching after a failure', () => {

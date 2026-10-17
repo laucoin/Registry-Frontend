@@ -11,7 +11,7 @@ import { MovementModel } from '@shared/models/model/movement.model'
 import { DateHelper } from '@shared/helpers/date.helper'
 import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum'
 import { VehicleApi } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.api'
-import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/rx.helper'
+import { notifyOnError } from '@shared/helpers/rx.helper'
 import { CumulativePageHelper } from '@shared/helpers/store/cumulative-page.helper'
 
 /**
@@ -140,14 +140,12 @@ export class VehicleFacade extends GenericProjectElementFacade {
 
     public createVehicle (vehicle: VehicleDto): Observable<VehicleModel> {
         return this.api.createVehicle( this.selectedProjectId(), vehicle ).pipe(
-            notifyUnavailableOnly( this.uiFacade ),
             tap( (created: VehicleModel): void => this.onCommandSuccess( 'create', created ) ),
         )
     }
 
     public updateVehicle (id: string, vehicle: VehicleDto, ifMatch?: string): Observable<VehicleModel> {
         return this.api.updateVehicleById( this.selectedProjectId(), id, vehicle, ifMatch ).pipe(
-            notifyUnavailableOnly( this.uiFacade ),
             tap( (updated: VehicleModel): void => this.onCommandSuccess( 'edit', updated ) ),
         )
     }

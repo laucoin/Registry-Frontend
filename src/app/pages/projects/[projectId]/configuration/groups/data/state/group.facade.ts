@@ -10,7 +10,7 @@ import { GroupModel } from '@shared/models/model/group.model'
 import { GroupStore } from '@pages/projects/[projectId]/configuration/groups/data/state/group.store'
 import { DateHelper } from '@shared/helpers/date.helper'
 import { GroupApi } from '@pages/projects/[projectId]/configuration/groups/data/state/group.api'
-import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/rx.helper'
+import { notifyOnError } from '@shared/helpers/rx.helper'
 import { CommandEvent } from '@shared/helpers/facade/command-event.service'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { AddedGroupMembersDto } from '@shared/models/dto/added-group-members.dto'
@@ -153,14 +153,12 @@ export class GroupFacade extends GenericProjectElementFacade {
 
     public createGroup (group: GroupDto): Observable<GroupModel> {
         return this.api.createGroup( this.selectedProjectId(), group ).pipe(
-            notifyUnavailableOnly( this.uiFacade ),
             tap( (created: GroupModel): void => this.onCommandSuccess( 'create', created ) ),
         )
     }
 
     public updateGroup (id: string, group: GroupDto, ifMatch?: string): Observable<GroupModel> {
         return this.api.updateGroupById( this.selectedProjectId(), id, group, ifMatch ).pipe(
-            notifyUnavailableOnly( this.uiFacade ),
             tap( (updated: GroupModel): void => this.onCommandSuccess( 'update', updated ) ),
         )
     }

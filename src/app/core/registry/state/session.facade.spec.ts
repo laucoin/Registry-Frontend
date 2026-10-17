@@ -400,7 +400,7 @@ describe( 'SessionFacade', () => {
             } ) )
         } )
 
-        it( 'reports an unavailable backend globally when saving the theme fails', () => {
+        it( 'notifies that the theme was not saved when the backend is unavailable', () => {
             // Arrange
             updateThemePreference.mockReturnValue( failing( UNAVAILABLE ) )
 
@@ -408,8 +408,7 @@ describe( 'SessionFacade', () => {
             facade.updateCurrentUserTheme( ThemeEnum.DARK )
 
             // Assert
-            expect( setGlobalError ).toHaveBeenCalledWith( UNAVAILABLE )
-            expect( notify ).not.toHaveBeenCalled()
+            expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'global.notifications.THEME_SAVE_FAILED.title' } ) )
         } )
 
         it( 'offers the light, dark and system themes', () => {

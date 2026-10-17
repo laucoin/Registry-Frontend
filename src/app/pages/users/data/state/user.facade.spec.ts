@@ -32,7 +32,7 @@ describe( 'UserFacade', () => {
             providers: [
                 UserFacade,
                 { provide: UserApi, useValue: { findUsers, blockUserById, updateUserRole, deleteUserById, exportUserById } },
-                { provide: UiFacade, useValue: { notify, setGlobalError: vi.fn() } },
+                { provide: UiFacade, useValue: { notify } },
                 { provide: TranslocoService, useValue: { translate: (key: string): string => `t:${key}` } },
             ],
         } )

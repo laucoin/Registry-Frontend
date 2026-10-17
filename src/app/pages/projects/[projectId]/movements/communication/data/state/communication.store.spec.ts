@@ -8,7 +8,6 @@ import { CommunicationStore } from '@pages/projects/[projectId]/movements/commun
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
 import { ERROR_500, ERROR_503, failing, pageOf } from '@shared/helpers/testing/test-fixtures'
 import { AlertModel } from '@shared/models/model/alert.model'
-import { ErrorModel } from '@shared/models/model/error.model'
 import { MovementModel } from '@shared/models/model/movement.model'
 
 describe( 'CommunicationStore', () => {
@@ -17,7 +16,6 @@ describe( 'CommunicationStore', () => {
     let findCommunicationById: Mock<CommunicationApi['findCommunicationById']>
     let searchMovements: Mock<CommunicationApi['searchMovements']>
     let searchAlerts: Mock<CommunicationApi['searchAlerts']>
-    let setGlobalError: Mock<(error: ErrorModel) => void>
     let notify: Mock<(message: unknown) => void>
 
     beforeEach( () => {
@@ -25,14 +23,13 @@ describe( 'CommunicationStore', () => {
         findCommunicationById = vi.fn()
         searchMovements = vi.fn()
         searchAlerts = vi.fn()
-        setGlobalError = vi.fn()
         notify = vi.fn()
         TestBed.configureTestingModule( {
             providers: [
                 CommunicationStore,
                 { provide: CommunicationApi, useValue: { findCommunications, findCommunicationById, searchMovements, searchAlerts } },
                 { provide: DateFormatPipe, useValue: { transform: (): string => '01/01' } },
-                { provide: ErrorReporter, useValue: { setGlobalError, notify } },
+                { provide: ErrorReporter, useValue: { notify } },
             ],
         } )
         store = TestBed.inject( CommunicationStore )
@@ -61,7 +58,7 @@ describe( 'CommunicationStore', () => {
         expect( store.communications.error()?.summary ).toBe( 'Title' )
     } )
 
-    it( 'reports a 503 on the communications fetch as the global error', () => {
+    it( 'keeps a 503 failure in its block', () => {
         // Arrange
         findCommunications.mockReturnValue( failing( ERROR_503 ) )
 
@@ -69,7 +66,7 @@ describe( 'CommunicationStore', () => {
         store.fetchCommunicationsPage( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
-        expect( setGlobalError ).toHaveBeenCalledWith( ERROR_503 )
+        expect( store.communications.error() ).toBeDefined()
     } )
 
     it( 'loads a single communication and ends the loading state', () => {

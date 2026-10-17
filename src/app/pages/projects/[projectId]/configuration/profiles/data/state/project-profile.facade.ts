@@ -13,7 +13,7 @@ import { UserModel } from '@shared/models/model/user.model'
 import { DateHelper } from '@shared/helpers/date.helper'
 import { ProfileStatusEnum } from '@shared/models/enumeration/profile-status.enum'
 import { ProjectProfileApi } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.api'
-import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/rx.helper'
+import { notifyOnError } from '@shared/helpers/rx.helper'
 import { CommandEvent } from '@shared/helpers/facade/command-event.service'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { CreatedProjectProfiles } from '@pages/projects/[projectId]/configuration/profiles/data/dto/created-project-profiles.dto'
@@ -100,7 +100,6 @@ export class ProjectProfileFacade extends GenericProjectElementFacade {
 
     public createProjectProfiles (projectProfiles: ProjectProfilesDto): Observable<CreatedProjectProfiles> {
         return this.api.createProjectProfiles( this.selectedProjectId(), projectProfiles ).pipe(
-            notifyUnavailableOnly( this.uiFacade ),
             tap( (creationStatus: CreatedProjectProfiles): void => {
                 this.notifyCreation( creationStatus )
                 this.refreshPage()
@@ -141,7 +140,6 @@ export class ProjectProfileFacade extends GenericProjectElementFacade {
 
     public updateProjectProfile (id: string, projectProfile: ProjectProfileDto, ifMatch?: string): Observable<ProjectProfileModel> {
         return this.api.updateProjectProfileById( this.selectedProjectId(), id, projectProfile, ifMatch ).pipe(
-            notifyUnavailableOnly( this.uiFacade ),
             tap( (updated: ProjectProfileModel): void => this.onCommandSuccess( 'update', updated ) ),
         )
     }

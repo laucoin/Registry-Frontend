@@ -5,7 +5,6 @@ import { ErrorReporter } from '@core/registry/state/error-reporter'
 import { UserApi } from '@pages/users/data/state/user.api'
 import { UserStore } from '@pages/users/data/state/user.store'
 import { ERROR_500, ERROR_503, failing, pageOf } from '@shared/helpers/testing/test-fixtures'
-import { ErrorModel } from '@shared/models/model/error.model'
 import { UserModel } from '@shared/models/model/user.model'
 
 describe( 'UserStore', () => {
@@ -13,19 +12,17 @@ describe( 'UserStore', () => {
     let findUsers: Mock<UserApi['findUsers']>
     let findUserById: Mock<UserApi['findUserById']>
     let getAssignableUserRoles: Mock<UserApi['getAssignableUserRoles']>
-    let setGlobalError: Mock<(error: ErrorModel) => void>
     let notify: Mock<(message: unknown) => void>
 
     beforeEach( () => {
         findUsers = vi.fn()
         findUserById = vi.fn()
         getAssignableUserRoles = vi.fn()
-        setGlobalError = vi.fn()
         notify = vi.fn()
         TestBed.configureTestingModule( {
             providers: [
                 { provide: UserApi, useValue: { findUsers, findUserById, getAssignableUserRoles } },
-                { provide: ErrorReporter, useValue: { setGlobalError, notify } },
+                { provide: ErrorReporter, useValue: { notify } },
             ],
         } )
         store = TestBed.inject( UserStore )
@@ -71,7 +68,7 @@ describe( 'UserStore', () => {
         expect( store.users.element() ).toBeUndefined()
     } )
 
-    it( 'reports a 503 as the global error', () => {
+    it( 'keeps a 503 failure in its block', () => {
         // Arrange
         findUsers.mockReturnValue( failing( ERROR_503 ) )
 
@@ -79,8 +76,7 @@ describe( 'UserStore', () => {
         store.fetchUsersPage( { page: 0, size: 10 } )
 
         // Assert
-        expect( setGlobalError ).toHaveBeenCalledWith( ERROR_503 )
-        expect( store.users.error() ).toBeUndefined()
+        expect( store.users.error() ).toBeDefined()
     } )
 
     it( 'loads a single user and ends the loading state', () => {

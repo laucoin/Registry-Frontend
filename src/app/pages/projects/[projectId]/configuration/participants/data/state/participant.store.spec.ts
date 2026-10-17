@@ -8,7 +8,6 @@ import { ParticipantApi } from '@pages/projects/[projectId]/configuration/partic
 import { ParticipantStore } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.store'
 import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
 import { ERROR_500, ERROR_503, failing, pageOf } from '@shared/helpers/testing/test-fixtures'
-import { ErrorModel } from '@shared/models/model/error.model'
 import { GroupModel } from '@shared/models/model/group.model'
 import { MovementModel } from '@shared/models/model/movement.model'
 import { ParticipantModel } from '@shared/models/model/participant.model'
@@ -21,7 +20,6 @@ describe( 'ParticipantStore', () => {
     let searchUsers: Mock<ParticipantApi['searchUsers']>
     let searchGroups: Mock<ParticipantApi['searchGroups']>
     let findMovementsContents: Mock<MovementApi['findMovementsContents']>
-    let setGlobalError: Mock<(error: ErrorModel) => void>
     let notify: Mock<(message: unknown) => void>
 
     beforeEach( () => {
@@ -30,7 +28,6 @@ describe( 'ParticipantStore', () => {
         searchUsers = vi.fn()
         searchGroups = vi.fn()
         findMovementsContents = vi.fn( () => of( [] ) )
-        setGlobalError = vi.fn()
         notify = vi.fn()
         TestBed.configureTestingModule( {
             providers: [
@@ -38,7 +35,7 @@ describe( 'ParticipantStore', () => {
                 { provide: ParticipantApi, useValue: { findParticipants, findParticipantMovements, searchUsers, searchGroups } },
                 { provide: MovementApi, useValue: { findMovementsContents } },
                 { provide: MetadataApi, useValue: { getPresencesStatus: vi.fn( () => of( [] ) ) } },
-                { provide: ErrorReporter, useValue: { setGlobalError, notify } },
+                { provide: ErrorReporter, useValue: { notify } },
                 { provide: TranslocoService, useValue: { langChanges$: new Subject<string>().asObservable() } },
             ],
         } )
@@ -82,7 +79,7 @@ describe( 'ParticipantStore', () => {
         expect( store.participants.error()?.summary ).toBe( 'Title' )
     } )
 
-    it( 'reports a 503 on the participants fetch as the global error', () => {
+    it( 'keeps a 503 failure in its block', () => {
         // Arrange
         findParticipants.mockReturnValue( failing( ERROR_503 ) )
 
@@ -90,7 +87,7 @@ describe( 'ParticipantStore', () => {
         store.fetchParticipantsPage( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
-        expect( setGlobalError ).toHaveBeenCalledWith( ERROR_503 )
+        expect( store.participants.error() ).toBeDefined()
     } )
 
     it( 'turns the searched users into select items', () => {

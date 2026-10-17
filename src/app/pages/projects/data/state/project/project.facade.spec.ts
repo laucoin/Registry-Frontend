@@ -36,7 +36,7 @@ describe( 'ProjectFacade', () => {
                 ProjectStore,
                 { provide: ProjectApi, useValue: { findProjects, createProject, updateProjectById, disableProjectById } },
                 { provide: SessionFacade, useValue: { currentProjectId, fetchCurrentUser } },
-                { provide: UiFacade, useValue: { notify, setGlobalError: vi.fn() } },
+                { provide: UiFacade, useValue: { notify } },
                 { provide: TranslocoService, useValue: { translate: (key: string): string => `t:${key}` } },
             ],
         } )

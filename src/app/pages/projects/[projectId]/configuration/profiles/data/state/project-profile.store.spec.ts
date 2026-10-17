@@ -8,7 +8,6 @@ import { ProjectProfileApi } from '@pages/projects/[projectId]/configuration/pro
 import { ProjectProfileStore } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.store'
 import { ERROR_500, ERROR_503, failing, pageOf } from '@shared/helpers/testing/test-fixtures'
 import { ProfileStatusEnum } from '@shared/models/enumeration/profile-status.enum'
-import { ErrorModel } from '@shared/models/model/error.model'
 import { ProjectProfileModel } from '@shared/models/model/project-profile.model'
 import { UserModel } from '@shared/models/model/user.model'
 
@@ -18,7 +17,6 @@ describe( 'ProjectProfileStore', () => {
     let searchUsers: Mock<ProjectProfileApi['searchUsers']>
     let getAssignableProjectProfileRoles: Mock<ProjectProfileApi['getAssignableProjectProfileRoles']>
     let getProfilesStatus: Mock<MetadataApi['getProfilesStatus']>
-    let setGlobalError: Mock<(error: ErrorModel) => void>
     let notify: Mock<(message: unknown) => void>
     let langChanges: Subject<string>
 
@@ -27,7 +25,6 @@ describe( 'ProjectProfileStore', () => {
         searchUsers = vi.fn()
         getAssignableProjectProfileRoles = vi.fn()
         getProfilesStatus = vi.fn( () => of( [ { label: 'Invited', value: ProfileStatusEnum.INVITED } ] ) )
-        setGlobalError = vi.fn()
         notify = vi.fn()
         langChanges = new Subject<string>()
         TestBed.configureTestingModule( {
@@ -35,7 +32,7 @@ describe( 'ProjectProfileStore', () => {
                 ProjectProfileStore,
                 { provide: ProjectProfileApi, useValue: { findProjectProfiles, searchUsers, getAssignableProjectProfileRoles } },
                 { provide: MetadataApi, useValue: { getProfilesStatus } },
-                { provide: ErrorReporter, useValue: { setGlobalError, notify } },
+                { provide: ErrorReporter, useValue: { notify } },
                 { provide: TranslocoService, useValue: { langChanges$: langChanges.asObservable() } },
             ],
         } )
@@ -104,7 +101,7 @@ describe( 'ProjectProfileStore', () => {
         expect( store.projectProfiles.error()?.summary ).toBe( 'Title' )
     } )
 
-    it( 'reports a 503 on the profiles fetch as the global error', () => {
+    it( 'keeps a 503 failure in its block', () => {
         // Arrange
         findProjectProfiles.mockReturnValue( failing( ERROR_503 ) )
 
@@ -112,7 +109,7 @@ describe( 'ProjectProfileStore', () => {
         store.fetchProjectProfilesPage( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
-        expect( setGlobalError ).toHaveBeenCalledWith( ERROR_503 )
+        expect( store.projectProfiles.error() ).toBeDefined()
     } )
 
     it( 'turns the searched users into select items', () => {

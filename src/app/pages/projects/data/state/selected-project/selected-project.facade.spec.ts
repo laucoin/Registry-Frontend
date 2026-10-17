@@ -42,7 +42,7 @@ describe( 'SelectedProjectFacade', () => {
                 { provide: AlertApi, useValue: { findAlerts } },
                 { provide: ParticipantApi, useValue: { findParticipantsBirthdays } },
                 { provide: SessionFacade, useValue: { currentProjectId: signal( 'p1' ), selectedProject, selectedProjectHasOption: projectOptionChecker( selectedProject ) } },
-                { provide: UiFacade, useValue: { notify: vi.fn(), setGlobalError: vi.fn() } },
+                { provide: UiFacade, useValue: { notify: vi.fn() } },
                 { provide: TranslocoService, useValue: { translate: (key: string): string => key } },
             ],
         } )

@@ -34,7 +34,6 @@ describe( 'UserProfileFacade', () => {
     let createSupport: Mock<UserProjectProfileApi['createSupportProjectProfile']>
     let findProfilesPage: Mock<UserProjectProfileApi['findUserProjectProfiles']>
     let fetchCurrentUser: Mock<() => Observable<void>>
-    let setGlobalError: Mock<(error: ErrorModel) => void>
     let notify: Mock<(message: unknown) => void>
     let resetAll: Mock<() => void>
 
@@ -44,7 +43,6 @@ describe( 'UserProfileFacade', () => {
         createSupport = vi.fn( () => of( { id: 'p1', name: 'Camp', profile: { id: 'pp2' } } as ProjectModel ) )
         findProfilesPage = vi.fn( () => of( EMPTY_PAGE ) )
         fetchCurrentUser = vi.fn( () => of( undefined ) )
-        setGlobalError = vi.fn()
         notify = vi.fn()
         resetAll = vi.fn()
         currentUser = signal<CurrentUserModel | undefined>( USER )
@@ -65,8 +63,8 @@ describe( 'UserProfileFacade', () => {
     function provideCollaborators (): Provider[] {
         return [
             { provide: SessionFacade, useValue: { currentUser, fetchCurrentUser } },
-            { provide: ErrorReporter, useValue: { setGlobalError, notify: vi.fn() } },
-            { provide: UiFacade, useValue: { setGlobalError, notify } },
+            { provide: ErrorReporter, useValue: { notify: vi.fn() } },
+            { provide: UiFacade, useValue: { notify } },
             { provide: CustomDateFormatPipe, useValue: { transform: (): string => 'date' } },
             { provide: ProfileResetService, useValue: { resetAll } },
         ]
@@ -208,7 +206,7 @@ describe( 'UserProfileFacade', () => {
             expect( completed ).toBe( true )
         } )
 
-        it( 'reports a 503 as the global error when creating a support profile fails', () => {
+        it( 'toasts a 503 when creating a support profile fails', () => {
             // Arrange
             createSupport.mockReturnValue( failing( UNAVAILABLE ) )
 
@@ -216,7 +214,7 @@ describe( 'UserProfileFacade', () => {
             facade.createSupportProjectProfile( 'p1' ).subscribe()
 
             // Assert
-            expect( setGlobalError ).toHaveBeenCalledWith( UNAVAILABLE )
+            expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { sticky: true } ) )
         } )
     } )
 

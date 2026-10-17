@@ -1,4 +1,4 @@
-import { catchError, defer, EMPTY, finalize, Observable, ReplaySubject, throwError } from 'rxjs'
+import { catchError, defer, EMPTY, finalize, Observable, ReplaySubject } from 'rxjs'
 import { WritableSignal } from '@angular/core'
 import { NotificationModel } from '@shared/models/model/notification.model'
 import { ErrorModel } from '@shared/models/model/error.model'
@@ -6,12 +6,10 @@ import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 
 /**
  * Purpose: Contract of what stores and facades use to report a failure to the user.
- * Scope: Offers the full-page error state and the notification toast.
- * Limits: Declares the two commands only; the implementations live in the UI state.
+ * Scope: Offers the notification toast.
+ * Limits: Declares the one command only; the implementations live in the UI state.
  */
 export interface ErrorSink {
-    setGlobalError (error: ErrorModel): void
-
     notify (message: NotificationModel): void
 }
 
@@ -37,46 +35,27 @@ export const withLoading = (loading: WritableSignal<boolean>) => <T> (source: Ob
 
 /**
  * Purpose: Shows a failure to the user.
- * Scope: Opens the full-page error state on a 503 and a sticky error toast otherwise.
+ * Scope: Raises a sticky error toast.
  * Limits: Does not stop or recover the stream; the caller does.
  */
 export const reportError = (errorSink: ErrorSink, error: ErrorModel): void => {
-    if (error.status === 503) {
-        errorSink.setGlobalError( error )
-    } else {
-        errorSink.notify( {
-            severity: SeverityEnum.ERROR,
-            summary: error.title ?? 'global.notifications.UNKNOWN_ERROR.title',
-            detail: error.message,
-            icon: 'pi pi-exclamation-triangle',
-            closable: true,
-            sticky: true,
-        } )
-    }
+    errorSink.notify( {
+        severity: SeverityEnum.ERROR,
+        summary: error.title ?? 'global.notifications.UNKNOWN_ERROR.title',
+        detail: error.message,
+        icon: 'pi pi-exclamation-triangle',
+        closable: true,
+        sticky: true,
+    } )
 }
 
 /**
  * Purpose: Reports a failed source and completes it without emitting.
- * Scope: Shows a toast, or the full-page state on a 503.
+ * Scope: Shows a toast.
  * Limits: Does not retry.
  */
 export const notifyOnError = (errorSink: ErrorSink) => <T> (source: Observable<T>): Observable<T> => source.pipe(
     catchError( (error: ErrorModel): Observable<never> => {
-        reportError( errorSink, error )
-        return EMPTY
-    } ),
-)
-
-/**
- * Purpose: Handles the errors of a form submission.
- * Scope: Reports a 503 and completes silently; rethrows any other error for the form to display.
- * Limits: Does not display the rethrown error.
- */
-export const notifyUnavailableOnly = (errorSink: ErrorSink) => <T> (source: Observable<T>): Observable<T> => source.pipe(
-    catchError( (error: ErrorModel): Observable<never> => {
-        if (error.status !== 503) {
-            return throwError( (): ErrorModel => error )
-        }
         reportError( errorSink, error )
         return EMPTY
     } ),

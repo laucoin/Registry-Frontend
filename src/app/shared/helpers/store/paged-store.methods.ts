@@ -93,7 +93,7 @@ function loadPage<S extends object, K extends keyof S & string, R> (fetch: PageF
     return defer(
         (): Observable<PageOf<S[K]>> => fetch.source( request, readBlock( fetch.store, fetch.key ).params as ParamsOf<S[K]> ),
     ).pipe(
-        trackPage( fetch.errors, slice as never ),
+        trackPage( slice as never ),
     )
 }
 

@@ -253,8 +253,6 @@ export class SessionFacade {
     }
 
     private themeSaveFailed$(error: ErrorModel): Observable<never> {
-        if (error.status === 503) return this.reportError$(error)
-
         this.notifyThemeNotSaved(error)
         return EMPTY
     }

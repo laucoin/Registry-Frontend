@@ -5,7 +5,7 @@ import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { NotificationModel } from '@shared/models/model/notification.model'
 import { DateHelper } from '@shared/helpers/date.helper'
 import { AlertApi } from '@pages/projects/[projectId]/movements/data/state/alert.api'
-import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/rx.helper'
+import { notifyOnError } from '@shared/helpers/rx.helper'
 import { CommandEvent } from '@shared/helpers/facade/command-event.service'
 import { Observable, tap } from 'rxjs'
 import { GenericProjectElementFacade } from '@shared/helpers/facade/generic-project-element.facade'
@@ -170,14 +170,12 @@ export class AlertFacade extends GenericProjectElementFacade {
 
     public createAlert (alert: AlertDto): Observable<AlertModel> {
         return this.api.createAlert( this.selectedProjectId(), alert ).pipe(
-            notifyUnavailableOnly( this.uiFacade ),
             tap( (created: AlertModel): void => this.onCommandSuccess( 'create', created ) ),
         )
     }
 
     public updateAlert (id: string, alert: AlertDto): Observable<AlertModel> {
         return this.api.updateAlertById( this.selectedProjectId(), id, alert ).pipe(
-            notifyUnavailableOnly( this.uiFacade ),
             tap( (updated: AlertModel): void => this.onCommandSuccess( 'update', updated ) ),
         )
     }

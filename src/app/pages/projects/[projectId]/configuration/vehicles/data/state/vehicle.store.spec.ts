@@ -9,7 +9,6 @@ import { VehicleStore } from '@pages/projects/[projectId]/configuration/vehicles
 import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
 import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum'
 import { ERROR_500, ERROR_503, failing, pageOf } from '@shared/helpers/testing/test-fixtures'
-import { ErrorModel } from '@shared/models/model/error.model'
 import { MovementContentModel } from '@shared/models/model/movement-content.model'
 import { MovementModel } from '@shared/models/model/movement.model'
 import { VehicleModel } from '@shared/models/model/vehicle.model'
@@ -20,7 +19,6 @@ describe( 'VehicleStore', () => {
     let findVehicleMovements: Mock<VehicleApi['findVehicleMovements']>
     let findMovementsContents: Mock<MovementApi['findMovementsContents']>
     let getPresencesStatus: Mock<MetadataApi['getPresencesStatus']>
-    let setGlobalError: Mock<(error: ErrorModel) => void>
     let langChanges: Subject<string>
 
     beforeEach( () => {
@@ -28,7 +26,6 @@ describe( 'VehicleStore', () => {
         findVehicleMovements = vi.fn()
         findMovementsContents = vi.fn( () => of( [] ) )
         getPresencesStatus = vi.fn( () => of( [ { label: 'In', value: PresenceStatusEnum.IN } ] ) )
-        setGlobalError = vi.fn()
         langChanges = new Subject<string>()
         TestBed.configureTestingModule( {
             providers: [
@@ -36,7 +33,7 @@ describe( 'VehicleStore', () => {
                 { provide: VehicleApi, useValue: { findVehicles, findVehicleMovements } },
                 { provide: MovementApi, useValue: { findMovementsContents } },
                 { provide: MetadataApi, useValue: { getPresencesStatus } },
-                { provide: ErrorReporter, useValue: { setGlobalError, notify: vi.fn() } },
+                { provide: ErrorReporter, useValue: { notify: vi.fn() } },
                 { provide: TranslocoService, useValue: { langChanges$: langChanges.asObservable() } },
             ],
         } )
@@ -105,7 +102,7 @@ describe( 'VehicleStore', () => {
         expect( store.vehicles.error()?.summary ).toBe( 'Title' )
     } )
 
-    it( 'reports a 503 on the vehicles fetch as the global error', () => {
+    it( 'keeps a 503 failure in its block', () => {
         // Arrange
         findVehicles.mockReturnValue( failing( ERROR_503 ) )
 
@@ -113,7 +110,7 @@ describe( 'VehicleStore', () => {
         store.fetchVehiclesPage( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
-        expect( setGlobalError ).toHaveBeenCalledWith( ERROR_503 )
+        expect( store.vehicles.error() ).toBeDefined()
     } )
 
     it( 'loads the movements of a vehicle and merges their contents', () => {

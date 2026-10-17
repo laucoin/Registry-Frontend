@@ -10,7 +10,6 @@ import { SelectedProjectStore } from '@pages/projects/data/state/selected-projec
 import { ERROR_500, ERROR_503, failing, pageOf } from '@shared/helpers/testing/test-fixtures'
 import { AlertStatusEnum } from '@shared/models/enumeration/alert-status.enum'
 import { AlertModel } from '@shared/models/model/alert.model'
-import { ErrorModel } from '@shared/models/model/error.model'
 import { MovementContentModel } from '@shared/models/model/movement-content.model'
 import { MovementModel } from '@shared/models/model/movement.model'
 import { ParticipantModel } from '@shared/models/model/participant.model'
@@ -23,7 +22,6 @@ describe( 'SelectedProjectStore', () => {
     let findVehiclesStatus: Mock<MovementApi['findVehiclesStatus']>
     let findAlerts: Mock<AlertApi['findAlerts']>
     let findParticipantsBirthdays: Mock<ParticipantApi['findParticipantsBirthdays']>
-    let setGlobalError: Mock<(error: ErrorModel) => void>
     let notify: Mock<(message: unknown) => void>
 
     beforeEach( () => {
@@ -33,7 +31,6 @@ describe( 'SelectedProjectStore', () => {
         findVehiclesStatus = vi.fn()
         findAlerts = vi.fn()
         findParticipantsBirthdays = vi.fn()
-        setGlobalError = vi.fn()
         notify = vi.fn()
         TestBed.configureTestingModule( {
             providers: [
@@ -41,7 +38,7 @@ describe( 'SelectedProjectStore', () => {
                 { provide: MovementApi, useValue: { findMovements, findMovementsContents, findParticipantsStatus, findVehiclesStatus } },
                 { provide: AlertApi, useValue: { findAlerts } },
                 { provide: ParticipantApi, useValue: { findParticipantsBirthdays } },
-                { provide: ErrorReporter, useValue: { setGlobalError, notify } },
+                { provide: ErrorReporter, useValue: { notify } },
             ],
         } )
         store = TestBed.inject( SelectedProjectStore )
@@ -85,7 +82,7 @@ describe( 'SelectedProjectStore', () => {
         expect( store.status.vehicles.loading() ).toBe( false )
     } )
 
-    it( 'reports a 503 on a status fetch as the global error', () => {
+    it( 'keeps a 503 on a status fetch in the status block', () => {
         // Arrange
         findParticipantsStatus.mockReturnValue( failing( ERROR_503 ) )
 
@@ -93,8 +90,7 @@ describe( 'SelectedProjectStore', () => {
         store.fetchParticipantsStatus( 'p1' )
 
         // Assert
-        expect( setGlobalError ).toHaveBeenCalledWith( ERROR_503 )
-        expect( store.status.participants.error() ).toBeUndefined()
+        expect( store.status.participants.error() ).toBeDefined()
     } )
 
     it( 'stores the birthdays of the participants', () => {
@@ -186,7 +182,7 @@ describe( 'SelectedProjectStore', () => {
         expect( store.alerts.element()?.content ).toHaveLength( 1 )
     } )
 
-    it( 'keeps a failed alerts fetch in the alerts block and reports a 503 globally', () => {
+    it( 'keeps a failed alerts fetch in the alerts block, a 503 included', () => {
         // Arrange
         findAlerts.mockReturnValueOnce( failing( ERROR_500 ) )
         findAlerts.mockReturnValueOnce( failing( ERROR_503 ) )
@@ -198,6 +194,6 @@ describe( 'SelectedProjectStore', () => {
 
         // Assert
         expect( keptError ).toBe( 'Title' )
-        expect( setGlobalError ).toHaveBeenCalledWith( ERROR_503 )
+        expect( store.alerts.error() ).toBeDefined()
     } )
 } )

@@ -12,7 +12,7 @@ import { GenericProjectElementFacade } from '@shared/helpers/facade/generic-proj
 import { VehicleModel } from '@shared/models/model/vehicle.model'
 import { DateHelper } from '@shared/helpers/date.helper'
 import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
-import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/rx.helper'
+import { notifyOnError } from '@shared/helpers/rx.helper'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
@@ -228,7 +228,6 @@ export class MovementFacade extends GenericProjectElementFacade {
             : this.api.createGuestsMovement( this.selectedProjectId(), movement )
 
         return request.pipe(
-            notifyUnavailableOnly( this.uiFacade ),
             tap( (created: MovementModel): void => this.onCommandSuccess( 'create', created ) ),
         )
     }
@@ -239,7 +238,6 @@ export class MovementFacade extends GenericProjectElementFacade {
             : this.api.updateGuestsMovementById( this.selectedProjectId(), id, movement, ifMatch )
 
         return request.pipe(
-            notifyUnavailableOnly( this.uiFacade ),
             tap( (updated: MovementModel): void => this.onCommandSuccess( 'update', updated ) ),
         )
     }

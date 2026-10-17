@@ -95,23 +95,19 @@ function currentMovementsSlice (store: Ref, key: CurrentMovementsKey): PageSlice
     }
 }
 
-function statusFetcher<T> (store: Ref, key: StatusKey, source: (projectId: string | undefined) => Observable<T>, errors: ErrorSink): RxMethod<string | undefined> {
+function statusFetcher<T> (store: Ref, key: StatusKey, source: (projectId: string | undefined) => Observable<T>): RxMethod<string | undefined> {
     return rxMethod<string | undefined>( pipe(
         switchMap( (projectId: string | undefined): Observable<T> => source( projectId ).pipe(
             initialize( (): void => patchStatus( store, key, { loading: true } ) ),
             finalize( (): void => patchStatus( store, key, { loading: false } ) ),
-            catchError( (error: ErrorModel): Observable<never> => reportStatusError( store, key, errors, error ) ),
+            catchError( (error: ErrorModel): Observable<never> => reportStatusError( store, key, error ) ),
         ) ),
         tap( (element: T): void => patchStatus( store, key, { element: element as never } ) ),
     ) )
 }
 
-function reportStatusError (store: Ref, key: StatusKey, errors: ErrorSink, error: ErrorModel): Observable<never> {
-    if (error.status === 503) {
-        reportError( errors, error )
-    } else {
-        patchStatus( store, key, { error: buildToast( error ) } )
-    }
+function reportStatusError (store: Ref, key: StatusKey, error: ErrorModel): Observable<never> {
+    patchStatus( store, key, { error: buildToast( error ) } )
     return EMPTY
 }
 
@@ -135,12 +131,11 @@ function currentMovementsPage (
     store: Ref,
     key: CurrentMovementsKey,
     movementApi: MovementApi,
-    errors: ErrorSink,
     fetchContents: (request: MovementContentsRequest) => void,
 ): RxMethod<CurrentPageRequest> {
     return rxMethod<CurrentPageRequest>( pipe(
         switchMap( (request: CurrentPageRequest): Observable<{ request: CurrentPageRequest, page: PageModel<MovementModel> }> =>
-            fetchCurrentMovements( store, key, movementApi, errors, request ),
+            fetchCurrentMovements( store, key, movementApi, request ),
         ),
         tap( ({ request, page }: { request: CurrentPageRequest, page: PageModel<MovementModel> }): void => {
             patchCurrentMovements( store, key, (block: MovementsBlock): MovementsBlock => ({ ...block, element: CumulativePageHelper.merge( block.element, page, request ) }) )
@@ -153,12 +148,11 @@ function fetchCurrentMovements (
     store: Ref,
     key: CurrentMovementsKey,
     movementApi: MovementApi,
-    errors: ErrorSink,
     request: CurrentPageRequest,
 ): Observable<{ request: CurrentPageRequest, page: PageModel<MovementModel> }> {
     const params: MovementPageParamsModel = store.isCurrent()[ key ].params
     return movementApi.findMovements( request.projectId, request.page, request.size, params ).pipe(
-        trackPage( errors, currentMovementsSlice( store, key ) ),
+        trackPage( currentMovementsSlice( store, key ) ),
         map( (page: PageModel<MovementModel>) => ({ request, page }) ),
     )
 }
@@ -190,15 +184,15 @@ export const SelectedProjectStore = signalStore(
     withState<SelectedProjectStoreModel>( defaultSelectedProjectStore ),
     withProfileScope<SelectedProjectStoreModel>( defaultSelectedProjectStore ),
     withMethods( (store, movementApi = inject( MovementApi ), participantApi = inject( ParticipantApi ), errors = inject( ErrorReporter )) => ({
-        fetchParticipantsStatus: statusFetcher<ProjectStatusModel>( store, 'participants', (projectId: string | undefined) => movementApi.findParticipantsStatus( projectId ), errors ),
-        fetchVehiclesStatus: statusFetcher<VehicleStatusModel>( store, 'vehicles', (projectId: string | undefined) => movementApi.findVehiclesStatus( projectId ), errors ),
+        fetchParticipantsStatus: statusFetcher<ProjectStatusModel>( store, 'participants', (projectId: string | undefined) => movementApi.findParticipantsStatus( projectId ) ),
+        fetchVehiclesStatus: statusFetcher<VehicleStatusModel>( store, 'vehicles', (projectId: string | undefined) => movementApi.findVehiclesStatus( projectId ) ),
         fetchParticipantsBirthdays: fetchParticipantsBirthdays( store, participantApi, errors ),
         fetchCurrentMovementsWithoutActivityContents: currentMovementsContents( store, 'withoutActivity', movementApi, errors ),
         fetchCurrentMovementsWithActivityContents: currentMovementsContents( store, 'withActivity', movementApi, errors ),
     }) ),
     withMethods( (store, movementApi = inject( MovementApi ), alertApi = inject( AlertApi ), errors = inject( ErrorReporter )) => ({
-        fetchCurrentMovementsPageWithoutActivity: currentMovementsPage( store, 'withoutActivity', movementApi, errors, store.fetchCurrentMovementsWithoutActivityContents ),
-        fetchCurrentMovementsPageWithActivity: currentMovementsPage( store, 'withActivity', movementApi, errors, store.fetchCurrentMovementsWithActivityContents ),
+        fetchCurrentMovementsPageWithoutActivity: currentMovementsPage( store, 'withoutActivity', movementApi, store.fetchCurrentMovementsWithoutActivityContents ),
+        fetchCurrentMovementsPageWithActivity: currentMovementsPage( store, 'withActivity', movementApi, store.fetchCurrentMovementsWithActivityContents ),
         fetchCurrentAlertsPage: pageFetcher( store, 'alerts', (request: CurrentPageRequest, params: AlertPageParamsModel) =>
             alertApi.findAlerts( request.projectId, request.page, request.size, params ), errors ),
     }) ),

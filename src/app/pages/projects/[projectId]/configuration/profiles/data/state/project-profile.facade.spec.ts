@@ -41,7 +41,7 @@ describe( 'ProjectProfileFacade', () => {
                 { provide: MetadataApi, useValue: { getProfilesStatus: vi.fn( () => of( [] ) ) } },
                 { provide: PluralTranslationPipe, useValue: { transform: (key: string, count: number | unknown[]): string => `${key}:${Array.isArray( count ) ? count.length : count}` } },
                 { provide: SessionFacade, useValue: { currentProjectId: signal( 'p1' ), selectedProject: (): unknown => ({ name: 'Camp' }) } },
-                { provide: UiFacade, useValue: { notify, setGlobalError: vi.fn() } },
+                { provide: UiFacade, useValue: { notify } },
                 { provide: TranslocoService, useValue: { translate: (key: string): string => `t:${key}`, langChanges$: new Subject<string>().asObservable() } },
             ],
         } )

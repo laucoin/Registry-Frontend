@@ -10,7 +10,7 @@ import { GenericProjectElementFacade } from '@shared/helpers/facade/generic-proj
 import { MovementModel } from '@shared/models/model/movement.model'
 import { DateHelper } from '@shared/helpers/date.helper'
 import { ActivityApi } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.api'
-import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/rx.helper'
+import { notifyOnError } from '@shared/helpers/rx.helper'
 import { CumulativePageHelper } from '@shared/helpers/store/cumulative-page.helper'
 
 /**
@@ -141,14 +141,12 @@ export class ActivityFacade extends GenericProjectElementFacade {
 
     public createActivity (activity: ActivityDto): Observable<ActivityModel> {
         return this.api.createActivity( this.selectedProjectId(), activity ).pipe(
-            notifyUnavailableOnly( this.uiFacade ),
             tap( (created: ActivityModel): void => this.onCommandSuccess( 'create', created ) ),
         )
     }
 
     public updateActivity (id: string, activity: ActivityDto, ifMatch?: string): Observable<ActivityModel> {
         return this.api.updateActivityById( this.selectedProjectId(), id, activity, ifMatch ).pipe(
-            notifyUnavailableOnly( this.uiFacade ),
             tap( (updated: ActivityModel): void => this.onCommandSuccess( 'edit', updated ) ),
         )
     }

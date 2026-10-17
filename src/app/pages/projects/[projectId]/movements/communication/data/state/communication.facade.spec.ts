@@ -35,7 +35,7 @@ describe( 'CommunicationFacade', () => {
                 { provide: CommunicationApi, useValue: { findCommunications, createCommunication, updateCommunicationById, disableCommunicationById } },
                 { provide: DateFormatPipe, useValue: { transform: (): string => '01/01' } },
                 { provide: SessionFacade, useValue: { currentProjectId: signal( 'p1' ) } },
-                { provide: UiFacade, useValue: { notify, setGlobalError: vi.fn() } },
+                { provide: UiFacade, useValue: { notify } },
                 { provide: TranslocoService, useValue: { translate: (key: string): string => `t:${key}` } },
             ],
         } )

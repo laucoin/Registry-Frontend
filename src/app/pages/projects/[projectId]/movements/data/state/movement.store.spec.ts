@@ -10,7 +10,6 @@ import { MovementStore } from '@pages/projects/[projectId]/movements/data/state/
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
 import { ERROR_500, ERROR_503, failing, pageOf } from '@shared/helpers/testing/test-fixtures'
 import { ParticipantTypeEnum } from '@shared/models/enumeration/participant-type.enum'
-import { ErrorModel } from '@shared/models/model/error.model'
 import { GroupModel } from '@shared/models/model/group.model'
 import { MovementContentModel } from '@shared/models/model/movement-content.model'
 import { MovementModel } from '@shared/models/model/movement.model'
@@ -26,7 +25,6 @@ describe( 'MovementStore', () => {
     let searchVehicles: Mock<MovementApi['searchVehicles']>
     let getMovementsTypes: Mock<MetadataApi['getMovementsTypes']>
     let getParticipantsTypes: Mock<MetadataApi['getParticipantsTypes']>
-    let setGlobalError: Mock<(error: ErrorModel) => void>
     let notify: Mock<(message: unknown) => void>
     let langChanges: Subject<string>
 
@@ -38,7 +36,6 @@ describe( 'MovementStore', () => {
         searchVehicles = vi.fn()
         getMovementsTypes = vi.fn( () => of( [ { label: 'In', value: 'IN' } ] ) ) as unknown as Mock<MetadataApi['getMovementsTypes']>
         getParticipantsTypes = vi.fn( () => of( [ { label: 'Registered', value: ParticipantTypeEnum.REGISTERED } ] ) )
-        setGlobalError = vi.fn()
         notify = vi.fn()
         langChanges = new Subject<string>()
         TestBed.configureTestingModule( {
@@ -46,7 +43,7 @@ describe( 'MovementStore', () => {
                 MovementStore,
                 { provide: MovementApi, useValue: { findMovements, findMovementsContents, findMovementCommunications, searchParticipantsAndGroups, searchVehicles } },
                 { provide: MetadataApi, useValue: { getMovementsTypes, getParticipantsTypes } },
-                { provide: ErrorReporter, useValue: { setGlobalError, notify } },
+                { provide: ErrorReporter, useValue: { notify } },
                 { provide: TranslocoService, useValue: { langChanges$: langChanges.asObservable(), translate: (key: string): string => key } },
                 { provide: PluralTranslationPipe, useValue: { transform: (key: string, count: unknown[]): string => `${key}:${count?.length}` } },
             ],
@@ -118,7 +115,7 @@ describe( 'MovementStore', () => {
         expect( store.movementCommunications.error() ).toBeUndefined()
     } )
 
-    it( 'reports a 503 on the movements fetch as the global error', () => {
+    it( 'keeps a 503 failure in its block', () => {
         // Arrange
         findMovements.mockReturnValue( failing( ERROR_503 ) )
 
@@ -126,7 +123,7 @@ describe( 'MovementStore', () => {
         store.fetchMovementsPage( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
-        expect( setGlobalError ).toHaveBeenCalledWith( ERROR_503 )
+        expect( store.movements.error() ).toBeDefined()
     } )
 
     it( 'only lists visible communications by default', () => {

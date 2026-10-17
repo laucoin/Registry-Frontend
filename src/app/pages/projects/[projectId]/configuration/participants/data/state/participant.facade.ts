@@ -12,7 +12,7 @@ import { GenericProjectElementFacade } from '@shared/helpers/facade/generic-proj
 import { MovementModel } from '@shared/models/model/movement.model'
 import { DateHelper } from '@shared/helpers/date.helper'
 import { ParticipantApi } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.api'
-import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/rx.helper'
+import { notifyOnError } from '@shared/helpers/rx.helper'
 import { CommandEvent } from '@shared/helpers/facade/command-event.service'
 import { UserModel } from '@shared/models/model/user.model'
 import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum'
@@ -178,14 +178,12 @@ export class ParticipantFacade extends GenericProjectElementFacade {
 
     public createParticipant (participant: ParticipantDto): Observable<ParticipantModel> {
         return this.api.createParticipant( this.selectedProjectId(), participant ).pipe(
-            notifyUnavailableOnly( this.uiFacade ),
             tap( (created: ParticipantModel): void => this.onCommandSuccess( 'create', created ) ),
         )
     }
 
     public updateParticipant (id: string, participant: ParticipantDto, ifMatch?: string): Observable<ParticipantModel> {
         return this.api.updateParticipantById( this.selectedProjectId(), id, participant, ifMatch ).pipe(
-            notifyUnavailableOnly( this.uiFacade ),
             tap( (updated: ParticipantModel): void => this.onCommandSuccess( 'update', updated ) ),
         )
     }

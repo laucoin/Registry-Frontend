@@ -17,7 +17,6 @@ import {
 } from '@shared/helpers/store/testing/test-paged.store'
 import { ErrorSink } from '@shared/helpers/rx.helper'
 import { MovementContentsApi } from '@shared/helpers/store/paged-store.methods'
-import { ErrorModel } from '@shared/models/model/error.model'
 import { GenericModel } from '@shared/models/model/generic.model'
 import { MovementContentModel } from '@shared/models/model/movement-content.model'
 import { MovementModel } from '@shared/models/model/movement.model'
@@ -29,7 +28,6 @@ describe( 'paged store methods', () => {
     let itemSource: Mock<ItemSource>
     let labelsSource: Mock<LabelsSource>
     let findMovementsContents: Mock<MovementContentsApi['findMovementsContents']>
-    let setGlobalError: Mock<(error: ErrorModel) => void>
     let notify: Mock<(message: unknown) => void>
 
     beforeEach( () => {
@@ -38,7 +36,6 @@ describe( 'paged store methods', () => {
         itemSource = vi.fn()
         labelsSource = vi.fn()
         findMovementsContents = vi.fn( () => of( [] ) )
-        setGlobalError = vi.fn()
         notify = vi.fn()
         TestBed.configureTestingModule( {
             providers: [
@@ -47,7 +44,7 @@ describe( 'paged store methods', () => {
                 { provide: MOVEMENTS_SOURCE, useValue: movementsSource },
                 { provide: ITEM_SOURCE, useValue: itemSource },
                 { provide: LABELS_SOURCE, useValue: labelsSource },
-                { provide: TEST_ERRORS, useValue: { setGlobalError, notify } as ErrorSink },
+                { provide: TEST_ERRORS, useValue: { notify } as ErrorSink },
                 { provide: MOVEMENT_CONTENTS_API, useValue: { findMovementsContents } },
             ],
         } )
@@ -137,7 +134,7 @@ describe( 'paged store methods', () => {
             expect( store.items.element() ).toBeDefined()
         } )
 
-        it( 'reports a 503 globally instead of keeping it in the block', () => {
+        it( 'keeps a 503 failure in its block', () => {
             // Arrange
             itemsSource.mockReturnValue( failing( ERROR_503 ) )
 
@@ -145,8 +142,7 @@ describe( 'paged store methods', () => {
             store.fetchItems( { n: 1 } )
 
             // Assert
-            expect( setGlobalError ).toHaveBeenCalledWith( ERROR_503 )
-            expect( store.items.error() ).toBeUndefined()
+            expect( store.items.error() ).toBeDefined()
         } )
     } )
 

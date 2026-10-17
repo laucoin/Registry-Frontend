@@ -21,15 +21,13 @@ const PAGE: PageModel<UserInvitationModel> = {
 describe( 'UserProfileStore', () => {
     let store: InstanceType<typeof UserProfileStore>
     let findUserProjectProfiles: Mock<UserProjectProfileApi['findUserProjectProfiles']>
-    let setGlobalError: Mock<(error: ErrorModel) => void>
 
     beforeEach( () => {
         findUserProjectProfiles = vi.fn()
-        setGlobalError = vi.fn()
         TestBed.configureTestingModule( {
             providers: [
                 { provide: UserProjectProfileApi, useValue: { findUserProjectProfiles } },
-                { provide: ErrorReporter, useValue: { setGlobalError, notify: vi.fn() } },
+                { provide: ErrorReporter, useValue: { notify: vi.fn() } },
             ],
         } )
         store = TestBed.inject( UserProfileStore )
@@ -78,7 +76,7 @@ describe( 'UserProfileStore', () => {
         expect( store.profiles.error() ).toBeUndefined()
     } )
 
-    it( 'reports a 503 as the global error', () => {
+    it( 'keeps a 503 failure in its block', () => {
         // Arrange
         const error: ErrorModel = { status: 503 } as ErrorModel
         findUserProjectProfiles.mockReturnValue( throwError( (): ErrorModel => error ) )
@@ -87,8 +85,7 @@ describe( 'UserProfileStore', () => {
         store.fetchProfilesPage( { page: 0, size: 10 } )
 
         // Assert
-        expect( setGlobalError ).toHaveBeenCalledWith( error )
-        expect( store.profiles.error() ).toBeUndefined()
+        expect( store.profiles.error() ).toBeDefined()
     } )
 
     it( 'merges the search parameters of the profiles page', () => {

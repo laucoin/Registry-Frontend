@@ -6,7 +6,6 @@ import { ProjectOptionModel } from '@shared/models/model/project-option.model'
 import { ProjectApi } from '@pages/projects/data/state/project.api'
 import { ProjectStore } from '@pages/projects/data/state/project/project.store'
 import { ERROR_500, ERROR_503, failing, pageOf } from '@shared/helpers/testing/test-fixtures'
-import { ErrorModel } from '@shared/models/model/error.model'
 import { ProjectModel } from '@shared/models/model/project.model'
 
 describe( 'ProjectStore', () => {
@@ -14,20 +13,18 @@ describe( 'ProjectStore', () => {
     let findProjects: Mock<ProjectApi['findProjects']>
     let findProjectById: Mock<ProjectApi['findProjectById']>
     let getAvailableProjectOptions: Mock<ProjectApi['getAvailableProjectOptions']>
-    let setGlobalError: Mock<(error: ErrorModel) => void>
     let notify: Mock<(message: unknown) => void>
 
     beforeEach( () => {
         findProjects = vi.fn()
         findProjectById = vi.fn()
         getAvailableProjectOptions = vi.fn()
-        setGlobalError = vi.fn()
         notify = vi.fn()
         TestBed.configureTestingModule( {
             providers: [
                 ProjectStore,
                 { provide: ProjectApi, useValue: { findProjects, findProjectById, getAvailableProjectOptions } },
-                { provide: ErrorReporter, useValue: { setGlobalError, notify } },
+                { provide: ErrorReporter, useValue: { notify } },
             ],
         } )
         store = TestBed.inject( ProjectStore )
@@ -56,7 +53,7 @@ describe( 'ProjectStore', () => {
         expect( store.projects.error()?.summary ).toBe( 'Title' )
     } )
 
-    it( 'reports a 503 on the projects fetch as the global error', () => {
+    it( 'keeps a 503 failure in its block', () => {
         // Arrange
         findProjects.mockReturnValue( failing( ERROR_503 ) )
 
@@ -64,7 +61,7 @@ describe( 'ProjectStore', () => {
         store.fetchProjectsPage( { page: 0, size: 10 } )
 
         // Assert
-        expect( setGlobalError ).toHaveBeenCalledWith( ERROR_503 )
+        expect( store.projects.error() ).toBeDefined()
     } )
 
     it( 'stores the available project options', () => {

@@ -20,7 +20,6 @@ describe( 'ActivityFacade', () => {
     let disableActivityById: Mock<ActivityApi['disableActivityById']>
     let deleteActivityById: Mock<ActivityApi['deleteActivityById']>
     let notify: Mock<(message: unknown) => void>
-    let setGlobalError: Mock<(error: ErrorModel) => void>
 
     beforeEach( () => {
         provideTestConfig()
@@ -29,7 +28,6 @@ describe( 'ActivityFacade', () => {
         disableActivityById = vi.fn()
         deleteActivityById = vi.fn()
         notify = vi.fn()
-        setGlobalError = vi.fn()
         TestBed.configureTestingModule( {
             providers: [
                 ActivityFacade,
@@ -37,7 +35,7 @@ describe( 'ActivityFacade', () => {
                 { provide: ActivityApi, useValue: { findActivities, createActivity, disableActivityById, deleteActivityById } },
                 { provide: MovementApi, useValue: { findMovementsContents: vi.fn( () => of( [] ) ) } },
                 { provide: SessionFacade, useValue: { currentProjectId: signal( 'p1' ) } },
-                { provide: UiFacade, useValue: { notify, setGlobalError } },
+                { provide: UiFacade, useValue: { notify } },
                 { provide: TranslocoService, useValue: { translate: (key: string): string => `t:${key}` } },
             ],
         } )
@@ -105,17 +103,16 @@ describe( 'ActivityFacade', () => {
         expect( findActivities ).not.toHaveBeenCalled()
     } )
 
-    it( 'reports a 503 on creation globally and completes silently', () => {
+    it( 'rethrows a 503 on creation for the form to display', () => {
         // Arrange
         createActivity.mockReturnValue( failing( ERROR_503 ) )
-        let completed: boolean = false
+        let received: unknown
 
         // Act
-        facade.createActivity( {} as never ).subscribe( { complete: (): void => { completed = true } } )
+        facade.createActivity( {} as never ).subscribe( { error: (error: unknown): void => { received = error } } )
 
         // Assert
-        expect( setGlobalError ).toHaveBeenCalledWith( ERROR_503 )
-        expect( completed ).toBe( true )
+        expect( received ).toBe( ERROR_503 )
     } )
 
     it( 'notifies a failed command instead of rethrowing it', () => {

@@ -9,7 +9,6 @@ import { AlertApi } from '@pages/projects/[projectId]/movements/data/state/alert
 import { ERROR_500, ERROR_503, failing, pageOf } from '@shared/helpers/testing/test-fixtures'
 import { AlertStatusEnum } from '@shared/models/enumeration/alert-status.enum'
 import { AlertModel } from '@shared/models/model/alert.model'
-import { ErrorModel } from '@shared/models/model/error.model'
 import { CommunicationModel } from '@shared/models/model/communication.model'
 
 describe( 'AlertStore', () => {
@@ -17,21 +16,19 @@ describe( 'AlertStore', () => {
     let findAlerts: Mock<AlertApi['findAlerts']>
     let findAlertCommunications: Mock<AlertApi['findAlertCommunications']>
     let getAlertsStatus: Mock<MetadataApi['getAlertsStatus']>
-    let setGlobalError: Mock<(error: ErrorModel) => void>
     let langChanges: Subject<string>
 
     beforeEach( () => {
         findAlerts = vi.fn()
         findAlertCommunications = vi.fn()
         getAlertsStatus = vi.fn( () => of( [ { label: 'In progress', value: AlertStatusEnum.IN_PROGRESS } ] ) )
-        setGlobalError = vi.fn()
         langChanges = new Subject<string>()
         TestBed.configureTestingModule( {
             providers: [
                 AlertStore,
                 { provide: AlertApi, useValue: { findAlerts, findAlertCommunications } },
                 { provide: MetadataApi, useValue: { getAlertsStatus } },
-                { provide: ErrorReporter, useValue: { setGlobalError, notify: vi.fn() } },
+                { provide: ErrorReporter, useValue: { notify: vi.fn() } },
                 { provide: TranslocoService, useValue: { langChanges$: langChanges.asObservable() } },
             ],
         } )
@@ -87,7 +84,7 @@ describe( 'AlertStore', () => {
         expect( store.communications.error() ).toBeUndefined()
     } )
 
-    it( 'reports a 503 on the alerts fetch as the global error', () => {
+    it( 'keeps a 503 failure in its block', () => {
         // Arrange
         findAlerts.mockReturnValue( failing( ERROR_503 ) )
 
@@ -95,7 +92,7 @@ describe( 'AlertStore', () => {
         store.fetchAlertsPage( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
-        expect( setGlobalError ).toHaveBeenCalledWith( ERROR_503 )
+        expect( store.alerts.error() ).toBeDefined()
     } )
 
     it( 'stores the communications of an alert apart from the alerts', () => {

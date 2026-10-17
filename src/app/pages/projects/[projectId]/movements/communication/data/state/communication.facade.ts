@@ -7,7 +7,7 @@ import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { NotificationModel } from '@shared/models/model/notification.model'
 import { DateHelper } from '@shared/helpers/date.helper'
 import { CommunicationApi } from '@pages/projects/[projectId]/movements/communication/data/state/communication.api'
-import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/rx.helper'
+import { notifyOnError } from '@shared/helpers/rx.helper'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
 import { CommandEvent } from '@shared/helpers/facade/command-event.service'
 import { Observable, tap } from 'rxjs'
@@ -128,14 +128,12 @@ export class CommunicationFacade extends GenericProjectElementFacade {
 
     public createCommunication (communication: CommunicationDto): Observable<CommunicationModel> {
         return this.api.createCommunication( this.selectedProjectId(), communication ).pipe(
-            notifyUnavailableOnly( this.uiFacade ),
             tap( (created: CommunicationModel): void => this.onCommandSuccess( 'create', created ) ),
         )
     }
 
     public updateCommunication (id: string, communication: CommunicationDto, ifMatch?: string): Observable<CommunicationModel> {
         return this.api.updateCommunicationById( this.selectedProjectId(), id, communication, ifMatch ).pipe(
-            notifyUnavailableOnly( this.uiFacade ),
             tap( (updated: CommunicationModel): void => this.onCommandSuccess( 'update', updated ) ),
         )
     }

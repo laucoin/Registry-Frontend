@@ -37,7 +37,7 @@ describe( 'AlertFacade', () => {
                 { provide: AlertApi, useValue: { findAlerts, findAlertCommunications, createAlert, updateAlertStatusById } },
                 { provide: MetadataApi, useValue: { getAlertsStatus: vi.fn( () => of( [] ) ) } },
                 { provide: SessionFacade, useValue: { currentProjectId: signal( 'p1' ) } },
-                { provide: UiFacade, useValue: { notify, setGlobalError: vi.fn() } },
+                { provide: UiFacade, useValue: { notify } },
                 { provide: TranslocoService, useValue: { translate: (key: string): string => `t:${key}`, langChanges$: new Subject<string>().asObservable() } },
             ],
         } )
