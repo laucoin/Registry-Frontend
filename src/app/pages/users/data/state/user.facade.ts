@@ -1,3 +1,4 @@
+import { SectionErrorsHelper } from '@shared/helpers/store/section-errors.helper'
 import { computed, inject, Injectable, Signal } from '@angular/core'
 import { toObservable } from '@angular/core/rxjs-interop'
 import { finalize, Observable, tap } from 'rxjs'
@@ -26,6 +27,10 @@ export class UserFacade extends GenericFacade {
     private readonly api: UserApi = inject( UserApi )
     private readonly uiFacade: UiFacade = inject( UiFacade )
     private readonly browser: BrowserService = inject( BrowserService )
+
+    public readonly metadataErrors: Signal<Record<string, NotificationModel | undefined>> = SectionErrorsHelper.metadata( this.store.sectionErrors )
+
+    public readonly userError: Signal<NotificationModel | undefined> = this.store.user.error
 
     public readonly usersPage: Signal<PageModel<UserModel> | undefined> = this.store.users.element
 

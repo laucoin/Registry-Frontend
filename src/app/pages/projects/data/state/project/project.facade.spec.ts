@@ -167,4 +167,15 @@ describe( 'ProjectFacade', () => {
         // Assert
         expect( findProjects ).toHaveBeenCalledWith( 0, 20, expect.anything() )
     } )
+
+    it( 'exposes the failure of the project fetch', () => {
+        // Arrange
+        Object.assign( TestBed.inject( ProjectApi ), { findProjectById: vi.fn( () => failing( ERROR_500 ) ) } )
+
+        // Act
+        facade.fetchProject( 'p1' )
+
+        // Assert
+        expect( facade.projectError()?.summary ).toBe( 'Title' )
+    } )
 } )

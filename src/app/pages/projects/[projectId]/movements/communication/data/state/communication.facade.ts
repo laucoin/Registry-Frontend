@@ -1,3 +1,4 @@
+import { SectionErrorsHelper } from '@shared/helpers/store/section-errors.helper'
 import { toObservable } from '@angular/core/rxjs-interop'
 import { computed, Injectable, Signal, inject } from '@angular/core'
 import { PageModel } from '@shared/models/model/page.model'
@@ -28,6 +29,10 @@ export class CommunicationFacade extends GenericProjectElementFacade {
 
     private readonly api: CommunicationApi = inject( CommunicationApi )
     private readonly datePipe: DateFormatPipe = inject( DateFormatPipe )
+
+    public readonly metadataErrors: Signal<Record<string, NotificationModel | undefined>> = SectionErrorsHelper.metadata( this.store.sectionErrors )
+
+    public readonly communicationError: Signal<NotificationModel | undefined> = this.store.communication.error
 
     public readonly communicationsPage: Signal<PageModel<CommunicationModel> | undefined> = this.store.communications.element
 

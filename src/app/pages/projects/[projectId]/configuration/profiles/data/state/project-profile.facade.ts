@@ -1,3 +1,4 @@
+import { SectionErrorsHelper } from '@shared/helpers/store/section-errors.helper'
 import { computed, Injectable, Signal, inject } from '@angular/core'
 import { Observable, tap } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
@@ -31,6 +32,8 @@ export class ProjectProfileFacade extends GenericProjectElementFacade {
     private readonly pluralTranslationPipe: PluralTranslationPipe = inject( PluralTranslationPipe )
 
     private readonly store: InstanceType<typeof ProjectProfileStore> = inject( ProjectProfileStore )
+
+    public readonly metadataErrors: Signal<Record<string, NotificationModel | undefined>> = SectionErrorsHelper.metadata( this.store.sectionErrors )
 
     public readonly projectProfilesPage: Signal<PageModel<ProjectProfileModel> | undefined> = this.store.projectProfiles.element
     public readonly projectProfilesPageLoading: Signal<boolean> = this.store.projectProfiles.loading

@@ -1,3 +1,4 @@
+import { SectionErrorsHelper } from '@shared/helpers/store/section-errors.helper'
 import { computed, inject, Injectable, Signal } from '@angular/core'
 import { Observable, tap } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
@@ -23,6 +24,8 @@ export class ActivityFacade extends GenericProjectElementFacade {
     private readonly api: ActivityApi = inject( ActivityApi )
 
     private readonly store: InstanceType<typeof ActivityStore> = inject( ActivityStore )
+
+    public readonly movementsContentsError: Signal<NotificationModel | undefined> = SectionErrorsHelper.of( this.store.sectionErrors, 'contents' )
 
     public readonly activitiesPage: Signal<PageModel<ActivityModel> | undefined> = this.store.activities.element
     public readonly activitiesPageLoading: Signal<boolean> = this.store.activities.loading

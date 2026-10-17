@@ -1,3 +1,4 @@
+import { SectionErrorsHelper } from '@shared/helpers/store/section-errors.helper'
 import { computed, inject, Injectable, Signal } from '@angular/core'
 import { ProjectStatusModel } from '@shared/models/model/project-status.model'
 import { NotificationModel } from '@shared/models/model/notification.model'
@@ -24,6 +25,12 @@ export class SelectedProjectFacade extends GenericFacade {
     private readonly store: InstanceType<typeof SelectedProjectStore> = inject( SelectedProjectStore )
 
     private readonly hasVehicleOption: Signal<boolean> = this.sessionFacade.selectedProjectHasOption( ProjectOptionEnum.VEHICLE )
+
+    public readonly participantsBirthdaysError: Signal<NotificationModel | undefined> = SectionErrorsHelper.of( this.store.sectionErrors, 'birthdays' )
+
+    public readonly currentMovementsWithoutActivityContentsError: Signal<NotificationModel | undefined> = SectionErrorsHelper.of( this.store.sectionErrors, 'contents.withoutActivity' )
+
+    public readonly currentMovementsWithActivityContentsError: Signal<NotificationModel | undefined> = SectionErrorsHelper.of( this.store.sectionErrors, 'contents.withActivity' )
 
     public readonly participantsStatus: Signal<ProjectStatusModel | undefined> = this.store.status.participants.element
 

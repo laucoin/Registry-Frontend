@@ -118,4 +118,15 @@ describe( 'CommunicationFacade', () => {
         expect( received ).toBe( ERROR_500 )
         expect( findCommunications ).not.toHaveBeenCalled()
     } )
+
+    it( 'exposes the failure of the communication fetch', () => {
+        // Arrange
+        Object.assign( TestBed.inject( CommunicationApi ), { findCommunicationById: vi.fn( () => failing( ERROR_500 ) ) } )
+
+        // Act
+        facade.fetchCommunication( 'c1' )
+
+        // Assert
+        expect( facade.communicationError()?.summary ).toBe( 'Title' )
+    } )
 } )

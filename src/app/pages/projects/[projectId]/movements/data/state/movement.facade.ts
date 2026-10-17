@@ -1,3 +1,4 @@
+import { SectionErrorsHelper } from '@shared/helpers/store/section-errors.helper'
 import { computed, inject, Injectable, Signal } from '@angular/core'
 import { Observable, tap } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
@@ -35,6 +36,10 @@ export class MovementFacade extends GenericProjectElementFacade {
     private readonly api: MovementApi = inject( MovementApi )
     private readonly pluralTranslationPipe: PluralTranslationPipe = inject( PluralTranslationPipe )
     private readonly datePipe: DateFormatPipe = inject( DateFormatPipe )
+
+    public readonly metadataErrors: Signal<Record<string, NotificationModel | undefined>> = SectionErrorsHelper.metadata( this.store.sectionErrors )
+
+    public readonly movementsContentsError: Signal<NotificationModel | undefined> = SectionErrorsHelper.of( this.store.sectionErrors, 'contents' )
 
     public readonly movementsPage: Signal<PageModel<MovementModel> | undefined> = this.store.movements.element
 

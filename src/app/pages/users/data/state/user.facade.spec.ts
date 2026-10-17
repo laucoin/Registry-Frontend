@@ -161,4 +161,15 @@ describe( 'UserFacade', () => {
         expect( downloadJson ).not.toHaveBeenCalled()
         expect( notify ).toHaveBeenCalled()
     } )
+
+    it( 'exposes the failure of the user fetch', () => {
+        // Arrange
+        Object.assign( TestBed.inject( UserApi ), { findUserById: vi.fn( () => failing( ERROR_500 ) ) } )
+
+        // Act
+        facade.fetchUser( 'u1' )
+
+        // Assert
+        expect( facade.userError()?.summary ).toBe( 'Title' )
+    } )
 } )

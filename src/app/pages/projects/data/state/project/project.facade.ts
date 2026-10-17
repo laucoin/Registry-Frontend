@@ -1,3 +1,4 @@
+import { SectionErrorsHelper } from '@shared/helpers/store/section-errors.helper'
 import { computed, inject, Injectable, Signal } from '@angular/core'
 import { toObservable } from '@angular/core/rxjs-interop'
 import { finalize, Observable, switchMap, tap } from 'rxjs'
@@ -29,6 +30,10 @@ export class ProjectFacade extends GenericFacade {
     private readonly api: ProjectApi = inject( ProjectApi )
     private readonly uiFacade: UiFacade = inject( UiFacade )
     private readonly sessionFacade: SessionFacade = inject( SessionFacade )
+
+    public readonly metadataErrors: Signal<Record<string, NotificationModel | undefined>> = SectionErrorsHelper.metadata( this.store.sectionErrors )
+
+    public readonly projectError: Signal<NotificationModel | undefined> = this.store.project.error
 
     public readonly projectsPage: Signal<PageModel<ProjectModel> | undefined> = this.store.projects.element
 

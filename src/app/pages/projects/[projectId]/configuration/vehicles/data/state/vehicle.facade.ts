@@ -1,3 +1,4 @@
+import { SectionErrorsHelper } from '@shared/helpers/store/section-errors.helper'
 import { computed, inject, Injectable, Signal } from '@angular/core'
 import { Observable, tap } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
@@ -24,6 +25,10 @@ export class VehicleFacade extends GenericProjectElementFacade {
     private readonly api: VehicleApi = inject( VehicleApi )
 
     private readonly store: InstanceType<typeof VehicleStore> = inject( VehicleStore )
+
+    public readonly metadataErrors: Signal<Record<string, NotificationModel | undefined>> = SectionErrorsHelper.metadata( this.store.sectionErrors )
+
+    public readonly movementsContentsError: Signal<NotificationModel | undefined> = SectionErrorsHelper.of( this.store.sectionErrors, 'contents' )
 
     public readonly vehiclesPage: Signal<PageModel<VehicleModel> | undefined> = this.store.vehicles.element
     public readonly vehiclesPageLoading: Signal<boolean> = this.store.vehicles.loading

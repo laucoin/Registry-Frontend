@@ -1,3 +1,4 @@
+import { SectionErrorsHelper } from '@shared/helpers/store/section-errors.helper'
 import { computed, inject, Injectable, Signal } from '@angular/core'
 import { Observable, tap } from 'rxjs'
 import { BrowserService } from '@core/browser/browser.service'
@@ -30,6 +31,10 @@ export class ParticipantFacade extends GenericProjectElementFacade {
     private readonly api: ParticipantApi = inject( ParticipantApi )
 
     private readonly browser: BrowserService = inject( BrowserService )
+
+    public readonly metadataErrors: Signal<Record<string, NotificationModel | undefined>> = SectionErrorsHelper.metadata( this.store.sectionErrors )
+
+    public readonly movementsContentsError: Signal<NotificationModel | undefined> = SectionErrorsHelper.of( this.store.sectionErrors, 'contents' )
 
     public readonly participantsPage: Signal<PageModel<ParticipantModel> | undefined> = this.store.participants.element
 

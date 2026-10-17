@@ -1,3 +1,4 @@
+import { SectionErrorsHelper } from '@shared/helpers/store/section-errors.helper'
 import { computed, Injectable, Signal, inject } from '@angular/core'
 import { PageModel } from '@shared/models/model/page.model'
 import { AlertStore } from '@pages/projects/[projectId]/alerts/data/state/alert.store'
@@ -26,6 +27,8 @@ export class AlertFacade extends GenericProjectElementFacade {
     private readonly store: InstanceType<typeof AlertStore> = inject( AlertStore )
 
     private readonly api: AlertApi = inject( AlertApi )
+
+    public readonly metadataErrors: Signal<Record<string, NotificationModel | undefined>> = SectionErrorsHelper.metadata( this.store.sectionErrors )
 
     public readonly alertsPage: Signal<PageModel<AlertModel> | undefined> = this.store.alerts.element
 
