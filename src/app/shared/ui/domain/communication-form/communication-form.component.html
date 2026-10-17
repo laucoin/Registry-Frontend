@@ -1,4 +1,10 @@
 <div class="composer">
+    @if (facade.communicationError(); as failure) {
+        <app-section-error [error]="failure" [retrying]="facade.communicationLoading()" (retry)="loadData()"/>
+    }
+    @if (searchError(); as failure) {
+        <app-section-error [error]="failure" [retryable]="false"/>
+    }
     <app-form-error [error]='error()' />
     <app-field-error [field]='form.movement' translationPrefix='communications.form.error.movement' />
     <app-field-error [field]='form.alert' translationPrefix='communications.form.error.alert' />

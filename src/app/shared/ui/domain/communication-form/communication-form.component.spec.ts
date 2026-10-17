@@ -47,6 +47,7 @@ interface CommunicationFormApi {
     selectAlert: (key: string) => void
     movementChoices: () => { label: string, value: { id: string } }[]
     selectedMovementKey: () => string
+    searchError: () => { summary?: string } | undefined
 }
 
 describe( 'CommunicationFormComponent', () => {
@@ -63,6 +64,7 @@ describe( 'CommunicationFormComponent', () => {
         communication$ = new BehaviorSubject<object | undefined>( undefined )
         facade[ 'communication$' ] = communication$ as never
         facade[ 'communication' ].mockImplementation( () => current )
+        facade[ 'metadataErrors' ].mockReturnValue( {} )
         facade[ 'createCommunication' ].mockReturnValue( of( {} ) )
         facade[ 'updateCommunication' ].mockReturnValue( of( {} ) )
         alertFacade[ 'createAlert' ].mockReturnValue( of( {} ) )
@@ -95,6 +97,32 @@ describe( 'CommunicationFormComponent', () => {
 
     beforeEach( () => {
         TestBed.resetTestingModule()
+    } )
+
+    describe( 'search failures', () => {
+        it( 'exposes the failure of the movements search', () => {
+            // Arrange
+            const page: CommunicationFormApi = create()
+            facade[ 'metadataErrors' ].mockReturnValue( { searchedMovements: { summary: 'Movements down' } } )
+
+            // Act
+            const error: { summary?: string } | undefined = page.searchError()
+
+            // Assert
+            expect( error?.summary ).toBe( 'Movements down' )
+        } )
+
+        it( 'exposes the failure of the alerts search', () => {
+            // Arrange
+            const page: CommunicationFormApi = create()
+            facade[ 'metadataErrors' ].mockReturnValue( { searchedAlerts: { summary: 'Alerts down' } } )
+
+            // Act
+            const error: { summary?: string } | undefined = page.searchError()
+
+            // Assert
+            expect( error?.summary ).toBe( 'Alerts down' )
+        } )
     } )
 
     describe( 'available actions', () => {

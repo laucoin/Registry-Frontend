@@ -8,11 +8,12 @@ import { SectionErrorComponent } from '@shared/ui/common/section-error/section-e
 
 @Component({
     imports: [SectionErrorComponent],
-    template: `<app-section-error [error]="error()" [retrying]="retrying()" (retry)="retries = retries + 1"/>`,
+    template: `<app-section-error [error]="error()" [retrying]="retrying()" [retryable]="retryable()" (retry)="retries = retries + 1"/>`,
 })
 class HostComponent {
     public readonly error: WritableSignal<NotificationModel> = signal({ summary: 'Oops', detail: 'Backend said no' })
     public readonly retrying: WritableSignal<boolean> = signal(false)
+    public readonly retryable: WritableSignal<boolean> = signal(true)
     public retries: number = 0
 }
 
@@ -68,6 +69,17 @@ describe('SectionErrorComponent', () => {
 
         // Assert
         expect(host.retries).toBe(1)
+    })
+
+    it('hides the retry button when the failure cannot be retried', async () => {
+        // Arrange
+        host.retryable.set(false)
+
+        // Act
+        await render()
+
+        // Assert
+        expect(query('sgdf-button')).toBeNull()
     })
 
     it('flags the button as loading while the retry is in flight', async () => {

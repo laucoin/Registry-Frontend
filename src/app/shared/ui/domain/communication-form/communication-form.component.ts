@@ -51,6 +51,8 @@ import '@sgdf/ui/textarea'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
 import { FormErrorComponent } from '@shared/ui/common/form-error/form-error.component'
 import { ETagHelper } from '@shared/helpers/etag.helper'
+import { NotificationModel } from '@shared/models/model/notification.model'
+import { SectionErrorComponent } from '@shared/ui/common/section-error/section-error.component'
 
 enum CommunicationModulableFieldEnum {
     MOVEMENT = 'movement',
@@ -77,6 +79,7 @@ enum AlertModulableFieldEnum {
         FormField,
         SgdfFieldDirective,
         DateFormatPipe,
+        SectionErrorComponent,
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     templateUrl: './communication-form.component.html',
@@ -86,6 +89,10 @@ export class CommunicationFormComponent extends BaseFormComponent implements OnI
     protected readonly facade: CommunicationFacade = inject( CommunicationFacade )
     protected readonly alertFacade: AlertFacade = inject( AlertFacade )
     protected readonly classicDatePipe: DateFormatPipe = inject( DateFormatPipe )
+
+    protected readonly searchError: Signal<NotificationModel | undefined> = computed(
+        (): NotificationModel | undefined => this.facade.metadataErrors()[ 'searchedMovements' ] ?? this.facade.metadataErrors()[ 'searchedAlerts' ],
+    )
 
     protected readonly movementChoices: Signal<SelectOptionModel<MovementModel>[]> = computed(
         (): SelectOptionModel<MovementModel>[] => this.withSelected( this.facade.searchedMovementsMetadata(), this.model().movement ),

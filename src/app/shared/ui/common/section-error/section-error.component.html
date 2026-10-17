@@ -2,8 +2,10 @@
               [title]="error().summary || ('global.notifications.UNKNOWN_ERROR.title' | transloco)">
     <div class="flex flex-wrap items-center justify-between gap-(--spacing--in-block)">
         <span>{{ error().detail || ('global.notifications.UNKNOWN_ERROR.message' | transloco) }}</span>
-        <sgdf-button size="small" variant="danger" appearance="outlined" [loading]="retrying()" (click)="retry.emit()">
-            {{ 'global.list.retry' | transloco }}
-        </sgdf-button>
+        @if (retryable()) {
+            <sgdf-button size="small" variant="danger" appearance="outlined" [loading]="retrying()" (click)="retry.emit()">
+                {{ 'global.list.retry' | transloco }}
+            </sgdf-button>
+        }
     </div>
 </sgdf-callout>
