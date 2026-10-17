@@ -54,7 +54,7 @@ import { ETagHelper } from '@shared/helpers/etag.helper'
     providedIn: 'root',
 })
 export class MovementApi extends GenericProjectApi {
-    private static readonly MAX_CONTENT_IDS: number = 100
+    private static readonly MAX_CONTENT_IDS: number = 80
 
     public constructor() {
         super(`/api/v2/projects/${SELECT_PROFILE_PROJECT_ID}/movements`)

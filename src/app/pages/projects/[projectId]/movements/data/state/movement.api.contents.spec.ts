@@ -18,7 +18,7 @@ describe( 'MovementApi contents batching', (): void => {
         controller = TestBed.inject( HttpTestingController )
     } )
 
-    it( 'splits the movement ids in requests of 100 at most and merges the answers', (): void => {
+    it( 'splits the movement ids in requests of 80 at most and merges the answers', (): void => {
         // Arrange
         const ids: string[] = Array.from( { length: 250 }, (_: unknown, index: number): string => `m${index}` )
         let result: PairModel<MovementContentModel[]>[] = []
@@ -29,8 +29,8 @@ describe( 'MovementApi contents batching', (): void => {
         requests.forEach( (request: TestRequest, index: number): void => request.flush( [ { first: `chunk${index}`, second: [] } ] ) )
 
         // Assert
-        expect( requests.map( (request: TestRequest): number => request.request.urlWithParams.split( 'movementIds=' ).length - 1 ) ).toEqual( [ 100, 100, 50 ] )
-        expect( result.map( (pair: PairModel<MovementContentModel[]>): unknown => pair.first ) ).toEqual( [ 'chunk0', 'chunk1', 'chunk2' ] )
+        expect( requests.map( (request: TestRequest): number => request.request.urlWithParams.split( 'movementIds=' ).length - 1 ) ).toEqual( [ 80, 80, 80, 10 ] )
+        expect( result.map( (pair: PairModel<MovementContentModel[]>): unknown => pair.first ) ).toEqual( [ 'chunk0', 'chunk1', 'chunk2', 'chunk3' ] )
     } )
 
     it( 'sends no request without movement ids', () => {
