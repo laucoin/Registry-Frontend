@@ -28,6 +28,7 @@ import { GenericModel } from '@shared/models/model/generic.model'
 import { NotificationModel } from '@shared/models/model/notification.model'
 import { PageEventModel } from '@shared/models/model/page-event.model'
 import { PageModel } from '@shared/models/model/page.model'
+import { SectionErrorComponent } from '@shared/ui/common/section-error/section-error.component'
 
 const DEFAULT_PAGE_SIZE: number = 20
 const SKELETON_ROWS: number = 6
@@ -39,7 +40,7 @@ const SKELETON_ROWS: number = 6
  */
 @Component({
 	selector: 'app-list',
-	imports: [NgTemplateOutlet, TranslocoPipe, DateFormatPipe],
+	imports: [NgTemplateOutlet, TranslocoPipe, DateFormatPipe, SectionErrorComponent],
 	schemas: [CUSTOM_ELEMENTS_SCHEMA],
 	templateUrl: './list.component.html',
 })

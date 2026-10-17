@@ -10,6 +10,7 @@ import { NotificationModel } from '@shared/models/model/notification.model'
 import { PageEventModel } from '@shared/models/model/page-event.model'
 import { PageModel } from '@shared/models/model/page.model'
 import { ListComponent } from '@shared/ui/common/list/list.component'
+import { SectionErrorComponent } from '@shared/ui/common/section-error/section-error.component'
 
 @Component({
     imports: [ListComponent, RegistryTemplateDirective],
@@ -67,6 +68,7 @@ describe('ListComponent', () => {
         await MockBuilder(HostComponent)
             .keep(ListComponent)
             .keep(RegistryTemplateDirective)
+            .keep(SectionErrorComponent)
             .mock(TranslocoPipe, (key: string): string => key)
             .mock(DateFormatPipe, (): string => 'date')
         fixture = TestBed.createComponent(HostComponent)
