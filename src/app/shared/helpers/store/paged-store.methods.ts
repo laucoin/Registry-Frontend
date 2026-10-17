@@ -108,14 +108,14 @@ function readBlock<S extends object, K extends keyof S & string> (store: StoreRe
 
 /**
  * Purpose: Stores a fetched page in its block.
- * Scope: Merges it with the shown page when a merge hook is given, stores it, then calls the after hook.
+ * Scope: Merges it with the shown page when a merge hook is given, stores it, then calls the after hook with the fetched page only.
  * Limits: Does not handle errors; the caller reports them.
  */
 function commitPage<S extends object, K extends keyof S & string, R> (fetch: PageFetch<S, K, R>, request: R, fetched: PageOf<S[K]>): void {
     const current: PageOf<S[K]> | undefined = readBlock( fetch.store, fetch.key ).element as PageOf<S[K]> | undefined
     const stored: PageOf<S[K]> = fetch.hooks.merge?.( current, fetched, request ) ?? fetched
     storePage( fetch.store, fetch.key, stored )
-    fetch.hooks.after?.( request, stored )
+    fetch.hooks.after?.( request, fetched )
 }
 
 /**
@@ -192,7 +192,7 @@ function mergeContents<S extends { movements: MovementsBlock }> (state: S, conte
 
 /**
  * Purpose: Builds the callback that fetches the contents of a freshly loaded page of movements.
- * Scope: Asks for the contents of every movement of the page, unless the page is empty.
+ * Scope: Asks for the contents of the movements of the page that just arrived, unless it is empty.
  * Limits: Only triggers the fetch; the contents method stores the result.
  */
 export function contentsRequester (fetchContents: (request: MovementContentsRequest) => void): (request: { projectId: string | undefined }, page: PageModel<MovementModel>) => void {

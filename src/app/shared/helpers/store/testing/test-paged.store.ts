@@ -27,6 +27,10 @@ export interface TestPagedState {
 export type ItemsSource = (request: { n: number }, params: TestItemsParams) => Observable<PageModel<GenericModel>>
 export type MovementsSource = (request: { projectId: string | undefined }, params: MovementPageParamsModel) => Observable<PageModel<MovementModel>>
 
+function appendMovements (current: PageModel<MovementModel> | undefined, fetched: PageModel<MovementModel>): PageModel<MovementModel> {
+    return current ? { ...fetched, content: [ ...current.content, ...fetched.content ] } : fetched
+}
+
 export type ItemSource = (id: string) => Observable<GenericModel>
 export type LabelsSource = (prefix: string) => Observable<string[]>
 
@@ -82,6 +86,6 @@ export const TestPagedStore = signalStore(
         stopItemLoader: loaderToggle( store, 'item', false ),
     }) ),
     withMethods( (store, errors = inject( TEST_ERRORS )) => ({
-        fetchMovements: pageFetcher( store, 'movements', inject( MOVEMENTS_SOURCE ), errors, { after: contentsRequester( store.fetchContents ) } ),
+        fetchMovements: pageFetcher( store, 'movements', inject( MOVEMENTS_SOURCE ), errors, { after: contentsRequester( store.fetchContents ), merge: appendMovements } ),
     }) ),
 )

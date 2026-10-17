@@ -193,6 +193,21 @@ describe( 'paged store methods', () => {
             expect( store.movements.element()?.content[ 1 ].content ).toHaveLength( 1 )
         } )
 
+        it( 'fetches only the contents of the page that just arrived', () => {
+            // Arrange
+            movementsSource.mockReturnValueOnce( of( pageOf<MovementModel>( [ { id: 'm1' } as MovementModel ] ) ) )
+            movementsSource.mockReturnValueOnce( of( pageOf<MovementModel>( [ { id: 'm2' } as MovementModel ], 1 ) ) )
+            store.fetchMovements( { projectId: 'p1' } )
+            findMovementsContents.mockClear()
+
+            // Act
+            store.fetchMovements( { projectId: 'p1' } )
+
+            // Assert
+            expect( findMovementsContents ).toHaveBeenCalledOnce()
+            expect( findMovementsContents ).toHaveBeenCalledWith( 'p1', [ 'm2' ], true )
+        } )
+
         it( 'does not fetch contents for an empty page', () => {
             // Arrange
             movementsSource.mockReturnValue( of( pageOf<MovementModel>( [] ) ) )
