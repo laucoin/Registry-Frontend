@@ -38,10 +38,12 @@ import { ProgressSpinner } from 'primeng/progressspinner'
 import { FormTitlePipe } from '@shared/helpers/pipe/form-title.pipe'
 import { FormIconPipe } from '@shared/helpers/pipe/form-icon.pipe'
 import { ETagHelper } from '@shared/helpers/etag.helper'
+import { NotificationModel } from '@shared/models/model/notification.model'
+import { SectionErrorComponent } from '@shared/ui/common/section-error/section-error.component'
 
 /**
  * Purpose: Page with the form to create or edit a project.
- * Scope: Builds the form, submits it through the facade and navigates back.
+ * Scope: Builds the form, submits it through the facade and navigates back; shows the failure of the project or options load instead of the form.
  * Limits: Holds no domain state and never calls the backend.
  */
 @Component( {
@@ -68,6 +70,7 @@ import { ETagHelper } from '@shared/helpers/etag.helper'
         ProgressSpinner,
         FormTitlePipe,
         FormIconPipe,
+        SectionErrorComponent,
     ],
     templateUrl: './project-form.page.html',
     styleUrl: './project-form.page.css',
@@ -85,6 +88,9 @@ export class ProjectFormPage extends BaseFormComponent implements OnDestroy {
     protected readonly allSelectedForm: FieldTree<boolean> = form( this.allSelectedModel )
     protected readonly nextNavigation: RegistryRouteEnum = RegistryRouteEnum.PROJECTS
     protected readonly activeTab: ModelSignal<number> = model<number>( 1 )
+    protected readonly loadError: Signal<NotificationModel | undefined> = computed( (): NotificationModel | undefined =>
+        this.facade.projectError() ?? this.facade.metadataErrors()[ 'options' ],
+    )
 
     public constructor () {
         super()

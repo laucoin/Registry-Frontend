@@ -1,4 +1,6 @@
-@if (!form().touched() && facade.projectLoading()) {
+@if (loadError(); as error) {
+    <app-section-error [error]='error' [retrying]='facade.projectLoading()' (retry)='loadData()'/>
+} @else if (!form().touched() && facade.projectLoading()) {
     <div class='flex justify-center'>
         <p-progress-spinner></p-progress-spinner>
     </div>

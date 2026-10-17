@@ -22,6 +22,7 @@ interface ProjectFormApi {
     optionsModel: { (): Record<string, boolean>, set: (value: Record<string, boolean>) => void }
     optionsForm: () => { errors: () => { kind: string }[] }
     allSelected: () => boolean | undefined
+    loadError: () => { summary?: string } | undefined
     submit: () => void
     selectAll: (event: { checked: boolean }) => void
 }
@@ -48,6 +49,8 @@ describe( 'ProjectFormPage', () => {
         facade[ 'project$' ] = project$ as never
         facade[ 'projectOptionsMetadata$' ] = of( OPTIONS ) as never
         facade[ 'project' ].mockImplementation( () => current )
+        facade[ 'projectError' ].mockReturnValue( undefined )
+        facade[ 'metadataErrors' ].mockReturnValue( {} )
         facade[ 'createdProjectId' ].mockReturnValue( 'new1' )
         facade[ 'projectOptionsMetadata' ].mockReturnValue( OPTIONS )
         facade[ 'createProject' ].mockReturnValue( of( {} ) )
@@ -97,6 +100,30 @@ describe( 'ProjectFormPage', () => {
 
             // Assert
             expect( facade[ 'fetchProject' ] ).toHaveBeenCalledWith( 'p1' )
+        } )
+
+        it( 'blocks the form with the project failure when editing', () => {
+            // Arrange
+            const page: ProjectFormApi = create( 'p1' )
+            facade[ 'projectError' ].mockReturnValue( { summary: 'Project down' } )
+
+            // Act
+            const error: { summary?: string } | undefined = page.loadError()
+
+            // Assert
+            expect( error?.summary ).toBe( 'Project down' )
+        } )
+
+        it( 'blocks the form with the options failure', () => {
+            // Arrange
+            const page: ProjectFormApi = create()
+            facade[ 'metadataErrors' ].mockReturnValue( { options: { summary: 'Options down' } } )
+
+            // Act
+            const error: { summary?: string } | undefined = page.loadError()
+
+            // Assert
+            expect( error?.summary ).toBe( 'Options down' )
         } )
 
         it( 'adds one control per option', () => {
