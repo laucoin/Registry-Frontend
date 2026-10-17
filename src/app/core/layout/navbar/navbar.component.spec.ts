@@ -8,7 +8,8 @@ import { SessionFacade } from '@core/registry/state/session.facade';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { CurrentUserModel } from '@shared/models/model/current-user.model';
 import { ProjectModel } from '@shared/models/model/project.model';
-import { MockBuilder } from 'ng-mocks';
+import { RouterLink } from '@angular/router';
+import { MockBuilder, ngMocks } from 'ng-mocks';
 import { NavbarComponent } from './navbar.component';
 
 describe('NavbarComponent', () => {
@@ -49,7 +50,7 @@ describe('NavbarComponent', () => {
 					logoutMenu: LOGOUT_MENU,
 				},
 			})
-			.provide({ provide: SessionFacade, useValue: { currentUser, selectedProject, logout } });
+			.provide({ provide: SessionFacade, useValue: { currentUser, selectedProject, currentProjectId: signal<string | undefined>('42'), logout } });
 	});
 
 	it('should show the full name and the initials of the user', async () => {
@@ -133,6 +134,18 @@ describe('NavbarComponent', () => {
 
 		// Assert
 		expect(context?.querySelector('strong')?.textContent).toBe('Summer camp');
+	});
+
+	it('should link the project name to the project home', async () => {
+		// Arrange
+		selectedProject.set({ name: 'Summer camp' } as ProjectModel);
+		await render(undefined);
+
+		// Act
+		const link: RouterLink = ngMocks.get(ngMocks.find('[slot="context"] a'), RouterLink);
+
+		// Assert
+		expect(link.routerLink).toBe('projects/42');
 	});
 
 	it('should hide the context slot when no project is selected', async () => {
