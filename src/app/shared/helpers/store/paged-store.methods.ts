@@ -1,8 +1,11 @@
 import { patchState, StateSignals, WritableStateSource } from '@ngrx/signals'
 import { RxMethod, rxMethod } from '@ngrx/signals/rxjs-interop'
-import { defer, finalize, Observable, pipe, switchMap, tap } from 'rxjs'
+import { catchError, defer, EMPTY, finalize, Observable, pipe, switchMap, tap } from 'rxjs'
 import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { ErrorSink, initialize, notifyOnError } from '@shared/helpers/rx.helper'
+import { SectionErrorsState } from '@shared/models/model/section-errors-state.model'
+import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
+import { ErrorModel } from '@shared/models/model/error.model'
 import { MovementHelper } from '@shared/helpers/movement.helper'
 import { StateHelper } from '@shared/helpers/state/state.helper'
 import { pageSlice, trackPage } from '@shared/helpers/store/track-page.operator'
@@ -14,6 +17,7 @@ import { ElementRequestInformationModel } from '@shared/models/model/element-req
 import { PageModel } from '@shared/models/model/page.model'
 import { PageRequestInformationModel } from '@shared/models/model/page-request-information.model'
 import { PairModel } from '@shared/models/model/pair.model'
+import { NotificationModel } from '@shared/models/model/notification.model'
 
 export type StoreRef<S extends object> = WritableStateSource<S> & StateSignals<S>
 
@@ -160,12 +164,11 @@ export function paramsMerger<S extends object, K extends keyof S & string> (stor
 /**
  * Purpose: Builds the rxMethod that completes a page of movements with their contents.
  * Scope: Fetches the contents of the given movements and merges them into the stored movements page.
- * Limits: Leaves the page untouched when none is stored or when the fetch fails (the failure is notified).
+ * Limits: Leaves the page untouched when none is stored; a failure is kept under the `contents` section error.
  */
-export function movementContentsFetcher<S extends { movements: MovementsBlock }> (
+export function movementContentsFetcher<S extends SectionErrorsState & { movements: MovementsBlock }> (
     store: StoreRef<S>,
     movementApi: MovementContentsApi,
-    errors: ErrorSink,
 ): RxMethod<MovementContentsRequest> {
     const movements: () => MovementsBlock = (): MovementsBlock => (store as unknown as { movements: () => MovementsBlock }).movements()
 
@@ -174,7 +177,7 @@ export function movementContentsFetcher<S extends { movements: MovementsBlock }>
             request.projectId,
             request.movementIds,
             movements().params.isCurrent,
-        ).pipe( notifyOnError( errors ) ) ),
+        ).pipe( trackSectionError( store, CONTENTS_SECTION ) ) ),
         tap( (contents: PairModel<MovementContentModel[]>[]): void => patchState( store, (state: S) => mergeContents( state, contents ) ) ),
     ) )
 }
@@ -207,6 +210,33 @@ type ElementOf<B> = B extends ElementRequestInformationModel<infer M> ? M : neve
 
 type ElementBlock = ElementRequestInformationModel<unknown>
 
+export const CONTENTS_SECTION: string = 'contents'
+
+export const BIRTHDAYS_SECTION: string = 'birthdays'
+
+export const contentsSection = (block: string): string => `${CONTENTS_SECTION}.${block}`
+
+export const metadataSection = (field: string): string => `metadata.${field}`
+
+/**
+ * Purpose: Builds an operator that keeps the failure of a secondary fetch in the section errors of the store.
+ * Scope: Clears the section error when the request starts, stores the failure and completes without emitting.
+ * Limits: Does not notify the user; the page shows the section error.
+ */
+export function trackSectionError<S extends SectionErrorsState> (store: StoreRef<S>, section: string): <T> (source: Observable<T>) => Observable<T> {
+    return <T> (source: Observable<T>): Observable<T> => source.pipe(
+        initialize( (): void => setSectionError( store, section, undefined ) ),
+        catchError( (error: ErrorModel): Observable<never> => {
+            setSectionError( store, section, PageStateHelper.toNotification( error ) )
+            return EMPTY
+        } ),
+    )
+}
+
+function setSectionError<S extends SectionErrorsState> (store: StoreRef<S>, section: string, error: NotificationModel | undefined): void {
+    patchState( store, (state: S) => ({ sectionErrors: { ...state.sectionErrors, [ section ]: error } }) as unknown as Partial<S> )
+}
+
 /**
  * Purpose: Builds an operator that scopes the loading flag of one element block to a request.
  * Scope: Raises the flag when the request starts and lowers it when it ends, whatever the outcome.
@@ -237,19 +267,32 @@ export function loaderToggle<S extends object, K extends keyof S & string> (stor
     return (): void => setElementLoading( store, key, loading )
 }
 
+function keepElementError<S extends object, K extends keyof S & string> (store: StoreRef<S>, key: K): <T> (source: Observable<T>) => Observable<T> {
+    return <T> (source: Observable<T>): Observable<T> => source.pipe(
+        initialize( (): void => setElementError( store, key, undefined ) ),
+        catchError( (error: ErrorModel): Observable<never> => {
+            setElementError( store, key, PageStateHelper.toNotification( error ) )
+            return EMPTY
+        } ),
+    )
+}
+
+function setElementError<S extends object, K extends keyof S & string> (store: StoreRef<S>, key: K, error: NotificationModel | undefined): void {
+    patchState( store, (state: S) => ({ [ key ]: { ...state[ key ], error } }) as unknown as Partial<S> )
+}
+
 /**
  * Purpose: Builds the rxMethod that loads one element of a signal store.
- * Scope: Scopes the loading flag to the element block, notifies a failure and stores the element.
- * Limits: A failure leaves the previous element in place.
+ * Scope: Scopes the loading flag to the element block, keeps a failure in the block's error and stores the element.
+ * Limits: A failure leaves the previous element in place; the error is cleared when the next request starts.
  */
 export function elementFetcher<S extends object, K extends keyof S & string, R> (
     store: StoreRef<S>,
     key: K,
     source: (request: R) => Observable<ElementOf<S[K]>>,
-    errors: ErrorSink,
 ): RxMethod<R> {
     return rxMethod<R>( pipe(
-        switchMap( (request: R): Observable<ElementOf<S[K]>> => source( request ).pipe( trackElement( store, key ), notifyOnError( errors ) ) ),
+        switchMap( (request: R): Observable<ElementOf<S[K]>> => source( request ).pipe( trackElement( store, key ), keepElementError( store, key ) ) ),
         tap( (element: ElementOf<S[K]>): void => patchState( store, (state: S) => ({ [ key ]: { ...state[ key ], element } }) as unknown as Partial<S> ) ),
     ) )
 }
@@ -257,17 +300,16 @@ export function elementFetcher<S extends object, K extends keyof S & string, R> 
 /**
  * Purpose: Builds the rxMethod that fills one metadata list of a signal store.
  * Scope: Fetches the values, optionally transforms them, and stores them under the metadata field.
- * Limits: A failure is notified and the previous values stay.
+ * Limits: A failure is kept under the section error of the field and the previous values stay.
  */
-export function metadataFetcher<S extends { metadata: object }, F extends keyof S[ 'metadata' ] & string, R, T> (
+export function metadataFetcher<S extends SectionErrorsState & { metadata: object }, F extends keyof S[ 'metadata' ] & string, R, T> (
     store: StoreRef<S>,
     field: F,
     source: (request: R) => Observable<T>,
-    errors: ErrorSink,
     transform: (value: T) => S[ 'metadata' ][ F ] = (value: T): S[ 'metadata' ][ F ] => value as unknown as S[ 'metadata' ][ F ],
 ): RxMethod<R> {
     return rxMethod<R>( pipe(
-        switchMap( (request: R): Observable<T> => source( request ).pipe( notifyOnError( errors ) ) ),
+        switchMap( (request: R): Observable<T> => source( request ).pipe( trackSectionError( store, metadataSection( field ) ) ) ),
         tap( (value: T): void => patchState( store, (state: S) => ({ metadata: { ...state.metadata, [ field ]: transform( value ) } }) as unknown as Partial<S> ) ),
     ) )
 }

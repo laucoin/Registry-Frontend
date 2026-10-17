@@ -33,6 +33,7 @@ interface VehicleMovementsPageRequest extends VehiclesPageRequest {
 }
 
 const defaultVehicleStore: VehicleStoreModel = {
+    sectionErrors: {},
     vehicles: PageStateHelper.initial<VehiclePageParamsModel, VehicleModel>( {
         resetSearch: false,
         isVisible: undefined,
@@ -76,13 +77,13 @@ export const VehicleStore = signalStore(
     }) ),
     withMethods( (store, api = inject( VehicleApi ), movementApi = inject( MovementApi ), metadataApi = inject( MetadataApi ), errors = inject( ErrorReporter )) => ({
         fetchPresencesStatus: metadataFetcher<VehicleStoreModel, 'presencesStatus', void, SelectOptionModel<PresenceStatusEnum>[]>(
-            store, 'presencesStatus', () => metadataApi.getPresencesStatus(), errors, withEmptyOption,
+            store, 'presencesStatus', () => metadataApi.getPresencesStatus(), withEmptyOption,
         ),
         fetchVehiclesPage: pageFetcher( store, 'vehicles', (request: VehiclesPageRequest, params: VehiclePageParamsModel) =>
             api.findVehicles( request.projectId, request.page, request.size, params ), errors, { merge: CumulativePageHelper.merge } ),
         updateVehiclesPageSearchParams: paramsUpdater( store, 'vehicles' ),
         updateVehicleMovementsPageSearchParams: paramsUpdater( store, 'movements' ),
-        fetchVehicleMovementsContents: movementContentsFetcher( store, movementApi, errors ),
+        fetchVehicleMovementsContents: movementContentsFetcher( store, movementApi ),
     }) ),
     withMethods( (store, api = inject( VehicleApi ), errors = inject( ErrorReporter )) => ({
         fetchVehicleMovementsPage: pageFetcher( store, 'movements', (request: VehicleMovementsPageRequest, params: MovementPageParamsModel) =>

@@ -25,6 +25,7 @@ interface AlertCommunicationsPageRequest extends AlertsPageRequest {
 }
 
 const defaultAlertStore: AlertStoreModel = {
+    sectionErrors: {},
     alerts: PageStateHelper.initial<AlertPageParamsModel, AlertModel>( {
         resetSearch: false,
         q: undefined,
@@ -62,7 +63,7 @@ export const AlertStore = signalStore(
     }) ),
     withMethods( (store, api = inject( AlertApi ), metadataApi = inject( MetadataApi ), errors = inject( ErrorReporter )) => ({
         fetchAlertStatus: metadataFetcher<AlertStoreModel, 'status', void, SelectOptionModel<AlertStatusEnum>[]>(
-            store, 'status', () => metadataApi.getAlertsStatus(), errors, withEmptyOption,
+            store, 'status', () => metadataApi.getAlertsStatus(), withEmptyOption,
         ),
         fetchAlertsPage: pageFetcher( store, 'alerts', (request: AlertsPageRequest, params: AlertPageParamsModel) =>
             api.findAlerts( request.projectId, request.page, request.size, params ), errors, { merge: CumulativePageHelper.merge } ),

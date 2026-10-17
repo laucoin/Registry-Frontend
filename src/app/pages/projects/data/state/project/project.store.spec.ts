@@ -76,7 +76,7 @@ describe( 'ProjectStore', () => {
         expect( store.metadata.options() ).toEqual( options )
     } )
 
-    it( 'notifies when the project options cannot be loaded', () => {
+    it( 'keeps the failure of the project options in the section error', () => {
         // Arrange
         getAvailableProjectOptions.mockReturnValue( failing( ERROR_500 ) )
 
@@ -84,7 +84,7 @@ describe( 'ProjectStore', () => {
         store.fetchProjectOptions()
 
         // Assert
-        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'Title' } ) )
+        expect( store.sectionErrors()[ 'metadata.options' ]?.summary ).toBe( 'Title' )
         expect( store.metadata.options() ).toEqual( [] )
     } )
 

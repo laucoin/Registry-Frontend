@@ -112,7 +112,7 @@ describe( 'ParticipantStore', () => {
         expect( store.metadata.searchedGroups()[ 0 ].label ).toBe( 'Wolves' )
     } )
 
-    it( 'notifies a failed user search and keeps the previous results', () => {
+    it( 'keeps a failed user search in the section error and keeps the previous results', () => {
         // Arrange
         searchUsers.mockReturnValueOnce( of( [ { id: 'u1', email: 'a@b.c', firstName: 'A', lastName: 'B' } as UserModel ] ) )
         searchUsers.mockReturnValueOnce( failing( ERROR_500 ) )
@@ -122,7 +122,7 @@ describe( 'ParticipantStore', () => {
         store.searchUsers( { projectId: 'p1', q: 'ab' } )
 
         // Assert
-        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'Title' } ) )
+        expect( store.sectionErrors()[ 'metadata.searchedUsers' ]?.summary ).toBe( 'Title' )
         expect( store.metadata.searchedUsers() ).toHaveLength( 1 )
     } )
 

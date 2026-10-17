@@ -1,3 +1,4 @@
+import { SectionErrorsState } from '@shared/models/model/section-errors-state.model'
 import { PageRequestInformationModel } from '@shared/models/model/page-request-information.model'
 import { NotificationModel } from '@shared/models/model/notification.model'
 import { ProjectStatusModel } from '@shared/models/model/project-status.model'
@@ -8,7 +9,7 @@ import { ParticipantModel } from '@shared/models/model/participant.model'
 import { AlertModel } from '@shared/models/model/alert.model'
 import { AlertPageParamsModel } from '@shared/models/model/alert-page-params.model'
 
-export interface SelectedProjectStoreModel {
+export interface SelectedProjectStoreModel extends SectionErrorsState {
     status: {
         participants: {
             element: ProjectStatusModel | undefined

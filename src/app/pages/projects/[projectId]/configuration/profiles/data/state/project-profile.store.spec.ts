@@ -135,7 +135,7 @@ describe( 'ProjectProfileStore', () => {
         expect( store.metadata.roles() ).toEqual( [ { label: 'Chief', value: 'CHIEF' } ] )
     } )
 
-    it( 'notifies a failed role fetch and keeps the previous roles', () => {
+    it( 'keeps a failed role fetch in the section error and keeps the previous roles', () => {
         // Arrange
         getAssignableProjectProfileRoles.mockReturnValueOnce( of( [ { label: 'Chief', value: 'CHIEF' } ] ) )
         getAssignableProjectProfileRoles.mockReturnValueOnce( failing( ERROR_500 ) )
@@ -145,7 +145,7 @@ describe( 'ProjectProfileStore', () => {
         store.fetchAssignableRoles( 'p1' )
 
         // Assert
-        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'Title' } ) )
+        expect( store.sectionErrors()[ 'metadata.roles' ]?.summary ).toBe( 'Title' )
         expect( store.metadata.roles() ).toHaveLength( 1 )
     } )
 } )

@@ -63,6 +63,7 @@ interface SearchVehiclesRequest {
 type SectionLabel = (key: string, items: unknown[]) => string
 
 const defaultMovementStore: MovementStoreModel = {
+    sectionErrors: {},
     movements: PageStateHelper.initial<MovementPageParamsModel, MovementModel>( {
         resetSearch: false,
         isCurrent: false,
@@ -124,14 +125,14 @@ export const MovementStore = signalStore(
             types: current.metadata.types,
         },
     }) ),
-    withMethods( (store, metadataApi = inject( MetadataApi ), movementApi = inject( MovementApi ), errors = inject( ErrorReporter )) => ({
+    withMethods( (store, metadataApi = inject( MetadataApi ), movementApi = inject( MovementApi )) => ({
         fetchMovementTypes: metadataFetcher<MovementStoreModel, 'types', void, SelectOptionModel<MovementTypeEnum>[]>(
-            store, 'types', () => metadataApi.getMovementsTypes(), errors, withEmptyOption,
+            store, 'types', () => metadataApi.getMovementsTypes(), withEmptyOption,
         ),
         fetchParticipantTypes: metadataFetcher<MovementStoreModel, 'participantTypes', void, SelectOptionModel<ParticipantTypeEnum>[]>(
-            store, 'participantTypes', () => metadataApi.getParticipantsTypes(), errors,
+            store, 'participantTypes', () => metadataApi.getParticipantsTypes(),
         ),
-        fetchMovementsContents: movementContentsFetcher( store, movementApi, errors ),
+        fetchMovementsContents: movementContentsFetcher( store, movementApi ),
         updateMovementsPageSearchParams: paramsUpdater( store, 'movements' ),
         updateMovementCommunicationsPageSearchParams: paramsUpdater( store, 'movementCommunications' ),
     }) ),
@@ -145,17 +146,17 @@ export const MovementStore = signalStore(
             api.findMovementCommunications( request.projectId, request.id, request.page, request.size, params ), errors ),
         searchReasonsAndActivities: metadataFetcher<MovementStoreModel, 'searchedReasonsAndActivities', SearchReasonsAndActivitiesRequest, MovementReasonModel[]>(
             store, 'searchedReasonsAndActivities', (request: SearchReasonsAndActivitiesRequest) =>
-                api.searchReasonsAndActivities( request.projectId, request.q, request.type, request.contentType ), errors,
+                api.searchReasonsAndActivities( request.projectId, request.q, request.type, request.contentType ),
         ),
         searchVehicles: metadataFetcher<MovementStoreModel, 'searchedVehicles', SearchVehiclesRequest, VehicleModel[]>(
-            store, 'searchedVehicles', (request: SearchVehiclesRequest) => api.searchVehicles( request.projectId, request.q ), errors,
+            store, 'searchedVehicles', (request: SearchVehiclesRequest) => api.searchVehicles( request.projectId, request.q ),
             (vehicles: VehicleModel[]): SelectOptionModel<VehicleModel>[] => vehicles.map( VehicleHelper.toSelectItem ),
         ),
     }) ),
-    withMethods( (store, api = inject( MovementApi ), errors = inject( ErrorReporter ), translateService = inject( TranslocoService ), plural = inject( PluralTranslationPipe )) => ({
+    withMethods( (store, api = inject( MovementApi ), translateService = inject( TranslocoService ), plural = inject( PluralTranslationPipe )) => ({
         searchParticipantsAndGroups: metadataFetcher<MovementStoreModel, 'searchedParticipantsAndGroups', SearchParticipantsAndGroupsRequest, MovementParticipantsAndGroupsModel>(
             store, 'searchedParticipantsAndGroups', (request: SearchParticipantsAndGroupsRequest) =>
-                api.searchParticipantsAndGroups( request.projectId, request.contentType, request.q ), errors,
+                api.searchParticipantsAndGroups( request.projectId, request.contentType, request.q ),
             (result: MovementParticipantsAndGroupsModel): SelectOptionGroupModel<ParticipantModel | GroupModel>[] =>
                 toSearchedSections( result, (key: string, items: unknown[]): string => translateService.translate( plural.transform( key, items ) ) ),
         ),

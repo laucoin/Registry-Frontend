@@ -1,3 +1,4 @@
+import { SectionErrorsState } from '@shared/models/model/section-errors-state.model'
 import { MovementPageParamsModel } from '@shared/models/model/movement-page-params.model'
 import { MovementModel } from '@shared/models/model/movement.model'
 import { PageRequestInformationModel } from '@shared/models/model/page-request-information.model'
@@ -11,7 +12,7 @@ import { MovementTypeEnum } from '@shared/models/enumeration/movement-type.enum'
 import { CommunicationPageParamsModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication-page-params.model'
 import { CommunicationModel } from '@shared/models/model/communication.model'
 
-export interface MovementStoreModel {
+export interface MovementStoreModel extends SectionErrorsState {
     movements: PageRequestInformationModel<MovementPageParamsModel, MovementModel>
     movementCommunications: PageRequestInformationModel<CommunicationPageParamsModel, CommunicationModel>
     metadata: {

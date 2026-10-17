@@ -35,9 +35,11 @@ interface SearchRequest {
 const defaultCommunication: ElementRequestInformationModel<CommunicationModel> = {
     element: undefined,
     loading: false,
+    error: undefined,
 }
 
 const defaultCommunicationStore: CommunicationStoreModel = {
+    sectionErrors: {},
     communications: PageStateHelper.initial<CommunicationPageParamsModel, CommunicationModel>( {
         resetSearch: false,
         q: undefined,
@@ -70,20 +72,18 @@ export const CommunicationStore = signalStore(
             api.findCommunications( request.projectId, request.page, request.size, params ), errors ),
         updateCommunicationsPageSearchParams: paramsUpdater( store, 'communications' ),
         fetchCommunication: elementFetcher( store, 'communication', (request: CommunicationRequest) =>
-            api.findCommunicationById( request.projectId, request.id ), errors ),
+            api.findCommunicationById( request.projectId, request.id )),
         resetCommunication: (): void => patchState( store, { communication: defaultCommunication } ),
     }) ),
-    withMethods( (store, api = inject( CommunicationApi ), errors = inject( ErrorReporter ), datePipe = inject( DateFormatPipe )) => ({
+    withMethods( (store, api = inject( CommunicationApi ), datePipe = inject( DateFormatPipe )) => ({
         searchMovements: metadataFetcher<CommunicationStoreModel, 'searchedMovements', SearchRequest, MovementModel[]>(
             store, 'searchedMovements',
             (request: SearchRequest) => api.searchMovements( request.projectId, request.q ).pipe( trackElement( store, 'communication' ) ),
-            errors,
             (movements: MovementModel[]): SelectOptionModel<MovementModel>[] => movements.map( (movement: MovementModel): SelectOptionModel<MovementModel> => MovementHelper.toActivitySelectItem( movement, datePipe ) ),
         ),
         searchAlerts: metadataFetcher<CommunicationStoreModel, 'searchedAlerts', SearchRequest, AlertModel[]>(
             store, 'searchedAlerts',
             (request: SearchRequest) => api.searchAlerts( request.projectId, request.q ).pipe( trackElement( store, 'communication' ) ),
-            errors,
             (alerts: AlertModel[]): SelectOptionModel<AlertModel>[] => alerts.map( (alert: AlertModel): SelectOptionModel<AlertModel> => AlertHelper.toSelectItem( alert, datePipe ) ),
         ),
     }) ),

@@ -1,3 +1,4 @@
+import { SectionErrorsState } from '@shared/models/model/section-errors-state.model'
 import { PageRequestInformationModel } from '@shared/models/model/page-request-information.model'
 import {
     ElementRequestInformationModel,
@@ -8,7 +9,7 @@ import { CommunicationModel } from '@shared/models/model/communication.model'
 import { MovementModel } from '@shared/models/model/movement.model'
 import { AlertModel } from '@shared/models/model/alert.model'
 
-export interface CommunicationStoreModel {
+export interface CommunicationStoreModel extends SectionErrorsState {
     communications: PageRequestInformationModel<CommunicationPageParamsModel, CommunicationModel>
     communication: ElementRequestInformationModel<CommunicationModel>
     metadata: {

@@ -22,6 +22,7 @@ interface ActivityMovementsPageRequest extends ActivitiesPageRequest {
 }
 
 const defaultActivityStore: ActivityStoreModel = {
+    sectionErrors: {},
     activities: PageStateHelper.initial<ActivityPageParamsModel, ActivityModel>( {
         resetSearch: false,
         q: undefined,
@@ -65,7 +66,7 @@ export const ActivityStore = signalStore(
             api.findActivities( request.projectId, request.page, request.size, params ), errors, { merge: CumulativePageHelper.merge } ),
         updateActivitiesPageSearchParams: paramsUpdater( store, 'activities' ),
         updateActivityMovementsPageSearchParams: paramsUpdater( store, 'movements' ),
-        fetchActivityMovementsContents: movementContentsFetcher( store, movementApi, errors ),
+        fetchActivityMovementsContents: movementContentsFetcher( store, movementApi ),
     }) ),
     withMethods( (store, api = inject( ActivityApi ), errors = inject( ErrorReporter )) => ({
         fetchActivityMovementsPage: pageFetcher( store, 'movements', (request: ActivityMovementsPageRequest, params: MovementPageParamsModel) =>

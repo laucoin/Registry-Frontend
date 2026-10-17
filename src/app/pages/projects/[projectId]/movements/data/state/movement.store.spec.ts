@@ -189,7 +189,7 @@ describe( 'MovementStore', () => {
         expect( store.metadata.searchedVehicles() ).toHaveLength( 1 )
     } )
 
-    it( 'notifies a failed vehicle search and keeps the previous results', () => {
+    it( 'keeps a failed vehicle search in the section error and keeps the previous results', () => {
         // Arrange
         searchVehicles.mockReturnValueOnce( of( [ { id: 'v1', licensePlate: 'AB-123' } as VehicleModel ] ) )
         searchVehicles.mockReturnValueOnce( failing( ERROR_500 ) )
@@ -199,7 +199,7 @@ describe( 'MovementStore', () => {
         store.searchVehicles( { projectId: 'p1', q: 'ab' } )
 
         // Assert
-        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'Title' } ) )
+        expect( store.sectionErrors()[ 'metadata.searchedVehicles' ]?.summary ).toBe( 'Title' )
         expect( store.metadata.searchedVehicles() ).toHaveLength( 1 )
     } )
 } )

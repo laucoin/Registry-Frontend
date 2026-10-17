@@ -81,7 +81,7 @@ describe( 'CommunicationStore', () => {
         expect( store.communication.loading() ).toBe( false )
     } )
 
-    it( 'notifies a failed communication fetch and ends the loading state', () => {
+    it( 'keeps a failed communication fetch in the block and ends the loading state', () => {
         // Arrange
         findCommunicationById.mockReturnValue( failing( ERROR_500 ) )
 
@@ -89,7 +89,7 @@ describe( 'CommunicationStore', () => {
         store.fetchCommunication( { projectId: 'p1', id: 'c1' } )
 
         // Assert
-        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'Title' } ) )
+        expect( store.communication.error()?.summary ).toBe( 'Title' )
         expect( store.communication.loading() ).toBe( false )
         expect( store.communication.element() ).toBeUndefined()
     } )

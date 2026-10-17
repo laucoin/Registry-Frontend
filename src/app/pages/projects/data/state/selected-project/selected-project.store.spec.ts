@@ -104,7 +104,7 @@ describe( 'SelectedProjectStore', () => {
         expect( store.birthdays() ).toHaveLength( 1 )
     } )
 
-    it( 'notifies a failed birthdays fetch and keeps the previous ones', () => {
+    it( 'keeps a failed birthdays fetch in the section error and keeps the previous ones', () => {
         // Arrange
         findParticipantsBirthdays.mockReturnValueOnce( of( [ { id: 'pa1' } as ParticipantModel ] ) )
         findParticipantsBirthdays.mockReturnValueOnce( failing( ERROR_500 ) )
@@ -114,7 +114,7 @@ describe( 'SelectedProjectStore', () => {
         store.fetchParticipantsBirthdays( 'p1' )
 
         // Assert
-        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'Title' } ) )
+        expect( store.sectionErrors()[ 'birthdays' ]?.summary ).toBe( 'Title' )
         expect( store.birthdays() ).toHaveLength( 1 )
     } )
 
@@ -158,7 +158,7 @@ describe( 'SelectedProjectStore', () => {
         expect( store.isCurrent.withActivity.loading() ).toBe( false )
     } )
 
-    it( 'notifies a failed contents fetch and leaves the movements page as it was', () => {
+    it( 'keeps a failed contents fetch in the section error and leaves the movements page as it was', () => {
         // Arrange
         findMovements.mockReturnValue( of( pageOf<MovementModel>( [ { id: 'm1' } as MovementModel ] ) ) )
         findMovementsContents.mockReturnValue( failing( ERROR_500 ) )
@@ -167,7 +167,7 @@ describe( 'SelectedProjectStore', () => {
         store.fetchCurrentMovementsPageWithoutActivity( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
-        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'Title' } ) )
+        expect( store.sectionErrors()[ 'contents.withoutActivity' ]?.summary ).toBe( 'Title' )
         expect( store.isCurrent.withoutActivity.element()?.content[ 0 ].id ).toBe( 'm1' )
     } )
 

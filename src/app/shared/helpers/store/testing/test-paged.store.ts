@@ -2,6 +2,7 @@ import { inject, InjectionToken } from '@angular/core'
 import { patchState, signalStore, withMethods, withState } from '@ngrx/signals'
 import { Observable } from 'rxjs'
 import { MovementPageParamsModel } from '@shared/models/model/movement-page-params.model'
+import { SectionErrorsState } from '@shared/models/model/section-errors-state.model'
 import { ErrorSink } from '@shared/helpers/rx.helper'
 import { contentsRequester, MovementContentsApi, elementFetcher, loaderToggle, metadataFetcher, movementContentsFetcher, pageFetcher, paramsMerger, paramsUpdater } from '@shared/helpers/store/paged-store.methods'
 import { CumulativePageHelper } from '@shared/helpers/store/cumulative-page.helper'
@@ -17,7 +18,7 @@ export interface TestItemsParams {
     text: string | undefined
 }
 
-export interface TestPagedState {
+export interface TestPagedState extends SectionErrorsState {
     items: PageRequestInformationModel<TestItemsParams, GenericModel>
     movements: PageRequestInformationModel<MovementPageParamsModel, MovementModel>
     item: ElementRequestInformationModel<GenericModel>
@@ -53,6 +54,7 @@ export const TEST_ERRORS: InjectionToken<ErrorSink> = new InjectionToken<ErrorSi
  */
 export const TestPagedStore = signalStore(
     withState<TestPagedState>( {
+        sectionErrors: {},
         items: PageStateHelper.initial<TestItemsParams, GenericModel>( { resetSearch: true, text: undefined } ),
         movements: PageStateHelper.initial<MovementPageParamsModel, MovementModel>( {
             resetSearch: false,
@@ -63,7 +65,7 @@ export const TestPagedStore = signalStore(
             from: undefined,
             to: undefined,
         } ),
-        item: { element: undefined, loading: false },
+        item: { element: undefined, loading: false, error: undefined },
         metadata: { labels: [] },
     } ),
     withMethods( (store, movementApi = inject( MOVEMENT_CONTENTS_API ), errors = inject( TEST_ERRORS )) => ({
@@ -79,9 +81,9 @@ export const TestPagedStore = signalStore(
         } ),
         updateItemsParams: paramsUpdater( store, 'items' ),
         mergeItemsParams: paramsMerger( store, 'items' ),
-        fetchContents: movementContentsFetcher( store, movementApi, errors ),
-        fetchItem: elementFetcher( store, 'item', inject( ITEM_SOURCE ), errors ),
-        fetchLabels: metadataFetcher( store, 'labels', inject( LABELS_SOURCE ), errors, (labels: string[]): string[] => [ '-', ...labels ] ),
+        fetchContents: movementContentsFetcher( store, movementApi ),
+        fetchItem: elementFetcher( store, 'item', inject( ITEM_SOURCE )),
+        fetchLabels: metadataFetcher( store, 'labels', inject( LABELS_SOURCE ), (labels: string[]): string[] => [ '-', ...labels ] ),
         startItemLoader: loaderToggle( store, 'item', true ),
         stopItemLoader: loaderToggle( store, 'item', false ),
     }) ),

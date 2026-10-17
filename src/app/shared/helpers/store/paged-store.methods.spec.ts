@@ -230,7 +230,7 @@ describe( 'paged store methods', () => {
             expect( findMovementsContents ).not.toHaveBeenCalled()
         } )
 
-        it( 'notifies a failed contents fetch and keeps the page as it was', () => {
+        it( 'keeps a failed contents fetch in the section error and the page as it was', () => {
             // Arrange
             movementsSource.mockReturnValue( of( pageOf<MovementModel>( [ { id: 'm1' } as MovementModel ] ) ) )
             findMovementsContents.mockReturnValue( failing( ERROR_500 ) )
@@ -239,7 +239,7 @@ describe( 'paged store methods', () => {
             store.fetchMovements( { projectId: 'p1' } )
 
             // Assert
-            expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'Title' } ) )
+            expect( store.sectionErrors()[ 'contents' ]?.summary ).toBe( 'Title' )
             expect( store.movements.element()?.content[ 0 ].id ).toBe( 'm1' )
         } )
 
@@ -268,7 +268,7 @@ describe( 'paged store methods', () => {
             expect( store.item.loading() ).toBe( false )
         } )
 
-        it( 'notifies a failed element fetch, ends the loading state and keeps the previous element', () => {
+        it( 'keeps a failed element fetch in the block, ends the loading state and keeps the previous element', () => {
             // Arrange
             itemSource.mockReturnValueOnce( of( { id: 'x' } as GenericModel ) )
             itemSource.mockReturnValueOnce( failing( ERROR_500 ) )
@@ -278,7 +278,7 @@ describe( 'paged store methods', () => {
             store.fetchItem( 'y' )
 
             // Assert
-            expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'Title' } ) )
+            expect( store.item.error()?.summary ).toBe( 'Title' )
             expect( store.item.loading() ).toBe( false )
             expect( store.item.element()?.id ).toBe( 'x' )
         } )
@@ -307,7 +307,7 @@ describe( 'paged store methods', () => {
             expect( store.metadata.labels() ).toEqual( [ '-', 'a', 'b' ] )
         } )
 
-        it( 'notifies a failed metadata fetch and keeps the previous list', () => {
+        it( 'keeps a failed metadata fetch in the section error and the previous list', () => {
             // Arrange
             labelsSource.mockReturnValueOnce( of( [ 'a' ] ) )
             labelsSource.mockReturnValueOnce( failing( ERROR_500 ) )
@@ -317,8 +317,36 @@ describe( 'paged store methods', () => {
             store.fetchLabels( 'x' )
 
             // Assert
-            expect( notify ).toHaveBeenCalledTimes( 1 )
+            expect( store.sectionErrors()[ 'metadata.labels' ]?.summary ).toBe( 'Title' )
             expect( store.metadata.labels() ).toEqual( [ '-', 'a' ] )
+        } )
+
+        it( 'clears the section error of a metadata list when the next fetch succeeds', () => {
+            // Arrange
+            labelsSource.mockReturnValueOnce( failing( ERROR_500 ) )
+            labelsSource.mockReturnValueOnce( of( [ 'a' ] ) )
+            store.fetchLabels( 'x' )
+
+            // Act
+            store.fetchLabels( 'x' )
+
+            // Assert
+            expect( store.sectionErrors()[ 'metadata.labels' ] ).toBeUndefined()
+            expect( store.metadata.labels() ).toEqual( [ '-', 'a' ] )
+        } )
+
+        it( 'clears the error of an element block when the next fetch succeeds', () => {
+            // Arrange
+            itemSource.mockReturnValueOnce( failing( ERROR_500 ) )
+            itemSource.mockReturnValueOnce( of( { id: 'y' } as GenericModel ) )
+            store.fetchItem( 'x' )
+
+            // Act
+            store.fetchItem( 'y' )
+
+            // Assert
+            expect( store.item.error() ).toBeUndefined()
+            expect( store.item.element()?.id ).toBe( 'y' )
         } )
     } )
 } )

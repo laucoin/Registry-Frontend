@@ -91,7 +91,7 @@ describe( 'UserStore', () => {
         expect( store.user.loading() ).toBe( false )
     } )
 
-    it( 'notifies a failed user fetch and keeps the store usable', () => {
+    it( 'clears the failure of a user fetch when the next one succeeds', () => {
         // Arrange
         findUserById.mockReturnValueOnce( failing( ERROR_500 ) )
         findUserById.mockReturnValueOnce( of( { id: 'u2' } as UserModel ) )
@@ -101,7 +101,7 @@ describe( 'UserStore', () => {
         store.fetchUser( 'u2' )
 
         // Assert
-        expect( notify ).toHaveBeenCalledTimes( 1 )
+        expect( store.user.error() ).toBeUndefined()
         expect( store.user.element()?.id ).toBe( 'u2' )
     } )
 

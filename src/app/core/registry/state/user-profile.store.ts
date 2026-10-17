@@ -35,7 +35,7 @@ const pageParams = (status: ProfileStatusEnum): UserProjectProfilePageParamsMode
 const defaultUserProfileState: UserProfileState = {
     profiles: PageStateHelper.initial<UserProjectProfilePageParamsModel, UserInvitationModel>( pageParams( ProfileStatusEnum.ACCEPTED ) ),
     invitations: PageStateHelper.initial<UserProjectProfilePageParamsModel, UserInvitationModel>( pageParams( ProfileStatusEnum.INVITED ) ),
-    profile: { element: undefined, loading: false },
+    profile: { element: undefined, loading: false, error: undefined },
 }
 
 /**

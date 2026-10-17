@@ -1,3 +1,4 @@
+import { SectionErrorsState } from '@shared/models/model/section-errors-state.model'
 import { VehiclePageParamsModel } from '@pages/projects/[projectId]/configuration/vehicles/data/model/vehicle-page-params.model'
 import { PageRequestInformationModel } from '@shared/models/model/page-request-information.model'
 import { MovementPageParamsModel } from '@shared/models/model/movement-page-params.model'
@@ -6,7 +7,7 @@ import { VehicleModel } from '@shared/models/model/vehicle.model'
 import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum'
 
-export interface VehicleStoreModel {
+export interface VehicleStoreModel extends SectionErrorsState {
     vehicles: PageRequestInformationModel<VehiclePageParamsModel, VehicleModel>
     movements: PageRequestInformationModel<MovementPageParamsModel, MovementModel>
     metadata: {

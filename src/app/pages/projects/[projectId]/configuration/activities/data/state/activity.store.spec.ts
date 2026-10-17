@@ -122,7 +122,7 @@ describe( 'ActivityStore', () => {
         expect( store.activities.error() ).toBeUndefined()
     } )
 
-    it( 'notifies a failed contents fetch and leaves the movements as they were', () => {
+    it( 'keeps a failed contents fetch in the section error and leaves the movements as they were', () => {
         // Arrange
         findActivityMovements.mockReturnValue( of( pageOf<MovementModel>( [ { id: 'm1' } as MovementModel ] ) ) )
         findMovementsContents.mockReturnValue( failing( ERROR_500 ) )
@@ -131,7 +131,7 @@ describe( 'ActivityStore', () => {
         store.fetchActivityMovementsPage( { projectId: 'p1', id: 'a1', page: 0, size: 10 } )
 
         // Assert
-        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'Title' } ) )
+        expect( store.sectionErrors()[ 'contents' ]?.summary ).toBe( 'Title' )
         expect( store.movements.element()?.content[ 0 ].id ).toBe( 'm1' )
     } )
 

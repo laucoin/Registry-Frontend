@@ -14,9 +14,11 @@ import { UserModel } from '@shared/models/model/user.model'
 const defaultUser: ElementRequestInformationModel<UserModel> = {
     element: undefined,
     loading: false,
+    error: undefined,
 }
 
 const defaultUserStore: UserStoreModel = {
+    sectionErrors: {},
     users: PageStateHelper.initial<UserPageParamsModel, UserModel>( {
         resetSearch: false,
         q: undefined,
@@ -47,9 +49,9 @@ export const UserStore = signalStore(
         updateUsersPageSearchParams: paramsUpdater( store, 'users' ),
         startUserLoader: loaderToggle( store, 'user', true ),
         stopUserLoader: loaderToggle( store, 'user', false ),
-        fetchUser: elementFetcher( store, 'user', (id: string) => api.findUserById( id ), errors ),
+        fetchUser: elementFetcher( store, 'user', (id: string) => api.findUserById( id ) ),
         resetUser: (): void => patchState( store, { user: defaultUser } ),
         fetchAssignableRoles: metadataFetcher<UserStoreModel, 'assignableRoles', void, SelectOptionModel<string>[]>( store, 'assignableRoles', () =>
-            api.getAssignableUserRoles().pipe( trackElement( store, 'user' ) ), errors ),
+            api.getAssignableUserRoles().pipe( trackElement( store, 'user' ) )),
     }) ),
 )
