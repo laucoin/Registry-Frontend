@@ -67,15 +67,28 @@ describe('GroupRowComponent', () => {
         expect(tags()).toEqual(['Available'])
     })
 
-    it('should flag a hidden group', async () => {
+    it('should grey out a hidden group and announce it to assistive technologies', async () => {
         // Arrange
         await render({ ...ELEMENT, visible: false } as unknown as GroupModel)
 
         // Act
-        const shown: string[] = tags()
+        const row: HTMLElement & { disabled: boolean } = fixture.nativeElement.querySelector('sgdf-list-item')
+        const notice: string | undefined = text('sgdf-list-item > .sr-only')
 
         // Assert
-        expect(shown).toContain('fr.groups.visible.false')
+        expect(row.disabled).toBe(true)
+        expect(notice).toBe('(fr.groups.visible.false)')
+    })
+
+    it('should keep a visible group enabled', async () => {
+        // Arrange
+        await render(ELEMENT)
+
+        // Act
+        const row: HTMLElement & { disabled: boolean } = fixture.nativeElement.querySelector('sgdf-list-item')
+
+        // Assert
+        expect(row.disabled).toBe(false)
     })
 
     it('should show the availability dates of the group', async () => {
