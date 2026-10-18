@@ -1,0 +1,10 @@
+<sgdf-avatar slot="start" appearance="solid" aria-hidden="true" [variant]="row().statusVariant">
+    <sgdf-icon slot="icon" [name]="row().icon" library="solid"/>
+</sgdf-avatar>
+<span class="block truncate" [attr.title]="row().title">{{ row().title }}</span>
+@if (row().subtitle) {
+    <span slot="description" class="truncate">{{ row().subtitle }}</span>
+}
+@if (row().statusLabel) {
+    <sgdf-tag slot="end" size="small" appearance="soft" pill [variant]="row().statusVariant">{{ row().statusLabel }}</sgdf-tag>
+}
