@@ -159,7 +159,7 @@ describe('ProjectActiveAlertComponent', () => {
 		await render();
 
 		// Act
-		const target: string = ngMocks.input('.sr-only-link, sgdf-table-row:last-of-type sgdf-button', 'routerLink');
+		const target: string = ngMocks.input('[data-testid="alerts-link"]', 'routerLink');
 
 		// Assert
 		expect(target).toBe('/projects/p1/alerts');

@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import { HISTORY, PARTICIPANT_DTO, PLANNED_MOVEMENT_DTO, PROJECT_DTO, USER_DTO, WHEN } from '@shared/helpers/testing/response-fixtures'
 import { ActivityMapper } from '@shared/mappers/activity.mapper'
+import { AlertCriticalityMetadataMapper } from '@shared/mappers/alert-criticality-metadata.mapper'
 import { AlertMapper } from '@shared/mappers/alert.mapper'
+import { AlertCriticalityMetadataResponseDto } from '@shared/models/dto/response/alert-criticality-metadata.response.dto'
 import { CommunicationMapper } from '@shared/mappers/communication.mapper'
 import { CurrentUserMapper } from '@shared/mappers/current-user.mapper'
 import { GroupMapper } from '@shared/mappers/group.mapper'
@@ -328,5 +330,20 @@ describe( 'mappers', () => {
 
         // Assert
         expect( model.reason ).toBeUndefined()
+    } )
+
+    it( 'copies the levels and the rule of the alert criticality metadata', () => {
+        // Arrange
+        const dto: AlertCriticalityMetadataResponseDto = {
+            levels: [ { label: 'Recent', value: 'RECENT' as never }, { label: 'High', value: 'HIGH' as never } ],
+            rule: 'Recent under 6 h, high over 18 h',
+        }
+
+        // Act
+        const model: ReturnType<typeof AlertCriticalityMetadataMapper.toModel> = AlertCriticalityMetadataMapper.toModel( dto )
+
+        // Assert
+        expect( model ).toEqual( dto )
+        expect( model.levels ).not.toBe( undefined )
     } )
 } )

@@ -75,7 +75,7 @@ export class ProjectActiveAlertComponent implements OnInit {
 	protected readonly alertFacade: AlertFacade = inject(AlertFacade)
 	protected readonly uiFacade: UiFacade = inject(UiFacade)
 
-	private readonly communicationEnabled: Signal<boolean> = this.sessionFacade.selectedProjectHasOption(ProjectOptionEnum.COMMUNICATION)
+	protected readonly canCommunicate: Signal<boolean> = this.sessionFacade.selectedProjectHasOption(ProjectOptionEnum.COMMUNICATION)
 
 	protected readonly loading: Signal<boolean> = this.facade.currentAlertsPageLoading
 	protected readonly error: Signal<NotificationModel | undefined> = this.facade.currentAlertsPageError
@@ -84,7 +84,6 @@ export class ProjectActiveAlertComponent implements OnInit {
 		(this.facade.currentAlertsPage()?.content ?? []).map((alert: AlertModel): AlertCard => this.toCard(alert)),
 	)
 	protected readonly remaining: Signal<number> = computed((): number => Math.max(0, (this.total() ?? 0) - this.cards().length))
-	protected readonly canCommunicate: Signal<boolean> = this.communicationEnabled
 	protected readonly alertsLink: Signal<string> = computed((): string =>
 		RouteHelper.absolute(RegistryRouteEnum.PROJECTS_ALERTS).replace(':projectId', this.sessionFacade.currentProjectId() ?? ''),
 	)
