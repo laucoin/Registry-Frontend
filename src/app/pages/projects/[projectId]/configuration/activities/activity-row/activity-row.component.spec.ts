@@ -81,15 +81,28 @@ describe('ActivityRowComponent', () => {
         expect(tags()).toEqual([])
     })
 
-    it('should flag a hidden activity', async () => {
+    it('should grey out a hidden activity and announce it to assistive technologies', async () => {
         // Arrange
         await render({ ...ELEMENT, visible: false } as unknown as ActivityModel)
 
         // Act
-        const shown: string[] = tags()
+        const row: HTMLElement & { disabled: boolean } = fixture.nativeElement.querySelector('sgdf-list-item')
+        const notice: string | undefined = text('sgdf-list-item > .sr-only')
 
         // Assert
-        expect(shown).toContain('fr.activities.visible.false')
+        expect(row.disabled).toBe(true)
+        expect(notice).toBe('(fr.activities.visible.false)')
+    })
+
+    it('should keep a visible activity enabled', async () => {
+        // Arrange
+        await render(ELEMENT)
+
+        // Act
+        const row: HTMLElement & { disabled: boolean } = fixture.nativeElement.querySelector('sgdf-list-item')
+
+        // Assert
+        expect(row.disabled).toBe(false)
     })
 
     it('should show the availability dates of the activity', async () => {
