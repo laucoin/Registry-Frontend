@@ -1,4 +1,4 @@
-import { GenericProjectResponseDto } from '@shared/models/dto/response/generic-project.response.dto'
+import { GenericResponseDto } from '@shared/models/dto/response/generic.response.dto'
 import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { CustomDatetimeModel } from '@shared/models/model/custom-datetime.model'
 import { ProfileStatusEnum } from '@shared/models/enumeration/profile-status.enum'
@@ -11,7 +11,7 @@ export interface InvitationProjectResponseDto {
     end: CustomDatetimeModel | undefined
 }
 
-export interface UserInvitationResponseDto extends GenericProjectResponseDto {
+export interface UserInvitationResponseDto extends GenericResponseDto {
     project: InvitationProjectResponseDto | undefined
     role: SelectOptionModel<string>
     availabilityStatus: SelectOptionModel<AvailabilityStatusEnum>

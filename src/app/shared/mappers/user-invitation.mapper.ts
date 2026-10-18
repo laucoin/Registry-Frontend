@@ -1,6 +1,6 @@
 import { UserInvitationModel } from '@shared/models/model/user-invitation.model'
 import { UserInvitationResponseDto } from '@shared/models/dto/response/user-invitation.response.dto'
-import { GenericProjectMapper } from '@shared/mappers/generic-project.mapper'
+import { GenericMapper } from '@shared/mappers/generic.mapper'
 
 /**
  * Purpose: Converts a user invitation response of the backend into the UserInvitation model.
@@ -10,7 +10,7 @@ import { GenericProjectMapper } from '@shared/mappers/generic-project.mapper'
 export class UserInvitationMapper {
     public static toModel (dto: UserInvitationResponseDto): UserInvitationModel {
         return {
-            ...GenericProjectMapper.toModel( dto ),
+            ...GenericMapper.toModel( dto ),
             project: dto.project
                 ? { id: dto.project.id, name: dto.project.name, begin: dto.project.begin, end: dto.project.end }
                 : undefined,

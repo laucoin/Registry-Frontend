@@ -10,7 +10,7 @@ import { ProjectProfileActions } from '@pages/projects/[projectId]/configuration
 import { CustomDateFormatPipe } from '@shared/helpers/pipe/custom-date-format.pipe'
 import { AvailabilityStatusEnum } from '@shared/models/enumeration/availability-status.enum'
 import { ProfileStatusEnum } from '@shared/models/enumeration/profile-status.enum'
-import { isProjectProfile, ListedProfileModel } from '@shared/models/model/listed-profile.model'
+import { isProjectProfile, ListedProfileModel, profileProjectId } from '@shared/models/model/listed-profile.model'
 import { ProjectProfileModel } from '@shared/models/model/project-profile.model'
 import { ElementActionsComponent } from '@shared/ui/common/element-actions/element-actions.component'
 
@@ -51,7 +51,7 @@ export class ProjectProfileRowComponent {
     }
 
     protected isSelected(profile: ListedProfileModel): boolean {
-        return this.sessionFacade.selectedProject()?.id === profile.projectId
+        return this.sessionFacade.selectedProject()?.id === profileProjectId( profile )
     }
 
     protected awaitsAnswer(profile: ListedProfileModel): boolean {

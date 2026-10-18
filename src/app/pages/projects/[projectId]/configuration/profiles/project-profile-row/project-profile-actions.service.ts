@@ -8,7 +8,7 @@ import { ElementActionEnum } from '@shared/models/enumeration/element-action.enu
 import { ProfileStatusEnum } from '@shared/models/enumeration/profile-status.enum'
 import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
-import { isProjectProfile, ListedProfileModel } from '@shared/models/model/listed-profile.model'
+import { isProjectProfile, ListedProfileModel, profileProjectId } from '@shared/models/model/listed-profile.model'
 import { ProjectProfileModel } from '@shared/models/model/project-profile.model'
 
 /**
@@ -47,13 +47,14 @@ export class ProjectProfileActions extends ElementActionsBase<ListedProfileModel
     }
 
     private selectSpec(profile: ListedProfileModel, own: boolean): ElementActionSpec {
+        const projectId: string | undefined = profileProjectId( profile )
         return {
             id: 'select',
             icon: 'arrow-right',
             enabledAction: ElementActionEnum.PROJECT_PROFILE_SELECT,
-            shown: own && this.sessionFacade.selectedProject()?.id !== profile.projectId,
+            shown: own && projectId !== undefined && this.sessionFacade.selectedProject()?.id !== projectId,
             allowed: true,
-            run: (): void => this.navigate(RegistryRouteEnum.PROJECT.replace(':projectId', profile.projectId)),
+            run: (): void => this.navigate(RegistryRouteEnum.PROJECT.replace(':projectId', projectId ?? '')),
         }
     }
 

@@ -242,7 +242,7 @@ describe( 'mappers', () => {
     it( 'maps a user invitation with its project summary, and without when absent', () => {
         // Arrange
         const dto: UserInvitationResponseDto = {
-            id: 'pp1', visible: true, creation: HISTORY, lastEdition: HISTORY, projectId: 'p1',
+            id: 'pp1', visible: true, creation: HISTORY, lastEdition: HISTORY,
             project: { id: 'p1', name: 'Camp', begin: { date: '2026-01-01', time: undefined }, end: undefined },
             role: { label: 'Chief', value: 'CHIEF' }, availabilityStatus: { label: 'x', value: 'AVAILABLE' as never }, status: { label: 'y', value: 'INVITED' as never },
             startAccess: undefined, endAccess: undefined,
@@ -253,7 +253,6 @@ describe( 'mappers', () => {
         const withoutProject: ReturnType<typeof UserInvitationMapper.toModel> = UserInvitationMapper.toModel( { ...dto, project: undefined } )
 
         // Assert
-        expect( model.projectId ).toBe( 'p1' )
         expect( model.project?.name ).toBe( 'Camp' )
         expect( model.status.value ).toBe( 'INVITED' )
         expect( withoutProject.project ).toBeUndefined()

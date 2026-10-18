@@ -7,3 +7,7 @@ export type ListedProfileModel = ProjectProfileModel | UserInvitationModel
 export function isProjectProfile (profile: ListedProfileModel): profile is ProjectProfileModel {
     return 'user' in profile
 }
+
+export function profileProjectId (profile: ListedProfileModel): string | undefined {
+    return isProjectProfile( profile ) ? profile.projectId : profile.project?.id
+}

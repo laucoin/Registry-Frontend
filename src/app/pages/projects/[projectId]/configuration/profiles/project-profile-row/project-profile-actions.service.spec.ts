@@ -22,7 +22,7 @@ const OTHER: ProjectProfileModel = {
 } as ProjectProfileModel
 const OWN: ProjectProfileModel = { ...OTHER, user: { id: 'u1' } } as ProjectProfileModel
 const BLOCKED: ProjectProfileModel = { ...OTHER, visible: false }
-const INVITATION: UserInvitationModel = { id: 'pp2', visible: true, projectId: 'p2', project: { id: 'p2', name: 'Other camp' }, status: { value: ProfileStatusEnum.INVITED } } as UserInvitationModel
+const INVITATION: UserInvitationModel = { id: 'pp2', visible: true, project: { id: 'p2', name: 'Other camp' }, status: { value: ProfileStatusEnum.INVITED } } as UserInvitationModel
 
 describe('ProjectProfileActions', () => {
     let actions: ProjectProfileActions

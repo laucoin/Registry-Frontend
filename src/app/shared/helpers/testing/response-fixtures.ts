@@ -75,7 +75,7 @@ export const PROFILE_DTO: ProjectProfileResponseDto = {
 }
 
 export const INVITATION_DTO: UserInvitationResponseDto = {
-    ...GENERIC, id: 'pp1', projectId: 'p1', project: { id: 'p1', name: 'Camp', begin: undefined, end: undefined },
+    ...GENERIC, id: 'pp1', project: { id: 'p1', name: 'Camp', begin: undefined, end: undefined },
     role: { label: 'Chief', value: 'CHIEF' }, availabilityStatus: { label: 'x', value: 'AVAILABLE' as never }, status: { label: 'y', value: 'INVITED' as never },
     startAccess: undefined, endAccess: undefined,
 }
