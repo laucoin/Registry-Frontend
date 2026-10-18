@@ -1,0 +1,52 @@
+@if (error(); as failure) {
+    <app-section-error [error]="failure" [retrying]="loading() || loadingMore()" (retry)="retry()"/>
+}
+
+@if (showSkeleton()) {
+    <sgdf-accordion appearance="soft" aria-busy="true" [attr.aria-label]="'global.list.loading' | transloco">
+        @for (row of skeletonRows; track row) {
+            <sgdf-accordion-item>
+                <sgdf-skeleton slot="title" shape="rounded" effect="pulse" style="width: 40%; height: 1rem"/>
+            </sgdf-accordion-item>
+        }
+    </sgdf-accordion>
+} @else if (isEmpty()) {
+    @if (!error()) {
+        <sgdf-callout variant="neutral" [title]="'projectHome.groupStatus.empty.title' | transloco">
+            {{ 'projectHome.groupStatus.empty.message' | transloco }}
+        </sgdf-callout>
+    }
+} @else if (groupPage(); as page) {
+    <sgdf-accordion mode="multiple" appearance="soft" heading-level="2">
+        @for (group of page.content; track group.id) {
+            <sgdf-accordion-item [expanded]="expanded()">
+                <span slot="title" class="flex flex-wrap items-center gap-2">
+                    {{ group.name }}
+                    <sgdf-tag variant="neutral" size="small" appearance="soft">
+                        {{ 'projectHome.groupStatus.members' | pluralTranslation: group.membersCount | transloco: { count: group.membersCount } }}
+                    </sgdf-tag>
+                    @if (group.outsideMembersCount > 0) {
+                        <sgdf-tag variant="warning" size="small" appearance="soft">
+                            {{ 'projectHome.groupStatus.outside' | pluralTranslation: group.outsideMembersCount | transloco: { count: group.outsideMembersCount } }}
+                        </sgdf-tag>
+                    }
+                </span>
+                <sgdf-list appearance="text" [label]="'projectHome.groupStatus.membersOf' | transloco: { name: group.name }">
+                    @for (row of rows(group); track row.id) {
+                        <sgdf-list-item appMonitoringRow [row]="row"/>
+                    }
+                </sgdf-list>
+            </sgdf-accordion-item>
+        }
+    </sgdf-accordion>
+    @if (hasMore()) {
+        <div class="mt-(--spacing--block) flex flex-col items-center gap-(--spacing--in-block)">
+            <small class="opacity-80">
+                {{ 'global.list.loaded-count' | transloco: { count: page.content.length, total: page.totalElements } }}
+            </small>
+            <sgdf-button appearance="outlined" [loading]="loadingMore()" (click)="loadMore()">
+                {{ 'global.list.load-more' | transloco }}
+            </sgdf-button>
+        </div>
+    }
+}

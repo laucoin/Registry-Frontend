@@ -60,5 +60,33 @@
         "message": "Aucun mouvement sans activité n'est en cours."
       }
     }
+  },
+  "participantsPage": {
+    "title": "Suivi des participants",
+    "subtitle": "Où se trouvent les participants du projet",
+    "tabs": {
+      "mine": "Mes groupes",
+      "groups": "Par groupe",
+      "individual": "Individuel"
+    }
+  },
+  "vehiclesPage": {
+    "title": "Suivi des véhicules",
+    "subtitle": "Où se trouvent les véhicules du projet"
+  },
+  "groupStatus": {
+    "members": {
+      "one": "{{count}} participant",
+      "few": "{{count}} participants"
+    },
+    "outside": {
+      "one": "{{count}} en sortie",
+      "few": "{{count}} en sortie"
+    },
+    "membersOf": "Participants de {{name}}",
+    "empty": {
+      "title": "Aucun groupe",
+      "message": "Aucun groupe n'a de participant présent sur le projet."
+    }
   }
 }
