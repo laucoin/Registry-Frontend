@@ -4,7 +4,7 @@
             <sgdf-icon name="clock" library="solid"/>
             <h2 class="text-sm font-semibold uppercase">{{ 'projectHome.participantRegularization.title' | transloco }}</h2>
             @if (total() !== undefined) {
-                <sgdf-tag class="ml-auto" size="small" variant="info" appearance="soft">{{ total() }}</sgdf-tag>
+                <sgdf-tag class="ml-auto" size="small" variant="info" appearance="soft">{{ 'projectHome.participantRegularization.total' | pluralTranslation: total() | transloco: { count: total() } }}</sgdf-tag>
             }
         </sgdf-table-cell>
     </sgdf-table-row>

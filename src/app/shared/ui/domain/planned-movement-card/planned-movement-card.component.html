@@ -5,7 +5,7 @@
             <h2 class="text-sm font-semibold uppercase">{{ titleKey() | transloco }}</h2>
             @if (total() !== undefined) {
                 <sgdf-tag class="ml-auto" size="small" variant="info" appearance="soft">
-                    {{ totalKey() | transloco: { count: total() } }}
+                    {{ totalKey() | pluralTranslation: total() | transloco: { count: total() } }}
                 </sgdf-tag>
             }
         </sgdf-table-cell>

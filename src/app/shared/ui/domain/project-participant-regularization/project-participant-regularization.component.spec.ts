@@ -79,7 +79,7 @@ describe('ProjectParticipantRegularizationComponent', () => {
 
 		// Assert
 		expect(rows).toBe(2);
-		expect(total).toBe('2');
+		expect(total).toBe('projectHome.participantRegularization.total');
 	});
 
 	it('should show the planned end and how long the participant has been present', async () => {

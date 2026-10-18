@@ -22,10 +22,14 @@
     "seeAll": "Voir toutes les présences à régulariser",
     "empty": "Aucune présence à régulariser",
     "plannedEnd": "Fin prévue le {{date}}",
-    "presentSince": "présent depuis {{duration}}",
+    "presentSince": "Présent depuis {{duration}}",
     "more": {
       "one": "+ {{count}} autre participant",
       "few": "+ {{count}} autres participants"
+    },
+    "total": {
+      "one": "{{count}} présence",
+      "few": "{{count}} présences"
     }
   },
   "activeAlert": {
@@ -36,16 +40,26 @@
       "one": "+ {{count}} autre alerte",
       "few": "+ {{count}} autres alertes"
     },
-    "lastCommunication": "Dernière communication le {{date}}"
+    "lastCommunication": "Dernière communication le {{date}}",
+    "total": {
+      "one": "{{count}} alerte ouverte",
+      "few": "{{count}} alertes ouvertes"
+    }
   },
   "upcomingArrival": {
     "title": "Arrivées du jour",
-    "total": "{{count}} arrivées",
+    "total": {
+      "one": "{{count}} arrivée",
+      "few": "{{count}} arrivées"
+    },
     "empty": "Aucune arrivée prévue aujourd'hui"
   },
   "upcomingDeparture": {
     "title": "Départs du jour",
-    "total": "{{count}} départs",
+    "total": {
+      "one": "{{count}} départ",
+      "few": "{{count}} départs"
+    },
     "empty": "Aucun départ prévu aujourd'hui"
   },
   "birthday": {
@@ -55,6 +69,10 @@
     "more": {
       "one": "+ {{count}} autre",
       "few": "+ {{count}} autres"
+    },
+    "total": {
+      "one": "{{count}} anniversaire",
+      "few": "{{count}} anniversaires"
     }
   },
   "operationalMonitoring": {

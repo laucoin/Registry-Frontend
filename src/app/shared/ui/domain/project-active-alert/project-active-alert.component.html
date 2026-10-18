@@ -4,7 +4,7 @@
             <sgdf-icon name="bell" library="solid"/>
             <h2 class="text-sm font-semibold uppercase">{{ 'projectHome.activeAlert.title' | transloco }}</h2>
             @if (total() !== undefined) {
-                <sgdf-tag class="ml-auto" size="small" variant="info" appearance="soft">{{ total() }}</sgdf-tag>
+                <sgdf-tag class="ml-auto" size="small" variant="info" appearance="soft">{{ 'projectHome.activeAlert.total' | pluralTranslation: total() | transloco: { count: total() } }}</sgdf-tag>
             }
         </sgdf-table-cell>
     </sgdf-table-row>
@@ -22,8 +22,9 @@
             }
 
             @if (loading() && total() === undefined) {
+                <span class="sr-only" role="status">{{ 'global.list.loading' | transloco }}</span>
                 @for (card of skeletonCards; track card) {
-                    <sgdf-skeleton shape="rounded" effect="pulse" aria-busy="true" style="height: 7rem"/>
+                    <sgdf-skeleton shape="rounded" effect="pulse" aria-hidden="true" style="height: 7rem"/>
                 }
             } @else if (total() === 0) {
                 <p class="m-0 text-sm opacity-80 md:col-span-3">{{ 'projectHome.activeAlert.empty' | transloco }}</p>
@@ -33,7 +34,10 @@
                         <p>
                             {{ card.alert.criticality?.label }}
                             @if (card.age; as age) {
-                                · {{ age | intervalFormat }}
+                                @if (card.alert.criticality?.label) {
+                                    ·
+                                }
+                                {{ age | intervalFormat }}
                             }
                         </p>
                         @if (card.alert.lastCommunication; as last) {

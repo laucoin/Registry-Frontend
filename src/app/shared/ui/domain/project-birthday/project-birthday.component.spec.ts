@@ -64,7 +64,7 @@ describe('ProjectBirthdayComponent', () => {
 
 		// Assert
 		expect(rows).toBe(3);
-		expect(total).toBe('3');
+		expect(total).toBe('projectHome.birthday.total');
 	});
 
 	it('should show only the first birthdays and count the others', async () => {

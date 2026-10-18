@@ -99,7 +99,7 @@ describe('ProjectActiveAlertComponent', () => {
 
 		// Assert
 		expect(text).toContain('Aging rule');
-		expect(fixture.nativeElement.querySelector('sgdf-tag').textContent.trim()).toBe('9');
+		expect(fixture.nativeElement.querySelector('sgdf-tag').textContent.trim()).toBe('projectHome.activeAlert.total');
 	});
 
 	it('should count the alerts that are not shown', async () => {
@@ -137,6 +137,7 @@ describe('ProjectActiveAlertComponent', () => {
 
 		// Assert
 		expect(skeletons).toBe(3);
+		expect(fixture.nativeElement.querySelector('[role="status"]').textContent).toContain('global.list.loading');
 	});
 
 	it('should display the failure and load the alerts again when retrying', async () => {
