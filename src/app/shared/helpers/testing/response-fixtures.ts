@@ -65,6 +65,7 @@ export const COMMUNICATION_DTO: CommunicationResponseDto = {
 
 export const ALERT_DTO: AlertResponseDto = {
     ...GENERIC, id: 'al1', dateTime: WHEN, title: 'Fire', status: { label: 'In progress', value: 'IN_PROGRESS' as never },
+    criticality: { label: 'Recent', value: 'RECENT' as never }, lastCommunication: { dateTime: WHEN, message: 'On site' },
     communications: [ COMMUNICATION_DTO ],
 }
 

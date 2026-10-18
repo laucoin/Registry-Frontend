@@ -5,4 +5,5 @@ export interface AlertPageParamsModel {
     isVisible: boolean | undefined
     from: string | undefined
     to: string | undefined
+    sort: string | undefined
 }

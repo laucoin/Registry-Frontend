@@ -1,3 +1,4 @@
+import { AlertCriticalityMetadataModel } from '@shared/models/model/alert-criticality-metadata.model'
 import { SectionErrorsState } from '@shared/models/model/section-errors-state.model'
 import { PageRequestInformationModel } from '@shared/models/model/page-request-information.model'
 import { SelectOptionModel } from '@shared/models/model/select-option.model'
@@ -12,6 +13,7 @@ export interface AlertStoreModel extends SectionErrorsState {
     communications: PageRequestInformationModel<CommunicationPageParamsModel, CommunicationModel>
     metadata: {
         status: SelectOptionModel<AlertStatusEnum | undefined>[],
+        criticality: AlertCriticalityMetadataModel | undefined,
         visibilities: SelectOptionModel<boolean | undefined>[],
     }
 }

@@ -35,7 +35,7 @@ describe( 'AlertFacade', () => {
                 AlertFacade,
                 AlertStore,
                 { provide: AlertApi, useValue: { findAlerts, findAlertCommunications, createAlert, updateAlertStatusById } },
-                { provide: MetadataApi, useValue: { getAlertsStatus: vi.fn( () => of( [] ) ) } },
+                { provide: MetadataApi, useValue: { getAlertsStatus: vi.fn( () => of( [] ) ), getAlertCriticality: vi.fn( () => of( { levels: [], rule: 'Aging rule' } ) ) } },
                 { provide: SessionFacade, useValue: { currentProjectId: signal( 'p1' ) } },
                 { provide: UiFacade, useValue: { notify } },
                 { provide: TranslocoService, useValue: { translate: (key: string): string => `t:${key}`, langChanges$: new Subject<string>().asObservable() } },
@@ -44,6 +44,17 @@ describe( 'AlertFacade', () => {
         facade = TestBed.inject( AlertFacade )
         facade.fetchAlertsPage( 2, 10 )
         findAlerts.mockClear()
+    } )
+
+    it( 'exposes the sentence describing how the criticality is computed', () => {
+        // Arrange
+        const expected: string = 'Aging rule'
+
+        // Act
+        const rule: string | undefined = facade.alertCriticalityRule()
+
+        // Assert
+        expect( rule ).toBe( expected )
     } )
 
     it( 'fetches the requested alerts page for the selected project', () => {

@@ -15,6 +15,8 @@ export class AlertMapper {
             dateTime: dto.dateTime,
             title: dto.title,
             status: dto.status,
+            criticality: dto.criticality,
+            lastCommunication: dto.lastCommunication ? { dateTime: dto.lastCommunication.dateTime, message: dto.lastCommunication.message } : undefined,
             communications: dto.communications?.map( CommunicationMapper.toModel ),
         }
     }

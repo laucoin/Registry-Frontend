@@ -24,13 +24,13 @@
   },
   "activeAlert": {
     "title": "Alertes ouvertes",
-    "criticalityHint": "Criticité automatique selon l'ancienneté : récente < 6 h · renforcée 6–18 h · élevée > 18 h",
     "seeAll": "Voir toutes les alertes",
-    "criticality": {
-      "high": "Élevée",
-      "reinforced": "Renforcée",
-      "recent": "Récente"
-    }
+    "empty": "Aucune alerte ouverte",
+    "more": {
+      "one": "+ {{count}} autre alerte",
+      "few": "+ {{count}} autres alertes"
+    },
+    "lastCommunication": "Dernière communication le {{date}}"
   },
   "upcomingArrival": {
     "title": "Arrivées du jour",

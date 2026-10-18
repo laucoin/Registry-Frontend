@@ -59,6 +59,7 @@ const defaultSelectedProjectStore: SelectedProjectStoreModel = {
         isVisible: true,
         from: undefined,
         to: undefined,
+        sort: '-criticality',
     } ),
     birthdays: { element: undefined, loading: false, error: undefined },
     isCurrent: {

@@ -83,6 +83,8 @@ export class AlertFacade extends GenericProjectElementFacade {
             }) ),
         )
 
+    public readonly alertCriticalityRule: Signal<string | undefined> = computed( (): string | undefined => this.store.metadata.criticality()?.rule )
+
     public readonly alertStatusMetadata: Signal<SelectOptionModel<AlertStatusEnum | undefined>[]> = this.store.metadata.status
 
     public fetchAlertsPage (
@@ -114,6 +116,7 @@ export class AlertFacade extends GenericProjectElementFacade {
                 isVisible: isVisible,
                 from: from?.toISOString(),
                 to: to?.toISOString(),
+                sort: undefined,
             } )
         }
     }

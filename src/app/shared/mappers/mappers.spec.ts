@@ -170,6 +170,7 @@ describe( 'mappers', () => {
         const dto: AlertResponseDto = {
             id: 'al1', visible: true, creation: HISTORY, lastEdition: HISTORY,
             dateTime: WHEN, title: 'Fire', status: { label: 'In progress', value: 'IN_PROGRESS' as never }, communications: [ communication ],
+            criticality: { label: 'High', value: 'HIGH' as never }, lastCommunication: { dateTime: WHEN, message: 'hello' },
         }
 
         // Act
@@ -178,6 +179,8 @@ describe( 'mappers', () => {
 
         // Assert
         expect( model.communications?.[ 0 ].message ).toBe( 'hello' )
+        expect( model.criticality?.value ).toBe( 'HIGH' )
+        expect( model.lastCommunication?.message ).toBe( 'hello' )
         expect( model.communications?.[ 0 ].movement?.contentType ).toBe( 'GUEST' )
         expect( communicationModel.alert ).toBeUndefined()
     } )

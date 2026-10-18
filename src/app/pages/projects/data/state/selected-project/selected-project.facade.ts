@@ -80,6 +80,8 @@ export class SelectedProjectFacade extends GenericFacade {
             DateHelper.buildDate( this.store.isCurrent.withActivity.params.to() ),
         )
 
+    public readonly currentAlertsPageLoading: Signal<boolean> = this.store.alerts.loading
+
     public readonly currentAlertsPageError: Signal<NotificationModel | undefined> = this.store.alerts.error
 
     public readonly currentAlertsPage: Signal<PageModel<AlertModel> | undefined> = this.store.alerts.element
