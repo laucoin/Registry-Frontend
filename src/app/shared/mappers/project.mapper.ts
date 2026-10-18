@@ -17,6 +17,8 @@ export class ProjectMapper {
             begin: dto.begin,
             end: dto.end,
             options: dto.options,
+            counts: dto.counts ? { ...dto.counts } : undefined,
+            favorite: dto.favorite,
             profile: dto.profile ? CurrentProjectProfileMapper.toModel( dto.profile ) : undefined,
         }
     }

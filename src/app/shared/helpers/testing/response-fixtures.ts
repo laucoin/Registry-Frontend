@@ -28,7 +28,8 @@ export const USER_DTO: UserResponseDto = {
 }
 
 export const PROJECT_DTO: ProjectResponseDto = {
-    ...GENERIC, id: 'p1', name: 'Camp', status: undefined, begin: { date: '2026-01-01', time: undefined }, end: undefined, options: [], profile: undefined,
+    ...GENERIC, id: 'p1', name: 'Camp', status: undefined, begin: { date: '2026-01-01', time: undefined }, end: undefined, options: [],
+    counts: { participants: 3, groups: 1, acceptedProfiles: 2, vehicles: undefined, activities: 4, activeAlerts: 0 }, favorite: true, profile: undefined,
 }
 
 export const PARTICIPANT_DTO: ParticipantResponseDto = {

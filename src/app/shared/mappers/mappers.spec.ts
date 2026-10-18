@@ -225,6 +225,20 @@ describe( 'mappers', () => {
         expect( withoutProfile.profile ).toBeUndefined()
     } )
 
+    it( 'maps the resource counts and the favorite flag of a project, and leaves them undefined when absent', () => {
+        // Arrange
+        const withoutCounts: ProjectResponseDto = { ...PROJECT, counts: undefined, favorite: undefined }
+
+        // Act
+        const model: ReturnType<typeof ProjectMapper.toModel> = ProjectMapper.toModel( PROJECT )
+        const bare: ReturnType<typeof ProjectMapper.toModel> = ProjectMapper.toModel( withoutCounts )
+
+        // Assert
+        expect( model.counts ).toEqual( PROJECT.counts )
+        expect( model.favorite ).toBe( true )
+        expect( [ bare.counts, bare.favorite ] ).toEqual( [ undefined, undefined ] )
+    } )
+
     it( 'maps a user invitation with its project summary, and without when absent', () => {
         // Arrange
         const dto: UserInvitationResponseDto = {
