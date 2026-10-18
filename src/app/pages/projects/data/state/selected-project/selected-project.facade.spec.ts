@@ -16,6 +16,7 @@ import { pageOf, projectOptionChecker } from '@shared/helpers/testing/test-fixtu
 import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
 import { AlertModel } from '@shared/models/model/alert.model'
 import { MovementModel } from '@shared/models/model/movement.model'
+import { ParticipantModel } from '@shared/models/model/participant.model'
 import { ProjectModel } from '@shared/models/model/project.model'
 
 describe( 'SelectedProjectFacade', () => {
@@ -60,6 +61,19 @@ describe( 'SelectedProjectFacade', () => {
         expect( findParticipantsStatus ).toHaveBeenCalledWith( expectedProjectId )
         expect( findParticipantsBirthdays ).toHaveBeenCalledWith( expectedProjectId )
         expect( facade.participantsStatus()?.guests ).toBe( 1 )
+    } )
+
+    it( 'loads the birthdays of the selected project on demand', () => {
+        // Arrange
+        findParticipantsBirthdays.mockReturnValue( of( [ { id: 'pa1' } as ParticipantModel ] ) )
+
+        // Act
+        facade.fetchParticipantsBirthdays()
+
+        // Assert
+        expect( findParticipantsBirthdays ).toHaveBeenCalledWith( 'p1' )
+        expect( facade.participantsBirthdays() ).toHaveLength( 1 )
+        expect( facade.participantsBirthdaysLoading() ).toBe( false )
     } )
 
     it( 'skips the vehicles status when the project does not have the vehicle option', () => {

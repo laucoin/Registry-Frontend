@@ -1,3 +1,4 @@
+import { ElementRequestInformationModel } from '@shared/models/model/element-request-information.model'
 import { SectionErrorsState } from '@shared/models/model/section-errors-state.model'
 import { PageRequestInformationModel } from '@shared/models/model/page-request-information.model'
 import { NotificationModel } from '@shared/models/model/notification.model'
@@ -23,7 +24,7 @@ export interface SelectedProjectStoreModel extends SectionErrorsState {
         }
     }
     alerts: PageRequestInformationModel<AlertPageParamsModel, AlertModel>
-    birthdays: ParticipantModel[]
+    birthdays: ElementRequestInformationModel<ParticipantModel[]>
     isCurrent: {
         withoutActivity: PageRequestInformationModel<MovementPageParamsModel, MovementModel>
         withActivity: PageRequestInformationModel<MovementPageParamsModel, MovementModel>

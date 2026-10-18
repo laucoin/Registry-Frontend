@@ -26,8 +26,6 @@ export class SelectedProjectFacade extends GenericFacade {
 
     private readonly hasVehicleOption: Signal<boolean> = this.sessionFacade.selectedProjectHasOption( ProjectOptionEnum.VEHICLE )
 
-    public readonly participantsBirthdaysError: Signal<NotificationModel | undefined> = SectionErrorsHelper.of( this.store.sectionErrors, 'birthdays' )
-
     public readonly currentMovementsWithoutActivityContentsError: Signal<NotificationModel | undefined> = SectionErrorsHelper.of( this.store.sectionErrors, 'contents.withoutActivity' )
 
     public readonly currentMovementsWithActivityContentsError: Signal<NotificationModel | undefined> = SectionErrorsHelper.of( this.store.sectionErrors, 'contents.withActivity' )
@@ -44,7 +42,11 @@ export class SelectedProjectFacade extends GenericFacade {
 
     public readonly vehiclesStatusError: Signal<NotificationModel | undefined> = this.store.status.vehicles.error
 
-    public readonly participantsBirthdays: Signal<ParticipantModel[]> = this.store.birthdays
+    public readonly participantsBirthdays: Signal<ParticipantModel[] | undefined> = this.store.birthdays.element
+
+    public readonly participantsBirthdaysLoading: Signal<boolean> = this.store.birthdays.loading
+
+    public readonly participantsBirthdaysError: Signal<NotificationModel | undefined> = this.store.birthdays.error
 
     public readonly currentMovementsPageWithoutActivityLoading: Signal<boolean> = this.store.isCurrent.withoutActivity.loading
 
@@ -93,6 +95,10 @@ export class SelectedProjectFacade extends GenericFacade {
 
     public fetchParticipantsStatus (): void {
         this.store.fetchParticipantsStatus( this.selectedProjectId() )
+    }
+
+    public fetchParticipantsBirthdays (): void {
+        this.store.fetchParticipantsBirthdays( this.selectedProjectId() )
     }
 
     public fetchVehiclesStatus (): void {

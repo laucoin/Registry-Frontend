@@ -12,7 +12,7 @@ import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/mo
 import { MovementHelper } from '@shared/helpers/movement.helper'
 import { initialize } from '@shared/helpers/rx.helper'
 import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
-import { BIRTHDAYS_SECTION, contentsSection, MovementContentsRequest, pageFetcher, StoreRef, trackSectionError } from '@shared/helpers/store/paged-store.methods'
+import { contentsSection, elementFetcher, MovementContentsRequest, pageFetcher, StoreRef, trackSectionError } from '@shared/helpers/store/paged-store.methods'
 import { PageSlice, trackPage } from '@shared/helpers/store/track-page.operator'
 import { withProfileScope } from '@shared/helpers/store/with-profile-scope.feature'
 import { AlertStatusEnum } from '@shared/models/enumeration/alert-status.enum'
@@ -24,7 +24,6 @@ import { MovementModel } from '@shared/models/model/movement.model'
 import { MovementPageParamsModel } from '@shared/models/model/movement-page-params.model'
 import { PageModel } from '@shared/models/model/page.model'
 import { PairModel } from '@shared/models/model/pair.model'
-import { ParticipantModel } from '@shared/models/model/participant.model'
 import { CumulativePageHelper, CumulativePageRequest } from '@shared/helpers/store/cumulative-page.helper'
 
 type CurrentMovementsKey = keyof SelectedProjectStoreModel['isCurrent']
@@ -61,7 +60,7 @@ const defaultSelectedProjectStore: SelectedProjectStoreModel = {
         from: undefined,
         to: undefined,
     } ),
-    birthdays: [],
+    birthdays: { element: undefined, loading: false, error: undefined },
     isCurrent: {
         withoutActivity: currentMovementsBlock( false ),
         withActivity: currentMovementsBlock( true ),
@@ -155,15 +154,6 @@ function requestContents (fetchContents: (request: MovementContentsRequest) => v
     }
 }
 
-function fetchParticipantsBirthdays (store: Ref, participantApi: ParticipantApi): RxMethod<string | undefined> {
-    return rxMethod<string | undefined>( pipe(
-        switchMap( (projectId: string | undefined): Observable<ParticipantModel[]> => participantApi.findParticipantsBirthdays( projectId ).pipe(
-            trackSectionError( store, BIRTHDAYS_SECTION ),
-        ) ),
-        tap( (participants: ParticipantModel[]): void => patchState( store, { birthdays: participants } ) ),
-    ) )
-}
-
 /**
  * Purpose: Holds the selected project state.
  * Scope: Owns the data of the selected project pages and resources with their loading and error flags, and fetches them through the selected project api.
@@ -175,7 +165,7 @@ export const SelectedProjectStore = signalStore(
     withMethods( (store, movementApi = inject( MovementApi ), participantApi = inject( ParticipantApi )) => ({
         fetchParticipantsStatus: statusFetcher<ProjectStatusModel>( store, 'participants', (projectId: string | undefined) => movementApi.findParticipantsStatus( projectId ) ),
         fetchVehiclesStatus: statusFetcher<VehicleStatusModel>( store, 'vehicles', (projectId: string | undefined) => movementApi.findVehiclesStatus( projectId ) ),
-        fetchParticipantsBirthdays: fetchParticipantsBirthdays( store, participantApi ),
+        fetchParticipantsBirthdays: elementFetcher( store, 'birthdays', (projectId: string | undefined) => participantApi.findParticipantsBirthdays( projectId ) ),
         fetchCurrentMovementsWithoutActivityContents: currentMovementsContents( store, 'withoutActivity', movementApi ),
         fetchCurrentMovementsWithActivityContents: currentMovementsContents( store, 'withActivity', movementApi ),
     }) ),

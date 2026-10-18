@@ -101,10 +101,11 @@ describe( 'SelectedProjectStore', () => {
         store.fetchParticipantsBirthdays( 'p1' )
 
         // Assert
-        expect( store.birthdays() ).toHaveLength( 1 )
+        expect( store.birthdays.element() ).toHaveLength( 1 )
+        expect( store.birthdays.loading() ).toBe( false )
     } )
 
-    it( 'keeps a failed birthdays fetch in the section error and keeps the previous ones', () => {
+    it( 'keeps a failed birthdays fetch in its own block and keeps the previous ones', () => {
         // Arrange
         findParticipantsBirthdays.mockReturnValueOnce( of( [ { id: 'pa1' } as ParticipantModel ] ) )
         findParticipantsBirthdays.mockReturnValueOnce( failing( ERROR_500 ) )
@@ -114,8 +115,8 @@ describe( 'SelectedProjectStore', () => {
         store.fetchParticipantsBirthdays( 'p1' )
 
         // Assert
-        expect( store.sectionErrors()[ 'birthdays' ]?.summary ).toBe( 'Title' )
-        expect( store.birthdays() ).toHaveLength( 1 )
+        expect( store.birthdays.error()?.summary ).toBe( 'Title' )
+        expect( store.birthdays.element() ).toHaveLength( 1 )
     } )
 
     it( 'stores the current movements without activity and fetches their contents among current movements', () => {

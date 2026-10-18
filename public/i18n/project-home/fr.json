@@ -42,7 +42,12 @@
   },
   "birthday": {
     "title": "Anniversaires du jour",
-    "age": "{{count}} ans"
+    "age": "{{count}} ans",
+    "empty": "Aucun anniversaire aujourd'hui",
+    "more": {
+      "one": "+ {{count}} autre",
+      "few": "+ {{count}} autres"
+    }
   },
   "operationalMonitoring": {
     "title": "Suivi opérationnel",
