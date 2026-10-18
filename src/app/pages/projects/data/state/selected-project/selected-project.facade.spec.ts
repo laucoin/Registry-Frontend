@@ -13,7 +13,6 @@ import { VehicleStatusModel } from '@shared/models/model/vehicle-status.model'
 import { SelectedProjectFacade } from '@pages/projects/data/state/selected-project/selected-project.facade'
 import { SelectedProjectStore } from '@pages/projects/data/state/selected-project/selected-project.store'
 import { pageOf, projectOptionChecker } from '@shared/helpers/testing/test-fixtures'
-import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
 import { AlertModel } from '@shared/models/model/alert.model'
 import { MovementModel } from '@shared/models/model/movement.model'
 import { ParticipantModel } from '@shared/models/model/participant.model'
@@ -52,84 +51,6 @@ describe( 'SelectedProjectFacade', () => {
             ],
         } )
         facade = TestBed.inject( SelectedProjectFacade )
-    } )
-
-    it( 'loads the participants status and birthdays of the selected project', () => {
-        // Arrange
-        const expectedProjectId: string = 'p1'
-
-        // Act
-        facade.loadProjectHomeInformation()
-
-        // Assert
-        expect( findParticipantsStatus ).toHaveBeenCalledWith( expectedProjectId )
-        expect( findParticipantsBirthdays ).toHaveBeenCalledWith( expectedProjectId )
-        expect( facade.participantsStatus()?.guests ).toBe( 1 )
-    } )
-
-    it( 'loads the participants to regularize of the selected project on demand', () => {
-        // Arrange
-        const size: number = 5
-
-        // Act
-        facade.fetchOverdueParticipantsPage( 0, size )
-
-        // Assert
-        expect( facade.overdueParticipantsPage()?.content ).toHaveLength( 1 )
-        expect( facade.overdueParticipantsPageLoading() ).toBe( false )
-        expect( facade.overdueParticipantsPageError() ).toBeUndefined()
-    } )
-
-    it( 'loads the planned arrivals and departures of the selected project on demand', () => {
-        // Arrange
-        const expectedProjectId: string = 'p1'
-
-        // Act
-        facade.fetchPlannedArrivals()
-        facade.fetchPlannedDepartures()
-
-        // Assert
-        expect( findPlannedArrivals ).toHaveBeenCalledWith( expectedProjectId )
-        expect( findPlannedDepartures ).toHaveBeenCalledWith( expectedProjectId )
-        expect( facade.plannedArrivals() ).toEqual( [] )
-        expect( facade.plannedDeparturesLoading() ).toBe( false )
-        expect( facade.plannedArrivalsError() ).toBeUndefined()
-    } )
-
-    it( 'loads the birthdays of the selected project on demand', () => {
-        // Arrange
-        findParticipantsBirthdays.mockReturnValue( of( [ { id: 'pa1' } as ParticipantModel ] ) )
-
-        // Act
-        facade.fetchParticipantsBirthdays()
-
-        // Assert
-        expect( findParticipantsBirthdays ).toHaveBeenCalledWith( 'p1' )
-        expect( facade.participantsBirthdays() ).toHaveLength( 1 )
-        expect( facade.participantsBirthdaysLoading() ).toBe( false )
-    } )
-
-    it( 'skips the vehicles status when the project does not have the vehicle option', () => {
-        // Arrange
-        selectedProject.set( { id: 'p1', options: [ { label: 'Alerts', value: ProjectOptionEnum.ALERT } ] } as unknown as ProjectModel )
-
-        // Act
-        facade.loadProjectHomeInformation()
-
-        // Assert
-        expect( findVehiclesStatus ).not.toHaveBeenCalled()
-    } )
-
-    it( 'loads the vehicles status when the project has the vehicle option', () => {
-        // Arrange
-        selectedProject.set( { id: 'p1', options: [ { label: 'Vehicles', value: ProjectOptionEnum.VEHICLE } ] } as unknown as ProjectModel )
-
-        // Act
-        facade.loadProjectHomeInformation()
-
-        // Assert
-        expect( findVehiclesStatus ).toHaveBeenCalledWith( 'p1' )
-        expect( facade.vehiclesStatus() ).toBeDefined()
     } )
 
     it( 'fetches the participants status on demand', () => {

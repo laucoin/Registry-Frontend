@@ -10,7 +10,6 @@ import { SessionFacade } from '@core/registry/state/session.facade'
 import { GenericFacade } from '@shared/helpers/facade/generic.facade'
 import { SelectedProjectStore } from '@pages/projects/data/state/selected-project/selected-project.store'
 import { ParticipantModel } from '@shared/models/model/participant.model'
-import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
 import { AlertModel } from '@shared/models/model/alert.model'
 import { PlannedMovementModel } from '@shared/models/model/planned-movement.model'
 import { CumulativePageHelper } from '@shared/helpers/store/cumulative-page.helper'
@@ -24,8 +23,6 @@ import { CumulativePageHelper } from '@shared/helpers/store/cumulative-page.help
 export class SelectedProjectFacade extends GenericFacade {
     private readonly sessionFacade: SessionFacade = inject( SessionFacade )
     private readonly store: InstanceType<typeof SelectedProjectStore> = inject( SelectedProjectStore )
-
-    private readonly hasVehicleOption: Signal<boolean> = this.sessionFacade.selectedProjectHasOption( ProjectOptionEnum.VEHICLE )
 
     public readonly currentMovementsWithoutActivityContentsError: Signal<NotificationModel | undefined> = SectionErrorsHelper.of( this.store.sectionErrors, 'contents.withoutActivity' )
 
@@ -104,15 +101,6 @@ export class SelectedProjectFacade extends GenericFacade {
     public readonly currentAlertsPageError: Signal<NotificationModel | undefined> = this.store.alerts.error
 
     public readonly currentAlertsPage: Signal<PageModel<AlertModel> | undefined> = this.store.alerts.element
-
-    public loadProjectHomeInformation (): void {
-        const projectId: string | undefined = this.selectedProjectId()
-        this.store.fetchParticipantsStatus( projectId )
-        this.store.fetchParticipantsBirthdays( projectId )
-        if (this.hasVehicleOption()) {
-            this.store.fetchVehiclesStatus( projectId )
-        }
-    }
 
     public fetchOverdueParticipantsPage (page: number | undefined, size: number | undefined): void {
         this.store.fetchOverduePage( { projectId: this.selectedProjectId(), page: page, size: size } )
