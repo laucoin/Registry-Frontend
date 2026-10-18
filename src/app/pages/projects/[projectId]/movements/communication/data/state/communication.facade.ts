@@ -1,12 +1,10 @@
 import { SectionErrorsHelper } from '@shared/helpers/store/section-errors.helper'
 import { toObservable } from '@angular/core/rxjs-interop'
-import { computed, Injectable, Signal, inject } from '@angular/core'
-import { PageModel } from '@shared/models/model/page.model'
+import { Injectable, Signal, inject } from '@angular/core'
 import { CommunicationModel } from '@shared/models/model/communication.model'
 import { CommunicationStore } from '@pages/projects/[projectId]/movements/communication/data/state/communication.store'
 import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { NotificationModel } from '@shared/models/model/notification.model'
-import { DateHelper } from '@shared/helpers/date.helper'
 import { CommunicationApi } from '@pages/projects/[projectId]/movements/communication/data/state/communication.api'
 import { notifyOnError } from '@shared/helpers/rx.helper'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
@@ -34,74 +32,15 @@ export class CommunicationFacade extends GenericProjectElementFacade {
 
     public readonly communicationError: Signal<NotificationModel | undefined> = this.store.communication.error
 
-    public readonly communicationsPage: Signal<PageModel<CommunicationModel> | undefined> = this.store.communications.element
-
-    public readonly communicationsPageLoading: Signal<boolean> = this.store.communications.loading
-
-    public readonly communicationsPageSilentLoading: Signal<boolean> = this.store.communications.silentLoading
-
-    public readonly communicationsPageError: Signal<NotificationModel | undefined> = this.store.communications.error
-
-    private readonly communicationsPageResetSearch: Signal<boolean> = this.store.communications.params.resetSearch
-
-    public readonly communicationsPageQueryParam: Signal<string | undefined> = this.store.communications.params.q
-
-    public readonly communicationsPageIsVisibleParam: Signal<boolean | undefined> = this.store.communications.params.isVisible
-
-    public readonly communicationsPageFromParam: Signal<Date | undefined> = computed( (): Date | undefined =>
-            DateHelper.buildDate( this.store.communications.params.from() ),
-        )
-
-    public readonly communicationsPageToParam: Signal<Date | undefined> = computed( (): Date | undefined =>
-            DateHelper.buildDate( this.store.communications.params.to() ),
-        )
-
     public readonly communication: Signal<CommunicationModel | undefined> = this.store.communication.element
 
     public readonly communication$: Observable<CommunicationModel | undefined> = toObservable( this.communication )
 
     public readonly communicationLoading: Signal<boolean> = this.store.communication.loading
 
-    public readonly visibilitiesMetadata: Signal<SelectOptionModel<boolean | undefined>[]> = computed( () =>
-            this.store.metadata.visibilities().map( (status: SelectOptionModel<boolean | undefined>) => ({
-                ...status,
-                label: this.translateLabel( status.label! ),
-            }) ),
-        )
-
     public readonly searchedMovementsMetadata: Signal<SelectOptionModel<MovementModel>[]> = this.store.metadata.searchedMovements
 
     public readonly searchedAlertsMetadata: Signal<SelectOptionModel<AlertModel>[]> = this.store.metadata.searchedAlerts
-
-    public fetchCommunicationsPage (
-        page: number | undefined,
-        size: number | undefined,
-    ): void {
-        const index: number | undefined = this.communicationsPageResetSearch() ? 0 : page
-        this.store.fetchCommunicationsPage( { projectId: this.selectedProjectId(), page: index, size: size } )
-    }
-
-    public inputPageSearchParameters (
-        q: string | undefined,
-        isVisible: boolean | undefined,
-        from: Date | undefined,
-        to: Date | undefined,
-    ): void {
-        const resetSearch: boolean = this.communicationsPageQueryParam() != q
-                                     || this.communicationsPageIsVisibleParam() != isVisible
-                                     || this.communicationsPageFromParam()?.toISOString() != from?.toISOString()
-                                     || this.communicationsPageToParam()?.toISOString() != to?.toISOString()
-
-        if (resetSearch) {
-            this.store.updateCommunicationsPageSearchParams( {
-                resetSearch: resetSearch,
-                q: q,
-                isVisible: isVisible,
-                from: from?.toISOString(),
-                to: to?.toISOString(),
-            } )
-        }
-    }
 
     public fetchCommunication (id: string): void {
         this.store.fetchCommunication( { projectId: this.selectedProjectId(), id: id } )
@@ -177,8 +116,5 @@ export class CommunicationFacade extends GenericProjectElementFacade {
         } else {
             this.commandEvents.emit( 'communication', command )
         }
-
-        const page: PageModel<CommunicationModel> | undefined = this.communicationsPage()
-        this.fetchCommunicationsPage( page?.page, page?.size )
     }
 }

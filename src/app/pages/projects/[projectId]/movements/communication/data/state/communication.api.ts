@@ -2,9 +2,6 @@ import {Injectable} from '@angular/core'
 import { Observable, map } from 'rxjs'
 import {GenericProjectApi} from '@shared/helpers/api/generic-project.api'
 import {SELECT_PROFILE_PROJECT_ID} from '@shared/helpers/request.helper'
-import {PageModel} from '@shared/models/model/page.model'
-import {QueryHelper} from '@shared/helpers/query.helper'
-import {CommunicationPageParamsModel} from '@pages/projects/[projectId]/movements/communication/data/model/communication-page-params.model'
 import {CommunicationModel} from '@shared/models/model/communication.model'
 import {CommunicationDto} from '@pages/projects/[projectId]/movements/communication/data/dto/communication.dto'
 import {HttpParams} from '@angular/common/http'
@@ -16,8 +13,6 @@ import { MovementResponseDto } from '@shared/models/dto/response/movement.respon
 import { AlertMapper } from '@shared/mappers/alert.mapper'
 import { CommunicationMapper } from '@shared/mappers/communication.mapper'
 import { MovementMapper } from '@shared/mappers/movement.mapper'
-import { PageMapper } from '@shared/mappers/page.mapper'
-import { PageResponseDto } from '@shared/models/dto/response/page.response.dto'
 import { ETagHelper } from '@shared/helpers/etag.helper'
 
 /**
@@ -31,23 +26,6 @@ import { ETagHelper } from '@shared/helpers/etag.helper'
 export class CommunicationApi extends GenericProjectApi {
     public constructor() {
         super(`/api/v2/projects/${SELECT_PROFILE_PROJECT_ID}/communications`)
-    }
-
-    public findCommunications(
-        projectId: string | undefined,
-        page: number | undefined,
-        size: number | undefined,
-        params: CommunicationPageParamsModel,
-    ): Observable<PageModel<CommunicationModel>> {
-        return this.http.get<PageResponseDto<CommunicationResponseDto>>(
-            `${this.buildRequestBaseUrl(projectId)}?${QueryHelper.buildQueryParams(
-                page,
-                size,
-                params,
-            ).toString()}`,
-        ).pipe(
-            map( (dto: PageResponseDto<CommunicationResponseDto>): PageModel<CommunicationModel> => PageMapper.toModel( dto, CommunicationMapper.toModel ) ),
-        )
     }
 
     public findCommunicationById(projectId: string | undefined, id: string): Observable<CommunicationModel> {

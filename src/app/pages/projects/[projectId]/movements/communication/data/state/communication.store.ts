@@ -1,26 +1,17 @@
 import { inject } from '@angular/core'
 import { patchState, signalStore, withMethods, withState } from '@ngrx/signals'
 import { SelectOptionModel } from '@shared/models/model/select-option.model'
-import { ErrorReporter } from '@core/registry/state/error-reporter'
-import { CommunicationPageParamsModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication-page-params.model'
 import { CommunicationStoreModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication-store.model'
 import { CommunicationModel } from '@shared/models/model/communication.model'
 import { CommunicationApi } from '@pages/projects/[projectId]/movements/communication/data/state/communication.api'
 import { AlertHelper } from '@shared/helpers/alert.helper'
 import { MovementHelper } from '@shared/helpers/movement.helper'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
-import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
-import { elementFetcher, metadataFetcher, pageFetcher, paramsUpdater, trackElement } from '@shared/helpers/store/paged-store.methods'
+import { elementFetcher, metadataFetcher, trackElement } from '@shared/helpers/store/paged-store.methods'
 import { withProfileScope } from '@shared/helpers/store/with-profile-scope.feature'
 import { AlertModel } from '@shared/models/model/alert.model'
 import { ElementRequestInformationModel } from '@shared/models/model/element-request-information.model'
 import { MovementModel } from '@shared/models/model/movement.model'
-
-interface CommunicationsPageRequest {
-    projectId: string | undefined
-    page: number | undefined
-    size: number | undefined
-}
 
 interface CommunicationRequest {
     projectId: string | undefined
@@ -40,22 +31,10 @@ const defaultCommunication: ElementRequestInformationModel<CommunicationModel> =
 
 const defaultCommunicationStore: CommunicationStoreModel = {
     sectionErrors: {},
-    communications: PageStateHelper.initial<CommunicationPageParamsModel, CommunicationModel>( {
-        resetSearch: false,
-        q: undefined,
-        isVisible: undefined,
-        from: undefined,
-        to: undefined,
-    } ),
     communication: defaultCommunication,
     metadata: {
         searchedMovements: [],
         searchedAlerts: [],
-        visibilities: [
-            { label: '-', value: undefined },
-            { label: 'communications.visible.true', value: true },
-            { label: 'communications.visible.false', value: false },
-        ],
     },
 }
 
@@ -67,10 +46,7 @@ const defaultCommunicationStore: CommunicationStoreModel = {
 export const CommunicationStore = signalStore(
     withState<CommunicationStoreModel>( defaultCommunicationStore ),
     withProfileScope<CommunicationStoreModel>( defaultCommunicationStore ),
-    withMethods( (store, api = inject( CommunicationApi ), errors = inject( ErrorReporter )) => ({
-        fetchCommunicationsPage: pageFetcher( store, 'communications', (request: CommunicationsPageRequest, params: CommunicationPageParamsModel) =>
-            api.findCommunications( request.projectId, request.page, request.size, params ), errors ),
-        updateCommunicationsPageSearchParams: paramsUpdater( store, 'communications' ),
+    withMethods( (store, api = inject( CommunicationApi )) => ({
         fetchCommunication: elementFetcher( store, 'communication', (request: CommunicationRequest) =>
             api.findCommunicationById( request.projectId, request.id )),
         resetCommunication: (): void => patchState( store, { communication: defaultCommunication } ),

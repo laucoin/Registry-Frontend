@@ -1,72 +1,32 @@
 import { TestBed } from '@angular/core/testing'
 import { of } from 'rxjs'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
-import { ErrorReporter } from '@core/registry/state/error-reporter'
 import { CommunicationModel } from '@shared/models/model/communication.model'
 import { CommunicationApi } from '@pages/projects/[projectId]/movements/communication/data/state/communication.api'
 import { CommunicationStore } from '@pages/projects/[projectId]/movements/communication/data/state/communication.store'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
-import { ERROR_500, ERROR_503, failing, pageOf } from '@shared/helpers/testing/test-fixtures'
+import { ERROR_500, failing } from '@shared/helpers/testing/test-fixtures'
 import { AlertModel } from '@shared/models/model/alert.model'
 import { MovementModel } from '@shared/models/model/movement.model'
 
 describe( 'CommunicationStore', () => {
     let store: InstanceType<typeof CommunicationStore>
-    let findCommunications: Mock<CommunicationApi['findCommunications']>
     let findCommunicationById: Mock<CommunicationApi['findCommunicationById']>
     let searchMovements: Mock<CommunicationApi['searchMovements']>
     let searchAlerts: Mock<CommunicationApi['searchAlerts']>
-    let notify: Mock<(message: unknown) => void>
 
     beforeEach( () => {
-        findCommunications = vi.fn()
         findCommunicationById = vi.fn()
         searchMovements = vi.fn()
         searchAlerts = vi.fn()
-        notify = vi.fn()
         TestBed.configureTestingModule( {
             providers: [
                 CommunicationStore,
-                { provide: CommunicationApi, useValue: { findCommunications, findCommunicationById, searchMovements, searchAlerts } },
+                { provide: CommunicationApi, useValue: { findCommunicationById, searchMovements, searchAlerts } },
                 { provide: DateFormatPipe, useValue: { transform: (): string => '01/01' } },
-                { provide: ErrorReporter, useValue: { notify } },
             ],
         } )
         store = TestBed.inject( CommunicationStore )
-    } )
-
-    it( 'stores the fetched communications page', () => {
-        // Arrange
-        findCommunications.mockReturnValue( of( pageOf<CommunicationModel>( [ { id: 'c1' } as CommunicationModel ] ) ) )
-
-        // Act
-        store.fetchCommunicationsPage( { projectId: 'p1', page: 0, size: 10 } )
-
-        // Assert
-        expect( store.communications.element()?.content ).toHaveLength( 1 )
-        expect( store.communications.loading() ).toBe( false )
-    } )
-
-    it( 'keeps a failed communications fetch in the communications block', () => {
-        // Arrange
-        findCommunications.mockReturnValue( failing( ERROR_500 ) )
-
-        // Act
-        store.fetchCommunicationsPage( { projectId: 'p1', page: 0, size: 10 } )
-
-        // Assert
-        expect( store.communications.error()?.summary ).toBe( 'Title' )
-    } )
-
-    it( 'keeps a 503 failure in its block', () => {
-        // Arrange
-        findCommunications.mockReturnValue( failing( ERROR_503 ) )
-
-        // Act
-        store.fetchCommunicationsPage( { projectId: 'p1', page: 0, size: 10 } )
-
-        // Assert
-        expect( store.communications.error() ).toBeDefined()
     } )
 
     it( 'loads a single communication and ends the loading state', () => {
