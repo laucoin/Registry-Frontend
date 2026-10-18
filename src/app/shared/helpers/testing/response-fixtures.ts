@@ -35,7 +35,7 @@ export const PROJECT_DTO: ProjectResponseDto = {
 export const PARTICIPANT_DTO: ParticipantResponseDto = {
     ...GENERIC, id: 'pa1', firstName: 'A', lastName: 'B', birthday: '2010-01-01', major: false,
     type: { label: 'Registered', value: 'REGISTERED' as never }, groups: undefined, status: { label: 'In', value: 'IN' as never },
-    startAvailability: undefined, endAvailability: undefined, user: USER_DTO,
+    startAvailability: undefined, endAvailability: undefined, effectiveArrival: WHEN, effectiveDeparture: undefined, user: USER_DTO,
 }
 
 export const GROUP_DTO: GroupResponseDto = {

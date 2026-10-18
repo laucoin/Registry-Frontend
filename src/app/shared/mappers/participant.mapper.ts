@@ -22,6 +22,8 @@ export class ParticipantMapper {
             status: dto.status,
             startAvailability: dto.startAvailability,
             endAvailability: dto.endAvailability,
+            effectiveArrival: dto.effectiveArrival,
+            effectiveDeparture: dto.effectiveDeparture,
             user: dto.user ? UserMapper.toModel( dto.user ) : undefined,
         }
     }

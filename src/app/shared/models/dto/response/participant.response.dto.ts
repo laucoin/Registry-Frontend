@@ -16,5 +16,7 @@ export interface ParticipantResponseDto extends GenericResponseDto {
     status: SelectOptionModel<PresenceStatusEnum>
     startAvailability: CustomDatetimeModel | undefined
     endAvailability: CustomDatetimeModel | undefined
+    effectiveArrival: Date | undefined
+    effectiveDeparture: Date | undefined
     user: UserResponseDto | undefined
 }

@@ -16,5 +16,7 @@ export interface ParticipantModel extends GenericModel {
     status: SelectOptionModel<PresenceStatusEnum>
     startAvailability: CustomDatetimeModel | undefined
     endAvailability: CustomDatetimeModel | undefined
+    effectiveArrival: Date | undefined
+    effectiveDeparture: Date | undefined
     user: UserModel | undefined
 }

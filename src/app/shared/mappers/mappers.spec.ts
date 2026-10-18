@@ -273,6 +273,19 @@ describe( 'mappers', () => {
         expect( project.name ).toBe( PROJECT.name )
     } )
 
+    it( 'maps the effective arrival and departure dates of a participant', () => {
+        // Arrange
+        const departed: ParticipantResponseDto = { ...PARTICIPANT, effectiveDeparture: WHEN }
+
+        // Act
+        const model: ReturnType<typeof ParticipantMapper.toModel> = ParticipantMapper.toModel( departed )
+        const arrived: ReturnType<typeof ParticipantMapper.toModel> = ParticipantMapper.toModel( PARTICIPANT )
+
+        // Assert
+        expect( [ model.effectiveArrival, model.effectiveDeparture ] ).toEqual( [ WHEN, WHEN ] )
+        expect( arrived.effectiveDeparture ).toBeUndefined()
+    } )
+
     it( 'maps a participant whose groups only carry a name, an id and a visibility', () => {
         // Arrange
         const lightGroup: object = { id: 'g1', name: 'Wolves', visible: true }
