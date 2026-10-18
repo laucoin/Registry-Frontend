@@ -33,14 +33,14 @@
         <sgdf-icon slot="icon" [name]="statusIconName()" library="solid"/>
     </sgdf-avatar>
     <span class="block truncate" [attr.title]="alert().title">{{ alert().title | titlecase }}</span>
+    @if (!alert().visible) {
+        <span class="sr-only">({{ 'alerts.visible.false' | transloco }})</span>
+    }
     <span slot="description" class="inline-flex items-center gap-1">
         <sgdf-icon name="clock" library="regular"/>
         {{ alert().dateTime | dateFormat: 'datetime' }}
     </span>
     <span slot="end" class="flex flex-wrap items-center gap-2">
-        @if (!alert().visible) {
-            <sgdf-tag appearance="outlined" pill>{{ 'alerts.visible.false' | transloco }}</sgdf-tag>
-        }
         <sgdf-tag appearance="soft" pill [variant]="statusVariant()">{{ statusLabel() }}</sgdf-tag>
         @if (addButtonVisible()) {
             <sgdf-button size="small" appearance="outlined" [variant]="isInProgress() ? 'info' : 'neutral'"
