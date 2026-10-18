@@ -11,6 +11,9 @@ import { AlertApi } from '@pages/projects/[projectId]/movements/data/state/alert
 import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
 import { MovementHelper } from '@shared/helpers/movement.helper'
 import { initialize } from '@shared/helpers/rx.helper'
+import { ParticipantPageParamsModel } from '@pages/projects/[projectId]/configuration/participants/data/model/participant-page-params.model'
+import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum'
+import { ParticipantModel } from '@shared/models/model/participant.model'
 import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
 import { contentsSection, elementFetcher, MovementContentsRequest, pageFetcher, StoreRef, trackSectionError } from '@shared/helpers/store/paged-store.methods'
 import { PageSlice, trackPage } from '@shared/helpers/store/track-page.operator'
@@ -60,6 +63,14 @@ const defaultSelectedProjectStore: SelectedProjectStoreModel = {
         from: undefined,
         to: undefined,
         sort: '-criticality',
+    } ),
+    overdue: PageStateHelper.initial<ParticipantPageParamsModel, ParticipantModel>( {
+        resetSearch: false,
+        isVisible: true,
+        status: PresenceStatusEnum.OVERDUE,
+        q: undefined,
+        onSite: true,
+        sort: 'endAvailability',
     } ),
     birthdays: { element: undefined, loading: false, error: undefined },
     isCurrent: {
@@ -170,9 +181,11 @@ export const SelectedProjectStore = signalStore(
         fetchCurrentMovementsWithoutActivityContents: currentMovementsContents( store, 'withoutActivity', movementApi ),
         fetchCurrentMovementsWithActivityContents: currentMovementsContents( store, 'withActivity', movementApi ),
     }) ),
-    withMethods( (store, movementApi = inject( MovementApi ), alertApi = inject( AlertApi ), errors = inject( ErrorReporter )) => ({
+    withMethods( (store, movementApi = inject( MovementApi ), alertApi = inject( AlertApi ), participantApi = inject( ParticipantApi ), errors = inject( ErrorReporter )) => ({
         fetchCurrentMovementsPageWithoutActivity: currentMovementsPage( store, 'withoutActivity', movementApi, store.fetchCurrentMovementsWithoutActivityContents ),
         fetchCurrentMovementsPageWithActivity: currentMovementsPage( store, 'withActivity', movementApi, store.fetchCurrentMovementsWithActivityContents ),
+        fetchOverduePage: pageFetcher( store, 'overdue', (request: CurrentPageRequest, params: ParticipantPageParamsModel) =>
+            participantApi.findParticipants( request.projectId, request.page, request.size, params ), errors, { merge: CumulativePageHelper.merge } ),
         fetchCurrentAlertsPage: pageFetcher( store, 'alerts', (request: CurrentPageRequest, params: AlertPageParamsModel) =>
             alertApi.findAlerts( request.projectId, request.page, request.size, params ), errors ),
     }) ),

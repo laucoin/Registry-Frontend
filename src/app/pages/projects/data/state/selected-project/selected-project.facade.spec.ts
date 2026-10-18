@@ -41,7 +41,7 @@ describe( 'SelectedProjectFacade', () => {
                 SelectedProjectStore,
                 { provide: MovementApi, useValue: { findMovements, findParticipantsStatus, findVehiclesStatus, findMovementsContents: vi.fn( () => of( [] ) ) } },
                 { provide: AlertApi, useValue: { findAlerts } },
-                { provide: ParticipantApi, useValue: { findParticipantsBirthdays } },
+                { provide: ParticipantApi, useValue: { findParticipantsBirthdays, findParticipants: vi.fn( () => of( pageOf<ParticipantModel>( [ { id: 'pa1' } as ParticipantModel ] ) ) ) } },
                 { provide: SessionFacade, useValue: { currentProjectId: signal( 'p1' ), selectedProject, selectedProjectHasOption: projectOptionChecker( selectedProject ) } },
                 { provide: UiFacade, useValue: { notify: vi.fn() } },
                 { provide: TranslocoService, useValue: { translate: (key: string): string => key } },
@@ -61,6 +61,19 @@ describe( 'SelectedProjectFacade', () => {
         expect( findParticipantsStatus ).toHaveBeenCalledWith( expectedProjectId )
         expect( findParticipantsBirthdays ).toHaveBeenCalledWith( expectedProjectId )
         expect( facade.participantsStatus()?.guests ).toBe( 1 )
+    } )
+
+    it( 'loads the participants to regularize of the selected project on demand', () => {
+        // Arrange
+        const size: number = 5
+
+        // Act
+        facade.fetchOverdueParticipantsPage( 0, size )
+
+        // Assert
+        expect( facade.overdueParticipantsPage()?.content ).toHaveLength( 1 )
+        expect( facade.overdueParticipantsPageLoading() ).toBe( false )
+        expect( facade.overdueParticipantsPageError() ).toBeUndefined()
     } )
 
     it( 'loads the birthdays of the selected project on demand', () => {

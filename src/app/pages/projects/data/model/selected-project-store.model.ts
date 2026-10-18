@@ -7,6 +7,7 @@ import { VehicleStatusModel } from '@shared/models/model/vehicle-status.model'
 import { MovementPageParamsModel } from '@shared/models/model/movement-page-params.model'
 import { MovementModel } from '@shared/models/model/movement.model'
 import { ParticipantModel } from '@shared/models/model/participant.model'
+import { ParticipantPageParamsModel } from '@pages/projects/[projectId]/configuration/participants/data/model/participant-page-params.model'
 import { AlertModel } from '@shared/models/model/alert.model'
 import { AlertPageParamsModel } from '@shared/models/model/alert-page-params.model'
 
@@ -24,6 +25,7 @@ export interface SelectedProjectStoreModel extends SectionErrorsState {
         }
     }
     alerts: PageRequestInformationModel<AlertPageParamsModel, AlertModel>
+    overdue: PageRequestInformationModel<ParticipantPageParamsModel, ParticipantModel>
     birthdays: ElementRequestInformationModel<ParticipantModel[]>
     isCurrent: {
         withoutActivity: PageRequestInformationModel<MovementPageParamsModel, MovementModel>

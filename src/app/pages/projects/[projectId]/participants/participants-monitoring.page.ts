@@ -39,6 +39,7 @@ type ParticipantsTabKey = 'mine' | 'groups' | 'individual'
 
 const PAGE_SIZE: number = 20
 const TAB_PARAM: string = 'tab'
+const STATUS_PARAM: string = 'status'
 
 /**
  * Purpose: Page tracking where the participants are: through my groups, through every group, or one by one.
@@ -100,6 +101,7 @@ export class ParticipantsMonitoringPage implements OnInit {
     protected readonly form: FieldTree<ParticipantsListSearchModel> = createSearchForm( this.model )
 
     public constructor () {
+        this.presetStatusFromUrl()
         effect( (): void => {
             const tab: ParticipantsTabKey = this.activeTab()
             if (this.ready()) {
@@ -148,6 +150,14 @@ export class ParticipantsMonitoringPage implements OnInit {
     protected resetFilters (): void {
         this.model.set( { q: '', status: '', isVisible: '' } )
         this.search()
+    }
+
+    private presetStatusFromUrl (): void {
+        const status: string | null = this.route.snapshot.queryParamMap.get( STATUS_PARAM )
+        if (status) {
+            this.participants.inputPageSearchParameters( undefined, status, undefined )
+            this.model.update( (current: ParticipantsListSearchModel): ParticipantsListSearchModel => ({ ...current, status }) )
+        }
     }
 
     private loadFirstBatch (tab: ParticipantsTabKey): void {

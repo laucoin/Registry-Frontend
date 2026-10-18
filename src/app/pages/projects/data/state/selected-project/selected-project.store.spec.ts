@@ -22,6 +22,7 @@ describe( 'SelectedProjectStore', () => {
     let findVehiclesStatus: Mock<MovementApi['findVehiclesStatus']>
     let findAlerts: Mock<AlertApi['findAlerts']>
     let findParticipantsBirthdays: Mock<ParticipantApi['findParticipantsBirthdays']>
+    let findParticipants: Mock<ParticipantApi['findParticipants']>
     let notify: Mock<(message: unknown) => void>
 
     beforeEach( () => {
@@ -31,13 +32,14 @@ describe( 'SelectedProjectStore', () => {
         findVehiclesStatus = vi.fn()
         findAlerts = vi.fn()
         findParticipantsBirthdays = vi.fn()
+        findParticipants = vi.fn()
         notify = vi.fn()
         TestBed.configureTestingModule( {
             providers: [
                 SelectedProjectStore,
                 { provide: MovementApi, useValue: { findMovements, findMovementsContents, findParticipantsStatus, findVehiclesStatus } },
                 { provide: AlertApi, useValue: { findAlerts } },
-                { provide: ParticipantApi, useValue: { findParticipantsBirthdays } },
+                { provide: ParticipantApi, useValue: { findParticipantsBirthdays, findParticipants } },
                 { provide: ErrorReporter, useValue: { notify } },
             ],
         } )
@@ -91,6 +93,30 @@ describe( 'SelectedProjectStore', () => {
 
         // Assert
         expect( store.status.participants.error() ).toBeDefined()
+    } )
+
+    it( 'stores the participants to regularize, asking for the on-site overdue ones, the earliest planned end first', () => {
+        // Arrange
+        findParticipants.mockReturnValue( of( pageOf<ParticipantModel>( [ { id: 'pa1' } as ParticipantModel ] ) ) )
+
+        // Act
+        store.fetchOverduePage( { projectId: 'p1', page: 0, size: 5 } )
+
+        // Assert
+        expect( store.overdue.element()?.content ).toHaveLength( 1 )
+        expect( findParticipants ).toHaveBeenCalledWith( 'p1', 0, 5, expect.objectContaining( { status: 'OVERDUE', onSite: true, isVisible: true, sort: 'endAvailability' } ) )
+    } )
+
+    it( 'keeps a failed participants to regularize fetch in its own block', () => {
+        // Arrange
+        findParticipants.mockReturnValue( failing( ERROR_500 ) )
+
+        // Act
+        store.fetchOverduePage( { projectId: 'p1', page: 0, size: 5 } )
+
+        // Assert
+        expect( store.overdue.error()?.summary ).toBe( 'Title' )
+        expect( store.overdue.loading() ).toBe( false )
     } )
 
     it( 'stores the birthdays of the participants', () => {

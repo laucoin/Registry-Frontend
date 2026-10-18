@@ -55,7 +55,7 @@ describe( 'ParticipantsMonitoringPage', () => {
             .mock( TranslocoPipe, (key: string): string => key )
             .provide( { provide: GroupStatusFacade, useValue: groups } )
             .provide( { provide: ParticipantFacade, useValue: participants } )
-            .provide( { provide: ActivatedRoute, useValue: { queryParamMap: queryParams.asObservable() } } )
+            .provide( { provide: ActivatedRoute, useValue: { queryParamMap: queryParams.asObservable(), snapshot: { get queryParamMap (): ParamMap { return queryParams.value } } } } )
             .provide( { provide: Router, useValue: { navigate: vi.fn( () => Promise.resolve( true ) ) } } )
     } )
 
@@ -293,5 +293,30 @@ describe( 'ParticipantsMonitoringPage', () => {
 
         // Assert
         expect( TestBed.inject( Router ).navigate ).not.toHaveBeenCalled()
+    } )
+
+    it( 'presets the status filter asked in the url before loading the participants', () => {
+        // Arrange
+        queryParams.next( convertToParamMap( { tab: 'individual', status: 'OVERDUE' } ) )
+        myGroupsPage.set( pageOf<GroupModel>( [ GROUP ] ) )
+
+        // Act
+        fixture = TestBed.createComponent( ParticipantsMonitoringPage )
+        fixture.detectChanges()
+
+        // Assert
+        expect( participants[ 'inputPageSearchParameters' ] ).toHaveBeenCalledWith( undefined, 'OVERDUE', undefined )
+        expect( fixture.componentInstance[ 'model' ]().status ).toBe( 'OVERDUE' )
+    } )
+
+    it( 'leaves the filters alone when the url asks for no status', () => {
+        // Arrange
+        const expected: number = 0
+
+        // Act
+        create( 'individual' )
+
+        // Assert
+        expect( (participants[ 'inputPageSearchParameters' ] as MockInstance).mock.calls.length ).toBe( expected )
     } )
 } )

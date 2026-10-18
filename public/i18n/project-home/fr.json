@@ -20,7 +20,14 @@
   },
   "participantRegularization": {
     "title": "Présences à régulariser",
-    "seeAll": "Voir toutes les présences à régulariser"
+    "seeAll": "Voir toutes les présences à régulariser",
+    "empty": "Aucune présence à régulariser",
+    "plannedEnd": "Fin prévue le {{date}}",
+    "presentSince": "présent depuis {{duration}}",
+    "more": {
+      "one": "+ {{count}} autre participant",
+      "few": "+ {{count}} autres participants"
+    }
   },
   "activeAlert": {
     "title": "Alertes ouvertes",

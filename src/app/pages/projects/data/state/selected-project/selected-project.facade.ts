@@ -80,6 +80,12 @@ export class SelectedProjectFacade extends GenericFacade {
             DateHelper.buildDate( this.store.isCurrent.withActivity.params.to() ),
         )
 
+    public readonly overdueParticipantsPage: Signal<PageModel<ParticipantModel> | undefined> = this.store.overdue.element
+
+    public readonly overdueParticipantsPageLoading: Signal<boolean> = this.store.overdue.loading
+
+    public readonly overdueParticipantsPageError: Signal<NotificationModel | undefined> = this.store.overdue.error
+
     public readonly currentAlertsPageLoading: Signal<boolean> = this.store.alerts.loading
 
     public readonly currentAlertsPageError: Signal<NotificationModel | undefined> = this.store.alerts.error
@@ -93,6 +99,10 @@ export class SelectedProjectFacade extends GenericFacade {
         if (this.hasVehicleOption()) {
             this.store.fetchVehiclesStatus( projectId )
         }
+    }
+
+    public fetchOverdueParticipantsPage (page: number | undefined, size: number | undefined): void {
+        this.store.fetchOverduePage( { projectId: this.selectedProjectId(), page: page, size: size } )
     }
 
     public fetchParticipantsStatus (): void {
