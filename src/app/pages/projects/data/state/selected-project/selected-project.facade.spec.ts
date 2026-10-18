@@ -85,6 +85,17 @@ describe( 'SelectedProjectFacade', () => {
         expect( facade.vehiclesStatus() ).toBeDefined()
     } )
 
+    it( 'fetches the participants status on demand', () => {
+        // Arrange
+        const expectedProjectId: string = 'p1'
+
+        // Act
+        facade.fetchParticipantsStatus()
+
+        // Assert
+        expect( findParticipantsStatus ).toHaveBeenCalledWith( expectedProjectId )
+    } )
+
     it( 'fetches the vehicles status on demand', () => {
         // Arrange
         const expectedProjectId: string = 'p1'

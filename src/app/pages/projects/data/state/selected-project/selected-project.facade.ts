@@ -91,6 +91,10 @@ export class SelectedProjectFacade extends GenericFacade {
         }
     }
 
+    public fetchParticipantsStatus (): void {
+        this.store.fetchParticipantsStatus( this.selectedProjectId() )
+    }
+
     public fetchVehiclesStatus (): void {
         this.store.fetchVehiclesStatus( this.selectedProjectId() )
     }

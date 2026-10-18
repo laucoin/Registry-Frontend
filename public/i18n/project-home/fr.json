@@ -9,14 +9,14 @@
     "registeredPresent": "Inscrits présents",
     "registeredOut": "Inscrits en sortie",
     "guestsPresent": "Invités présents",
-    "seeIndividualStatus": "Voir le statut individuel"
+    "seeAll": "Voir le suivi des participants"
   },
   "vehicleOverview": {
     "title": "Véhicules",
     "total": "{{count}} au total",
     "present": "Présents",
     "out": "En sortie",
-    "seeVehicleStatus": "Voir le statut des véhicules"
+    "seeAll": "Voir le suivi des véhicules"
   },
   "participantRegularization": {
     "title": "Présences à régulariser",
