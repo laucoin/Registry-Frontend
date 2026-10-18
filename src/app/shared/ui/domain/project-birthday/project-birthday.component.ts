@@ -13,7 +13,6 @@ import { SelectedProjectFacade } from '@pages/projects/data/state/selected-proje
 import { AgeHelper } from '@shared/helpers/age.helper';
 import { MonitoringRowHelper } from '@shared/helpers/monitoring-row.helper';
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe';
-import { MonitoringRowModel } from '@shared/models/model/monitoring-row.model';
 import { NotificationModel } from '@shared/models/model/notification.model';
 import { ParticipantModel } from '@shared/models/model/participant.model';
 import { SectionErrorComponent } from '@shared/ui/common/section-error/section-error.component';
@@ -66,7 +65,11 @@ export class ProjectBirthdayComponent implements OnInit {
 	}
 
 	private toRow(participant: ParticipantModel): BirthdayRow {
-		const row: MonitoringRowModel = MonitoringRowHelper.fromParticipant(participant)
-		return { id: row.id, name: row.title, age: AgeHelper.ageOn(participant.birthday, new Date()), detail: row.subtitle }
+		return {
+			id: participant.id,
+			name: MonitoringRowHelper.fullName(participant),
+			age: AgeHelper.ageOn(participant.birthday, new Date()),
+			detail: MonitoringRowHelper.participantDetail(participant),
+		}
 	}
 }

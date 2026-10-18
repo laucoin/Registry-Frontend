@@ -70,9 +70,9 @@ export class PlannedMovementCardComponent {
 		const single: boolean = !movement.poolName && movement.participants.length === 1 && !!first
 		return {
 			key: `${index}-${movement.poolName ?? first?.id ?? ''}`,
-			title: movement.poolName ?? (first ? MonitoringRowHelper.fromParticipant(first).title : ''),
+			title: movement.poolName ?? (first ? MonitoringRowHelper.fullName(first) : ''),
 			count: movement.participants.length,
-			detail: single ? [movement.reason?.label, first!.type.label].filter(Boolean).join(' · ') : movement.reason?.label,
+			detail: single ? [movement.reason?.label, first!.type?.label].filter(Boolean).join(' · ') : movement.reason?.label,
 			time: movement.plannedAt ? { date: undefined, time: movement.plannedAt.time } : undefined,
 		}
 	}

@@ -104,4 +104,30 @@ describe( 'MonitoringRowHelper', () => {
         // Assert
         expect( row.title ).toBe( 'T' )
     } )
+
+    it( 'builds a participant row without status when the backend sends none', () => {
+        // Arrange
+        const participant: ParticipantModel = { ...ParticipantMapper.toModel( PARTICIPANT_DTO ), status: undefined as never, groups: undefined }
+
+        // Act
+        const row: MonitoringRowModel = MonitoringRowHelper.fromParticipant( participant )
+
+        // Assert
+        expect( row.statusLabel ).toBeUndefined()
+        expect( row.statusVariant ).toBe( 'neutral' )
+        expect( row.title ).toBe( 'A B' )
+    } )
+
+    it( 'names a participant and describes him by his group or his type', () => {
+        // Arrange
+        const participant: ParticipantModel = ParticipantMapper.toModel( PARTICIPANT_DTO )
+
+        // Act
+        const name: string = MonitoringRowHelper.fullName( participant )
+        const detail: string | undefined = MonitoringRowHelper.participantDetail( participant )
+
+        // Assert
+        expect( name ).toBe( 'A B' )
+        expect( detail ).toBe( 'Registered' )
+    } )
 } )

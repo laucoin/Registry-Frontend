@@ -17,17 +17,25 @@ const STATUS_VARIANTS: Record<PresenceStatusEnum, MonitoringStatusVariant> = {
  * Limits: Pure functions; the status label comes from the backend and is never translated here.
  */
 export class MonitoringRowHelper {
-    public static statusVariant (status: PresenceStatusEnum): MonitoringStatusVariant {
-        return STATUS_VARIANTS[ status ] ?? 'neutral'
+    public static statusVariant (status: PresenceStatusEnum | undefined): MonitoringStatusVariant {
+        return status ? STATUS_VARIANTS[ status ] ?? 'neutral' : 'neutral'
+    }
+
+    public static fullName (participant: ParticipantModel): string {
+        return [ participant.firstName, participant.lastName?.toUpperCase() ].filter( Boolean ).join( ' ' )
+    }
+
+    public static participantDetail (participant: ParticipantModel): string | undefined {
+        return MonitoringRowHelper.groupNames( participant.groups ) ?? participant.type?.label
     }
 
     public static fromParticipant (participant: ParticipantModel): MonitoringRowModel {
         return {
             id: participant.id,
-            title: [ participant.firstName, participant.lastName?.toUpperCase() ].filter( Boolean ).join( ' ' ),
-            subtitle: MonitoringRowHelper.groupNames( participant.groups ) ?? participant.type.label,
-            statusLabel: participant.status.label,
-            statusVariant: MonitoringRowHelper.statusVariant( participant.status.value ),
+            title: MonitoringRowHelper.fullName( participant ),
+            subtitle: MonitoringRowHelper.participantDetail( participant ),
+            statusLabel: participant.status?.label,
+            statusVariant: MonitoringRowHelper.statusVariant( participant.status?.value ),
             icon: 'user',
         }
     }

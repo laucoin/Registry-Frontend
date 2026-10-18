@@ -133,4 +133,16 @@ describe('ProjectBirthdayComponent', () => {
 		expect(text).toContain('projectHome.birthday.age');
 		expect(text).toContain('Registered');
 	});
+
+	it('should list a participant whose status the backend does not send', async () => {
+		// Arrange
+		birthdays.set([{ ...ParticipantMapper.toModel(PARTICIPANT_DTO), status: undefined as never, groups: undefined }]);
+
+		// Act
+		await render();
+		const rows: number = fixture.nativeElement.querySelectorAll('sgdf-list-item').length;
+
+		// Assert
+		expect(rows).toBe(1);
+	});
 });

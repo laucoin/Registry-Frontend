@@ -81,7 +81,7 @@ export class ProjectParticipantRegularizationComponent implements OnInit {
 	private toRow(participant: ParticipantModel): RegularizationRow {
 		return {
 			participant,
-			name: MonitoringRowHelper.fromParticipant(participant).title,
+			name: MonitoringRowHelper.fullName(participant),
 			since: DateHelper.buildDateInterval(participant.effectiveArrival, new Date()),
 		}
 	}
