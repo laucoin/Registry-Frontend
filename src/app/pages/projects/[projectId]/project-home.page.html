@@ -15,5 +15,9 @@
     <app-project-upcoming-arrival class="lg:col-span-4 block"/>
     <app-project-upcoming-departure class="lg:col-span-4 block"/>
     <app-project-birthday class="lg:col-span-4 block"/>
-    <app-project-operational-monitoring class="lg:col-span-12 block"/>
+    @defer (on viewport) {
+        <app-project-operational-monitoring class="lg:col-span-12 block"/>
+    } @placeholder {
+        <div class="lg:col-span-12 block min-h-48"></div>
+    }
 </section>

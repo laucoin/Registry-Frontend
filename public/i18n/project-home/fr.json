@@ -48,12 +48,17 @@
     "title": "Suivi opérationnel",
     "tabs": {
       "activities": "Activités en cours",
-      "idleMovements": "Mouvements sans activité",
-      "individualStatus": "Statut individuel",
-      "groupStatus": "Statut par groupe",
-      "vehicleStatus": "Statut des véhicules"
+      "otherMovements": "Autres mouvements en cours"
     },
-    "overdue": "Durée estimée dépassée",
-    "lastCommunication": "Dernière communication {{value}}"
+    "empty": {
+      "activities": {
+        "title": "Aucune activité en cours",
+        "message": "Aucun mouvement lié à une activité n'est en cours."
+      },
+      "otherMovements": {
+        "title": "Aucun autre mouvement en cours",
+        "message": "Aucun mouvement sans activité n'est en cours."
+      }
+    }
   }
 }
