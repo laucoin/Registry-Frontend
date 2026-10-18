@@ -236,6 +236,19 @@ describe( 'SessionFacade', () => {
         } )
     } )
 
+    describe( 'fetchCurrentUser', () => {
+        it( 'leaves the redirection to login to the interceptor when the visitor is not signed in', () => {
+            // Arrange
+            fetchCurrentUser.mockReturnValue( failing( { status: 401, title: 'Unauthorized', message: 'Unauthorized' } as ErrorModel ) )
+
+            // Act
+            facade.fetchCurrentUser().subscribe()
+
+            // Assert
+            expect( setGlobalError ).not.toHaveBeenCalled()
+        } )
+    } )
+
     describe( 'fetchToken', () => {
         it( 'loads the user then goes back to the remembered page', () => {
             // Arrange

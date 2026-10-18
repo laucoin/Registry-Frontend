@@ -44,6 +44,8 @@ import { ProjectModel } from '@shared/models/model/project.model'
 import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
 import { ThemeChoiceModel } from '@shared/models/model/theme-choice.model'
 
+const UNAUTHORIZED_STATUS: number = 401
+
 /**
  * Purpose: Public entry point for the signed-in user and its session: sign-in and sign-out, current user, selected project, theme and language preferences.
  * Scope: Exposes the session store as signals, calls the backend for the session flows and applies the user's theme and language to the shell.
@@ -238,13 +240,19 @@ export class SessionFacade {
     }
 
     private globalError$(error: ErrorModel): Observable<never> {
-        this.uiFacade.setGlobalError(error)
+        this.showGlobalError(error)
         return EMPTY
     }
 
     private globalErrorCompleted$(error: ErrorModel): Observable<void> {
-        this.uiFacade.setGlobalError(error)
+        this.showGlobalError(error)
         return of(undefined)
+    }
+
+    private showGlobalError(error: ErrorModel): void {
+        if (error.status !== UNAUTHORIZED_STATUS) {
+            this.uiFacade.setGlobalError(error)
+        }
     }
 
     private languageChangeFailed$(error: ErrorModel): Observable<never> {
