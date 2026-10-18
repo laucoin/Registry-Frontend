@@ -1,7 +1,10 @@
 <ng-template #row let-participant>
-    <sgdf-list-item>
+    <sgdf-list-item [disabled]="!participant.visible">
         <sgdf-avatar slot="start" variant="primary" aria-hidden="true" [initials]="initials(participant)"/>
         <span class="block truncate" [attr.title]="fullName(participant)">{{ fullName(participant) }}</span>
+        @if (!participant.visible) {
+            <span class="sr-only">({{ 'participants.visible.false' | transloco }})</span>
+        }
         <span slot="description" class="flex flex-wrap items-center gap-x-3">
             @if (participant.groups?.[0]; as group) {
                 @if (otherGroups(participant) > 0) {
@@ -26,9 +29,6 @@
             }
         </span>
         <span slot="end" class="flex flex-wrap items-center gap-2">
-            @if (!participant.visible) {
-                <sgdf-tag appearance="outlined" pill>{{ 'participants.visible.false' | transloco }}</sgdf-tag>
-            }
             <sgdf-tag appearance="soft" pill [variant]="statusVariant(participant)">{{ participant.status.label }}</sgdf-tag>
             @if (actions.primaryFor(participant, groupId()); as primary) {
                 <sgdf-button size="small" appearance="outlined" variant="primary"
