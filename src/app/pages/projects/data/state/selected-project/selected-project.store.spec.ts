@@ -12,6 +12,7 @@ import { AlertStatusEnum } from '@shared/models/enumeration/alert-status.enum'
 import { AlertModel } from '@shared/models/model/alert.model'
 import { MovementContentModel } from '@shared/models/model/movement-content.model'
 import { MovementModel } from '@shared/models/model/movement.model'
+import { PlannedMovementModel } from '@shared/models/model/planned-movement.model'
 import { ParticipantModel } from '@shared/models/model/participant.model'
 
 describe( 'SelectedProjectStore', () => {
@@ -23,6 +24,8 @@ describe( 'SelectedProjectStore', () => {
     let findAlerts: Mock<AlertApi['findAlerts']>
     let findParticipantsBirthdays: Mock<ParticipantApi['findParticipantsBirthdays']>
     let findParticipants: Mock<ParticipantApi['findParticipants']>
+    let findPlannedArrivals: Mock<MovementApi['findPlannedArrivals']>
+    let findPlannedDepartures: Mock<MovementApi['findPlannedDepartures']>
     let notify: Mock<(message: unknown) => void>
 
     beforeEach( () => {
@@ -33,11 +36,13 @@ describe( 'SelectedProjectStore', () => {
         findAlerts = vi.fn()
         findParticipantsBirthdays = vi.fn()
         findParticipants = vi.fn()
+        findPlannedArrivals = vi.fn()
+        findPlannedDepartures = vi.fn()
         notify = vi.fn()
         TestBed.configureTestingModule( {
             providers: [
                 SelectedProjectStore,
-                { provide: MovementApi, useValue: { findMovements, findMovementsContents, findParticipantsStatus, findVehiclesStatus } },
+                { provide: MovementApi, useValue: { findPlannedArrivals, findPlannedDepartures, findMovements, findMovementsContents, findParticipantsStatus, findVehiclesStatus } },
                 { provide: AlertApi, useValue: { findAlerts } },
                 { provide: ParticipantApi, useValue: { findParticipantsBirthdays, findParticipants } },
                 { provide: ErrorReporter, useValue: { notify } },
@@ -117,6 +122,32 @@ describe( 'SelectedProjectStore', () => {
         // Assert
         expect( store.overdue.error()?.summary ).toBe( 'Title' )
         expect( store.overdue.loading() ).toBe( false )
+    } )
+
+    it( 'stores the planned arrivals and departures apart from each other', () => {
+        // Arrange
+        findPlannedArrivals.mockReturnValue( of( [ { poolName: 'Arriving' } as PlannedMovementModel ] ) )
+        findPlannedDepartures.mockReturnValue( of( [ { poolName: 'Leaving' } as PlannedMovementModel, { poolName: 'Leaving too' } as PlannedMovementModel ] ) )
+
+        // Act
+        store.fetchPlannedArrivals( 'p1' )
+        store.fetchPlannedDepartures( 'p1' )
+
+        // Assert
+        expect( store.arrivals.element() ).toHaveLength( 1 )
+        expect( store.departures.element() ).toHaveLength( 2 )
+    } )
+
+    it( 'keeps a failed planned arrivals fetch in its own block', () => {
+        // Arrange
+        findPlannedArrivals.mockReturnValue( failing( ERROR_500 ) )
+
+        // Act
+        store.fetchPlannedArrivals( 'p1' )
+
+        // Assert
+        expect( store.arrivals.error()?.summary ).toBe( 'Title' )
+        expect( store.departures.error() ).toBeUndefined()
     } )
 
     it( 'stores the birthdays of the participants', () => {

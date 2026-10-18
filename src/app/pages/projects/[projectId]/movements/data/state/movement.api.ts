@@ -37,6 +37,9 @@ import { MovementContentMapper } from '@shared/mappers/movement-content.mapper'
 import { MovementParticipantsAndGroupsMapper } from '@shared/mappers/movement-participants-and-groups.mapper'
 import { MovementReasonMapper } from '@shared/mappers/movement-reason.mapper'
 import { PageMapper } from '@shared/mappers/page.mapper'
+import { PlannedMovementMapper } from '@shared/mappers/planned-movement.mapper'
+import { PlannedMovementResponseDto } from '@shared/models/dto/response/planned-movement.response.dto'
+import { PlannedMovementModel } from '@shared/models/model/planned-movement.model'
 import { PairMapper } from '@shared/mappers/pair.mapper'
 import { ProjectStatusMapper } from '@shared/mappers/project-status.mapper'
 import { VehicleMapper } from '@shared/mappers/vehicle.mapper'
@@ -127,6 +130,20 @@ export class MovementApi extends GenericProjectApi {
             ).toString()}`,
         ).pipe(
             map( (dto: PageResponseDto<CommunicationResponseDto>): PageModel<CommunicationModel> => PageMapper.toModel( dto, CommunicationMapper.toModel ) ),
+        )
+    }
+
+    public findPlannedArrivals(projectId: string | undefined): Observable<PlannedMovementModel[]> {
+        return this.findPlannedMovements(projectId, 'arrivals')
+    }
+
+    public findPlannedDepartures(projectId: string | undefined): Observable<PlannedMovementModel[]> {
+        return this.findPlannedMovements(projectId, 'departures')
+    }
+
+    private findPlannedMovements(projectId: string | undefined, kind: 'arrivals' | 'departures'): Observable<PlannedMovementModel[]> {
+        return this.http.get<PlannedMovementResponseDto[]>(`${this.buildRequestBaseUrl(projectId)}/planned/${kind}`).pipe(
+            map( (dtos: PlannedMovementResponseDto[]): PlannedMovementModel[] => dtos.map( PlannedMovementMapper.toModel ) ),
         )
     }
 

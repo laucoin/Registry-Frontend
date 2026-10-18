@@ -12,9 +12,11 @@
     @if (hasAlertOption()) {
         <app-project-active-alert class="lg:col-span-12 block"/>
     }
-    <app-project-upcoming-arrival class="lg:col-span-4 block"/>
-    <app-project-upcoming-departure class="lg:col-span-4 block"/>
-    <app-project-birthday class="lg:col-span-4 block"/>
+    @if (canSeePlannedMovements()) {
+        <app-project-upcoming-arrival class="lg:col-span-4 block"/>
+        <app-project-upcoming-departure class="lg:col-span-4 block"/>
+    }
+    <app-project-birthday [class]="canSeePlannedMovements() ? 'lg:col-span-4 block' : 'lg:col-span-12 block'"/>
     @defer (on viewport) {
         <app-project-operational-monitoring class="lg:col-span-12 block"/>
     } @placeholder {

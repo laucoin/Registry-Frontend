@@ -25,6 +25,8 @@ describe( 'SelectedProjectFacade', () => {
     let findParticipantsStatus: Mock<MovementApi['findParticipantsStatus']>
     let findVehiclesStatus: Mock<MovementApi['findVehiclesStatus']>
     let findParticipantsBirthdays: Mock<ParticipantApi['findParticipantsBirthdays']>
+    let findPlannedArrivals: Mock<MovementApi['findPlannedArrivals']>
+    let findPlannedDepartures: Mock<MovementApi['findPlannedDepartures']>
     let findAlerts: Mock<AlertApi['findAlerts']>
     let selectedProject: WritableSignal<ProjectModel | undefined>
 
@@ -33,13 +35,15 @@ describe( 'SelectedProjectFacade', () => {
         findParticipantsStatus = vi.fn( () => of( { guests: 1 } as unknown as ProjectStatusModel ) )
         findVehiclesStatus = vi.fn( () => of( { total: 1 } as unknown as VehicleStatusModel ) )
         findParticipantsBirthdays = vi.fn( () => of( [] ) )
+        findPlannedArrivals = vi.fn( () => of( [] ) )
+        findPlannedDepartures = vi.fn( () => of( [] ) )
         findAlerts = vi.fn( () => of( pageOf<AlertModel>( [] ) ) )
         selectedProject = signal<ProjectModel | undefined>( { id: 'p1', options: [] } as unknown as ProjectModel )
         TestBed.configureTestingModule( {
             providers: [
                 SelectedProjectFacade,
                 SelectedProjectStore,
-                { provide: MovementApi, useValue: { findMovements, findParticipantsStatus, findVehiclesStatus, findMovementsContents: vi.fn( () => of( [] ) ) } },
+                { provide: MovementApi, useValue: { findPlannedArrivals, findPlannedDepartures, findMovements, findParticipantsStatus, findVehiclesStatus, findMovementsContents: vi.fn( () => of( [] ) ) } },
                 { provide: AlertApi, useValue: { findAlerts } },
                 { provide: ParticipantApi, useValue: { findParticipantsBirthdays, findParticipants: vi.fn( () => of( pageOf<ParticipantModel>( [ { id: 'pa1' } as ParticipantModel ] ) ) ) } },
                 { provide: SessionFacade, useValue: { currentProjectId: signal( 'p1' ), selectedProject, selectedProjectHasOption: projectOptionChecker( selectedProject ) } },
@@ -74,6 +78,22 @@ describe( 'SelectedProjectFacade', () => {
         expect( facade.overdueParticipantsPage()?.content ).toHaveLength( 1 )
         expect( facade.overdueParticipantsPageLoading() ).toBe( false )
         expect( facade.overdueParticipantsPageError() ).toBeUndefined()
+    } )
+
+    it( 'loads the planned arrivals and departures of the selected project on demand', () => {
+        // Arrange
+        const expectedProjectId: string = 'p1'
+
+        // Act
+        facade.fetchPlannedArrivals()
+        facade.fetchPlannedDepartures()
+
+        // Assert
+        expect( findPlannedArrivals ).toHaveBeenCalledWith( expectedProjectId )
+        expect( findPlannedDepartures ).toHaveBeenCalledWith( expectedProjectId )
+        expect( facade.plannedArrivals() ).toEqual( [] )
+        expect( facade.plannedDeparturesLoading() ).toBe( false )
+        expect( facade.plannedArrivalsError() ).toBeUndefined()
     } )
 
     it( 'loads the birthdays of the selected project on demand', () => {

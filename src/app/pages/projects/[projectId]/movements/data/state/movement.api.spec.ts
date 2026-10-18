@@ -1,6 +1,6 @@
 import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
 import { ApiCase, describeApi, expectMapped, expectMappedList, expectMappedPage, PAGE_QUERY } from '@shared/helpers/testing/api-test.helper'
-import { COMMUNICATION_DTO, GROUP_DTO, MOVEMENT_DTO, PARTICIPANT_DTO, VEHICLE_DTO, WHEN, pageDto } from '@shared/helpers/testing/response-fixtures'
+import { COMMUNICATION_DTO, GROUP_DTO, MOVEMENT_DTO, PARTICIPANT_DTO, PLANNED_MOVEMENT_DTO, VEHICLE_DTO, WHEN, pageDto } from '@shared/helpers/testing/response-fixtures'
 
 const BASE: string = '/api/v2/projects/p1/movements'
 const PARAMS: never = { resetSearch: false, isCurrent: false } as never
@@ -19,6 +19,10 @@ const CASES: ApiCase<MovementApi>[] = [
         call: (api: MovementApi) => api.findMovementCommunications( 'p1', 'm1', 0, 10, PARAMS ), response: pageDto( [ COMMUNICATION_DTO ] ), verify: expectMappedPage },
     { name: 'finds the status of the participants', method: 'GET', url: `${BASE}/participants/status`,
         call: (api: MovementApi) => api.findParticipantsStatus( 'p1' ), response: { registered: { presentMinors: 1, presentMajors: 2, absentMinors: 3, absentMajors: 4 }, guests: 5, lastRefresh: WHEN }, verify: expectMapped },
+    { name: 'finds the planned arrivals of the day', method: 'GET', url: `${BASE}/planned/arrivals`,
+        call: (api: MovementApi) => api.findPlannedArrivals( 'p1' ), response: [ PLANNED_MOVEMENT_DTO ], verify: expectMappedList },
+    { name: 'finds the planned departures of the day', method: 'GET', url: `${BASE}/planned/departures`,
+        call: (api: MovementApi) => api.findPlannedDepartures( 'p1' ), response: [ PLANNED_MOVEMENT_DTO ], verify: expectMappedList },
     { name: 'finds the status of the vehicles', method: 'GET', url: `${BASE}/vehicles/status`,
         call: (api: MovementApi) => api.findVehiclesStatus( 'p1' ), response: { present: 1, absent: 2, lastRefresh: WHEN }, verify: expectMapped },
     { name: 'finds a movement by id', method: 'GET', url: `${BASE}/m1`,

@@ -1,4 +1,5 @@
 import { ElementRequestInformationModel } from '@shared/models/model/element-request-information.model'
+import { PlannedMovementModel } from '@shared/models/model/planned-movement.model'
 import { SectionErrorsState } from '@shared/models/model/section-errors-state.model'
 import { PageRequestInformationModel } from '@shared/models/model/page-request-information.model'
 import { NotificationModel } from '@shared/models/model/notification.model'
@@ -27,6 +28,8 @@ export interface SelectedProjectStoreModel extends SectionErrorsState {
     alerts: PageRequestInformationModel<AlertPageParamsModel, AlertModel>
     overdue: PageRequestInformationModel<ParticipantPageParamsModel, ParticipantModel>
     birthdays: ElementRequestInformationModel<ParticipantModel[]>
+    arrivals: ElementRequestInformationModel<PlannedMovementModel[]>
+    departures: ElementRequestInformationModel<PlannedMovementModel[]>
     isCurrent: {
         withoutActivity: PageRequestInformationModel<MovementPageParamsModel, MovementModel>
         withActivity: PageRequestInformationModel<MovementPageParamsModel, MovementModel>

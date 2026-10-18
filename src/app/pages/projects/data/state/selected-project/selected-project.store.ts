@@ -73,6 +73,8 @@ const defaultSelectedProjectStore: SelectedProjectStoreModel = {
         sort: 'endAvailability',
     } ),
     birthdays: { element: undefined, loading: false, error: undefined },
+    arrivals: { element: undefined, loading: false, error: undefined },
+    departures: { element: undefined, loading: false, error: undefined },
     isCurrent: {
         withoutActivity: currentMovementsBlock( false ),
         withActivity: currentMovementsBlock( true ),
@@ -177,6 +179,8 @@ export const SelectedProjectStore = signalStore(
     withMethods( (store, movementApi = inject( MovementApi ), participantApi = inject( ParticipantApi )) => ({
         fetchParticipantsStatus: statusFetcher<ProjectStatusModel>( store, 'participants', (projectId: string | undefined) => movementApi.findParticipantsStatus( projectId ) ),
         fetchVehiclesStatus: statusFetcher<VehicleStatusModel>( store, 'vehicles', (projectId: string | undefined) => movementApi.findVehiclesStatus( projectId ) ),
+        fetchPlannedArrivals: elementFetcher( store, 'arrivals', (projectId: string | undefined) => movementApi.findPlannedArrivals( projectId ) ),
+        fetchPlannedDepartures: elementFetcher( store, 'departures', (projectId: string | undefined) => movementApi.findPlannedDepartures( projectId ) ),
         fetchParticipantsBirthdays: elementFetcher( store, 'birthdays', (projectId: string | undefined) => participantApi.findParticipantsBirthdays( projectId ) ),
         fetchCurrentMovementsWithoutActivityContents: currentMovementsContents( store, 'withoutActivity', movementApi ),
         fetchCurrentMovementsWithActivityContents: currentMovementsContents( store, 'withActivity', movementApi ),

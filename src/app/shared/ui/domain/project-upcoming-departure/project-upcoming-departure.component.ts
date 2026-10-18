@@ -1,23 +1,19 @@
-import '@sgdf/ui/table'
-import '@sgdf/ui/table-row'
-import '@sgdf/ui/table-cell'
-import '@sgdf/ui/icon'
-import '@sgdf/ui/tag'
-import '@sgdf/ui/button'
-import '@sgdf/ui/list'
-import '@sgdf/ui/list-item'
-import '@sgdf/ui/avatar'
-import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { provideTranslocoScope, TranslocoPipe } from "@jsverse/transloco";
+import { ChangeDetectionStrategy, Component, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit, Signal } from '@angular/core';
+import { provideTranslocoScope } from "@jsverse/transloco";
+import { SelectedProjectFacade } from '@pages/projects/data/state/selected-project/selected-project.facade';
+import { NotificationModel } from '@shared/models/model/notification.model';
+import { PlannedMovementModel } from '@shared/models/model/planned-movement.model';
+import { PlannedMovementCardComponent } from '@shared/ui/domain/planned-movement-card/planned-movement-card.component';
 
 /**
- * Purpose: Lists the departures expected today on the project.
- * Scope: Displays each departure with its place and time.
- * Limits: Static placeholder values until the data is plugged; no navigation yet.
+ * Purpose: Lists the departures planned today on the project.
+ * Scope: Loads the planned departures of the selected project and gives them to the planned movement card.
+ * Limits: Reads the selected project facade only; it shows no more than the card shows.
  */
 @Component({
+	changeDetection: ChangeDetectionStrategy.OnPush,
 	imports: [
-		TranslocoPipe
+		PlannedMovementCardComponent
 	],
 	selector: 'app-project-upcoming-departure',
 	schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -25,10 +21,18 @@ import { provideTranslocoScope, TranslocoPipe } from "@jsverse/transloco";
 	styleUrl: './project-upcoming-departure.component.css',
 	templateUrl: './project-upcoming-departure.component.html',
 })
-export class ProjectUpcomingDepartureComponent {
-	protected readonly departures: { name: string, detail: string, place: string, time: string }[] = [
-		{ name: 'Camille Renaud', detail: 'Inscrite · responsable santé', place: 'Poste central', time: '09:41' },
-		{ name: 'Théo Marchand', detail: 'Inscrit · Caravelle Paris', place: 'Porte ouest', time: '10:05' },
-		{ name: 'Patrouille Lynx', detail: '7 personnes · 1 véhicule', place: 'Porte sud', time: '11:20' },
-	]
+export class ProjectUpcomingDepartureComponent implements OnInit {
+	private readonly facade: SelectedProjectFacade = inject(SelectedProjectFacade)
+
+	protected readonly movements: Signal<PlannedMovementModel[] | undefined> = this.facade.plannedDepartures
+	protected readonly loading: Signal<boolean> = this.facade.plannedDeparturesLoading
+	protected readonly error: Signal<NotificationModel | undefined> = this.facade.plannedDeparturesError
+
+	public ngOnInit(): void {
+		this.reload()
+	}
+
+	protected reload(): void {
+		this.facade.fetchPlannedDepartures()
+	}
 }

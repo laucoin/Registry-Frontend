@@ -12,6 +12,7 @@ import { SelectedProjectStore } from '@pages/projects/data/state/selected-projec
 import { ParticipantModel } from '@shared/models/model/participant.model'
 import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
 import { AlertModel } from '@shared/models/model/alert.model'
+import { PlannedMovementModel } from '@shared/models/model/planned-movement.model'
 import { CumulativePageHelper } from '@shared/helpers/store/cumulative-page.helper'
 
 /**
@@ -80,6 +81,18 @@ export class SelectedProjectFacade extends GenericFacade {
             DateHelper.buildDate( this.store.isCurrent.withActivity.params.to() ),
         )
 
+    public readonly plannedArrivals: Signal<PlannedMovementModel[] | undefined> = this.store.arrivals.element
+
+    public readonly plannedArrivalsLoading: Signal<boolean> = this.store.arrivals.loading
+
+    public readonly plannedArrivalsError: Signal<NotificationModel | undefined> = this.store.arrivals.error
+
+    public readonly plannedDepartures: Signal<PlannedMovementModel[] | undefined> = this.store.departures.element
+
+    public readonly plannedDeparturesLoading: Signal<boolean> = this.store.departures.loading
+
+    public readonly plannedDeparturesError: Signal<NotificationModel | undefined> = this.store.departures.error
+
     public readonly overdueParticipantsPage: Signal<PageModel<ParticipantModel> | undefined> = this.store.overdue.element
 
     public readonly overdueParticipantsPageLoading: Signal<boolean> = this.store.overdue.loading
@@ -103,6 +116,14 @@ export class SelectedProjectFacade extends GenericFacade {
 
     public fetchOverdueParticipantsPage (page: number | undefined, size: number | undefined): void {
         this.store.fetchOverduePage( { projectId: this.selectedProjectId(), page: page, size: size } )
+    }
+
+    public fetchPlannedArrivals (): void {
+        this.store.fetchPlannedArrivals( this.selectedProjectId() )
+    }
+
+    public fetchPlannedDepartures (): void {
+        this.store.fetchPlannedDepartures( this.selectedProjectId() )
     }
 
     public fetchParticipantsStatus (): void {

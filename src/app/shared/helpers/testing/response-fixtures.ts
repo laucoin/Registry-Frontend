@@ -1,4 +1,5 @@
 import { ActivityResponseDto } from '@shared/models/dto/response/activity.response.dto'
+import { PlannedMovementResponseDto } from '@shared/models/dto/response/planned-movement.response.dto'
 import { AlertResponseDto } from '@shared/models/dto/response/alert.response.dto'
 import { CommunicationResponseDto } from '@shared/models/dto/response/communication.response.dto'
 import { GroupResponseDto } from '@shared/models/dto/response/group.response.dto'
@@ -79,6 +80,11 @@ export const INVITATION_DTO: UserInvitationResponseDto = {
     ...GENERIC, id: 'pp1', project: { id: 'p1', name: 'Camp', begin: undefined, end: undefined },
     role: { label: 'Chief', value: 'CHIEF' }, availabilityStatus: { label: 'x', value: 'AVAILABLE' as never }, status: { label: 'y', value: 'INVITED' as never },
     startAccess: undefined, endAccess: undefined,
+}
+
+export const PLANNED_MOVEMENT_DTO: PlannedMovementResponseDto = {
+    type: { label: 'In', value: 'IN' as never }, reason: undefined, contentType: 'REGISTERED' as never,
+    plannedAt: { date: '2026-01-05', time: '10:32:00+01:00' }, poolName: 'Wolves', participants: [ PARTICIPANT_DTO ],
 }
 
 export function pageDto<T> (content: T[]): PageResponseDto<T> {
