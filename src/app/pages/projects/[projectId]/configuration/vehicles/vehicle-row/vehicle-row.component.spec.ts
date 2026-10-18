@@ -35,7 +35,6 @@ describe('VehicleRowComponent', () => {
     let fixture: ComponentFixture<HostComponent>
 
     const text = (selector: string): string | undefined => fixture.nativeElement.querySelector(selector)?.textContent?.trim()
-    const tags = (): string[] => Array.from<HTMLElement>(fixture.nativeElement.querySelectorAll('sgdf-tag')).map((tag: HTMLElement): string => tag.textContent!.trim())
 
     async function render(element: VehicleModel): Promise<void> {
         fixture.componentInstance.element.set(element)
@@ -68,15 +67,28 @@ describe('VehicleRowComponent', () => {
         expect(description).toContain('Renault Trafic')
     })
 
-    it('should flag a hidden vehicle', async () => {
+    it('should grey out a hidden vehicle and announce it to assistive technologies', async () => {
         // Arrange
         await render({ ...ELEMENT, visible: false } as unknown as VehicleModel)
 
         // Act
-        const shown: string[] = tags()
+        const row: HTMLElement & { disabled: boolean } = fixture.nativeElement.querySelector('sgdf-list-item')
+        const notice: string | undefined = text('sgdf-list-item > .sr-only')
 
         // Assert
-        expect(shown).toContain('fr.vehicles.visible.false')
+        expect(row.disabled).toBe(true)
+        expect(notice).toBe('(fr.vehicles.visible.false)')
+    })
+
+    it('should keep a visible vehicle enabled', async () => {
+        // Arrange
+        await render(ELEMENT)
+
+        // Act
+        const row: HTMLElement & { disabled: boolean } = fixture.nativeElement.querySelector('sgdf-list-item')
+
+        // Assert
+        expect(row.disabled).toBe(false)
     })
 
     it('should show the availability dates of the vehicle', async () => {
