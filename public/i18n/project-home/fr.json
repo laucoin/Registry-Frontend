@@ -21,6 +21,10 @@
     "title": "Présences à régulariser",
     "seeAll": "Voir toutes les présences à régulariser",
     "empty": "Aucune présence à régulariser",
+    "dialogEmpty": {
+      "title": "Aucune présence à régulariser",
+      "message": "Toutes les présences sont à jour : aucun participant n'a dépassé sa fin de présence prévue."
+    },
     "plannedEnd": "Fin prévue le {{date}}",
     "presentSince": "Présent depuis {{duration}}",
     "seeRemaining": {

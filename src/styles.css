@@ -40,3 +40,15 @@ sgdf-menu-item {
 sgdf-drawer.drawer-sheet {
     --size: calc(100dvh - 3rem);
 }
+
+sgdf-dialog.dialog-fullscreen {
+    --width: 100vw;
+}
+
+sgdf-dialog.dialog-fullscreen::part(dialog) {
+    width: 100vw;
+    max-width: 100vw;
+    height: 100dvh;
+    max-height: 100dvh;
+    border-radius: 0;
+}

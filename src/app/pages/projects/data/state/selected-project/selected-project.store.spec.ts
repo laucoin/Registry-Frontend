@@ -124,6 +124,21 @@ describe( 'SelectedProjectStore', () => {
         expect( store.overdue.loading() ).toBe( false )
     } )
 
+    it( 'lists all the participants to regularize apart from the few shown on the dashboard, batch after batch', () => {
+        // Arrange
+        findParticipants.mockReturnValue( of( pageOf<ParticipantModel>( [ { id: 'pa1' } as ParticipantModel ] ) ) )
+        store.fetchOverduePage( { projectId: 'p1', page: 0, size: 5 } )
+        findParticipants.mockReturnValue( of( { ...pageOf<ParticipantModel>( [ { id: 'pa2' } as ParticipantModel ] ), page: 1 } ) )
+
+        // Act
+        store.fetchOverdueListPage( { projectId: 'p1', page: undefined, size: 20 } )
+        store.fetchOverdueListPage( { projectId: 'p1', page: 1, size: 20 } )
+
+        // Assert
+        expect( store.overdueList.element()?.content.map( (participant: ParticipantModel): string => participant.id ) ).toEqual( [ 'pa2' ] )
+        expect( store.overdue.element()?.content ).toHaveLength( 1 )
+    } )
+
     it( 'stores the planned arrivals and departures apart from each other', () => {
         // Arrange
         findPlannedArrivals.mockReturnValue( of( [ { poolName: 'Arriving' } as PlannedMovementModel ] ) )

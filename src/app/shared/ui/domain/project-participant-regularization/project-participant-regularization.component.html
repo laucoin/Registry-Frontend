@@ -28,24 +28,8 @@
                 <p class="m-4 text-sm opacity-80">{{ 'projectHome.participantRegularization.empty' | transloco }}</p>
             } @else if (total() !== undefined) {
                 <sgdf-list appearance="text" [label]="'projectHome.participantRegularization.title' | transloco">
-                    @for (row of rows(); track row.participant.id) {
-                        <sgdf-list-item>
-                            <sgdf-avatar slot="start" variant="danger" aria-hidden="true">
-                                <sgdf-icon slot="icon" name="clock" library="solid"/>
-                            </sgdf-avatar>
-                            {{ row.name }}
-                            <span slot="description" class="text-xs">
-                                @if (row.participant.endAvailability; as end) {
-                                    {{ 'projectHome.participantRegularization.plannedEnd' | transloco: { date: (end | customDateFormat) } }}
-                                }
-                                @if (row.participant.endAvailability && row.since) {
-                                    ·
-                                }
-                                @if (row.since; as since) {
-                                    {{ 'projectHome.participantRegularization.presentSince' | transloco: { duration: (since | intervalFormat) } }}
-                                }
-                            </span>
-                        </sgdf-list-item>
+                    @for (participant of participants(); track participant.id) {
+                        <sgdf-list-item appRegularizationRow [participant]="participant"/>
                     }
                 </sgdf-list>
             }
@@ -54,7 +38,7 @@
 
     <sgdf-table-row>
         <sgdf-table-cell class="align-bottom">
-            <sgdf-button block size="small" appearance="text" [routerLink]="participantsLink()" [queryParams]="{ tab: 'individual', status: 'OVERDUE' }">
+            <sgdf-button block size="small" appearance="text" (click)="listOpen.set(true)">
                 @if (remaining() > 0) {
                     {{ 'projectHome.participantRegularization.seeRemaining' | pluralTranslation: remaining() | transloco: { count: remaining() } }}
                 } @else {
@@ -64,3 +48,5 @@
         </sgdf-table-cell>
     </sgdf-table-row>
 </sgdf-table>
+
+<app-overdue-participants-dialog [(open)]="listOpen"/>
