@@ -48,11 +48,6 @@
                         </sgdf-list-item>
                     }
                 </sgdf-list>
-                @if (remaining() > 0) {
-                    <p class="m-0 px-4 pb-3 text-xs opacity-80">
-                        {{ 'projectHome.participantRegularization.more' | pluralTranslation: remaining() | transloco: { count: remaining() } }}
-                    </p>
-                }
             }
         </sgdf-table-cell>
     </sgdf-table-row>
@@ -60,7 +55,11 @@
     <sgdf-table-row>
         <sgdf-table-cell class="align-bottom">
             <sgdf-button block size="small" appearance="text" [routerLink]="participantsLink()" [queryParams]="{ tab: 'individual', status: 'OVERDUE' }">
-                {{ 'projectHome.participantRegularization.seeAll' | transloco }}
+                @if (remaining() > 0) {
+                    {{ 'projectHome.participantRegularization.seeRemaining' | pluralTranslation: remaining() | transloco: { count: remaining() } }}
+                } @else {
+                    {{ 'projectHome.participantRegularization.seeAll' | transloco }}
+                }
             </sgdf-button>
         </sgdf-table-cell>
     </sgdf-table-row>

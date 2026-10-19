@@ -16,21 +16,27 @@
     }
 
     <sgdf-table-row>
-        <sgdf-table-cell class="grid grid-cols-1 gap-3 md:grid-cols-3">
+        <sgdf-table-cell>
             @if (error(); as failure) {
-                <app-section-error class="md:col-span-3" [error]="failure" [retrying]="loading()" (retry)="reload()"/>
+                <app-section-error [error]="failure" [retrying]="loading()" (retry)="reload()"/>
             }
 
             @if (loading() && total() === undefined) {
                 <span class="sr-only" role="status">{{ 'global.list.loading' | transloco }}</span>
-                @for (card of skeletonCards; track card) {
-                    <sgdf-skeleton shape="rounded" effect="pulse" aria-hidden="true" style="height: 7rem"/>
-                }
+                <div class="flex gap-3 overflow-x-auto">
+                    @for (card of skeletonCards; track card) {
+                        <sgdf-skeleton class="w-72 shrink-0" shape="rounded" effect="pulse" aria-hidden="true" style="height: 7rem"/>
+                    }
+                </div>
             } @else if (total() === 0) {
-                <p class="m-0 text-sm opacity-80 md:col-span-3">{{ 'projectHome.activeAlert.empty' | transloco }}</p>
+                <p class="m-0 text-sm opacity-80">{{ 'projectHome.activeAlert.empty' | transloco }}</p>
             } @else {
+                <div class="flex items-stretch gap-3 overflow-x-auto pb-2" data-testid="alerts-row">
                 @for (card of cards(); track card.alert.id) {
-                    <sgdf-callout [variant]="card.variant" [title]="card.alert.title">
+                    <sgdf-callout class="w-72 shrink-0 [&::part(base)]:h-full [&::part(content)]:flex [&::part(content)]:self-stretch [&::part(content)]:flex-1 [&::part(content)]:flex-col [&::part(message)]:flex [&::part(message)]:flex-1 [&::part(message)]:flex-col" [variant]="card.variant" [title]="untitled(card.alert) ? ('projectHome.activeAlert.untitled' | transloco) : card.alert.title">
+                        @if (untitled(card.alert)) {
+                            <span slot="title" class="font-normal italic" style="color: var(--sgdf-color-text-light)">{{ 'projectHome.activeAlert.untitled' | transloco }}</span>
+                        }
                         <p>
                             {{ card.alert.criticality?.label }}
                             @if (card.age; as age) {
@@ -41,7 +47,7 @@
                             }
                         </p>
                         @if (card.alert.lastCommunication; as last) {
-                            <p>
+                            <p class="line-clamp-3" [title]="last.message ?? ''">
                                 {{ 'projectHome.activeAlert.lastCommunication' | transloco: { date: (last.dateTime | dateFormat: 'datetime') } }}
                                 @if (last.message) {
                                     · {{ last.message }}
@@ -49,30 +55,27 @@
                             </p>
                         }
                         @if (canCommunicate()) {
-                            <sgdf-button size="small" appearance="outlined" [variant]="card.variant" (click)="communicating.set(card.alert)">
+                            <sgdf-button class="mt-auto self-start" size="small" appearance="outlined" [variant]="card.variant" (click)="communicating.set(card.alert)">
                                 <sgdf-icon slot="prefix" name="comments" library="regular"/>
                                 {{ 'projectHome.communicate' | transloco }}
-                                <span class="sr-only">({{ card.alert.title }})</span>
+                                <span class="sr-only">({{ untitled(card.alert) ? ('projectHome.activeAlert.untitled' | transloco) : card.alert.title }})</span>
                             </sgdf-button>
                         }
                     </sgdf-callout>
                 }
+                </div>
             }
         </sgdf-table-cell>
     </sgdf-table-row>
 
-    @if (remaining() > 0) {
-        <sgdf-table-row>
-            <sgdf-table-cell class="text-xs opacity-80">
-                {{ 'projectHome.activeAlert.more' | pluralTranslation: remaining() | transloco: { count: remaining() } }}
-            </sgdf-table-cell>
-        </sgdf-table-row>
-    }
-
     <sgdf-table-row>
         <sgdf-table-cell>
             <sgdf-button block size="small" appearance="text" data-testid="alerts-link" [routerLink]="alertsLink()">
-                {{ 'projectHome.activeAlert.seeAll' | transloco }}
+                @if (remaining() > 0) {
+                    {{ 'projectHome.activeAlert.seeRemaining' | pluralTranslation: remaining() | transloco: { count: remaining() } }}
+                } @else {
+                    {{ 'projectHome.activeAlert.seeAll' | transloco }}
+                }
             </sgdf-button>
         </sgdf-table-cell>
     </sgdf-table-row>

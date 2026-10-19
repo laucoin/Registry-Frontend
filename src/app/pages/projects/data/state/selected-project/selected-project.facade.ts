@@ -96,6 +96,14 @@ export class SelectedProjectFacade extends GenericFacade {
 
     public readonly overdueParticipantsPageError: Signal<NotificationModel | undefined> = this.store.overdue.error
 
+    public readonly overdueParticipantsListPage: Signal<PageModel<ParticipantModel> | undefined> = this.store.overdueList.element
+
+    public readonly overdueParticipantsListLoading: Signal<boolean> = this.store.overdueList.loading
+
+    public readonly overdueParticipantsListSilentLoading: Signal<boolean> = this.store.overdueList.silentLoading
+
+    public readonly overdueParticipantsListError: Signal<NotificationModel | undefined> = this.store.overdueList.error
+
     public readonly currentAlertsPageLoading: Signal<boolean> = this.store.alerts.loading
 
     public readonly currentAlertsPageError: Signal<NotificationModel | undefined> = this.store.alerts.error
@@ -104,6 +112,10 @@ export class SelectedProjectFacade extends GenericFacade {
 
     public fetchOverdueParticipantsPage (page: number | undefined, size: number | undefined): void {
         this.store.fetchOverduePage( { projectId: this.selectedProjectId(), page: page, size: size } )
+    }
+
+    public fetchOverdueParticipantsListPage (page: number | undefined, size: number | undefined): void {
+        this.store.fetchOverdueListPage( { projectId: this.selectedProjectId(), page: page, size: size } )
     }
 
     public fetchPlannedArrivals (): void {

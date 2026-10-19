@@ -38,10 +38,6 @@ describe('ProjectOperationalMonitoringComponent', () => {
 		await fixture.whenStable();
 	});
 
-	function showTab(name: string): void {
-		fixture.nativeElement.querySelector('sgdf-tab-group').dispatchEvent(new CustomEvent<{ name: string }>('sgdf-tab-show', { detail: { name } }));
-	}
-
 	it('should display the activities and the other movements tabs only', () => {
 		// Arrange
 		const selector: string = 'sgdf-tab';
@@ -53,42 +49,31 @@ describe('ProjectOperationalMonitoringComponent', () => {
 		expect(count).toBe(2);
 	});
 
-	it('should load the first batch of the activities at once, capped to ten', () => {
+	it('should load the first batch of every tab at once, capped to ten', () => {
 		// Arrange
 		const expected: unknown[] = [undefined, 10];
 
 		// Act
-		const requested: unknown[] = fetchWithActivity.mock.calls[0];
+		const requestedWith: unknown[] = fetchWithActivity.mock.calls[0];
+		const requestedWithout: unknown[] = fetchWithoutActivity.mock.calls[0];
 
 		// Assert
-		expect(requested).toEqual(expected);
-		expect(fetchWithoutActivity).not.toHaveBeenCalled();
+		expect(requestedWith).toEqual(expected);
+		expect(requestedWithout).toEqual(expected);
 	});
 
-	it('should load the other movements only when their tab is first shown', () => {
+	it('should render the list of every tab from the start', () => {
 		// Arrange
-		showTab('otherMovements');
+		const selector: string = 'app-list';
 
 		// Act
-		showTab('otherMovements');
+		const count: number = fixture.nativeElement.querySelectorAll(selector).length;
 
 		// Assert
-		expect(fetchWithoutActivity).toHaveBeenCalledTimes(1);
-		expect(fetchWithoutActivity).toHaveBeenCalledWith(undefined, 10);
+		expect(count).toBe(2);
 	});
 
-	it('should ignore the display of an unknown tab', () => {
-		// Arrange
-		const event: CustomEvent<{ name: string }> = new CustomEvent<{ name: string }>('sgdf-tab-show', { detail: { name: 'unknown' } });
-
-		// Act
-		fixture.nativeElement.querySelector('sgdf-tab-group').dispatchEvent(event);
-
-		// Assert
-		expect(fetchWithoutActivity).not.toHaveBeenCalled();
-	});
-
-	it('should display the total of a loaded tab in its badge and none for a tab not loaded', () => {
+	it('should display the total of a loaded tab in its badge and none for a tab not loaded yet', () => {
 		// Arrange
 		const badges: HTMLElement[] = Array.from(fixture.nativeElement.querySelectorAll('sgdf-badge'));
 
@@ -97,20 +82,6 @@ describe('ProjectOperationalMonitoringComponent', () => {
 
 		// Assert
 		expect(texts).toEqual(['6']);
-	});
-
-	it('should render the list of a tab only once it was shown', async () => {
-		// Arrange
-		const before: number = fixture.nativeElement.querySelectorAll('app-list').length;
-
-		// Act
-		showTab('otherMovements');
-		await fixture.whenStable();
-		const after: number = fixture.nativeElement.querySelectorAll('app-list').length;
-
-		// Assert
-		expect(before).toBe(1);
-		expect(after).toBe(2);
 	});
 
 	it('should fetch the requested batch of the list of a tab', () => {
@@ -140,8 +111,6 @@ describe('ProjectOperationalMonitoringComponent', () => {
 
 	it('should fetch the batch of the other movements when their list asks for one', async () => {
 		// Arrange
-		showTab('otherMovements');
-		await fixture.whenStable();
 		const lists: DebugElement[] = ngMocks.findAll('app-list');
 
 		// Act

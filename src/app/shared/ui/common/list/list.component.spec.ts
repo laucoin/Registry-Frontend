@@ -10,6 +10,7 @@ import { NotificationModel } from '@shared/models/model/notification.model'
 import { PageEventModel } from '@shared/models/model/page-event.model'
 import { PageModel } from '@shared/models/model/page.model'
 import { ListComponent } from '@shared/ui/common/list/list.component'
+import { LoadMoreComponent } from '@shared/ui/common/load-more/load-more.component'
 import { SectionErrorComponent } from '@shared/ui/common/section-error/section-error.component'
 
 @Component({
@@ -69,6 +70,7 @@ describe('ListComponent', () => {
             .keep(ListComponent)
             .keep(RegistryTemplateDirective)
             .keep(SectionErrorComponent)
+            .keep(LoadMoreComponent)
             .mock(TranslocoPipe, (key: string): string => key)
             .mock(DateFormatPipe, (): string => 'date')
         fixture = TestBed.createComponent(HostComponent)

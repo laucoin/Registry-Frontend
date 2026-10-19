@@ -102,7 +102,7 @@ describe('ProjectActiveAlertComponent', () => {
 		expect(fixture.nativeElement.querySelector('sgdf-tag').textContent.trim()).toBe('projectHome.activeAlert.total');
 	});
 
-	it('should count the alerts that are not shown', async () => {
+	it('should offer to see the alerts that are not shown', async () => {
 		// Arrange
 		page.set({ ...pageOf([alert('a1', 'HIGH')]), totalElements: 4 });
 
@@ -111,7 +111,7 @@ describe('ProjectActiveAlertComponent', () => {
 		const text: string = fixture.nativeElement.textContent;
 
 		// Assert
-		expect(text).toContain('projectHome.activeAlert.more');
+		expect(text).toContain('projectHome.activeAlert.seeRemaining');
 	});
 
 	it('should say there is no open alert', async () => {

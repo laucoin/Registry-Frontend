@@ -117,7 +117,7 @@ describe('ProjectParticipantRegularizationComponent', () => {
 		const text: string = fixture.nativeElement.textContent;
 
 		// Assert
-		expect(text).toContain('projectHome.participantRegularization.more');
+		expect(text).toContain('projectHome.participantRegularization.seeRemaining');
 	});
 
 	it('should say there is nothing to regularize', async () => {

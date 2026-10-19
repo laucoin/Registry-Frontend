@@ -7,6 +7,7 @@ import { BehaviorSubject } from 'rxjs'
 import { beforeEach, describe, expect, it, MockInstance, vi } from 'vitest'
 import { ParticipantFacade } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.facade'
 import { GroupStatusFacade } from '@pages/projects/[projectId]/participants/data/state/group-status.facade'
+import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
 import { pageOf } from '@shared/helpers/testing/test-fixtures'
 import { GroupModel } from '@shared/models/model/group.model'
 import { PageModel } from '@shared/models/model/page.model'
@@ -24,9 +25,13 @@ describe( 'ParticipantsMonitoringPage', () => {
     let groups: Record<string, unknown>
     let participants: Record<string, unknown>
 
-    function create (tab?: string, mine: number = 1): void {
+    function create (tab?: string, mine: number = 1, loadedTabs: boolean = true): void {
         queryParams.next( convertToParamMap( tab ? { tab } : {} ) )
         myGroupsPage.set( pageOf<GroupModel>( mine > 0 ? [ GROUP ] : [] ) )
+        if (loadedTabs) {
+            groupsPage.update( (page: PageModel<GroupModel> | undefined): PageModel<GroupModel> => page ?? pageOf<GroupModel>( [] ) )
+            participantsPage.update( (page: PageModel<ParticipantModel> | undefined): PageModel<ParticipantModel> => page ?? pageOf<ParticipantModel>( [] ) )
+        }
         fixture = TestBed.createComponent( ParticipantsMonitoringPage )
         fixture.detectChanges()
     }
@@ -44,7 +49,7 @@ describe( 'ParticipantsMonitoringPage', () => {
             myGroupsPage, groupsPage, myGroupsPageLoading: signal( false ), groupsPageLoading: signal( false ),
             myGroupsPageSilentLoading: signal( false ), groupsPageSilentLoading: signal( false ),
             myGroupsPageError: signal( undefined ), groupsPageError: signal( undefined ),
-            fetchMyGroupsPage: vi.fn(), fetchGroupsPage: vi.fn(),
+            fetchMyGroupsPage: vi.fn(), fetchGroupsPage: vi.fn(), fetchGroupMembersPage: vi.fn(), membersByGroup: signal( {} ),
         }
         participants = {
             participantsPage, participantsPageLoading: signal( false ), participantsPageSilentLoading: signal( false ), participantsPageError: signal( undefined ),
@@ -53,6 +58,7 @@ describe( 'ParticipantsMonitoringPage', () => {
         }
         await MockBuilder( ParticipantsMonitoringPage )
             .mock( TranslocoPipe, (key: string): string => key )
+            .mock( PluralTranslationPipe, (key: string): string => key )
             .provide( { provide: GroupStatusFacade, useValue: groups } )
             .provide( { provide: ParticipantFacade, useValue: participants } )
             .provide( { provide: ActivatedRoute, useValue: { queryParamMap: queryParams.asObservable(), snapshot: { get queryParamMap (): ParamMap { return queryParams.value } } } } )
@@ -94,7 +100,7 @@ describe( 'ParticipantsMonitoringPage', () => {
         expect( tabs() ).toEqual( expected )
     } )
 
-    it( 'leaves out my groups when the user has none and opens the groups', () => {
+    it( 'leaves out my groups when the user has none', () => {
         // Arrange
         const expected: string[] = [ 'groups', 'individual' ]
 
@@ -103,19 +109,30 @@ describe( 'ParticipantsMonitoringPage', () => {
 
         // Assert
         expect( tabs() ).toEqual( expected )
-        expect( groups[ 'fetchGroupsPage' ] ).toHaveBeenCalledWith( undefined, 20 )
     } )
 
-    it( 'loads the participants only when their tab is asked in the url', () => {
+    it( 'loads the first batch of every tab when displayed, so that the counters show together', () => {
         // Arrange
         const expected: unknown[] = [ undefined, 20 ]
 
         // Act
-        create( 'individual' )
+        create( undefined, 1, false )
 
         // Assert
+        expect( (groups[ 'fetchMyGroupsPage' ] as MockInstance).mock.calls[ 0 ] ).toEqual( expected )
+        expect( (groups[ 'fetchGroupsPage' ] as MockInstance).mock.calls[ 0 ] ).toEqual( expected )
         expect( (participants[ 'fetchParticipantsPage' ] as MockInstance).mock.calls[ 0 ] ).toEqual( expected )
-        expect( groups[ 'fetchGroupsPage' ] ).not.toHaveBeenCalled()
+    } )
+
+    it( 'shows no tab until every tab has settled', () => {
+        // Arrange
+        participantsPage.set( undefined )
+
+        // Act
+        create( undefined, 1, false )
+
+        // Assert
+        expect( tabs() ).toEqual( [] )
     } )
 
     it( 'falls back to the first tab when the url asks for an unavailable one', () => {
@@ -126,18 +143,20 @@ describe( 'ParticipantsMonitoringPage', () => {
         create( requested, 0 )
 
         // Assert
-        expect( groups[ 'fetchGroupsPage' ] ).toHaveBeenCalledTimes( 1 )
+        expect( fixture.componentInstance[ 'activeTab' ]() ).toBe( 'groups' )
     } )
 
     it( 'does not load a tab again once it holds a page', () => {
         // Arrange
         groupsPage.set( pageOf<GroupModel>( [ GROUP ] ) )
+        participantsPage.set( pageOf<ParticipantModel>( [] ) )
 
         // Act
-        create( 'groups' )
+        create()
 
         // Assert
         expect( groups[ 'fetchGroupsPage' ] ).not.toHaveBeenCalled()
+        expect( participants[ 'fetchParticipantsPage' ] ).not.toHaveBeenCalled()
     } )
 
     it( 'keeps the shown tab in the url', () => {
@@ -164,7 +183,7 @@ describe( 'ParticipantsMonitoringPage', () => {
         expect( TestBed.inject( Router ).navigate ).not.toHaveBeenCalled()
     } )
 
-    it( 'shows the total of the tabs that are loaded as badges', () => {
+    it( 'shows the total of every tab as a badge', () => {
         // Arrange
         groupsPage.set( { ...pageOf<GroupModel>( [ GROUP ] ), totalElements: 7 } )
 
@@ -173,7 +192,7 @@ describe( 'ParticipantsMonitoringPage', () => {
         const badges: string[] = Array.from<HTMLElement>( fixture.nativeElement.querySelectorAll( 'sgdf-badge' ) ).map( (badge: HTMLElement): string => badge.textContent.trim() )
 
         // Assert
-        expect( badges ).toEqual( [ '1', '7' ] )
+        expect( badges ).toEqual( [ '1', '7', '0' ] )
     } )
 
     it( 'searches the participants from the first batch with the filters of the form', () => {
@@ -213,9 +232,68 @@ describe( 'ParticipantsMonitoringPage', () => {
         expect( groups[ 'fetchMyGroupsPage' ] ).toHaveBeenLastCalledWith( 1, 20 )
     } )
 
+    it( 'asks for the members of a group opened in the shown tab', () => {
+        // Arrange
+        create()
+
+        // Act
+        ngMocks.output( 'app-group-status-list', 'membersRequired' ).emit( { groupId: 'g1', page: undefined, size: 20 } )
+
+        // Assert
+        expect( groups[ 'fetchGroupMembersPage' ] ).toHaveBeenLastCalledWith( 'g1', undefined, 20 )
+    } )
+
+    it( 'always shows the count of the ticked participants, with nothing to clear until one is ticked', () => {
+        // Arrange
+        create()
+        const button = (): { disabled: boolean } => fixture.nativeElement.querySelector( 'sgdf-button' )
+
+        // Act
+        const counterWhenNobodyIsTicked: HTMLElement | null = fixture.nativeElement.querySelector( '[role=status]' )
+        const disabledWhenNobodyIsTicked: boolean = button().disabled
+
+        // Assert
+        expect( counterWhenNobodyIsTicked ).not.toBeNull()
+        expect( disabledWhenNobodyIsTicked ).toBe( true )
+    } )
+
+    it( 'ticks the participants of the roll call and clears them all at once', () => {
+        // Arrange
+        create()
+        const button = (): { disabled: boolean } => fixture.nativeElement.querySelector( 'sgdf-button' )
+
+        // Act
+        ngMocks.output( 'app-group-status-list', 'checkedChange' ).emit( { ids: [ 'p1', 'p2' ], checked: true } )
+        ngMocks.output( 'app-group-status-list', 'checkedChange' ).emit( { ids: [ 'p2' ], checked: false } )
+        fixture.detectChanges()
+        const ticked: number = fixture.componentInstance[ 'checkedIds' ]().size
+        const enabled: boolean = !button().disabled
+        ngMocks.click( 'sgdf-button' )
+        fixture.detectChanges()
+
+        // Assert
+        expect( ticked ).toBe( 1 )
+        expect( enabled ).toBe( true )
+        expect( fixture.componentInstance[ 'checkedIds' ]().size ).toBe( 0 )
+        expect( button().disabled ).toBe( true )
+    } )
+
+    it( 'reminds the user to check the information, since a human error can always happen', () => {
+        // Arrange
+        create()
+
+        // Act
+        const text: string = fixture.nativeElement.textContent
+
+        // Assert
+        expect( text ).toContain( 'projectHome.participantsPage.disclaimer' )
+    } )
+
     it( 'shows the tabs without my groups and the error with a retry when my groups failed to load', () => {
         // Arrange
         queryParams.next( convertToParamMap( {} ) )
+        groupsPage.set( pageOf<GroupModel>( [] ) )
+        participantsPage.set( pageOf<ParticipantModel>( [] ) )
         groups[ 'myGroupsPageError' ] = signal( { severity: 'error', detail: 'boom' } )
         TestBed.overrideProvider( GroupStatusFacade, { useValue: groups } )
 
@@ -231,6 +309,8 @@ describe( 'ParticipantsMonitoringPage', () => {
     it( 'asks for my groups again when the error is retried', () => {
         // Arrange
         queryParams.next( convertToParamMap( {} ) )
+        groupsPage.set( pageOf<GroupModel>( [] ) )
+        participantsPage.set( pageOf<ParticipantModel>( [] ) )
         groups[ 'myGroupsPageError' ] = signal( { severity: 'error', detail: 'boom' } )
         TestBed.overrideProvider( GroupStatusFacade, { useValue: groups } )
         fixture = TestBed.createComponent( ParticipantsMonitoringPage )

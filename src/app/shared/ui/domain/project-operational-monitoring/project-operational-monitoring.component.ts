@@ -5,7 +5,7 @@ import '@sgdf/ui/icon'
 import '@sgdf/ui/tab-group'
 import '@sgdf/ui/badge'
 import '@sgdf/ui/list-item'
-import { ChangeDetectionStrategy, Component, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit, signal, Signal, WritableSignal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit, Signal } from '@angular/core';
 import { provideTranslocoScope, TranslocoPipe } from "@jsverse/transloco";
 import { SelectedProjectFacade } from '@pages/projects/data/state/selected-project/selected-project.facade';
 import { MovementModel } from '@shared/models/model/movement.model';
@@ -29,7 +29,7 @@ interface MonitoringTab {
 
 /**
  * Purpose: Tracks what is happening on the project through the movements in progress with an activity and the other ones.
- * Scope: Loads the first batch of the first tab at once and of each other tab when it is first shown, then lets the list load more.
+ * Scope: Loads the first batch of every tab at once so counts and lists are ready when a tab is shown, then lets the list load more.
  * Limits: The participant, group and vehicle statuses live in their own pages; it reads the selected project facade only.
  */
 @Component({
@@ -50,7 +50,6 @@ export class ProjectOperationalMonitoringComponent implements OnInit {
 	private static readonly PAGE_SIZE: number = 10
 
 	private readonly facade: SelectedProjectFacade = inject(SelectedProjectFacade)
-	private readonly visited: WritableSignal<ReadonlySet<MonitoringTabKey>> = signal(new Set<MonitoringTabKey>(['activities']))
 
 	protected readonly tabs: MonitoringTab[] = [
 		{
@@ -72,24 +71,10 @@ export class ProjectOperationalMonitoringComponent implements OnInit {
 	]
 
 	public ngOnInit(): void {
-		this.tabs[0]!.fetch(undefined, ProjectOperationalMonitoringComponent.PAGE_SIZE)
-	}
-
-	protected isVisited(key: MonitoringTabKey): boolean {
-		return this.visited().has(key)
+		this.tabs.forEach((tab: MonitoringTab): void => tab.fetch(undefined, ProjectOperationalMonitoringComponent.PAGE_SIZE))
 	}
 
 	protected loadBatch(tab: MonitoringTab, event: PageEventModel): void {
 		tab.fetch(event.page, event.size)
-	}
-
-	protected onTabShow(event: Event): void {
-		const tab: MonitoringTab | undefined = this.tabs.find((it: MonitoringTab): boolean => it.key === (event as CustomEvent<{ name: string }>).detail?.name)
-		if (!tab || this.isVisited(tab.key)) {
-			return
-		}
-
-		this.visited.update((current: ReadonlySet<MonitoringTabKey>): ReadonlySet<MonitoringTabKey> => new Set(current).add(tab.key))
-		tab.fetch(undefined, ProjectOperationalMonitoringComponent.PAGE_SIZE)
 	}
 }

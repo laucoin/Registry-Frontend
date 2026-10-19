@@ -1,21 +1,25 @@
 import { Injectable } from '@angular/core'
-import { delay, map, Observable, of } from 'rxjs'
-import { ALL_GROUPS_MOCK, MY_GROUPS_MOCK } from '@pages/projects/[projectId]/participants/data/state/group-status.mock'
+import { map, Observable } from 'rxjs'
 import { GenericProjectApi } from '@shared/helpers/api/generic-project.api'
+import { QueryHelper } from '@shared/helpers/query.helper'
 import { SELECT_PROFILE_PROJECT_ID } from '@shared/helpers/request.helper'
 import { GroupMapper } from '@shared/mappers/group.mapper'
 import { PageMapper } from '@shared/mappers/page.mapper'
+import { ParticipantMapper } from '@shared/mappers/participant.mapper'
 import { GroupResponseDto } from '@shared/models/dto/response/group.response.dto'
 import { PageResponseDto } from '@shared/models/dto/response/page.response.dto'
+import { ParticipantResponseDto } from '@shared/models/dto/response/participant.response.dto'
 import { GroupModel } from '@shared/models/model/group.model'
 import { PageModel } from '@shared/models/model/page.model'
+import { ParticipantModel } from '@shared/models/model/participant.model'
 
-const LATENCY_MS: number = 250
+const GROUPS_PARAMS: object = { hasOnSiteMembers: true, isVisible: true, sort: 'name' }
+const MEMBERS_PARAMS: object = { onSite: true, isVisible: true, sort: 'status' }
 
 /**
- * Purpose: Sends the HTTP requests of the group status domain: the groups with the presence status of their participants.
- * Scope: Returns the groups of a project, or only those of the participant linked to the signed-in user, each with its members that have arrived and not left.
- * Limits: Serves static data until the backend endpoint exists; it holds no state and handles no error.
+ * Purpose: Sends the HTTP requests of the group status domain: the groups with the presence counters of their on-site members, and those members.
+ * Scope: Returns the visible groups of a project having members on site, or only those of the participant linked to the signed-in user, without their members; returns the on-site members of one group apart.
+ * Limits: Holds no state and handles no error; stores and facades do.
  */
 @Injectable( { providedIn: 'root' } )
 export class GroupStatusApi extends GenericProjectApi {
@@ -24,25 +28,31 @@ export class GroupStatusApi extends GenericProjectApi {
     }
 
     public findGroups (projectId: string | undefined, page: number | undefined, size: number | undefined): Observable<PageModel<GroupModel>> {
-        return this.mockPage( ALL_GROUPS_MOCK, page, size )
+        return this.fetchGroups( projectId, page, size, GROUPS_PARAMS )
     }
 
     public findMyGroups (projectId: string | undefined, page: number | undefined, size: number | undefined): Observable<PageModel<GroupModel>> {
-        return this.mockPage( MY_GROUPS_MOCK, page, size )
+        return this.fetchGroups( projectId, page, size, { ...GROUPS_PARAMS, mine: true } )
     }
 
-    private mockPage (groups: GroupResponseDto[], page: number | undefined, size: number | undefined): Observable<PageModel<GroupModel>> {
-        const pageSize: number = size ?? groups.length
-        const index: number = page ?? 0
-        const dto: PageResponseDto<GroupResponseDto> = {
-            page: index,
-            size: pageSize,
-            totalElements: groups.length,
-            totalPages: Math.ceil( groups.length / pageSize ),
-            hasNext: (index + 1) * pageSize < groups.length,
-            content: groups.slice( index * pageSize, (index + 1) * pageSize ),
-            lastRefresh: new Date(),
-        }
-        return of( dto ).pipe( delay( LATENCY_MS ), map( (it: PageResponseDto<GroupResponseDto>): PageModel<GroupModel> => PageMapper.toModel( it, GroupMapper.toModel ) ) )
+    public findOnSiteMembers (
+        projectId: string | undefined,
+        groupId: string,
+        page: number | undefined,
+        size: number | undefined,
+    ): Observable<PageModel<ParticipantModel>> {
+        return this.http.get<PageResponseDto<ParticipantResponseDto>>(
+            `${this.buildRequestBaseUrl( projectId )}/${groupId}/members?${QueryHelper.buildQueryParams( page, size, MEMBERS_PARAMS ).toString()}`,
+        ).pipe(
+            map( (dto: PageResponseDto<ParticipantResponseDto>): PageModel<ParticipantModel> => PageMapper.toModel( dto, ParticipantMapper.toModel ) ),
+        )
+    }
+
+    private fetchGroups (projectId: string | undefined, page: number | undefined, size: number | undefined, params: object): Observable<PageModel<GroupModel>> {
+        return this.http.get<PageResponseDto<GroupResponseDto>>(
+            `${this.buildRequestBaseUrl( projectId )}?${QueryHelper.buildQueryParams( page, size, params ).toString()}`,
+        ).pipe(
+            map( (dto: PageResponseDto<GroupResponseDto>): PageModel<GroupModel> => PageMapper.toModel( dto, GroupMapper.toModel ) ),
+        )
     }
 }

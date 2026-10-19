@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { MockBuilder } from 'ng-mocks';
 import { MonitoringRowModel } from '@shared/models/model/monitoring-row.model';
 import { MonitoringRowComponent } from './monitoring-row.component';
@@ -14,7 +15,7 @@ describe('MonitoringRowComponent', () => {
 	}
 
 	beforeEach(async () => {
-		await MockBuilder(MonitoringRowComponent);
+		await MockBuilder(MonitoringRowComponent).mock(TranslocoPipe, (key: string): string => key);
 		fixture = TestBed.createComponent(MonitoringRowComponent);
 	});
 
@@ -53,5 +54,59 @@ describe('MonitoringRowComponent', () => {
 
 		// Assert
 		expect(optional).toBe(0);
+	});
+
+	it('should not offer a checkbox unless the row is selectable', async () => {
+		// Arrange
+		await render(row);
+
+		// Act
+		const checkbox: HTMLElement | null = fixture.nativeElement.querySelector('sgdf-checkbox');
+
+		// Assert
+		expect(checkbox).toBeNull();
+	});
+
+	it('should show the checkbox in front of the avatar with its checked state', async () => {
+		// Arrange
+		fixture.componentRef.setInput('selectable', true);
+		fixture.componentRef.setInput('checked', true);
+		await render(row);
+
+		// Act
+		const checkbox: { checked: boolean } = fixture.nativeElement.querySelector('sgdf-checkbox');
+
+		// Assert
+		expect(checkbox.checked).toBe(true);
+	});
+
+	it('should tell the change of the checkbox', async () => {
+		// Arrange
+		fixture.componentRef.setInput('selectable', true);
+		await render(row);
+		const changes: boolean[] = [];
+		fixture.componentInstance.checkedChange.subscribe((checked: boolean): number => changes.push(checked));
+		const checkbox: HTMLElement & { checked: boolean } = fixture.nativeElement.querySelector('sgdf-checkbox');
+
+		// Act
+		checkbox.checked = true;
+		checkbox.dispatchEvent(new Event('change'));
+
+		// Assert
+		expect(changes).toEqual([true]);
+	});
+
+	it('should explain the status to regularize under the participant concerned only', async () => {
+		// Arrange
+		await render({ ...row, overdue: true });
+		const concerned: string = fixture.nativeElement.textContent;
+		await render({ ...row, overdue: false });
+
+		// Act
+		const others: string = fixture.nativeElement.textContent;
+
+		// Assert
+		expect(concerned).toContain('projectHome.monitoring.overdueHint');
+		expect(others).not.toContain('projectHome.monitoring.overdueHint');
 	});
 });

@@ -5,16 +5,11 @@
                      [initials]="initials(profile)"/>
         <span class="block truncate" [attr.title]="title(profile)">{{ title(profile) }}</span>
         <span slot="description" class="flex flex-wrap items-center gap-x-3">
-            @if (profile.startAccess) {
-                <span class="inline-flex items-center gap-1">
-                    <sgdf-icon name="circle-play" library="solid"/>
-                    {{ profile.startAccess | customDateFormat }}
-                </span>
-            }
-            @if (profile.endAccess) {
-                <span class="inline-flex items-center gap-1">
-                    <sgdf-icon name="circle-stop" library="solid"/>
-                    {{ profile.endAccess | customDateFormat }}
+            @if (profile.startAccess || profile.endAccess) {
+                <span class="inline-flex flex-wrap items-center gap-x-2">
+                    <span>{{ profile.startAccess ? (profile.startAccess | customDateFormat) : '...' }}</span>
+                    <sgdf-icon name="arrow-right-long" library="solid"/>
+                    <span>{{ profile.endAccess ? (profile.endAccess | customDateFormat) : '...' }}</span>
                 </span>
             }
         </span>

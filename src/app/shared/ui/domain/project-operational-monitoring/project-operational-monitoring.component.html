@@ -7,8 +7,8 @@
     </sgdf-table-row>
 
     <sgdf-table-row>
-        <sgdf-table-cell class="align-top">
-            <sgdf-tab-group appearance="text" (sgdf-tab-show)="onTabShow($event)">
+        <sgdf-table-cell class="align-top pt-0">
+            <sgdf-tab-group appearance="text">
                 @for (tab of tabs; track tab.key) {
                     <sgdf-tab [panel]="tab.key">
                         {{ 'projectHome.operationalMonitoring.tabs.' + tab.key | transloco }}
@@ -20,22 +20,20 @@
 
                 @for (tab of tabs; track tab.key) {
                     <sgdf-tab-panel [name]="tab.key">
-                        @if (isVisited(tab.key)) {
-                            <app-list [emptyMessagePrefix]="'projectHome.operationalMonitoring.empty.' + tab.key"
-                                      [label]="'projectHome.operationalMonitoring.tabs.' + tab.key | transloco"
-                                      [elementPage]="tab.page()"
-                                      [error]="tab.error()"
-                                      [loading]="tab.loading()"
-                                      [loadingMore]="tab.silentLoading()"
-                                      (updateRequired)="loadBatch(tab, $event)">
-                                <ng-template appTemplate="element" let-movement>
-                                    <sgdf-list-item appMovementElement
-                                                    [movement]="movement"
-                                                    [communicable]="true"
-                                                    [actionMenuVisible]="false"/>
-                                </ng-template>
-                            </app-list>
-                        }
+                        <app-list [emptyMessagePrefix]="'projectHome.operationalMonitoring.empty.' + tab.key"
+                                  [label]="'projectHome.operationalMonitoring.tabs.' + tab.key | transloco"
+                                  [elementPage]="tab.page()"
+                                  [error]="tab.error()"
+                                  [loading]="tab.loading()"
+                                  [loadingMore]="tab.silentLoading()"
+                                  (updateRequired)="loadBatch(tab, $event)">
+                            <ng-template appTemplate="element" let-movement>
+                                <sgdf-list-item appMovementElement
+                                                [movement]="movement"
+                                                [communicable]="true"
+                                                [actionMenuVisible]="false"/>
+                            </ng-template>
+                        </app-list>
                     </sgdf-tab-panel>
                 }
             </sgdf-tab-group>

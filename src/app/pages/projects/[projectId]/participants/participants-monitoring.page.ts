@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, CUSTOM_ELEMENTS_SCHEMA, effect, inject, OnInit, signal, Signal, untracked, WritableSignal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit, signal, Signal, WritableSignal } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { FieldTree, FormField } from '@angular/forms/signals'
 import { ActivatedRoute, ParamMap, Router } from '@angular/router'
@@ -27,11 +27,12 @@ import { createSearchForm } from '@shared/helpers/form/search.form'
 import { MonitoringRowHelper } from '@shared/helpers/monitoring-row.helper'
 import { MonitoringRowModel } from '@shared/models/model/monitoring-row.model'
 import { PageEventModel } from '@shared/models/model/page-event.model'
+import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
 import { ParticipantModel } from '@shared/models/model/participant.model'
 import { StringHelper } from '@shared/helpers/string.helper'
 import { ListComponent } from '@shared/ui/common/list/list.component'
 import { SectionErrorComponent } from '@shared/ui/common/section-error/section-error.component'
-import { GroupStatusListComponent } from '@shared/ui/domain/group-status-list/group-status-list.component'
+import { CheckedChangeModel, GroupMembersRequestModel, GroupStatusListComponent } from '@shared/ui/domain/group-status-list/group-status-list.component'
 import { MonitoringRowComponent } from '@shared/ui/domain/monitoring-row/monitoring-row.component'
 import { ProjectParticipantOverviewComponent } from '@shared/ui/domain/project-participant-overview/project-participant-overview.component'
 
@@ -43,8 +44,8 @@ const STATUS_PARAM: string = 'status'
 
 /**
  * Purpose: Page tracking where the participants are: through my groups, through every group, or one by one.
- * Scope: Shows the participant counters on desktop above the tabs, keeps the active tab in the url and loads a tab only when it is shown. The tab of my groups exists only when the user has some.
- * Limits: Holds no domain state; the group status and participant facades own it. Groups come from a static source until the backend serves them.
+ * Scope: Shows the participant counters on desktop above the tabs, lets the roll call tick participants, groups and rows alike, keeps the active tab in the url and loads the first batch of every tab when displayed, so that the counters of the tabs show together and the tabs do not jump. The tab of my groups exists only when the user has some.
+ * Limits: Holds no domain state, only the ticks of the roll call, which live in the page and are lost on reload; the group status and participant facades own the data. The members of a group are loaded when its section opens.
  */
 @Component({
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -53,6 +54,7 @@ const STATUS_PARAM: string = 'status'
     providers: [ provideTranslocoScope( 'project-home' ) ],
     imports: [
         TranslocoPipe,
+        PluralTranslationPipe,
         FormField,
         ProjectEyebrowDirective,
         RegistryTemplateDirective,
@@ -73,7 +75,9 @@ export class ParticipantsMonitoringPage implements OnInit {
     private readonly queryParams: Signal<ParamMap | undefined> = toSignal( this.route.queryParamMap )
 
     protected readonly ready: Signal<boolean> = computed( (): boolean =>
-        !this.groups.myGroupsPageLoading() && (this.groups.myGroupsPage() !== undefined || this.groups.myGroupsPageError() !== undefined),
+        this.settled( this.groups.myGroupsPage(), this.groups.myGroupsPageLoading(), this.groups.myGroupsPageError() )
+        && this.settled( this.groups.groupsPage(), this.groups.groupsPageLoading(), this.groups.groupsPageError() )
+        && this.settled( this.participants.participantsPage(), this.participants.participantsPageLoading(), this.participants.participantsPageError() ),
     )
     protected readonly hasMine: Signal<boolean> = computed( (): boolean => (this.groups.myGroupsPage()?.totalElements ?? 0) > 0 )
     protected readonly tabs: Signal<ParticipantsTabKey[]> = computed( (): ParticipantsTabKey[] =>
@@ -87,6 +91,8 @@ export class ParticipantsMonitoringPage implements OnInit {
         groups: this.groups.groupsPage()?.totalElements,
         individual: this.participants.participantsPage()?.totalElements,
     }) )
+
+    protected readonly checkedIds: WritableSignal<ReadonlySet<string>> = signal<ReadonlySet<string>>( new Set() )
 
     protected readonly activeFilters: Signal<number> = computed( (): number => [
         StringHelper.isNotNullNorBlank( this.participants.participantsPageQueryParam() ),
@@ -102,16 +108,11 @@ export class ParticipantsMonitoringPage implements OnInit {
 
     public constructor () {
         this.presetStatusFromUrl()
-        effect( (): void => {
-            const tab: ParticipantsTabKey = this.activeTab()
-            if (this.ready()) {
-                untracked( (): void => this.loadFirstBatch( tab ) )
-            }
-        } )
     }
 
     public ngOnInit (): void {
         this.fetchFirstMyGroups()
+        this.loadFirstBatchOfTheOtherTabs()
     }
 
     protected fetchFirstMyGroups (): void {
@@ -137,6 +138,22 @@ export class ParticipantsMonitoringPage implements OnInit {
         this.groups.fetchGroupsPage( event.page, event.size )
     }
 
+    protected setChecked (change: CheckedChangeModel): void {
+        this.checkedIds.update( (current: ReadonlySet<string>): ReadonlySet<string> => {
+            const next: Set<string> = new Set( current )
+            change.ids.forEach( (id: string): void => { change.checked ? next.add( id ) : next.delete( id ) } )
+            return next
+        } )
+    }
+
+    protected uncheckAll (): void {
+        this.checkedIds.set( new Set() )
+    }
+
+    protected loadGroupMembers (request: GroupMembersRequestModel): void {
+        this.groups.fetchGroupMembersPage( request.groupId, request.page, request.size )
+    }
+
     protected loadParticipants (event: PageEventModel): void {
         this.participants.fetchParticipantsPage( event.page, event.size )
     }
@@ -160,11 +177,15 @@ export class ParticipantsMonitoringPage implements OnInit {
         }
     }
 
-    private loadFirstBatch (tab: ParticipantsTabKey): void {
-        if (tab === 'groups' && !this.groups.groupsPage() && !this.groups.groupsPageLoading()) {
+    private settled (page: unknown, loading: boolean, error: unknown): boolean {
+        return !loading && (page !== undefined || error !== undefined)
+    }
+
+    private loadFirstBatchOfTheOtherTabs (): void {
+        if (!this.groups.groupsPage() && !this.groups.groupsPageLoading()) {
             this.groups.fetchGroupsPage( undefined, PAGE_SIZE )
         }
-        if (tab === 'individual' && !this.participants.participantsPage() && !this.participants.participantsPageLoading()) {
+        if (!this.participants.participantsPage() && !this.participants.participantsPageLoading()) {
             this.participants.fetchParticipantsPage( undefined, PAGE_SIZE )
         }
     }

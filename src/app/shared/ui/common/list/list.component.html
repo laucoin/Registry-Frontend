@@ -68,19 +68,8 @@
             }
         </sgdf-list>
         @if (hasMore()) {
-            <div class="flex flex-col items-center gap-(--spacing--in-block)">
-                <small class="opacity-80">
-                    {{
-                        'global.list.loaded-count' | transloco: {
-                            count: page.content.length,
-                            total: page.totalElements
-                        }
-                    }}
-                </small>
-                <sgdf-button appearance="outlined" [loading]="loadingMore()" (click)="loadMore()">
-                    {{ 'global.list.load-more' | transloco }}
-                </sgdf-button>
-            </div>
+            <app-load-more [loadedCount]="page.content.length" [total]="page.totalElements"
+                           [loading]="loadingMore()" [autoLoad]="!error()" (loadMore)="loadMore()"/>
         }
     }
 </section>

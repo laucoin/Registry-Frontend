@@ -1,80 +1,16 @@
-import { TestBed } from '@angular/core/testing'
-import { firstValueFrom } from 'rxjs'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { RegistryConfig } from '@core/config/registry.config'
 import { GroupStatusApi } from '@pages/projects/[projectId]/participants/data/state/group-status.api'
-import { GroupModel } from '@shared/models/model/group.model'
-import { PageModel } from '@shared/models/model/page.model'
+import { ApiCase, describeApi, expectMappedPage, PAGE_QUERY } from '@shared/helpers/testing/api-test.helper'
+import { GROUP_DTO, PARTICIPANT_DTO, pageDto } from '@shared/helpers/testing/response-fixtures'
 
-describe( 'GroupStatusApi', () => {
-    let api: GroupStatusApi
+const BASE: string = '/api/v2/projects/p1/groups'
 
-    beforeEach( () => {
-        vi.useFakeTimers()
-        RegistryConfig.environment = { production: false, backend: { url: 'http://backend.test', noAuthPaths: [] }, hosting: { providerName: null, providerAddress: null } }
-        api = TestBed.inject( GroupStatusApi )
-    } )
+const CASES: ApiCase<GroupStatusApi>[] = [
+    { name: 'pages the visible groups having members on site, by name', method: 'GET', url: new RegExp( `${BASE}\\?${PAGE_QUERY}&hasOnSiteMembers=true&isVisible=true&sort=name$` ),
+        call: (api: GroupStatusApi) => api.findGroups( 'p1', 0, 10 ), response: pageDto( [ GROUP_DTO ] ), verify: expectMappedPage },
+    { name: 'pages only the groups of the signed-in user', method: 'GET', url: new RegExp( `${BASE}\\?${PAGE_QUERY}&hasOnSiteMembers=true&isVisible=true&sort=name&mine=true$` ),
+        call: (api: GroupStatusApi) => api.findMyGroups( 'p1', 0, 10 ), response: pageDto( [ GROUP_DTO ] ), verify: expectMappedPage },
+    { name: 'pages the on-site members of a group, the late ones first', method: 'GET', url: new RegExp( `${BASE}/g1/members\\?${PAGE_QUERY}&onSite=true&isVisible=true&sort=status$` ),
+        call: (api: GroupStatusApi) => api.findOnSiteMembers( 'p1', 'g1', 0, 10 ), response: pageDto( [ PARTICIPANT_DTO ] ), verify: expectMappedPage },
+]
 
-    async function resolved (call: Promise<PageModel<GroupModel>>): Promise<PageModel<GroupModel>> {
-        await vi.runAllTimersAsync()
-        return call
-    }
-
-    it( 'returns all the groups with their members', async () => {
-        // Arrange
-        const request: Promise<PageModel<GroupModel>> = firstValueFrom( api.findGroups( 'p1', undefined, undefined ) )
-
-        // Act
-        const page: PageModel<GroupModel> = await resolved( request )
-
-        // Assert
-        expect( page.content.map( (group: GroupModel): string => group.id ) ).toEqual( [ 'g1', 'g2', 'g3' ] )
-    } )
-
-    it( 'returns fewer groups for my groups than for all the groups', async () => {
-        // Arrange
-        const request: Promise<PageModel<GroupModel>> = firstValueFrom( api.findMyGroups( 'p1', undefined, undefined ) )
-
-        // Act
-        const page: PageModel<GroupModel> = await resolved( request )
-
-        // Assert
-        expect( page.totalElements ).toBe( 2 )
-    } )
-
-    it( 'returns nothing past the last batch', async () => {
-        // Arrange
-        const request: Promise<PageModel<GroupModel>> = firstValueFrom( api.findGroups( 'p1', 5, 2 ) )
-
-        // Act
-        const page: PageModel<GroupModel> = await resolved( request )
-
-        // Assert
-        expect( page.content ).toEqual( [] )
-        expect( page.hasNext ).toBe( false )
-    } )
-
-    it( 'serves the groups batch by batch', async () => {
-        // Arrange
-        const request: Promise<PageModel<GroupModel>> = firstValueFrom( api.findGroups( 'p1', 1, 2 ) )
-
-        // Act
-        const page: PageModel<GroupModel> = await resolved( request )
-
-        // Assert
-        expect( page.content ).toHaveLength( 1 )
-        expect( page.hasNext ).toBe( false )
-        expect( page.page ).toBe( 1 )
-    } )
-
-    it( 'announces a next batch while groups remain', async () => {
-        // Arrange
-        const request: Promise<PageModel<GroupModel>> = firstValueFrom( api.findGroups( 'p1', 0, 2 ) )
-
-        // Act
-        const page: PageModel<GroupModel> = await resolved( request )
-
-        // Assert
-        expect( page.hasNext ).toBe( true )
-    } )
-} )
+describeApi( 'GroupStatusApi', GroupStatusApi, CASES )

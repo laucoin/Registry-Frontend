@@ -19,6 +19,10 @@ export class GroupMapper {
             membersCount: dto.membersCount,
             insideMembersCount: dto.insideMembersCount,
             outsideMembersCount: dto.outsideMembersCount,
+            onSiteMembersCount: dto.onSiteMembersCount,
+            inMembersCount: dto.inMembersCount,
+            outMembersCount: dto.outMembersCount,
+            overdueMembersCount: dto.overdueMembersCount,
             members: dto.members?.map( ParticipantMapper.toModel ),
         }
     }

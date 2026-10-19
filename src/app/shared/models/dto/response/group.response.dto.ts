@@ -12,5 +12,9 @@ export interface GroupResponseDto extends GenericResponseDto {
     membersCount: number
     insideMembersCount: number
     outsideMembersCount: number
+    onSiteMembersCount?: number
+    inMembersCount?: number
+    outMembersCount?: number
+    overdueMembersCount?: number
     members: ParticipantResponseDto[] | undefined
 }

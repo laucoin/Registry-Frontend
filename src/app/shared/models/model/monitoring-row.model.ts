@@ -7,4 +7,5 @@ export interface MonitoringRowModel {
     statusLabel: string | undefined
     statusVariant: MonitoringStatusVariant
     icon: string
+    overdue?: boolean
 }

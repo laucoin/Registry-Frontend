@@ -1,0 +1,15 @@
+<sgdf-avatar slot="start" variant="danger" aria-hidden="true">
+    <sgdf-icon slot="icon" name="clock" library="solid"/>
+</sgdf-avatar>
+{{ name() }}
+<span slot="description" class="text-xs">
+    @if (participant().endAvailability; as end) {
+        {{ 'projectHome.participantRegularization.plannedEnd' | transloco: { date: (end | customDateFormat) } }}
+    }
+    @if (participant().endAvailability && since()) {
+        ·
+    }
+    @if (since(); as presentSince) {
+        {{ 'projectHome.participantRegularization.presentSince' | transloco: { duration: (presentSince | intervalFormat) } }}
+    }
+</span>

@@ -47,7 +47,18 @@ describe( 'MonitoringRowHelper', () => {
         const row: MonitoringRowModel = MonitoringRowHelper.fromParticipant( participant )
 
         // Assert
-        expect( row ).toEqual( { id: 'pa1', title: 'A B', subtitle: 'Wolves, Owls', statusLabel: 'In', statusVariant: 'success', icon: 'user' } )
+        expect( row ).toEqual( { id: 'pa1', title: 'A B', subtitle: 'Wolves, Owls', statusLabel: 'In', statusVariant: 'success', icon: 'user', overdue: false } )
+    } )
+
+    it( 'flags a participant whose planned presence is over without any departure', () => {
+        // Arrange
+        const participant: ParticipantModel = { ...ParticipantMapper.toModel( PARTICIPANT_DTO ), status: { label: 'Overdue', value: PresenceStatusEnum.OVERDUE } }
+
+        // Act
+        const row: MonitoringRowModel = MonitoringRowHelper.fromParticipant( participant )
+
+        // Assert
+        expect( row.overdue ).toBe( true )
     } )
 
     it( 'describes a participant without group by its type', () => {

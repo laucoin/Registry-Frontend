@@ -23,9 +23,9 @@
     "empty": "Aucune présence à régulariser",
     "plannedEnd": "Fin prévue le {{date}}",
     "presentSince": "Présent depuis {{duration}}",
-    "more": {
-      "one": "+ {{count}} autre participant",
-      "few": "+ {{count}} autres participants"
+    "seeRemaining": {
+      "one": "Voir l'autre présence à régulariser",
+      "few": "Voir les {{count}} autres présences à régulariser"
     },
     "total": {
       "one": "{{count}} présence",
@@ -36,9 +36,10 @@
     "title": "Alertes ouvertes",
     "seeAll": "Voir toutes les alertes",
     "empty": "Aucune alerte ouverte",
-    "more": {
-      "one": "+ {{count}} autre alerte",
-      "few": "+ {{count}} autres alertes"
+    "untitled": "Alerte sans titre",
+    "seeRemaining": {
+      "one": "Voir l'autre alerte",
+      "few": "Voir les {{count}} autres alertes"
     },
     "lastCommunication": "Dernière communication le {{date}}",
     "total": {
@@ -92,6 +93,9 @@
       }
     }
   },
+  "monitoring": {
+    "overdueHint": "Fin de présence dépassée, sortie non enregistrée. Est-elle encore là ?"
+  },
   "participantsPage": {
     "title": "Suivi des participants",
     "subtitle": "Où se trouvent les participants du projet",
@@ -99,7 +103,15 @@
       "mine": "Mes groupes",
       "groups": "Par groupe",
       "individual": "Individuel"
-    }
+    },
+    "check": "Pointer {{name}}",
+    "checked": {
+      "zero": "{{count}} participants pointés",
+      "one": "{{count}} participant pointé",
+      "few": "{{count}} participants pointés"
+    },
+    "uncheckAll": "Tout décocher",
+    "disclaimer": "Vérifie bien ces informations : une erreur humaine (oubli ou erreur de saisie) peut toujours survenir."
   },
   "vehiclesPage": {
     "title": "Suivi des véhicules",
@@ -110,10 +122,20 @@
       "one": "{{count}} participant",
       "few": "{{count}} participants"
     },
+    "onSite": {
+      "one": "{{count}} sur place",
+      "few": "{{count}} sur place"
+    },
     "outside": {
       "one": "{{count}} en sortie",
       "few": "{{count}} en sortie"
     },
+    "overdue": {
+      "one": "{{count}} à régulariser",
+      "few": "{{count}} à régulariser"
+    },
+    "checkedOf": "{{checked}}/{{total}} pointés",
+    "noMembers": "Aucun participant sur place dans ce groupe.",
     "membersOf": "Participants de {{name}}",
     "empty": {
       "title": "Aucun groupe",

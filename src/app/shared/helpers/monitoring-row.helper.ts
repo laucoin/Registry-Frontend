@@ -37,6 +37,7 @@ export class MonitoringRowHelper {
             statusLabel: participant.status?.label,
             statusVariant: MonitoringRowHelper.statusVariant( participant.status?.value ),
             icon: 'user',
+            overdue: participant.status?.value === PresenceStatusEnum.OVERDUE,
         }
     }
 

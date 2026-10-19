@@ -7,6 +7,7 @@ import '@sgdf/ui/button'
 import '@sgdf/ui/callout'
 import '@sgdf/ui/drawer'
 import '@sgdf/ui/skeleton'
+import { StringHelper } from '@shared/helpers/string.helper';
 import { ChangeDetectionStrategy, Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit, signal, Signal, WritableSignal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { SessionFacade } from '@core/registry/state/session.facade';
@@ -80,6 +81,10 @@ export class ProjectActiveAlertComponent implements OnInit {
 	protected readonly loading: Signal<boolean> = this.facade.currentAlertsPageLoading
 	protected readonly error: Signal<NotificationModel | undefined> = this.facade.currentAlertsPageError
 	protected readonly total: Signal<number | undefined> = computed((): number | undefined => this.facade.currentAlertsPage()?.totalElements)
+	protected untitled(alert: AlertModel): boolean {
+		return StringHelper.isNullOrBlank(alert.title);
+	}
+
 	protected readonly cards: Signal<AlertCard[]> = computed((): AlertCard[] =>
 		(this.facade.currentAlertsPage()?.content ?? []).map((alert: AlertModel): AlertCard => this.toCard(alert)),
 	)

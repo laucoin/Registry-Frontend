@@ -49,6 +49,17 @@ const currentMovementsBlock = (hasActivity: boolean): MovementsBlock =>
         to: undefined,
     } )
 
+function overdueBlock (): PageRequestInformationModel<ParticipantPageParamsModel, ParticipantModel> {
+    return PageStateHelper.initial<ParticipantPageParamsModel, ParticipantModel>( {
+        resetSearch: false,
+        isVisible: true,
+        status: PresenceStatusEnum.OVERDUE,
+        q: undefined,
+        onSite: true,
+        sort: 'endAvailability',
+    } )
+}
+
 const defaultSelectedProjectStore: SelectedProjectStoreModel = {
     sectionErrors: {},
     status: {
@@ -64,14 +75,8 @@ const defaultSelectedProjectStore: SelectedProjectStoreModel = {
         to: undefined,
         sort: '-criticality',
     } ),
-    overdue: PageStateHelper.initial<ParticipantPageParamsModel, ParticipantModel>( {
-        resetSearch: false,
-        isVisible: true,
-        status: PresenceStatusEnum.OVERDUE,
-        q: undefined,
-        onSite: true,
-        sort: 'endAvailability',
-    } ),
+    overdue: overdueBlock(),
+    overdueList: overdueBlock(),
     birthdays: { element: undefined, loading: false, error: undefined },
     arrivals: { element: undefined, loading: false, error: undefined },
     departures: { element: undefined, loading: false, error: undefined },
@@ -189,6 +194,8 @@ export const SelectedProjectStore = signalStore(
         fetchCurrentMovementsPageWithoutActivity: currentMovementsPage( store, 'withoutActivity', movementApi, store.fetchCurrentMovementsWithoutActivityContents ),
         fetchCurrentMovementsPageWithActivity: currentMovementsPage( store, 'withActivity', movementApi, store.fetchCurrentMovementsWithActivityContents ),
         fetchOverduePage: pageFetcher( store, 'overdue', (request: CurrentPageRequest, params: ParticipantPageParamsModel) =>
+            participantApi.findParticipants( request.projectId, request.page, request.size, params ), errors, { merge: CumulativePageHelper.merge } ),
+        fetchOverdueListPage: pageFetcher( store, 'overdueList', (request: CurrentPageRequest, params: ParticipantPageParamsModel) =>
             participantApi.findParticipants( request.projectId, request.page, request.size, params ), errors, { merge: CumulativePageHelper.merge } ),
         fetchCurrentAlertsPage: pageFetcher( store, 'alerts', (request: CurrentPageRequest, params: AlertPageParamsModel) =>
             alertApi.findAlerts( request.projectId, request.page, request.size, params ), errors ),

@@ -12,5 +12,9 @@ export interface GroupModel extends GenericModel {
     membersCount: number
     insideMembersCount: number
     outsideMembersCount: number
+    onSiteMembersCount?: number
+    inMembersCount?: number
+    outMembersCount?: number
+    overdueMembersCount?: number
     members: ParticipantModel[] | undefined
 }

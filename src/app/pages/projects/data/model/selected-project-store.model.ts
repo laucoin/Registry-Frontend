@@ -27,6 +27,7 @@ export interface SelectedProjectStoreModel extends SectionErrorsState {
     }
     alerts: PageRequestInformationModel<AlertPageParamsModel, AlertModel>
     overdue: PageRequestInformationModel<ParticipantPageParamsModel, ParticipantModel>
+    overdueList: PageRequestInformationModel<ParticipantPageParamsModel, ParticipantModel>
     birthdays: ElementRequestInformationModel<ParticipantModel[]>
     arrivals: ElementRequestInformationModel<PlannedMovementModel[]>
     departures: ElementRequestInformationModel<PlannedMovementModel[]>

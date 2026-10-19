@@ -31,6 +31,7 @@ import { MenuEntryModel } from '@shared/models/model/menu-entry.model'
 import { EventHelper } from '@shared/helpers/event.helper'
 import { AlertHelper } from '@shared/helpers/alert.helper'
 import { IntervalModel } from '@shared/models/model/interval.model'
+import { StringHelper } from '@shared/helpers/string.helper'
 import { DateHelper } from '@shared/helpers/date.helper'
 import { IntervalPipe } from '@shared/helpers/pipe/interval.pipe'
 
@@ -48,6 +49,9 @@ const STATUS_ICONS: Record<string, string> = {
     [ AlertStatusEnum.CANCELED ]: 'xmark',
     [ AlertStatusEnum.RESOLVED ]: 'circle-check',
 }
+
+/** Zero-width characters a title may hold without showing anything. */
+const INVISIBLE_CHARACTERS: RegExp = /[\u200B-\u200D\u2060\uFEFF]/g
 
 /**
  * Purpose: Presents one alert with its actions, as a list item (attribute of `sgdf-list-item`) or as a card in the carousel.
@@ -85,6 +89,11 @@ export class AlertElementComponent extends GenericElementComponent {
     public readonly addButtonVisible: InputSignal<boolean> = input( true )
     public readonly carouselView: InputSignal<boolean> = input( false )
     public readonly alert: InputSignal<AlertModel> = input.required()
+
+    protected readonly titleBlank: Signal<boolean> = computed( (): boolean => StringHelper.isNullOrBlank( this.alert().title?.replace( INVISIBLE_CHARACTERS, '' ) ) )
+
+    protected readonly accessibleTitle: Signal<string> = computed( (): string =>
+        this.titleBlank() ? this.translateService.translate( 'alerts.untitled' ) : this.alert().title )
 
     protected readonly actions: Signal<ElementActionModel[]> = computed( (): ElementActionModel[] => this.actionsService.actionsFor( this.alert() ) )
 
