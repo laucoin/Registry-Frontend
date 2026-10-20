@@ -18,11 +18,11 @@ export enum RegistryRouteEnum {
 	TERMS = 'terms',
 
 	MY_ACCOUNT = 'my-account',
+	MY_ACCOUNT_PROJECTS = `${MY_ACCOUNT}/projects`,
+	MY_ACCOUNT_INVITATIONS = `${MY_ACCOUNT}/invitations`,
 
 	USERS = 'users',
 	USERS_EDITION = `${USERS}/${UserRoutesEnum.EDIT}`,
-	USERS_PROFILES = `${USERS}/${UserRoutesEnum.PROFILES}`,
-	USERS_INVITATIONS = `${USERS}/${UserRoutesEnum.INVITATIONS}`,
 
 	PROJECTS = 'projects',
 	PROJECTS_CREATION = `${PROJECTS}/${ProjectRoutesEnum.CREATE}`,

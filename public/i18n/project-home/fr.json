@@ -82,6 +82,7 @@
   },
   "operationalMonitoring": {
     "title": "Suivi opérationnel",
+    "titleMovementsOnly": "Mouvements en cours",
     "tabs": {
       "activities": "Activités en cours",
       "otherMovements": "Autres mouvements en cours"

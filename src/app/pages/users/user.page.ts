@@ -3,7 +3,7 @@ import { RouterOutlet } from '@angular/router'
 
 /**
  * Purpose: Routing shell of the user section.
- * Scope: Provides the facades and stores of the section to its child routes.
+ * Scope: Renders the child routes of the section.
  * Limits: Holds no data of its own.
  */
 @Component( {

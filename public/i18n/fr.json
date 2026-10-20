@@ -1816,15 +1816,7 @@
       "home": "Accueil",
       "movements": "Mouvements",
       "alerts": "Alertes",
-      "configuration": {
-        "title": "Configuration",
-        "edit-project": "Modifier le projet",
-        "project-profiles": "Utilisateurs membres",
-        "participants": "Participants",
-        "groups": "Groupes",
-        "vehicles": "Véhicules",
-        "activities": "Activités"
-      }
+      "configuration": "Configuration"
     }
   },
   "footer": {

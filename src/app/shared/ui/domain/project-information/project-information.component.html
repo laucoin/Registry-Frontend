@@ -1,0 +1,59 @@
+@if (project(); as project) {
+    <sgdf-table class="block [&::part(grid)]:table-fixed" appearance="soft">
+        <sgdf-table-row>
+            <sgdf-table-cell header class="flex items-center gap-1">
+                <sgdf-icon name="pen-to-square" library="solid"/>
+                <h2 class="text-sm font-semibold uppercase">{{ 'projectInformation.title' | transloco }}</h2>
+            </sgdf-table-cell>
+        </sgdf-table-row>
+
+        <sgdf-table-row>
+            <sgdf-table-cell>
+                <div class="flex flex-col gap-1">
+                    <strong class="text-sm">{{ 'projectInformation.name' | transloco }}</strong>
+                    <span>{{ project.name }}</span>
+                </div>
+            </sgdf-table-cell>
+        </sgdf-table-row>
+
+        <sgdf-table-row>
+            <sgdf-table-cell>
+                <div class="flex flex-col gap-1">
+                    <strong class="text-sm">{{ 'projectInformation.period' | transloco }}</strong>
+                    <span>
+                        {{ 'projectInformation.periodValue' | transloco: {
+                            begin: project.begin?.date | dateFormat: 'date',
+                            end: project.end?.date | dateFormat: 'date'
+                        } }}
+                        @if (project.status?.label; as status) {
+                            · {{ 'projectInformation.status' | transloco: { status } }}
+                        }
+                    </span>
+                </div>
+            </sgdf-table-cell>
+        </sgdf-table-row>
+
+        <sgdf-table-row>
+            <sgdf-table-cell>
+                <div class="flex items-center gap-2">
+                    <div class="flex min-w-0 flex-1 flex-col gap-1">
+                        <strong class="text-sm">{{ 'projectInformation.options' | transloco }}</strong>
+                        <span>{{ optionLabels() || ('projectInformation.noOptions' | transloco) }}</span>
+                    </div>
+                    <sgdf-tag size="small" variant="info" appearance="soft">{{ optionsRatio() }}</sgdf-tag>
+                </div>
+            </sgdf-table-cell>
+        </sgdf-table-row>
+
+        @if (canEdit()) {
+            <sgdf-table-row>
+                <sgdf-table-cell class="text-right">
+                    <sgdf-button size="small" appearance="outlined" [routerLink]="editUrl()">
+                        <sgdf-icon slot="prefix" name="pen" library="solid"/>
+                        {{ 'projectInformation.edit' | transloco }}
+                    </sgdf-button>
+                </sgdf-table-cell>
+            </sgdf-table-row>
+        }
+    </sgdf-table>
+}

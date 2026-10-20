@@ -44,13 +44,14 @@ import { ListComponent } from '@shared/ui/common/list/list.component'
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     templateUrl: './profiles-list.page.html',
+    styles: ':host { display: block; width: 100%; }',
 })
 export class ProfilesListPage {
     protected readonly userProfileFacade: UserProfileFacade = inject(UserProfileFacade)
     protected readonly facade: ProjectProfileFacade = inject(ProjectProfileFacade)
 
     protected readonly createRoute: string = `/${RegistryRouteEnum.PROJECTS_CREATION}`
-    protected readonly invitationsRoute: string = `/${RegistryRouteEnum.USERS_INVITATIONS}`
+    protected readonly invitationsRoute: string = `/${RegistryRouteEnum.MY_ACCOUNT_INVITATIONS}`
 
     protected readonly activeFilters: Signal<number> = computed((): number => [
         StringHelper.isNotNullNorBlank(this.userProfileFacade.userProjectProfilesPageQueryParam()),

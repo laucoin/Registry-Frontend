@@ -25,12 +25,12 @@ export const USER_LEVEL_MENUS: MenuItemModel[] = [
 	{
 		label: 'navbar.user.profiles',
 		icon: { library: 'solid', name: 'id-badge' },
-		url: RegistryRouteEnum.USERS_PROFILES,
+		url: RegistryRouteEnum.MY_ACCOUNT_PROJECTS,
 	},
 	{
 		label: 'navbar.user.invitations',
 		icon: { library: 'solid', name: 'envelope' },
-		url: RegistryRouteEnum.USERS_INVITATIONS,
+		url: RegistryRouteEnum.MY_ACCOUNT_INVITATIONS,
 	},
 ]
 
@@ -60,48 +60,9 @@ export const PROJECT_LEVEL_MENUS: MenuItemModel[] = [
 		requiredProjectOption: ProjectOptionEnum.ALERT,
 	},
 	{
-		label: 'navbar.project.configuration.title',
+		label: 'navbar.project.configuration',
 		icon: { library: 'solid', name: 'gear' },
+		url: RegistryRouteEnum.PROJECTS_CONFIGURATION,
 		requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_R,
-		items: [
-			{
-				label: 'navbar.project.configuration.edit-project',
-				icon: { library: 'solid', name: 'pen-to-square' },
-				url: RegistryRouteEnum.PROJECTS_EDITION,
-				requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_U,
-			},
-			{
-				label: 'navbar.project.configuration.project-profiles',
-				icon: { library: 'solid', name: 'unlock' },
-				url: RegistryRouteEnum.PROJECTS_CONFIGURATION_PROFILES,
-				requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_R,
-			},
-			{
-				label: 'navbar.project.configuration.participants',
-				icon: { library: 'solid', name: 'user' },
-				url: RegistryRouteEnum.PROJECTS_CONFIGURATION_PARTICIPANTS,
-				requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_R,
-			},
-			{
-				label: 'navbar.project.configuration.groups',
-				icon: { library: 'solid', name: 'users' },
-				url: RegistryRouteEnum.PROJECTS_CONFIGURATION_GROUPS,
-				requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_R,
-			},
-			{
-				label: 'navbar.project.configuration.vehicles',
-				icon: { library: 'solid', name: 'car' },
-				url: RegistryRouteEnum.PROJECTS_CONFIGURATION_VEHICLES,
-				requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_VEHICLE_R,
-				requiredProjectOption: ProjectOptionEnum.VEHICLE,
-			},
-			{
-				label: 'navbar.project.configuration.activities',
-				icon: { library: 'solid', name: 'hammer' },
-				url: RegistryRouteEnum.PROJECTS_CONFIGURATION_ACTIVITIES,
-				requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_ACTIVITY_R,
-				requiredProjectOption: ProjectOptionEnum.ACTIVITY,
-			},
-		],
 	},
 ]

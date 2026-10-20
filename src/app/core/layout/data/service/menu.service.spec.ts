@@ -105,7 +105,7 @@ describe('MenuService', () => {
 		const menus: MenuItemModel[] = service.projectMenus()
 
 		// Assert
-		expect(labels(menus)).toEqual(['navbar.project.home', 'navbar.project.movements'])
+		expect(labels(menus)).toEqual(['navbar.project.home', 'navbar.project.movements', 'navbar.project.configuration'])
 		expect(menus[1]!.url).toBe('projects/p1/movements')
 	})
 
@@ -128,26 +128,24 @@ describe('MenuService', () => {
 		expect(withOption).toContain('navbar.project.alerts')
 	})
 
-	it('should keep only the allowed entries of the configuration menu', () => {
+	it('should expose the configuration menu as a single link to the configuration page', () => {
 		// Arrange
-		currentUser.set(userWith(
-			`p1_${ProjectAuthorityEnum.REGISTRY_PROJECT_R}`,
-			`p1_${ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_R}`,
-		))
+		currentUser.set(userWith(`p1_${ProjectAuthorityEnum.REGISTRY_PROJECT_R}`))
 		selectedProject.set(projectWith())
 		currentProjectId.set('p1')
 
 		// Act
 		const configuration: MenuItemModel | undefined = service.projectMenus()
-			.find((menu: MenuItemModel): boolean => menu.label == 'navbar.project.configuration.title')
+			.find((menu: MenuItemModel): boolean => menu.label == 'navbar.project.configuration')
 
 		// Assert
-		expect(labels(configuration?.items ?? [])).toEqual(['navbar.project.configuration.groups'])
+		expect(configuration?.url).toBe('projects/p1/configuration')
+		expect(configuration?.items).toBeUndefined()
 	})
 
-	it('should drop the configuration menu when none of its entries is allowed', () => {
+	it('should drop the configuration menu without the project read authority', () => {
 		// Arrange
-		currentUser.set(userWith(`p1_${ProjectAuthorityEnum.REGISTRY_PROJECT_R}`))
+		currentUser.set(userWith(`p1_${ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_R}`))
 		selectedProject.set(projectWith())
 		currentProjectId.set('p1')
 
@@ -155,7 +153,7 @@ describe('MenuService', () => {
 		const menus: string[] = labels(service.projectMenus())
 
 		// Assert
-		expect(menus).not.toContain('navbar.project.configuration.title')
+		expect(menus).not.toContain('navbar.project.configuration')
 	})
 
 	describe('activeMenuUrl', () => {
@@ -194,7 +192,7 @@ describe('MenuService', () => {
 			navigateTo('/projects/p1/configuration/groups/3/edit?tab=1#top')
 
 			// Assert
-			expect(freshService.activeMenuUrl()).toBe('projects/p1/configuration/groups')
+			expect(freshService.activeMenuUrl()).toBe('projects/p1/configuration')
 		})
 
 		it('should match the project home on the project root', () => {

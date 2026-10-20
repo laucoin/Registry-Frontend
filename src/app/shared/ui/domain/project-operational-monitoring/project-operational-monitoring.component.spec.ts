@@ -1,7 +1,9 @@
+import { NgTemplateOutlet } from '@angular/common';
 import { DebugElement, signal, WritableSignal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { MockBuilder, ngMocks } from 'ng-mocks';
+import { SessionFacade } from '@core/registry/state/session.facade';
 import { SelectedProjectFacade } from '@pages/projects/data/state/selected-project/selected-project.facade';
 import { NotificationModel } from '@shared/models/model/notification.model';
 import { MovementModel } from '@shared/models/model/movement.model';
@@ -13,12 +15,14 @@ const page: PageModel<MovementModel> = { page: 0, size: 10, totalElements: 6, to
 describe('ProjectOperationalMonitoringComponent', () => {
 	let fixture: ComponentFixture<ProjectOperationalMonitoringComponent>;
 	let facade: Record<string, unknown>;
+	let hasActivityOption: WritableSignal<boolean>;
 	let fetchWithActivity: ReturnType<typeof vi.fn>;
 	let fetchWithoutActivity: ReturnType<typeof vi.fn>;
 
 	beforeEach(async () => {
 		fetchWithActivity = vi.fn();
 		fetchWithoutActivity = vi.fn();
+		hasActivityOption = signal(true);
 		facade = {
 			currentMovementsPageWithActivity: signal(page),
 			currentMovementsPageWithActivityLoading: signal(false),
@@ -32,8 +36,10 @@ describe('ProjectOperationalMonitoringComponent', () => {
 			fetchCurrentMovementsPageWithoutActivity: fetchWithoutActivity,
 		};
 		await MockBuilder(ProjectOperationalMonitoringComponent)
+			.keep(NgTemplateOutlet)
 			.mock(TranslocoPipe, (key: string): string => key)
-			.provide({ provide: SelectedProjectFacade, useValue: facade });
+			.provide({ provide: SelectedProjectFacade, useValue: facade })
+			.provide({ provide: SessionFacade, useValue: { selectedProjectHasOption: (): WritableSignal<boolean> => hasActivityOption } });
 		fixture = TestBed.createComponent(ProjectOperationalMonitoringComponent);
 		await fixture.whenStable();
 	});
@@ -130,5 +136,19 @@ describe('ProjectOperationalMonitoringComponent', () => {
 
 		// Assert
 		expect(label).toBe('projectHome.operationalMonitoring.tabs.activities');
+	});
+
+	it('should show the other movements as a single list without tab when the project has no activity option', async () => {
+		// Arrange
+		hasActivityOption.set(false);
+
+		// Act
+		await fixture.whenStable();
+
+		// Assert
+		expect(fixture.nativeElement.querySelectorAll('sgdf-tab').length).toBe(0);
+		expect(ngMocks.findAll('app-list').length).toBe(1);
+		expect(ngMocks.input('app-list', 'label')).toBe('projectHome.operationalMonitoring.tabs.otherMovements');
+		expect(fixture.nativeElement.querySelector('h2').textContent.trim()).toBe('projectHome.operationalMonitoring.titleMovementsOnly');
 	});
 });

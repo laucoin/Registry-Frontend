@@ -41,7 +41,7 @@ describe( 'routes', () => {
         const pages: unknown[] = await Promise.all( loaders.map( (load: () => Promise<unknown>): Promise<unknown> => load() ) )
 
         // Assert
-        expect( pages.map( (page: unknown): string => typeof page ) ).toEqual( [ 'function', 'function', 'function', 'function', 'function' ] )
+        expect( pages.map( (page: unknown): string => typeof page ) ).toEqual( [ 'function', 'function', 'function', 'function' ] )
     } )
 
     it( 'guards the signed-in areas', () => {

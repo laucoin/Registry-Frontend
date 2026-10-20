@@ -2,41 +2,51 @@
     <sgdf-table-row>
         <sgdf-table-cell header class="flex items-center gap-1">
             <sgdf-icon name="magnifying-glass-chart" library="solid"/>
-            <h2 class="text-sm font-semibold uppercase">{{ 'projectHome.operationalMonitoring.title' | transloco }}</h2>
+            <h2 class="text-sm font-semibold uppercase">{{ (tabs().length > 1 ? 'projectHome.operationalMonitoring.title' : 'projectHome.operationalMonitoring.titleMovementsOnly') | transloco }}</h2>
         </sgdf-table-cell>
     </sgdf-table-row>
 
     <sgdf-table-row>
         <sgdf-table-cell class="align-top pt-0">
-            <sgdf-tab-group appearance="text">
-                @for (tab of tabs; track tab.key) {
-                    <sgdf-tab [panel]="tab.key">
-                        {{ 'projectHome.operationalMonitoring.tabs.' + tab.key | transloco }}
-                        @if (tab.page(); as page) {
-                            <sgdf-badge>{{ page.totalElements }}</sgdf-badge>
-                        }
-                    </sgdf-tab>
-                }
+            @if (tabs().length > 1) {
+                <sgdf-tab-group appearance="text">
+                    @for (tab of tabs(); track tab.key) {
+                        <sgdf-tab [panel]="tab.key">
+                            {{ 'projectHome.operationalMonitoring.tabs.' + tab.key | transloco }}
+                            @if (tab.page(); as page) {
+                                <sgdf-badge>{{ page.totalElements }}</sgdf-badge>
+                            }
+                        </sgdf-tab>
+                    }
 
-                @for (tab of tabs; track tab.key) {
-                    <sgdf-tab-panel [name]="tab.key">
-                        <app-list [emptyMessagePrefix]="'projectHome.operationalMonitoring.empty.' + tab.key"
-                                  [label]="'projectHome.operationalMonitoring.tabs.' + tab.key | transloco"
-                                  [elementPage]="tab.page()"
-                                  [error]="tab.error()"
-                                  [loading]="tab.loading()"
-                                  [loadingMore]="tab.silentLoading()"
-                                  (updateRequired)="loadBatch(tab, $event)">
-                            <ng-template appTemplate="element" let-movement>
-                                <sgdf-list-item appMovementElement
-                                                [movement]="movement"
-                                                [communicable]="true"
-                                                [actionMenuVisible]="false"/>
-                            </ng-template>
-                        </app-list>
-                    </sgdf-tab-panel>
-                }
-            </sgdf-tab-group>
+                    @for (tab of tabs(); track tab.key) {
+                        <sgdf-tab-panel [name]="tab.key">
+                            <ng-container [ngTemplateOutlet]="monitoringList" [ngTemplateOutletContext]="{ $implicit: tab }"/>
+                        </sgdf-tab-panel>
+                    }
+                </sgdf-tab-group>
+            } @else {
+                <div class="pt-(--spacing--in-block-large)">
+                    <ng-container [ngTemplateOutlet]="monitoringList" [ngTemplateOutletContext]="{ $implicit: tabs()[0] }"/>
+                </div>
+            }
         </sgdf-table-cell>
     </sgdf-table-row>
 </sgdf-table>
+
+<ng-template #monitoringList let-tab>
+    <app-list [emptyMessagePrefix]="'projectHome.operationalMonitoring.empty.' + tab.key"
+              [label]="'projectHome.operationalMonitoring.tabs.' + tab.key | transloco"
+              [elementPage]="tab.page()"
+              [error]="tab.error()"
+              [loading]="tab.loading()"
+              [loadingMore]="tab.silentLoading()"
+              (updateRequired)="loadBatch(tab, $event)">
+        <ng-template appTemplate="element" let-movement>
+            <sgdf-list-item appMovementElement
+                            [movement]="movement"
+                            [communicable]="true"
+                            [actionMenuVisible]="false"/>
+        </ng-template>
+    </app-list>
+</ng-template>

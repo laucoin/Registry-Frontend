@@ -23,7 +23,7 @@ export const routes: Routes = [
 		children: [
 			{
 				path: RegistryRouteEnum.MY_ACCOUNT,
-				loadComponent: () => import('@pages/my-account/my-account.page').then((m: typeof import('@pages/my-account/my-account.page')) => m.MyAccountPage),
+				loadChildren: () => import('@pages/my-account/my-account.routes').then((m: typeof import('@pages/my-account/my-account.routes')) => m.myAccountRoutes),
 				canActivate: [authGuard],
 			},
 			{
