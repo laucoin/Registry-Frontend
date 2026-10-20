@@ -1,0 +1,52 @@
+<sgdf-table class="h-full [&::part(grid)]:h-full [&::part(grid)]:table-fixed" appearance="soft">
+    <sgdf-table-row class="h-px">
+        <sgdf-table-cell header class="flex items-center gap-1">
+            <sgdf-icon name="triangle-exclamation" library="solid"/>
+            <h2 class="text-sm font-semibold uppercase">{{ 'home.attention.title' | transloco }}</h2>
+            @if (!initialLoading()) {
+                <sgdf-tag class="ml-auto" size="small" variant="info" appearance="soft">{{ projects().length }}</sgdf-tag>
+            }
+        </sgdf-table-cell>
+    </sgdf-table-row>
+
+    @if (error(); as failure) {
+        <sgdf-table-row class="h-px">
+            <sgdf-table-cell>
+                <app-section-error [error]="failure" [retrying]="loading()" (retry)="reload()"/>
+            </sgdf-table-cell>
+        </sgdf-table-row>
+    }
+
+    @if (initialLoading()) {
+        <sgdf-table-row>
+            <sgdf-table-cell>
+                <span class="sr-only" role="status">{{ 'global.list.loading' | transloco }}</span>
+                @for (row of skeletonRows; track row) {
+                    <sgdf-skeleton class="mb-2" shape="rounded" effect="pulse" aria-hidden="true" style="height: 2.5rem"/>
+                }
+            </sgdf-table-cell>
+        </sgdf-table-row>
+    } @else if (projects().length === 0) {
+        <sgdf-table-row>
+            <sgdf-table-cell class="align-middle text-center"><p class="m-0 text-sm opacity-80">{{ 'home.attention.empty' | transloco }}</p></sgdf-table-cell>
+        </sgdf-table-row>
+    } @else {
+        @for (project of projects(); track project.id) {
+            <sgdf-table-row class="h-px">
+                <sgdf-table-cell>
+                    <a class="flex items-center justify-between gap-3 no-underline" [routerLink]="link(project)">
+                        <span class="flex min-w-0 items-center gap-3">
+                            <sgdf-avatar shape="rounded" variant="primary" size="small" aria-hidden="true" [initials]="initials(project)"/>
+                            <strong class="truncate" [attr.title]="project.name">{{ project.name }}</strong>
+                        </span>
+                        <sgdf-tag size="small" appearance="soft" [variant]="variant(project)">{{ 'home.attention.alerts' | pluralTranslation: alerts(project) | transloco: { count: alerts(project) } }}</sgdf-tag>
+                        <span class="sr-only">{{ 'home.attention.open' | transloco: { name: project.name } }}</span>
+                    </a>
+                </sgdf-table-cell>
+            </sgdf-table-row>
+        }
+        <sgdf-table-row aria-hidden="true">
+            <sgdf-table-cell></sgdf-table-cell>
+        </sgdf-table-row>
+    }
+</sgdf-table>

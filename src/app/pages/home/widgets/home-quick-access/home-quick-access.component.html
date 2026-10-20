@@ -1,0 +1,29 @@
+<sgdf-table class="h-full [&::part(grid)]:h-full [&::part(grid)]:table-fixed" appearance="soft">
+    <sgdf-table-row>
+        <sgdf-table-cell header class="flex items-center gap-1">
+            <sgdf-icon name="gauge" library="solid"/>
+            <h2 class="text-sm font-semibold uppercase">{{ 'home.quickAccess.title' | transloco }}</h2>
+        </sgdf-table-cell>
+    </sgdf-table-row>
+    <sgdf-table-row>
+        <sgdf-table-cell>
+            <div class="grid grid-cols-2 gap-2">
+                @for (shortcut of shortcuts(); track shortcut.url) {
+                    @if (shortcut.external) {
+                        <sgdf-button appearance="outlined" variant="neutral" class="[&::part(base)]:h-20 [&::part(base)]:flex-col [&::part(base)]:justify-center [&::part(base)]:gap-1"
+                                     target="_blank" rel="noopener noreferrer" [href]="shortcut.url">
+                            <sgdf-icon slot="prefix" class="text-xl" [attr.name]="shortcut.icon" library="solid"/>
+                            {{ shortcut.label | transloco }}
+                            <span class="sr-only"> ({{ 'footer.new-tab' | transloco }})</span>
+                        </sgdf-button>
+                    } @else {
+                        <sgdf-button appearance="outlined" variant="neutral" class="[&::part(base)]:h-20 [&::part(base)]:flex-col [&::part(base)]:justify-center [&::part(base)]:gap-1" [routerLink]="shortcut.url">
+                            <sgdf-icon slot="prefix" class="text-xl" [attr.name]="shortcut.icon" library="solid"/>
+                            {{ shortcut.label | transloco }}
+                        </sgdf-button>
+                    }
+                }
+            </div>
+        </sgdf-table-cell>
+    </sgdf-table-row>
+</sgdf-table>

@@ -10,6 +10,7 @@ import { elementFetcher, loaderToggle, metadataFetcher, pageFetcher, paramsUpdat
 import { CumulativePageHelper, CumulativePageRequest } from '@shared/helpers/store/cumulative-page.helper'
 import { ElementRequestInformationModel } from '@shared/models/model/element-request-information.model'
 import { ProjectModel } from '@shared/models/model/project.model'
+import { PageModel } from '@shared/models/model/page.model'
 
 
 const defaultProject: ElementRequestInformationModel<ProjectModel> = {
@@ -25,6 +26,7 @@ const defaultProjectStore: ProjectStoreModel = {
         q: undefined,
         isVisible: undefined,
         at: undefined,
+        isFavorite: undefined,
     } ),
     project: defaultProject,
     createdProjectId: undefined,
@@ -34,6 +36,11 @@ const defaultProjectStore: ProjectStoreModel = {
             { label: '-', value: undefined },
             { label: 'projects.visible.true', value: true },
             { label: 'projects.visible.false', value: false },
+        ],
+        favorites: [
+            { label: '-', value: undefined },
+            { label: 'projects.favorite.true', value: true },
+            { label: 'projects.favorite.false', value: false },
         ],
     },
 }
@@ -53,6 +60,19 @@ export const ProjectStore = signalStore(
         startProjectLoader: loaderToggle( store, 'project', true ),
         stopProjectLoader: loaderToggle( store, 'project', false ),
         fetchProject: elementFetcher( store, 'project', (id: string) => api.findProjectById( id ) ),
+        setProjectFavorite: (id: string, favorite: boolean): void => {
+            const page: PageModel<ProjectModel> | undefined = store.projects.element()
+            if (!page) return
+            patchState( store, (state: ProjectStoreModel): Partial<ProjectStoreModel> => ({
+                projects: {
+                    ...state.projects,
+                    element: {
+                        ...page,
+                        content: page.content.map( (project: ProjectModel): ProjectModel => project.id === id ? { ...project, favorite } : project ),
+                    },
+                },
+            }) )
+        },
         resetProject: (): void => patchState( store, { project: defaultProject } ),
         setCreatedProjectId: (id: string | undefined): void => patchState( store, { createdProjectId: id } ),
     }) ),

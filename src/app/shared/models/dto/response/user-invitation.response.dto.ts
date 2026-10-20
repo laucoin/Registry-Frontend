@@ -9,6 +9,7 @@ export interface InvitationProjectResponseDto {
     name: string
     begin: CustomDatetimeModel | undefined
     end: CustomDatetimeModel | undefined
+    favorite: boolean | undefined
 }
 
 export interface UserInvitationResponseDto extends GenericResponseDto {

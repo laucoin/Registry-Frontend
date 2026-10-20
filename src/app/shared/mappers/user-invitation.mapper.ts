@@ -12,7 +12,7 @@ export class UserInvitationMapper {
         return {
             ...GenericMapper.toModel( dto ),
             project: dto.project
-                ? { id: dto.project.id, name: dto.project.name, begin: dto.project.begin, end: dto.project.end }
+                ? { id: dto.project.id, name: dto.project.name, begin: dto.project.begin, end: dto.project.end, favorite: dto.project.favorite }
                 : undefined,
             role: dto.role,
             availabilityStatus: dto.availabilityStatus,

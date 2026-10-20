@@ -6,6 +6,7 @@ import { TranslocoTestingModule } from '@jsverse/transloco'
 import { Mock, beforeEach, describe, expect, it, vi } from 'vitest'
 import { RegistryConfig } from '@core/config/registry.config'
 import { SessionFacade } from '@core/registry/state/session.facade'
+import { UserProfileFacade } from '@core/registry/state/user-profile.facade'
 import { ProjectProfileActions } from '@pages/projects/[projectId]/configuration/profiles/project-profile-row/project-profile-actions.service'
 import { ProjectProfileRowComponent } from '@pages/projects/[projectId]/configuration/profiles/project-profile-row/project-profile-row.component'
 import { AvailabilityStatusEnum } from '@shared/models/enumeration/availability-status.enum'
@@ -54,6 +55,7 @@ const INVITATION: UserInvitationModel = {
 describe('ProjectProfileRowComponent', () => {
     let fixture: ComponentFixture<HostComponent>
     let manageAcceptance: Mock<(profile: ProjectProfileModel, status: ProfileStatusEnum) => void>
+    let toggleProjectFavorite: Mock<(profile: UserInvitationModel) => void>
 
     const text = (selector: string): string | undefined => fixture.nativeElement.querySelector(selector)?.textContent?.trim()
     const tags = (): string[] => Array.from<HTMLElement>(fixture.nativeElement.querySelectorAll('sgdf-tag')).map((tag: HTMLElement): string => tag.textContent!.trim())
@@ -67,10 +69,12 @@ describe('ProjectProfileRowComponent', () => {
     beforeEach(async () => {
         RegistryConfig.config = { enabledActions: [] } as never
         manageAcceptance = vi.fn()
+        toggleProjectFavorite = vi.fn()
         TestBed.configureTestingModule({
             imports: [TranslocoTestingModule.forRoot({ langs: { fr: {} }, translocoConfig: { defaultLang: 'fr' } })],
             providers: [
                 provideRouter([]),
+                { provide: UserProfileFacade, useValue: { toggleProjectFavorite } },
                 { provide: SessionFacade, useValue: { currentUser: (): unknown => ({ id: 'u1' }), selectedProject: (): undefined => undefined } },
             ],
         })
@@ -90,6 +94,42 @@ describe('ProjectProfileRowComponent', () => {
 
         // Assert
         expect(title).toBe('Camp Vercors')
+    })
+
+    it('should show a pressed star for the project of a profile that is a favorite', async () => {
+        // Arrange
+        await render({ ...INVITATION, project: { ...INVITATION.project!, favorite: true } })
+
+        // Act
+        const star: Element | null = fixture.nativeElement.querySelector('app-favorite-toggle sgdf-icon-button')
+
+        // Assert
+        expect(star?.getAttribute('aria-pressed')).toBe('true')
+    })
+
+    it('should toggle the favorite of the project when the star is clicked', async () => {
+        // Arrange
+        await render(INVITATION)
+
+        // Act
+        fixture.nativeElement.querySelector('app-favorite-toggle sgdf-icon-button').click()
+
+        // Assert
+        expect(toggleProjectFavorite).toHaveBeenCalledWith(INVITATION)
+    })
+
+    it('should offer no star while the invitation awaits an answer, nor from the project side', async () => {
+        // Arrange
+        await render({ ...INVITATION, status: { value: ProfileStatusEnum.INVITED, label: 'Invited' } } as UserInvitationModel)
+        const awaiting: Element | null = fixture.nativeElement.querySelector('app-favorite-toggle')
+        await render(PROFILE, 'project')
+
+        // Act
+        const fromProject: Element | null = fixture.nativeElement.querySelector('app-favorite-toggle')
+
+        // Assert
+        expect(awaiting).toBeNull()
+        expect(fromProject).toBeNull()
     })
 
     it('should title the row with the person from the project side', async () => {

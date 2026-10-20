@@ -1,5 +1,5 @@
 <sgdf-table class="h-full [&::part(grid)]:h-full [&::part(grid)]:table-fixed" appearance="soft">
-    <sgdf-table-row>
+    <sgdf-table-row class="h-px">
         <sgdf-table-cell header class="flex items-center gap-1">
             <sgdf-icon name="car" library="solid"/>
             <h2 class="text-sm font-semibold uppercase">{{ 'projectHome.vehicleOverview.title' | transloco }}</h2>
@@ -29,7 +29,7 @@
     </sgdf-table-row>
 
     @if (showLink()) {
-        <sgdf-table-row>
+        <sgdf-table-row class="h-px">
             <sgdf-table-cell class="align-bottom">
                 <sgdf-button block size="small" appearance="text" [routerLink]="link()">
                     {{ 'projectHome.vehicleOverview.seeAll' | transloco }}

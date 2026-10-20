@@ -338,6 +338,10 @@
       "description": "Une erreur empêche l'application de fonctionner. Vous pouvez réessayer ; si le problème persiste, contactez le support.",
       "cause": "Cause de l'erreur",
       "retry": "Réessayer"
+    },
+    "favorite": {
+      "add": "Ajouter {{name}} aux favoris",
+      "remove": "Retirer {{name}} des favoris"
     }
   },
   "project-home": {
@@ -488,7 +492,8 @@
     "search-and-filter": {
       "text": "Nom",
       "datetime": "Date & Heure",
-      "visibility": "Visibilité"
+      "visibility": "Visibilité",
+      "favorite": "Favoris"
     },
     "visible": {
       "true": "Visible",
@@ -597,6 +602,10 @@
         "title": "🕵️‍♀️ Aucun projet",
         "message": "Aucun projet n’a été trouvé."
       }
+    },
+    "favorite": {
+      "true": "Favoris",
+      "false": "Hors favoris"
     }
   },
   "project-profiles": {
@@ -1806,6 +1815,7 @@
       "logout": "Se déconnecter"
     },
     "app": {
+      "home": "Accueil",
       "projects": "Projets",
       "users": "Utilisateurs"
     },

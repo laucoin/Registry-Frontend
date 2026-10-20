@@ -14,6 +14,8 @@ export enum RegistryRouteEnum {
 	LOGIN = 'login',
 	AUTH_CALLBACK = 'auth/callback',
 
+	HOME = '/',
+
 	PRIVACY = 'privacy',
 	TERMS = 'terms',
 

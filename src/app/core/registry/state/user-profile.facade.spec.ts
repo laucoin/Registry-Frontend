@@ -32,6 +32,7 @@ describe( 'UserProfileFacade', () => {
     let manageAcceptance: Mock<UserProjectProfileApi['manageUserProjectProfileAcceptance']>
     let deleteProfile: Mock<UserProjectProfileApi['deleteUserProfileById']>
     let createSupport: Mock<UserProjectProfileApi['createSupportProjectProfile']>
+    let setProjectFavorite: Mock<UserProjectProfileApi['setProjectFavorite']>
     let findProfilesPage: Mock<UserProjectProfileApi['findUserProjectProfiles']>
     let fetchCurrentUser: Mock<() => Observable<void>>
     let notify: Mock<(message: unknown) => void>
@@ -41,6 +42,7 @@ describe( 'UserProfileFacade', () => {
         manageAcceptance = vi.fn( () => of( { id: 'pp1', status: { value: 'ACCEPTED' } } as unknown as UserInvitationModel ) )
         deleteProfile = vi.fn( () => of( undefined ) )
         createSupport = vi.fn( () => of( { id: 'p1', name: 'Camp', profile: { id: 'pp2' } } as ProjectModel ) )
+        setProjectFavorite = vi.fn( () => of( undefined ) )
         findProfilesPage = vi.fn( () => of( EMPTY_PAGE ) )
         fetchCurrentUser = vi.fn( () => of( undefined ) )
         notify = vi.fn()
@@ -55,6 +57,7 @@ describe( 'UserProfileFacade', () => {
                 manageUserProjectProfileAcceptance: manageAcceptance,
                 deleteUserProfileById: deleteProfile,
                 createSupportProjectProfile: createSupport,
+                setProjectFavorite,
                 findUserProjectProfiles: findProfilesPage,
             },
         }
@@ -163,6 +166,47 @@ describe( 'UserProfileFacade', () => {
             // Assert
             expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'Title' } ) )
             expect( fetchCurrentUser ).not.toHaveBeenCalled()
+        } )
+
+        it( 'toggles the favorite of the project of a profile and shows it in the loaded pages', () => {
+            // Arrange
+            const profile: UserInvitationModel = { id: 'pp1', project: { id: 'p1', name: 'Camp', favorite: false } } as UserInvitationModel
+            findProfilesPage.mockReturnValue( of( { ...EMPTY_PAGE, content: [ profile ] } ) )
+            facade.fetchProjectProfilesPage( 0, 10 )
+
+            // Act
+            facade.toggleProjectFavorite( profile )
+
+            // Assert
+            expect( setProjectFavorite ).toHaveBeenCalledWith( 'p1', true )
+            expect( facade.userProjectProfilesPage()?.content[ 0 ]?.project?.favorite ).toBe( true )
+        } )
+
+        it( 'removes the favorite when the project already is one', () => {
+            // Act
+            facade.toggleProjectFavorite( { id: 'pp1', project: { id: 'p1', name: 'Camp', favorite: true } } as UserInvitationModel )
+
+            // Assert
+            expect( setProjectFavorite ).toHaveBeenCalledWith( 'p1', false )
+        } )
+
+        it( 'does nothing for a profile without project', () => {
+            // Act
+            facade.toggleProjectFavorite( { id: 'pp1', project: undefined } as UserInvitationModel )
+
+            // Assert
+            expect( setProjectFavorite ).not.toHaveBeenCalled()
+        } )
+
+        it( 'notifies the failure of a favorite change', () => {
+            // Arrange
+            setProjectFavorite.mockReturnValue( failing( FAILURE ) )
+
+            // Act
+            facade.toggleProjectFavorite( { id: 'pp1', project: { id: 'p1', name: 'Camp', favorite: false } } as UserInvitationModel )
+
+            // Assert
+            expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'Title' } ) )
         } )
 
         it( 'notifies and refreshes after the deletion of a profile', () => {

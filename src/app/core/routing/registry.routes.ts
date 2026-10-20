@@ -22,6 +22,12 @@ export const routes: Routes = [
 		component: MainComponent,
 		children: [
 			{
+				path: '',
+				pathMatch: 'full',
+				loadChildren: () => import('@pages/home/home.routes').then((m: typeof import('@pages/home/home.routes')) => m.homeRoutes),
+				canActivate: [authGuard],
+			},
+			{
 				path: RegistryRouteEnum.MY_ACCOUNT,
 				loadChildren: () => import('@pages/my-account/my-account.routes').then((m: typeof import('@pages/my-account/my-account.routes')) => m.myAccountRoutes),
 				canActivate: [authGuard],
@@ -46,7 +52,7 @@ export const routes: Routes = [
 			},
 			{
 				path: '**',
-				redirectTo: RegistryRouteEnum.PROJECTS,
+				redirectTo: '',
 			},
 		],
 	},

@@ -6,6 +6,10 @@ import { UserAuthorityEnum } from '@shared/models/enumeration/user-authority.enu
 
 export const APP_LEVEL_MENUS: MenuItemModel[] = [
 	{
+		label: 'navbar.app.home',
+		url: RegistryRouteEnum.HOME,
+	},
+	{
 		label: 'navbar.app.projects',
 		url: RegistryRouteEnum.PROJECTS,
 	},

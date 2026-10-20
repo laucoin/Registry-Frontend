@@ -1,0 +1,60 @@
+<div class="mb-3 flex flex-wrap items-end justify-between gap-x-3 gap-y-1">
+    <div class="min-w-0">
+        <h2 class="m-0 text-lg font-semibold">{{ 'home.favorites.title' | transloco }}</h2>
+        @if (total() !== undefined) {
+            <small class="opacity-80">{{ 'home.favorites.summary' | pluralTranslation: total() | transloco: { count: total() } }}</small>
+        }
+    </div>
+    <sgdf-button size="small" appearance="text" [routerLink]="projectsLink">{{ 'home.favorites.seeAll' | transloco }}</sgdf-button>
+</div>
+
+@if (error(); as failure) {
+    <app-section-error [error]="failure" [retrying]="loading()" (retry)="reload()"/>
+}
+
+@if (showSkeleton()) {
+    <span class="sr-only" role="status">{{ 'global.list.loading' | transloco }}</span>
+    <div class="grid grid-cols-1 gap-(--spacing--in-block-large) sm:grid-cols-2 lg:grid-cols-3">
+        @for (card of skeletonCards; track card) {
+            <sgdf-skeleton shape="rounded" effect="pulse" aria-hidden="true" style="height: 10rem"/>
+        }
+    </div>
+} @else if (total() === 0) {
+    <p class="m-0 text-sm opacity-80">{{ 'home.favorites.empty' | transloco }}</p>
+} @else {
+    <div class="grid grid-cols-1 gap-(--spacing--in-block-large) sm:grid-cols-2 lg:grid-cols-3" data-testid="favorites-row">
+        @for (project of projects(); track project.id) {
+            <sgdf-card class="relative min-w-0" appearance="outlined">
+                <div class="flex flex-wrap items-start justify-between gap-x-3 gap-y-1">
+                    <sgdf-avatar shape="rounded" variant="primary" aria-hidden="true" [initials]="initials(project)"/>
+                    <span class="flex shrink-0 items-center gap-2">
+                        @if (project.status; as status) {
+                            <sgdf-tag size="small" appearance="soft">{{ status.label }}</sgdf-tag>
+                        }
+                        <app-favorite-toggle [favorite]="true" [name]="project.name" (toggled)="remove(project)"/>
+                    </span>
+                </div>
+                <h3 class="mb-1 mt-3 break-words text-base font-semibold">
+                    <a class="no-underline" [routerLink]="link(project)">{{ project.name }}</a>
+                </h3>
+                @if (project.counts; as counts) {
+                    <p class="m-0 text-sm">
+                        {{ 'home.favorites.participants' | pluralTranslation: counts.participants | transloco: { count: counts.participants } }}
+                        @if (counts.vehicles !== undefined) {
+                            · {{ 'home.favorites.vehicles' | pluralTranslation: counts.vehicles | transloco: { count: counts.vehicles } }}
+                        } @else {
+                            · {{ 'home.favorites.groups' | pluralTranslation: counts.groups | transloco: { count: counts.groups } }}
+                        }
+                    </p>
+                }
+                <p class="mb-0 mt-3 border-t pt-3 text-xs opacity-80">
+                    @if (project.begin || project.end) {
+                        {{ 'home.favorites.period' | transloco: { begin: (project.begin | customDateFormat) ?? '...', end: (project.end | customDateFormat) ?? '...' } }}
+                    } @else {
+                        {{ 'home.favorites.permanent' | transloco }}
+                    }
+                </p>
+            </sgdf-card>
+        }
+    </div>
+}

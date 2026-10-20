@@ -17,6 +17,7 @@ describe( 'ProjectFacade', () => {
     let createProject: Mock<ProjectApi['createProject']>
     let updateProjectById: Mock<ProjectApi['updateProjectById']>
     let disableProjectById: Mock<ProjectApi['disableProjectById']>
+    let setFavoriteById: Mock<ProjectApi['setFavoriteById']>
     let fetchCurrentUser: Mock<SessionFacade['fetchCurrentUser']>
     let notify: Mock<(message: unknown) => void>
     let currentProjectId: WritableSignal<string | undefined>
@@ -27,6 +28,7 @@ describe( 'ProjectFacade', () => {
         createProject = vi.fn()
         updateProjectById = vi.fn()
         disableProjectById = vi.fn()
+        setFavoriteById = vi.fn( () => of( undefined ) )
         fetchCurrentUser = vi.fn( () => of( undefined ) )
         notify = vi.fn()
         currentProjectId = signal<string | undefined>( undefined )
@@ -34,7 +36,7 @@ describe( 'ProjectFacade', () => {
             providers: [
                 ProjectFacade,
                 ProjectStore,
-                { provide: ProjectApi, useValue: { findProjects, createProject, updateProjectById, disableProjectById } },
+                { provide: ProjectApi, useValue: { findProjects, createProject, updateProjectById, disableProjectById, setFavoriteById } },
                 { provide: SessionFacade, useValue: { currentProjectId, fetchCurrentUser } },
                 { provide: UiFacade, useValue: { notify } },
                 { provide: TranslocoService, useValue: { translate: (key: string): string => `t:${key}` } },
@@ -89,6 +91,50 @@ describe( 'ProjectFacade', () => {
 
         // Assert
         expect( findProjects ).toHaveBeenCalledWith( 3, 10, expect.anything() )
+    } )
+
+    it( 'adds a project to the favorites and shows it as a favorite', () => {
+        // Arrange
+        findProjects.mockReturnValueOnce( of( pageOf<ProjectModel>( [ { id: 'a', favorite: false } as ProjectModel ], 0 ) ) )
+        facade.fetchProjectsPage( 0, 10 )
+
+        // Act
+        facade.toggleFavorite( { id: 'a', favorite: false } as ProjectModel )
+
+        // Assert
+        expect( setFavoriteById ).toHaveBeenCalledWith( 'a', true )
+        expect( facade.projectsPage()?.content[ 0 ]?.favorite ).toBe( true )
+    } )
+
+    it( 'removes a favorite project from the favorites', () => {
+        // Act
+        facade.toggleFavorite( { id: 'a', favorite: true } as ProjectModel )
+
+        // Assert
+        expect( setFavoriteById ).toHaveBeenCalledWith( 'a', false )
+    } )
+
+    it( 'notifies and keeps the project unchanged when the favorite command fails', () => {
+        // Arrange
+        findProjects.mockReturnValueOnce( of( pageOf<ProjectModel>( [ { id: 'a', favorite: false } as ProjectModel ], 0 ) ) )
+        facade.fetchProjectsPage( 0, 10 )
+        setFavoriteById.mockReturnValue( failing( ERROR_500 ) )
+
+        // Act
+        facade.toggleFavorite( { id: 'a', favorite: false } as ProjectModel )
+
+        // Assert
+        expect( notify ).toHaveBeenCalledTimes( 1 )
+        expect( facade.projectsPage()?.content[ 0 ]?.favorite ).toBe( false )
+    } )
+
+    it( 'restarts from the first page when the favorite filter changed', () => {
+        // Act
+        facade.inputPageSearchParameters( undefined, undefined, undefined, true )
+        facade.fetchProjectsPage( 3, 10 )
+
+        // Assert
+        expect( findProjects ).toHaveBeenLastCalledWith( 0, 10, expect.objectContaining( { isFavorite: true } ) )
     } )
 
     it( 'translates the visibility labels except the empty option', () => {

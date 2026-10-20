@@ -263,7 +263,7 @@ describe( 'SessionFacade', () => {
             expect( navigateByUrl ).toHaveBeenCalledWith( '/projects/42' )
         } )
 
-        it( 'falls back to the projects page instead of looping on the callback route', () => {
+        it( 'falls back to the home page instead of looping on the callback route', () => {
             // Arrange
             sessionStorage.setItem( REDIRECT_URI, '/auth/callback' )
 
@@ -271,7 +271,7 @@ describe( 'SessionFacade', () => {
             facade.fetchToken( 'code' )
 
             // Assert
-            expect( navigateByUrl ).toHaveBeenCalledWith( 'projects' )
+            expect( navigateByUrl ).toHaveBeenCalledWith( '/' )
         } )
 
         it( 'shows the global error when the token exchange fails', () => {

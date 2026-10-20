@@ -10,5 +10,6 @@ import { RouterOutlet } from '@angular/router'
     selector: 'app-user',
     imports: [ RouterOutlet ],
     template: '<router-outlet/>',
+    styles: ':host { display: block; width: 100%; }',
 } )
 export class UserPage {}

@@ -112,6 +112,17 @@ export class UserProfileFacade {
         ).subscribe()
     }
 
+    public toggleProjectFavorite(profile: UserInvitationModel): void {
+        const project: UserInvitationModel['project'] = profile.project
+        if (!project) return
+
+        const favorite: boolean = !project.favorite
+        this.userProjectProfileApi.setProjectFavorite(project.id, favorite).pipe(
+            tap((): void => this.store.setProjectFavorite(project.id, favorite)),
+            catchError((error: ErrorModel): Observable<void> => this.reportError$(error)),
+        ).subscribe()
+    }
+
     public deleteUserProjectProfile(profile: UserInvitationModel): Observable<void> {
         return eager(
             this.userProjectProfileApi.deleteUserProfileById(profile.id).pipe(

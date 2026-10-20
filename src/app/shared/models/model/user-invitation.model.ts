@@ -9,6 +9,8 @@ export interface InvitationProjectModel {
     name: string
     begin: CustomDatetimeModel | undefined
     end: CustomDatetimeModel | undefined
+    /** Whether the signed-in user marked the project as a favorite; undefined when the backend does not tell. */
+    favorite: boolean | undefined
 }
 
 /** A profile of the signed-in user seen from the user side: the project summary matters, the user is implicit. */

@@ -55,6 +55,22 @@ export const UserProfileStore = signalStore(
         updateInvitationsPageSearchParams: paramsMerger( store, 'invitations' ),
         startProfileLoader: loaderToggle( store, 'profile', true ),
         stopProfileLoader: loaderToggle( store, 'profile', false ),
+        setProjectFavorite: (projectId: string, favorite: boolean): void => {
+            const withFavorite = (block: ProfilesPage): ProfilesPage => block.element
+                ? {
+                    ...block,
+                    element: {
+                        ...block.element,
+                        content: block.element.content.map( (profile: UserInvitationModel): UserInvitationModel =>
+                            profile.project?.id === projectId ? { ...profile, project: { ...profile.project, favorite } } : profile ),
+                    },
+                }
+                : block
+            patchState( store, (state: UserProfileState): Partial<UserProfileState> => ({
+                profiles: withFavorite( state.profiles ),
+                invitations: withFavorite( state.invitations ),
+            }) )
+        },
         reset: (): void => patchState( store, defaultUserProfileState ),
     }) ),
 )

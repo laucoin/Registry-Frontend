@@ -63,6 +63,15 @@ export class ProjectFacade extends GenericFacade {
             }) ),
         )
 
+    public readonly projectsPageIsFavoriteParam: Signal<boolean | undefined> = this.store.projects.params.isFavorite
+
+    public readonly favoritesMetadata: Signal<SelectOptionModel<boolean | undefined>[]> = computed( (): SelectOptionModel<boolean | undefined>[] =>
+            this.store.metadata.favorites().map( (item: SelectOptionModel<boolean | undefined>): SelectOptionModel<boolean | undefined> => ({
+                ...item,
+                label: this.translateLabel( item.label! ),
+            }) ),
+        )
+
     public readonly project: Signal<ProjectModel | undefined> = this.store.project.element
 
     public readonly createdProjectId: Signal<string | undefined> = this.store.createdProjectId
@@ -87,19 +96,30 @@ export class ProjectFacade extends GenericFacade {
         q: string | undefined,
         at: Date | undefined,
         isVisible: boolean | undefined,
+        isFavorite: boolean | undefined = undefined,
     ): void {
         const resetSearch: boolean = this.projectsPageQueryParam() != q
                                      || this.projectsPageAtParam()?.toISOString() != at?.toISOString()
                                      || this.projectsPageIsVisibleParam() != isVisible
+                                     || this.projectsPageIsFavoriteParam() != isFavorite
 
         if (resetSearch) {
             this.store.updateProjectsPageSearchParams( {
                 resetSearch: resetSearch,
                 isVisible: isVisible,
+                isFavorite: isFavorite,
                 q: q,
                 at: at?.toISOString(),
             } )
         }
+    }
+
+    public toggleFavorite (project: ProjectModel): void {
+        const favorite: boolean = !project.favorite
+        this.api.setFavoriteById( project.id, favorite ).pipe(
+            notifyOnError( this.uiFacade ),
+            tap( (): void => this.store.setProjectFavorite( project.id, favorite ) ),
+        ).subscribe()
     }
 
     public fetchProject (id: string): void {

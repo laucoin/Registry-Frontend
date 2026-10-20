@@ -1,0 +1,59 @@
+{
+  "eyebrow": "Espace applicatif",
+  "greeting": "Bonjour {{name}}",
+  "subtitle": "Retrouvez vos projets, vos invitations et les éléments qui demandent votre attention.",
+  "create": "Créer un projet",
+  "favorites": {
+    "title": "Mes projets favoris",
+    "summary": {
+      "one": "{{count}} favori",
+      "few": "{{count}} favoris"
+    },
+    "seeAll": "Voir tous les projets",
+    "empty": "Aucun projet favori pour le moment. Marquez un projet comme favori depuis la liste des projets.",
+    "participants": {
+      "one": "{{count}} participant",
+      "few": "{{count}} participants"
+    },
+    "vehicles": {
+      "one": "{{count}} véhicule",
+      "few": "{{count}} véhicules"
+    },
+    "groups": {
+      "one": "{{count}} groupe",
+      "few": "{{count}} groupes"
+    },
+    "remove": "Retirer des favoris : {{name}}",
+    "permanent": "Projet permanent",
+    "period": "Du {{begin}} au {{end}}"
+  },
+  "invitations": {
+    "title": "Invitations reçues",
+    "pending": {
+      "zero": "Aucune en attente",
+      "one": "{{count}} en attente",
+      "few": "{{count}} en attente"
+    },
+    "invitedAs": "Invitation en tant que {{role}}",
+    "accept": "Accepter",
+    "refuse": "Refuser",
+    "empty": "Aucune invitation en attente.",
+    "seeAll": "Voir toutes les invitations"
+  },
+  "attention": {
+    "title": "Projets demandant l'attention",
+    "alerts": {
+      "one": "{{count}} alerte",
+      "few": "{{count}} alertes"
+    },
+    "empty": "Aucun projet n'a d'alerte en cours.",
+    "open": "Ouvrir les alertes de {{name}}"
+  },
+  "quickAccess": {
+    "title": "Accès rapides",
+    "users": "Utilisateurs",
+    "account": "Mon compte",
+    "profiles": "Mes profils",
+    "help": "Centre d'aide"
+  }
+}

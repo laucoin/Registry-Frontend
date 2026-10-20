@@ -13,6 +13,10 @@ const CASES: ApiCase<UserProjectProfileApi>[] = [
         call: (api: UserProjectProfileApi) => api.manageUserProjectProfileAcceptance( 'pp1', false ), response: INVITATION_DTO, verify: expectMapped },
     { name: 'creates a support profile', method: 'POST', url: `${BASE}/p1/support`,
         call: (api: UserProjectProfileApi) => api.createSupportProjectProfile( 'p1' ), response: PROJECT_DTO, verify: expectMapped },
+    { name: 'adds the project of a profile to the favorites', method: 'POST', url: '/api/v2/projects/p1/favorite',
+        call: (api: UserProjectProfileApi) => api.setProjectFavorite( 'p1', true ) },
+    { name: 'removes the project of a profile from the favorites', method: 'DELETE', url: '/api/v2/projects/p1/favorite',
+        call: (api: UserProjectProfileApi) => api.setProjectFavorite( 'p1', false ) },
     { name: 'deletes a profile of the user', method: 'DELETE', url: `${BASE}/pp1`, call: (api: UserProjectProfileApi) => api.deleteUserProfileById( 'pp1' ) },
 ]
 

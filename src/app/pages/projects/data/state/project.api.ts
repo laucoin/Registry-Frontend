@@ -79,6 +79,12 @@ export class ProjectApi extends GenericApi {
         )
     }
 
+    public setFavoriteById(id: string, favorite: boolean): Observable<void> {
+        return favorite
+            ? this.http.post<void>(`${this.baseUrl}/${id}/favorite`, null)
+            : this.http.delete<void>(`${this.baseUrl}/${id}/favorite`)
+    }
+
     public deleteProjectById(id: string): Observable<void> {
         return this.http.delete<void>(`${this.baseUrl}/${id}`)
     }

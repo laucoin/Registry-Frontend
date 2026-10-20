@@ -1,0 +1,66 @@
+<sgdf-table class="h-full [&::part(grid)]:h-full [&::part(grid)]:table-fixed" appearance="soft">
+    <sgdf-table-row class="h-px">
+        <sgdf-table-cell header class="flex items-center gap-1">
+            <sgdf-icon name="envelope" library="regular"/>
+            <h2 class="text-sm font-semibold uppercase">{{ 'home.invitations.title' | transloco }}</h2>
+            @if (total() !== undefined) {
+                <sgdf-tag class="ml-auto" size="small" variant="info" appearance="soft">{{ 'home.invitations.pending' | pluralTranslation: total() | transloco: { count: total() } }}</sgdf-tag>
+            }
+        </sgdf-table-cell>
+    </sgdf-table-row>
+
+    @if (error(); as failure) {
+        <sgdf-table-row class="h-px">
+            <sgdf-table-cell>
+                <app-section-error [error]="failure" [retrying]="loading()" (retry)="reload()"/>
+            </sgdf-table-cell>
+        </sgdf-table-row>
+    }
+
+    @if (loading() && total() === undefined) {
+        <sgdf-table-row>
+            <sgdf-table-cell>
+                <span class="sr-only" role="status">{{ 'global.list.loading' | transloco }}</span>
+                @for (row of skeletonRows; track row) {
+                    <sgdf-skeleton class="mb-2" shape="rounded" effect="pulse" aria-hidden="true" style="height: 2.5rem"/>
+                }
+            </sgdf-table-cell>
+        </sgdf-table-row>
+    } @else if (total() === 0) {
+        <sgdf-table-row>
+            <sgdf-table-cell class="align-middle text-center"><p class="m-0 text-sm opacity-80">{{ 'home.invitations.empty' | transloco }}</p></sgdf-table-cell>
+        </sgdf-table-row>
+    } @else {
+        @for (invitation of invitations(); track invitation.id) {
+            <sgdf-table-row class="h-px">
+                <sgdf-table-cell>
+                    <div class="flex flex-wrap items-center justify-between gap-3">
+                        <div class="min-w-0">
+                            <strong class="block truncate" [attr.title]="invitation.project?.name">{{ invitation.project?.name }}</strong>
+                            <small class="opacity-80">{{ 'home.invitations.invitedAs' | transloco: { role: invitation.role.label } }}</small>
+                        </div>
+                        <span class="flex gap-2">
+                            <sgdf-button size="small" appearance="outlined" variant="neutral" (click)="answer(invitation, false)">
+                                {{ 'home.invitations.refuse' | transloco }}
+                                <span class="sr-only">({{ invitation.project?.name }})</span>
+                            </sgdf-button>
+                            <sgdf-button size="small" variant="success" (click)="answer(invitation, true)">
+                                {{ 'home.invitations.accept' | transloco }}
+                                <span class="sr-only">({{ invitation.project?.name }})</span>
+                            </sgdf-button>
+                        </span>
+                    </div>
+                </sgdf-table-cell>
+            </sgdf-table-row>
+        }
+        <sgdf-table-row aria-hidden="true">
+            <sgdf-table-cell></sgdf-table-cell>
+        </sgdf-table-row>
+    }
+
+    <sgdf-table-row class="h-px">
+        <sgdf-table-cell>
+            <sgdf-button block size="small" appearance="text" [routerLink]="invitationsLink">{{ 'home.invitations.seeAll' | transloco }}</sgdf-button>
+        </sgdf-table-cell>
+    </sgdf-table-row>
+</sgdf-table>

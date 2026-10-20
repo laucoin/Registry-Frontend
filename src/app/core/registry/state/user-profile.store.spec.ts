@@ -64,6 +64,38 @@ describe( 'UserProfileStore', () => {
         expect( ids ).toEqual( [ [ 'pp1', 'pp2' ], [ 'pp1', 'pp2' ] ] )
     } )
 
+    it( 'updates the favorite of the project in every shown profile and invitation', () => {
+        // Arrange
+        const page: PageModel<UserInvitationModel> = {
+            ...PAGE,
+            content: [
+                { id: 'pp1', project: { id: 'p1', name: 'Camp', favorite: false } } as UserInvitationModel,
+                { id: 'pp2', project: { id: 'p1', name: 'Camp', favorite: false } } as UserInvitationModel,
+                { id: 'pp3', project: { id: 'p2', name: 'Other', favorite: false } } as UserInvitationModel,
+            ],
+        }
+        findUserProjectProfiles.mockReturnValue( of( page ) )
+        store.fetchProfilesPage( { page: 0, size: 10 } )
+        store.fetchInvitationsPage( { page: 0, size: 10 } )
+
+        // Act
+        store.setProjectFavorite( 'p1', true )
+
+        // Assert
+        const favorites = ( block: typeof store.profiles ): (boolean | undefined)[] | undefined =>
+            block.element()?.content.map( (profile: UserInvitationModel): boolean | undefined => profile.project?.favorite )
+        expect( favorites( store.profiles ) ).toEqual( [ true, true, false ] )
+        expect( favorites( store.invitations ) ).toEqual( [ true, true, false ] )
+    } )
+
+    it( 'leaves the pages untouched when none is shown', () => {
+        // Act
+        store.setProjectFavorite( 'p1', true )
+
+        // Assert
+        expect( store.profiles.element() ).toBeUndefined()
+    } )
+
     it( 'keeps the error of a failed invitations fetch in the invitations block', () => {
         // Arrange
         findUserProjectProfiles.mockReturnValue( throwError( (): ErrorModel => ({ status: 500, title: 'Title', message: 'Message' }) as ErrorModel ) )

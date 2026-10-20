@@ -3,4 +3,6 @@ export interface ProjectPageParamsModel {
     isVisible: boolean | undefined
     q: string | undefined
     at: string | undefined
+    isFavorite: boolean | undefined
+    sort?: string
 }

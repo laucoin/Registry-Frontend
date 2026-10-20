@@ -34,6 +34,7 @@ describe('ProjectsListPage', () => {
         facade['projectsPageQueryParam'].mockReturnValue(undefined)
         facade['projectsPageAtParam'].mockReturnValue(undefined)
         facade['projectsPageIsVisibleParam'].mockReturnValue(undefined)
+        facade['projectsPageIsFavoriteParam'].mockReturnValue(undefined)
         authorities = signal(['REGISTRY_PROJECT_C', 'REGISTRY_PROJECT_R'])
         TestBed.configureTestingModule({
             providers: [
@@ -67,34 +68,46 @@ describe('ProjectsListPage', () => {
         const model: ProjectsListSearchModel = page.model()
 
         // Assert
-        expect(model).toEqual({ q: '', at: null, isVisible: '' })
+        expect(model).toEqual({ q: '', at: null, isVisible: '', isFavorite: '' })
     })
 
     it('sends the typed filters to the facade and restarts from the first batch', () => {
         // Arrange
         const page: ProjectsListApi = create()
         const when: Date = new Date(2026, 9, 3)
-        page.model.set({ q: 'camp', at: when, isVisible: 'false' })
+        page.model.set({ q: 'camp', at: when, isVisible: 'false', isFavorite: 'true' })
 
         // Act
         page.search()
 
         // Assert
-        expect(facade['inputPageSearchParameters']).toHaveBeenCalledWith('camp', when, false)
+        expect(facade['inputPageSearchParameters']).toHaveBeenCalledWith('camp', when, false, true)
         expect(facade['fetchProjectsPage']).toHaveBeenLastCalledWith(0, undefined)
     })
 
     it('clears the filters when they are reset, then searches again', () => {
         // Arrange
         const page: ProjectsListApi = create()
-        page.model.set({ q: 'camp', at: new Date(), isVisible: 'true' })
+        page.model.set({ q: 'camp', at: new Date(), isVisible: 'true', isFavorite: 'false' })
 
         // Act
         page.resetFilters()
 
         // Assert
-        expect(page.model()).toEqual({ q: '', at: null, isVisible: '' })
-        expect(facade['inputPageSearchParameters']).toHaveBeenCalledWith(undefined, undefined, undefined)
+        expect(page.model()).toEqual({ q: '', at: null, isVisible: '', isFavorite: '' })
+        expect(facade['inputPageSearchParameters']).toHaveBeenCalledWith(undefined, undefined, undefined, undefined)
+    })
+
+    it('toggles the favorite of a project through the facade', () => {
+        // Arrange
+        const page: ProjectsListApi = create()
+        const project: ProjectModel = { id: 'p1', favorite: false } as ProjectModel
+
+        // Act
+        ;(page as unknown as { toggleFavorite: (project: ProjectModel) => void }).toggleFavorite(project)
+
+        // Assert
+        expect(facade['toggleFavorite']).toHaveBeenCalledWith(project)
     })
 
     it('asks the facade for the requested batch without touching the search parameters', () => {

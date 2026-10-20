@@ -42,6 +42,28 @@ describe( 'ProjectStore', () => {
         expect( store.projects.loading() ).toBe( false )
     } )
 
+    it( 'updates the favorite of one shown project without refetching', () => {
+        // Arrange
+        findProjects.mockReturnValue( of( pageOf<ProjectModel>( [ { id: 'p1', favorite: false } as ProjectModel, { id: 'p2', favorite: false } as ProjectModel ] ) ) )
+        store.fetchProjectsPage( { page: 0, size: 10 } )
+        findProjects.mockClear()
+
+        // Act
+        store.setProjectFavorite( 'p2', true )
+
+        // Assert
+        expect( store.projects.element()?.content.map( (project: ProjectModel): boolean | undefined => project.favorite ) ).toEqual( [ false, true ] )
+        expect( findProjects ).not.toHaveBeenCalled()
+    } )
+
+    it( 'ignores a favorite change when no page is shown', () => {
+        // Act
+        store.setProjectFavorite( 'p1', true )
+
+        // Assert
+        expect( store.projects.element() ).toBeUndefined()
+    } )
+
     it( 'keeps a failed projects fetch in the projects block', () => {
         // Arrange
         findProjects.mockReturnValue( failing( ERROR_500 ) )

@@ -31,6 +31,10 @@
                 <sgdf-tag appearance="soft" pill [variant]="statusVariant(profile)">{{ profile.status.label }}</sgdf-tag>
             }
         </span>
+        @if (canFavorite(profile)) {
+            <app-favorite-toggle slot="end" [favorite]="isFavorite(profile)" [name]="title(profile)"
+                                 (toggled)="toggleFavorite(profile)"/>
+        }
         <app-element-actions slot="actions" [subject]="title(profile)" [actions]="actions.actionsFor(profile)"/>
     </sgdf-list-item>
 </ng-template>

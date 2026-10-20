@@ -1,3 +1,4 @@
+import { FavoriteToggleComponent } from '@shared/ui/common/favorite-toggle/favorite-toggle.component'
 import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, signal, Signal, WritableSignal } from '@angular/core'
 import { FieldTree, FormField } from '@angular/forms/signals'
 import { RouterLink } from '@angular/router'
@@ -57,6 +58,7 @@ const INITIALS_LENGTH: number = 2
         CustomDateFormatPipe,
         PluralTranslationPipe,
         BooleanChoicePipe,
+        FavoriteToggleComponent,
     ],
     providers: [ProjectActions],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -78,12 +80,14 @@ export class ProjectsListPage {
         StringHelper.isNotNullNorBlank(this.facade.projectsPageQueryParam()),
         this.facade.projectsPageAtParam() !== undefined,
         this.facade.projectsPageIsVisibleParam() !== undefined,
+        this.facade.projectsPageIsFavoriteParam() !== undefined,
     ].filter(Boolean).length)
 
     protected readonly model: WritableSignal<ProjectsListSearchModel> = signal(toProjectsListSearchModel({
         q: this.facade.projectsPageQueryParam(),
         at: this.facade.projectsPageAtParam(),
         isVisible: this.facade.projectsPageIsVisibleParam(),
+        isFavorite: this.facade.projectsPageIsFavoriteParam(),
     }))
     protected readonly form: FieldTree<ProjectsListSearchModel> = createSearchForm(this.model)
 
@@ -97,6 +101,7 @@ export class ProjectsListPage {
             search.q,
             search.at,
             search.isVisible,
+            search.isFavorite,
         )
         this.facade.fetchProjectsPage(0, undefined)
     }
@@ -107,12 +112,17 @@ export class ProjectsListPage {
             q: '',
             at: null,
             isVisible: '',
+            isFavorite: '',
         }))
         this.search()
     }
 
     protected loadBatch(pageEvent: PageEventModel): void {
         this.facade.fetchProjectsPage(pageEvent.page, pageEvent.size)
+    }
+
+    protected toggleFavorite(project: ProjectModel): void {
+        this.facade.toggleFavorite(project)
     }
 
     protected initials(project: ProjectModel): string {

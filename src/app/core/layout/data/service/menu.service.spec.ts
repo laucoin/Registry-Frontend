@@ -67,7 +67,7 @@ describe('MenuService', () => {
 		const menus: MenuItemModel[] = service.appMenus()
 
 		// Assert
-		expect(labels(menus)).toEqual(['navbar.app.projects'])
+		expect(labels(menus)).toEqual(['navbar.app.home', 'navbar.app.projects'])
 	})
 
 	it('should show the users menu with the users authority', () => {
@@ -78,7 +78,7 @@ describe('MenuService', () => {
 		const menus: MenuItemModel[] = service.appMenus()
 
 		// Assert
-		expect(labels(menus)).toEqual(['navbar.app.projects', 'navbar.app.users'])
+		expect(labels(menus)).toEqual(['navbar.app.home', 'navbar.app.projects', 'navbar.app.users'])
 	})
 
 	it('should expose no project menu without a selected project', () => {
@@ -181,6 +181,22 @@ describe('MenuService', () => {
 
 			// Assert
 			expect(active).toBe('projects')
+		})
+
+		it('should mark the home menu active only on the root path', () => {
+			// Arrange
+			currentUser.set(userWith())
+			const freshService: MenuService = TestBed.inject(MenuService)
+
+			// Act
+			navigateTo('/')
+			const onHome: string | undefined = freshService.activeMenuUrl()
+			navigateTo('/projects')
+			const onProjects: string | undefined = freshService.activeMenuUrl()
+
+			// Assert
+			expect(onHome).toBe('/')
+			expect(onProjects).toBe('projects')
 		})
 
 		it('should prefer the most specific menu over the project home', () => {
