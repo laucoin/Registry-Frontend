@@ -59,8 +59,13 @@ export class MenuService {
 	}
 
 	private resolve(menu: MenuItemModel): MenuItemModel {
+		const fallback: MenuItemModel['fallbackLabel'] = menu.fallbackLabel
+		const useFallback: boolean = !!fallback
+			&& !CurrentUserHelper.hasUserAuthority(this.session.currentUser(), fallback.unlessAuthority)
+
 		return {
 			...menu,
+			label: useFallback ? fallback!.label : menu.label,
 			url: menu.url?.replace(':projectId', this.session.currentProjectId() ?? ''),
 			items: menu.items && this.filterMenus(menu.items),
 		}

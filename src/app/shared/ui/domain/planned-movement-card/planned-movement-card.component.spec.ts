@@ -27,7 +27,7 @@ describe('PlannedMovementCardComponent', () => {
 		fixture.componentRef.setInput('totalKey', 'total');
 		fixture.componentRef.setInput('emptyKey', 'empty');
 		fixture.componentRef.setInput('icon', 'plane-arrival');
-		fixture.componentRef.setInput('rowIcon', 'arrow-down-left');
+		fixture.componentRef.setInput('rowIcon', 'arrow-right-to-bracket');
 		await fixture.whenStable();
 	}
 

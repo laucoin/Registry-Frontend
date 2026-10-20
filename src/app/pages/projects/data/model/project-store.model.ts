@@ -14,5 +14,6 @@ export interface ProjectStoreModel extends SectionErrorsState {
         options: ProjectOptionModel[],
         visibilities: SelectOptionModel<boolean | undefined>[],
         favorites: SelectOptionModel<boolean | undefined>[],
+        withProfiles: SelectOptionModel<boolean | undefined>[],
     }
 }

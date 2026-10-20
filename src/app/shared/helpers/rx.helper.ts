@@ -62,6 +62,15 @@ export const notifyOnError = (errorSink: ErrorSink) => <T> (source: Observable<T
 )
 
 /**
+ * Purpose: Drops the failure of a source and completes it without emitting.
+ * Scope: Lets a background refresh fail without any toast or error state.
+ * Limits: Reports nothing; the caller retries on its own schedule.
+ */
+export const ignoreError = () => <T> (source: Observable<T>): Observable<T> => source.pipe(
+    catchError( (): Observable<never> => EMPTY ),
+)
+
+/**
  * Purpose: Runs a source right away, like a dispatched action.
  * Scope: Replays the outcome to the callers, who may ignore it or chain on it.
  * Limits: Does not cancel the source when the callers unsubscribe.

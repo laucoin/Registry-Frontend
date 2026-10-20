@@ -9,6 +9,7 @@ import { NotificationModel } from '@shared/models/model/notification.model';
 import { MovementModel } from '@shared/models/model/movement.model';
 import { PageModel } from '@shared/models/model/page.model';
 import { ProjectOperationalMonitoringComponent } from './project-operational-monitoring.component';
+import { REFRESH_SERVICE_STUB } from '@shared/helpers/testing/refresh-service.stub';
 
 const page: PageModel<MovementModel> = { page: 0, size: 10, totalElements: 6, totalPages: 1, hasNext: false, content: [], lastRefresh: new Date() };
 
@@ -35,7 +36,7 @@ describe('ProjectOperationalMonitoringComponent', () => {
 			currentMovementsPageWithoutActivityError: signal(undefined),
 			fetchCurrentMovementsPageWithoutActivity: fetchWithoutActivity,
 		};
-		await MockBuilder(ProjectOperationalMonitoringComponent)
+		await MockBuilder(ProjectOperationalMonitoringComponent).provide(REFRESH_SERVICE_STUB)
 			.keep(NgTemplateOutlet)
 			.mock(TranslocoPipe, (key: string): string => key)
 			.provide({ provide: SelectedProjectFacade, useValue: facade })

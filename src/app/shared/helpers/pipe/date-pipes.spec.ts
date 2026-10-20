@@ -148,6 +148,39 @@ describe( 'date pipes', () => {
             expect( result ).toBe( '03:05:07' )
         } )
 
+        it( 'hides the seconds when asked, keeping hours and minutes', () => {
+            // Arrange
+            const span: IntervalModel = interval( 0, 0, 0, 3, 5, 7 )
+
+            // Act
+            const result: string | undefined = pipe.transform( span, undefined, true )
+
+            // Assert
+            expect( result ).toBe( '03:05' )
+        } )
+
+        it( 'shows minutes as hours and minutes under an hour when seconds are hidden', () => {
+            // Arrange
+            const span: IntervalModel = interval( 0, 0, 0, 0, 5, 7 )
+
+            // Act
+            const result: string | undefined = pipe.transform( span, undefined, true )
+
+            // Assert
+            expect( result ).toBe( '00:05' )
+        } )
+
+        it( 'says a few seconds under a minute when seconds are hidden', () => {
+            // Arrange
+            const spans: IntervalModel[] = [ interval( 0, 0, 0, 0, 0, 0 ), interval( 0, 0, 0, 0, 0, 42 ) ]
+
+            // Act
+            const results: (string | undefined)[] = spans.map( (span: IntervalModel) => pipe.transform( span, undefined, true ) )
+
+            // Assert
+            expect( results ).toEqual( [ 'global.date-and-time-format.few-seconds', 'global.date-and-time-format.few-seconds' ] )
+        } )
+
         it( 'combines the two biggest non-zero units from the day up', () => {
             // Arrange
             const span: IntervalModel = interval( 1, 2, 3, 4, 5, 6 )

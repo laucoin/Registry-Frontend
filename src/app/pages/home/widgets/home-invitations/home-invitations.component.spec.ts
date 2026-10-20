@@ -11,6 +11,7 @@ import { NotificationModel } from '@shared/models/model/notification.model'
 import { PageModel } from '@shared/models/model/page.model'
 import { UserInvitationModel } from '@shared/models/model/user-invitation.model'
 import { HomeInvitationsComponent } from './home-invitations.component'
+import { REFRESH_SERVICE_STUB } from '@shared/helpers/testing/refresh-service.stub';
 
 function invitations(count: number): UserInvitationModel[] {
 	return Array.from({ length: count }, (_: unknown, index: number): UserInvitationModel => ({ ...UserInvitationMapper.toModel(INVITATION_DTO), id: `i${index}` }))
@@ -31,7 +32,7 @@ describe('HomeInvitationsComponent', () => {
 		page = signal<PageModel<UserInvitationModel> | undefined>(undefined)
 		fetch = vi.fn()
 		manage = vi.fn()
-		await MockBuilder(HomeInvitationsComponent)
+		await MockBuilder(HomeInvitationsComponent).provide(REFRESH_SERVICE_STUB)
 			.mock(TranslocoPipe, (key: string): string => key)
 			.mock(PluralTranslationPipe, (key: string): string => key)
 			.provide({

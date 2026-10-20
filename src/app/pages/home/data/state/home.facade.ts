@@ -41,6 +41,14 @@ export class HomeFacade extends GenericFacade {
 		this.store.fetchAttention({ page: 0, size: ATTENTION_SIZE })
 	}
 
+	public refreshFavorites(): void {
+		this.store.refreshFavorites({ page: 0, size: FAVORITES_SIZE })
+	}
+
+	public refreshAttention(): void {
+		this.store.refreshAttention({ page: 0, size: ATTENTION_SIZE })
+	}
+
 	public removeFavorite(project: ProjectModel): void {
 		this.api.setFavoriteById(project.id, false).pipe(
 			notifyOnError(this.uiFacade),

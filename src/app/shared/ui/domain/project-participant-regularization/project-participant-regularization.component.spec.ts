@@ -12,6 +12,7 @@ import { NotificationModel } from '@shared/models/model/notification.model';
 import { PageModel } from '@shared/models/model/page.model';
 import { ParticipantModel } from '@shared/models/model/participant.model';
 import { ProjectParticipantRegularizationComponent } from './project-participant-regularization.component';
+import { REFRESH_SERVICE_STUB } from '@shared/helpers/testing/refresh-service.stub';
 
 function participant(id: string): ParticipantModel {
 	return {
@@ -39,7 +40,7 @@ describe('ProjectParticipantRegularizationComponent', () => {
 		loading = signal(false);
 		error = signal<NotificationModel | undefined>(undefined);
 		fetchOverdueParticipantsPage = vi.fn();
-		await MockBuilder(ProjectParticipantRegularizationComponent)
+		await MockBuilder(ProjectParticipantRegularizationComponent).provide(REFRESH_SERVICE_STUB)
 			.mock(TranslocoPipe, (key: string): string => key)
 			.mock(PluralTranslationPipe, (key: string): string => key)
 			.provide({

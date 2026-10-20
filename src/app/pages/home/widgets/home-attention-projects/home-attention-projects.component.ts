@@ -14,6 +14,7 @@ import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.p
 import { NotificationModel } from '@shared/models/model/notification.model'
 import { ProjectModel } from '@shared/models/model/project.model'
 import { SectionErrorComponent } from '@shared/ui/common/section-error/section-error.component'
+import { injectAutoRefresh } from '@shared/helpers/refresh/inject-auto-refresh'
 
 const INITIALS_LENGTH: number = 3
 const DANGER_ALERTS: number = 2
@@ -33,6 +34,7 @@ const DANGER_ALERTS: number = 2
 })
 export class HomeAttentionProjectsComponent implements OnInit {
 	private readonly facade: HomeFacade = inject(HomeFacade)
+	private readonly autoRefresh: void = injectAutoRefresh('home/attention', 'counts', (): void => this.facade.refreshAttention())
 
 	protected readonly projects: Signal<ProjectModel[]> = this.facade.attention
 	protected readonly loading: Signal<boolean> = this.facade.attentionLoading

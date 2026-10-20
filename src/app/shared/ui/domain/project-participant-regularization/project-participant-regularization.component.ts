@@ -17,6 +17,7 @@ import { ParticipantModel } from '@shared/models/model/participant.model';
 import { SectionErrorComponent } from '@shared/ui/common/section-error/section-error.component';
 import { OverdueParticipantsDialogComponent } from '@shared/ui/domain/overdue-participants-dialog/overdue-participants-dialog.component';
 import { RegularizationRowComponent } from '@shared/ui/domain/regularization-row/regularization-row.component';
+import { injectAutoRefresh } from '@shared/helpers/refresh/inject-auto-refresh';
 
 const PAGE_SIZE: number = 5
 
@@ -42,6 +43,8 @@ const PAGE_SIZE: number = 5
 })
 export class ProjectParticipantRegularizationComponent implements OnInit {
 	private readonly facade: SelectedProjectFacade = inject(SelectedProjectFacade)
+
+	private readonly autoRefresh: void = injectAutoRefresh('project-home/overdue', 'dayBound', (): void => this.facade.refreshOverdueParticipantsPage())
 
 	protected readonly loading: Signal<boolean> = this.facade.overdueParticipantsPageLoading
 	protected readonly error: Signal<NotificationModel | undefined> = this.facade.overdueParticipantsPageError

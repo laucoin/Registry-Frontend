@@ -11,6 +11,7 @@ import { ParticipantMapper } from '@shared/mappers/participant.mapper';
 import { NotificationModel } from '@shared/models/model/notification.model';
 import { ParticipantModel } from '@shared/models/model/participant.model';
 import { ProjectBirthdayComponent } from './project-birthday.component';
+import { REFRESH_SERVICE_STUB } from '@shared/helpers/testing/refresh-service.stub';
 
 function participants(count: number): ParticipantModel[] {
 	return Array.from({ length: count }, (_: unknown, index: number): ParticipantModel => ({ ...ParticipantMapper.toModel(PARTICIPANT_DTO), id: `p${index}`, firstName: `Name${index}` }));
@@ -33,7 +34,7 @@ describe('ProjectBirthdayComponent', () => {
 		loading = signal(false);
 		error = signal<NotificationModel | undefined>(undefined);
 		fetchParticipantsBirthdays = vi.fn();
-		await MockBuilder(ProjectBirthdayComponent)
+		await MockBuilder(ProjectBirthdayComponent).provide(REFRESH_SERVICE_STUB)
 			.mock(TranslocoPipe, (key: string): string => key)
 			.mock(PluralTranslationPipe, (key: string): string => key)
 			.provide({

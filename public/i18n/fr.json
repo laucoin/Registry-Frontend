@@ -246,6 +246,7 @@
         "one": "1 seconde",
         "few": "{{count}} secondes"
       },
+      "few-seconds": "quelques secondes",
       "last-refresh": "Dernière actualisation le {{datetime}}",
       "element-created": "Créé le {{datetime}}",
       "element-created-user": "Créé le {{datetime}} par {{user}}",
@@ -493,7 +494,12 @@
       "text": "Nom",
       "datetime": "Date & Heure",
       "visibility": "Visibilité",
-      "favorite": "Favoris"
+      "favorite": "Favoris",
+      "with-profile": "Profil"
+    },
+    "with-profile": {
+      "true": "Mes projets (avec un profil)",
+      "false": "Tous les projets"
     },
     "visible": {
       "true": "Visible",
@@ -1810,13 +1816,13 @@
     "user": {
       "menu": "Menu du compte de {{name}}",
       "my-acccount": "Mon compte",
-      "profiles": "Mes projets",
       "invitations": "Mes invitations",
       "logout": "Se déconnecter"
     },
     "app": {
       "home": "Accueil",
       "projects": "Projets",
+      "my-projects": "Mes projets",
       "users": "Utilisateurs"
     },
     "context": {

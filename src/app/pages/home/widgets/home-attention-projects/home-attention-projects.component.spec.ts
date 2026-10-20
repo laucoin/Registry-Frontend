@@ -9,6 +9,7 @@ import { ProjectMapper } from '@shared/mappers/project.mapper'
 import { NotificationModel } from '@shared/models/model/notification.model'
 import { ProjectModel } from '@shared/models/model/project.model'
 import { HomeAttentionProjectsComponent } from './home-attention-projects.component'
+import { REFRESH_SERVICE_STUB } from '@shared/helpers/testing/refresh-service.stub';
 
 function alerted(activeAlerts: number, index: number): ProjectModel {
 	const project: ProjectModel = ProjectMapper.toModel(PROJECT_DTO)
@@ -30,7 +31,7 @@ describe('HomeAttentionProjectsComponent', () => {
 		attention = signal<ProjectModel[]>([])
 		loading = signal(false)
 		fetchAttention = vi.fn()
-		await MockBuilder(HomeAttentionProjectsComponent)
+		await MockBuilder(HomeAttentionProjectsComponent).provide(REFRESH_SERVICE_STUB)
 			.mock(TranslocoPipe, (key: string): string => key)
 			.mock(PluralTranslationPipe, (key: string): string => key)
 			.provide({

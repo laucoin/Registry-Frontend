@@ -15,6 +15,7 @@ import { NotificationModel } from '@shared/models/model/notification.model'
 import { PageModel } from '@shared/models/model/page.model'
 import { UserInvitationModel } from '@shared/models/model/user-invitation.model'
 import { SectionErrorComponent } from '@shared/ui/common/section-error/section-error.component'
+import { injectAutoRefresh } from '@shared/helpers/refresh/inject-auto-refresh'
 
 const PAGE_SIZE: number = 3
 
@@ -33,6 +34,7 @@ const PAGE_SIZE: number = 3
 })
 export class HomeInvitationsComponent implements OnInit {
 	private readonly facade: UserProfileFacade = inject(UserProfileFacade)
+	private readonly autoRefresh: void = injectAutoRefresh('home/invitations', 'counts', (): void => this.facade.refreshProjectProfileInvitationPage())
 
 	protected readonly page: Signal<PageModel<UserInvitationModel> | undefined> = this.facade.userProjectProfileInvitationsPage
 	protected readonly loading: Signal<boolean> = this.facade.userProjectProfileInvitationsPageLoading

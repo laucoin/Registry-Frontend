@@ -53,14 +53,14 @@ describe( 'mappers', () => {
 
     it( 'maps the preferences of a current user with its authorities', () => {
         // Arrange
-        const dto: CurrentUserResponseDto = { ...USER, authorities: [ 'A', 'B' ], preferences: { userId: 'u1', theme: 'DARK', language: 'fr' } }
+        const dto: CurrentUserResponseDto = { ...USER, authorities: [ 'A', 'B' ], preferences: { userId: 'u1', theme: 'DARK', language: 'fr', refreshMode: 'NORMAL' } }
 
         // Act
         const model: ReturnType<typeof CurrentUserMapper.toModel> = CurrentUserMapper.toModel( dto )
 
         // Assert
         expect( model.authorities ).toEqual( [ 'A', 'B' ] )
-        expect( model.preferences ).toEqual( { userId: 'u1', theme: 'DARK', language: 'fr' } )
+        expect( model.preferences ).toEqual( { userId: 'u1', theme: 'DARK', language: 'fr', refreshMode: 'NORMAL' } )
         expect( model.email ).toBe( 'g@x.test' )
     } )
 

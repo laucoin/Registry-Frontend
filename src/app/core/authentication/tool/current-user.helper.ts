@@ -7,6 +7,7 @@ import { GenericHelper } from '@shared/helpers/generic.helper'
 import { ProjectModel } from '@shared/models/model/project.model'
 import { ActionableItemModel } from '@shared/models/model/actionable-item.model'
 import { ThemeEnum } from '@shared/models/enumeration/theme.enum'
+import { RefreshModeEnum } from '@shared/models/enumeration/refresh-mode.enum'
 
 /**
  * Purpose: Answers authority, project option and theme questions about the current user.
@@ -74,6 +75,10 @@ export class CurrentUserHelper {
             default:
                 return ThemeEnum.SYSTEM
         }
+    }
+
+    public static mapRefreshModeToEnum (mode: string | undefined): RefreshModeEnum {
+        return Object.values( RefreshModeEnum ).find( (it: RefreshModeEnum): boolean => it === mode ) ?? RefreshModeEnum.NORMAL
     }
 
     public static mapThemeToString (theme: ThemeEnum): string {

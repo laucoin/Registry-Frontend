@@ -25,7 +25,8 @@
     },
     "remove": "Retirer des favoris : {{name}}",
     "permanent": "Projet permanent",
-    "period": "Du {{begin}} au {{end}}"
+    "period": "Du {{begin}} au {{end}}",
+    "updated": "Mis à jour"
   },
   "invitations": {
     "title": "Invitations reçues",

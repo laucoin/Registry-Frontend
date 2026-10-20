@@ -18,6 +18,7 @@ import { PageModel } from '@shared/models/model/page.model';
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive';
 import { ListComponent } from '@shared/ui/common/list/list.component';
 import { MovementElementComponent } from '@shared/ui/domain/movement-element/movement-element.component';
+import { injectAutoRefresh } from '@shared/helpers/refresh/inject-auto-refresh';
 
 type MonitoringTabKey = 'activities' | 'otherMovements'
 
@@ -28,6 +29,7 @@ interface MonitoringTab {
 	silentLoading: Signal<boolean>
 	error: Signal<NotificationModel | undefined>
 	fetch: (page: number | undefined, size: number | undefined) => void
+	refresh: () => void
 }
 
 /**
@@ -66,6 +68,7 @@ export class ProjectOperationalMonitoringComponent {
 		silentLoading: this.facade.currentMovementsPageWithActivitySilentLoading,
 		error: this.facade.currentMovementsPageWithActivityError,
 		fetch: (page: number | undefined, size: number | undefined): void => this.facade.fetchCurrentMovementsPageWithActivity(page, size),
+		refresh: (): void => this.facade.refreshCurrentMovementsPageWithActivity(),
 	}
 
 	private readonly otherMovementsTab: MonitoringTab = {
@@ -75,11 +78,14 @@ export class ProjectOperationalMonitoringComponent {
 		silentLoading: this.facade.currentMovementsPageWithoutActivitySilentLoading,
 		error: this.facade.currentMovementsPageWithoutActivityError,
 		fetch: (page: number | undefined, size: number | undefined): void => this.facade.fetchCurrentMovementsPageWithoutActivity(page, size),
+		refresh: (): void => this.facade.refreshCurrentMovementsPageWithoutActivity(),
 	}
 
 	protected readonly tabs: Signal<MonitoringTab[]> = computed((): MonitoringTab[] => this.hasActivityOption()
 		? [this.activitiesTab, this.otherMovementsTab]
 		: [this.otherMovementsTab])
+
+	private readonly autoRefresh: void = injectAutoRefresh('project-home/movements', 'live', (): void => this.tabs().forEach((tab: MonitoringTab): void => tab.refresh()))
 
 	public constructor() {
 		effect((): void => {

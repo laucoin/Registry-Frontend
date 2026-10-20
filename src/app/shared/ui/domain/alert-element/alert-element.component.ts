@@ -17,7 +17,7 @@ import { SeverityTagComponent } from '@shared/ui/common/severity-tag/severity-ta
 import { TitleCasePipe } from '@angular/common'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
 import { toSignal } from '@angular/core/rxjs-interop'
-import { interval, map } from 'rxjs'
+import { filter, interval, map } from 'rxjs'
 import { Button } from 'primeng/button'
 import {TranslocoPipe} from '@jsverse/transloco'
 import {
@@ -34,6 +34,7 @@ import { IntervalModel } from '@shared/models/model/interval.model'
 import { StringHelper } from '@shared/helpers/string.helper'
 import { DateHelper } from '@shared/helpers/date.helper'
 import { IntervalPipe } from '@shared/helpers/pipe/interval.pipe'
+import { BrowserService } from '@core/browser/browser.service'
 
 // TODO: remove with the PrimeNG carousel card once the dashboard moves to @sgdf/ui
 const CARD_ICONS: Record<string, string> = {
@@ -82,6 +83,7 @@ export class AlertElementComponent extends GenericElementComponent {
     protected readonly facade: AlertFacade = inject( AlertFacade )
     private readonly actionsService: AlertActions = inject( AlertActions )
     protected readonly intervalPipe: IntervalPipe = inject( IntervalPipe )
+    private readonly browser: BrowserService = inject( BrowserService )
 
     protected readonly AlertStatusEnum: typeof AlertStatusEnum = AlertStatusEnum
 
@@ -117,10 +119,11 @@ export class AlertElementComponent extends GenericElementComponent {
         this.alert().status.value ) )
 
     protected readonly statusLabel: Signal<string> = computed( (): string =>
-        this.alert().status.label + (this.inProgressSince() ? ` (${this.intervalPipe.transform( this.inProgressSince() )!})` : ''),
+        this.alert().status.label + (this.inProgressSince() ? ` (${this.intervalPipe.transform( this.inProgressSince(), undefined, true )!})` : ''),
     )
 
     private readonly inProgressSince: Signal<IntervalModel | undefined> = toSignal( interval( 1000 ).pipe(
+        filter( (): boolean => this.browser.pageVisible ),
         map( (): IntervalModel | undefined => this.getInProgressSince() ),
     ) )
 

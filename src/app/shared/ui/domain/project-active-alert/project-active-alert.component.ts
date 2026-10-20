@@ -30,6 +30,7 @@ import { NotificationModel } from '@shared/models/model/notification.model';
 import { SectionErrorComponent } from '@shared/ui/common/section-error/section-error.component';
 import { AlertCommunicationsListComponent } from '@shared/ui/domain/alert-communications-list/alert-communications-list.component';
 import { CommunicationFormComponent } from '@shared/ui/domain/communication-form/communication-form.component';
+import { injectAutoRefresh } from '@shared/helpers/refresh/inject-auto-refresh';
 
 type AlertVariant = 'danger' | 'warning' | 'info'
 
@@ -72,6 +73,8 @@ const VARIANTS: Record<AlertCriticalityEnum, AlertVariant> = {
 })
 export class ProjectActiveAlertComponent implements OnInit {
 	private readonly facade: SelectedProjectFacade = inject(SelectedProjectFacade)
+
+	private readonly autoRefresh: void = injectAutoRefresh('project-home/alerts', 'live', (): void => this.facade.refreshCurrentAlertsPage())
 	private readonly sessionFacade: SessionFacade = inject(SessionFacade)
 	protected readonly alertFacade: AlertFacade = inject(AlertFacade)
 	protected readonly uiFacade: UiFacade = inject(UiFacade)

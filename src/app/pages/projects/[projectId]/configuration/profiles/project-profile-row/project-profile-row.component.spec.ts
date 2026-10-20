@@ -90,7 +90,7 @@ describe('ProjectProfileRowComponent', () => {
         await render(INVITATION, 'user')
 
         // Act
-        const title: string | undefined = text('sgdf-list-item > span.block')
+        const title: string | undefined = text('sgdf-list-item span.block.truncate')
 
         // Assert
         expect(title).toBe('Camp Vercors')
@@ -137,7 +137,7 @@ describe('ProjectProfileRowComponent', () => {
         await render(PROFILE, 'project')
 
         // Act
-        const title: string | undefined = text('sgdf-list-item > span.block')
+        const title: string | undefined = text('sgdf-list-item span.block.truncate')
 
         // Assert
         expect(title).toBe('Ada LOVELACE')
@@ -149,7 +149,7 @@ describe('ProjectProfileRowComponent', () => {
         await render({ ...PROFILE, user: { ...PROFILE.user, firstName: undefined, lastName: undefined } } as ProjectProfileModel, 'project')
 
         // Act
-        const title: string | undefined = text('sgdf-list-item > span.block')
+        const title: string | undefined = text('sgdf-list-item span.block.truncate')
 
         // Assert
         expect(title).toBe('ada@example.org')

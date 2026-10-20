@@ -27,6 +27,7 @@ const defaultProjectStore: ProjectStoreModel = {
         isVisible: undefined,
         at: undefined,
         isFavorite: undefined,
+        withProfile: undefined,
     } ),
     project: defaultProject,
     createdProjectId: undefined,
@@ -42,6 +43,11 @@ const defaultProjectStore: ProjectStoreModel = {
             { label: 'projects.favorite.true', value: true },
             { label: 'projects.favorite.false', value: false },
         ],
+        withProfiles: [
+            { label: '-', value: undefined },
+            { label: 'projects.with-profile.true', value: true },
+            { label: 'projects.with-profile.false', value: false },
+        ],
     },
 }
 
@@ -56,6 +62,8 @@ export const ProjectStore = signalStore(
         fetchProjectOptions: metadataFetcher<ProjectStoreModel, 'options', void, ProjectOptionModel[]>( store, 'options', () => api.getAvailableProjectOptions() ),
         fetchProjectsPage: pageFetcher( store, 'projects', (request: CumulativePageRequest, params: ProjectPageParamsModel) =>
             api.findProjects( request.page, request.size, params ), errors, { merge: CumulativePageHelper.merge } ),
+        refreshProjectsPage: pageFetcher( store, 'projects', (request: CumulativePageRequest, params: ProjectPageParamsModel) =>
+            api.findProjects( request.page, request.size, params ), errors, { merge: CumulativePageHelper.merge, silent: true } ),
         updateProjectsPageSearchParams: paramsUpdater( store, 'projects' ),
         startProjectLoader: loaderToggle( store, 'project', true ),
         stopProjectLoader: loaderToggle( store, 'project', false ),

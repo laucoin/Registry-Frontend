@@ -36,6 +36,7 @@ import { THEME_CHOICES } from '@shared/helpers/theme-choices.const'
 import { ProfileResetService } from '@shared/helpers/store/profile-reset.service'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { ThemeEnum } from '@shared/models/enumeration/theme.enum'
+import { RefreshModeEnum } from '@shared/models/enumeration/refresh-mode.enum'
 import { AuthenticationUriModel } from '@shared/models/model/authentication-uri.model'
 import { CurrentUserModel } from '@shared/models/model/current-user.model'
 import { ErrorModel } from '@shared/models/model/error.model'
@@ -78,6 +79,7 @@ export class SessionFacade {
 
     public readonly currentUserTheme: Signal<ThemeEnum> = this.uiFacade.theme
     public readonly themeChoices: readonly ThemeChoiceModel[] = THEME_CHOICES
+    public readonly currentUserRefreshMode: Signal<RefreshModeEnum> = this.uiFacade.refreshMode
     public readonly currentUserLanguage: Signal<string> = computed((): string =>
         this.currentUser()?.preferences?.language ?? RegistryConfig.config.defaultLanguage,
     )
@@ -168,6 +170,16 @@ export class SessionFacade {
         ).subscribe()
     }
 
+    public updateCurrentUserRefreshMode(refreshMode: RefreshModeEnum): void {
+        if (refreshMode === this.uiFacade.refreshMode()) return
+
+        this.uiFacade.updateRefreshMode(refreshMode)
+        this.preferencesApi.updateRefreshMode(refreshMode).pipe(
+            tap((preferences: PreferencesModel): void => this.session.setCurrentUserRefreshMode(preferences.refreshMode)),
+            catchError((error: ErrorModel): Observable<never> => this.reportError$(error)),
+        ).subscribe()
+    }
+
     public updateCurrentUserLanguage(language: string): void {
         if (language === this.currentUserLanguage()) return
 
@@ -195,6 +207,18 @@ export class SessionFacade {
         return done.asObservable()
     }
 
+    public refreshCurrentProject(): void {
+        const projectId: string | undefined = this.currentProjectId()
+        if (GenericHelper.isNull(projectId)) return
+
+        this.projectApi.findProjectById(projectId!).pipe(
+            tap((project: ProjectModel): void => {
+                if (this.currentProjectId() === projectId) this.session.setCurrentProject(projectId, project)
+            }),
+            catchError((): Observable<never> => EMPTY),
+        ).subscribe()
+    }
+
     private fetchProject$(projectId: string): Observable<void> {
         return this.projectApi.findProjectById(projectId).pipe(
             tap((project: ProjectModel): void => this.session.setCurrentProject(projectId, project)),
@@ -210,6 +234,8 @@ export class SessionFacade {
         if (userTheme !== this.uiFacade.theme()) {
             this.uiFacade.updateTheme(userTheme)
         }
+
+        this.uiFacade.updateRefreshMode(CurrentUserHelper.mapRefreshModeToEnum(currentUser.preferences.refreshMode))
 
         const userLanguage: string | undefined = currentUser.preferences.language
         if (GenericHelper.nonNull(userLanguage) && userLanguage !== this.languageService.activeLanguage) {

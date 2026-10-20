@@ -7,6 +7,7 @@ import { SessionFacade } from '@core/registry/state/session.facade';
 import { SelectedProjectFacade } from '@pages/projects/data/state/selected-project/selected-project.facade';
 import { ProjectStatusModel } from '@shared/models/model/project-status.model';
 import { ProjectParticipantOverviewComponent } from './project-participant-overview.component';
+import { REFRESH_SERVICE_STUB } from '@shared/helpers/testing/refresh-service.stub';
 
 const status: ProjectStatusModel = { registered: { presentMinors: 50, presentMajors: 74, absentMinors: 1, absentMajors: 1 }, guests: 2, lastRefresh: new Date() };
 
@@ -18,7 +19,7 @@ describe('ProjectParticipantOverviewComponent', () => {
 	beforeEach(async () => {
 		participantsStatus = signal<ProjectStatusModel | undefined>(status);
 		fetchParticipantsStatus = vi.fn();
-		await MockBuilder(ProjectParticipantOverviewComponent)
+		await MockBuilder(ProjectParticipantOverviewComponent).provide(REFRESH_SERVICE_STUB)
 			.mock(TranslocoPipe, (key: string): string => key)
 			.provide({ provide: SelectedProjectFacade, useValue: { participantsStatus, fetchParticipantsStatus } })
 			.provide({ provide: SessionFacade, useValue: { currentProjectId: signal('p1') } })

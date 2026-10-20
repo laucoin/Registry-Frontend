@@ -67,6 +67,17 @@ describe('MenuService', () => {
 		const menus: MenuItemModel[] = service.appMenus()
 
 		// Assert
+		expect(labels(menus)).toEqual(['navbar.app.home', 'navbar.app.my-projects'])
+	})
+
+	it('should label the projects menu with its global name with the project read authority', () => {
+		// Arrange
+		currentUser.set(userWith(UserAuthorityEnum.REGISTRY_PROJECT_R))
+
+		// Act
+		const menus: MenuItemModel[] = service.appMenus()
+
+		// Assert
 		expect(labels(menus)).toEqual(['navbar.app.home', 'navbar.app.projects'])
 	})
 
@@ -78,7 +89,7 @@ describe('MenuService', () => {
 		const menus: MenuItemModel[] = service.appMenus()
 
 		// Assert
-		expect(labels(menus)).toEqual(['navbar.app.home', 'navbar.app.projects', 'navbar.app.users'])
+		expect(labels(menus)).toEqual(['navbar.app.home', 'navbar.app.my-projects', 'navbar.app.users'])
 	})
 
 	it('should expose no project menu without a selected project', () => {
@@ -258,7 +269,7 @@ describe('MenuService', () => {
 		const menus: MenuItemModel[] = service.userMenus()
 
 		// Assert
-		expect(labels(menus)).toEqual(['navbar.user.my-acccount', 'navbar.user.profiles', 'navbar.user.invitations'])
+		expect(labels(menus)).toEqual(['navbar.user.my-acccount', 'navbar.user.invitations'])
 	})
 
 	it('should expose the logout menu without any url', () => {

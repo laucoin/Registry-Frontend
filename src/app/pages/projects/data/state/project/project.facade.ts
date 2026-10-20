@@ -65,6 +65,15 @@ export class ProjectFacade extends GenericFacade {
 
     public readonly projectsPageIsFavoriteParam: Signal<boolean | undefined> = this.store.projects.params.isFavorite
 
+    public readonly projectsPageWithProfileParam: Signal<boolean | undefined> = this.store.projects.params.withProfile
+
+    public readonly withProfilesMetadata: Signal<SelectOptionModel<boolean | undefined>[]> = computed( (): SelectOptionModel<boolean | undefined>[] =>
+            this.store.metadata.withProfiles().map( (item: SelectOptionModel<boolean | undefined>): SelectOptionModel<boolean | undefined> => ({
+                ...item,
+                label: this.translateLabel( item.label! ),
+            }) ),
+        )
+
     public readonly favoritesMetadata: Signal<SelectOptionModel<boolean | undefined>[]> = computed( (): SelectOptionModel<boolean | undefined>[] =>
             this.store.metadata.favorites().map( (item: SelectOptionModel<boolean | undefined>): SelectOptionModel<boolean | undefined> => ({
                 ...item,
@@ -84,6 +93,10 @@ export class ProjectFacade extends GenericFacade {
         this.store.fetchProjectOptions()
     }
 
+    public refreshProjectsPage (): void {
+        this.store.refreshProjectsPage( CumulativePageHelper.reloadRequest( this.projectsPage() ) )
+    }
+
     public fetchProjectsPage (
         page: number | undefined,
         size: number | undefined,
@@ -97,17 +110,20 @@ export class ProjectFacade extends GenericFacade {
         at: Date | undefined,
         isVisible: boolean | undefined,
         isFavorite: boolean | undefined = undefined,
+        withProfile: boolean | undefined = undefined,
     ): void {
         const resetSearch: boolean = this.projectsPageQueryParam() != q
                                      || this.projectsPageAtParam()?.toISOString() != at?.toISOString()
                                      || this.projectsPageIsVisibleParam() != isVisible
                                      || this.projectsPageIsFavoriteParam() != isFavorite
+                                     || this.projectsPageWithProfileParam() != withProfile
 
         if (resetSearch) {
             this.store.updateProjectsPageSearchParams( {
                 resetSearch: resetSearch,
                 isVisible: isVisible,
                 isFavorite: isFavorite,
+                withProfile: withProfile,
                 q: q,
                 at: at?.toISOString(),
             } )

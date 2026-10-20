@@ -51,6 +51,8 @@ export const UserProfileStore = signalStore(
             api.findUserProjectProfiles( request.page, request.size, params ), errors, { merge: CumulativePageHelper.merge } ),
         fetchInvitationsPage: pageFetcher( store, 'invitations', (request: CumulativePageRequest, params: UserProjectProfilePageParamsModel) =>
             api.findUserProjectProfiles( request.page, request.size, params ), errors, { merge: CumulativePageHelper.merge } ),
+        refreshInvitationsPage: pageFetcher( store, 'invitations', (request: CumulativePageRequest, params: UserProjectProfilePageParamsModel) =>
+            api.findUserProjectProfiles( request.page, request.size, params ), errors, { merge: CumulativePageHelper.merge, silent: true } ),
         updateProfilesPageSearchParams: paramsMerger( store, 'profiles' ),
         updateInvitationsPageSearchParams: paramsMerger( store, 'invitations' ),
         startProfileLoader: loaderToggle( store, 'profile', true ),

@@ -27,6 +27,15 @@ export class PreferencesApi extends GenericApi {
         )
     }
 
+    public updateRefreshMode(mode: string): Observable<PreferencesModel> {
+        return this.http.post<PreferencesResponseDto>(
+            `${this.baseUrl}/refresh-mode?mode=${mode}`,
+            null,
+        ).pipe(
+            map( PreferencesMapper.toModel ),
+        )
+    }
+
     public updateLanguage(language: string): Observable<PreferencesModel> {
         return this.http.post<PreferencesResponseDto>(
             `${this.baseUrl}/language?language=${language}`,

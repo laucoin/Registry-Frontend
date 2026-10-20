@@ -16,6 +16,7 @@ import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.p
 import { NotificationModel } from '@shared/models/model/notification.model';
 import { ParticipantModel } from '@shared/models/model/participant.model';
 import { SectionErrorComponent } from '@shared/ui/common/section-error/section-error.component';
+import { injectAutoRefresh } from '@shared/helpers/refresh/inject-auto-refresh';
 
 const MAX_DISPLAYED: number = 5
 
@@ -46,6 +47,8 @@ interface BirthdayRow {
 })
 export class ProjectBirthdayComponent implements OnInit {
 	private readonly facade: SelectedProjectFacade = inject(SelectedProjectFacade)
+
+	private readonly autoRefresh: void = injectAutoRefresh('project-home/birthdays', 'dayBound', (): void => this.facade.refreshParticipantsBirthdays())
 
 	protected readonly loading: Signal<boolean> = this.facade.participantsBirthdaysLoading
 	protected readonly error: Signal<NotificationModel | undefined> = this.facade.participantsBirthdaysError

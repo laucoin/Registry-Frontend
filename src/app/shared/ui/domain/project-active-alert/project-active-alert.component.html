@@ -43,7 +43,7 @@
                                 @if (card.alert.criticality?.label) {
                                     ·
                                 }
-                                {{ age | intervalFormat }}
+                                {{ age | intervalFormat: 'global.date-and-time-format' : true }}
                             }
                         </p>
                         @if (card.alert.lastCommunication; as last) {

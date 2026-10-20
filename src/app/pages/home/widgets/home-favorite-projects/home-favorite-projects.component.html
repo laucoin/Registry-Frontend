@@ -24,37 +24,29 @@
 } @else {
     <div class="grid grid-cols-1 gap-(--spacing--in-block-large) sm:grid-cols-2 lg:grid-cols-3" data-testid="favorites-row">
         @for (project of projects(); track project.id) {
-            <sgdf-card class="relative min-w-0" appearance="outlined">
-                <div class="flex flex-wrap items-start justify-between gap-x-3 gap-y-1">
-                    <sgdf-avatar shape="rounded" variant="primary" aria-hidden="true" [initials]="initials(project)"/>
-                    <span class="flex shrink-0 items-center gap-2">
-                        @if (project.status; as status) {
-                            <sgdf-tag size="small" appearance="soft">{{ status.label }}</sgdf-tag>
-                        }
-                        <app-favorite-toggle [favorite]="true" [name]="project.name" (toggled)="remove(project)"/>
-                    </span>
-                </div>
-                <h3 class="mb-1 mt-3 break-words text-base font-semibold">
-                    <a class="no-underline" [routerLink]="link(project)">{{ project.name }}</a>
-                </h3>
-                @if (project.counts; as counts) {
-                    <p class="m-0 text-sm">
-                        {{ 'home.favorites.participants' | pluralTranslation: counts.participants | transloco: { count: counts.participants } }}
-                        @if (counts.vehicles !== undefined) {
-                            · {{ 'home.favorites.vehicles' | pluralTranslation: counts.vehicles | transloco: { count: counts.vehicles } }}
-                        } @else {
-                            · {{ 'home.favorites.groups' | pluralTranslation: counts.groups | transloco: { count: counts.groups } }}
-                        }
-                    </p>
-                }
-                <p class="mb-0 mt-3 border-t pt-3 text-xs opacity-80">
-                    @if (project.begin || project.end) {
-                        {{ 'home.favorites.period' | transloco: { begin: (project.begin | customDateFormat) ?? '...', end: (project.end | customDateFormat) ?? '...' } }}
-                    } @else {
-                        {{ 'home.favorites.permanent' | transloco }}
+            <div class="relative min-w-0">
+                <sgdf-tile class="block h-full" [href]="link(project)" (click)="open($event, project)">
+                    <span slot="icon" class="text-sm font-semibold">{{ initials(project) }}</span>
+                    <span slot="title" class="block truncate pe-8" [attr.title]="project.name">{{ project.name }}</span>
+                    @if (summary(project); as summary) {
+                        <span class="block">{{ summary }}</span>
                     }
-                </p>
-            </sgdf-card>
+                    @if (project.status; as status) {
+                        <span class="mt-2 block"><sgdf-tag size="small" variant="neutral" appearance="soft">{{ status.label }}</sgdf-tag></span>
+                    }
+                    <small class="mt-2 block text-xs opacity-80">
+                        @if (period(project); as period) {
+                            {{ 'home.favorites.period' | transloco: period }}
+                        } @else {
+                            {{ 'home.favorites.permanent' | transloco }}
+                        }
+                        @if (project.lastEdition; as edition) {
+                            · {{ 'home.favorites.updated' | transloco }} <sgdf-relative-time [date]="edition.dateTime" sync/>
+                        }
+                    </small>
+                </sgdf-tile>
+                <app-favorite-toggle class="absolute right-2 top-2" [favorite]="true" [name]="project.name" (toggled)="remove(project)"/>
+            </div>
         }
     </div>
 }

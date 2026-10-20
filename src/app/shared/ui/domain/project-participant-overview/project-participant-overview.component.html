@@ -28,6 +28,14 @@
         </sgdf-table-cell>
     </sgdf-table-row>
 
+    @if (lastRefresh()) {
+        <sgdf-table-row class="h-px">
+            <sgdf-table-cell class="align-bottom text-xs opacity-80">
+                {{ 'global.date-and-time-format.last-refresh' | transloco: { datetime: lastRefresh() | dateFormat: 'datetime' } }}
+            </sgdf-table-cell>
+        </sgdf-table-row>
+    }
+
     @if (showLink()) {
         <sgdf-table-row class="h-px">
             <sgdf-table-cell class="align-bottom">

@@ -28,6 +28,15 @@
     "choose": "Choisir le thème",
     "hint": "« Système » suit le réglage de votre appareil."
   },
+  "refresh": {
+    "title": "Actualisation des données",
+    "off": "Désactivée",
+    "eco": "Économe",
+    "normal": "Normale",
+    "fast": "Rapide",
+    "choose": "Choisir la fréquence d’actualisation",
+    "hint": "Fréquence à laquelle les informations affichées (alertes, mouvements, présences…) sont rechargées automatiquement, sans quitter la page. Seules les données visibles à l’écran sont actualisées. Même désactivée, les données du jour (arrivées, départs, anniversaires) sont renouvelées à minuit."
+  },
   "personalData": {
     "title": "Mes données personnelles",
     "gdprLabel": "RGPD",

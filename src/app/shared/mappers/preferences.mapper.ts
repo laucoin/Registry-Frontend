@@ -12,6 +12,7 @@ export class PreferencesMapper {
             userId: dto.userId,
             theme: dto.theme,
             language: dto.language,
+            refreshMode: dto.refreshMode,
         }
     }
 }

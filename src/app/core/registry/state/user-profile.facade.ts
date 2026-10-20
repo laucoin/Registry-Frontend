@@ -82,6 +82,10 @@ export class UserProfileFacade {
         }
     }
 
+    public refreshProjectProfileInvitationPage(): void {
+        this.store.refreshInvitationsPage(CumulativePageHelper.reloadRequest(this.userProjectProfileInvitationsPage()))
+    }
+
     public fetchProjectProfileInvitationPage(page: number | undefined, size: number | undefined): void {
         const index: number | undefined = this.userProjectProfileInvitationsPageResetSearch() ? 0 : page
         this.store.fetchInvitationsPage({page: index, size: size})
