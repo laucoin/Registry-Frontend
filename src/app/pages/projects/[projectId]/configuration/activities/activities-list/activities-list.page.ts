@@ -1,7 +1,7 @@
 import { NgTemplateOutlet } from '@angular/common'
 import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, signal, Signal, WritableSignal } from '@angular/core'
 import { FieldTree, FormField } from '@angular/forms/signals'
-import { RouterLink } from '@angular/router'
+import { RouterLink, RouterOutlet } from '@angular/router'
 import { CurrentUserHelper } from '@core/authentication/tool/current-user.helper'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { TranslocoPipe } from '@jsverse/transloco'
@@ -46,6 +46,7 @@ import { ListComponent } from '@shared/ui/common/list/list.component'
         TranslocoPipe,
         FormField,
         RouterLink,
+        RouterOutlet,
         BooleanChoicePipe,
         NgTemplateOutlet,
     ],

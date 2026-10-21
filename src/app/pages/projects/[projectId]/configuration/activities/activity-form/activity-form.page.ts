@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, signal, WritableSignal } from '@angular/core'
+import { Component, CUSTOM_ELEMENTS_SCHEMA, inject, OnDestroy, signal, WritableSignal } from '@angular/core'
 import {ActivityFacade} from '@pages/projects/[projectId]/configuration/activities/data/state/activity.facade'
 import { FieldTree, FormField } from '@angular/forms/signals'
 import {ActivityDto} from '@pages/projects/[projectId]/configuration/activities/data/dto/activity.dto'
@@ -9,61 +9,50 @@ import {
     toActivityFormModel,
 } from '@pages/projects/[projectId]/configuration/activities/activity-form/activity.form'
 import {CustomDatetimeModel} from '@shared/models/model/custom-datetime.model'
-import {Button} from 'primeng/button'
-import {CardModule} from 'primeng/card'
-import {DividerModule} from 'primeng/divider'
-import {FormComponent} from '@shared/ui/common/form/form.component'
 import {FieldErrorComponent} from '@shared/ui/common/field-error/field-error.component'
-import {InputTextModule} from 'primeng/inputtext'
 import {TranslocoPipe} from '@jsverse/transloco'
+import '@sgdf/ui/date-time-picker'
+import '@sgdf/ui/duration-picker'
+import '@sgdf/ui/input'
+import '@sgdf/ui/textarea'
+import { FieldErrorDirective } from '@shared/directives/field-error.directive'
+import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
+import { FormDialogComponent } from '@shared/ui/common/form-dialog/form-dialog.component'
 import {ActivityModel} from '@shared/models/model/activity.model'
-import {RegistryRequiredDirective} from '@shared/directives/registry-required.directive'
 import {ProjectModel} from '@shared/models/model/project.model'
-import {Textarea} from 'primeng/textarea'
 import {BaseFormComponent} from '@shared/ui/base/base-form.component'
 import {withLoading} from '@shared/helpers/rx.helper'
-import {DurationFieldComponent} from '@shared/ui/common/duration-field/duration-field.component'
 import {
     NumberRangeFieldComponent,
 } from '@shared/ui/common/number-range-field/number-range-field.component'
-import {DateFormatPipe} from '@shared/helpers/pipe/date-format.pipe'
 import {FormTitlePipe} from '@shared/helpers/pipe/form-title.pipe'
 import {FormButtonPipe} from '@shared/helpers/pipe/form-button.pipe'
 import {GenericHelper} from '@shared/helpers/generic.helper'
-import {DateTimeFieldComponent} from '@shared/ui/common/date-time-field/date-time-field.component'
-import {FormIconPipe} from '@shared/helpers/pipe/form-icon.pipe'
 import { ETagHelper } from '@shared/helpers/etag.helper'
 
 /**
- * Purpose: Page with the form to create or edit a activity.
+ * Purpose: Dialog page with the form to create or edit an activity, opened over the activities list.
  * Scope: Builds the form, submits it through the facade and navigates back.
  * Limits: Holds no domain state and never calls the backend.
  */
 @Component({
     selector: 'app-activity-form',
     imports: [
-        Button,
-        CardModule,
-        DividerModule,
-        FormComponent,
+        FormDialogComponent,
         FieldErrorComponent,
-        InputTextModule,
         TranslocoPipe,
         FormField,
-        RegistryRequiredDirective,
-        Textarea,
-        DurationFieldComponent,
+        SgdfFieldDirective,
+        FieldErrorDirective,
         NumberRangeFieldComponent,
-        DateFormatPipe,
         FormTitlePipe,
         FormButtonPipe,
-        DateTimeFieldComponent,
-        FormIconPipe,
     ],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
     templateUrl: './activity-form.page.html',
-    styleUrl: './activity-form.page.css',
 })
 export class ActivityFormPage extends BaseFormComponent implements OnDestroy {
+    protected override readonly closesToParentRoute: boolean = true
     protected readonly facade: ActivityFacade = inject(ActivityFacade)
 
     protected readonly activity: WritableSignal<ActivityModel | undefined> = signal(undefined)

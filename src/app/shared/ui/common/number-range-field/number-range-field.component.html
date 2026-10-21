@@ -1,23 +1,19 @@
-<p-inputgroup [id]='inputId()' [class.invalid]='showInvalid()'>
-    <p-inputgroup-addon>{{ minLabel() }}</p-inputgroup-addon>
-    <p-input-number inputId='min'
-                    [ngModel]='minValue()'
-                    [disabled]='disabled()'
-                    inputmode='numeric'
-                    (onInput)='onInputMin($event.value)'
-                    [placeholder]='minPlaceholder()' />
-    <p-inputgroup-addon>{{ maxLabel() }}</p-inputgroup-addon>
-    <p-input-number inputId='max'
-                    [ngModel]='maxValue()'
-                    [disabled]='disabled()'
-                    inputmode='numeric'
-                    (onInput)='onInputMax($event.value)'
-                    [placeholder]='maxPlaceholder()' />
-    <p-inputgroup-addon>
-        <p-button [ariaLabel]='"global.actions.clear" | transloco'
-                  icon='pi pi-times'
-                  severity='secondary'
-                  [disabled]='disabled()'
-                  (onClick)='onInputChange(undefined, undefined)' />
-    </p-inputgroup-addon>
-</p-inputgroup>
+@if (label()) {
+    <div class="mb-[0.25rem] text-sm font-semibold" aria-hidden="true">{{ label() }}</div>
+}
+<div role="group" class="grid grid-cols-2 gap-[0.75rem]" [attr.id]="inputId()" [attr.aria-label]="label()">
+    <sgdf-number-input without-steppers with-clear
+                       [label]="minLabel()"
+                       [placeholder]="minPlaceholder()"
+                       [disabled]="disabled()"
+                       [value]="minValue()?.toString() ?? ''"
+                       (input)="onInputMin($any($event.target).value || null)"
+                       (focusout)="touch.emit()"/>
+    <sgdf-number-input without-steppers with-clear
+                       [label]="maxLabel()"
+                       [placeholder]="maxPlaceholder()"
+                       [disabled]="disabled()"
+                       [value]="maxValue()?.toString() ?? ''"
+                       (input)="onInputMax($any($event.target).value || null)"
+                       (focusout)="touch.emit()"/>
+</div>

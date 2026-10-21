@@ -1,4 +1,4 @@
-import { Component, OnDestroy, signal, WritableSignal } from '@angular/core'
+import { Component, CUSTOM_ELEMENTS_SCHEMA, OnDestroy, signal, WritableSignal } from '@angular/core'
 import { FieldTree, FormField } from '@angular/forms/signals'
 import {
     createProjectProfileForm,
@@ -10,20 +10,19 @@ import {withLoading} from '@shared/helpers/rx.helper'
 import {GenericHelper} from '@shared/helpers/generic.helper'
 import {ProjectProfileModel} from '@shared/models/model/project-profile.model'
 import {TranslocoPipe} from '@jsverse/transloco'
-import {CardModule} from 'primeng/card'
+import '@sgdf/ui/date-time-picker'
+import '@sgdf/ui/option'
+import '@sgdf/ui/select'
+import { FieldErrorDirective } from '@shared/directives/field-error.directive'
+import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
+import { FormDialogComponent } from '@shared/ui/common/form-dialog/form-dialog.component'
 import {FieldErrorComponent} from '@shared/ui/common/field-error/field-error.component'
 import {UserElementComponent} from '@pages/users/user-element/user-element.component'
-import {FormComponent} from '@shared/ui/common/form/form.component'
 import {GenericProjectProfileFormComponent} from '@pages/projects/[projectId]/configuration/profiles/project-profile-form/generic-project-profile-form.component'
-import {RegistryRequiredDirective} from '@shared/directives/registry-required.directive'
-import {Button} from 'primeng/button'
-import {Select, SelectModule} from 'primeng/select'
-import {DateFormatPipe} from '@shared/helpers/pipe/date-format.pipe'
-import {DateTimeFieldComponent} from '@shared/ui/common/date-time-field/date-time-field.component'
 import { ETagHelper } from '@shared/helpers/etag.helper'
 
 /**
- * Purpose: Page with the form to create or edit a project profile edition.
+ * Purpose: Dialog page with the form to edit a project profile, opened over the profiles list.
  * Scope: Builds the form, submits it through the facade and navigates back.
  * Limits: Holds no domain state and never calls the backend.
  */
@@ -31,21 +30,18 @@ import { ETagHelper } from '@shared/helpers/etag.helper'
     selector: 'app-project-profile-edition-form',
     imports: [
         TranslocoPipe,
-        CardModule,
         FormField,
-        SelectModule,
         FieldErrorComponent,
         UserElementComponent,
-        FormComponent,
-        RegistryRequiredDirective,
-        Button,
-        Select,
-        DateFormatPipe,
-        DateTimeFieldComponent,
+        FormDialogComponent,
+        SgdfFieldDirective,
+        FieldErrorDirective,
     ],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
     templateUrl: './project-profile-edition-form.page.html',
 })
 export class ProjectProfileEditionFormPage extends GenericProjectProfileFormComponent implements OnDestroy {
+    protected override readonly closesToParentRoute: boolean = true
     protected readonly projectProfile: WritableSignal<ProjectProfileModel | undefined> = signal(undefined)
     protected readonly model: WritableSignal<ProjectProfileFormModel> = signal(toProjectProfileFormModel())
     protected readonly form: FieldTree<ProjectProfileFormModel> = createProjectProfileForm(this.model)

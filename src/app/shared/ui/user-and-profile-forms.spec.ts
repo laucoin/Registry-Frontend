@@ -42,7 +42,7 @@ describe( 'user and project profile forms', () => {
             providers: [
                 { provide: facadeToken, useValue: facade },
                 { provide: Location, useValue: { back } },
-                { provide: Router, useValue: { navigateByUrl } },
+                { provide: Router, useValue: { navigateByUrl, navigate: (): Promise<boolean> => { back(); return Promise.resolve( true ) } } },
                 { provide: ActivatedRoute, useValue: { snapshot: { params } } },
                 { provide: SessionFacade, useValue: { selectedProject: (): undefined => undefined, currentUser: (): undefined => undefined } },
                 { provide: UiFacade, useValue: autoMock() },

@@ -6,7 +6,7 @@ import { UserRoutesEnum } from '@pages/users/user-routes.enum'
 
 /**
  * Purpose: Declares the routes of the users area.
- * Scope: Maps the users list, edition form pages.
+ * Scope: Maps the users list and its edition dialog, shown as a child route over the list.
  * Limits: Holds no navigation logic; the guards and the pages own it.
  */
 export const userRoutes: Routes = [
@@ -16,9 +16,9 @@ export const userRoutes: Routes = [
         children: [
             {
                 path: '', component: UsersListPage,
-            },
-            {
-                path: UserRoutesEnum.EDIT, component: UserFormPage,
+                children: [
+                    { path: UserRoutesEnum.EDIT, component: UserFormPage },
+                ],
             },
         ],
     },

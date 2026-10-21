@@ -1,20 +1,17 @@
-import { Component, inject, OnDestroy, signal, WritableSignal } from '@angular/core'
+import { Component, CUSTOM_ELEMENTS_SCHEMA, inject, OnDestroy, signal, WritableSignal } from '@angular/core'
 import {VehicleFacade} from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.facade'
 import { FieldTree, FormField } from '@angular/forms/signals'
-import {Button} from 'primeng/button'
-import {CardModule} from 'primeng/card'
-import {DividerModule} from 'primeng/divider'
-import {FormComponent} from '@shared/ui/common/form/form.component'
 import {FieldErrorComponent} from '@shared/ui/common/field-error/field-error.component'
-import {InputTextModule} from 'primeng/inputtext'
 import {TranslocoPipe} from '@jsverse/transloco'
+import '@sgdf/ui/date-time-picker'
+import '@sgdf/ui/input'
+import { FieldErrorDirective } from '@shared/directives/field-error.directive'
+import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
+import { FormDialogComponent } from '@shared/ui/common/form-dialog/form-dialog.component'
 import {VehicleDto} from '@pages/projects/[projectId]/configuration/vehicles/data/dto/vehicle.dto'
 import {CustomDatetimeModel} from '@shared/models/model/custom-datetime.model'
 import {VehicleModel} from '@shared/models/model/vehicle.model'
-import {RegistryRequiredDirective} from '@shared/directives/registry-required.directive'
 import {ProjectModel} from '@shared/models/model/project.model'
-import {InputMask} from 'primeng/inputmask'
-import {DateFormatPipe} from '@shared/helpers/pipe/date-format.pipe'
 import {BaseFormComponent} from '@shared/ui/base/base-form.component'
 import {
     createVehicleForm,
@@ -26,37 +23,30 @@ import {withLoading} from '@shared/helpers/rx.helper'
 import {FormTitlePipe} from '@shared/helpers/pipe/form-title.pipe'
 import {FormButtonPipe} from '@shared/helpers/pipe/form-button.pipe'
 import {GenericHelper} from '@shared/helpers/generic.helper'
-import {DateTimeFieldComponent} from '@shared/ui/common/date-time-field/date-time-field.component'
-import {FormIconPipe} from '@shared/helpers/pipe/form-icon.pipe'
 import { ETagHelper } from '@shared/helpers/etag.helper'
 
 /**
- * Purpose: Page with the form to create or edit a vehicle.
+ * Purpose: Dialog page with the form to create or edit a vehicle, opened over the vehicles list.
  * Scope: Builds the form, submits it through the facade and navigates back.
  * Limits: Holds no domain state and never calls the backend.
  */
 @Component({
     selector: 'app-vehicle-form',
     imports: [
-        Button,
-        CardModule,
-        DividerModule,
-        FormComponent,
+        FormDialogComponent,
         FieldErrorComponent,
-        InputTextModule,
         TranslocoPipe,
         FormField,
-        RegistryRequiredDirective,
-        InputMask,
-        DateFormatPipe,
+        SgdfFieldDirective,
+        FieldErrorDirective,
         FormTitlePipe,
         FormButtonPipe,
-        DateTimeFieldComponent,
-        FormIconPipe,
     ],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
     templateUrl: './vehicle-form.page.html',
 })
 export class VehicleFormPage extends BaseFormComponent implements OnDestroy {
+    protected override readonly closesToParentRoute: boolean = true
     protected readonly facade: VehicleFacade = inject(VehicleFacade)
 
     protected readonly vehicle: WritableSignal<VehicleModel | undefined> = signal(undefined)

@@ -40,7 +40,7 @@ describe( 'VehicleFormPage', () => {
             providers: [
                 { provide: VehicleFacade, useValue: facade },
                 { provide: Location, useValue: { back } },
-                { provide: Router, useValue: { navigateByUrl: vi.fn( () => Promise.resolve( true ) ) } },
+                { provide: Router, useValue: { navigateByUrl: vi.fn( () => Promise.resolve( true ) ), navigate: (): Promise<boolean> => { back(); return Promise.resolve( true ) } } },
                 { provide: ActivatedRoute, useValue: { snapshot: { params: id ? { vehicleId: id } : {} } } },
                 { provide: SessionFacade, useValue: { selectedProject: signal( undefined ), currentUser: (): undefined => undefined } },
                 { provide: UiFacade, useValue: autoMock() },

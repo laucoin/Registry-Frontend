@@ -22,7 +22,7 @@ interface PageApi {
     error: () => unknown
 }
 
-const FILLED: ActivityFormModel = { name: 'Hike', description: 'd', duration: { hours: 2, minutes: 0 }, allowedParticipants: { lower: 1, upper: 5 }, beginDateTime: null, endDateTime: null }
+const FILLED: ActivityFormModel = { name: 'Hike', description: 'd', duration: 'PT2H', allowedParticipants: { lower: 1, upper: 5 }, beginDateTime: null, endDateTime: null }
 
 describe( 'ActivityFormPage', () => {
     let facade: Record<string, Mock>
@@ -40,7 +40,7 @@ describe( 'ActivityFormPage', () => {
             providers: [
                 { provide: ActivityFacade, useValue: facade },
                 { provide: Location, useValue: { back } },
-                { provide: Router, useValue: { navigateByUrl: vi.fn( () => Promise.resolve( true ) ) } },
+                { provide: Router, useValue: { navigateByUrl: vi.fn( () => Promise.resolve( true ) ), navigate: (): Promise<boolean> => { back(); return Promise.resolve( true ) } } },
                 { provide: ActivatedRoute, useValue: { snapshot: { params: id ? { activityId: id } : {} } } },
                 { provide: SessionFacade, useValue: { selectedProject: signal( undefined ), currentUser: (): undefined => undefined } },
                 { provide: UiFacade, useValue: autoMock() },

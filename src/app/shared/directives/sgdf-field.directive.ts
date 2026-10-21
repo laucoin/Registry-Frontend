@@ -1,10 +1,11 @@
 import { Directive, ElementRef, forwardRef, inject } from '@angular/core'
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms'
+import { CustomDatetimeModel } from '@shared/models/model/custom-datetime.model'
 
-type SgdfFieldValue = string | boolean | Date | null
+type SgdfFieldValue = string | boolean | Date | CustomDatetimeModel | null
 
 interface SgdfFieldElement extends HTMLElement {
-    value: string
+    value: string | { date: string, time: string }
     checked: boolean
     disabled: boolean
 }
@@ -14,7 +15,7 @@ const LOCAL_DATE_TIME: RegExp = /^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2}))?$/
 /**
  * Purpose: Lets signal forms (`[formField]`) drive the `@sgdf/ui` form elements: `sgdf-input`, `sgdf-textarea`, `sgdf-select`, `sgdf-switch` and `sgdf-date-time-picker`.
  * Scope: Applied with the `appSgdfField` attribute next to `[formField]`. Writes the model value to the element, reads it back on `input` and `change`, reports touch on focus out and the disabled state. The switch holds a boolean and the date time picker a local `Date`.
- * Limits: Maps no value of its own: a select holds the string of its option, and the picker uses the combined value format.
+ * Limits: Maps no value of its own: a select holds the string of its option. The picker uses the combined value format and holds a `Date`, or the separate one (`value-format="separate"`) and holds a `CustomDatetimeModel`.
  */
 @Directive({
     selector: '[appSgdfField]',
@@ -32,7 +33,7 @@ export class SgdfFieldDirective implements ControlValueAccessor {
         if (this.tag === 'sgdf-switch') {
             this.element.checked = value === true
         } else if (this.tag === 'sgdf-date-time-picker') {
-            this.element.value = value instanceof Date ? SgdfFieldDirective.format(value) : ''
+            this.element.value = this.separate ? SgdfFieldDirective.toParts(value) : value instanceof Date ? SgdfFieldDirective.format(value) : ''
         } else {
             this.element.value = typeof value === 'string' ? value : ''
         }
@@ -56,8 +57,24 @@ export class SgdfFieldDirective implements ControlValueAccessor {
 
     private read(): SgdfFieldValue {
         if (this.tag === 'sgdf-switch') return this.element.checked
-        if (this.tag === 'sgdf-date-time-picker') return SgdfFieldDirective.parse(this.element.value)
-        return this.element.value
+        if (this.tag === 'sgdf-date-time-picker') {
+            return this.separate ? SgdfFieldDirective.fromParts(this.element.value) : SgdfFieldDirective.parse(this.element.value as string)
+        }
+        return this.element.value as string
+    }
+
+    private get separate(): boolean {
+        return this.element.getAttribute('value-format') === 'separate'
+    }
+
+    private static toParts(value: SgdfFieldValue): { date: string, time: string } {
+        const parts: Partial<CustomDatetimeModel> | null = value !== null && typeof value === 'object' && !(value instanceof Date) ? value : null
+        return { date: parts?.date ?? '', time: parts?.time ?? '' }
+    }
+
+    private static fromParts(value: string | { date: string, time: string }): CustomDatetimeModel | null {
+        if (typeof value === 'string' || (!value.date && !value.time)) return null
+        return { date: value.date || undefined, time: value.time || undefined }
     }
 
     private static format(date: Date): string {

@@ -1,5 +1,6 @@
 import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, signal, Signal, WritableSignal } from '@angular/core'
 import { FieldTree, FormField } from '@angular/forms/signals'
+import { RouterOutlet } from '@angular/router'
 import { TranslocoPipe } from '@jsverse/transloco'
 import '@sgdf/ui/avatar'
 import '@sgdf/ui/button'
@@ -44,6 +45,7 @@ const INITIALS_LENGTH: number = 2
         FormField,
         BooleanChoicePipe,
         VisibilityNamePipe,
+        RouterOutlet,
     ],
     providers: [UserActions],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],

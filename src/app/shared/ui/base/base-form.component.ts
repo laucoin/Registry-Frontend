@@ -21,6 +21,9 @@ export abstract class BaseFormComponent extends GenericComponent {
 
     protected readonly subscriptions: Subscription = new Subscription()
 
+    // A form shown as a dialog over its list closes on the parent route, whatever the history holds (a deep link has none).
+    protected readonly closesToParentRoute: boolean = false
+
     protected readonly loading: WritableSignal<boolean> = signal( false )
     protected readonly saving: WritableSignal<boolean> = signal( false )
     protected readonly error: WritableSignal<ErrorModel | undefined> = signal( undefined )
@@ -93,6 +96,7 @@ export abstract class BaseFormComponent extends GenericComponent {
 
     protected navigateToRedirectUri (route: RegistryRouteEnum | undefined = undefined): void {
         if (GenericHelper.nonNull( route )) this.router.navigateByUrl( route! ).catch( (): void => this.location.back() )
+        else if (this.closesToParentRoute) this.router.navigate( [ '..' ], { relativeTo: this.route } ).catch( console.error )
         else this.location.back()
     }
 

@@ -7,7 +7,6 @@ import { UiFacade } from '@core/registry/state/ui.facade'
 import { MovementContentFieldComponent } from '@pages/projects/[projectId]/movements/movement-form/movement-content-field/movement-content-field.component'
 import { autoMock } from '@shared/helpers/testing/auto-mock'
 import { DateTimeFieldComponent } from '@shared/ui/common/date-time-field/date-time-field.component'
-import { DurationFieldComponent } from '@shared/ui/common/duration-field/duration-field.component'
 import { NumberRangeFieldComponent } from '@shared/ui/common/number-range-field/number-range-field.component'
 import { SelectElementsFieldComponent } from '@shared/ui/common/select-elements-field/select-elements-field.component'
 
@@ -46,7 +45,6 @@ describe( 'value fields', () => {
     } )
 
     describe.each( [
-        [ 'duration', DurationFieldComponent, {} ],
         [ 'number range', NumberRangeFieldComponent, {} ],
         [ 'date time', DateTimeFieldComponent, {} ],
         [ 'select elements', SelectElementsFieldComponent, { selectItemBuilder: (): object => ({}) } ],
@@ -77,32 +75,6 @@ describe( 'value fields', () => {
 
             // Assert
             expect( (field as unknown as { disabled: () => boolean }).disabled() ).toBe( true )
-        } )
-    } )
-
-    describe( 'duration field', () => {
-        it( 'publishes the chosen duration and marks the field as touched', () => {
-            // Arrange
-            const { field, touched }: Handle<DurationFieldComponent> = create( DurationFieldComponent )
-
-            // Act
-            ;(field as never as { onInputChange: (value: object) => void }).onInputChange( { hours: 1, minutes: 30 } )
-
-            // Assert
-            expect( field.value() ).toEqual( { hours: 1, minutes: 30 } )
-            expect( touched ).toHaveBeenCalledTimes( 1 )
-        } )
-
-        it( 'offers an empty choice then every quarter of an hour from 00h15 to 23h45', () => {
-            // Arrange
-            const { field }: Handle<DurationFieldComponent> = create( DurationFieldComponent )
-
-            // Act
-            const durations: { value: unknown }[] = (field as never as { durations: { value: unknown }[] }).durations
-
-            // Assert
-            expect( durations ).toHaveLength( 1 + 24 * 4 - 1 )
-            expect( durations[ 0 ].value ).toBeNull()
         } )
     } )
 
