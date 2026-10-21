@@ -8,6 +8,7 @@ import { ChangeDetectionStrategy, Component, computed, CUSTOM_ELEMENTS_SCHEMA, i
 import { RouterLink } from '@angular/router'
 import { CurrentUserHelper } from '@core/authentication/tool/current-user.helper'
 import { SessionFacade } from '@core/registry/state/session.facade'
+import { RouteHelper } from '@shared/helpers/route.helper'
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
 import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
@@ -34,7 +35,7 @@ export class ProjectInformationComponent {
 
 	protected readonly project: Signal<ProjectModel | undefined> = this.sessionFacade.selectedProject
 	protected readonly editUrl: Signal<string> = computed((): string =>
-		RegistryRouteEnum.PROJECTS_EDITION.replace(':projectId', this.sessionFacade.currentProjectId() ?? ''),
+		RouteHelper.absolute(RegistryRouteEnum.PROJECTS_EDITION).replace(':projectId', this.sessionFacade.currentProjectId() ?? ''),
 	)
 	protected readonly canEdit: Signal<boolean> = computed((): boolean => CurrentUserHelper.hasProjectAuthority(
 		this.sessionFacade.currentUser(),

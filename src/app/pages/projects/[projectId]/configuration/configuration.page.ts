@@ -3,6 +3,8 @@ import '@sgdf/ui/tag'
 import '@sgdf/ui/tile'
 import { ChangeDetectionStrategy, Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, Signal } from '@angular/core'
 import { RouterLink } from '@angular/router'
+import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
+import { RouteHelper } from '@shared/helpers/route.helper'
 import { CurrentUserHelper } from '@core/authentication/tool/current-user.helper'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco'
@@ -38,7 +40,8 @@ export class ConfigurationPage {
 		return this.project()?.counts?.[tile.count]
 	}
 
+	// Absolute: without the leading slash `routerLink` resolves the url from the current route and ends on the wildcard
 	private resolveUrl(url: string): string {
-		return url.replace(':projectId', this.sessionFacade.currentProjectId() ?? '')
+		return RouteHelper.absolute(url as RegistryRouteEnum).replace(':projectId', this.sessionFacade.currentProjectId() ?? '')
 	}
 }

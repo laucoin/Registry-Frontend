@@ -92,6 +92,6 @@ describe('ConfigurationPage', () => {
 		const urls: string[] = create().tiles().map((tile: { url: string }): string => tile.url)
 
 		// Assert
-		expect(urls).toEqual(['projects/p1/configuration/groups'])
+		expect(urls).toEqual(['/projects/p1/configuration/groups'])
 	})
 })

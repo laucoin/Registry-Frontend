@@ -75,7 +75,7 @@ describe('ProjectInformationComponent', () => {
 
 		// Assert
 		expect(button).not.toBeNull()
-		expect(internals().editUrl()).toBe('projects/p1/edit')
+		expect(internals().editUrl()).toBe('/projects/p1/edit')
 	})
 
 	it('should hide the edit button without the edit authority', async () => {
