@@ -57,7 +57,7 @@ const UNAVAILABLE_STATUSES: number[] = [0, 502, 503]
 /**
  * Purpose: Single HTTP interceptor for every request to the backend.
  * Scope: Adds credentials (except on the public metadata endpoints, so the backend skips authentication), the CSRF token and the display language, resolves url placeholders, refreshes the token once on a 401 then replays, and maps 0/502/503 to a service unavailable error.
- * Limits: Does not touch other origins; the refresh endpoint and the no-auth paths are never refreshed or replayed.
+ * Limits: Does not touch other origins; the refresh endpoint and the no-auth paths are never refreshed or replayed. Keeps the CSRF token of authenticated responses only: the backend derives it from the access token, so it is meaningless on the requests sent without credentials.
  */
 export const backendHandler: HttpInterceptorFn = (
 	req: HttpRequest<unknown>,
@@ -75,7 +75,7 @@ export const backendHandler: HttpInterceptorFn = (
 		const authenticatedRequest: HttpRequest<unknown> = authenticate(req, sessionFacade, languageService.activeLanguage)
 		const context: InterceptionContext = { request: req, authenticatedRequest, next, sessionFacade, translateService }
 		return next(authenticatedRequest).pipe(
-			tap(captureCsrfTokenFromEvent),
+			tap((event: HttpEvent<unknown>): void => captureCsrfTokenFromEvent(event, authenticatedRequest)),
 			catchError((error: HttpErrorResponse): Observable<HttpEvent<unknown>> => handleError(error, context)),
 		)
 	})
@@ -100,7 +100,7 @@ function withCsrfToken(req: HttpRequest<unknown>): HttpRequest<unknown> {
 }
 
 function handleError(error: HttpErrorResponse, context: InterceptionContext): Observable<HttpEvent<unknown>> {
-	captureCsrfToken(error.headers)
+	if (context.authenticatedRequest.withCredentials) captureCsrfToken(error.headers)
 
 	if (error.status === 401 && isNoAuthPath(context.request.url)) {
 		context.sessionFacade.redirectToLogin()
@@ -121,7 +121,7 @@ function refreshAndReplay(error: HttpErrorResponse, context: InterceptionContext
 
 function replay(context: InterceptionContext): Observable<HttpEvent<unknown>> {
 	return context.next(withCsrfToken(context.authenticatedRequest)).pipe(
-		tap(captureCsrfTokenFromEvent),
+		tap((event: HttpEvent<unknown>): void => captureCsrfTokenFromEvent(event, context.authenticatedRequest)),
 		catchError((error: HttpErrorResponse): Observable<never> => throwError((): ErrorModel => toBackendError(error, context.translateService))),
 	)
 }
@@ -143,8 +143,8 @@ function unavailableError(translateService: TranslocoService): ErrorModel {
 	}
 }
 
-function captureCsrfTokenFromEvent(event: HttpEvent<unknown>): void {
-	if (event instanceof HttpResponse) {
+function captureCsrfTokenFromEvent(event: HttpEvent<unknown>, request: HttpRequest<unknown>): void {
+	if (event instanceof HttpResponse && request.withCredentials) {
 		captureCsrfToken(event.headers)
 	}
 }

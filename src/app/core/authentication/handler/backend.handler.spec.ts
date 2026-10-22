@@ -123,6 +123,36 @@ describe( 'backendHandler', () => {
         expect( request.request.headers.get( 'X-XSRF-TOKEN' ) ).toBe( 'csrf-1' )
     } )
 
+    it( 'keeps the csrf token of the authenticated responses when a request without credentials answers another one', () => {
+        // Arrange
+        http.get( `${BACKEND_URL}/first` ).subscribe()
+        controller.expectOne( `${BACKEND_URL}/first` ).flush( {}, { headers: { 'X-XSRF-TOKEN': 'csrf-valid' } } )
+        http.get( `${BACKEND_URL}/api/v2/metadata/profiles/status` ).subscribe()
+        controller.expectOne( `${BACKEND_URL}/api/v2/metadata/profiles/status` ).flush( {}, { headers: { 'X-XSRF-TOKEN': 'csrf-empty' } } )
+
+        // Act
+        http.post( `${BACKEND_URL}/second`, {} ).subscribe()
+        const request: TestRequest = controller.expectOne( `${BACKEND_URL}/second` )
+
+        // Assert
+        expect( request.request.headers.get( 'X-XSRF-TOKEN' ) ).toBe( 'csrf-valid' )
+    } )
+
+    it( 'ignores the csrf token of a failed request without credentials', () => {
+        // Arrange
+        http.get( `${BACKEND_URL}/first` ).subscribe()
+        controller.expectOne( `${BACKEND_URL}/first` ).flush( {}, { headers: { 'X-XSRF-TOKEN': 'csrf-valid' } } )
+        http.get( `${BACKEND_URL}/api/v2/metadata/profiles/status` ).subscribe( { error: (): void => undefined } )
+        controller.expectOne( `${BACKEND_URL}/api/v2/metadata/profiles/status` ).flush( null, { status: 500, statusText: 'Down', headers: { 'X-XSRF-TOKEN': 'csrf-empty' } } )
+
+        // Act
+        http.post( `${BACKEND_URL}/second`, {} ).subscribe()
+        const request: TestRequest = controller.expectOne( `${BACKEND_URL}/second` )
+
+        // Assert
+        expect( request.request.headers.get( 'X-XSRF-TOKEN' ) ).toBe( 'csrf-valid' )
+    } )
+
     it.each( [ 0, 502, 503 ] )( 'maps status %i to a service unavailable error', (status: number) => {
         // Arrange
         let failure: ErrorModel | undefined
