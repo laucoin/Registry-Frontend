@@ -4,6 +4,7 @@ import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
 import { MovementFacade } from '@pages/projects/[projectId]/movements/data/state/movement.facade'
 import { ElementActionsBase, ElementActionSpec } from '@shared/helpers/facade/element-actions.base'
 import { ElementActionEnum } from '@shared/models/enumeration/element-action.enum'
+import { ParticipantTypeEnum } from '@shared/models/enumeration/participant-type.enum'
 import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { MovementModel } from '@shared/models/model/movement.model'
@@ -69,8 +70,11 @@ export class MovementActions extends ElementActionsBase<MovementModel> {
     }
 
     private navigateToEdition(movement: MovementModel): void {
+        const edition: RegistryRouteEnum = movement.contentType === ParticipantTypeEnum.GUEST
+                                           ? RegistryRouteEnum.PROJECTS_MOVEMENTS_GUEST_EDITION
+                                           : RegistryRouteEnum.PROJECTS_MOVEMENTS_REGISTERED_EDITION
         this.router.navigateByUrl(
-            RegistryRouteEnum.PROJECTS_MOVEMENTS_EDITION.replace(':movementId', movement.id).replace(':projectId', this.sessionFacade.currentProjectId() ?? ''),
+            edition.replace(':movementId', movement.id).replace(':projectId', this.sessionFacade.currentProjectId() ?? ''),
         ).catch((err: Error) => console.error(err))
     }
 }

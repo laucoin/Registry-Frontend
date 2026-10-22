@@ -801,7 +801,11 @@
   "movements": {
     "list": {
       "title": "Mouvements",
-      "subtitle": "Tous les mouvements du projet, avec ou sans activité rattachée."
+      "subtitle": "Tous les mouvements du projet, avec ou sans activité rattachée.",
+      "create": {
+        "registered": "Participants inscrits",
+        "guest": "Invités"
+      }
     },
     "history-page": {
       "subtitle": "Les mouvements du projet qui concernent cet élément."
@@ -849,7 +853,6 @@
       },
       "datetime": "Date & Heure",
       "type": "Type",
-      "content-kind": "Type de participant",
       "reason": {
         "name": "Motif",
         "empty-search": "Aucune raison trouvée"

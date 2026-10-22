@@ -53,7 +53,8 @@ export class MovementsListPage {
     protected readonly facade: MovementFacade = inject(MovementFacade)
     private readonly sessionFacade: SessionFacade = inject(SessionFacade)
 
-    protected readonly createRoute: MovementRoutesEnum = MovementRoutesEnum.CREATE
+    protected readonly createRegisteredRoute: MovementRoutesEnum = MovementRoutesEnum.CREATE_REGISTERED
+    protected readonly createGuestRoute: MovementRoutesEnum = MovementRoutesEnum.CREATE_GUEST
 
     protected readonly canCreate: Signal<boolean> = computed((): boolean => CurrentUserHelper.hasProjectAuthority(
         this.sessionFacade.currentUser(),

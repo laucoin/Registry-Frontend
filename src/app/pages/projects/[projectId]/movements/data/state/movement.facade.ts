@@ -6,6 +6,7 @@ import { SelectOptionModel, SelectOptionGroupModel } from '@shared/models/model/
 import { NotificationModel } from '@shared/models/model/notification.model'
 import { GroupModel } from '@shared/models/model/group.model'
 import { MovementStore } from '@pages/projects/[projectId]/movements/data/state/movement.store'
+import { GuestMovementDto } from '@pages/projects/[projectId]/movements/data/dto/guest-movement.dto'
 import { MovementDto } from '@pages/projects/[projectId]/movements/data/dto/movement.dto'
 import { MovementModel } from '@shared/models/model/movement.model'
 import { ParticipantModel } from '@shared/models/model/participant.model'
@@ -227,22 +228,26 @@ export class MovementFacade extends GenericProjectElementFacade {
         )
     }
 
-    public createMovement (movement: MovementDto): Observable<MovementModel> {
-        const request: Observable<MovementModel> = movement.contentType === ParticipantTypeEnum.REGISTERED
-            ? this.api.createMovement( this.selectedProjectId(), movement )
-            : this.api.createGuestsMovement( this.selectedProjectId(), movement )
-
-        return request.pipe(
+    public createRegisteredMovement (movement: MovementDto): Observable<MovementModel> {
+        return this.api.createMovement( this.selectedProjectId(), movement ).pipe(
             tap( (created: MovementModel): void => this.onCommandSuccess( 'create', created ) ),
         )
     }
 
-    public updateMovement (id: string, movement: MovementDto, ifMatch?: string): Observable<MovementModel> {
-        const request: Observable<MovementModel> = movement.contentType === ParticipantTypeEnum.REGISTERED
-            ? this.api.updateMovementById( this.selectedProjectId(), id, movement, ifMatch )
-            : this.api.updateGuestsMovementById( this.selectedProjectId(), id, movement, ifMatch )
+    public updateRegisteredMovement (id: string, movement: MovementDto, ifMatch?: string): Observable<MovementModel> {
+        return this.api.updateMovementById( this.selectedProjectId(), id, movement, ifMatch ).pipe(
+            tap( (updated: MovementModel): void => this.onCommandSuccess( 'update', updated ) ),
+        )
+    }
 
-        return request.pipe(
+    public createGuestMovement (movement: GuestMovementDto): Observable<MovementModel> {
+        return this.api.createGuestsMovement( this.selectedProjectId(), movement ).pipe(
+            tap( (created: MovementModel): void => this.onCommandSuccess( 'create', created ) ),
+        )
+    }
+
+    public updateGuestMovement (id: string, movement: GuestMovementDto, ifMatch?: string): Observable<MovementModel> {
+        return this.api.updateGuestsMovementById( this.selectedProjectId(), id, movement, ifMatch ).pipe(
             tap( (updated: MovementModel): void => this.onCommandSuccess( 'update', updated ) ),
         )
     }

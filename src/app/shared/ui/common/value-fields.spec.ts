@@ -4,7 +4,6 @@ import { TranslocoService } from '@jsverse/transloco'
 import { Mock, beforeEach, describe, expect, it, vi } from 'vitest'
 import { BrowserService } from '@core/browser/browser.service'
 import { UiFacade } from '@core/registry/state/ui.facade'
-import { MovementContentFieldComponent } from '@pages/projects/[projectId]/movements/movement-form/movement-content-field/movement-content-field.component'
 import { autoMock } from '@shared/helpers/testing/auto-mock'
 import { NumberRangeFieldComponent } from '@shared/ui/common/number-range-field/number-range-field.component'
 import { SelectElementsFieldComponent } from '@shared/ui/common/select-elements-field/select-elements-field.component'
@@ -45,7 +44,6 @@ describe( 'value fields', () => {
 
     describe.each( [
         [ 'number range', NumberRangeFieldComponent, {} ],
-        [ 'movement content', MovementContentFieldComponent, { suggestions: [], selectionLabel: '', interpretedMovementType: [] } ],
     ] as [ string, Type<unknown>, Record<string, unknown> ][] )( '%s field', (_name: string, type: Type<unknown>, inputs: Record<string, unknown>) => {
         it.each( [
             [ 'invalid and touched', { invalid: true, touched: true, dirty: false }, true ],
@@ -280,58 +278,6 @@ describe( 'value fields', () => {
 
             // Assert
             expect( focus ).toHaveBeenCalledTimes( 1 )
-        } )
-    } )
-
-    describe( 'movement content field', () => {
-        const ADA: object = { id: 'pa1', firstName: 'Ada' }
-        const GRACE: object = { id: 'pa2', firstName: 'Grace' }
-
-        function content (): Handle<MovementContentFieldComponent> {
-            return create( MovementContentFieldComponent, { suggestions: [], selectionLabel: '', interpretedMovementType: [] } )
-        }
-
-        it( 'adds a participant without pool', () => {
-            // Arrange
-            const { field, touched }: Handle<MovementContentFieldComponent> = content()
-
-            // Act
-            field[ 'handleElementSelection' ]( { label: 'ada', value: ADA } as never )
-
-            // Assert
-            expect( field.value() ).toEqual( [ { poolName: undefined, participant: ADA, vehicle: undefined } ] )
-            expect( touched ).toHaveBeenCalledTimes( 1 )
-        } )
-
-        it( 'adds every member of a group under the pool of the group and highlights the duplicates', () => {
-            // Arrange
-            const { field }: Handle<MovementContentFieldComponent> = content()
-            field.value.set( [ { poolName: undefined, participant: ADA, vehicle: undefined } as never ] )
-
-            // Act
-            field[ 'handleElementSelection' ]( { label: 'wolves', value: { name: 'Wolves', members: [ ADA, GRACE ] } } as never )
-
-            // Assert
-            expect( field.value().map( (item: { participant: { id: string }, poolName: string | undefined }): string => `${item.poolName}:${item.participant.id}` ) )
-                .toEqual( [ 'undefined:pa1', 'Wolves:pa2' ] )
-            expect( highlight ).toHaveBeenCalledWith( 'pa1' )
-        } )
-
-        it( 'removes a participant, or a whole pool', () => {
-            // Arrange
-            const { field }: Handle<MovementContentFieldComponent> = content()
-            field.value.set( [
-                { poolName: 'Wolves', participant: ADA, vehicle: undefined } as never,
-                { poolName: 'Wolves', participant: GRACE, vehicle: undefined } as never,
-                { poolName: undefined, participant: { id: 'pa3' }, vehicle: undefined } as never,
-            ] )
-
-            // Act
-            field[ 'handleParticipantRemoving' ]( 'pa3' )
-            field[ 'handleGroupRemoving' ]( 'Wolves' )
-
-            // Assert
-            expect( field.value() ).toEqual( [] )
         } )
     } )
 } )

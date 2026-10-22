@@ -3,6 +3,7 @@ import { Observable, forkJoin, map, of } from 'rxjs'
 import {PageModel} from '@shared/models/model/page.model'
 import {GenericProjectApi} from '@shared/helpers/api/generic-project.api'
 import {SELECT_PROFILE_PROJECT_ID} from '@shared/helpers/request.helper'
+import { GuestMovementDto } from '@pages/projects/[projectId]/movements/data/dto/guest-movement.dto'
 import {MovementDto} from '@pages/projects/[projectId]/movements/data/dto/movement.dto'
 import {MovementPageParamsModel} from '@shared/models/model/movement-page-params.model'
 import {QueryHelper} from '@shared/helpers/query.helper'
@@ -234,7 +235,7 @@ export class MovementApi extends GenericProjectApi {
         )
     }
 
-    public createGuestsMovement(projectId: string | undefined, movement: MovementDto): Observable<MovementModel> {
+    public createGuestsMovement(projectId: string | undefined, movement: GuestMovementDto): Observable<MovementModel> {
         return this.http.post<MovementResponseDto>(`${this.buildRequestBaseUrl(projectId)}/guests`, movement).pipe(
             map( MovementMapper.toModel ),
         )
@@ -243,7 +244,7 @@ export class MovementApi extends GenericProjectApi {
     public updateGuestsMovementById(
         projectId: string | undefined,
         id: string,
-        movement: MovementDto,
+        movement: GuestMovementDto,
         ifMatch?: string,
     ): Observable<MovementModel> {
         return this.http.patch<MovementResponseDto>(`${this.buildRequestBaseUrl(projectId)}/guests/${id}`, movement, ETagHelper.options(ifMatch)).pipe(
