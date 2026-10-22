@@ -37,7 +37,7 @@
                 </sgdf-button>
                 <sgdf-button variant="primary" appearance="outlined" submit [attr.label]="'global.actions.next' | transloco">
                     {{ uiFacade.tinyScreen() ? '' : ('global.actions.next' | transloco) }}
-                    <sgdf-icon slot="suffix" name="arrow-down" library="solid"/>
+                    <sgdf-icon slot="suffix" name="arrow-right" library="solid"/>
                 </sgdf-button>
             </div>
         </form>
@@ -115,7 +115,7 @@
             </sgdf-card>
             <div class="flex items-center justify-between pt-[1rem]">
                 <sgdf-button variant="neutral" appearance="text" (click)="goTo(1)">
-                    <sgdf-icon slot="prefix" name="arrow-up" library="solid"/>
+                    <sgdf-icon slot="prefix" name="arrow-left" library="solid"/>
                     {{ 'global.actions.previous' | transloco }}
                 </sgdf-button>
                 <sgdf-button variant="primary" submit [loading]="saving()">

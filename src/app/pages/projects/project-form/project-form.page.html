@@ -39,7 +39,7 @@
                 </sgdf-button>
                 <sgdf-button variant="primary" appearance="outlined" submit [attr.label]="'global.actions.next' | transloco">
                     {{ uiFacade.tinyScreen() ? '' : ('global.actions.next' | transloco) }}
-                    <sgdf-icon slot="suffix" name="arrow-down" library="solid"/>
+                    <sgdf-icon slot="suffix" name="arrow-right" library="solid"/>
                 </sgdf-button>
             </div>
         </form>
@@ -72,7 +72,7 @@
             }
             <div class="flex items-center justify-between pt-[1rem]">
                 <sgdf-button variant="neutral" appearance="text" (click)="activeTab.set(1)" [attr.label]="'global.actions.previous' | transloco">
-                    <sgdf-icon slot="prefix" name="arrow-up" library="solid"/>
+                    <sgdf-icon slot="prefix" name="arrow-left" library="solid"/>
                     {{ uiFacade.tinyScreen() ? '' : ('global.actions.previous' | transloco) }}
                 </sgdf-button>
                 <sgdf-button variant="primary" submit [loading]="saving()" [attr.label]="facade.project() | formButton | transloco">
