@@ -99,7 +99,8 @@ export class GuestMovementFormPage extends BaseFormComponent implements OnDestro
     )
     protected readonly suggestions: Signal<SelectOptionModel<ParticipantModel | GroupModel>[]> = computed(
         (): SelectOptionModel<ParticipantModel | GroupModel>[] => this.facade.searchedParticipantAndGroupMetadata()
-            .flatMap( (group: SelectOptionGroupModel<ParticipantModel | GroupModel>): SelectOptionModel<ParticipantModel | GroupModel>[] => group.items ),
+            .flatMap( (group: SelectOptionGroupModel<ParticipantModel | GroupModel>): SelectOptionModel<ParticipantModel | GroupModel>[] => group.items )
+            .filter( (option: SelectOptionModel<ParticipantModel | GroupModel>): boolean => !('name' in option.value) ),
     )
 
     protected readonly reasonKeyOf: typeof reasonKeyOf = reasonKeyOf

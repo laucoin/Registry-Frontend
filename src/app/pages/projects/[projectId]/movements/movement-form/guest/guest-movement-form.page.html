@@ -24,7 +24,9 @@
                                  [appFieldError]="form.information.type" translationPrefix="movements.form.error.type"
                                  (change)="handleTypeChange($event)">
                         @for (type of facade.movementTypesMetadata(); track type.value) {
-                            <sgdf-option [value]="type.value ?? ''">{{ type.label }}</sgdf-option>
+                            @if (type.value) {
+                                <sgdf-option [value]="type.value">{{ type.label }}</sgdf-option>
+                            }
                         }
                     </sgdf-select>
                 </div>

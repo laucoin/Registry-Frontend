@@ -139,10 +139,10 @@ describe( 'GuestMovementFormPage', () => {
             expect( page.reasonOptions() ).toHaveLength( 1 )
         } )
 
-        it( 'flattens the searched guests into suggestions', () => {
+        it( 'flattens the searched guests into suggestions and leaves the groups out', () => {
             // Arrange
             const page: PageApi = create()
-            facade[ 'searchedParticipantAndGroupMetadata' ].mockReturnValue( [ { items: [ { value: { id: 'g1' } } ] } ] )
+            facade[ 'searchedParticipantAndGroupMetadata' ].mockReturnValue( [ { items: [ { value: { id: 'team', name: 'team' } } ] }, { items: [ { value: { id: 'g1' } } ] } ] )
 
             // Act
             const ids: string[] = page.suggestions().map( (option: { value: { id: string } }): string => option.value.id )
