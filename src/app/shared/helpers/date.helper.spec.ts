@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { DateHelper } from '@shared/helpers/date.helper'
+import { useTimeZone } from '@shared/helpers/testing/time-zone'
 import { CustomDatetimeModel } from '@shared/models/model/custom-datetime.model'
 import { IntervalModel } from '@shared/models/model/interval.model'
 
@@ -148,6 +149,50 @@ describe( 'DateHelper', () => {
 
             // Assert
             expect( date?.getFullYear() ).toBe( 1970 )
+        } )
+    } )
+
+    describe( 'UTC time of a civil date', () => {
+        useTimeZone( 'Europe/Paris' )
+
+        it( 'follows the daylight saving time of the given date, not the one of today', () => {
+            // Arrange
+            const winter: string = '2026-01-15'
+            const summer: string = '2026-07-15'
+
+            // Act
+            const winterHour: number | undefined = DateHelper.fromIsoTime( '08:00:00.000Z', winter )?.getHours()
+            const summerHour: number | undefined = DateHelper.fromIsoTime( '08:00:00.000Z', summer )?.getHours()
+
+            // Assert
+            expect( winterHour ).toBe( 9 )
+            expect( summerHour ).toBe( 10 )
+        } )
+
+        it( 'reads the time of a custom date time with the offset of its own date', () => {
+            // Arrange
+            const winter: CustomDatetimeModel = { date: '2026-01-15', time: '08:00:00.000Z' }
+            const summer: CustomDatetimeModel = { date: '2026-07-15', time: '08:00:00.000Z' }
+
+            // Act
+            const winterDate: Date | undefined = DateHelper.toDate( winter )
+            const summerDate: Date | undefined = DateHelper.toDate( summer )
+
+            // Assert
+            expect( winterDate?.getHours() ).toBe( 9 )
+            expect( summerDate?.getHours() ).toBe( 10 )
+        } )
+
+        it( 'falls back to today when no date is given', () => {
+            // Arrange
+            const expected: Date = new Date()
+            expected.setUTCHours( 8, 0, 0, 0 )
+
+            // Act
+            const hour: number | undefined = DateHelper.fromIsoTime( '08:00:00.000Z' )?.getHours()
+
+            // Assert
+            expect( hour ).toBe( expected.getHours() )
         } )
     } )
 
