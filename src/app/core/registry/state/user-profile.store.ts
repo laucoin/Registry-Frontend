@@ -14,46 +14,36 @@ import { UserInvitationModel } from '@shared/models/model/user-invitation.model'
 type ProfilesPage = PageRequestInformationModel<UserProjectProfilePageParamsModel, UserInvitationModel>
 
 interface UserProfileState {
-    profiles: ProfilesPage
     invitations: ProfilesPage
     profile: ElementRequestInformationModel<UserInvitationModel>
 }
 
-/**
- * Purpose: Builds the search parameters of the profiles list of one status.
- * Scope: Fills the other criteria with their empty values.
- * Limits: Does not read the store.
- */
-const pageParams = (status: ProfileStatusEnum): UserProjectProfilePageParamsModel => ({
+const invitationParams: UserProjectProfilePageParamsModel = {
     resetSearch: false,
     isAvailable: undefined,
-    status: status,
+    status: ProfileStatusEnum.INVITED,
     q: undefined,
     at: undefined,
-})
+}
 
 const defaultUserProfileState: UserProfileState = {
-    profiles: PageStateHelper.initial<UserProjectProfilePageParamsModel, UserInvitationModel>( pageParams( ProfileStatusEnum.ACCEPTED ) ),
-    invitations: PageStateHelper.initial<UserProjectProfilePageParamsModel, UserInvitationModel>( pageParams( ProfileStatusEnum.INVITED ) ),
+    invitations: PageStateHelper.initial<UserProjectProfilePageParamsModel, UserInvitationModel>( invitationParams ),
     profile: { element: undefined, loading: false, error: undefined },
 }
 
 /**
- * Purpose: Holds the project profiles and the invitations of the signed-in user.
- * Scope: Owns the paged fetches of the user's own profiles and invitations and the loading state of a profile command.
+ * Purpose: Holds the invitations of the signed-in user.
+ * Scope: Owns the paged fetches of the user's own invitations and the loading state of a profile command.
  * Limits: Knows nothing about the signed-in user or the selected project; the session store holds those.
  */
 export const UserProfileStore = signalStore(
     { providedIn: 'root' },
     withState<UserProfileState>( defaultUserProfileState ),
     withMethods( (store, api = inject( UserProjectProfileApi ), errors = inject( ErrorReporter )) => ({
-        fetchProfilesPage: pageFetcher( store, 'profiles', (request: CumulativePageRequest, params: UserProjectProfilePageParamsModel) =>
-            api.findUserProjectProfiles( request.page, request.size, params ), errors, { merge: CumulativePageHelper.merge } ),
         fetchInvitationsPage: pageFetcher( store, 'invitations', (request: CumulativePageRequest, params: UserProjectProfilePageParamsModel) =>
             api.findUserProjectProfiles( request.page, request.size, params ), errors, { merge: CumulativePageHelper.merge } ),
         refreshInvitationsPage: pageFetcher( store, 'invitations', (request: CumulativePageRequest, params: UserProjectProfilePageParamsModel) =>
             api.findUserProjectProfiles( request.page, request.size, params ), errors, { merge: CumulativePageHelper.merge, silent: true } ),
-        updateProfilesPageSearchParams: paramsMerger( store, 'profiles' ),
         updateInvitationsPageSearchParams: paramsMerger( store, 'invitations' ),
         startProfileLoader: loaderToggle( store, 'profile', true ),
         stopProfileLoader: loaderToggle( store, 'profile', false ),
@@ -69,7 +59,6 @@ export const UserProfileStore = signalStore(
                 }
                 : block
             patchState( store, (state: UserProfileState): Partial<UserProfileState> => ({
-                profiles: withFavorite( state.profiles ),
                 invitations: withFavorite( state.invitations ),
             }) )
         },

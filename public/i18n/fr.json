@@ -620,11 +620,6 @@
   },
   "project-profiles": {
     "pages": {
-      "profiles": {
-        "eyebrow": "Mon espace",
-        "title": "Mes projets",
-        "subtitle": "Les projets auxquels vous avez accès et le rôle que vous y tenez."
-      },
       "invitations": {
         "eyebrow": "Mon espace",
         "title": "Mes invitations",
@@ -644,7 +639,6 @@
       "status": "Statut",
       "visibility": "Disponibilité"
     },
-    "empty": "Tu ne sembles pas avoir de profil d'accès pour le moment. Tu peux en obtenir un en acceptant une invitation que tu as reçue ou en créant un projet.",
     "empty-invitation": "Tu ne sembles pas avoir d'invitation en attente de réponse. Tu peux en obtenir un en acceptant une invitation que tu as reçue ou en créant un projet.",
     "visible": {
       "true": "En cours de validité",
@@ -703,8 +697,7 @@
         "few": "Inviter des utilisateurs"
       },
       "create-project": "Créer un projet",
-      "profiles": "Voir mes profils d'accès",
-      "invitations": "Voir mes invitations",
+      "projects": "Voir mes projets",
       "edit": "Modifier",
       "enable": "Débloquer",
       "disable": "Bloquer",

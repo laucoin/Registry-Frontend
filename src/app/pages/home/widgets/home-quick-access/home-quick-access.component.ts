@@ -23,7 +23,7 @@ interface QuickAccess {
 const SHORTCUTS: readonly QuickAccess[] = [
 	{ label: 'home.quickAccess.users', icon: 'user-group', url: RegistryRouteEnum.USERS, authority: UserAuthorityEnum.REGISTRY_USER_R },
 	{ label: 'home.quickAccess.account', icon: 'gear', url: RegistryRouteEnum.MY_ACCOUNT },
-	{ label: 'home.quickAccess.profiles', icon: 'id-badge', url: RegistryRouteEnum.MY_ACCOUNT_PROJECTS },
+	{ label: 'home.quickAccess.projects', icon: 'folder-open', url: RegistryRouteEnum.PROJECTS },
 ]
 
 /**

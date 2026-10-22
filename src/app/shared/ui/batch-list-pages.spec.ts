@@ -9,7 +9,6 @@ import { UserProfileFacade } from '@core/registry/state/user-profile.facade'
 import { ProjectProfileFacade } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.facade'
 import { ProjectProfilesListPage } from '@pages/projects/[projectId]/configuration/profiles/project-profiles-list/project-profiles-list.page'
 import { InvitationsListPage } from '@pages/users/invitations/invitations-list/invitations-list.page'
-import { ProfilesListPage } from '@pages/users/profiles/profiles-list/profiles-list.page'
 import { ActivityFacade } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.facade'
 import { ActivitiesListPage } from '@pages/projects/[projectId]/configuration/activities/activities-list/activities-list.page'
 import { GroupFacade } from '@pages/projects/[projectId]/configuration/groups/data/state/group.facade'
@@ -56,7 +55,6 @@ const CASES: BatchListCase[] = [
     { name: 'vehicles', type: VehiclesListPage, facades: [ VehicleFacade ], owner: VehicleFacade, services: [], fetch: 'fetchVehiclesPage', withId: false },
     { name: 'users', type: UsersListPage, facades: [ UserFacade ], owner: UserFacade, services: [ UserActions ], fetch: 'fetchUsersPage', withId: false },
     { name: 'invitations', type: InvitationsListPage, facades: [], owner: UserProfileFacade, services: [], fetch: 'fetchProjectProfileInvitationPage', withId: false },
-    { name: 'profiles', type: ProfilesListPage, facades: [ ProjectProfileFacade ], owner: UserProfileFacade, services: [], fetch: 'fetchProjectProfilesPage', withId: false },
     { name: 'project profiles', type: ProjectProfilesListPage, facades: [ ProjectProfileFacade ], owner: ProjectProfileFacade, services: [], fetch: 'fetchProjectProfilesPage', withId: false },
     { name: 'alerts', type: AlertsListPage, facades: [ AlertFacade ], owner: AlertFacade, services: [], fetch: 'fetchAlertsPage', withId: false },
     { name: 'activity movements', type: ActivityMovementsListPage, facades: [ ActivityFacade, MovementFacade ], owner: ActivityFacade, services: [], fetch: 'fetchActivityMovementsPage', withId: true },

@@ -82,23 +82,23 @@ describe( 'UserProfileFacade', () => {
     } )
 
     describe( 'pages', () => {
-        it( 'fetches the requested profiles page', () => {
+        it( 'fetches the requested invitations page', () => {
             // Arrange
             const page: number = 3
 
             // Act
-            facade.fetchProjectProfilesPage( page, 10 )
+            facade.fetchProjectProfileInvitationPage( page, 10 )
 
             // Assert
             expect( findProfilesPage ).toHaveBeenCalledWith( 3, 10, expect.anything() )
         } )
 
-        it( 'restarts from the first page after the profiles search changed', () => {
+        it( 'restarts from the first page after the invitations search changed', () => {
             // Arrange
-            facade.inputProfilesPageSearchParameters( 'wolves', undefined, undefined )
+            facade.inputInvitationsPageSearchParameters( 'wolves', undefined )
 
             // Act
-            facade.fetchProjectProfilesPage( 4, 10 )
+            facade.fetchProjectProfileInvitationPage( 4, 10 )
 
             // Assert
             expect( findProfilesPage ).toHaveBeenCalledWith( 0, 10, expect.anything() )
@@ -117,9 +117,9 @@ describe( 'UserProfileFacade', () => {
             expect( facade.userProjectProfileInvitationsPageQueryParam() ).toBe( 'wolves' )
         } )
 
-        it( 'forgets the loaded profiles once the user is gone', () => {
+        it( 'forgets the loaded invitations once the user is gone', () => {
             // Arrange
-            facade.fetchProjectProfilesPage( 0, 10 )
+            facade.fetchProjectProfileInvitationPage( 0, 10 )
             TestBed.tick()
 
             // Act
@@ -127,23 +127,23 @@ describe( 'UserProfileFacade', () => {
             TestBed.tick()
 
             // Assert
-            expect( store.profiles.element() ).toBeUndefined()
+            expect( store.invitations.element() ).toBeUndefined()
         } )
 
-        it( 'keeps the loaded profiles while the user is known', () => {
+        it( 'keeps the loaded invitations while the user is known', () => {
             // Arrange
-            facade.fetchProjectProfilesPage( 0, 10 )
+            facade.fetchProjectProfileInvitationPage( 0, 10 )
 
             // Act
             TestBed.tick()
 
             // Assert
-            expect( facade.userProjectProfilesPage() ).toEqual( EMPTY_PAGE )
+            expect( facade.userProjectProfileInvitationsPage() ).toEqual( EMPTY_PAGE )
         } )
     } )
 
     describe( 'profile commands', () => {
-        it( 'notifies and refreshes the user and both pages after an invitation answer', () => {
+        it( 'notifies and refreshes the user and the invitations page after an invitation answer', () => {
             // Arrange
 
             // Act
@@ -153,7 +153,7 @@ describe( 'UserProfileFacade', () => {
             expect( manageAcceptance ).toHaveBeenCalledWith( 'pp1', true )
             expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'project-profiles.notifications.acceptance.ACCEPTED.title' } ) )
             expect( fetchCurrentUser ).toHaveBeenCalledTimes( 1 )
-            expect( findProfilesPage ).toHaveBeenCalledTimes( 2 )
+            expect( findProfilesPage ).toHaveBeenCalledTimes( 1 )
         } )
 
         it( 'notifies the failure of an invitation answer', () => {
@@ -168,18 +168,18 @@ describe( 'UserProfileFacade', () => {
             expect( fetchCurrentUser ).not.toHaveBeenCalled()
         } )
 
-        it( 'toggles the favorite of the project of a profile and shows it in the loaded pages', () => {
+        it( 'toggles the favorite of the project of a profile and shows it in the loaded invitations', () => {
             // Arrange
             const profile: UserInvitationModel = { id: 'pp1', project: { id: 'p1', name: 'Camp', favorite: false } } as UserInvitationModel
             findProfilesPage.mockReturnValue( of( { ...EMPTY_PAGE, content: [ profile ] } ) )
-            facade.fetchProjectProfilesPage( 0, 10 )
+            facade.fetchProjectProfileInvitationPage( 0, 10 )
 
             // Act
             facade.toggleProjectFavorite( profile )
 
             // Assert
             expect( setProjectFavorite ).toHaveBeenCalledWith( 'p1', true )
-            expect( facade.userProjectProfilesPage()?.content[ 0 ]?.project?.favorite ).toBe( true )
+            expect( facade.userProjectProfileInvitationsPage()?.content[ 0 ]?.project?.favorite ).toBe( true )
         } )
 
         it( 'removes the favorite when the project already is one', () => {
@@ -209,7 +209,7 @@ describe( 'UserProfileFacade', () => {
             expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'Title' } ) )
         } )
 
-        it( 'notifies and refreshes after the deletion of a profile', () => {
+        it( 'notifies after the deletion of a profile', () => {
             // Arrange
             let completed: boolean = false
 
@@ -222,7 +222,7 @@ describe( 'UserProfileFacade', () => {
             expect( completed ).toBe( true )
         } )
 
-        it( 'completes without refreshing when the deletion fails', () => {
+        it( 'completes without reloading the user when the deletion fails', () => {
             // Arrange
             deleteProfile.mockReturnValue( failing( FAILURE ) )
             let completed: boolean = false
@@ -260,18 +260,5 @@ describe( 'UserProfileFacade', () => {
             // Assert
             expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { sticky: true } ) )
         } )
-    } )
-
-    it( 'reloads every shown batch of the profiles in one request after a profile is deleted', () => {
-        // Arrange
-        findProfilesPage.mockReturnValue( of( { ...EMPTY_PAGE, page: 2 } ) )
-        facade.fetchProjectProfilesPage( 2, 10 )
-        findProfilesPage.mockClear()
-
-        // Act
-        facade.deleteUserProjectProfile( { id: 'pp1', project: { name: 'Camp' } } as UserInvitationModel ).subscribe()
-
-        // Assert
-        expect( findProfilesPage ).toHaveBeenCalledWith( 0, 30, expect.anything() )
     } )
 } )

@@ -45,7 +45,7 @@ export class InvitationsListPage {
     protected readonly userProfileFacade: UserProfileFacade = inject(UserProfileFacade)
 
     protected readonly createRoute: string = `/${RegistryRouteEnum.PROJECTS_CREATION}`
-    protected readonly profilesRoute: string = `/${RegistryRouteEnum.MY_ACCOUNT_PROJECTS}`
+    protected readonly projectsRoute: string = `/${RegistryRouteEnum.PROJECTS}`
 
     protected readonly activeFilters: Signal<number> = computed((): number => [
         StringHelper.isNotNullNorBlank(this.userProfileFacade.userProjectProfileInvitationsPageQueryParam()),
