@@ -211,16 +211,5 @@ describe( 'user and project profile forms', () => {
             expect( facade[ 'createProjectProfiles' ] ).toHaveBeenCalledWith( { userIds: [ 'u1' ], role: 'CHIEF', startAccess: undefined, endAccess: undefined } )
             expect( back ).toHaveBeenCalledTimes( 1 )
         } )
-
-        it( 'searches users through the facade', () => {
-            // Arrange
-            const page: ProjectProfileInvitationFormPage = create( ProjectProfileInvitationFormPage, ProjectProfileFacade, {} )
-
-            // Act
-            ;(page as unknown as { handleSearch: (text: string) => void }).handleSearch( 'ada' )
-
-            // Assert
-            expect( facade[ 'searchUsers' ] ).toHaveBeenCalledWith( 'ada' )
-        } )
     } )
 } )

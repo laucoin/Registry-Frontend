@@ -529,7 +529,15 @@
         "option": {
           "one": "Option",
           "few": "Options"
-        }
+        },
+        "invitation": "Invitations"
+      },
+      "invitation": {
+        "created": {
+          "title": "Le projet “{{name}}” est déjà créé",
+          "message": "Il n’est plus possible de revenir en arrière : le projet existe dès maintenant. Invitez des utilisateurs à le rejoindre ou passez cette étape, vous pourrez toujours les inviter plus tard depuis la configuration du projet."
+        },
+        "skip": "Passer cette étape"
       },
       "name": "Nom",
       "begin-datetime": "Date & Heure de début",

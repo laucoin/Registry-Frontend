@@ -89,6 +89,18 @@ describe( 'ProjectProfileFacade', () => {
         expect( findProjectProfiles ).toHaveBeenCalledTimes( 1 )
     } )
 
+    it( 'invites into another project without reloading the profiles of the selected one', () => {
+        // Arrange
+        createProjectProfiles.mockReturnValue( of( { createdUserIds: [ 'u1' ], notCreatedUserIds: [] } ) )
+
+        // Act
+        facade.createProjectProfiles( {} as never, 'p2' ).subscribe()
+
+        // Assert
+        expect( createProjectProfiles ).toHaveBeenCalledWith( 'p2', {} )
+        expect( findProjectProfiles ).not.toHaveBeenCalled()
+    } )
+
     it( 'warns with the asked and created counts when some invitations failed', () => {
         // Arrange
         const status: CreatedProjectProfiles = { createdUserIds: [ 'u1' ], notCreatedUserIds: [ 'u2', 'u3' ] }
