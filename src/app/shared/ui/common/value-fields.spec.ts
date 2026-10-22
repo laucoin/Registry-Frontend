@@ -208,6 +208,65 @@ describe( 'value fields', () => {
             expect( announced ).toEqual( [ 'global.selection.added', 'global.selection.duplicate', 'global.selection.removed' ] )
         } )
 
+        it( 'expands a chosen suggestion into several grouped elements and skips the duplicates', () => {
+            // Arrange
+            const { fixture, field, touched }: Handle<SelectElementsFieldComponent<Element>> = select()
+            fixture.componentRef.setInput( 'expand', (): Element[] => [ { id: 'a' }, { id: 'b' } ] )
+            field.value.set( [ { id: 'a' } ] )
+
+            // Act
+            field[ 'handleElementSelection' ]( { id: 'group' } )
+
+            // Assert
+            expect( field.value() ).toEqual( [ { id: 'a' }, { id: 'b' } ] )
+            expect( highlight ).toHaveBeenCalledWith( 'a', expect.anything() )
+            expect( touched ).toHaveBeenCalledTimes( 1 )
+        } )
+
+        it( 'announces a duplicate when every expanded element is already selected', () => {
+            // Arrange
+            const { fixture, field, touched }: Handle<SelectElementsFieldComponent<Element>> = select()
+            fixture.componentRef.setInput( 'expand', (): Element[] => [ { id: 'a' } ] )
+            field.value.set( [ { id: 'a' } ] )
+
+            // Act
+            field[ 'handleElementSelection' ]( { id: 'group' } )
+
+            // Assert
+            expect( field[ 'announcement' ]() ).toBe( 'global.selection.duplicate' )
+            expect( touched ).not.toHaveBeenCalled()
+        } )
+
+        it( 'adds nothing when a suggestion expands to no element', () => {
+            // Arrange
+            const { fixture, field, touched }: Handle<SelectElementsFieldComponent<Element>> = select()
+            fixture.componentRef.setInput( 'expand', (): Element[] => [] )
+
+            // Act
+            field[ 'handleElementSelection' ]( { id: 'group' } )
+
+            // Assert
+            expect( field.value() ).toEqual( [] )
+            expect( field[ 'announcement' ]() ).toBe( '' )
+            expect( touched ).not.toHaveBeenCalled()
+        } )
+
+        it( 'separates the grouped elements and removes a whole group', () => {
+            // Arrange
+            const { fixture, field }: Handle<SelectElementsFieldComponent<Element>> = select()
+            fixture.componentRef.setInput( 'groupOf', (element: Element): string | undefined => element.id.startsWith( 'g' ) ? 'team' : undefined )
+            field.value.set( [ { id: 'a' }, { id: 'g1' }, { id: 'g2' } ] )
+
+            // Act
+            const before: unknown = [ field[ 'ungrouped' ](), field[ 'groups' ]() ]
+            field[ 'handleGroupRemoving' ]( 'team' )
+
+            // Assert
+            expect( before ).toEqual( [ [ { id: 'a' } ], [ { name: 'team', elements: [ { id: 'g1' }, { id: 'g2' } ] } ] ] )
+            expect( field.value() ).toEqual( [ { id: 'a' } ] )
+            expect( field[ 'announcement' ]() ).toBe( 'global.selection.removed' )
+        } )
+
         it( 'gives the focus back to the search field after a removal', () => {
             // Arrange
             const { fixture, field }: Handle<SelectElementsFieldComponent<Element>> = select()
