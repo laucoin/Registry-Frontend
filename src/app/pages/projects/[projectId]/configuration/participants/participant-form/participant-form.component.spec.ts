@@ -23,9 +23,11 @@ interface ParticipantFormApi {
     model: { (): Record<string, unknown>, set: (value: Record<string, unknown>) => void }
     form: Record<string, () => FieldApi>
     handleUserSelection: (user: { label: string, value: object } | undefined) => void
-    handleUserSearch: (event: { query: string }) => void
+    handleUserSearch: (query: string) => void
     handleGroupSearch: (event: { query: string }) => void
     submit: () => void
+    cancel: () => void
+    cancelled: { subscribe: (next: () => void) => void }
 }
 
 const CHILD: object = { ...PARTICIPANT_DTO, user: undefined, birthday: '2010-01-05', groups: [ { ...GROUP_DTO, id: 'g1' } ] }
@@ -175,6 +177,34 @@ describe( 'ParticipantFormComponent', () => {
         } )
     } )
 
+    describe( 'cancelling', () => {
+        it( 'goes back from a page', () => {
+            // Arrange
+            const page: ParticipantFormApi = create()
+
+            // Act
+            page.cancel()
+
+            // Assert
+            expect( back ).toHaveBeenCalledTimes( 1 )
+        } )
+
+        it( 'only asks the panel to close when redirection is disabled', () => {
+            // Arrange
+            const page: ParticipantFormApi = create()
+            fixture.componentRef.setInput( 'redirect', false )
+            const closed: Mock<() => void> = vi.fn()
+            page.cancelled.subscribe( closed )
+
+            // Act
+            page.cancel()
+
+            // Assert
+            expect( closed ).toHaveBeenCalledTimes( 1 )
+            expect( back ).not.toHaveBeenCalled()
+        } )
+    } )
+
     describe( 'dto', () => {
         it( 'adds the default group when it is not selected', () => {
             // Arrange
@@ -209,7 +239,7 @@ describe( 'ParticipantFormComponent', () => {
             const page: ParticipantFormApi = create()
 
             // Act
-            page.handleUserSearch( { query: 'gr' } )
+            page.handleUserSearch( 'gr' )
             page.handleGroupSearch( { query: 'wo' } )
 
             // Assert

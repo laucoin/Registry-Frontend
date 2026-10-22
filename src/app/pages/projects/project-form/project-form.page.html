@@ -1,136 +1,85 @@
 @if (loadError(); as error) {
-    <app-section-error [error]='error' [retrying]='facade.projectLoading()' (retry)='loadData()'/>
+    <app-section-error [error]="error" [retrying]="facade.projectLoading()" (retry)="loadData()"/>
 } @else if (!form().touched() && facade.projectLoading()) {
-    <div class='flex justify-center'>
-        <p-progress-spinner></p-progress-spinner>
+    <div class="flex justify-center">
+        <sgdf-spinner/>
     </div>
 } @else {
-    <h2>{{ 'projects.form.title' | formTitle: facade.project() | transloco : {name: facade.project()?.name} }}</h2>
-    <p-stepper [(value)]='activeTab' [linear]='true'>
-        <p-step-item [value]='1'>
-            <p-step>{{ 'projects.form.subtitle.information' | transloco }}</p-step>
-            <p-step-panel>
-                <ng-template #content let-activateCallback='activateCallback'>
-                    <div class='p-2'>
-                        <div class='field'>
-                            <label for='name' appRequired>{{ 'projects.form.name' | transloco }}</label>
-                            <input [formField]='form.name'
-                                   [placeholder]='"projects.form.placeholder.name" | transloco'
-                                   id='name'
-                                   pInputText
-                                   type='text'/>
-                            <app-field-error [field]='form.name' translationPrefix='projects.form.error.name'/>
-                        </div>
-                        <div class='flex flex-wrap'>
-                            <div class='left-field field'>
-                                <label for='begin-date-time'>{{ 'projects.form.begin-datetime' | transloco }}</label>
-                                <app-date-time-field [formField]='form.beginDateTime'
-                                                     inputId='begin-date-time'
-                                                     [datePlaceholder]='"projects.form.placeholder.date" | transloco: {
-                                                            date: startDateExample | dateFormat: "date"
-                                                         }'
-                                                     [timePlaceholder]='"projects.form.placeholder.time" | transloco: {
-                                                            date: startDateExample | dateFormat: "time"
-                                                         }'/>
-                                <app-field-error [field]='form.beginDateTime' translationPrefix='projects.form.error.begin-datetime'/>
-                            </div>
-                            <div class='right-field field'>
-                                <label for='end-date-time'>{{ 'projects.form.end-datetime' | transloco }}</label>
-                                <app-date-time-field [formField]='form.endDateTime'
-                                                     inputId='end-date-time'
-                                                     [datePlaceholder]='"projects.form.placeholder.date" | transloco: {
-                                                            date: endDateExample | dateFormat: "date"
-                                                         }'
-                                                     [timePlaceholder]='"projects.form.placeholder.time" | transloco: {
-                                                            date: endDateExample | dateFormat: "time"
-                                                         }'/>
-                                <app-field-error [field]='form.endDateTime' translationPrefix='projects.form.error.end-datetime'/>
-                            </div>
-                        </div>
-                        @if (form.beginDateTime().valid() && form.endDateTime().valid()) {
-                            <app-field-error [field]='form' translationPrefix='projects.form.error.date-range'/>
-                        }
-                        <div class='flex pt-6 justify-between'>
-                            <p-button
-                                    (onClick)='navigateToRedirectUri()'
-                                    [label]='"global.actions.cancel" | transloco'
-                                    text
-                                    rounded/>
-                            <p-button
-                                    (onClick)='isFormValid(form) ? activateCallback(2) : undefined'
-                                    [label]='uiFacade.tinyScreen() ? "" : "global.actions.next" | transloco'
-                                    rounded
-                                    outlined
-                                    icon='pi pi-arrow-down'
-                                    iconPos='right'/>
-                        </div>
-                    </div>
-                </ng-template>
-            </p-step-panel>
-        </p-step-item>
+    <h2>{{ 'projects.form.title' | formTitle: facade.project() | transloco : { name: facade.project()?.name } }}</h2>
+    <sgdf-stepper linear [active]="'step-' + activeTab()" [label]="'projects.form.title' | formTitle: facade.project() | transloco : { name: facade.project()?.name }">
+        <sgdf-step name="step-1" [completed]="activeTab() > 1">{{ 'projects.form.subtitle.information' | transloco }}</sgdf-step>
+        <sgdf-step name="step-2">{{ 'projects.form.subtitle.option' | pluralTranslation: facade.projectOptionsMetadata() | transloco }}</sgdf-step>
+    </sgdf-stepper>
 
-        <p-step-item [value]='2'>
-            <p-step>
-                {{ 'projects.form.subtitle.option' | pluralTranslation: facade.projectOptionsMetadata() | transloco }}
-            </p-step>
-            <p-step-panel>
-                <ng-template #content let-activateCallback='activateCallback'>
-                    <div class='p-2'>
-                        <div class='switch-field select-all-field'>
-                            <label for='select-all'>{{ 'projects.options.select-all' | transloco }}</label>
-                            <p-checkbox binary
-                                        (onChange)='selectAll($event)'
-                                        [formField]='allSelectedForm'
-                                        [indeterminate]='allSelected() === undefined'
-                                        inputId='select-all'/>
-                        </div>
-                        <p-divider/>
-                        <div>
-                            @for (option of facade.projectOptionsMetadata(); track option.value) {
-                                <div class='field'>
-                                    <div class='switch-field option-field'>
-                                        <label [for]='option.value'>
-                                            <i [class]='option.value | optionIcon'></i>
-                                            {{ option.ask }}
-                                            <b> ({{ option.label }})</b>
-                                        </label>
-                                        <p-checkbox [formField]='optionsForm[option.value]'
-                                                    binary
-                                                    [inputId]='option.value'/>
-                                    </div>
-                                </div>
-                                @if (!$last) {
-                                    <p-divider/>
-                                }
-                            }
-                        </div>
-                        @let missingPreRequired = optionsForm().getError('preRequiredOptions');
-                        @if (missingPreRequired) {
-                            <p-message severity='error'
-                                       variant='simple'>{{
-                                    'projects.form.error.options.preRequiredOptions' | transloco: missingPreRequired
-                                }}
-                            </p-message>
-                        }
-                        <div class='flex pt-6 justify-between'>
-                            <p-button
-                                    (onClick)='activateCallback(1)'
-                                    [label]='uiFacade.tinyScreen() ? "" :"global.actions.previous" | transloco'
-                                    icon='pi pi-arrow-up'
-                                    text
-                                    rounded/>
-                            <p-button
-                                    class='ms-2'
-                                    (onClick)='submit()'
-                                    [label]='uiFacade.tinyScreen() ? "" : facade.project() | formButton | transloco'
-                                    rounded
-                                    outlined
-                                    [icon]='facade.project() | formIcon'
-                                    severity='success'/>
-                        </div>
-                    </div>
-                </ng-template>
-            </p-step-panel>
-        </p-step-item>
-    </p-stepper>
+    @if (activeTab() === 1) {
+        <form class="mt-[1rem]" (submit)="$event.preventDefault(); next()">
+            <div class="flex flex-col gap-[0.75rem]">
+                <sgdf-input appSgdfField required
+                            [label]="'projects.form.name' | transloco"
+                            [placeholder]="'projects.form.placeholder.name' | transloco"
+                            [formField]="form.name"
+                            [appFieldError]="form.name" translationPrefix="projects.form.error.name"/>
+                <div class="grid gap-[0.75rem] md:grid-cols-2">
+                    <sgdf-date-time-picker appSgdfField with-time value-format="separate"
+                                           [label]="'projects.form.begin-datetime' | transloco"
+                                           [formField]="form.beginDateTime"
+                                           [appFieldError]="form.beginDateTime" translationPrefix="projects.form.error.begin-datetime"/>
+                    <sgdf-date-time-picker appSgdfField with-time value-format="separate"
+                                           [label]="'projects.form.end-datetime' | transloco"
+                                           [formField]="form.endDateTime"
+                                           [appFieldError]="form.endDateTime" translationPrefix="projects.form.error.end-datetime"/>
+                </div>
+                @if (form.beginDateTime().valid() && form.endDateTime().valid()) {
+                    <app-field-error [field]="form" translationPrefix="projects.form.error.date-range"/>
+                }
+            </div>
+            <div class="flex items-center justify-between pt-[1rem]">
+                <sgdf-button variant="neutral" appearance="text" (click)="navigateToRedirectUri()">
+                    {{ 'global.actions.cancel' | transloco }}
+                </sgdf-button>
+                <sgdf-button variant="primary" appearance="outlined" submit [attr.label]="'global.actions.next' | transloco">
+                    {{ uiFacade.tinyScreen() ? '' : ('global.actions.next' | transloco) }}
+                    <sgdf-icon slot="suffix" name="arrow-down" library="solid"/>
+                </sgdf-button>
+            </div>
+        </form>
+    } @else {
+        <form class="mt-[1rem]" (submit)="$event.preventDefault(); submit()">
+            <div class="flex justify-end">
+                <sgdf-checkbox [checked]="allSelected() === true"
+                               [indeterminate]="allSelected() === undefined"
+                               (change)="selectAll({ checked: $any($event.target).checked })">
+                    {{ 'projects.options.select-all' | transloco }}
+                </sgdf-checkbox>
+            </div>
+            <sgdf-divider/>
+            @for (option of facade.projectOptionsMetadata(); track option.value) {
+                <sgdf-switch appSgdfField class="py-[0.5rem]" [formField]="optionsForm[option.value]">
+                    <span class="flex items-center gap-[0.5rem]">
+                        <sgdf-icon [name]="option.value | optionIcon: 'sgdf'" library="solid"/>
+                        <span>{{ option.ask }} <b>({{ option.label }})</b></span>
+                    </span>
+                </sgdf-switch>
+                @if (!$last) {
+                    <sgdf-divider appearance="soft"/>
+                }
+            }
+            @let missingPreRequired = optionsForm().getError('preRequiredOptions');
+            @if (missingPreRequired) {
+                <sgdf-callout variant="danger" role="alert">
+                    {{ 'projects.form.error.options.preRequiredOptions' | transloco: missingPreRequired }}
+                </sgdf-callout>
+            }
+            <div class="flex items-center justify-between pt-[1rem]">
+                <sgdf-button variant="neutral" appearance="text" (click)="activeTab.set(1)" [attr.label]="'global.actions.previous' | transloco">
+                    <sgdf-icon slot="prefix" name="arrow-up" library="solid"/>
+                    {{ uiFacade.tinyScreen() ? '' : ('global.actions.previous' | transloco) }}
+                </sgdf-button>
+                <sgdf-button variant="primary" submit [loading]="saving()" [attr.label]="facade.project() | formButton | transloco">
+                    <sgdf-icon slot="prefix" [name]="facade.project() ? 'pen-to-square' : 'plus'" library="solid"/>
+                    {{ uiFacade.tinyScreen() ? '' : (facade.project() | formButton | transloco) }}
+                </sgdf-button>
+            </div>
+        </form>
+    }
 }

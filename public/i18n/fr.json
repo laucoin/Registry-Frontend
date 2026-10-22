@@ -173,6 +173,11 @@
     }
   },
   "global": {
+    "selection": {
+      "added": "{{name}} ajouté",
+      "removed": "{{name}} retiré",
+      "duplicate": "{{name}} est déjà sélectionné"
+    },
     "language": {
       "fr": "Français",
       "en": "English"
@@ -287,6 +292,7 @@
       "skip-to-content": "Aller au contenu",
       "sign-out": "Déconnexion",
       "remove": "Retirer",
+      "remove-named": "Retirer {{name}}",
       "reset": "Réinitialiser",
       "add": "Ajouter",
       "clear": "Effacer",
@@ -548,9 +554,7 @@
         }
       },
       "placeholder": {
-        "name": "Ex : Camp D.F.C.I. Pionniers-Caravelles",
-        "date": "Ex : {{date}}",
-        "time": "Ex : {{date}}"
+        "name": "Ex : Camp D.F.C.I. Pionniers-Caravelles"
       }
     },
     "actions": {
@@ -672,9 +676,7 @@
         "end-date-time": "Par défaut, le profil n’a pas de fin de validité."
       },
       "placeholder": {
-        "role": "Ex : {{role}}",
-        "date": "Ex : {{date}}",
-        "time": "Ex : {{date}}"
+        "role": "Ex : {{role}}"
       },
       "error": {
         "role": {
@@ -1133,9 +1135,7 @@
         "user": "Ex : robert.baden-powell@exemple.com (Robert BADEN-POWELL)",
         "firstname": "Ex : Robert",
         "lastname": "Ex : BADEN-POWELL",
-        "birthday": "Ex : 22/02/1857",
-        "date": "Ex : {{date}}",
-        "time": "Ex : {{date}}"
+        "birthday": "Ex : 22/02/1857"
       }
     },
     "actions": {
@@ -1268,9 +1268,7 @@
         }
       },
       "placeholder": {
-        "name": "Ex : Pionniers-Caravelles - Charles de Foucauld Bondues",
-        "date": "Ex : {{date}}",
-        "time": "Ex : {{date}}"
+        "name": "Ex : Pionniers-Caravelles - Charles de Foucauld Bondues"
       }
     },
     "actions": {
@@ -1414,9 +1412,7 @@
       "placeholder": {
         "license-plate": "Ex : AB-123-CD",
         "brand": "Ex : Toyota",
-        "model": "Ex : Yaris",
-        "date": "Ex : {{date}}",
-        "time": "Ex : {{date}}"
+        "model": "Ex : Yaris"
       }
     },
     "actions": {
@@ -1549,9 +1545,7 @@
         "description": "Ex : Cette randonnée dans les Calanques de Marseille, est une activité de 3 heures. Durant cette activité, les participants pourront…",
         "duration": "Ex : 3h45",
         "allowed-min-participants": "Ex : 5",
-        "allowed-max-participants": "Ex : 15",
-        "date": "Ex : {{date}}",
-        "time": "Ex : {{date}}"
+        "allowed-max-participants": "Ex : 15"
       }
     },
     "actions": {

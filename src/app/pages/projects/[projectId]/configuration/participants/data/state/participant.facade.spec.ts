@@ -32,7 +32,7 @@ describe( 'ParticipantFacade', () => {
         updateParticipantById = vi.fn()
         deleteParticipantById = vi.fn()
         exportParticipantById = vi.fn()
-        downloadJson = vi.spyOn( BrowserService.prototype, 'downloadJson' ).mockReset()
+        downloadJson = vi.spyOn( BrowserService.prototype, 'downloadJson' ).mockReset().mockImplementation( (): void => undefined )
         notify = vi.fn()
         TestBed.configureTestingModule( {
             providers: [

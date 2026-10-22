@@ -31,7 +31,7 @@ describe( 'UserFormPage', () => {
                 { provide: UserFacade, useValue: facade },
                 { provide: Location, useValue: { back: vi.fn() } },
                 { provide: Router, useValue: { navigateByUrl: vi.fn( () => Promise.resolve( true ) ) } },
-                { provide: ActivatedRoute, useValue: { snapshot: { params: { userId: 'u1' } } } },
+                { provide: ActivatedRoute, useValue: { snapshot: { params: { userId: 'u1' }, url: [ { path: 'u1' }, { path: 'edit' } ] } } },
                 { provide: SessionFacade, useValue: { selectedProject: (): undefined => undefined, currentUser: (): undefined => undefined } },
                 { provide: UiFacade, useValue: autoMock() },
                 { provide: CustomDateFormatPipe, useValue: { transform: (): string => '' } },

@@ -62,44 +62,34 @@
     </ng-template>
 </app-list>
 
-<app-layer [(visible)]='addMembersFormLayerOpened'
-           [title]='"groups.actions.add-members" | transloco'>
-    <div>
-            <div class='field'>
-                <span class='label'
-                      appRequired>{{ 'groups.form.members' | pluralTranslation: addMembersModel().participants | transloco }}</span>
-                <label for='members' class='secondary-color'>{{ 'groups.form.members.search' | transloco }}</label>
-                <app-select-elements-field [formField]='addMembersForm.participants' [suggestions]='facade.searchedParticipantsMetadata()'
-                                           [fluid]='true'
-                                           [selectItemBuilder]='ParticipantHelper.toSelectItem'
-                                           [selectionLabel]='"groups.form.members.selected" | pluralTranslation: addMembersModel().participants |
-                                       transloco'
-                                           [emptyMessage]='"groups.form.members.empty" | transloco'
-                                           [emptySelectionMessage]='"groups.form.members.empty-search" | transloco'
-                                           inputId='members'
-                                           (handleSearch)='handleSearch($event.query)' />
-                <app-field-error [field]='addMembersForm.participants' translationPrefix='groups.form.error.add-members' />
-            </div>
+<sgdf-drawer [open]="addMembersFormLayerOpened()"
+             [placement]="uiFacade.tinyScreen() ? 'bottom' : 'right'"
+             [title]="'groups.actions.add-members' | transloco"
+             (sgdf-hide)="closeLayer($event, addMembersFormLayerOpened)">
+    <form class="flex flex-col gap-[0.75rem]" (submit)="$event.preventDefault(); addMembers()">
+        <div>
+            <h3 class="m-0 text-base font-semibold">{{ 'groups.form.members' | pluralTranslation: addMembersModel().participants | transloco }}</h3>
+            <app-select-elements-field [formField]="addMembersForm.participants"
+                                       [label]="'groups.form.members.search' | transloco"
+                                       [suggestions]="facade.searchedParticipantsMetadata()"
+                                       [selectItemBuilder]="ParticipantHelper.toSelectItem"
+                                       [selectionLabel]="'groups.form.members.selected' | pluralTranslation: addMembersModel().participants | transloco"
+                                       [emptyMessage]="'groups.form.members.empty' | transloco"
+                                       [emptySelectionMessage]="'groups.form.members.empty-search' | transloco"
+                                       (handleSearch)="handleSearch($event.query)"/>
+            <app-field-error [field]="addMembersForm.participants" translationPrefix="groups.form.error.add-members"/>
+        </div>
+        <app-form-actions submitLabel="groups.actions.add" submitIcon="user-plus"
+                          (cancelled)="addMembersFormLayerOpened.set(false)"/>
+    </form>
+</sgdf-drawer>
 
-            <div class='flex mt-2 justify-center'>
-                <p-button
-                        (onClick)='addMembersFormLayerOpened.set(false)'
-                        [label]='"global.actions.cancel" | transloco'
-                        text
-                        rounded />
-                <p-button
-                        class='ms-2'
-                        (onClick)='addMembers()'
-                        [label]='"groups.actions.add" | transloco'
-                        rounded
-                        outlined
-                        icon='pi pi-user-plus'
-                        severity='success' />
-            </div>
-    </div>
-</app-layer>
-
-<app-layer [(visible)]='createMemberFormLayerOpened'
-           [title]='"groups.actions.create-member" | transloco'>
-    <app-participant-form [defaultGroup]='group()' [showTitle]='false' [redirect]='false' />
-</app-layer>
+<sgdf-drawer [open]="createMemberFormLayerOpened()"
+             [placement]="uiFacade.tinyScreen() ? 'bottom' : 'right'"
+             [title]="'groups.actions.create-member' | transloco"
+             (sgdf-hide)="closeLayer($event, createMemberFormLayerOpened)">
+    @if (createMemberFormLayerOpened()) {
+        <app-participant-form [defaultGroup]="group()" [showTitle]="false" [redirect]="false"
+                              (cancelled)="createMemberFormLayerOpened.set(false)"/>
+    }
+</sgdf-drawer>

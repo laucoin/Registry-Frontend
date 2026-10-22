@@ -61,9 +61,14 @@ class TestForm extends BaseFormComponent {
     }
 }
 
+class TestDialogForm extends TestForm {
+    protected override readonly closesToParentRoute: boolean = true
+}
+
 describe( 'BaseFormComponent', () => {
     let back: Mock<() => void>
     let navigateByUrl: Mock<(url: string) => Promise<boolean>>
+    let navigate: Mock<(commands: string[]) => Promise<boolean>>
 
     function create (): TestForm {
         return TestBed.runInInjectionContext( (): TestForm => new TestForm() )
@@ -72,12 +77,13 @@ describe( 'BaseFormComponent', () => {
     beforeEach( () => {
         back = vi.fn()
         navigateByUrl = vi.fn( () => Promise.resolve( true ) )
+        navigate = vi.fn( () => Promise.resolve( true ) )
         RegistryConfig.environment = { production: false, backend: { url: 'http://backend.test', noAuthPaths: [] }, hosting: { providerName: null, providerAddress: null } }
         RegistryConfig.config = { notification: { duration: {} } } as unknown as ConfigModel
         TestBed.configureTestingModule( {
             providers: [
                 { provide: Location, useValue: { back } },
-                { provide: Router, useValue: { navigateByUrl } },
+                { provide: Router, useValue: { navigateByUrl, navigate } },
                 { provide: ActivatedRoute, useValue: {} },
                 { provide: SessionFacade, useValue: autoMock() },
                 { provide: UiFacade, useValue: autoMock() },
@@ -116,6 +122,36 @@ describe( 'BaseFormComponent', () => {
         // Assert
         expect( back ).toHaveBeenCalledTimes( 1 )
         expect( form.flags.saving ).toBe( false )
+    } )
+
+    it.each( [
+        [ 'a create route of one segment', [ { path: 'create' } ], [ '..' ] ],
+        [ 'an edit route of two segments', [ { path: 'v1' }, { path: 'edit' } ], [ '../..' ] ],
+        [ 'a route without segment', [], [ '..' ] ],
+    ] )( 'closes a dialog form on the parent route from %s', (_label: string, url: object[], expected: string[]) => {
+        // Arrange : the case comes from the table
+        TestBed.overrideProvider( ActivatedRoute, { useValue: { snapshot: { url } } } )
+        const form: TestDialogForm = TestBed.runInInjectionContext( (): TestDialogForm => new TestDialogForm() )
+
+        // Act
+        form.run( of( 'saved' ) )
+
+        // Assert
+        expect( navigate.mock.calls[ 0 ][ 0 ] ).toEqual( expected )
+        expect( back ).not.toHaveBeenCalled()
+    } )
+
+    it( 'goes to the given route instead of the parent one', () => {
+        // Arrange
+        TestBed.overrideProvider( ActivatedRoute, { useValue: { snapshot: { url: [ { path: 'create' } ] } } } )
+        const form: TestDialogForm = TestBed.runInInjectionContext( (): TestDialogForm => new TestDialogForm() )
+
+        // Act
+        form.goTo( RegistryRouteEnum.PROJECTS )
+
+        // Assert
+        expect( navigateByUrl ).toHaveBeenCalledWith( RegistryRouteEnum.PROJECTS )
+        expect( navigate ).not.toHaveBeenCalled()
     } )
 
     it( 'stays on the form when the redirect is switched off', () => {

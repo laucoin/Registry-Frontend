@@ -1,22 +1,24 @@
-<sgdf-dialog open
-             [class.dialog-fullscreen]="uiFacade.tinyScreen()"
-             [title]="title() ?? ''"
-             (sgdf-hide)="hidden($event)">
-    @if (loading()) {
-        <div class="flex justify-center">
-            <sgdf-spinner/>
-        </div>
-    } @else {
-        <form class="flex flex-col gap-[0.75rem] text-left" (submit)="$event.preventDefault(); submitted.emit()">
-            <app-form-error [error]="error()"/>
-            <ng-content/>
-        </form>
-    }
-    <sgdf-button slot="footer" variant="neutral" appearance="text" (click)="closed.emit()">
-        {{ 'global.actions.cancel' | transloco }}
-    </sgdf-button>
-    <sgdf-button slot="footer" variant="primary" [loading]="saving()" [disabled]="loading()" (click)="submitted.emit()">
-        <sgdf-icon slot="prefix" [name]="submitIcon()" library="solid"/>
-        {{ submitLabel() | transloco }}
-    </sgdf-button>
-</sgdf-dialog>
+<form novalidate (submit)="$event.preventDefault(); submitted.emit()">
+    <sgdf-dialog open
+                 [class.dialog-fullscreen]="uiFacade.tinyScreen()"
+                 [title]="title() ?? ''"
+                 (sgdf-hide)="hidden($event)">
+        @if (loading()) {
+            <div class="flex justify-center">
+                <sgdf-spinner/>
+            </div>
+        } @else {
+            <div class="flex flex-col gap-[0.75rem] text-left">
+                <app-form-error [error]="error()"/>
+                <ng-content/>
+            </div>
+        }
+        <sgdf-button slot="footer" variant="neutral" appearance="text" (click)="closed.emit()">
+            {{ 'global.actions.cancel' | transloco }}
+        </sgdf-button>
+        <sgdf-button slot="footer" variant="primary" submit [loading]="saving()" [disabled]="loading()">
+            <sgdf-icon slot="prefix" [name]="submitIcon()" library="solid"/>
+            {{ submitLabel() | transloco }}
+        </sgdf-button>
+    </sgdf-dialog>
+</form>

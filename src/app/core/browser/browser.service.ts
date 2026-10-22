@@ -119,8 +119,8 @@ export class BrowserService {
         document.documentElement.lang = language
     }
 
-    public highlightByDataValue (value: string): void {
-        const element: HTMLElement | null = document.querySelector( `[data-value="${ value }"]` )
+    public highlightByDataValue (value: string, root: ParentNode = document): void {
+        const element: HTMLElement | null = root.querySelector( `[data-value="${ value }"]` )
         if (element) {
             element.classList.add( HIGHLIGHT_CLASS )
             setTimeout( (): void => element.classList.remove( HIGHLIGHT_CLASS ), HIGHLIGHT_DURATION_MS )

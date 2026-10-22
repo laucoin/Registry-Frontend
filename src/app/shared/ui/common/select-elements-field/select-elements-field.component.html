@@ -1,36 +1,31 @@
-<p-auto-complete multiple
-                 class='no-autocomplete-item'
-                 completeOnFocus
-                 [disabled]='disabled()'
-                 [inputId]='inputId()'
-                 [fluid]='fluid()'
-                 [suggestions]='suggestions()'
-                 (onSelect)='handleElementSelection($event)'
-                 (completeMethod)='handleSearch.emit($event)'>
-    <ng-template #selecteditem />
-    @if (emptyMessage()) {
-        <ng-template #empty>
-            <span>{{ emptyMessage() }}</span>
-        </ng-template>
+<sgdf-select with-search without-filter
+             [label]="label()"
+             [hint]="hint()"
+             [disabled]="disabled()"
+             [loading]="loading()"
+             [placeholder]="placeholder()"
+             [attr.no-results-label]="emptyMessage()"
+             (sgdf-show)="handleSearch.emit({ query: '' })"
+             (sgdf-search)="handleSearch.emit({ query: $any($event).detail.query })"
+             (change)="handleChoice($event)">
+    @for (suggestion of suggestions(); track suggestion.value.id) {
+        <sgdf-option [value]="suggestion.value.id">{{ suggestion.label }}</sgdf-option>
     }
-</p-auto-complete>
-<div class='secondary-color mt-4'>
-    {{ selectionLabel() }}
-</div>
-<ul class='list-box mt-2 flex flex-col justify-center'
-    [class.invalid]='showInvalid()'>
+</sgdf-select>
+@if (selectionLabel()) {
+    <div class="mt-[0.75rem] text-sm font-semibold" aria-hidden="true">{{ selectionLabel() }}</div>
+}
+<sgdf-list class="mt-[0.25rem] block" [attr.label]="selectionLabel()">
     @for (element of value(); track element.id) {
-        <li class='item list-item w-full flex items-center justify-between' [attr.data-value]='element.id'>
-            <div class='ms-4'>{{ selectItemBuilder()(element).label }}</div>
-            <p-button [ariaLabel]='"global.actions.remove" | transloco' icon='pi pi-times'
-                      size='small'
-                      rounded
-                      text
-                      (onClick)='handleElementRemoving(element.id)' />
-        </li>
+        <sgdf-list-item [attr.data-value]="element.id">
+            {{ selectItemBuilder()(element).label }}
+            <sgdf-icon-button slot="end" name="xmark" library="solid"
+                              [attr.label]="'global.actions.remove-named' | transloco : { name: selectItemBuilder()(element).label }"
+                              [disabled]="disabled()"
+                              (click)="handleElementRemoving(element.id)"/>
+        </sgdf-list-item>
     } @empty {
-        <li class='item empty-message'>
-            <div class='ms-2 secondary-color'>{{ emptySelectionMessage() }}</div>
-        </li>
+        <p class="m-0 p-[0.75rem] text-sm">{{ emptySelectionMessage() }}</p>
     }
-</ul>
+</sgdf-list>
+<span class="sr-only" role="status">{{ announcement() }}</span>

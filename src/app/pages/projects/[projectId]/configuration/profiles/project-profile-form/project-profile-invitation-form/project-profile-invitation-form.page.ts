@@ -1,9 +1,13 @@
-import { Component, OnDestroy, signal, WritableSignal } from '@angular/core'
-import {CardModule} from 'primeng/card'
-import {DividerModule} from 'primeng/divider'
-import {InputTextModule} from 'primeng/inputtext'
-import {PaginatorModule} from 'primeng/paginator'
+import { Component, CUSTOM_ELEMENTS_SCHEMA, OnDestroy, signal, WritableSignal } from '@angular/core'
 import {TranslocoPipe} from '@jsverse/transloco'
+import '@sgdf/ui/card'
+import '@sgdf/ui/date-time-picker'
+import '@sgdf/ui/divider'
+import '@sgdf/ui/option'
+import '@sgdf/ui/select'
+import { FieldErrorDirective } from '@shared/directives/field-error.directive'
+import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
+import { FormActionsComponent } from '@shared/ui/common/form-actions/form-actions.component'
 import { FieldTree, FormField } from '@angular/forms/signals'
 import {
     createProjectProfileInvitationForm,
@@ -14,18 +18,11 @@ import {
 import {FieldErrorComponent} from '@shared/ui/common/field-error/field-error.component'
 import {FormComponent} from '@shared/ui/common/form/form.component'
 import {GenericProjectProfileFormComponent} from '@pages/projects/[projectId]/configuration/profiles/project-profile-form/generic-project-profile-form.component'
-import {RegistryRequiredDirective} from '@shared/directives/registry-required.directive'
-import {SelectModule} from 'primeng/select'
-import {Button} from 'primeng/button'
-import {TreeTableModule} from 'primeng/treetable'
-import {TableModule} from 'primeng/table'
 import {
     SelectElementsFieldComponent,
 } from '@shared/ui/common/select-elements-field/select-elements-field.component'
 import {PluralTranslationPipe} from '@shared/helpers/pipe/plural-translation.pipe'
-import {DateFormatPipe} from '@shared/helpers/pipe/date-format.pipe'
 import {UserHelper} from '@shared/helpers/user.helper'
-import {DateTimeFieldComponent} from '@shared/ui/common/date-time-field/date-time-field.component'
 
 /**
  * Purpose: Page with the form to create or edit a project profile invitation.
@@ -35,24 +32,17 @@ import {DateTimeFieldComponent} from '@shared/ui/common/date-time-field/date-tim
 @Component({
     selector: 'app-project-profile-invitation-form',
     imports: [
-        CardModule,
-        DividerModule,
-        InputTextModule,
-        PaginatorModule,
         TranslocoPipe,
         FormField,
         FieldErrorComponent,
+        FieldErrorDirective,
         FormComponent,
-        RegistryRequiredDirective,
-        SelectModule,
-        Button,
-        TreeTableModule,
-        TableModule,
+        FormActionsComponent,
+        SgdfFieldDirective,
         SelectElementsFieldComponent,
         PluralTranslationPipe,
-        DateFormatPipe,
-        DateTimeFieldComponent,
     ],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
     templateUrl: './project-profile-invitation-form.page.html',
 })
 export class ProjectProfileInvitationFormPage extends GenericProjectProfileFormComponent implements OnDestroy {

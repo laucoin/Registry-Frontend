@@ -25,6 +25,8 @@ interface ProjectFormApi {
     loadError: () => { summary?: string } | undefined
     submit: () => void
     selectAll: (event: { checked: boolean }) => void
+    next: () => void
+    activeTab: () => number
 }
 
 const OPTIONS: ProjectOptionModel[] = [
@@ -185,6 +187,40 @@ describe( 'ProjectFormPage', () => {
 
             // Assert
             expect( page.optionsForm().errors().map( (error: { kind: string }): string => error.kind ) ).toEqual( [ 'preRequiredOptions' ] )
+        } )
+    } )
+
+    describe( 'steps', () => {
+        it( 'starts on the information step', () => {
+            // Arrange
+            // Act
+            const page: ProjectFormApi = create()
+
+            // Assert
+            expect( page.activeTab() ).toBe( 1 )
+        } )
+
+        it( 'stays on the information step while the project information is invalid', () => {
+            // Arrange
+            const page: ProjectFormApi = create()
+
+            // Act
+            page.next()
+
+            // Assert
+            expect( page.activeTab() ).toBe( 1 )
+        } )
+
+        it( 'goes to the options step once the project information is valid', () => {
+            // Arrange
+            const page: ProjectFormApi = create()
+            page.model.set( { ...page.model(), name: 'Camp' } )
+
+            // Act
+            page.next()
+
+            // Assert
+            expect( page.activeTab() ).toBe( 2 )
         } )
     } )
 
