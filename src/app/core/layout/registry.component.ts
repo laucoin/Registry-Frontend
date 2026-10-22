@@ -2,6 +2,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, inject, Signal, viewChild } from '@angular/core'
 import { RouterOutlet } from '@angular/router'
 import { TranslocoService } from '@jsverse/transloco'
+import { ConfirmationDialogComponent } from '@core/layout/confirmation-dialog/confirmation-dialog.component'
 import { GlobalErrorComponent } from '@core/layout/global-error/global-error.component'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
@@ -23,9 +24,9 @@ const VARIANTS: Record<string, string> = {
 }
 
 /**
- * Purpose: Root component of the application: hosts the routed pages, shows the notifications as toasts and swaps the pages for the global error when the whole application is blocked.
+ * Purpose: Root component of the application: hosts the routed pages, shows the notifications as toasts, hosts the confirmation dialog and swaps the pages for the global error when the whole application is blocked.
  * Scope: Translates each notification of the UI facade into a sgdf-toast and chooses between the routed pages and the global error.
- * Limits: Does not decide what is notified or what blocks the application, does not render the error itself and does not show the confirmations.
+ * Limits: Does not decide what is notified or what blocks the application, does not render the error nor the confirmations itself.
  */
 @Component({
 	selector: 'app-root',
@@ -34,6 +35,7 @@ const VARIANTS: Record<string, string> = {
 	imports: [
 		RouterOutlet,
 		GlobalErrorComponent,
+		ConfirmationDialogComponent,
 	]
 })
 export class RegistryComponent {

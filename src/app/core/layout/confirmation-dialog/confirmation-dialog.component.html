@@ -1,0 +1,12 @@
+<sgdf-dialog [open]="!!pending()"
+             [variant]="variant()"
+             [title]="pending()?.header ?? ''"
+             (sgdf-hide)="cancel($event)">
+    <p class="m-0 text-left">{{ pending()?.message }}</p>
+    <sgdf-button slot="footer" variant="neutral" appearance="text" (click)="cancel()">
+        {{ 'global.actions.cancel' | transloco }}
+    </sgdf-button>
+    <sgdf-button slot="footer" [variant]="variant()" (click)="confirm()">
+        {{ 'global.actions.confirm' | transloco }}
+    </sgdf-button>
+</sgdf-dialog>
