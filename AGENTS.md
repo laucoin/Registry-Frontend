@@ -70,7 +70,7 @@ The source code is organized into three core directories:
   redirect-only call) — only work whose result must be persisted in state and shared across components belongs in the
   store.
 - **Documented exception:** `shared/ui/domain/` holds the cards and forms of the business entities. They read their
-  domain facades and models from `pages/`, which is the only accepted `shared` to `pages` dependency (the 29 existing
+  domain facades and models from `pages/`, which is the only accepted `shared` to `pages` dependency (the 30 existing
   imports). They are reworked with the `@sgdf/ui` migration; do not add new `shared` to `pages` imports elsewhere.
 - **Documented exception (routing):** `core/routing/registry-route.enum.ts` composes the URLs of the whole application and
   imports the route enums of each page; `core/routing/registry.routes.ts` lazy loads the pages. They are the only accepted

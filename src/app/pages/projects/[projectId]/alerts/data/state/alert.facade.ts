@@ -5,7 +5,7 @@ import { AlertStore } from '@pages/projects/[projectId]/alerts/data/state/alert.
 import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { NotificationModel } from '@shared/models/model/notification.model'
 import { DateHelper } from '@shared/helpers/date.helper'
-import { AlertApi } from '@pages/projects/[projectId]/movements/data/state/alert.api'
+import { AlertApi } from '@pages/projects/[projectId]/alerts/data/state/alert.api'
 import { notifyOnError } from '@shared/helpers/rx.helper'
 import { CommandEvent } from '@shared/helpers/facade/command-event.service'
 import { Observable, tap } from 'rxjs'

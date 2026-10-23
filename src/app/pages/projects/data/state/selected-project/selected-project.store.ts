@@ -8,7 +8,7 @@ import { PageRequestInformationModel } from '@shared/models/model/page-request-i
 import { SelectedProjectStoreModel } from '@pages/projects/data/model/selected-project-store.model'
 import { VehicleStatusModel } from '@shared/models/model/vehicle-status.model'
 import { ParticipantApi } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.api'
-import { AlertApi } from '@pages/projects/[projectId]/movements/data/state/alert.api'
+import { AlertApi } from '@pages/projects/[projectId]/alerts/data/state/alert.api'
 import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
 import { MovementHelper } from '@shared/helpers/movement.helper'
 import { ignoreError, initialize } from '@shared/helpers/rx.helper'

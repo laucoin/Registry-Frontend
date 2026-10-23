@@ -1,4 +1,4 @@
-import { UserApi } from '@pages/users/data/state/user.api'
+import { UserApi } from '@core/registry/state/user.api'
 import { ApiCase, describeApi, expectMapped, expectMappedPage, PAGE_QUERY } from '@shared/helpers/testing/api-test.helper'
 import { USER_DTO, pageDto } from '@shared/helpers/testing/response-fixtures'
 

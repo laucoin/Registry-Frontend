@@ -24,7 +24,7 @@ import {
     toProjectProfilesDto,
 } from '@pages/projects/[projectId]/configuration/profiles/project-profile-form/project-profile.form'
 import { ProjectProfileInvitationFieldsComponent } from '@pages/projects/[projectId]/configuration/profiles/project-profile-form/project-profile-invitation-fields/project-profile-invitation-fields.component'
-import { ProjectDto } from '@pages/projects/data/dto/project.dto'
+import { ProjectDto } from '@shared/models/dto/project.dto'
 import { ProjectOptionModel } from '@shared/models/model/project-option.model'
 import { ArrayHelper } from '@shared/helpers/array.helper'
 import { GenericHelper } from '@shared/helpers/generic.helper'

@@ -1,4 +1,4 @@
-import { AlertApi } from '@pages/projects/[projectId]/movements/data/state/alert.api'
+import { AlertApi } from '@pages/projects/[projectId]/alerts/data/state/alert.api'
 import { ApiCase, PAGE_QUERY, describeApi, expectMapped, expectMappedPage } from '@shared/helpers/testing/api-test.helper'
 import { ALERT_DTO, COMMUNICATION_DTO, pageDto } from '@shared/helpers/testing/response-fixtures'
 

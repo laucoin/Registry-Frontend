@@ -1,4 +1,4 @@
-import { ProjectApi } from '@pages/projects/data/state/project.api'
+import { ProjectApi } from '@core/registry/state/project.api'
 import { ApiCase, describeApi, expectMapped, expectMappedList, expectMappedPage, PAGE_QUERY } from '@shared/helpers/testing/api-test.helper'
 import { PROJECT_DTO, pageDto } from '@shared/helpers/testing/response-fixtures'
 

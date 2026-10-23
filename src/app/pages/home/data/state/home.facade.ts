@@ -1,7 +1,7 @@
 import { computed, inject, Injectable, Signal } from '@angular/core'
 import { tap } from 'rxjs'
 import { HomeStore } from '@pages/home/data/state/home.store'
-import { ProjectApi } from '@pages/projects/data/state/project.api'
+import { ProjectApi } from '@core/registry/state/project.api'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { GenericFacade } from '@shared/helpers/facade/generic.facade'
 import { notifyOnError } from '@shared/helpers/rx.helper'

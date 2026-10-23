@@ -1,7 +1,7 @@
 import { WritableSignal } from '@angular/core'
 import { FieldTree, form, SchemaPathTree } from '@angular/forms/signals'
 import { SelectOptionModel } from '@shared/models/model/select-option.model'
-import { ProjectDto } from '@pages/projects/data/dto/project.dto'
+import { ProjectDto } from '@shared/models/dto/project.dto'
 import { RegistrySchemas } from '@shared/helpers/form/registry.schemas'
 import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
 import { CustomDatetimeModel } from '@shared/models/model/custom-datetime.model'

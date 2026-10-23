@@ -12,7 +12,7 @@ import { ProjectProfileApi } from '@pages/projects/[projectId]/configuration/pro
 import { VehicleApi } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.api'
 import { CommunicationApi } from '@pages/projects/[projectId]/movements/communication/data/state/communication.api'
 import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
-import { ProjectApi } from '@pages/projects/data/state/project.api'
+import { ProjectApi } from '@core/registry/state/project.api'
 
 interface UpdateCase {
     name: string
