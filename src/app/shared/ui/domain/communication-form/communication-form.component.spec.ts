@@ -1,14 +1,13 @@
 import { Location } from '@angular/common'
-import { signal } from '@angular/core'
+import { signal, WritableSignal } from '@angular/core'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslocoService } from '@jsverse/transloco'
-import { MenuItem } from 'primeng/api'
+import { MenuEntryModel } from '@shared/models/model/menu-entry.model'
 import { BehaviorSubject, of } from 'rxjs'
 import { Mock, beforeEach, describe, expect, it, vi } from 'vitest'
 import { ConfigModel } from '@core/config/model/config.model'
 import { RegistryConfig } from '@core/config/registry.config'
-import { RegistryFacade } from '@core/registry/state/registry.facade'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { AlertFacade } from '@pages/projects/[projectId]/alerts/data/state/alert.facade'
@@ -17,6 +16,8 @@ import { CustomDateFormatPipe } from '@shared/helpers/pipe/custom-date-format.pi
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
 import { ProjectOptionIconPipe } from '@shared/helpers/pipe/project-option-icon.pipe'
 import { autoMock } from '@shared/helpers/testing/auto-mock'
+import { projectOptionChecker } from '@shared/helpers/testing/test-fixtures'
+import { ProjectModel } from '@shared/models/model/project.model'
 import { ALERT_DTO, COMMUNICATION_DTO, MOVEMENT_DTO } from '@shared/helpers/testing/response-fixtures'
 import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
 import { CommunicationFormComponent } from '@shared/ui/domain/communication-form/communication-form.component'
@@ -32,7 +33,7 @@ interface FieldApi {
 interface CommunicationFormApi {
     model: { (): { message: string, movement: LinkItem, alert: LinkItem, newAlertTitle: string }, set: (value: object) => void }
     form: Record<string, () => FieldApi>
-    actions: () => MenuItem[]
+    actions: () => MenuEntryModel[]
     movementSelectorVisible: { (): boolean, set: (visible: boolean) => void }
     alertSelectorMode: () => string | undefined
     ngOnInit: () => void
@@ -42,6 +43,10 @@ interface CommunicationFormApi {
     removeAlertField: () => void
     handleMovementSearch: (event: { query: string }) => void
     handleAlertSearch: (event: { query: string }) => void
+    selectMovement: (key: string) => void
+    selectAlert: (key: string) => void
+    movementChoices: () => { label: string, value: { id: string } }[]
+    selectedMovementKey: () => string
 }
 
 describe( 'CommunicationFormComponent', () => {
@@ -62,7 +67,8 @@ describe( 'CommunicationFormComponent', () => {
         facade[ 'updateCommunication' ].mockReturnValue( of( {} ) )
         alertFacade[ 'createAlert' ].mockReturnValue( of( {} ) )
         RegistryConfig.config = { notification: { duration: {} } } as unknown as ConfigModel
-        RegistryConfig.environment = { production: false, backend: { url: 'http://backend.test', noAuthPaths: [] } }
+        RegistryConfig.environment = { production: false, backend: { url: 'http://backend.test', noAuthPaths: [] }, hosting: { providerName: null, providerAddress: null } }
+        const project: WritableSignal<ProjectModel | undefined> = signal<ProjectModel | undefined>( { id: 'p1', options: options.map( (value: ProjectOptionEnum) => ({ label: value, value }) ) } as unknown as ProjectModel )
         TestBed.configureTestingModule( {
             providers: [
                 { provide: CommunicationFacade, useValue: facade },
@@ -72,9 +78,8 @@ describe( 'CommunicationFormComponent', () => {
                 { provide: Location, useValue: { back: vi.fn() } },
                 { provide: Router, useValue: {} },
                 { provide: ActivatedRoute, useValue: { snapshot: { params: id ? { communicationId: id } : {} } } },
-                { provide: SessionFacade, useValue: { selectedProject: signal( { id: 'p1', options: options.map( (value: ProjectOptionEnum) => ({ label: value, value }) ) } ), currentUser: signal( undefined ) } },
+                { provide: SessionFacade, useValue: { selectedProject: project, selectedProjectHasOption: projectOptionChecker( project ), currentUser: signal( undefined ) } },
                 { provide: UiFacade, useValue: autoMock() },
-                { provide: RegistryFacade, useValue: autoMock() },
                 { provide: CustomDateFormatPipe, useValue: { transform: (): string => '' } },
                 { provide: TranslocoService, useValue: { translate: (key: string): string => key } },
             ],
@@ -85,7 +90,7 @@ describe( 'CommunicationFormComponent', () => {
     }
 
     function actionIds (page: CommunicationFormApi): (string | undefined)[] {
-        return page.actions().map( (action: MenuItem): string | undefined => action.label )
+        return page.actions().map( (action: MenuEntryModel): string | undefined => action.label )
     }
 
     beforeEach( () => {
@@ -148,7 +153,7 @@ describe( 'CommunicationFormComponent', () => {
 
             // Assert
             expect( page.alertSelectorMode() ).toBe( 'SELECT' )
-            expect( page.actions().filter( (a: MenuItem): boolean => !!a.disabled ) ).toHaveLength( 2 )
+            expect( page.actions().filter( (a: MenuEntryModel): boolean => !!a.disabled ) ).toHaveLength( 2 )
         } )
     } )
 
@@ -300,6 +305,69 @@ describe( 'CommunicationFormComponent', () => {
             // Assert
             expect( facade[ 'searchMovements' ] ).toHaveBeenCalledWith( 'mo' )
             expect( facade[ 'searchAlerts' ] ).toHaveBeenCalledWith( 'al' )
+        } )
+
+        it( 'links the movement chosen among the found ones and keeps it listed after a new search', () => {
+            // Arrange
+            const page: CommunicationFormApi = create()
+            facade[ 'searchedMovementsMetadata' ].mockReturnValue( [ { label: 'First', value: { id: 'm1' } } ] )
+
+            // Act
+            page.selectMovement( 'm1' )
+            facade[ 'searchedMovementsMetadata' ].mockReturnValue( [] )
+
+            // Assert
+            expect( page.selectedMovementKey() ).toBe( 'm1' )
+            expect( page.movementChoices().map( (option: { value: { id: string } }): string => option.value.id ) ).toEqual( [ 'm1' ] )
+        } )
+
+        it( 'unlinks the movement when the choice is cleared', () => {
+            // Arrange
+            const page: CommunicationFormApi = create()
+            facade[ 'searchedMovementsMetadata' ].mockReturnValue( [ { label: 'First', value: { id: 'm1' } } ] )
+            page.selectMovement( 'm1' )
+
+            // Act
+            page.selectMovement( '' )
+
+            // Assert
+            expect( page.selectedMovementKey() ).toBe( '' )
+        } )
+
+        it( 'links the alert chosen among the found ones', () => {
+            // Arrange
+            const page: CommunicationFormApi = create()
+            facade[ 'searchedAlertsMetadata' ].mockReturnValue( [ { label: 'Fire', value: { id: 'a1' } } ] )
+
+            // Act
+            page.selectAlert( 'a1' )
+
+            // Assert
+            expect( page.model().alert.value.id ).toBe( 'a1' )
+        } )
+
+        it( 'unlinks the movement when the chosen key is not among the found ones', () => {
+            // Arrange
+            const page: CommunicationFormApi = create()
+            facade[ 'searchedMovementsMetadata' ].mockReturnValue( [] )
+
+            // Act
+            page.selectMovement( 'unknown' )
+
+            // Assert
+            expect( page.selectedMovementKey() ).toBe( '' )
+        } )
+
+        it( 'unlinks the alert when the chosen key is not among the found ones', () => {
+            // Arrange
+            const page: CommunicationFormApi = create()
+            facade[ 'searchedAlertsMetadata' ].mockReturnValue( [] )
+
+            // Act
+            page.selectAlert( 'unknown' )
+
+            // Assert
+            expect( page.model().alert ).toBeNull()
         } )
     } )
 } )

@@ -1,4 +1,4 @@
-import { SelectItem } from 'primeng/api'
+import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { VehicleModel } from '@shared/models/model/vehicle.model'
 
 /**
@@ -7,7 +7,7 @@ import { VehicleModel } from '@shared/models/model/vehicle.model'
  * Limits: No state and no translation.
  */
 export class VehicleHelper {
-    public static toSelectItem (vehicle: VehicleModel): SelectItem<VehicleModel> {
+    public static toSelectItem (vehicle: VehicleModel): SelectOptionModel<VehicleModel> {
         return {
             label: `${vehicle.brand} ${vehicle.model} (${vehicle.licensePlate})`,
             value: vehicle,

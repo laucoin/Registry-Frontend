@@ -3,15 +3,15 @@ import { PageRequestInformationModel } from '@shared/models/model/page-request-i
 import { MovementPageParamsModel } from '@shared/models/model/movement-page-params.model'
 import { MovementModel } from '@shared/models/model/movement.model'
 import { VehicleModel } from '@shared/models/model/vehicle.model'
-import { SelectItem } from 'primeng/api'
+import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum'
 
 export interface VehicleStoreModel {
     vehicles: PageRequestInformationModel<VehiclePageParamsModel, VehicleModel>
     movements: PageRequestInformationModel<MovementPageParamsModel, MovementModel>
     metadata: {
-        availabilities: SelectItem<boolean | undefined>[]
-        visibilities: SelectItem<boolean | undefined>[]
-        presencesStatus: SelectItem<PresenceStatusEnum | undefined>[]
+        availabilities: SelectOptionModel<boolean | undefined>[]
+        visibilities: SelectOptionModel<boolean | undefined>[]
+        presencesStatus: SelectOptionModel<PresenceStatusEnum | undefined>[]
     }
 }

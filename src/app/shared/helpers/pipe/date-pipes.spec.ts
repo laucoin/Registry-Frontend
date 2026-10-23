@@ -1,7 +1,7 @@
 import { DatePipe } from '@angular/common'
 import { TestBed } from '@angular/core/testing'
 import { TranslocoService } from '@jsverse/transloco'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { CustomDateFormatPipe } from '@shared/helpers/pipe/custom-date-format.pipe'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
 import { IntervalPipe } from '@shared/helpers/pipe/interval.pipe'
@@ -83,6 +83,19 @@ describe( 'date pipes', () => {
             expect( both ).toMatch( /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/ )
         } )
 
+        it( 'has nothing to show when the pattern cannot format the date', () => {
+            // Arrange
+            const pipe: CustomDateFormatPipe = TestBed.runInInjectionContext( (): CustomDateFormatPipe => new CustomDateFormatPipe() )
+            const invalid: DatePipe = TestBed.inject( DatePipe )
+            vi.spyOn( invalid, 'transform' ).mockReturnValue( null )
+
+            // Act
+            const result: string | undefined = pipe.transform( { date: '2026-01-05', time: '10:00:00' } )
+
+            // Assert
+            expect( result ).toBeUndefined()
+        } )
+
         it( 'has nothing to show for an empty value', () => {
             // Arrange
             const pipe: CustomDateFormatPipe = TestBed.runInInjectionContext( (): CustomDateFormatPipe => new CustomDateFormatPipe() )
@@ -146,6 +159,18 @@ describe( 'date pipes', () => {
             expect( result ).toContain( 'global.date-and-time-format.interval' )
             expect( result ).toContain( 'global.date-and-time-format.year' )
             expect( result ).toContain( 'global.date-and-time-format.month' )
+        } )
+
+        it( 'starts at months when there are no years', () => {
+            // Arrange
+            const span: IntervalModel = interval( 0, 2, 3, 0, 0, 0 )
+
+            // Act
+            const result: string | undefined = pipe.transform( span )
+
+            // Assert
+            expect( result ).toContain( 'global.date-and-time-format.month' )
+            expect( result ).toContain( 'global.date-and-time-format.day' )
         } )
 
         it( 'starts at days when there are no months or years', () => {

@@ -11,11 +11,10 @@ import { withProfileScope } from '@shared/helpers/store/with-profile-scope.featu
 import { ActivityModel } from '@shared/models/model/activity.model'
 import { MovementModel } from '@shared/models/model/movement.model'
 import { MovementPageParamsModel } from '@shared/models/model/movement-page-params.model'
+import { CumulativePageHelper, CumulativePageRequest } from '@shared/helpers/store/cumulative-page.helper'
 
-interface ActivitiesPageRequest {
+interface ActivitiesPageRequest extends CumulativePageRequest {
     projectId: string | undefined
-    pageNumber: number | undefined
-    pageSize: number | undefined
 }
 
 interface ActivityMovementsPageRequest extends ActivitiesPageRequest {
@@ -63,7 +62,7 @@ export const ActivityStore = signalStore(
     withProfileScope<ActivityStoreModel>( defaultActivityStore ),
     withMethods( (store, api = inject( ActivityApi ), movementApi = inject( MovementApi ), errors = inject( ErrorReporter )) => ({
         fetchActivitiesPage: pageFetcher( store, 'activities', (request: ActivitiesPageRequest, params: ActivityPageParamsModel) =>
-            api.findActivities( request.projectId, request.pageNumber, request.pageSize, params ), errors ),
+            api.findActivities( request.projectId, request.pageNumber, request.pageSize, params ), errors, { merge: CumulativePageHelper.merge } ),
         updateActivitiesPageSearchParams: paramsUpdater( store, 'activities' ),
         updateActivityMovementsPageSearchParams: paramsUpdater( store, 'movements' ),
         fetchActivityMovementsContents: movementContentsFetcher( store, movementApi, errors ),
@@ -71,6 +70,7 @@ export const ActivityStore = signalStore(
     withMethods( (store, api = inject( ActivityApi ), errors = inject( ErrorReporter )) => ({
         fetchActivityMovementsPage: pageFetcher( store, 'movements', (request: ActivityMovementsPageRequest, params: MovementPageParamsModel) =>
             api.findActivityMovements( request.projectId, request.id, request.pageNumber, request.pageSize, params ), errors, {
+            merge: CumulativePageHelper.merge,
             after: contentsRequester( store.fetchActivityMovementsContents ),
         } ),
     }) ),

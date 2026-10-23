@@ -1,6 +1,6 @@
 import { WritableSignal } from '@angular/core'
 import { FieldTree, form, SchemaPathTree } from '@angular/forms/signals'
-import { SelectItem } from 'primeng/api'
+import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { ProjectDto } from '@pages/projects/data/dto/project.dto'
 import { RegistrySchemas } from '@shared/helpers/form/registry.schemas'
 import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
@@ -26,9 +26,9 @@ export function toProjectFormModel (project?: ProjectModel): ProjectFormModel {
 
 export function toProjectOptionsFormModel (
     available: ProjectOptionModel[],
-    selected: SelectItem<ProjectOptionEnum>[] | undefined,
+    selected: SelectOptionModel<ProjectOptionEnum>[] | undefined,
 ): ProjectOptionsFormModel {
-    const selectedValues: string[] = (selected ?? []).map( (option: SelectItem<ProjectOptionEnum>): string => option.value )
+    const selectedValues: string[] = (selected ?? []).map( (option: SelectOptionModel<ProjectOptionEnum>): string => option.value )
     return Object.fromEntries( available.map( (option: ProjectOptionModel): [ string, boolean ] =>
         [ option.value, selectedValues.includes( option.value ) ] ) )
 }

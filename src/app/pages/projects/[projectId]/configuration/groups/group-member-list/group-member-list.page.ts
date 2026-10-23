@@ -1,7 +1,11 @@
 import { FieldTree, FormField } from '@angular/forms/signals'
 import { createSearchForm } from '@shared/helpers/form/search.form'
 import { GroupMemberListSearchModel, toGroupMemberListSearchModel, toGroupMemberListSearchParams } from './group-member-list.search'
-import { Component, inject, OnDestroy, signal, WritableSignal, model, ModelSignal } from '@angular/core'
+import { NgTemplateOutlet } from '@angular/common'
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, OnDestroy, signal, Signal, WritableSignal, model, ModelSignal } from '@angular/core'
+import { ActivatedRoute } from '@angular/router'
+import { CurrentUserHelper } from '@core/authentication/tool/current-user.helper'
+import { SessionFacade } from '@core/registry/state/session.facade'
 import { GroupModel } from '@shared/models/model/group.model'
 import { withLoading } from '@shared/helpers/rx.helper'
 import {
@@ -12,13 +16,21 @@ import {
 } from '@pages/projects/[projectId]/configuration/groups/group-member-list/add-members.form'
 import { PageEventModel } from '@shared/models/model/page-event.model'
 import { GroupFacade } from '@pages/projects/[projectId]/configuration/groups/data/state/group.facade'
-import { GroupElementComponent } from '@pages/projects/[projectId]/configuration/groups/group-element/group-element.component'
 import { Button } from 'primeng/button'
-import { InputText } from 'primeng/inputtext'
+import { ParticipantRowComponent } from '@pages/projects/[projectId]/configuration/participants/participant-row/participant-row.component'
 import { ListComponent } from '@shared/ui/common/list/list.component'
-import {
-    ParticipantElementComponent,
-} from '@shared/ui/domain/participant-element/participant-element.component'
+import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
+import { BooleanChoicePipe } from '@shared/helpers/pipe/boolean-choice.pipe'
+import { StringHelper } from '@shared/helpers/string.helper'
+import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum'
+import '@sgdf/ui/button'
+import '@sgdf/ui/icon'
+import '@sgdf/ui/input'
+import '@sgdf/ui/option'
+import '@sgdf/ui/page-title'
+import '@sgdf/ui/select'
+import '@sgdf/ui/skeleton'
+import { ProjectEyebrowDirective } from '@shared/directives/project-eyebrow.directive'
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import {TranslocoPipe} from '@jsverse/transloco'
 import { LayerComponent } from '@shared/ui/common/layer/layer.component'
@@ -28,47 +40,44 @@ import {
 } from '@shared/ui/common/select-elements-field/select-elements-field.component'
 import { Observable, Subscription, switchMap, tap } from 'rxjs'
 import { FieldErrorComponent } from '@shared/ui/common/field-error/field-error.component'
-import { Select } from 'primeng/select'
-import { GenericListComponent } from '@shared/ui/base/generic-list.component'
 import { ParticipantHelper } from '@shared/helpers/participant.helper'
 import { ParticipantFacade } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.facade'
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
 import { ParticipantFormComponent } from '@pages/projects/[projectId]/configuration/participants/participant-form/participant-form.component'
-import { ElementSkeletonComponent } from '@shared/ui/common/element-skeleton/element-skeleton.component'
-import { Card } from 'primeng/card'
 
 /**
- * Purpose: Page listing the group member with search and lazy loading.
- * Scope: Binds the list component to the facade and reloads on command events.
+ * Purpose: Page listing the members of a group with search and a "load more" trigger, and the forms to add or create members.
+ * Scope: Binds the list component to the group facade, owns the search form, gives the list the row template of a participant and opens the add and create member layers.
  * Limits: Holds no domain state and never calls the backend.
  */
 @Component( {
     selector: 'app-group-member-list',
     imports: [
-        GroupElementComponent,
-        Button,
-        InputText,
+        ProjectEyebrowDirective,
         ListComponent,
-        ParticipantElementComponent,
-        FormField,
+        ParticipantRowComponent,
         RegistryTemplateDirective,
+        SgdfFieldDirective,
+        BooleanChoicePipe,
+        NgTemplateOutlet,
+        Button,
+        FormField,
         TranslocoPipe,
         LayerComponent,
         RegistryRequiredDirective,
         SelectElementsFieldComponent,
         FieldErrorComponent,
-        Select,
         PluralTranslationPipe,
         ParticipantFormComponent,
-        ElementSkeletonComponent,
-        Card,
-
     ],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
     templateUrl: './group-member-list.page.html',
 } )
-export class GroupMemberListPage extends GenericListComponent implements OnDestroy {
+export class GroupMemberListPage implements OnDestroy {
     protected readonly facade: GroupFacade = inject( GroupFacade )
     protected readonly participantFacade: ParticipantFacade = inject( ParticipantFacade )
+    private readonly route: ActivatedRoute = inject( ActivatedRoute )
+    private readonly sessionFacade: SessionFacade = inject( SessionFacade )
 
     protected readonly ParticipantHelper: typeof ParticipantHelper = ParticipantHelper
 
@@ -83,6 +92,17 @@ export class GroupMemberListPage extends GenericListComponent implements OnDestr
 
     protected readonly createMemberFormLayerOpened: ModelSignal<boolean> = model<boolean>( false )
 
+    protected readonly canAddMembers: Signal<boolean> = computed( (): boolean => this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_U ) )
+    protected readonly canCreateMember: Signal<boolean> = computed( (): boolean =>
+        this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_C ) && this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_U ),
+    )
+
+    protected readonly activeFilters: Signal<number> = computed( (): number => [
+        StringHelper.isNotNullNorBlank( this.facade.groupMembersPageTextSearchedParam() ),
+        this.facade.groupMembersPageStatusSearchedParam() !== undefined,
+        this.facade.groupMembersPageVisibilitySearchedParam() !== undefined,
+    ].filter( Boolean ).length )
+
     protected readonly model: WritableSignal<GroupMemberListSearchModel> = signal( toGroupMemberListSearchModel( {
         textSearched: this.facade.groupMembersPageTextSearchedParam(),
         statusSearched: this.facade.groupMembersPageStatusSearchedParam(),
@@ -91,8 +111,6 @@ export class GroupMemberListPage extends GenericListComponent implements OnDestr
     protected readonly form: FieldTree<GroupMemberListSearchModel> = createSearchForm( this.model )
 
     public constructor () {
-        super()
-
         this.loadData()
         this.handleParticipantActions()
     }
@@ -104,28 +122,24 @@ export class GroupMemberListPage extends GenericListComponent implements OnDestr
                 withLoading( this.groupLoading ),
             ).subscribe( (group: GroupModel): void => this.group.set( group ) ),
         )
-        this.facade.fetchGroupMembersPage( id!, undefined, undefined)
+        this.facade.fetchGroupMembersPage( id!, undefined, undefined )
     }
 
     private handleParticipantActions (): void {
         this.subscriptions.add(
             this.facade.handleGroupMembersChange().pipe(
-                switchMap( (): Observable<GroupModel> => this.facade.fetchGroup( this.route.snapshot.params['groupId'] ) ),
+                switchMap( (): Observable<GroupModel> => this.facade.fetchGroup( this.groupId() ) ),
             ).subscribe( (group: GroupModel): void => this.group.set( group ) ),
         )
-        this.reloadMembersOn( this.participantFacade.handleParticipantFirstPageReload(), undefined, undefined )
-        this.reloadMembersOn(
-            this.participantFacade.handleParticipantCurrentPageReload(),
-            () => this.facade.groupMembersPage()?.pageNumber,
-            () => this.facade.groupMembersPage()?.pageSize,
-        )
+        this.reloadMembersOn( this.participantFacade.handleParticipantFirstPageReload(), (): void => this.facade.fetchGroupMembersPage( this.groupId(), 0, undefined ) )
+        this.reloadMembersOn( this.participantFacade.handleParticipantCurrentPageReload(), (): void => this.facade.reloadGroupMembersPage( this.groupId() ) )
     }
 
-    private reloadMembersOn (events: Observable<unknown>, pageNumber: (() => number | undefined) | undefined, pageSize: (() => number | undefined) | undefined): void {
+    private reloadMembersOn (events: Observable<unknown>, reload: () => void): void {
         this.subscriptions.add( events.pipe(
             tap( (): void => {
                 this.createMemberFormLayerOpened.set( false )
-                this.facade.fetchGroupMembersPage( this.route.snapshot.params['groupId'], pageNumber?.(), pageSize?.() )
+                reload()
             } ),
         ).subscribe() )
     }
@@ -139,17 +153,19 @@ export class GroupMemberListPage extends GenericListComponent implements OnDestr
         this.createMemberFormLayerOpened.set( true )
     }
 
-    protected loadPage (pageEvent: PageEventModel): void {
+    protected search (): void {
         const search: ReturnType<typeof toGroupMemberListSearchParams> = toGroupMemberListSearchParams( this.model() )
-        this.facade.inputMembersPageSearchParameters(
-            search.textSearched,
-            search.statusSearched,
-            search.visibilitySearched,
-        )
-        this.facade.fetchGroupMembersPage(
-            this.route.snapshot.params['groupId'],
-            pageEvent.pageNumber,
-            pageEvent.pageSize)
+        this.facade.inputMembersPageSearchParameters( search.textSearched, search.statusSearched, search.visibilitySearched )
+        this.facade.fetchGroupMembersPage( this.groupId(), 0, undefined )
+    }
+
+    protected resetFilters (): void {
+        this.model.set( { textSearched: '', statusSearched: '', visibilitySearched: '' } )
+        this.search()
+    }
+
+    protected loadBatch (pageEvent: PageEventModel): void {
+        this.facade.fetchGroupMembersPage( this.groupId(), pageEvent.pageNumber, pageEvent.pageSize )
     }
 
     protected handleSearch (searched: string | undefined): void {
@@ -163,10 +179,8 @@ export class GroupMemberListPage extends GenericListComponent implements OnDestr
             return
         }
 
-        const groupId: string = this.route.snapshot.params['groupId']
-
         this.subscriptions.add(
-            this.facade.addMembersToGroup( groupId, toMemberIds( this.addMembersModel() ) ).subscribe( (): void => {
+            this.facade.addMembersToGroup( this.groupId(), toMemberIds( this.addMembersModel() ) ).subscribe( (): void => {
                 this.addMembersFormLayerOpened.set( false )
             } ),
         )
@@ -174,5 +188,13 @@ export class GroupMemberListPage extends GenericListComponent implements OnDestr
 
     public ngOnDestroy (): void {
         this.subscriptions.unsubscribe()
+    }
+
+    private groupId (): string {
+        return this.route.snapshot.params['groupId']
+    }
+
+    private hasProjectAuthority (authority: ProjectAuthorityEnum): boolean {
+        return CurrentUserHelper.hasProjectAuthority( this.sessionFacade.currentUser(), this.facade.selectedProjectId(), authority )
     }
 }

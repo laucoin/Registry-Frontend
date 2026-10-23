@@ -7,7 +7,6 @@ import { of, throwError } from 'rxjs'
 import { Mock, beforeEach, describe, expect, it, vi } from 'vitest'
 import { ConfigModel } from '@core/config/model/config.model'
 import { RegistryConfig } from '@core/config/registry.config'
-import { RegistryFacade } from '@core/registry/state/registry.facade'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { ActivityFacade } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.facade'
@@ -36,7 +35,7 @@ describe( 'ActivityFormPage', () => {
         facade[ 'updateActivity' ].mockReturnValue( of( ACTIVITY_DTO ) )
         facade[ 'createActivity' ].mockReturnValue( of( ACTIVITY_DTO ) )
         RegistryConfig.config = { notification: { duration: {} } } as unknown as ConfigModel
-        RegistryConfig.environment = { production: false, backend: { url: 'http://backend.test', noAuthPaths: [] } }
+        RegistryConfig.environment = { production: false, backend: { url: 'http://backend.test', noAuthPaths: [] }, hosting: { providerName: null, providerAddress: null } }
         TestBed.configureTestingModule( {
             providers: [
                 { provide: ActivityFacade, useValue: facade },
@@ -45,7 +44,6 @@ describe( 'ActivityFormPage', () => {
                 { provide: ActivatedRoute, useValue: { snapshot: { params: id ? { activityId: id } : {} } } },
                 { provide: SessionFacade, useValue: { selectedProject: signal( undefined ), currentUser: (): undefined => undefined } },
                 { provide: UiFacade, useValue: autoMock() },
-                { provide: RegistryFacade, useValue: autoMock() },
                 { provide: CustomDateFormatPipe, useValue: { transform: (): string => '' } },
                 { provide: TranslocoService, useValue: { translate: (key: string): string => key } },
             ],

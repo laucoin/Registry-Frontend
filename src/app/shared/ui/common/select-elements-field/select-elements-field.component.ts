@@ -16,7 +16,7 @@ import { FormValueControl } from '@angular/forms/signals'
 import { AutoComplete, AutoCompleteCompleteEvent, AutoCompleteSelectEvent } from 'primeng/autocomplete'
 import { Button } from 'primeng/button'
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
-import { SelectItem } from 'primeng/api'
+import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { BaseModel } from '@shared/models/model/base.model'
 import { BrowserService } from '@core/browser/browser.service'
 import { TranslocoPipe } from '@jsverse/transloco'
@@ -47,8 +47,8 @@ export class SelectElementsFieldComponent<T extends BaseModel> implements FormVa
     public readonly dirty: InputSignal<boolean> = input( false )
     public readonly touch: OutputEmitterRef<void> = output<void>()
 
-    public readonly suggestions: InputSignal<SelectItem<T>[]> = input<SelectItem<T>[]>( [] )
-    public readonly selectItemBuilder: InputSignal<(element: T) => SelectItem<T>> = input.required()
+    public readonly suggestions: InputSignal<SelectOptionModel<T>[]> = input<SelectOptionModel<T>[]>( [] )
+    public readonly selectItemBuilder: InputSignal<(element: T) => SelectOptionModel<T>> = input.required()
     public readonly inputId: InputSignal<string | undefined> = input()
     public readonly fluid: InputSignal<boolean> = input( false )
     public readonly placeholder: InputSignal<string | undefined> = input()

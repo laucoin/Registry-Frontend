@@ -1,10 +1,10 @@
-import { SelectItem } from 'primeng/api'
+import { SelectOptionModel } from '@shared/models/model/select-option.model'
 
 export interface IntervalModel {
-    yearCount: SelectItem<number>
-    monthCount: SelectItem<number>
-    dayCount: SelectItem<number>
-    hourCount: SelectItem<number>
-    minuteCount: SelectItem<number>
-    secondCount: SelectItem<number>
+    yearCount: SelectOptionModel<number>
+    monthCount: SelectOptionModel<number>
+    dayCount: SelectOptionModel<number>
+    hourCount: SelectOptionModel<number>
+    minuteCount: SelectOptionModel<number>
+    secondCount: SelectOptionModel<number>
 }

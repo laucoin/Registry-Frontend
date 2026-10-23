@@ -3,7 +3,6 @@ import { TestBed } from '@angular/core/testing'
 import { TranslocoService } from '@jsverse/transloco'
 import { of } from 'rxjs'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
-import { RegistryFacade } from '@core/registry/state/registry.facade'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { ProjectApi } from '@pages/projects/data/state/project.api'
@@ -18,7 +17,7 @@ describe( 'ProjectFacade', () => {
     let createProject: Mock<ProjectApi['createProject']>
     let updateProjectById: Mock<ProjectApi['updateProjectById']>
     let disableProjectById: Mock<ProjectApi['disableProjectById']>
-    let fetchCurrentUser: Mock<RegistryFacade['fetchCurrentUser']>
+    let fetchCurrentUser: Mock<SessionFacade['fetchCurrentUser']>
     let notify: Mock<(message: unknown) => void>
     let currentProjectId: WritableSignal<string | undefined>
 
@@ -36,8 +35,7 @@ describe( 'ProjectFacade', () => {
                 ProjectFacade,
                 ProjectStore,
                 { provide: ProjectApi, useValue: { findProjects, createProject, updateProjectById, disableProjectById } },
-                { provide: RegistryFacade, useValue: { fetchCurrentUser } },
-                { provide: SessionFacade, useValue: { currentProjectId } },
+                { provide: SessionFacade, useValue: { currentProjectId, fetchCurrentUser } },
                 { provide: UiFacade, useValue: { notify, setGlobalError: vi.fn() } },
                 { provide: TranslocoService, useValue: { translate: (key: string): string => `t:${key}` } },
             ],
@@ -56,6 +54,19 @@ describe( 'ProjectFacade', () => {
 
         // Assert
         expect( findProjects ).toHaveBeenCalledWith( 2, 10, expect.anything() )
+    } )
+
+    it( 'appends the next batch to the projects already shown', () => {
+        // Arrange
+        findProjects.mockReturnValueOnce( of( pageOf<ProjectModel>( [ { id: 'a' } as ProjectModel ], 0 ) ) )
+            .mockReturnValueOnce( of( pageOf<ProjectModel>( [ { id: 'b' } as ProjectModel ], 1 ) ) )
+        facade.fetchProjectsPage( 0, 10 )
+
+        // Act
+        facade.fetchProjectsPage( 1, 10 )
+
+        // Assert
+        expect( facade.projectsPage()?.content.map( (it: ProjectModel): string => it.id ) ).toEqual( [ 'a', 'b' ] )
     } )
 
     it( 'restarts from the first page when the search changed', () => {
@@ -144,5 +155,16 @@ describe( 'ProjectFacade', () => {
         expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'projects.notifications.disable.title' } ) )
         expect( fetchCurrentUser ).toHaveBeenCalledTimes( 1 )
         expect( findProjects ).toHaveBeenCalledTimes( 1 )
+    } )
+
+    it( 'reloads every batch shown in one request after a command', () => {
+        // Arrange
+        disableProjectById.mockReturnValue( of( { id: 'p1', name: 'Camp' } as ProjectModel ) )
+
+        // Act
+        facade.disableProject( 'p1' )
+
+        // Assert
+        expect( findProjects ).toHaveBeenCalledWith( 0, 20, expect.anything() )
     } )
 } )

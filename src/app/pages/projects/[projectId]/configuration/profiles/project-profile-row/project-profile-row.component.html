@@ -1,0 +1,41 @@
+<ng-template #row let-profile>
+    <sgdf-list-item [disabled]="!profile.visible">
+        <sgdf-avatar slot="start" shape="rounded" aria-hidden="true"
+                     [variant]="isSelected(profile) ? 'success' : 'primary'"
+                     [initials]="initials(profile)"/>
+        <span class="block truncate" [attr.title]="title(profile)">{{ title(profile) }}</span>
+        <span slot="description" class="flex flex-wrap items-center gap-x-3">
+            @if (profile.startAccess) {
+                <span class="inline-flex items-center gap-1">
+                    <sgdf-icon name="circle-play" library="solid"/>
+                    {{ profile.startAccess | customDateFormat }}
+                </span>
+            }
+            @if (profile.endAccess) {
+                <span class="inline-flex items-center gap-1">
+                    <sgdf-icon name="circle-stop" library="solid"/>
+                    {{ profile.endAccess | customDateFormat }}
+                </span>
+            }
+        </span>
+        <span slot="end" class="flex flex-wrap items-center gap-2">
+            <sgdf-tag appearance="outlined" pill>{{ profile.role.label }}</sgdf-tag>
+            @if (awaitsAnswer(profile)) {
+                <sgdf-button size="small" variant="danger" appearance="outlined"
+                             (click)="actions.manageAcceptance(profile, ProfileStatusEnum.REJECTED)">
+                    {{ 'project-profiles.actions.reject' | transloco }}
+                </sgdf-button>
+                <sgdf-button size="small" variant="success"
+                             (click)="actions.manageAcceptance(profile, ProfileStatusEnum.ACCEPTED)">
+                    {{ 'project-profiles.actions.accept' | transloco }}
+                </sgdf-button>
+            } @else {
+                @if (profile.availabilityStatus; as availability) {
+                    <sgdf-tag appearance="soft" pill [variant]="availabilityVariant(profile)">{{ availability.label }}</sgdf-tag>
+                }
+                <sgdf-tag appearance="soft" pill [variant]="statusVariant(profile)">{{ profile.status.label }}</sgdf-tag>
+            }
+        </span>
+        <app-element-actions slot="actions" [subject]="title(profile)" [actions]="actions.actionsFor(profile)"/>
+    </sgdf-list-item>
+</ng-template>

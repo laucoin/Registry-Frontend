@@ -1,0 +1,68 @@
+{
+  "$schema": "../node_modules/@angular-devkit/schematics/collection-schema.json",
+  "schematics": {
+    "page": {
+      "aliases": [
+        "p"
+      ],
+      "description": "Generate a routed page (*.page.ts) under src/app/pages, wrapping @schematics/angular:component with type=page.",
+      "factory": "./page/index#page",
+      "schema": "./page/schema.json"
+    },
+    "model": {
+      "aliases": [
+        "m"
+      ],
+      "description": "Generate a shared model interface under src/app/shared/models/model.",
+      "factory": "./model/index#model",
+      "schema": "./model/schema.json"
+    },
+    "dto": {
+      "description": "Generate a response DTO interface under src/app/shared/models/dto/response.",
+      "factory": "./dto/index#dto",
+      "schema": "./dto/schema.json"
+    },
+    "mapper": {
+      "description": "Generate a DTO-to-model mapper class under src/app/shared/mappers.",
+      "factory": "./mapper/index#mapper",
+      "schema": "./mapper/schema.json"
+    },
+    "helper": {
+      "aliases": [
+        "h"
+      ],
+      "description": "Generate a helper class under src/app/shared/helpers.",
+      "factory": "./helper/index#helper",
+      "schema": "./helper/schema.json"
+    },
+    "service": {
+      "aliases": [
+        "s"
+      ],
+      "description": "Generate a plain (non-api) service class under src/app/shared/helpers/service.",
+      "factory": "./service/index#service",
+      "schema": "./service/schema.json"
+    },
+    "api": {
+      "aliases": [
+        "a"
+      ],
+      "description": "Generate a HTTP api class under src/app/pages/<name>/data/state.",
+      "factory": "./api/index#api",
+      "schema": "./api/schema.json"
+    },
+    "store": {
+      "description": "Generate a signal store under src/app/pages/<name>/data/state.",
+      "factory": "./store/index#store",
+      "schema": "./store/schema.json"
+    },
+    "facade": {
+      "aliases": [
+        "f"
+      ],
+      "description": "Generate a facade class under src/app/pages/<name>/data/state.",
+      "factory": "./facade/index#facade",
+      "schema": "./facade/schema.json"
+    }
+  }
+}

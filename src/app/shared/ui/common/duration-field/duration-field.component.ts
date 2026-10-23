@@ -1,5 +1,5 @@
 import { Component, computed, input, InputSignal, model, ModelSignal, output, OutputEmitterRef, Signal } from '@angular/core'
-import { SelectItem } from 'primeng/api'
+import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { SplitTimeModel } from '@shared/models/model/split-time.model'
 import { FormsModule } from '@angular/forms'
 import { FormValueControl } from '@angular/forms/signals'
@@ -20,7 +20,7 @@ import { Select } from 'primeng/select'
     styleUrl: './duration-field.component.css',
 } )
 export class DurationFieldComponent implements FormValueControl<SplitTimeModel | null> {
-    protected readonly durations: SelectItem<SplitTimeModel | null>[] = [
+    protected readonly durations: SelectOptionModel<SplitTimeModel | null>[] = [
         { label: '-', value: null },
         { label: '00h15', value: { hours: 0, minutes: 15 } },
         { label: '00h30', value: { hours: 0, minutes: 30 } },

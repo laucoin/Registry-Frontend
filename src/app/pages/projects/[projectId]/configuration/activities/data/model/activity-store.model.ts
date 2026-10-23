@@ -3,13 +3,13 @@ import { PageRequestInformationModel } from '@shared/models/model/page-request-i
 import { MovementPageParamsModel } from '@shared/models/model/movement-page-params.model'
 import { MovementModel } from '@shared/models/model/movement.model'
 import { ActivityModel } from '@shared/models/model/activity.model'
-import { SelectItem } from 'primeng/api'
+import { SelectOptionModel } from '@shared/models/model/select-option.model'
 
 export interface ActivityStoreModel {
     activities: PageRequestInformationModel<ActivityPageParamsModel, ActivityModel>
     movements: PageRequestInformationModel<MovementPageParamsModel, MovementModel>
     metadata: {
-        availabilities: SelectItem<boolean | undefined>[],
-        visibilities: SelectItem<boolean | undefined>[],
+        availabilities: SelectOptionModel<boolean | undefined>[],
+        visibilities: SelectOptionModel<boolean | undefined>[],
     }
 }

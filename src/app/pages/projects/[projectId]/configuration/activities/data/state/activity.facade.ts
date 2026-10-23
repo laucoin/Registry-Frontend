@@ -3,13 +3,15 @@ import { Observable, tap } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
 import { ActivityModel } from '@shared/models/model/activity.model'
 import { ActivityDto } from '@pages/projects/[projectId]/configuration/activities/data/dto/activity.dto'
-import { SelectItem, ToastMessageOptions } from 'primeng/api'
+import { SelectOptionModel } from '@shared/models/model/select-option.model'
+import { NotificationModel } from '@shared/models/model/notification.model'
 import { ActivityStore } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.store'
 import { GenericProjectElementFacade } from '@shared/helpers/facade/generic-project-element.facade'
 import { MovementModel } from '@shared/models/model/movement.model'
 import { DateHelper } from '@shared/helpers/date.helper'
 import { ActivityApi } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.api'
 import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/rx.helper'
+import { CumulativePageHelper } from '@shared/helpers/store/cumulative-page.helper'
 
 /**
  * Purpose: Public entry point of the activity domain for pages, components and guards.
@@ -25,7 +27,7 @@ export class ActivityFacade extends GenericProjectElementFacade {
     public readonly activitiesPage: Signal<PageModel<ActivityModel> | undefined> = this.store.activities.element
     public readonly activitiesPageLoading: Signal<boolean> = this.store.activities.loading
     public readonly activitiesPageSilentLoading: Signal<boolean> = this.store.activities.silentLoading
-    public readonly activitiesPageError: Signal<ToastMessageOptions | undefined> = this.store.activities.error
+    public readonly activitiesPageError: Signal<NotificationModel | undefined> = this.store.activities.error
     private readonly activitiesPageResetSearch: Signal<boolean> = this.store.activities.params.resetSearch
     public readonly activitiesPageTextSearchedParam: Signal<string | undefined> = this.store.activities.params.textSearched
     public readonly activitiesPageDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
@@ -37,7 +39,7 @@ export class ActivityFacade extends GenericProjectElementFacade {
     public readonly activityMovementsPage: Signal<PageModel<MovementModel> | undefined> = this.store.movements.element
     public readonly activityMovementsPageLoading: Signal<boolean> = this.store.movements.loading
     public readonly activityMovementsPageSilentLoading: Signal<boolean> = this.store.movements.silentLoading
-    public readonly activityMovementsPageError: Signal<ToastMessageOptions | undefined> = this.store.movements.error
+    public readonly activityMovementsPageError: Signal<NotificationModel | undefined> = this.store.movements.error
     public readonly activityMovementsPageResetSearch: Signal<boolean> = this.store.movements.params.resetSearch
     public readonly activityMovementsPageTypeSearchedParam: Signal<string | undefined> = this.store.movements.params.typeSearched
     public readonly activityMovementsPageStartDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
@@ -48,12 +50,12 @@ export class ActivityFacade extends GenericProjectElementFacade {
     )
     public readonly activityMovementsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.movements.params.visibilitySearched
 
-    public readonly availabilitiesMetadata: Signal<SelectItem<boolean | undefined>[]> = this.translated( this.store.metadata.availabilities )
-    public readonly visibilitiesMetadata: Signal<SelectItem<boolean | undefined>[]> = this.translated( this.store.metadata.visibilities )
+    public readonly availabilitiesMetadata: Signal<SelectOptionModel<boolean | undefined>[]> = this.translated( this.store.metadata.availabilities )
+    public readonly visibilitiesMetadata: Signal<SelectOptionModel<boolean | undefined>[]> = this.translated( this.store.metadata.visibilities )
 
-    private translated (items: Signal<SelectItem<boolean | undefined>[]>): Signal<SelectItem<boolean | undefined>[]> {
-        return computed( (): SelectItem<boolean | undefined>[] => items().map(
-            (status: SelectItem<boolean | undefined>): SelectItem<boolean | undefined> => ({
+    private translated (items: Signal<SelectOptionModel<boolean | undefined>[]>): Signal<SelectOptionModel<boolean | undefined>[]> {
+        return computed( (): SelectOptionModel<boolean | undefined>[] => items().map(
+            (status: SelectOptionModel<boolean | undefined>): SelectOptionModel<boolean | undefined> => ({
                 ...status,
                 label: this.translateLabel( status.label! ),
             }),
@@ -97,6 +99,10 @@ export class ActivityFacade extends GenericProjectElementFacade {
     ): void {
         const index: number | undefined = this.activityMovementsPageResetSearch() ? 0 : pageNumber
         this.store.fetchActivityMovementsPage( { projectId: this.selectedProjectId(), id: id, pageNumber: index, pageSize: pageSize } )
+    }
+
+    public reloadActivityMovementsPage (id: string): void {
+        this.store.fetchActivityMovementsPage( { projectId: this.selectedProjectId(), id: id, ...CumulativePageHelper.reloadRequest( this.activityMovementsPage() ) } )
     }
 
     public fetchActivityMovementsContent (movementIds: string[]): void {
@@ -171,7 +177,6 @@ export class ActivityFacade extends GenericProjectElementFacade {
     private onCommandSuccess (command: string, activity: ActivityModel): void {
         this.notifySuccess( `activities.notifications.${ command }`, 'pi pi-users', { name: activity?.name } )
 
-        const page: PageModel<ActivityModel> | undefined = this.activitiesPage()
-        this.fetchActivitiesPage( page?.pageNumber, page?.pageSize )
+        this.store.fetchActivitiesPage( { projectId: this.selectedProjectId(), ...CumulativePageHelper.reloadRequest( this.activitiesPage() ) } )
     }
 }

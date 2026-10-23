@@ -1,7 +1,7 @@
-import { Component, input, InputSignal } from '@angular/core'
+import { Component, CUSTOM_ELEMENTS_SCHEMA, input, InputSignal } from '@angular/core'
+import '@sgdf/ui/callout'
 import {TranslocoPipe} from '@jsverse/transloco'
 import { ErrorModel } from '@shared/models/model/error.model'
-import { MessageModule } from 'primeng/message'
 
 /**
  * Purpose: Displays the error of a whole form.
@@ -11,9 +11,9 @@ import { MessageModule } from 'primeng/message'
 @Component({
 	selector: 'app-form-error',
 	imports: [
-		MessageModule,
 		TranslocoPipe,
 	],
+	schemas: [CUSTOM_ELEMENTS_SCHEMA],
 	templateUrl: './form-error.component.html',
 })
 export class FormErrorComponent {

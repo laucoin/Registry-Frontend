@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core'
 import {Observable} from 'rxjs'
 import {GenericApi} from '@shared/helpers/api/generic.api'
-import {SelectItem} from 'primeng/api'
+import {SelectOptionModel} from '@shared/models/model/select-option.model'
 import {MovementTypeEnum} from '@shared/models/enumeration/movement-type.enum'
 import {ParticipantTypeEnum} from '@shared/models/enumeration/participant-type.enum'
 import {ProfileStatusEnum} from '@shared/models/enumeration/profile-status.enum'
@@ -21,23 +21,23 @@ export class MetadataApi extends GenericApi {
         super('/api/v1/metadata')
     }
 
-    public getPresencesStatus(): Observable<SelectItem<PresenceStatusEnum>[]> {
-        return this.http.get<SelectItem<PresenceStatusEnum>[]>(`${this.baseUrl}/presences/status`)
+    public getPresencesStatus(): Observable<SelectOptionModel<PresenceStatusEnum>[]> {
+        return this.http.get<SelectOptionModel<PresenceStatusEnum>[]>(`${this.baseUrl}/presences/status`)
     }
 
-    public getProfilesStatus(): Observable<SelectItem<ProfileStatusEnum>[]> {
-        return this.http.get<SelectItem<ProfileStatusEnum>[]>(`${this.baseUrl}/profiles/status`)
+    public getProfilesStatus(): Observable<SelectOptionModel<ProfileStatusEnum>[]> {
+        return this.http.get<SelectOptionModel<ProfileStatusEnum>[]>(`${this.baseUrl}/profiles/status`)
     }
 
-    public getMovementsTypes(): Observable<SelectItem<MovementTypeEnum>[]> {
-        return this.http.get<SelectItem<MovementTypeEnum>[]>(`${this.baseUrl}/movements/types`)
+    public getMovementsTypes(): Observable<SelectOptionModel<MovementTypeEnum>[]> {
+        return this.http.get<SelectOptionModel<MovementTypeEnum>[]>(`${this.baseUrl}/movements/types`)
     }
 
-    public getParticipantsTypes(): Observable<SelectItem<ParticipantTypeEnum>[]> {
-        return this.http.get<SelectItem<ParticipantTypeEnum>[]>(`${this.baseUrl}/participants/types`)
+    public getParticipantsTypes(): Observable<SelectOptionModel<ParticipantTypeEnum>[]> {
+        return this.http.get<SelectOptionModel<ParticipantTypeEnum>[]>(`${this.baseUrl}/participants/types`)
     }
 
-    public getAlertsStatus(): Observable<SelectItem<AlertStatusEnum>[]> {
-        return this.http.get<SelectItem<AlertStatusEnum>[]>(`${this.baseUrl}/alerts/status`)
+    public getAlertsStatus(): Observable<SelectOptionModel<AlertStatusEnum>[]> {
+        return this.http.get<SelectOptionModel<AlertStatusEnum>[]>(`${this.baseUrl}/alerts/status`)
     }
 }

@@ -20,6 +20,7 @@ import {
 } from '@shared/ui/common/severity-information/severity-information.component'
 import { MovementFacade } from '@pages/projects/[projectId]/movements/data/state/movement.facade'
 import { ProjectStatusModel } from '@shared/models/model/project-status.model'
+import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
 import { VehicleStatusModel } from '@shared/models/model/vehicle-status.model'
 import { Subscription, tap } from 'rxjs'
 
@@ -53,6 +54,8 @@ export class DashboardComponent extends GenericComponent implements OnDestroy {
     protected readonly movementFacade: MovementFacade = inject( MovementFacade )
 
     private readonly subscriptions: Subscription = new Subscription()
+
+    protected readonly hasVehicleOption: Signal<boolean> = this.sessionFacade.selectedProjectHasOption( ProjectOptionEnum.VEHICLE )
 
     protected readonly ParticipantTypeEnum: typeof ParticipantTypeEnum = ParticipantTypeEnum
     protected readonly PresenceStatusEnum: typeof PresenceStatusEnum = PresenceStatusEnum

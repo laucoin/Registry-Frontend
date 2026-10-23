@@ -1,6 +1,6 @@
-import { Component, computed, inject, input, InputSignal, Signal } from '@angular/core'
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, input, InputSignal, Signal } from '@angular/core'
+import '@sgdf/ui/callout'
 import { ValidationError } from '@angular/forms/signals'
-import { MessageModule } from 'primeng/message'
 import { TranslocoService } from '@jsverse/transloco'
 import { FieldErrorState, FieldStateHelper } from '@shared/helpers/form/field-state.helper'
 
@@ -27,9 +27,7 @@ const ERROR_PARAMS: Record<string, [string, string][]> = {
  */
 @Component({
     selector: 'app-field-error',
-    imports: [
-        MessageModule,
-    ],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
     templateUrl: './field-error.component.html',
 })
 export class FieldErrorComponent {

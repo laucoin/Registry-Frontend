@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core'
-import { ToastMessageOptions } from 'primeng/api'
+import { NotificationModel } from '@shared/models/model/notification.model'
 import { NotificationStore } from '@core/registry/state/notification.store'
 import { UiStore } from '@core/registry/state/ui.store'
 import { ErrorSink } from '@shared/helpers/rx.helper'
@@ -19,7 +19,7 @@ export class ErrorReporter implements ErrorSink {
         this.ui.setGlobalError( error )
     }
 
-    public notify (message: ToastMessageOptions): void {
+    public notify (message: NotificationModel): void {
         this.notifications.notify( message )
     }
 }

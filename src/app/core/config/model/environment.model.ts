@@ -4,4 +4,8 @@ export interface EnvironmentModel {
         url: string
         noAuthPaths: string[]
     }
+    hosting: {
+        providerName: string | null
+        providerAddress: string | null
+    }
 }

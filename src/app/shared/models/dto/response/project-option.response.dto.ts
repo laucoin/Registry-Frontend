@@ -1,9 +1,9 @@
 import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
-import { SelectItem } from 'primeng/api'
+import { SelectOptionModel } from '@shared/models/model/select-option.model'
 
 export interface ProjectOptionResponseDto {
     value: ProjectOptionEnum
     label: string
     ask: string
-    preRequired: SelectItem<ProjectOptionEnum>[]
+    preRequired: SelectOptionModel<ProjectOptionEnum>[]
 }

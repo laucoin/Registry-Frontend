@@ -1,20 +1,23 @@
 import { inject } from '@angular/core'
-import { CanActivateFn } from '@angular/router'
-import { RegistryFacade } from '@core/registry/state/registry.facade'
+import { CanActivateFn, Router, UrlTree } from '@angular/router'
+import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { GenericHelper } from '@shared/helpers/generic.helper'
-import { map, Observable } from 'rxjs'
+import { RouteHelper } from '@shared/helpers/route.helper'
+import { map, Observable, of } from 'rxjs'
 
 /**
- * Purpose: Lets a route through once the current user is loaded.
+ * Purpose: Lets a route through once the current user is loaded, otherwise sends the visitor to the login page.
  * Scope: Triggers the current user fetch when the user is unknown and waits for it.
  * Limits: A usability aid only; the backend re-checks every request.
  */
-export const authGuard: CanActivateFn = (): Observable<boolean> => {
-    const facade: RegistryFacade = inject( RegistryFacade )
+export const authGuard: CanActivateFn = (): Observable<boolean | UrlTree> => {
     const sessionFacade: SessionFacade = inject( SessionFacade )
-    if (GenericHelper.isNull( sessionFacade.currentUser() )) {
-        facade.fetchCurrentUser()
+    const loginRoute: UrlTree = inject( Router ).parseUrl( RouteHelper.absolute( RegistryRouteEnum.LOGIN ) )
+    if (GenericHelper.nonNull( sessionFacade.currentUser() )) {
+        return of( true )
     }
-    return sessionFacade.currentUser$.pipe( map( (): boolean => true ) )
+    return sessionFacade.fetchCurrentUser().pipe(
+        map( (): boolean | UrlTree => GenericHelper.nonNull( sessionFacade.currentUser() ) || loginRoute ),
+    )
 }

@@ -1,4 +1,3 @@
-import {RegistryFacade} from '@core/registry/state/registry.facade'
 import {UiFacade} from '@core/registry/state/ui.facade'
 import {SessionFacade} from '@core/registry/state/session.facade'
 import {inject} from '@angular/core'
@@ -17,7 +16,7 @@ import {SeverityEnum} from '@shared/models/enumeration/severity.enum'
 
 /**
  * Purpose: Base class of the components that need the shared facades and helpers.
- * Scope: Provides the registry, UI and session facades, routing and translation.
+ * Scope: Provides the UI and session facades, routing and translation.
  * Limits: Abstract; it holds no view logic.
  */
 export abstract class GenericComponent {
@@ -33,7 +32,6 @@ export abstract class GenericComponent {
     protected readonly SeverityEnum: typeof SeverityEnum = SeverityEnum
     protected readonly ProjectHelper: typeof ProjectHelper = ProjectHelper
 
-    protected readonly registryFacade: RegistryFacade = inject(RegistryFacade)
     protected readonly uiFacade: UiFacade = inject(UiFacade)
     protected readonly sessionFacade: SessionFacade = inject(SessionFacade)
     protected readonly route: ActivatedRoute = inject(ActivatedRoute)

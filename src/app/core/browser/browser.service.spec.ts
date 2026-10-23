@@ -35,6 +35,19 @@ describe( 'BrowserService', () => {
         expect( location.hash ).toBe( target )
     } )
 
+    it( 'reloads the page', () => {
+        // Arrange
+        const reload: Mock = vi.fn()
+        vi.stubGlobal( 'location', { reload } )
+
+        // Act
+        service.reload()
+
+        // Assert
+        expect( reload ).toHaveBeenCalledOnce()
+        vi.unstubAllGlobals()
+    } )
+
     it( 'exposes the current location', () => {
         // Arrange
         const expectedOrigin: string = window.location.origin
@@ -48,17 +61,43 @@ describe( 'BrowserService', () => {
         expect( service.host ).toBe( window.location.host )
     } )
 
-    it( 'adds and removes a class on the root element', () => {
+    it( 'exposes the viewport, the network state and the preferred languages', () => {
         // Arrange
-        service.setRootClass( 'dark-mod', true )
-        const added: boolean = document.documentElement.classList.contains( 'dark-mod' )
+        const expectedWidth: number = window.innerWidth
 
         // Act
-        service.setRootClass( 'dark-mod', false )
+        const width: number = service.viewportWidth
 
         // Assert
-        expect( added ).toBe( true )
-        expect( document.documentElement.classList.contains( 'dark-mod' ) ).toBe( false )
+        expect( width ).toBe( expectedWidth )
+        expect( service.online ).toBe( navigator.onLine )
+        expect( service.preferredLanguages ).toBe( navigator.languages )
+    } )
+
+    it( 'reads the vertical scroll offset of the page', () => {
+        // Arrange
+        vi.spyOn( window, 'pageYOffset', 'get' ).mockReturnValue( 120 )
+
+        // Act
+        const offset: number = service.scrollOffset
+
+        // Assert
+        expect( offset ).toBe( 120 )
+    } )
+
+    it.each( [
+        [ ThemeEnum.DARK, 'dark' ],
+        [ ThemeEnum.LIGHT, 'light' ],
+        [ ThemeEnum.SYSTEM, null ],
+    ] )( 'applies the %s theme on the root element', (theme: ThemeEnum, expected: string | null) => {
+        // Arrange
+        document.documentElement.setAttribute( 'data-theme', 'dark' )
+
+        // Act
+        service.setRootTheme( theme )
+
+        // Assert
+        expect( document.documentElement.getAttribute( 'data-theme' ) ).toBe( expected )
     } )
 
     it( 'sets the language of the root element', () => {
@@ -136,5 +175,30 @@ describe( 'BrowserService', () => {
 
         // Assert
         expect( call ).not.toThrow()
+    } )
+
+    it( 'reports the viewport width each time the window is resized', () => {
+        // Arrange
+        const listener: (width: number) => void = vi.fn()
+        service.onViewportResize( listener )
+
+        // Act
+        window.dispatchEvent( new Event( 'resize' ) )
+
+        // Assert
+        expect( listener ).toHaveBeenCalledWith( window.innerWidth )
+    } )
+
+    it( 'stops reporting the viewport width once the listener is removed', () => {
+        // Arrange
+        const listener: (width: number) => void = vi.fn()
+        const stop: () => void = service.onViewportResize( listener )
+
+        // Act
+        stop()
+        window.dispatchEvent( new Event( 'resize' ) )
+
+        // Assert
+        expect( listener ).not.toHaveBeenCalled()
     } )
 } )

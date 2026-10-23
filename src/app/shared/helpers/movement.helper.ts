@@ -1,7 +1,7 @@
 import { MovementModel } from '@shared/models/model/movement.model'
 import { PairModel } from '@shared/models/model/pair.model'
 import { MovementContentModel } from '@shared/models/model/movement-content.model'
-import { SelectItem } from 'primeng/api'
+import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
 
 /**
@@ -20,7 +20,7 @@ export class MovementHelper {
         }) )
     }
 
-    public static toActivitySelectItem (movement: MovementModel, datePipe: DateFormatPipe): SelectItem<MovementModel> {
+    public static toActivitySelectItem (movement: MovementModel, datePipe: DateFormatPipe): SelectOptionModel<MovementModel> {
         return {
             label: `${movement.reason?.label} (${datePipe.transform( movement.dateTime, 'datetime' )})`,
             value: movement,

@@ -3,7 +3,7 @@ import { OptionalProjectResponseDto } from '@shared/models/dto/response/generic-
 import { GroupResponseDto } from '@shared/models/dto/response/group.response.dto'
 import { ParticipantTypeEnum } from '@shared/models/enumeration/participant-type.enum'
 import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum'
-import { SelectItem } from 'primeng/api'
+import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { UserResponseDto } from '@shared/models/dto/response/user.response.dto'
 
 export interface ParticipantResponseDto extends OptionalProjectResponseDto {
@@ -11,9 +11,9 @@ export interface ParticipantResponseDto extends OptionalProjectResponseDto {
     lastName: string
     birthday: string
     major: boolean
-    type: SelectItem<ParticipantTypeEnum>
+    type: SelectOptionModel<ParticipantTypeEnum>
     groups: GroupResponseDto[] | undefined
-    status: SelectItem<PresenceStatusEnum>
+    status: SelectOptionModel<PresenceStatusEnum>
     startAvailability: CustomDatetimeModel | undefined
     endAvailability: CustomDatetimeModel | undefined
     user: UserResponseDto | undefined

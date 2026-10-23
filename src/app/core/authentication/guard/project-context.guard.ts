@@ -2,7 +2,6 @@ import { inject } from '@angular/core'
 import { ActivatedRouteSnapshot, CanActivateFn, CanDeactivateFn, Router, UrlTree } from '@angular/router'
 import { map, Observable, of, switchMap, take } from 'rxjs'
 import { RegistryConfig } from '@core/config/registry.config'
-import { RegistryFacade } from '@core/registry/state/registry.facade'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { GenericHelper } from '@shared/helpers/generic.helper'
@@ -13,7 +12,6 @@ import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
 const PROJECT_ID_PARAM: string = 'projectId'
 
 interface GuardContext {
-    registryFacade: RegistryFacade
     sessionFacade: SessionFacade
     uiFacade: UiFacade
     router: Router
@@ -26,7 +24,6 @@ interface GuardContext {
  */
 export const projectContextGuard: CanActivateFn = (route: ActivatedRouteSnapshot): Observable<boolean | UrlTree> => {
     const context: GuardContext = {
-        registryFacade: inject( RegistryFacade ),
         sessionFacade: inject( SessionFacade ),
         uiFacade: inject( UiFacade ),
         router: inject( Router ),
@@ -44,7 +41,7 @@ function resolveAccess (context: GuardContext, currentUser: CurrentUserModel, pr
         return of( redirectToProjects( context ) )
     }
 
-    return context.registryFacade.setCurrentProject( projectId ).pipe(
+    return context.sessionFacade.setCurrentProject( projectId ).pipe(
         take( 1 ),
         map( (): boolean | UrlTree => GenericHelper.isNull( context.sessionFacade.selectedProject() ) ? redirectToProjects( context ) : true ),
     )
@@ -56,7 +53,7 @@ function redirectToProjects (context: GuardContext): UrlTree {
 }
 
 export const projectContextDeactivateGuard: CanDeactivateFn<unknown> = (): boolean => {
-    inject( RegistryFacade ).setCurrentProject( undefined ).pipe( take( 1 ) ).subscribe()
+    inject( SessionFacade ).setCurrentProject( undefined ).pipe( take( 1 ) ).subscribe()
     return true
 }
 

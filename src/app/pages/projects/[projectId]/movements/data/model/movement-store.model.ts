@@ -1,7 +1,7 @@
 import { MovementPageParamsModel } from '@shared/models/model/movement-page-params.model'
 import { MovementModel } from '@shared/models/model/movement.model'
 import { PageRequestInformationModel } from '@shared/models/model/page-request-information.model'
-import { SelectItem, SelectItemGroup } from 'primeng/api'
+import { SelectOptionModel, SelectOptionGroupModel } from '@shared/models/model/select-option.model'
 import { ParticipantModel } from '@shared/models/model/participant.model'
 import { GroupModel } from '@shared/models/model/group.model'
 import { VehicleModel } from '@shared/models/model/vehicle.model'
@@ -15,11 +15,11 @@ export interface MovementStoreModel {
     movements: PageRequestInformationModel<MovementPageParamsModel, MovementModel>
     movementCommunications: PageRequestInformationModel<CommunicationPageParamsModel, CommunicationModel>
     metadata: {
-        types: SelectItem<MovementTypeEnum | undefined>[]
-        participantTypes: SelectItem<ParticipantTypeEnum>[]
+        types: SelectOptionModel<MovementTypeEnum | undefined>[]
+        participantTypes: SelectOptionModel<ParticipantTypeEnum>[]
         searchedReasonsAndActivities: MovementReasonModel[]
-        searchedParticipantsAndGroups: SelectItemGroup<ParticipantModel | GroupModel>[]
-        searchedVehicles: SelectItem<VehicleModel>[]
-        visibilities: SelectItem<boolean | undefined>[]
+        searchedParticipantsAndGroups: SelectOptionGroupModel<ParticipantModel | GroupModel>[]
+        searchedVehicles: SelectOptionModel<VehicleModel>[]
+        visibilities: SelectOptionModel<boolean | undefined>[]
     }
 }

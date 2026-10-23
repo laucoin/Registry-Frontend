@@ -2,7 +2,7 @@ import { PageRequestInformationModel } from '@shared/models/model/page-request-i
 import {
     ElementRequestInformationModel,
 } from '@shared/models/model/element-request-information.model'
-import { SelectItem } from 'primeng/api'
+import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { CommunicationPageParamsModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication-page-params.model'
 import { CommunicationModel } from '@shared/models/model/communication.model'
 import { MovementModel } from '@shared/models/model/movement.model'
@@ -12,8 +12,8 @@ export interface CommunicationStoreModel {
     communications: PageRequestInformationModel<CommunicationPageParamsModel, CommunicationModel>
     communication: ElementRequestInformationModel<CommunicationModel>
     metadata: {
-        searchedMovements: SelectItem<MovementModel>[]
-        searchedAlerts: SelectItem<AlertModel>[]
-        visibilities: SelectItem<boolean | undefined>[],
+        searchedMovements: SelectOptionModel<MovementModel>[]
+        searchedAlerts: SelectOptionModel<AlertModel>[]
+        visibilities: SelectOptionModel<boolean | undefined>[],
     }
 }

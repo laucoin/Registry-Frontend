@@ -45,6 +45,20 @@ describe( 'ParticipantStore', () => {
         store = TestBed.inject( ParticipantStore )
     } )
 
+    it( 'appends the next batch to the participants already shown', () => {
+        // Arrange
+        findParticipants
+            .mockReturnValueOnce( of( { ...pageOf<ParticipantModel>( [ { id: 'a1' } as ParticipantModel ] ), pageSize: 1, totalPages: 2 } ) )
+            .mockReturnValueOnce( of( { ...pageOf<ParticipantModel>( [ { id: 'a2' } as ParticipantModel ], 1 ), pageSize: 1, totalPages: 2 } ) )
+        store.fetchParticipantsPage( { projectId: 'p1', pageNumber: 0, pageSize: 1 } )
+
+        // Act
+        store.fetchParticipantsPage( { projectId: 'p1', pageNumber: 1, pageSize: 1 } )
+
+        // Assert
+        expect( store.participants.element()?.content.map( (element: ParticipantModel): string => element.id ) ).toEqual( [ 'a1', 'a2' ] )
+    } )
+
     it( 'stores the fetched participants page', () => {
         // Arrange
         findParticipants.mockReturnValue( of( pageOf<ParticipantModel>( [ { id: 'pa1' } as ParticipantModel ] ) ) )

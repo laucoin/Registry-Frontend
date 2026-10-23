@@ -79,6 +79,20 @@ describe( 'ProjectProfileStore', () => {
         expect( store.projectProfiles.loading() ).toBe( false )
     } )
 
+    it( 'appends the next batch to the profiles already shown', () => {
+        // Arrange
+        findProjectProfiles
+            .mockReturnValueOnce( of( { ...pageOf<ProjectProfileModel>( [ { id: 'pp1' } as ProjectProfileModel ] ), pageSize: 1, totalPages: 2 } ) )
+            .mockReturnValueOnce( of( { ...pageOf<ProjectProfileModel>( [ { id: 'pp2' } as ProjectProfileModel ], 1 ), pageSize: 1, totalPages: 2 } ) )
+        store.fetchProjectProfilesPage( { projectId: 'p1', pageNumber: 0, pageSize: 1 } )
+
+        // Act
+        store.fetchProjectProfilesPage( { projectId: 'p1', pageNumber: 1, pageSize: 1 } )
+
+        // Assert
+        expect( store.projectProfiles.element()?.content.map( (profile: ProjectProfileModel): string => profile.id ) ).toEqual( [ 'pp1', 'pp2' ] )
+    } )
+
     it( 'keeps a failed profiles fetch in the profiles block', () => {
         // Arrange
         findProjectProfiles.mockReturnValue( failing( ERROR_500 ) )

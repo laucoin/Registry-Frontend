@@ -7,7 +7,7 @@ import { MockProvider } from 'ng-mocks'
 import { Observable, of, throwError } from 'rxjs'
 import { afterEach, beforeEach, describe, expect, it, Mock, vi } from 'vitest'
 import { RegistryConfig } from '@core/config/registry.config'
-import { RegistryFacade } from '@core/registry/state/registry.facade'
+import { LanguageService } from '@core/language/language.service'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { backendHandler } from '@core/authentication/handler/backend.handler'
 import { CurrentUserModel } from '@shared/models/model/current-user.model'
@@ -20,7 +20,7 @@ const REFRESH_PATH: string = '/api/v1/authentication/token/refresh'
 describe( 'backendHandler', () => {
     let http: HttpClient
     let controller: HttpTestingController
-    let login: Mock<() => void>
+    let redirectToLogin: Mock<() => void>
     let refreshToken: Mock<() => Observable<void>>
     let currentUser: WritableSignal<CurrentUserModel | undefined>
 
@@ -28,8 +28,9 @@ describe( 'backendHandler', () => {
         RegistryConfig.environment = {
             production: false,
             backend: { url: BACKEND_URL, noAuthPaths: [ REFRESH_PATH ] },
+            hosting: { providerName: null, providerAddress: null },
         }
-        login = vi.fn()
+        redirectToLogin = vi.fn()
         refreshToken = vi.fn( (): Observable<void> => of( undefined ) )
         currentUser = signal<CurrentUserModel | undefined>( { id: 'user-1' } as CurrentUserModel )
 
@@ -37,8 +38,8 @@ describe( 'backendHandler', () => {
             providers: [
                 provideHttpClient( withInterceptors( [ backendHandler ] ) ),
                 provideHttpClientTesting(),
-                MockProvider( RegistryFacade, { login: login, refreshToken: refreshToken } ),
-                MockProvider( SessionFacade, { currentUser: currentUser, currentProjectId: signal( 'project-1' ) } ),
+                MockProvider( SessionFacade, { currentUser: currentUser, currentProjectId: signal( 'project-1' ), redirectToLogin: redirectToLogin, refreshToken: refreshToken } ),
+                { provide: LanguageService, useValue: { activeLanguage: 'en' } },
                 { provide: TranslocoService, useValue: { translate: (key: string): string => key } },
             ],
         } )
@@ -70,6 +71,18 @@ describe( 'backendHandler', () => {
 
         // Assert
         expect( request.request.withCredentials ).toBe( true )
+    } )
+
+    it( 'asks the backend for the active display language', () => {
+        // Arrange
+        const url: string = `${BACKEND_URL}/data`
+
+        // Act
+        http.get( url ).subscribe()
+        const request: TestRequest = controller.expectOne( url )
+
+        // Assert
+        expect( request.request.headers.get( 'Accept-Language' ) ).toBe( 'en' )
     } )
 
     it( 'fails without sending the request when the current user is unknown', () => {
@@ -111,7 +124,7 @@ describe( 'backendHandler', () => {
         expect( failure?.title ).toBe( 'global.notifications.503.title' )
     } )
 
-    it( 'logs in again without refreshing when a no-auth path answers 401', () => {
+    it( 'redirects to the login page without refreshing when a no-auth path answers 401', () => {
         // Arrange
         let failure: ErrorModel | undefined
 
@@ -120,7 +133,7 @@ describe( 'backendHandler', () => {
         controller.expectOne( `${BACKEND_URL}${REFRESH_PATH}` ).flush( null, { status: 401, statusText: 'Unauthorized' } )
 
         // Assert
-        expect( login ).toHaveBeenCalledTimes( 1 )
+        expect( redirectToLogin ).toHaveBeenCalledTimes( 1 )
         expect( refreshToken ).not.toHaveBeenCalled()
         expect( failure?.status ).toBe( 401 )
     } )

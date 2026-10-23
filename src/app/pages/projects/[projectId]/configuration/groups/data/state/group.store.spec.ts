@@ -33,6 +33,20 @@ describe( 'GroupStore', () => {
         store = TestBed.inject( GroupStore )
     } )
 
+    it( 'appends the next batch to the groups already shown', () => {
+        // Arrange
+        findGroups
+            .mockReturnValueOnce( of( { ...pageOf<GroupModel>( [ { id: 'a1' } as GroupModel ] ), pageSize: 1, totalPages: 2 } ) )
+            .mockReturnValueOnce( of( { ...pageOf<GroupModel>( [ { id: 'a2' } as GroupModel ] ), pageNumber: 1, pageSize: 1, totalPages: 2 } ) )
+        store.fetchGroupsPage( { projectId: 'p1', pageNumber: 0, pageSize: 1 } )
+
+        // Act
+        store.fetchGroupsPage( { projectId: 'p1', pageNumber: 1, pageSize: 1 } )
+
+        // Assert
+        expect( store.groups.element()?.content.map( (element: GroupModel): string => element.id ) ).toEqual( [ 'a1', 'a2' ] )
+    } )
+
     it( 'stores the fetched groups page and ends the loading state', () => {
         // Arrange
         const page: PageModel<GroupModel> = pageOf<GroupModel>( [ { id: 'g1' } as GroupModel ] )

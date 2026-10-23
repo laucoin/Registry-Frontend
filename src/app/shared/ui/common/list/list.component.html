@@ -1,83 +1,95 @@
-<p-data-view #data
-             [value]='elementPage()?.content'
-             paginator
-             lazy
-             [alwaysShowPaginator]='false'
-             [rows]='20'
-             [totalRecords]='elementPage()?.totalElements'
-             (onPage)='updateData($event)'>
-    <ng-template #header>
-        <div class='flex flex-col'>
-            <div class='order-1 sm:order-2 p-2'>
-                <div class='flex items-center justify-between'>
-                    @if (elementPage()) {
-                        <i class='secondary-color last-refresh'>
-                            {{
-                                'global.date-and-time-format.last-refresh' | transloco
-                                    : {
-                                        datetime: elementPage()?.lastRefresh | dateFormat: 'datetime',
-                                    }
-                            }}
-                        </i>
-                    } @else {
-                    <p-skeleton [width]='loading() ? "5rem" : "0"' borderRadius='1rem'/>
-                }
-                    <div>
-                        @if (getTemplate('creation')) {
-                            <ng-container [ngTemplateOutlet]='getTemplate("creation")'/>
-                        }
-                    </div>
-                </div>
-            </div>
-            @if (GenericHelper.nonNull(getTemplate('search'))) {
-                <div class='order-2 sm:order-1'>
-                    <p-panel [style]='{ "border": "none" }' [header]='"global.actions.search-and-filter" | transloco'
-                             toggleable [collapsed]="true">
-                        <ng-container [ngTemplateOutlet]='getTemplate("search")'
-                                      [ngTemplateOutletContext]='{ $implicit: pageEvent() }'/>
-                    </p-panel>
-                </div>
-            }
-        </div>
-    </ng-template>
-    <ng-template #list let-elements>
-        <div class='layout list m-1'>
-            @if (loading()) {
-                @for (_ of counterArray(6); track $index) {
-                    <p-card>
-                        <app-element-skeleton [withIcon]='true'
-                                              [layout]='uiFacade.tinyScreen() ? "grid" : "list"'/>
-                    </p-card>
-                }
-            } @else {
-            @for (element of elements; track $index) {
-                <ng-container [ngTemplateOutlet]='getTemplate("element")'
-                              [ngTemplateOutletContext]='{ $implicit: element }'/>
-            }
+<section class="flex flex-col gap-(--spacing--in-block-large)">
+    <header class="flex flex-wrap items-center justify-between gap-(--spacing--in-block)">
+        @if (elementPage(); as page) {
+            <small class="opacity-80">
+                {{ 'global.date-and-time-format.last-refresh' | transloco: { datetime: page.lastRefresh | dateFormat: 'datetime' } }}
+            </small>
+        } @else {
+            <sgdf-skeleton effect="pulse" shape="rounded" style="width: 12rem; height: 1rem"/>
         }
-        </div>
-    </ng-template>
-    <ng-template #emptymessage>
-        @if (GenericHelper.nonNull(error())) {
-            @if (GenericHelper.nonNull(getTemplate('error'))) {
-                <ng-container [ngTemplateOutlet]='getTemplate("error")'/>
-            } @else {
-                <div class='p-4 flex flex-col justify-center items-center'>
-                    <h2>{{ error()!.summary! | transloco }}</h2>
-                    <p class='error'>{{ error()!.detail! | transloco }}</p>
-                </div>
-            }
-        } @else if (!loading()) {
-        <div class='p-6'>
-            @if (getTemplate('empty')) {
-                <ng-container [ngTemplateOutlet]='getTemplate("empty")'/>
-            } @else {
-            <div class='p-4 flex flex-col justify-center items-center'>
-                <h2>{{ message().summary! | transloco }}</h2>
-                <p>{{ message().detail! | transloco }}</p>
-            </div>
+        @if (getTemplate('creation'); as creation) {
+            <ng-container [ngTemplateOutlet]="creation"/>
         }
-        </div>
+    </header>
+
+    @if (getTemplate('search'); as search) {
+        <sgdf-accordion appearance="soft" mode="single-collapsible">
+            <sgdf-accordion-item>
+                <span slot="title" class="flex flex-wrap items-center gap-2">
+                    {{ 'global.actions.search-and-filter' | transloco }}
+                    @if (activeFilters() > 0) {
+                        <sgdf-tag variant="primary" size="small" pill>
+                            {{ 'global.list.active-filters' | transloco: { count: activeFilters() } }}
+                        </sgdf-tag>
+                    }
+                </span>
+                <ng-container [ngTemplateOutlet]="search"/>
+            </sgdf-accordion-item>
+        </sgdf-accordion>
     }
-    </ng-template>
-</p-data-view>
+
+    @if (error(); as failure) {
+        <sgdf-callout variant="danger" role="alert"
+                      [title]="failure.summary ? (failure.summary | transloco) : ('global.notifications.UNKNOWN_ERROR.title' | transloco)">
+            <div class="flex flex-wrap items-center justify-between gap-(--spacing--in-block)">
+                <span>{{ failure.detail ? (failure.detail | transloco) : ('global.notifications.UNKNOWN_ERROR.message' | transloco) }}</span>
+                <sgdf-button size="small" variant="danger" appearance="outlined" [loading]="loading() || loadingMore()"
+                             (click)="retry()">
+                    {{ 'global.list.retry' | transloco }}
+                </sgdf-button>
+            </div>
+        </sgdf-callout>
+    }
+
+    @if (showSkeleton()) {
+        <sgdf-list [label]="'global.list.loading' | transloco" aria-busy="true" appearance="soft">
+            @for (row of skeletonRows; track row) {
+                <sgdf-list-item>
+                    <sgdf-skeleton slot="start" shape="circle" effect="pulse" style="width: 2.5rem; height: 2.5rem"/>
+                    <sgdf-skeleton shape="rounded" effect="pulse" style="width: 40%; height: 1rem"/>
+                    <sgdf-skeleton slot="description" shape="rounded" effect="pulse"
+                                   style="width: 65%; height: 0.75rem"/>
+                </sgdf-list-item>
+            }
+        </sgdf-list>
+    } @else if (isEmpty()) {
+        @if (activeFilters() > 0) {
+            <sgdf-callout variant="neutral" [title]="'global.list.no-result.title' | transloco">
+                <div class="flex flex-wrap items-center justify-between gap-(--spacing--in-block)">
+                    <span>{{ 'global.list.no-result.message' | transloco }}</span>
+                    <sgdf-button size="small" appearance="outlined" (click)="filtersReset.emit()">
+                        {{ 'global.list.reset-filters' | transloco }}
+                    </sgdf-button>
+                </div>
+            </sgdf-callout>
+        } @else if (getTemplate('empty'); as empty) {
+            <ng-container [ngTemplateOutlet]="empty"/>
+        } @else if (!error()) {
+            <sgdf-callout variant="neutral" [title]="emptyMessagePrefix() + '.title' | transloco">
+                {{ emptyMessagePrefix() + '.message' | transloco }}
+            </sgdf-callout>
+        }
+    } @else if (elementPage(); as page) {
+        <sgdf-list [label]="emptyMessagePrefix() + '.title' | transloco" appearance="text">
+            @for (element of page.content; track element.id) {
+                <ng-container [ngTemplateOutlet]="getTemplate('element')"
+                              [ngTemplateOutletContext]="{ $implicit: element }"/>
+            }
+        </sgdf-list>
+        @if (hasMore()) {
+            <div class="flex flex-col items-center gap-(--spacing--in-block)">
+                <small class="opacity-80">
+                    {{
+                        'global.list.loaded-count' | transloco: {
+                            count: page.content.length,
+                            total: page.totalElements
+                        }
+                    }}
+                </small>
+                <sgdf-button appearance="outlined" [loading]="loadingMore()" (click)="loadMore()">
+                    {{ 'global.list.load-more' | transloco }}
+                </sgdf-button>
+            </div>
+        }
+    }
+</section>

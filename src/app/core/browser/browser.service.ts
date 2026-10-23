@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core'
 import { ThemeEnum } from '@shared/models/enumeration/theme.enum'
 
+const THEME_ATTRIBUTE: string = 'data-theme'
 const HIGHLIGHT_CLASS: string = 'highlight'
 const HIGHLIGHT_DURATION_MS: number = 1000
 
@@ -45,6 +46,12 @@ export class BrowserService {
         return this.lightSchemeQuery?.matches === false ? ThemeEnum.DARK : ThemeEnum.LIGHT
     }
 
+    public onViewportResize (listener: (width: number) => void): () => void {
+        const onResize: () => void = (): void => listener( window.innerWidth )
+        window.addEventListener( 'resize', onResize )
+        return (): void => window.removeEventListener( 'resize', onResize )
+    }
+
     public onSystemThemeChange (listener: () => void): void {
         this.lightSchemeQuery?.addEventListener( 'change', listener )
     }
@@ -53,8 +60,16 @@ export class BrowserService {
         window.location.href = url
     }
 
-    public setRootClass (name: string, enabled: boolean): void {
-        document.documentElement.classList.toggle( name, enabled )
+    public reload (): void {
+        location.reload()
+    }
+
+    public setRootTheme (theme: ThemeEnum): void {
+        if (theme === ThemeEnum.SYSTEM) {
+            document.documentElement.removeAttribute( THEME_ATTRIBUTE )
+        } else {
+            document.documentElement.setAttribute( THEME_ATTRIBUTE, theme )
+        }
     }
 
     public setRootLanguage (language: string): void {

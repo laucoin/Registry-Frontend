@@ -1,6 +1,6 @@
 import { WritableSignal } from '@angular/core'
 import { applyEach, disabled, FieldContext, FieldTree, form, required, SchemaPathTree } from '@angular/forms/signals'
-import { SelectItem } from 'primeng/api'
+import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { MovementContentDto } from '@pages/projects/[projectId]/movements/data/dto/movement-content.dto'
 import { MovementDto } from '@pages/projects/[projectId]/movements/data/dto/movement.dto'
 import { DateHelper } from '@shared/helpers/date.helper'
@@ -118,10 +118,10 @@ export function toMovementFormModel (movement: MovementModel): MovementFormModel
     }
 }
 
-export function driversOf (model: MovementFormModel): SelectItem<ParticipantModel>[] {
+export function driversOf (model: MovementFormModel): SelectOptionModel<ParticipantModel>[] {
     return model.content.participants
         .filter( (element: MovementContentModel): boolean => element.participant?.major ?? true )
-        .map( (element: MovementContentModel): SelectItem<ParticipantModel> => ParticipantHelper.toSelectItem( element.participant ) )
+        .map( (element: MovementContentModel): SelectOptionModel<ParticipantModel> => ParticipantHelper.toSelectItem( element.participant ) )
 }
 
 function vehicleOfDriver (model: MovementFormModel, driverId: string): string | undefined {

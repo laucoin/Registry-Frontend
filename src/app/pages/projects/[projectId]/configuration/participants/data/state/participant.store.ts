@@ -1,6 +1,6 @@
 import { inject } from '@angular/core'
 import { signalStore, withHooks, withMethods, withState } from '@ngrx/signals'
-import { SelectItem } from 'primeng/api'
+import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { ErrorReporter } from '@core/registry/state/error-reporter'
 import { MetadataApi } from '@core/registry/state/metadata.api'
 import { ParticipantPageParamsModel } from '@pages/projects/[projectId]/configuration/participants/data/model/participant-page-params.model'
@@ -26,11 +26,10 @@ import { MovementModel } from '@shared/models/model/movement.model'
 import { MovementPageParamsModel } from '@shared/models/model/movement-page-params.model'
 import { ParticipantModel } from '@shared/models/model/participant.model'
 import { UserModel } from '@shared/models/model/user.model'
+import { CumulativePageHelper, CumulativePageRequest } from '@shared/helpers/store/cumulative-page.helper'
 
-interface ParticipantsPageRequest {
+interface ParticipantsPageRequest extends CumulativePageRequest {
     projectId: string | undefined
-    pageNumber: number | undefined
-    pageSize: number | undefined
 }
 
 interface ParticipantMovementsPageRequest extends ParticipantsPageRequest {
@@ -81,19 +80,19 @@ export const ParticipantStore = signalStore(
         metadata: { ...defaultParticipantStore.metadata, presencesStatus: current.metadata.presencesStatus },
     }) ),
     withMethods( (store, api = inject( ParticipantApi ), metadataApi = inject( MetadataApi ), errors = inject( ErrorReporter )) => ({
-        fetchPresencesStatus: metadataFetcher<ParticipantStoreModel, 'presencesStatus', void, SelectItem<PresenceStatusEnum>[]>(
+        fetchPresencesStatus: metadataFetcher<ParticipantStoreModel, 'presencesStatus', void, SelectOptionModel<PresenceStatusEnum>[]>(
             store, 'presencesStatus', () => metadataApi.getPresencesStatus(), errors, withEmptyOption,
         ),
         searchUsers: metadataFetcher<ParticipantStoreModel, 'searchedUsers', SearchRequest, UserModel[]>(
             store, 'searchedUsers', (request: SearchRequest) => api.searchUsers( request.projectId, request.textSearched ), errors,
-            (users: UserModel[]): SelectItem<UserModel>[] => users.map( UserHelper.toSelectItem ),
+            (users: UserModel[]): SelectOptionModel<UserModel>[] => users.map( UserHelper.toSelectItem ),
         ),
         searchGroups: metadataFetcher<ParticipantStoreModel, 'searchedGroups', SearchRequest, GroupModel[]>(
             store, 'searchedGroups', (request: SearchRequest) => api.searchGroups( request.projectId, request.textSearched ), errors,
-            (groups: GroupModel[]): SelectItem<GroupModel>[] => groups.map( GroupHelper.toSelectItem ),
+            (groups: GroupModel[]): SelectOptionModel<GroupModel>[] => groups.map( GroupHelper.toSelectItem ),
         ),
         fetchParticipantsPage: pageFetcher( store, 'participants', (request: ParticipantsPageRequest, params: ParticipantPageParamsModel) =>
-            api.findParticipants( request.projectId, request.pageNumber, request.pageSize, params ), errors ),
+            api.findParticipants( request.projectId, request.pageNumber, request.pageSize, params ), errors, { merge: CumulativePageHelper.merge } ),
         updateParticipantsPageSearchParams: paramsUpdater( store, 'participants' ),
     }) ),
     withMethods( (store, movementApi = inject( MovementApi ), errors = inject( ErrorReporter )) => ({
@@ -103,6 +102,7 @@ export const ParticipantStore = signalStore(
     withMethods( (store, api = inject( ParticipantApi ), errors = inject( ErrorReporter )) => ({
         fetchParticipantMovementsPage: pageFetcher( store, 'movements', (request: ParticipantMovementsPageRequest, params: MovementPageParamsModel) =>
             api.findParticipantMovements( request.projectId, request.id, request.pageNumber, request.pageSize, params ), errors, {
+            merge: CumulativePageHelper.merge,
             after: contentsRequester( store.fetchParticipantMovementsContents ),
         } ),
     }) ),

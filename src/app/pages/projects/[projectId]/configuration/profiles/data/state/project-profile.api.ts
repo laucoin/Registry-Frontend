@@ -6,12 +6,12 @@ import {GenericProjectApi} from '@shared/helpers/api/generic-project.api'
 import {SELECT_PROFILE_PROJECT_ID} from '@shared/helpers/request.helper'
 import {ProjectProfileDto} from '@pages/projects/[projectId]/configuration/profiles/data/dto/project-profile.dto'
 import {ProjectProfilesDto} from '@pages/projects/[projectId]/configuration/profiles/data/dto/project-profiles.dto'
-import {ProjectProfilePageParamsModel} from '@pages/projects/[projectId]/configuration/profiles/data/model/project-profile-page-params.model'
+import {ProjectProfilePageParamsModel} from '@shared/models/model/project-profile-page-params.model'
 import {QueryHelper} from '@shared/helpers/query.helper'
 import {CreatedProjectProfiles} from '@pages/projects/[projectId]/configuration/profiles/data/dto/created-project-profiles.dto'
 import {HttpParams} from '@angular/common/http'
 import {UserModel} from '@shared/models/model/user.model'
-import {SelectItem} from 'primeng/api'
+import {SelectOptionModel} from '@shared/models/model/select-option.model'
 import { ProjectProfileResponseDto } from '@shared/models/dto/response/project-profile.response.dto'
 import { UserResponseDto } from '@shared/models/dto/response/user.response.dto'
 import { PageMapper } from '@shared/mappers/page.mapper'
@@ -69,8 +69,8 @@ export class ProjectProfileApi extends GenericProjectApi {
         )
     }
 
-    public getAssignableProjectProfileRoles(projectId: string | undefined): Observable<SelectItem<string>[]> {
-        return this.http.get<SelectItem<string>[]>(`${this.buildRequestBaseUrl(projectId)}/roles`)
+    public getAssignableProjectProfileRoles(projectId: string | undefined): Observable<SelectOptionModel<string>[]> {
+        return this.http.get<SelectOptionModel<string>[]>(`${this.buildRequestBaseUrl(projectId)}/roles`)
     }
 
     public createProjectProfiles(

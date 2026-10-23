@@ -1,12 +1,12 @@
 import { GenericModel } from '@shared/models/model/generic.model'
-import { SelectItem } from 'primeng/api'
+import { SelectOptionModel } from '@shared/models/model/select-option.model'
 
 export interface UserModel extends GenericModel {
     firstName: string | undefined
     lastName: string | undefined
     email: string
-    role: SelectItem<string> | undefined
+    role: SelectOptionModel<string> | undefined
     birthday: Date
-    lastLogin: Date
+    lastLogin?: Date
     purged: boolean
 }

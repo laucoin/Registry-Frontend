@@ -88,7 +88,7 @@ describe( 'ActivityFacade', () => {
 
         // Assert
         expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'activities.notifications.create.title' } ) )
-        expect( findActivities ).toHaveBeenCalledWith( 'p1', 2, 10, expect.anything() )
+        expect( findActivities ).toHaveBeenCalledWith( 'p1', 0, 30, expect.anything() )
     } )
 
     it( 'lets the form handle a creation error other than 503', () => {
@@ -141,5 +141,19 @@ describe( 'ActivityFacade', () => {
         // Assert
         expect( deleteActivityById ).toHaveBeenCalledWith( undefined, 'a1' )
         expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'activities.notifications.delete.title' } ) )
+    } )
+
+    it( 'reloads every shown batch of the movements of an activity in one request', () => {
+        // Arrange
+        const finder: Mock = vi.fn( () => of( pageOf<never>( [], 1 ) ) )
+        ;(TestBed.inject( ActivityApi ) as unknown as Record<string, Mock>)[ 'findActivityMovements' ] = finder
+        facade.fetchActivityMovementsPage( 'e1', 1, 10 )
+        finder.mockClear()
+
+        // Act
+        facade.reloadActivityMovementsPage( 'e1' )
+
+        // Assert
+        expect( finder ).toHaveBeenCalledWith( 'p1', 'e1', 0, expect.any( Number ), expect.anything() )
     } )
 } )

@@ -54,7 +54,6 @@ export class StringHelper {
         switch (true) {
             case currentUri.includes( RegistryRouteEnum.USERS_PROFILES ) && isUserRoute:
             case currentUri.includes( RegistryRouteEnum.USERS_INVITATIONS ) && isUserRoute:
-            case currentUri.includes( RegistryRouteEnum.USERS_SETTINGS ) && isUserRoute:
                 return false
             default:
                 return currentUri.includes( route )

@@ -4,13 +4,13 @@ import { MovementContentResponseDto } from '@shared/models/dto/response/movement
 import { MovementReasonResponseDto } from '@shared/models/dto/response/movement-reason.response.dto'
 import { MovementTypeEnum } from '@shared/models/enumeration/movement-type.enum'
 import { ParticipantTypeEnum } from '@shared/models/enumeration/participant-type.enum'
-import { SelectItem } from 'primeng/api'
+import { SelectOptionModel } from '@shared/models/model/select-option.model'
 
 export interface MovementResponseDto extends OptionalProjectResponseDto {
     dateTime: Date
-    type: SelectItem<MovementTypeEnum>
+    type: SelectOptionModel<MovementTypeEnum>
     reason: MovementReasonResponseDto | undefined
-    activity: SelectItem<ActivityResponseDto> | undefined
+    activity: SelectOptionModel<ActivityResponseDto> | undefined
     contentType: ParticipantTypeEnum
     content: MovementContentResponseDto[]
 }

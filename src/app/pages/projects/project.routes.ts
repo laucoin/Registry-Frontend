@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router'
 import { ProjectPage } from '@pages/projects/project.page'
+import { ProjectFacade } from '@pages/projects/data/state/project/project.facade'
+import { ProjectStore } from '@pages/projects/data/state/project/project.store'
 import { ProjectsListPage } from '@pages/projects/projects-list/projects-list.page'
 import { ProjectRoutesEnum } from '@pages/projects/project-routes.enum'
 import { ProjectFormPage } from '@pages/projects/project-form/project-form.page'
@@ -18,10 +20,16 @@ import { AlertStore } from '@pages/projects/[projectId]/alerts/data/state/alert.
 import { AlertFacade } from '@pages/projects/[projectId]/alerts/data/state/alert.facade'
 import { AlertsListPage } from '@pages/projects/[projectId]/alerts/alerts-list/alerts-list.page'
 
+/**
+ * Purpose: Declares the routes below a project.
+ * Scope: Maps the project pages, forms and configuration areas to their lazy components.
+ * Limits: Holds no navigation logic; the guards and the pages own it.
+ */
 export const projectRoutes: Routes = [
     {
         path: '',
         component: ProjectPage,
+        providers: [ ProjectFacade, ProjectStore ],
         children: [
             {
                 path: '', component: ProjectsListPage,

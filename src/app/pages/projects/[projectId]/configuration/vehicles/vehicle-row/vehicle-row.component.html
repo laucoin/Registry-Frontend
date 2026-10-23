@@ -1,0 +1,31 @@
+<ng-template #row let-vehicle>
+    <sgdf-list-item>
+        <sgdf-avatar slot="start" variant="primary" shape="rounded" aria-hidden="true" [initials]="initials(vehicle)"/>
+        <span class="block truncate" [attr.title]="title(vehicle)">{{ title(vehicle) }}</span>
+        <span slot="description" class="flex flex-wrap items-center gap-x-3">
+            <span>{{ vehicle.brand }} {{ vehicle.model }}</span>
+            @if (vehicle.startAvailability || vehicle.endAvailability) {
+                <span class="inline-flex flex-wrap items-center gap-x-2">
+                    <span>{{ vehicle.startAvailability ? (vehicle.startAvailability | customDateFormat) : '...' }}</span>
+                    <sgdf-icon name="arrow-right-long" library="solid"/>
+                    <span>{{ vehicle.endAvailability ? (vehicle.endAvailability | customDateFormat) : '...' }}</span>
+                </span>
+            }
+        </span>
+        <span slot="end" class="flex flex-wrap items-center gap-2">
+            @if (!vehicle.visible) {
+                <sgdf-tag appearance="outlined" pill>{{ 'vehicles.visible.false' | transloco }}</sgdf-tag>
+            }
+            <sgdf-tag appearance="soft" pill [variant]="statusVariant(vehicle)">{{ vehicle.status.label }}</sgdf-tag>
+            @if (actions.primaryFor(vehicle); as primary) {
+                <sgdf-button size="small" appearance="outlined" variant="primary"
+                             [attr.aria-disabled]="primary.disabled ? 'true' : null"
+                             (click)="primary.disabled ? null : primary.run()">
+                    <sgdf-icon slot="prefix" [name]="primary.icon" library="solid"/>
+                    {{ primary.label | transloco }}
+                </sgdf-button>
+            }
+        </span>
+        <app-element-actions slot="actions" [subject]="title(vehicle)" [actions]="actions.menuFor(vehicle)"/>
+    </sgdf-list-item>
+</ng-template>

@@ -1,88 +1,155 @@
-<app-list (updateRequired)='loadPage($event)'
-          [elementPage]='facade.projectsPage()'
-          [error]='facade.projectsPageError()'
-          [loading]='facade.projectsPageLoading()'
-          emptyMessagePrefix='projects.notifications.EMPTY'>
-    <ng-template appTemplate='search' let-pageEvent>
-        <div class='field'>
-            <label for='text-search-field'>{{ 'projects.search-and-filter.text' | transloco }}</label>
-            <input id='text-search-field'
-                   type='text'
-                   fluid
-                   pInputText
-                   (keydown.enter)='loadPage(pageEvent)'
-                   [formField]='form.textSearched' />
-        </div>
-        <div class='grid search-line'>
-            <div class='field'>
-                <label for='date-time-search-field'>{{ 'projects.search-and-filter.datetime' | transloco }}</label>
-                <p-date-picker inputId='date-time-search-field'
-                               fluid
-                               showButtonBar
-                               [showTime]='true'
-                               [touchUI]='uiFacade.tinyScreen()'
-                               (onBlur)='loadPage(pageEvent)'
-                               [formField]='form.dateTimeSearched' />
-            </div>
-            <div class='field'>
-                <label for='visibility-search-field'>{{ 'projects.search-and-filter.visibility' | transloco }}</label>
-                <p-select inputId='visibility-search-field'
-                          fluid
-                          [options]='facade.visibilitiesMetadata()'
-                          optionLabel='label'
-                          optionValue='value'
-                          (onChange)='loadPage(pageEvent)'
-                          [formField]='form.visibilitySearched' />
-            </div>
-        </div>
-        <div class='flex justify-around'>
-            @if (CurrentUserHelper.hasUserAuthority(sessionFacade.currentUser(), UserAuthority.REGISTRY_PROJECT_R)) {
-                <div class='flex items-center'>
-                    <label for='with-profile-search-field'
-                           class='me-2'>{{ 'projects.search-and-filter.with-profile' | transloco }}</label>
-                    <p-toggle-switch inputId='with-profile-search-field'
-                                     (onChange)='loadPage(pageEvent)'
-                                     [formField]='form.withProfile' />
-                </div>
-            }
-            <p-button (onClick)='loadPage(pageEvent)'
-                      [label]='"global.actions.search-and-filter" | transloco'
-                      outlined
-                      rounded
-                      icon='pi pi-search'
-                      [loading]='facade.projectsPageLoading() || facade.projectsPageSilentLoading()' />
-        </div>
-    </ng-template>
-    <ng-template appTemplate='creation'>
-        @if (CurrentUserHelper.hasUserAuthority(sessionFacade.currentUser(), UserAuthority.REGISTRY_PROJECT_C)) {
-            <p-button class='m-1'
-                      severity='success'
-                      outlined
-                      rounded
-                      [label]='uiFacade.tinyScreen() ? "" : "global.actions.create" | transloco'
-                      icon='pi pi-plus'
-                      [routerLink]='ProjectRoutesEnum.CREATE' />
-        }
-    </ng-template>
-    <ng-template appTemplate='element' let-project>
-        <app-project-element [project]='project' />
-    </ng-template>
-    @if (!hasFilters()) {
-        <ng-template appTemplate='empty'>
-            <div class='p-6'>
-                <h2>{{ 'global.welcome.title' | transloco }}</h2>
-                <app-info />
-                <div class='flex flex-col justify-center items-center'>
-                    <p>{{ 'global.welcome.begin' | transloco }}</p>
-                    <p-button class='m-1'
-                              severity='success'
-                              outlined
-                              rounded
-                              [label]='"global.welcome.create-project" | transloco'
-                              icon='pi pi-plus'
-                              [routerLink]='ProjectRoutesEnum.CREATE' />
-                </div>
-            </div>
-        </ng-template>
+<sgdf-page-title [eyebrow]="'projects.list.eyebrow' | transloco"
+                 [lede]="'projects.list.subtitle' | transloco">
+    {{ 'projects.list.title' | transloco }}
+    @if (canCreate()) {
+        <sgdf-button slot="actions" variant="primary" [routerLink]="createRoute">
+            <sgdf-icon slot="prefix" name="plus" library="solid"/>
+            {{ 'global.actions.create' | transloco }}
+        </sgdf-button>
     }
+</sgdf-page-title>
+
+<app-list class="mt-(--spacing--block) block"
+          emptyMessagePrefix="projects.notifications.EMPTY"
+          [elementPage]="facade.projectsPage()"
+          [error]="facade.projectsPageError()"
+          [loading]="facade.projectsPageLoading()"
+          [loadingMore]="facade.projectsPageSilentLoading()"
+          [activeFilters]="activeFilters()"
+          (updateRequired)="loadBatch($event)"
+          (filtersReset)="resetFilters()">
+    <ng-template appTemplate="search">
+        <form class="grid grid-cols-1 items-end gap-(--spacing--in-block-large) md:grid-cols-3"
+              (submit)="$event.preventDefault(); search()">
+            <sgdf-input appSgdfField [label]="'projects.search-and-filter.text' | transloco"
+                        [formField]="form.textSearched"/>
+            <sgdf-date-time-picker appSgdfField with-time
+                                   [label]="'projects.search-and-filter.datetime' | transloco"
+                                   [formField]="form.dateTimeSearched"/>
+            <sgdf-select appSgdfField [label]="'projects.search-and-filter.visibility' | transloco"
+                         [formField]="form.visibilitySearched">
+                @for (item of facade.visibilitiesMetadata(); track item.label) {
+                    <sgdf-option [value]="item.value | booleanChoice">{{ item.label }}</sgdf-option>
+                }
+            </sgdf-select>
+            <div class="flex flex-wrap items-center justify-between gap-(--spacing--in-block) md:col-span-3">
+                @if (canFilterByProfile()) {
+                    <sgdf-switch appSgdfField [formField]="form.withProfile">
+                        {{ 'projects.search-and-filter.with-profile' | transloco }}
+                    </sgdf-switch>
+                }
+                <sgdf-button class="ms-auto" variant="primary" appearance="outlined" submit
+                             [loading]="facade.projectsPageLoading()">
+                    <sgdf-icon slot="prefix" name="magnifying-glass" library="solid"/>
+                    {{ 'global.actions.search' | transloco }}
+                </sgdf-button>
+            </div>
+        </form>
+    </ng-template>
+
+    <ng-template appTemplate="element" let-project>
+        @let actions = projectActions.actionsFor(project);
+        @let options = project.options ?? [];
+        <sgdf-list-item [disabled]="!project.visible">
+            <sgdf-avatar slot="start" shape="rounded" variant="primary"
+                         aria-hidden="true"
+                         [initials]="initials(project)"/>
+            <span class="block truncate" [attr.title]="project.name">{{ project.name }}</span>
+            @if (!project.visible) {
+                <span class="sr-only">({{ 'projects.visible.false' | transloco }})</span>
+            }
+            <span slot="description" class="flex flex-wrap items-center gap-x-2">
+                @if (project.begin || project.end) {
+                    <span>{{ project.begin ? (project.begin | customDateFormat) : '...' }}</span>
+                    <sgdf-icon name="arrow-right-long" library="solid"/>
+                    <span>{{ project.end ? (project.end | customDateFormat) : '...' }}</span>
+                } @else {
+                    <span>{{ 'projects.list.permanent' | transloco }}</span>
+                }
+            </span>
+            <span slot="end" class="flex flex-wrap items-center gap-x-4 gap-y-2">
+                <span class="flex flex-wrap items-center gap-2">
+                    @if (project.status; as status) {
+                        <sgdf-tag appearance="soft" pill
+                                  [variant]="isAvailable(project) ? 'success' : 'info'">{{ status.label }}</sgdf-tag>
+                    }
+                    @if (options.length > 1) {
+                        <sgdf-button size="small" variant="neutral" appearance="outlined"
+                                     (click)="optionsProject.set(project)">
+                            {{
+                                'projects.options' | pluralTranslation: options | transloco: {
+                                    name: options[0].label,
+                                    others: options.length - 1
+                                }
+                            }}
+                            <span class="sr-only">({{ 'projects.options-open' | transloco: { name: project.name } }}
+                                )</span>
+                        </sgdf-button>
+                    } @else {
+                        <sgdf-tag appearance="outlined" pill>
+                            {{
+                                'projects.options' | pluralTranslation: options | transloco: {
+                                    name: options[0]?.label,
+                                    others: 0
+                                }
+                            }}
+                        </sgdf-tag>
+                    }
+                </span>
+                <span class="flex items-center gap-2 max-sm:basis-full">
+                    @if (projectActions.canJoin(project)) {
+                        <sgdf-button size="small" appearance="outlined"
+                                     [variant]="project.visible ? 'primary' : 'neutral'"
+                                     [attr.aria-disabled]="project.visible ? null : 'true'"
+                                     (click)="project.visible ? projectActions.join(project) : hiddenProject.set(project)">
+                            {{ 'projects.actions.select' | transloco }}
+                        </sgdf-button>
+                    } @else if (projectActions.canCreateSupport(project)) {
+                        <sgdf-button size="small" appearance="outlined"
+                                     [variant]="project.visible ? 'primary' : 'neutral'"
+                                     [attr.aria-disabled]="project.visible ? null : 'true'"
+                                     (click)="project.visible ? projectActions.confirmSupportProfile(project) : hiddenProject.set(project)">
+                            {{ 'projects.actions.create-support' | transloco }}
+                        </sgdf-button>
+                    }
+                </span>
+            </span>
+            <app-element-actions slot="actions" [subject]="project.name" [actions]="actions"/>
+        </sgdf-list-item>
+    </ng-template>
+
+    <ng-template appTemplate="empty">
+        <section class="flex flex-col items-center gap-(--spacing--in-block-large) p-(--spacing--block) text-center">
+            <h2>{{ 'global.welcome.title' | transloco }}</h2>
+            <app-info/>
+            <p>{{ 'global.welcome.begin' | transloco }}</p>
+            @if (canCreate()) {
+                <sgdf-button variant="primary" [routerLink]="createRoute">
+                    <sgdf-icon slot="prefix" name="plus" library="solid"/>
+                    {{ 'global.welcome.create-project' | transloco }}
+                </sgdf-button>
+            }
+        </section>
+    </ng-template>
 </app-list>
+
+<sgdf-dialog light-dismiss
+             [open]="!!optionsProject()"
+             [title]="'projects.options.list' | transloco"
+             (sgdf-hide)="closeDialog($event, optionsProject)">
+    <sgdf-list [label]="'projects.options.list' | transloco" appearance="text">
+        @for (option of optionsProject()?.options; track option.value) {
+            <sgdf-list-item>{{ option.label }}</sgdf-list-item>
+        }
+    </sgdf-list>
+</sgdf-dialog>
+
+<sgdf-dialog light-dismiss
+             [open]="!!hiddenProject()"
+             [title]="'projects.hidden-notice.title' | transloco"
+             (sgdf-hide)="closeDialog($event, hiddenProject)">
+    <p class="m-0">{{ 'projects.hidden-notice.message' | transloco: { name: hiddenProject()?.name } }}</p>
+    <sgdf-button slot="footer" variant="warning" (click)="hiddenProject.set(undefined)">
+        {{ 'projects.hidden-notice.close' | transloco }}
+    </sgdf-button>
+</sgdf-dialog>

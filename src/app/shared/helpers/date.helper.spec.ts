@@ -78,6 +78,17 @@ describe( 'DateHelper', () => {
             expect( [ date?.getUTCHours(), date?.getUTCMinutes(), date?.getUTCSeconds(), date?.getUTCMilliseconds() ] ).toEqual( [ 10, 30, 15, 123 ] )
         } )
 
+        it( 'reads an ISO time that has only hours', () => {
+            // Arrange
+            const iso: string = '09'
+
+            // Act
+            const date: Date | undefined = DateHelper.fromIsoTime( iso )
+
+            // Assert
+            expect( [ date?.getUTCHours(), date?.getUTCMinutes(), date?.getUTCSeconds() ] ).toEqual( [ 9, 0, 0 ] )
+        } )
+
         it( 'reads an ISO time that has no seconds', () => {
             // Arrange
             const iso: string = '10:30'
@@ -190,6 +201,17 @@ describe( 'DateHelper', () => {
 
             // Assert
             expect( results ).toEqual( [ true, true, false, false, false, false ] )
+        } )
+
+        it( 'keeps undated entries by default and leaves equal dates in place', () => {
+            // Arrange
+            const dates: (CustomDatetimeModel | undefined)[] = [ EARLY, { ...EARLY }, undefined ]
+
+            // Act
+            const sorted: (CustomDatetimeModel | undefined)[] = DateHelper.sortDate( [ ...dates ] )
+
+            // Assert
+            expect( sorted ).toEqual( [ EARLY, EARLY, undefined ] )
         } )
 
         it( 'sorts ascending or descending and can drop undated entries', () => {

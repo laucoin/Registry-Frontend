@@ -12,7 +12,7 @@ import { ProjectStatusModel } from '@shared/models/model/project-status.model'
 import { VehicleStatusModel } from '@shared/models/model/vehicle-status.model'
 import { SelectedProjectFacade } from '@pages/projects/data/state/selected-project/selected-project.facade'
 import { SelectedProjectStore } from '@pages/projects/data/state/selected-project/selected-project.store'
-import { pageOf } from '@shared/helpers/testing/test-fixtures'
+import { pageOf, projectOptionChecker } from '@shared/helpers/testing/test-fixtures'
 import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
 import { AlertModel } from '@shared/models/model/alert.model'
 import { MovementModel } from '@shared/models/model/movement.model'
@@ -41,7 +41,7 @@ describe( 'SelectedProjectFacade', () => {
                 { provide: MovementApi, useValue: { findMovements, findParticipantsStatus, findVehiclesStatus, findMovementsContents: vi.fn( () => of( [] ) ) } },
                 { provide: AlertApi, useValue: { findAlerts } },
                 { provide: ParticipantApi, useValue: { findParticipantsBirthdays } },
-                { provide: SessionFacade, useValue: { currentProjectId: signal( 'p1' ), selectedProject } },
+                { provide: SessionFacade, useValue: { currentProjectId: signal( 'p1' ), selectedProject, selectedProjectHasOption: projectOptionChecker( selectedProject ) } },
                 { provide: UiFacade, useValue: { notify: vi.fn(), setGlobalError: vi.fn() } },
                 { provide: TranslocoService, useValue: { translate: (key: string): string => key } },
             ],
@@ -119,5 +119,20 @@ describe( 'SelectedProjectFacade', () => {
         // Assert
         expect( findAlerts ).toHaveBeenCalledWith( 'p1', 0, 5, expect.anything() )
         expect( facade.currentAlertsPage() ).toBeDefined()
+    } )
+
+    it( 'reloads every shown batch of each current movements list in one request', () => {
+        // Arrange
+        facade.fetchCurrentMovementsPageWithActivity( 1, 5 )
+        facade.fetchCurrentMovementsPageWithoutActivity( 1, 5 )
+        findMovements.mockClear()
+
+        // Act
+        facade.reloadCurrentMovementsPageWithActivity()
+        facade.reloadCurrentMovementsPageWithoutActivity()
+
+        // Assert
+        expect( findMovements ).toHaveBeenNthCalledWith( 1, 'p1', 0, expect.any( Number ), expect.objectContaining( { linkedToActivity: true } ) )
+        expect( findMovements ).toHaveBeenNthCalledWith( 2, 'p1', 0, expect.any( Number ), expect.objectContaining( { linkedToActivity: false } ) )
     } )
 } )

@@ -2,12 +2,11 @@ import { signal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslocoService } from '@jsverse/transloco'
-import { Confirmation, ConfirmationService } from 'primeng/api'
+import { ConfirmationModel } from '@shared/models/model/confirmation.model'
 import { Observable, Subject } from 'rxjs'
 import { Mock, beforeEach, describe, expect, it, vi } from 'vitest'
 import { ConfigModel } from '@core/config/model/config.model'
 import { RegistryConfig } from '@core/config/registry.config'
-import { RegistryFacade } from '@core/registry/state/registry.facade'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { autoMock } from '@shared/helpers/testing/auto-mock'
@@ -41,11 +40,7 @@ class TestElement extends GenericElementComponent {
         return this.actionIsEnable( action )
     }
 
-    public optionAvailable (option: ProjectOptionEnum): boolean {
-        return this.projectHasOption( option )
-    }
-
-    public confirmation (accept: () => void): Confirmation {
+    public confirmation (accept: () => void): ConfirmationModel {
         return this.buildConfirmation( 'groups.confirm', 'pi pi-info', { name: 'Wolves' }, SeverityEnum.DANGER, accept )
     }
 
@@ -55,7 +50,7 @@ class TestElement extends GenericElementComponent {
 }
 
 describe( 'GenericElementComponent', () => {
-    let confirm: Mock<(confirmation: Confirmation) => void>
+    let confirm: Mock<(confirmation: ConfirmationModel) => void>
     let element: TestElement
 
     beforeEach( () => {
@@ -63,7 +58,6 @@ describe( 'GenericElementComponent', () => {
         RegistryConfig.config = { enabledActions: [ firstAction() ] } as unknown as ConfigModel
         TestBed.configureTestingModule( {
             providers: [
-                { provide: ConfirmationService, useValue: { confirm } },
                 {
                     provide: SessionFacade,
                     useValue: {
@@ -71,8 +65,7 @@ describe( 'GenericElementComponent', () => {
                         selectedProject: signal( { id: 'p1', options: [ { label: 'Alerts', value: ProjectOptionEnum.ALERT } ] } as unknown as ProjectModel ),
                     },
                 },
-                { provide: UiFacade, useValue: autoMock() },
-                { provide: RegistryFacade, useValue: autoMock() },
+                { provide: UiFacade, useValue: Object.assign( autoMock(), { confirm } ) },
                 { provide: Router, useValue: {} },
                 { provide: ActivatedRoute, useValue: {} },
                 { provide: TranslocoService, useValue: { translate: (key: string, params?: object): string => `${key}${params ? JSON.stringify( params ) : ''}` } },
@@ -129,29 +122,17 @@ describe( 'GenericElementComponent', () => {
         expect( results ).toEqual( [ true, false ] )
     } )
 
-    it( 'tells whether the selected project has an option', () => {
-        // Arrange
-        const results: boolean[] = []
-
-        // Act
-        results.push( element.optionAvailable( ProjectOptionEnum.ALERT ), element.optionAvailable( ProjectOptionEnum.VEHICLE ) )
-
-        // Assert
-        expect( results ).toEqual( [ true, false ] )
-    } )
-
-    it( 'builds a confirmation with translated texts, a secondary reject button and a severity on the accept button', () => {
+    it( 'builds a confirmation with translated texts, the severity of the accept button', () => {
         // Arrange
         const accept: () => void = vi.fn()
 
         // Act
-        const confirmation: Confirmation = element.confirmation( accept )
+        const confirmation: ConfirmationModel = element.confirmation( accept )
 
         // Assert
         expect( confirmation.header ).toBe( 'groups.confirm.title{"element":{"name":"Wolves"}}' )
         expect( confirmation.message ).toBe( 'groups.confirm.message{"element":{"name":"Wolves"}}' )
-        expect( confirmation.rejectButtonProps?.severity ).toBe( SeverityEnum.SECONDARY )
-        expect( confirmation.acceptButtonProps?.severity ).toBe( SeverityEnum.DANGER )
+        expect( confirmation.acceptSeverity ).toBe( SeverityEnum.DANGER )
         expect( confirmation.accept ).toBe( accept )
     } )
 

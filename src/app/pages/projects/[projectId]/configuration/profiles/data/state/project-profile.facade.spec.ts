@@ -117,7 +117,7 @@ describe( 'ProjectProfileFacade', () => {
         expect( notify ).not.toHaveBeenCalled()
     } )
 
-    it( 'notifies a block with the identity of the person and refreshes the page', () => {
+    it( 'notifies a block with the identity of the person and reloads the batches already shown', () => {
         // Arrange
         blockProjectProfileById.mockReturnValue( of( PROFILE ) )
 
@@ -129,7 +129,7 @@ describe( 'ProjectProfileFacade', () => {
             summary: 'project-profiles.notifications.disable.title',
             data: { firstName: 'Ada', lastName: 'L', name: 'Camp' },
         } ) )
-        expect( findProjectProfiles ).toHaveBeenCalledWith( 'p1', 2, 10, expect.anything() )
+        expect( findProjectProfiles ).toHaveBeenCalledWith( 'p1', 0, 30, expect.anything() )
     } )
 
     it( 'uses the message meant for another person when deleting a profile', () => {

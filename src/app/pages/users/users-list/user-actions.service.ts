@@ -1,0 +1,95 @@
+import { inject, Injectable } from '@angular/core'
+import { Router } from '@angular/router'
+import { CurrentUserHelper } from '@core/authentication/tool/current-user.helper'
+import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
+import { UserFacade } from '@pages/users/data/state/user.facade'
+import { ElementActionsBase, ElementActionSpec } from '@shared/helpers/facade/element-actions.base'
+import { ElementActionEnum } from '@shared/models/enumeration/element-action.enum'
+import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
+import { UserAuthorityEnum } from '@shared/models/enumeration/user-authority.enum'
+import { UserModel } from '@shared/models/model/user.model'
+
+/**
+ * Purpose: Tells which commands a user of the list offers to the signed-in user and runs them.
+ * Scope: Builds the action menu (change the role, block, unblock, anonymise, delete) with its confirmations; nobody can act on their own account.
+ * Limits: Holds no state; it only reads the session and calls the user facade. The backend still checks every command.
+ */
+@Injectable()
+export class UserActions extends ElementActionsBase<UserModel> {
+    protected readonly translationPrefix: string = 'users'
+
+    private readonly facade: UserFacade = inject(UserFacade)
+    private readonly router: Router = inject(Router)
+
+    protected specsFor(user: UserModel): ElementActionSpec[] {
+        const others: boolean = this.sessionFacade.currentUser()?.id !== user.id
+        return [
+            this.updateRoleSpec(user, others),
+            this.blockSpec(user, others),
+            this.unblockSpec(user, others),
+            this.impersonateSpec(user, others),
+            this.deleteSpec(user, others),
+        ]
+    }
+
+    private updateRoleSpec(user: UserModel, others: boolean): ElementActionSpec {
+        return {
+            id: 'update-role',
+            icon: 'user-pen',
+            enabledAction: ElementActionEnum.USER_UPDATE,
+            shown: others,
+            allowed: this.hasAuthority(UserAuthorityEnum.REGISTRY_USER_U),
+            run: (): void => {
+                this.router.navigateByUrl(RegistryRouteEnum.USERS_EDITION.replace(':userId', user.id)).catch((err: Error) => console.error(err))
+            },
+        }
+    }
+
+    private blockSpec(user: UserModel, others: boolean): ElementActionSpec {
+        return {
+            id: 'disable',
+            icon: 'ban',
+            enabledAction: ElementActionEnum.USER_BLOCK,
+            shown: others && user.visible,
+            allowed: this.hasAuthority(UserAuthorityEnum.REGISTRY_USER_U),
+            confirmation: { severity: SeverityEnum.WARNING, icon: 'pi pi-exclamation-triangle', accept: (): void => this.facade.bockUser(user.id) },
+        }
+    }
+
+    private unblockSpec(user: UserModel, others: boolean): ElementActionSpec {
+        return {
+            id: 'enable',
+            icon: 'rotate-right',
+            enabledAction: ElementActionEnum.USER_UNBLOCK,
+            shown: others && !user.visible,
+            allowed: this.hasAuthority(UserAuthorityEnum.REGISTRY_USER_U),
+            confirmation: { severity: SeverityEnum.INFO, icon: 'pi pi-info-circle', accept: (): void => this.facade.unblockUser(user.id) },
+        }
+    }
+
+    private impersonateSpec(user: UserModel, others: boolean): ElementActionSpec {
+        return {
+            id: 'impersonate',
+            icon: 'eraser',
+            enabledAction: ElementActionEnum.USER_IMPERSONATE,
+            shown: others,
+            allowed: this.hasAuthority(UserAuthorityEnum.REGISTRY_USER_D),
+            confirmation: { severity: SeverityEnum.DANGER, icon: 'pi pi-exclamation-circle', accept: (): void => this.facade.impersonateUser(user) },
+        }
+    }
+
+    private deleteSpec(user: UserModel, others: boolean): ElementActionSpec {
+        return {
+            id: 'delete',
+            icon: 'trash',
+            enabledAction: ElementActionEnum.USER_DELETE,
+            shown: others,
+            allowed: this.hasAuthority(UserAuthorityEnum.REGISTRY_USER_D),
+            confirmation: { severity: SeverityEnum.DANGER, icon: 'pi pi-exclamation-circle', accept: (): void => this.facade.deleteUser(user) },
+        }
+    }
+
+    private hasAuthority(authority: UserAuthorityEnum): boolean {
+        return CurrentUserHelper.hasUserAuthority(this.sessionFacade.currentUser(), authority)
+    }
+}

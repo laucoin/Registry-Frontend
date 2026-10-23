@@ -1,7 +1,8 @@
 import { computed, Injectable, Signal, inject } from '@angular/core'
 import { PageModel } from '@shared/models/model/page.model'
 import { AlertStore } from '@pages/projects/[projectId]/alerts/data/state/alert.store'
-import { SelectItem, ToastMessageOptions } from 'primeng/api'
+import { SelectOptionModel } from '@shared/models/model/select-option.model'
+import { NotificationModel } from '@shared/models/model/notification.model'
 import { DateHelper } from '@shared/helpers/date.helper'
 import { AlertApi } from '@pages/projects/[projectId]/movements/data/state/alert.api'
 import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/rx.helper'
@@ -11,6 +12,7 @@ import { GenericProjectElementFacade } from '@shared/helpers/facade/generic-proj
 import { AlertDto } from '@pages/projects/[projectId]/alerts/data/dto/alert.dto'
 import { AlertModel } from '@shared/models/model/alert.model'
 import { AlertStatusEnum } from '@shared/models/enumeration/alert-status.enum'
+import { CumulativePageHelper } from '@shared/helpers/store/cumulative-page.helper'
 import { CommunicationModel } from '@shared/models/model/communication.model'
 
 
@@ -31,13 +33,13 @@ export class AlertFacade extends GenericProjectElementFacade {
 
     public readonly alertsPageSilentLoading: Signal<boolean> = this.store.alerts.silentLoading
 
-    public readonly alertsPageError: Signal<ToastMessageOptions | undefined> = this.store.alerts.error
+    public readonly alertsPageError: Signal<NotificationModel | undefined> = this.store.alerts.error
 
     private readonly alertsPageResetSearch: Signal<boolean> = this.store.alerts.params.resetSearch
 
     public readonly alertsPageTextSearchedParam: Signal<string | undefined> = this.store.alerts.params.textSearched
 
-    public readonly alertsPageStatusSearchedParam: Signal<AlertStatusEnum | undefined> = this.store.alerts.params.statusSearched
+    public readonly alertsPageStatusSearchedParam: Signal<string | undefined> = this.store.alerts.params.statusSearched
 
     public readonly alertsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.alerts.params.visibilitySearched
 
@@ -55,7 +57,7 @@ export class AlertFacade extends GenericProjectElementFacade {
 
     public readonly alertCommunicationsPageSilentLoading: Signal<boolean> = this.store.communications.silentLoading
 
-    public readonly alertCommunicationsPageError: Signal<ToastMessageOptions | undefined> = this.store.communications.error
+    public readonly alertCommunicationsPageError: Signal<NotificationModel | undefined> = this.store.communications.error
 
     private readonly alertCommunicationsPageResetSearch: Signal<boolean> = this.store.communications.params.resetSearch
 
@@ -71,14 +73,14 @@ export class AlertFacade extends GenericProjectElementFacade {
             DateHelper.buildDate( this.store.communications.params.endDateTimeSearched() ),
         )
 
-    public readonly visibilitiesMetadata: Signal<SelectItem<boolean | undefined>[]> = computed( () =>
-            this.store.metadata.visibilities().map( (status: SelectItem<boolean | undefined>) => ({
+    public readonly visibilitiesMetadata: Signal<SelectOptionModel<boolean | undefined>[]> = computed( () =>
+            this.store.metadata.visibilities().map( (status: SelectOptionModel<boolean | undefined>) => ({
                 ...status,
                 label: this.translateLabel( status.label! ),
             }) ),
         )
 
-    public readonly alertStatusMetadata: Signal<SelectItem<AlertStatusEnum | undefined>[]> = this.store.metadata.status
+    public readonly alertStatusMetadata: Signal<SelectOptionModel<AlertStatusEnum | undefined>[]> = this.store.metadata.status
 
     public fetchAlertsPage (
         pageNumber: number | undefined,
@@ -90,7 +92,7 @@ export class AlertFacade extends GenericProjectElementFacade {
 
     public inputPageSearchParameters (
         textSearched: string | undefined,
-        statusSearched: AlertStatusEnum | undefined,
+        statusSearched: string | undefined,
         visibilitySearched: boolean | undefined,
         startDateTimeSearched: Date | undefined,
         endDateTimeSearched: Date | undefined,
@@ -211,7 +213,10 @@ export class AlertFacade extends GenericProjectElementFacade {
     private onCommandSuccess (command: CommandEvent, alert: AlertModel): void {
         this.onCommandSucceeded( 'alert', command, 'alerts.notifications', 'pi pi-sort-alt', { title: alert?.title, status: alert?.status?.label } )
 
-        const page: PageModel<AlertModel> | undefined = this.alertsPage()
-        this.fetchAlertsPage( page?.pageNumber, page?.pageSize )
+        this.reloadAlertsPage()
+    }
+
+    public reloadAlertsPage (): void {
+        this.store.fetchAlertsPage( { projectId: this.selectedProjectId(), ...CumulativePageHelper.reloadRequest( this.alertsPage() ) } )
     }
 }

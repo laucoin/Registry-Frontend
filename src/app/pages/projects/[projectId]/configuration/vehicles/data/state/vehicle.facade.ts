@@ -3,7 +3,8 @@ import { Observable, tap } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
 import { VehicleModel } from '@shared/models/model/vehicle.model'
 import { VehicleDto } from '@pages/projects/[projectId]/configuration/vehicles/data/dto/vehicle.dto'
-import { SelectItem, ToastMessageOptions } from 'primeng/api'
+import { SelectOptionModel } from '@shared/models/model/select-option.model'
+import { NotificationModel } from '@shared/models/model/notification.model'
 import { VehicleStore } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.store'
 import { GenericProjectElementFacade } from '@shared/helpers/facade/generic-project-element.facade'
 import { MovementModel } from '@shared/models/model/movement.model'
@@ -11,6 +12,7 @@ import { DateHelper } from '@shared/helpers/date.helper'
 import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum'
 import { VehicleApi } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.api'
 import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/rx.helper'
+import { CumulativePageHelper } from '@shared/helpers/store/cumulative-page.helper'
 
 /**
  * Purpose: Public entry point of the vehicle domain for pages, components and guards.
@@ -26,19 +28,19 @@ export class VehicleFacade extends GenericProjectElementFacade {
     public readonly vehiclesPage: Signal<PageModel<VehicleModel> | undefined> = this.store.vehicles.element
     public readonly vehiclesPageLoading: Signal<boolean> = this.store.vehicles.loading
     public readonly vehiclesPageSilentLoading: Signal<boolean> = this.store.vehicles.silentLoading
-    public readonly vehiclesPageError: Signal<ToastMessageOptions | undefined> = this.store.vehicles.error
+    public readonly vehiclesPageError: Signal<NotificationModel | undefined> = this.store.vehicles.error
     public readonly vehiclesPageResetSearch: Signal<boolean> = this.store.vehicles.params.resetSearch
     public readonly vehiclesPageTextSearchedParam: Signal<string | undefined> = this.store.vehicles.params.textSearched
     public readonly vehiclesPageDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
         DateHelper.buildDate( this.store.vehicles.params.dateTimeSearched() ),
     )
-    public readonly vehiclesPageStatusSearchedParam: Signal<boolean | undefined> = this.store.vehicles.params.statusSearched
+    public readonly vehiclesPageStatusSearchedParam: Signal<string | undefined> = this.store.vehicles.params.statusSearched
     public readonly vehiclesPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.vehicles.params.visibilitySearched
 
     public readonly vehicleMovementsPage: Signal<PageModel<MovementModel> | undefined> = this.store.movements.element
     public readonly vehicleMovementsPageLoading: Signal<boolean> = this.store.movements.loading
     public readonly vehicleMovementsPageSilentLoading: Signal<boolean> = this.store.movements.silentLoading
-    public readonly vehicleMovementsPageError: Signal<ToastMessageOptions | undefined> = this.store.movements.error
+    public readonly vehicleMovementsPageError: Signal<NotificationModel | undefined> = this.store.movements.error
     private readonly vehicleMovementsPageResetSearch: Signal<boolean> = this.store.movements.params.resetSearch
     public readonly vehicleMovementsPageTypeSearchedParam: Signal<string | undefined> = this.store.movements.params.typeSearched
     public readonly vehicleMovementsPageStartDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
@@ -49,10 +51,10 @@ export class VehicleFacade extends GenericProjectElementFacade {
     )
     public readonly vehicleMovementsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.movements.params.visibilitySearched
 
-    public readonly presencesStatusMetadata: Signal<SelectItem<PresenceStatusEnum | undefined>[]> = this.store.metadata.presencesStatus
-    public readonly visibilitiesMetadata: Signal<SelectItem<boolean | undefined>[]> = computed( (): SelectItem<boolean | undefined>[] =>
+    public readonly presencesStatusMetadata: Signal<SelectOptionModel<PresenceStatusEnum | undefined>[]> = this.store.metadata.presencesStatus
+    public readonly visibilitiesMetadata: Signal<SelectOptionModel<boolean | undefined>[]> = computed( (): SelectOptionModel<boolean | undefined>[] =>
         this.store.metadata.visibilities().map(
-            (status: SelectItem<boolean | undefined>): SelectItem<boolean | undefined> => ({
+            (status: SelectOptionModel<boolean | undefined>): SelectOptionModel<boolean | undefined> => ({
                 ...status,
                 label: this.translateLabel( status.label! ),
             }),
@@ -70,7 +72,7 @@ export class VehicleFacade extends GenericProjectElementFacade {
     public inputPageSearchParameters (
         textSearched: string | undefined,
         dateTimeSearched: Date | undefined,
-        statusSearched: boolean | undefined,
+        statusSearched: string | undefined,
         visibilitySearched: boolean | undefined,
     ): void {
         const resetSearch: boolean = this.vehiclesPageTextSearchedParam() != textSearched
@@ -96,6 +98,10 @@ export class VehicleFacade extends GenericProjectElementFacade {
     ): void {
         const index: number | undefined = this.vehicleMovementsPageResetSearch() ? 0 : pageNumber
         this.store.fetchVehicleMovementsPage( { projectId: this.selectedProjectId(), id: id, pageNumber: index, pageSize: pageSize } )
+    }
+
+    public reloadVehicleMovementsPage (id: string): void {
+        this.store.fetchVehicleMovementsPage( { projectId: this.selectedProjectId(), id: id, ...CumulativePageHelper.reloadRequest( this.vehicleMovementsPage() ) } )
     }
 
     public fetchVehicleMovementsContent (movementIds: string[]): void {
@@ -174,7 +180,6 @@ export class VehicleFacade extends GenericProjectElementFacade {
             model: vehicle?.model,
         } )
 
-        const page: PageModel<VehicleModel> | undefined = this.vehiclesPage()
-        this.fetchVehiclesPage( page?.pageNumber, page?.pageSize )
+        this.store.fetchVehiclesPage( { projectId: this.selectedProjectId(), ...CumulativePageHelper.reloadRequest( this.vehiclesPage() ) } )
     }
 }

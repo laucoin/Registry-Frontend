@@ -1,7 +1,6 @@
 import { TestBed } from '@angular/core/testing'
 import { of } from 'rxjs'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
-import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
 import { ERROR_500, ERROR_503, failing, pageOf } from '@shared/helpers/testing/test-fixtures'
 import {
     ITEM_SOURCE,
@@ -10,12 +9,14 @@ import {
     ItemSource,
     LABELS_SOURCE,
     LabelsSource,
+    MOVEMENT_CONTENTS_API,
     MOVEMENTS_SOURCE,
     MovementsSource,
     TEST_ERRORS,
     TestPagedStore,
 } from '@shared/helpers/store/testing/test-paged.store'
 import { ErrorSink } from '@shared/helpers/rx.helper'
+import { MovementContentsApi } from '@shared/helpers/store/paged-store.methods'
 import { ErrorModel } from '@shared/models/model/error.model'
 import { GenericModel } from '@shared/models/model/generic.model'
 import { MovementContentModel } from '@shared/models/model/movement-content.model'
@@ -27,7 +28,7 @@ describe( 'paged store methods', () => {
     let movementsSource: Mock<MovementsSource>
     let itemSource: Mock<ItemSource>
     let labelsSource: Mock<LabelsSource>
-    let findMovementsContents: Mock<MovementApi['findMovementsContents']>
+    let findMovementsContents: Mock<MovementContentsApi['findMovementsContents']>
     let setGlobalError: Mock<(error: ErrorModel) => void>
     let notify: Mock<(message: unknown) => void>
 
@@ -47,10 +48,52 @@ describe( 'paged store methods', () => {
                 { provide: ITEM_SOURCE, useValue: itemSource },
                 { provide: LABELS_SOURCE, useValue: labelsSource },
                 { provide: TEST_ERRORS, useValue: { setGlobalError, notify } as ErrorSink },
-                { provide: MovementApi, useValue: { findMovementsContents } },
+                { provide: MOVEMENT_CONTENTS_API, useValue: { findMovementsContents } },
             ],
         } )
         store = TestBed.inject( TestPagedStore )
+    } )
+
+    describe( 'pageFetcher merge hook', () => {
+        it( 'stores the shown page merged with the fetched one', () => {
+            // Arrange
+            const first: ReturnType<typeof pageOf<GenericModel>> = { ...pageOf<GenericModel>( [ { id: 'a' } as GenericModel ] ), pageSize: 1 }
+            const second: ReturnType<typeof pageOf<GenericModel>> = { ...pageOf<GenericModel>( [ { id: 'b' } as GenericModel ], 1 ), pageSize: 1 }
+            itemsSource.mockReturnValueOnce( of( first ) ).mockReturnValueOnce( of( second ) )
+            store.fetchAppendedItems( { n: 0 } )
+
+            // Act
+            store.fetchAppendedItems( { n: 1 } )
+
+            // Assert
+            expect( store.items.element()?.content.map( (it: GenericModel): string => it.id ) ).toEqual( [ 'a', 'b' ] )
+        } )
+    } )
+
+    describe( 'pageFetcher hooks', () => {
+        it( 'reads the search parameters after the before hook ran', () => {
+            // Arrange
+            itemsSource.mockReturnValue( of( pageOf<GenericModel>( [] ) ) )
+
+            // Act
+            store.fetchResettingItems( { n: 0 } )
+
+            // Assert
+            expect( itemsSource ).toHaveBeenCalledWith( { n: 0 }, expect.objectContaining( { text: 'reset' } ) )
+        } )
+
+        it( 'reports a hook that throws and keeps serving the next requests', () => {
+            // Arrange
+            itemsSource.mockReturnValue( of( pageOf<GenericModel>( [ { id: 'a' } as GenericModel ] ) ) )
+            store.fetchGuardedItems( { n: -1 } )
+
+            // Act
+            store.fetchGuardedItems( { n: 1 } )
+
+            // Assert
+            expect( notify ).toHaveBeenCalledTimes( 1 )
+            expect( store.items.element()?.content ).toHaveLength( 1 )
+        } )
     } )
 
     describe( 'pageFetcher', () => {

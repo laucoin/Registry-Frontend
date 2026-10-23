@@ -23,6 +23,12 @@ on this Angular Client-Side Rendering (CSR) project.
   system until the migration; do not introduce new PrimeNG-specific abstractions beyond what the current code needs.
 - **Styling:** Tailwind CSS v4 utility classes in templates (default breakpoints), native CSS for the remaining
   component styles. Bootstrap is not used. Beware the spacing scale: Tailwind steps are `n × 0.25rem`.
+- **`@sgdf/ui` first:** before building any UI, check what `@sgdf/ui` already provides (`custom-elements.json` and the
+  `.d.ts` of `node_modules/@sgdf/ui`): a component for the need (e.g. `sgdf-callout` for a message or an error) and its
+  `variant`, `appearance`, slots and CSS properties for the look. Tailwind is for layout and spacing only: never use it
+  to recolor an `@sgdf/ui` component or to rebuild one (no `--sgdf-*` tokens in utility classes for colors). If what is
+  needed is not possible with `@sgdf/ui`, do not work around it: suggest a change to `@sgdf/ui` when it makes sense
+  architecturally, and fall back to a custom implementation only if the developer declines or it is not relevant.
 
 ---
 
@@ -55,10 +61,17 @@ The source code is organized into three core directories:
 - **Documented exception:** `shared/ui/domain/` holds the cards and forms of the business entities. They read their
   domain facades and models from `pages/`, which is the only accepted `shared` to `pages` dependency (the 29 existing
   imports). They are reworked with the `@sgdf/ui` migration; do not add new `shared` to `pages` imports elsewhere.
-- **Core facades:** `UiFacade` exposes what the shell displays (theme, screen, toasts, global loader and error),
-  `SessionFacade` exposes the signed-in user, the selected project and the user's own profiles, and `RegistryFacade`
-  only orchestrates the flows that cross both (sign-in, preferences, project selection). Stores never depend on a
-  facade: they report failures through `ErrorReporter` (`core/registry/state/error-reporter.ts`).
+- **Documented exception (routing):** `core/routing/registry-route.enum.ts` composes the URLs of the whole application and
+  imports the route enums of each page; `core/routing/registry.routes.ts` lazy loads the pages. They are the only accepted
+  `core` to `pages` dependencies. Stores, facades, apis and models of `core` never import from `pages/`: shared models
+  live in `shared/models/`, and the stores of a page are provided by that page's own routes.
+- **Core facades:** `UiFacade` exposes what the shell displays (theme, screen, toasts and global error),
+  `SessionFacade` owns the signed-in user and the session (sign-in and sign-out, current user, selected project, theme
+  and language preferences, and the choices offered for them), and `UserProfileFacade` owns the user's own project
+  profiles and invitations and the commands acting on them. `UserProfileFacade` depends on `SessionFacade`, never the
+  other way around. Components, guards and interceptors read the choices and menus to display from a facade or
+  service, and leave redundant-call filtering to the facade. Stores never depend on a facade: they report failures
+  through `ErrorReporter` (`core/registry/state/error-reporter.ts`).
 - **Store methods:** build the repetitive rxMethods with the builders of `shared/helpers/store/paged-store.methods.ts`
   (`pageFetcher`, `paramsUpdater`, `paramsMerger`, `elementFetcher`, `metadataFetcher`, `movementContentsFetcher`)
   and inject dependencies as parameters of `withMethods`, never through a public `withProps`.
@@ -231,11 +244,10 @@ This exception is standing and does not require asking the user each time — ev
   deadlock — don't simplify that exclusion away, don't scatter interceptor logic into services.
 - No environment value is compiled into the bundle. Runtime config is loaded from public/settings/config.json and
   public/settings/env.json via provideAppInitializer() prior to application bootstrap.
-- Theming: while PrimeNG and `@sgdf/ui` coexist, the PrimeNG preset is built from `config.json` at runtime, and dark
-  mode flips both the `dark-mod` class and the `data-theme` attribute on `<html>`, always through `BrowserService`.
-  The SGDF tokens (`--sgdf-*`) belong to `@sgdf/ui`: no theme key is added to `config.json` for them. Once PrimeNG is
-  removed, only `data-theme` remains. Raise any change to this mechanism with the user rather than working around it
-  silently.
+- Theming: `@sgdf/ui` owns the theme. The mode (`light`, `dark`, or no attribute for the system) is set on `<html>` as the `data-theme`
+  attribute, always via `BrowserService`; the `@sgdf/ui` entry point is never imported for it (it would pull the whole library). The SGDF tokens (`--sgdf-*`) belong to `@sgdf/ui`:
+  no theme key is added to `config.json`. PrimeNG ships without theme (`theme: 'none'`) until it is removed. Raise any
+  change to this mechanism with the user rather than working around it silently.
 - The production build enforces bundle budgets — an initial bundle past 1 MB or a component stylesheet past 8 kB is a
   hard failure, not a nuisance.
 - Static Web Serving (CSR): Production output is hosted as pure static assets (e.g. NGINX / Caddy). Ensure web server

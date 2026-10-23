@@ -1,4 +1,4 @@
-import { SelectItem } from 'primeng/api'
+import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { ActivityModel } from '@shared/models/model/activity.model'
 
 /**
@@ -7,7 +7,7 @@ import { ActivityModel } from '@shared/models/model/activity.model'
  * Limits: No state and no translation.
  */
 export class ActivityHelper {
-    public static toSelectItem (activity: ActivityModel): SelectItem<ActivityModel> {
+    public static toSelectItem (activity: ActivityModel): SelectOptionModel<ActivityModel> {
         return {
             label: activity.name,
             value: activity,

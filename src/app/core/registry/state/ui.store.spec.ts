@@ -7,9 +7,11 @@ import { ThemeEnum } from '@shared/models/enumeration/theme.enum'
 
 describe( 'UiStore', () => {
     let store: InstanceType<typeof UiStore>
-    let setRootClass: Mock<(name: string, enabled: boolean) => void>
+    let setRootTheme: Mock<(theme: ThemeEnum) => void>
     let setRootLanguage: Mock<(language: string) => void>
     let systemTheme: ThemeEnum
+    let resize: (width: number) => void
+    let stopResize: Mock<() => void>
 
     function createStore (): InstanceType<typeof UiStore> {
         TestBed.configureTestingModule( {
@@ -19,8 +21,9 @@ describe( 'UiStore', () => {
                     useValue: {
                         get systemTheme (): ThemeEnum { return systemTheme },
                         viewportWidth: 1024,
-                        setRootClass,
+                        setRootTheme,
                         setRootLanguage,
+                        onViewportResize: (listener: (width: number) => void): (() => void) => { resize = listener; return stopResize },
                     },
                 },
             ],
@@ -29,8 +32,9 @@ describe( 'UiStore', () => {
     }
 
     beforeEach( () => {
-        setRootClass = vi.fn()
+        setRootTheme = vi.fn()
         setRootLanguage = vi.fn()
+        stopResize = vi.fn()
         systemTheme = ThemeEnum.LIGHT
     } )
 
@@ -44,11 +48,10 @@ describe( 'UiStore', () => {
         // Assert
         expect( store.theme() ).toBe( ThemeEnum.DARK )
         expect( store.screenWidth() ).toBe( 1024 )
-        expect( store.loading() ).toBe( false )
         expect( store.error() ).toBeUndefined()
     } )
 
-    it( 'turns the dark class on for the dark theme', () => {
+    it( 'applies the dark theme on the document', () => {
         // Arrange
         store = createStore()
 
@@ -56,11 +59,11 @@ describe( 'UiStore', () => {
         store.updateTheme( ThemeEnum.DARK )
 
         // Assert
-        expect( setRootClass ).toHaveBeenCalledWith( 'dark-mod', true )
+        expect( setRootTheme ).toHaveBeenCalledWith( ThemeEnum.DARK )
         expect( store.theme() ).toBe( ThemeEnum.DARK )
     } )
 
-    it( 'turns the dark class off for the light theme even when the system is dark', () => {
+    it( 'applies the light theme on the document even when the system is dark', () => {
         // Arrange
         systemTheme = ThemeEnum.DARK
         store = createStore()
@@ -69,10 +72,10 @@ describe( 'UiStore', () => {
         store.updateTheme( ThemeEnum.LIGHT )
 
         // Assert
-        expect( setRootClass ).toHaveBeenCalledWith( 'dark-mod', false )
+        expect( setRootTheme ).toHaveBeenCalledWith( ThemeEnum.LIGHT )
     } )
 
-    it( 'follows the system scheme for the system theme', () => {
+    it( 'hands the system theme over to the document', () => {
         // Arrange
         systemTheme = ThemeEnum.DARK
         store = createStore()
@@ -81,20 +84,22 @@ describe( 'UiStore', () => {
         store.updateTheme( ThemeEnum.SYSTEM )
 
         // Assert
-        expect( setRootClass ).toHaveBeenCalledWith( 'dark-mod', true )
+        expect( setRootTheme ).toHaveBeenCalledWith( ThemeEnum.SYSTEM )
         expect( store.theme() ).toBe( ThemeEnum.SYSTEM )
     } )
 
-    it( 'tells the document which language is displayed', () => {
+    it( 'tracks the language being saved until the change stops', () => {
         // Arrange
         store = createStore()
 
         // Act
-        store.updateLanguage( 'fr' )
+        store.startLanguageChange( 'en' )
+        const pending: string | undefined = store.pendingLanguage()
+        store.stopLanguageChange()
 
         // Assert
-        expect( setRootLanguage ).toHaveBeenCalledWith( 'fr' )
-        expect( store.language() ).toBe( 'fr' )
+        expect( pending ).toBe( 'en' )
+        expect( store.pendingLanguage() ).toBeUndefined()
     } )
 
     it( 'builds the global error toast from the error title and message', () => {
@@ -108,30 +113,36 @@ describe( 'UiStore', () => {
         expect( store.error() ).toEqual( expect.objectContaining( { severity: 'error', summary: 'Title', detail: 'Message', closable: true } ) )
     } )
 
-    it( 'toggles the global loader', () => {
-        // Arrange
-        store = createStore()
-        store.startGlobalLoader()
-        const running: boolean = store.loading()
-
-        // Act
-        store.stopGlobalLoader()
-
-        // Assert
-        expect( running ).toBe( true )
-        expect( store.loading() ).toBe( false )
-    } )
-
-    it( 'tracks the network state and the screen width', () => {
+    it( 'tracks the network state', () => {
         // Arrange
         store = createStore()
 
         // Act
         store.updateNetwork( false )
-        store.updateScreenWidth( 500 )
 
         // Assert
         expect( store.online() ).toBe( false )
+    } )
+
+    it( 'follows the viewport width when the window is resized', () => {
+        // Arrange
+        store = createStore()
+
+        // Act
+        resize( 500 )
+
+        // Assert
         expect( store.screenWidth() ).toBe( 500 )
+    } )
+
+    it( 'stops following the viewport when the store is destroyed', () => {
+        // Arrange
+        store = createStore()
+
+        // Act
+        TestBed.resetTestingModule()
+
+        // Assert
+        expect( stopResize ).toHaveBeenCalledTimes( 1 )
     } )
 } )

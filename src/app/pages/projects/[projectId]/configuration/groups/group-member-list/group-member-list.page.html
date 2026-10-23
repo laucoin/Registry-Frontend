@@ -1,83 +1,64 @@
-<div class='mb-2'>
-    @if (groupLoading()) {
-        <p-card>
-            <app-element-skeleton [withIcon]='true' [layout]='uiFacade.tinyScreen() ? "grid" : "list"' />
-        </p-card>
-    } @else if (group()) {
-        <app-group-element [group]='group()!' [actionMenuVisible]='false' />
+<sgdf-page-title appProjectEyebrow
+                 [lede]="'groups.members-page.subtitle' | transloco">
+    @if (group(); as current) {
+        {{ current.name }}
+    } @else {
+        <sgdf-skeleton effect="pulse" shape="rounded" class="inline-block w-48 h-8"/>
     }
-</div>
+    @if (canAddMembers()) {
+        <sgdf-button slot="actions" variant="primary" (click)="initAddMembersForm()">
+            <sgdf-icon slot="prefix" name="user-plus" library="solid"/>
+            {{ 'groups.actions.add-members' | transloco }}
+        </sgdf-button>
+    }
+    @if (canCreateMember()) {
+        <sgdf-button slot="actions" appearance="outlined" (click)="initCreateMemberForm()">
+            <sgdf-icon slot="prefix" name="plus" library="solid"/>
+            {{ 'groups.actions.create-member' | transloco }}
+        </sgdf-button>
+    }
+</sgdf-page-title>
 
+<app-participant-row #row [groupId]="group()?.id"/>
 
-<app-list (updateRequired)='loadPage($event)'
-          [elementPage]='facade.groupMembersPage()'
-          [error]='facade.groupMembersPageError()'
-          [loading]='facade.groupMembersPageLoading()'
-          emptyMessagePrefix='participants.notifications.EMPTY'>
-    <ng-template appTemplate='search' let-pageEvent>
-        <div class='field'>
-            <label for='text-search-field'>{{ 'participants.search-and-filter.text' | transloco }}</label>
-            <input id='text-search-field'
-                   type='text'
-                   fluid
-                   pInputText
-                   (keydown.enter)='loadPage(pageEvent)'
-                   [formField]='form.textSearched' />
-        </div>
-        <div class='grid search-line'>
-            <div class='field'>
-                <label for='status-search-field'>{{ 'participants.search-and-filter.status' | transloco }}</label>
-                <p-select inputId='status-search-field'
-                          fluid
-                          [options]='participantFacade.presencesStatusMetadata()'
-                          optionLabel='label'
-                          optionValue='value'
-                          (onChange)='loadPage(pageEvent)'
-                          [formField]='form.statusSearched' />
+<app-list class="mt-(--spacing--block) block"
+          emptyMessagePrefix="participants.notifications.EMPTY"
+          [elementPage]="facade.groupMembersPage()"
+          [error]="facade.groupMembersPageError()"
+          [loading]="facade.groupMembersPageLoading()"
+          [loadingMore]="facade.groupMembersPageSilentLoading()"
+          [activeFilters]="activeFilters()"
+          (updateRequired)="loadBatch($event)"
+          (filtersReset)="resetFilters()">
+    <ng-template appTemplate="search">
+        <form class="grid grid-cols-1 items-end gap-(--spacing--in-block-large) md:grid-cols-3"
+              (submit)="$event.preventDefault(); search()">
+            <sgdf-input appSgdfField [label]="'participants.search-and-filter.text' | transloco"
+                        [formField]="form.textSearched"/>
+            <sgdf-select appSgdfField [label]="'participants.search-and-filter.status' | transloco"
+                         [formField]="form.statusSearched">
+                @for (item of participantFacade.presencesStatusMetadata(); track item.label) {
+                    <sgdf-option [value]="item.value ?? ''">{{ item.label }}</sgdf-option>
+                }
+            </sgdf-select>
+            <sgdf-select appSgdfField [label]="'participants.search-and-filter.visibility' | transloco"
+                         [formField]="form.visibilitySearched">
+                @for (item of participantFacade.visibilitiesMetadata(); track item.label) {
+                    <sgdf-option [value]="item.value | booleanChoice">{{ item.label }}</sgdf-option>
+                }
+            </sgdf-select>
+            <div class="flex justify-end md:col-span-3">
+                <sgdf-button variant="primary" appearance="outlined" submit
+                             [loading]="facade.groupMembersPageLoading()">
+                    <sgdf-icon slot="prefix" name="magnifying-glass" library="solid"/>
+                    {{ 'global.actions.search' | transloco }}
+                </sgdf-button>
             </div>
-            <div class='field'>
-                <label for='visibility-search-field'>{{ 'participants.search-and-filter.visibility' | transloco }}</label>
-                <p-select inputId='visibility-search-field'
-                          fluid
-                          [options]='participantFacade.visibilitiesMetadata()'
-                          optionLabel='label'
-                          optionValue='value'
-                          (onChange)='loadPage(pageEvent)'
-                          [formField]='form.visibilitySearched' />
-            </div>
-        </div>
-        <div class='flex justify-center'>
-            <p-button (onClick)='loadPage(pageEvent)'
-                      [label]='"global.actions.search-and-filter" | transloco'
-                      outlined
-                      rounded
-                      icon='pi pi-search'
-                      [loading]='facade.groupMembersPageLoading() || facade.groupMembersPageSilentLoading()' />
-        </div>
+        </form>
     </ng-template>
-    <ng-template appTemplate='element' let-participant>
-        <app-participant-element [participant]='participant' [groupIdToRemove]='group()?.id' />
-    </ng-template>
-    <ng-template appTemplate='creation'>
-        @if (CurrentUserHelper.hasProjectAuthority(sessionFacade.currentUser(), facade.selectedProjectId(), ProjectAuthority.REGISTRY_PROJECT_GROUP_U)) {
-            <p-button (onClick)='initAddMembersForm()'
-                      class='m-1'
-                      severity='info'
-                      rounded
-                      outlined
-                      [label]='uiFacade.tinyScreen() ? "" : "groups.actions.add-members" | transloco'
-                      icon='pi pi-user-plus' />
-        }
-        @if (CurrentUserHelper.hasProjectAuthority(sessionFacade.currentUser(), facade.selectedProjectId(), ProjectAuthority.REGISTRY_PROJECT_PARTICIPANT_C)
-             && CurrentUserHelper.hasProjectAuthority(sessionFacade.currentUser(), facade.selectedProjectId(), ProjectAuthority.REGISTRY_PROJECT_GROUP_U)) {
-            <p-button (onClick)='initCreateMemberForm()'
-                      class='m-1'
-                      severity='success'
-                      rounded
-                      outlined
-                      [label]='uiFacade.tinyScreen() ? "" : "groups.actions.create-member" | transloco'
-                      icon='pi pi-plus' />
-        }
+
+    <ng-template appTemplate="element" let-participant>
+        <ng-container [ngTemplateOutlet]="row.template()" [ngTemplateOutletContext]="{ $implicit: participant }"/>
     </ng-template>
 </app-list>
 

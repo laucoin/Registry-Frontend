@@ -1,6 +1,6 @@
 import { WritableSignal } from '@angular/core'
 import { applyWhen, FieldTree, form, SchemaPathTree } from '@angular/forms/signals'
-import { SelectItem } from 'primeng/api'
+import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { AlertDto } from '@pages/projects/[projectId]/alerts/data/dto/alert.dto'
 import { CommunicationDto } from '@pages/projects/[projectId]/movements/communication/data/dto/communication.dto'
 import { RegistrySchemas } from '@shared/helpers/form/registry.schemas'
@@ -10,8 +10,8 @@ import { MovementModel } from '@shared/models/model/movement.model'
 
 export interface CommunicationFormModel {
     message: string
-    movement: SelectItem<MovementModel> | null
-    alert: SelectItem<AlertModel> | null
+    movement: SelectOptionModel<MovementModel> | null
+    alert: SelectOptionModel<AlertModel> | null
     newAlertTitle: string
 }
 

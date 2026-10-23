@@ -15,7 +15,6 @@ const CASES: ApiCase<UserApi>[] = [
     { name: 'blocks a user', method: 'PATCH', url: `${BASE}/u1/block`, call: (api: UserApi) => api.blockUserById( 'u1' ), response: USER_DTO, verify: expectMapped },
     { name: 'unblocks a user', method: 'PATCH', url: `${BASE}/u1/unblock`, call: (api: UserApi) => api.unblockUserById( 'u1' ), response: USER_DTO, verify: expectMapped },
     { name: 'impersonates a user', method: 'PATCH', url: `${BASE}/u1/impersonate`, call: (api: UserApi) => api.impersonateUserById( 'u1' ), response: USER_DTO, verify: expectMapped },
-    { name: 'impersonates the current user', method: 'PATCH', url: `${BASE}/impersonate`, call: (api: UserApi) => api.impersonateCurrentUser(), response: USER_DTO, verify: expectMapped },
     { name: 'deletes a user', method: 'DELETE', url: `${BASE}/u1`, call: (api: UserApi) => api.deleteUserById( 'u1' ) },
 ]
 

@@ -7,7 +7,6 @@ import { BehaviorSubject, of } from 'rxjs'
 import { Mock, beforeEach, describe, expect, it, vi } from 'vitest'
 import { ConfigModel } from '@core/config/model/config.model'
 import { RegistryConfig } from '@core/config/registry.config'
-import { RegistryFacade } from '@core/registry/state/registry.facade'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
@@ -38,7 +37,7 @@ describe( 'user and project profile forms', () => {
         back = vi.fn()
         navigateByUrl = vi.fn( () => Promise.resolve( true ) )
         RegistryConfig.config = { notification: { duration: {} } } as unknown as ConfigModel
-        RegistryConfig.environment = { production: false, backend: { url: 'http://backend.test', noAuthPaths: [] } }
+        RegistryConfig.environment = { production: false, backend: { url: 'http://backend.test', noAuthPaths: [] }, hosting: { providerName: null, providerAddress: null } }
         TestBed.configureTestingModule( {
             providers: [
                 { provide: facadeToken, useValue: facade },
@@ -47,7 +46,6 @@ describe( 'user and project profile forms', () => {
                 { provide: ActivatedRoute, useValue: { snapshot: { params } } },
                 { provide: SessionFacade, useValue: { selectedProject: (): undefined => undefined, currentUser: (): undefined => undefined } },
                 { provide: UiFacade, useValue: autoMock() },
-                { provide: RegistryFacade, useValue: autoMock() },
                 { provide: CustomDateFormatPipe, useValue: { transform: (): string => '' } },
                 { provide: TranslocoService, useValue: { translate: (key: string): string => key } },
             ],

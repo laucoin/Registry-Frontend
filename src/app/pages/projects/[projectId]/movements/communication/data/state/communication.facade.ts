@@ -3,7 +3,8 @@ import { computed, Injectable, Signal, inject } from '@angular/core'
 import { PageModel } from '@shared/models/model/page.model'
 import { CommunicationModel } from '@shared/models/model/communication.model'
 import { CommunicationStore } from '@pages/projects/[projectId]/movements/communication/data/state/communication.store'
-import { SelectItem, ToastMessageOptions } from 'primeng/api'
+import { SelectOptionModel } from '@shared/models/model/select-option.model'
+import { NotificationModel } from '@shared/models/model/notification.model'
 import { DateHelper } from '@shared/helpers/date.helper'
 import { CommunicationApi } from '@pages/projects/[projectId]/movements/communication/data/state/communication.api'
 import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/rx.helper'
@@ -34,7 +35,7 @@ export class CommunicationFacade extends GenericProjectElementFacade {
 
     public readonly communicationsPageSilentLoading: Signal<boolean> = this.store.communications.silentLoading
 
-    public readonly communicationsPageError: Signal<ToastMessageOptions | undefined> = this.store.communications.error
+    public readonly communicationsPageError: Signal<NotificationModel | undefined> = this.store.communications.error
 
     private readonly communicationsPageResetSearch: Signal<boolean> = this.store.communications.params.resetSearch
 
@@ -56,16 +57,16 @@ export class CommunicationFacade extends GenericProjectElementFacade {
 
     public readonly communicationLoading: Signal<boolean> = this.store.communication.loading
 
-    public readonly visibilitiesMetadata: Signal<SelectItem<boolean | undefined>[]> = computed( () =>
-            this.store.metadata.visibilities().map( (status: SelectItem<boolean | undefined>) => ({
+    public readonly visibilitiesMetadata: Signal<SelectOptionModel<boolean | undefined>[]> = computed( () =>
+            this.store.metadata.visibilities().map( (status: SelectOptionModel<boolean | undefined>) => ({
                 ...status,
                 label: this.translateLabel( status.label! ),
             }) ),
         )
 
-    public readonly searchedMovementsMetadata: Signal<SelectItem<MovementModel>[]> = this.store.metadata.searchedMovements
+    public readonly searchedMovementsMetadata: Signal<SelectOptionModel<MovementModel>[]> = this.store.metadata.searchedMovements
 
-    public readonly searchedAlertsMetadata: Signal<SelectItem<AlertModel>[]> = this.store.metadata.searchedAlerts
+    public readonly searchedAlertsMetadata: Signal<SelectOptionModel<AlertModel>[]> = this.store.metadata.searchedAlerts
 
     public fetchCommunicationsPage (
         pageNumber: number | undefined,

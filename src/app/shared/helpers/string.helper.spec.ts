@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
+import { RouteHelper } from '@shared/helpers/route.helper'
 import { StringHelper } from '@shared/helpers/string.helper'
 
 describe( 'StringHelper', () => {
@@ -104,14 +105,14 @@ describe( 'StringHelper', () => {
         expect( active ).toBe( true )
     } )
 
-    it( 'does not mark the users route active on the profiles, invitations or settings pages', () => {
+    it( 'does not mark the users route active on the profiles or invitations pages', () => {
         // Arrange
-        const pathnames: string[] = [ `/${RegistryRouteEnum.USERS_PROFILES}`, `/${RegistryRouteEnum.USERS_INVITATIONS}`, `/${RegistryRouteEnum.USERS_SETTINGS}` ]
+        const pathnames: string[] = [ RouteHelper.absolute( RegistryRouteEnum.USERS_PROFILES ), RouteHelper.absolute( RegistryRouteEnum.USERS_INVITATIONS ) ]
 
         // Act
         const results: boolean[] = pathnames.map( (pathname: string): boolean => StringHelper.isRouteActive( RegistryRouteEnum.USERS, pathname ) )
 
         // Assert
-        expect( results ).toEqual( [ false, false, false ] )
+        expect( results ).toEqual( [ false, false ] )
     } )
 } )

@@ -10,5 +10,6 @@ import { RouterOutlet } from '@angular/router'
     selector: 'app-project',
     imports: [ RouterOutlet ],
     template: '<router-outlet/>',
+    styles: ':host { display: block; width: 100%; }',
 } )
 export class ProjectPage {}

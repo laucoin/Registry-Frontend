@@ -14,7 +14,7 @@ import {Ripple} from 'primeng/ripple'
 import {ContextMenu} from 'primeng/contextmenu'
 import {GenericComponent} from '@shared/ui/base/generic.component'
 import {DateFormatPipe} from '@shared/helpers/pipe/date-format.pipe'
-import {MenuItem} from 'primeng/api'
+import {MenuEntryModel} from '@shared/models/model/menu-entry.model'
 
 /**
  * Purpose: Card frame shared by every element of a list.
@@ -43,7 +43,7 @@ export class ElementCardComponent<T extends GenericModel> extends GenericCompone
     private readonly datePipe: DateFormatPipe = inject(DateFormatPipe)
 
     public readonly element: InputSignal<T> = input.required()
-    public readonly actions: InputSignal<MenuItem[]> = input<MenuItem[]>([])
+    public readonly actions: InputSignal<MenuEntryModel[]> = input<MenuEntryModel[]>([])
     public readonly icon: InputSignal<string | undefined> = input()
     public readonly loading: InputSignal<boolean> = input(false)
     public readonly actionMenuVisible: InputSignal<boolean> = input(true)

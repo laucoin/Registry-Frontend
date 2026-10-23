@@ -132,4 +132,29 @@ describe( 'AlertFacade', () => {
         expect( received ).toBe( ERROR_500 )
         expect( notify ).not.toHaveBeenCalled()
     } )
+
+    it( 'reloads every shown batch of the alerts in one request', () => {
+        // Arrange
+        const expectedProjectId: string = 'p1'
+        findAlerts.mockClear()
+
+        // Act
+        facade.reloadAlertsPage()
+
+        // Assert
+        expect( findAlerts ).toHaveBeenCalledWith( expectedProjectId, 0, facade.alertsPage()!.pageSize * 3, expect.anything() )
+    } )
+
+    it( 'appends the next batch of alerts to the ones already shown', () => {
+        // Arrange
+        findAlerts.mockReturnValueOnce( of( pageOf<AlertModel>( [ { id: 'a' } as AlertModel ], 0 ) ) )
+        findAlerts.mockReturnValueOnce( of( pageOf<AlertModel>( [ { id: 'b' } as AlertModel ], 1 ) ) )
+        facade.fetchAlertsPage( 0, 1 )
+
+        // Act
+        facade.fetchAlertsPage( 1, 1 )
+
+        // Assert
+        expect( facade.alertsPage()?.content.map( (it: AlertModel): string => it.id ) ).toEqual( [ 'a', 'b' ] )
+    } )
 } )

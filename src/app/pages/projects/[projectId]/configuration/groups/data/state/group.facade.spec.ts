@@ -1,3 +1,4 @@
+import { pageOf } from '@shared/helpers/testing/test-fixtures'
 import { signal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { TranslocoService } from '@jsverse/transloco'
@@ -108,7 +109,7 @@ describe( 'GroupFacade', () => {
         // Assert
         expect( notify ).toHaveBeenCalledTimes( 1 )
         expect( emitted ).toEqual( [ 'create' ] )
-        expect( findGroups ).toHaveBeenCalledWith( 'p1', 2, 10, expect.anything() )
+        expect( findGroups ).toHaveBeenCalledWith( 'p1', 0, 30, expect.anything() )
     } )
 
     it( 'warns when only some of the members were added', () => {
@@ -131,5 +132,19 @@ describe( 'GroupFacade', () => {
 
         // Assert
         expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { severity: SeverityEnum.SUCCESS } ) )
+    } )
+
+    it( 'reloads every shown batch of the members of a group in one request', () => {
+        // Arrange
+        const finder: Mock = vi.fn( () => of( pageOf<never>( [], 1 ) ) )
+        ;(TestBed.inject( GroupApi ) as unknown as Record<string, Mock>)[ 'findGroupMembersByGroupId' ] = finder
+        facade.fetchGroupMembersPage( 'e1', 1, 10 )
+        finder.mockClear()
+
+        // Act
+        facade.reloadGroupMembersPage( 'e1' )
+
+        // Assert
+        expect( finder ).toHaveBeenCalledWith( 'p1', 'e1', 0, expect.any( Number ), expect.anything() )
     } )
 } )

@@ -1,11 +1,11 @@
 import { signalStore, withState } from '@ngrx/signals'
-import { SelectItem } from 'primeng/api'
+import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { ThemeEnum } from '@shared/models/enumeration/theme.enum'
 import { RegistryConfig } from '@core/config/registry.config'
 
 interface MetadataStoreModel {
-    themes: SelectItem<ThemeEnum>[]
-    languages: SelectItem<string>[]
+    themes: SelectOptionModel<ThemeEnum>[]
+    languages: SelectOptionModel<string>[]
 }
 
 /**
@@ -21,7 +21,7 @@ export const MetadataStore = signalStore(
             { icon: 'pi pi-sun', value: ThemeEnum.LIGHT },
             { icon: 'pi pi-moon', value: ThemeEnum.DARK },
         ],
-        languages: RegistryConfig.config.languages.map( (lang: string): SelectItem<string> => ({
+        languages: RegistryConfig.config.languages.map( (lang: string): SelectOptionModel<string> => ({
             label: 'global.language.' + lang,
             value: lang,
         }) ),

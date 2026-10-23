@@ -2,7 +2,7 @@ import { inject } from '@angular/core'
 import { patchState, signalStore, withMethods, withState } from '@ngrx/signals'
 import { RxMethod, rxMethod } from '@ngrx/signals/rxjs-interop'
 import { Observable, pipe, switchMap, tap } from 'rxjs'
-import { SelectItem } from 'primeng/api'
+import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { ErrorReporter } from '@core/registry/state/error-reporter'
 import { GroupPageParamsModel } from '@pages/projects/[projectId]/configuration/groups/data/model/group-page-params.model'
 import { GroupStoreModel } from '@pages/projects/[projectId]/configuration/groups/data/model/group-store.model'
@@ -15,11 +15,10 @@ import { pageFetcher, paramsUpdater, StoreRef } from '@shared/helpers/store/page
 import { withProfileScope } from '@shared/helpers/store/with-profile-scope.feature'
 import { GroupModel } from '@shared/models/model/group.model'
 import { ParticipantModel } from '@shared/models/model/participant.model'
+import { CumulativePageHelper, CumulativePageRequest } from '@shared/helpers/store/cumulative-page.helper'
 
-interface GroupsPageRequest {
+interface GroupsPageRequest extends CumulativePageRequest {
     projectId: string | undefined
-    pageNumber: number | undefined
-    pageSize: number | undefined
 }
 
 interface GroupMembersPageRequest extends GroupsPageRequest {
@@ -74,7 +73,7 @@ function fetchGroupMembersPage (store: GroupStoreRef, api: GroupApi, errors: Err
         (request: GroupMembersPageRequest, params: ParticipantPageParamsModel) =>
             api.findGroupMembersByGroupId( request.projectId, request.id, request.pageNumber, request.pageSize, params ),
         errors,
-        { before: (request: GroupMembersPageRequest): void => resetMembersOnGroupChange( store, request.id ) },
+        { before: (request: GroupMembersPageRequest): void => resetMembersOnGroupChange( store, request.id ), merge: CumulativePageHelper.merge },
     )
 }
 
@@ -90,7 +89,7 @@ function searchParticipants (store: GroupStoreRef, api: GroupApi, errors: ErrorS
             api.searchParticipants( request.projectId, request.textSearched ).pipe( notifyOnError( errors ) ),
         ),
         tap( (participants: ParticipantModel[]): void => patchState( store, (state: GroupStoreModel) => ({
-            metadata: { ...state.metadata, searched: participants.map( ParticipantHelper.toSelectItem ) as SelectItem<ParticipantModel>[] },
+            metadata: { ...state.metadata, searched: participants.map( ParticipantHelper.toSelectItem ) as SelectOptionModel<ParticipantModel>[] },
         }) ) ),
     ) )
 }
@@ -105,7 +104,7 @@ export const GroupStore = signalStore(
     withProfileScope<GroupStoreModel>( defaultGroupStore ),
     withMethods( (store, api = inject( GroupApi ), errors = inject( ErrorReporter )) => ({
         fetchGroupsPage: pageFetcher( store, 'groups', (request: GroupsPageRequest, params: GroupPageParamsModel) =>
-            api.findGroups( request.projectId, request.pageNumber, request.pageSize, params ), errors ),
+            api.findGroups( request.projectId, request.pageNumber, request.pageSize, params ), errors, { merge: CumulativePageHelper.merge } ),
         updateGroupsPageSearchParams: paramsUpdater( store, 'groups' ),
         fetchGroupMembersPage: fetchGroupMembersPage( store, api, errors ),
         updateGroupMembersPageSearchParams: paramsUpdater( store, 'members' ),
