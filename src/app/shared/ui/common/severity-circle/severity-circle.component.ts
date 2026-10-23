@@ -4,7 +4,7 @@ import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 @Component( {
     selector: 'app-severity-circle',
     templateUrl: './severity-circle.component.html',
-    styleUrl: './severity-circle.component.scss',
+    styleUrl: './severity-circle.component.css',
 } )
 export class SeverityCircleComponent {
     public readonly severity: InputSignal<SeverityEnum | undefined> = input.required<SeverityEnum | undefined>()

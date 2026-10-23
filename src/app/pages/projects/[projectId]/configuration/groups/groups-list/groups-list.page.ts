@@ -8,7 +8,7 @@ import { DatePicker } from 'primeng/datepicker'
 import { InputText } from 'primeng/inputtext'
 import { ListComponent } from '@shared/ui/common/list/list.component'
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
-import { TranslatePipe } from '@ngx-translate/core'
+import {TranslocoPipe} from '@jsverse/transloco'
 import { RouterLink } from '@angular/router'
 import { GroupElementComponent } from '@pages/projects/[projectId]/configuration/groups/group-element/group-element.component'
 import { Select } from 'primeng/select'
@@ -23,7 +23,7 @@ import { GenericListComponent } from '@shared/ui/base/generic-list.component'
         ListComponent,
         ReactiveFormsModule,
         RegistryTemplateDirective,
-        TranslatePipe,
+        TranslocoPipe,
         RouterLink,
         GroupElementComponent,
         Select,

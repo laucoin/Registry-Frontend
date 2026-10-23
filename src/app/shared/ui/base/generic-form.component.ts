@@ -24,7 +24,7 @@ export abstract class GenericFormComponent<M, D> extends GenericComponent {
 
     private destroyed: boolean = false
 
-    protected readonly invalidFormMessage: string = this.translateService.instant( 'global.messages.invalid-form' )
+    protected readonly invalidFormMessage: string = this.translateService.translate( 'global.messages.invalid-form' )
     protected readonly startDateExample: Date = GenericFormComponent.startDateExample
     protected readonly endDateExample: Date = GenericFormComponent.endDateExample
 

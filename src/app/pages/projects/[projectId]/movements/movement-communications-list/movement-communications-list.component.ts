@@ -3,7 +3,7 @@ import { ReactiveFormsModule } from '@angular/forms'
 import { MovementFacade } from '@pages/projects/[projectId]/movements/data/state/movement.facade'
 import { Subscription, tap } from 'rxjs'
 import { CommunicationFacade } from '@pages/projects/[projectId]/movements/communication/data/state/communication.facade'
-import { TranslatePipe } from '@ngx-translate/core'
+import {TranslocoPipe} from '@jsverse/transloco'
 import { MovementModel } from '@shared/models/model/movement.model'
 import { CommunicationFormComponent } from '@shared/ui/domain/communication-form/communication-form.component'
 import { GenericComponent } from '@shared/ui/base/generic.component'
@@ -16,7 +16,7 @@ import { AlertFacade } from '@pages/projects/[projectId]/alerts/data/state/alert
     selector: 'app-movement-communications-list',
     imports: [
         ReactiveFormsModule,
-        TranslatePipe,
+        TranslocoPipe,
         CommunicationFormComponent,
         DialogElementComponent,
     ],

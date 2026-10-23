@@ -9,7 +9,7 @@ import {DividerModule} from 'primeng/divider'
 import {FormComponent} from '@shared/ui/common/form/form.component'
 import {FormFieldErrorComponent} from '@shared/ui/common/form-field-error/form-field-error.component'
 import {InputTextModule} from 'primeng/inputtext'
-import {TranslatePipe} from '@ngx-translate/core'
+import {TranslocoPipe} from '@jsverse/transloco'
 import {FormHelper} from '@shared/helpers/form.helper'
 import {ActivityModel} from '@shared/models/model/activity.model'
 import {RegistryRequiredDirective} from '@shared/directives/registry-required.directive'
@@ -39,7 +39,7 @@ import {FormIconPipe} from '@shared/helpers/pipe/form-icon.pipe'
         FormFieldErrorComponent,
         FormsModule,
         InputTextModule,
-        TranslatePipe,
+        TranslocoPipe,
         ReactiveFormsModule,
         RegistryRequiredDirective,
         Textarea,
@@ -52,7 +52,7 @@ import {FormIconPipe} from '@shared/helpers/pipe/form-icon.pipe'
         FormIconPipe,
     ],
     templateUrl: './activity-form.page.html',
-    styleUrl: './activity-form.page.scss',
+    styleUrl: './activity-form.page.css',
 })
 export class ActivityFormPage extends GenericFormComponent<ActivityModel, ActivityDto> implements OnDestroy {
     protected readonly facade: ActivityFacade = inject(ActivityFacade)

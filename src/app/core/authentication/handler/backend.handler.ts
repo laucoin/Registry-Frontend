@@ -8,7 +8,7 @@ import {
     HttpResponse,
 } from '@angular/common/http'
 import { inject } from '@angular/core'
-import { TranslateService } from '@ngx-translate/core'
+import {TranslocoService} from '@jsverse/transloco'
 import { catchError, map, mergeMap, Observable, shareReplay, tap, throwError } from 'rxjs'
 import { RegistryConfig } from '@core/config/registry.config'
 import { RegistryFacade } from '@core/registry/state/registry.facade'
@@ -53,7 +53,7 @@ export const backendHandler: HttpInterceptorFn = (
 
 	const registryFacade: RegistryFacade = inject(RegistryFacade)
 	const securityApi: SecurityApi = inject(SecurityApi)
-	const translateService: TranslateService = inject(TranslateService)
+	const translateService: TranslocoService = inject(TranslocoService)
 
 	const currentUser: CurrentUserModel | undefined = registryFacade.currentUser()
 	const url: string = formatUrlIfNeeded(registryFacade, currentUser, req.url)
@@ -85,8 +85,8 @@ export const backendHandler: HttpInterceptorFn = (
 						return throwError((): ErrorModel => ({
 							status: 503,
 							name: 'Service Unavailable',
-							title: translateService.instant('global.notifications.503.title'),
-							message: translateService.instant('global.notifications.503.message'),
+							title: translateService.translate('global.notifications.503.title'),
+							message: translateService.translate('global.notifications.503.message'),
 						}))
 					case 401:
 						return refreshAccessToken(securityApi, registryFacade).pipe(

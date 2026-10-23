@@ -1,6 +1,6 @@
 import { Component, computed, Signal} from '@angular/core'
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms'
-import {TranslatePipe} from '@ngx-translate/core'
+import {TranslocoPipe} from '@jsverse/transloco'
 import {PageEventModel} from '@shared/models/model/page-event.model'
 import {InputTextModule} from 'primeng/inputtext'
 import {ToggleButtonModule} from 'primeng/togglebutton'
@@ -19,7 +19,7 @@ import {RouterLink} from '@angular/router'
 @Component({
     selector: 'app-invitations-list',
     imports: [
-        TranslatePipe,
+        TranslocoPipe,
         FormsModule,
         InputTextModule,
         ToggleButtonModule,

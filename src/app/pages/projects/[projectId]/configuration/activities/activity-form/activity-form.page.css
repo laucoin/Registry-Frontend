@@ -1,0 +1,10 @@
+@media (min-width: 992px) {
+  .duration {
+    padding-right: calc(var(--min-spacer) / 2);
+    flex-basis: 40%;
+  }
+  .allowed-participants {
+    padding-left: calc(var(--min-spacer) / 2);
+    flex-basis: 60%;
+  }
+}

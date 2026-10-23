@@ -1,6 +1,6 @@
 import { computed, inject, Injectable, Signal } from '@angular/core'
 import { Router } from '@angular/router'
-import { TranslateService } from '@ngx-translate/core'
+import {TranslocoService} from '@jsverse/transloco'
 import { PrimeNG } from 'primeng/config'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import {
@@ -51,7 +51,7 @@ import { initialize, reportError } from '@shared/helpers/rx.helper'
 
 @Injectable()
 export class RegistryFacade {
-    private readonly translateService: TranslateService = inject(TranslateService)
+    private readonly translateService: TranslocoService = inject(TranslocoService)
     private readonly primeConfig: PrimeNG = inject(PrimeNG)
     private readonly router: Router = inject(Router)
     private readonly datePipe: CustomDateFormatPipe = inject(CustomDateFormatPipe)
@@ -150,7 +150,7 @@ export class RegistryFacade {
     public readonly languagesMetadata: Signal<SelectItem<string>[]> = computed((): SelectItem<string>[] =>
         this.metadata.languages().map((lang: SelectItem<string>): SelectItem<string> => ({
             ...lang,
-            label: this.translateService.instant(lang.label!),
+            label: this.translateService.translate(lang.label!),
         })),
     )
 
@@ -186,7 +186,7 @@ export class RegistryFacade {
         if (StringHelper.isNullOrBlank(message.detail) && StringHelper.isNullOrBlank(message.summary)) {
             formattedMessage = {
                 ...message,
-                detail: this.translateService.instant('global.notifications.UNKNOWN_ERROR'),
+                detail: this.translateService.translate('global.notifications.UNKNOWN_ERROR'),
             }
         }
 
@@ -336,9 +336,7 @@ export class RegistryFacade {
     }
 
     public updateCurrentUserLanguage(language: string): void {
-        this.translateService.use(language)
-        this.primeConfig.setTranslation(this.translateService.instant('prime-ng'))
-        this.reloadTranslatedData()
+        this.applyLanguage(language)
         this.preferencesApi.updateLanguage(language).pipe(
             catchError((error: ErrorModel): Observable<never> => this.reportError$(error)),
         ).subscribe()
@@ -437,11 +435,18 @@ export class RegistryFacade {
         }
 
         const userLanguage: string | undefined = currentUser.preferences.language
-        if (GenericHelper.nonNull(userLanguage) && userLanguage !== this.translateService.currentLang()) {
-            this.translateService.use(userLanguage)
-            this.primeConfig.setTranslation(this.translateService.instant('prime-ng'))
-            this.reloadTranslatedData()
+        if (GenericHelper.nonNull(userLanguage) && userLanguage !== this.translateService.getActiveLang()) {
+            this.applyLanguage(userLanguage)
         }
+    }
+
+    private applyLanguage(language: string): void {
+        this.translateService.load(language).pipe(
+            tap((): TranslocoService => this.translateService.setActiveLang(language)),
+            tap((): void => this.primeConfig.setTranslation(this.translateService.translateObject('prime-ng'))),
+            tap((): void => this.reloadTranslatedData()),
+            catchError((error: ErrorModel): Observable<never> => this.reportError$(error)),
+        ).subscribe()
     }
 
     private notifyProfile(summary: string, detail: string, icon: string, data?: object): void {

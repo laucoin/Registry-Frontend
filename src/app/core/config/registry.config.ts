@@ -1,12 +1,13 @@
-import {EnvironmentProviders, Injectable, Provider} from '@angular/core'
-import {provideTranslateHttpLoader} from '@ngx-translate/http-loader'
+import {EnvironmentProviders, inject, Injectable, provideAppInitializer, Provider} from '@angular/core'
 import {EnvironmentModel} from '@core/config/model/environment.model'
 import {StringHelper} from '@shared/helpers/string.helper'
 import {providePrimeNG} from 'primeng/config'
 import {LocalStorageUtils} from '@shared/helpers/local-storage.helper'
 import {GenericHelper} from '@shared/helpers/generic.helper'
 import {LOCALE} from '@shared/helpers/request.helper'
-import {provideTranslateService} from '@ngx-translate/core'
+import {provideTransloco, TranslocoService} from '@jsverse/transloco'
+import {RegistryTranslationLoader} from '@core/config/registry-translation.loader'
+import {firstValueFrom} from 'rxjs'
 import {ConfigModel} from '@core/config/model/config.model';
 import {definePreset} from "@primeuix/themes";
 import Lara from '@primeuix/themes/lara';
@@ -68,17 +69,23 @@ export class RegistryConfig {
         return lang
     }
 
-    public static provideTranslatorService(): Provider | EnvironmentProviders {
-        return provideTranslateService({
-            fallbackLang: RegistryConfig.config.defaultLanguage,
-            lang: RegistryConfig.locale,
-        })
-    }
+    public static provideTranslatorService(): (Provider | EnvironmentProviders)[] {
+        return [
+            provideTransloco({
+                config: {
+                    availableLangs: RegistryConfig.config.languages,
+                    defaultLang: RegistryConfig.locale,
+                    fallbackLang: RegistryConfig.config.defaultLanguage,
+                    reRenderOnLangChange: true,
+                    prodMode: RegistryConfig.environment.production,
+                },
+                loader: RegistryTranslationLoader,
+            }),
+            provideAppInitializer((): Promise<unknown> => {
+                const translateService: TranslocoService = inject(TranslocoService)
 
-    public static provideTranslatorHttpLoader(): Provider | EnvironmentProviders {
-        return provideTranslateHttpLoader({
-            prefix: `i18n/`,
-            suffix: '.json',
-        })
+                return firstValueFrom(translateService.load(translateService.getActiveLang()))
+            }),
+        ]
     }
 }

@@ -1,12 +1,11 @@
 import { inject, Pipe, PipeTransform } from '@angular/core'
-import { TranslateService } from '@ngx-translate/core'
-import { GenericHelper } from '@shared/helpers/generic.helper'
+import {TranslocoService} from '@jsverse/transloco'
 
 @Pipe( {
     name: 'pluralTranslation', standalone: true, pure: false,
 } )
 export class PluralTranslationPipe implements PipeTransform {
-    private translateService: TranslateService = inject( TranslateService )
+    private translateService: TranslocoService = inject( TranslocoService )
 
     public transform (key: string, number: number | unknown[] | undefined = undefined): string {
         const size: number | undefined = number instanceof Array ? number.length : number
@@ -14,18 +13,18 @@ export class PluralTranslationPipe implements PipeTransform {
         const twoKey: string = `${key}.two`
 
         switch (true) {
-            case size === 0 && this.translateService.instant( zeroKey ) !== zeroKey:
-                return `${key}.zero`
+            case size === 0 && this.hasTranslation( zeroKey ):
+                return zeroKey
             case size === 0 || size === 1:
                 return `${key}.one`
-            case size === 2 && this.translateService.instant( twoKey ) !== twoKey: {
+            case size === 2 && this.hasTranslation( twoKey ):
                 return twoKey
-            }
-            case GenericHelper.nonNull( size ) && size! >= 2: {
-                return `${key}.few`
-            }
             default:
-                return `${key}.other`
+                return `${key}.few`
         }
+    }
+
+    private hasTranslation (key: string): boolean {
+        return key in this.translateService.getTranslation( this.translateService.getActiveLang() )
     }
 }

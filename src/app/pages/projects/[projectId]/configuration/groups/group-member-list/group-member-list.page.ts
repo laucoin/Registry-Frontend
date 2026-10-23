@@ -13,7 +13,7 @@ import {
     ParticipantElementComponent,
 } from '@shared/ui/domain/participant-element/participant-element.component'
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
-import { TranslatePipe } from '@ngx-translate/core'
+import {TranslocoPipe} from '@jsverse/transloco'
 import { LayerComponent } from '@shared/ui/common/layer/layer.component'
 import { RegistryRequiredDirective } from '@shared/directives/registry-required.directive'
 import {
@@ -40,7 +40,7 @@ import { Card } from 'primeng/card'
         ParticipantElementComponent,
         ReactiveFormsModule,
         RegistryTemplateDirective,
-        TranslatePipe,
+        TranslocoPipe,
         LayerComponent,
         RegistryRequiredDirective,
         SelectElementsFieldComponent,

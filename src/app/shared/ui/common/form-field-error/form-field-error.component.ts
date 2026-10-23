@@ -1,7 +1,7 @@
 import { Component, computed, inject, input, InputSignal, Signal} from '@angular/core'
 import {ValidationErrors} from '@angular/forms'
 import {MessageModule} from 'primeng/message'
-import {TranslateService} from '@ngx-translate/core'
+import {TranslocoService} from '@jsverse/transloco'
 
 @Component({
     selector: 'app-form-field-error',
@@ -11,7 +11,7 @@ import {TranslateService} from '@ngx-translate/core'
     templateUrl: './form-field-error.component.html',
 })
 export class FormFieldErrorComponent {
-    private readonly translateService: TranslateService = inject(TranslateService)
+    private readonly translateService: TranslocoService = inject(TranslocoService)
 
     public readonly invalid: InputSignal<boolean> = input.required()
     public readonly errors: InputSignal<ValidationErrors | null> = input.required()
@@ -29,7 +29,7 @@ export class FormFieldErrorComponent {
 
     private definedError(code: string | undefined): string | undefined {
         if (!code) return undefined
-        return this.translateService.instant(
+        return this.translateService.translate(
             `${this.translationPrefix()}.${code}`,
             this.buildTranslationParams(code),
         )

@@ -1,6 +1,12 @@
 import { inject } from '@angular/core'
-import { TranslateService } from '@ngx-translate/core'
+import {TranslocoService} from '@jsverse/transloco'
 
 export abstract class GenericFacade {
-    protected readonly translateService: TranslateService = inject( TranslateService )
+    private static readonly EMPTY_OPTION_LABEL: string = '-'
+
+    protected readonly translateService: TranslocoService = inject( TranslocoService )
+
+    protected translateLabel (label: string): string {
+        return label === GenericFacade.EMPTY_OPTION_LABEL ? label : this.translateService.translate( label )
+    }
 }

@@ -10,7 +10,7 @@ import {
 import {ProjectModel} from '@shared/models/model/project.model'
 import {ElementCardComponent} from '@shared/ui/common/element-card/element-card.component'
 import {TagModule} from 'primeng/tag'
-import {TranslatePipe} from '@ngx-translate/core'
+import {TranslocoPipe} from '@jsverse/transloco'
 import {ChipModule} from 'primeng/chip'
 import {ProjectFacade} from '@pages/projects/data/state/project/project.facade'
 import {RegistryRouteEnum} from '@core/routing/registry-route.enum'
@@ -35,7 +35,7 @@ import {AvailabilityStatusEnum} from '@shared/models/enumeration/availability-st
     imports: [
         ElementCardComponent,
         TagModule,
-        TranslatePipe,
+        TranslocoPipe,
         ChipModule,
         SeverityTagComponent,
         LayerComponent,
@@ -46,7 +46,7 @@ import {AvailabilityStatusEnum} from '@shared/models/enumeration/availability-st
         SeverityCircleComponent,
     ],
     templateUrl: './project-element.component.html',
-    styleUrl: './project-element.component.scss',
+    styleUrl: './project-element.component.css',
 })
 export class ProjectElementComponent extends GenericElementComponent implements OnDestroy {
     protected readonly facade: ProjectFacade = inject(ProjectFacade)
@@ -145,8 +145,8 @@ export class ProjectElementComponent extends GenericElementComponent implements 
 
     protected confirmSupportProfileCreation(): void {
         this.confirmationService.confirm({
-            header: this.translateService.instant('projects.actions.confirmations.create-support.title'),
-            message: this.translateService.instant(
+            header: this.translateService.translate('projects.actions.confirmations.create-support.title'),
+            message: this.translateService.translate(
                 'projects.actions.confirmations.create-support.message',
                 {element: this.project()},
             ),

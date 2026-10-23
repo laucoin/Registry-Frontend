@@ -21,7 +21,7 @@ This project does **not** yet have a unit-test runner configured (`skipTests` is
 - **Components** — use `TestBed` with the standalone component in `imports`. Mock the facade/services it depends on; assert rendered output and that user interactions dispatch the right calls. Keep components thin, so most logic lives in state/services.
 - **NGXS state** — test via `TestBed` + `provideStore([FeatureState])` and `Store`: dispatch an action, mock the injected service (HTTP) to return a controlled observable, then read the resulting `store.selectSnapshot(...)`. Cover success and error paths.
 - **Services** — test HTTP with `provideHttpClientTesting()` / `HttpTestingController`; assert URL, method, body, and response mapping.
-- Mock `@ngx-translate` where components render translated strings.
+- Mock `@jsverse/transloco` where components render translated strings.
 
 ## Deliverable
 

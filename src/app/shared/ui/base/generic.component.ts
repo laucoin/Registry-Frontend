@@ -1,6 +1,6 @@
 import {RegistryFacade} from '@core/registry/state/registry.facade'
 import {inject} from '@angular/core'
-import {TranslateService} from '@ngx-translate/core'
+import {TranslocoService} from '@jsverse/transloco'
 import {ActivatedRoute, Router} from '@angular/router'
 import {FormBuilder} from '@angular/forms'
 import {UserAuthorityEnum} from '@shared/models/enumeration/user-authority.enum'
@@ -33,7 +33,7 @@ export abstract class GenericComponent {
     protected readonly registryFacade: RegistryFacade = inject(RegistryFacade)
     protected readonly route: ActivatedRoute = inject(ActivatedRoute)
     protected readonly router: Router = inject(Router)
-    protected readonly translateService: TranslateService = inject(TranslateService)
+    protected readonly translateService: TranslocoService = inject(TranslocoService)
 
     protected readonly breakpoint: Record<string, string> = breakPoint
 }

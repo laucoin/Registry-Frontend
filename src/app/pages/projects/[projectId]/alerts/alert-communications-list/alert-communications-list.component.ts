@@ -8,7 +8,7 @@ import { CommunicationModel } from '@pages/projects/[projectId]/movements/commun
 import { CommunicationFormComponent } from '@shared/ui/domain/communication-form/communication-form.component'
 import { Subscription, tap } from 'rxjs'
 import { CommunicationFacade } from '@pages/projects/[projectId]/movements/communication/data/state/communication.facade'
-import { TranslatePipe } from '@ngx-translate/core'
+import {TranslocoPipe} from '@jsverse/transloco'
 
 @Component( {
     selector: 'app-alert-communications-list',
@@ -16,10 +16,10 @@ import { TranslatePipe } from '@ngx-translate/core'
         DialogElementComponent,
         ReactiveFormsModule,
         CommunicationFormComponent,
-        TranslatePipe,
+        TranslocoPipe,
     ],
     templateUrl: './alert-communications-list.component.html',
-    styleUrl: './alert-communications-list.component.scss',
+    styleUrl: './alert-communications-list.component.css',
 } )
 export class AlertCommunicationsListComponent implements OnInit, OnDestroy {
     protected readonly facade: AlertFacade = inject( AlertFacade )

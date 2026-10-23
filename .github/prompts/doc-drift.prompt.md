@@ -20,7 +20,7 @@ Compare the Technical documentation against what the frontend actually does:
 - Architecture (NGXS + feature-first): state flow component → facade → action → state → service, and where documented feature code is supposed to live (`domains/<domain>/`, `shell/`, `shared/util-*`).
 - Angular version/build tooling, standalone components, routing/lazy-loading claims vs actual `app.routes.ts`.
 - API integration: which backend endpoints/versions each service actually calls vs what's documented.
-- Accessibility and UX/UI commitments (semantic HTML, keyboard support, i18n via `@ngx-translate`, theming) vs what the components actually implement.
+- Accessibility and UX/UI commitments (semantic HTML, keyboard support, i18n via `@jsverse/transloco`, theming) vs what the components actually implement.
 - Any ADRs — do they still reflect the decision actually implemented?
 
 ## Step 3 — Compare feature by feature

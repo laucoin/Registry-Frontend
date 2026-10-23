@@ -256,7 +256,8 @@
       "profiles": "Access profiles",
       "invitations": "Invitations",
       "settings": "Parameters",
-      "help": "Help"
+      "help": "Help",
+      "options": "Open options menu"
     },
     "date-and-time-format": {
       "date": "dd/mm/yyyy",

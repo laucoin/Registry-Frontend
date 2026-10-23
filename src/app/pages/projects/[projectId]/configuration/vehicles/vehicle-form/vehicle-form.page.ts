@@ -9,7 +9,7 @@ import {DividerModule} from 'primeng/divider'
 import {FormComponent} from '@shared/ui/common/form/form.component'
 import {FormFieldErrorComponent} from '@shared/ui/common/form-field-error/form-field-error.component'
 import {InputTextModule} from 'primeng/inputtext'
-import {TranslatePipe} from '@ngx-translate/core'
+import {TranslocoPipe} from '@jsverse/transloco'
 import {FormHelper} from '@shared/helpers/form.helper'
 import {VehicleModel} from '@shared/models/model/vehicle.model'
 import {RegistryRequiredDirective} from '@shared/directives/registry-required.directive'
@@ -34,7 +34,7 @@ import {FormIconPipe} from '@shared/helpers/pipe/form-icon.pipe'
         FormFieldErrorComponent,
         FormsModule,
         InputTextModule,
-        TranslatePipe,
+        TranslocoPipe,
         ReactiveFormsModule,
         RegistryRequiredDirective,
         InputMask,

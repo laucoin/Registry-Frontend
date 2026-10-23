@@ -3,7 +3,7 @@ import {CardModule} from 'primeng/card'
 import {DividerModule} from 'primeng/divider'
 import {InputTextModule} from 'primeng/inputtext'
 import {PaginatorModule} from 'primeng/paginator'
-import {TranslatePipe} from '@ngx-translate/core'
+import {TranslocoPipe} from '@jsverse/transloco'
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms'
 import {ProjectProfilesDto} from '@pages/projects/[projectId]/configuration/profiles/data/dto/project-profiles.dto'
 import {FormFieldErrorComponent} from '@shared/ui/common/form-field-error/form-field-error.component'
@@ -32,7 +32,7 @@ import {RegistryValidators} from '@shared/helpers/registry.validator'
         DividerModule,
         InputTextModule,
         PaginatorModule,
-        TranslatePipe,
+        TranslocoPipe,
         ReactiveFormsModule,
         FormFieldErrorComponent,
         FormComponent,

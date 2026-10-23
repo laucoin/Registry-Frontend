@@ -3,7 +3,7 @@ import {MovementModel} from '@shared/models/model/movement.model'
 import {MovementFacade} from '@pages/projects/[projectId]/movements/data/state/movement.facade'
 import {ElementCardComponent} from '@shared/ui/common/element-card/element-card.component'
 import {KeyValuePipe, TitleCasePipe, UpperCasePipe} from '@angular/common'
-import {TranslatePipe} from '@ngx-translate/core'
+import {TranslocoPipe} from '@jsverse/transloco'
 import {TagModule} from 'primeng/tag'
 import {MovementContentModel} from '@shared/models/model/movement-content.model'
 import {LayerComponent} from '@shared/ui/common/layer/layer.component'
@@ -45,7 +45,7 @@ import {
     selector: 'app-movement-element',
     imports: [
         ElementCardComponent,
-        TranslatePipe,
+        TranslocoPipe,
         TagModule,
         TitleCasePipe,
         UpperCasePipe,
@@ -75,7 +75,7 @@ import {
         MovementCommunicationsListComponent,
     ],
     templateUrl: './movement-element.component.html',
-    styleUrl: './movement-element.component.scss',
+    styleUrl: './movement-element.component.css',
 })
 export class MovementElementComponent extends GenericElementComponent {
     protected readonly facade: MovementFacade = inject(MovementFacade)

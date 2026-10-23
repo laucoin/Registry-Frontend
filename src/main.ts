@@ -1,5 +1,5 @@
 import {provideHttpClient, withInterceptors} from '@angular/common/http'
-import {enableProdMode, provideZoneChangeDetection} from '@angular/core'
+import {enableProdMode, provideZonelessChangeDetection} from '@angular/core'
 import {bootstrapApplication} from '@angular/platform-browser'
 import {provideRouter} from '@angular/router'
 import {MessageService} from 'primeng/api'
@@ -25,8 +25,7 @@ import {IntervalPipe} from '@shared/helpers/pipe/interval.pipe'
 
     bootstrapApplication(RegistryComponent, {
         providers: [
-            provideZoneChangeDetection({eventCoalescing: true}),
-            provideHttpClient(),
+            provideZonelessChangeDetection(),
             provideHttpClient(withInterceptors([backendHandler])),
             provideRouter(routes),
             MessageService,
@@ -40,7 +39,6 @@ import {IntervalPipe} from '@shared/helpers/pipe/interval.pipe'
             RegistryConfig,
             RegistryConfig.providePrimeNg(),
             RegistryConfig.provideTranslatorService(),
-            RegistryConfig.provideTranslatorHttpLoader(),
             PluralTranslationPipe,
         ],
     }).catch((error: Error) => console.error(error))

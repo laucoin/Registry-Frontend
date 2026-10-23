@@ -19,7 +19,7 @@ import { DateHelper } from '@shared/helpers/date.helper'
         },
     ],
     templateUrl: './date-time-field.component.html',
-    styleUrl: './date-time-field.component.scss',
+    styleUrl: './date-time-field.component.css',
 } )
 export class DateTimeFieldComponent implements ControlValueAccessor {
     protected readonly registryFacade: RegistryFacade = inject( RegistryFacade )

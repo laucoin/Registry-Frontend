@@ -14,14 +14,14 @@
         </ng-template>
     }
 </p-auto-complete>
-<div class='secondary-color mt-3'>
+<div class='secondary-color mt-4'>
     {{ selectionLabel() }}
 </div>
-<ul class='list-box mt-2 d-flex flex-column justify-content-center'
+<ul class='list-box mt-2 flex flex-col justify-center'
     [class.invalid]='invalid()'>
     @for (element of (multiple() ? multipleValue() : GenericHelper.nonNull(simpleValue()) ? [ simpleValue() ] : []); track element!.id) {
-        <li class='item list-item w-100 d-flex align-items-center justify-content-between' [attr.data-value]='element!.id'>
-            <div class='ms-3'>{{ selectItemBuilder()(element!).label }}</div>
+        <li class='item list-item w-full flex items-center justify-between' [attr.data-value]='element!.id'>
+            <div class='ms-4'>{{ selectItemBuilder()(element!).label }}</div>
             <p-button icon='pi pi-times'
                       size='small'
                       rounded

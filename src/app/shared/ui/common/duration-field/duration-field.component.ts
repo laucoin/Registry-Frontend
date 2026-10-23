@@ -19,7 +19,7 @@ import { Select } from 'primeng/select'
         },
     ],
     templateUrl: './duration-field.component.html',
-    styleUrl: './duration-field.component.scss',
+    styleUrl: './duration-field.component.css',
 } )
 export class DurationFieldComponent implements ControlValueAccessor {
     protected readonly durations: SelectItem<SplitTimeModel | undefined>[] = [
