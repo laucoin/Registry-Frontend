@@ -7,17 +7,6 @@ import { AlertApi } from '@pages/projects/[projectId]/movements/data/state/alert
 import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/rx.helper'
 import { CommandEvent } from '@shared/helpers/facade/command-event.service'
 import { Observable, tap } from 'rxjs'
-import {
-    FetchAlertCommunicationsPage,
-    FetchAlertsPage,
-    FetchAlertStatus,
-    StartAlertCommunicationsPageLoader,
-    StartAlertsPageLoader,
-    StopAlertCommunicationsPageLoader,
-    StopAlertsPageLoader,
-    UpdateAlertCommunicationsPageSearchParams,
-    UpdateAlertsPageSearchParams,
-} from '@pages/projects/[projectId]/alerts/data/state/alert.action'
 import { GenericProjectElementFacade } from '@shared/helpers/facade/generic-project-element.facade'
 import { AlertDto } from '@pages/projects/[projectId]/alerts/data/dto/alert.dto'
 import { AlertModel } from '@shared/models/model/alert.model'
@@ -27,124 +16,71 @@ import { CommunicationModel } from '@pages/projects/[projectId]/movements/commun
 
 @Injectable()
 export class AlertFacade extends GenericProjectElementFacade {
+    private readonly store: InstanceType<typeof AlertStore> = inject( AlertStore )
+
     private readonly api: AlertApi = inject( AlertApi )
 
-    public get alertsPage (): Signal<PageModel<AlertModel> | undefined> {
-        return this.ngStore.selectSignal( AlertStore.alertsPage )
-    }
+    public readonly alertsPage: Signal<PageModel<AlertModel> | undefined> = this.store.alerts.element
 
-    public get alertsPageLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( AlertStore.alertsPageLoading )
-    }
+    public readonly alertsPageLoading: Signal<boolean> = this.store.alerts.loading
 
-    public get alertsPageSilentLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( AlertStore.alertsPageSilentLoading )
-    }
+    public readonly alertsPageSilentLoading: Signal<boolean> = this.store.alerts.silentLoading
 
-    public get alertsPageError (): Signal<ToastMessageOptions | undefined> {
-        return this.ngStore.selectSignal( AlertStore.alertsPageError )
-    }
+    public readonly alertsPageError: Signal<ToastMessageOptions | undefined> = this.store.alerts.error
 
-    private get alertsPageResetSearch (): Signal<boolean> {
-        return this.ngStore.selectSignal( AlertStore.alertsPageResetSearch )
-    }
+    private readonly alertsPageResetSearch: Signal<boolean> = this.store.alerts.params.resetSearch
 
-    public get alertsPageTextSearchedParam (): Signal<string | undefined> {
-        return this.ngStore.selectSignal( AlertStore.alertsPageTextSearchedParam )
-    }
+    public readonly alertsPageTextSearchedParam: Signal<string | undefined> = this.store.alerts.params.textSearched
 
-    public get alertsPageStatusSearchedParam (): Signal<AlertStatusEnum | undefined> {
-        return this.ngStore.selectSignal( AlertStore.alertsPageStatusSearchedParam )
-    }
+    public readonly alertsPageStatusSearchedParam: Signal<AlertStatusEnum | undefined> = this.store.alerts.params.statusSearched
 
-    public get alertsPageVisibilitySearchedParam (): Signal<boolean | undefined> {
-        return this.ngStore.selectSignal( AlertStore.alertsPageVisibilitySearchedParam )
-    }
+    public readonly alertsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.alerts.params.visibilitySearched
 
-    public get alertsPageStartDateTimeSearchedParam (): Signal<Date | undefined> {
-        return computed( (): Date | undefined =>
-            DateHelper.buildDate( this.ngStore.selectSignal( AlertStore.alertsPageStartDateTimeSearchedParam )() ),
+    public readonly alertsPageStartDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
+            DateHelper.buildDate( this.store.alerts.params.startDateTimeSearched() ),
         )
-    }
 
-    public get alertsPageEndDateTimeSearchedParam (): Signal<Date | undefined> {
-        return computed( (): Date | undefined =>
-            DateHelper.buildDate( this.ngStore.selectSignal( AlertStore.alertsPageEndDateTimeSearchedParam )() ),
+    public readonly alertsPageEndDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
+            DateHelper.buildDate( this.store.alerts.params.endDateTimeSearched() ),
         )
-    }
 
-    public get alertCommunicationsPage (): Signal<PageModel<CommunicationModel> | undefined> {
-        return this.ngStore.selectSignal( AlertStore.alertCommunicationsPage )
-    }
+    public readonly alertCommunicationsPage: Signal<PageModel<CommunicationModel> | undefined> = this.store.communications.element
 
-    public get alertCommunicationsPageLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( AlertStore.alertCommunicationsPageLoading )
-    }
+    public readonly alertCommunicationsPageLoading: Signal<boolean> = this.store.communications.loading
 
-    public get alertCommunicationsPageSilentLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( AlertStore.alertCommunicationsPageSilentLoading )
-    }
+    public readonly alertCommunicationsPageSilentLoading: Signal<boolean> = this.store.communications.silentLoading
 
-    public get alertCommunicationsPageError (): Signal<ToastMessageOptions | undefined> {
-        return this.ngStore.selectSignal( AlertStore.alertCommunicationsPageError )
-    }
+    public readonly alertCommunicationsPageError: Signal<ToastMessageOptions | undefined> = this.store.communications.error
 
-    private get alertCommunicationsPageResetSearch (): Signal<boolean> {
-        return this.ngStore.selectSignal( AlertStore.alertCommunicationsPageResetSearch )
-    }
+    private readonly alertCommunicationsPageResetSearch: Signal<boolean> = this.store.communications.params.resetSearch
 
-    public get alertCommunicationsPageTextSearchedParam (): Signal<string | undefined> {
-        return this.ngStore.selectSignal( AlertStore.alertCommunicationsPageTextSearchedParam )
-    }
+    public readonly alertCommunicationsPageTextSearchedParam: Signal<string | undefined> = this.store.communications.params.textSearched
 
-    public get alertCommunicationsPageVisibilitySearchedParam (): Signal<boolean | undefined> {
-        return this.ngStore.selectSignal( AlertStore.alertCommunicationsPageVisibilitySearchedParam )
-    }
+    public readonly alertCommunicationsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.communications.params.visibilitySearched
 
-    public get alertCommunicationsPageStartDateTimeSearchedParam (): Signal<Date | undefined> {
-        return computed( (): Date | undefined =>
-            DateHelper.buildDate( this.ngStore.selectSignal( AlertStore.alertCommunicationsPageStartDateTimeSearchedParam )() ),
+    public readonly alertCommunicationsPageStartDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
+            DateHelper.buildDate( this.store.communications.params.startDateTimeSearched() ),
         )
-    }
 
-    public get alertCommunicationsPageEndDateTimeSearchedParam (): Signal<Date | undefined> {
-        return computed( (): Date | undefined =>
-            DateHelper.buildDate( this.ngStore.selectSignal( AlertStore.alertCommunicationsPageEndDateTimeSearchedParam )() ),
+    public readonly alertCommunicationsPageEndDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
+            DateHelper.buildDate( this.store.communications.params.endDateTimeSearched() ),
         )
-    }
 
-    public get visibilitiesMetadata (): Signal<SelectItem<boolean | undefined>[]> {
-        return computed( () =>
-            this.ngStore.selectSignal( AlertStore.visibilitiesMetadata )().map( (status: SelectItem<boolean | undefined>) => ({
+    public readonly visibilitiesMetadata: Signal<SelectItem<boolean | undefined>[]> = computed( () =>
+            this.store.metadata.visibilities().map( (status: SelectItem<boolean | undefined>) => ({
                 ...status,
                 label: this.translateService.instant( status.label! ),
             }) ),
         )
-    }
 
-    public get alertStatusMetadata (): Signal<SelectItem<AlertStatusEnum | undefined>[]> {
-        return this.ngStore.selectSignal( AlertStore.alertStatusMetadata )
-    }
-
-    public fetchAlertStatus (): void {
-        this.ngStore.dispatch( FetchAlertStatus )
-    }
-
-    public startAlertsPageLoader (): void {
-        this.ngStore.dispatch( StartAlertsPageLoader )
-    }
-
-    public stopAlertsPageLoader (): void {
-        this.ngStore.dispatch( StopAlertsPageLoader )
-    }
+    public readonly alertStatusMetadata: Signal<SelectItem<AlertStatusEnum | undefined>[]> = this.store.metadata.status
 
     public fetchAlertsPage (
         pageNumber: number | undefined,
         pageSize: number | undefined,
-        force: boolean,
     ): void {
         const index: number | undefined = this.alertsPageResetSearch() ? 0 : pageNumber
-        this.ngStore.dispatch( new FetchAlertsPage( this.selectedProjectId(), index, pageSize, force ) )
+        this.store.fetchAlertsPage( { projectId: this.selectedProjectId(), pageNumber: index, pageSize: pageSize } )
     }
 
     public inputPageSearchParameters (
@@ -161,39 +97,24 @@ export class AlertFacade extends GenericProjectElementFacade {
                                      || this.alertsPageEndDateTimeSearchedParam() != endDateTimeSearched?.toISOString()
 
         if (resetSearch) {
-            this.ngStore.dispatch( new UpdateAlertsPageSearchParams( {
+            this.store.updateAlertsPageSearchParams( {
                 resetSearch: resetSearch,
                 textSearched: textSearched,
                 statusSearched: statusSearched,
                 visibilitySearched: visibilitySearched,
                 startDateTimeSearched: startDateTimeSearched?.toISOString(),
                 endDateTimeSearched: endDateTimeSearched?.toISOString(),
-            } ) )
+            } )
         }
-    }
-
-    public startAlertCommunicationsPageLoader (): void {
-        this.ngStore.dispatch( StartAlertCommunicationsPageLoader )
-    }
-
-    public stopAlertCommunicationsPageLoader (): void {
-        this.ngStore.dispatch( StopAlertCommunicationsPageLoader )
     }
 
     public fetchAlertCommunicationsPage (
         id: string,
         pageNumber: number | undefined,
         pageSize: number | undefined,
-        force: boolean,
     ): void {
         const index: number | undefined = this.alertsPageResetSearch() ? 0 : pageNumber
-        this.ngStore.dispatch( new FetchAlertCommunicationsPage(
-            this.selectedProjectId(),
-            id,
-            index,
-            pageSize,
-            force,
-        ) )
+        this.store.fetchAlertCommunicationsPage( { projectId: this.selectedProjectId(), id: id, pageNumber: index, pageSize: pageSize } )
     }
 
     public inputCommunicationsPageSearchParameters (
@@ -208,13 +129,13 @@ export class AlertFacade extends GenericProjectElementFacade {
                                      || this.alertCommunicationsPageEndDateTimeSearchedParam() != endDateTimeSearched?.toISOString()
 
         if (resetSearch) {
-            this.ngStore.dispatch( new UpdateAlertCommunicationsPageSearchParams( {
+            this.store.updateAlertCommunicationsPageSearchParams( {
                 resetSearch: resetSearch,
                 textSearched: textSearched,
                 visibilitySearched: visibilitySearched,
                 startDateTimeSearched: startDateTimeSearched?.toISOString(),
                 endDateTimeSearched: endDateTimeSearched?.toISOString(),
-            } ) )
+            } )
         }
     }
 
@@ -286,6 +207,6 @@ export class AlertFacade extends GenericProjectElementFacade {
         this.onCommandSucceeded( 'alert', command, 'alerts.notifications', 'pi pi-sort-alt', { title: alert?.title, status: alert?.status?.label } )
 
         const page: PageModel<AlertModel> | undefined = this.alertsPage()
-        this.fetchAlertsPage( page?.pageNumber, page?.pageSize, true )
+        this.fetchAlertsPage( page?.pageNumber, page?.pageSize )
     }
 }

@@ -3,24 +3,24 @@ import {ParticipantModel} from '@shared/models/model/participant.model'
 import {withLoading} from '@shared/helpers/rx.helper'
 import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms'
 import {PageEventModel} from '@shared/models/model/page-event.model'
-import {ListComponent} from '@shared/ui/list/list.component'
+import {ListComponent} from '@shared/ui/common/list/list.component'
 import {RegistryTemplateDirective} from '@shared/directives/registry-template.directive'
 import {TranslatePipe} from '@ngx-translate/core'
 import {InputTextModule} from 'primeng/inputtext'
 import {ToggleButtonModule} from 'primeng/togglebutton'
-import {MovementElementComponent} from '@shared/ui/movement-element/movement-element.component'
+import {MovementElementComponent} from '@shared/ui/domain/movement-element/movement-element.component'
 import {Select, SelectModule} from 'primeng/select'
 import {Button} from 'primeng/button'
 import {DatePicker} from 'primeng/datepicker'
 import {ParticipantFacade} from '@pages/projects/[projectId]/configuration/participants/data/state/participant.facade'
 import {
     ParticipantElementComponent,
-} from '@shared/ui/participant-element/participant-element.component'
+} from '@shared/ui/domain/participant-element/participant-element.component'
 import {GenericListComponent} from '@shared/ui/base/generic-list.component'
 import {MovementFacade} from '@pages/projects/[projectId]/movements/data/state/movement.facade'
 import {Subscription, tap} from 'rxjs'
 import {Card} from 'primeng/card'
-import {ElementSkeletonComponent} from '@shared/ui/element-skeleton/element-skeleton.component'
+import {ElementSkeletonComponent} from '@shared/ui/common/element-skeleton/element-skeleton.component'
 
 @Component({
     selector: 'app-participant-movements-list',
@@ -76,7 +76,7 @@ export class ParticipantMovementsListPage extends GenericListComponent implement
                 withLoading(this.participantLoading),
             ).subscribe( (participant: ParticipantModel): void => this.participant.set(participant) ),
         )
-        this.facade.fetchParticipantMovementsPage(id!, undefined, undefined, false)
+        this.facade.fetchParticipantMovementsPage(id!, undefined, undefined)
     }
 
     private handleMovementActions(): void {
@@ -86,9 +86,7 @@ export class ParticipantMovementsListPage extends GenericListComponent implement
                     this.facade.fetchParticipantMovementsPage(
                         this.route.snapshot.params['participantId'],
                         undefined,
-                        undefined,
-                        true,
-                    )
+                        undefined)
                 }),
             ).subscribe(),
         )
@@ -99,9 +97,7 @@ export class ParticipantMovementsListPage extends GenericListComponent implement
                     this.facade.fetchParticipantMovementsPage(
                         this.route.snapshot.params['participantId'],
                         this.facade.participantMovementsPage()?.pageNumber,
-                        this.facade.participantMovementsPage()?.pageSize,
-                        true,
-                    )
+                        this.facade.participantMovementsPage()?.pageSize)
                 }),
             ).subscribe(),
         )
@@ -115,8 +111,7 @@ export class ParticipantMovementsListPage extends GenericListComponent implement
             this.visibilitySearched.value,
         )
         this.facade.fetchParticipantMovementsPage(
-            this.route.snapshot.params['participantId'], pageEvent.pageNumber, pageEvent.pageSize, false,
-        )
+            this.route.snapshot.params['participantId'], pageEvent.pageNumber, pageEvent.pageSize)
     }
 
     public ngOnDestroy(): void {

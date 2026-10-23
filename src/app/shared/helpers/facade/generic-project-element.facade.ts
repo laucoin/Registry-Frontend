@@ -1,5 +1,4 @@
 import { GenericFacade } from '@shared/helpers/facade/generic.facade'
-import { RegistryStore } from '@core/registry/state/registry.store'
 import { RegistryFacade } from '@core/registry/state/registry.facade'
 import { inject, Signal } from '@angular/core'
 import { StateHelper } from '@shared/helpers/state/state.helper'
@@ -11,7 +10,7 @@ export abstract class GenericProjectElementFacade extends GenericFacade {
     protected readonly commandEvents: CommandEventService = inject( CommandEventService )
 
     public get selectedProjectId (): Signal<string | undefined> {
-        return this.ngStore.selectSignal( RegistryStore.currentUserSelectedProjectId )
+        return this.registryFacade.currentProjectId
     }
 
     protected notifyMessage (

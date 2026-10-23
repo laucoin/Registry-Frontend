@@ -2,9 +2,9 @@ import { Component, inject, OnDestroy } from '@angular/core'
 import { SelectedProjectFacade } from '@pages/projects/data/state/selected-project/selected-project.facade'
 import { PageEventModel } from '@shared/models/model/page-event.model'
 import { GenericComponent } from '@shared/ui/base/generic.component'
-import { ListComponent } from '@shared/ui/list/list.component'
+import { ListComponent } from '@shared/ui/common/list/list.component'
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
-import { MovementElementComponent } from '@shared/ui/movement-element/movement-element.component'
+import { MovementElementComponent } from '@shared/ui/domain/movement-element/movement-element.component'
 import { Subscription, tap } from 'rxjs'
 import { MovementFacade } from '@pages/projects/[projectId]/movements/data/state/movement.facade'
 
@@ -31,11 +31,11 @@ export class CurrentMovementsComponent extends GenericComponent implements OnDes
     }
 
     protected loadData (): void {
-        this.facade.fetchCurrentMovementsPageWithoutActivity( undefined, undefined, false )
+        this.facade.fetchCurrentMovementsPageWithoutActivity( undefined, undefined)
     }
 
     protected loadPage (pageEvent: PageEventModel): void {
-        this.facade.fetchCurrentMovementsPageWithoutActivity( pageEvent.pageNumber, pageEvent.pageSize, false )
+        this.facade.fetchCurrentMovementsPageWithoutActivity( pageEvent.pageNumber, pageEvent.pageSize)
     }
 
     private handleMovementActions (): void {
@@ -44,9 +44,7 @@ export class CurrentMovementsComponent extends GenericComponent implements OnDes
                 tap( (): void => {
                     this.facade.fetchCurrentMovementsPageWithoutActivity(
                         undefined,
-                        undefined,
-                        true,
-                    )
+                        undefined)
                 } ),
             ).subscribe(),
         )
@@ -56,9 +54,7 @@ export class CurrentMovementsComponent extends GenericComponent implements OnDes
                 tap( (): void => {
                     this.facade.fetchCurrentMovementsPageWithoutActivity(
                         this.facade.currentMovementsPageWithoutActivity()?.pageNumber,
-                        this.facade.currentMovementsPageWithoutActivity()?.pageSize,
-                        true,
-                    )
+                        this.facade.currentMovementsPageWithoutActivity()?.pageSize)
                 } ),
             ).subscribe(),
         )

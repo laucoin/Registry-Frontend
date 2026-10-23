@@ -1,11 +1,7 @@
-import {EnvironmentProviders, importProvidersFrom, Injectable, Provider} from '@angular/core'
+import {EnvironmentProviders, Injectable, Provider} from '@angular/core'
 import {provideTranslateHttpLoader} from '@ngx-translate/http-loader'
-import {NgxsReduxDevtoolsPluginModule} from '@ngxs/devtools-plugin'
-import {NgxsModule} from '@ngxs/store'
-import {RegistryStore} from '@core/registry/state/registry.store'
 import {EnvironmentModel} from '@core/config/model/environment.model'
 import {StringHelper} from '@shared/helpers/string.helper'
-import {UserStore} from '@pages/users/data/state/user.store'
 import {providePrimeNG} from 'primeng/config'
 import {LocalStorageUtils} from '@shared/helpers/local-storage.helper'
 import {GenericHelper} from '@shared/helpers/generic.helper'
@@ -38,15 +34,6 @@ export class RegistryConfig {
         ])
     }
 
-    public static provideNgxs(): Provider | EnvironmentProviders {
-        return importProvidersFrom(NgxsModule.forRoot(
-            [RegistryStore, UserStore],
-            {
-                developmentMode: !RegistryConfig.environment.production,
-            },
-        ))
-    }
-
     public static providePrimeNg(): Provider | EnvironmentProviders {
         return providePrimeNG({
             ripple: true,
@@ -57,12 +44,6 @@ export class RegistryConfig {
                 },
             },
         })
-    }
-
-    public static provideNgxsReduxDevtools(): Provider | EnvironmentProviders {
-        return importProvidersFrom(NgxsReduxDevtoolsPluginModule.forRoot({
-            disabled: RegistryConfig.environment.production,
-        }))
     }
 
     private static get locale(): string {

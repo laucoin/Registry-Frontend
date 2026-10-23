@@ -7,7 +7,7 @@ import { TranslatePipe } from '@ngx-translate/core'
 import { GenericHelper } from '@shared/helpers/generic.helper'
 import { AlertModel } from '@shared/models/model/alert.model'
 import { Button } from 'primeng/button'
-import { AlertElementComponent } from '@shared/ui/alert-element/alert-element.component'
+import { AlertElementComponent } from '@shared/ui/domain/alert-element/alert-element.component'
 import { RouterLink } from '@angular/router'
 import { Subscription, tap } from 'rxjs'
 import { AlertFacade } from '@pages/projects/[projectId]/alerts/data/state/alert.facade'
@@ -59,11 +59,11 @@ export class CurrentAlertsComponent extends GenericComponent implements OnDestro
         super()
 
         this.handleAlertsActions()
-        this.loadData( false )
+        this.loadData()
     }
 
-    private loadData (force: boolean): void {
-        this.facade.fetchCurrentAlertsPage( 0, 20, force )
+    private loadData (): void {
+        this.facade.fetchCurrentAlertsPage( 0, 20 )
     }
 
     private handleAlertsActions (): void {
@@ -71,7 +71,7 @@ export class CurrentAlertsComponent extends GenericComponent implements OnDestro
             this.alertFacade.handleAlertChange().pipe(
                 tap( (): void => {
                     if ((this.facade.currentAlertsPage()?.content ?? []).length > 0) {
-                        this.loadData( true )
+                        this.loadData()
                     }
                 } ),
             ).subscribe(),

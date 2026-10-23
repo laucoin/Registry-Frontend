@@ -5,9 +5,9 @@ import { Subscription, tap } from 'rxjs'
 import { CommunicationFacade } from '@pages/projects/[projectId]/movements/communication/data/state/communication.facade'
 import { TranslatePipe } from '@ngx-translate/core'
 import { MovementModel } from '@shared/models/model/movement.model'
-import { CommunicationFormComponent } from '@shared/ui/communication-form/communication-form.component'
+import { CommunicationFormComponent } from '@shared/ui/domain/communication-form/communication-form.component'
 import { GenericComponent } from '@shared/ui/base/generic.component'
-import { DialogElementComponent } from '@shared/ui/dialog-element/dialog-element.component'
+import { DialogElementComponent } from '@shared/ui/domain/dialog-element/dialog-element.component'
 import { CommunicationModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
 import { CommunicationHelper } from '@shared/helpers/communication.helper'
 import { AlertFacade } from '@pages/projects/[projectId]/alerts/data/state/alert.facade'
@@ -37,7 +37,7 @@ export class MovementCommunicationsListComponent extends GenericComponent implem
     }
 
     protected loadData (): void {
-        this.facade.fetchMovementCommunicationsPage( this.movement().id!, undefined, undefined, true )
+        this.facade.fetchMovementCommunicationsPage( this.movement().id!, undefined, undefined)
     }
 
     private handleCommunicationActions (): void {
@@ -47,9 +47,7 @@ export class MovementCommunicationsListComponent extends GenericComponent implem
                     this.facade.fetchMovementCommunicationsPage(
                         this.movement().id,
                         undefined,
-                        undefined,
-                        true,
-                    )
+                        undefined)
                 } ),
             ).subscribe(),
         )
@@ -60,9 +58,7 @@ export class MovementCommunicationsListComponent extends GenericComponent implem
                     this.facade.fetchMovementCommunicationsPage(
                         this.movement().id,
                         undefined,
-                        undefined,
-                        true,
-                    )
+                        undefined)
                 } ),
             ).subscribe(),
         )
@@ -73,9 +69,7 @@ export class MovementCommunicationsListComponent extends GenericComponent implem
                     this.facade.fetchMovementCommunicationsPage(
                         this.movement().id,
                         this.facade.movementCommunicationsPage()?.pageNumber,
-                        this.facade.movementCommunicationsPage()?.pageSize,
-                        true,
-                    )
+                        this.facade.movementCommunicationsPage()?.pageSize)
                 } ),
             ).subscribe(),
         )

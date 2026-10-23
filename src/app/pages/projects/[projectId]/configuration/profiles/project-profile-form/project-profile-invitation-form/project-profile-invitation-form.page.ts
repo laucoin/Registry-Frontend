@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy,Component, OnDestroy} from '@angular/core'
+import { Component, OnDestroy} from '@angular/core'
 import {CardModule} from 'primeng/card'
 import {DividerModule} from 'primeng/divider'
 import {InputTextModule} from 'primeng/inputtext'
@@ -6,8 +6,8 @@ import {PaginatorModule} from 'primeng/paginator'
 import {TranslatePipe} from '@ngx-translate/core'
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms'
 import {ProjectProfilesDto} from '@pages/projects/[projectId]/configuration/profiles/data/dto/project-profiles.dto'
-import {FormFieldErrorComponent} from '@shared/ui/form-field-error/form-field-error.component'
-import {FormComponent} from '@shared/ui/form/form.component'
+import {FormFieldErrorComponent} from '@shared/ui/common/form-field-error/form-field-error.component'
+import {FormComponent} from '@shared/ui/common/form/form.component'
 import {GenericProjectProfileFormComponent} from '@pages/projects/[projectId]/configuration/profiles/project-profile-form/generic-project-profile-form.component'
 import {RegistryRequiredDirective} from '@shared/directives/registry-required.directive'
 import {SelectModule} from 'primeng/select'
@@ -16,17 +16,16 @@ import {TreeTableModule} from 'primeng/treetable'
 import {TableModule} from 'primeng/table'
 import {
     SelectElementsFieldComponent,
-} from '@shared/ui/select-elements-field/select-elements-field.component'
+} from '@shared/ui/common/select-elements-field/select-elements-field.component'
 import {PluralTranslationPipe} from '@shared/helpers/pipe/plural-translation.pipe'
 import {FormHelper} from '@shared/helpers/form.helper'
 import {DateFormatPipe} from '@shared/helpers/pipe/date-format.pipe'
 import {UserHelper} from '@shared/helpers/user.helper'
-import {DateTimeFieldComponent} from '@shared/ui/date-time-field/date-time-field.component'
+import {DateTimeFieldComponent} from '@shared/ui/common/date-time-field/date-time-field.component'
 import {UserModel} from '@shared/models/model/user.model'
 import {RegistryValidators} from '@shared/helpers/registry.validator'
 
 @Component({
-	changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'app-project-profile-invitation-form',
     imports: [
         CardModule,

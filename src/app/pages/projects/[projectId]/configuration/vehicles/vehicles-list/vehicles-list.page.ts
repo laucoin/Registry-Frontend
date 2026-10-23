@@ -2,7 +2,7 @@ import { Component, inject} from '@angular/core'
 import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms'
 import {PageEventModel} from '@shared/models/model/page-event.model'
 import {VehicleFacade} from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.facade'
-import {ListComponent} from '@shared/ui/list/list.component'
+import {ListComponent} from '@shared/ui/common/list/list.component'
 import {RegistryTemplateDirective} from '@shared/directives/registry-template.directive'
 import {TranslatePipe} from '@ngx-translate/core'
 import {InputTextModule} from 'primeng/inputtext'
@@ -56,7 +56,7 @@ export class VehiclesListPage extends GenericListComponent {
     }
 
     protected loadData(): void {
-        this.facade.fetchVehiclesPage(undefined, undefined, false)
+        this.facade.fetchVehiclesPage(undefined, undefined)
     }
 
     protected loadPage(pageEvent: PageEventModel): void {
@@ -66,7 +66,7 @@ export class VehiclesListPage extends GenericListComponent {
             this.statusSearched.value,
             this.visibilitySearched.value,
         )
-        this.facade.fetchVehiclesPage(pageEvent.pageNumber, pageEvent.pageSize, false)
+        this.facade.fetchVehiclesPage(pageEvent.pageNumber, pageEvent.pageSize)
     }
 
     protected get textSearched(): FormControl {

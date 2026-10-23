@@ -5,12 +5,12 @@ import {PageEventModel} from '@shared/models/model/page-event.model'
 import {InputTextModule} from 'primeng/inputtext'
 import {ToggleButtonModule} from 'primeng/togglebutton'
 import {GenericListComponent} from '@shared/ui/base/generic-list.component'
-import {ListComponent} from '@shared/ui/list/list.component'
+import {ListComponent} from '@shared/ui/common/list/list.component'
 import {DatePicker} from 'primeng/datepicker'
 import {Button} from 'primeng/button'
 import {
     ProjectProfileElementComponent,
-} from '@shared/ui/project-profile-element/project-profile-element.component'
+} from '@shared/ui/domain/project-profile-element/project-profile-element.component'
 import {RegistryTemplateDirective} from '@shared/directives/registry-template.directive'
 import {StringHelper} from '@shared/helpers/string.helper'
 import {GenericHelper} from '@shared/helpers/generic.helper'
@@ -44,7 +44,7 @@ export class InvitationsListPage extends GenericListComponent {
 
         this.form = this.initForm()
 
-        this.registryFacade.fetchProjectProfileInvitationPage(undefined, undefined, false)
+        this.registryFacade.fetchProjectProfileInvitationPage(undefined, undefined)
     }
 
     protected initForm(): FormGroup {
@@ -56,7 +56,7 @@ export class InvitationsListPage extends GenericListComponent {
 
     protected loadPage(pageEvent: PageEventModel): void {
         this.registryFacade.inputInvitationsPageSearchParameters(this.textSearched.value, this.dateTimeSearched.value)
-        this.registryFacade.fetchProjectProfileInvitationPage(pageEvent.pageNumber, pageEvent.pageSize, false)
+        this.registryFacade.fetchProjectProfileInvitationPage(pageEvent.pageNumber, pageEvent.pageSize)
     }
 
     protected get textSearched(): FormControl {

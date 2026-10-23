@@ -3,12 +3,12 @@ import {VehicleModel} from '@shared/models/model/vehicle.model'
 import {withLoading} from '@shared/helpers/rx.helper'
 import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms'
 import {PageEventModel} from '@shared/models/model/page-event.model'
-import {ListComponent} from '@shared/ui/list/list.component'
+import {ListComponent} from '@shared/ui/common/list/list.component'
 import {RegistryTemplateDirective} from '@shared/directives/registry-template.directive'
 import {TranslatePipe} from '@ngx-translate/core'
 import {InputTextModule} from 'primeng/inputtext'
 import {ToggleButtonModule} from 'primeng/togglebutton'
-import {MovementElementComponent} from '@shared/ui/movement-element/movement-element.component'
+import {MovementElementComponent} from '@shared/ui/domain/movement-element/movement-element.component'
 import {Select, SelectModule} from 'primeng/select'
 import {Button} from 'primeng/button'
 import {DatePicker} from 'primeng/datepicker'
@@ -17,7 +17,7 @@ import {VehicleElementComponent} from '@pages/projects/[projectId]/configuration
 import {GenericListComponent} from '@shared/ui/base/generic-list.component'
 import {MovementFacade} from '@pages/projects/[projectId]/movements/data/state/movement.facade'
 import {Subscription, tap} from 'rxjs'
-import {ElementSkeletonComponent} from '@shared/ui/element-skeleton/element-skeleton.component'
+import {ElementSkeletonComponent} from '@shared/ui/common/element-skeleton/element-skeleton.component'
 import {Card} from 'primeng/card'
 
 @Component({
@@ -74,7 +74,7 @@ export class VehicleMovementsListPage extends GenericListComponent implements On
                 withLoading(this.vehicleLoading),
             ).subscribe( (vehicle: VehicleModel): void => this.vehicle.set(vehicle) ),
         )
-        this.facade.fetchVehicleMovementsPage(id!, undefined, undefined, false)
+        this.facade.fetchVehicleMovementsPage(id!, undefined, undefined)
     }
 
     private handleMovementActions(): void {
@@ -85,7 +85,6 @@ export class VehicleMovementsListPage extends GenericListComponent implements On
                         this.route.snapshot.params['vehicleId'],
                         undefined,
                         undefined,
-                        true,
                     )
                 }),
             ).subscribe(),
@@ -98,7 +97,6 @@ export class VehicleMovementsListPage extends GenericListComponent implements On
                         this.route.snapshot.params['vehicleId'],
                         this.facade.vehicleMovementsPage()?.pageNumber,
                         this.facade.vehicleMovementsPage()?.pageSize,
-                        true,
                     )
                 }),
             ).subscribe(),
@@ -113,7 +111,7 @@ export class VehicleMovementsListPage extends GenericListComponent implements On
             this.visibilitySearched.value,
         )
         this.facade.fetchVehicleMovementsPage(
-            this.route.snapshot.params['vehicleId'], pageEvent.pageNumber, pageEvent.pageSize, false,
+            this.route.snapshot.params['vehicleId'], pageEvent.pageNumber, pageEvent.pageSize,
         )
     }
 

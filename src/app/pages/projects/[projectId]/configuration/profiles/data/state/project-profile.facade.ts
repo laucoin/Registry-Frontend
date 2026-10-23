@@ -5,15 +5,6 @@ import { GenericProjectElementFacade } from '@shared/helpers/facade/generic-proj
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { ProjectProfileModel } from '@shared/models/model/project-profile.model'
 import { ProjectProfileStore } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.store'
-import {
-    FetchAssignableProjectProfileRoles,
-    FetchProfileStatus,
-    FetchProjectProfilesPage,
-    SearchUsers,
-    StartProjectProfilesPageLoader,
-    StopProjectProfilesPageLoader,
-    UpdateProjectProfilesPageSearchParams,
-} from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.action'
 import { ProjectProfileDto } from '@pages/projects/[projectId]/configuration/profiles/data/dto/project-profile.dto'
 import { ProjectProfilesDto } from '@pages/projects/[projectId]/configuration/profiles/data/dto/project-profiles.dto'
 import { UserModel } from '@shared/models/model/user.model'
@@ -31,80 +22,36 @@ export class ProjectProfileFacade extends GenericProjectElementFacade {
     private readonly api: ProjectProfileApi = inject( ProjectProfileApi )
     private readonly pluralTranslationPipe: PluralTranslationPipe = inject( PluralTranslationPipe )
 
-    public get projectProfilesPage (): Signal<PageModel<ProjectProfileModel> | undefined> {
-        return this.ngStore.selectSignal( ProjectProfileStore.projectProfilesPage )
-    }
+    private readonly store: InstanceType<typeof ProjectProfileStore> = inject( ProjectProfileStore )
 
-    public get projectProfilesPageLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( ProjectProfileStore.projectProfilesPageLoading )
-    }
+    public readonly projectProfilesPage: Signal<PageModel<ProjectProfileModel> | undefined> = this.store.projectProfiles.element
+    public readonly projectProfilesPageLoading: Signal<boolean> = this.store.projectProfiles.loading
+    public readonly projectProfilesPageSilentLoading: Signal<boolean> = this.store.projectProfiles.silentLoading
+    public readonly projectProfilesPageError: Signal<ToastMessageOptions | undefined> = this.store.projectProfiles.error
+    private readonly projectProfilesPageResetSearch: Signal<boolean> = this.store.projectProfiles.params.resetSearch
+    public readonly projectProfilesPageTextSearchedParam: Signal<string | undefined> = this.store.projectProfiles.params.textSearched
+    public readonly projectProfilesPageDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
+        DateHelper.buildDate( this.store.projectProfiles.params.dateTimeSearched() ),
+    )
+    public readonly projectProfilesPageAvailabilitySearchedParam: Signal<boolean | undefined> = this.store.projectProfiles.params.availabilitySearched
+    public readonly projectProfilesPageStatusSearchedParam: Signal<string | undefined> = this.store.projectProfiles.params.statusSearched
 
-    public get projectProfilesPageSilentLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( ProjectProfileStore.projectProfilesPageSilentLoading )
-    }
-
-    public get projectProfilesPageError (): Signal<ToastMessageOptions | undefined> {
-        return this.ngStore.selectSignal( ProjectProfileStore.projectProfilesPageError )
-    }
-
-    private get projectProfilesPageResetSearch (): Signal<boolean> {
-        return this.ngStore.selectSignal( ProjectProfileStore.projectProfilesPageResetSearch )
-    }
-
-    public get projectProfilesPageTextSearchedParam (): Signal<string | undefined> {
-        return this.ngStore.selectSignal( ProjectProfileStore.projectProfilesPageTextSearchedParam )
-    }
-
-    public get projectProfilesPageDateTimeSearchedParam (): Signal<Date | undefined> {
-        return computed( (): Date | undefined =>
-            DateHelper.buildDate( this.ngStore.selectSignal( ProjectProfileStore.projectProfilesPageDateTimeSearchedParam )() ),
-        )
-    }
-
-    public get projectProfilesPageAvailabilitySearchedParam (): Signal<boolean | undefined> {
-        return this.ngStore.selectSignal( ProjectProfileStore.projectProfilesPageAvailabilitySearchedParam )
-    }
-
-    public get projectProfilesPageStatusSearchedParam (): Signal<string | undefined> {
-        return this.ngStore.selectSignal( ProjectProfileStore.projectProfilesPageStatusSearchedParam )
-    }
-
-    public get searchedUsersMetadata (): Signal<SelectItem<UserModel>[]> {
-        return this.ngStore.selectSignal( ProjectProfileStore.searchedUsersMetadata )
-    }
-
-    public get projectProfileAssignableRolesMetadata (): Signal<SelectItem<string>[]> {
-        return this.ngStore.selectSignal( ProjectProfileStore.projectProfileAssignableRolesMetadata )
-    }
-
-    public get projectProfilesStatusMetadata (): Signal<SelectItem<ProfileStatusEnum | undefined>[]> {
-        return this.ngStore.selectSignal( ProjectProfileStore.projectProfilesStatusMetadata )
-    }
-
-    public get projectProfilesAvailabilitiesMetadata (): Signal<SelectItem<boolean | undefined>[]> {
-        return computed( (): SelectItem<boolean | undefined>[] =>
-            this.ngStore.selectSignal( ProjectProfileStore.projectProfilesAvailabilitiesMetadata )().map( (status: SelectItem<boolean | undefined>): SelectItem<boolean | undefined> => ({
-                ...status,
-                label: this.translateService.instant( status.label! ),
-            }) ),
-        )
-    }
-
-    public startProjectProfilesPageLoader (): void {
-        this.ngStore.dispatch( StartProjectProfilesPageLoader )
-    }
-
-    public stopProjectProfilesPageLoader (): void {
-        this.ngStore.dispatch( StopProjectProfilesPageLoader )
-    }
+    public readonly searchedUsersMetadata: Signal<SelectItem<UserModel>[]> = this.store.metadata.searched
+    public readonly projectProfileAssignableRolesMetadata: Signal<SelectItem<string>[]> = this.store.metadata.roles
+    public readonly projectProfilesStatusMetadata: Signal<SelectItem<ProfileStatusEnum | undefined>[]> = this.store.metadata.status
+    public readonly projectProfilesAvailabilitiesMetadata: Signal<SelectItem<boolean | undefined>[]> = computed( (): SelectItem<boolean | undefined>[] =>
+        this.store.metadata.availabilities().map( (status: SelectItem<boolean | undefined>): SelectItem<boolean | undefined> => ({
+            ...status,
+            label: this.translateService.instant( status.label! ),
+        }) ),
+    )
 
     public fetchProjectProfilesPage (
         pageNumber: number | undefined,
         pageSize: number | undefined,
-        force: boolean,
     ): void {
         const index: number | undefined = this.projectProfilesPageResetSearch() ? 0 : pageNumber
-        this.ngStore.dispatch( new FetchProjectProfilesPage( this.selectedProjectId(), index, pageSize, force ) )
+        this.store.fetchProjectProfilesPage( { projectId: this.selectedProjectId(), pageNumber: index, pageSize: pageSize } )
     }
 
     public inputPageSearchParameters (
@@ -119,26 +66,22 @@ export class ProjectProfileFacade extends GenericProjectElementFacade {
                                      || this.projectProfilesPageAvailabilitySearchedParam() != availabilitySearched
 
         if (resetSearch) {
-            this.ngStore.dispatch( new UpdateProjectProfilesPageSearchParams( {
+            this.store.updateProjectProfilesPageSearchParams( {
                 resetSearch: resetSearch,
                 statusSearched: statusSearched,
                 availabilitySearched: availabilitySearched,
                 textSearched: textSearched,
                 dateTimeSearched: dateTimeSearched?.toISOString(),
-            } ) )
+            } )
         }
     }
 
     public searchUsers (textSearched: string | undefined = undefined): void {
-        this.ngStore.dispatch( new SearchUsers( this.selectedProjectId(), textSearched ) )
+        this.store.searchUsers( { projectId: this.selectedProjectId(), textSearched: textSearched } )
     }
 
     public fetchAssignableRoles (): void {
-        this.ngStore.dispatch( new FetchAssignableProjectProfileRoles( this.selectedProjectId() ) )
-    }
-
-    public fetchProfileStatus (): void {
-        this.ngStore.dispatch( FetchProfileStatus )
+        this.store.fetchAssignableRoles( this.selectedProjectId() )
     }
 
     public fetchProjectProfile (id: string): Observable<ProjectProfileModel> {
@@ -229,6 +172,6 @@ export class ProjectProfileFacade extends GenericProjectElementFacade {
 
     private refreshPage (): void {
         const page: PageModel<ProjectProfileModel> | undefined = this.projectProfilesPage()
-        this.fetchProjectProfilesPage( page?.pageNumber, page?.pageSize, true )
+        this.fetchProjectProfilesPage( page?.pageNumber, page?.pageSize )
     }
 }

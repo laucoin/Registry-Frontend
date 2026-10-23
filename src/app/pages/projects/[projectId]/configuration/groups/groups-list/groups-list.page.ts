@@ -6,7 +6,7 @@ import { PageEventModel } from '@shared/models/model/page-event.model'
 import { Button } from 'primeng/button'
 import { DatePicker } from 'primeng/datepicker'
 import { InputText } from 'primeng/inputtext'
-import { ListComponent } from '@shared/ui/list/list.component'
+import { ListComponent } from '@shared/ui/common/list/list.component'
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import { TranslatePipe } from '@ngx-translate/core'
 import { RouterLink } from '@angular/router'
@@ -53,7 +53,7 @@ export class GroupsListPage extends GenericListComponent {
     }
 
     protected loadData (): void {
-        this.facade.fetchGroupsPage( undefined, undefined, false )
+        this.facade.fetchGroupsPage( undefined, undefined)
     }
 
     protected loadPage (pageEvent: PageEventModel): void {
@@ -63,7 +63,7 @@ export class GroupsListPage extends GenericListComponent {
             this.presenceSearched.value,
             this.visibilitySearched.value,
         )
-        this.facade.fetchGroupsPage( pageEvent.pageNumber, pageEvent.pageSize, false )
+        this.facade.fetchGroupsPage( pageEvent.pageNumber, pageEvent.pageSize)
     }
 
     protected get textSearched (): FormControl {

@@ -3,20 +3,6 @@ import { Observable, tap } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
 import { ParticipantModel } from '@shared/models/model/participant.model'
 import { ParticipantDto } from '@pages/projects/[projectId]/configuration/participants/data/dto/participant.dto'
-import {
-    FetchParticipantMovementsContents,
-    FetchParticipantMovementsPage,
-    FetchParticipantPresencesStatus,
-    FetchParticipantsPage,
-    SearchGroups,
-    SearchUsers,
-    StartParticipantMovementsPageLoader,
-    StartParticipantsPageLoader,
-    StopParticipantMovementsPageLoader,
-    StopParticipantsPageLoader,
-    UpdateParticipantMovementsPageSearchParams,
-    UpdateParticipantsPageSearchParams,
-} from '@pages/projects/[projectId]/configuration/participants/data/state/participant.action'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { GroupModel } from '@shared/models/model/group.model'
 import { ParticipantStore } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.store'
@@ -31,116 +17,67 @@ import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.e
 
 @Injectable()
 export class ParticipantFacade extends GenericProjectElementFacade {
+    private readonly store: InstanceType<typeof ParticipantStore> = inject( ParticipantStore )
+
     private readonly api: ParticipantApi = inject( ParticipantApi )
 
-    public get participantsPage (): Signal<PageModel<ParticipantModel> | undefined> {
-        return this.ngStore.selectSignal( ParticipantStore.participantsPage )
-    }
+    public readonly participantsPage: Signal<PageModel<ParticipantModel> | undefined> = this.store.participants.element
 
-    public get participantsPageLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( ParticipantStore.participantsPageLoading )
-    }
+    public readonly participantsPageLoading: Signal<boolean> = this.store.participants.loading
 
-    public get participantsPageSilentLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( ParticipantStore.participantsPageSilentLoading )
-    }
+    public readonly participantsPageSilentLoading: Signal<boolean> = this.store.participants.silentLoading
 
-    public get participantsPageError (): Signal<ToastMessageOptions | undefined> {
-        return this.ngStore.selectSignal( ParticipantStore.participantsPageError )
-    }
+    public readonly participantsPageError: Signal<ToastMessageOptions | undefined> = this.store.participants.error
 
-    public get participantsPageResetSearch (): Signal<boolean> {
-        return this.ngStore.selectSignal( ParticipantStore.participantsPageResetSearch )
-    }
+    public readonly participantsPageResetSearch: Signal<boolean> = this.store.participants.params.resetSearch
 
-    public get participantsPageTextSearchedParam (): Signal<string | undefined> {
-        return this.ngStore.selectSignal( ParticipantStore.participantsPageTextSearchedParam )
-    }
+    public readonly participantsPageTextSearchedParam: Signal<string | undefined> = this.store.participants.params.textSearched
 
-    public get participantsPageStatusSearchedParam (): Signal<string | undefined> {
-        return this.ngStore.selectSignal( ParticipantStore.participantsPageStatusSearchedParam )
-    }
+    public readonly participantsPageStatusSearchedParam: Signal<string | undefined> = this.store.participants.params.statusSearched
 
-    public get participantsPageVisibilitySearchedParam (): Signal<boolean | undefined> {
-        return this.ngStore.selectSignal( ParticipantStore.participantsPageVisibilitySearchedParam )
-    }
+    public readonly participantsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.participants.params.visibilitySearched
 
-    public get participantMovementsPage (): Signal<PageModel<MovementModel> | undefined> {
-        return this.ngStore.selectSignal( ParticipantStore.participantMovementsPage )
-    }
+    public readonly participantMovementsPage: Signal<PageModel<MovementModel> | undefined> = this.store.movements.element
 
-    public get participantMovementsPageLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( ParticipantStore.participantMovementsPageLoading )
-    }
+    public readonly participantMovementsPageLoading: Signal<boolean> = this.store.movements.loading
 
-    public get participantMovementsPageSilentLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( ParticipantStore.participantMovementsPageSilentLoading )
-    }
+    public readonly participantMovementsPageSilentLoading: Signal<boolean> = this.store.movements.silentLoading
 
-    public get participantMovementsPageError (): Signal<ToastMessageOptions | undefined> {
-        return this.ngStore.selectSignal( ParticipantStore.participantMovementsPageError )
-    }
+    public readonly participantMovementsPageError: Signal<ToastMessageOptions | undefined> = this.store.movements.error
 
-    public get participantMovementsPageResetSearch (): Signal<boolean> {
-        return this.ngStore.selectSignal( ParticipantStore.participantMovementsPageResetSearch )
-    }
+    public readonly participantMovementsPageResetSearch: Signal<boolean> = this.store.movements.params.resetSearch
 
-    public get participantMovementsPageTypeSearchedParam (): Signal<string | undefined> {
-        return this.ngStore.selectSignal( ParticipantStore.participantMovementsPageTypeSearchedParam )
-    }
+    public readonly participantMovementsPageTypeSearchedParam: Signal<string | undefined> = this.store.movements.params.typeSearched
 
-    public get participantMovementsPageStartDateTimeSearchedParam (): Signal<Date | undefined> {
-        return computed( (): Date | undefined =>
-            DateHelper.buildDate( this.ngStore.selectSignal( ParticipantStore.participantMovementsPageStartDateTimeSearchedParam )() ),
+    public readonly participantMovementsPageStartDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
+            DateHelper.buildDate( this.store.movements.params.startDateTimeSearched() ),
         )
-    }
 
-    public get participantMovementsPageEndDateTimeSearchedParam (): Signal<Date | undefined> {
-        return computed( (): Date | undefined =>
-            DateHelper.buildDate( this.ngStore.selectSignal( ParticipantStore.participantMovementsPageEndDateTimeSearchedParam )() ),
+    public readonly participantMovementsPageEndDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
+            DateHelper.buildDate( this.store.movements.params.endDateTimeSearched() ),
         )
-    }
 
-    public get participantMovementsPageVisibilitySearchedParam (): Signal<boolean | undefined> {
-        return this.ngStore.selectSignal( ParticipantStore.participantMovementsPageVisibilitySearchedParam )
-    }
+    public readonly participantMovementsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.movements.params.visibilitySearched
 
-    public get searchedUsersMetadata (): Signal<SelectItem<UserModel>[]> {
-        return this.ngStore.selectSignal( ParticipantStore.searchedUsersMetadata )
-    }
+    public readonly searchedUsersMetadata: Signal<SelectItem<UserModel>[]> = this.store.metadata.searchedUsers
 
-    public get searchedGroupsMetadata (): Signal<SelectItem<GroupModel>[]> {
-        return this.ngStore.selectSignal( ParticipantStore.searchedGroupsMetadata )
-    }
+    public readonly searchedGroupsMetadata: Signal<SelectItem<GroupModel>[]> = this.store.metadata.searchedGroups
 
-    public get presencesStatusMetadata (): Signal<SelectItem<PresenceStatusEnum | undefined>[]> {
-        return this.ngStore.selectSignal( ParticipantStore.presencesStatusMetadata )
-    }
+    public readonly presencesStatusMetadata: Signal<SelectItem<PresenceStatusEnum | undefined>[]> = this.store.metadata.presencesStatus
 
-    public get visibilitiesMetadata (): Signal<SelectItem<boolean | undefined>[]> {
-        return computed( (): SelectItem<boolean | undefined>[] =>
-            this.ngStore.selectSignal( ParticipantStore.visibilitiesMetadata )().map( (status: SelectItem<boolean | undefined>): SelectItem<boolean | undefined> => ({
+    public readonly visibilitiesMetadata: Signal<SelectItem<boolean | undefined>[]> = computed( (): SelectItem<boolean | undefined>[] =>
+            this.store.metadata.visibilities().map( (status: SelectItem<boolean | undefined>): SelectItem<boolean | undefined> => ({
                 ...status,
                 label: this.translateService.instant( status.label! ),
             }) ),
         )
-    }
-
-    public startParticipantsPageLoader (): void {
-        this.ngStore.dispatch( StartParticipantsPageLoader )
-    }
-
-    public stopParticipantsPageLoader (): void {
-        this.ngStore.dispatch( StopParticipantsPageLoader )
-    }
 
     public fetchParticipantsPage (
         pageNumber: number | undefined,
         pageSize: number | undefined,
-        force: boolean,
     ): void {
         const index: number | undefined = this.participantsPageResetSearch() ? 0 : pageNumber
-        this.ngStore.dispatch( new FetchParticipantsPage( this.selectedProjectId(), index, pageSize, force ) )
+        this.store.fetchParticipantsPage( { projectId: this.selectedProjectId(), pageNumber: index, pageSize: pageSize } )
     }
 
     public inputPageSearchParameters (
@@ -153,41 +90,26 @@ export class ParticipantFacade extends GenericProjectElementFacade {
                                      || this.participantsPageVisibilitySearchedParam() != visibilitySearched
 
         if (resetSearch) {
-            this.ngStore.dispatch( new UpdateParticipantsPageSearchParams( {
+            this.store.updateParticipantsPageSearchParams( {
                 resetSearch: resetSearch,
                 visibilitySearched: visibilitySearched,
                 statusSearched: statusSearched,
                 textSearched: textSearched,
-            } ) )
+            } )
         }
-    }
-
-    public startParticipantMovementsPageLoader (): void {
-        this.ngStore.dispatch( StartParticipantMovementsPageLoader )
-    }
-
-    public stopParticipantMovementsPageLoader (): void {
-        this.ngStore.dispatch( StopParticipantMovementsPageLoader )
     }
 
     public fetchParticipantMovementsPage (
         id: string,
         pageNumber: number | undefined,
         pageSize: number | undefined,
-        force: boolean,
     ): void {
         const index: number | undefined = this.participantMovementsPageResetSearch() ? 0 : pageNumber
-        this.ngStore.dispatch( new FetchParticipantMovementsPage(
-            this.selectedProjectId(),
-            id,
-            index,
-            pageSize,
-            force,
-        ) )
+        this.store.fetchParticipantMovementsPage( { projectId: this.selectedProjectId(), id: id, pageNumber: index, pageSize: pageSize } )
     }
 
     public fetchParticipantMovementsContent (movementIds: string[]): void {
-        this.ngStore.dispatch( new FetchParticipantMovementsContents( this.selectedProjectId(), movementIds ) )
+        this.store.fetchParticipantMovementsContents( { projectId: this.selectedProjectId(), movementIds: movementIds } )
     }
 
     public inputMovementsPageSearchParameters (
@@ -202,7 +124,7 @@ export class ParticipantFacade extends GenericProjectElementFacade {
                                      || this.participantMovementsPageVisibilitySearchedParam() != visibilitySearched
 
         if (resetSearch) {
-            this.ngStore.dispatch( new UpdateParticipantMovementsPageSearchParams( {
+            this.store.updateParticipantMovementsPageSearchParams( {
                 resetSearch: resetSearch,
                 visibilitySearched: visibilitySearched,
                 currentMovements: false,
@@ -210,24 +132,20 @@ export class ParticipantFacade extends GenericProjectElementFacade {
                 typeSearched: typeSearched,
                 startDateTimeSearched: startDateTimeSearched?.toISOString(),
                 endDateTimeSearched: endDateTimeSearched?.toISOString(),
-            } ) )
+            } )
         }
     }
 
     public searchUsers (
         textSearched: string | undefined = undefined,
     ): void {
-        this.ngStore.dispatch( new SearchUsers( this.selectedProjectId(), textSearched ) )
+        this.store.searchUsers( { projectId: this.selectedProjectId(), textSearched: textSearched } )
     }
 
     public searchGroups (
         textSearched: string | undefined = undefined,
     ): void {
-        this.ngStore.dispatch( new SearchGroups( this.selectedProjectId(), textSearched ) )
-    }
-
-    public fetchPresencesStatus (): void {
-        this.ngStore.dispatch( FetchParticipantPresencesStatus )
+        this.store.searchGroups( { projectId: this.selectedProjectId(), textSearched: textSearched } )
     }
 
     public handleParticipantFirstPageReload (): Observable<unknown> {
@@ -283,6 +201,6 @@ export class ParticipantFacade extends GenericProjectElementFacade {
         this.onCommandSucceeded( 'participant', command, 'participants.notifications', 'pi pi-users', { firstName: participant?.firstName, lastName: participant?.lastName } )
 
         const page: PageModel<ParticipantModel> | undefined = this.participantsPage()
-        this.fetchParticipantsPage( page?.pageNumber, page?.pageSize, true )
+        this.fetchParticipantsPage( page?.pageNumber, page?.pageSize )
     }
 }

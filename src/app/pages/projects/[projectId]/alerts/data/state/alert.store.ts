@@ -1,61 +1,53 @@
-import { Action, NgxsOnInit, Selector, State, StateContext } from '@ngxs/store'
-import { catchError, finalize, map, Observable, of } from 'rxjs'
+import { inject } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { patchState, signalStore, withHooks, withMethods, withProps, withState } from '@ngrx/signals'
+import { rxMethod } from '@ngrx/signals/rxjs-interop'
+import { TranslateService } from '@ngx-translate/core'
+import { catchError, EMPTY, finalize, Observable, pipe, switchMap, tap } from 'rxjs'
+import { SelectItem } from 'primeng/api'
 import { PageModel } from '@shared/models/model/page.model'
-import { GenericProjectElementStore } from '@shared/helpers/state/generic-project-element.store'
-import { initialize } from '@shared/helpers/rx.helper'
-import { StateHelper } from '@shared/helpers/state/state.helper'
-import { inject, Injectable } from '@angular/core'
-import { SelectItem, ToastMessageOptions } from 'primeng/api'
-import { ErrorModel } from '@shared/models/model/error.model'
-import { AlertFacade } from '@pages/projects/[projectId]/alerts/data/state/alert.facade'
 import { AlertModel } from '@shared/models/model/alert.model'
+import { AlertPageParamsModel } from '@shared/models/model/alert-page-params.model'
+import { AlertStatusEnum } from '@shared/models/enumeration/alert-status.enum'
+import { ErrorModel } from '@shared/models/model/error.model'
+import { CommunicationPageParamsModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication-page-params.model'
+import { CommunicationModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
 import { AlertStoreModel } from '@pages/projects/[projectId]/alerts/data/model/alert-store.model'
 import { AlertApi } from '@pages/projects/[projectId]/movements/data/state/alert.api'
-import { AlertStatusEnum } from '@shared/models/enumeration/alert-status.enum'
-import {
-    FetchAlertCommunicationsPage,
-    FetchAlertsPage,
-    FetchAlertStatus,
-    ResetAlertState,
-    StartAlertCommunicationsPageLoader,
-    StartAlertsPageLoader,
-    StopAlertCommunicationsPageLoader,
-    StopAlertsPageLoader,
-    UpdateAlertCommunicationsPageSearchParams,
-    UpdateAlertsPageSearchParams,
-} from '@pages/projects/[projectId]/alerts/data/state/alert.action'
 import { MetadataApi } from '@core/registry/state/metadata.api'
-import { CommunicationModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
+import { RegistryFacade } from '@core/registry/state/registry.facade'
+import { StateHelper } from '@shared/helpers/state/state.helper'
+import { initialize, notifyOnError, reportError } from '@shared/helpers/rx.helper'
+import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
+import { withProfileScope } from '@shared/helpers/store/with-profile-scope.feature'
+
+interface AlertsPageRequest {
+    projectId: string | undefined
+    pageNumber: number | undefined
+    pageSize: number | undefined
+}
+
+interface AlertCommunicationsPageRequest extends AlertsPageRequest {
+    id: string
+}
 
 const defaultAlertStore: AlertStoreModel = {
-    alerts: {
-        element: undefined,
-        params: {
-            resetSearch: false,
-            textSearched: undefined,
-            statusSearched: undefined,
-            visibilitySearched: undefined,
-            startDateTimeSearched: undefined,
-            endDateTimeSearched: undefined,
-        },
-        loading: false,
-        silentLoading: false,
-        error: undefined,
-    },
-    communications: {
-        element: undefined,
-        params: {
-            resetSearch: false,
-            textSearched: undefined,
-            visibilitySearched: undefined,
-            startDateTimeSearched: undefined,
-            endDateTimeSearched: undefined,
-        },
-        loading: false,
-        silentLoading: false,
-        error: undefined,
-    },
-    _metadata: {
+    alerts: PageStateHelper.initial<AlertPageParamsModel, AlertModel>( {
+        resetSearch: false,
+        textSearched: undefined,
+        statusSearched: undefined,
+        visibilitySearched: undefined,
+        startDateTimeSearched: undefined,
+        endDateTimeSearched: undefined,
+    } ),
+    communications: PageStateHelper.initial<CommunicationPageParamsModel, CommunicationModel>( {
+        resetSearch: false,
+        textSearched: undefined,
+        visibilitySearched: undefined,
+        startDateTimeSearched: undefined,
+        endDateTimeSearched: undefined,
+    } ),
+    metadata: {
         status: [],
         visibilities: [
             { label: '-', value: undefined },
@@ -65,316 +57,111 @@ const defaultAlertStore: AlertStoreModel = {
     },
 }
 
-@State<AlertStoreModel>( {
-    name: 'alert',
-    defaults: defaultAlertStore,
-} )
-@Injectable()
-export class AlertStore extends GenericProjectElementStore<AlertStoreModel> implements NgxsOnInit {
-    private readonly api: AlertApi = inject( AlertApi )
-    private readonly metadataApi: MetadataApi = inject( MetadataApi )
-    private readonly facade: AlertFacade = inject( AlertFacade )
-
-    public ngxsOnInit (): void {
-        this.facade.fetchAlertStatus()
-    }
-
-    @Selector()
-    public static alertsPage (state: AlertStoreModel): PageModel<AlertModel> | undefined {
-        return state.alerts.element
-    }
-
-    @Selector()
-    public static alertsPageLoading (state: AlertStoreModel): boolean {
-        return state.alerts.loading
-    }
-
-    @Selector()
-    public static alertsPageError (state: AlertStoreModel): ToastMessageOptions | undefined {
-        return state.alerts.error
-    }
-
-    @Selector()
-    public static alertsPageSilentLoading (state: AlertStoreModel): boolean {
-        return state.alerts.silentLoading
-    }
-
-    @Selector()
-    public static alertsPageResetSearch (state: AlertStoreModel): boolean {
-        return state.alerts.params.resetSearch
-    }
-
-    @Selector()
-    public static alertsPageTextSearchedParam (state: AlertStoreModel): string | undefined {
-        return state.alerts.params.textSearched
-    }
-
-    @Selector()
-    public static alertsPageStatusSearchedParam (state: AlertStoreModel): AlertStatusEnum | undefined {
-        return state.alerts.params.statusSearched
-    }
-
-    @Selector()
-    public static alertsPageVisibilitySearchedParam (state: AlertStoreModel): boolean | undefined {
-        return state.alerts.params.visibilitySearched
-    }
-
-    @Selector()
-    public static alertsPageStartDateTimeSearchedParam (state: AlertStoreModel): string | undefined {
-        return state.alerts.params.startDateTimeSearched
-    }
-
-    @Selector()
-    public static alertsPageEndDateTimeSearchedParam (state: AlertStoreModel): string | undefined {
-        return state.alerts.params.endDateTimeSearched
-    }
-
-    @Selector()
-    public static alertCommunicationsPage (state: AlertStoreModel): PageModel<CommunicationModel> | undefined {
-        return state.communications.element
-    }
-
-    @Selector()
-    public static alertCommunicationsPageLoading (state: AlertStoreModel): boolean {
-        return state.communications.loading
-    }
-
-    @Selector()
-    public static alertCommunicationsPageError (state: AlertStoreModel): ToastMessageOptions | undefined {
-        return state.communications.error
-    }
-
-    @Selector()
-    public static alertCommunicationsPageSilentLoading (state: AlertStoreModel): boolean {
-        return state.communications.silentLoading
-    }
-
-    @Selector()
-    public static alertCommunicationsPageResetSearch (state: AlertStoreModel): boolean {
-        return state.communications.params.resetSearch
-    }
-
-    @Selector()
-    public static alertCommunicationsPageTextSearchedParam (state: AlertStoreModel): string | undefined {
-        return state.communications.params.textSearched
-    }
-
-    @Selector()
-    public static alertCommunicationsPageVisibilitySearchedParam (state: AlertStoreModel): boolean | undefined {
-        return state.communications.params.visibilitySearched
-    }
-
-    @Selector()
-    public static alertCommunicationsPageStartDateTimeSearchedParam (state: AlertStoreModel): string | undefined {
-        return state.communications.params.startDateTimeSearched
-    }
-
-    @Selector()
-    public static alertCommunicationsPageEndDateTimeSearchedParam (state: AlertStoreModel): string | undefined {
-        return state.communications.params.endDateTimeSearched
-    }
-
-    @Selector()
-    public static alertStatusMetadata (state: AlertStoreModel): SelectItem<AlertStatusEnum | undefined>[] {
-        return state._metadata.status
-    }
-
-    @Selector()
-    public static visibilitiesMetadata (state: AlertStoreModel): SelectItem<boolean | undefined>[] {
-        return state._metadata.visibilities
-    }
-
-    @Action( ResetAlertState )
-    public resetAlertState (ctx: StateContext<AlertStoreModel>): void {
-        ctx.setState( {
-            ...defaultAlertStore,
-            _metadata: {
-                ...defaultAlertStore._metadata,
-                status: ctx.getState()._metadata.status,
-            },
-        } )
-    }
-
-    @Action( FetchAlertStatus )
-    public fetchAlertStatus (ctx: StateContext<AlertStoreModel>): Observable<void> {
-        return this.metadataApi.getAlertsStatus().pipe(
-            map( (status: SelectItem<AlertStatusEnum>[]): void => this.fetchAlertStatusComplete( ctx, status ) ),
-        )
-    }
-
-    private fetchAlertStatusComplete (
-        ctx: StateContext<AlertStoreModel>,
-        status: SelectItem<AlertStatusEnum>[],
-    ): void {
-        ctx.patchState( {
-            _metadata: {
-                ...ctx.getState()._metadata,
-                status: [
-                    { label: '-', value: undefined },
-                    ...status,
-                ],
-            },
-        } )
-    }
-
-    @Action( StartAlertsPageLoader )
-    public startAlertsPageLoader (ctx: StateContext<AlertStoreModel>): void {
-        ctx.patchState( {
-            alerts: StateHelper.updatePageLoader( ctx.getState().alerts, true ),
-        } )
-    }
-
-    @Action( StopAlertsPageLoader )
-    public stopAlertsPageLoader (ctx: StateContext<AlertStoreModel>): void {
-        ctx.patchState( {
-            alerts: StateHelper.updatePageLoader( ctx.getState().alerts, false ),
-        } )
-    }
-
-    @Action( FetchAlertsPage )
-    public fetchAlertsPage (
-        ctx: StateContext<AlertStoreModel>,
-        payload: FetchAlertsPage,
-    ): Observable<void> {
-        return this.api.findAlerts(
-            payload.projectId,
-            payload.pageNumber,
-            payload.pageSize,
-            ctx.getState().alerts.params,
-        ).pipe(
-            initialize( (): void => this.facade.startAlertsPageLoader() ),
-            finalize( (): void => this.facade.stopAlertsPageLoader() ),
-            map( (alertsPage: PageModel<AlertModel>): void => this.fetchAlertsPageComplete(
-                ctx,
-                alertsPage,
+export const AlertStore = signalStore(
+    withState<AlertStoreModel>( defaultAlertStore ),
+    withProfileScope<AlertStoreModel>( defaultAlertStore, (current: AlertStoreModel): Partial<AlertStoreModel> => ({
+        metadata: { ...defaultAlertStore.metadata, status: current.metadata.status },
+    }) ),
+    withProps( () => ({
+        api: inject( AlertApi ),
+        metadataApi: inject( MetadataApi ),
+        registryFacade: inject( RegistryFacade ),
+    }) ),
+    withMethods( (store) => ({
+        fetchAlertStatus: rxMethod<void>( pipe(
+            switchMap( (): Observable<SelectItem<AlertStatusEnum>[]> => store.metadataApi.getAlertsStatus().pipe(
+                notifyOnError( store.registryFacade ),
             ) ),
-            catchError( (error: ErrorModel): Observable<void> => this.pageError( ctx, error ) ),
-        )
-    }
+            tap( (status: SelectItem<AlertStatusEnum>[]): void => patchState( store, (state: AlertStoreModel) => ({
+                metadata: { ...state.metadata, status: [ { label: '-', value: undefined }, ...status ] },
+            }) ) ),
+        ) ),
 
-    private fetchAlertsPageComplete (
-        ctx: StateContext<AlertStoreModel>,
-        alertsPage: PageModel<AlertModel>,
-    ): void {
-        ctx.patchState( {
-            alerts: {
-                ...ctx.getState().alerts,
-                params: {
-                    ...ctx.getState().alerts.params,
-                    resetSearch: false,
-                },
-                element: alertsPage,
-            },
-        } )
-    }
-
-    @Action( UpdateAlertsPageSearchParams )
-    public updateAlertsPageSearchParams (
-        ctx: StateContext<AlertStoreModel>,
-        payload: UpdateAlertsPageSearchParams,
-    ): void {
-        ctx.patchState( {
-            alerts: {
-                ...ctx.getState().alerts,
-                params: payload.params,
-            },
-        } )
-    }
-
-    @Action( StartAlertCommunicationsPageLoader )
-    public startAlertCommunicationsPageLoader (ctx: StateContext<AlertStoreModel>): void {
-        ctx.patchState( {
-            communications: StateHelper.updatePageLoader( ctx.getState().communications, true ),
-        } )
-    }
-
-    @Action( StopAlertCommunicationsPageLoader )
-    public stopAlertCommunicationsPageLoader (ctx: StateContext<AlertStoreModel>): void {
-        ctx.patchState( {
-            communications: StateHelper.updatePageLoader( ctx.getState().communications, false ),
-        } )
-    }
-
-    @Action( FetchAlertCommunicationsPage )
-    public fetchAlertCommunicationsPage (
-        ctx: StateContext<AlertStoreModel>,
-        payload: FetchAlertCommunicationsPage,
-    ): Observable<void> {
-        return this.api.findAlertCommunications(
-            payload.projectId,
-            payload.id,
-            payload.pageNumber,
-            payload.pageSize,
-            ctx.getState().alerts.params,
-        ).pipe(
-            initialize( (): void => this.facade.startAlertCommunicationsPageLoader() ),
-            finalize( (): void => this.facade.stopAlertCommunicationsPageLoader() ),
-            map( (alertsPage: PageModel<CommunicationModel>): void => this.fetchAlertCommunicationsPageComplete(
-                ctx,
-                alertsPage,
+        fetchAlertsPage: rxMethod<AlertsPageRequest>( pipe(
+            switchMap( (request: AlertsPageRequest): Observable<PageModel<AlertModel>> => store.api.findAlerts(
+                request.projectId,
+                request.pageNumber,
+                request.pageSize,
+                store.alerts.params(),
+            ).pipe(
+                initialize( (): void => patchState( store, (state: AlertStoreModel) => ({
+                    alerts: StateHelper.updatePageLoader( state.alerts, true ),
+                }) ) ),
+                finalize( (): void => patchState( store, (state: AlertStoreModel) => ({
+                    alerts: StateHelper.updatePageLoader( state.alerts, false ),
+                }) ) ),
+                catchError( (error: ErrorModel): Observable<never> => {
+                    if (error.status === 503) {
+                        reportError( store.registryFacade, error )
+                    } else {
+                        patchState( store, (state: AlertStoreModel) => ({
+                            alerts: PageStateHelper.withError( state.alerts, error ),
+                        }) )
+                    }
+                    return EMPTY
+                } ),
             ) ),
-            catchError( (error: ErrorModel): Observable<void> => this.fetchAlertCommunicationsPageError( ctx, error ) ),
-        )
-    }
-
-    private fetchAlertCommunicationsPageComplete (
-        ctx: StateContext<AlertStoreModel>,
-        communicationsPage: PageModel<CommunicationModel>,
-    ): void {
-        ctx.patchState( {
-            communications: {
-                ...ctx.getState().alerts,
-                params: {
-                    ...ctx.getState().alerts.params,
-                    resetSearch: false,
+            tap( (page: PageModel<AlertModel>): void => patchState( store, (state: AlertStoreModel) => ({
+                alerts: {
+                    ...state.alerts,
+                    params: { ...state.alerts.params, resetSearch: false },
+                    element: page,
                 },
-                element: communicationsPage,
-            },
-        } )
-    }
+            }) ) ),
+        ) ),
 
-    protected fetchAlertCommunicationsPageError (
-        ctx: StateContext<AlertStoreModel>,
-        error: ErrorModel,
-    ): Observable<void> {
-        if (error.status == 503) {
-            throw error
-        } else {
-            ctx.patchState( {
-                communications: this.buildErrorMessage( ctx.getState().communications, error ),
+        updateAlertsPageSearchParams: (params: AlertPageParamsModel): void => {
+            patchState( store, (state: AlertStoreModel) => ({ alerts: { ...state.alerts, params: params } }) )
+        },
+
+        fetchAlertCommunicationsPage: rxMethod<AlertCommunicationsPageRequest>( pipe(
+            switchMap( (request: AlertCommunicationsPageRequest): Observable<PageModel<CommunicationModel>> =>
+                store.api.findAlertCommunications(
+                    request.projectId,
+                    request.id,
+                    request.pageNumber,
+                    request.pageSize,
+                    store.communications.params(),
+                ).pipe(
+                    initialize( (): void => patchState( store, (state: AlertStoreModel) => ({
+                        communications: StateHelper.updatePageLoader( state.communications, true ),
+                    }) ) ),
+                    finalize( (): void => patchState( store, (state: AlertStoreModel) => ({
+                        communications: StateHelper.updatePageLoader( state.communications, false ),
+                    }) ) ),
+                    catchError( (error: ErrorModel): Observable<never> => {
+                        if (error.status === 503) {
+                            reportError( store.registryFacade, error )
+                        } else {
+                            patchState( store, (state: AlertStoreModel) => ({
+                                communications: PageStateHelper.withError( state.communications, error ),
+                            }) )
+                        }
+                        return EMPTY
+                    } ),
+                ),
+            ),
+            tap( (page: PageModel<CommunicationModel>): void => patchState( store, (state: AlertStoreModel) => ({
+                communications: {
+                    ...state.communications,
+                    params: { ...state.communications.params, resetSearch: false },
+                    element: page,
+                },
+            }) ) ),
+        ) ),
+
+        updateAlertCommunicationsPageSearchParams: (params: CommunicationPageParamsModel): void => {
+            patchState( store, (state: AlertStoreModel) => ({
+                communications: { ...state.communications, params: params },
+            }) )
+        },
+    }) ),
+    withHooks( {
+        onInit (store): void {
+            store.fetchAlertStatus()
+            inject( TranslateService ).onLangChange.pipe( takeUntilDestroyed() ).subscribe( (): void => {
+                store.fetchAlertStatus()
             } )
-        }
-
-        return of()
-    }
-
-    @Action( UpdateAlertCommunicationsPageSearchParams )
-    public updateAlertCommunicationsPageSearchParams (
-        ctx: StateContext<AlertStoreModel>,
-        payload: UpdateAlertCommunicationsPageSearchParams,
-    ): void {
-        ctx.patchState( {
-            communications: {
-                ...ctx.getState().communications,
-                params: payload.params,
-            },
-        } )
-    }
-
-    protected refreshPage (ctx: StateContext<AlertStoreModel>): void {
-        const page: PageModel<AlertModel> | undefined = ctx.getState().alerts.element
-        this.facade.fetchAlertsPage( page?.pageNumber, page?.pageSize, true )
-    }
-
-    protected pageError (ctx: StateContext<AlertStoreModel>, error: ErrorModel): Observable<void> {
-        if (error.status == 503) {
-            throw error
-        } else {
-            ctx.patchState( {
-                alerts: this.buildErrorMessage( ctx.getState().alerts, error ),
-            } )
-        }
-
-        return of()
-    }
-}
+        },
+    } ),
+)

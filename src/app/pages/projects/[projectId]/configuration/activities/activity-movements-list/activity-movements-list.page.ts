@@ -3,12 +3,12 @@ import {ActivityModel} from '@shared/models/model/activity.model'
 import {withLoading} from '@shared/helpers/rx.helper'
 import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms'
 import {PageEventModel} from '@shared/models/model/page-event.model'
-import {ListComponent} from '@shared/ui/list/list.component'
+import {ListComponent} from '@shared/ui/common/list/list.component'
 import {RegistryTemplateDirective} from '@shared/directives/registry-template.directive'
 import {TranslatePipe} from '@ngx-translate/core'
 import {InputTextModule} from 'primeng/inputtext'
 import {ToggleButtonModule} from 'primeng/togglebutton'
-import {MovementElementComponent} from '@shared/ui/movement-element/movement-element.component'
+import {MovementElementComponent} from '@shared/ui/domain/movement-element/movement-element.component'
 import {Select, SelectModule} from 'primeng/select'
 import {Button} from 'primeng/button'
 import {DatePicker} from 'primeng/datepicker'
@@ -17,7 +17,7 @@ import {ActivityElementComponent} from '@pages/projects/[projectId]/configuratio
 import {GenericListComponent} from '@shared/ui/base/generic-list.component'
 import {MovementFacade} from '@pages/projects/[projectId]/movements/data/state/movement.facade'
 import {Card} from 'primeng/card'
-import {ElementSkeletonComponent} from '@shared/ui/element-skeleton/element-skeleton.component'
+import {ElementSkeletonComponent} from '@shared/ui/common/element-skeleton/element-skeleton.component'
 import {Subscription, tap} from 'rxjs'
 
 @Component({
@@ -74,7 +74,7 @@ export class ActivityMovementsListPage extends GenericListComponent implements O
                 withLoading(this.activityLoading),
             ).subscribe( (activity: ActivityModel): void => this.activity.set(activity) ),
         )
-        this.facade.fetchActivityMovementsPage(id!, undefined, undefined, false)
+        this.facade.fetchActivityMovementsPage(id!, undefined, undefined)
     }
 
     private handleMovementActions(): void {
@@ -84,9 +84,7 @@ export class ActivityMovementsListPage extends GenericListComponent implements O
                     this.facade.fetchActivityMovementsPage(
                         this.route.snapshot.params['activityId'],
                         undefined,
-                        undefined,
-                        true,
-                    )
+                        undefined)
                 }),
             ).subscribe(),
         )
@@ -97,9 +95,7 @@ export class ActivityMovementsListPage extends GenericListComponent implements O
                     this.facade.fetchActivityMovementsPage(
                         this.route.snapshot.params['activityId'],
                         this.facade.activityMovementsPage()?.pageNumber,
-                        this.facade.activityMovementsPage()?.pageSize,
-                        true,
-                    )
+                        this.facade.activityMovementsPage()?.pageSize)
                 }),
             ).subscribe(),
         )
@@ -113,8 +109,7 @@ export class ActivityMovementsListPage extends GenericListComponent implements O
             this.visibilitySearched.value,
         )
         this.facade.fetchActivityMovementsPage(
-            this.route.snapshot.params['activityId'], pageEvent.pageNumber, pageEvent.pageSize, false,
-        )
+            this.route.snapshot.params['activityId'], pageEvent.pageNumber, pageEvent.pageSize)
     }
 
     public ngOnDestroy(): void {

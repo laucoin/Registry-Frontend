@@ -2,14 +2,14 @@ import { Component, inject} from '@angular/core'
 import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms'
 import {PageEventModel} from '@shared/models/model/page-event.model'
 import {ParticipantFacade} from '@pages/projects/[projectId]/configuration/participants/data/state/participant.facade'
-import {ListComponent} from '@shared/ui/list/list.component'
+import {ListComponent} from '@shared/ui/common/list/list.component'
 import {RegistryTemplateDirective} from '@shared/directives/registry-template.directive'
 import {TranslatePipe} from '@ngx-translate/core'
 import {InputTextModule} from 'primeng/inputtext'
 import {ToggleButtonModule} from 'primeng/togglebutton'
 import {
     ParticipantElementComponent,
-} from '@shared/ui/participant-element/participant-element.component'
+} from '@shared/ui/domain/participant-element/participant-element.component'
 import {RouterLink} from '@angular/router'
 import {ParticipantRoutesEnum} from '@pages/projects/[projectId]/configuration/participants/participant-routes.enum'
 import {Button} from 'primeng/button'
@@ -55,7 +55,7 @@ export class ParticipantsListPage extends GenericListComponent {
     }
 
     protected loadData(): void {
-        this.facade.fetchParticipantsPage(undefined, undefined, false)
+        this.facade.fetchParticipantsPage(undefined, undefined)
     }
 
     protected loadPage(pageEvent: PageEventModel): void {
@@ -64,7 +64,7 @@ export class ParticipantsListPage extends GenericListComponent {
             this.statusSearched.value,
             this.visibilitySearched.value,
         )
-        this.facade.fetchParticipantsPage(pageEvent.pageNumber, pageEvent.pageSize, false)
+        this.facade.fetchParticipantsPage(pageEvent.pageNumber, pageEvent.pageSize)
     }
 
     protected get textSearched(): FormControl {

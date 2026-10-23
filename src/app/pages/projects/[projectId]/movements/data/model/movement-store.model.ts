@@ -14,7 +14,7 @@ import { CommunicationModel } from '@pages/projects/[projectId]/movements/commun
 export interface MovementStoreModel {
     movements: PageRequestInformationModel<MovementPageParamsModel, MovementModel>
     movementCommunications: PageRequestInformationModel<CommunicationPageParamsModel, CommunicationModel>
-    _metadata: {
+    metadata: {
         types: SelectItem<MovementTypeEnum | undefined>[]
         participantTypes: SelectItem<ParticipantTypeEnum>[]
         searchedReasonsAndActivities: MovementReasonModel[]

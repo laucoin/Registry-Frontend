@@ -2,10 +2,10 @@ import { Component, inject, input, InputSignal, OnDestroy, OnInit } from '@angul
 import { AlertModel } from '@shared/models/model/alert.model'
 import { AlertFacade } from '@pages/projects/[projectId]/alerts/data/state/alert.facade'
 import { ReactiveFormsModule } from '@angular/forms'
-import { DialogElementComponent } from '@shared/ui/dialog-element/dialog-element.component'
+import { DialogElementComponent } from '@shared/ui/domain/dialog-element/dialog-element.component'
 import { CommunicationHelper } from '@shared/helpers/communication.helper'
 import { CommunicationModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
-import { CommunicationFormComponent } from '@shared/ui/communication-form/communication-form.component'
+import { CommunicationFormComponent } from '@shared/ui/domain/communication-form/communication-form.component'
 import { Subscription, tap } from 'rxjs'
 import { CommunicationFacade } from '@pages/projects/[projectId]/movements/communication/data/state/communication.facade'
 import { TranslatePipe } from '@ngx-translate/core'
@@ -35,7 +35,7 @@ export class AlertCommunicationsListComponent implements OnInit, OnDestroy {
     }
 
     protected loadData (): void {
-        this.facade.fetchAlertCommunicationsPage( this.alert().id!, undefined, undefined, true )
+        this.facade.fetchAlertCommunicationsPage( this.alert().id!, undefined, undefined)
     }
 
     protected getPreviousAuthorId (index: number): string | undefined {
@@ -57,9 +57,7 @@ export class AlertCommunicationsListComponent implements OnInit, OnDestroy {
                     this.facade.fetchAlertCommunicationsPage(
                         this.alert().id,
                         undefined,
-                        undefined,
-                        true,
-                    )
+                        undefined)
                 } ),
             ).subscribe(),
         )
@@ -70,9 +68,7 @@ export class AlertCommunicationsListComponent implements OnInit, OnDestroy {
                     this.facade.fetchAlertCommunicationsPage(
                         this.alert().id,
                         this.facade.alertCommunicationsPage()?.pageNumber,
-                        this.facade.alertCommunicationsPage()?.pageSize,
-                        true,
-                    )
+                        this.facade.alertCommunicationsPage()?.pageSize)
                 } ),
             ).subscribe(),
         )

@@ -11,15 +11,14 @@ import { ProjectOptionModel } from '@pages/projects/data/model/project-option.mo
 import { ArrayHelper } from '@shared/helpers/array.helper'
 import { SelectItem } from 'primeng/api'
 import { FormHelper } from '@shared/helpers/form.helper'
-import { UpdateProject } from '@pages/projects/data/state/project/project.action'
 import { Checkbox, CheckboxChangeEvent } from 'primeng/checkbox'
 import { GenericHelper } from '@shared/helpers/generic.helper'
 import { Step, StepItem, StepPanel, Stepper } from 'primeng/stepper'
 import { Button } from 'primeng/button'
 import { TranslatePipe } from '@ngx-translate/core'
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
-import { FormFieldErrorComponent } from '@shared/ui/form-field-error/form-field-error.component'
-import { DateTimeFieldComponent } from '@shared/ui/date-time-field/date-time-field.component'
+import { FormFieldErrorComponent } from '@shared/ui/common/form-field-error/form-field-error.component'
+import { DateTimeFieldComponent } from '@shared/ui/common/date-time-field/date-time-field.component'
 import { RegistryRequiredDirective } from '@shared/directives/registry-required.directive'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
 import { InputText } from 'primeng/inputtext'
@@ -31,7 +30,6 @@ import { ProgressSpinner } from 'primeng/progressspinner'
 import { FormTitlePipe } from '@shared/helpers/pipe/form-title.pipe'
 import { FormIconPipe } from '@shared/helpers/pipe/form-icon.pipe'
 import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
-import { FetchCurrentUser } from '@core/registry/state/registry.action'
 
 @Component( {
     selector: 'app-project-form',
@@ -163,7 +161,7 @@ export class ProjectFormPage extends GenericFormComponent<ProjectModel, ProjectD
         }
 
         const dto: ProjectDto = this.buildDto()
-        const observable: Observable<FetchCurrentUser | UpdateProject> =
+        const observable: Observable<unknown> =
             this.facade.project()
             ? this.facade.updateProject( this.facade.project()!.id!, dto )
             : this.facade.createProject( dto )

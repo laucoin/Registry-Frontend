@@ -9,10 +9,6 @@ import {routes} from '@core/routing/registry.routes'
 import {backendHandler} from '@core/authentication/handler/backend.handler'
 import {RegistryFacade} from '@core/registry/state/registry.facade'
 import {UserFacade} from '@pages/users/data/state/user.facade'
-import {
-    RegistryNgxsUnhandledErrorHandler,
-} from '@core/config/handler/registry-ngxs-unhandled-error.handler'
-import {withNgxsPlugin} from '@ngxs/store'
 import {DatePipe} from '@angular/common'
 import {DateFormatPipe} from '@shared/helpers/pipe/date-format.pipe'
 import {PluralTranslationPipe} from '@shared/helpers/pipe/plural-translation.pipe'
@@ -43,9 +39,6 @@ import {IntervalPipe} from '@shared/helpers/pipe/interval.pipe'
             CustomDateFormatPipe,
             RegistryConfig,
             RegistryConfig.providePrimeNg(),
-            RegistryConfig.provideNgxs(),
-            RegistryConfig.provideNgxsReduxDevtools(),
-            withNgxsPlugin(RegistryNgxsUnhandledErrorHandler),
             RegistryConfig.provideTranslatorService(),
             RegistryConfig.provideTranslatorHttpLoader(),
             PluralTranslationPipe,

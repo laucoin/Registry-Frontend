@@ -1,83 +1,90 @@
-import { Action, NgxsOnInit, Selector, State, StateContext } from '@ngxs/store'
-import { catchError, finalize, map, Observable, of } from 'rxjs'
+import { inject } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { patchState, signalStore, withHooks, withMethods, withProps, withState } from '@ngrx/signals'
+import { rxMethod } from '@ngrx/signals/rxjs-interop'
+import { TranslateService } from '@ngx-translate/core'
+import { catchError, EMPTY, finalize, map, Observable, pipe, switchMap, tap } from 'rxjs'
+import { SelectItem, SelectItemGroup } from 'primeng/api'
 import { PageModel } from '@shared/models/model/page.model'
-import { GenericProjectElementStore } from '@shared/helpers/state/generic-project-element.store'
-import { initialize } from '@shared/helpers/rx.helper'
-import {
-    FetchMovementCommunicationsPage,
-    FetchMovementsContent,
-    FetchMovementsPage,
-    FetchMovementTypes,
-    FetchParticipantTypes,
-    ResetMovementState,
-    SearchParticipantsAndGroups,
-    SearchReasonsAndActivities,
-    SearchVehicles,
-    StartMovementCommunicationsPageLoader,
-    StartMovementsPageLoader,
-    StopMovementCommunicationsPageLoader,
-    StopMovementsPageLoader,
-    UpdateMovementCommunicationsPageSearchParams,
-    UpdateMovementsPageSearchParams,
-} from '@pages/projects/[projectId]/movements/data/state/movement.action'
-import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
-import { MovementFacade } from '@pages/projects/[projectId]/movements/data/state/movement.facade'
-import { StateHelper } from '@shared/helpers/state/state.helper'
-import { inject, Injectable } from '@angular/core'
-import { GroupModel } from '@shared/models/model/group.model'
-import { GroupHelper } from '@shared/helpers/group.helper'
-import { SelectItem, SelectItemGroup, ToastMessageOptions } from 'primeng/api'
-import { ErrorModel } from '@shared/models/model/error.model'
-import { ParticipantModel } from '@shared/models/model/participant.model'
-import { MovementModel } from '@shared/models/model/movement.model'
-import { MovementStoreModel } from '@pages/projects/[projectId]/movements/data/model/movement-store.model'
-import {
-    MovementParticipantsAndGroupsModel,
-} from '@shared/models/model/movement-participants-and-groups.model'
-import { ParticipantHelper } from '@shared/helpers/participant.helper'
-import { VehicleModel } from '@shared/models/model/vehicle.model'
-import { VehicleHelper } from '@shared/helpers/vehicle.helper'
-import { MovementContentModel } from '@shared/models/model/movement-content.model'
 import { PairModel } from '@shared/models/model/pair.model'
-import { MovementHelper } from '@shared/helpers/movement.helper'
-import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
-import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
-import { MetadataApi } from '@core/registry/state/metadata.api'
-import { MovementReasonModel } from '@pages/projects/[projectId]/movements/data/model/movement-reason.model'
-import { MovementTypeEnum } from '@shared/models/enumeration/movement-type.enum'
+import { MovementModel } from '@shared/models/model/movement.model'
+import { MovementContentModel } from '@shared/models/model/movement-content.model'
+import { MovementPageParamsModel } from '@shared/models/model/movement-page-params.model'
+import { MovementParticipantsAndGroupsModel } from '@shared/models/model/movement-participants-and-groups.model'
+import { ParticipantModel } from '@shared/models/model/participant.model'
+import { GroupModel } from '@shared/models/model/group.model'
+import { VehicleModel } from '@shared/models/model/vehicle.model'
+import { ErrorModel } from '@shared/models/model/error.model'
 import { ParticipantTypeEnum } from '@shared/models/enumeration/participant-type.enum'
+import { MovementTypeEnum } from '@shared/models/enumeration/movement-type.enum'
+import { MovementReasonModel } from '@pages/projects/[projectId]/movements/data/model/movement-reason.model'
+import { MovementStoreModel } from '@pages/projects/[projectId]/movements/data/model/movement-store.model'
+import { CommunicationPageParamsModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication-page-params.model'
 import { CommunicationModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
+import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
+import { MetadataApi } from '@core/registry/state/metadata.api'
+import { RegistryFacade } from '@core/registry/state/registry.facade'
+import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
+import { GroupHelper } from '@shared/helpers/group.helper'
+import { ParticipantHelper } from '@shared/helpers/participant.helper'
+import { VehicleHelper } from '@shared/helpers/vehicle.helper'
+import { MovementHelper } from '@shared/helpers/movement.helper'
+import { StateHelper } from '@shared/helpers/state/state.helper'
+import { initialize, notifyOnError, reportError } from '@shared/helpers/rx.helper'
+import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
+import { withProfileScope } from '@shared/helpers/store/with-profile-scope.feature'
+
+interface MovementsPageRequest {
+    projectId: string | undefined
+    pageNumber: number | undefined
+    pageSize: number | undefined
+}
+
+interface MovementCommunicationsPageRequest extends MovementsPageRequest {
+    id: string
+}
+
+interface MovementsContentRequest {
+    projectId: string | undefined
+    movementIds: string[]
+}
+
+interface SearchReasonsAndActivitiesRequest {
+    projectId: string | undefined
+    textSearched: string | undefined
+    typeSearched: string
+    contentTypeSearched: ParticipantTypeEnum
+}
+
+interface SearchParticipantsAndGroupsRequest {
+    projectId: string | undefined
+    contentTypeSearched: ParticipantTypeEnum
+    textSearched: string | undefined
+}
+
+interface SearchVehiclesRequest {
+    projectId: string | undefined
+    textSearched: string | undefined
+}
 
 const defaultMovementStore: MovementStoreModel = {
-    movements: {
-        element: undefined,
-        params: {
-            resetSearch: false,
-            currentMovements: false,
-            linkedToActivity: undefined,
-            visibilitySearched: undefined,
-            typeSearched: undefined,
-            startDateTimeSearched: undefined,
-            endDateTimeSearched: undefined,
-        },
-        loading: false,
-        silentLoading: false,
-        error: undefined,
-    },
-    movementCommunications: {
-        element: undefined,
-        params: {
-            resetSearch: false,
-            visibilitySearched: true,
-            textSearched: undefined,
-            startDateTimeSearched: undefined,
-            endDateTimeSearched: undefined,
-        },
-        loading: false,
-        silentLoading: false,
-        error: undefined,
-    },
-    _metadata: {
+    movements: PageStateHelper.initial<MovementPageParamsModel, MovementModel>( {
+        resetSearch: false,
+        currentMovements: false,
+        linkedToActivity: undefined,
+        visibilitySearched: undefined,
+        typeSearched: undefined,
+        startDateTimeSearched: undefined,
+        endDateTimeSearched: undefined,
+    } ),
+    movementCommunications: PageStateHelper.initial<CommunicationPageParamsModel, CommunicationModel>( {
+        resetSearch: false,
+        visibilitySearched: true,
+        textSearched: undefined,
+        startDateTimeSearched: undefined,
+        endDateTimeSearched: undefined,
+    } ),
+    metadata: {
         types: [],
         participantTypes: [],
         searchedReasonsAndActivities: [],
@@ -91,503 +98,236 @@ const defaultMovementStore: MovementStoreModel = {
     },
 }
 
-@State<MovementStoreModel>( {
-    name: 'movement',
-    defaults: defaultMovementStore,
-} )
-@Injectable()
-export class MovementStore extends GenericProjectElementStore<MovementStoreModel> implements NgxsOnInit {
-    private readonly api: MovementApi = inject( MovementApi )
-    private readonly metadataApi: MetadataApi = inject( MetadataApi )
-    private readonly facade: MovementFacade = inject( MovementFacade )
-    private readonly pluralTranslationPipe: PluralTranslationPipe = inject( PluralTranslationPipe )
-    private readonly datePipe: DateFormatPipe = inject( DateFormatPipe )
+export const MovementStore = signalStore(
+    withState<MovementStoreModel>( defaultMovementStore ),
+    withProfileScope<MovementStoreModel>( defaultMovementStore, (current: MovementStoreModel): Partial<MovementStoreModel> => ({
+        metadata: {
+            ...defaultMovementStore.metadata,
+            participantTypes: current.metadata.participantTypes,
+            types: current.metadata.types,
+        },
+    }) ),
+    withProps( () => ({
+        api: inject( MovementApi ),
+        metadataApi: inject( MetadataApi ),
+        registryFacade: inject( RegistryFacade ),
+        translateService: inject( TranslateService ),
+        pluralTranslationPipe: inject( PluralTranslationPipe ),
+    }) ),
+    withMethods( (store) => {
+        const fetchMovementsContents = rxMethod<MovementsContentRequest>( pipe(
+            switchMap( (request: MovementsContentRequest): Observable<PairModel<MovementContentModel[]>[]> =>
+                store.api.findMovementsContents(
+                    request.projectId,
+                    request.movementIds,
+                    store.movements.params.currentMovements(),
+                ).pipe( notifyOnError( store.registryFacade ) ),
+            ),
+            tap( (contents: PairModel<MovementContentModel[]>[]): void => patchState( store, (state: MovementStoreModel) => {
+                if (!state.movements.element) return state
+                return {
+                    movements: {
+                        ...state.movements,
+                        element: {
+                            ...state.movements.element,
+                            content: MovementHelper.rebuildPageWithContent( state.movements.element.content, contents ),
+                        },
+                    },
+                }
+            }) ),
+        ) )
 
-    public ngxsOnInit (): void {
-        this.facade.fetchMovementTypes()
-        this.facade.fetchParticipantTypes()
-    }
-
-    @Selector()
-    public static movementsPage (state: MovementStoreModel): PageModel<MovementModel> | undefined {
-        return state.movements.element
-    }
-
-    @Selector()
-    public static movementsPageLoading (state: MovementStoreModel): boolean {
-        return state.movements.loading
-    }
-
-    @Selector()
-    public static movementsPageError (state: MovementStoreModel): ToastMessageOptions | undefined {
-        return state.movements.error
-    }
-
-    @Selector()
-    public static movementsPageSilentLoading (state: MovementStoreModel): boolean {
-        return state.movements.silentLoading
-    }
-
-    @Selector()
-    public static movementsPageResetSearch (state: MovementStoreModel): boolean {
-        return state.movements.params.resetSearch
-    }
-
-    @Selector()
-    public static movementsPageTypeSearchedParam (state: MovementStoreModel): string | undefined {
-        return state.movements.params.typeSearched
-    }
-
-    @Selector()
-    public static movementsPageVisibilitySearchedParam (state: MovementStoreModel): boolean | undefined {
-        return state.movements.params.visibilitySearched
-    }
-
-    @Selector()
-    public static movementsPageStartDateTimeSearchedParam (state: MovementStoreModel): string | undefined {
-        return state.movements.params.startDateTimeSearched
-    }
-
-    @Selector()
-    public static movementsPageEndDateTimeSearchedParam (state: MovementStoreModel): string | undefined {
-        return state.movements.params.endDateTimeSearched
-    }
-
-    @Selector()
-    public static movementCommunicationsPage (state: MovementStoreModel): PageModel<CommunicationModel> | undefined {
-        return state.movementCommunications.element
-    }
-
-    @Selector()
-    public static movementCommunicationsPageLoading (state: MovementStoreModel): boolean {
-        return state.movementCommunications.loading
-    }
-
-    @Selector()
-    public static movementCommunicationsPageError (state: MovementStoreModel): ToastMessageOptions | undefined {
-        return state.movementCommunications.error
-    }
-
-    @Selector()
-    public static movementCommunicationsPageSilentLoading (state: MovementStoreModel): boolean {
-        return state.movementCommunications.silentLoading
-    }
-
-    @Selector()
-    public static movementCommunicationsPageResetSearch (state: MovementStoreModel): boolean {
-        return state.movementCommunications.params.resetSearch
-    }
-
-    @Selector()
-    public static movementCommunicationsPageTextSearchedParam (state: MovementStoreModel): string | undefined {
-        return state.movementCommunications.params.textSearched
-    }
-
-    @Selector()
-    public static movementCommunicationsPageVisibilitySearchedParam (state: MovementStoreModel): boolean | undefined {
-        return state.movementCommunications.params.visibilitySearched
-    }
-
-    @Selector()
-    public static movementCommunicationsPageStartDateTimeSearchedParam (state: MovementStoreModel): string | undefined {
-        return state.movementCommunications.params.startDateTimeSearched
-    }
-
-    @Selector()
-    public static movementCommunicationsPageEndDateTimeSearchedParam (state: MovementStoreModel): string | undefined {
-        return state.movementCommunications.params.endDateTimeSearched
-    }
-
-    @Selector()
-    public static searchedReasonAndActivityMetadata (state: MovementStoreModel): MovementReasonModel[] {
-        return state._metadata.searchedReasonsAndActivities
-    }
-
-    @Selector()
-    public static searchedParticipantAndGroupMetadata (state: MovementStoreModel): SelectItemGroup<ParticipantModel | GroupModel>[] {
-        return state._metadata.searchedParticipantsAndGroups
-    }
-
-    @Selector()
-    public static searchedVehicleMetadata (state: MovementStoreModel): SelectItem<VehicleModel>[] {
-        return state._metadata.searchedVehicles
-    }
-
-    @Selector()
-    public static movementTypesMetadata (state: MovementStoreModel): SelectItem<MovementTypeEnum | undefined>[] {
-        return state._metadata.types
-    }
-
-    @Selector()
-    public static participantTypesMetadata (state: MovementStoreModel): SelectItem<ParticipantTypeEnum>[] {
-        return state._metadata.participantTypes
-    }
-
-    @Selector()
-    public static visibilitiesMetadata (state: MovementStoreModel): SelectItem<boolean | undefined>[] {
-        return state._metadata.visibilities
-    }
-
-    @Action( ResetMovementState )
-    public resetMovementState (ctx: StateContext<MovementStoreModel>): void {
-        ctx.setState( {
-            ...defaultMovementStore,
-            _metadata: {
-                ...defaultMovementStore._metadata,
-                participantTypes: ctx.getState()._metadata.participantTypes,
-                types: ctx.getState()._metadata.types,
-            },
-        } )
-    }
-
-    @Action( FetchMovementTypes )
-    public fetchMovementTypes (ctx: StateContext<MovementStoreModel>): Observable<void> {
-        return this.metadataApi.getMovementsTypes().pipe(
-            map( (types: SelectItem<MovementTypeEnum>[]): void => this.fetchMovementTypesComplete( ctx, types ) ),
-        )
-    }
-
-    private fetchMovementTypesComplete (
-        ctx: StateContext<MovementStoreModel>,
-        types: SelectItem<MovementTypeEnum>[],
-    ): void {
-        ctx.patchState( {
-            _metadata: {
-                ...ctx.getState()._metadata,
-                types: [
-                    { label: '-', value: undefined },
-                    ...types,
-                ],
-            },
-        } )
-    }
-
-    @Action( FetchParticipantTypes )
-    public fetchParticipantTypes (ctx: StateContext<MovementStoreModel>): Observable<void> {
-        return this.metadataApi.getParticipantsTypes().pipe(
-            map( (types: SelectItem<ParticipantTypeEnum>[]): void => this.fetchParticipantTypesComplete( ctx, types ) ),
-        )
-    }
-
-    private fetchParticipantTypesComplete (
-        ctx: StateContext<MovementStoreModel>,
-        types: SelectItem<ParticipantTypeEnum>[],
-    ): void {
-        ctx.patchState( {
-            _metadata: {
-                ...ctx.getState()._metadata,
-                participantTypes: types,
-            },
-        } )
-    }
-
-    @Action( StartMovementsPageLoader )
-    public startMovementsPageLoader (ctx: StateContext<MovementStoreModel>): void {
-        ctx.patchState( {
-            movements: StateHelper.updatePageLoader( ctx.getState().movements, true ),
-        } )
-    }
-
-    @Action( StopMovementsPageLoader )
-    public stopMovementsPageLoader (ctx: StateContext<MovementStoreModel>): void {
-        ctx.patchState( {
-            movements: StateHelper.updatePageLoader( ctx.getState().movements, false ),
-        } )
-    }
-
-    @Action( FetchMovementsPage )
-    public fetchMovementsPage (ctx: StateContext<MovementStoreModel>, payload: FetchMovementsPage): Observable<void> {
-        return this.api.findMovements(
-            payload.projectId,
-            payload.pageNumber,
-            payload.pageSize,
-            ctx.getState().movements.params,
-        ).pipe(
-            initialize( (): void => this.facade.startMovementsPageLoader() ),
-            finalize( (): void => this.facade.stopMovementsPageLoader() ),
-            map( (movementsPage: PageModel<MovementModel>): void => this.fetchMovementsPageComplete(
-                ctx,
-                movementsPage,
-            ) ),
-            catchError( (error: ErrorModel): Observable<void> => this.pageError( ctx, error ) ),
-        )
-    }
-
-    private fetchMovementsPageComplete (
-        ctx: StateContext<MovementStoreModel>,
-        movementsPage: PageModel<MovementModel>,
-    ): void {
-        ctx.patchState( {
-            movements: {
-                ...ctx.getState().movements,
-                params: {
-                    ...ctx.getState().movements.params,
-                    resetSearch: false,
-                },
-                element: movementsPage,
-            },
-        } )
-
-        if (movementsPage.content.length > 0) {
-            this.facade.fetchMovementsContents(
-                movementsPage.content.map( (movement: MovementModel): string => movement.id ),
-            )
-        }
-    }
-
-    @Action( FetchMovementsContent )
-    public fetchMovementsContent (
-        ctx: StateContext<MovementStoreModel>,
-        payload: FetchMovementsContent,
-    ): Observable<void> {
-        return this.api.findMovementsContents(
-            payload.projectId,
-            payload.movementIds,
-            ctx.getState().movements.params.currentMovements,
-        ).pipe(
-            map( (contents: PairModel<MovementContentModel[]>[]): void => this.fetchMovementsContentComplete(
-                ctx,
-                contents,
-            ) ),
-        )
-    }
-
-    private fetchMovementsContentComplete (
-        ctx: StateContext<MovementStoreModel>,
-        contents: PairModel<MovementContentModel[]>[],
-    ): void {
-        if (!ctx.getState().movements.element) {
-            return
-        }
-
-        ctx.patchState( {
-            movements: {
-                ...ctx.getState().movements,
-                element: {
-                    ...ctx.getState().movements.element!,
-                    content: MovementHelper.rebuildPageWithContent( ctx.getState().movements.element!.content, contents ),
-                },
-            },
-        } )
-    }
-
-    @Action( UpdateMovementsPageSearchParams )
-    public updateMovementsPageSearchParams (
-        ctx: StateContext<MovementStoreModel>,
-        payload: UpdateMovementsPageSearchParams,
-    ): void {
-        ctx.patchState( {
-            movements: {
-                ...ctx.getState().movements,
-                params: payload.params,
-            },
-        } )
-    }
-
-    @Action( StartMovementCommunicationsPageLoader )
-    public startMovementCommunicationsPageLoader (ctx: StateContext<MovementStoreModel>): void {
-        ctx.patchState( {
-            movementCommunications: StateHelper.updatePageLoader( ctx.getState().movementCommunications, true ),
-        } )
-    }
-
-    @Action( StopMovementCommunicationsPageLoader )
-    public stopMovementCommunicationsPageLoader (ctx: StateContext<MovementStoreModel>): void {
-        ctx.patchState( {
-            movementCommunications: StateHelper.updatePageLoader( ctx.getState().movementCommunications, false ),
-        } )
-    }
-
-    @Action( FetchMovementCommunicationsPage )
-    public fetchMovementCommunicationsPage (
-        ctx: StateContext<MovementStoreModel>,
-        payload: FetchMovementCommunicationsPage,
-    ): Observable<void> {
-        return this.api.findMovementCommunications(
-            payload.projectId,
-            payload.id,
-            payload.pageNumber,
-            payload.pageSize,
-            ctx.getState().movementCommunications.params,
-        ).pipe(
-            initialize( (): void => this.facade.startMovementCommunicationsPageLoader() ),
-            finalize( (): void => this.facade.stopMovementCommunicationsPageLoader() ),
-            map( (communicationsPage: PageModel<CommunicationModel>): void => this.fetchMovementCommunicationsPageComplete(
-                ctx,
-                communicationsPage,
-            ) ),
-            catchError( (error: ErrorModel): Observable<void> => this.communicationsPageError( ctx, error ) ),
-        )
-    }
-
-    private fetchMovementCommunicationsPageComplete (
-        ctx: StateContext<MovementStoreModel>,
-        communicationsPage: PageModel<CommunicationModel>,
-    ): void {
-        ctx.patchState( {
-            movementCommunications: {
-                ...ctx.getState().movementCommunications,
-                params: {
-                    ...ctx.getState().movementCommunications.params,
-                    resetSearch: false,
-                },
-                element: communicationsPage,
-            },
-        } )
-    }
-
-    @Action( UpdateMovementCommunicationsPageSearchParams )
-    public updateMovementCommunicationsPageSearchParams (
-        ctx: StateContext<MovementStoreModel>,
-        payload: UpdateMovementCommunicationsPageSearchParams,
-    ): void {
-        ctx.patchState( {
-            movementCommunications: {
-                ...ctx.getState().movementCommunications,
-                params: payload.params,
-            },
-        } )
-    }
-
-    @Action( SearchReasonsAndActivities )
-    public searchReasonsAndActivities (
-        ctx: StateContext<MovementStoreModel>,
-        payload: SearchReasonsAndActivities,
-    ): Observable<void> {
-        return this.api.searchReasonsAndActivities(
-            payload.projectId,
-            payload.textSearched,
-            payload.typeSearched,
-            payload.contentTypeSearched,
-        ).pipe(
-            map( (reasonsAndActivities: MovementReasonModel[]): void => this.searchReasonsAndActivitiesComplete(
-                ctx,
-                reasonsAndActivities,
-            ) ),
-        )
-    }
-
-    private searchReasonsAndActivitiesComplete (
-        ctx: StateContext<MovementStoreModel>,
-        reasonsAndActivities: MovementReasonModel[],
-    ): void {
-        ctx.patchState( {
-            _metadata: {
-                ...ctx.getState()._metadata,
-                searchedReasonsAndActivities: reasonsAndActivities,
-            },
-        } )
-    }
-
-    @Action( SearchParticipantsAndGroups )
-    public searchParticipantsAndGroups (
-        ctx: StateContext<MovementStoreModel>,
-        payload: SearchParticipantsAndGroups,
-    ): Observable<void> {
-        return this.api.searchParticipantsAndGroups(
-            payload.projectId,
-            payload.contentTypeSearched,
-            payload.textSearched,
-        ).pipe(
-            map( (participantsAndGroups: MovementParticipantsAndGroupsModel): void => this.searchParticipantsAndGroupsComplete(
-                ctx,
-                participantsAndGroups,
-            ) ),
-        )
-    }
-
-    private searchParticipantsAndGroupsComplete (
-        ctx: StateContext<MovementStoreModel>,
-        participantsAndGroups: MovementParticipantsAndGroupsModel,
-    ): void {
-        const searched: SelectItemGroup<ParticipantModel | GroupModel>[] = []
-
-        if (participantsAndGroups.groups.length > 0) {
-            searched.push( {
-                label: this.translateService.instant( this.pluralTranslationPipe.transform(
-                    'movements.form.content.registered.searched.group',
-                    participantsAndGroups.participants,
+        return {
+            fetchMovementTypes: rxMethod<void>( pipe(
+                switchMap( (): Observable<SelectItem<MovementTypeEnum>[]> => store.metadataApi.getMovementsTypes().pipe(
+                    notifyOnError( store.registryFacade ),
                 ) ),
-                items: participantsAndGroups.groups.map( (group: GroupModel): SelectItem<GroupModel> =>
-                    GroupHelper.toSelectItem( group ),
-                ),
-            } )
-        }
-
-        if (participantsAndGroups.participants?.length > 0) {
-            searched.push( {
-                label: this.translateService.instant( this.pluralTranslationPipe.transform(
-                    'movements.form.content.registered.searched.participant',
-                    participantsAndGroups.participants,
-                ) ),
-                items: participantsAndGroups.participants.map(
-                    (participant: ParticipantModel): SelectItem<ParticipantModel> =>
-                        ParticipantHelper.toSelectItem( participant ),
-                ),
-            } )
-        }
-
-        ctx.patchState( {
-            _metadata: {
-                ...ctx.getState()._metadata,
-                searchedParticipantsAndGroups: searched,
-            },
-        } )
-    }
-
-    @Action( SearchVehicles )
-    public searchVehicles (
-        ctx: StateContext<MovementStoreModel>,
-        payload: SearchVehicles,
-    ): Observable<void> {
-        return this.api.searchVehicles( payload.projectId, payload.textSearched ).pipe(
-            map( (vehicles: VehicleModel[]): void => this.searchVehiclesComplete(
-                ctx,
-                vehicles,
+                tap( (types: SelectItem<MovementTypeEnum>[]): void => patchState( store, (state: MovementStoreModel) => ({
+                    metadata: { ...state.metadata, types: [ { label: '-', value: undefined }, ...types ] },
+                }) ) ),
             ) ),
-        )
-    }
 
-    private searchVehiclesComplete (
-        ctx: StateContext<MovementStoreModel>,
-        vehicles: VehicleModel[],
-    ): void {
-        ctx.patchState( {
-            _metadata: {
-                ...ctx.getState()._metadata,
-                searchedVehicles: vehicles.map( (vehicle: VehicleModel): SelectItem<VehicleModel> =>
-                    VehicleHelper.toSelectItem( vehicle ),
-                ),
+            fetchParticipantTypes: rxMethod<void>( pipe(
+                switchMap( (): Observable<SelectItem<ParticipantTypeEnum>[]> => store.metadataApi.getParticipantsTypes().pipe(
+                    notifyOnError( store.registryFacade ),
+                ) ),
+                tap( (types: SelectItem<ParticipantTypeEnum>[]): void => patchState( store, (state: MovementStoreModel) => ({
+                    metadata: { ...state.metadata, participantTypes: types },
+                }) ) ),
+            ) ),
+
+            fetchMovementsPage: rxMethod<MovementsPageRequest>( pipe(
+                switchMap( (request: MovementsPageRequest): Observable<{
+                    request: MovementsPageRequest
+                    page: PageModel<MovementModel>
+                }> => store.api.findMovements(
+                    request.projectId,
+                    request.pageNumber,
+                    request.pageSize,
+                    store.movements.params(),
+                ).pipe(
+                    initialize( (): void => patchState( store, (state: MovementStoreModel) => ({
+                        movements: StateHelper.updatePageLoader( state.movements, true ),
+                    }) ) ),
+                    finalize( (): void => patchState( store, (state: MovementStoreModel) => ({
+                        movements: StateHelper.updatePageLoader( state.movements, false ),
+                    }) ) ),
+                    catchError( (error: ErrorModel): Observable<never> => {
+                        if (error.status === 503) {
+                            reportError( store.registryFacade, error )
+                        } else {
+                            patchState( store, (state: MovementStoreModel) => ({
+                                movements: PageStateHelper.withError( state.movements, error ),
+                            }) )
+                        }
+                        return EMPTY
+                    } ),
+                    map( (page: PageModel<MovementModel>) => ({ request, page }) ),
+                ) ),
+                tap( ({ request, page }): void => {
+                    patchState( store, (state: MovementStoreModel) => ({
+                        movements: {
+                            ...state.movements,
+                            params: { ...state.movements.params, resetSearch: false },
+                            element: page,
+                        },
+                    }) )
+                    if (page.content.length > 0) {
+                        fetchMovementsContents( {
+                            projectId: request.projectId,
+                            movementIds: page.content.map( (movement: MovementModel): string => movement.id ),
+                        } )
+                    }
+                } ),
+            ) ),
+
+            fetchMovementsContents,
+
+            updateMovementsPageSearchParams: (params: MovementPageParamsModel): void => {
+                patchState( store, (state: MovementStoreModel) => ({ movements: { ...state.movements, params: params } }) )
             },
-        } )
-    }
 
-    protected refreshPage (ctx: StateContext<MovementStoreModel>): void {
-        const page: PageModel<MovementModel> | undefined = ctx.getState().movements.element
-        this.facade.fetchMovementsPage( page?.pageNumber, page?.pageSize, true )
-    }
+            fetchMovementCommunicationsPage: rxMethod<MovementCommunicationsPageRequest>( pipe(
+                switchMap( (request: MovementCommunicationsPageRequest): Observable<PageModel<CommunicationModel>> =>
+                    store.api.findMovementCommunications(
+                        request.projectId,
+                        request.id,
+                        request.pageNumber,
+                        request.pageSize,
+                        store.movementCommunications.params(),
+                    ).pipe(
+                        initialize( (): void => patchState( store, (state: MovementStoreModel) => ({
+                            movementCommunications: StateHelper.updatePageLoader( state.movementCommunications, true ),
+                        }) ) ),
+                        finalize( (): void => patchState( store, (state: MovementStoreModel) => ({
+                            movementCommunications: StateHelper.updatePageLoader( state.movementCommunications, false ),
+                        }) ) ),
+                        catchError( (error: ErrorModel): Observable<never> => {
+                            if (error.status === 503) {
+                                reportError( store.registryFacade, error )
+                            } else {
+                                patchState( store, (state: MovementStoreModel) => ({
+                                    movementCommunications: PageStateHelper.withError( state.movementCommunications, error ),
+                                }) )
+                            }
+                            return EMPTY
+                        } ),
+                    ),
+                ),
+                tap( (page: PageModel<CommunicationModel>): void => patchState( store, (state: MovementStoreModel) => ({
+                    movementCommunications: {
+                        ...state.movementCommunications,
+                        params: { ...state.movementCommunications.params, resetSearch: false },
+                        element: page,
+                    },
+                }) ) ),
+            ) ),
 
-    protected communicationsPageError (ctx: StateContext<MovementStoreModel>, error: ErrorModel): Observable<void> {
-        if (error.status == 503) {
-            throw error
-        } else {
-            ctx.patchState( {
-                movementCommunications: this.buildErrorMessage( ctx.getState().movementCommunications, error ),
-            } )
+            updateMovementCommunicationsPageSearchParams: (params: CommunicationPageParamsModel): void => {
+                patchState( store, (state: MovementStoreModel) => ({
+                    movementCommunications: { ...state.movementCommunications, params: params },
+                }) )
+            },
+
+            searchReasonsAndActivities: rxMethod<SearchReasonsAndActivitiesRequest>( pipe(
+                switchMap( (request: SearchReasonsAndActivitiesRequest): Observable<MovementReasonModel[]> =>
+                    store.api.searchReasonsAndActivities(
+                        request.projectId,
+                        request.textSearched,
+                        request.typeSearched,
+                        request.contentTypeSearched,
+                    ).pipe( notifyOnError( store.registryFacade ) ),
+                ),
+                tap( (reasonsAndActivities: MovementReasonModel[]): void => patchState( store, (state: MovementStoreModel) => ({
+                    metadata: { ...state.metadata, searchedReasonsAndActivities: reasonsAndActivities },
+                }) ) ),
+            ) ),
+
+            searchParticipantsAndGroups: rxMethod<SearchParticipantsAndGroupsRequest>( pipe(
+                switchMap( (request: SearchParticipantsAndGroupsRequest): Observable<MovementParticipantsAndGroupsModel> =>
+                    store.api.searchParticipantsAndGroups(
+                        request.projectId,
+                        request.contentTypeSearched,
+                        request.textSearched,
+                    ).pipe( notifyOnError( store.registryFacade ) ),
+                ),
+                tap( (participantsAndGroups: MovementParticipantsAndGroupsModel): void => {
+                    const searched: SelectItemGroup<ParticipantModel | GroupModel>[] = []
+
+                    if (participantsAndGroups.groups.length > 0) {
+                        searched.push( {
+                            label: store.translateService.instant( store.pluralTranslationPipe.transform(
+                                'movements.form.content.registered.searched.group',
+                                participantsAndGroups.participants,
+                            ) ),
+                            items: participantsAndGroups.groups.map( (group: GroupModel): SelectItem<GroupModel> =>
+                                GroupHelper.toSelectItem( group ),
+                            ),
+                        } )
+                    }
+
+                    if (participantsAndGroups.participants?.length > 0) {
+                        searched.push( {
+                            label: store.translateService.instant( store.pluralTranslationPipe.transform(
+                                'movements.form.content.registered.searched.participant',
+                                participantsAndGroups.participants,
+                            ) ),
+                            items: participantsAndGroups.participants.map(
+                                (participant: ParticipantModel): SelectItem<ParticipantModel> =>
+                                    ParticipantHelper.toSelectItem( participant ),
+                            ),
+                        } )
+                    }
+
+                    patchState( store, (state: MovementStoreModel) => ({
+                        metadata: { ...state.metadata, searchedParticipantsAndGroups: searched },
+                    }) )
+                } ),
+            ) ),
+
+            searchVehicles: rxMethod<SearchVehiclesRequest>( pipe(
+                switchMap( (request: SearchVehiclesRequest): Observable<VehicleModel[]> =>
+                    store.api.searchVehicles( request.projectId, request.textSearched ).pipe( notifyOnError( store.registryFacade ) ),
+                ),
+                tap( (vehicles: VehicleModel[]): void => patchState( store, (state: MovementStoreModel) => ({
+                    metadata: {
+                        ...state.metadata,
+                        searchedVehicles: vehicles.map( (vehicle: VehicleModel): SelectItem<VehicleModel> =>
+                            VehicleHelper.toSelectItem( vehicle ),
+                        ),
+                    },
+                }) ) ),
+            ) ),
         }
-
-        return of()
-    }
-
-    protected pageError (ctx: StateContext<MovementStoreModel>, error: ErrorModel): Observable<void> {
-        if (error.status == 503) {
-            throw error
-        } else {
-            ctx.patchState( {
-                movements: this.buildErrorMessage( ctx.getState().movements, error ),
+    } ),
+    withHooks( {
+        onInit (store): void {
+            store.fetchMovementTypes()
+            store.fetchParticipantTypes()
+            inject( TranslateService ).onLangChange.pipe( takeUntilDestroyed() ).subscribe( (): void => {
+                store.fetchMovementTypes()
+                store.fetchParticipantTypes()
             } )
-        }
-
-        return of()
-    }
-}
+        },
+    } ),
+)

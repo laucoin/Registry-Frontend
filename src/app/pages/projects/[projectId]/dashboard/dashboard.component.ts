@@ -8,16 +8,16 @@ import { GenericComponent } from '@shared/ui/base/generic.component'
 import { GenericHelper } from '@shared/helpers/generic.helper'
 import { SelectedProjectFacade } from '@pages/projects/data/state/selected-project/selected-project.facade'
 import { Panel } from 'primeng/panel'
-import { ElementCardComponent } from '@shared/ui/element-card/element-card.component'
-import { SeverityCircleComponent } from '@shared/ui/severity-circle/severity-circle.component'
-import { SeverityTagComponent } from '@shared/ui/severity-tag/severity-tag.component'
+import { ElementCardComponent } from '@shared/ui/common/element-card/element-card.component'
+import { SeverityCircleComponent } from '@shared/ui/common/severity-circle/severity-circle.component'
+import { SeverityTagComponent } from '@shared/ui/common/severity-tag/severity-tag.component'
 import { TitleCasePipe, UpperCasePipe } from '@angular/common'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
 import { ParticipantTypeEnum } from '@shared/models/enumeration/participant-type.enum'
 import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum'
 import {
     SeverityInformationComponent,
-} from '@shared/ui/severity-information/severity-information.component'
+} from '@shared/ui/common/severity-information/severity-information.component'
 import { MovementFacade } from '@pages/projects/[projectId]/movements/data/state/movement.facade'
 import { Subscription, tap } from 'rxjs'
 
@@ -61,7 +61,7 @@ export class DashboardComponent extends GenericComponent implements OnDestroy {
     public constructor () {
         super()
 
-        this.facade.loadProjectHomeInformation( false )
+        this.facade.loadProjectHomeInformation()
 
         this.totalParticipants = computed( (): number | undefined => {
             if (GenericHelper.isNull( this.facade.participantsStatus() )) return undefined
@@ -115,7 +115,7 @@ export class DashboardComponent extends GenericComponent implements OnDestroy {
     private handleMovementActions (): void {
         this.subscriptions.add(
             this.movementFacade.handleMovementChanges().pipe(
-                tap( (): void => this.facade.loadProjectHomeInformation( true ) ),
+                tap( (): void => this.facade.loadProjectHomeInformation() ),
             ).subscribe(),
         )
     }

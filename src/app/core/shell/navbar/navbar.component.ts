@@ -21,7 +21,7 @@ import { TruncatePipe } from '@shared/helpers/pipe/truncate.pipe'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { ProjectOptionIconPipe } from '@shared/helpers/pipe/project-option-icon.pipe'
 import { Dialog } from 'primeng/dialog'
-import { InfoComponent } from '@shared/ui/info/info.component'
+import { InfoComponent } from '@shared/ui/common/info/info.component'
 
 @Component( {
     selector: 'app-navbar',

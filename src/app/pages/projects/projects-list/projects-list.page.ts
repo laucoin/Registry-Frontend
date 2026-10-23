@@ -2,7 +2,7 @@ import { Component, computed, inject, Signal} from '@angular/core'
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms'
 import {PageEventModel} from '@shared/models/model/page-event.model'
 import {ProjectFacade} from '@pages/projects/data/state/project/project.facade'
-import {ListComponent} from '@shared/ui/list/list.component'
+import {ListComponent} from '@shared/ui/common/list/list.component'
 import {RegistryTemplateDirective} from '@shared/directives/registry-template.directive'
 import {ProjectElementComponent} from '@pages/projects/project-element/project-element.component'
 import {Button} from 'primeng/button'
@@ -16,7 +16,7 @@ import {DatePicker} from 'primeng/datepicker'
 import {GenericListComponent} from '@shared/ui/base/generic-list.component'
 import {ToggleSwitch} from 'primeng/toggleswitch'
 import {GenericHelper} from '@shared/helpers/generic.helper'
-import {InfoComponent} from '@shared/ui/info/info.component'
+import {InfoComponent} from '@shared/ui/common/info/info.component'
 import {StringHelper} from '@shared/helpers/string.helper'
 
 @Component({
@@ -55,7 +55,7 @@ export class ProjectsListPage extends GenericListComponent {
 
         this.form = this.initForm()
 
-        this.facade.fetchProjectsPage(undefined, undefined, false)
+        this.facade.fetchProjectsPage(undefined, undefined)
     }
 
     protected initForm(): FormGroup {
@@ -74,7 +74,7 @@ export class ProjectsListPage extends GenericListComponent {
             this.withProfile.value,
             this.visibilitySearched.value,
         )
-        this.facade.fetchProjectsPage(pageEvent.pageNumber, pageEvent.pageSize, false)
+        this.facade.fetchProjectsPage(pageEvent.pageNumber, pageEvent.pageSize)
     }
 
     protected get textSearched(): FormControl {

@@ -2,12 +2,12 @@ import { Component, inject} from '@angular/core'
 import {MovementFacade} from '@pages/projects/[projectId]/movements/data/state/movement.facade'
 import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms'
 import {PageEventModel} from '@shared/models/model/page-event.model'
-import {ListComponent} from '@shared/ui/list/list.component'
+import {ListComponent} from '@shared/ui/common/list/list.component'
 import {RegistryTemplateDirective} from '@shared/directives/registry-template.directive'
 import {TranslatePipe} from '@ngx-translate/core'
 import {InputTextModule} from 'primeng/inputtext'
 import {ToggleButtonModule} from 'primeng/togglebutton'
-import {MovementElementComponent} from '@shared/ui/movement-element/movement-element.component'
+import {MovementElementComponent} from '@shared/ui/domain/movement-element/movement-element.component'
 import {RouterLink} from '@angular/router'
 import {MovementRoutesEnum} from '@pages/projects/[projectId]/movements/movement-routes.enum'
 import {Select, SelectModule} from 'primeng/select'
@@ -56,7 +56,7 @@ export class MovementsListPage extends GenericListComponent {
     }
 
     protected loadData(): void {
-        this.facade.fetchMovementsPage(undefined, undefined, false)
+        this.facade.fetchMovementsPage(undefined, undefined)
     }
 
     protected loadPage(pageEvent: PageEventModel): void {
@@ -66,7 +66,7 @@ export class MovementsListPage extends GenericListComponent {
             this.endDateTimeSearched.value,
             this.visibilitySearched.value,
         )
-        this.facade.fetchMovementsPage(pageEvent.pageNumber, pageEvent.pageSize, false)
+        this.facade.fetchMovementsPage(pageEvent.pageNumber, pageEvent.pageSize)
     }
 
     protected get typeSearched(): FormControl {

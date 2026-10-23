@@ -5,8 +5,6 @@ import { ProjectRoutesEnum } from '@pages/projects/project-routes.enum'
 import { ProjectFormPage } from '@pages/projects/project-form/project-form.page'
 import { projectContextDeactivateGuard, projectContextGuard } from '@core/authentication/guard/project-context.guard'
 import { MovementFacade } from '@pages/projects/[projectId]/movements/data/state/movement.facade'
-import { importProvidersFrom } from '@angular/core'
-import { NgxsModule } from '@ngxs/store'
 import { MovementStore } from '@pages/projects/[projectId]/movements/data/state/movement.store'
 import { CommunicationFacade } from '@pages/projects/[projectId]/movements/communication/data/state/communication.facade'
 import { CommunicationStore } from '@pages/projects/[projectId]/movements/communication/data/state/communication.store'
@@ -43,20 +41,19 @@ export const projectRoutes: Routes = [
                     {
                         path: '', component: ProjectHomePage,
                         providers: [
-                            SelectedProjectFacade, ParticipantFacade, MovementFacade, CommunicationFacade, AlertFacade,
-                            importProvidersFrom( NgxsModule.forFeature( [ SelectedProjectStore, ParticipantStore, MovementStore, CommunicationStore, AlertStore ] ) ),
+                            SelectedProjectFacade, SelectedProjectStore, ParticipantFacade, ParticipantStore, MovementFacade, MovementStore, CommunicationFacade, CommunicationStore, AlertFacade, AlertStore,
                         ],
                     },
                     {
                         path: ProjectRoutesEnum.MOVEMENTS,
                         loadChildren: () => import('@pages/projects/[projectId]/movements/movement.routes').then( (m: typeof import('@pages/projects/[projectId]/movements/movement.routes')) => m.movementRoutes ),
-                        providers: [ CommunicationFacade, MovementFacade, importProvidersFrom( NgxsModule.forFeature( [ MovementStore, CommunicationStore ] ) ) ],
+                        providers: [ CommunicationFacade, CommunicationStore, MovementFacade, MovementStore ],
                     },
                     {
                         path: ProjectRoutesEnum.ALERTS,
                         component: AlertsListPage,
                         canActivate: [ alertOptionGuard ],
-                        providers: [ CommunicationFacade, AlertFacade, importProvidersFrom( NgxsModule.forFeature( [ AlertStore, CommunicationStore ] ) ) ],
+                        providers: [ CommunicationFacade, CommunicationStore, AlertFacade, AlertStore ],
                     },
                     {
                         path: ProjectRoutesEnum.CONFIGURATION,

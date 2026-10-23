@@ -3,18 +3,6 @@ import { Observable, tap } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
 import { VehicleModel } from '@shared/models/model/vehicle.model'
 import { VehicleDto } from '@pages/projects/[projectId]/configuration/vehicles/data/dto/vehicle.dto'
-import {
-    FetchVehicleMovementsContents,
-    FetchVehicleMovementsPage,
-    FetchVehiclePresencesStatus,
-    FetchVehiclesPage,
-    StartVehicleMovementsPageLoader,
-    StartVehiclesPageLoader,
-    StopVehicleMovementsPageLoader,
-    StopVehiclesPageLoader,
-    UpdateVehicleMovementsPageSearchParams,
-    UpdateVehiclesPageSearchParams,
-} from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.action'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { VehicleStore } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.store'
 import { GenericProjectElementFacade } from '@shared/helpers/facade/generic-project-element.facade'
@@ -28,114 +16,50 @@ import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/rx.helper'
 export class VehicleFacade extends GenericProjectElementFacade {
     private readonly api: VehicleApi = inject( VehicleApi )
 
-    public get vehiclesPage (): Signal<PageModel<VehicleModel> | undefined> {
-        return this.ngStore.selectSignal( VehicleStore.vehiclesPage )
-    }
+    private readonly store: InstanceType<typeof VehicleStore> = inject( VehicleStore )
 
-    public get vehiclesPageLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( VehicleStore.vehiclesPageLoading )
-    }
+    public readonly vehiclesPage: Signal<PageModel<VehicleModel> | undefined> = this.store.vehicles.element
+    public readonly vehiclesPageLoading: Signal<boolean> = this.store.vehicles.loading
+    public readonly vehiclesPageSilentLoading: Signal<boolean> = this.store.vehicles.silentLoading
+    public readonly vehiclesPageError: Signal<ToastMessageOptions | undefined> = this.store.vehicles.error
+    public readonly vehiclesPageResetSearch: Signal<boolean> = this.store.vehicles.params.resetSearch
+    public readonly vehiclesPageTextSearchedParam: Signal<string | undefined> = this.store.vehicles.params.textSearched
+    public readonly vehiclesPageDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
+        DateHelper.buildDate( this.store.vehicles.params.dateTimeSearched() ),
+    )
+    public readonly vehiclesPageStatusSearchedParam: Signal<boolean | undefined> = this.store.vehicles.params.statusSearched
+    public readonly vehiclesPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.vehicles.params.visibilitySearched
 
-    public get vehiclesPageSilentLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( VehicleStore.vehiclesPageSilentLoading )
-    }
+    public readonly vehicleMovementsPage: Signal<PageModel<MovementModel> | undefined> = this.store.movements.element
+    public readonly vehicleMovementsPageLoading: Signal<boolean> = this.store.movements.loading
+    public readonly vehicleMovementsPageSilentLoading: Signal<boolean> = this.store.movements.silentLoading
+    public readonly vehicleMovementsPageError: Signal<ToastMessageOptions | undefined> = this.store.movements.error
+    private readonly vehicleMovementsPageResetSearch: Signal<boolean> = this.store.movements.params.resetSearch
+    public readonly vehicleMovementsPageTypeSearchedParam: Signal<string | undefined> = this.store.movements.params.typeSearched
+    public readonly vehicleMovementsPageStartDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
+        DateHelper.buildDate( this.store.movements.params.startDateTimeSearched() ),
+    )
+    public readonly vehicleMovementsPageEndDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
+        DateHelper.buildDate( this.store.movements.params.endDateTimeSearched() ),
+    )
+    public readonly vehicleMovementsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.movements.params.visibilitySearched
 
-    public get vehiclesPageError (): Signal<ToastMessageOptions | undefined> {
-        return this.ngStore.selectSignal( VehicleStore.vehiclesPageError )
-    }
-
-    public get vehiclesPageResetSearch (): Signal<boolean> {
-        return this.ngStore.selectSignal( VehicleStore.vehiclesPageResetSearch )
-    }
-
-    public get vehiclesPageTextSearchedParam (): Signal<string | undefined> {
-        return this.ngStore.selectSignal( VehicleStore.vehiclesPageTextSearchedParam )
-    }
-
-    public get vehiclesPageDateTimeSearchedParam (): Signal<Date | undefined> {
-        return computed( (): Date | undefined =>
-            DateHelper.buildDate( this.ngStore.selectSignal( VehicleStore.vehiclesPageDateTimeSearchedParam )() ),
-        )
-    }
-
-    public get vehiclesPageStatusSearchedParam (): Signal<boolean | undefined> {
-        return this.ngStore.selectSignal( VehicleStore.vehiclesPageAvailabilitySearchedParam )
-    }
-
-    public get vehiclesPageVisibilitySearchedParam (): Signal<boolean | undefined> {
-        return this.ngStore.selectSignal( VehicleStore.vehiclesPageVisibilitySearchedParam )
-    }
-
-    public get vehicleMovementsPage (): Signal<PageModel<MovementModel> | undefined> {
-        return this.ngStore.selectSignal( VehicleStore.vehicleMovementsPage )
-    }
-
-    public get vehicleMovementsPageLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( VehicleStore.vehicleMovementsPageLoading )
-    }
-
-    public get vehicleMovementsPageSilentLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( VehicleStore.vehicleMovementsPageSilentLoading )
-    }
-
-    public get vehicleMovementsPageError (): Signal<ToastMessageOptions | undefined> {
-        return this.ngStore.selectSignal( VehicleStore.vehicleMovementsPageError )
-    }
-
-    private get vehicleMovementsPageResetSearch (): Signal<boolean> {
-        return this.ngStore.selectSignal( VehicleStore.vehicleMovementsPageResetSearch )
-    }
-
-    public get vehicleMovementsPageTypeSearchedParam (): Signal<string | undefined> {
-        return this.ngStore.selectSignal( VehicleStore.vehicleMovementsPageTypeSearchedParam )
-    }
-
-    public get vehicleMovementsPageStartDateTimeSearchedParam (): Signal<Date | undefined> {
-        return computed( (): Date | undefined =>
-            DateHelper.buildDate( this.ngStore.selectSignal( VehicleStore.vehicleMovementsPageStartDateTimeSearchedParam )() ),
-        )
-    }
-
-    public get vehicleMovementsPageEndDateTimeSearchedParam (): Signal<Date | undefined> {
-        return computed( (): Date | undefined =>
-            DateHelper.buildDate( this.ngStore.selectSignal( VehicleStore.vehicleMovementsPageEndDateTimeSearchedParam )() ),
-        )
-    }
-
-    public get vehicleMovementsPageVisibilitySearchedParam (): Signal<boolean | undefined> {
-        return this.ngStore.selectSignal( VehicleStore.vehicleMovementsPageVisibilitySearchedParam )
-    }
-
-    public get presencesStatusMetadata (): Signal<SelectItem<PresenceStatusEnum | undefined>[]> {
-        return this.ngStore.selectSignal( VehicleStore.presencesStatusMetadata )
-    }
-
-    public get visibilitiesMetadata (): Signal<SelectItem<boolean | undefined>[]> {
-        return computed( (): SelectItem<boolean | undefined>[] =>
-            this.ngStore.selectSignal( VehicleStore.visibilitiesMetadata )().map(
-                (status: SelectItem<boolean | undefined>): SelectItem<boolean | undefined> => ({
-                    ...status,
-                    label: this.translateService.instant( status.label! ),
-                }),
-            ),
-        )
-    }
-
-    public startVehiclesPageLoader (): void {
-        this.ngStore.dispatch( StartVehiclesPageLoader )
-    }
-
-    public stopVehiclesPageLoader (): void {
-        this.ngStore.dispatch( StopVehiclesPageLoader )
-    }
+    public readonly presencesStatusMetadata: Signal<SelectItem<PresenceStatusEnum | undefined>[]> = this.store.metadata.presencesStatus
+    public readonly visibilitiesMetadata: Signal<SelectItem<boolean | undefined>[]> = computed( (): SelectItem<boolean | undefined>[] =>
+        this.store.metadata.visibilities().map(
+            (status: SelectItem<boolean | undefined>): SelectItem<boolean | undefined> => ({
+                ...status,
+                label: this.translateService.instant( status.label! ),
+            }),
+        ),
+    )
 
     public fetchVehiclesPage (
         pageNumber: number | undefined,
         pageSize: number | undefined,
-        force: boolean,
     ): void {
         const index: number | undefined = this.vehiclesPageResetSearch() ? 0 : pageNumber
-        this.ngStore.dispatch( new FetchVehiclesPage( this.selectedProjectId(), index, pageSize, force ) )
+        this.store.fetchVehiclesPage( { projectId: this.selectedProjectId(), pageNumber: index, pageSize: pageSize } )
     }
 
     public inputPageSearchParameters (
@@ -150,36 +74,27 @@ export class VehicleFacade extends GenericProjectElementFacade {
                                      || this.vehiclesPageVisibilitySearchedParam() != visibilitySearched
 
         if (resetSearch) {
-            this.ngStore.dispatch( new UpdateVehiclesPageSearchParams( {
+            this.store.updateVehiclesPageSearchParams( {
                 resetSearch: resetSearch,
                 visibilitySearched: visibilitySearched,
                 textSearched: textSearched,
                 statusSearched: statusSearched,
                 dateTimeSearched: dateTimeSearched?.toISOString(),
-            } ) )
+            } )
         }
-    }
-
-    public startVehicleMovementsPageLoader (): void {
-        this.ngStore.dispatch( StartVehicleMovementsPageLoader )
-    }
-
-    public stopVehicleMovementsPageLoader (): void {
-        this.ngStore.dispatch( StopVehicleMovementsPageLoader )
     }
 
     public fetchVehicleMovementsPage (
         id: string,
         pageNumber: number | undefined,
         pageSize: number | undefined,
-        force: boolean,
     ): void {
         const index: number | undefined = this.vehicleMovementsPageResetSearch() ? 0 : pageNumber
-        this.ngStore.dispatch( new FetchVehicleMovementsPage( this.selectedProjectId(), id, index, pageSize, force ) )
+        this.store.fetchVehicleMovementsPage( { projectId: this.selectedProjectId(), id: id, pageNumber: index, pageSize: pageSize } )
     }
 
     public fetchVehicleMovementsContent (movementIds: string[]): void {
-        this.ngStore.dispatch( new FetchVehicleMovementsContents( this.selectedProjectId(), movementIds ) )
+        this.store.fetchVehicleMovementsContents( { projectId: this.selectedProjectId(), movementIds: movementIds } )
     }
 
     public inputMovementsPageSearchParameters (
@@ -194,7 +109,7 @@ export class VehicleFacade extends GenericProjectElementFacade {
                                      || this.vehicleMovementsPageVisibilitySearchedParam() != visibilitySearched
 
         if (resetSearch) {
-            this.ngStore.dispatch( new UpdateVehicleMovementsPageSearchParams( {
+            this.store.updateVehicleMovementsPageSearchParams( {
                 resetSearch: resetSearch,
                 visibilitySearched: visibilitySearched,
                 currentMovements: false,
@@ -202,7 +117,7 @@ export class VehicleFacade extends GenericProjectElementFacade {
                 typeSearched: typeSearched,
                 startDateTimeSearched: startDateTimeSearched?.toISOString(),
                 endDateTimeSearched: endDateTimeSearched?.toISOString(),
-            } ) )
+            } )
         }
     }
 
@@ -255,10 +170,6 @@ export class VehicleFacade extends GenericProjectElementFacade {
         } )
 
         const page: PageModel<VehicleModel> | undefined = this.vehiclesPage()
-        this.fetchVehiclesPage( page?.pageNumber, page?.pageSize, true )
-    }
-
-    public fetchPresencesStatus (): void {
-        this.ngStore.dispatch( FetchVehiclePresencesStatus )
+        this.fetchVehiclesPage( page?.pageNumber, page?.pageSize )
     }
 }

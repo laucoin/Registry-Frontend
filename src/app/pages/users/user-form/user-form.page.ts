@@ -6,7 +6,7 @@ import { UserFacade } from '@pages/users/data/state/user.facade'
 import { GenericHelper } from '@shared/helpers/generic.helper'
 import { Button } from 'primeng/button'
 import { Card } from 'primeng/card'
-import { FormComponent } from '@shared/ui/form/form.component'
+import { FormComponent } from '@shared/ui/common/form/form.component'
 import { RegistryRequiredDirective } from '@shared/directives/registry-required.directive'
 import { TranslatePipe } from '@ngx-translate/core'
 import { Select } from 'primeng/select'
@@ -14,7 +14,7 @@ import { GenericFormComponent } from '@shared/ui/base/generic-form.component'
 import { UserDto } from '@shared/models/dto/user.dto'
 import { filter, map } from 'rxjs'
 import { FormHelper } from '@shared/helpers/form.helper'
-import { FormFieldErrorComponent } from '@shared/ui/form-field-error/form-field-error.component'
+import { FormFieldErrorComponent } from '@shared/ui/common/form-field-error/form-field-error.component'
 
 @Component( {
     selector: 'app-user-form',

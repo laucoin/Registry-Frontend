@@ -2,7 +2,7 @@ import { Component, inject} from '@angular/core'
 import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms'
 import {PageEventModel} from '@shared/models/model/page-event.model'
 import {ActivityFacade} from '@pages/projects/[projectId]/configuration/activities/data/state/activity.facade'
-import {ListComponent} from '@shared/ui/list/list.component'
+import {ListComponent} from '@shared/ui/common/list/list.component'
 import {RegistryTemplateDirective} from '@shared/directives/registry-template.directive'
 import {TranslatePipe} from '@ngx-translate/core'
 import {InputTextModule} from 'primeng/inputtext'
@@ -56,7 +56,7 @@ export class ActivitiesListPage extends GenericListComponent {
     }
 
     protected loadData(): void {
-        this.facade.fetchActivitiesPage(undefined, undefined, false)
+        this.facade.fetchActivitiesPage(undefined, undefined)
     }
 
     protected loadPage(pageEvent: PageEventModel): void {
@@ -66,7 +66,7 @@ export class ActivitiesListPage extends GenericListComponent {
             this.availabilitySearched.value,
             this.visibilitySearched.value,
         )
-        this.facade.fetchActivitiesPage(pageEvent.pageNumber, pageEvent.pageSize, false)
+        this.facade.fetchActivitiesPage(pageEvent.pageNumber, pageEvent.pageSize)
     }
 
     protected get textSearched(): FormControl {

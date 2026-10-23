@@ -4,8 +4,8 @@ import { PageEventModel } from '@shared/models/model/page-event.model'
 import { GenericComponent } from '@shared/ui/base/generic.component'
 import { Subscription, tap } from 'rxjs'
 import { MovementFacade } from '@pages/projects/[projectId]/movements/data/state/movement.facade'
-import { ListComponent } from '@shared/ui/list/list.component'
-import { MovementElementComponent } from '@shared/ui/movement-element/movement-element.component'
+import { ListComponent } from '@shared/ui/common/list/list.component'
+import { MovementElementComponent } from '@shared/ui/domain/movement-element/movement-element.component'
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 
 @Component( {
@@ -31,11 +31,11 @@ export class CurrentActivitiesComponent extends GenericComponent implements OnDe
     }
 
     protected loadData (): void {
-        this.facade.fetchCurrentMovementsPageWithActivity( undefined, undefined, false )
+        this.facade.fetchCurrentMovementsPageWithActivity( undefined, undefined)
     }
 
     protected loadPage (pageEvent: PageEventModel): void {
-        this.facade.fetchCurrentMovementsPageWithActivity( pageEvent.pageNumber, pageEvent.pageSize, false )
+        this.facade.fetchCurrentMovementsPageWithActivity( pageEvent.pageNumber, pageEvent.pageSize)
     }
 
     private handleMovementActions (): void {
@@ -44,9 +44,7 @@ export class CurrentActivitiesComponent extends GenericComponent implements OnDe
                 tap( (): void => {
                     this.facade.fetchCurrentMovementsPageWithActivity(
                         undefined,
-                        undefined,
-                        true,
-                    )
+                        undefined)
                 } ),
             ).subscribe(),
         )
@@ -56,9 +54,7 @@ export class CurrentActivitiesComponent extends GenericComponent implements OnDe
                 tap( (): void => {
                     this.facade.fetchCurrentMovementsPageWithActivity(
                         this.facade.currentMovementsPageWithActivity()?.pageNumber,
-                        this.facade.currentMovementsPageWithActivity()?.pageSize,
-                        true,
-                    )
+                        this.facade.currentMovementsPageWithActivity()?.pageSize)
                 } ),
             ).subscribe(),
         )

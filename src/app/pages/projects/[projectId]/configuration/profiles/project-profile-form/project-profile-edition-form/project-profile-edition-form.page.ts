@@ -1,23 +1,22 @@
-import { ChangeDetectionStrategy,Component, OnDestroy} from '@angular/core'
+import { Component, OnDestroy} from '@angular/core'
 import {FormGroup, ReactiveFormsModule, Validators} from '@angular/forms'
 import {ProjectProfileDto} from '@pages/projects/[projectId]/configuration/profiles/data/dto/project-profile.dto'
 import {ProjectProfileModel} from '@shared/models/model/project-profile.model'
 import {FormHelper} from '@shared/helpers/form.helper'
 import {TranslatePipe} from '@ngx-translate/core'
 import {CardModule} from 'primeng/card'
-import {FormFieldErrorComponent} from '@shared/ui/form-field-error/form-field-error.component'
+import {FormFieldErrorComponent} from '@shared/ui/common/form-field-error/form-field-error.component'
 import {UserElementComponent} from '@pages/users/user-element/user-element.component'
-import {FormComponent} from '@shared/ui/form/form.component'
+import {FormComponent} from '@shared/ui/common/form/form.component'
 import {GenericProjectProfileFormComponent} from '@pages/projects/[projectId]/configuration/profiles/project-profile-form/generic-project-profile-form.component'
 import {RegistryRequiredDirective} from '@shared/directives/registry-required.directive'
 import {Button} from 'primeng/button'
 import {Select, SelectModule} from 'primeng/select'
 import {DateFormatPipe} from '@shared/helpers/pipe/date-format.pipe'
-import {DateTimeFieldComponent} from '@shared/ui/date-time-field/date-time-field.component'
+import {DateTimeFieldComponent} from '@shared/ui/common/date-time-field/date-time-field.component'
 import {RegistryValidators} from '@shared/helpers/registry.validator'
 
 @Component({
-	changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'app-project-profile-edition-form',
     imports: [
         TranslatePipe,

@@ -39,6 +39,9 @@ jobs:
       - name: Lint
         run: pnpm lint
 
+      - name: Test
+        run: pnpm test --watch=false
+
       # Produces dist/browser, which the Dockerfile copies into nginx.
       - name: Build
         run: pnpm build

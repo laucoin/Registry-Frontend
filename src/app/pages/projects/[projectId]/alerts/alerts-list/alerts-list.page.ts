@@ -6,11 +6,11 @@ import {PageEventModel} from '@shared/models/model/page-event.model'
 import {Button} from 'primeng/button'
 import {DatePicker} from 'primeng/datepicker'
 import {InputText} from 'primeng/inputtext'
-import {ListComponent} from '@shared/ui/list/list.component'
+import {ListComponent} from '@shared/ui/common/list/list.component'
 import {RegistryTemplateDirective} from '@shared/directives/registry-template.directive'
 import {Select} from 'primeng/select'
 import {TranslatePipe} from '@ngx-translate/core'
-import {AlertElementComponent} from '@shared/ui/alert-element/alert-element.component'
+import {AlertElementComponent} from '@shared/ui/domain/alert-element/alert-element.component'
 
 @Component({
     selector: 'app-alerts-list',
@@ -50,7 +50,7 @@ export class AlertsListPage extends GenericListComponent {
     }
 
     protected loadData(): void {
-        this.facade.fetchAlertsPage(undefined, undefined, false)
+        this.facade.fetchAlertsPage(undefined, undefined)
     }
 
     protected loadPage(pageEvent: PageEventModel): void {
@@ -61,7 +61,7 @@ export class AlertsListPage extends GenericListComponent {
             this.startDateTimeSearched.value,
             this.endDateTimeSearched.value,
         )
-        this.facade.fetchAlertsPage(pageEvent.pageNumber, pageEvent.pageSize, false)
+        this.facade.fetchAlertsPage(pageEvent.pageNumber, pageEvent.pageSize)
     }
 
     protected get textSearched(): FormControl {

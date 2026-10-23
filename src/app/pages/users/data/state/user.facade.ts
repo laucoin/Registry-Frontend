@@ -1,98 +1,58 @@
-import { computed, Injectable, Signal } from '@angular/core'
-import { Observable } from 'rxjs'
+import { computed, inject, Injectable, Signal } from '@angular/core'
+import { toObservable } from '@angular/core/rxjs-interop'
+import { finalize, Observable, tap } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
 import { UserModel } from '@shared/models/model/user.model'
-import {
-    BlockUser,
-    DeleteUser,
-    FetchAssignableUserRoles,
-    FetchUser,
-    FetchUsersPage,
-    ImpersonateUser,
-    ResetUser,
-    StartUserLoader,
-    StartUsersPageLoader,
-    StopUserLoader,
-    StopUsersPageLoader,
-    UnblockUser,
-    UpdateUserRole,
-    UpdateUsersPageSearchParams,
-} from '@pages/users/data/state/user.action'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
-import { ofActionSuccessful } from '@ngxs/store'
 import { GenericFacade } from '@shared/helpers/facade/generic.facade'
+import { UserApi } from '@pages/users/data/state/user.api'
+import { RegistryFacade } from '@core/registry/state/registry.facade'
+import { StateHelper } from '@shared/helpers/state/state.helper'
+import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
+import { initialize, notifyOnError } from '@shared/helpers/rx.helper'
 import { UserStore } from '@pages/users/data/state/user.store'
 
 @Injectable()
 export class UserFacade extends GenericFacade {
-    public get usersPage (): Signal<PageModel<UserModel> | undefined> {
-        return this.ngStore.selectSignal( UserStore.usersPage )
-    }
+    private readonly store: InstanceType<typeof UserStore> = inject( UserStore )
+    private readonly api: UserApi = inject( UserApi )
+    private readonly registryFacade: RegistryFacade = inject( RegistryFacade )
 
-    public get usersPageLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( UserStore.usersPageLoading )
-    }
+    public readonly usersPage: Signal<PageModel<UserModel> | undefined> = this.store.users.element
 
-    public get usersPageSilentLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( UserStore.usersPageSilentLoading )
-    }
+    public readonly usersPageLoading: Signal<boolean> = this.store.users.loading
 
-    public get usersPageError (): Signal<ToastMessageOptions | undefined> {
-        return this.ngStore.selectSignal( UserStore.usersPageError )
-    }
+    public readonly usersPageSilentLoading: Signal<boolean> = this.store.users.silentLoading
 
-    public get usersPageResetSearch (): Signal<boolean> {
-        return this.ngStore.selectSignal( UserStore.usersPageResetSearch )
-    }
+    public readonly usersPageError: Signal<ToastMessageOptions | undefined> = this.store.users.error
 
-    public get usersPageTextSearchedParam (): Signal<string | undefined> {
-        return this.ngStore.selectSignal( UserStore.usersPageTextSearchedParam )
-    }
+    public readonly usersPageResetSearch: Signal<boolean> = this.store.users.params.resetSearch
 
-    public get actualUsersPageVisibilitySearchedParam (): Signal<boolean | undefined> {
-        return this.ngStore.selectSignal( UserStore.usersPageVisibilitySearchedParam )
-    }
+    public readonly usersPageTextSearchedParam: Signal<string | undefined> = this.store.users.params.textSearched
 
-    public get user (): Signal<UserModel | undefined> {
-        return this.ngStore.selectSignal( UserStore.user )
-    }
+    public readonly actualUsersPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.users.params.visibilitySearched
 
-    public get user$ (): Observable<UserModel | undefined> {
-        return this.ngStore.select( UserStore.user )
-    }
+    public readonly user: Signal<UserModel | undefined> = this.store.user.element
 
-    public get userLoading (): Signal<boolean> {
-        return this.ngStore.selectSignal( UserStore.userLoading )
-    }
+    public readonly user$: Observable<UserModel | undefined> = toObservable( this.user )
 
-    public get assignableRolesMetadata (): Signal<SelectItem<string>[]> {
-        return this.ngStore.selectSignal( UserStore.assignableRolesMetadata )
-    }
+    public readonly userLoading: Signal<boolean> = this.store.user.loading
 
-    public get statusMetadata (): Signal<SelectItem<boolean | undefined>[]> {
-        return computed( () =>
-            this.ngStore.selectSignal( UserStore.statusMetadata )().map( (status: SelectItem<boolean | undefined>) => ({
+    public readonly assignableRolesMetadata: Signal<SelectItem<string>[]> = this.store.metadata.assignableRoles
+
+    public readonly statusMetadata: Signal<SelectItem<boolean | undefined>[]> = computed( () =>
+            this.store.metadata.status().map( (status: SelectItem<boolean | undefined>) => ({
                 ...status,
                 label: this.translateService.instant( status.label! ),
             }) ),
         )
-    }
-
-    public startUsersPageLoader (): void {
-        this.ngStore.dispatch( StartUsersPageLoader )
-    }
-
-    public stopUsersPageLoader (): void {
-        this.ngStore.dispatch( StopUsersPageLoader )
-    }
 
     public fetchUsersPage (
         pageNumber: number | undefined,
         pageSize: number | undefined,
-        force: boolean,
     ): void {
         const index: number | undefined = this.usersPageResetSearch() ? 0 : pageNumber
-        this.ngStore.dispatch( new FetchUsersPage( index, pageSize, force ) )
+        this.store.fetchUsersPage( { pageNumber: index, pageSize: pageSize } )
     }
 
     public inputPageSearchParameters (
@@ -103,53 +63,81 @@ export class UserFacade extends GenericFacade {
                                      || this.actualUsersPageVisibilitySearchedParam() != visibilitySearched
 
         if (resetSearch) {
-            this.ngStore.dispatch( new UpdateUsersPageSearchParams( {
+            this.store.updateUsersPageSearchParams( {
                 resetSearch: resetSearch,
                 textSearched: textSearched,
                 visibilitySearched: visibilitySearched,
-            } ) )
+            } )
         }
     }
 
-    public startUserLoader (): void {
-        this.ngStore.dispatch( StartUserLoader )
-    }
-
-    public stopUserLoader (): void {
-        this.ngStore.dispatch( StopUserLoader )
-    }
-
     public fetchUser (id: string): void {
-        this.ngStore.dispatch( new FetchUser( id ) )
+        this.store.fetchUser( id )
     }
 
     public resetUser (): void {
-        this.ngStore.dispatch( ResetUser )
+        this.store.resetUser()
     }
 
     public fetchAssignableRoles (): void {
-        this.ngStore.dispatch( new FetchAssignableUserRoles() )
+        this.store.fetchAssignableRoles()
     }
 
-    public updateUserRole (id: string, role: string | undefined): Observable<UpdateUserRole> {
-        this.ngStore.dispatch( new UpdateUserRole( id, role ) )
-
-        return this.actions$.pipe( ofActionSuccessful( UpdateUserRole ) )
+    public updateUserRole (id: string, role: string | undefined): Observable<UserModel> {
+        return this.api.updateUserRole( id, role ).pipe(
+            this.trackUserLoader,
+            notifyOnError( this.registryFacade ),
+            tap( (user: UserModel): void => this.onCommandSuccess( 'update-role', user ) ),
+        )
     }
 
     public bockUser (id: string): void {
-        this.ngStore.dispatch( new BlockUser( id ) )
+        this.api.blockUserById( id ).pipe(
+            this.trackUserLoader,
+            notifyOnError( this.registryFacade ),
+            tap( (user: UserModel): void => this.onCommandSuccess( 'disable', user ) ),
+        ).subscribe()
     }
 
     public unblockUser (id: string): void {
-        this.ngStore.dispatch( new UnblockUser( id ) )
+        this.api.unblockUserById( id ).pipe(
+            this.trackUserLoader,
+            notifyOnError( this.registryFacade ),
+            tap( (user: UserModel): void => this.onCommandSuccess( 'enable', user ) ),
+        ).subscribe()
     }
 
     public impersonateUser (user: UserModel): void {
-        this.ngStore.dispatch( new ImpersonateUser( user ) )
+        this.api.impersonateUserById( user.id ).pipe(
+            this.trackUserLoader,
+            notifyOnError( this.registryFacade ),
+            tap( (): void => this.onCommandSuccess( 'impersonate', user ) ),
+        ).subscribe()
     }
 
     public deleteUser (user: UserModel): void {
-        this.ngStore.dispatch( new DeleteUser( user ) )
+        this.api.deleteUserById( user.id ).pipe(
+            this.trackUserLoader,
+            notifyOnError( this.registryFacade ),
+            tap( (): void => this.onCommandSuccess( 'delete', user ) ),
+        ).subscribe()
+    }
+
+    private readonly trackUserLoader = <T> (source: Observable<T>): Observable<T> => source.pipe(
+        initialize( (): void => this.store.startUserLoader() ),
+        finalize( (): void => this.store.stopUserLoader() ),
+    )
+
+    private onCommandSuccess (command: string, user: UserModel): void {
+        this.registryFacade.notify( StateHelper.buildNotificationMessage(
+            SeverityEnum.SUCCESS,
+            `users.notifications.${ command }.title`,
+            `users.notifications.${ command }.message`,
+            'pi pi-users',
+            { firstName: user.firstName, lastName: user.lastName },
+        ) )
+
+        const page: PageModel<UserModel> | undefined = this.usersPage()
+        this.fetchUsersPage( page?.pageNumber, page?.pageSize )
     }
 }

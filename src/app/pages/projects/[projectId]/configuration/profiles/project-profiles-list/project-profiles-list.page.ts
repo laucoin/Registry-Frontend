@@ -2,14 +2,14 @@ import { Component, inject} from '@angular/core'
 import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms'
 import {PageEventModel} from '@shared/models/model/page-event.model'
 import {ProjectProfileFacade} from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.facade'
-import {ListComponent} from '@shared/ui/list/list.component'
+import {ListComponent} from '@shared/ui/common/list/list.component'
 import {RegistryTemplateDirective} from '@shared/directives/registry-template.directive'
 import {TranslatePipe} from '@ngx-translate/core'
 import {InputTextModule} from 'primeng/inputtext'
 import {ToggleButtonModule} from 'primeng/togglebutton'
 import {
     ProjectProfileElementComponent,
-} from '@shared/ui/project-profile-element/project-profile-element.component'
+} from '@shared/ui/domain/project-profile-element/project-profile-element.component'
 import {RouterLink} from '@angular/router'
 import {ProjectProfileRoutesEnum} from '@pages/projects/[projectId]/configuration/profiles/project-profile-routes.enum'
 import {Select, SelectModule} from 'primeng/select'
@@ -58,7 +58,7 @@ export class ProjectProfilesListPage extends GenericListComponent {
     }
 
     protected loadData(): void {
-        this.facade.fetchProjectProfilesPage(undefined, undefined, false)
+        this.facade.fetchProjectProfilesPage(undefined, undefined)
     }
 
     protected loadPage(pageEvent: PageEventModel): void {
@@ -68,7 +68,7 @@ export class ProjectProfilesListPage extends GenericListComponent {
             this.statusSearched.value,
             this.availabilitySearched.value,
         )
-        this.facade.fetchProjectProfilesPage(pageEvent.pageNumber, pageEvent.pageSize, false)
+        this.facade.fetchProjectProfilesPage(pageEvent.pageNumber, pageEvent.pageSize)
     }
 
     protected get textSearched(): FormControl {

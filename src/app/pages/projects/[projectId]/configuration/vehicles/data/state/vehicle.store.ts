@@ -1,67 +1,63 @@
-import { Action, NgxsOnInit, Selector, State, StateContext } from '@ngxs/store'
-import { catchError, finalize, map, Observable, of } from 'rxjs'
+import { inject } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { patchState, signalStore, withHooks, withMethods, withProps, withState } from '@ngrx/signals'
+import { rxMethod } from '@ngrx/signals/rxjs-interop'
+import { TranslateService } from '@ngx-translate/core'
+import { catchError, EMPTY, finalize, map, Observable, pipe, switchMap, tap } from 'rxjs'
+import { SelectItem } from 'primeng/api'
 import { PageModel } from '@shared/models/model/page.model'
-import { VehicleModel } from '@shared/models/model/vehicle.model'
-import { GenericProjectElementStore } from '@shared/helpers/state/generic-project-element.store'
-import { initialize } from '@shared/helpers/rx.helper'
-import { VehicleStoreModel } from '@pages/projects/[projectId]/configuration/vehicles/data/model/vehicle-store.model'
-import {
-    FetchVehicleMovementsContents,
-    FetchVehicleMovementsPage,
-    FetchVehiclePresencesStatus,
-    FetchVehiclesPage,
-    ResetVehicleState,
-    StartVehicleMovementsPageLoader,
-    StartVehiclesPageLoader,
-    StopVehicleMovementsPageLoader,
-    StopVehiclesPageLoader,
-    UpdateVehicleMovementsPageSearchParams,
-    UpdateVehiclesPageSearchParams,
-} from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.action'
-import { VehicleApi } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.api'
-import { VehicleFacade } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.facade'
-import { StateHelper } from '@shared/helpers/state/state.helper'
-import { inject, Injectable } from '@angular/core'
-import { SelectItem, ToastMessageOptions } from 'primeng/api'
-import { ErrorModel } from '@shared/models/model/error.model'
 import { MovementModel } from '@shared/models/model/movement.model'
-import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
 import { PairModel } from '@shared/models/model/pair.model'
 import { MovementContentModel } from '@shared/models/model/movement-content.model'
-import { MovementHelper } from '@shared/helpers/movement.helper'
-import { MetadataApi } from '@core/registry/state/metadata.api'
+import { ErrorModel } from '@shared/models/model/error.model'
+import { VehicleModel } from '@shared/models/model/vehicle.model'
+import { VehiclePageParamsModel } from '@pages/projects/[projectId]/configuration/vehicles/data/model/vehicle-page-params.model'
+import { MovementPageParamsModel } from '@shared/models/model/movement-page-params.model'
 import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum'
+import { VehicleStoreModel } from '@pages/projects/[projectId]/configuration/vehicles/data/model/vehicle-store.model'
+import { VehicleApi } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.api'
+import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
+import { MetadataApi } from '@core/registry/state/metadata.api'
+import { RegistryFacade } from '@core/registry/state/registry.facade'
+import { MovementHelper } from '@shared/helpers/movement.helper'
+import { StateHelper } from '@shared/helpers/state/state.helper'
+import { initialize, notifyOnError, reportError } from '@shared/helpers/rx.helper'
+import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
+import { withProfileScope } from '@shared/helpers/store/with-profile-scope.feature'
+
+interface VehiclesPageRequest {
+    projectId: string | undefined
+    pageNumber: number | undefined
+    pageSize: number | undefined
+}
+
+interface VehicleMovementsPageRequest extends VehiclesPageRequest {
+    id: string
+}
+
+interface VehicleMovementsContentsRequest {
+    projectId: string | undefined
+    movementIds: string[]
+}
 
 const defaultVehicleStore: VehicleStoreModel = {
-    vehicles: {
-        element: undefined,
-        params: {
-            resetSearch: false,
-            visibilitySearched: undefined,
-            textSearched: undefined,
-            statusSearched: undefined,
-            dateTimeSearched: undefined,
-        },
-        loading: false,
-        silentLoading: false,
-        error: undefined,
-    },
-    movements: {
-        element: undefined,
-        params: {
-            resetSearch: false,
-            currentMovements: false,
-            visibilitySearched: undefined,
-            linkedToActivity: undefined,
-            typeSearched: undefined,
-            startDateTimeSearched: undefined,
-            endDateTimeSearched: undefined,
-        },
-        loading: false,
-        silentLoading: false,
-        error: undefined,
-    },
-    _metadata: {
+    vehicles: PageStateHelper.initial<VehiclePageParamsModel, VehicleModel>( {
+        resetSearch: false,
+        visibilitySearched: undefined,
+        textSearched: undefined,
+        statusSearched: undefined,
+        dateTimeSearched: undefined,
+    } ),
+    movements: PageStateHelper.initial<MovementPageParamsModel, MovementModel>( {
+        resetSearch: false,
+        currentMovements: false,
+        visibilitySearched: undefined,
+        linkedToActivity: undefined,
+        typeSearched: undefined,
+        startDateTimeSearched: undefined,
+        endDateTimeSearched: undefined,
+    } ),
+    metadata: {
         availabilities: [
             { label: '-', value: undefined },
             { label: 'vehicles.available.true', value: true },
@@ -76,358 +72,148 @@ const defaultVehicleStore: VehicleStoreModel = {
     },
 }
 
-@State<VehicleStoreModel>( {
-    name: 'vehicle',
-    defaults: defaultVehicleStore,
-} )
-@Injectable()
-export class VehicleStore extends GenericProjectElementStore<VehicleStoreModel> implements NgxsOnInit {
-    private readonly api: VehicleApi = inject( VehicleApi )
-    private readonly metadataApi: MetadataApi = inject( MetadataApi )
-    private readonly movementApi: MovementApi = inject( MovementApi )
-    private readonly facade: VehicleFacade = inject( VehicleFacade )
-
-    public ngxsOnInit (): void {
-        this.facade.fetchPresencesStatus()
-    }
-
-    @Selector()
-    public static vehiclesPage (state: VehicleStoreModel): PageModel<VehicleModel> | undefined {
-        return state.vehicles.element
-    }
-
-    @Selector()
-    public static vehiclesPageLoading (state: VehicleStoreModel): boolean {
-        return state.vehicles.loading
-    }
-
-    @Selector()
-    public static vehiclesPageError (state: VehicleStoreModel): ToastMessageOptions | undefined {
-        return state.vehicles.error
-    }
-
-    @Selector()
-    public static vehiclesPageSilentLoading (state: VehicleStoreModel): boolean {
-        return state.vehicles.silentLoading
-    }
-
-    @Selector()
-    public static vehiclesPageResetSearch (state: VehicleStoreModel): boolean {
-        return state.vehicles.params.resetSearch
-    }
-
-    @Selector()
-    public static vehiclesPageTextSearchedParam (state: VehicleStoreModel): string | undefined {
-        return state.vehicles.params.textSearched
-    }
-
-    @Selector()
-    public static vehiclesPageDateTimeSearchedParam (state: VehicleStoreModel): string | undefined {
-        return state.vehicles.params.dateTimeSearched
-    }
-
-    @Selector()
-    public static vehiclesPageAvailabilitySearchedParam (state: VehicleStoreModel): boolean | undefined {
-        return state.vehicles.params.statusSearched
-    }
-
-    @Selector()
-    public static vehiclesPageVisibilitySearchedParam (state: VehicleStoreModel): boolean | undefined {
-        return state.vehicles.params.visibilitySearched
-    }
-
-    @Selector()
-    public static vehicleMovementsPage (state: VehicleStoreModel): PageModel<MovementModel> | undefined {
-        return state.movements.element
-    }
-
-    @Selector()
-    public static vehicleMovementsPageLoading (state: VehicleStoreModel): boolean {
-        return state.movements.loading
-    }
-
-    @Selector()
-    public static vehicleMovementsPageError (state: VehicleStoreModel): ToastMessageOptions | undefined {
-        return state.movements.error
-    }
-
-    @Selector()
-    public static vehicleMovementsPageSilentLoading (state: VehicleStoreModel): boolean {
-        return state.movements.silentLoading
-    }
-
-    @Selector()
-    public static vehicleMovementsPageResetSearch (state: VehicleStoreModel): boolean {
-        return state.movements.params.resetSearch
-    }
-
-    @Selector()
-    public static vehicleMovementsPageTypeSearchedParam (state: VehicleStoreModel): string | undefined {
-        return state.movements.params.typeSearched
-    }
-
-    @Selector()
-    public static vehicleMovementsPageStartDateTimeSearchedParam (state: VehicleStoreModel): string | undefined {
-        return state.movements.params.startDateTimeSearched
-    }
-
-    @Selector()
-    public static vehicleMovementsPageEndDateTimeSearchedParam (state: VehicleStoreModel): string | undefined {
-        return state.movements.params.endDateTimeSearched
-    }
-
-    @Selector()
-    public static vehicleMovementsPageVisibilitySearchedParam (state: VehicleStoreModel): boolean | undefined {
-        return state.movements.params.visibilitySearched
-    }
-
-    @Selector()
-    public static availabilitiesMetadata (state: VehicleStoreModel): SelectItem<boolean | undefined>[] {
-        return state._metadata.availabilities
-    }
-
-    @Selector()
-    public static visibilitiesMetadata (state: VehicleStoreModel): SelectItem<boolean | undefined>[] {
-        return state._metadata.visibilities
-    }
-
-    @Selector()
-    public static presencesStatusMetadata (state: VehicleStoreModel): SelectItem<PresenceStatusEnum | undefined>[] {
-        return state._metadata.presencesStatus
-    }
-
-    @Action( ResetVehicleState )
-    public resetVehicleState (ctx: StateContext<VehicleStoreModel>): void {
-        ctx.setState( {
-            ...defaultVehicleStore,
-            _metadata: {
-                ...defaultVehicleStore._metadata,
-                presencesStatus: ctx.getState()._metadata.presencesStatus,
-            },
-        } )
-    }
-
-    @Action( FetchVehiclePresencesStatus )
-    public fetchVehiclePresencesStatus (ctx: StateContext<VehicleStoreModel>): Observable<void> {
-        return this.metadataApi.getPresencesStatus().pipe(
-            map( (types: SelectItem<PresenceStatusEnum>[]): void => this.fetchVehiclePresencesStatusComplete(
-                ctx,
-                types,
+export const VehicleStore = signalStore(
+    withState<VehicleStoreModel>( defaultVehicleStore ),
+    withProfileScope<VehicleStoreModel>( defaultVehicleStore, (current: VehicleStoreModel): Partial<VehicleStoreModel> => ({
+        metadata: { ...defaultVehicleStore.metadata, presencesStatus: current.metadata.presencesStatus },
+    }) ),
+    withProps( () => ({
+        api: inject( VehicleApi ),
+        movementApi: inject( MovementApi ),
+        metadataApi: inject( MetadataApi ),
+        registryFacade: inject( RegistryFacade ),
+    }) ),
+    withMethods( (store) => {
+        const fetchPresencesStatus = rxMethod<void>( pipe(
+            switchMap( (): Observable<SelectItem<PresenceStatusEnum>[]> => store.metadataApi.getPresencesStatus().pipe(
+                notifyOnError( store.registryFacade ),
             ) ),
-        )
-    }
+            tap( (status: SelectItem<PresenceStatusEnum>[]): void => patchState( store, (state: VehicleStoreModel) => ({
+                metadata: { ...state.metadata, presencesStatus: [ { label: '-', value: undefined }, ...status ] },
+            }) ) ),
+        ) )
 
-    private fetchVehiclePresencesStatusComplete (
-        ctx: StateContext<VehicleStoreModel>,
-        status: SelectItem<PresenceStatusEnum>[],
-    ): void {
-        ctx.patchState( {
-            _metadata: {
-                ...ctx.getState()._metadata,
-                presencesStatus: [
-                    { label: '-', value: undefined },
-                    ...status,
-                ],
-            },
-        } )
-    }
+        const fetchMovementsContents = rxMethod<VehicleMovementsContentsRequest>( pipe(
+            switchMap( (request: VehicleMovementsContentsRequest): Observable<PairModel<MovementContentModel[]>[]> =>
+                store.movementApi.findMovementsContents(
+                    request.projectId,
+                    request.movementIds,
+                    store.movements.params.currentMovements(),
+                ).pipe( notifyOnError( store.registryFacade ) ),
+            ),
+            tap( (contents: PairModel<MovementContentModel[]>[]): void => patchState( store, (state: VehicleStoreModel) => {
+                if (!state.movements.element) return state
+                return {
+                    movements: {
+                        ...state.movements,
+                        element: {
+                            ...state.movements.element,
+                            content: MovementHelper.rebuildPageWithContent( state.movements.element.content, contents ),
+                        },
+                    },
+                }
+            }) ),
+        ) )
 
-    @Action( StartVehiclesPageLoader )
-    public startVehiclesPageLoader (ctx: StateContext<VehicleStoreModel>): void {
-        ctx.patchState( {
-            vehicles: StateHelper.updatePageLoader( ctx.getState().vehicles, true ),
-        } )
-    }
+        return {
+            fetchPresencesStatus,
 
-    @Action( StopVehiclesPageLoader )
-    public stopVehiclesPageLoader (ctx: StateContext<VehicleStoreModel>): void {
-        ctx.patchState( {
-            vehicles: StateHelper.updatePageLoader( ctx.getState().vehicles, false ),
-        } )
-    }
-
-    @Action( FetchVehiclesPage )
-    public fetchVehiclesPage (
-        ctx: StateContext<VehicleStoreModel>,
-        payload: FetchVehiclesPage,
-    ): Observable<void> {
-        return this.api.findVehicles(
-            payload.projectId,
-            payload.pageNumber,
-            payload.pageSize,
-            ctx.getState().vehicles.params,
-        ).pipe(
-            initialize( (): void => this.facade.startVehiclesPageLoader() ),
-            finalize( (): void => this.facade.stopVehiclesPageLoader() ),
-            map( (vehiclePage: PageModel<VehicleModel>): void => this.fetchVehiclesPageComplete(
-                ctx,
-                vehiclePage,
+            fetchVehiclesPage: rxMethod<VehiclesPageRequest>( pipe(
+                switchMap( (request: VehiclesPageRequest): Observable<PageModel<VehicleModel>> => store.api.findVehicles(
+                    request.projectId,
+                    request.pageNumber,
+                    request.pageSize,
+                    store.vehicles.params(),
+                ).pipe(
+                    initialize( (): void => patchState( store, (state: VehicleStoreModel) => ({
+                        vehicles: StateHelper.updatePageLoader( state.vehicles, true ),
+                    }) ) ),
+                    finalize( (): void => patchState( store, (state: VehicleStoreModel) => ({
+                        vehicles: StateHelper.updatePageLoader( state.vehicles, false ),
+                    }) ) ),
+                    catchError( (error: ErrorModel): Observable<never> => {
+                        if (error.status === 503) {
+                            reportError( store.registryFacade, error )
+                        } else {
+                            patchState( store, (state: VehicleStoreModel) => ({
+                                vehicles: PageStateHelper.withError( state.vehicles, error ),
+                            }) )
+                        }
+                        return EMPTY
+                    } ),
+                ) ),
+                tap( (page: PageModel<VehicleModel>): void => patchState( store, (state: VehicleStoreModel) => ({
+                    vehicles: {
+                        ...state.vehicles,
+                        params: { ...state.vehicles.params, resetSearch: false },
+                        element: page,
+                    },
+                }) ) ),
             ) ),
-            catchError( (error: ErrorModel): Observable<void> => this.pageError( ctx, error ) ),
-        )
-    }
 
-    private fetchVehiclesPageComplete (
-        ctx: StateContext<VehicleStoreModel>,
-        vehiclePage: PageModel<VehicleModel>,
-    ): void {
-        ctx.patchState( {
-            vehicles: {
-                ...ctx.getState().vehicles,
-                params: {
-                    ...ctx.getState().vehicles.params,
-                    resetSearch: false,
-                },
-                element: vehiclePage,
+            updateVehiclesPageSearchParams: (params: VehiclePageParamsModel): void => {
+                patchState( store, (state: VehicleStoreModel) => ({ vehicles: { ...state.vehicles, params: params } }) )
             },
-        } )
-    }
 
-    @Action( UpdateVehiclesPageSearchParams )
-    public updateVehiclesPageSearchParams (
-        ctx: StateContext<VehicleStoreModel>,
-        payload: UpdateVehiclesPageSearchParams,
-    ): void {
-        ctx.patchState( {
-            vehicles: {
-                ...ctx.getState().vehicles,
-                params: payload.params,
-            },
-        } )
-    }
-
-    @Action( StartVehicleMovementsPageLoader )
-    public startVehicleMovementsPageLoader (ctx: StateContext<VehicleStoreModel>): void {
-        ctx.patchState( {
-            movements: StateHelper.updatePageLoader( ctx.getState().movements, true ),
-        } )
-    }
-
-    @Action( StopVehicleMovementsPageLoader )
-    public stopVehicleMovementsPageLoader (ctx: StateContext<VehicleStoreModel>): void {
-        ctx.patchState( {
-            movements: StateHelper.updatePageLoader( ctx.getState().movements, false ),
-        } )
-    }
-
-    @Action( FetchVehicleMovementsPage )
-    public fetchVehicleMovementsPage (
-        ctx: StateContext<VehicleStoreModel>,
-        payload: FetchVehicleMovementsPage,
-    ): Observable<void> {
-        return this.api.findVehicleMovements(
-            payload.projectId,
-            payload.id,
-            payload.pageNumber,
-            payload.pageSize,
-            ctx.getState().movements.params,
-        ).pipe(
-            initialize( (): void => this.facade.startVehicleMovementsPageLoader() ),
-            finalize( (): void => this.facade.stopVehicleMovementsPageLoader() ),
-            map( (movementsPage: PageModel<MovementModel>): void => this.fetchVehicleMovementsPageComplete(
-                ctx,
-                movementsPage,
+            fetchVehicleMovementsPage: rxMethod<VehicleMovementsPageRequest>( pipe(
+                switchMap( (request: VehicleMovementsPageRequest): Observable<{
+                    request: VehicleMovementsPageRequest
+                    page: PageModel<MovementModel>
+                }> => store.api.findVehicleMovements(
+                    request.projectId,
+                    request.id,
+                    request.pageNumber,
+                    request.pageSize,
+                    store.movements.params(),
+                ).pipe(
+                    initialize( (): void => patchState( store, (state: VehicleStoreModel) => ({
+                        movements: StateHelper.updatePageLoader( state.movements, true ),
+                    }) ) ),
+                    finalize( (): void => patchState( store, (state: VehicleStoreModel) => ({
+                        movements: StateHelper.updatePageLoader( state.movements, false ),
+                    }) ) ),
+                    catchError( (error: ErrorModel): Observable<never> => {
+                        if (error.status === 503) {
+                            reportError( store.registryFacade, error )
+                        } else {
+                            patchState( store, (state: VehicleStoreModel) => ({
+                                movements: PageStateHelper.withError( state.movements, error ),
+                            }) )
+                        }
+                        return EMPTY
+                    } ),
+                    map( (page: PageModel<MovementModel>) => ({ request, page }) ),
+                ) ),
+                tap( ({ request, page }): void => {
+                    patchState( store, (state: VehicleStoreModel) => ({
+                        movements: {
+                            ...state.movements,
+                            params: { ...state.movements.params, resetSearch: false },
+                            element: page,
+                        },
+                    }) )
+                    if (page.content.length > 0) {
+                        fetchMovementsContents( {
+                            projectId: request.projectId,
+                            movementIds: page.content.map( (movement: MovementModel): string => movement.id ),
+                        } )
+                    }
+                } ),
             ) ),
-            catchError( (error: ErrorModel): Observable<void> => this.movementsPageError( ctx, error ) ),
-        )
-    }
 
-    private fetchVehicleMovementsPageComplete (
-        ctx: StateContext<VehicleStoreModel>,
-        movementsPage: PageModel<MovementModel>,
-    ): void {
-        ctx.patchState( {
-            movements: {
-                ...ctx.getState().movements,
-                params: {
-                    ...ctx.getState().movements.params,
-                    resetSearch: false,
-                },
-                element: movementsPage,
+            fetchVehicleMovementsContents: fetchMovementsContents,
+
+            updateVehicleMovementsPageSearchParams: (params: MovementPageParamsModel): void => {
+                patchState( store, (state: VehicleStoreModel) => ({ movements: { ...state.movements, params: params } }) )
             },
-        } )
-
-        if (movementsPage.content.length > 0) {
-            this.facade.fetchVehicleMovementsContent(
-                movementsPage.content.map( (movement: MovementModel): string => movement.id ),
-            )
         }
-    }
-
-    @Action( FetchVehicleMovementsContents )
-    public fetchVehicleMovementsContents (
-        ctx: StateContext<VehicleStoreModel>,
-        payload: FetchVehicleMovementsContents,
-    ): Observable<void> {
-        return this.movementApi.findMovementsContents(
-            payload.projectId,
-            payload.movementIds,
-            ctx.getState().movements.params.currentMovements,
-        ).pipe(
-            map( (contents: PairModel<MovementContentModel[]>[]): void => this.fetchVehicleMovementsContentsComplete(
-                ctx,
-                contents,
-            ) ),
-        )
-    }
-
-    private fetchVehicleMovementsContentsComplete (
-        ctx: StateContext<VehicleStoreModel>,
-        contents: PairModel<MovementContentModel[]>[],
-    ): void {
-        if (!ctx.getState().movements.element) {
-            return
-        }
-
-        ctx.patchState( {
-            movements: {
-                ...ctx.getState().movements,
-                element: {
-                    ...ctx.getState().movements.element!,
-                    content: MovementHelper.rebuildPageWithContent( ctx.getState().movements.element!.content, contents ),
-                },
-            },
-        } )
-    }
-
-    @Action( UpdateVehicleMovementsPageSearchParams )
-    public updateVehicleMovementsPageSearchParams (
-        ctx: StateContext<VehicleStoreModel>,
-        payload: UpdateVehicleMovementsPageSearchParams,
-    ): void {
-        ctx.patchState( {
-            movements: {
-                ...ctx.getState().movements,
-                params: payload.params,
-            },
-        } )
-    }
-
-    protected refreshPage (ctx: StateContext<VehicleStoreModel>): void {
-        const page: PageModel<VehicleModel> | undefined = ctx.getState().vehicles.element
-        this.facade.fetchVehiclesPage( page?.pageNumber, page?.pageSize, true )
-    }
-
-    protected pageError (ctx: StateContext<VehicleStoreModel>, error: ErrorModel): Observable<void> {
-        if (error.status == 503) {
-            throw error
-        } else {
-            ctx.patchState( {
-                vehicles: this.buildErrorMessage( ctx.getState().vehicles, error ),
+    } ),
+    withHooks( {
+        onInit (store): void {
+            store.fetchPresencesStatus()
+            inject( TranslateService ).onLangChange.pipe( takeUntilDestroyed() ).subscribe( (): void => {
+                store.fetchPresencesStatus()
             } )
-        }
-
-        return of()
-    }
-
-    protected movementsPageError (ctx: StateContext<VehicleStoreModel>, error: ErrorModel): Observable<void> {
-        if (error.status == 503) {
-            throw error
-        } else {
-            ctx.patchState( {
-                movements: this.buildErrorMessage( ctx.getState().movements, error ),
-            } )
-        }
-        return of()
-    }
-}
+        },
+    } ),
+)
