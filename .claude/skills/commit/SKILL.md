@@ -19,7 +19,7 @@ Conventional Commits are mandatory: semantic-release derives the version, change
 
 - Run `pnpm lint`, `pnpm build` and `pnpm test:coverage` first; all must pass (coverage thresholds
   included). Do not commit on failure or on a coverage drop.
-- Run the `code-review` skill beforehand; all 5 ratings must be ≥ 8/10. If new code lacks coverage, run the `test`
+- Run the `code-review` skill beforehand; all 6 ratings must be ≥ 8/10. If new code lacks coverage, run the `test`
   skill first.
 - Work-in-progress gate: if a complete testable feature is uncommitted, refuse unrelated new work until it is
   committed. Local commits are enough.
