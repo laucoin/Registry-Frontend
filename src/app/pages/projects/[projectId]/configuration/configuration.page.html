@@ -1,0 +1,27 @@
+<sgdf-page-title [eyebrow]="'projectConfiguration.eyebrow' | transloco"
+                 [lede]="'projectConfiguration.subtitle' | transloco">
+    {{ 'projectConfiguration.title' | transloco }}
+</sgdf-page-title>
+
+<div class="flex flex-col gap-(--spacing--block)">
+    @defer (on viewport) {
+        <app-project-information/>
+    } @placeholder {
+        <div class="min-h-64"></div>
+    }
+
+    <nav class="grid grid-cols-[repeat(auto-fill,minmax(min(100%,24rem),1fr))] gap-(--spacing--block)"
+         [attr.aria-label]="'projectConfiguration.title' | transloco">
+        @for (tile of tiles(); track tile.key) {
+            <sgdf-tile [routerLink]="tile.url">
+                <sgdf-icon slot="icon" [attr.name]="tile.icon.name" [library]="tile.icon.library"/>
+                <span slot="title"
+                      class="whitespace-nowrap">{{ 'projectConfiguration.tiles.' + tile.key + '.title' | transloco }}</span>
+                {{ 'projectConfiguration.tiles.' + tile.key + '.description' | transloco }}
+                @if (countOf(tile) !== undefined) {
+                    <sgdf-tag slot="badge" variant="info" appearance="soft">{{ countOf(tile) }}</sgdf-tag>
+                }
+            </sgdf-tile>
+        }
+    </nav>
+</div>

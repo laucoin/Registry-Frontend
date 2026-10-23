@@ -47,13 +47,11 @@ export class DialogElementComponent extends GenericElementComponent {
         CommunicationHelper.getAuthorId( this.communication() ) !== this.previousAuthorId(),
     )
 
-    protected readonly lastAuthorMessage: Signal<boolean> = computed( (): boolean =>
-        CommunicationHelper.getAuthorId( this.communication() ) !== this.nextAuthorId(),
-    )
-
     protected readonly authorIsCurrentUser: Signal<boolean> = computed(
         (): boolean => this.buildAuthorIsCurrentUser( this.communication(), this.sessionFacade.currentUser() ),
     )
+
+    protected readonly alertTitleBlank: Signal<boolean> = computed( (): boolean => StringHelper.isNullOrBlank( this.communication().alert?.title ) )
 
     protected readonly authorName: Signal<string> = computed( (): string => this.buildAuthorName( this.communication() ) )
 

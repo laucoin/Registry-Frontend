@@ -1,3 +1,5 @@
+import { ElementRequestInformationModel } from '@shared/models/model/element-request-information.model'
+import { PlannedMovementModel } from '@shared/models/model/planned-movement.model'
 import { SectionErrorsState } from '@shared/models/model/section-errors-state.model'
 import { PageRequestInformationModel } from '@shared/models/model/page-request-information.model'
 import { NotificationModel } from '@shared/models/model/notification.model'
@@ -6,6 +8,7 @@ import { VehicleStatusModel } from '@shared/models/model/vehicle-status.model'
 import { MovementPageParamsModel } from '@shared/models/model/movement-page-params.model'
 import { MovementModel } from '@shared/models/model/movement.model'
 import { ParticipantModel } from '@shared/models/model/participant.model'
+import { ParticipantPageParamsModel } from '@pages/projects/[projectId]/configuration/participants/data/model/participant-page-params.model'
 import { AlertModel } from '@shared/models/model/alert.model'
 import { AlertPageParamsModel } from '@shared/models/model/alert-page-params.model'
 
@@ -23,7 +26,11 @@ export interface SelectedProjectStoreModel extends SectionErrorsState {
         }
     }
     alerts: PageRequestInformationModel<AlertPageParamsModel, AlertModel>
-    birthdays: ParticipantModel[]
+    overdue: PageRequestInformationModel<ParticipantPageParamsModel, ParticipantModel>
+    overdueList: PageRequestInformationModel<ParticipantPageParamsModel, ParticipantModel>
+    birthdays: ElementRequestInformationModel<ParticipantModel[]>
+    arrivals: ElementRequestInformationModel<PlannedMovementModel[]>
+    departures: ElementRequestInformationModel<PlannedMovementModel[]>
     isCurrent: {
         withoutActivity: PageRequestInformationModel<MovementPageParamsModel, MovementModel>
         withActivity: PageRequestInformationModel<MovementPageParamsModel, MovementModel>

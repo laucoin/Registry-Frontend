@@ -1,7 +1,6 @@
 {
   "eyebrow": "Tableau de bord",
   "subtitle": "Vue opérationnelle du projet",
-  "seeMore": "Voir plus",
   "communicate": "Communiquer",
   "participantOverview": {
     "title": "Participants",
@@ -9,51 +8,153 @@
     "registeredPresent": "Inscrits présents",
     "registeredOut": "Inscrits en sortie",
     "guestsPresent": "Invités présents",
-    "seeIndividualStatus": "Voir le statut individuel"
+    "seeAll": "Voir le suivi des participants"
   },
   "vehicleOverview": {
     "title": "Véhicules",
     "total": "{{count}} au total",
     "present": "Présents",
     "out": "En sortie",
-    "seeVehicleStatus": "Voir le statut des véhicules"
+    "seeAll": "Voir le suivi des véhicules"
   },
   "participantRegularization": {
     "title": "Présences à régulariser",
-    "seeAll": "Voir toutes les présences à régulariser"
+    "seeAll": "Voir toutes les présences à régulariser",
+    "empty": "Aucune présence à régulariser",
+    "dialogEmpty": {
+      "title": "Aucune présence à régulariser",
+      "message": "Toutes les présences sont à jour : aucun participant n'a dépassé sa fin de présence prévue."
+    },
+    "plannedEnd": "Fin prévue le {{date}}",
+    "presentSince": "Présent depuis {{duration}}",
+    "seeRemaining": {
+      "one": "Voir l'autre présence à régulariser",
+      "few": "Voir les {{count}} autres présences à régulariser"
+    },
+    "total": {
+      "one": "{{count}} présence",
+      "few": "{{count}} présences"
+    }
   },
   "activeAlert": {
     "title": "Alertes ouvertes",
-    "criticalityHint": "Criticité automatique selon l'ancienneté : récente < 6 h · renforcée 6–18 h · élevée > 18 h",
     "seeAll": "Voir toutes les alertes",
-    "criticality": {
-      "high": "Élevée",
-      "reinforced": "Renforcée",
-      "recent": "Récente"
+    "empty": "Aucune alerte ouverte",
+    "untitled": "Alerte sans titre",
+    "seeRemaining": {
+      "one": "Voir l'autre alerte",
+      "few": "Voir les {{count}} autres alertes"
+    },
+    "lastCommunication": "Dernière communication le {{date}}",
+    "total": {
+      "one": "{{count}} alerte ouverte",
+      "few": "{{count}} alertes ouvertes"
     }
   },
   "upcomingArrival": {
     "title": "Arrivées du jour",
-    "total": "{{count}} arrivées"
+    "total": {
+      "one": "{{count}} arrivée",
+      "few": "{{count}} arrivées"
+    },
+    "empty": "Aucune arrivée prévue aujourd'hui"
   },
   "upcomingDeparture": {
     "title": "Départs du jour",
-    "total": "{{count}} départs"
+    "total": {
+      "one": "{{count}} départ",
+      "few": "{{count}} départs"
+    },
+    "empty": "Aucun départ prévu aujourd'hui"
   },
   "birthday": {
     "title": "Anniversaires du jour",
-    "age": "{{count}} ans"
+    "age": "{{count}} ans",
+    "empty": "Aucun anniversaire aujourd'hui",
+    "more": {
+      "one": "+ {{count}} autre",
+      "few": "+ {{count}} autres"
+    },
+    "total": {
+      "one": "{{count}} anniversaire",
+      "few": "{{count}} anniversaires"
+    }
   },
   "operationalMonitoring": {
     "title": "Suivi opérationnel",
+    "titleMovementsOnly": "Mouvements en cours",
     "tabs": {
       "activities": "Activités en cours",
-      "idleMovements": "Mouvements sans activité",
-      "individualStatus": "Statut individuel",
-      "groupStatus": "Statut par groupe",
-      "vehicleStatus": "Statut des véhicules"
+      "otherMovements": "Autres mouvements en cours"
     },
-    "overdue": "Durée estimée dépassée",
-    "lastCommunication": "Dernière communication {{value}}"
+    "empty": {
+      "activities": {
+        "title": "Aucune activité en cours",
+        "message": "Aucun mouvement lié à une activité n'est en cours."
+      },
+      "otherMovements": {
+        "title": "Aucun autre mouvement en cours",
+        "message": "Aucun mouvement sans activité n'est en cours."
+      }
+    }
+  },
+  "monitoring": {
+    "overdueHint": "Fin de présence dépassée, sortie non enregistrée. Est-elle encore là ?"
+  },
+  "participantsPage": {
+    "title": "Suivi des participants",
+    "subtitle": "Où se trouvent les participants du projet",
+    "tabs": {
+      "mine": "Mes groupes",
+      "groups": "Par groupe",
+      "individual": "Individuel"
+    },
+    "check": "Pointer {{name}}",
+    "checked": {
+      "zero": "{{count}} participants pointés",
+      "one": "{{count}} participant pointé",
+      "few": "{{count}} participants pointés"
+    },
+    "uncheckAll": "Tout décocher",
+    "disclaimer": "Vérifie bien ces informations : une erreur humaine (oubli ou erreur de saisie) peut toujours survenir."
+  },
+  "vehiclesPage": {
+    "title": "Suivi des véhicules",
+    "subtitle": "Où se trouvent les véhicules du projet"
+  },
+  "groupStatus": {
+    "members": {
+      "one": "{{count}} participant",
+      "few": "{{count}} participants"
+    },
+    "onSite": {
+      "one": "{{count}} sur place",
+      "few": "{{count}} sur place"
+    },
+    "outside": {
+      "one": "{{count}} en sortie",
+      "few": "{{count}} en sortie"
+    },
+    "overdue": {
+      "one": "{{count}} à régulariser",
+      "few": "{{count}} à régulariser"
+    },
+    "checkedOf": "{{checked}}/{{total}} pointés",
+    "noMembers": "Aucun participant sur place dans ce groupe.",
+    "membersOf": "Participants de {{name}}",
+    "empty": {
+      "title": "Aucun groupe",
+      "message": "Aucun groupe n'a de participant présent sur le projet."
+    }
+  },
+  "plannedMovement": {
+    "people": {
+      "one": "{{count}} personne",
+      "few": "{{count}} personnes"
+    },
+    "more": {
+      "one": "+ {{count}} autre",
+      "few": "+ {{count}} autres"
+    }
   }
 }

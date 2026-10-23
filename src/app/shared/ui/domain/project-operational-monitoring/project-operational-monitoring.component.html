@@ -2,51 +2,51 @@
     <sgdf-table-row>
         <sgdf-table-cell header class="flex items-center gap-1">
             <sgdf-icon name="magnifying-glass-chart" library="solid"/>
-            <h2 class="text-sm font-semibold uppercase">{{ 'projectHome.operationalMonitoring.title' | transloco }}</h2>
+            <h2 class="text-sm font-semibold uppercase">{{ (tabs().length > 1 ? 'projectHome.operationalMonitoring.title' : 'projectHome.operationalMonitoring.titleMovementsOnly') | transloco }}</h2>
         </sgdf-table-cell>
     </sgdf-table-row>
 
     <sgdf-table-row>
-        <sgdf-table-cell class="p-0 align-top">
-            <sgdf-tab-group appearance="text">
-                @for (tab of tabs; track tab.key) {
-                    <sgdf-tab [panel]="tab.key">
-                        {{ 'projectHome.operationalMonitoring.tabs.' + tab.key | transloco }}
-                        <sgdf-badge>{{ tab.count }}</sgdf-badge>
-                    </sgdf-tab>
-                }
-
-                @for (tab of tabs; track tab.key) {
-                    <sgdf-tab-panel [name]="tab.key">
-                        <sgdf-list appearance="text"
-                                   [label]="'projectHome.operationalMonitoring.tabs.' + tab.key | transloco">
-                            @for (item of tab.items; track item.title) {
-                                <sgdf-list-item>
-                                    <sgdf-avatar slot="start" variant="info" aria-hidden="true">
-                                        <sgdf-icon slot="icon" [name]="tab.icon" library="solid"/>
-                                    </sgdf-avatar>
-                                    {{ item.title }}
-                                    <span slot="description" class="text-xs">{{ item.description }}</span>
-                                    <span slot="end" class="flex flex-col items-end text-xs">
-                                        <strong>{{ item.status }}</strong>
-                                        @if (item.overdue) {
-                                            <sgdf-tag variant="warning" size="small" appearance="soft">
-                                                {{ 'projectHome.operationalMonitoring.overdue' | transloco }}
-                                            </sgdf-tag>
-                                        }
-                                    </span>
-                                    @if (item.communicable) {
-                                        <sgdf-button slot="end" size="small" appearance="outlined">
-                                            <sgdf-icon slot="prefix" name="comments" library="regular"/>
-                                            {{ 'projectHome.communicate' | transloco }}
-                                        </sgdf-button>
-                                    }
-                                </sgdf-list-item>
+        <sgdf-table-cell class="align-top pt-0">
+            @if (tabs().length > 1) {
+                <sgdf-tab-group appearance="text">
+                    @for (tab of tabs(); track tab.key) {
+                        <sgdf-tab [panel]="tab.key">
+                            {{ 'projectHome.operationalMonitoring.tabs.' + tab.key | transloco }}
+                            @if (tab.page(); as page) {
+                                <sgdf-badge>{{ page.totalElements }}</sgdf-badge>
                             }
-                        </sgdf-list>
-                    </sgdf-tab-panel>
-                }
-            </sgdf-tab-group>
+                        </sgdf-tab>
+                    }
+
+                    @for (tab of tabs(); track tab.key) {
+                        <sgdf-tab-panel [name]="tab.key">
+                            <ng-container [ngTemplateOutlet]="monitoringList" [ngTemplateOutletContext]="{ $implicit: tab }"/>
+                        </sgdf-tab-panel>
+                    }
+                </sgdf-tab-group>
+            } @else {
+                <div class="pt-(--spacing--in-block-large)">
+                    <ng-container [ngTemplateOutlet]="monitoringList" [ngTemplateOutletContext]="{ $implicit: tabs()[0] }"/>
+                </div>
+            }
         </sgdf-table-cell>
     </sgdf-table-row>
 </sgdf-table>
+
+<ng-template #monitoringList let-tab>
+    <app-list [emptyMessagePrefix]="'projectHome.operationalMonitoring.empty.' + tab.key"
+              [label]="'projectHome.operationalMonitoring.tabs.' + tab.key | transloco"
+              [elementPage]="tab.page()"
+              [error]="tab.error()"
+              [loading]="tab.loading()"
+              [loadingMore]="tab.silentLoading()"
+              (updateRequired)="loadBatch(tab, $event)">
+        <ng-template appTemplate="element" let-movement>
+            <sgdf-list-item appMovementElement
+                            [movement]="movement"
+                            [communicable]="true"
+                            [actionMenuVisible]="false"/>
+        </ng-template>
+    </app-list>
+</ng-template>

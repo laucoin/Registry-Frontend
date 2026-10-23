@@ -12,6 +12,7 @@ import { AlertStatusEnum } from '@shared/models/enumeration/alert-status.enum'
 import { AlertModel } from '@shared/models/model/alert.model'
 import { MovementContentModel } from '@shared/models/model/movement-content.model'
 import { MovementModel } from '@shared/models/model/movement.model'
+import { PlannedMovementModel } from '@shared/models/model/planned-movement.model'
 import { ParticipantModel } from '@shared/models/model/participant.model'
 
 describe( 'SelectedProjectStore', () => {
@@ -22,6 +23,9 @@ describe( 'SelectedProjectStore', () => {
     let findVehiclesStatus: Mock<MovementApi['findVehiclesStatus']>
     let findAlerts: Mock<AlertApi['findAlerts']>
     let findParticipantsBirthdays: Mock<ParticipantApi['findParticipantsBirthdays']>
+    let findParticipants: Mock<ParticipantApi['findParticipants']>
+    let findPlannedArrivals: Mock<MovementApi['findPlannedArrivals']>
+    let findPlannedDepartures: Mock<MovementApi['findPlannedDepartures']>
     let notify: Mock<(message: unknown) => void>
 
     beforeEach( () => {
@@ -31,13 +35,16 @@ describe( 'SelectedProjectStore', () => {
         findVehiclesStatus = vi.fn()
         findAlerts = vi.fn()
         findParticipantsBirthdays = vi.fn()
+        findParticipants = vi.fn()
+        findPlannedArrivals = vi.fn()
+        findPlannedDepartures = vi.fn()
         notify = vi.fn()
         TestBed.configureTestingModule( {
             providers: [
                 SelectedProjectStore,
-                { provide: MovementApi, useValue: { findMovements, findMovementsContents, findParticipantsStatus, findVehiclesStatus } },
+                { provide: MovementApi, useValue: { findPlannedArrivals, findPlannedDepartures, findMovements, findMovementsContents, findParticipantsStatus, findVehiclesStatus } },
                 { provide: AlertApi, useValue: { findAlerts } },
-                { provide: ParticipantApi, useValue: { findParticipantsBirthdays } },
+                { provide: ParticipantApi, useValue: { findParticipantsBirthdays, findParticipants } },
                 { provide: ErrorReporter, useValue: { notify } },
             ],
         } )
@@ -93,6 +100,71 @@ describe( 'SelectedProjectStore', () => {
         expect( store.status.participants.error() ).toBeDefined()
     } )
 
+    it( 'stores the participants to regularize, asking for the on-site overdue ones, the earliest planned end first', () => {
+        // Arrange
+        findParticipants.mockReturnValue( of( pageOf<ParticipantModel>( [ { id: 'pa1' } as ParticipantModel ] ) ) )
+
+        // Act
+        store.fetchOverduePage( { projectId: 'p1', page: 0, size: 5 } )
+
+        // Assert
+        expect( store.overdue.element()?.content ).toHaveLength( 1 )
+        expect( findParticipants ).toHaveBeenCalledWith( 'p1', 0, 5, expect.objectContaining( { status: 'OVERDUE', onSite: true, isVisible: true, sort: 'endAvailability' } ) )
+    } )
+
+    it( 'keeps a failed participants to regularize fetch in its own block', () => {
+        // Arrange
+        findParticipants.mockReturnValue( failing( ERROR_500 ) )
+
+        // Act
+        store.fetchOverduePage( { projectId: 'p1', page: 0, size: 5 } )
+
+        // Assert
+        expect( store.overdue.error()?.summary ).toBe( 'Title' )
+        expect( store.overdue.loading() ).toBe( false )
+    } )
+
+    it( 'lists all the participants to regularize apart from the few shown on the dashboard, batch after batch', () => {
+        // Arrange
+        findParticipants.mockReturnValue( of( pageOf<ParticipantModel>( [ { id: 'pa1' } as ParticipantModel ] ) ) )
+        store.fetchOverduePage( { projectId: 'p1', page: 0, size: 5 } )
+        findParticipants.mockReturnValue( of( { ...pageOf<ParticipantModel>( [ { id: 'pa2' } as ParticipantModel ] ), page: 1 } ) )
+
+        // Act
+        store.fetchOverdueListPage( { projectId: 'p1', page: undefined, size: 20 } )
+        store.fetchOverdueListPage( { projectId: 'p1', page: 1, size: 20 } )
+
+        // Assert
+        expect( store.overdueList.element()?.content.map( (participant: ParticipantModel): string => participant.id ) ).toEqual( [ 'pa2' ] )
+        expect( store.overdue.element()?.content ).toHaveLength( 1 )
+    } )
+
+    it( 'stores the planned arrivals and departures apart from each other', () => {
+        // Arrange
+        findPlannedArrivals.mockReturnValue( of( [ { poolName: 'Arriving' } as PlannedMovementModel ] ) )
+        findPlannedDepartures.mockReturnValue( of( [ { poolName: 'Leaving' } as PlannedMovementModel, { poolName: 'Leaving too' } as PlannedMovementModel ] ) )
+
+        // Act
+        store.fetchPlannedArrivals( 'p1' )
+        store.fetchPlannedDepartures( 'p1' )
+
+        // Assert
+        expect( store.arrivals.element() ).toHaveLength( 1 )
+        expect( store.departures.element() ).toHaveLength( 2 )
+    } )
+
+    it( 'keeps a failed planned arrivals fetch in its own block', () => {
+        // Arrange
+        findPlannedArrivals.mockReturnValue( failing( ERROR_500 ) )
+
+        // Act
+        store.fetchPlannedArrivals( 'p1' )
+
+        // Assert
+        expect( store.arrivals.error()?.summary ).toBe( 'Title' )
+        expect( store.departures.error() ).toBeUndefined()
+    } )
+
     it( 'stores the birthdays of the participants', () => {
         // Arrange
         findParticipantsBirthdays.mockReturnValue( of( [ { id: 'pa1' } as ParticipantModel ] ) )
@@ -101,10 +173,11 @@ describe( 'SelectedProjectStore', () => {
         store.fetchParticipantsBirthdays( 'p1' )
 
         // Assert
-        expect( store.birthdays() ).toHaveLength( 1 )
+        expect( store.birthdays.element() ).toHaveLength( 1 )
+        expect( store.birthdays.loading() ).toBe( false )
     } )
 
-    it( 'keeps a failed birthdays fetch in the section error and keeps the previous ones', () => {
+    it( 'keeps a failed birthdays fetch in its own block and keeps the previous ones', () => {
         // Arrange
         findParticipantsBirthdays.mockReturnValueOnce( of( [ { id: 'pa1' } as ParticipantModel ] ) )
         findParticipantsBirthdays.mockReturnValueOnce( failing( ERROR_500 ) )
@@ -114,8 +187,8 @@ describe( 'SelectedProjectStore', () => {
         store.fetchParticipantsBirthdays( 'p1' )
 
         // Assert
-        expect( store.sectionErrors()[ 'birthdays' ]?.summary ).toBe( 'Title' )
-        expect( store.birthdays() ).toHaveLength( 1 )
+        expect( store.birthdays.error()?.summary ).toBe( 'Title' )
+        expect( store.birthdays.element() ).toHaveLength( 1 )
     } )
 
     it( 'stores the current movements without activity and fetches their contents among current movements', () => {

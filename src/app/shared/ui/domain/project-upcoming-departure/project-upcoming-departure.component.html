@@ -1,34 +1,11 @@
-<sgdf-table class="h-full [&::part(grid)]:h-full [&::part(grid)]:table-fixed" appearance="soft">
-    <sgdf-table-row>
-        <sgdf-table-cell header class="flex items-center gap-1">
-            <sgdf-icon name="plane-departure" library="solid"/>
-            <h2 class="text-sm font-semibold uppercase">{{ 'projectHome.upcomingDeparture.title' | transloco }}</h2>
-            <sgdf-tag class="ml-auto" size="small" variant="info" appearance="soft">
-                {{ 'projectHome.upcomingDeparture.total' | transloco: { count: departures.length } }}
-            </sgdf-tag>
-        </sgdf-table-cell>
-    </sgdf-table-row>
-
-    <sgdf-table-row>
-        <sgdf-table-cell class="h-full p-0 align-top">
-            <sgdf-list appearance="text" [label]="'projectHome.upcomingDeparture.title' | transloco">
-                @for (departure of departures; track departure.name) {
-                    <sgdf-list-item>
-                        <sgdf-avatar slot="start" variant="warning" aria-hidden="true">
-                            <sgdf-icon slot="icon" name="arrow-up-right" library="solid"/>
-                        </sgdf-avatar>
-                        {{ departure.name }}
-                        <span slot="description" class="text-xs">{{ departure.detail }}</span>
-                        <span slot="end" class="flex items-baseline gap-2 text-xs">{{ departure.place }} <strong class="text-base">{{ departure.time }}</strong></span>
-                    </sgdf-list-item>
-                }
-            </sgdf-list>
-        </sgdf-table-cell>
-    </sgdf-table-row>
-
-    <sgdf-table-row>
-        <sgdf-table-cell class="align-bottom">
-            <sgdf-button block size="small" appearance="text">{{ 'projectHome.seeMore' | transloco }}</sgdf-button>
-        </sgdf-table-cell>
-    </sgdf-table-row>
-</sgdf-table>
+<app-planned-movement-card class="block h-full"
+                           titleKey="projectHome.upcomingDeparture.title"
+                           totalKey="projectHome.upcomingDeparture.total"
+                           emptyKey="projectHome.upcomingDeparture.empty"
+                           icon="plane-departure"
+                           rowIcon="arrow-up-right"
+                           rowVariant="warning"
+                           [movements]="movements()"
+                           [loading]="loading()"
+                           [error]="error()"
+                           (retry)="reload()"/>

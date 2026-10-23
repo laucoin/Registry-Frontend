@@ -1,0 +1,27 @@
+{
+  "eyebrow": "Configuration",
+  "title": "Configuration du projet",
+  "subtitle": "Gérez les participants, groupes, véhicules et options du projet.",
+  "tiles": {
+    "participants": {
+      "title": "Participants",
+      "description": "Inscrits, invités et données individuelles"
+    },
+    "groups": {
+      "title": "Groupes",
+      "description": "Unités, équipes et affectations"
+    },
+    "vehicles": {
+      "title": "Véhicules",
+      "description": "Parc, conducteurs et capacités"
+    },
+    "activities": {
+      "title": "Activités",
+      "description": "Programme du projet et cadres de mouvements"
+    },
+    "profiles": {
+      "title": "Membres",
+      "description": "Profils propres au projet : rôles et accès"
+    }
+  }
+}

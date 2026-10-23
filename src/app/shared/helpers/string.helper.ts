@@ -1,10 +1,9 @@
-import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
 import { GenericHelper } from '@shared/helpers/generic.helper'
 
 /**
- * Purpose: String and route utilities.
- * Scope: Cache busting, truncation, blank checks, number conversion, digit padding, title case and active route detection.
- * Limits: No translation and no browser access; the path is passed in.
+ * Purpose: String utilities.
+ * Scope: Cache busting, truncation, blank checks, number conversion, digit padding, and title case.
+ * Limits: No translation and no browser access.
  */
 export class StringHelper {
     public static addCacheBustingToUrl (url: string): string {
@@ -44,27 +43,6 @@ export class StringHelper {
 
     public static formatDigits (value: number, range: number): string {
         return value.toString().padStart( range, '0' )
-    }
-
-    public static isRouteActive (route: RegistryRouteEnum, pathname: string): boolean {
-        const castedRoute: string = StringHelper.sanitizeRoute( route )
-        const currentUri: string = StringHelper.sanitizeRoute( pathname )
-        const isUserRoute: boolean = RegistryRouteEnum.USERS.includes( castedRoute )
-
-        switch (true) {
-            case currentUri.includes( RegistryRouteEnum.USERS_PROFILES ) && isUserRoute:
-            case currentUri.includes( RegistryRouteEnum.USERS_INVITATIONS ) && isUserRoute:
-                return false
-            default:
-                return currentUri.includes( route )
-        }
-    }
-
-    private static sanitizeRoute (route: string): string {
-        return route.replace(
-            /projects\/[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}/,
-            'projects/:projectId',
-        )
     }
 
     public static toTitleCase (str: string | undefined): string {

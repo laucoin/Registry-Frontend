@@ -44,7 +44,7 @@
 
     <ng-template appTemplate="empty">
         <sgdf-callout variant="neutral" [title]="'project-profiles.notifications.EMPTY.message' | transloco">
-            <div class="flex flex-wrap items-center justify-between gap-(--spacing--in-block)">
+            <div class="flex flex-col items-start gap-(--spacing--in-block)">
                 <span>{{ 'project-profiles.empty' | transloco }}</span>
                 <span class="flex flex-wrap items-center gap-2">
                     <sgdf-button size="small" variant="primary" [routerLink]="createRoute">

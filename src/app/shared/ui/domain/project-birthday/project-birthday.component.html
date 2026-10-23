@@ -3,31 +3,55 @@
         <sgdf-table-cell header class="flex items-center gap-1">
             <sgdf-icon name="cake-candles" library="solid"/>
             <h2 class="text-sm font-semibold uppercase">{{ 'projectHome.birthday.title' | transloco }}</h2>
-            <sgdf-tag class="ml-auto" size="small" variant="info" appearance="soft">{{ birthdays.length }}</sgdf-tag>
+            @if (total() !== undefined) {
+                <sgdf-tag class="ml-auto" size="small" variant="info" appearance="soft">{{ 'projectHome.birthday.total' | pluralTranslation: total() | transloco: { count: total() } }}</sgdf-tag>
+            }
         </sgdf-table-cell>
     </sgdf-table-row>
 
     <sgdf-table-row>
         <sgdf-table-cell class="h-full p-0 align-top">
-            <sgdf-list appearance="text" [label]="'projectHome.birthday.title' | transloco">
-                @for (birthday of birthdays; track birthday.name) {
-                    <sgdf-list-item>
-                        <sgdf-avatar slot="start" variant="warning" aria-hidden="true">
-                            <sgdf-icon slot="icon" name="cake-candles" library="solid"/>
-                        </sgdf-avatar>
-                        {{ birthday.name }}
-                        <span slot="description" class="text-xs">
-                            {{ 'projectHome.birthday.age' | transloco: { count: birthday.age } }} · {{ birthday.detail }}
-                        </span>
-                    </sgdf-list-item>
-                }
-            </sgdf-list>
-        </sgdf-table-cell>
-    </sgdf-table-row>
+            @if (error(); as failure) {
+                <app-section-error [error]="failure" [retrying]="loading()" (retry)="reload()"/>
+            }
 
-    <sgdf-table-row>
-        <sgdf-table-cell class="align-bottom">
-            <sgdf-button block size="small" appearance="text">{{ 'projectHome.seeMore' | transloco }}</sgdf-button>
+            @if (loading() && total() === undefined) {
+                <sgdf-list appearance="text" aria-busy="true" [label]="'global.list.loading' | transloco">
+                    @for (row of skeletonRows; track row) {
+                        <sgdf-list-item>
+                            <sgdf-skeleton slot="start" shape="circle" effect="pulse" style="width: 2.5rem; height: 2.5rem"/>
+                            <sgdf-skeleton shape="rounded" effect="pulse" style="width: 50%; height: 1rem"/>
+                        </sgdf-list-item>
+                    }
+                </sgdf-list>
+            } @else if (total() === 0) {
+                <p class="m-4 text-sm opacity-80">{{ 'projectHome.birthday.empty' | transloco }}</p>
+            } @else if (total() !== undefined) {
+                <sgdf-list appearance="text" [label]="'projectHome.birthday.title' | transloco">
+                    @for (row of rows(); track row.id) {
+                        <sgdf-list-item>
+                            <sgdf-avatar slot="start" variant="warning" aria-hidden="true">
+                                <sgdf-icon slot="icon" name="cake-candles" library="solid"/>
+                            </sgdf-avatar>
+                            {{ row.name }}
+                            <span slot="description" class="text-xs">
+                                @if (row.age !== undefined) {
+                                    {{ 'projectHome.birthday.age' | transloco: { count: row.age } }}
+                                }
+                                @if (row.age !== undefined && row.detail) {
+                                    ·
+                                }
+                                {{ row.detail }}
+                            </span>
+                        </sgdf-list-item>
+                    }
+                </sgdf-list>
+                @if (remaining() > 0) {
+                    <p class="m-0 px-4 pb-3 text-xs opacity-80">
+                        {{ 'projectHome.birthday.more' | pluralTranslation: remaining() | transloco: { count: remaining() } }}
+                    </p>
+                }
+            }
         </sgdf-table-cell>
     </sgdf-table-row>
 </sgdf-table>

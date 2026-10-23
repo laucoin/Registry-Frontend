@@ -1,12 +1,16 @@
 import { describe, expect, it } from 'vitest'
-import { HISTORY, PARTICIPANT_DTO, PROJECT_DTO, USER_DTO, WHEN } from '@shared/helpers/testing/response-fixtures'
+import { HISTORY, PARTICIPANT_DTO, PLANNED_MOVEMENT_DTO, PROJECT_DTO, USER_DTO, WHEN } from '@shared/helpers/testing/response-fixtures'
 import { ActivityMapper } from '@shared/mappers/activity.mapper'
+import { AlertCriticalityMetadataMapper } from '@shared/mappers/alert-criticality-metadata.mapper'
 import { AlertMapper } from '@shared/mappers/alert.mapper'
+import { AlertCriticalityMetadataResponseDto } from '@shared/models/dto/response/alert-criticality-metadata.response.dto'
 import { CommunicationMapper } from '@shared/mappers/communication.mapper'
 import { CurrentUserMapper } from '@shared/mappers/current-user.mapper'
 import { GroupMapper } from '@shared/mappers/group.mapper'
 import { MovementMapper } from '@shared/mappers/movement.mapper'
 import { PageMapper } from '@shared/mappers/page.mapper'
+import { PlannedMovementMapper } from '@shared/mappers/planned-movement.mapper'
+import { PlannedMovementResponseDto } from '@shared/models/dto/response/planned-movement.response.dto'
 import { PairMapper } from '@shared/mappers/pair.mapper'
 import { ParticipantMapper } from '@shared/mappers/participant.mapper'
 import { ProjectMapper } from '@shared/mappers/project.mapper'
@@ -170,6 +174,7 @@ describe( 'mappers', () => {
         const dto: AlertResponseDto = {
             id: 'al1', visible: true, creation: HISTORY, lastEdition: HISTORY,
             dateTime: WHEN, title: 'Fire', status: { label: 'In progress', value: 'IN_PROGRESS' as never }, communications: [ communication ],
+            criticality: { label: 'High', value: 'HIGH' as never }, lastCommunication: { dateTime: WHEN, message: 'hello' },
         }
 
         // Act
@@ -178,6 +183,8 @@ describe( 'mappers', () => {
 
         // Assert
         expect( model.communications?.[ 0 ].message ).toBe( 'hello' )
+        expect( model.criticality?.value ).toBe( 'HIGH' )
+        expect( model.lastCommunication?.message ).toBe( 'hello' )
         expect( model.communications?.[ 0 ].movement?.contentType ).toBe( 'GUEST' )
         expect( communicationModel.alert ).toBeUndefined()
     } )
@@ -295,5 +302,48 @@ describe( 'mappers', () => {
 
         // Assert
         expect( model.groups?.[ 0 ] ).toMatchObject( { id: 'g1', name: 'Wolves', creation: undefined } )
+    } )
+
+    it( 'maps a planned movement with its reason and its participants', () => {
+        // Arrange
+        const dto: PlannedMovementResponseDto = {
+            ...PLANNED_MOVEMENT_DTO,
+            reason: { label: 'Hospital return', value: 'HOSPITAL', kind: 'REASON' },
+        }
+
+        // Act
+        const model: ReturnType<typeof PlannedMovementMapper.toModel> = PlannedMovementMapper.toModel( dto )
+
+        // Assert
+        expect( model.poolName ).toBe( 'Wolves' )
+        expect( model.plannedAt?.time ).toBe( '10:32:00+01:00' )
+        expect( model.reason?.label ).toBe( 'Hospital return' )
+        expect( model.participants[ 0 ].id ).toBe( PARTICIPANT_DTO.id )
+    } )
+
+    it( 'maps a planned movement without reason', () => {
+        // Arrange
+        const dto: PlannedMovementResponseDto = { ...PLANNED_MOVEMENT_DTO, reason: undefined }
+
+        // Act
+        const model: ReturnType<typeof PlannedMovementMapper.toModel> = PlannedMovementMapper.toModel( dto )
+
+        // Assert
+        expect( model.reason ).toBeUndefined()
+    } )
+
+    it( 'copies the levels and the rule of the alert criticality metadata', () => {
+        // Arrange
+        const dto: AlertCriticalityMetadataResponseDto = {
+            levels: [ { label: 'Recent', value: 'RECENT' as never }, { label: 'High', value: 'HIGH' as never } ],
+            rule: 'Recent under 6 h, high over 18 h',
+        }
+
+        // Act
+        const model: ReturnType<typeof AlertCriticalityMetadataMapper.toModel> = AlertCriticalityMetadataMapper.toModel( dto )
+
+        // Assert
+        expect( model ).toEqual( dto )
+        expect( model.levels ).not.toBe( undefined )
     } )
 } )

@@ -1,0 +1,10 @@
+{
+  "title": "Informations du projet",
+  "name": "Nom du projet",
+  "period": "Période",
+  "periodValue": "Du {{begin}} au {{end}}",
+  "status": "statut calculé : {{status}}",
+  "options": "Options du projet",
+  "noOptions": "Aucune option",
+  "edit": "Modifier…"
+}

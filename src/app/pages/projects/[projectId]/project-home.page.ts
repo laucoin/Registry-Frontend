@@ -1,4 +1,6 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, inject, Signal } from '@angular/core'
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, Signal } from '@angular/core'
+import { CurrentUserHelper } from "@core/authentication/tool/current-user.helper";
+import { ProjectAuthorityEnum } from "@shared/models/enumeration/project-authority.enum";
 import { SessionFacade } from "@core/registry/state/session.facade";
 import { provideTranslocoScope, TranslocoPipe } from "@jsverse/transloco";
 import { ProjectOptionEnum } from "@shared/models/enumeration/project-option.enum";
@@ -52,6 +54,11 @@ export class ProjectHomePage {
 
 	protected readonly project: Signal<ProjectModel | undefined> = this.sessionFacade.selectedProject
 	protected readonly hasVehicleOption: Signal<boolean> = this.sessionFacade.selectedProjectHasOption(ProjectOptionEnum.VEHICLE)
+	protected readonly canSeePlannedMovements: Signal<boolean> = computed((): boolean => CurrentUserHelper.hasProjectAuthority(
+		this.sessionFacade.currentUser(),
+		this.sessionFacade.currentProjectId(),
+		ProjectAuthorityEnum.REGISTRY_PROJECT_MOVEMENT_C,
+	))
 	protected readonly hasAlertOption: Signal<boolean> = this.sessionFacade.selectedProjectHasOption(ProjectOptionEnum.ALERT)
 
 	// protected readonly tabParam: string = 'tab'

@@ -13,6 +13,7 @@ import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
 import { metadataFetcher, pageFetcher, paramsUpdater, withEmptyOption } from '@shared/helpers/store/paged-store.methods'
 import { withProfileScope } from '@shared/helpers/store/with-profile-scope.feature'
 import { AlertStatusEnum } from '@shared/models/enumeration/alert-status.enum'
+import { AlertCriticalityMetadataModel } from '@shared/models/model/alert-criticality-metadata.model'
 import { AlertModel } from '@shared/models/model/alert.model'
 import { AlertPageParamsModel } from '@shared/models/model/alert-page-params.model'
 
@@ -33,6 +34,7 @@ const defaultAlertStore: AlertStoreModel = {
         isVisible: undefined,
         from: undefined,
         to: undefined,
+        sort: undefined,
     } ),
     communications: PageStateHelper.initial<CommunicationPageParamsModel, CommunicationModel>( {
         resetSearch: false,
@@ -43,6 +45,7 @@ const defaultAlertStore: AlertStoreModel = {
     } ),
     metadata: {
         status: [],
+        criticality: undefined,
         visibilities: [
             { label: '-', value: undefined },
             { label: 'alerts.visible.true', value: true },
@@ -59,7 +62,7 @@ const defaultAlertStore: AlertStoreModel = {
 export const AlertStore = signalStore(
     withState<AlertStoreModel>( defaultAlertStore ),
     withProfileScope<AlertStoreModel>( defaultAlertStore, (current: AlertStoreModel): Partial<AlertStoreModel> => ({
-        metadata: { ...defaultAlertStore.metadata, status: current.metadata.status },
+        metadata: { ...defaultAlertStore.metadata, status: current.metadata.status, criticality: current.metadata.criticality },
     }) ),
     withMethods( (store, api = inject( AlertApi ), metadataApi = inject( MetadataApi ), errors = inject( ErrorReporter )) => ({
         fetchAlertStatus: metadataFetcher<AlertStoreModel, 'status', void, SelectOptionModel<AlertStatusEnum>[]>(
@@ -67,12 +70,15 @@ export const AlertStore = signalStore(
         ),
         fetchAlertsPage: pageFetcher( store, 'alerts', (request: AlertsPageRequest, params: AlertPageParamsModel) =>
             api.findAlerts( request.projectId, request.page, request.size, params ), errors, { merge: CumulativePageHelper.merge } ),
+        fetchAlertCriticality: metadataFetcher<AlertStoreModel, 'criticality', void, AlertCriticalityMetadataModel>(
+            store, 'criticality', () => metadataApi.getAlertCriticality(),
+        ),
         updateAlertsPageSearchParams: paramsUpdater( store, 'alerts' ),
         fetchAlertCommunicationsPage: pageFetcher( store, 'communications', (request: AlertCommunicationsPageRequest, params: CommunicationPageParamsModel) =>
             api.findAlertCommunications( request.projectId, request.id, request.page, request.size, params ), errors ),
         updateAlertCommunicationsPageSearchParams: paramsUpdater( store, 'communications' ),
     }) ),
     withHooks( {
-        onInit: (store): void => refreshOnLanguageChange( store.fetchAlertStatus ),
+        onInit: (store): void => refreshOnLanguageChange( store.fetchAlertStatus, store.fetchAlertCriticality ),
     } ),
 )

@@ -18,7 +18,6 @@ import { vehicleOptionGuard, activityOptionGuard } from '@core/authentication/gu
 export const configurationRoutes: Routes = [
     {
         path: '',
-        component: ConfigurationPage,
         children: [
             {
                 path: '', component: ConfigurationPage,

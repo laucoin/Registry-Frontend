@@ -28,6 +28,7 @@ import { GenericModel } from '@shared/models/model/generic.model'
 import { NotificationModel } from '@shared/models/model/notification.model'
 import { PageEventModel } from '@shared/models/model/page-event.model'
 import { PageModel } from '@shared/models/model/page.model'
+import { LoadMoreComponent } from '@shared/ui/common/load-more/load-more.component'
 import { SectionErrorComponent } from '@shared/ui/common/section-error/section-error.component'
 
 const DEFAULT_PAGE_SIZE: number = 20
@@ -40,7 +41,7 @@ const SKELETON_ROWS: number = 6
  */
 @Component({
 	selector: 'app-list',
-	imports: [NgTemplateOutlet, TranslocoPipe, DateFormatPipe, SectionErrorComponent],
+	imports: [NgTemplateOutlet, TranslocoPipe, DateFormatPipe, SectionErrorComponent, LoadMoreComponent],
 	schemas: [CUSTOM_ELEMENTS_SCHEMA],
 	templateUrl: './list.component.html',
 })
@@ -53,6 +54,7 @@ export class ListComponent<T extends GenericModel> {
 	public readonly loadingMore: InputSignal<boolean> = input(false)
 	public readonly activeFilters: InputSignal<number> = input(0)
 	public readonly emptyMessagePrefix: InputSignal<string> = input('global.notifications.EMPTY')
+	public readonly label: InputSignal<string | undefined> = input()
 
 	public readonly updateRequired: OutputEmitterRef<PageEventModel> = output()
 	public readonly filtersReset: OutputEmitterRef<void> = output()

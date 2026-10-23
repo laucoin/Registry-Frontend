@@ -212,8 +212,6 @@ type ElementBlock = ElementRequestInformationModel<unknown>
 
 export const CONTENTS_SECTION: string = 'contents'
 
-export const BIRTHDAYS_SECTION: string = 'birthdays'
-
 export const contentsSection = (block: string): string => `${CONTENTS_SECTION}.${block}`
 
 export const metadataSection = (field: string): string => `metadata.${field}`

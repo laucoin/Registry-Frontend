@@ -16,18 +16,20 @@ describe( 'AlertStore', () => {
     let findAlerts: Mock<AlertApi['findAlerts']>
     let findAlertCommunications: Mock<AlertApi['findAlertCommunications']>
     let getAlertsStatus: Mock<MetadataApi['getAlertsStatus']>
+    let getAlertCriticality: Mock<MetadataApi['getAlertCriticality']>
     let langChanges: Subject<string>
 
     beforeEach( () => {
         findAlerts = vi.fn()
         findAlertCommunications = vi.fn()
         getAlertsStatus = vi.fn( () => of( [ { label: 'In progress', value: AlertStatusEnum.IN_PROGRESS } ] ) )
+        getAlertCriticality = vi.fn( () => of( { levels: [], rule: 'Aging rule' } ) )
         langChanges = new Subject<string>()
         TestBed.configureTestingModule( {
             providers: [
                 AlertStore,
                 { provide: AlertApi, useValue: { findAlerts, findAlertCommunications } },
-                { provide: MetadataApi, useValue: { getAlertsStatus } },
+                { provide: MetadataApi, useValue: { getAlertsStatus, getAlertCriticality } },
                 { provide: ErrorReporter, useValue: { notify: vi.fn() } },
                 { provide: TranslocoService, useValue: { langChanges$: langChanges.asObservable() } },
             ],
@@ -58,6 +60,29 @@ describe( 'AlertStore', () => {
         // Assert
         expect( callsAfterInitial ).toBe( 1 )
         expect( getAlertsStatus ).toHaveBeenCalledTimes( 2 )
+    } )
+
+    it( 'loads the alert criticality rule on init and again when the language changes', () => {
+        // Arrange
+        langChanges.next( 'fr' )
+
+        // Act
+        langChanges.next( 'en' )
+
+        // Assert
+        expect( store.metadata.criticality()?.rule ).toBe( 'Aging rule' )
+        expect( getAlertCriticality ).toHaveBeenCalledTimes( 2 )
+    } )
+
+    it( 'keeps a failed criticality fetch in the section errors', () => {
+        // Arrange
+        getAlertCriticality.mockReturnValue( failing( ERROR_500 ) )
+
+        // Act
+        store.fetchAlertCriticality()
+
+        // Assert
+        expect( store.sectionErrors()[ 'metadata.criticality' ]?.summary ).toBe( 'Title' )
     } )
 
     it( 'stores the fetched alerts page', () => {

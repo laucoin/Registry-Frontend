@@ -13,9 +13,9 @@ import { VehicleStatusModel } from '@shared/models/model/vehicle-status.model'
 import { SelectedProjectFacade } from '@pages/projects/data/state/selected-project/selected-project.facade'
 import { SelectedProjectStore } from '@pages/projects/data/state/selected-project/selected-project.store'
 import { pageOf, projectOptionChecker } from '@shared/helpers/testing/test-fixtures'
-import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
 import { AlertModel } from '@shared/models/model/alert.model'
 import { MovementModel } from '@shared/models/model/movement.model'
+import { ParticipantModel } from '@shared/models/model/participant.model'
 import { ProjectModel } from '@shared/models/model/project.model'
 
 describe( 'SelectedProjectFacade', () => {
@@ -24,6 +24,8 @@ describe( 'SelectedProjectFacade', () => {
     let findParticipantsStatus: Mock<MovementApi['findParticipantsStatus']>
     let findVehiclesStatus: Mock<MovementApi['findVehiclesStatus']>
     let findParticipantsBirthdays: Mock<ParticipantApi['findParticipantsBirthdays']>
+    let findPlannedArrivals: Mock<MovementApi['findPlannedArrivals']>
+    let findPlannedDepartures: Mock<MovementApi['findPlannedDepartures']>
     let findAlerts: Mock<AlertApi['findAlerts']>
     let selectedProject: WritableSignal<ProjectModel | undefined>
 
@@ -32,15 +34,17 @@ describe( 'SelectedProjectFacade', () => {
         findParticipantsStatus = vi.fn( () => of( { guests: 1 } as unknown as ProjectStatusModel ) )
         findVehiclesStatus = vi.fn( () => of( { total: 1 } as unknown as VehicleStatusModel ) )
         findParticipantsBirthdays = vi.fn( () => of( [] ) )
+        findPlannedArrivals = vi.fn( () => of( [] ) )
+        findPlannedDepartures = vi.fn( () => of( [] ) )
         findAlerts = vi.fn( () => of( pageOf<AlertModel>( [] ) ) )
         selectedProject = signal<ProjectModel | undefined>( { id: 'p1', options: [] } as unknown as ProjectModel )
         TestBed.configureTestingModule( {
             providers: [
                 SelectedProjectFacade,
                 SelectedProjectStore,
-                { provide: MovementApi, useValue: { findMovements, findParticipantsStatus, findVehiclesStatus, findMovementsContents: vi.fn( () => of( [] ) ) } },
+                { provide: MovementApi, useValue: { findPlannedArrivals, findPlannedDepartures, findMovements, findParticipantsStatus, findVehiclesStatus, findMovementsContents: vi.fn( () => of( [] ) ) } },
                 { provide: AlertApi, useValue: { findAlerts } },
-                { provide: ParticipantApi, useValue: { findParticipantsBirthdays } },
+                { provide: ParticipantApi, useValue: { findParticipantsBirthdays, findParticipants: vi.fn( () => of( pageOf<ParticipantModel>( [ { id: 'pa1' } as ParticipantModel ] ) ) ) } },
                 { provide: SessionFacade, useValue: { currentProjectId: signal( 'p1' ), selectedProject, selectedProjectHasOption: projectOptionChecker( selectedProject ) } },
                 { provide: UiFacade, useValue: { notify: vi.fn() } },
                 { provide: TranslocoService, useValue: { translate: (key: string): string => key } },
@@ -49,40 +53,15 @@ describe( 'SelectedProjectFacade', () => {
         facade = TestBed.inject( SelectedProjectFacade )
     } )
 
-    it( 'loads the participants status and birthdays of the selected project', () => {
+    it( 'fetches the participants status on demand', () => {
         // Arrange
         const expectedProjectId: string = 'p1'
 
         // Act
-        facade.loadProjectHomeInformation()
+        facade.fetchParticipantsStatus()
 
         // Assert
         expect( findParticipantsStatus ).toHaveBeenCalledWith( expectedProjectId )
-        expect( findParticipantsBirthdays ).toHaveBeenCalledWith( expectedProjectId )
-        expect( facade.participantsStatus()?.guests ).toBe( 1 )
-    } )
-
-    it( 'skips the vehicles status when the project does not have the vehicle option', () => {
-        // Arrange
-        selectedProject.set( { id: 'p1', options: [ { label: 'Alerts', value: ProjectOptionEnum.ALERT } ] } as unknown as ProjectModel )
-
-        // Act
-        facade.loadProjectHomeInformation()
-
-        // Assert
-        expect( findVehiclesStatus ).not.toHaveBeenCalled()
-    } )
-
-    it( 'loads the vehicles status when the project has the vehicle option', () => {
-        // Arrange
-        selectedProject.set( { id: 'p1', options: [ { label: 'Vehicles', value: ProjectOptionEnum.VEHICLE } ] } as unknown as ProjectModel )
-
-        // Act
-        facade.loadProjectHomeInformation()
-
-        // Assert
-        expect( findVehiclesStatus ).toHaveBeenCalledWith( 'p1' )
-        expect( facade.vehiclesStatus() ).toBeDefined()
     } )
 
     it( 'fetches the vehicles status on demand', () => {

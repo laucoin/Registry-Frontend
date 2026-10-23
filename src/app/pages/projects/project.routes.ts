@@ -15,7 +15,13 @@ import { SelectedProjectFacade } from '@pages/projects/data/state/selected-proje
 import { SelectedProjectStore } from '@pages/projects/data/state/selected-project/selected-project.store'
 import { ParticipantFacade } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.facade'
 import { ParticipantStore } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.store'
-import { alertOptionGuard } from '@core/authentication/guard/project-option.guard'
+import { GroupStatusFacade } from '@pages/projects/[projectId]/participants/data/state/group-status.facade'
+import { GroupStatusStore } from '@pages/projects/[projectId]/participants/data/state/group-status.store'
+import { VehicleFacade } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.facade'
+import { VehicleStore } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.store'
+import { ParticipantsMonitoringPage } from '@pages/projects/[projectId]/participants/participants-monitoring.page'
+import { VehiclesMonitoringPage } from '@pages/projects/[projectId]/vehicles/vehicles-monitoring.page'
+import { alertOptionGuard, vehicleOptionGuard } from '@core/authentication/guard/project-option.guard'
 import { AlertStore } from '@pages/projects/[projectId]/alerts/data/state/alert.store'
 import { AlertFacade } from '@pages/projects/[projectId]/alerts/data/state/alert.facade'
 import { AlertsListPage } from '@pages/projects/[projectId]/alerts/alerts-list/alerts-list.page'
@@ -62,6 +68,17 @@ export const projectRoutes: Routes = [
                         component: AlertsListPage,
                         canActivate: [ alertOptionGuard ],
                         providers: [ CommunicationFacade, CommunicationStore, AlertFacade, AlertStore ],
+                    },
+                    {
+                        path: ProjectRoutesEnum.PARTICIPANTS,
+                        component: ParticipantsMonitoringPage,
+                        providers: [ SelectedProjectFacade, SelectedProjectStore, ParticipantFacade, ParticipantStore, GroupStatusFacade, GroupStatusStore ],
+                    },
+                    {
+                        path: ProjectRoutesEnum.VEHICLES,
+                        component: VehiclesMonitoringPage,
+                        canActivate: [ vehicleOptionGuard ],
+                        providers: [ SelectedProjectFacade, SelectedProjectStore, VehicleFacade, VehicleStore ],
                     },
                     {
                         path: ProjectRoutesEnum.CONFIGURATION,

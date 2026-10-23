@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core'
-import {Observable} from 'rxjs'
+import {map, Observable} from 'rxjs'
 import {GenericApi} from '@shared/helpers/api/generic.api'
 import {SelectOptionModel} from '@shared/models/model/select-option.model'
 import {MovementTypeEnum} from '@shared/models/enumeration/movement-type.enum'
@@ -7,6 +7,9 @@ import {ParticipantTypeEnum} from '@shared/models/enumeration/participant-type.e
 import {ProfileStatusEnum} from '@shared/models/enumeration/profile-status.enum'
 import {PresenceStatusEnum} from '@shared/models/enumeration/presence-status.enum'
 import {AlertStatusEnum} from '@shared/models/enumeration/alert-status.enum'
+import { AlertCriticalityMetadataMapper } from '@shared/mappers/alert-criticality-metadata.mapper'
+import { AlertCriticalityMetadataResponseDto } from '@shared/models/dto/response/alert-criticality-metadata.response.dto'
+import { AlertCriticalityMetadataModel } from '@shared/models/model/alert-criticality-metadata.model'
 
 /**
  * Purpose: Sends the HTTP requests of the metadata domain.
@@ -35,6 +38,12 @@ export class MetadataApi extends GenericApi {
 
     public getParticipantsTypes(): Observable<SelectOptionModel<ParticipantTypeEnum>[]> {
         return this.http.get<SelectOptionModel<ParticipantTypeEnum>[]>(`${this.baseUrl}/participants/types`)
+    }
+
+    public getAlertCriticality(): Observable<AlertCriticalityMetadataModel> {
+        return this.http.get<AlertCriticalityMetadataResponseDto>(`${this.baseUrl}/alerts/criticality`).pipe(
+            map( AlertCriticalityMetadataMapper.toModel ),
+        )
     }
 
     public getAlertsStatus(): Observable<SelectOptionModel<AlertStatusEnum>[]> {

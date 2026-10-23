@@ -4,5 +4,7 @@ export enum ProjectRoutesEnum {
     EDIT = 'edit',
     MOVEMENTS = 'movements',
     ALERTS = 'alerts',
+    PARTICIPANTS = 'participants',
+    VEHICLES = 'vehicles',
     CONFIGURATION = 'configuration',
 }

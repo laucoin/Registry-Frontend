@@ -39,12 +39,13 @@ import { ListComponent } from '@shared/ui/common/list/list.component'
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     templateUrl: './invitations-list.page.html',
+    styles: ':host { display: block; width: 100%; }',
 })
 export class InvitationsListPage {
     protected readonly userProfileFacade: UserProfileFacade = inject(UserProfileFacade)
 
     protected readonly createRoute: string = `/${RegistryRouteEnum.PROJECTS_CREATION}`
-    protected readonly profilesRoute: string = `/${RegistryRouteEnum.USERS_PROFILES}`
+    protected readonly profilesRoute: string = `/${RegistryRouteEnum.MY_ACCOUNT_PROJECTS}`
 
     protected readonly activeFilters: Signal<number> = computed((): number => [
         StringHelper.isNotNullNorBlank(this.userProfileFacade.userProjectProfileInvitationsPageQueryParam()),

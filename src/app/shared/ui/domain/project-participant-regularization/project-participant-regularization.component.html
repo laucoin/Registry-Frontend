@@ -3,31 +3,50 @@
         <sgdf-table-cell header class="flex items-center gap-1">
             <sgdf-icon name="clock" library="solid"/>
             <h2 class="text-sm font-semibold uppercase">{{ 'projectHome.participantRegularization.title' | transloco }}</h2>
-            <sgdf-tag class="ml-auto" size="small" variant="info" appearance="soft">{{ participants.length }}</sgdf-tag>
+            @if (total() !== undefined) {
+                <sgdf-tag class="ml-auto" size="small" variant="info" appearance="soft">{{ 'projectHome.participantRegularization.total' | pluralTranslation: total() | transloco: { count: total() } }}</sgdf-tag>
+            }
         </sgdf-table-cell>
     </sgdf-table-row>
 
     <sgdf-table-row>
         <sgdf-table-cell class="h-full p-0 align-top">
-            <sgdf-list appearance="text" [label]="'projectHome.participantRegularization.title' | transloco">
-                @for (participant of participants; track participant.name) {
-                    <sgdf-list-item>
-                        <sgdf-avatar slot="start" variant="warning" aria-hidden="true">
-                            <sgdf-icon slot="icon" name="clock" library="solid"/>
-                        </sgdf-avatar>
-                        {{ participant.name }}
-                        <span slot="description" class="text-xs">{{ participant.detail }}</span>
-                    </sgdf-list-item>
-                }
-            </sgdf-list>
+            @if (error(); as failure) {
+                <app-section-error [error]="failure" [retrying]="loading()" (retry)="reload()"/>
+            }
+
+            @if (loading() && total() === undefined) {
+                <sgdf-list appearance="text" aria-busy="true" [label]="'global.list.loading' | transloco">
+                    @for (row of skeletonRows; track row) {
+                        <sgdf-list-item>
+                            <sgdf-skeleton slot="start" shape="circle" effect="pulse" style="width: 2.5rem; height: 2.5rem"/>
+                            <sgdf-skeleton shape="rounded" effect="pulse" style="width: 50%; height: 1rem"/>
+                        </sgdf-list-item>
+                    }
+                </sgdf-list>
+            } @else if (total() === 0) {
+                <p class="m-4 text-sm opacity-80">{{ 'projectHome.participantRegularization.empty' | transloco }}</p>
+            } @else if (total() !== undefined) {
+                <sgdf-list appearance="text" [label]="'projectHome.participantRegularization.title' | transloco">
+                    @for (participant of participants(); track participant.id) {
+                        <sgdf-list-item appRegularizationRow [participant]="participant"/>
+                    }
+                </sgdf-list>
+            }
         </sgdf-table-cell>
     </sgdf-table-row>
 
     <sgdf-table-row>
         <sgdf-table-cell class="align-bottom">
-            <sgdf-button block size="small" appearance="text">
-                {{ 'projectHome.participantRegularization.seeAll' | transloco }}
+            <sgdf-button block size="small" appearance="text" (click)="listOpen.set(true)">
+                @if (remaining() > 0) {
+                    {{ 'projectHome.participantRegularization.seeRemaining' | pluralTranslation: remaining() | transloco: { count: remaining() } }}
+                } @else {
+                    {{ 'projectHome.participantRegularization.seeAll' | transloco }}
+                }
             </sgdf-button>
         </sgdf-table-cell>
     </sgdf-table-row>
 </sgdf-table>
+
+<app-overdue-participants-dialog [(open)]="listOpen"/>

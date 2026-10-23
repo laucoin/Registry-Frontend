@@ -1,10 +1,11 @@
 :host {
   display: block;
+  font-weight: var(--sgdf-font-weight-normal);
 }
 
 .message {
   display: flex;
-  align-items: flex-end;
+  align-items: flex-start;
   gap: var(--sgdf-spacing-x-small);
   margin-block-start: var(--sgdf-spacing-small);
 }
@@ -24,39 +25,46 @@
 }
 
 .bubble {
-  max-width: min(85%, 32rem);
+  max-width: min(80%, 26rem);
   min-width: 0;
   padding: var(--sgdf-spacing-x-small) var(--sgdf-spacing-small);
+  border: 1px solid var(--sgdf-color-border);
   border-radius: var(--sgdf-border-radius-large);
-  background: var(--sgdf-color-bg-neutral);
+  background: var(--sgdf-color-bg-default);
   color: var(--sgdf-color-text-default);
+  font-weight: var(--sgdf-font-weight-normal);
+  line-height: 1.5;
 }
 
 .own .bubble {
-  --icon-button-color: var(--sgdf-color-on-default);
-  --icon-button-color-hover: var(--sgdf-color-on-default);
-  background: var(--sgdf-color-bg-primary);
-  color: var(--sgdf-color-on-default);
+  border-color: transparent;
+  background: var(--sgdf-color-bg-secondary);
 }
 
-.bubble.tail {
-  border-end-start-radius: var(--sgdf-border-radius-small);
+.message:not(.own) .bubble.first {
+  border-start-start-radius: var(--sgdf-border-radius-small);
 }
 
-.own .bubble.tail {
-  border-end-start-radius: var(--sgdf-border-radius-large);
-  border-end-end-radius: var(--sgdf-border-radius-small);
+.own .bubble.first {
+  border-start-end-radius: var(--sgdf-border-radius-small);
 }
 
 .hidden-message {
-  border: 1px dashed currentColor;
+  border-style: dashed;
+  opacity: 0.85;
+}
+
+.hidden-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sgdf-spacing-2x-small);
+  font-size: var(--sgdf-text-sm);
+  font-weight: var(--sgdf-font-weight-semibold);
 }
 
 .author {
-  font-size: var(--sgdf-text-xs);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
+  font-size: var(--sgdf-text-sm);
+  font-weight: var(--sgdf-font-weight-semibold);
 }
 
 .quote {
@@ -74,18 +82,27 @@
 }
 
 .quote-title {
-  font-weight: 700;
+  font-weight: var(--sgdf-font-weight-semibold);
+}
+
+.quote-title.untitled {
+  font-style: italic;
+  font-weight: var(--sgdf-font-weight-normal);
+  color: var(--sgdf-color-text-light);
 }
 
 .content {
+  font-weight: var(--sgdf-font-weight-normal);
   overflow-wrap: anywhere;
   white-space: pre-wrap;
 }
 
 .meta {
+  font-weight: var(--sgdf-font-weight-normal);
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: var(--sgdf-spacing-2x-small);
   font-size: var(--sgdf-text-xs);
+  color: var(--sgdf-color-text-light);
 }

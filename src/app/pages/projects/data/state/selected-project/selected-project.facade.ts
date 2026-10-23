@@ -10,8 +10,8 @@ import { SessionFacade } from '@core/registry/state/session.facade'
 import { GenericFacade } from '@shared/helpers/facade/generic.facade'
 import { SelectedProjectStore } from '@pages/projects/data/state/selected-project/selected-project.store'
 import { ParticipantModel } from '@shared/models/model/participant.model'
-import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
 import { AlertModel } from '@shared/models/model/alert.model'
+import { PlannedMovementModel } from '@shared/models/model/planned-movement.model'
 import { CumulativePageHelper } from '@shared/helpers/store/cumulative-page.helper'
 
 /**
@@ -23,10 +23,6 @@ import { CumulativePageHelper } from '@shared/helpers/store/cumulative-page.help
 export class SelectedProjectFacade extends GenericFacade {
     private readonly sessionFacade: SessionFacade = inject( SessionFacade )
     private readonly store: InstanceType<typeof SelectedProjectStore> = inject( SelectedProjectStore )
-
-    private readonly hasVehicleOption: Signal<boolean> = this.sessionFacade.selectedProjectHasOption( ProjectOptionEnum.VEHICLE )
-
-    public readonly participantsBirthdaysError: Signal<NotificationModel | undefined> = SectionErrorsHelper.of( this.store.sectionErrors, 'birthdays' )
 
     public readonly currentMovementsWithoutActivityContentsError: Signal<NotificationModel | undefined> = SectionErrorsHelper.of( this.store.sectionErrors, 'contents.withoutActivity' )
 
@@ -44,7 +40,11 @@ export class SelectedProjectFacade extends GenericFacade {
 
     public readonly vehiclesStatusError: Signal<NotificationModel | undefined> = this.store.status.vehicles.error
 
-    public readonly participantsBirthdays: Signal<ParticipantModel[]> = this.store.birthdays
+    public readonly participantsBirthdays: Signal<ParticipantModel[] | undefined> = this.store.birthdays.element
+
+    public readonly participantsBirthdaysLoading: Signal<boolean> = this.store.birthdays.loading
+
+    public readonly participantsBirthdaysError: Signal<NotificationModel | undefined> = this.store.birthdays.error
 
     public readonly currentMovementsPageWithoutActivityLoading: Signal<boolean> = this.store.isCurrent.withoutActivity.loading
 
@@ -78,17 +78,60 @@ export class SelectedProjectFacade extends GenericFacade {
             DateHelper.buildDate( this.store.isCurrent.withActivity.params.to() ),
         )
 
+    public readonly plannedArrivals: Signal<PlannedMovementModel[] | undefined> = this.store.arrivals.element
+
+    public readonly plannedArrivalsLoading: Signal<boolean> = this.store.arrivals.loading
+
+    public readonly plannedArrivalsError: Signal<NotificationModel | undefined> = this.store.arrivals.error
+
+    public readonly plannedDepartures: Signal<PlannedMovementModel[] | undefined> = this.store.departures.element
+
+    public readonly plannedDeparturesLoading: Signal<boolean> = this.store.departures.loading
+
+    public readonly plannedDeparturesError: Signal<NotificationModel | undefined> = this.store.departures.error
+
+    public readonly overdueParticipantsPage: Signal<PageModel<ParticipantModel> | undefined> = this.store.overdue.element
+
+    public readonly overdueParticipantsPageLoading: Signal<boolean> = this.store.overdue.loading
+
+    public readonly overdueParticipantsPageError: Signal<NotificationModel | undefined> = this.store.overdue.error
+
+    public readonly overdueParticipantsListPage: Signal<PageModel<ParticipantModel> | undefined> = this.store.overdueList.element
+
+    public readonly overdueParticipantsListLoading: Signal<boolean> = this.store.overdueList.loading
+
+    public readonly overdueParticipantsListSilentLoading: Signal<boolean> = this.store.overdueList.silentLoading
+
+    public readonly overdueParticipantsListError: Signal<NotificationModel | undefined> = this.store.overdueList.error
+
+    public readonly currentAlertsPageLoading: Signal<boolean> = this.store.alerts.loading
+
     public readonly currentAlertsPageError: Signal<NotificationModel | undefined> = this.store.alerts.error
 
     public readonly currentAlertsPage: Signal<PageModel<AlertModel> | undefined> = this.store.alerts.element
 
-    public loadProjectHomeInformation (): void {
-        const projectId: string | undefined = this.selectedProjectId()
-        this.store.fetchParticipantsStatus( projectId )
-        this.store.fetchParticipantsBirthdays( projectId )
-        if (this.hasVehicleOption()) {
-            this.store.fetchVehiclesStatus( projectId )
-        }
+    public fetchOverdueParticipantsPage (page: number | undefined, size: number | undefined): void {
+        this.store.fetchOverduePage( { projectId: this.selectedProjectId(), page: page, size: size } )
+    }
+
+    public fetchOverdueParticipantsListPage (page: number | undefined, size: number | undefined): void {
+        this.store.fetchOverdueListPage( { projectId: this.selectedProjectId(), page: page, size: size } )
+    }
+
+    public fetchPlannedArrivals (): void {
+        this.store.fetchPlannedArrivals( this.selectedProjectId() )
+    }
+
+    public fetchPlannedDepartures (): void {
+        this.store.fetchPlannedDepartures( this.selectedProjectId() )
+    }
+
+    public fetchParticipantsStatus (): void {
+        this.store.fetchParticipantsStatus( this.selectedProjectId() )
+    }
+
+    public fetchParticipantsBirthdays (): void {
+        this.store.fetchParticipantsBirthdays( this.selectedProjectId() )
     }
 
     public fetchVehiclesStatus (): void {
