@@ -1,6 +1,6 @@
 import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, OnDestroy, signal, Signal, WritableSignal } from '@angular/core'
 import { FieldTree, FormField } from '@angular/forms/signals'
-import { ActivatedRoute } from '@angular/router'
+import { ActivatedRoute, ParamMap } from '@angular/router'
 import { TranslocoPipe } from '@jsverse/transloco'
 import '@sgdf/ui/button'
 import '@sgdf/ui/date-time-picker'
@@ -10,7 +10,7 @@ import '@sgdf/ui/option'
 import '@sgdf/ui/page-title'
 import '@sgdf/ui/select'
 import '@sgdf/ui/skeleton'
-import { Subscription, tap } from 'rxjs'
+import { distinctUntilChanged, map, Subscription, tap } from 'rxjs'
 import { ParticipantFacade } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.facade'
 import {
     ParticipantMovementsListSearchModel,
@@ -80,7 +80,12 @@ export class ParticipantMovementsListPage implements OnDestroy {
     protected readonly form: FieldTree<ParticipantMovementsListSearchModel> = createSearchForm(this.model)
 
     public constructor() {
-        this.loadData()
+        this.subscriptions.add(
+            this.route.paramMap.pipe(
+                map((params: ParamMap): string | null => params.get('participantId')),
+                distinctUntilChanged(),
+            ).subscribe((): void => this.loadData()),
+        )
         this.handleMovementActions()
     }
 

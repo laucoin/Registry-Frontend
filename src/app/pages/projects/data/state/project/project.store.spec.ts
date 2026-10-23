@@ -57,8 +57,11 @@ describe( 'ProjectStore', () => {
     } )
 
     it( 'ignores a favorite change when no page is shown', () => {
+        // Arrange
+        const projectId: string = 'p1'
+
         // Act
-        store.setProjectFavorite( 'p1', true )
+        store.setProjectFavorite( projectId, true )
 
         // Assert
         expect( store.projects.element() ).toBeUndefined()

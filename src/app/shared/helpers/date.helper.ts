@@ -62,30 +62,14 @@ export class DateHelper {
     }
 
     public static isBefore (actual: Date | undefined, other: Date | undefined): boolean {
-        switch (true) {
-            case GenericHelper.isNull( other ):
-                return false
-            case GenericHelper.isNull( actual ) || new Date( actual! ).getTime() < new Date( other! ).getTime():
-                return true
-            default:
-                return false
-        }
+        return DateHelper.compareWith( actual, other, (a: Date, o: Date): boolean => new Date( a ).getTime() < new Date( o ).getTime() )
     }
 
     public static isBeforeOrEqual (
         actual: CustomDatetimeModel | undefined,
         other: CustomDatetimeModel | undefined,
     ): boolean {
-        const actualDate: number | undefined = DateHelper.toDate( actual )?.getTime()
-        const otherDate: number | undefined = DateHelper.toDate( other )?.getTime()
-        switch (true) {
-            case GenericHelper.isNull( other ):
-                return false
-            case GenericHelper.isNull( actual ) || actualDate! <= otherDate!:
-                return true
-            default:
-                return false
-        }
+        return DateHelper.compareWith( actual, other, (a: CustomDatetimeModel, o: CustomDatetimeModel): boolean => ( DateHelper.toDate( a )?.getTime() ?? NaN ) <= ( DateHelper.toDate( o )?.getTime() ?? NaN ) )
     }
 
     public static isCustomDateAfter (
@@ -96,30 +80,20 @@ export class DateHelper {
     }
 
     public static isAfter (actual: Date | undefined, other: Date | undefined): boolean {
-        switch (true) {
-            case GenericHelper.isNull( other ):
-                return false
-            case GenericHelper.isNull( actual ) || new Date( actual! ).getTime()! > new Date( other! ).getTime()!:
-                return true
-            default:
-                return false
-        }
+        return DateHelper.compareWith( actual, other, (a: Date, o: Date): boolean => new Date( a ).getTime() > new Date( o ).getTime() )
     }
 
     public static isAfterOrEqual (
         actual: CustomDatetimeModel | undefined,
         other: CustomDatetimeModel | undefined,
     ): boolean {
-        const actualDate: number | undefined = DateHelper.toDate( actual )?.getTime()
-        const otherDate: number | undefined = DateHelper.toDate( other )?.getTime()
-        switch (true) {
-            case GenericHelper.isNull( other ):
-                return false
-            case GenericHelper.isNull( actual ) || actualDate! >= otherDate!:
-                return true
-            default:
-                return false
-        }
+        return DateHelper.compareWith( actual, other, (a: CustomDatetimeModel, o: CustomDatetimeModel): boolean => ( DateHelper.toDate( a )?.getTime() ?? NaN ) >= ( DateHelper.toDate( o )?.getTime() ?? NaN ) )
+    }
+
+    // Nothing to compare against never matches; a missing value always matches.
+    private static compareWith<T> (actual: T | undefined, other: T | undefined, matches: (actual: T, other: T) => boolean): boolean {
+        if (GenericHelper.isNull( other )) return false
+        return GenericHelper.isNull( actual ) || matches( actual!, other! )
     }
 
     public static toCustomDateTime (date: Date | undefined): CustomDatetimeModel | undefined {
@@ -175,7 +149,7 @@ export class DateHelper {
             formattedValue.setFullYear( 1970, 0, 1 )
         } else {
             const date: Date = DateHelper.fromIsoDate( dateTime?.date )!
-            formattedValue.setFullYear( date.getFullYear(), date.getMonth(), date.getDate() )
+            formattedValue.setFullYear( date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate() )
         }
 
         if (GenericHelper.isNull( dateTime?.time )) {

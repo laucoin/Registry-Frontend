@@ -2,6 +2,7 @@ import { Type } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslocoService } from '@jsverse/transloco'
+import { of } from 'rxjs'
 import { Mock, beforeEach, describe, expect, it, vi } from 'vitest'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { UiFacade } from '@core/registry/state/ui.facade'
@@ -83,7 +84,7 @@ describe( 'batch list pages', () => {
                 ...item.services.map( (service: Type<unknown>) => ({ provide: service, useValue: {} }) ),
                 { provide: TranslocoService, useValue: { translate: (key: string): string => key } },
                 { provide: Router, useValue: { navigateByUrl: vi.fn( () => Promise.resolve( true ) ) } },
-                { provide: ActivatedRoute, useValue: { snapshot: { params: new Proxy( {}, { get: (): string => 'id1' } ) } } },
+                { provide: ActivatedRoute, useValue: { snapshot: { params: new Proxy( {}, { get: (): string => 'id1' } ) }, paramMap: of( { get: (): string => 'id1' } ) } },
             ],
         } )
         TestBed.overrideComponent( item.type, { set: { template: '', imports: [], providers: [] } } )

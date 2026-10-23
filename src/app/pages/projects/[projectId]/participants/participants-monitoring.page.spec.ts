@@ -25,8 +25,8 @@ describe( 'ParticipantsMonitoringPage', () => {
     let groups: Record<string, unknown>
     let participants: Record<string, unknown>
 
-    function create (tab?: string, mine: number = 1, loadedTabs: boolean = true): void {
-        queryParams.next( convertToParamMap( tab ? { tab } : {} ) )
+    function create (tab?: string, mine: number = 1, loadedTabs: boolean = true, status?: string): void {
+        queryParams.next( convertToParamMap( { ...(tab ? { tab } : {}), ...(status ? { status } : {}) } ) )
         myGroupsPage.set( pageOf<GroupModel>( mine > 0 ? [ GROUP ] : [] ) )
         if (loadedTabs) {
             groupsPage.update( (page: PageModel<GroupModel> | undefined): PageModel<GroupModel> => page ?? pageOf<GroupModel>( [] ) )
@@ -144,6 +144,30 @@ describe( 'ParticipantsMonitoringPage', () => {
 
         // Assert
         expect( fixture.componentInstance[ 'activeTab' ]() ).toBe( 'groups' )
+    } )
+
+    it( 'presets the status filter from a known status in the url', () => {
+        // Arrange
+        const status: string = 'OUT'
+
+        // Act
+        create( undefined, 1, true, status )
+
+        // Assert
+        expect( participants[ 'inputPageSearchParameters' ] ).toHaveBeenCalledWith( undefined, 'OUT', undefined )
+        expect( fixture.componentInstance[ 'model' ]().status ).toBe( 'OUT' )
+    } )
+
+    it( 'ignores a status of the url that is not a presence status', () => {
+        // Arrange
+        const status: string = 'UNKNOWN'
+
+        // Act
+        create( undefined, 1, true, status )
+
+        // Assert
+        expect( participants[ 'inputPageSearchParameters' ] ).not.toHaveBeenCalled()
+        expect( fixture.componentInstance[ 'model' ]().status ).toBe( '' )
     } )
 
     it( 'does not load a tab again once it holds a page', () => {

@@ -5,7 +5,7 @@ import '@sgdf/ui/icon'
 import '@sgdf/ui/tag'
 import '@sgdf/ui/button'
 import '@sgdf/ui/skeleton'
-import { ChangeDetectionStrategy, Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit, Signal } from '@angular/core'
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit, Signal } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import { UserProfileFacade } from '@core/registry/state/user-profile.facade'
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
@@ -25,7 +25,6 @@ const PAGE_SIZE: number = 3
  * Limits: Reads the user profile facade only; it shows a few rows and counts the others.
  */
 @Component({
-	changeDetection: ChangeDetectionStrategy.OnPush,
 	selector: 'app-home-invitations',
 	schemas: [CUSTOM_ELEMENTS_SCHEMA],
 	providers: [provideTranslocoScope('home')],

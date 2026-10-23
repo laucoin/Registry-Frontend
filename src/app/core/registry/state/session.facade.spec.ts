@@ -54,6 +54,7 @@ describe( 'SessionFacade', () => {
     let downloadJson: Mock<BrowserService['downloadJson']>
 
     let navigateByUrl: Mock<Router['navigateByUrl']>
+    let currentUrl: string
     let applyLanguage: Mock<LanguageService['apply']>
     let rememberLanguage: Mock<LanguageService['remember']>
     let reload: Mock<() => void>
@@ -81,6 +82,7 @@ describe( 'SessionFacade', () => {
     }
 
     function mockCollaborators (): void {
+        currentUrl = '/current?tab=1#top'
         navigateByUrl = vi.fn( () => Promise.resolve( true ) )
         applyLanguage = vi.fn( () => of( {} ) )
         rememberLanguage = vi.fn()
@@ -110,7 +112,7 @@ describe( 'SessionFacade', () => {
         return [
             { provide: ErrorReporter, useValue: { setGlobalError, notify: vi.fn() } },
             { provide: UiFacade, useValue: { theme, refreshMode, updateRefreshMode, setGlobalError, updateTheme, notify, startLanguageChange, stopLanguageChange } },
-            { provide: BrowserService, useValue: { pathname: '/current', origin: 'http://app.test', redirect, reload, downloadJson } },
+            { provide: BrowserService, useValue: { get relativeUrl (): string { return currentUrl }, pathname: '/current', origin: 'http://app.test', redirect, reload, downloadJson } },
             { provide: Router, useValue: { navigateByUrl } },
             { provide: LanguageService, useValue: { activeLanguage: 'fr', apply: applyLanguage, remember: rememberLanguage } },
             { provide: ProfileResetService, useValue: { resetAll } },
@@ -136,8 +138,20 @@ describe( 'SessionFacade', () => {
             facade.redirectToLogin()
 
             // Assert
-            expect( sessionStorage.getItem( REDIRECT_URI ) ).toBe( '/current' )
+            expect( sessionStorage.getItem( REDIRECT_URI ) ).toBe( '/current?tab=1#top' )
             expect( session.currentUser() ).toBeUndefined()
+            expect( navigateByUrl ).toHaveBeenCalledWith( '/login' )
+        } )
+
+        it.each( [ '/login', '/auth/callback?code=abc' ] )( 'does not remember %s as the page to come back to', (url: string) => {
+            // Arrange
+            currentUrl = url
+
+            // Act
+            facade.redirectToLogin()
+
+            // Assert
+            expect( sessionStorage.getItem( REDIRECT_URI ) ).toBeNull()
             expect( navigateByUrl ).toHaveBeenCalledWith( '/login' )
         } )
     } )
@@ -267,7 +281,7 @@ describe( 'SessionFacade', () => {
             // Assert
             expect( fetchToken ).toHaveBeenCalledWith( expect.objectContaining( { authorizationCode: 'code' } ) )
             expect( session.currentUser() ).toEqual( USER )
-            expect( navigateByUrl ).toHaveBeenCalledWith( '/projects/42' )
+            expect( navigateByUrl ).toHaveBeenCalledWith( '/projects/42', { replaceUrl: true } )
         } )
 
         it( 'falls back to the home page instead of looping on the callback route', () => {
@@ -278,7 +292,7 @@ describe( 'SessionFacade', () => {
             facade.fetchToken( 'code' )
 
             // Assert
-            expect( navigateByUrl ).toHaveBeenCalledWith( '/' )
+            expect( navigateByUrl ).toHaveBeenCalledWith( '/', { replaceUrl: true } )
         } )
 
         it( 'shows the global error when the token exchange fails', () => {

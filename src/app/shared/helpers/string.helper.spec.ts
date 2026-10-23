@@ -58,6 +58,17 @@ describe( 'StringHelper', () => {
         expect( results ).toEqual( [ 12, 34, undefined, undefined ] )
     } )
 
+    it( 'keeps decimals and drops non numeric strings', () => {
+        // Arrange
+        const samples: string[] = [ '1.5', 'abc' ]
+
+        // Act
+        const results: (number | undefined)[] = samples.map( (value: string): number | undefined => StringHelper.toNumber( value ) )
+
+        // Assert
+        expect( results ).toEqual( [ 1.5, undefined ] )
+    } )
+
     it( 'pads digits to the requested width', () => {
         // Arrange
         const value: number = 7

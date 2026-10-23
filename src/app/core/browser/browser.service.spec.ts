@@ -42,8 +42,12 @@ describe( 'BrowserService', () => {
         vi.stubGlobal( 'URL', { createObjectURL, revokeObjectURL } )
         const click: Mock = vi.spyOn( HTMLAnchorElement.prototype, 'click' ).mockImplementation( () => undefined )
 
+        vi.useFakeTimers()
+
         // Act
         service.downloadJson( { a: 1 }, 'data.json' )
+        vi.runAllTimers()
+        vi.useRealTimers()
 
         // Assert
         expect( createObjectURL ).toHaveBeenCalledOnce()
@@ -197,6 +201,31 @@ describe( 'BrowserService', () => {
         // Assert
         expect( inside.classList.contains( 'highlight' ) ).toBe( true )
         expect( outside.classList.contains( 'highlight' ) ).toBe( false )
+    } )
+
+    it( 'highlights an element whose data value holds selector characters', () => {
+        // Arrange
+        vi.useFakeTimers()
+        document.body.innerHTML = '<div id="target"></div>'
+        const element: Element = document.querySelector( '#target' )!
+        element.setAttribute( 'data-value', 'a"b]c' )
+
+        // Act
+        service.highlightByDataValue( 'a"b]c' )
+
+        // Assert
+        expect( element.classList.contains( 'highlight' ) ).toBe( true )
+    } )
+
+    it( 'exposes the path, the query and the hash of the current location', () => {
+        // Arrange
+        history.replaceState( null, '', '/projects/42?tab=1#top' )
+
+        // Act
+        const relativeUrl: string = service.relativeUrl
+
+        // Assert
+        expect( relativeUrl ).toBe( '/projects/42?tab=1#top' )
     } )
 
     it( 'ignores a highlight request for a missing element', () => {

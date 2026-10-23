@@ -8,7 +8,7 @@ import '@sgdf/ui/list'
 import '@sgdf/ui/list-item'
 import '@sgdf/ui/avatar'
 import '@sgdf/ui/skeleton'
-import { ChangeDetectionStrategy, Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit, signal, Signal, WritableSignal } from '@angular/core';
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit, signal, Signal, WritableSignal } from '@angular/core';
 import { provideTranslocoScope, TranslocoPipe } from "@jsverse/transloco";
 import { SelectedProjectFacade } from '@pages/projects/data/state/selected-project/selected-project.facade';
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe';
@@ -27,7 +27,6 @@ const PAGE_SIZE: number = 5
  * Limits: Shows no more than a few rows and opens the dialog listing all of them; reads the selected project facade only.
  */
 @Component({
-	changeDetection: ChangeDetectionStrategy.OnPush,
 	imports: [
 		TranslocoPipe,
 		PluralTranslationPipe,

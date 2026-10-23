@@ -165,15 +165,14 @@ describe( 'mappers', () => {
     it( 'maps an alert with its communications, each pointing back to a movement', () => {
         // Arrange
         const movement: MovementResponseDto = {
-            id: 'm1', visible: true, creation: HISTORY, lastEdition: HISTORY,
-            dateTime: WHEN, type: { label: 'In', value: 'IN' as never }, reason: undefined, activity: undefined, contentType: 'GUEST' as never, content: [],
+            id: 'm1', visible: true, creation: HISTORY, lastEdition: HISTORY, dateTime: WHEN,
+            type: { label: 'In', value: 'IN' as never }, reason: undefined, activity: undefined, contentType: 'GUEST' as never, content: [],
         }
         const communication: CommunicationResponseDto = {
             id: 'c1', visible: true, creation: HISTORY, lastEdition: HISTORY, dateTime: WHEN, message: 'hello', movement, alert: undefined,
         }
         const dto: AlertResponseDto = {
-            id: 'al1', visible: true, creation: HISTORY, lastEdition: HISTORY,
-            dateTime: WHEN, title: 'Fire', status: { label: 'In progress', value: 'IN_PROGRESS' as never }, communications: [ communication ],
+            id: 'al1', visible: true, creation: HISTORY, lastEdition: HISTORY, dateTime: WHEN, title: 'Fire', status: { label: 'In progress', value: 'IN_PROGRESS' as never }, communications: [ communication ],
             criticality: { label: 'High', value: 'HIGH' as never }, lastCommunication: { dateTime: WHEN, message: 'hello' },
         }
 

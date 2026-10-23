@@ -47,7 +47,6 @@ bootstrapApplication(RegistryComponent, {
 		IntervalPipe,
 		ProjectOptionIconPipe,
 		CustomDateFormatPipe,
-		RegistryConfig,
 		RegistryConfig.provideTranslatorService(),
 		PluralTranslationPipe,
 	],

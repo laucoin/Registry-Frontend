@@ -34,8 +34,10 @@ export class StringHelper {
         switch (true) {
             case GenericHelper.isNull( value ):
                 return undefined
-            case typeof value == 'string':
-                return Number.parseInt( value )
+            case typeof value == 'string': {
+                const parsed: number = Number.parseFloat( value as string )
+                return Number.isNaN( parsed ) ? undefined : parsed
+            }
             default:
                 return value!
         }

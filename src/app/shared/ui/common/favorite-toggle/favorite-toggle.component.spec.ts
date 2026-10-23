@@ -19,8 +19,12 @@ describe('FavoriteToggleComponent', () => {
 	})
 
 	it('should show a filled amber star for a favorite', async () => {
+		// Arrange
+
+		// Act
 		const button: HTMLElement = await render(true)
 
+		// Assert
 		expect(button.getAttribute('aria-pressed')).toBe('true')
 		expect((button as unknown as { library: string }).library).toBe('solid')
 		expect((button as unknown as { variant: string }).variant).toBe('warning')
@@ -28,8 +32,12 @@ describe('FavoriteToggleComponent', () => {
 	})
 
 	it('should show an outlined neutral star otherwise', async () => {
+		// Arrange
+
+		// Act
 		const button: HTMLElement = await render(false)
 
+		// Assert
 		expect(button.getAttribute('aria-pressed')).toBe('false')
 		expect((button as unknown as { library: string }).library).toBe('regular')
 		expect((button as unknown as { variant: string }).variant).toBe('neutral')
@@ -37,12 +45,15 @@ describe('FavoriteToggleComponent', () => {
 	})
 
 	it('should emit when the user clicks the star', async () => {
+		// Arrange
 		const button: HTMLElement = await render(false)
 		const emitted: () => void = vi.fn()
 		fixture.componentInstance.toggled.subscribe(emitted)
 
+		// Act
 		button.click()
 
+		// Assert
 		expect(emitted).toHaveBeenCalledTimes(1)
 	})
 })

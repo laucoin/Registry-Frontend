@@ -123,6 +123,6 @@
     <app-element-actions slot="header-actions" [subject]="typeAndReason()" [actions]="actions()"/>
     @if (communicationsLayerOpened()) {
         <app-movement-communications-list [movement]="movement()"/>
-        <app-communication-form slot="footer" [initialMovement]="movement()" [redirect]="false"/>
+        <app-communication-form slot="footer" [initialMovement]="movement()"/>
     }
 </sgdf-drawer>

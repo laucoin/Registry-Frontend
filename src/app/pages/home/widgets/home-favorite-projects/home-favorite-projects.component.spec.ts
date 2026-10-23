@@ -51,6 +51,8 @@ describe('HomeFavoriteProjectsComponent', () => {
 	})
 
 	it('should load the favorites when displayed', async () => {
+		// Arrange
+
 		// Act
 		await render()
 
@@ -154,33 +156,75 @@ describe('HomeFavoriteProjectsComponent', () => {
 		})
 
 		it('should sum up the participants and the vehicles', () => {
-			expect(api().summary(withCounts(18))).toBe('home.favorites.participants.few:142 · home.favorites.vehicles.few:18')
+			// Arrange
+			const project: ProjectModel = withCounts(18)
+
+			// Act
+			const summary: string | undefined = api().summary(project)
+
+			// Assert
+			expect(summary).toBe('home.favorites.participants.few:142 · home.favorites.vehicles.few:18')
 		})
 
 		it('should fall back on the groups when the project has no vehicle count', () => {
-			expect(api().summary(withCounts(null))).toBe('home.favorites.participants.few:142 · home.favorites.groups.few:7')
-			expect(api().summary(withCounts(undefined))).toContain('home.favorites.groups')
+			// Arrange
+			const withoutVehicles: ProjectModel = withCounts(null)
+			const undefinedVehicles: ProjectModel = withCounts(undefined)
+
+			// Act
+			const nullSummary: string | undefined = api().summary(withoutVehicles)
+			const undefinedSummary: string | undefined = api().summary(undefinedVehicles)
+
+			// Assert
+			expect(nullSummary).toBe('home.favorites.participants.few:142 · home.favorites.groups.few:7')
+			expect(undefinedSummary).toContain('home.favorites.groups')
 		})
 
 		it('should give no summary without counts', () => {
-			expect(api().summary({} as ProjectModel)).toBeUndefined()
+			// Arrange
+			const project: ProjectModel = {} as ProjectModel
+
+			// Act
+			const summary: string | undefined = api().summary(project)
+
+			// Assert
+			expect(summary).toBeUndefined()
 		})
 
 		it('should write the days of a period inside one month only once', () => {
+			// Arrange
 			const project: ProjectModel = { begin: { date: '2026-09-18' }, end: { date: '2026-09-27' } } as unknown as ProjectModel
 
-			expect(api().period(project)).toEqual({ begin: '18', end: '27 septembre 2026' })
+			// Act
+			const period: { begin: string, end: string } | undefined = api().period(project)
+
+			// Assert
+			expect(period).toEqual({ begin: '18', end: '27 septembre 2026' })
 		})
 
 		it('should keep the month of the start when the period crosses months of one year', () => {
+			// Arrange
 			const project: ProjectModel = { begin: { date: '2026-09-28' }, end: { date: '2026-10-02' } } as unknown as ProjectModel
 
-			expect(api().period(project)).toEqual({ begin: '28 septembre', end: '2 octobre 2026' })
+			// Act
+			const period: { begin: string, end: string } | undefined = api().period(project)
+
+			// Assert
+			expect(period).toEqual({ begin: '28 septembre', end: '2 octobre 2026' })
 		})
 
 		it('should open the missing bound of a period and give none for a permanent project', () => {
-			expect(api().period({ begin: { date: '2026-09-18' } } as unknown as ProjectModel)).toEqual({ begin: '18 septembre 2026', end: '...' })
-			expect(api().period({} as ProjectModel)).toBeUndefined()
+			// Arrange
+			const openEnded: ProjectModel = { begin: { date: '2026-09-18' } } as unknown as ProjectModel
+			const permanent: ProjectModel = {} as ProjectModel
+
+			// Act
+			const openEndedPeriod: { begin: string, end: string } | undefined = api().period(openEnded)
+			const permanentPeriod: { begin: string, end: string } | undefined = api().period(permanent)
+
+			// Assert
+			expect(openEndedPeriod).toEqual({ begin: '18 septembre 2026', end: '...' })
+			expect(permanentPeriod).toBeUndefined()
 		})
 	})
 })

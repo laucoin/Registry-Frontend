@@ -5,8 +5,10 @@ import { TestBed } from '@angular/core/testing'
 import { BrowserService } from '@core/browser/browser.service'
 import { TranslocoService } from '@jsverse/transloco'
 import { RegistryConfig } from '@core/config/registry.config'
+import { UiFacade } from '@core/registry/state/ui.facade'
 import { ConfigModel } from '@core/config/model/config.model'
 import { EnvironmentModel } from '@core/config/model/environment.model'
+import { of, throwError } from 'rxjs'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 interface RegistryConfigInternals {
@@ -14,6 +16,8 @@ interface RegistryConfigInternals {
     load: () => Promise<unknown>
     resolveLocale: (browser: Partial<BrowserService>) => string
 }
+
+const echoKey: TranslocoService['translate'] = ((key: string): string => key) as TranslocoService['translate']
 
 describe( 'RegistryConfig', () => {
     const internals: RegistryConfigInternals = RegistryConfig as unknown as RegistryConfigInternals
@@ -109,6 +113,17 @@ describe( 'RegistryConfig', () => {
         expect( locale ).toBe( 'fr' )
     } )
 
+    it( 'resolves a regional preferred language to its base language', () => {
+        // Arrange
+        const browser: Partial<BrowserService> = fakeBrowser( undefined, [ 'en-GB', 'fr' ] )
+
+        // Act
+        const locale: string = internals.resolveLocale( browser )
+
+        // Assert
+        expect( locale ).toBe( 'en' )
+    } )
+
     it( 'activates the resolved language and applies it on the root element once initialized', async () => {
         // Arrange
         stubFetch()
@@ -143,5 +158,55 @@ describe( 'RegistryConfig', () => {
 
         // Assert
         expect( RegistryConfig.environment ).toEqual( ENVIRONMENT )
+    } )
+
+    it( 'falls back on a neutral configuration and reports the error when the settings cannot be loaded', async () => {
+        // Arrange
+        stubFetch( false )
+        const setGlobalError: ReturnType<typeof vi.fn> = vi.fn()
+        RegistryConfig.config = undefined as unknown as ConfigModel
+        RegistryConfig.environment = undefined as unknown as EnvironmentModel
+        const translocoService: Partial<TranslocoService> = { getActiveLang: (): string => 'fr', load: () => of( {} ), translate: echoKey }
+        TestBed.configureTestingModule( {
+            providers: [
+                provideHttpClient(),
+                provideHttpClientTesting(),
+                { provide: UiFacade, useValue: { setGlobalError } },
+                { provide: BrowserService, useValue: { preferredLanguages: [ 'fr' ], setRootLanguage: vi.fn(), readCookie: (): undefined => undefined, writeCookie: vi.fn() } },
+                ...RegistryConfig.provideTranslatorService(),
+                { provide: TranslocoService, useValue: translocoService },
+            ],
+        } )
+
+        // Act
+        await TestBed.inject( ApplicationInitStatus ).donePromise
+
+        // Assert
+        expect( RegistryConfig.config.defaultLanguage ).toBe( 'fr' )
+        expect( RegistryConfig.environment.backend.url ).toBe( 'about:blank' )
+        expect( setGlobalError ).toHaveBeenCalledWith( expect.objectContaining( { title: 'global.notifications.startup.title' } ) )
+    } )
+
+    it( 'reports the error and keeps the application starting when the translations cannot be loaded', async () => {
+        // Arrange
+        stubFetch()
+        const setGlobalError: ReturnType<typeof vi.fn> = vi.fn()
+        const translocoService: Partial<TranslocoService> = { getActiveLang: (): string => 'en', load: () => throwError( (): Error => new Error( 'boom' ) ), translate: echoKey }
+        TestBed.configureTestingModule( {
+            providers: [
+                provideHttpClient(),
+                provideHttpClientTesting(),
+                { provide: UiFacade, useValue: { setGlobalError } },
+                { provide: BrowserService, useValue: { preferredLanguages: [ 'en' ], setRootLanguage: vi.fn(), readCookie: (): undefined => undefined, writeCookie: vi.fn() } },
+                ...RegistryConfig.provideTranslatorService(),
+                { provide: TranslocoService, useValue: translocoService },
+            ],
+        } )
+
+        // Act
+        await TestBed.inject( ApplicationInitStatus ).donePromise
+
+        // Assert
+        expect( setGlobalError ).toHaveBeenCalledTimes( 1 )
     } )
 } )

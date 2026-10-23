@@ -83,6 +83,17 @@ describe( 'date pipes', () => {
             expect( both ).toMatch( /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/ )
         } )
 
+        it( 'is re-evaluated on every change detection so that a language change updates the text', () => {
+            // Arrange
+            const definition: { pure: boolean } = (CustomDateFormatPipe as unknown as { ɵpipe: { pure: boolean } }).ɵpipe
+
+            // Act
+            const pure: boolean = definition.pure
+
+            // Assert
+            expect( pure ).toBe( false )
+        } )
+
         it( 'has nothing to show when the pattern cannot format the date', () => {
             // Arrange
             const pipe: CustomDateFormatPipe = TestBed.runInInjectionContext( (): CustomDateFormatPipe => new CustomDateFormatPipe() )

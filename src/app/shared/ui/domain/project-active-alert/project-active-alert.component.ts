@@ -8,7 +8,7 @@ import '@sgdf/ui/callout'
 import '@sgdf/ui/drawer'
 import '@sgdf/ui/skeleton'
 import { StringHelper } from '@shared/helpers/string.helper';
-import { ChangeDetectionStrategy, Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit, signal, Signal, WritableSignal } from '@angular/core';
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit, signal, Signal, WritableSignal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { SessionFacade } from '@core/registry/state/session.facade';
 import { UiFacade } from '@core/registry/state/ui.facade';
@@ -54,7 +54,6 @@ const VARIANTS: Record<AlertCriticalityEnum, AlertVariant> = {
  * Limits: Shows no more than a few alerts and counts the others; reads the selected project and alert facades only.
  */
 @Component({
-	changeDetection: ChangeDetectionStrategy.OnPush,
 	imports: [
 		TranslocoPipe,
 		PluralTranslationPipe,

@@ -175,7 +175,7 @@ describe('ProjectsListPage', () => {
         expect(rights).toEqual([false])
     })
 
-    it.each([['  vercors 2026', 'V2'], ['Camp d\'été Vercors', 'CD'], ['Rallye', 'RA']])('builds the avatar initials of "%s"', (name: string, expected: string) => {
+    it.each([['  vercors 2026', 'V2'], ['Camp d\'été Vercors', 'CD'], ['Rallye', 'RA'], ['🔥 feu de camp', '🔥F'], ['🔥🔥🔥', '🔥🔥']])('builds the avatar initials of "%s"', (name: string, expected: string) => {
         // Arrange
         const page: ProjectsListApi = create()
 

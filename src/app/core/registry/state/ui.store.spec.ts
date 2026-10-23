@@ -119,6 +119,18 @@ describe( 'UiStore', () => {
         expect( store.error() ).toEqual( expect.objectContaining( { severity: 'error', summary: 'Title', detail: 'Message', closable: true } ) )
     } )
 
+    it( 'keeps the first global error', () => {
+        // Arrange
+        store = createStore()
+        store.setGlobalError( ERROR_500 )
+
+        // Act
+        store.setGlobalError( Object.assign( new Error(), ERROR_500, { title: 'Other' } ) )
+
+        // Assert
+        expect( store.error() ).toEqual( expect.objectContaining( { summary: 'Title' } ) )
+    } )
+
     it( 'tracks the network state', () => {
         // Arrange
         store = createStore()

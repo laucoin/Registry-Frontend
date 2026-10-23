@@ -5,7 +5,7 @@ import '@sgdf/ui/icon'
 import '@sgdf/ui/tag'
 import '@sgdf/ui/divider'
 import '@sgdf/ui/button'
-import { ChangeDetectionStrategy, Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, input, InputSignal, OnInit, Signal } from '@angular/core';
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, input, InputSignal, OnInit, Signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { SessionFacade } from '@core/registry/state/session.facade';
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum';
@@ -27,7 +27,6 @@ interface OverviewStat {
  * Limits: Reads the selected project facade only; a failed load leaves the counters empty and nothing is retried.
  */
 @Component({
-	changeDetection: ChangeDetectionStrategy.OnPush,
 	imports: [
 		TranslocoPipe,
 		DateFormatPipe,

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, CUSTOM_ELEMENTS_SCHEMA, input, InputSignal, output, OutputEmitterRef } from '@angular/core'
+import { Component, CUSTOM_ELEMENTS_SCHEMA, input, InputSignal, output, OutputEmitterRef } from '@angular/core'
 import { TranslocoPipe } from '@jsverse/transloco'
 import '@sgdf/ui/button'
 import '@sgdf/ui/icon'
@@ -9,7 +9,6 @@ import '@sgdf/ui/icon'
  * Limits: Owns no form state and never navigates.
  */
 @Component({
-	changeDetection: ChangeDetectionStrategy.OnPush,
 	selector: 'app-form-actions',
 	imports: [TranslocoPipe],
 	schemas: [CUSTOM_ELEMENTS_SCHEMA],

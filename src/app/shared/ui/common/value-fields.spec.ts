@@ -132,7 +132,7 @@ describe( 'value fields', () => {
             } )
         }
 
-                it( 'appends to the selection', () => {
+        it( 'appends to the selection', () => {
             // Arrange
             const { fixture, field, touched }: Handle<SelectElementsFieldComponent<Element>> = select()
             fixture.componentRef.setInput( 'suggestions', [ { label: 'b', value: { id: 'b' } } ] )
@@ -175,6 +175,23 @@ describe( 'value fields', () => {
             expect( highlight ).toHaveBeenCalledWith( 'a', expect.anything() )
             expect( field.value() ).toEqual( [ { id: 'a' } ] )
             expect( touched ).not.toHaveBeenCalled()
+        } )
+
+        it( 'keeps apart the elements that have no id', () => {
+            // Arrange
+            const { field }: Handle<SelectElementsFieldComponent<Element>> = select()
+            const first: Element = {} as Element
+            const second: Element = {} as Element
+            field.value.set( [ first ] )
+
+            // Act
+            field[ 'handleElementSelection' ]( second )
+            field[ 'handleElementSelection' ]( first )
+
+            // Assert
+            expect( field.value() ).toEqual( [ first, second ] )
+            expect( field.value()[ 0 ] ).toBe( first )
+            expect( field.value()[ 1 ] ).toBe( second )
         } )
 
         it( 'removes only the given element', () => {

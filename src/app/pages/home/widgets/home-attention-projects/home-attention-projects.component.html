@@ -34,7 +34,7 @@
         @for (project of projects(); track project.id) {
             <sgdf-table-row class="h-px">
                 <sgdf-table-cell>
-                    <a class="flex items-center justify-between gap-3 no-underline" [routerLink]="link(project)">
+                    <a class="flex items-center justify-between gap-3 no-underline! hover:no-underline!" [routerLink]="link(project)">
                         <span class="flex min-w-0 items-center gap-3">
                             <sgdf-avatar shape="rounded" variant="primary" size="small" aria-hidden="true" [initials]="initials(project)"/>
                             <strong class="truncate" [attr.title]="project.name">{{ project.name }}</strong>

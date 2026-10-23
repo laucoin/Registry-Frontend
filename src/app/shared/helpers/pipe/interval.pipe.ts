@@ -11,7 +11,7 @@ import { StringHelper } from '@shared/helpers/string.helper'
  * Limits: Returns undefined for an empty interval.
  */
 @Pipe( {
-    name: 'intervalFormat', standalone: true,
+    name: 'intervalFormat', standalone: true, pure: false,
 } )
 export class IntervalPipe implements PipeTransform {
     private readonly pluralTranslation: PluralTranslationPipe = inject( PluralTranslationPipe )

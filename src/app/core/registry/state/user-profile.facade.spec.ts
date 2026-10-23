@@ -183,16 +183,22 @@ describe( 'UserProfileFacade', () => {
         } )
 
         it( 'removes the favorite when the project already is one', () => {
+            // Arrange
+            const invitation: UserInvitationModel = { id: 'pp1', project: { id: 'p1', name: 'Camp', favorite: true } } as UserInvitationModel
+
             // Act
-            facade.toggleProjectFavorite( { id: 'pp1', project: { id: 'p1', name: 'Camp', favorite: true } } as UserInvitationModel )
+            facade.toggleProjectFavorite( invitation )
 
             // Assert
             expect( setProjectFavorite ).toHaveBeenCalledWith( 'p1', false )
         } )
 
         it( 'does nothing for a profile without project', () => {
+            // Arrange
+            const invitation: UserInvitationModel = { id: 'pp1', project: undefined } as UserInvitationModel
+
             // Act
-            facade.toggleProjectFavorite( { id: 'pp1', project: undefined } as UserInvitationModel )
+            facade.toggleProjectFavorite( invitation )
 
             // Assert
             expect( setProjectFavorite ).not.toHaveBeenCalled()

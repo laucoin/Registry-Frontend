@@ -48,6 +48,7 @@ export const projectRoutes: Routes = [
             },
             {
                 path: `${ProjectRoutesEnum.PROJECT_ID}/${ProjectRoutesEnum.EDIT}`, component: ProjectFormPage,
+                providers: [ ProjectProfileFacade, ProjectProfileStore ],
             },
             {
                 path: ProjectRoutesEnum.PROJECT_ID,

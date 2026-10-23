@@ -1,22 +1,25 @@
 import { TestBed } from '@angular/core/testing'
-import { ActivatedRoute } from '@angular/router'
-import { BehaviorSubject } from 'rxjs'
-import { Mock, beforeEach, describe, expect, it, vi } from 'vitest'
+import { ActivatedRoute, convertToParamMap } from '@angular/router'
+import { Mock, beforeEach, describe, expect, it } from 'vitest'
 import { SessionFacade } from '@core/registry/state/session.facade'
+import { UiFacade } from '@core/registry/state/ui.facade'
+import { TranslocoService } from '@jsverse/transloco'
 import { AuthCallbackPage } from '@pages/auth/callback/auth-callback.page'
 import { autoMock } from '@shared/helpers/testing/auto-mock'
 
 describe( 'AuthCallbackPage', () => {
     let facade: Record<string, Mock>
-    let queryParams: BehaviorSubject<object>
+    let uiFacade: Record<string, Mock>
 
-    function create (params: object): AuthCallbackPage {
+    function create (params: Record<string, string>): AuthCallbackPage {
         facade = autoMock()
-        queryParams = new BehaviorSubject<object>( params )
+        uiFacade = autoMock()
         TestBed.configureTestingModule( {
             providers: [
                 { provide: SessionFacade, useValue: facade },
-                { provide: ActivatedRoute, useValue: { queryParams } },
+                { provide: UiFacade, useValue: uiFacade },
+                { provide: TranslocoService, useValue: { translate: (key: string): string => key } },
+                { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: convertToParamMap( params ) } } },
             ],
         } )
         return TestBed.createComponent( AuthCallbackPage ).componentInstance
@@ -35,33 +38,32 @@ describe( 'AuthCallbackPage', () => {
 
         // Assert
         expect( facade[ 'fetchToken' ] ).toHaveBeenCalledWith( 'abc' )
+        expect( uiFacade[ 'setGlobalError' ] ).not.toHaveBeenCalled()
     } )
 
-    it( 'fails when the redirect carries no authorization code', () => {
+    it( 'shows the global error when the redirect carries no authorization code', () => {
         // Arrange
-        vi.useFakeTimers()
-        const page: AuthCallbackPage = create( {} )
-        page.ngOnInit()
+        const page: AuthCallbackPage = create( { error: 'access_denied', error_description: 'User refused' } )
 
         // Act
-        const act: () => void = (): void => { vi.runAllTimers() }
+        page.ngOnInit()
 
         // Assert
-        expect( act ).toThrow( 'No authorization code found' )
         expect( facade[ 'fetchToken' ] ).not.toHaveBeenCalled()
-        vi.useRealTimers()
+        expect( uiFacade[ 'setGlobalError' ] ).toHaveBeenCalledWith( expect.objectContaining( { title: 'access_denied', message: 'User refused' } ) )
     } )
 
-    it( 'stops listening to the route once destroyed', () => {
+    it( 'shows the translated error when the redirect carries neither a code nor an error', () => {
         // Arrange
-        const page: AuthCallbackPage = create( { code: 'abc' } )
-        page.ngOnInit()
-        page.ngOnDestroy()
+        const page: AuthCallbackPage = create( {} )
 
         // Act
-        queryParams.next( { code: 'def' } )
+        page.ngOnInit()
 
         // Assert
-        expect( facade[ 'fetchToken' ] ).toHaveBeenCalledTimes( 1 )
+        expect( uiFacade[ 'setGlobalError' ] ).toHaveBeenCalledWith( expect.objectContaining( {
+            title: 'global.notifications.auth-callback.title',
+            message: 'global.notifications.auth-callback.message',
+        } ) )
     } )
 } )

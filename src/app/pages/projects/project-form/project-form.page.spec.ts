@@ -2,7 +2,7 @@ import { Location } from '@angular/common'
 import { TestBed } from '@angular/core/testing'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslocoService } from '@jsverse/transloco'
-import { BehaviorSubject, of, throwError } from 'rxjs'
+import { BehaviorSubject, NEVER, of, throwError } from 'rxjs'
 import { Mock, beforeEach, describe, expect, it, vi } from 'vitest'
 import { ConfigModel } from '@core/config/model/config.model'
 import { RegistryConfig } from '@core/config/registry.config'
@@ -146,6 +146,31 @@ describe( 'ProjectFormPage', () => {
             expect( Object.keys( page.optionsModel() ) ).toEqual( [ 'VEHICLE', 'ACTIVITY', 'ALERT' ] )
         } )
 
+        it( 'waits for the project before filling the form when editing', () => {
+            // Arrange
+            const page: ProjectFormApi = create( 'p1' )
+
+            // Act
+            const options: object = page.optionsModel()
+
+            // Assert
+            expect( options ).toEqual( {} )
+        } )
+
+        it( 'fills the form once and keeps what the user typed when the project emits again', () => {
+            // Arrange
+            const page: ProjectFormApi = create( 'p1' )
+            const project: ProjectModel = { ...PROJECT_DTO, options: [] } as never
+            project$.next( project )
+            page.model.set( { ...page.model(), name: 'Typed' } )
+
+            // Act
+            project$.next( { ...project, name: 'Refreshed' } as never )
+
+            // Assert
+            expect( page.model()[ 'name' ] ).toBe( 'Typed' )
+        } )
+
         it( 'fills the form with the loaded project and its options', () => {
             // Arrange
             const page: ProjectFormApi = create( 'p1' )
@@ -271,6 +296,20 @@ describe( 'ProjectFormPage', () => {
             expect( facade[ 'createProject' ] ).toHaveBeenCalledWith( {
                 name: 'Camp', begin: { date: '2026-01-01', time: undefined }, end: undefined, options: [ 'VEHICLE', 'ACTIVITY' ],
             } )
+        } )
+
+        it( 'ignores a second submit while the project is being saved', () => {
+            // Arrange
+            const page: ProjectFormApi = create()
+            fillName( page )
+            facade[ 'createProject' ].mockReturnValue( NEVER )
+
+            // Act
+            page.submit()
+            page.submit()
+
+            // Assert
+            expect( facade[ 'createProject' ] ).toHaveBeenCalledTimes( 1 )
         } )
 
         it( 'creates the project then offers to invite users instead of leaving', () => {

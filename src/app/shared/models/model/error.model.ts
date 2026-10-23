@@ -16,4 +16,8 @@ export class ErrorModel extends Error {
         this.title = error.error?.title
         this.message = error.error?.detail ?? error.message
     }
+
+    public static of (title: string, message: string): ErrorModel {
+        return new ErrorModel( new HttpErrorResponse( { status: 0, error: { title: title, detail: message } } ) )
+    }
 }

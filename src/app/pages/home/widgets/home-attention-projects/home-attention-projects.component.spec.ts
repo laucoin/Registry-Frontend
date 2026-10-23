@@ -41,8 +41,12 @@ describe('HomeAttentionProjectsComponent', () => {
 	})
 
 	it('should load the projects when displayed', async () => {
+		// Arrange
+
+		// Act
 		await render()
 
+		// Assert
 		expect(fetchAttention).toHaveBeenCalledTimes(1)
 	})
 
@@ -70,6 +74,9 @@ describe('HomeAttentionProjectsComponent', () => {
 	})
 
 	it('should tell that no project has an alert', async () => {
+		// Arrange
+		attention.set([])
+
 		// Act
 		await render()
 

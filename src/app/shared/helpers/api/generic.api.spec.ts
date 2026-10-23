@@ -71,6 +71,17 @@ describe( 'generic apis', () => {
         expect( withProject ).toBe( 'http://backend.test/api/v2/projects/p1/things' )
     } )
 
+    it( 'encodes a project id holding reserved characters without interpreting replacement patterns', () => {
+        // Arrange
+        const api: TestProjectApi = TestBed.runInInjectionContext( (): TestProjectApi => new TestProjectApi() )
+
+        // Act
+        const encoded: string = api.urlFor( 'a/b$&?c' )
+
+        // Assert
+        expect( encoded ).toBe( 'http://backend.test/api/v2/projects/a%2Fb%24%26%3Fc/things' )
+    } )
+
     it( 'leaves the project placeholder for the interceptor when no project id is given', () => {
         // Arrange
         const api: TestProjectApi = TestBed.runInInjectionContext( (): TestProjectApi => new TestProjectApi() )

@@ -79,7 +79,10 @@ describe('GroupStatusListComponent', () => {
 
 	it('should ask for the members of the only group without waiting for its section to announce it', async () => {
 		// Arrange
-		await render(pageOf([group]));
+		const page: PageModel<GroupModel> = pageOf([group]);
+
+		// Act
+		await render(page);
 
 		// Assert
 		expect(requests).toEqual([{ groupId: 'g1', page: undefined, size: 20 }]);

@@ -68,6 +68,20 @@ describe( 'CumulativePageHelper', () => {
             expect( merged.hasNext ).toBe( true )
         } )
 
+        it( 'keeps the rows shown beyond the reloaded ones', () => {
+            // Arrange
+            const current: PageModel<GenericModel> = page( [ 'a', 'b', 'c', 'd', 'e', 'f' ], 2, 2, 8 )
+            const fetched: PageModel<GenericModel> = page( [ 'a2', 'b2', 'c2', 'd2' ], 0, 4, 8 )
+
+            // Act
+            const merged: PageModel<GenericModel> = CumulativePageHelper.merge( current, fetched, { page: 0, size: 4, batchSize: 2 } )
+
+            // Assert
+            expect( merged.content.map( (it: GenericModel): string | undefined => it.id ) ).toEqual( [ 'a2', 'b2', 'c2', 'd2', 'e', 'f' ] )
+            expect( merged.page ).toBe( 2 )
+            expect( merged.hasNext ).toBe( current.hasNext )
+        } )
+
         it( 'keeps one batch when a reload comes back empty', () => {
             // Arrange
             const fetched: PageModel<GenericModel> = page( [], 0, 4, 0 )

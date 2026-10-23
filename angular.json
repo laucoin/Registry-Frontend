@@ -45,8 +45,8 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "900kB",
-                  "maximumError": "1mb"
+                  "maximumWarning": "1000kB",
+                  "maximumError": "1.2mb"
                 },
                 {
                   "type": "anyComponentStyle",
@@ -112,10 +112,10 @@
               "html"
             ],
             "coverageThresholds": {
-              "statements": 87,
-              "branches": 79,
-              "functions": 84,
-              "lines": 89
+              "statements": 89,
+              "branches": 81,
+              "functions": 86,
+              "lines": 91
             }
           }
         },

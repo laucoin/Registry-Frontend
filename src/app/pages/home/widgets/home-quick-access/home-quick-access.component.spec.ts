@@ -25,28 +25,44 @@ describe('HomeQuickAccessComponent', () => {
 	})
 
 	it('should offer every shortcut to a user who can read users', async () => {
+		// Arrange
+
+		// Act
 		await render(true, 'https://doc.test')
 
+		// Assert
 		expect(fixture.nativeElement.querySelectorAll('sgdf-button').length).toBe(4)
 	})
 
 	it('should open the documentation from the configuration in a new tab', async () => {
+		// Arrange
+
+		// Act
 		await render(false, 'https://doc.test')
 		const help: HTMLElement = fixture.nativeElement.querySelector('sgdf-button[target="_blank"]')
 
+		// Assert
 		expect(help.textContent).toContain('home.quickAccess.help')
 		expect(help.getAttribute('ng-reflect-href') ?? (help as unknown as { href: string }).href).toBe('https://doc.test')
 	})
 
 	it('should hide the help center when no documentation url is configured', async () => {
+		// Arrange
+
+		// Act
 		await render(true)
 
+		// Assert
 		expect(fixture.nativeElement.textContent).not.toContain('home.quickAccess.help')
 	})
 
 	it('should hide the users shortcut from a user who cannot read users', async () => {
+		// Arrange
+
+		// Act
 		await render(false, 'https://doc.test')
 
+		// Assert
 		expect(fixture.nativeElement.querySelectorAll('sgdf-button').length).toBe(3)
 		expect(fixture.nativeElement.textContent).not.toContain('home.quickAccess.users')
 	})

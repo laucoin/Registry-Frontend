@@ -19,6 +19,10 @@ export class BrowserService {
         return location.pathname
     }
 
+    public get relativeUrl (): string {
+        return `${location.pathname}${location.search}${location.hash}`
+    }
+
     public get origin (): string {
         return location.origin
     }
@@ -89,7 +93,7 @@ export class BrowserService {
         link.href = url
         link.download = filename
         link.click()
-        URL.revokeObjectURL( url )
+        setTimeout( (): void => URL.revokeObjectURL( url ) )
     }
 
     public reload (): void {
@@ -120,7 +124,7 @@ export class BrowserService {
     }
 
     public highlightByDataValue (value: string, root: ParentNode = document): void {
-        const element: HTMLElement | null = root.querySelector( `[data-value="${ value }"]` )
+        const element: HTMLElement | null = root.querySelector( `[data-value="${ CSS.escape( value ) }"]` )
         if (element) {
             element.classList.add( HIGHLIGHT_CLASS )
             setTimeout( (): void => element.classList.remove( HIGHLIGHT_CLASS ), HIGHLIGHT_DURATION_MS )

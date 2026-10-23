@@ -3,7 +3,7 @@ import '@sgdf/ui/table-row'
 import '@sgdf/ui/table-cell'
 import '@sgdf/ui/icon'
 import '@sgdf/ui/button'
-import { ChangeDetectionStrategy, Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, Signal } from '@angular/core'
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, Signal } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import { RegistryConfig } from '@core/config/registry.config'
 import { CurrentUserHelper } from '@core/authentication/tool/current-user.helper'
@@ -32,7 +32,6 @@ const SHORTCUTS: readonly QuickAccess[] = [
  * Limits: Reads the session only; the routes and their guards still decide access.
  */
 @Component({
-	changeDetection: ChangeDetectionStrategy.OnPush,
 	selector: 'app-home-quick-access',
 	schemas: [CUSTOM_ELEMENTS_SCHEMA],
 	providers: [provideTranslocoScope('home')],

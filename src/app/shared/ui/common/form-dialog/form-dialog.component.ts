@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, CUSTOM_ELEMENTS_SCHEMA, inject, input, InputSignal, output, OutputEmitterRef } from '@angular/core'
+import { Component, CUSTOM_ELEMENTS_SCHEMA, inject, input, InputSignal, output, OutputEmitterRef } from '@angular/core'
 import { TranslocoPipe } from '@jsverse/transloco'
 import '@sgdf/ui/button'
 import '@sgdf/ui/dialog'
@@ -15,7 +15,6 @@ import { FormErrorComponent } from '@shared/ui/common/form-error/form-error.comp
  * Limits: Owns no form model and never navigates; the page decides what submit and close do. A click outside never closes it, to keep the input.
  */
 @Component({
-	changeDetection: ChangeDetectionStrategy.OnPush,
 	selector: 'app-form-dialog',
 	imports: [TranslocoPipe, FormErrorComponent],
 	schemas: [CUSTOM_ELEMENTS_SCHEMA],

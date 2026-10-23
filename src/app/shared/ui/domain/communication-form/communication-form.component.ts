@@ -108,7 +108,6 @@ export class CommunicationFormComponent extends BaseFormComponent implements OnI
     protected readonly now: Date = new Date()
     protected readonly AlertModulableFieldEnum: typeof AlertModulableFieldEnum = AlertModulableFieldEnum
 
-    public readonly redirect: InputSignal<boolean> = input( true )
     public readonly initialAlert: InputSignal<AlertModel | undefined> = input<AlertModel | undefined>()
     public readonly initialMovement: InputSignal<MovementModel | undefined> = input<MovementModel | undefined>(
         undefined )

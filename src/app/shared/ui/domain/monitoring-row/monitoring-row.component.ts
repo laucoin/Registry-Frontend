@@ -3,7 +3,7 @@ import '@sgdf/ui/checkbox'
 import '@sgdf/ui/icon'
 import '@sgdf/ui/list-item'
 import '@sgdf/ui/tag'
-import { ChangeDetectionStrategy, Component, CUSTOM_ELEMENTS_SCHEMA, input, InputSignal, output, OutputEmitterRef } from '@angular/core'
+import { Component, CUSTOM_ELEMENTS_SCHEMA, input, InputSignal, output, OutputEmitterRef } from '@angular/core'
 import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco';
 import { MonitoringRowModel } from '@shared/models/model/monitoring-row.model'
 
@@ -13,7 +13,6 @@ import { MonitoringRowModel } from '@shared/models/model/monitoring-row.model'
  * Limits: Receives a ready-made row and holds no state, the checked state included; it neither loads nor edits anything.
  */
 @Component({
-	changeDetection: ChangeDetectionStrategy.OnPush,
 	selector: 'sgdf-list-item[appMonitoringRow], app-monitoring-row',
 	imports: [TranslocoPipe],
 	providers: [provideTranslocoScope('project-home')],

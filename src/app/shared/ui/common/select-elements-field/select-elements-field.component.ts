@@ -28,6 +28,15 @@ import { BrowserService } from '@core/browser/browser.service'
 import { EventHelper } from '@shared/helpers/event.helper'
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco'
 
+const identities: WeakMap<object, string> = new WeakMap<object, string>()
+
+// Elements without an id must not collide with each other: each object gets its own stable key.
+function identityOf (element: unknown): string {
+    if (typeof element !== 'object' || element === null) return String( element )
+    if (!identities.has( element )) identities.set( element, `identity-${ crypto.randomUUID() }` )
+    return identities.get( element )!
+}
+
 /**
  * Purpose: Form field selecting several searched elements.
  * Scope: Asks the parent to search as the user types, picks one suggestion at a time into the selection list, highlights a duplicate, and can expand a suggestion into several elements shown under a removable group.
@@ -59,7 +68,7 @@ export class SelectElementsFieldComponent<T extends object, S extends BaseModel 
 
     public readonly suggestions: InputSignal<SelectOptionModel<S>[]> = input<SelectOptionModel<S>[]>( [] )
     public readonly selectItemBuilder: InputSignal<(element: T) => SelectOptionModel<unknown>> = input.required()
-    public readonly identify: InputSignal<(element: T) => string> = input( (element: T): string => (element as Partial<BaseModel>).id ?? '' )
+    public readonly identify: InputSignal<(element: T) => string> = input( (element: T): string => (element as Partial<BaseModel>).id ?? identityOf( element ) )
     public readonly expand: InputSignal<(chosen: S) => T[]> = input( (chosen: S): T[] => [ chosen as unknown as T ] )
     public readonly groupOf: InputSignal<(element: T) => string | undefined> = input<(element: T) => string | undefined>( (): undefined => undefined )
     public readonly warningOf: InputSignal<(element: T) => string | undefined> = input<(element: T) => string | undefined>( (): undefined => undefined )

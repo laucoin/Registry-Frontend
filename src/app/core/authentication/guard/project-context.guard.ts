@@ -48,7 +48,7 @@ function resolveAccess (context: GuardContext, currentUser: CurrentUserModel, pr
 }
 
 function redirectToProjects (context: GuardContext): UrlTree {
-    notifyNoProfile( context.uiFacade )
+    if (!context.uiFacade.globalError()) notifyNoProfile( context.uiFacade )
     return context.router.parseUrl( RegistryRouteEnum.PROJECTS )
 }
 

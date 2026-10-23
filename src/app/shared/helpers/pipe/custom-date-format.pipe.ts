@@ -11,7 +11,7 @@ import { DateHelper } from '@shared/helpers/date.helper'
  * Limits: Returns undefined for an empty value.
  */
 @Pipe( {
-    name: 'customDateFormat', standalone: true,
+    name: 'customDateFormat', standalone: true, pure: false,
 } )
 export class CustomDateFormatPipe implements PipeTransform {
     private readonly datePipe: DatePipe = inject( DatePipe )

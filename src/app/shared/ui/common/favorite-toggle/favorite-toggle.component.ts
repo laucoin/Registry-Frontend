@@ -1,5 +1,5 @@
 import '@sgdf/ui/icon-button'
-import { ChangeDetectionStrategy, Component, CUSTOM_ELEMENTS_SCHEMA, input, InputSignal, output, OutputEmitterRef } from '@angular/core'
+import { Component, CUSTOM_ELEMENTS_SCHEMA, input, InputSignal, output, OutputEmitterRef } from '@angular/core'
 import { TranslocoPipe } from '@jsverse/transloco'
 
 /**
@@ -8,7 +8,6 @@ import { TranslocoPipe } from '@jsverse/transloco'
  * Limits: Holds no state and calls no api; the parent runs the command and passes the new state back.
  */
 @Component({
-	changeDetection: ChangeDetectionStrategy.OnPush,
 	selector: 'app-favorite-toggle',
 	schemas: [CUSTOM_ELEMENTS_SCHEMA],
 	imports: [TranslocoPipe],

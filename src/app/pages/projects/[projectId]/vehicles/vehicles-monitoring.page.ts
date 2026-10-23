@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, signal, Signal, WritableSignal } from '@angular/core'
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, signal, Signal, WritableSignal } from '@angular/core'
 import { FieldTree, FormField } from '@angular/forms/signals'
 import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco'
 import '@sgdf/ui/button'
@@ -35,7 +35,6 @@ const PAGE_SIZE: number = 20
  * Limits: Holds no domain state; the vehicle facade owns it. Reachable only when the project has the vehicle option.
  */
 @Component({
-    changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'app-vehicles-monitoring',
     schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
     providers: [ provideTranslocoScope( 'project-home' ) ],

@@ -8,7 +8,7 @@ import { DatePipe } from '@angular/common'
  * Limits: Returns undefined for an empty value.
  */
 @Pipe( {
-    name: 'dateFormat', standalone: true,
+    name: 'dateFormat', standalone: true, pure: false,
 } )
 export class DateFormatPipe implements PipeTransform {
     private readonly datePipe: DatePipe = inject( DatePipe )

@@ -82,8 +82,11 @@ describe( 'UserProfileStore', () => {
     } )
 
     it( 'leaves the page untouched when none is shown', () => {
+        // Arrange
+        const projectId: string = 'p1'
+
         // Act
-        store.setProjectFavorite( 'p1', true )
+        store.setProjectFavorite( projectId, true )
 
         // Assert
         expect( store.invitations.element() ).toBeUndefined()

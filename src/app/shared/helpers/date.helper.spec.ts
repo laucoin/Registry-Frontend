@@ -116,6 +116,17 @@ describe( 'DateHelper', () => {
     } )
 
     describe( 'toDate', () => {
+        it( 'keeps the calendar day of the date whatever the time zone', () => {
+            // Arrange
+            const dateOnly: CustomDatetimeModel = { date: '2024-05-10', time: undefined }
+
+            // Act
+            const date: Date | undefined = DateHelper.toDate( dateOnly )
+
+            // Assert
+            expect( [ date?.getFullYear(), date?.getMonth(), date?.getDate() ] ).toEqual( [ 2024, 4, 10 ] )
+        } )
+
         it( 'has no date for an empty custom date time', () => {
             // Arrange
             const empties: (CustomDatetimeModel | undefined | null)[] = [ undefined, null, { date: undefined, time: undefined } ]

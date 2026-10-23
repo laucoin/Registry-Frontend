@@ -5,7 +5,7 @@ import '@sgdf/ui/icon'
 import '@sgdf/ui/tag'
 import '@sgdf/ui/avatar'
 import '@sgdf/ui/skeleton'
-import { ChangeDetectionStrategy, Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit, Signal } from '@angular/core'
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit, Signal } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
 import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco'
@@ -25,7 +25,6 @@ const DANGER_ALERTS: number = 2
  * Limits: Reads the home facade only; the backend does the sorting and only the alert count is shown.
  */
 @Component({
-	changeDetection: ChangeDetectionStrategy.OnPush,
 	selector: 'app-home-attention-projects',
 	schemas: [CUSTOM_ELEMENTS_SCHEMA],
 	providers: [provideTranslocoScope('home')],

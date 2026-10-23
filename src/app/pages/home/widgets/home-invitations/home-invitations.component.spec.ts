@@ -48,8 +48,12 @@ describe('HomeInvitationsComponent', () => {
 	})
 
 	it('should load the first invitations when displayed', async () => {
+		// Arrange
+
+		// Act
 		await render()
 
+		// Assert
 		expect(fetch).toHaveBeenCalledWith(0, 3)
 	})
 

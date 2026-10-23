@@ -22,7 +22,7 @@ export class RegistryRequiredDirective implements OnInit {
         const spanElement: unknown = this.renderer.createElement( 'span' )
         const translatedText: string | unknown = this.translateService.translate( 'global.form.required' )
 
-        this.renderer.setProperty( spanElement, 'innerHTML', ` - ${translatedText}` )
+        this.renderer.appendChild( spanElement, this.renderer.createText( ` - ${translatedText}` ) )
         this.setStyle( spanElement )
         this.renderer.appendChild( this.el.nativeElement, spanElement )
     }

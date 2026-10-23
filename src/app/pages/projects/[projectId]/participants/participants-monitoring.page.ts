@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit, signal, Signal, WritableSignal } from '@angular/core'
+import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum'
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit, signal, Signal, WritableSignal } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { FieldTree, FormField } from '@angular/forms/signals'
 import { ActivatedRoute, ParamMap, Router } from '@angular/router'
@@ -48,7 +49,6 @@ const STATUS_PARAM: string = 'status'
  * Limits: Holds no domain state, only the ticks of the roll call, which live in the page and are lost on reload; the group status and participant facades own the data. The members of a group are loaded when its section opens.
  */
 @Component({
-    changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'app-participants-monitoring',
     schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
     providers: [ provideTranslocoScope( 'project-home' ) ],
@@ -140,8 +140,8 @@ export class ParticipantsMonitoringPage implements OnInit {
 
     protected setChecked (change: CheckedChangeModel): void {
         this.checkedIds.update( (current: ReadonlySet<string>): ReadonlySet<string> => {
-            const next: Set<string> = new Set( current )
-            change.ids.forEach( (id: string): void => { change.checked ? next.add( id ) : next.delete( id ) } )
+            const next: Set<string> = new Set<string>( current )
+            change.ids.forEach( (id: string): void => { if (change.checked) { next.add( id ) } else { next.delete( id ) } } )
             return next
         } )
     }
@@ -171,7 +171,7 @@ export class ParticipantsMonitoringPage implements OnInit {
 
     private presetStatusFromUrl (): void {
         const status: string | null = this.route.snapshot.queryParamMap.get( STATUS_PARAM )
-        if (status) {
+        if (status && Object.values( PresenceStatusEnum ).includes( status as PresenceStatusEnum )) {
             this.participants.inputPageSearchParameters( undefined, status, undefined )
             this.model.update( (current: ParticipantsListSearchModel): ParticipantsListSearchModel => ({ ...current, status }) )
         }

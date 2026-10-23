@@ -5,7 +5,7 @@ import '@sgdf/ui/icon'
 import '@sgdf/ui/tab-group'
 import '@sgdf/ui/badge'
 import '@sgdf/ui/list-item'
-import { ChangeDetectionStrategy, Component, computed, CUSTOM_ELEMENTS_SCHEMA, effect, inject, Signal, untracked } from '@angular/core';
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, effect, inject, Signal, untracked } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { provideTranslocoScope, TranslocoPipe } from "@jsverse/transloco";
 import { SelectedProjectFacade } from '@pages/projects/data/state/selected-project/selected-project.facade';
@@ -38,7 +38,6 @@ interface MonitoringTab {
  * Limits: The participant, group and vehicle statuses live in their own pages; it reads the selected project facade only.
  */
 @Component({
-	changeDetection: ChangeDetectionStrategy.OnPush,
 	imports: [
 		TranslocoPipe,
 		NgTemplateOutlet,

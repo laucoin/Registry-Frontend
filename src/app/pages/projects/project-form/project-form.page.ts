@@ -15,7 +15,7 @@ import {
     withAllOptions,
 } from '@pages/projects/project-form/project.form'
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
-import { combineLatest, filter, map, Observable, tap } from 'rxjs'
+import { combineLatest, filter, map, Observable, take, tap } from 'rxjs'
 import { ProjectProfileFacade } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.facade'
 import {
     createProjectProfileInvitationForm,
@@ -119,9 +119,10 @@ export class ProjectFormPage extends BaseFormComponent implements OnDestroy {
     protected handleLoadedElement (): void {
         this.subscriptions.add(
             combineLatest( [ this.facade.project$, this.facade.projectOptionsMetadata$ ] ).pipe(
-                filter( ([ , options ]: [ ProjectModel | undefined, ProjectOptionModel[] ]): boolean =>
-                    !ArrayHelper.isNullOrEmpty( options ),
+                filter( ([ project, options ]: [ ProjectModel | undefined, ProjectOptionModel[] ]): boolean =>
+                    !ArrayHelper.isNullOrEmpty( options ) && (GenericHelper.isNull( this.idParam ) || GenericHelper.nonNull( project )),
                 ),
+                take( 1 ),
                 map( ([ project, options ]: [ ProjectModel | undefined, ProjectOptionModel[] ]): void =>
                     this.fillForm( project, options ),
                 ),
@@ -136,6 +137,7 @@ export class ProjectFormPage extends BaseFormComponent implements OnDestroy {
     }
 
     protected submit (): void {
+        if (this.saving()) return
         const informationValid: boolean = this.isFormValid( this.form )
         if (!this.isFormValid( this.optionsForm ) || !informationValid) {
             this.logInvalidForm( { ...this.model(), options: this.optionsModel() } )
@@ -148,11 +150,7 @@ export class ProjectFormPage extends BaseFormComponent implements OnDestroy {
             ? this.facade.updateProject( this.facade.project()!.id!, dto, ETagHelper.ifMatch( this.facade.project() ) )
             : this.facade.createProject( dto )
 
-        this.subscriptions.add(
-            observable.pipe(
-                tap( (): void => this.afterSave() ),
-            ).subscribe(),
-        )
+        this.save( observable.pipe( tap( (): void => this.afterSave() ) ), false )
     }
 
     private afterSave (): void {

@@ -1,6 +1,6 @@
 import '@sgdf/ui/dialog'
 import '@sgdf/ui/list-item'
-import { ChangeDetectionStrategy, Component, CUSTOM_ELEMENTS_SCHEMA, effect, inject, model, ModelSignal, untracked } from '@angular/core'
+import { Component, CUSTOM_ELEMENTS_SCHEMA, effect, inject, model, ModelSignal, untracked } from '@angular/core'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco'
 import { SelectedProjectFacade } from '@pages/projects/data/state/selected-project/selected-project.facade'
@@ -18,7 +18,6 @@ const PAGE_SIZE: number = 20
  * Limits: Reads the selected project facade only; it neither edits a participant nor leaves the page.
  */
 @Component({
-	changeDetection: ChangeDetectionStrategy.OnPush,
 	selector: 'app-overdue-participants-dialog',
 	imports: [TranslocoPipe, ListComponent, RegistryTemplateDirective, RegularizationRowComponent],
 	providers: [provideTranslocoScope('project-home')],

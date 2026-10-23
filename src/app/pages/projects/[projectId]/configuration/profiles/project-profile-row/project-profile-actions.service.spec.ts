@@ -174,8 +174,11 @@ describe('ProjectProfileActions', () => {
     })
 
     it('opens the project of a profile listed from the user side', () => {
+        // Arrange
+        const select: ElementActionModel = actions.actionsFor(INVITATION).find((action: ElementActionModel): boolean => action.id === 'select')!
+
         // Act
-        actions.actionsFor(INVITATION).find((action: ElementActionModel): boolean => action.id === 'select')!.run!()
+        select.run!()
 
         // Assert
         expect(navigateByUrl).toHaveBeenCalledWith(expect.stringContaining('p2'))

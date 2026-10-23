@@ -4,7 +4,7 @@ import '@sgdf/ui/icon'
 import '@sgdf/ui/button'
 import '@sgdf/ui/skeleton'
 import '@sgdf/ui/relative-time'
-import { ChangeDetectionStrategy, Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit, Signal } from '@angular/core'
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit, Signal } from '@angular/core'
 import { Router, RouterLink } from '@angular/router'
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
 import { provideTranslocoScope, TranslocoPipe, TranslocoService } from '@jsverse/transloco'
@@ -25,7 +25,6 @@ const INITIALS_LENGTH: number = 3
  * Limits: Reads the home facade only; it shows a few cards and links to the project list for the others.
  */
 @Component({
-	changeDetection: ChangeDetectionStrategy.OnPush,
 	selector: 'app-home-favorite-projects',
 	schemas: [CUSTOM_ELEMENTS_SCHEMA],
 	providers: [provideTranslocoScope('home')],

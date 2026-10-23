@@ -19,6 +19,7 @@ describe( 'projectContextGuard', () => {
     let currentUser$: Subject<CurrentUserModel>
     let setCurrentProject: Mock<SessionFacade['setCurrentProject']>
     let notify: Mock<(message: unknown) => void>
+    let globalError: Mock<() => unknown>
     let parseUrl: Mock<(url: string) => UrlTree>
 
     function route (projectId: string | undefined): ActivatedRouteSnapshot {
@@ -39,11 +40,12 @@ describe( 'projectContextGuard', () => {
             return of( undefined )
         } )
         notify = vi.fn()
+        globalError = vi.fn( (): unknown => undefined )
         parseUrl = vi.fn( () => PROJECTS_TREE )
         TestBed.configureTestingModule( {
             providers: [
                 { provide: SessionFacade, useValue: { currentUser$, selectedProject, setCurrentProject } },
-                { provide: UiFacade, useValue: { notify } },
+                { provide: UiFacade, useValue: { notify, globalError } },
                 { provide: Router, useValue: { parseUrl } },
             ],
         } )
@@ -107,6 +109,20 @@ describe( 'projectContextGuard', () => {
 
         // Assert
         expect( await result ).toBe( PROJECTS_TREE )
+    } )
+
+    it( 'does not warn about a missing profile when a global error is already shown', async () => {
+        // Arrange
+        globalError.mockReturnValue( { summary: 'boom' } )
+        setCurrentProject.mockReturnValue( of( undefined ) )
+        const result: Promise<boolean | UrlTree> = firstValueFrom( run( 'p1' ) )
+
+        // Act
+        currentUser$.next( { authorities: [ 'p1_ADMIN' ] } as CurrentUserModel )
+
+        // Assert
+        expect( await result ).toBe( PROJECTS_TREE )
+        expect( notify ).not.toHaveBeenCalled()
     } )
 
     it( 'clears the selected project when leaving the project routes', () => {

@@ -10,7 +10,7 @@ export interface CumulativePageRequest {
 /**
  * Purpose: Builds the page shown by a list that loads its elements batch after batch.
  * Scope: Appends a freshly fetched batch to the page already shown, or rebuilds the shown page from a single reload request.
- * Limits: Pure functions; a reload never asks for more rows than the backend page size cap, so a long list is reloaded up to the last whole batch under that cap.
+ * Limits: Pure functions; a reload never asks for more rows than the backend page size cap, so only the rows under that cap are refreshed and the rows beyond it are kept as shown.
  */
 export class CumulativePageHelper {
     private static readonly MAX_PAGE_SIZE: number = 200
@@ -21,7 +21,7 @@ export class CumulativePageHelper {
         request: CumulativePageRequest,
     ): PageModel<M> {
         if (request.batchSize !== undefined) {
-            return CumulativePageHelper.rebuilt( fetched, request.batchSize )
+            return CumulativePageHelper.rebuilt( current, fetched, request.batchSize )
         }
         if (current && request.page === current.page + 1) {
             return CumulativePageHelper.appended( current, fetched )
@@ -57,7 +57,17 @@ export class CumulativePageHelper {
         }
     }
 
-    private static rebuilt<M extends GenericModel> (fetched: PageModel<M>, batchSize: number): PageModel<M> {
+    private static rebuilt<M extends GenericModel> (current: PageModel<M> | undefined, fetched: PageModel<M>, batchSize: number): PageModel<M> {
+        if (current && current.content.length > fetched.content.length) {
+            return {
+                ...fetched,
+                size: batchSize,
+                page: current.page,
+                hasNext: current.hasNext,
+                totalPages: Math.ceil( fetched.totalElements / batchSize ),
+                content: [ ...fetched.content, ...current.content.slice( fetched.content.length ) ],
+            }
+        }
         const batches: number = Math.max( 1, Math.ceil( fetched.content.length / batchSize ) )
         return {
             ...fetched,

@@ -61,6 +61,18 @@ describe( 'backendHandler', () => {
         expect( request.request.withCredentials ).toBe( false )
     } )
 
+    it( 'leaves requests to a host that merely starts with the backend url untouched', () => {
+        // Arrange
+        const url: string = `${BACKEND_URL}.evil.test/data`
+
+        // Act
+        http.get( url ).subscribe()
+        const request: TestRequest = controller.expectOne( url )
+
+        // Assert
+        expect( request.request.withCredentials ).toBe( false )
+    } )
+
     it( 'sends backend requests with credentials and resolves url placeholders', () => {
         // Arrange
         const url: string = `${BACKEND_URL}/users/${CURRENT_USER_ID}/projects/${SELECT_PROFILE_PROJECT_ID}`
@@ -123,6 +135,36 @@ describe( 'backendHandler', () => {
         expect( request.request.headers.get( 'X-XSRF-TOKEN' ) ).toBe( 'csrf-1' )
     } )
 
+    it( 'keeps the csrf token of the authenticated responses when a request without credentials answers another one', () => {
+        // Arrange
+        http.get( `${BACKEND_URL}/first` ).subscribe()
+        controller.expectOne( `${BACKEND_URL}/first` ).flush( {}, { headers: { 'X-XSRF-TOKEN': 'csrf-valid' } } )
+        http.get( `${BACKEND_URL}/api/v2/metadata/profiles/status` ).subscribe()
+        controller.expectOne( `${BACKEND_URL}/api/v2/metadata/profiles/status` ).flush( {}, { headers: { 'X-XSRF-TOKEN': 'csrf-empty' } } )
+
+        // Act
+        http.post( `${BACKEND_URL}/second`, {} ).subscribe()
+        const request: TestRequest = controller.expectOne( `${BACKEND_URL}/second` )
+
+        // Assert
+        expect( request.request.headers.get( 'X-XSRF-TOKEN' ) ).toBe( 'csrf-valid' )
+    } )
+
+    it( 'ignores the csrf token of a failed request without credentials', () => {
+        // Arrange
+        http.get( `${BACKEND_URL}/first` ).subscribe()
+        controller.expectOne( `${BACKEND_URL}/first` ).flush( {}, { headers: { 'X-XSRF-TOKEN': 'csrf-valid' } } )
+        http.get( `${BACKEND_URL}/api/v2/metadata/profiles/status` ).subscribe( { error: (): void => undefined } )
+        controller.expectOne( `${BACKEND_URL}/api/v2/metadata/profiles/status` ).flush( null, { status: 500, statusText: 'Down', headers: { 'X-XSRF-TOKEN': 'csrf-empty' } } )
+
+        // Act
+        http.post( `${BACKEND_URL}/second`, {} ).subscribe()
+        const request: TestRequest = controller.expectOne( `${BACKEND_URL}/second` )
+
+        // Assert
+        expect( request.request.headers.get( 'X-XSRF-TOKEN' ) ).toBe( 'csrf-valid' )
+    } )
+
     it.each( [ 0, 502, 503 ] )( 'maps status %i to a service unavailable error', (status: number) => {
         // Arrange
         let failure: ErrorModel | undefined
@@ -136,7 +178,7 @@ describe( 'backendHandler', () => {
         expect( failure?.title ).toBe( 'global.notifications.503.title' )
     } )
 
-    it( 'redirects to the login page without refreshing when a no-auth path answers 401', () => {
+    it( 'does not refresh nor redirect twice when the refresh endpoint answers 401', () => {
         // Arrange
         let failure: ErrorModel | undefined
 
@@ -145,7 +187,7 @@ describe( 'backendHandler', () => {
         controller.expectOne( `${BACKEND_URL}${REFRESH_PATH}` ).flush( null, { status: 401, statusText: 'Unauthorized' } )
 
         // Assert
-        expect( redirectToLogin ).toHaveBeenCalledTimes( 1 )
+        expect( redirectToLogin ).not.toHaveBeenCalled()
         expect( refreshToken ).not.toHaveBeenCalled()
         expect( failure?.status ).toBe( 401 )
     } )

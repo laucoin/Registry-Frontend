@@ -1,3 +1,4 @@
+import { notifyOnError } from '@shared/helpers/rx.helper'
 import { ParticipantTypeEnum } from '@shared/models/enumeration/participant-type.enum'
 import { KeyValuePipe, NgTemplateOutlet, TitleCasePipe, UpperCasePipe } from '@angular/common'
 import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, input, InputSignal, model, ModelSignal, Signal } from '@angular/core'
@@ -170,9 +171,10 @@ export class MovementElementComponent extends GenericElementComponent {
 
     protected reverseMovement(content: MovementContentModel[]): void {
         const type: string = this.movement().type.value === MovementTypeEnum.IN ? MovementTypeEnum.OUT : MovementTypeEnum.IN
-        this.run(this.movement().contentType === ParticipantTypeEnum.GUEST
-                 ? this.facade.createGuestMovement(this.reverseGuestMovement(type, content))
-                 : this.facade.createRegisteredMovement(this.reverseRegisteredMovement(type, content)))
+        this.run((this.movement().contentType === ParticipantTypeEnum.GUEST
+                  ? this.facade.createGuestMovement(this.reverseGuestMovement(type, content))
+                  : this.facade.createRegisteredMovement(this.reverseRegisteredMovement(type, content))
+        ).pipe(notifyOnError(this.uiFacade)))
     }
 
     private reverseRegisteredMovement(type: string, content: MovementContentModel[]): MovementDto {

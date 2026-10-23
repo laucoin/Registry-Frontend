@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit, Signal } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit, Signal } from '@angular/core';
 import { provideTranslocoScope } from "@jsverse/transloco";
 import { SelectedProjectFacade } from '@pages/projects/data/state/selected-project/selected-project.facade';
 import { NotificationModel } from '@shared/models/model/notification.model';
@@ -12,7 +12,6 @@ import { injectAutoRefresh } from '@shared/helpers/refresh/inject-auto-refresh';
  * Limits: Reads the selected project facade only; it shows no more than the card shows.
  */
 @Component({
-	changeDetection: ChangeDetectionStrategy.OnPush,
 	imports: [
 		PlannedMovementCardComponent
 	],

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, Signal } from '@angular/core'
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, Signal } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import { CurrentUserHelper } from '@core/authentication/tool/current-user.helper'
 import { SessionFacade } from '@core/registry/state/session.facade'
@@ -16,7 +16,6 @@ import { UserAuthorityEnum } from '@shared/models/enumeration/user-authority.enu
  * Limits: Loads nothing itself; each widget reads its own data.
  */
 @Component({
-	changeDetection: ChangeDetectionStrategy.OnPush,
 	selector: 'app-home',
 	schemas: [CUSTOM_ELEMENTS_SCHEMA],
 	providers: [provideTranslocoScope('home')],

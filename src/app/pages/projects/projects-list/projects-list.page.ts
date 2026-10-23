@@ -135,7 +135,7 @@ export class ProjectsListPage {
 
     protected initials(project: ProjectModel): string {
         const words: string[] = project.name.trim().split(/\s+/)
-        const letters: string = words.length > 1 ? words.slice(0, INITIALS_LENGTH).map((word: string): string => word[0]).join('') : words[0].slice(0, INITIALS_LENGTH)
+        const letters: string = words.length > 1 ? words.slice(0, INITIALS_LENGTH).map((word: string): string => Array.from(word)[0]).join('') : Array.from(words[0]).slice(0, INITIALS_LENGTH).join('')
         return letters.toUpperCase()
     }
 

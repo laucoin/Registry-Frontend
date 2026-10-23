@@ -107,8 +107,11 @@ describe( 'ProjectFacade', () => {
     } )
 
     it( 'removes a favorite project from the favorites', () => {
+        // Arrange
+        const project: ProjectModel = { id: 'a', favorite: true } as ProjectModel
+
         // Act
-        facade.toggleFavorite( { id: 'a', favorite: true } as ProjectModel )
+        facade.toggleFavorite( project )
 
         // Assert
         expect( setFavoriteById ).toHaveBeenCalledWith( 'a', false )
@@ -129,6 +132,8 @@ describe( 'ProjectFacade', () => {
     } )
 
     it( 'restarts from the first page when the favorite filter changed', () => {
+        // Arrange
+
         // Act
         facade.inputPageSearchParameters( undefined, undefined, undefined, true )
         facade.fetchProjectsPage( 3, 10 )

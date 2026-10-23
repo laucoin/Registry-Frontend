@@ -8,9 +8,17 @@ on this Angular Client-Side Rendering (CSR) project.
 ## 1. Language & Communication
 
 - **User Interaction:** All direct communication, questions, and validations with the user **must** be conducted in
-  **French**.
-- **Code & Comments:** All source code, variable names, functions, and inline comments **must** be written in **US
-  English**.
+  **French**. Be concise and factual: no pleasantries, 1–2 simple sentences per explanation, except when a decision is
+  requested (see below).
+- **Interactive mode first:** always prefer the interactive mode (`AskUserQuestion`) over a free-text question or a
+  silent assumption whenever a decision belongs to the user (design choice, scope, naming, trade-off, ambiguous
+  request, documentation update). Each question must carry enough context to decide without re-reading the code:
+  what is at stake, the relevant code or spec reference (`file:line`), 2–4 options each with its consequences and
+  trade-offs, and a recommended option placed first. Group related decisions in a single call. Do not ask when a
+  convention of this document or the existing code already settles the point.
+- **Code & Comments:** All source code, variable names, functions, inline comments, and commit messages **must** be
+  written in **US English**.
+- **Strict Scope:** Address only the requested task. Do not refactor surrounding code or fix unrelated items.
 
 ---
 
@@ -29,6 +37,9 @@ on this Angular Client-Side Rendering (CSR) project.
   to recolor an `@sgdf/ui` component or to rebuild one (no `--sgdf-*` tokens in utility classes for colors). If what is
   needed is not possible with `@sgdf/ui`, do not work around it: suggest a change to `@sgdf/ui` when it makes sense
   architecturally, and fall back to a custom implementation only if the developer declines or it is not relevant.
+- **`@sgdf/ui` ownership:** the developer owns the library (source: `../sgdf-ui`) and can change it. When an
+  architectural review finds that a change belongs in `@sgdf/ui`, report it rather than accepting an override or a
+  workaround in this project.
 
 ---
 
@@ -102,7 +113,9 @@ The source code is organized into three core directories:
 
 - **Formatting & Linting:** Strictly adhere to project linting rules (`ESLint`, Prettier, etc.).
 - **Code Quality:** Pay special attention to:
-    - **Accessibility (a11y):** Semantic HTML, ARIA attributes, keyboard navigation.
+    - **Accessibility (a11y):** Semantic HTML, ARIA attributes, keyboard navigation. `@sgdf/ui` sets accessibility
+      attributes from the properties passed to its components: check what the library handles (`custom-elements.json`,
+      `.d.ts`) before reporting a gap, and never duplicate what it already provides.
     - **Performance:** CSR optimization, aggressive route lazy loading, minimal initial bundle size, change detection
       efficiency with signals (`OnPush` by default where applicable).
     - **Readability & Maintainability:** Clean code principles, descriptive naming conventions.
@@ -129,71 +142,38 @@ The source code is organized into three core directories:
 
 ---
 
-## 6. Multi-Agent Review Process (Mandatory Gate)
+## 6. Skills (mandatory routing)
 
-Before any code modification or new feature is finalized or committed, it **must pass a mandatory multi-agent review**
-conducted by 4 distinct virtual agent perspectives.
+When a request matches a skill, **load and follow it before doing anything else**. Do not improvise the procedure.
 
-Each reviewing agent must evaluate the proposed changes, provide feedback if needed, and assign a **formal rating out of
-10** for their specific category:
+| Request                                                    | Skill         |
+|------------------------------------------------------------|---------------|
+| Review a diff, file or branch; "review", "check my change" | `code-review` |
+| Add, write, extend or fix tests                            | `test`        |
+| Create a commit, plan commit scopes                        | `commit`      |
+| Compare the code against the documentation                 | `doc-drift`   |
 
-1. **Architecture Agent (`/10`):**
-    - Verifies strict adherence to directory layout (`core/`, `pages/`, `shared/`).
-    - Ensures strict data flow enforcement (`api` → `store` → `facade`). Components must only talk to facades.
-    - Validates that CSR runtime configuration is properly decoupled and not baked into build artifacts.
-
-2. **TechLead Agent (`/10`):**
-    - Enforces clean code rules, method size limits (<= 25 lines), and explicit naming conventions.
-    - Validates RxJS readability, operator inline abstraction, error swallowing in `rxMethod` pipes (`catchError`), and
-      signal usage.
-    - Checks bundle budget compliance, absence of dead code, and adherence to security / non-negotiable invariants.
-
-3. **Testeur / QA Agent (`/10`):**
-    - Ensures all public methods and facades have associated unit tests (using Jest or Vitest).
-    - Validates strict compliance with the **AAA pattern** and required section comments (`// Arrange`, `// Act`,
-      `// Assert`).
-    - Verifies test coverage for edge cases, error handling branches, and signal state transitions.
-
-4. **UI/UX & Accessibility (a11y) Designer Agent (`/10`):**
-    - Checks semantic HTML structure, keyboard navigation, ARIA roles, and accessibility standards.
-    - Ensures visual consistency through `shared/ui/` components and global theme application.
-    - Validates that user loading states are scoped per widget/section rather than global full-page blocking overlays.
-    - Verifies user error message formatting and clarity.
-
-*Review Gate Validation Criteria:*
-
-- A minimum score of **8/10** is required for every individual category.
-- If any score falls below **8/10**, the review is rejected and required refactorings must be completed before
-  re-evaluation.
-- Development is complete only when all 4 agents deliver their rating and give explicit approval.
+`code-review` and `test` run **only** before a commit or when the user asks for them; never automatically after an
+edit. Before each commit, `code-review` must give every one of its 5 ratings ≥ 8/10, and the new code must be covered
+by tests.
 
 ---
 
-## 7. Testing Guidelines
+## 7. Build, Tests & Commands
 
-- **Framework:** Jest or Vitest.
+- **Gate:** `pnpm lint`, `pnpm build` and `pnpm test:coverage` are the pre-commit authority.
+  `pnpm test` is the faster inner loop.
 - **Coverage:** `pnpm test:coverage` measures the whole `src/app` and enforces the thresholds of `angular.json`.
   Thresholds only go up: raise them whenever the measured coverage rises.
-- **Fixtures:** shared test data and helpers live in `shared/helpers/testing/` and are excluded from coverage.
-- **Method size:** the 25-line rule applies to specs as well.
-- **Pattern:** Strictly use the **AAA pattern** (`// Arrange`, `// Act`, `// Assert`).
-- **Comments:** Every test must explicitly include these exact section comments with **no additional detail**:
-  ```typescript
-  // Arrange
-  // ...
-
-  // Act
-  // ...
-
-  // Assert
-  // ...
-  ```
+- Test writing conventions (AAA, fixtures, naming) are in the `test` skill.
 
 ## 8. Documentation (doc.laucoin.fr)
 
 - Reference: https://doc.laucoin.fr/registry
 - Rule: The agent must always ask the user if documentation updates are relevant for any given feature or change, and
   where the documentation is located before attempting any updates.
+- Separation: never modify documentation during code steps, never touch frontend source during a specification step.
+  A scope change or unforeseen case means updating the specification **first**.
 - Conflict/Missing: If a user request, or a specification fetched from the documentation hub during spec-driven
   development, would require violating a rule in this document, stop before implementing it. Do not silently comply with
   the request, and do not silently ignore the spec. Propose one of two paths to the user: update this document to
@@ -221,14 +201,22 @@ This exception is standing and does not require asking the user each time — ev
 
 ## 10. Git & Version Control
 
-- Commits: The agent is authorized to make commits.
-- Pushing Prohibited: The agent must never perform a git push.
-- Commit Breakdown: Commit scopes must be strictly planned and agreed upon with the user before development begins,
-  breaking work down into the smallest functionally testable increments.
-- Work-in-progress gate: If a feature already implemented locally covers a complete testable functional scope but hasn't
-  been committed, the agent refuses to start any new, unrelated feature. Only fixes, review feedback, or adjustments to
-  that pending feature are allowed until it is committed. Local commits on the current branch are enough: the developer
-  decides when to push and open the PR, and may ask the agent to keep working on the same branch meanwhile.
+- **Commits:** the agent may commit, in Conventional Commits format `<type>(<scope>): <short summary>`,
+  `type` ∈ `feat, fix, chore, docs, style, refactor, perf, test` (semantic-release derives versions from them).
+  Use the `commit` skill.
+- **The git remote is read-only:** no write action on it (push, creating or editing a pull request, issue or release,
+  etc.). Reads (fetch, viewing pull requests and issues) are allowed. Write actions are also denied in
+  `.claude/settings.json`.
+- **Scopes** are planned and agreed with the user before development begins, broken down into the smallest
+  functionally testable increments.
+- **Pre-commit:** `pnpm lint`, `pnpm build` and `pnpm test:coverage` must pass. Never commit a failing build or a
+  coverage drop.
+- **Work-in-progress gate:** while a complete, testable feature is implemented but uncommitted, refuse any new unrelated
+  feature; only fixes, review feedback and adjustments to the pending feature are allowed. Local commits on the current
+  branch are enough: the developer decides when to push and open the PR, and may ask the agent to keep working on the
+  same branch meanwhile.
+- **Misunderstanding / bug:** stop immediately, never stack patch commits on a broken change. Explain the issue in one
+  sentence so the user can `git reset`.
 
 ## 11. Non-Negotiable Technical Invariants
 
@@ -248,8 +236,6 @@ This exception is standing and does not require asking the user each time — ev
   attribute, always via `BrowserService`; the `@sgdf/ui` entry point is never imported for it (it would pull the whole library). The SGDF tokens (`--sgdf-*`) belong to `@sgdf/ui`:
   no theme key is added to `config.json`. PrimeNG ships without theme (`theme: 'none'`) until it is removed. Raise any
   change to this mechanism with the user rather than working around it silently.
-- The production build enforces bundle budgets — an initial bundle past 1 MB or a component stylesheet past 8 kB is a
-  hard failure, not a nuisance.
 - Static Web Serving (CSR): Production output is hosted as pure static assets (e.g. NGINX / Caddy). Ensure web server
   fallback rules (URL rewriting to index.html) are configured for HTML5 client-side routing.
 - Hardening headers (including a CSP) are set in `nginx.conf`. The CSP must stay as strict as the app allows: no

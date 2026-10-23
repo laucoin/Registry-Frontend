@@ -7,7 +7,7 @@ import '@sgdf/ui/list'
 import '@sgdf/ui/list-item'
 import '@sgdf/ui/avatar'
 import '@sgdf/ui/skeleton'
-import { ChangeDetectionStrategy, Component, computed, CUSTOM_ELEMENTS_SCHEMA, input, InputSignal, output, OutputEmitterRef, Signal } from '@angular/core';
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, input, InputSignal, output, OutputEmitterRef, Signal } from '@angular/core';
 import { provideTranslocoScope, TranslocoPipe } from "@jsverse/transloco";
 import { CustomDateFormatPipe } from '@shared/helpers/pipe/custom-date-format.pipe';
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe';
@@ -34,7 +34,6 @@ interface PlannedMovementRow {
  * Limits: Holds no data and loads nothing; the parent feeds the movements and reacts to the retry.
  */
 @Component({
-	changeDetection: ChangeDetectionStrategy.OnPush,
 	imports: [
 		TranslocoPipe,
 		PluralTranslationPipe,

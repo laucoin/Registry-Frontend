@@ -6,7 +6,7 @@ import '@sgdf/ui/list'
 import '@sgdf/ui/list-item'
 import '@sgdf/ui/skeleton'
 import '@sgdf/ui/tag'
-import { ChangeDetectionStrategy, Component, computed, CUSTOM_ELEMENTS_SCHEMA, effect, input, InputSignal, output, OutputEmitterRef, Signal, untracked } from '@angular/core'
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, effect, input, InputSignal, output, OutputEmitterRef, Signal, untracked } from '@angular/core'
 import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco'
 import { GroupMembersBlock } from '@pages/projects/[projectId]/participants/data/model/group-status-store.model'
 import { CumulativePageHelper } from '@shared/helpers/store/cumulative-page.helper'
@@ -44,7 +44,6 @@ export interface GroupMembersRequestModel {
  * Limits: Owns no data and fetches nothing; the page decides what a request does, gives back the members it loaded and keeps the checked participants. The groups wait while a batch of members is loading.
  */
 @Component({
-	changeDetection: ChangeDetectionStrategy.OnPush,
 	selector: 'app-group-status-list',
 	imports: [TranslocoPipe, PluralTranslationPipe, SectionErrorComponent, MonitoringRowComponent, LoadMoreComponent],
 	providers: [provideTranslocoScope('project-home')],
@@ -74,6 +73,17 @@ export class GroupStatusListComponent {
 	protected readonly membersLoading: Signal<boolean> = computed((): boolean =>
 		Object.values(this.membersByGroup()).some((block: GroupMembersBlock): boolean => block.loading || block.silentLoading))
 
+	private readonly rowsByGroup: Signal<Record<string, MonitoringRowModel[]>> = computed((): Record<string, MonitoringRowModel[]> =>
+		Object.fromEntries(Object.entries(this.membersByGroup()).map(([groupId, block]: [string, GroupMembersBlock]): [string, MonitoringRowModel[]] => [
+			groupId,
+			(block.element?.content ?? []).map((member: ParticipantModel): MonitoringRowModel => MonitoringRowHelper.fromParticipant(member)),
+		])))
+	private readonly checkedCountByGroup: Signal<Record<string, number>> = computed((): Record<string, number> =>
+		Object.fromEntries(Object.entries(this.rowsByGroup()).map(([groupId, rows]: [string, MonitoringRowModel[]]): [string, number] => [
+			groupId,
+			rows.filter((row: MonitoringRowModel): boolean => this.checkedIds().has(row.id)).length,
+		])))
+
 	public constructor() {
 		// A section opened by `expanded` does not announce itself: the only group asks for its members as soon as it is shown.
 		effect((): void => {
@@ -85,15 +95,11 @@ export class GroupStatusListComponent {
 	}
 
 	protected checkedCount(group: GroupModel): number {
-		return this.loadedIds(group).filter((id: string): boolean => this.checkedIds().has(id)).length;
+		return this.checkedCountByGroup()[group.id] ?? 0;
 	}
 
 	protected rowCheckedChange(id: string, checked: boolean): void {
 		this.checkedChange.emit({ ids: [id], checked });
-	}
-
-	private loadedIds(group: GroupModel): string[] {
-		return (this.members(group)?.element?.content ?? []).map((member: ParticipantModel): string => member.id);
 	}
 
 	protected members(group: GroupModel): GroupMembersBlock | undefined {
@@ -101,7 +107,7 @@ export class GroupStatusListComponent {
 	}
 
 	protected rows(group: GroupModel): MonitoringRowModel[] {
-		return (this.members(group)?.element?.content ?? []).map((member: ParticipantModel): MonitoringRowModel => MonitoringRowHelper.fromParticipant(member))
+		return this.rowsByGroup()[group.id] ?? []
 	}
 
 	protected hasMoreMembers(group: GroupModel): boolean {

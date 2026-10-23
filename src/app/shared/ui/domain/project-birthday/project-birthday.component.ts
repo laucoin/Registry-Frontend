@@ -7,7 +7,7 @@ import '@sgdf/ui/list'
 import '@sgdf/ui/list-item'
 import '@sgdf/ui/avatar'
 import '@sgdf/ui/skeleton'
-import { ChangeDetectionStrategy, Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit, Signal } from '@angular/core';
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit, Signal } from '@angular/core';
 import { provideTranslocoScope, TranslocoPipe } from "@jsverse/transloco";
 import { SelectedProjectFacade } from '@pages/projects/data/state/selected-project/selected-project.facade';
 import { AgeHelper } from '@shared/helpers/age.helper';
@@ -33,7 +33,6 @@ interface BirthdayRow {
  * Limits: Reads the selected project facade only; it shows no more than a few rows and links to no page.
  */
 @Component({
-	changeDetection: ChangeDetectionStrategy.OnPush,
 	imports: [
 		TranslocoPipe,
 		PluralTranslationPipe,

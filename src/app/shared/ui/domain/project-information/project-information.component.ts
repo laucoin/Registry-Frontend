@@ -4,7 +4,7 @@ import '@sgdf/ui/table-cell'
 import '@sgdf/ui/icon'
 import '@sgdf/ui/tag'
 import '@sgdf/ui/button'
-import { ChangeDetectionStrategy, Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, Signal } from '@angular/core'
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, Signal } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import { CurrentUserHelper } from '@core/authentication/tool/current-user.helper'
 import { SessionFacade } from '@core/registry/state/session.facade'
@@ -23,7 +23,6 @@ import { SelectOptionModel } from '@shared/models/model/select-option.model'
  * Limits: Reads the session facade only; never calls the backend.
  */
 @Component({
-	changeDetection: ChangeDetectionStrategy.OnPush,
 	imports: [TranslocoPipe, DateFormatPipe, RouterLink],
 	selector: 'app-project-information',
 	schemas: [CUSTOM_ELEMENTS_SCHEMA],

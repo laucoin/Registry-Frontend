@@ -1,5 +1,5 @@
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
-import { ChangeDetectionStrategy, Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, signal, Signal, WritableSignal } from '@angular/core'
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, signal, Signal, WritableSignal } from '@angular/core'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { TranslocoPipe } from '@jsverse/transloco'
 import '@sgdf/ui/button'
@@ -23,7 +23,6 @@ const VARIANTS: Record<string, string> = {
  * Limits: Shows one request at a time (a new one replaces the pending one) and does not build the request: the element actions do.
  */
 @Component({
-	changeDetection: ChangeDetectionStrategy.OnPush,
 	selector: 'app-confirmation-dialog',
 	imports: [TranslocoPipe],
 	schemas: [CUSTOM_ELEMENTS_SCHEMA],

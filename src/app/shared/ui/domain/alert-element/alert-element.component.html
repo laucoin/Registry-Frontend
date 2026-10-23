@@ -74,6 +74,6 @@
     <sgdf-tag appearance="soft" pill [variant]="statusVariant()">{{ statusLabel() }}</sgdf-tag>
     @if (communicationsLayerOpened()) {
         <app-alert-communications-list [alert]="alert()"/>
-        <app-communication-form slot="footer" [initialAlert]="alert()" [redirect]="false"/>
+        <app-communication-form slot="footer" [initialAlert]="alert()"/>
     }
 </sgdf-drawer>

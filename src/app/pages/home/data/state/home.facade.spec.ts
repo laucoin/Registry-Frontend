@@ -41,20 +41,35 @@ describe('HomeFacade', () => {
 	})
 
 	it('should keep only the projects with an active alert in the attention list', () => {
-		expect(facade.attention().map((item: ProjectModel): string => item.id)).toEqual(['b'])
+		// Arrange
+
+		// Act
+		const ids: string[] = facade.attention().map((item: ProjectModel): string => item.id)
+
+		// Assert
+		expect(ids).toEqual(['b'])
 	})
 
 	it('should request a small first page of favorites and of alerted projects', () => {
+		// Arrange
+
+		// Act
 		facade.fetchFavorites()
 		facade.fetchAttention()
 
+		// Assert
 		expect(fetchFavorites).toHaveBeenCalledWith({ page: 0, size: 3 })
 		expect(fetchAttention).toHaveBeenCalledWith({ page: 0, size: 5 })
 	})
 
 	it('should remove a favorite then reload the favorites', () => {
-		facade.removeFavorite(project('a', 0))
+		// Arrange
+		const favorite: ProjectModel = project('a', 0)
 
+		// Act
+		facade.removeFavorite(favorite)
+
+		// Assert
 		expect(setFavoriteById).toHaveBeenCalledWith('a', false)
 		expect(fetchFavorites).toHaveBeenCalledTimes(1)
 	})

@@ -2,11 +2,12 @@ import { Signal, signal } from '@angular/core'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslocoService } from '@jsverse/transloco'
-import { of } from 'rxjs'
+import { of, throwError } from 'rxjs'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
 import { RegistryConfig } from '@core/config/registry.config'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { UiFacade } from '@core/registry/state/ui.facade'
+import { ErrorModel } from '@shared/models/model/error.model'
 import { MovementFacade } from '@pages/projects/[projectId]/movements/data/state/movement.facade'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
 import { IntervalPipe } from '@shared/helpers/pipe/interval.pipe'
@@ -205,5 +206,17 @@ describe( 'MovementElementComponent', () => {
         // Assert
         expect( facade[ used ] ).toHaveBeenCalledWith( expect.objectContaining( { type: 'OUT' } ) )
         expect( facade[ unused ] ).not.toHaveBeenCalled()
+    } )
+
+    it( 'notifies the user when the reversed movement cannot be created', () => {
+        // Arrange
+        const component: MovementElementComponent = create( { ...ELEMENT, contentType: 'GUEST', type: { value: 'IN' } } )
+        facade[ 'createGuestMovement' ].mockReturnValue( throwError( (): ErrorModel => ErrorModel.of( 'Refused', 'Not allowed' ) ) )
+
+        // Act
+        ;(component as unknown as { reverseMovement: (content: object[]) => void }).reverseMovement( [] )
+
+        // Assert
+        expect( TestBed.inject( UiFacade ).notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'Refused', detail: 'Not allowed' } ) )
     } )
 } )

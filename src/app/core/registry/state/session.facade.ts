@@ -99,7 +99,10 @@ export class SessionFacade {
     }
 
     public redirectToLogin(): void {
-        SessionStorageUtils.set(REDIRECT_URI, this.browser.pathname)
+        const current: string = this.browser.relativeUrl
+        if (!current.includes(RegistryRouteEnum.LOGIN) && !current.includes(RegistryRouteEnum.AUTH_CALLBACK)) {
+            SessionStorageUtils.set(REDIRECT_URI, current)
+        }
         this.session.reset()
         this.router.navigateByUrl(RouteHelper.absolute(RegistryRouteEnum.LOGIN))
     }
@@ -252,7 +255,7 @@ export class SessionFacade {
 
     private navigateAfterSignIn(): void {
         const redirectUri: string = (SessionStorageUtils.get(REDIRECT_URI) as string | undefined) ?? RegistryRouteEnum.HOME
-        this.router.navigateByUrl(!redirectUri.includes(RegistryRouteEnum.AUTH_CALLBACK) ? redirectUri : RegistryRouteEnum.HOME)
+        this.router.navigateByUrl(!redirectUri.includes(RegistryRouteEnum.AUTH_CALLBACK) ? redirectUri : RegistryRouteEnum.HOME, { replaceUrl: true })
             .then((): void => SessionStorageUtils.delete(REDIRECT_URI))
     }
 

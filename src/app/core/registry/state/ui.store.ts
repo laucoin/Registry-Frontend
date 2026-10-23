@@ -41,15 +41,18 @@ export const UiStore = signalStore(
         }
     } ),
     withMethods( (store, browser: BrowserService = inject( BrowserService )) => ({
-        setGlobalError: (error: ErrorModel): void => patchState( store, {
-            error: {
-                severity: 'error',
-                summary: error.title,
-                detail: error.message,
-                icon: 'pi pi-exclamation-triangle',
-                closable: true,
-            },
-        } ),
+        setGlobalError: (error: ErrorModel): void => {
+            if (store.error()) return
+            patchState( store, {
+                error: {
+                    severity: 'error',
+                    summary: error.title,
+                    detail: error.message,
+                    icon: 'pi pi-exclamation-triangle',
+                    closable: true,
+                },
+            } )
+        },
         startLanguageChange: (language: string): void => patchState( store, { pendingLanguage: language } ),
         stopLanguageChange: (): void => patchState( store, { pendingLanguage: undefined } ),
         updateRefreshMode: (refreshMode: RefreshModeEnum): void => patchState( store, { refreshMode: refreshMode } ),

@@ -13,7 +13,7 @@ export abstract class GenericProjectApi extends GenericApi {
 
     protected buildRequestBaseUrl (projectId: string | undefined): string {
         if (projectId != undefined) {
-            return this.baseUrl.replace( SELECT_PROFILE_PROJECT_ID, projectId )
+            return this.baseUrl.replace( SELECT_PROFILE_PROJECT_ID, (): string => encodeURIComponent( projectId ) )
         }
         return this.baseUrl
     }

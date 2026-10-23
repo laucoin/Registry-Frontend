@@ -1,7 +1,7 @@
 import '@sgdf/ui/icon'
 import '@sgdf/ui/tag'
 import '@sgdf/ui/tile'
-import { ChangeDetectionStrategy, Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, Signal } from '@angular/core'
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, Signal } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
 import { RouteHelper } from '@shared/helpers/route.helper'
@@ -19,7 +19,6 @@ import { ProjectModel } from '@shared/models/model/project.model'
  * Limits: Reads the selected project only; never calls the backend.
  */
 @Component({
-	changeDetection: ChangeDetectionStrategy.OnPush,
 	selector: 'app-configuration',
 	schemas: [CUSTOM_ELEMENTS_SCHEMA],
 	providers: [provideTranslocoScope('project-configuration')],

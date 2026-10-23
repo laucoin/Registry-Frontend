@@ -305,6 +305,13 @@
       "invalid-action": "🙅‍♂️ L’action choisie n’est pas prise en charge."
     },
     "notifications": {
+      "startup": {
+        "title": "🛠️ Application indisponible"
+      },
+      "auth-callback": {
+        "title": "🔐 Connexion impossible",
+        "message": "Le fournisseur d’identité n’a pas renvoyé de code d’autorisation. Réessayes de te connecter."
+      },
       "503": {
         "title": "🥴 Serveur indisponible",
         "message": "Fichtre ! Le serveur semble être indisponible 😭. Recharges la page, réessayes plus tard ou contactes l’administrateur."

@@ -22,9 +22,13 @@ describe('HomePage', () => {
 	})
 
 	it('should show the four home widgets', async () => {
+		// Arrange
+
+		// Act
 		await render(true)
 		const element: HTMLElement = fixture.nativeElement
 
+		// Assert
 		expect(element.querySelector('app-home-favorite-projects')).not.toBeNull()
 		expect(element.querySelector('app-home-invitations')).not.toBeNull()
 		expect(element.querySelector('app-home-attention-projects')).not.toBeNull()
@@ -32,8 +36,12 @@ describe('HomePage', () => {
 	})
 
 	it('should offer to create a project only to a user allowed to', async () => {
+		// Arrange
+
+		// Act
 		await render(false)
 
+		// Assert
 		expect(fixture.nativeElement.querySelector('sgdf-button')).toBeNull()
 	})
 })

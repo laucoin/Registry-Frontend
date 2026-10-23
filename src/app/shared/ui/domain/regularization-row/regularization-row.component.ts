@@ -1,7 +1,7 @@
 import '@sgdf/ui/avatar'
 import '@sgdf/ui/icon'
 import '@sgdf/ui/list-item'
-import { ChangeDetectionStrategy, Component, computed, CUSTOM_ELEMENTS_SCHEMA, input, InputSignal, Signal } from '@angular/core'
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, input, InputSignal, Signal } from '@angular/core'
 import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco'
 import { DateHelper } from '@shared/helpers/date.helper'
 import { MonitoringRowHelper } from '@shared/helpers/monitoring-row.helper'
@@ -16,8 +16,7 @@ import { ParticipantModel } from '@shared/models/model/participant.model'
  * Limits: Receives the participant and holds no state; it neither loads nor edits anything.
  */
 @Component({
-	changeDetection: ChangeDetectionStrategy.OnPush,
-	selector: 'sgdf-list-item[appRegularizationRow]',
+	selector: 'sgdf-list-item[appRegularizationRow], app-regularization-row',
 	imports: [TranslocoPipe, CustomDateFormatPipe, IntervalPipe],
 	providers: [provideTranslocoScope('project-home')],
 	schemas: [CUSTOM_ELEMENTS_SCHEMA],
