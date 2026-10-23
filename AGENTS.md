@@ -134,6 +134,10 @@ The source code is organized into three core directories:
       callbacks:** inside a reactive (`rxMethod`/pipe) operator's own callback, a **single** parameter may be named with
       just one or two letters (e.g. `it`) instead of a full descriptive name; this exception applies only there and only
       when the callback has no more than one parameter.
+    - **E2E Test Ids:** every interactive or asserted element of a template carries
+      `data-testid="<zone>-<element>-<role>"` (lowercase kebab words, `zone` = template name, unique within the
+      template). A list row uses `<entity>-row` plus `[attr.data-id]="<entity>.id"`; the children of shared components
+      keep fixed ids. `testid.spec.ts` enforces it.
     - **RxJS Readability:** In reactive (`rxMethod`/pipe) flows, factor operators and intermediate steps into small,
       well-named private methods so the overall flow stays easy to read at a glance rather than one long chained pipe.
       Ideally, each operator call fits on a **single line**; if an operator's logic needs to spread onto a second line,
