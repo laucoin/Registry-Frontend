@@ -89,6 +89,20 @@ describe( 'ParticipantsMonitoringPage', () => {
         expect( tabs() ).toEqual( [] )
     } )
 
+    it( 'announces the loading to assistive technologies while the tabs are not ready', () => {
+        // Arrange
+        queryParams.next( convertToParamMap( {} ) )
+
+        // Act
+        fixture = TestBed.createComponent( ParticipantsMonitoringPage )
+        fixture.detectChanges()
+
+        // Assert
+        const announcements: string[] = Array.from<HTMLElement>( fixture.nativeElement.querySelectorAll( '[role="status"]' ) ).map( (it: HTMLElement): string => it.textContent.trim() )
+        expect( announcements ).toContain( 'global.list.loading' )
+        expect( fixture.nativeElement.querySelector( 'sgdf-skeleton' ).getAttribute( 'aria-hidden' ) ).toBe( 'true' )
+    } )
+
     it( 'offers my groups first when the user has some', () => {
         // Arrange
         const expected: string[] = [ 'mine', 'groups', 'individual' ]

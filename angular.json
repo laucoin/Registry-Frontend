@@ -112,7 +112,7 @@
               "html"
             ],
             "coverageThresholds": {
-              "statements": 89,
+              "statements": 90,
               "branches": 81,
               "functions": 86,
               "lines": 91
