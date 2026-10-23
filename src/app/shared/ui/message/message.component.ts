@@ -1,0 +1,12 @@
+import { Component, input, InputSignal } from '@angular/core'
+import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
+
+@Component( {
+    selector: 'app-message',
+    template: '<div class="message" [class]="severity()" [class.normal]="!reverseBackground()" [class.reversed]="reverseBackground()"><ng-content/></div>',
+    styleUrl: './message.component.scss',
+} )
+export class MessageComponent {
+    public readonly severity: InputSignal<SeverityEnum | string | undefined> = input()
+    public readonly reverseBackground: InputSignal<boolean> = input( false )
+}

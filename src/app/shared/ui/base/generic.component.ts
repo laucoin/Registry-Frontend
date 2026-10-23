@@ -1,0 +1,39 @@
+import {RegistryFacade} from '@core/registry/state/registry.facade'
+import {inject} from '@angular/core'
+import {TranslateService} from '@ngx-translate/core'
+import {ActivatedRoute, Router} from '@angular/router'
+import {FormBuilder} from '@angular/forms'
+import {UserAuthorityEnum} from '@shared/models/enumeration/user-authority.enum'
+import {ProjectAuthorityEnum} from '@shared/models/enumeration/project-authority.enum'
+import {CurrentUserHelper} from '@core/authentication/tool/current-user.helper'
+import {GenericHelper} from '@shared/helpers/generic.helper'
+import {StringHelper} from '@shared/helpers/string.helper'
+import {breakPoint} from '@shared/helpers/breakpoint.const'
+import {RegistryRouteEnum} from '@core/routing/registry-route.enum'
+import {ProjectHelper} from '@shared/helpers/project.helper'
+import {ProjectOptionEnum} from '@shared/models/enumeration/project-option.enum'
+import {SeverityEnum} from '@shared/models/enumeration/severity.enum'
+import {FormHelper} from '@shared/helpers/form.helper'
+
+export abstract class GenericComponent {
+    protected readonly RegistryRouteEnum: typeof RegistryRouteEnum = RegistryRouteEnum
+
+    protected readonly GenericHelper: typeof GenericHelper = GenericHelper
+    protected readonly StringHelper: typeof StringHelper = StringHelper
+    protected readonly FormHelper: typeof FormHelper = FormHelper
+
+    protected readonly CurrentUserHelper: typeof CurrentUserHelper = CurrentUserHelper
+    protected readonly UserAuthority: typeof UserAuthorityEnum = UserAuthorityEnum
+    protected readonly ProjectAuthority: typeof ProjectAuthorityEnum = ProjectAuthorityEnum
+    protected readonly ProjectOptionEnum: typeof ProjectOptionEnum = ProjectOptionEnum
+    protected readonly SeverityEnum: typeof SeverityEnum = SeverityEnum
+    protected readonly ProjectHelper: typeof ProjectHelper = ProjectHelper
+
+    protected readonly formBuilder: FormBuilder = inject(FormBuilder)
+    protected readonly registryFacade: RegistryFacade = inject(RegistryFacade)
+    protected readonly route: ActivatedRoute = inject(ActivatedRoute)
+    protected readonly router: Router = inject(Router)
+    protected readonly translateService: TranslateService = inject(TranslateService)
+
+    protected readonly breakpoint: Record<string, string> = breakPoint
+}

@@ -3,31 +3,31 @@ import {enableProdMode, provideZoneChangeDetection} from '@angular/core'
 import {bootstrapApplication} from '@angular/platform-browser'
 import {provideRouter} from '@angular/router'
 import {MessageService} from 'primeng/api'
-import {AppComponent} from './app/app.component'
-import {AppConfig} from './app/app.config'
-import {routes} from './app/app.routes'
-import {backendHandler} from './app/shared/util-authentication/handler/backend.handler'
-import {RegistryFacade} from './app/shared/util-common/state/registry.facade'
-import {UserFacade} from './app/domains/user/data/state/user.facade'
+import {RegistryComponent} from '@core/layout/registry.component'
+import {RegistryConfig} from '@core/config/registry.config'
+import {routes} from '@core/routing/registry.routes'
+import {backendHandler} from '@core/authentication/handler/backend.handler'
+import {RegistryFacade} from '@core/registry/state/registry.facade'
+import {UserFacade} from '@pages/users/data/state/user.facade'
 import {
     RegistryNgxsUnhandledErrorHandler,
-} from './app/shared/util-config/handler/registry-ngxs-unhandled-error.handler'
+} from '@core/config/handler/registry-ngxs-unhandled-error.handler'
 import {withNgxsPlugin} from '@ngxs/store'
 import {DatePipe} from '@angular/common'
-import {DateFormatPipe} from './app/shared/util-tool/pipe/date-format.pipe'
-import {PluralTranslationPipe} from './app/shared/util-tool/pipe/plural-translation.pipe'
-import {CustomDateFormatPipe} from './app/shared/util-tool/pipe/custom-date-format.pipe'
-import {ProjectOptionIconPipe} from './app/shared/util-tool/pipe/project-option-icon.pipe'
-import {IntervalPipe} from './app/shared/util-tool/pipe/interval.pipe'
+import {DateFormatPipe} from '@shared/helpers/pipe/date-format.pipe'
+import {PluralTranslationPipe} from '@shared/helpers/pipe/plural-translation.pipe'
+import {CustomDateFormatPipe} from '@shared/helpers/pipe/custom-date-format.pipe'
+import {ProjectOptionIconPipe} from '@shared/helpers/pipe/project-option-icon.pipe'
+import {IntervalPipe} from '@shared/helpers/pipe/interval.pipe'
 
 (async (): Promise<void> => {
-    await AppConfig.load()
+    await RegistryConfig.load()
 
-    if (AppConfig.environment.production) {
+    if (RegistryConfig.environment.production) {
         enableProdMode()
     }
 
-    bootstrapApplication(AppComponent, {
+    bootstrapApplication(RegistryComponent, {
         providers: [
             provideZoneChangeDetection({eventCoalescing: true}),
             provideHttpClient(),
@@ -41,13 +41,13 @@ import {IntervalPipe} from './app/shared/util-tool/pipe/interval.pipe'
             IntervalPipe,
             ProjectOptionIconPipe,
             CustomDateFormatPipe,
-            AppConfig,
-            AppConfig.providePrimeNg(),
-            AppConfig.provideNgxs(),
-            AppConfig.provideNgxsReduxDevtools(),
+            RegistryConfig,
+            RegistryConfig.providePrimeNg(),
+            RegistryConfig.provideNgxs(),
+            RegistryConfig.provideNgxsReduxDevtools(),
             withNgxsPlugin(RegistryNgxsUnhandledErrorHandler),
-            AppConfig.provideTranslatorService(),
-            AppConfig.provideTranslatorHttpLoader(),
+            RegistryConfig.provideTranslatorService(),
+            RegistryConfig.provideTranslatorHttpLoader(),
             PluralTranslationPipe,
         ],
     }).catch((error: Error) => console.error(error))
