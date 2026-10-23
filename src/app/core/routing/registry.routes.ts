@@ -2,6 +2,7 @@ import { Routes } from '@angular/router'
 import { authGuard } from '@core/authentication/guard/auth.guard'
 import { MainComponent } from '@core/layout/main/main.component'
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
+import { RouteSeoModel, SEO_DATA_KEY } from '@core/seo/route-seo.model'
 
 /**
  * Purpose: Declares the top-level routes of the application.
@@ -11,10 +12,13 @@ import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
 export const routes: Routes = [
 	{
 		path: RegistryRouteEnum.LOGIN,
+		title: 'seo.login.title',
+		data: { [SEO_DATA_KEY]: { descriptionKey: 'seo.login.description' } satisfies RouteSeoModel },
 		loadComponent: () => import('@pages/login/login.page').then((m: typeof import('@pages/login/login.page')) => m.LoginPage),
 	},
 	{
 		path: RegistryRouteEnum.AUTH_CALLBACK,
+		title: 'seo.authCallback',
 		loadComponent: () => import('@pages/auth/callback/auth-callback.page').then((m: typeof import('@pages/auth/callback/auth-callback.page')) => m.AuthCallbackPage),
 	},
 	{
@@ -44,10 +48,14 @@ export const routes: Routes = [
 			},
 			{
 				path: RegistryRouteEnum.PRIVACY,
+				title: 'seo.privacy.title',
+				data: { [SEO_DATA_KEY]: { descriptionKey: 'seo.privacy.description' } satisfies RouteSeoModel },
 				loadComponent: () => import('@pages/privacy/privacy.page').then((m: typeof import('@pages/privacy/privacy.page')) => m.PrivacyPage),
 			},
 			{
 				path: RegistryRouteEnum.TERMS,
+				title: 'seo.terms.title',
+				data: { [SEO_DATA_KEY]: { descriptionKey: 'seo.terms.description' } satisfies RouteSeoModel },
 				loadComponent: () => import('@pages/terms/terms.page').then((m: typeof import('@pages/terms/terms.page')) => m.TermsPage),
 			},
 			{

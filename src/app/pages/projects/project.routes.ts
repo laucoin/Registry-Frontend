@@ -40,14 +40,14 @@ export const projectRoutes: Routes = [
         providers: [ ProjectFacade, ProjectStore ],
         children: [
             {
-                path: '', component: ProjectsListPage,
+                path: '', title: 'seo.projects.list', component: ProjectsListPage,
             },
             {
-                path: ProjectRoutesEnum.CREATE, component: ProjectFormPage,
+                path: ProjectRoutesEnum.CREATE, title: 'seo.projects.create', component: ProjectFormPage,
                 providers: [ ProjectProfileFacade, ProjectProfileStore ],
             },
             {
-                path: `${ProjectRoutesEnum.PROJECT_ID}/${ProjectRoutesEnum.EDIT}`, component: ProjectFormPage,
+                path: `${ProjectRoutesEnum.PROJECT_ID}/${ProjectRoutesEnum.EDIT}`, title: 'seo.projects.edit', component: ProjectFormPage,
                 providers: [ ProjectProfileFacade, ProjectProfileStore ],
             },
             {
@@ -57,7 +57,7 @@ export const projectRoutes: Routes = [
                 runGuardsAndResolvers: 'paramsChange',
                 children: [
                     {
-                        path: '', component: ProjectHomePage,
+                        path: '', title: 'seo.projects.home', component: ProjectHomePage,
                         providers: [
                             SelectedProjectFacade, SelectedProjectStore, ParticipantFacade, ParticipantStore, MovementFacade, MovementStore, CommunicationFacade, CommunicationStore, AlertFacade, AlertStore,
                         ],
@@ -69,17 +69,20 @@ export const projectRoutes: Routes = [
                     },
                     {
                         path: ProjectRoutesEnum.ALERTS,
+                        title: 'seo.alerts',
                         component: AlertsListPage,
                         canActivate: [ alertOptionGuard ],
                         providers: [ CommunicationFacade, CommunicationStore, AlertFacade, AlertStore ],
                     },
                     {
                         path: ProjectRoutesEnum.PARTICIPANTS,
+                        title: 'seo.participantsMonitoring',
                         component: ParticipantsMonitoringPage,
                         providers: [ SelectedProjectFacade, SelectedProjectStore, ParticipantFacade, ParticipantStore, GroupStatusFacade, GroupStatusStore ],
                     },
                     {
                         path: ProjectRoutesEnum.VEHICLES,
+                        title: 'seo.vehiclesMonitoring',
                         component: VehiclesMonitoringPage,
                         canActivate: [ vehicleOptionGuard ],
                         providers: [ SelectedProjectFacade, SelectedProjectStore, VehicleFacade, VehicleStore ],

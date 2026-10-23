@@ -11,6 +11,7 @@ import { HomeStore } from '@pages/home/data/state/home.store'
 export const homeRoutes: Routes = [
 	{
 		path: '',
+		title: 'seo.home',
 		component: HomePage,
 		providers: [HomeFacade, HomeStore],
 	},

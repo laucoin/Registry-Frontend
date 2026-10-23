@@ -285,4 +285,28 @@ describe( 'BrowserService', () => {
         // Assert
         expect( value ).toBeUndefined()
     } )
+
+    it( 'replaces the canonical link of the document', () => {
+        // Arrange
+        service.setCanonicalLink( 'https://registry.test/login' )
+
+        // Act
+        service.setCanonicalLink( 'https://registry.test/terms' )
+
+        // Assert
+        const links: NodeListOf<Element> = document.head.querySelectorAll( 'link[rel="canonical"]' )
+        expect( links ).toHaveLength( 1 )
+        expect( links[ 0 ].getAttribute( 'href' ) ).toBe( 'https://registry.test/terms' )
+    } )
+
+    it( 'removes the canonical link when no url is given', () => {
+        // Arrange
+        service.setCanonicalLink( 'https://registry.test/login' )
+
+        // Act
+        service.setCanonicalLink( undefined )
+
+        // Assert
+        expect( document.head.querySelector( 'link[rel="canonical"]' ) ).toBeNull()
+    } )
 } )

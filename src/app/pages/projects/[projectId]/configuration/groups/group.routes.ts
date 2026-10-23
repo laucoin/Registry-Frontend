@@ -11,16 +11,16 @@ export const groupRoutes: Routes = [
         component: GroupPage,
         children: [
             {
-                path: '', component: GroupsListPage,
+                path: '', title: 'seo.groups.list', component: GroupsListPage,
             },
             {
-                path: GroupRoutesEnum.MEMBERS, component: GroupMemberListPage,
+                path: GroupRoutesEnum.MEMBERS, title: 'seo.groups.members', component: GroupMemberListPage,
             },
             {
-                path: GroupRoutesEnum.CREATE, component: GroupFormPage,
+                path: GroupRoutesEnum.CREATE, title: 'seo.groups.create', component: GroupFormPage,
             },
             {
-                path: GroupRoutesEnum.EDIT, component: GroupFormPage,
+                path: GroupRoutesEnum.EDIT, title: 'seo.groups.edit', component: GroupFormPage,
             },
         ],
     },

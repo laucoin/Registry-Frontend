@@ -1851,5 +1851,73 @@
     "documentation": "Documentation",
     "support": "Support",
     "new-tab": "s’ouvre dans un nouvel onglet"
+  },
+  "seo": {
+    "login": {
+      "title": "Connexion",
+      "description": "Connecte-toi à Registry pour suivre les présences de tes projets."
+    },
+    "privacy": {
+      "title": "Politique de confidentialité",
+      "description": "Comment Registry collecte, utilise et protège tes données personnelles."
+    },
+    "terms": {
+      "title": "Conditions d'utilisation",
+      "description": "Les conditions d'utilisation du service Registry."
+    },
+    "authCallback": "Connexion en cours",
+    "home": "Accueil",
+    "myAccount": "Mon compte",
+    "invitations": "Mes invitations",
+    "projects": {
+      "list": "Projets",
+      "create": "Nouveau projet",
+      "edit": "Modifier le projet",
+      "home": "Tableau de bord du projet"
+    },
+    "alerts": "Alertes",
+    "participantsMonitoring": "Suivi des participants",
+    "vehiclesMonitoring": "Suivi des véhicules",
+    "movements": {
+      "list": "Mouvements",
+      "createRegistered": "Nouveau mouvement de participant",
+      "editRegistered": "Modifier le mouvement de participant",
+      "createGuest": "Nouveau mouvement d'invité",
+      "editGuest": "Modifier le mouvement d'invité"
+    },
+    "configuration": "Configuration du projet",
+    "profiles": {
+      "list": "Profils du projet",
+      "edit": "Modifier le profil",
+      "invite": "Inviter un profil"
+    },
+    "participants": {
+      "list": "Participants",
+      "create": "Nouveau participant",
+      "edit": "Modifier le participant",
+      "movements": "Mouvements du participant"
+    },
+    "groups": {
+      "list": "Groupes",
+      "members": "Membres du groupe",
+      "create": "Nouveau groupe",
+      "edit": "Modifier le groupe"
+    },
+    "vehicles": {
+      "list": "Véhicules",
+      "create": "Nouveau véhicule",
+      "edit": "Modifier le véhicule",
+      "movements": "Mouvements du véhicule"
+    },
+    "activities": {
+      "list": "Activités",
+      "create": "Nouvelle activité",
+      "edit": "Modifier l'activité",
+      "movements": "Mouvements de l'activité"
+    },
+    "users": {
+      "list": "Utilisateurs",
+      "edit": "Modifier l'utilisateur"
+    }
   }
 }

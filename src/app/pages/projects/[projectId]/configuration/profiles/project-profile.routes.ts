@@ -15,13 +15,13 @@ export const projectProfileRoutes: Routes = [
         component: ProjectProfilePage,
         children: [
             {
-                path: '', component: ProjectProfilesListPage,
+                path: '', title: 'seo.profiles.list', component: ProjectProfilesListPage,
                 children: [
-                    { path: ProjectProfileRoutesEnum.EDIT, component: ProjectProfileEditionFormPage },
+                    { path: ProjectProfileRoutesEnum.EDIT, title: 'seo.profiles.edit', component: ProjectProfileEditionFormPage },
                 ],
             },
             {
-                path: ProjectProfileRoutesEnum.INVITE, component: ProjectProfileInvitationFormPage,
+                path: ProjectProfileRoutesEnum.INVITE, title: 'seo.profiles.invite', component: ProjectProfileInvitationFormPage,
             },
         ],
     },

@@ -10,9 +10,10 @@ import { ProjectProfileStore } from '@pages/projects/[projectId]/configuration/p
  * Limits: Holds no navigation logic; the guards and the pages own it.
  */
 export const myAccountRoutes: Routes = [
-    { path: '', component: MyAccountPage },
+    { path: '', title: 'seo.myAccount', component: MyAccountPage },
     {
         path: 'invitations',
+        title: 'seo.invitations',
         component: InvitationsListPage,
         providers: [ ProjectProfileFacade, ProjectProfileStore ],
     },

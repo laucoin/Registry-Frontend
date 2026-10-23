@@ -11,16 +11,16 @@ export const participantRoutes: Routes = [
         component: ParticipantPage,
         children: [
             {
-                path: '', component: ParticipantsListPage,
+                path: '', title: 'seo.participants.list', component: ParticipantsListPage,
             },
             {
-                path: ParticipantRoutesEnum.CREATE, component: ParticipantFormPage,
+                path: ParticipantRoutesEnum.CREATE, title: 'seo.participants.create', component: ParticipantFormPage,
             },
             {
-                path: ParticipantRoutesEnum.EDIT, component: ParticipantFormPage,
+                path: ParticipantRoutesEnum.EDIT, title: 'seo.participants.edit', component: ParticipantFormPage,
             },
             {
-                path: ParticipantRoutesEnum.MOVEMENTS, component: ParticipantMovementsListPage,
+                path: ParticipantRoutesEnum.MOVEMENTS, title: 'seo.participants.movements', component: ParticipantMovementsListPage,
             },
         ],
     },

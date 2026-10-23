@@ -11,14 +11,14 @@ export const activityRoutes: Routes = [
         component: ActivityPage,
         children: [
             {
-                path: '', component: ActivitiesListPage,
+                path: '', title: 'seo.activities.list', component: ActivitiesListPage,
                 children: [
-                    { path: ActivityRoutesEnum.CREATE, component: ActivityFormPage },
-                    { path: ActivityRoutesEnum.EDIT, component: ActivityFormPage },
+                    { path: ActivityRoutesEnum.CREATE, title: 'seo.activities.create', component: ActivityFormPage },
+                    { path: ActivityRoutesEnum.EDIT, title: 'seo.activities.edit', component: ActivityFormPage },
                 ],
             },
             {
-                path: ActivityRoutesEnum.MOVEMENTS, component: ActivityMovementsListPage,
+                path: ActivityRoutesEnum.MOVEMENTS, title: 'seo.activities.movements', component: ActivityMovementsListPage,
             },
         ],
     },

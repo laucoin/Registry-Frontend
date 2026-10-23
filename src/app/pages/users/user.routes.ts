@@ -15,9 +15,9 @@ export const userRoutes: Routes = [
         component: UserPage,
         children: [
             {
-                path: '', component: UsersListPage,
+                path: '', title: 'seo.users.list', component: UsersListPage,
                 children: [
-                    { path: UserRoutesEnum.EDIT, component: UserFormPage },
+                    { path: UserRoutesEnum.EDIT, title: 'seo.users.edit', component: UserFormPage },
                 ],
             },
         ],

@@ -11,19 +11,19 @@ export const movementRoutes: Routes = [
         component: MovementPage,
         children: [
             {
-                path: '', component: MovementsListPage,
+                path: '', title: 'seo.movements.list', component: MovementsListPage,
             },
             {
-                path: MovementRoutesEnum.CREATE_REGISTERED, component: RegisteredMovementFormPage,
+                path: MovementRoutesEnum.CREATE_REGISTERED, title: 'seo.movements.createRegistered', component: RegisteredMovementFormPage,
             },
             {
-                path: MovementRoutesEnum.EDIT_REGISTERED, component: RegisteredMovementFormPage,
+                path: MovementRoutesEnum.EDIT_REGISTERED, title: 'seo.movements.editRegistered', component: RegisteredMovementFormPage,
             },
             {
-                path: MovementRoutesEnum.CREATE_GUEST, component: GuestMovementFormPage,
+                path: MovementRoutesEnum.CREATE_GUEST, title: 'seo.movements.createGuest', component: GuestMovementFormPage,
             },
             {
-                path: MovementRoutesEnum.EDIT_GUEST, component: GuestMovementFormPage,
+                path: MovementRoutesEnum.EDIT_GUEST, title: 'seo.movements.editGuest', component: GuestMovementFormPage,
             },
         ],
     },

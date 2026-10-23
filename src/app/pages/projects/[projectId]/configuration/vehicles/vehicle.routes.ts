@@ -11,14 +11,14 @@ export const vehicleRoutes: Routes = [
         component: VehiclePage,
         children: [
             {
-                path: '', component: VehiclesListPage,
+                path: '', title: 'seo.vehicles.list', component: VehiclesListPage,
                 children: [
-                    { path: VehicleRoutesEnum.CREATE, component: VehicleFormPage },
-                    { path: VehicleRoutesEnum.EDIT, component: VehicleFormPage },
+                    { path: VehicleRoutesEnum.CREATE, title: 'seo.vehicles.create', component: VehicleFormPage },
+                    { path: VehicleRoutesEnum.EDIT, title: 'seo.vehicles.edit', component: VehicleFormPage },
                 ],
             },
             {
-                path: VehicleRoutesEnum.MOVEMENTS, component: VehicleMovementsListPage,
+                path: VehicleRoutesEnum.MOVEMENTS, title: 'seo.vehicles.movements', component: VehicleMovementsListPage,
             },
         ],
     },

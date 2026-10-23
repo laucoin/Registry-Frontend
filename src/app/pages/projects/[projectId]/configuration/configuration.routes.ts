@@ -20,7 +20,7 @@ export const configurationRoutes: Routes = [
         path: '',
         children: [
             {
-                path: '', component: ConfigurationPage,
+                path: '', title: 'seo.configuration', component: ConfigurationPage,
             },
             {
                 path: ConfigurationRoutesEnum.PROFILES,

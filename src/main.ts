@@ -2,12 +2,13 @@ import { DatePipe } from '@angular/common'
 import { provideHttpClient, withInterceptors } from '@angular/common/http'
 import { provideZonelessChangeDetection } from '@angular/core'
 import { bootstrapApplication } from '@angular/platform-browser'
-import { provideRouter } from '@angular/router'
+import { provideRouter, TitleStrategy } from '@angular/router'
 import { backendHandler } from '@core/authentication/handler/backend.handler'
 import { RegistryConfig } from '@core/config/registry.config'
 import { RegistryComponent } from '@core/layout/registry.component'
 import { UserProfileFacade } from '@core/registry/state/user-profile.facade'
 import { routes } from '@core/routing/registry.routes'
+import { RegistryTitleStrategy } from '@core/seo/registry-title.strategy'
 import { UserFacade } from '@pages/users/data/state/user.facade'
 import { CustomDateFormatPipe } from '@shared/helpers/pipe/custom-date-format.pipe'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
@@ -40,6 +41,7 @@ bootstrapApplication(RegistryComponent, {
 		provideZonelessChangeDetection(),
 		provideHttpClient(withInterceptors([backendHandler])),
 		provideRouter(routes),
+		{ provide: TitleStrategy, useClass: RegistryTitleStrategy },
 		UserProfileFacade,
 		UserFacade,
 		DatePipe,

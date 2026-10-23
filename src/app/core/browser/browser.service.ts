@@ -8,7 +8,7 @@ export const PREFERENCE_COOKIE_MAX_AGE_SECONDS: number = 60 * 60 * 24 * 365
 
 /**
  * Purpose: Single access point to the browser globals the application depends on.
- * Scope: Wraps location, viewport, scroll, page visibility, element intersection, color scheme, cookies, root element attributes and element lookup.
+ * Scope: Wraps location, viewport, scroll, page visibility, element intersection, color scheme, cookies, root element attributes, the canonical link and element lookup.
  * Limits: Holds no state and applies no application logic; it does not manage storage (see the storage helpers).
  */
 @Injectable( { providedIn: 'root' } )
@@ -106,6 +106,15 @@ export class BrowserService {
         } else {
             document.documentElement.setAttribute( THEME_ATTRIBUTE, theme )
         }
+    }
+
+    public setCanonicalLink (url: string | undefined): void {
+        document.head.querySelector( 'link[rel="canonical"]' )?.remove()
+        if (url === undefined) return
+        const link: HTMLLinkElement = document.createElement( 'link' )
+        link.rel = 'canonical'
+        link.href = url
+        document.head.appendChild( link )
     }
 
     public readCookie (name: string): string | undefined {
