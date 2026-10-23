@@ -1,5 +1,8 @@
-import { Component, inject} from '@angular/core'
-import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms'
+import { ProfileStatusEnum } from '@shared/models/enumeration/profile-status.enum'
+import { FieldTree, FormField } from '@angular/forms/signals'
+import { createSearchForm } from '@shared/helpers/form/search.form'
+import { ProjectProfilesListSearchModel, toProjectProfilesListSearchModel, toProjectProfilesListSearchParams } from './project-profiles-list.search'
+import { Component, inject, signal, WritableSignal } from '@angular/core'
 import {PageEventModel} from '@shared/models/model/page-event.model'
 import {ProjectProfileFacade} from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.facade'
 import {ListComponent} from '@shared/ui/common/list/list.component'
@@ -28,7 +31,7 @@ import {GenericListComponent} from '@shared/ui/base/generic-list.component'
     imports: [
         ListComponent,
         RegistryTemplateDirective,
-        ReactiveFormsModule,
+        FormField,
         TranslocoPipe,
         InputTextModule,
         ToggleButtonModule,
@@ -45,21 +48,18 @@ export class ProjectProfilesListPage extends GenericListComponent {
 
     protected readonly ProjectProfileRoutesEnum: typeof ProjectProfileRoutesEnum = ProjectProfileRoutesEnum
 
+    protected readonly model: WritableSignal<ProjectProfilesListSearchModel> = signal( toProjectProfilesListSearchModel( {
+        textSearched: this.facade.projectProfilesPageTextSearchedParam(),
+        dateTimeSearched: this.facade.projectProfilesPageDateTimeSearchedParam(),
+        statusSearched: this.facade.projectProfilesPageStatusSearchedParam(),
+        availabilitySearched: this.facade.projectProfilesPageAvailabilitySearchedParam(),
+    } ) )
+    protected readonly form: FieldTree<ProjectProfilesListSearchModel> = createSearchForm( this.model )
+
     public constructor() {
         super()
 
-        this.form = this.initForm()
-
         this.loadData()
-    }
-
-    protected initForm(): FormGroup {
-        return this.formBuilder.group({
-            textSearched: this.formBuilder.control(this.facade.projectProfilesPageTextSearchedParam()),
-            dateTimeSearched: this.formBuilder.control(this.facade.projectProfilesPageDateTimeSearchedParam()),
-            statusSearched: this.formBuilder.control(this.facade.projectProfilesPageStatusSearchedParam()),
-            availabilitySearched: this.formBuilder.control(this.facade.projectProfilesPageAvailabilitySearchedParam()),
-        })
     }
 
     protected loadData(): void {
@@ -67,28 +67,13 @@ export class ProjectProfilesListPage extends GenericListComponent {
     }
 
     protected loadPage(pageEvent: PageEventModel): void {
+        const search: ReturnType<typeof toProjectProfilesListSearchParams> = toProjectProfilesListSearchParams( this.model() )
         this.facade.inputPageSearchParameters(
-            this.textSearched.value,
-            this.dateTimeSearched.value,
-            this.statusSearched.value,
-            this.availabilitySearched.value,
+            search.textSearched,
+            search.dateTimeSearched,
+            search.statusSearched as ProfileStatusEnum | undefined,
+            search.availabilitySearched,
         )
         this.facade.fetchProjectProfilesPage(pageEvent.pageNumber, pageEvent.pageSize)
-    }
-
-    protected get textSearched(): FormControl {
-        return this.form.get('textSearched') as FormControl
-    }
-
-    protected get dateTimeSearched(): FormControl {
-        return this.form.get('dateTimeSearched') as FormControl
-    }
-
-    protected get statusSearched(): FormControl {
-        return this.form.get('statusSearched') as FormControl
-    }
-
-    protected get availabilitySearched(): FormControl {
-        return this.form.get('availabilitySearched') as FormControl
     }
 }

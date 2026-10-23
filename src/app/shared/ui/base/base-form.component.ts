@@ -1,11 +1,9 @@
-import { FormControl, FormGroup } from '@angular/forms'
+import { FieldTree } from '@angular/forms/signals'
 import { GenericComponent } from '@shared/ui/base/generic.component'
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
 import { Observable, Subscription } from 'rxjs'
 import { ErrorModel } from '@shared/models/model/error.model'
 import { withLoading } from '@shared/helpers/rx.helper'
-import { ProjectModel } from '@shared/models/model/project.model'
-import { RegistryValidators } from '@shared/helpers/registry.validator'
 import { DestroyRef, inject, signal, WritableSignal } from '@angular/core'
 import { CustomDateFormatPipe } from '@shared/helpers/pipe/custom-date-format.pipe'
 import { Location } from '@angular/common'
@@ -13,11 +11,11 @@ import { GenericHelper } from '@shared/helpers/generic.helper'
 import { RegistryConfig } from '@core/config/registry.config'
 
 /**
- * Purpose: Base class of the create and edit forms.
+ * Purpose: Base class of the create and edit forms built on signal forms.
  * Scope: Handles validation, saving state, error display and navigation after submit.
- * Limits: Abstract; each form defines its fields and its facade calls.
+ * Limits: Abstract; each form defines its model, its schema and its facade calls.
  */
-export abstract class GenericFormComponent<M, D> extends GenericComponent {
+export abstract class BaseFormComponent extends GenericComponent {
     protected readonly datePipe: CustomDateFormatPipe = inject( CustomDateFormatPipe )
     private readonly location: Location = inject( Location )
 
@@ -30,8 +28,8 @@ export abstract class GenericFormComponent<M, D> extends GenericComponent {
     private destroyed: boolean = false
 
     protected readonly invalidFormMessage: string = this.translateService.translate( 'global.messages.invalid-form' )
-    protected readonly startDateExample: Date = GenericFormComponent.startDateExample
-    protected readonly endDateExample: Date = GenericFormComponent.endDateExample
+    protected readonly startDateExample: Date = BaseFormComponent.startDateExample
+    protected readonly endDateExample: Date = BaseFormComponent.endDateExample
 
     protected constructor () {
         super()
@@ -84,33 +82,14 @@ export abstract class GenericFormComponent<M, D> extends GenericComponent {
 
     protected abstract loadData (): void
 
-    protected abstract initForm (): FormGroup
-
     protected abstract handleLoadedElement (): void
-
-    protected addProjectDateValidators (
-        project: ProjectModel | undefined,
-        control: FormControl,
-    ): void {
-        if (project?.begin) {
-            control.addValidators( RegistryValidators.minDateTime(
-                project?.begin,
-                this.datePipe.transform( project?.begin ),
-            ) )
-        }
-        if (project?.end) {
-            control.addValidators( RegistryValidators.maxDateTime(
-                project?.end,
-                this.datePipe.transform( project?.end ),
-            ) )
-        }
-    }
-
-    protected abstract fillForm (element: M | undefined): void
 
     protected abstract submit (): void
 
-    protected abstract buildDto (): D
+    protected isFormValid<T> (form: FieldTree<T>): boolean {
+        form().markAsTouched()
+        return !form().invalid()
+    }
 
     protected navigateToRedirectUri (route: RegistryRouteEnum | undefined = undefined): void {
         if (GenericHelper.nonNull( route )) this.router.navigateByUrl( route! ).catch( (): void => this.location.back() )

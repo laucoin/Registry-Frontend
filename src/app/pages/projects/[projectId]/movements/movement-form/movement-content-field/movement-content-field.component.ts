@@ -1,17 +1,16 @@
 import {
     Component,
     computed,
-    forwardRef,
     inject,
     input,
     InputSignal,
+    model,
+    ModelSignal,
     output,
     OutputEmitterRef,
     Signal,
-    signal,
-    WritableSignal,
 } from '@angular/core'
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms'
+import { FormValueControl } from '@angular/forms/signals'
 import { MovementContentModel } from '@shared/models/model/movement-content.model'
 import { AutoComplete, AutoCompleteCompleteEvent } from 'primeng/autocomplete'
 import { SelectItem, SelectItemGroup } from 'primeng/api'
@@ -27,7 +26,7 @@ import { BrowserService } from '@core/browser/browser.service'
 
 /**
  * Purpose: Form field editing the content of a movement.
- * Scope: Selects registered participants, groups or guests and their pools.
+ * Scope: Selects registered participants and groups and exposes their pools as the value of a signal form field.
  * Limits: Does not save; the movement form does.
  */
 @Component( {
@@ -37,44 +36,39 @@ import { BrowserService } from '@core/browser/browser.service'
         Button,
         TranslocoPipe,
     ],
-    providers: [
-        {
-            provide: NG_VALUE_ACCESSOR,
-            useExisting: forwardRef( (): typeof MovementContentFieldComponent => MovementContentFieldComponent ),
-            multi: true,
-        },
-    ],
     templateUrl: './movement-content-field.component.html',
     styleUrl: './movement-content-field.component.css',
 } )
-export class MovementContentFieldComponent implements ControlValueAccessor {
+export class MovementContentFieldComponent implements FormValueControl<MovementContentModel[]> {
     protected readonly uiFacade: UiFacade = inject( UiFacade )
     private readonly browser: BrowserService = inject( BrowserService )
     protected readonly ParticipantHelper: typeof ParticipantHelper = ParticipantHelper
     protected readonly Object: typeof Object = Object
 
+    public readonly value: ModelSignal<MovementContentModel[]> = model<MovementContentModel[]>( [] )
+    public readonly disabled: InputSignal<boolean> = input( false )
+    public readonly invalid: InputSignal<boolean> = input( false )
+    public readonly touched: InputSignal<boolean> = input( false )
+    public readonly dirty: InputSignal<boolean> = input( false )
+    public readonly touch: OutputEmitterRef<void> = output<void>()
+
     public readonly suggestions: InputSignal<SelectItemGroup<ParticipantModel | GroupModel>[]> = input.required()
     public readonly inputId: InputSignal<string | undefined> = input()
     public readonly fluid: InputSignal<boolean> = input( false )
-    public readonly invalid: InputSignal<boolean> = input( false )
     public readonly emptyMessage: InputSignal<string | undefined> = input<string | undefined>()
     public readonly selectionLabel: InputSignal<string | undefined> = input.required()
     public readonly interpretedMovementType: InputSignal<PresenceStatusEnum[]> = input.required()
 
     public readonly handleSearch: OutputEmitterRef<AutoCompleteCompleteEvent> = output()
 
-    protected readonly value: WritableSignal<MovementContentModel[]> = signal( [] )
     protected readonly groups: Signal<Record<string, ParticipantModel[]>>
     protected readonly orphanParticipants: Signal<ParticipantModel[]>
-    protected readonly disabled: WritableSignal<boolean> = signal( false )
+    protected readonly showInvalid: Signal<boolean> = computed( (): boolean => this.invalid() && (this.touched() || this.dirty()) )
 
     public constructor () {
         this.groups = computed( (): Record<string, ParticipantModel[]> => this.groupByPoolName( this.value() ) )
         this.orphanParticipants = computed( (): ParticipantModel[] => this.extractOrphanParticipants( this.value() ) )
     }
-
-    public onChange: ((value: MovementContentModel[]) => void) | undefined = undefined
-    public onTouched: (() => void) | undefined = undefined
 
     protected handleElementSelection (element: SelectItem<ParticipantModel | GroupModel>): void {
         const selectedContent: MovementContentModel[] = this.buildContent( element.value )
@@ -156,27 +150,10 @@ export class MovementContentFieldComponent implements ControlValueAccessor {
 
     private onInputChange (value: MovementContentModel[]): void {
         this.value.set( value )
-        this.onChange?.( value )
-        this.onTouched?.()
+        this.touch.emit()
     }
 
     private isGroup (element: ParticipantModel | GroupModel): boolean {
         return 'name' in element
-    }
-
-    public registerOnChange (fn: (value: MovementContentModel[]) => void): void {
-        this.onChange = fn
-    }
-
-    public registerOnTouched (fn: () => void): void {
-        this.onTouched = fn
-    }
-
-    public setDisabledState (disabled: boolean): void {
-        this.disabled.set( disabled )
-    }
-
-    public writeValue (value: MovementContentModel[]): void {
-        this.value.set( value )
     }
 }

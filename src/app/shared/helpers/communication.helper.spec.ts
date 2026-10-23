@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { CommunicationModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
+import { CommunicationModel } from '@shared/models/model/communication.model'
 import { CommunicationHelper } from '@shared/helpers/communication.helper'
 
 describe( 'CommunicationHelper', () => {

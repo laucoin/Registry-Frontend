@@ -1,4 +1,4 @@
-import { Component, HostListener, inject, OnDestroy} from '@angular/core'
+import { Component, HostListener, inject, OnDestroy, model, ModelSignal } from '@angular/core'
 import {TranslocoPipe} from '@jsverse/transloco'
 import {ConfirmationService, MessageService, ToastMessageOptions} from 'primeng/api'
 import {ConfirmDialog} from 'primeng/confirmdialog'
@@ -52,8 +52,8 @@ export class RegistryComponent extends GenericComponent implements OnDestroy {
     private readonly primeConfig: PrimeNG = inject(PrimeNG)
     private readonly notifyService: MessageService = inject(MessageService)
 
-    protected showInformationDialog: boolean = false
-    protected showTermsOfUserDialog: boolean = false
+    protected readonly showInformationDialog: ModelSignal<boolean> = model<boolean>( false )
+    protected readonly showTermsOfUserDialog: ModelSignal<boolean> = model<boolean>( false )
 
     public constructor() {
         super()

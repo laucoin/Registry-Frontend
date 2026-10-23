@@ -60,13 +60,20 @@ const CASES: ListCase[] = [
     { name: 'profiles', type: ProfilesListPage, facades: [ ProjectProfileFacade ], owner: SessionFacade, fetch: 'fetchProjectProfilesPage', withId: false },
 ]
 
+function withUnsetSearchParams (facade: Record<string, Mock>): Record<string, Mock> {
+    return new Proxy( facade, {
+        get: (target: Record<string, Mock>, key: string | symbol): Mock | undefined =>
+            typeof key === 'string' && /Search(ed)?Param$/.test( key ) ? vi.fn( (): undefined => undefined ) : target[ key as string ],
+    } )
+}
+
 describe( 'list pages', () => {
     let mocks: Map<Type<unknown>, Record<string, Mock>>
 
     function create (item: ListCase): GenericListComponent {
         mocks = new Map<Type<unknown>, Record<string, Mock>>()
         const types: Type<unknown>[] = [ ...new Set( [ ...item.facades, item.owner, SessionFacade, UiFacade, RegistryFacade ] ) ]
-        types.forEach( (facade: Type<unknown>): void => { mocks.set( facade, autoMock() ) } )
+        types.forEach( (facade: Type<unknown>): void => { mocks.set( facade, withUnsetSearchParams( autoMock() ) ) } )
         TestBed.configureTestingModule( {
             providers: [
                 ...types.map( (facade: Type<unknown>) => ({ provide: facade, useValue: mocks.get( facade ) }) ),
@@ -112,9 +119,24 @@ describe( 'list pages', () => {
         const page: GenericListComponent = create( item )
 
         // Act
-        const controls: string[] = Object.keys( (page as unknown as { form: { controls: object } }).form.controls )
+        const fields: string[] = Object.keys( (page as unknown as { form: object }).form )
 
         // Assert
-        expect( controls.length ).toBeGreaterThan( 0 )
+        expect( fields.length ).toBeGreaterThan( 0 )
+    } )
+
+    it.each( CASES )( 'sends no search parameter for the $name page while the user filled nothing', (item: ListCase) => {
+        // Arrange
+        const page: GenericListComponent = create( item )
+
+        // Act
+        ;(page as unknown as { loadPage: (event: { pageNumber: number, pageSize: number }) => void }).loadPage( { pageNumber: 0, pageSize: 10 } )
+
+        // Assert
+        const inputs: Mock[] = [ ...mocks.values() ].flatMap( (mock: Record<string, Mock>): Mock[] =>
+            Object.entries( mock ).filter( ([ name ]: [ string, Mock ]): boolean => /^input\w*SearchParameters$/.test( name ) ).map( ([ , fn ]: [ string, Mock ]): Mock => fn ) )
+        const sent: unknown[] = inputs.flatMap( (fn: Mock): unknown[] => fn.mock.calls.flat() )
+        expect( sent.every( (value: unknown): boolean => value === undefined || value === false ) ).toBe( true )
+        expect( inputs.some( (fn: Mock): boolean => fn.mock.calls.length > 0 ) ).toBe( true )
     } )
 } )

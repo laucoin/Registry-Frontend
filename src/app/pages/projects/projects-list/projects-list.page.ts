@@ -1,5 +1,7 @@
-import { Component, computed, inject, Signal} from '@angular/core'
-import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms'
+import { FieldTree, FormField } from '@angular/forms/signals'
+import { createSearchForm } from '@shared/helpers/form/search.form'
+import { ProjectsListSearchModel, toProjectsListSearchModel, toProjectsListSearchParams } from './projects-list.search'
+import { Component, computed, inject, Signal, signal, WritableSignal } from '@angular/core'
 import {PageEventModel} from '@shared/models/model/page-event.model'
 import {ProjectFacade} from '@pages/projects/data/state/project/project.facade'
 import {ListComponent} from '@shared/ui/common/list/list.component'
@@ -31,11 +33,10 @@ import {StringHelper} from '@shared/helpers/string.helper'
         RegistryTemplateDirective,
         ProjectElementComponent,
         Button,
-        FormsModule,
         InputTextModule,
         ToggleButtonModule,
         TranslocoPipe,
-        ReactiveFormsModule,
+        FormField,
         RouterLink,
         Select,
         DatePicker,
@@ -55,46 +56,29 @@ export class ProjectsListPage extends GenericListComponent {
         || GenericHelper.nonNull(this.facade.projectsPageVisibilitySearchedParam()),
     )
 
+    protected readonly model: WritableSignal<ProjectsListSearchModel> = signal( toProjectsListSearchModel( {
+        textSearched: this.facade.projectsPageTextSearchedParam(),
+        dateTimeSearched: this.facade.projectsPageDateTimeSearchedParam(),
+        withProfile: this.facade.projectsPageWithProfileSearchedParam(),
+        visibilitySearched: this.facade.projectsPageVisibilitySearchedParam(),
+    } ) )
+    protected readonly form: FieldTree<ProjectsListSearchModel> = createSearchForm( this.model )
+
     public constructor() {
         super()
-
-        this.form = this.initForm()
 
         this.facade.fetchProjectsPage(undefined, undefined)
     }
 
-    protected initForm(): FormGroup {
-        return this.formBuilder.group({
-            textSearched: this.formBuilder.control(this.facade.projectsPageTextSearchedParam()),
-            dateTimeSearched: this.formBuilder.control(this.facade.projectsPageDateTimeSearchedParam()),
-            withProfile: this.formBuilder.control(this.facade.projectsPageWithProfileSearchedParam()),
-            visibilitySearched: this.formBuilder.control(this.facade.projectsPageVisibilitySearchedParam()),
-        })
-    }
-
     protected loadPage(pageEvent: PageEventModel): void {
+        const search: ReturnType<typeof toProjectsListSearchParams> = toProjectsListSearchParams( this.model() )
         this.facade.inputPageSearchParameters(
-            this.textSearched.value,
-            this.dateTimeSearched.value,
-            this.withProfile.value,
-            this.visibilitySearched.value,
+            search.textSearched,
+            search.dateTimeSearched,
+            search.withProfile ?? false,
+            search.visibilitySearched,
         )
         this.facade.fetchProjectsPage(pageEvent.pageNumber, pageEvent.pageSize)
     }
 
-    protected get textSearched(): FormControl {
-        return this.form.get('textSearched') as FormControl
-    }
-
-    protected get dateTimeSearched(): FormControl {
-        return this.form.get('dateTimeSearched') as FormControl
-    }
-
-    protected get withProfile(): FormControl {
-        return this.form.get('withProfile') as FormControl
-    }
-
-    protected get visibilitySearched(): FormControl {
-        return this.form.get('visibilitySearched') as FormControl
-    }
 }

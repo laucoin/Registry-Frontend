@@ -1,5 +1,4 @@
 import { Component, inject, input, InputSignal, OnDestroy, OnInit } from '@angular/core'
-import { ReactiveFormsModule } from '@angular/forms'
 import { MovementFacade } from '@pages/projects/[projectId]/movements/data/state/movement.facade'
 import { Observable, Subscription, tap } from 'rxjs'
 import { CommunicationFacade } from '@pages/projects/[projectId]/movements/communication/data/state/communication.facade'
@@ -8,7 +7,7 @@ import { MovementModel } from '@shared/models/model/movement.model'
 import { CommunicationFormComponent } from '@shared/ui/domain/communication-form/communication-form.component'
 import { GenericComponent } from '@shared/ui/base/generic.component'
 import { DialogElementComponent } from '@shared/ui/domain/dialog-element/dialog-element.component'
-import { CommunicationModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
+import { CommunicationModel } from '@shared/models/model/communication.model'
 import { CommunicationHelper } from '@shared/helpers/communication.helper'
 import { AlertFacade } from '@pages/projects/[projectId]/alerts/data/state/alert.facade'
 
@@ -20,7 +19,6 @@ import { AlertFacade } from '@pages/projects/[projectId]/alerts/data/state/alert
 @Component( {
     selector: 'app-movement-communications-list',
     imports: [
-        ReactiveFormsModule,
         TranslocoPipe,
         CommunicationFormComponent,
         DialogElementComponent,

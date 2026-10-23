@@ -40,10 +40,10 @@ describe( 'SettingPage', () => {
 
     it( 'starts with the theme and the language of the signed-in user', () => {
         // Arrange
-        const controls: { themeControl: { value: string }, languageControl: { value: string } } = page as never
+        const state: { model: () => { theme: string, language: string } } = page as never
 
         // Act
-        const values: string[] = [ controls.themeControl.value, controls.languageControl.value ]
+        const values: string[] = [ state.model().theme, state.model().language ]
 
         // Assert
         expect( values ).toEqual( [ 'dark', 'fr' ] )

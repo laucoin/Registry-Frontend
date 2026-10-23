@@ -1,5 +1,5 @@
-import { GenericProjectModel } from '@shared/models/model/generic-project.model'
-import { GenericProjectResponseDto } from '@shared/models/dto/response/generic-project.response.dto'
+import { GenericProjectModel, OptionalProjectModel } from '@shared/models/model/generic-project.model'
+import { GenericProjectResponseDto, OptionalProjectResponseDto } from '@shared/models/dto/response/generic-project.response.dto'
 import { GenericMapper } from '@shared/mappers/generic.mapper'
 import { ProjectMapper } from '@shared/mappers/project.mapper'
 
@@ -13,6 +13,13 @@ export class GenericProjectMapper {
         return {
             ...GenericMapper.toModel( dto ),
             project: ProjectMapper.toModel( dto.project ),
+        }
+    }
+
+    public static toOptionalModel (dto: OptionalProjectResponseDto): OptionalProjectModel {
+        return {
+            ...GenericMapper.toModel( dto ),
+            project: dto.project ? ProjectMapper.toModel( dto.project ) : undefined,
         }
     }
 }

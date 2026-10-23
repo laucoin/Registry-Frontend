@@ -1,6 +1,8 @@
-import { Component, inject} from '@angular/core'
+import { FieldTree, FormField } from '@angular/forms/signals'
+import { createSearchForm } from '@shared/helpers/form/search.form'
+import { MovementsListSearchModel, toMovementsListSearchModel, toMovementsListSearchParams } from './movements-list.search'
+import { Component, inject, signal, WritableSignal } from '@angular/core'
 import {MovementFacade} from '@pages/projects/[projectId]/movements/data/state/movement.facade'
-import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms'
 import {PageEventModel} from '@shared/models/model/page-event.model'
 import {ListComponent} from '@shared/ui/common/list/list.component'
 import {RegistryTemplateDirective} from '@shared/directives/registry-template.directive'
@@ -26,7 +28,7 @@ import {GenericListComponent} from '@shared/ui/base/generic-list.component'
     imports: [
         ListComponent,
         RegistryTemplateDirective,
-        ReactiveFormsModule,
+        FormField,
         TranslocoPipe,
         InputTextModule,
         ToggleButtonModule,
@@ -43,21 +45,18 @@ export class MovementsListPage extends GenericListComponent {
 
     protected readonly MovementRoutesEnum: typeof MovementRoutesEnum = MovementRoutesEnum
 
+    protected readonly model: WritableSignal<MovementsListSearchModel> = signal( toMovementsListSearchModel( {
+        typeSearched: this.facade.movementsPageTypeSearchedParam(),
+        startDateTimeSearched: this.facade.movementsPageStartDateTimeSearchedParam(),
+        endDateTimeSearched: this.facade.movementsPageEndDateTimeSearchedParam(),
+        visibilitySearched: this.facade.movementsPageVisibilitySearchedParam(),
+    } ) )
+    protected readonly form: FieldTree<MovementsListSearchModel> = createSearchForm( this.model )
+
     public constructor() {
         super()
 
-        this.form = this.initForm()
-
         this.loadData()
-    }
-
-    protected initForm(): FormGroup {
-        return this.formBuilder.group({
-            typeSearched: this.formBuilder.control(this.facade.movementsPageTypeSearchedParam()),
-            startDateTimeSearched: this.formBuilder.control(this.facade.movementsPageStartDateTimeSearchedParam()),
-            endDateTimeSearched: this.formBuilder.control(this.facade.movementsPageEndDateTimeSearchedParam()),
-            visibilitySearched: this.formBuilder.control(this.facade.movementsPageVisibilitySearchedParam()),
-        })
     }
 
     protected loadData(): void {
@@ -65,28 +64,14 @@ export class MovementsListPage extends GenericListComponent {
     }
 
     protected loadPage(pageEvent: PageEventModel): void {
+        const search: ReturnType<typeof toMovementsListSearchParams> = toMovementsListSearchParams( this.model() )
         this.facade.inputPageSearchParameters(
-            this.typeSearched.value,
-            this.startDateTimeSearched.value,
-            this.endDateTimeSearched.value,
-            this.visibilitySearched.value,
+            search.typeSearched,
+            search.startDateTimeSearched,
+            search.endDateTimeSearched,
+            search.visibilitySearched,
         )
         this.facade.fetchMovementsPage(pageEvent.pageNumber, pageEvent.pageSize)
     }
 
-    protected get typeSearched(): FormControl {
-        return this.form.get('typeSearched') as FormControl
-    }
-
-    protected get startDateTimeSearched(): FormControl {
-        return this.form.get('startDateTimeSearched') as FormControl
-    }
-
-    protected get endDateTimeSearched(): FormControl {
-        return this.form.get('endDateTimeSearched') as FormControl
-    }
-
-    protected get visibilitySearched(): FormControl {
-        return this.form.get('visibilitySearched') as FormControl
-    }
 }

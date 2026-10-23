@@ -19,13 +19,14 @@ import { UserFormPage } from '@pages/users/user-form/user-form.page'
 import { CustomDateFormatPipe } from '@shared/helpers/pipe/custom-date-format.pipe'
 import { autoMock } from '@shared/helpers/testing/auto-mock'
 import { PROFILE_DTO, USER_DTO } from '@shared/helpers/testing/response-fixtures'
-import { GenericFormComponent } from '@shared/ui/base/generic-form.component'
+import { BaseFormComponent } from '@shared/ui/base/base-form.component'
 
 interface FormApi {
     submit: () => void
-    buildDto: () => unknown
-    fillForm: (model: object) => void
-    form: { value: object, patchValue: (value: object) => void }
+}
+
+interface ModelApi {
+    model: { (): object, set: (value: object) => void }
 }
 
 describe( 'user and project profile forms', () => {
@@ -33,7 +34,7 @@ describe( 'user and project profile forms', () => {
     let back: Mock<() => void>
     let navigateByUrl: Mock<(url: string) => Promise<boolean>>
 
-    function create<T extends GenericFormComponent<unknown, unknown>> (type: Type<T>, facadeToken: Type<unknown>, params: Record<string, string>): T {
+    function create<T extends BaseFormComponent> (type: Type<T>, facadeToken: Type<unknown>, params: Record<string, string>): T {
         back = vi.fn()
         navigateByUrl = vi.fn( () => Promise.resolve( true ) )
         RegistryConfig.config = { notification: { duration: {} } } as unknown as ConfigModel
@@ -98,7 +99,7 @@ describe( 'user and project profile forms', () => {
             user$.next( USER_DTO )
 
             // Assert
-            expect( (page as unknown as FormApi).form.value ).toEqual( { role: 'ADMIN' } )
+            expect( (page as unknown as ModelApi).model() ).toEqual( { role: 'ADMIN' } )
         } )
 
         it( 'does not save without a role', () => {
@@ -119,7 +120,7 @@ describe( 'user and project profile forms', () => {
             facade[ 'user' ].mockReturnValue( USER_DTO )
             facade[ 'updateUserRole' ].mockReturnValue( of( USER_DTO ) )
             const page: UserFormPage = create( UserFormPage, UserFacade, { userId: 'u1' } )
-            ;(page as unknown as FormApi).form.patchValue( { role: 'CHIEF' } )
+            ;(page as unknown as ModelApi).model.set( { role: 'CHIEF' } )
 
             // Act
             ;(page as unknown as FormApi).submit()
@@ -127,18 +128,6 @@ describe( 'user and project profile forms', () => {
             // Assert
             expect( facade[ 'updateUserRole' ] ).toHaveBeenCalledWith( 'u1', 'CHIEF' )
             expect( back ).toHaveBeenCalledTimes( 1 )
-        } )
-
-        it( 'does not build a dto because only the role is saved', () => {
-            // Arrange
-            facade[ 'user$' ] = new BehaviorSubject<unknown>( undefined ) as never
-            const page: UserFormPage = create( UserFormPage, UserFacade, { userId: 'u1' } )
-
-            // Act
-            const build: () => unknown = (): unknown => (page as unknown as FormApi).buildDto()
-
-            // Assert
-            expect( build ).toThrow( 'global.messages.not-implemented' )
         } )
     } )
 
@@ -153,7 +142,7 @@ describe( 'user and project profile forms', () => {
             // Assert
             expect( facade[ 'fetchAssignableRoles' ] ).toHaveBeenCalledTimes( 1 )
             expect( facade[ 'fetchProjectProfile' ] ).toHaveBeenCalledWith( 'pp1' )
-            expect( (page as unknown as FormApi).buildDto() ).toEqual( { role: 'CHIEF', startAccess: undefined, endAccess: undefined } )
+            expect( (page as unknown as ModelApi).model() ).toEqual( { role: 'CHIEF', beginDateTime: null, endDateTime: null } )
         } )
 
         it( 'updates the profile with the form values then goes back', () => {
@@ -211,13 +200,13 @@ describe( 'user and project profile forms', () => {
             // Arrange
             facade[ 'createProjectProfiles' ].mockReturnValue( of( { createdUserIds: [ 'u1' ], notCreatedUserIds: [] } ) )
             const page: ProjectProfileInvitationFormPage = create( ProjectProfileInvitationFormPage, ProjectProfileFacade, {} )
-            ;(page as unknown as FormApi).form.patchValue( { role: 'CHIEF', users: [ USER_DTO ] } )
+            ;(page as unknown as ModelApi).model.set( { role: 'CHIEF', beginDateTime: null, endDateTime: null, users: [ { ...USER_DTO } ] } )
 
             // Act
             ;(page as unknown as FormApi).submit()
 
             // Assert
-            expect( facade[ 'createProjectProfiles' ] ).toHaveBeenCalledWith( { userIds: [ 'u1' ], role: 'CHIEF', startAccess: null, endAccess: null } )
+            expect( facade[ 'createProjectProfiles' ] ).toHaveBeenCalledWith( { userIds: [ 'u1' ], role: 'CHIEF', startAccess: undefined, endAccess: undefined } )
             expect( back ).toHaveBeenCalledTimes( 1 )
         } )
 

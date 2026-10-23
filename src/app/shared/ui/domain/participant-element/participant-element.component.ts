@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, InputSignal, Signal} from '@angular/core'
+import { Component, computed, inject, input, InputSignal, Signal, model, ModelSignal } from '@angular/core'
 import {ParticipantModel} from '@shared/models/model/participant.model'
 import {ParticipantFacade} from '@pages/projects/[projectId]/configuration/participants/data/state/participant.facade'
 import {ElementCardComponent} from '@shared/ui/common/element-card/element-card.component'
@@ -51,7 +51,7 @@ export class ParticipantElementComponent extends GenericElementComponent {
 
     protected ParticipantTypeEnum: typeof ParticipantTypeEnum = ParticipantTypeEnum
 
-    protected layerOpened: boolean = false
+    protected readonly layerOpened: ModelSignal<boolean> = model<boolean>( false )
 
     public readonly actionMenuVisible: InputSignal<boolean> = input(true)
     public readonly groupIdToRemove: InputSignal<string | undefined> = input()

@@ -1,6 +1,6 @@
 import { Component, computed, inject, input, InputSignal, Signal } from '@angular/core'
 import { Card } from 'primeng/card'
-import { CommunicationModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
+import { CommunicationModel } from '@shared/models/model/communication.model'
 import { Avatar } from 'primeng/avatar'
 import { StringHelper } from '@shared/helpers/string.helper'
 import { HistoryUserModel } from '@shared/models/model/history-user.model'
@@ -133,7 +133,7 @@ export class DialogElementComponent extends GenericElementComponent {
         this.communication().alert?.status?.value ) )
 
     protected readonly updated: Signal<boolean> = computed( (): boolean =>
-        DateHelper.isAfter( this.communication().lastEdition.dateTime, this.communication().creation.dateTime ),
+        DateHelper.isAfter( this.communication().lastEdition?.dateTime, this.communication().creation?.dateTime ),
     )
 
     private buildAuthorIsCurrentUser (

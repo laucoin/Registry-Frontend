@@ -1,8 +1,15 @@
-import { Component, inject, OnDestroy, signal, WritableSignal } from '@angular/core'
+import { FieldTree, FormField } from '@angular/forms/signals'
+import { createSearchForm } from '@shared/helpers/form/search.form'
+import { GroupMemberListSearchModel, toGroupMemberListSearchModel, toGroupMemberListSearchParams } from './group-member-list.search'
+import { Component, inject, OnDestroy, signal, WritableSignal, model, ModelSignal } from '@angular/core'
 import { GroupModel } from '@shared/models/model/group.model'
 import { withLoading } from '@shared/helpers/rx.helper'
-import { ParticipantModel } from '@shared/models/model/participant.model'
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
+import {
+    AddMembersFormModel,
+    createAddMembersForm,
+    emptyAddMembersFormModel,
+    toMemberIds,
+} from '@pages/projects/[projectId]/configuration/groups/group-member-list/add-members.form'
 import { PageEventModel } from '@shared/models/model/page-event.model'
 import { GroupFacade } from '@pages/projects/[projectId]/configuration/groups/data/state/group.facade'
 import { GroupElementComponent } from '@pages/projects/[projectId]/configuration/groups/group-element/group-element.component'
@@ -20,7 +27,7 @@ import {
     SelectElementsFieldComponent,
 } from '@shared/ui/common/select-elements-field/select-elements-field.component'
 import { Observable, Subscription, switchMap, tap } from 'rxjs'
-import { FormFieldErrorComponent } from '@shared/ui/common/form-field-error/form-field-error.component'
+import { FieldErrorComponent } from '@shared/ui/common/field-error/field-error.component'
 import { Select } from 'primeng/select'
 import { GenericListComponent } from '@shared/ui/base/generic-list.component'
 import { ParticipantHelper } from '@shared/helpers/participant.helper'
@@ -43,13 +50,13 @@ import { Card } from 'primeng/card'
         InputText,
         ListComponent,
         ParticipantElementComponent,
-        ReactiveFormsModule,
+        FormField,
         RegistryTemplateDirective,
         TranslocoPipe,
         LayerComponent,
         RegistryRequiredDirective,
         SelectElementsFieldComponent,
-        FormFieldErrorComponent,
+        FieldErrorComponent,
         Select,
         PluralTranslationPipe,
         ParticipantFormComponent,
@@ -70,26 +77,24 @@ export class GroupMemberListPage extends GenericListComponent implements OnDestr
     protected readonly group: WritableSignal<GroupModel | undefined> = signal( undefined )
     protected readonly groupLoading: WritableSignal<boolean> = signal( false )
 
-    protected addMembersForm: FormGroup | undefined
-    protected addMembersFormLayerOpened: boolean = false
+    protected readonly addMembersModel: WritableSignal<AddMembersFormModel> = signal( emptyAddMembersFormModel() )
+    protected readonly addMembersForm: FieldTree<AddMembersFormModel> = createAddMembersForm( this.addMembersModel )
+    protected readonly addMembersFormLayerOpened: ModelSignal<boolean> = model<boolean>( false )
 
-    protected createMemberFormLayerOpened: boolean = false
+    protected readonly createMemberFormLayerOpened: ModelSignal<boolean> = model<boolean>( false )
+
+    protected readonly model: WritableSignal<GroupMemberListSearchModel> = signal( toGroupMemberListSearchModel( {
+        textSearched: this.facade.groupMembersPageTextSearchedParam(),
+        statusSearched: this.facade.groupMembersPageStatusSearchedParam(),
+        visibilitySearched: this.facade.groupMembersPageVisibilitySearchedParam(),
+    } ) )
+    protected readonly form: FieldTree<GroupMemberListSearchModel> = createSearchForm( this.model )
 
     public constructor () {
         super()
 
-        this.form = this.initForm()
-
         this.loadData()
         this.handleParticipantActions()
-    }
-
-    protected initForm (): FormGroup {
-        return this.formBuilder.group( {
-            textSearched: this.formBuilder.control( this.facade.groupMembersPageTextSearchedParam() ),
-            statusSearched: this.formBuilder.control( this.facade.groupMembersPageStatusSearchedParam() ),
-            visibilitySearched: this.formBuilder.control( this.facade.groupMembersPageVisibilitySearchedParam() ),
-        } )
     }
 
     protected loadData (): void {
@@ -119,29 +124,27 @@ export class GroupMemberListPage extends GenericListComponent implements OnDestr
     private reloadMembersOn (events: Observable<unknown>, pageNumber: (() => number | undefined) | undefined, pageSize: (() => number | undefined) | undefined): void {
         this.subscriptions.add( events.pipe(
             tap( (): void => {
-                this.createMemberFormLayerOpened = false
+                this.createMemberFormLayerOpened.set( false )
                 this.facade.fetchGroupMembersPage( this.route.snapshot.params['groupId'], pageNumber?.(), pageSize?.() )
             } ),
         ).subscribe() )
     }
 
     protected initAddMembersForm (): void {
-        this.addMembersForm = this.formBuilder.group( {
-            participants: this.formBuilder.control( [], [ Validators.required ] ),
-        } )
-
-        this.addMembersFormLayerOpened = true
+        this.addMembersForm().reset( emptyAddMembersFormModel() )
+        this.addMembersFormLayerOpened.set( true )
     }
 
     protected initCreateMemberForm (): void {
-        this.createMemberFormLayerOpened = true
+        this.createMemberFormLayerOpened.set( true )
     }
 
     protected loadPage (pageEvent: PageEventModel): void {
+        const search: ReturnType<typeof toGroupMemberListSearchParams> = toGroupMemberListSearchParams( this.model() )
         this.facade.inputMembersPageSearchParameters(
-            this.textSearched.value,
-            this.statusSearched.value,
-            this.visibilitySearched.value,
+            search.textSearched,
+            search.statusSearched,
+            search.visibilitySearched,
         )
         this.facade.fetchGroupMembersPage(
             this.route.snapshot.params['groupId'],
@@ -150,42 +153,26 @@ export class GroupMemberListPage extends GenericListComponent implements OnDestr
     }
 
     protected handleSearch (searched: string | undefined): void {
-        this.addMembersParticipants?.markAsTouched()
+        this.addMembersForm.participants().markAsTouched()
         this.facade.searchParticipants( searched )
     }
 
     protected addMembers (): void {
-        if (this.addMembersParticipants?.invalid) {
+        this.addMembersForm().markAsTouched()
+        if (this.addMembersForm().invalid()) {
             return
         }
 
         const groupId: string = this.route.snapshot.params['groupId']
-        const newMemberIds: string[] = this.addMembersParticipants?.value?.map( (item: ParticipantModel): string => item.id ) ?? []
 
         this.subscriptions.add(
-            this.facade.addMembersToGroup( groupId, newMemberIds ).subscribe( (): void => {
-                this.addMembersFormLayerOpened = false
+            this.facade.addMembersToGroup( groupId, toMemberIds( this.addMembersModel() ) ).subscribe( (): void => {
+                this.addMembersFormLayerOpened.set( false )
             } ),
         )
     }
 
     public ngOnDestroy (): void {
         this.subscriptions.unsubscribe()
-    }
-
-    protected get textSearched (): FormControl {
-        return this.form.get( 'textSearched' ) as FormControl
-    }
-
-    protected get statusSearched (): FormControl {
-        return this.form.get( 'statusSearched' ) as FormControl
-    }
-
-    protected get visibilitySearched (): FormControl {
-        return this.form.get( 'visibilitySearched' ) as FormControl
-    }
-
-    protected get addMembersParticipants (): FormControl | undefined {
-        return this.addMembersForm?.get( 'participants' ) as FormControl | undefined
     }
 }

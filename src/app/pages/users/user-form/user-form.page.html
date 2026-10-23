@@ -8,14 +8,12 @@
                     inputId='role'
                     fluid
                     [options]='facade.assignableRolesMetadata()'
-                    [formControl]='role'
+                    [formField]='form.role'
                     (keydown.enter)='submit()'
                     optionLabel='label'
                     optionValue='value' />
             <small class='secondary-color'>{{ 'users.form.hint.role' | transloco }}</small>
-            <app-form-field-error [errors]='role.errors'
-                                  [invalid]='FormHelper.invalid(role)'
-                                  translationPrefix='users.form.error.role' />
+            <app-field-error [field]='form.role' translationPrefix='users.form.error.role' />
         </div>
     </p-card>
     <div class='flex mt-2 justify-center'>

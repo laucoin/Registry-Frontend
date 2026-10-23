@@ -1,5 +1,7 @@
-import { Component, inject} from '@angular/core'
-import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms'
+import { FieldTree, FormField } from '@angular/forms/signals'
+import { createSearchForm } from '@shared/helpers/form/search.form'
+import { ParticipantsListSearchModel, toParticipantsListSearchModel, toParticipantsListSearchParams } from './participants-list.search'
+import { Component, inject, signal, WritableSignal } from '@angular/core'
 import {PageEventModel} from '@shared/models/model/page-event.model'
 import {ParticipantFacade} from '@pages/projects/[projectId]/configuration/participants/data/state/participant.facade'
 import {ListComponent} from '@shared/ui/common/list/list.component'
@@ -27,7 +29,7 @@ import {GenericListComponent} from '@shared/ui/base/generic-list.component'
     imports: [
         ListComponent,
         RegistryTemplateDirective,
-        ReactiveFormsModule,
+        FormField,
         TranslocoPipe,
         InputTextModule,
         SelectModule,
@@ -43,20 +45,17 @@ export class ParticipantsListPage extends GenericListComponent {
 
     protected readonly ParticipantRoutesEnum: typeof ParticipantRoutesEnum = ParticipantRoutesEnum
 
+    protected readonly model: WritableSignal<ParticipantsListSearchModel> = signal( toParticipantsListSearchModel( {
+        textSearched: this.facade.participantsPageTextSearchedParam(),
+        statusSearched: this.facade.participantsPageStatusSearchedParam(),
+        visibilitySearched: this.facade.participantsPageVisibilitySearchedParam(),
+    } ) )
+    protected readonly form: FieldTree<ParticipantsListSearchModel> = createSearchForm( this.model )
+
     public constructor() {
         super()
 
-        this.form = this.initForm()
-
         this.loadData()
-    }
-
-    protected initForm(): FormGroup {
-        return this.formBuilder.group({
-            textSearched: this.formBuilder.control(this.facade.participantsPageTextSearchedParam()),
-            statusSearched: this.formBuilder.control(this.facade.participantsPageStatusSearchedParam()),
-            visibilitySearched: this.formBuilder.control(this.facade.participantsPageVisibilitySearchedParam()),
-        })
     }
 
     protected loadData(): void {
@@ -64,23 +63,13 @@ export class ParticipantsListPage extends GenericListComponent {
     }
 
     protected loadPage(pageEvent: PageEventModel): void {
+        const search: ReturnType<typeof toParticipantsListSearchParams> = toParticipantsListSearchParams( this.model() )
         this.facade.inputPageSearchParameters(
-            this.textSearched.value,
-            this.statusSearched.value,
-            this.visibilitySearched.value,
+            search.textSearched,
+            search.statusSearched,
+            search.visibilitySearched,
         )
         this.facade.fetchParticipantsPage(pageEvent.pageNumber, pageEvent.pageSize)
     }
 
-    protected get textSearched(): FormControl {
-        return this.form.get('textSearched') as FormControl
-    }
-
-    protected get statusSearched(): FormControl {
-        return this.form.get('statusSearched') as FormControl
-    }
-
-    protected get visibilitySearched(): FormControl {
-        return this.form.get('visibilitySearched') as FormControl
-    }
 }

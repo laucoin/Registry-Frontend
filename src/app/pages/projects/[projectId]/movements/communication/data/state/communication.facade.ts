@@ -1,7 +1,7 @@
 import { toObservable } from '@angular/core/rxjs-interop'
 import { computed, Injectable, Signal, inject } from '@angular/core'
 import { PageModel } from '@shared/models/model/page.model'
-import { CommunicationModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
+import { CommunicationModel } from '@shared/models/model/communication.model'
 import { CommunicationStore } from '@pages/projects/[projectId]/movements/communication/data/state/communication.store'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { DateHelper } from '@shared/helpers/date.helper'

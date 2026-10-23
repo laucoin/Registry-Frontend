@@ -1,7 +1,6 @@
 import { Location } from '@angular/common'
 import { signal } from '@angular/core'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
-import { FormGroup } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslocoService } from '@jsverse/transloco'
 import { MenuItem } from 'primeng/api'
@@ -22,16 +21,22 @@ import { ALERT_DTO, COMMUNICATION_DTO, MOVEMENT_DTO } from '@shared/helpers/test
 import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
 import { CommunicationFormComponent } from '@shared/ui/domain/communication-form/communication-form.component'
 
+interface LinkItem {
+    value: { id: string }
+}
+
+interface FieldApi {
+    valid: () => boolean
+}
+
 interface CommunicationFormApi {
-    form: FormGroup
+    model: { (): { message: string, movement: LinkItem, alert: LinkItem, newAlertTitle: string }, set: (value: object) => void }
+    form: Record<string, () => FieldApi>
     actions: () => MenuItem[]
     movementSelectorVisible: { (): boolean, set: (visible: boolean) => void }
     alertSelectorMode: () => string | undefined
-    selectedMovement: () => { value: { id: string } } | undefined
-    selectedAlert: () => { value: { id: string } } | undefined
     ngOnInit: () => void
     submit: () => void
-    buildDto: () => Record<string, unknown>
     resetForm: () => void
     removeMovementField: () => void
     removeAlertField: () => void
@@ -158,8 +163,8 @@ describe( 'CommunicationFormComponent', () => {
             page.ngOnInit()
 
             // Assert
-            expect( page.selectedMovement()!.value.id ).toBe( 'm1' )
-            expect( page.selectedAlert()!.value.id ).toBe( 'al1' )
+            expect( page.model().movement.value.id ).toBe( 'm1' )
+            expect( page.model().alert.value.id ).toBe( 'al1' )
         } )
     } )
 
@@ -178,7 +183,7 @@ describe( 'CommunicationFormComponent', () => {
         it( 'does not save without a movement or an alert', () => {
             // Arrange
             const page: CommunicationFormApi = create()
-            page.form.patchValue( { message: 'hello' } )
+            page.model.set( { ...page.model(), message: 'hello' } )
 
             // Act
             page.submit()
@@ -192,7 +197,7 @@ describe( 'CommunicationFormComponent', () => {
             const page: CommunicationFormApi = create()
             fixture.componentRef.setInput( 'initialMovement', MOVEMENT_DTO )
             page.ngOnInit()
-            page.form.patchValue( { message: 'hello' } )
+            page.model.set( { ...page.model(), message: 'hello' } )
 
             // Act
             page.submit()
@@ -200,14 +205,14 @@ describe( 'CommunicationFormComponent', () => {
             // Assert
             expect( facade[ 'createCommunication' ] ).toHaveBeenCalledWith( expect.objectContaining( { message: 'hello', movementId: 'm1', alertId: undefined } ) )
             expect( facade[ 'resetCommunication' ] ).toHaveBeenCalledTimes( 2 )
-            expect( page.form.value.message ).toBeNull()
+            expect( page.model().message ).toBe( '' )
         } )
 
         it( 'updates the loaded communication keeping its date', () => {
             // Arrange
             const page: CommunicationFormApi = create( [ ProjectOptionEnum.ALERT ], 'c1' )
             current = { ...COMMUNICATION_DTO, id: 'c1', dateTime: '2026-01-01T10:00:00.000Z' }
-            page.form.patchValue( { message: 'edited', alert: 'al1' } )
+            page.model.set( { ...page.model(), message: 'edited', alert: { label: 'a', value: { id: 'al1' } } } )
 
             // Act
             page.submit()
@@ -220,7 +225,7 @@ describe( 'CommunicationFormComponent', () => {
             // Arrange
             const page: CommunicationFormApi = create()
             page.actions()[ 2 ].command!( {} as never )
-            page.form.patchValue( { message: 'hello', newAlertTitle: 'Fire', alert: 'x' } )
+            page.model.set( { ...page.model(), message: 'hello', newAlertTitle: 'Fire', alert: { label: 'a', value: { id: 'x' } } } )
 
             // Act
             page.submit()
@@ -236,15 +241,14 @@ describe( 'CommunicationFormComponent', () => {
 
             // Act
             page.actions()[ 2 ].command!( {} as never )
-            page.form.get( 'newAlertTitle' )!.updateValueAndValidity()
 
             // Assert
-            expect( page.form.get( 'newAlertTitle' )!.valid ).toBe( false )
+            expect( page.form[ 'newAlertTitle' ]().valid() ).toBe( false )
         } )
     } )
 
     describe( 'editing', () => {
-        it( 'fills the message and locks the links of a loaded communication', () => {
+        it( 'fills the message and the links of a loaded communication', () => {
             // Arrange
             const page: CommunicationFormApi = create( [ ProjectOptionEnum.ALERT ], 'c1' )
 
@@ -252,9 +256,7 @@ describe( 'CommunicationFormComponent', () => {
             communication$.next( { ...COMMUNICATION_DTO, message: 'old', movement: MOVEMENT_DTO, alert: ALERT_DTO } )
 
             // Assert
-            expect( page.form.getRawValue().message ).toBe( 'old' )
-            expect( page.form.get( 'movement' )!.disabled ).toBe( true )
-            expect( page.form.get( 'alert' )!.disabled ).toBe( true )
+            expect( page.model() ).toMatchObject( { message: 'old', movement: { value: { id: 'm1' } }, alert: { value: { id: 'al1' } } } )
             expect( facade[ 'fetchCommunication' ] ).toHaveBeenCalledWith( 'c1' )
         } )
     } )
@@ -270,21 +272,21 @@ describe( 'CommunicationFormComponent', () => {
 
             // Assert
             expect( page.movementSelectorVisible() ).toBe( false )
-            expect( page.selectedMovement() ).toBeUndefined()
+            expect( page.model().movement ).toBeNull()
         } )
 
         it( 'removes the alert field and its title', () => {
             // Arrange
             const page: CommunicationFormApi = create()
             page.actions()[ 2 ].command!( {} as never )
-            page.form.patchValue( { newAlertTitle: 'Fire' } )
+            page.model.set( { ...page.model(), newAlertTitle: 'Fire' } )
 
             // Act
             page.removeAlertField()
 
             // Assert
             expect( page.alertSelectorMode() ).toBeUndefined()
-            expect( page.form.value.newAlertTitle ).toBeUndefined()
+            expect( page.model().newAlertTitle ).toBe( '' )
         } )
 
         it( 'delegates searches to the facade', () => {

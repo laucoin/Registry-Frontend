@@ -1,5 +1,7 @@
-import { Component, inject} from '@angular/core'
-import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms'
+import { FieldTree, FormField } from '@angular/forms/signals'
+import { createSearchForm } from '@shared/helpers/form/search.form'
+import { ActivitiesListSearchModel, toActivitiesListSearchModel, toActivitiesListSearchParams } from './activities-list.search'
+import { Component, inject, signal, WritableSignal } from '@angular/core'
 import {PageEventModel} from '@shared/models/model/page-event.model'
 import {ActivityFacade} from '@pages/projects/[projectId]/configuration/activities/data/state/activity.facade'
 import {ListComponent} from '@shared/ui/common/list/list.component'
@@ -26,7 +28,7 @@ import {GenericListComponent} from '@shared/ui/base/generic-list.component'
     imports: [
         ListComponent,
         RegistryTemplateDirective,
-        ReactiveFormsModule,
+        FormField,
         TranslocoPipe,
         InputTextModule,
         SelectModule,
@@ -43,21 +45,18 @@ export class ActivitiesListPage extends GenericListComponent {
 
     protected readonly ActivityRoutesEnum: typeof ActivityRoutesEnum = ActivityRoutesEnum
 
+    protected readonly model: WritableSignal<ActivitiesListSearchModel> = signal( toActivitiesListSearchModel( {
+        textSearched: this.facade.activitiesPageTextSearchedParam(),
+        dateTimeSearched: this.facade.activitiesPageDateTimeSearchedParam(),
+        availabilitySearched: this.facade.activitiesPageAvailabilitySearchedParam(),
+        visibilitySearched: this.facade.activitiesPageVisibilitySearchedParam(),
+    } ) )
+    protected readonly form: FieldTree<ActivitiesListSearchModel> = createSearchForm( this.model )
+
     public constructor() {
         super()
 
-        this.form = this.initForm()
-
         this.loadData()
-    }
-
-    protected initForm(): FormGroup {
-        return this.formBuilder.group({
-            textSearched: this.formBuilder.control(this.facade.activitiesPageTextSearchedParam()),
-            dateTimeSearched: this.formBuilder.control(this.facade.activitiesPageDateTimeSearchedParam()),
-            availabilitySearched: this.formBuilder.control(this.facade.activitiesPageAvailabilitySearchedParam()),
-            visibilitySearched: this.formBuilder.control(this.facade.activitiesPageVisibilitySearchedParam()),
-        })
     }
 
     protected loadData(): void {
@@ -65,28 +64,14 @@ export class ActivitiesListPage extends GenericListComponent {
     }
 
     protected loadPage(pageEvent: PageEventModel): void {
+        const search: ReturnType<typeof toActivitiesListSearchParams> = toActivitiesListSearchParams( this.model() )
         this.facade.inputPageSearchParameters(
-            this.textSearched.value,
-            this.dateTimeSearched.value,
-            this.availabilitySearched.value,
-            this.visibilitySearched.value,
+            search.textSearched,
+            search.dateTimeSearched,
+            search.availabilitySearched,
+            search.visibilitySearched,
         )
         this.facade.fetchActivitiesPage(pageEvent.pageNumber, pageEvent.pageSize)
     }
 
-    protected get textSearched(): FormControl {
-        return this.form.get('textSearched') as FormControl
-    }
-
-    protected get dateTimeSearched(): FormControl {
-        return this.form.get('dateTimeSearched') as FormControl
-    }
-
-    protected get availabilitySearched(): FormControl {
-        return this.form.get('availabilitySearched') as FormControl
-    }
-
-    protected get visibilitySearched(): FormControl {
-        return this.form.get('visibilitySearched') as FormControl
-    }
 }

@@ -1,12 +1,4 @@
-import {
-    Component,
-    computed,
-    inject,
-    input,
-    InputSignal,
-    OnDestroy,
-    Signal,
-} from '@angular/core'
+import { Component, computed, inject, input, InputSignal, OnDestroy, Signal, model, ModelSignal } from '@angular/core'
 import {ProjectModel} from '@shared/models/model/project.model'
 import {ElementCardComponent} from '@shared/ui/common/element-card/element-card.component'
 import {TagModule} from 'primeng/tag'
@@ -57,7 +49,7 @@ export class ProjectElementComponent extends GenericElementComponent implements 
     protected readonly facade: ProjectFacade = inject(ProjectFacade)
     protected readonly subscriptions: Subscription = new Subscription()
 
-    protected layerOpened: boolean = false
+    protected readonly layerOpened: ModelSignal<boolean> = model<boolean>( false )
 
     public readonly actionMenuVisible: InputSignal<boolean> = input(true)
     public readonly project: InputSignal<ProjectModel> = input.required()

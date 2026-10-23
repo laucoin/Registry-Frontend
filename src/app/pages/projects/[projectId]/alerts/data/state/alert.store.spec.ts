@@ -10,7 +10,7 @@ import { ERROR_500, ERROR_503, failing, pageOf } from '@shared/helpers/testing/t
 import { AlertStatusEnum } from '@shared/models/enumeration/alert-status.enum'
 import { AlertModel } from '@shared/models/model/alert.model'
 import { ErrorModel } from '@shared/models/model/error.model'
-import { CommunicationModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
+import { CommunicationModel } from '@shared/models/model/communication.model'
 
 describe( 'AlertStore', () => {
     let store: InstanceType<typeof AlertStore>

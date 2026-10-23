@@ -1,4 +1,4 @@
-import { VehicleStatusModel } from '@pages/projects/data/model/vehicle-status.model'
+import { VehicleStatusModel } from '@shared/models/model/vehicle-status.model'
 import { VehicleStatusResponseDto } from '@shared/models/dto/response/vehicle-status.response.dto'
 
 /**

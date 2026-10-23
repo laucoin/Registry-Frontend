@@ -8,7 +8,6 @@ import {GenericModel} from '@shared/models/model/generic.model'
 import {HistoryModel} from '@shared/models/model/history.model'
 import {ElementSkeletonComponent} from '@shared/ui/common/element-skeleton/element-skeleton.component'
 import {DialogModule} from 'primeng/dialog'
-import {FormsModule, ReactiveFormsModule} from '@angular/forms'
 import {InputTextModule} from 'primeng/inputtext'
 import {Popover} from 'primeng/popover'
 import {Ripple} from 'primeng/ripple'
@@ -32,9 +31,7 @@ import {MenuItem} from 'primeng/api'
         MenuModule,
         TranslocoPipe,
         DialogModule,
-        FormsModule,
         InputTextModule,
-        ReactiveFormsModule,
         Popover,
         Ripple,
         ContextMenu,
@@ -61,7 +58,8 @@ export class ElementCardComponent<T extends GenericModel> extends GenericCompone
         'global.date-and-time-format.element-last-update',
     ))
 
-    private buildHistoryItem(history: HistoryModel, translationPrefix: string): string {
+    private buildHistoryItem(history: HistoryModel | undefined, translationPrefix: string): string {
+        if (!history) return ''
         const key: string = `${translationPrefix}${history.user ? '-user' : ''}`
         return this.translateService.translate(
             key,

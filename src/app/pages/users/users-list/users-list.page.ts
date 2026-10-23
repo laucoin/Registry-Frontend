@@ -1,5 +1,7 @@
-import { Component, inject} from '@angular/core'
-import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms'
+import { FieldTree, FormField } from '@angular/forms/signals'
+import { createSearchForm } from '@shared/helpers/form/search.form'
+import { UsersListSearchModel, toUsersListSearchModel, toUsersListSearchParams } from './users-list.search'
+import { Component, inject, signal, WritableSignal } from '@angular/core'
 import {PageEventModel} from '@shared/models/model/page-event.model'
 import {UserFacade} from '@pages/users/data/state/user.facade'
 import {ListComponent} from '@shared/ui/common/list/list.component'
@@ -21,7 +23,7 @@ import {GenericListComponent} from '@shared/ui/base/generic-list.component'
     selector: 'app-users-list',
     imports: [
         ListComponent,
-        ReactiveFormsModule,
+        FormField,
         RegistryTemplateDirective,
         TranslocoPipe,
         InputTextModule,
@@ -35,31 +37,22 @@ import {GenericListComponent} from '@shared/ui/base/generic-list.component'
 export class UsersListPage extends GenericListComponent {
     protected readonly facade: UserFacade = inject(UserFacade)
 
+    protected readonly model: WritableSignal<UsersListSearchModel> = signal( toUsersListSearchModel( {
+        textSearched: this.facade.usersPageTextSearchedParam(),
+        visibilitySearched: this.facade.actualUsersPageVisibilitySearchedParam(),
+    } ) )
+    protected readonly form: FieldTree<UsersListSearchModel> = createSearchForm( this.model )
+
     public constructor() {
         super()
-
-        this.form = this.initForm()
 
         this.facade.fetchUsersPage(undefined, undefined)
     }
 
-    protected initForm(): FormGroup {
-        return this.formBuilder.group({
-            textSearched: this.formBuilder.control(this.facade.usersPageTextSearchedParam()),
-            visibilitySearched: this.formBuilder.control(this.facade.actualUsersPageVisibilitySearchedParam()),
-        })
-    }
-
     protected loadPage(pageEvent: PageEventModel): void {
-        this.facade.inputPageSearchParameters(this.textSearched.value, this.visibilitySearched.value)
+        const search: ReturnType<typeof toUsersListSearchParams> = toUsersListSearchParams( this.model() )
+        this.facade.inputPageSearchParameters(search.textSearched, search.visibilitySearched)
         this.facade.fetchUsersPage(pageEvent.pageNumber, pageEvent.pageSize)
     }
 
-    protected get textSearched(): FormControl {
-        return this.form.get('textSearched') as FormControl
-    }
-
-    protected get visibilitySearched(): FormControl {
-        return this.form.get('visibilitySearched') as FormControl
-    }
 }

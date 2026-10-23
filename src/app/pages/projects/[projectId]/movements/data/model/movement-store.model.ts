@@ -5,11 +5,11 @@ import { SelectItem, SelectItemGroup } from 'primeng/api'
 import { ParticipantModel } from '@shared/models/model/participant.model'
 import { GroupModel } from '@shared/models/model/group.model'
 import { VehicleModel } from '@shared/models/model/vehicle.model'
-import { MovementReasonModel } from '@pages/projects/[projectId]/movements/data/model/movement-reason.model'
+import { MovementReasonModel } from '@shared/models/model/movement-reason.model'
 import { ParticipantTypeEnum } from '@shared/models/enumeration/participant-type.enum'
 import { MovementTypeEnum } from '@shared/models/enumeration/movement-type.enum'
 import { CommunicationPageParamsModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication-page-params.model'
-import { CommunicationModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
+import { CommunicationModel } from '@shared/models/model/communication.model'
 
 export interface MovementStoreModel {
     movements: PageRequestInformationModel<MovementPageParamsModel, MovementModel>

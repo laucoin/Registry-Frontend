@@ -22,7 +22,7 @@
                           [severity]='isInProgress() ? "info" : "secondary"' [label]='(isInProgress() ?"alerts.actions.add-communication"
                        : "alerts.actions.communications") | transloco'
                           [icon]='ProjectOptionEnum.COMMUNICATION | optionIcon'
-                          (onClick)='communicationsLayerOpened = true'/>
+                          (onClick)='communicationsLayerOpened.set(true)'/>
             </div>
         }
         <div class='flex' [class.status]='!carouselView()'
@@ -38,7 +38,7 @@
                       [severity]='isInProgress() ? "info" : "secondary"' [label]='(isInProgress() ?"alerts.actions.add-communication"
                        : "alerts.actions.communications") | transloco'
                       [icon]='ProjectOptionEnum.COMMUNICATION | optionIcon'
-                      (onClick)='communicationsLayerOpened = true'/>
+                      (onClick)='communicationsLayerOpened.set(true)'/>
         </div>
     }
 </app-element-card>
@@ -64,7 +64,7 @@
                     icon='pi pi-ellipsis-v'/>
         </div>
     </ng-template>
-    @if (communicationsLayerOpened) {
+    @if (communicationsLayerOpened()) {
         <app-alert-communications-list [alert]='alert()'/>
     }
 </p-dialog>

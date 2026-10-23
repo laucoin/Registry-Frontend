@@ -231,15 +231,18 @@ This exception is standing and does not require asking the user each time — ev
   deadlock — don't simplify that exclusion away, don't scatter interceptor logic into services.
 - No environment value is compiled into the bundle. Runtime config is loaded from public/settings/config.json and
   public/settings/env.json via provideAppInitializer() prior to application bootstrap.
-- Theming: the PrimeNG preset is built from `config.json` at runtime, and dark mode is toggled by flipping the
-  `dark-mod` class on `<html>`. This is transitional until the `@sgdf/ui` migration; raise any change to this
-  mechanism with the user rather than working around it silently.
+- Theming: while PrimeNG and `@sgdf/ui` coexist, the PrimeNG preset is built from `config.json` at runtime, and dark
+  mode flips both the `dark-mod` class and the `data-theme` attribute on `<html>`, always through `BrowserService`.
+  The SGDF tokens (`--sgdf-*`) belong to `@sgdf/ui`: no theme key is added to `config.json` for them. Once PrimeNG is
+  removed, only `data-theme` remains. Raise any change to this mechanism with the user rather than working around it
+  silently.
 - The production build enforces bundle budgets — an initial bundle past 1 MB or a component stylesheet past 8 kB is a
   hard failure, not a nuisance.
 - Static Web Serving (CSR): Production output is hosted as pure static assets (e.g. NGINX / Caddy). Ensure web server
   fallback rules (URL rewriting to index.html) are configured for HTML5 client-side routing.
 - Hardening headers (including a CSP) are set in `nginx.conf`. The CSP must stay as strict as the app allows: no
-  `unsafe-eval`, and any loosening must be justified and agreed with the user first.
+  `unsafe-eval`, and any loosening must be justified and agreed with the user first. `@sgdf/ui` needs none: its fonts
+  and icons are served from the application origin.
 - semantic-release drives versioning/changelog/tags from Conventional Commits — a non-conventional commit message
   produces a wrong or missing release.
 - Pagination is lazy-loading based, not page-numbered. Lists fetch and append the next batch as the user

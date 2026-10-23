@@ -12,7 +12,7 @@ import { UserMapper } from '@shared/mappers/user.mapper'
 export class ParticipantMapper {
     public static toModel (dto: ParticipantResponseDto): ParticipantModel {
         return {
-            ...GenericProjectMapper.toModel( dto ),
+            ...GenericProjectMapper.toOptionalModel( dto ),
             firstName: dto.firstName,
             lastName: dto.lastName,
             birthday: dto.birthday,

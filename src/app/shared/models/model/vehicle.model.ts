@@ -1,9 +1,9 @@
-import { GenericProjectModel } from '@shared/models/model/generic-project.model'
+import { OptionalProjectModel } from '@shared/models/model/generic-project.model'
 import { CustomDatetimeModel } from '@shared/models/model/custom-datetime.model'
 import { SelectItem } from 'primeng/api'
 import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum'
 
-export interface VehicleModel extends GenericProjectModel {
+export interface VehicleModel extends OptionalProjectModel {
     licensePlate: string
     brand: string
     model: string

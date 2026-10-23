@@ -1,4 +1,4 @@
-import { ProjectStatusModel } from '@pages/projects/data/model/project-status.model'
+import { ProjectStatusModel } from '@shared/models/model/project-status.model'
 import { ProjectStatusResponseDto } from '@shared/models/dto/response/project-status.response.dto'
 
 /**

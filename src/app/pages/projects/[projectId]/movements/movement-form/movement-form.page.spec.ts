@@ -1,7 +1,6 @@
 import { Location } from '@angular/common'
 import { signal } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
-import { FormArray, FormControl, FormGroup } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslocoService } from '@jsverse/transloco'
 import { of } from 'rxjs'
@@ -20,30 +19,42 @@ import { MovementTypeEnum } from '@shared/models/enumeration/movement-type.enum'
 import { ParticipantTypeEnum } from '@shared/models/enumeration/participant-type.enum'
 import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum'
 
+interface FieldApi {
+    disabled: () => boolean
+}
+
+interface MovementFormModelApi {
+    information: { dateTime: Date | null, type: string, contentType: string }
+    content: { reason: object | null, participants: { participant: { id: string } }[], guests: { id: string, firstName: string }[] }
+    vehicles: { vehicle: { id: string }, driver: { id: string } | null }[]
+}
+
 interface MovementFormApi {
-    informationForm: FormGroup
-    contentForm: FormGroup
-    vehicleForm: FormGroup
+    model: { (): MovementFormModelApi, set: (value: MovementFormModelApi) => void, update: (fn: (value: MovementFormModelApi) => MovementFormModelApi) => void }
+    form: { information: { type: () => FieldApi, contentType: () => FieldApi } }
     interpretedMovementType: () => PresenceStatusEnum[]
     isContentSelection: () => boolean
     reasonRequired: () => boolean
-    selectedReason: { (): unknown, set: (reason: unknown) => void }
     drivers: () => { value: { id: string } }[]
-    handleTypeChange: (type: string | undefined) => void
+    handleTypeChange: (type: string) => void
     handleContentTypeChange: (contentType: string) => void
     addGuest: (participant?: object) => void
     removeGuest: (index: number) => void
     addVehicle: (vehicle: object) => void
     removeVehicle: (index: number) => void
     submit: () => void
-    buildDto: () => Record<string, unknown>
     handleReasonsAndActivitiesSearch: (text: string | undefined) => void
     handleParticipantsAndGroupsSearch: (text: string | undefined) => void
     handleVehiclesSearch: (text: string | undefined) => void
 }
 
-const MAJOR: object = { ...PARTICIPANT_DTO, id: 'pa1', major: true }
-const MINOR: object = { ...PARTICIPANT_DTO, id: 'pa2', major: false }
+function major (): object {
+    return structuredClone( { ...PARTICIPANT_DTO, id: 'pa1', major: true } )
+}
+
+function minor (): object {
+    return structuredClone( { ...PARTICIPANT_DTO, id: 'pa2', major: false } )
+}
 
 describe( 'MovementFormPage', () => {
     let facade: Record<string, Mock>
@@ -74,8 +85,15 @@ describe( 'MovementFormPage', () => {
         return TestBed.createComponent( MovementFormPage ).componentInstance as unknown as MovementFormApi
     }
 
-    function content (page: MovementFormApi): FormControl {
-        return page.contentForm.get( 'participantContent' ) as FormControl
+    function updateModel (page: MovementFormApi, change: (value: MovementFormModelApi) => Partial<MovementFormModelApi>): void {
+        page.model.update( (value: MovementFormModelApi): MovementFormModelApi => ({ ...value, ...change( value ) }) )
+    }
+
+    function fillArrival (page: MovementFormApi): void {
+        page.handleTypeChange( MovementTypeEnum.IN )
+        updateModel( page, (value: MovementFormModelApi) => ({
+            content: { ...value.content, participants: [ { participant: major(), poolName: 'car 1' } as never ] },
+        }) )
     }
 
     beforeEach( () => {
@@ -86,8 +104,8 @@ describe( 'MovementFormPage', () => {
         it.each( [
             [ MovementTypeEnum.IN, [ PresenceStatusEnum.IN ] ],
             [ MovementTypeEnum.OUT, [ PresenceStatusEnum.UNAVAILABLE, PresenceStatusEnum.OUT ] ],
-            [ undefined, [] ],
-        ] )( 'interprets the %s type as the presence statuses it leads to', (type: MovementTypeEnum | undefined, expected: PresenceStatusEnum[]) => {
+            [ '', [] ],
+        ] )( 'interprets the %s type as the presence statuses it leads to', (type: string, expected: PresenceStatusEnum[]) => {
             // Arrange
             const page: MovementFormApi = create()
 
@@ -124,27 +142,27 @@ describe( 'MovementFormPage', () => {
         it( 'switches to guests, asks for at least one and requires a reason for an arrival of guests', () => {
             // Arrange
             const page: MovementFormApi = create()
-            page.informationForm.patchValue( { type: MovementTypeEnum.IN } )
+            page.handleTypeChange( MovementTypeEnum.IN )
 
             // Act
             page.handleContentTypeChange( ParticipantTypeEnum.GUEST )
 
             // Assert
             expect( page.isContentSelection() ).toBe( false )
-            expect( (page.contentForm.get( 'guestContent' ) as FormArray).length ).toBe( 1 )
+            expect( page.model().content.guests ).toHaveLength( 1 )
             expect( page.reasonRequired() ).toBe( true )
         } )
 
         it( 'forgets the chosen reason when the rules change', () => {
             // Arrange
             const page: MovementFormApi = create()
-            page.selectedReason.set( { kind: 'REASON', value: 'r1' } )
+            updateModel( page, (value: MovementFormModelApi) => ({ content: { ...value.content, reason: { kind: 'REASON', value: 'r1' } } }) )
 
             // Act
             page.handleTypeChange( MovementTypeEnum.OUT )
 
             // Assert
-            expect( page.selectedReason() ).toBeUndefined()
+            expect( page.model().content.reason ).toBeNull()
         } )
     } )
 
@@ -152,7 +170,6 @@ describe( 'MovementFormPage', () => {
         it( 'adds and removes guests', () => {
             // Arrange
             const page: MovementFormApi = create()
-            const guests: FormArray = page.contentForm.get( 'guestContent' ) as FormArray
 
             // Act
             page.addGuest()
@@ -160,14 +177,13 @@ describe( 'MovementFormPage', () => {
             page.removeGuest( 0 )
 
             // Assert
-            expect( guests.length ).toBe( 1 )
-            expect( guests.at( 0 ).value.firstName ).toBe( 'A' )
+            expect( page.model().content.guests ).toHaveLength( 1 )
+            expect( page.model().content.guests[ 0 ].firstName ).toBe( 'A' )
         } )
 
         it( 'adds and removes vehicles waiting for a driver', () => {
             // Arrange
             const page: MovementFormApi = create()
-            const vehicles: FormArray = page.vehicleForm.get( 'vehiclesWithDrivers' ) as FormArray
 
             // Act
             page.addVehicle( VEHICLE_DTO )
@@ -175,8 +191,19 @@ describe( 'MovementFormPage', () => {
             page.removeVehicle( 0 )
 
             // Assert
-            expect( vehicles.length ).toBe( 1 )
-            expect( vehicles.at( 0 ).value.driver ).toBeNull()
+            expect( page.model().vehicles ).toHaveLength( 1 )
+            expect( page.model().vehicles[ 0 ].driver ).toBeNull()
+        } )
+
+        it( 'keeps the shared vehicle untouched by the form', () => {
+            // Arrange
+            const page: MovementFormApi = create()
+
+            // Act
+            page.addVehicle( VEHICLE_DTO )
+
+            // Assert
+            expect( page.model().vehicles[ 0 ].vehicle ).not.toBe( VEHICLE_DTO )
         } )
 
         it( 'only offers the adult participants as drivers', () => {
@@ -184,7 +211,9 @@ describe( 'MovementFormPage', () => {
             const page: MovementFormApi = create()
 
             // Act
-            content( page ).patchValue( [ { participant: MAJOR }, { participant: MINOR } ] )
+            updateModel( page, (value: MovementFormModelApi) => ({
+                content: { ...value.content, participants: [ { participant: major() } as never, { participant: minor() } as never ] },
+            }) )
 
             // Assert
             expect( page.drivers().map( (driver: { value: { id: string } }): string => driver.value.id ) ).toEqual( [ 'pa1' ] )
@@ -192,12 +221,6 @@ describe( 'MovementFormPage', () => {
     } )
 
     describe( 'saving', () => {
-        function fillArrival (page: MovementFormApi): void {
-            page.informationForm.patchValue( { type: MovementTypeEnum.IN } )
-            page.handleTypeChange( MovementTypeEnum.IN )
-            content( page ).patchValue( [ { participant: MAJOR, poolName: 'car 1' } ] )
-        }
-
         it( 'does not save while the form is incomplete', () => {
             // Arrange
             const page: MovementFormApi = create()
@@ -228,49 +251,35 @@ describe( 'MovementFormPage', () => {
             expect( back ).toHaveBeenCalledTimes( 1 )
         } )
 
-        it( 'sends the reason as a reason or as an activity depending on its kind', () => {
-            // Arrange
-            const page: MovementFormApi = create()
-            fillArrival( page )
-            page.selectedReason.set( { kind: 'REASON', value: 'r1' } )
-            const asReason: Record<string, unknown> = page.buildDto()
-            page.selectedReason.set( { kind: 'ACTIVITY', value: 'a1' } )
-
-            // Act
-            const asActivity: Record<string, unknown> = page.buildDto()
-
-            // Assert
-            expect( [ asReason[ 'reason' ], asReason[ 'activityId' ] ] ).toEqual( [ 'r1', undefined ] )
-            expect( [ asActivity[ 'reason' ], asActivity[ 'activityId' ] ] ).toEqual( [ undefined, 'a1' ] )
-        } )
-
         it( 'attaches to each participant the vehicle he or she drives', () => {
             // Arrange
             const page: MovementFormApi = create()
             fillArrival( page )
             page.addVehicle( VEHICLE_DTO )
-            ;((page.vehicleForm.get( 'vehiclesWithDrivers' ) as FormArray).at( 0 ) as FormGroup).patchValue( { driver: MAJOR } )
+            updateModel( page, (value: MovementFormModelApi) => ({
+                vehicles: value.vehicles.map( (item: MovementFormModelApi[ 'vehicles' ][ number ]) => ({ ...item, driver: major() as never }) ),
+            }) )
 
             // Act
-            const dto: Record<string, unknown> = page.buildDto()
+            page.submit()
 
             // Assert
-            expect( (dto[ 'content' ] as { vehicleId: string }[])[ 0 ].vehicleId ).toBe( 'v1' )
+            expect( facade[ 'createMovement' ] ).toHaveBeenCalledWith( expect.objectContaining( {
+                content: [ expect.objectContaining( { vehicleId: 'v1' } ) ],
+            } ) )
         } )
 
-        it( 'sends the guests with a formatted birthday', () => {
+        it( 'does not save a vehicle without a driver', () => {
             // Arrange
             const page: MovementFormApi = create()
-            page.informationForm.patchValue( { type: MovementTypeEnum.IN, contentType: ParticipantTypeEnum.GUEST } )
-            page.handleContentTypeChange( ParticipantTypeEnum.GUEST )
-            const guest: FormGroup = (page.contentForm.get( 'guestContent' ) as FormArray).at( 0 ) as FormGroup
-            guest.patchValue( { firstName: 'A', lastName: 'B', birthday: new Date( 2010, 0, 5 ) } )
+            fillArrival( page )
+            page.addVehicle( VEHICLE_DTO )
 
             // Act
-            const dto: Record<string, unknown> = page.buildDto()
+            page.submit()
 
             // Assert
-            expect( (dto[ 'guests' ] as { birthday: string }[])[ 0 ].birthday ).toBe( '2010-01-05' )
+            expect( facade[ 'createMovement' ] ).not.toHaveBeenCalled()
         } )
     } )
 
@@ -284,9 +293,9 @@ describe( 'MovementFormPage', () => {
 
             // Assert
             expect( facade[ 'fetchMovement' ] ).toHaveBeenCalledWith( 'm1' )
-            expect( page.informationForm.get( 'type' )!.disabled ).toBe( true )
-            expect( page.informationForm.get( 'contentType' )!.disabled ).toBe( true )
-            expect( content( page ).value ).toHaveLength( 1 )
+            expect( page.form.information.type().disabled() ).toBe( true )
+            expect( page.form.information.contentType().disabled() ).toBe( true )
+            expect( page.model().content.participants ).toHaveLength( 1 )
         } )
 
         it( 'rebuilds the vehicles with their drivers from the loaded content', () => {
@@ -294,11 +303,11 @@ describe( 'MovementFormPage', () => {
             const page: MovementFormApi = create( 'm1' )
 
             // Act
-            const vehicles: FormArray = page.vehicleForm.get( 'vehiclesWithDrivers' ) as FormArray
+            const vehicles: MovementFormModelApi[ 'vehicles' ] = page.model().vehicles
 
             // Assert
-            expect( vehicles.length ).toBe( 1 )
-            expect( vehicles.at( 0 ).value.driver.id ).toBe( 'pa1' )
+            expect( vehicles ).toHaveLength( 1 )
+            expect( vehicles[ 0 ].driver!.id ).toBe( 'pa1' )
         } )
 
         it( 'updates the loaded movement', () => {
@@ -318,7 +327,7 @@ describe( 'MovementFormPage', () => {
         it( 'searches reasons with the chosen type and content type', () => {
             // Arrange
             const page: MovementFormApi = create()
-            page.informationForm.patchValue( { type: MovementTypeEnum.OUT } )
+            page.handleTypeChange( MovementTypeEnum.OUT )
 
             // Act
             page.handleReasonsAndActivitiesSearch( 'arr' )

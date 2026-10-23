@@ -10,7 +10,7 @@ import { GenericProjectMapper } from '@shared/mappers/generic-project.mapper'
 export class ActivityMapper {
     public static toModel (dto: ActivityResponseDto): ActivityModel {
         return {
-            ...GenericProjectMapper.toModel( dto ),
+            ...GenericProjectMapper.toOptionalModel( dto ),
             name: dto.name,
             status: dto.status,
             description: dto.description,

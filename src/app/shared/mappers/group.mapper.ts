@@ -11,7 +11,7 @@ import { ParticipantMapper } from '@shared/mappers/participant.mapper'
 export class GroupMapper {
     public static toModel (dto: GroupResponseDto): GroupModel {
         return {
-            ...GenericProjectMapper.toModel( dto ),
+            ...GenericProjectMapper.toOptionalModel( dto ),
             name: dto.name,
             status: dto.status,
             startAvailability: dto.startAvailability,

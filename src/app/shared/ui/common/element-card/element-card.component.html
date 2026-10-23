@@ -6,7 +6,7 @@
             } @else {
                 <div class='flex items-center' [class.flex-col]='uiFacade.tinyScreen()'>
                     @if (icon()) {
-                        <div [class.me-6]='!uiFacade.tinyScreen()'>
+                        <div [class.me-4]='!uiFacade.tinyScreen()'>
                             <p-avatar [icon]='icon()' size='large' shape='circle' />
                         </div>
                     }

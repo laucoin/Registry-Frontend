@@ -27,8 +27,8 @@
             <div class='flex' [class.justify-center]='uiFacade.tinyScreen()'>
                 @let nbOfOptions = project().options?.length ?? 0;
                 <app-severity-tag
-                        (click)='nbOfOptions > 1 ? layerOpened = true : undefined'
-                        (keydown.enter)='nbOfOptions > 1 ? layerOpened = true : undefined'>
+                        (click)='nbOfOptions > 1 ? layerOpened.set(true) : undefined'
+                        (keydown.enter)='nbOfOptions > 1 ? layerOpened.set(true) : undefined'>
                 <span [class.pointer]='nbOfOptions > 1'
                       [class.hover-underline]='nbOfOptions > 1'>
                     {{

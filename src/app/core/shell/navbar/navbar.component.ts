@@ -1,4 +1,4 @@
-import { Component, computed, HostListener, inject, signal, Signal, WritableSignal } from '@angular/core'
+import { Component, computed, HostListener, inject, signal, Signal, WritableSignal, model, ModelSignal } from '@angular/core'
 import { Menubar } from 'primeng/menubar'
 import { GenericComponent } from '@shared/ui/base/generic.component'
 import { Avatar } from 'primeng/avatar'
@@ -73,12 +73,12 @@ export class NavbarComponent extends GenericComponent {
             icon: 'pi pi-question-circle',
             visible: this.uiFacade.tinyScreen(),
             command: (): void => {
-                this.helpDialogOpened = true
+                this.helpDialogOpened.set( true )
             },
         },
     ] )
 
-    protected helpDialogOpened: boolean = false
+    protected readonly helpDialogOpened: ModelSignal<boolean> = model<boolean>( false )
 
     private readonly allMenuItems: Signal<MenuItemModel[]> = signal( [
         {

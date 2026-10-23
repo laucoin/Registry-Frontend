@@ -19,8 +19,8 @@ import {
     SeverityInformationComponent,
 } from '@shared/ui/common/severity-information/severity-information.component'
 import { MovementFacade } from '@pages/projects/[projectId]/movements/data/state/movement.facade'
-import { ProjectStatusModel } from '@pages/projects/data/model/project-status.model'
-import { VehicleStatusModel } from '@pages/projects/data/model/vehicle-status.model'
+import { ProjectStatusModel } from '@shared/models/model/project-status.model'
+import { VehicleStatusModel } from '@shared/models/model/vehicle-status.model'
 import { Subscription, tap } from 'rxjs'
 
 /**

@@ -3,7 +3,7 @@
           [error]='sessionFacade.userProjectProfileInvitationsPageError()'
           [loading]='sessionFacade.userProjectProfileInvitationsPageLoading()'
           emptyMessagePrefix='project-profiles.notifications.EMPTY'>
-    <ng-template appTemplate='search' [formGroup]='form' let-pageEvent>
+    <ng-template appTemplate='search' let-pageEvent>
         <div class='row'>
             <div class='col-12 col-sm-6 col-md-12 col-lg-6 search-field'>
                 <label for='invitation-text-search-field'>{{ 'preferences.search-and-filter.text' | transloco }}</label>
@@ -11,11 +11,11 @@
                        type='text'
                        pInputText
                        (keydown.enter)='loadPage(pageEvent)'
-                       [formControl]='textSearched' />
+                       [formField]='form.textSearched' />
             </div>
             <div class='col-12 col-sm-6 col-md-12 col-lg-6 search-field'>
                 <label for='invitation-date-time-search-field'>{{ 'preferences.search-and-filter.datetime' | transloco }}</label>
-                <p-date-picker [formControl]='dateTimeSearched'
+                <p-date-picker [formField]='form.dateTimeSearched'
                                showButtonBar
                                [readonlyInput]='true'
                                [showTime]='true'

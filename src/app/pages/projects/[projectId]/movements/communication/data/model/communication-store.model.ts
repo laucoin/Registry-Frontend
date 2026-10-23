@@ -4,7 +4,7 @@ import {
 } from '@shared/models/model/element-request-information.model'
 import { SelectItem } from 'primeng/api'
 import { CommunicationPageParamsModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication-page-params.model'
-import { CommunicationModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
+import { CommunicationModel } from '@shared/models/model/communication.model'
 import { MovementModel } from '@shared/models/model/movement.model'
 import { AlertModel } from '@shared/models/model/alert.model'
 

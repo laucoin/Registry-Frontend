@@ -1,7 +1,9 @@
+import { FieldTree, FormField } from '@angular/forms/signals'
+import { createSearchForm } from '@shared/helpers/form/search.form'
+import { VehicleMovementsListSearchModel, toVehicleMovementsListSearchModel, toVehicleMovementsListSearchParams } from './vehicle-movements-list.search'
 import { Component, inject, OnDestroy, signal, WritableSignal } from '@angular/core'
 import {VehicleModel} from '@shared/models/model/vehicle.model'
 import {withLoading} from '@shared/helpers/rx.helper'
-import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms'
 import {PageEventModel} from '@shared/models/model/page-event.model'
 import {ListComponent} from '@shared/ui/common/list/list.component'
 import {RegistryTemplateDirective} from '@shared/directives/registry-template.directive'
@@ -31,7 +33,7 @@ import {Card} from 'primeng/card'
     imports: [
         ListComponent,
         RegistryTemplateDirective,
-        ReactiveFormsModule,
+        FormField,
         TranslocoPipe,
         InputTextModule,
         ToggleButtonModule,
@@ -54,22 +56,19 @@ export class VehicleMovementsListPage extends GenericListComponent implements On
     protected readonly vehicle: WritableSignal<VehicleModel | undefined> = signal(undefined)
     protected readonly vehicleLoading: WritableSignal<boolean> = signal(false)
 
+    protected readonly model: WritableSignal<VehicleMovementsListSearchModel> = signal( toVehicleMovementsListSearchModel( {
+        typeSearched: this.facade.vehicleMovementsPageTypeSearchedParam(),
+        startDateTimeSearched: this.facade.vehicleMovementsPageStartDateTimeSearchedParam(),
+        endDateTimeSearched: this.facade.vehicleMovementsPageEndDateTimeSearchedParam(),
+        visibilitySearched: this.facade.vehicleMovementsPageVisibilitySearchedParam(),
+    } ) )
+    protected readonly form: FieldTree<VehicleMovementsListSearchModel> = createSearchForm( this.model )
+
     public constructor() {
         super()
 
-        this.form = this.initForm()
-
         this.loadData()
         this.handleMovementActions()
-    }
-
-    protected initForm(): FormGroup {
-        return this.formBuilder.group({
-            typeSearched: this.formBuilder.control(this.facade.vehicleMovementsPageTypeSearchedParam()),
-            startDateTimeSearched: this.formBuilder.control(this.facade.vehicleMovementsPageStartDateTimeSearchedParam()),
-            endDateTimeSearched: this.formBuilder.control(this.facade.vehicleMovementsPageEndDateTimeSearchedParam()),
-            visibilitySearched: this.formBuilder.control(this.facade.vehicleMovementsPageVisibilitySearchedParam()),
-        })
     }
 
     protected loadData(): void {
@@ -109,11 +108,12 @@ export class VehicleMovementsListPage extends GenericListComponent implements On
     }
 
     protected loadPage(pageEvent: PageEventModel): void {
+        const search: ReturnType<typeof toVehicleMovementsListSearchParams> = toVehicleMovementsListSearchParams( this.model() )
         this.facade.inputMovementsPageSearchParameters(
-            this.typeSearched.value,
-            this.startDateTimeSearched.value,
-            this.endDateTimeSearched.value,
-            this.visibilitySearched.value,
+            search.typeSearched,
+            search.startDateTimeSearched,
+            search.endDateTimeSearched,
+            search.visibilitySearched,
         )
         this.facade.fetchVehicleMovementsPage(
             this.route.snapshot.params['vehicleId'], pageEvent.pageNumber, pageEvent.pageSize,
@@ -124,19 +124,4 @@ export class VehicleMovementsListPage extends GenericListComponent implements On
         this.subscriptions.unsubscribe()
     }
 
-    protected get typeSearched(): FormControl {
-        return this.form.get('typeSearched') as FormControl
-    }
-
-    protected get startDateTimeSearched(): FormControl {
-        return this.form.get('startDateTimeSearched') as FormControl
-    }
-
-    protected get endDateTimeSearched(): FormControl {
-        return this.form.get('endDateTimeSearched') as FormControl
-    }
-
-    protected get visibilitySearched(): FormControl {
-        return this.form.get('visibilitySearched') as FormControl
-    }
 }

@@ -1,5 +1,7 @@
-import { Component, computed, inject, Signal} from '@angular/core'
-import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms'
+import { FieldTree, FormField } from '@angular/forms/signals'
+import { createSearchForm } from '@shared/helpers/form/search.form'
+import { ProfilesListSearchModel, toProfilesListSearchModel, toProfilesListSearchParams } from './profiles-list.search'
+import { Component, computed, inject, Signal, signal, WritableSignal } from '@angular/core'
 import {TranslocoPipe} from '@jsverse/transloco'
 import {PageEventModel} from '@shared/models/model/page-event.model'
 import {InputTextModule} from 'primeng/inputtext'
@@ -27,10 +29,9 @@ import {RouterLink} from '@angular/router'
     selector: 'app-profiles-list',
     imports: [
         TranslocoPipe,
-        FormsModule,
         InputTextModule,
         ToggleButtonModule,
-        ReactiveFormsModule,
+        FormField,
         ListComponent,
         DatePicker,
         Button,
@@ -51,40 +52,27 @@ export class ProfilesListPage extends GenericListComponent {
         || GenericHelper.nonNull(this.sessionFacade.userProjectProfilesPageAvailabilitySearchParam()),
     )
 
+    protected readonly model: WritableSignal<ProfilesListSearchModel> = signal( toProfilesListSearchModel( {
+        textSearched: this.sessionFacade.userProjectProfilesPageTextSearchParam(),
+        dateTimeSearched: this.sessionFacade.userProjectProfilesPageDateTimeSearchParam(),
+        availabilitySearched: this.sessionFacade.userProjectProfilesPageAvailabilitySearchParam(),
+    } ) )
+    protected readonly form: FieldTree<ProfilesListSearchModel> = createSearchForm( this.model )
+
     public constructor() {
         super()
-
-        this.form = this.initForm()
 
         this.sessionFacade.fetchProjectProfilesPage(undefined, undefined)
     }
 
-    protected initForm(): FormGroup {
-        return this.formBuilder.group({
-            textSearched: this.formBuilder.control(this.sessionFacade.userProjectProfilesPageTextSearchParam()),
-            dateTimeSearched: this.formBuilder.control(this.sessionFacade.userProjectProfilesPageDateTimeSearchParam()),
-            availabilitySearched: this.formBuilder.control(this.sessionFacade.userProjectProfilesPageAvailabilitySearchParam()),
-        })
-    }
-
     protected loadPage(pageEvent: PageEventModel): void {
+        const search: ReturnType<typeof toProfilesListSearchParams> = toProfilesListSearchParams( this.model() )
         this.sessionFacade.inputProfilesPageSearchParameters(
-            this.textSearched.value,
-            this.availabilitySearched.value,
-            this.dateTimeSearched.value,
+            search.textSearched,
+            search.availabilitySearched,
+            search.dateTimeSearched,
         )
         this.sessionFacade.fetchProjectProfilesPage(pageEvent.pageNumber, pageEvent.pageSize)
     }
 
-    protected get textSearched(): FormControl {
-        return this.form.get('textSearched') as FormControl
-    }
-
-    protected get dateTimeSearched(): FormControl {
-        return this.form.get('dateTimeSearched') as FormControl
-    }
-
-    protected get availabilitySearched(): FormControl {
-        return this.form.get('availabilitySearched') as FormControl
-    }
 }

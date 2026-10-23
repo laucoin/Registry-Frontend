@@ -3,6 +3,6 @@ import { HistoryResponseDto } from '@shared/models/dto/response/history.response
 export interface GenericResponseDto {
     id: string
     visible: boolean
-    creation: HistoryResponseDto
-    lastEdition: HistoryResponseDto
+    creation: HistoryResponseDto | undefined
+    lastEdition: HistoryResponseDto | undefined
 }
