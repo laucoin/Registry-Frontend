@@ -1,9 +1,10 @@
-import { Component, inject, input, InputSignal, OnDestroy, OnInit } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { Component, inject, input, InputSignal, OnInit, DestroyRef } from '@angular/core'
 import { AlertModel } from '@shared/models/model/alert.model'
 import { AlertFacade } from '@pages/projects/[projectId]/alerts/data/state/alert.facade'
 import { DialogElementComponent } from '@shared/ui/domain/dialog-element/dialog-element.component'
 import { CommunicationHelper } from '@shared/helpers/communication.helper'
-import { Observable, Subscription, tap } from 'rxjs'
+import { Observable, tap } from 'rxjs'
 import { CommunicationFacade } from '@pages/projects/[projectId]/movements/communication/data/state/communication.facade'
 import {TranslocoPipe} from '@jsverse/transloco'
 
@@ -21,11 +22,10 @@ import {TranslocoPipe} from '@jsverse/transloco'
     templateUrl: './alert-communications-list.component.html',
     styleUrl: './alert-communications-list.component.css',
 } )
-export class AlertCommunicationsListComponent implements OnInit, OnDestroy {
+export class AlertCommunicationsListComponent implements OnInit {
+    private readonly destroyRef: DestroyRef = inject( DestroyRef )
     protected readonly facade: AlertFacade = inject( AlertFacade )
     protected readonly communicationFacade: CommunicationFacade = inject( CommunicationFacade )
-
-    protected readonly subscriptions: Subscription = new Subscription()
 
     public readonly alert: InputSignal<AlertModel> = input.required()
 
@@ -52,22 +52,18 @@ export class AlertCommunicationsListComponent implements OnInit, OnDestroy {
     }
 
     private reloadFirstPageOn (events: Observable<unknown>): void {
-        this.subscriptions.add( events.pipe(
+        events.pipe(
             tap( (): void => this.facade.fetchAlertCommunicationsPage( this.alert().id, undefined, undefined ) ),
-        ).subscribe() )
+        ).pipe( takeUntilDestroyed( this.destroyRef ) ).subscribe()
     }
 
     private reloadCurrentPageOn (events: Observable<unknown>): void {
-        this.subscriptions.add( events.pipe(
+        events.pipe(
             tap( (): void => this.facade.fetchAlertCommunicationsPage(
                 this.alert().id,
                 this.facade.alertCommunicationsPage()?.page,
                 this.facade.alertCommunicationsPage()?.size,
             ) ),
-        ).subscribe() )
-    }
-
-    public ngOnDestroy (): void {
-        this.subscriptions.unsubscribe()
+        ).pipe( takeUntilDestroyed( this.destroyRef ) ).subscribe()
     }
 }

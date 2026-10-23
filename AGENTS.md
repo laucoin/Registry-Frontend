@@ -154,7 +154,7 @@ When a request matches a skill, **load and follow it before doing anything else*
 | Compare the code against the documentation                 | `doc-drift`   |
 
 `code-review` and `test` run **only** before a commit or when the user asks for them; never automatically after an
-edit. Before each commit, `code-review` must give every one of its 5 ratings ≥ 8/10, and the new code must be covered
+edit. Before each commit, `code-review` must give every one of its 6 ratings ≥ 8/10, and the new code must be covered
 by tests.
 
 ---

@@ -57,7 +57,7 @@ describe( 'CommunicationFormComponent', () => {
     let current: object | undefined
     let fixture: ComponentFixture<CommunicationFormComponent>
 
-    function create (options: ProjectOptionEnum[] = [ ProjectOptionEnum.ALERT ], id: string | undefined = undefined): CommunicationFormApi {
+    function stubFacades (): void {
         facade = autoMock()
         alertFacade = autoMock()
         current = undefined
@@ -68,6 +68,9 @@ describe( 'CommunicationFormComponent', () => {
         facade[ 'createCommunication' ].mockReturnValue( of( {} ) )
         facade[ 'updateCommunication' ].mockReturnValue( of( {} ) )
         alertFacade[ 'createAlert' ].mockReturnValue( of( {} ) )
+    }
+
+    function configureTesting (options: ProjectOptionEnum[], id: string | undefined): void {
         RegistryConfig.config = { notification: { duration: {} } } as unknown as ConfigModel
         RegistryConfig.environment = { production: false, backend: { url: 'http://backend.test', noAuthPaths: [] }, hosting: { providerName: null, providerAddress: null } }
         const project: WritableSignal<ProjectModel | undefined> = signal<ProjectModel | undefined>( { id: 'p1', options: options.map( (value: ProjectOptionEnum) => ({ label: value, value }) ) } as unknown as ProjectModel )
@@ -86,6 +89,11 @@ describe( 'CommunicationFormComponent', () => {
                 { provide: TranslocoService, useValue: { translate: (key: string): string => key } },
             ],
         } )
+    }
+
+    function create (options: ProjectOptionEnum[] = [ ProjectOptionEnum.ALERT ], id: string | undefined = undefined): CommunicationFormApi {
+        stubFacades()
+        configureTesting( options, id )
         TestBed.overrideComponent( CommunicationFormComponent, { set: { template: '', imports: [], providers: [] } } )
         fixture = TestBed.createComponent( CommunicationFormComponent )
         return fixture.componentInstance as unknown as CommunicationFormApi

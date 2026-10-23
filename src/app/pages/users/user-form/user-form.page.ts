@@ -1,4 +1,5 @@
-import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, OnDestroy, Signal, signal, WritableSignal } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, Signal, signal, WritableSignal } from '@angular/core'
 import { FieldTree, FormField } from '@angular/forms/signals'
 import { UserModel } from '@shared/models/model/user.model'
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
@@ -34,7 +35,7 @@ import { createUserForm, toUserFormModel, UserFormModel } from '@pages/users/use
     schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
     templateUrl: './user-form.page.html',
 } )
-export class UserFormPage extends BaseFormComponent implements OnDestroy {
+export class UserFormPage extends BaseFormComponent {
     protected override readonly closesToParentRoute: boolean = true
     protected readonly facade: UserFacade = inject( UserFacade )
 
@@ -64,12 +65,10 @@ export class UserFormPage extends BaseFormComponent implements OnDestroy {
     }
 
     protected handleLoadedElement (): void {
-        this.subscriptions.add(
-            this.facade.user$.pipe(
+        this.facade.user$.pipe(
                 filter( (user: UserModel | undefined): boolean => GenericHelper.nonNull( user ) ),
                 map( (user: UserModel | undefined): void => this.fillForm( user! ) ),
-            ).subscribe(),
-        )
+            ).pipe( takeUntilDestroyed( this.destroyRef ) ).subscribe()
     }
 
     protected fillForm (element: UserModel): void {
@@ -87,9 +86,5 @@ export class UserFormPage extends BaseFormComponent implements OnDestroy {
 
     protected get idParam (): string | undefined {
         return this.route.snapshot.params['userId']
-    }
-
-    public ngOnDestroy (): void {
-        this.subscriptions.unsubscribe()
     }
 }

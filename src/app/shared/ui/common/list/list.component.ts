@@ -2,13 +2,12 @@ import { NgTemplateOutlet } from '@angular/common'
 import {
 	Component,
 	computed,
-	ContentChildren,
+	contentChildren,
 	CUSTOM_ELEMENTS_SCHEMA,
 	input,
 	InputSignal,
 	output,
 	OutputEmitterRef,
-	QueryList,
 	Signal,
 	TemplateRef,
 } from '@angular/core'
@@ -46,7 +45,7 @@ const SKELETON_ROWS: number = 6
 	templateUrl: './list.component.html',
 })
 export class ListComponent<T extends GenericModel> {
-	@ContentChildren(RegistryTemplateDirective) public templates: QueryList<RegistryTemplateDirective> | undefined
+	private readonly templates: Signal<readonly RegistryTemplateDirective[]> = contentChildren(RegistryTemplateDirective)
 
 	public readonly elementPage: InputSignal<PageModel<T> | undefined> = input.required()
 	public readonly loading: InputSignal<boolean> = input.required()
@@ -76,6 +75,6 @@ export class ListComponent<T extends GenericModel> {
 	}
 
 	protected getTemplate(name: string): TemplateRef<unknown> | null {
-		return this.templates?.find((template: RegistryTemplateDirective): boolean => template.appTemplate() === name)?.template ?? null
+		return this.templates().find((template: RegistryTemplateDirective): boolean => template.appTemplate() === name)?.template ?? null
 	}
 }

@@ -1,4 +1,5 @@
-import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, OnDestroy, signal, Signal, WritableSignal } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, signal, Signal, WritableSignal, DestroyRef } from '@angular/core'
 import { FieldTree, FormField } from '@angular/forms/signals'
 import { ActivatedRoute, ParamMap } from '@angular/router'
 import { TranslocoPipe } from '@jsverse/transloco'
@@ -10,7 +11,7 @@ import '@sgdf/ui/option'
 import '@sgdf/ui/page-title'
 import '@sgdf/ui/select'
 import '@sgdf/ui/skeleton'
-import { distinctUntilChanged, map, Subscription, tap } from 'rxjs'
+import { distinctUntilChanged, map, tap } from 'rxjs'
 import { ActivityFacade } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.facade'
 import {
     ActivityMovementsListSearchModel,
@@ -49,12 +50,11 @@ import { MovementElementComponent } from '@shared/ui/domain/movement-element/mov
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     templateUrl: './activity-movements-list.page.html',
 })
-export class ActivityMovementsListPage implements OnDestroy {
+export class ActivityMovementsListPage {
+    private readonly destroyRef: DestroyRef = inject( DestroyRef )
     protected readonly facade: ActivityFacade = inject(ActivityFacade)
     protected readonly movementFacade: MovementFacade = inject(MovementFacade)
     private readonly route: ActivatedRoute = inject(ActivatedRoute)
-
-    private readonly subscriptions: Subscription = new Subscription()
 
     protected readonly entity: WritableSignal<ActivityModel | undefined> = signal(undefined)
     protected readonly entityLoading: WritableSignal<boolean> = signal(false)
@@ -80,35 +80,27 @@ export class ActivityMovementsListPage implements OnDestroy {
     protected readonly form: FieldTree<ActivityMovementsListSearchModel> = createSearchForm(this.model)
 
     public constructor() {
-        this.subscriptions.add(
-            this.route.paramMap.pipe(
+        this.route.paramMap.pipe(
                 map((params: ParamMap): string | null => params.get('activityId')),
                 distinctUntilChanged(),
-            ).subscribe((): void => this.loadData()),
-        )
+            ).pipe( takeUntilDestroyed( this.destroyRef ) ).subscribe((): void => this.loadData())
         this.handleMovementActions()
     }
 
     protected loadData(): void {
-        this.subscriptions.add(
-            this.facade.fetchActivity(this.id()).pipe(
+        this.facade.fetchActivity(this.id()).pipe(
                 withLoading(this.entityLoading),
-            ).subscribe((entity: ActivityModel): void => this.entity.set(entity)),
-        )
+            ).pipe( takeUntilDestroyed( this.destroyRef ) ).subscribe((entity: ActivityModel): void => this.entity.set(entity))
         this.facade.fetchActivityMovementsPage(this.id(), undefined, undefined)
     }
 
     private handleMovementActions(): void {
-        this.subscriptions.add(
-            this.movementFacade.handleMovementFirstPageReload().pipe(
+        this.movementFacade.handleMovementFirstPageReload().pipe(
                 tap((): void => this.facade.fetchActivityMovementsPage(this.id(), 0, undefined)),
-            ).subscribe(),
-        )
-        this.subscriptions.add(
-            this.movementFacade.handleMovementCurrentPageReload().pipe(
+            ).pipe( takeUntilDestroyed( this.destroyRef ) ).subscribe()
+        this.movementFacade.handleMovementCurrentPageReload().pipe(
                 tap((): void => this.facade.reloadActivityMovementsPage(this.id())),
-            ).subscribe(),
-        )
+            ).pipe( takeUntilDestroyed( this.destroyRef ) ).subscribe()
     }
 
     protected search(): void {
@@ -129,10 +121,6 @@ export class ActivityMovementsListPage implements OnDestroy {
 
     protected loadBatch(pageEvent: PageEventModel): void {
         this.facade.fetchActivityMovementsPage(this.id(), pageEvent.page, pageEvent.size)
-    }
-
-    public ngOnDestroy(): void {
-        this.subscriptions.unsubscribe()
     }
 
     private id(): string {

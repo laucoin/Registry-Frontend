@@ -91,7 +91,7 @@ export class UserElementComponent extends GenericElementComponent {
 				'pi pi-exclamation-triangle',
 				this.user(),
 				SeverityEnum.WARNING,
-				(): void => this.facade.bockUser(this.user().id),
+				(): void => this.facade.blockUser(this.user().id),
 			),
 		}
 	}

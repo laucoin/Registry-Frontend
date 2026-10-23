@@ -1,4 +1,5 @@
-import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, model, ModelSignal, OnDestroy, Signal, signal, WritableSignal } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, model, ModelSignal, Signal, signal, WritableSignal } from '@angular/core'
 import { FieldTree, FormField } from '@angular/forms/signals'
 import { TranslocoPipe } from '@jsverse/transloco'
 import '@sgdf/ui/card'
@@ -84,7 +85,7 @@ import { SelectElementsFieldComponent } from '@shared/ui/common/select-elements-
     schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
     templateUrl: './registered-movement-form.page.html',
 } )
-export class RegisteredMovementFormPage extends BaseFormComponent implements OnDestroy {
+export class RegisteredMovementFormPage extends BaseFormComponent {
     protected readonly facade: MovementFacade = inject( MovementFacade )
 
     protected readonly VehicleHelper: typeof VehicleHelper = VehicleHelper
@@ -139,20 +140,14 @@ export class RegisteredMovementFormPage extends BaseFormComponent implements OnD
         this.handleLoadedElement()
     }
 
-    public ngOnDestroy (): void {
-        this.subscriptions.unsubscribe()
-    }
-
     protected override loadData (): void {
         if (GenericHelper.nonNull( this.idParam )) {
-            this.subscriptions.add(
-                this.facade.fetchMovement( this.idParam! ).pipe(
+            this.facade.fetchMovement( this.idParam! ).pipe(
                     withLoading( this.loading ),
-                ).subscribe( (movement: MovementModel): void => {
+                ).pipe( takeUntilDestroyed( this.destroyRef ) ).subscribe( (movement: MovementModel): void => {
                     this.movement.set( movement )
                     this.applyMovement( movement )
-                } ),
-            )
+                } )
         }
     }
 

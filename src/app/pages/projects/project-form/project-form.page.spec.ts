@@ -48,7 +48,7 @@ describe( 'ProjectFormPage', () => {
     let back: Mock<() => void>
     let navigate: Mock<(url: string) => Promise<boolean>>
 
-    function create (id: string | undefined = undefined): ProjectFormApi {
+    function stubFacades (): void {
         facade = autoMock()
         profileFacade = autoMock()
         profileFacade[ 'createProjectProfiles' ].mockReturnValue( of( { createdUserIds: [ 'u1' ], notCreatedUserIds: [] } ) )
@@ -65,6 +65,9 @@ describe( 'ProjectFormPage', () => {
         facade[ 'projectOptionsMetadata' ].mockReturnValue( OPTIONS )
         facade[ 'createProject' ].mockReturnValue( of( {} ) )
         facade[ 'updateProject' ].mockReturnValue( of( {} ) )
+    }
+
+    function configureTesting (id: string | undefined): void {
         RegistryConfig.config = { notification: { duration: {} } } as unknown as ConfigModel
         RegistryConfig.environment = { production: false, backend: { url: 'http://backend.test', noAuthPaths: [] }, hosting: { providerName: null, providerAddress: null } }
         TestBed.configureTestingModule( {
@@ -80,6 +83,11 @@ describe( 'ProjectFormPage', () => {
                 { provide: TranslocoService, useValue: { translate: (key: string): string => key } },
             ],
         } )
+    }
+
+    function create (id: string | undefined = undefined): ProjectFormApi {
+        stubFacades()
+        configureTesting( id )
         TestBed.overrideComponent( ProjectFormPage, { set: { template: '', imports: [], providers: [] } } )
         return TestBed.createComponent( ProjectFormPage ).componentInstance as unknown as ProjectFormApi
     }

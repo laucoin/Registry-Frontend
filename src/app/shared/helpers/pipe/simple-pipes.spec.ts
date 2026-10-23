@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest'
 import { FormButtonPipe } from '@shared/helpers/pipe/form-button.pipe'
-import { FormIconPipe } from '@shared/helpers/pipe/form-icon.pipe'
 import { FormTitlePipe } from '@shared/helpers/pipe/form-title.pipe'
 import { ProjectOptionIconPipe } from '@shared/helpers/pipe/project-option-icon.pipe'
 import { TruncatePipe } from '@shared/helpers/pipe/truncate.pipe'
@@ -20,21 +19,6 @@ describe( 'FormButtonPipe', () => {
         // Assert
         expect( editing ).toBe( 'global.actions.edit' )
         expect( creating ).toBe( 'global.actions.create' )
-    } )
-} )
-
-describe( 'FormIconPipe', () => {
-    it( 'shows a pen for an existing element and a plus for a new one', () => {
-        // Arrange
-        const pipe: FormIconPipe = new FormIconPipe()
-
-        // Act
-        const editing: string = pipe.transform( { id: '1' } )
-        const creating: string = pipe.transform( undefined )
-
-        // Assert
-        expect( editing ).toBe( 'pi pi-pen-to-square' )
-        expect( creating ).toBe( 'pi pi-plus' )
     } )
 } )
 

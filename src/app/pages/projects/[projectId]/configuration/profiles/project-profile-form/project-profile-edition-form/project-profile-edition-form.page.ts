@@ -1,4 +1,5 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, OnDestroy, signal, WritableSignal } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { Component, CUSTOM_ELEMENTS_SCHEMA, signal, WritableSignal } from '@angular/core'
 import { FieldTree, FormField } from '@angular/forms/signals'
 import {
     createProjectProfileForm,
@@ -40,7 +41,7 @@ import { ETagHelper } from '@shared/helpers/etag.helper'
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     templateUrl: './project-profile-edition-form.page.html',
 })
-export class ProjectProfileEditionFormPage extends GenericProjectProfileFormComponent implements OnDestroy {
+export class ProjectProfileEditionFormPage extends GenericProjectProfileFormComponent {
     protected override readonly closesToParentRoute: boolean = true
     protected readonly projectProfile: WritableSignal<ProjectProfileModel | undefined> = signal(undefined)
     protected readonly model: WritableSignal<ProjectProfileFormModel> = signal(toProjectProfileFormModel())
@@ -56,14 +57,12 @@ export class ProjectProfileEditionFormPage extends GenericProjectProfileFormComp
         super.loadData()
 
         if (GenericHelper.nonNull(this.idParam)) {
-            this.subscriptions.add(
-                this.facade.fetchProjectProfile(this.idParam!).pipe(
+            this.facade.fetchProjectProfile(this.idParam!).pipe(
                     withLoading(this.loading),
-                ).subscribe((profile: ProjectProfileModel): void => {
+                ).pipe( takeUntilDestroyed( this.destroyRef ) ).subscribe((profile: ProjectProfileModel): void => {
                     this.projectProfile.set(profile)
                     this.model.set(toProjectProfileFormModel(profile))
-                }),
-            )
+                })
         }
     }
 
@@ -76,9 +75,5 @@ export class ProjectProfileEditionFormPage extends GenericProjectProfileFormComp
         if (this.saving() || this.loading() || !this.projectProfile()) return
 
         this.save(this.facade.updateProjectProfile(this.projectProfile()!.id, toProjectProfileDto(this.model()), ETagHelper.ifMatch(this.projectProfile())))
-    }
-
-    public ngOnDestroy(): void {
-        this.subscriptions.unsubscribe()
     }
 }

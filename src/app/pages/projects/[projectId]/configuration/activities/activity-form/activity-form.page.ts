@@ -1,4 +1,5 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, inject, OnDestroy, signal, WritableSignal } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { Component, CUSTOM_ELEMENTS_SCHEMA, inject, signal, WritableSignal } from '@angular/core'
 import {ActivityFacade} from '@pages/projects/[projectId]/configuration/activities/data/state/activity.facade'
 import { FieldTree, FormField } from '@angular/forms/signals'
 import {ActivityDto} from '@pages/projects/[projectId]/configuration/activities/data/dto/activity.dto'
@@ -51,7 +52,7 @@ import { ETagHelper } from '@shared/helpers/etag.helper'
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     templateUrl: './activity-form.page.html',
 })
-export class ActivityFormPage extends BaseFormComponent implements OnDestroy {
+export class ActivityFormPage extends BaseFormComponent {
     protected override readonly closesToParentRoute: boolean = true
     protected readonly facade: ActivityFacade = inject(ActivityFacade)
 
@@ -73,14 +74,12 @@ export class ActivityFormPage extends BaseFormComponent implements OnDestroy {
 
     protected override loadData(): void {
         if (GenericHelper.nonNull(this.idParam)) {
-            this.subscriptions.add(
-                this.facade.fetchActivity(this.idParam!).pipe(
+            this.facade.fetchActivity(this.idParam!).pipe(
                     withLoading(this.loading),
-                ).subscribe( (activity: ActivityModel): void => {
+                ).pipe( takeUntilDestroyed( this.destroyRef ) ).subscribe( (activity: ActivityModel): void => {
                     this.activity.set(activity)
                     this.applyActivity(activity)
-                } ),
-            )
+                } )
         }
     }
 
@@ -112,9 +111,5 @@ export class ActivityFormPage extends BaseFormComponent implements OnDestroy {
 
     protected get idParam(): string | undefined {
         return this.route.snapshot.params['activityId']
-    }
-
-    public ngOnDestroy(): void {
-        this.subscriptions.unsubscribe()
     }
 }

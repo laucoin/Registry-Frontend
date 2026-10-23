@@ -19,6 +19,20 @@ interface RegistryConfigInternals {
 
 const echoKey: TranslocoService['translate'] = ((key: string): string => key) as TranslocoService['translate']
 
+function configureStartup (setGlobalError: ReturnType<typeof vi.fn>): void {
+    const translocoService: Partial<TranslocoService> = { getActiveLang: (): string => 'fr', load: () => of( {} ), translate: echoKey }
+    TestBed.configureTestingModule( {
+        providers: [
+            provideHttpClient(),
+            provideHttpClientTesting(),
+            { provide: UiFacade, useValue: { setGlobalError } },
+            { provide: BrowserService, useValue: { preferredLanguages: [ 'fr' ], setRootLanguage: vi.fn(), readCookie: (): undefined => undefined, writeCookie: vi.fn() } },
+            ...RegistryConfig.provideTranslatorService(),
+            { provide: TranslocoService, useValue: translocoService },
+        ],
+    } )
+}
+
 describe( 'RegistryConfig', () => {
     const internals: RegistryConfigInternals = RegistryConfig as unknown as RegistryConfigInternals
     const CONFIG: ConfigModel = { defaultLanguage: 'fr', languages: [ 'fr', 'en' ], application: { name: 'Registry' } } as unknown as ConfigModel
@@ -166,17 +180,7 @@ describe( 'RegistryConfig', () => {
         const setGlobalError: ReturnType<typeof vi.fn> = vi.fn()
         RegistryConfig.config = undefined as unknown as ConfigModel
         RegistryConfig.environment = undefined as unknown as EnvironmentModel
-        const translocoService: Partial<TranslocoService> = { getActiveLang: (): string => 'fr', load: () => of( {} ), translate: echoKey }
-        TestBed.configureTestingModule( {
-            providers: [
-                provideHttpClient(),
-                provideHttpClientTesting(),
-                { provide: UiFacade, useValue: { setGlobalError } },
-                { provide: BrowserService, useValue: { preferredLanguages: [ 'fr' ], setRootLanguage: vi.fn(), readCookie: (): undefined => undefined, writeCookie: vi.fn() } },
-                ...RegistryConfig.provideTranslatorService(),
-                { provide: TranslocoService, useValue: translocoService },
-            ],
-        } )
+        configureStartup( setGlobalError )
 
         // Act
         await TestBed.inject( ApplicationInitStatus ).donePromise

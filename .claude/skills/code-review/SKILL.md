@@ -1,13 +1,53 @@
 ---
 name: code-review
-description: Review gate for the Registry frontend. Use only when the user asks to review, check or audit a diff, file, branch or change, or right before a commit. Never run it automatically after an edit. Rates 5 perspectives out of 10.
+description: Review gate for the Registry frontend. Use only when the user asks to review, check or audit a diff, file, branch or change, or right before a commit. Never run it automatically after an edit. Rates 6 perspectives out of 10 in a single exhaustive pass, so that an approved review means the change is ready to merge.
 ---
 
 # Code review — Registry Frontend
 
-Review the change pointed at (a diff, a file, or the current branch vs `main`). Evaluate it from 5 perspectives, give
+Review the change pointed at (a diff, a file, or the current branch vs `main`). Evaluate it from 6 perspectives, give
 each a rating out of 10, and list findings most-severe first with `file:line`. Rules of reference: `AGENTS.md` (§2
 stack, §3 architecture, §5 standards, §11 invariants).
+
+## Contract: one review, merge-ready
+
+The developer asks for **one** review, not a series. The review is therefore exhaustive and convergent:
+
+- **Complete in one pass.** Every finding of every perspective is reported in this single review. Never hold findings
+  back for a later round, never report only the "top N". If all findings are fixed (or explicitly declined by the
+  developer), the change is ready to merge and a re-review finds nothing new.
+- **Nothing sampled.** Read every changed file of the scope. On a large diff, split it by directory, read each part in
+  full, and state in the output which parts were read and how. A rating based on a sample is invalid: say "not
+  reviewed" for what was not read and do not approve.
+- **Run the gate, do not assume it.** Run `pnpm lint`, `pnpm build` and `pnpm test:coverage` (if `pnpm` is blocked by
+  the sandbox, call `node_modules/.bin/eslint`, `ng build` and `ng test --watch=false --coverage` directly). A gate
+  that could not run is reported as "unverified" and blocks approval until it has run.
+- **Actionable findings.** Each finding states the exact fix (the change to make, not "consider improving"), so that
+  applying it needs no further decision. A finding that needs a decision of the developer says so explicitly and
+  offers the options.
+- **Stable on re-review.** A re-review verifies the previous findings and the code changed since. It reports a new
+  finding on unchanged code only if the earlier review missed a defect of a kind it was required to look for, and it
+  says so. Identical code gets identical findings and ratings.
+- **No invented work.** No finding without a rule (AGENTS.md, this skill, a verified API or security fact) or a
+  concrete failure scenario. Personal taste is not a finding.
+
+## Mandatory checks (run before rating)
+
+Each is mechanical: do it, do not rely on impressions. Report violations as findings of the perspective noted.
+
+1. **Scope and history** (TechLead): list the commits (`git log main..HEAD`); each message follows Conventional Commits
+   and each commit is a functionally testable increment; no unrelated change mixed in; no leftover `console.log`,
+   `debugger`, `fdescribe`/`fit`/`.only`/`.skip`, commented-out code, or `TODO` not marked `// TODO:`.
+2. **Dead and unused code** (TechLead): unused exports, files, i18n keys, inputs/outputs, imports, providers.
+3. **Layering** (Architecture): grep the imports of the scope for `core` → `pages`, `shared` → `pages` (compare with the
+   count documented in AGENTS.md §3), components/guards/interceptors importing a store or an api, `patchState`
+   outside stores, stores importing a facade, browser globals outside `BrowserService`.
+4. **Translations** (TechLead): every key used in templates and code exists in `public/i18n/` for every language
+   shipped; no key left unused; no hardcoded user-facing string.
+5. **Tests quality** (QA): beyond existence, the assertions check behavior (not only "is created"), error and empty
+   branches are exercised, no test depends on timers or order, each spec method ≤ 25 lines.
+6. **Docs coherence** (TechLead): AGENTS.md, README and the documentation hub agree with the change (use `doc-drift`
+   when the change touches documented behavior); never edit documentation during the review.
 
 ## `@sgdf/ui` ownership (applies to every perspective)
 
@@ -46,10 +86,15 @@ stack, §3 architecture, §5 standards, §11 invariants).
 - Loading state scoped per resource, never global; error strategy as agreed; no hardcoded user-facing strings
   (`@jsverse/transloco`).
 - Lazy loading, lint rules, invariants of §11.
+- Performance of the build: read the `ng build` output (initial and lazy chunk sizes, budgets, warnings); flag a new
+  heavy dependency or an eagerly loaded feature that could be lazy; `OnPush`/signals for change detection, no
+  per-change-detection method calls in templates, `track` on every `@for`.
 
 **3. QA**
 - Public methods, stores and facades have tests (Vitest); AAA pattern with the exact `// Arrange`, `// Act`,
   `// Assert` comments; edge cases, error branches, signal state transitions; coverage thresholds hold.
+- Every new or changed behavior is covered by a test that would fail without it (check the assertions, not only the
+  coverage number); the full suite is green.
 
 **4. UI/UX & Accessibility**
 - Semantic HTML, keyboard navigation, accessible names, ARIA only where HTML cannot express it, announced
@@ -70,6 +115,23 @@ stack, §3 architecture, §5 standards, §11 invariants).
   content, without duplicating the bundle checks of TechLead.
 - Not applicable to a change that touches no page, route, `index.html` or meta handling: rate 10 and mark "n/a".
 
+**6. Security & Dependencies**
+- Remember AGENTS.md §11: the frontend enforces nothing, so a guard or hidden control is never a security boundary.
+- Injection: no `[innerHTML]` with unsanitized data, no `bypassSecurityTrust*`, no `eval`/`new Function`, no dynamic
+  script or style injection, no user-controlled URL in `href`, `src`, `window.open` or a redirect (open redirect);
+  `target="_blank"` carries `rel="noopener"`.
+- Secrets and data: no secret, token, credential or environment value in the source, `public/`, `console.*` or error
+  messages; no sensitive data in `localStorage`/`sessionStorage`, URLs or query parameters; personal data is not logged.
+- Transport and headers: all backend calls go through the single interceptor (CSRF header, `withCredentials`, refresh
+  exclusion preserved); `nginx.conf` hardening headers and CSP stay as strict as before (no `unsafe-eval`, any
+  loosening justified).
+- Dependencies: run `pnpm audit` (or `pnpm audit --prod`) and report every high or critical advisory reachable from
+  the change; for each added or upgraded package in `package.json`/`pnpm-lock.yaml`, check it is needed, maintained,
+  license-compatible, compatible with the Angular version in use, and not duplicating an existing dependency; the
+  lockfile is committed and consistent with `package.json`. If the audit cannot run (network), report it as
+  "unverified" and block approval.
+- Not applicable only if the change touches no code, dependency, header or configuration: rate 10 and mark "n/a".
+
 ## Rating scale (fixed, not discretionary)
 
 A rating is **computed** from the findings, never judged by feel. Each finding is attributed to exactly one
@@ -84,12 +146,15 @@ perspective (the one it mainly belongs to) and has exactly one severity.
 
 - **Blocker:** breaks a §11 invariant, the data flow (`api` → `store` → `facade`), or an `rxMethod` that does not swallow
   its errors; wrong behavior or data loss; a frontend-only security assumption; an environment value compiled into the
-  bundle; a failing lint, build or coverage threshold; a usability barrier that prevents a keyboard or
+  bundle; a high or critical vulnerability in a dependency reachable from the change, an injection or open-redirect
+  path, a committed secret; a failing lint, build or coverage threshold; a usability barrier that prevents a keyboard or
   screen-reader user from completing an action.
 - **Should-fix:** breaks a §5 standard or a skill rule without being a blocker: method > 25 lines, new behavior
   (store, facade, api, component) without tests, dead code, missing JSDoc header, deprecated or superseded API,
   global loading flag, hardcoded user-facing string, an override or workaround that belongs in `@sgdf/ui`, an
-  accessibility gap not handled by `@sgdf/ui`, or an accessibility attribute duplicating `@sgdf/ui`.
+  accessibility gap not handled by `@sgdf/ui`, an accessibility attribute duplicating `@sgdf/ui`, a moderate
+  advisory, an unneeded or unmaintained new dependency, a leftover `console.*`/`.only`/commented-out code, an unused
+  i18n key, or a commit message that is not Conventional Commits.
 - **Nit:** naming, formatting, wording or ordering with no behavioral effect.
 
 With this scale, one blocker always rejects (≤ 6), three should-fix reject (7), two do not (8). Identical findings
@@ -97,8 +162,13 @@ must give identical ratings on a re-review.
 
 ## Output
 
+0. Scope read: the files and commits reviewed, how the diff was read, and the result of each gate command
+   (`lint`, `build`, `test:coverage`, `audit`) as passed / failed / unverified.
 1. Findings grouped by severity (blocker / should-fix / nit), each with an id: location, perspective, problem, why it
    matters, suggested fix. Do not restate unchanged code.
 2. Ratings table, one row per perspective: starting 10, the ids of its findings with their deductions, resulting
-   rating: Architecture /10, TechLead /10, QA /10, UI/UX & Accessibility /10, SEO /10.
-3. Verdict: approved only if **every** rating is ≥ 8/10; otherwise list the refactorings required before re-review.
+   rating: Architecture /10, TechLead /10, QA /10, UI/UX & Accessibility /10, SEO /10, Security & Dependencies /10.
+3. Verdict: approved only if there is **no blocker**, **every** rating is ≥ 8/10, every gate has run and passed, and
+   the whole scope was read. Approval does not discard the remaining findings: they are listed anyway and must be
+   fixed or explicitly declined by the developer before merge. Otherwise list the refactorings required, complete, so
+   that one round of fixes leads to approval.

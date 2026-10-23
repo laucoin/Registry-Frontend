@@ -1,8 +1,9 @@
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FieldTree, FormField } from '@angular/forms/signals'
 import { createSearchForm } from '@shared/helpers/form/search.form'
 import { GroupMemberListSearchModel, toGroupMemberListSearchModel, toGroupMemberListSearchParams } from './group-member-list.search'
 import { NgTemplateOutlet } from '@angular/common'
-import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, OnDestroy, signal, Signal, WritableSignal, model, ModelSignal } from '@angular/core'
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, signal, Signal, WritableSignal, model, ModelSignal, DestroyRef } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
 import { CurrentUserHelper } from '@core/authentication/tool/current-user.helper'
 import { SessionFacade } from '@core/registry/state/session.facade'
@@ -36,7 +37,7 @@ import {TranslocoPipe} from '@jsverse/transloco'
 import {
     SelectElementsFieldComponent,
 } from '@shared/ui/common/select-elements-field/select-elements-field.component'
-import { Observable, Subscription, switchMap, tap } from 'rxjs'
+import { Observable, switchMap, tap } from 'rxjs'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { EventHelper } from '@shared/helpers/event.helper'
 import { FormActionsComponent } from '@shared/ui/common/form-actions/form-actions.component'
@@ -72,7 +73,8 @@ import { ParticipantFormComponent } from '@pages/projects/[projectId]/configurat
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     templateUrl: './group-member-list.page.html',
 } )
-export class GroupMemberListPage implements OnDestroy {
+export class GroupMemberListPage {
+    private readonly destroyRef: DestroyRef = inject( DestroyRef )
     protected readonly facade: GroupFacade = inject( GroupFacade )
     protected readonly participantFacade: ParticipantFacade = inject( ParticipantFacade )
     private readonly route: ActivatedRoute = inject( ActivatedRoute )
@@ -80,8 +82,6 @@ export class GroupMemberListPage implements OnDestroy {
     protected readonly uiFacade: UiFacade = inject( UiFacade )
 
     protected readonly ParticipantHelper: typeof ParticipantHelper = ParticipantHelper
-
-    private readonly subscriptions: Subscription = new Subscription()
 
     protected readonly group: WritableSignal<GroupModel | undefined> = signal( undefined )
     protected readonly groupLoading: WritableSignal<boolean> = signal( false )
@@ -117,31 +117,27 @@ export class GroupMemberListPage implements OnDestroy {
 
     protected loadData (): void {
         const id: string | undefined = this.route.snapshot.params['groupId']
-        this.subscriptions.add(
-            this.facade.fetchGroup( id! ).pipe(
+        this.facade.fetchGroup( id! ).pipe(
                 withLoading( this.groupLoading ),
-            ).subscribe( (group: GroupModel): void => this.group.set( group ) ),
-        )
+            ).pipe( takeUntilDestroyed( this.destroyRef ) ).subscribe( (group: GroupModel): void => this.group.set( group ) )
         this.facade.fetchGroupMembersPage( id!, undefined, undefined )
     }
 
     private handleParticipantActions (): void {
-        this.subscriptions.add(
-            this.facade.handleGroupMembersChange().pipe(
+        this.facade.handleGroupMembersChange().pipe(
                 switchMap( (): Observable<GroupModel> => this.facade.fetchGroup( this.groupId() ) ),
-            ).subscribe( (group: GroupModel): void => this.group.set( group ) ),
-        )
+            ).pipe( takeUntilDestroyed( this.destroyRef ) ).subscribe( (group: GroupModel): void => this.group.set( group ) )
         this.reloadMembersOn( this.participantFacade.handleParticipantFirstPageReload(), (): void => this.facade.fetchGroupMembersPage( this.groupId(), 0, undefined ) )
         this.reloadMembersOn( this.participantFacade.handleParticipantCurrentPageReload(), (): void => this.facade.reloadGroupMembersPage( this.groupId() ) )
     }
 
     private reloadMembersOn (events: Observable<unknown>, reload: () => void): void {
-        this.subscriptions.add( events.pipe(
+        events.pipe(
             tap( (): void => {
                 this.createMemberFormLayerOpened.set( false )
                 reload()
             } ),
-        ).subscribe() )
+        ).pipe( takeUntilDestroyed( this.destroyRef ) ).subscribe()
     }
 
     protected closeLayer (event: Event, opened: WritableSignal<boolean>): void {
@@ -183,15 +179,9 @@ export class GroupMemberListPage implements OnDestroy {
             return
         }
 
-        this.subscriptions.add(
-            this.facade.addMembersToGroup( this.groupId(), toMemberIds( this.addMembersModel() ) ).subscribe( (): void => {
+        this.facade.addMembersToGroup( this.groupId(), toMemberIds( this.addMembersModel() ) ).pipe( takeUntilDestroyed( this.destroyRef ) ).subscribe( (): void => {
                 this.addMembersFormLayerOpened.set( false )
-            } ),
-        )
-    }
-
-    public ngOnDestroy (): void {
-        this.subscriptions.unsubscribe()
+            } )
     }
 
     private groupId (): string {

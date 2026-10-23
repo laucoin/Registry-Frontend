@@ -20,8 +20,9 @@ export class PreferencesApi extends GenericApi {
 
     public updateTheme(theme: string): Observable<PreferencesModel> {
         return this.http.post<PreferencesResponseDto>(
-            `${this.baseUrl}/theme?theme=${theme}`,
+            `${this.baseUrl}/theme`,
             null,
+            { params: { theme } },
         ).pipe(
             map( PreferencesMapper.toModel ),
         )
@@ -29,8 +30,9 @@ export class PreferencesApi extends GenericApi {
 
     public updateRefreshMode(mode: string): Observable<PreferencesModel> {
         return this.http.post<PreferencesResponseDto>(
-            `${this.baseUrl}/refresh-mode?mode=${mode}`,
+            `${this.baseUrl}/refresh-mode`,
             null,
+            { params: { mode } },
         ).pipe(
             map( PreferencesMapper.toModel ),
         )
@@ -38,8 +40,9 @@ export class PreferencesApi extends GenericApi {
 
     public updateLanguage(language: string): Observable<PreferencesModel> {
         return this.http.post<PreferencesResponseDto>(
-            `${this.baseUrl}/language?language=${language}`,
+            `${this.baseUrl}/language`,
             null,
+            { params: { language } },
         ).pipe(
             map( PreferencesMapper.toModel ),
         )

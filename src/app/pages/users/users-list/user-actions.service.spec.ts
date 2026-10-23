@@ -28,7 +28,7 @@ describe('UserActions', () => {
         RegistryConfig.config = { enabledActions: Object.values(ElementActionEnum) } as never
         authorities = signal(['REGISTRY_USER_U', 'REGISTRY_USER_D'])
         currentUserId = signal('u1')
-        facade = { bockUser: vi.fn(), unblockUser: vi.fn(), deleteUser: vi.fn() }
+        facade = { blockUser: vi.fn(), unblockUser: vi.fn(), deleteUser: vi.fn() }
         confirm = vi.fn()
         navigateByUrl = vi.fn(() => Promise.resolve(true))
         TestBed.configureTestingModule({
@@ -115,7 +115,7 @@ describe('UserActions', () => {
     })
 
     it.each([
-        ['disable', 'bockUser', SeverityEnum.WARNING, ACTIVE, 'u2'],
+        ['disable', 'blockUser', SeverityEnum.WARNING, ACTIVE, 'u2'],
         ['enable', 'unblockUser', SeverityEnum.INFO, BLOCKED, 'u2'],
         ['delete', 'deleteUser', SeverityEnum.DANGER, ACTIVE, ACTIVE],
     ])('asks for a confirmation before running %s, then calls the facade', (id: string, call: string, severity: SeverityEnum, user: UserModel, argument: unknown) => {

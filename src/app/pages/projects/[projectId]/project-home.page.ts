@@ -44,8 +44,7 @@ import {
 		ProjectUpcomingDepartureComponent,
 		ProjectBirthdayComponent,
 		ProjectOperationalMonitoringComponent,
-		ProjectVehicleOverviewComponent,
-		ProjectUpcomingDepartureComponent
+		ProjectVehicleOverviewComponent
 	],
 	templateUrl: './project-home.page.html',
 })
@@ -60,31 +59,4 @@ export class ProjectHomePage {
 		ProjectAuthorityEnum.REGISTRY_PROJECT_MOVEMENT_C,
 	))
 	protected readonly hasAlertOption: Signal<boolean> = this.sessionFacade.selectedProjectHasOption(ProjectOptionEnum.ALERT)
-
-	// protected readonly tabParam: string = 'tab'
-	// protected readonly tab: string[] = [
-	// 	'dashboard',
-	// 	'activities',
-	// 	'movements',
-	// ]
-	// private readonly queryParams: Signal<ParamMap | undefined> = toSignal(this.route.queryParamMap)
-	// protected readonly currentTab: Signal<string> = computed((): string => {
-	// 	const param: string | null | undefined = this.queryParams()?.get(this.tabParam)
-	// 	if (GenericHelper.isNull(param) || !this.tab.includes(param!)) {
-	// 		return this.tab[0]!
-	// 	}
-	// 	return param!
-	// })
-	//
-	// protected navigate(tab: string | number | undefined): void {
-	// 	if (!tab) {
-	// 		return
-	// 	}
-	//
-	// 	this.router.navigate([], {
-	// 		relativeTo: this.route,
-	// 		queryParams: { [this.tabParam]: tab },
-	// 		queryParamsHandling: 'merge',
-	// 	}).then()
-	// }
 }

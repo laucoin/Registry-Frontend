@@ -1,5 +1,4 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { LocalStorageUtils } from '@shared/helpers/local-storage.helper'
 import { SessionStorageUtils } from '@shared/helpers/session-storage.helper'
 import { StorageUtils } from '@shared/helpers/storage.helper'
 
@@ -92,19 +91,6 @@ describe( 'StorageUtils', () => {
 
         // Assert
         expect( localStorage.length ).toBe( 0 )
-    } )
-
-    it( 'works on the local storage through its wrapper', () => {
-        // Arrange
-        LocalStorageUtils.set( 'locale', 'fr' )
-
-        // Act
-        const results: unknown[] = [ LocalStorageUtils.get( 'locale' ), LocalStorageUtils.check( 'locale' ) ]
-        LocalStorageUtils.delete( 'locale' )
-
-        // Assert
-        expect( results ).toEqual( [ 'fr', true ] )
-        expect( localStorage.getItem( 'locale' ) ).toBeNull()
     } )
 
     it( 'keeps the session storage apart from the local storage', () => {

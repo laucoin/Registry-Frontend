@@ -1,4 +1,5 @@
-import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, input, InputSignal, OnDestroy, output, OutputEmitterRef, Signal, signal, WritableSignal } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, input, InputSignal, output, OutputEmitterRef, Signal, signal, WritableSignal } from '@angular/core'
 import {ParticipantFacade} from '@pages/projects/[projectId]/configuration/participants/data/state/participant.facade'
 import { FieldTree, FormField } from '@angular/forms/signals'
 import {
@@ -61,7 +62,7 @@ import { ETagHelper } from '@shared/helpers/etag.helper'
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     templateUrl: './participant-form.component.html',
 })
-export class ParticipantFormComponent extends BaseFormComponent implements OnDestroy {
+export class ParticipantFormComponent extends BaseFormComponent {
     protected readonly facade: ParticipantFacade = inject(ParticipantFacade)
 
     protected readonly GroupHelper: typeof GroupHelper = GroupHelper
@@ -97,14 +98,12 @@ export class ParticipantFormComponent extends BaseFormComponent implements OnDes
 
     protected override loadData(): void {
         if (GenericHelper.nonNull(this.idParam)) {
-            this.subscriptions.add(
-                this.facade.fetchParticipant(this.idParam!).pipe(
+            this.facade.fetchParticipant(this.idParam!).pipe(
                     withLoading(this.loading),
-                ).subscribe( (participant: ParticipantModel): void => {
+                ).pipe( takeUntilDestroyed( this.destroyRef ) ).subscribe( (participant: ParticipantModel): void => {
                     this.participant.set(participant)
                     this.applyParticipant(participant)
-                } ),
-            )
+                } )
         }
     }
 
@@ -170,9 +169,5 @@ export class ParticipantFormComponent extends BaseFormComponent implements OnDes
 
     protected get idParam(): string | undefined {
         return this.route.snapshot.params['participantId']
-    }
-
-    public ngOnDestroy(): void {
-        this.subscriptions.unsubscribe()
     }
 }

@@ -1,4 +1,5 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, inject, OnDestroy, signal, WritableSignal } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { Component, CUSTOM_ELEMENTS_SCHEMA, inject, signal, WritableSignal } from '@angular/core'
 import { GroupModel } from '@shared/models/model/group.model'
 import { FieldTree, FormField } from '@angular/forms/signals'
 import { GroupFacade } from '@pages/projects/[projectId]/configuration/groups/data/state/group.facade'
@@ -56,7 +57,7 @@ import { ETagHelper } from '@shared/helpers/etag.helper'
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     templateUrl: './group-form.page.html',
 } )
-export class GroupFormPage extends BaseFormComponent implements OnDestroy {
+export class GroupFormPage extends BaseFormComponent {
     protected readonly facade: GroupFacade = inject( GroupFacade )
 
     protected readonly ParticipantHelper: typeof ParticipantHelper = ParticipantHelper
@@ -79,14 +80,12 @@ export class GroupFormPage extends BaseFormComponent implements OnDestroy {
 
     protected override loadData (): void {
         if (GenericHelper.nonNull( this.idParam )) {
-            this.subscriptions.add(
-                this.facade.fetchGroup( this.idParam! ).pipe(
+            this.facade.fetchGroup( this.idParam! ).pipe(
                     withLoading( this.loading ),
-                ).subscribe( (group: GroupModel): void => {
+                ).pipe( takeUntilDestroyed( this.destroyRef ) ).subscribe( (group: GroupModel): void => {
                     this.group.set( group )
                     this.applyGroup( group )
-                } ),
-            )
+                } )
         }
     }
 
@@ -122,9 +121,5 @@ export class GroupFormPage extends BaseFormComponent implements OnDestroy {
 
     protected get idParam (): string | undefined {
         return this.route.snapshot.params['groupId']
-    }
-
-    public ngOnDestroy (): void {
-        this.subscriptions.unsubscribe()
     }
 }

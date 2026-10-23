@@ -1,3 +1,4 @@
+import { ConfigModel } from '@core/config/model/config.model'
 import {GenericModel} from '@shared/models/model/generic.model'
 import {PageRequestInformationModel} from '@shared/models/model/page-request-information.model'
 import {PageModel} from '@shared/models/model/page.model'
@@ -70,7 +71,6 @@ export class StateHelper {
     }
 
     private static notificationLife(severity: SeverityEnum): number | undefined {
-        const index: number = Object.keys(RegistryConfig.config.notification.duration).findIndex((key: string): boolean => key === severity)
-        return Object.values(RegistryConfig.config.notification.duration)[index]
+        return RegistryConfig.config.notification.duration[severity as keyof ConfigModel['notification']['duration']]
     }
 }

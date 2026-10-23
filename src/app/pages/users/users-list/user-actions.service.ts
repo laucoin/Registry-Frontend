@@ -51,7 +51,7 @@ export class UserActions extends ElementActionsBase<UserModel> {
             enabledAction: ElementActionEnum.USER_BLOCK,
             shown: others && user.visible,
             allowed: this.hasAuthority(UserAuthorityEnum.REGISTRY_USER_U),
-            confirmation: { severity: SeverityEnum.WARNING, icon: 'pi pi-exclamation-triangle', accept: (): void => this.facade.bockUser(user.id) },
+            confirmation: { severity: SeverityEnum.WARNING, icon: 'pi pi-exclamation-triangle', accept: (): void => this.facade.blockUser(user.id) },
         }
     }
 

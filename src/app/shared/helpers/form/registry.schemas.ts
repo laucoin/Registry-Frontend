@@ -32,7 +32,7 @@ function toCustomDateTime (value: CustomDatetimeModel | Date): CustomDatetimeMod
 }
 
 /**
- * Purpose: Signal form validation rules of the application, keeping the legacy error codes used by the translations.
+ * Purpose: Signal form validation rules of the application, using the error codes of the translations.
  * Scope: Provides blank, date, range, option-dependent and cross-field rules applied to schema paths.
  * Limits: Validates on the client for usability; the backend validates again.
  */

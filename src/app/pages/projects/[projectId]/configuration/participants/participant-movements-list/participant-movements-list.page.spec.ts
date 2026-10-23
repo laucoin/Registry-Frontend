@@ -159,7 +159,7 @@ describe('ParticipantMovementsListPage', () => {
         fetchMovements.mockClear()
 
         // Act
-        page.ngOnDestroy()
+        TestBed.resetTestingModule()
         firstPageReload.next()
 
         // Assert

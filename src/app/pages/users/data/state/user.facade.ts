@@ -105,7 +105,7 @@ export class UserFacade extends GenericFacade {
         )
     }
 
-    public bockUser (id: string): void {
+    public blockUser (id: string): void {
         this.api.blockUserById( id ).pipe(
             this.trackUserLoader,
             notifyOnError( this.uiFacade ),

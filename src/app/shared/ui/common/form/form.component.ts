@@ -15,6 +15,7 @@ import { FormErrorComponent } from '@shared/ui/common/form-error/form-error.comp
     ],
     schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
     templateUrl: './form.component.html',
+    styles: 'h1 { font-size: var(--sgdf-text-3xl); }',
 } )
 export class FormComponent {
     public readonly loading: InputSignal<boolean> = input.required()

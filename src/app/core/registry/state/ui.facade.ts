@@ -16,7 +16,7 @@ import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { Observable } from 'rxjs'
 
 /**
- * Purpose: Public entry point for what the shell displays: theme, screen size, global loader and error, language change in flight, toasts, display options.
+ * Purpose: Public entry point for what the shell displays: theme, screen size, global error, language change in flight, toasts, display options.
  * Scope: Exposes the UI, notification and metadata stores as signals and forwards their commands.
  * Limits: Knows nothing about the user or the session; it does not call the backend.
  */

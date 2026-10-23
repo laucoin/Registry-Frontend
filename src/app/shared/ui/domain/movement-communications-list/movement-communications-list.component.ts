@@ -1,6 +1,7 @@
-import { Component, inject, input, InputSignal, OnDestroy, OnInit } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { Component, inject, input, InputSignal, OnInit, DestroyRef } from '@angular/core'
 import { MovementFacade } from '@pages/projects/[projectId]/movements/data/state/movement.facade'
-import { Observable, Subscription, tap } from 'rxjs'
+import { Observable, tap } from 'rxjs'
 import { CommunicationFacade } from '@pages/projects/[projectId]/movements/communication/data/state/communication.facade'
 import {TranslocoPipe} from '@jsverse/transloco'
 import { MovementModel } from '@shared/models/model/movement.model'
@@ -23,12 +24,11 @@ import { AlertFacade } from '@pages/projects/[projectId]/alerts/data/state/alert
     templateUrl: './movement-communications-list.component.html',
     styleUrl: './movement-communications-list.component.css',
 } )
-export class MovementCommunicationsListComponent extends GenericComponent implements OnInit, OnDestroy {
+export class MovementCommunicationsListComponent extends GenericComponent implements OnInit {
+    private readonly destroyRef: DestroyRef = inject( DestroyRef )
     protected readonly facade: MovementFacade = inject( MovementFacade )
     protected readonly communicationFacade: CommunicationFacade = inject( CommunicationFacade )
     protected readonly alertFacade: AlertFacade = inject( AlertFacade )
-
-    private readonly subscriptions: Subscription = new Subscription()
 
     public readonly movement: InputSignal<MovementModel> = input.required()
 
@@ -48,19 +48,19 @@ export class MovementCommunicationsListComponent extends GenericComponent implem
     }
 
     private reloadFirstPageOn (events: Observable<unknown>): void {
-        this.subscriptions.add( events.pipe(
+        events.pipe(
             tap( (): void => this.facade.fetchMovementCommunicationsPage( this.movement().id, undefined, undefined ) ),
-        ).subscribe() )
+        ).pipe( takeUntilDestroyed( this.destroyRef ) ).subscribe()
     }
 
     private reloadCurrentPageOn (events: Observable<unknown>): void {
-        this.subscriptions.add( events.pipe(
+        events.pipe(
             tap( (): void => this.facade.fetchMovementCommunicationsPage(
                 this.movement().id,
                 this.facade.movementCommunicationsPage()?.page,
                 this.facade.movementCommunicationsPage()?.size,
             ) ),
-        ).subscribe() )
+        ).pipe( takeUntilDestroyed( this.destroyRef ) ).subscribe()
     }
 
     protected getPreviousAuthorId (index: number): string | undefined {
@@ -69,9 +69,5 @@ export class MovementCommunicationsListComponent extends GenericComponent implem
 
     protected getNextAuthorId (index: number): string | undefined {
         return CommunicationHelper.nextAuthorId( this.facade.movementCommunicationsPage()?.content, index )
-    }
-
-    public ngOnDestroy (): void {
-        this.subscriptions.unsubscribe()
     }
 }

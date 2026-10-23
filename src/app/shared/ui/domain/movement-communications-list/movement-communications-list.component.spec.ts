@@ -65,7 +65,7 @@ describe('MovementCommunicationsListComponent', () => {
 
     it('stops reloading once the list is destroyed', () => {
         // Arrange
-        component.ngOnDestroy()
+        TestBed.resetTestingModule()
 
         // Act
         firstPageReload.next(undefined)

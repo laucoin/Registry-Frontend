@@ -1,4 +1,5 @@
-import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, OnDestroy, signal, Signal, WritableSignal, model, ModelSignal } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, signal, Signal, WritableSignal, model, ModelSignal } from '@angular/core'
 import { BaseFormComponent } from '@shared/ui/base/base-form.component'
 import { ProjectModel } from '@shared/models/model/project.model'
 import { ProjectFacade } from '@pages/projects/data/state/project/project.facade'
@@ -74,8 +75,9 @@ import { SectionErrorComponent } from '@shared/ui/common/section-error/section-e
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     templateUrl: './project-form.page.html',
+    styles: 'h1 { font-size: var(--sgdf-text-3xl); }',
 } )
-export class ProjectFormPage extends BaseFormComponent implements OnDestroy {
+export class ProjectFormPage extends BaseFormComponent {
     protected readonly facade: ProjectFacade = inject( ProjectFacade )
     private readonly profileFacade: ProjectProfileFacade = inject( ProjectProfileFacade )
 
@@ -103,10 +105,6 @@ export class ProjectFormPage extends BaseFormComponent implements OnDestroy {
         this.handleLoadedElement()
     }
 
-    public ngOnDestroy (): void {
-        this.subscriptions.unsubscribe()
-    }
-
     protected override loadData (): void {
         this.facade.resetProject()
         this.facade.fetchProjectOptions()
@@ -117,8 +115,7 @@ export class ProjectFormPage extends BaseFormComponent implements OnDestroy {
     }
 
     protected handleLoadedElement (): void {
-        this.subscriptions.add(
-            combineLatest( [ this.facade.project$, this.facade.projectOptionsMetadata$ ] ).pipe(
+        combineLatest( [ this.facade.project$, this.facade.projectOptionsMetadata$ ] ).pipe(
                 filter( ([ project, options ]: [ ProjectModel | undefined, ProjectOptionModel[] ]): boolean =>
                     !ArrayHelper.isNullOrEmpty( options ) && (GenericHelper.isNull( this.idParam ) || GenericHelper.nonNull( project )),
                 ),
@@ -126,8 +123,7 @@ export class ProjectFormPage extends BaseFormComponent implements OnDestroy {
                 map( ([ project, options ]: [ ProjectModel | undefined, ProjectOptionModel[] ]): void =>
                     this.fillForm( project, options ),
                 ),
-            ).subscribe(),
-        )
+            ).pipe( takeUntilDestroyed( this.destroyRef ) ).subscribe()
     }
 
     private fillForm ( project: ProjectModel | undefined, options: ProjectOptionModel[] ): void {

@@ -159,7 +159,7 @@ describe('VehicleMovementsListPage', () => {
         fetchMovements.mockClear()
 
         // Act
-        page.ngOnDestroy()
+        TestBed.resetTestingModule()
         firstPageReload.next()
 
         // Assert

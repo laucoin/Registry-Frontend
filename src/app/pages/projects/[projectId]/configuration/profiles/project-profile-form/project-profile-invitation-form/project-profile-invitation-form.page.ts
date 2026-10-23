@@ -1,4 +1,4 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, OnDestroy, signal, WritableSignal } from '@angular/core'
+import { Component, CUSTOM_ELEMENTS_SCHEMA, signal, WritableSignal } from '@angular/core'
 import {TranslocoPipe} from '@jsverse/transloco'
 import '@sgdf/ui/card'
 import { FormActionsComponent } from '@shared/ui/common/form-actions/form-actions.component'
@@ -31,7 +31,7 @@ import {ProjectProfileInvitationFieldsComponent} from '@pages/projects/[projectI
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     templateUrl: './project-profile-invitation-form.page.html',
 })
-export class ProjectProfileInvitationFormPage extends GenericProjectProfileFormComponent implements OnDestroy {
+export class ProjectProfileInvitationFormPage extends GenericProjectProfileFormComponent {
     protected readonly model: WritableSignal<ProjectProfileInvitationFormModel> = signal(toProjectProfileInvitationFormModel())
     protected readonly form: FieldTree<ProjectProfileInvitationFormModel> = createProjectProfileInvitationForm(this.model)
 
@@ -50,9 +50,5 @@ export class ProjectProfileInvitationFormPage extends GenericProjectProfileFormC
         if (this.saving()) return
 
         this.save(this.facade.createProjectProfiles(toProjectProfilesDto(this.model())))
-    }
-
-    public ngOnDestroy(): void {
-        this.subscriptions.unsubscribe()
     }
 }

@@ -6,9 +6,9 @@
     </div>
 } @else {
     @if (activeTab() === 3) {
-        <h2>{{ 'project-profiles.form.title.create' | transloco : { name: createdProjectName() } }}</h2>
+        <h1>{{ 'project-profiles.form.title.create' | transloco : { name: createdProjectName() } }}</h1>
     } @else {
-        <h2>{{ 'projects.form.title' | formTitle: facade.project() | transloco : { name: facade.project()?.name } }}</h2>
+        <h1>{{ 'projects.form.title' | formTitle: facade.project() | transloco : { name: facade.project()?.name } }}</h1>
     }
     <sgdf-stepper linear [active]="'step-' + activeTab()" [label]="'projects.form.title' | formTitle: facade.project() | transloco : { name: facade.project()?.name }">
         <sgdf-step name="step-1" [completed]="activeTab() > 1">{{ 'projects.form.subtitle.information' | transloco }}</sgdf-step>

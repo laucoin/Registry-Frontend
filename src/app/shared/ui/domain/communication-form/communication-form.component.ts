@@ -1,3 +1,4 @@
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import {
     Component,
     CUSTOM_ELEMENTS_SCHEMA,
@@ -5,7 +6,6 @@ import {
     inject,
     input,
     InputSignal,
-    OnDestroy,
     OnInit,
     Signal,
     signal,
@@ -85,7 +85,7 @@ enum AlertModulableFieldEnum {
     templateUrl: './communication-form.component.html',
     styleUrl: './communication-form.component.css',
 } )
-export class CommunicationFormComponent extends BaseFormComponent implements OnInit, OnDestroy {
+export class CommunicationFormComponent extends BaseFormComponent implements OnInit {
     protected readonly facade: CommunicationFacade = inject( CommunicationFacade )
     protected readonly alertFacade: AlertFacade = inject( AlertFacade )
     protected readonly classicDatePipe: DateFormatPipe = inject( DateFormatPipe )
@@ -182,11 +182,9 @@ export class CommunicationFormComponent extends BaseFormComponent implements OnI
     }
 
     protected handleLoadedElement (): void {
-        this.subscriptions.add(
-            this.facade.communication$.pipe(
+        this.facade.communication$.pipe(
                 tap( (communication: CommunicationModel | undefined): void => this.fillForm( communication ) ),
-            ).subscribe(),
-        )
+            ).pipe( takeUntilDestroyed( this.destroyRef ) ).subscribe()
     }
 
     private fillForm (element: CommunicationModel | undefined): void {
@@ -291,9 +289,5 @@ export class CommunicationFormComponent extends BaseFormComponent implements OnI
             disabled: action.disabled || (action.id === CommunicationModulableFieldEnum.ALERT && GenericHelper.nonNull(
                 this.alertSelectorMode() )) || (action.id === CommunicationModulableFieldEnum.MOVEMENT && this.movementSelectorVisible()),
         }) )
-    }
-
-    public ngOnDestroy (): void {
-        this.subscriptions.unsubscribe()
     }
 }

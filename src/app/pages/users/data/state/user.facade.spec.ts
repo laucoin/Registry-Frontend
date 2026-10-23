@@ -91,7 +91,7 @@ describe( 'UserFacade', () => {
         blockUserById.mockReturnValue( of( { id: 'u1', firstName: 'Ada', lastName: 'L' } as UserModel ) )
 
         // Act
-        facade.bockUser( 'u1' )
+        facade.blockUser( 'u1' )
 
         // Assert
         expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'users.notifications.disable.title' } ) )
@@ -104,7 +104,7 @@ describe( 'UserFacade', () => {
         blockUserById.mockReturnValue( failing( ERROR_500 ) )
 
         // Act
-        facade.bockUser( 'u1' )
+        facade.blockUser( 'u1' )
 
         // Assert
         expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'Title' } ) )

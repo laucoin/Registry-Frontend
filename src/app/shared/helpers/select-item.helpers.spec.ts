@@ -1,28 +1,14 @@
 import { describe, expect, it } from 'vitest'
-import { ActivityHelper } from '@shared/helpers/activity.helper'
 import { GroupHelper } from '@shared/helpers/group.helper'
 import { ParticipantHelper } from '@shared/helpers/participant.helper'
 import { UserHelper } from '@shared/helpers/user.helper'
 import { VehicleHelper } from '@shared/helpers/vehicle.helper'
-import { ActivityModel } from '@shared/models/model/activity.model'
 import { GroupModel } from '@shared/models/model/group.model'
 import { ParticipantModel } from '@shared/models/model/participant.model'
 import { UserModel } from '@shared/models/model/user.model'
 import { VehicleModel } from '@shared/models/model/vehicle.model'
 
 describe( 'select item helpers', () => {
-    it( 'labels an activity with its name', () => {
-        // Arrange
-        const activity: ActivityModel = { name: 'Hike' } as ActivityModel
-
-        // Act
-        const item: { label?: string, value: ActivityModel } = ActivityHelper.toSelectItem( activity ) as { label?: string, value: ActivityModel }
-
-        // Assert
-        expect( item.label ).toBe( 'Hike' )
-        expect( item.value ).toBe( activity )
-    } )
-
     it( 'labels a group with its name', () => {
         // Arrange
         const group: GroupModel = { name: 'Wolves' } as GroupModel

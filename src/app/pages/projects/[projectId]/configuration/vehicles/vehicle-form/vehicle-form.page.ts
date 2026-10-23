@@ -1,4 +1,5 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, inject, OnDestroy, signal, WritableSignal } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { Component, CUSTOM_ELEMENTS_SCHEMA, inject, signal, WritableSignal } from '@angular/core'
 import {VehicleFacade} from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.facade'
 import { FieldTree, FormField } from '@angular/forms/signals'
 import {FieldErrorComponent} from '@shared/ui/common/field-error/field-error.component'
@@ -45,7 +46,7 @@ import { ETagHelper } from '@shared/helpers/etag.helper'
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     templateUrl: './vehicle-form.page.html',
 })
-export class VehicleFormPage extends BaseFormComponent implements OnDestroy {
+export class VehicleFormPage extends BaseFormComponent {
     protected override readonly closesToParentRoute: boolean = true
     protected readonly facade: VehicleFacade = inject(VehicleFacade)
 
@@ -67,14 +68,12 @@ export class VehicleFormPage extends BaseFormComponent implements OnDestroy {
 
     protected override loadData(): void {
         if (GenericHelper.nonNull(this.idParam)) {
-            this.subscriptions.add(
-                this.facade.fetchVehicle(this.idParam!).pipe(
+            this.facade.fetchVehicle(this.idParam!).pipe(
                     withLoading(this.loading),
-                ).subscribe( (vehicle: VehicleModel): void => {
+                ).pipe( takeUntilDestroyed( this.destroyRef ) ).subscribe( (vehicle: VehicleModel): void => {
                     this.vehicle.set(vehicle)
                     this.applyVehicle(vehicle)
-                } ),
-            )
+                } )
         }
     }
 
@@ -106,9 +105,5 @@ export class VehicleFormPage extends BaseFormComponent implements OnDestroy {
 
     protected get idParam(): string | undefined {
         return this.route.snapshot.params['vehicleId']
-    }
-
-    public ngOnDestroy(): void {
-        this.subscriptions.unsubscribe()
     }
 }

@@ -107,6 +107,7 @@
             </sgdf-tab-panel>
         </sgdf-tab-group>
     } @else {
-        <sgdf-skeleton shape="rounded" effect="pulse" aria-busy="true" style="width: 100%; height: 10rem"/>
+        <span class="sr-only" role="status">{{ 'global.list.loading' | transloco }}</span>
+        <sgdf-skeleton shape="rounded" effect="pulse" aria-hidden="true" style="width: 100%; height: 10rem"/>
     }
 </div>

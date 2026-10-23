@@ -1,7 +1,7 @@
 import { FieldTree } from '@angular/forms/signals'
 import { GenericComponent } from '@shared/ui/base/generic.component'
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
-import { Observable, Subscription } from 'rxjs'
+import { Observable } from 'rxjs'
 import { ErrorModel } from '@shared/models/model/error.model'
 import { withLoading } from '@shared/helpers/rx.helper'
 import { DestroyRef, inject, signal, WritableSignal } from '@angular/core'
@@ -18,8 +18,7 @@ import { RegistryConfig } from '@core/config/registry.config'
 export abstract class BaseFormComponent extends GenericComponent {
     protected readonly datePipe: CustomDateFormatPipe = inject( CustomDateFormatPipe )
     private readonly location: Location = inject( Location )
-
-    protected readonly subscriptions: Subscription = new Subscription()
+    protected readonly destroyRef: DestroyRef = inject( DestroyRef )
 
     protected readonly closesToParentRoute: boolean = false
 
@@ -33,7 +32,7 @@ export abstract class BaseFormComponent extends GenericComponent {
 
     protected constructor () {
         super()
-        inject( DestroyRef ).onDestroy( (): void => {
+        this.destroyRef.onDestroy( (): void => {
             this.destroyed = true
         } )
     }

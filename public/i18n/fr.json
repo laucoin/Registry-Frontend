@@ -205,21 +205,6 @@
       "create-project": "Créer mon premier projet"
     },
     "menu": {
-      "users": "Utilisateurs",
-      "projects": "Projets",
-      "edit-project": "Modifier le projet",
-      "project-home": "Accueil du projet",
-      "configuration": "Configuration",
-      "project-profiles": "Profils d’accès",
-      "movements": "Mouvements",
-      "alerts": "Alertes",
-      "participants": "Participants",
-      "groups": "Groupes",
-      "vehicles": "Véhicules",
-      "activities": "Activités",
-      "profiles": "Profils d’accès",
-      "invitations": "Invitations",
-      "help": "Aide",
       "options": "Ouvrir le menu d’options"
     },
     "date-and-time-format": {
@@ -345,7 +330,6 @@
         "message": "Le thème est appliqué sur cet appareil uniquement. Impossible de l'enregistrer sur votre compte : {{reason}}"
       }
     },
-    "not-set": "Non défini",
     "error": {
       "eyebrow": "Pas très pratique 😩",
       "title": "L'application est momentanément inaccessible",
@@ -356,62 +340,6 @@
     "favorite": {
       "add": "Ajouter {{name}} aux favoris",
       "remove": "Retirer {{name}} des favoris"
-    }
-  },
-  "project-home": {
-    "alerts": {
-      "title": "Alertes en cours",
-      "see-more": "Voir plus"
-    },
-    "dashboard": {
-      "title": "Tableau de bord",
-      "birthday": {
-        "one": "Anniversaire",
-        "few": "Anniversaires"
-      },
-      "no-birthday": "Pas d’anniversaire aujourd’hui",
-      "participants": {
-        "total": {
-          "one": "Nombre de participant",
-          "few": "Nombre de participants"
-        },
-        "present": {
-          "one": "Présent",
-          "few": "Présents"
-        },
-        "registered": {
-          "one": "Inscrit",
-          "few": "Inscrits"
-        },
-        "guest": {
-          "one": "Invité",
-          "few": "Invités"
-        },
-        "absent": {
-          "one": "Absent",
-          "few": "Absents"
-        }
-      },
-      "vehicles": {
-        "total": {
-          "one": "Nombre de vehicule",
-          "few": "Nombre de vehicules"
-        },
-        "present": {
-          "one": "Présent",
-          "few": "Présents"
-        },
-        "absent": {
-          "one": "Absent",
-          "few": "Absents"
-        }
-      }
-    },
-    "activity-in-progress": {
-      "title": "Activité en cours"
-    },
-    "movements-in-progress": {
-      "title": "Mouvements en cours"
     }
   },
   "users": {
@@ -1838,6 +1766,10 @@
       "movements": "Mouvements",
       "alerts": "Alertes",
       "configuration": "Configuration"
+    },
+    "label": {
+      "main": "Navigation principale",
+      "project": "Navigation du projet"
     }
   },
   "footer": {
