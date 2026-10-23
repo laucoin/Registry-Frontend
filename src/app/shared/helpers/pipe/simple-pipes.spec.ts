@@ -70,6 +70,33 @@ describe( 'ProjectOptionIconPipe', () => {
         expect( result ).toBe( icon )
     } )
 
+    it.each( [
+        [ ProjectOptionEnum.VEHICLE, 'car' ],
+        [ ProjectOptionEnum.ACTIVITY, 'hammer' ],
+        [ ProjectOptionEnum.COMMUNICATION, 'comment' ],
+        [ ProjectOptionEnum.ALERT, 'triangle-exclamation' ],
+    ] )( 'gives the %s option its sgdf icon', (option: ProjectOptionEnum, icon: string) => {
+        // Arrange
+        const pipe: ProjectOptionIconPipe = new ProjectOptionIconPipe()
+
+        // Act
+        const result: string = pipe.transform( option, 'sgdf' )
+
+        // Assert
+        expect( result ).toBe( icon )
+    } )
+
+    it( 'gives an unknown option no sgdf icon', () => {
+        // Arrange
+        const pipe: ProjectOptionIconPipe = new ProjectOptionIconPipe()
+
+        // Act
+        const result: string = pipe.transform( 'UNKNOWN' as ProjectOptionEnum, 'sgdf' )
+
+        // Assert
+        expect( result ).toBe( '' )
+    } )
+
     it( 'gives an unknown option no icon', () => {
         // Arrange
         const pipe: ProjectOptionIconPipe = new ProjectOptionIconPipe()

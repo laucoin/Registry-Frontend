@@ -4,12 +4,16 @@ interface ProjectsListSearch {
     q: string | undefined
     at: Date | undefined
     isVisible: boolean | undefined
+    isFavorite: boolean | undefined
+    withProfile: boolean | undefined
 }
 
 export interface ProjectsListSearchModel {
     q: string
     at: Date | null
     isVisible: BooleanChoice
+    isFavorite: BooleanChoice
+    withProfile: BooleanChoice
 }
 
 /**
@@ -22,6 +26,8 @@ export function toProjectsListSearchModel (params: ProjectsListSearch): Projects
         q: params.q ?? '',
         at: params.at ?? null,
         isVisible: toBooleanChoice(params.isVisible),
+        isFavorite: toBooleanChoice(params.isFavorite),
+        withProfile: toBooleanChoice(params.withProfile),
     }
 }
 
@@ -35,5 +41,7 @@ export function toProjectsListSearchParams (model: ProjectsListSearchModel): Pro
         q: model.q === '' ? undefined : model.q,
         at: model.at ?? undefined,
         isVisible: fromBooleanChoice(model.isVisible),
+        isFavorite: fromBooleanChoice(model.isFavorite),
+        withProfile: fromBooleanChoice(model.withProfile),
     }
 }

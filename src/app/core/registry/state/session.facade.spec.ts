@@ -17,6 +17,7 @@ import { ProjectApi } from '@pages/projects/data/state/project.api'
 import { UserApi } from '@pages/users/data/state/user.api'
 import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
 import { ThemeEnum } from '@shared/models/enumeration/theme.enum'
+import { RefreshModeEnum } from '@shared/models/enumeration/refresh-mode.enum'
 import { CurrentUserModel } from '@shared/models/model/current-user.model'
 import { ErrorModel } from '@shared/models/model/error.model'
 import { ProjectModel } from '@shared/models/model/project.model'
@@ -24,7 +25,7 @@ import { ThemeChoiceModel } from '@shared/models/model/theme-choice.model'
 import { REDIRECT_URI } from '@shared/helpers/request.helper'
 import { ProfileResetService } from '@shared/helpers/store/profile-reset.service'
 
-const USER: CurrentUserModel = { id: 'u1', preferences: { userId: 'u1', theme: 'LIGHT', language: 'fr' } } as CurrentUserModel
+const USER: CurrentUserModel = { id: 'u1', preferences: { userId: 'u1', theme: 'LIGHT', language: 'fr', refreshMode: 'NORMAL' } } as CurrentUserModel
 const FAILURE: ErrorModel = { status: 500, title: 'Title', message: 'Message' } as ErrorModel
 const UNAVAILABLE: ErrorModel = { status: 503, title: 'Down', message: 'Down' } as ErrorModel
 
@@ -44,6 +45,9 @@ describe( 'SessionFacade', () => {
     let refreshToken: Mock<SecurityApi['refreshToken']>
     let updateThemePreference: Mock<PreferencesApi['updateTheme']>
     let updateLanguagePreference: Mock<PreferencesApi['updateLanguage']>
+    let updateRefreshModePreference: Mock<PreferencesApi['updateRefreshMode']>
+    let updateRefreshMode: Mock<(mode: RefreshModeEnum) => void>
+    let refreshMode: WritableSignal<RefreshModeEnum>
     let findProjectById: Mock<ProjectApi['findProjectById']>
     let deleteCurrentUser: Mock<UserApi['deleteCurrentUser']>
     let exportCurrentUser: Mock<UserApi['exportCurrentUser']>
@@ -67,8 +71,9 @@ describe( 'SessionFacade', () => {
         fetchToken = vi.fn( () => of( undefined ) )
         fetchCurrentUser = vi.fn( () => of( USER ) )
         refreshToken = vi.fn( () => of( undefined ) )
-        updateThemePreference = vi.fn( () => of( { userId: 'u1', theme: 'DARK', language: 'fr' } ) )
-        updateLanguagePreference = vi.fn( () => of( { userId: 'u1', theme: 'LIGHT', language: 'en' } ) )
+        updateThemePreference = vi.fn( () => of( { userId: 'u1', theme: 'DARK', language: 'fr', refreshMode: 'NORMAL' } ) )
+        updateLanguagePreference = vi.fn( () => of( { userId: 'u1', theme: 'LIGHT', language: 'en', refreshMode: 'NORMAL' } ) )
+        updateRefreshModePreference = vi.fn( () => of( { userId: 'u1', theme: 'LIGHT', language: 'fr', refreshMode: 'FAST' } ) )
         findProjectById = vi.fn( () => of( { id: 'p1' } as ProjectModel ) )
         deleteCurrentUser = vi.fn( () => of( undefined ) )
         exportCurrentUser = vi.fn( () => of( { subjectType: 'USER' } ) )
@@ -84,6 +89,8 @@ describe( 'SessionFacade', () => {
         stopLanguageChange = vi.fn()
         setGlobalError = vi.fn()
         updateTheme = vi.fn()
+        updateRefreshMode = vi.fn()
+        refreshMode = signal( RefreshModeEnum.NORMAL )
         notify = vi.fn()
         resetAll = vi.fn()
         redirect = vi.fn()
@@ -93,7 +100,7 @@ describe( 'SessionFacade', () => {
     function provideApis (): Provider[] {
         return [
             { provide: SecurityApi, useValue: { getLoginUri, getLogoutUri, fetchToken, fetchCurrentUser, refreshToken } },
-            { provide: PreferencesApi, useValue: { updateTheme: updateThemePreference, updateLanguage: updateLanguagePreference } },
+            { provide: PreferencesApi, useValue: { updateTheme: updateThemePreference, updateLanguage: updateLanguagePreference, updateRefreshMode: updateRefreshModePreference } },
             { provide: ProjectApi, useValue: { findProjectById: findProjectById } },
             { provide: UserApi, useValue: { deleteCurrentUser, exportCurrentUser } },
         ]
@@ -102,7 +109,7 @@ describe( 'SessionFacade', () => {
     function provideCollaborators (): Provider[] {
         return [
             { provide: ErrorReporter, useValue: { setGlobalError, notify: vi.fn() } },
-            { provide: UiFacade, useValue: { theme, setGlobalError, updateTheme, notify, startLanguageChange, stopLanguageChange } },
+            { provide: UiFacade, useValue: { theme, refreshMode, updateRefreshMode, setGlobalError, updateTheme, notify, startLanguageChange, stopLanguageChange } },
             { provide: BrowserService, useValue: { pathname: '/current', origin: 'http://app.test', redirect, reload, downloadJson } },
             { provide: Router, useValue: { navigateByUrl } },
             { provide: LanguageService, useValue: { activeLanguage: 'fr', apply: applyLanguage, remember: rememberLanguage } },
@@ -263,7 +270,7 @@ describe( 'SessionFacade', () => {
             expect( navigateByUrl ).toHaveBeenCalledWith( '/projects/42' )
         } )
 
-        it( 'falls back to the projects page instead of looping on the callback route', () => {
+        it( 'falls back to the home page instead of looping on the callback route', () => {
             // Arrange
             sessionStorage.setItem( REDIRECT_URI, '/auth/callback' )
 
@@ -271,7 +278,7 @@ describe( 'SessionFacade', () => {
             facade.fetchToken( 'code' )
 
             // Assert
-            expect( navigateByUrl ).toHaveBeenCalledWith( 'projects' )
+            expect( navigateByUrl ).toHaveBeenCalledWith( '/' )
         } )
 
         it( 'shows the global error when the token exchange fails', () => {
@@ -612,6 +619,81 @@ describe( 'SessionFacade', () => {
 
             // Assert
             expect( emitted ).toEqual( [ 'u1' ] )
+        } )
+    } )
+    describe( 'updateCurrentUserRefreshMode', () => {
+        it( 'ignores the mode already applied', () => {
+            // Arrange
+            refreshMode.set( RefreshModeEnum.FAST )
+
+            // Act
+            facade.updateCurrentUserRefreshMode( RefreshModeEnum.FAST )
+
+            // Assert
+            expect( updateRefreshModePreference ).not.toHaveBeenCalled()
+            expect( updateRefreshMode ).not.toHaveBeenCalled()
+        } )
+
+        it( 'applies the mode immediately and saves it on the user', () => {
+            // Arrange
+            session.setCurrentUser( USER )
+
+            // Act
+            facade.updateCurrentUserRefreshMode( RefreshModeEnum.FAST )
+
+            // Assert
+            expect( updateRefreshMode ).toHaveBeenCalledWith( RefreshModeEnum.FAST )
+            expect( updateRefreshModePreference ).toHaveBeenCalledWith( RefreshModeEnum.FAST )
+            expect( session.currentUser()?.preferences.refreshMode ).toBe( 'FAST' )
+        } )
+
+        it( 'keeps the mode applied when saving fails', () => {
+            // Arrange
+            updateRefreshModePreference.mockReturnValue( failing( FAILURE ) )
+
+            // Act
+            facade.updateCurrentUserRefreshMode( RefreshModeEnum.ECO )
+
+            // Assert
+            expect( updateRefreshMode ).toHaveBeenCalledWith( RefreshModeEnum.ECO )
+        } )
+    } )
+
+    describe( 'refreshCurrentProject', () => {
+        it( 'reloads the selected project silently', () => {
+            // Arrange
+            session.setCurrentProject( 'p1', { id: 'old' } as ProjectModel )
+
+            // Act
+            facade.refreshCurrentProject()
+
+            // Assert
+            expect( findProjectById ).toHaveBeenCalledWith( 'p1' )
+            expect( session.currentProject.project() ).toEqual( { id: 'p1' } )
+        } )
+
+        it( 'does nothing without a selected project', () => {
+            // Arrange
+            session.setCurrentProject( undefined, undefined )
+
+            // Act
+            facade.refreshCurrentProject()
+
+            // Assert
+            expect( findProjectById ).not.toHaveBeenCalled()
+        } )
+
+        it( 'keeps the project shown when the reload fails', () => {
+            // Arrange
+            session.setCurrentProject( 'p1', { id: 'old' } as ProjectModel )
+            findProjectById.mockReturnValue( failing( FAILURE ) )
+
+            // Act
+            facade.refreshCurrentProject()
+
+            // Assert
+            expect( session.currentProject.project() ).toEqual( { id: 'old' } )
+            expect( setGlobalError ).not.toHaveBeenCalled()
         } )
     } )
 } )

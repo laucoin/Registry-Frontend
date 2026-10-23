@@ -16,7 +16,6 @@ import {
 } from '@pages/projects/[projectId]/configuration/groups/group-member-list/add-members.form'
 import { PageEventModel } from '@shared/models/model/page-event.model'
 import { GroupFacade } from '@pages/projects/[projectId]/configuration/groups/data/state/group.facade'
-import { Button } from 'primeng/button'
 import { ParticipantRowComponent } from '@pages/projects/[projectId]/configuration/participants/participant-row/participant-row.component'
 import { ListComponent } from '@shared/ui/common/list/list.component'
 import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
@@ -24,6 +23,7 @@ import { BooleanChoicePipe } from '@shared/helpers/pipe/boolean-choice.pipe'
 import { StringHelper } from '@shared/helpers/string.helper'
 import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum'
 import '@sgdf/ui/button'
+import '@sgdf/ui/drawer'
 import '@sgdf/ui/icon'
 import '@sgdf/ui/input'
 import '@sgdf/ui/option'
@@ -33,12 +33,13 @@ import '@sgdf/ui/skeleton'
 import { ProjectEyebrowDirective } from '@shared/directives/project-eyebrow.directive'
 import { RegistryTemplateDirective } from '@shared/directives/registry-template.directive'
 import {TranslocoPipe} from '@jsverse/transloco'
-import { LayerComponent } from '@shared/ui/common/layer/layer.component'
-import { RegistryRequiredDirective } from '@shared/directives/registry-required.directive'
 import {
     SelectElementsFieldComponent,
 } from '@shared/ui/common/select-elements-field/select-elements-field.component'
 import { Observable, Subscription, switchMap, tap } from 'rxjs'
+import { UiFacade } from '@core/registry/state/ui.facade'
+import { EventHelper } from '@shared/helpers/event.helper'
+import { FormActionsComponent } from '@shared/ui/common/form-actions/form-actions.component'
 import { FieldErrorComponent } from '@shared/ui/common/field-error/field-error.component'
 import { ParticipantHelper } from '@shared/helpers/participant.helper'
 import { ParticipantFacade } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.facade'
@@ -60,13 +61,11 @@ import { ParticipantFormComponent } from '@pages/projects/[projectId]/configurat
         SgdfFieldDirective,
         BooleanChoicePipe,
         NgTemplateOutlet,
-        Button,
         FormField,
         TranslocoPipe,
-        LayerComponent,
-        RegistryRequiredDirective,
         SelectElementsFieldComponent,
         FieldErrorComponent,
+        FormActionsComponent,
         PluralTranslationPipe,
         ParticipantFormComponent,
     ],
@@ -78,6 +77,7 @@ export class GroupMemberListPage implements OnDestroy {
     protected readonly participantFacade: ParticipantFacade = inject( ParticipantFacade )
     private readonly route: ActivatedRoute = inject( ActivatedRoute )
     private readonly sessionFacade: SessionFacade = inject( SessionFacade )
+    protected readonly uiFacade: UiFacade = inject( UiFacade )
 
     protected readonly ParticipantHelper: typeof ParticipantHelper = ParticipantHelper
 
@@ -142,6 +142,10 @@ export class GroupMemberListPage implements OnDestroy {
                 reload()
             } ),
         ).subscribe() )
+    }
+
+    protected closeLayer (event: Event, opened: WritableSignal<boolean>): void {
+        if (EventHelper.isFromHost( event )) opened.set( false )
     }
 
     protected initAddMembersForm (): void {

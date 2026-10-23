@@ -4,10 +4,7 @@ import { TranslocoService } from '@jsverse/transloco'
 import { Mock, beforeEach, describe, expect, it, vi } from 'vitest'
 import { BrowserService } from '@core/browser/browser.service'
 import { UiFacade } from '@core/registry/state/ui.facade'
-import { MovementContentFieldComponent } from '@pages/projects/[projectId]/movements/movement-form/movement-content-field/movement-content-field.component'
 import { autoMock } from '@shared/helpers/testing/auto-mock'
-import { DateTimeFieldComponent } from '@shared/ui/common/date-time-field/date-time-field.component'
-import { DurationFieldComponent } from '@shared/ui/common/duration-field/duration-field.component'
 import { NumberRangeFieldComponent } from '@shared/ui/common/number-range-field/number-range-field.component'
 import { SelectElementsFieldComponent } from '@shared/ui/common/select-elements-field/select-elements-field.component'
 
@@ -46,11 +43,7 @@ describe( 'value fields', () => {
     } )
 
     describe.each( [
-        [ 'duration', DurationFieldComponent, {} ],
         [ 'number range', NumberRangeFieldComponent, {} ],
-        [ 'date time', DateTimeFieldComponent, {} ],
-        [ 'select elements', SelectElementsFieldComponent, { selectItemBuilder: (): object => ({}) } ],
-        [ 'movement content', MovementContentFieldComponent, { suggestions: [], selectionLabel: '', interpretedMovementType: [] } ],
     ] as [ string, Type<unknown>, Record<string, unknown> ][] )( '%s field', (_name: string, type: Type<unknown>, inputs: Record<string, unknown>) => {
         it.each( [
             [ 'invalid and touched', { invalid: true, touched: true, dirty: false }, true ],
@@ -77,32 +70,6 @@ describe( 'value fields', () => {
 
             // Assert
             expect( (field as unknown as { disabled: () => boolean }).disabled() ).toBe( true )
-        } )
-    } )
-
-    describe( 'duration field', () => {
-        it( 'publishes the chosen duration and marks the field as touched', () => {
-            // Arrange
-            const { field, touched }: Handle<DurationFieldComponent> = create( DurationFieldComponent )
-
-            // Act
-            ;(field as never as { onInputChange: (value: object) => void }).onInputChange( { hours: 1, minutes: 30 } )
-
-            // Assert
-            expect( field.value() ).toEqual( { hours: 1, minutes: 30 } )
-            expect( touched ).toHaveBeenCalledTimes( 1 )
-        } )
-
-        it( 'offers an empty choice then every quarter of an hour from 00h15 to 23h45', () => {
-            // Arrange
-            const { field }: Handle<DurationFieldComponent> = create( DurationFieldComponent )
-
-            // Act
-            const durations: { value: unknown }[] = (field as never as { durations: { value: unknown }[] }).durations
-
-            // Assert
-            expect( durations ).toHaveLength( 1 + 24 * 4 - 1 )
-            expect( durations[ 0 ].value ).toBeNull()
         } )
     } )
 
@@ -158,58 +125,6 @@ describe( 'value fields', () => {
         } )
     } )
 
-    describe( 'date time field', () => {
-        it( 'splits the value into a date and a time', () => {
-            // Arrange
-            const { field }: Handle<DateTimeFieldComponent> = create( DateTimeFieldComponent )
-
-            // Act
-            field.value.set( { date: '2026-03-04', time: '10:30:00.000Z' } )
-
-            // Assert
-            expect( field[ 'date' ]()?.toISOString() ).toBe( '2026-03-04T00:00:00.000Z' )
-            expect( field[ 'time' ]()?.getUTCHours() ).toBe( 10 )
-        } )
-
-        it( 'keeps the time when the date changes', () => {
-            // Arrange
-            const { field, touched }: Handle<DateTimeFieldComponent> = create( DateTimeFieldComponent )
-            field.value.set( { date: '2026-03-04', time: '10:30:00.000Z' } )
-
-            // Act
-            field[ 'onDateChange' ]( new Date( 2026, 4, 6 ) )
-
-            // Assert
-            expect( field.value() ).toEqual( { date: '2026-05-06', time: '10:30:00.000Z' } )
-            expect( touched ).toHaveBeenCalledTimes( 1 )
-        } )
-
-        it( 'keeps the date when the time changes', () => {
-            // Arrange
-            const { field }: Handle<DateTimeFieldComponent> = create( DateTimeFieldComponent )
-            field.value.set( { date: '2026-03-04', time: undefined } )
-
-            // Act
-            field[ 'onTimeChange' ]( new Date( Date.UTC( 2026, 0, 1, 8, 15, 0 ) ) )
-
-            // Assert
-            expect( field.value() ).toEqual( { date: '2026-03-04', time: '08:15:00.000Z' } )
-        } )
-
-        it( 'has no value when both parts are cleared', () => {
-            // Arrange
-            const { field }: Handle<DateTimeFieldComponent> = create( DateTimeFieldComponent )
-            field.value.set( { date: '2026-03-04', time: undefined } )
-
-            // Act
-            field[ 'onDateChange' ]( null )
-
-            // Assert
-            expect( field.value() ).toBeNull()
-            expect( field[ 'date' ]() ).toBeUndefined()
-        } )
-    } )
-
     describe( 'select elements field', () => {
         function select (): Handle<SelectElementsFieldComponent<Element>> {
             return create( SelectElementsFieldComponent<Element>, {
@@ -217,21 +132,35 @@ describe( 'value fields', () => {
             } )
         }
 
-        function pick (id: string): never {
-            return { value: { value: { id } } } as never
-        }
-
-        it( 'appends to the selection', () => {
+                it( 'appends to the selection', () => {
             // Arrange
-            const { field, touched }: Handle<SelectElementsFieldComponent<Element>> = select()
+            const { fixture, field, touched }: Handle<SelectElementsFieldComponent<Element>> = select()
+            fixture.componentRef.setInput( 'suggestions', [ { label: 'b', value: { id: 'b' } } ] )
             field.value.set( [ { id: 'a' } ] )
+            const target: { value: string } = { value: 'b' }
 
             // Act
-            field[ 'handleElementSelection' ]( pick( 'b' ) )
+            field[ 'handleChoice' ]( { target } as unknown as Event )
 
             // Assert
             expect( field.value() ).toEqual( [ { id: 'a' }, { id: 'b' } ] )
+            expect( target.value ).toBe( '' )
             expect( touched ).toHaveBeenCalledTimes( 1 )
+        } )
+
+        it( 'empties the select and adds nothing when the chosen id is not among the suggestions', () => {
+            // Arrange
+            const { fixture, field, touched }: Handle<SelectElementsFieldComponent<Element>> = select()
+            fixture.componentRef.setInput( 'suggestions', [ { label: 'b', value: { id: 'b' } } ] )
+            const target: { value: string } = { value: 'unknown' }
+
+            // Act
+            field[ 'handleChoice' ]( { target } as unknown as Event )
+
+            // Assert
+            expect( target.value ).toBe( '' )
+            expect( field.value() ).toEqual( [] )
+            expect( touched ).not.toHaveBeenCalled()
         } )
 
         it( 'highlights an element already selected instead of adding it twice', () => {
@@ -240,10 +169,10 @@ describe( 'value fields', () => {
             field.value.set( [ { id: 'a' } ] )
 
             // Act
-            field[ 'handleElementSelection' ]( pick( 'a' ) )
+            field[ 'handleElementSelection' ]( { id: 'a' } )
 
             // Assert
-            expect( highlight ).toHaveBeenCalledWith( 'a' )
+            expect( highlight ).toHaveBeenCalledWith( 'a', expect.anything() )
             expect( field.value() ).toEqual( [ { id: 'a' } ] )
             expect( touched ).not.toHaveBeenCalled()
         } )
@@ -259,57 +188,96 @@ describe( 'value fields', () => {
             // Assert
             expect( field.value() ).toEqual( [ { id: 'b' } ] )
         } )
-    } )
 
-    describe( 'movement content field', () => {
-        const ADA: object = { id: 'pa1', firstName: 'Ada' }
-        const GRACE: object = { id: 'pa2', firstName: 'Grace' }
-
-        function content (): Handle<MovementContentFieldComponent> {
-            return create( MovementContentFieldComponent, { suggestions: [], selectionLabel: '', interpretedMovementType: [] } )
-        }
-
-        it( 'adds a participant without pool', () => {
+        it( 'announces what was added, a duplicate and what was removed', () => {
             // Arrange
-            const { field, touched }: Handle<MovementContentFieldComponent> = content()
+            const { field }: Handle<SelectElementsFieldComponent<Element>> = select()
+            const announced: string[] = []
 
             // Act
-            field[ 'handleElementSelection' ]( { label: 'ada', value: ADA } as never )
+            field[ 'handleElementSelection' ]( { id: 'a' } )
+            announced.push( field[ 'announcement' ]() )
+            field[ 'handleElementSelection' ]( { id: 'a' } )
+            announced.push( field[ 'announcement' ]() )
+            field[ 'handleElementRemoving' ]( 'a' )
+            announced.push( field[ 'announcement' ]() )
 
             // Assert
-            expect( field.value() ).toEqual( [ { poolName: undefined, participant: ADA, vehicle: undefined } ] )
+            expect( announced ).toEqual( [ 'global.selection.added', 'global.selection.duplicate', 'global.selection.removed' ] )
+        } )
+
+        it( 'expands a chosen suggestion into several grouped elements and skips the duplicates', () => {
+            // Arrange
+            const { fixture, field, touched }: Handle<SelectElementsFieldComponent<Element>> = select()
+            fixture.componentRef.setInput( 'expand', (): Element[] => [ { id: 'a' }, { id: 'b' } ] )
+            field.value.set( [ { id: 'a' } ] )
+
+            // Act
+            field[ 'handleElementSelection' ]( { id: 'group' } )
+
+            // Assert
+            expect( field.value() ).toEqual( [ { id: 'a' }, { id: 'b' } ] )
+            expect( highlight ).toHaveBeenCalledWith( 'a', expect.anything() )
             expect( touched ).toHaveBeenCalledTimes( 1 )
         } )
 
-        it( 'adds every member of a group under the pool of the group and highlights the duplicates', () => {
+        it( 'announces a duplicate when every expanded element is already selected', () => {
             // Arrange
-            const { field }: Handle<MovementContentFieldComponent> = content()
-            field.value.set( [ { poolName: undefined, participant: ADA, vehicle: undefined } as never ] )
+            const { fixture, field, touched }: Handle<SelectElementsFieldComponent<Element>> = select()
+            fixture.componentRef.setInput( 'expand', (): Element[] => [ { id: 'a' } ] )
+            field.value.set( [ { id: 'a' } ] )
 
             // Act
-            field[ 'handleElementSelection' ]( { label: 'wolves', value: { name: 'Wolves', members: [ ADA, GRACE ] } } as never )
+            field[ 'handleElementSelection' ]( { id: 'group' } )
 
             // Assert
-            expect( field.value().map( (item: { participant: { id: string }, poolName: string | undefined }): string => `${item.poolName}:${item.participant.id}` ) )
-                .toEqual( [ 'undefined:pa1', 'Wolves:pa2' ] )
-            expect( highlight ).toHaveBeenCalledWith( 'pa1' )
+            expect( field[ 'announcement' ]() ).toBe( 'global.selection.duplicate' )
+            expect( touched ).not.toHaveBeenCalled()
         } )
 
-        it( 'removes a participant, or a whole pool', () => {
+        it( 'adds nothing when a suggestion expands to no element', () => {
             // Arrange
-            const { field }: Handle<MovementContentFieldComponent> = content()
-            field.value.set( [
-                { poolName: 'Wolves', participant: ADA, vehicle: undefined } as never,
-                { poolName: 'Wolves', participant: GRACE, vehicle: undefined } as never,
-                { poolName: undefined, participant: { id: 'pa3' }, vehicle: undefined } as never,
-            ] )
+            const { fixture, field, touched }: Handle<SelectElementsFieldComponent<Element>> = select()
+            fixture.componentRef.setInput( 'expand', (): Element[] => [] )
 
             // Act
-            field[ 'handleParticipantRemoving' ]( 'pa3' )
-            field[ 'handleGroupRemoving' ]( 'Wolves' )
+            field[ 'handleElementSelection' ]( { id: 'group' } )
 
             // Assert
             expect( field.value() ).toEqual( [] )
+            expect( field[ 'announcement' ]() ).toBe( '' )
+            expect( touched ).not.toHaveBeenCalled()
+        } )
+
+        it( 'separates the grouped elements and removes a whole group', () => {
+            // Arrange
+            const { fixture, field }: Handle<SelectElementsFieldComponent<Element>> = select()
+            fixture.componentRef.setInput( 'groupOf', (element: Element): string | undefined => element.id.startsWith( 'g' ) ? 'team' : undefined )
+            field.value.set( [ { id: 'a' }, { id: 'g1' }, { id: 'g2' } ] )
+
+            // Act
+            const before: unknown = [ field[ 'ungrouped' ](), field[ 'groups' ]() ]
+            field[ 'handleGroupRemoving' ]( 'team' )
+
+            // Assert
+            expect( before ).toEqual( [ [ { id: 'a' } ], [ { name: 'team', elements: [ { id: 'g1' }, { id: 'g2' } ] } ] ] )
+            expect( field.value() ).toEqual( [ { id: 'a' } ] )
+            expect( field[ 'announcement' ]() ).toBe( 'global.selection.removed' )
+        } )
+
+        it( 'gives the focus back to the search field after a removal', () => {
+            // Arrange
+            const { fixture, field }: Handle<SelectElementsFieldComponent<Element>> = select()
+            const search: HTMLElement = document.createElement( 'sgdf-select' )
+            const focus: Mock<() => void> = vi.spyOn( search, 'focus' ).mockImplementation( () => undefined )
+            fixture.nativeElement.appendChild( search )
+            field.value.set( [ { id: 'a' } ] )
+
+            // Act
+            field[ 'handleElementRemoving' ]( 'a' )
+
+            // Assert
+            expect( focus ).toHaveBeenCalledTimes( 1 )
         } )
     } )
 } )

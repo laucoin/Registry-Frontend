@@ -16,12 +16,12 @@ describe( 'RouteHelper', () => {
 
     it( 'keeps the nested segments of a composed route', () => {
         // Arrange
-        const route: RegistryRouteEnum = RegistryRouteEnum.MY_ACCOUNT_PROJECTS
+        const route: RegistryRouteEnum = RegistryRouteEnum.MY_ACCOUNT_INVITATIONS
 
         // Act
         const url: string = RouteHelper.absolute( route )
 
         // Assert
-        expect( url ).toBe( `/${RegistryRouteEnum.MY_ACCOUNT_PROJECTS}` )
+        expect( url ).toBe( `/${RegistryRouteEnum.MY_ACCOUNT_INVITATIONS}` )
     } )
 } )

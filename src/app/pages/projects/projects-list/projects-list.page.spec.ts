@@ -9,6 +9,7 @@ import { ProjectsListSearchModel } from '@pages/projects/projects-list/projects-
 import { autoMock } from '@shared/helpers/testing/auto-mock'
 import { AvailabilityStatusEnum } from '@shared/models/enumeration/availability-status.enum'
 import { ProjectModel } from '@shared/models/model/project.model'
+import { REFRESH_SERVICE_STUB } from '@shared/helpers/testing/refresh-service.stub';
 
 interface ProjectsListApi {
     model: WritableSignal<ProjectsListSearchModel>
@@ -34,9 +35,12 @@ describe('ProjectsListPage', () => {
         facade['projectsPageQueryParam'].mockReturnValue(undefined)
         facade['projectsPageAtParam'].mockReturnValue(undefined)
         facade['projectsPageIsVisibleParam'].mockReturnValue(undefined)
+        facade['projectsPageIsFavoriteParam'].mockReturnValue(undefined)
+        facade['projectsPageWithProfileParam'].mockReturnValue(undefined)
         authorities = signal(['REGISTRY_PROJECT_C', 'REGISTRY_PROJECT_R'])
         TestBed.configureTestingModule({
             providers: [
+                REFRESH_SERVICE_STUB,
                 { provide: ProjectFacade, useValue: facade },
                 { provide: ProjectActions, useValue: {} },
                 { provide: SessionFacade, useValue: { currentUser: (): unknown => ({ authorities: authorities() }) } },
@@ -67,34 +71,46 @@ describe('ProjectsListPage', () => {
         const model: ProjectsListSearchModel = page.model()
 
         // Assert
-        expect(model).toEqual({ q: '', at: null, isVisible: '' })
+        expect(model).toEqual({ q: '', at: null, isVisible: '', isFavorite: '', withProfile: '' })
     })
 
     it('sends the typed filters to the facade and restarts from the first batch', () => {
         // Arrange
         const page: ProjectsListApi = create()
         const when: Date = new Date(2026, 9, 3)
-        page.model.set({ q: 'camp', at: when, isVisible: 'false' })
+        page.model.set({ q: 'camp', at: when, isVisible: 'false', isFavorite: 'true', withProfile: '' })
 
         // Act
         page.search()
 
         // Assert
-        expect(facade['inputPageSearchParameters']).toHaveBeenCalledWith('camp', when, false)
+        expect(facade['inputPageSearchParameters']).toHaveBeenCalledWith('camp', when, false, true, undefined)
         expect(facade['fetchProjectsPage']).toHaveBeenLastCalledWith(0, undefined)
     })
 
     it('clears the filters when they are reset, then searches again', () => {
         // Arrange
         const page: ProjectsListApi = create()
-        page.model.set({ q: 'camp', at: new Date(), isVisible: 'true' })
+        page.model.set({ q: 'camp', at: new Date(), isVisible: 'true', isFavorite: 'false', withProfile: '' })
 
         // Act
         page.resetFilters()
 
         // Assert
-        expect(page.model()).toEqual({ q: '', at: null, isVisible: '' })
-        expect(facade['inputPageSearchParameters']).toHaveBeenCalledWith(undefined, undefined, undefined)
+        expect(page.model()).toEqual({ q: '', at: null, isVisible: '', isFavorite: '', withProfile: '' })
+        expect(facade['inputPageSearchParameters']).toHaveBeenCalledWith(undefined, undefined, undefined, undefined, undefined)
+    })
+
+    it('toggles the favorite of a project through the facade', () => {
+        // Arrange
+        const page: ProjectsListApi = create()
+        const project: ProjectModel = { id: 'p1', favorite: false } as ProjectModel
+
+        // Act
+        ;(page as unknown as { toggleFavorite: (project: ProjectModel) => void }).toggleFavorite(project)
+
+        // Assert
+        expect(facade['toggleFavorite']).toHaveBeenCalledWith(project)
     })
 
     it('asks the facade for the requested batch without touching the search parameters', () => {
@@ -120,6 +136,31 @@ describe('ProjectsListPage', () => {
 
         // Assert
         expect(count).toBe(2)
+    })
+
+    it('sends the profile filter when the user has the global read authority', () => {
+        // Arrange
+        const page: ProjectsListApi = create()
+        page.model.set({ q: '', at: null, isVisible: '', isFavorite: '', withProfile: 'true' })
+
+        // Act
+        page.search()
+
+        // Assert
+        expect(facade['inputPageSearchParameters']).toHaveBeenCalledWith(undefined, undefined, undefined, undefined, true)
+    })
+
+    it('never sends the profile filter without the global read authority', () => {
+        // Arrange
+        const page: ProjectsListApi = create()
+        authorities.set(['REGISTRY_PROJECT_C'])
+        page.model.set({ q: '', at: null, isVisible: '', isFavorite: '', withProfile: 'true' })
+
+        // Act
+        page.search()
+
+        // Assert
+        expect(facade['inputPageSearchParameters']).toHaveBeenCalledWith(undefined, undefined, undefined, undefined, undefined)
     })
 
     it('reads the creation right from the session', () => {

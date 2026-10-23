@@ -16,12 +16,12 @@ export const projectProfileRoutes: Routes = [
         children: [
             {
                 path: '', component: ProjectProfilesListPage,
+                children: [
+                    { path: ProjectProfileRoutesEnum.EDIT, component: ProjectProfileEditionFormPage },
+                ],
             },
             {
                 path: ProjectProfileRoutesEnum.INVITE, component: ProjectProfileInvitationFormPage,
-            },
-            {
-                path: ProjectProfileRoutesEnum.EDIT, component: ProjectProfileEditionFormPage,
             },
         ],
     },

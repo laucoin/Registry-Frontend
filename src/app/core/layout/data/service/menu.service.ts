@@ -44,7 +44,7 @@ export class MenuService {
 	public readonly activeMenuUrl: Signal<string | undefined> = computed((): string | undefined =>
 		this.flatten([...this.appMenus(), ...this.projectMenus()])
 			.map((menu: MenuItemModel): string | undefined => menu.url)
-			.filter((url: string | undefined): url is string => !!url && this.isPrefixOfCurrentPath(url))
+			.filter((url: string | undefined): url is string => url !== undefined && this.isPrefixOfCurrentPath(url))
 			.sort((first: string, second: string): number => second.length - first.length)[0],
 	)
 
@@ -59,8 +59,13 @@ export class MenuService {
 	}
 
 	private resolve(menu: MenuItemModel): MenuItemModel {
+		const fallback: MenuItemModel['fallbackLabel'] = menu.fallbackLabel
+		const useFallback: boolean = !!fallback
+			&& !CurrentUserHelper.hasUserAuthority(this.session.currentUser(), fallback.unlessAuthority)
+
 		return {
 			...menu,
+			label: useFallback ? fallback!.label : menu.label,
 			url: menu.url?.replace(':projectId', this.session.currentProjectId() ?? ''),
 			items: menu.items && this.filterMenus(menu.items),
 		}
@@ -71,7 +76,8 @@ export class MenuService {
 	}
 
 	private isPrefixOfCurrentPath(url: string): boolean {
-		return this.currentPath() === url || this.currentPath().startsWith(`${url}/`)
+		const path: string = url.replace(/^\//, '')
+		return this.currentPath() === path || (path !== '' && this.currentPath().startsWith(`${path}/`))
 	}
 
 	private pathOf(url: string): string {

@@ -147,10 +147,10 @@ export class DateHelper {
         return new Date( `${date}T00:00:00Z` )
     }
 
-    public static fromIsoTime (time: string | undefined): Date | undefined {
+    public static fromIsoTime (time: string | undefined, date?: string): Date | undefined {
         if (!time) return undefined
 
-        const formattedValue: Date = new Date()
+        const formattedValue: Date = date ? DateHelper.fromIsoDate( date )! : new Date()
         const [ hours, minutes, secondsWithMs ]: string[] = time.split( ':' )
         const [ seconds, milliseconds ]: string[] = (secondsWithMs ?? '0').split( '.' )
 
@@ -182,7 +182,7 @@ export class DateHelper {
             if (mode == 'min') formattedValue.setHours( 0, 0, 0, 0 )
             else formattedValue.setHours( 23, 59, 59, 999 )
         } else {
-            const time: Date = DateHelper.fromIsoTime( dateTime?.time )!
+            const time: Date = DateHelper.fromIsoTime( dateTime?.time, dateTime?.date )!
             formattedValue.setHours( time.getHours(), time.getMinutes(), time.getSeconds(), time.getMilliseconds() )
         }
 

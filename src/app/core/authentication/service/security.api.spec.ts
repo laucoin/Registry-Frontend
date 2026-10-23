@@ -3,7 +3,7 @@ import { ApiCase, describeApi, expectMapped } from '@shared/helpers/testing/api-
 import { USER_DTO } from '@shared/helpers/testing/response-fixtures'
 
 const BASE: string = '/api/v2/authentication'
-const CURRENT_USER: object = { ...USER_DTO, authorities: [ 'REGISTRY_USER_R' ], preferences: { userId: 'u1', theme: 'DARK', language: 'fr' } }
+const CURRENT_USER: object = { ...USER_DTO, authorities: [ 'REGISTRY_USER_R' ], preferences: { userId: 'u1', theme: 'DARK', language: 'fr', refreshMode: 'NORMAL' } }
 
 const CASES: ApiCase<SecurityApi>[] = [
     { name: 'asks for the login uri with the redirect uri', method: 'GET', url: `${BASE}/login/uri?redirectUri=http://app.test/auth/callback`,

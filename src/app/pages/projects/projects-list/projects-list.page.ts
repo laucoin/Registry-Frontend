@@ -1,3 +1,4 @@
+import { FavoriteToggleComponent } from '@shared/ui/common/favorite-toggle/favorite-toggle.component'
 import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, signal, Signal, WritableSignal } from '@angular/core'
 import { FieldTree, FormField } from '@angular/forms/signals'
 import { RouterLink } from '@angular/router'
@@ -35,6 +36,7 @@ import { ProjectModel } from '@shared/models/model/project.model'
 import { ElementActionsComponent } from '@shared/ui/common/element-actions/element-actions.component'
 import { InfoComponent } from '@shared/ui/common/info/info.component'
 import { ListComponent } from '@shared/ui/common/list/list.component'
+import { injectAutoRefresh } from '@shared/helpers/refresh/inject-auto-refresh'
 
 const INITIALS_LENGTH: number = 2
 
@@ -57,6 +59,7 @@ const INITIALS_LENGTH: number = 2
         CustomDateFormatPipe,
         PluralTranslationPipe,
         BooleanChoicePipe,
+        FavoriteToggleComponent,
     ],
     providers: [ProjectActions],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -67,6 +70,7 @@ export class ProjectsListPage {
     protected readonly facade: ProjectFacade = inject(ProjectFacade)
     protected readonly projectActions: ProjectActions = inject(ProjectActions)
     private readonly sessionFacade: SessionFacade = inject(SessionFacade)
+    private readonly autoRefresh: void = injectAutoRefresh('projects/list', 'counts', (): void => this.facade.refreshProjectsPage())
 
     protected readonly createRoute: typeof ProjectRoutesEnum.CREATE = ProjectRoutesEnum.CREATE
     protected readonly optionsProject: WritableSignal<ProjectModel | undefined> = signal(undefined)
@@ -74,16 +78,22 @@ export class ProjectsListPage {
 
     protected readonly canCreate: Signal<boolean> = this.canWith(UserAuthorityEnum.REGISTRY_PROJECT_C)
 
+    protected readonly canReadAll: Signal<boolean> = this.canWith(UserAuthorityEnum.REGISTRY_PROJECT_R)
+
     protected readonly activeFilters: Signal<number> = computed((): number => [
         StringHelper.isNotNullNorBlank(this.facade.projectsPageQueryParam()),
         this.facade.projectsPageAtParam() !== undefined,
         this.facade.projectsPageIsVisibleParam() !== undefined,
+        this.facade.projectsPageIsFavoriteParam() !== undefined,
+        this.canReadAll() && this.facade.projectsPageWithProfileParam() !== undefined,
     ].filter(Boolean).length)
 
     protected readonly model: WritableSignal<ProjectsListSearchModel> = signal(toProjectsListSearchModel({
         q: this.facade.projectsPageQueryParam(),
         at: this.facade.projectsPageAtParam(),
         isVisible: this.facade.projectsPageIsVisibleParam(),
+        isFavorite: this.facade.projectsPageIsFavoriteParam(),
+        withProfile: this.facade.projectsPageWithProfileParam(),
     }))
     protected readonly form: FieldTree<ProjectsListSearchModel> = createSearchForm(this.model)
 
@@ -97,6 +107,8 @@ export class ProjectsListPage {
             search.q,
             search.at,
             search.isVisible,
+            search.isFavorite,
+            this.canReadAll() ? search.withProfile : undefined,
         )
         this.facade.fetchProjectsPage(0, undefined)
     }
@@ -107,12 +119,18 @@ export class ProjectsListPage {
             q: '',
             at: null,
             isVisible: '',
+            isFavorite: '',
+            withProfile: '',
         }))
         this.search()
     }
 
     protected loadBatch(pageEvent: PageEventModel): void {
         this.facade.fetchProjectsPage(pageEvent.page, pageEvent.size)
+    }
+
+    protected toggleFavorite(project: ProjectModel): void {
+        this.facade.toggleFavorite(project)
     }
 
     protected initials(project: ProjectModel): string {

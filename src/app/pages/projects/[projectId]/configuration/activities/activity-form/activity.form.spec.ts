@@ -14,7 +14,7 @@ import { CustomDatetimeModel } from '@shared/models/model/custom-datetime.model'
 
 const JUNE: CustomDatetimeModel = { date: '2026-06-01', time: '10:00:00' }
 const AUGUST: CustomDatetimeModel = { date: '2026-08-01', time: '10:00:00' }
-const VALID: ActivityFormModel = { name: 'Hike', description: '', duration: null, allowedParticipants: null, beginDateTime: null, endDateTime: null }
+const VALID: ActivityFormModel = { name: 'Hike', description: '', duration: '', allowedParticipants: null, beginDateTime: null, endDateTime: null }
 
 function kindsOf (field: { errors: () => readonly { kind: string }[] }): string[] {
     return field.errors().map( (error: { kind: string }): string => error.kind )
@@ -57,7 +57,7 @@ describe( 'activity form', () => {
 
     it( 'sends no duration when none is chosen', () => {
         // Arrange
-        const model: ActivityFormModel = { ...VALID, duration: null }
+        const model: ActivityFormModel = { ...VALID, duration: '' }
 
         // Act
         const dto: { duration: string | undefined } = toActivityDto( model )

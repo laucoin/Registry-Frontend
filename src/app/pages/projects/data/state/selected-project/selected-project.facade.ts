@@ -174,6 +174,42 @@ export class SelectedProjectFacade extends GenericFacade {
         this.store.fetchCurrentAlertsPage( { projectId: this.selectedProjectId(), page: page, size: size } )
     }
 
+    public refreshParticipantsStatus (): void {
+        this.store.refreshParticipantsStatus( this.selectedProjectId() )
+    }
+
+    public refreshVehiclesStatus (): void {
+        this.store.refreshVehiclesStatus( this.selectedProjectId() )
+    }
+
+    public refreshPlannedArrivals (): void {
+        this.store.refreshPlannedArrivals( this.selectedProjectId() )
+    }
+
+    public refreshPlannedDepartures (): void {
+        this.store.refreshPlannedDepartures( this.selectedProjectId() )
+    }
+
+    public refreshParticipantsBirthdays (): void {
+        this.store.refreshParticipantsBirthdays( this.selectedProjectId() )
+    }
+
+    public refreshOverdueParticipantsPage (): void {
+        this.store.refreshOverduePage( { projectId: this.selectedProjectId(), ...CumulativePageHelper.reloadRequest( this.overdueParticipantsPage() ) } )
+    }
+
+    public refreshCurrentAlertsPage (): void {
+        this.store.refreshCurrentAlertsPage( { projectId: this.selectedProjectId(), ...CumulativePageHelper.reloadRequest( this.currentAlertsPage() ) } )
+    }
+
+    public refreshCurrentMovementsPageWithoutActivity (): void {
+        this.store.refreshCurrentMovementsPageWithoutActivity( { projectId: this.selectedProjectId(), ...CumulativePageHelper.reloadRequest( this.currentMovementsPageWithoutActivity() ) } )
+    }
+
+    public refreshCurrentMovementsPageWithActivity (): void {
+        this.store.refreshCurrentMovementsPageWithActivity( { projectId: this.selectedProjectId(), ...CumulativePageHelper.reloadRequest( this.currentMovementsPageWithActivity() ) } )
+    }
+
     private get selectedProjectId (): Signal<string | undefined> {
         return this.sessionFacade.currentProjectId
     }

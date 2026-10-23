@@ -4,6 +4,7 @@ import { SelectedProjectFacade } from '@pages/projects/data/state/selected-proje
 import { NotificationModel } from '@shared/models/model/notification.model';
 import { PlannedMovementModel } from '@shared/models/model/planned-movement.model';
 import { PlannedMovementCardComponent } from '@shared/ui/domain/planned-movement-card/planned-movement-card.component';
+import { injectAutoRefresh } from '@shared/helpers/refresh/inject-auto-refresh';
 
 /**
  * Purpose: Lists the departures planned today on the project.
@@ -23,6 +24,8 @@ import { PlannedMovementCardComponent } from '@shared/ui/domain/planned-movement
 })
 export class ProjectUpcomingDepartureComponent implements OnInit {
 	private readonly facade: SelectedProjectFacade = inject(SelectedProjectFacade)
+
+	private readonly autoRefresh: void = injectAutoRefresh('project-home/departures', 'dayBound', (): void => this.facade.refreshPlannedDepartures())
 
 	protected readonly movements: Signal<PlannedMovementModel[] | undefined> = this.facade.plannedDepartures
 	protected readonly loading: Signal<boolean> = this.facade.plannedDeparturesLoading

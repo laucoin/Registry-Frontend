@@ -1,31 +1,18 @@
-import { Component, OnDestroy, signal, WritableSignal } from '@angular/core'
-import {CardModule} from 'primeng/card'
-import {DividerModule} from 'primeng/divider'
-import {InputTextModule} from 'primeng/inputtext'
-import {PaginatorModule} from 'primeng/paginator'
+import { Component, CUSTOM_ELEMENTS_SCHEMA, OnDestroy, signal, WritableSignal } from '@angular/core'
 import {TranslocoPipe} from '@jsverse/transloco'
-import { FieldTree, FormField } from '@angular/forms/signals'
+import '@sgdf/ui/card'
+import { FormActionsComponent } from '@shared/ui/common/form-actions/form-actions.component'
+import { FieldTree } from '@angular/forms/signals'
 import {
     createProjectProfileInvitationForm,
     ProjectProfileInvitationFormModel,
     toProjectProfileInvitationFormModel,
     toProjectProfilesDto,
 } from '@pages/projects/[projectId]/configuration/profiles/project-profile-form/project-profile.form'
-import {FieldErrorComponent} from '@shared/ui/common/field-error/field-error.component'
 import {FormComponent} from '@shared/ui/common/form/form.component'
 import {GenericProjectProfileFormComponent} from '@pages/projects/[projectId]/configuration/profiles/project-profile-form/generic-project-profile-form.component'
-import {RegistryRequiredDirective} from '@shared/directives/registry-required.directive'
-import {SelectModule} from 'primeng/select'
-import {Button} from 'primeng/button'
-import {TreeTableModule} from 'primeng/treetable'
-import {TableModule} from 'primeng/table'
-import {
-    SelectElementsFieldComponent,
-} from '@shared/ui/common/select-elements-field/select-elements-field.component'
 import {PluralTranslationPipe} from '@shared/helpers/pipe/plural-translation.pipe'
-import {DateFormatPipe} from '@shared/helpers/pipe/date-format.pipe'
-import {UserHelper} from '@shared/helpers/user.helper'
-import {DateTimeFieldComponent} from '@shared/ui/common/date-time-field/date-time-field.component'
+import {ProjectProfileInvitationFieldsComponent} from '@pages/projects/[projectId]/configuration/profiles/project-profile-form/project-profile-invitation-fields/project-profile-invitation-fields.component'
 
 /**
  * Purpose: Page with the form to create or edit a project profile invitation.
@@ -35,29 +22,16 @@ import {DateTimeFieldComponent} from '@shared/ui/common/date-time-field/date-tim
 @Component({
     selector: 'app-project-profile-invitation-form',
     imports: [
-        CardModule,
-        DividerModule,
-        InputTextModule,
-        PaginatorModule,
         TranslocoPipe,
-        FormField,
-        FieldErrorComponent,
         FormComponent,
-        RegistryRequiredDirective,
-        SelectModule,
-        Button,
-        TreeTableModule,
-        TableModule,
-        SelectElementsFieldComponent,
+        FormActionsComponent,
         PluralTranslationPipe,
-        DateFormatPipe,
-        DateTimeFieldComponent,
+        ProjectProfileInvitationFieldsComponent,
     ],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
     templateUrl: './project-profile-invitation-form.page.html',
 })
 export class ProjectProfileInvitationFormPage extends GenericProjectProfileFormComponent implements OnDestroy {
-    protected readonly UserHelper: typeof UserHelper = UserHelper
-
     protected readonly model: WritableSignal<ProjectProfileInvitationFormModel> = signal(toProjectProfileInvitationFormModel())
     protected readonly form: FieldTree<ProjectProfileInvitationFormModel> = createProjectProfileInvitationForm(this.model)
 
@@ -76,10 +50,6 @@ export class ProjectProfileInvitationFormPage extends GenericProjectProfileFormC
         if (this.saving()) return
 
         this.save(this.facade.createProjectProfiles(toProjectProfilesDto(this.model())))
-    }
-
-    protected handleSearch(searched: string | undefined): void {
-        this.facade.searchUsers(searched)
     }
 
     public ngOnDestroy(): void {

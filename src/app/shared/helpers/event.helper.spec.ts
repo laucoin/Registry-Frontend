@@ -24,4 +24,15 @@ describe( 'EventHelper', () => {
         // Assert
         expect( fromHost ).toBe( false )
     } )
+
+    it( 'reads the value of the element that raised the event', () => {
+        // Arrange
+        const event: Event = Object.defineProperty( new Event( 'sgdf-change' ), 'target', { value: { value: 'abc' } } )
+
+        // Act
+        const value: string = EventHelper.valueOf( event )
+
+        // Assert
+        expect( value ).toBe( 'abc' )
+    } )
 } )

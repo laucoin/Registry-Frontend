@@ -190,4 +190,20 @@ describe( 'MovementElementComponent', () => {
         // Assert
         expect( count ).toBe( 0 )
     } )
+
+    it.each( [
+        [ 'REGISTERED', 'createRegisteredMovement', 'createGuestMovement' ],
+        [ 'GUEST', 'createGuestMovement', 'createRegisteredMovement' ],
+    ] )( 'reverses a %s movement through %s', (contentType: string, used: string, unused: string) => {
+        // Arrange
+        const component: MovementElementComponent = create( { ...ELEMENT, contentType, type: { value: 'IN' } } )
+        const content: object[] = [ { participant: { id: 'pa1' }, vehicle: undefined, poolName: undefined } ]
+
+        // Act
+        ;(component as unknown as { reverseMovement: (content: object[]) => void }).reverseMovement( content )
+
+        // Assert
+        expect( facade[ used ] ).toHaveBeenCalledWith( expect.objectContaining( { type: 'OUT' } ) )
+        expect( facade[ unused ] ).not.toHaveBeenCalled()
+    } )
 } )

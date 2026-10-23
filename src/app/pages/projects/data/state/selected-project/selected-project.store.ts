@@ -11,12 +11,12 @@ import { ParticipantApi } from '@pages/projects/[projectId]/configuration/partic
 import { AlertApi } from '@pages/projects/[projectId]/movements/data/state/alert.api'
 import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
 import { MovementHelper } from '@shared/helpers/movement.helper'
-import { initialize } from '@shared/helpers/rx.helper'
+import { ignoreError, initialize } from '@shared/helpers/rx.helper'
 import { ParticipantPageParamsModel } from '@pages/projects/[projectId]/configuration/participants/data/model/participant-page-params.model'
 import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum'
 import { ParticipantModel } from '@shared/models/model/participant.model'
 import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
-import { contentsSection, elementFetcher, MovementContentsRequest, pageFetcher, StoreRef, trackSectionError } from '@shared/helpers/store/paged-store.methods'
+import { contentsSection, elementFetcher, MovementContentsRequest, pageFetcher, silentElementFetcher, StoreRef, trackSectionError } from '@shared/helpers/store/paged-store.methods'
 import { PageSlice, trackPage } from '@shared/helpers/store/track-page.operator'
 import { withProfileScope } from '@shared/helpers/store/with-profile-scope.feature'
 import { AlertStatusEnum } from '@shared/models/enumeration/alert-status.enum'
@@ -117,6 +117,13 @@ function statusFetcher<T> (store: Ref, key: StatusKey, source: (projectId: strin
     ) )
 }
 
+function silentStatusFetcher<T> (store: Ref, key: StatusKey, source: (projectId: string | undefined) => Observable<T>): RxMethod<string | undefined> {
+    return rxMethod<string | undefined>( pipe(
+        switchMap( (projectId: string | undefined): Observable<T> => source( projectId ).pipe( ignoreError() ) ),
+        tap( (element: T): void => patchStatus( store, key, { element: element as never } ) ),
+    ) )
+}
+
 function reportStatusError (store: Ref, key: StatusKey, error: ErrorModel): Observable<never> {
     patchStatus( store, key, { error: PageStateHelper.toNotification( error ) } )
     return EMPTY
@@ -143,10 +150,11 @@ function currentMovementsPage (
     key: CurrentMovementsKey,
     movementApi: MovementApi,
     fetchContents: (request: MovementContentsRequest) => void,
+    silent: boolean = false,
 ): RxMethod<CurrentPageRequest> {
     return rxMethod<CurrentPageRequest>( pipe(
         switchMap( (request: CurrentPageRequest): Observable<{ request: CurrentPageRequest, page: PageModel<MovementModel> }> =>
-            fetchCurrentMovements( store, key, movementApi, request ),
+            fetchCurrentMovements( store, key, movementApi, request, silent ),
         ),
         tap( ({ request, page }: { request: CurrentPageRequest, page: PageModel<MovementModel> }): void => {
             patchCurrentMovements( store, key, (block: MovementsBlock): MovementsBlock => ({ ...block, element: CumulativePageHelper.merge( block.element, page, request ) }) )
@@ -160,10 +168,11 @@ function fetchCurrentMovements (
     key: CurrentMovementsKey,
     movementApi: MovementApi,
     request: CurrentPageRequest,
+    silent: boolean,
 ): Observable<{ request: CurrentPageRequest, page: PageModel<MovementModel> }> {
     const params: MovementPageParamsModel = store.isCurrent()[ key ].params
     return movementApi.findMovements( request.projectId, request.page, request.size, params ).pipe(
-        trackPage( currentMovementsSlice( store, key ) ),
+        silent ? ignoreError() : trackPage( currentMovementsSlice( store, key ) ),
         map( (page: PageModel<MovementModel>) => ({ request, page }) ),
     )
 }
@@ -188,12 +197,23 @@ export const SelectedProjectStore = signalStore(
         fetchPlannedArrivals: elementFetcher( store, 'arrivals', (projectId: string | undefined) => movementApi.findPlannedArrivals( projectId ) ),
         fetchPlannedDepartures: elementFetcher( store, 'departures', (projectId: string | undefined) => movementApi.findPlannedDepartures( projectId ) ),
         fetchParticipantsBirthdays: elementFetcher( store, 'birthdays', (projectId: string | undefined) => participantApi.findParticipantsBirthdays( projectId ) ),
+        refreshParticipantsStatus: silentStatusFetcher<ProjectStatusModel>( store, 'participants', (projectId: string | undefined) => movementApi.findParticipantsStatus( projectId ) ),
+        refreshVehiclesStatus: silentStatusFetcher<VehicleStatusModel>( store, 'vehicles', (projectId: string | undefined) => movementApi.findVehiclesStatus( projectId ) ),
+        refreshPlannedArrivals: silentElementFetcher( store, 'arrivals', (projectId: string | undefined) => movementApi.findPlannedArrivals( projectId ) ),
+        refreshPlannedDepartures: silentElementFetcher( store, 'departures', (projectId: string | undefined) => movementApi.findPlannedDepartures( projectId ) ),
+        refreshParticipantsBirthdays: silentElementFetcher( store, 'birthdays', (projectId: string | undefined) => participantApi.findParticipantsBirthdays( projectId ) ),
         fetchCurrentMovementsWithoutActivityContents: currentMovementsContents( store, 'withoutActivity', movementApi ),
         fetchCurrentMovementsWithActivityContents: currentMovementsContents( store, 'withActivity', movementApi ),
     }) ),
     withMethods( (store, movementApi = inject( MovementApi ), alertApi = inject( AlertApi ), participantApi = inject( ParticipantApi ), errors = inject( ErrorReporter )) => ({
         fetchCurrentMovementsPageWithoutActivity: currentMovementsPage( store, 'withoutActivity', movementApi, store.fetchCurrentMovementsWithoutActivityContents ),
         fetchCurrentMovementsPageWithActivity: currentMovementsPage( store, 'withActivity', movementApi, store.fetchCurrentMovementsWithActivityContents ),
+        refreshCurrentMovementsPageWithoutActivity: currentMovementsPage( store, 'withoutActivity', movementApi, store.fetchCurrentMovementsWithoutActivityContents, true ),
+        refreshCurrentMovementsPageWithActivity: currentMovementsPage( store, 'withActivity', movementApi, store.fetchCurrentMovementsWithActivityContents, true ),
+        refreshOverduePage: pageFetcher( store, 'overdue', (request: CurrentPageRequest, params: ParticipantPageParamsModel) =>
+            participantApi.findParticipants( request.projectId, request.page, request.size, params ), errors, { merge: CumulativePageHelper.merge, silent: true } ),
+        refreshCurrentAlertsPage: pageFetcher( store, 'alerts', (request: CurrentPageRequest, params: AlertPageParamsModel) =>
+            alertApi.findAlerts( request.projectId, request.page, request.size, params ), errors, { silent: true } ),
         fetchOverduePage: pageFetcher( store, 'overdue', (request: CurrentPageRequest, params: ParticipantPageParamsModel) =>
             participantApi.findParticipants( request.projectId, request.page, request.size, params ), errors, { merge: CumulativePageHelper.merge } ),
         fetchOverdueListPage: pageFetcher( store, 'overdueList', (request: CurrentPageRequest, params: ParticipantPageParamsModel) =>

@@ -53,14 +53,14 @@ describe( 'mappers', () => {
 
     it( 'maps the preferences of a current user with its authorities', () => {
         // Arrange
-        const dto: CurrentUserResponseDto = { ...USER, authorities: [ 'A', 'B' ], preferences: { userId: 'u1', theme: 'DARK', language: 'fr' } }
+        const dto: CurrentUserResponseDto = { ...USER, authorities: [ 'A', 'B' ], preferences: { userId: 'u1', theme: 'DARK', language: 'fr', refreshMode: 'NORMAL' } }
 
         // Act
         const model: ReturnType<typeof CurrentUserMapper.toModel> = CurrentUserMapper.toModel( dto )
 
         // Assert
         expect( model.authorities ).toEqual( [ 'A', 'B' ] )
-        expect( model.preferences ).toEqual( { userId: 'u1', theme: 'DARK', language: 'fr' } )
+        expect( model.preferences ).toEqual( { userId: 'u1', theme: 'DARK', language: 'fr', refreshMode: 'NORMAL' } )
         expect( model.email ).toBe( 'g@x.test' )
     } )
 
@@ -250,7 +250,7 @@ describe( 'mappers', () => {
         // Arrange
         const dto: UserInvitationResponseDto = {
             id: 'pp1', visible: true, creation: HISTORY, lastEdition: HISTORY,
-            project: { id: 'p1', name: 'Camp', begin: { date: '2026-01-01', time: undefined }, end: undefined },
+            project: { id: 'p1', name: 'Camp', begin: { date: '2026-01-01', time: undefined }, end: undefined, favorite: true },
             role: { label: 'Chief', value: 'CHIEF' }, availabilityStatus: { label: 'x', value: 'AVAILABLE' as never }, status: { label: 'y', value: 'INVITED' as never },
             startAccess: undefined, endAccess: undefined,
         }
@@ -261,6 +261,7 @@ describe( 'mappers', () => {
 
         // Assert
         expect( model.project?.name ).toBe( 'Camp' )
+        expect( model.project?.favorite ).toBe( true )
         expect( model.status.value ).toBe( 'INVITED' )
         expect( withoutProject.project ).toBeUndefined()
     } )

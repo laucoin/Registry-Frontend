@@ -1,36 +1,53 @@
-<p-auto-complete multiple
-                 class='no-autocomplete-item'
-                 completeOnFocus
-                 [disabled]='disabled()'
-                 [inputId]='inputId()'
-                 [fluid]='fluid()'
-                 [suggestions]='suggestions()'
-                 (onSelect)='handleElementSelection($event)'
-                 (completeMethod)='handleSearch.emit($event)'>
-    <ng-template #selecteditem />
-    @if (emptyMessage()) {
-        <ng-template #empty>
-            <span>{{ emptyMessage() }}</span>
-        </ng-template>
+<sgdf-select with-search without-filter
+             [label]="label()"
+             [hint]="hint()"
+             [disabled]="disabled()"
+             [loading]="loading()"
+             [placeholder]="placeholder()"
+             [attr.no-results-label]="emptyMessage()"
+             (sgdf-show)="handleSearch.emit({ query: '' })"
+             (sgdf-search)="handleSearch.emit({ query: $any($event).detail.query })"
+             (change)="handleChoice($event)">
+    @for (suggestion of suggestions(); track suggestion.value.id) {
+        <sgdf-option [value]="suggestion.value.id">{{ suggestion.label }}</sgdf-option>
     }
-</p-auto-complete>
-<div class='secondary-color mt-4'>
-    {{ selectionLabel() }}
-</div>
-<ul class='list-box mt-2 flex flex-col justify-center'
-    [class.invalid]='showInvalid()'>
-    @for (element of value(); track element.id) {
-        <li class='item list-item w-full flex items-center justify-between' [attr.data-value]='element.id'>
-            <div class='ms-4'>{{ selectItemBuilder()(element).label }}</div>
-            <p-button [ariaLabel]='"global.actions.remove" | transloco' icon='pi pi-times'
-                      size='small'
-                      rounded
-                      text
-                      (onClick)='handleElementRemoving(element.id)' />
-        </li>
+</sgdf-select>
+@if (selectionLabel()) {
+    <div class="mt-[0.75rem] text-sm font-semibold" aria-hidden="true">{{ selectionLabel() }}</div>
+}
+<sgdf-list class="mt-[0.25rem] block" [attr.label]="selectionLabel()">
+    @for (element of ungrouped(); track identify()(element)) {
+        <ng-container [ngTemplateOutlet]="item" [ngTemplateOutletContext]="{ $implicit: element }"/>
     } @empty {
-        <li class='item empty-message'>
-            <div class='ms-2 secondary-color'>{{ emptySelectionMessage() }}</div>
-        </li>
+        @if (groups().length === 0) {
+            <p class="m-0 p-[0.75rem] text-sm">{{ emptySelectionMessage() }}</p>
+        }
     }
-</ul>
+</sgdf-list>
+@for (group of groups(); track group.name) {
+    <div class="mt-[0.75rem] flex items-center justify-between text-sm font-semibold">
+        {{ groupLabel()(group.name) }}
+        <sgdf-icon-button name="xmark" library="solid"
+                          [attr.label]="'global.actions.remove-named' | transloco : { name: groupLabel()(group.name) }"
+                          [disabled]="disabled()"
+                          (click)="handleGroupRemoving(group.name)"/>
+    </div>
+    <sgdf-list class="mt-[0.25rem] block" [attr.label]="groupLabel()(group.name)">
+        @for (element of group.elements; track identify()(element)) {
+            <ng-container [ngTemplateOutlet]="item" [ngTemplateOutletContext]="{ $implicit: element }"/>
+        }
+    </sgdf-list>
+}
+<ng-template #item let-element>
+    <sgdf-list-item [attr.data-value]="identify()(element)">
+        {{ selectItemBuilder()(element).label }}
+        @if (warningOf()(element); as warning) {
+            <sgdf-tag slot="end" variant="warning">{{ warning }}</sgdf-tag>
+        }
+        <sgdf-icon-button slot="end" name="xmark" library="solid"
+                          [attr.label]="'global.actions.remove-named' | transloco : { name: selectItemBuilder()(element).label }"
+                          [disabled]="disabled()"
+                          (click)="handleElementRemoving(identify()(element))"/>
+    </sgdf-list-item>
+</ng-template>
+<span class="sr-only" role="status">{{ announcement() }}</span>

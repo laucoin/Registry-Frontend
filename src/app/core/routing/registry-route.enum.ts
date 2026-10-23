@@ -14,11 +14,12 @@ export enum RegistryRouteEnum {
 	LOGIN = 'login',
 	AUTH_CALLBACK = 'auth/callback',
 
+	HOME = '/',
+
 	PRIVACY = 'privacy',
 	TERMS = 'terms',
 
 	MY_ACCOUNT = 'my-account',
-	MY_ACCOUNT_PROJECTS = `${MY_ACCOUNT}/projects`,
 	MY_ACCOUNT_INVITATIONS = `${MY_ACCOUNT}/invitations`,
 
 	USERS = 'users',
@@ -31,7 +32,8 @@ export enum RegistryRouteEnum {
 	PROJECTS_EDITION = `${PROJECT}/${ProjectRoutesEnum.EDIT}`,
 
 	PROJECTS_MOVEMENTS = `${PROJECT}/${ProjectRoutesEnum.MOVEMENTS}`,
-	PROJECTS_MOVEMENTS_EDITION = `${PROJECTS_MOVEMENTS}/${MovementRoutesEnum.EDIT}`,
+	PROJECTS_MOVEMENTS_REGISTERED_EDITION = `${PROJECTS_MOVEMENTS}/${MovementRoutesEnum.EDIT_REGISTERED}`,
+	PROJECTS_MOVEMENTS_GUEST_EDITION = `${PROJECTS_MOVEMENTS}/${MovementRoutesEnum.EDIT_GUEST}`,
 
 	PROJECTS_ALERTS = `${PROJECT}/${ProjectRoutesEnum.ALERTS}`,
 

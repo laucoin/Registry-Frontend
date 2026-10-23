@@ -32,18 +32,20 @@ describe( 'user and project profile forms', () => {
     let facade: Record<string, Mock>
     let back: Mock<() => void>
     let navigateByUrl: Mock<(url: string) => Promise<boolean>>
+    let navigate: Mock<(commands: string[]) => Promise<boolean>>
 
     function create<T extends BaseFormComponent> (type: Type<T>, facadeToken: Type<unknown>, params: Record<string, string>): T {
         back = vi.fn()
         navigateByUrl = vi.fn( () => Promise.resolve( true ) )
+        navigate = vi.fn( (): Promise<boolean> => { back(); return Promise.resolve( true ) } )
         RegistryConfig.config = { notification: { duration: {} } } as unknown as ConfigModel
         RegistryConfig.environment = { production: false, backend: { url: 'http://backend.test', noAuthPaths: [] }, hosting: { providerName: null, providerAddress: null } }
         TestBed.configureTestingModule( {
             providers: [
                 { provide: facadeToken, useValue: facade },
                 { provide: Location, useValue: { back } },
-                { provide: Router, useValue: { navigateByUrl } },
-                { provide: ActivatedRoute, useValue: { snapshot: { params } } },
+                { provide: Router, useValue: { navigateByUrl, navigate } },
+                { provide: ActivatedRoute, useValue: { snapshot: { params, url: [ { path: 'x' }, { path: 'edit' } ] } } },
                 { provide: SessionFacade, useValue: { selectedProject: (): undefined => undefined, currentUser: (): undefined => undefined } },
                 { provide: UiFacade, useValue: autoMock() },
                 { provide: CustomDateFormatPipe, useValue: { transform: (): string => '' } },
@@ -126,6 +128,7 @@ describe( 'user and project profile forms', () => {
             // Assert
             expect( facade[ 'updateUserRole' ] ).toHaveBeenCalledWith( 'u1', 'CHIEF' )
             expect( back ).toHaveBeenCalledTimes( 1 )
+            expect( navigate.mock.calls[ 0 ][ 0 ] ).toEqual( [ '../..' ] )
         } )
     } )
 
@@ -155,6 +158,7 @@ describe( 'user and project profile forms', () => {
             // Assert
             expect( facade[ 'updateProjectProfile' ] ).toHaveBeenCalledWith( 'pp1', expect.objectContaining( { role: 'CHIEF' } ), WHEN_ETAG )
             expect( back ).toHaveBeenCalledTimes( 1 )
+            expect( navigate.mock.calls[ 0 ][ 0 ] ).toEqual( [ '../..' ] )
         } )
 
         it( 'does not save an invalid profile', () => {
@@ -206,17 +210,6 @@ describe( 'user and project profile forms', () => {
             // Assert
             expect( facade[ 'createProjectProfiles' ] ).toHaveBeenCalledWith( { userIds: [ 'u1' ], role: 'CHIEF', startAccess: undefined, endAccess: undefined } )
             expect( back ).toHaveBeenCalledTimes( 1 )
-        } )
-
-        it( 'searches users through the facade', () => {
-            // Arrange
-            const page: ProjectProfileInvitationFormPage = create( ProjectProfileInvitationFormPage, ProjectProfileFacade, {} )
-
-            // Act
-            ;(page as unknown as { handleSearch: (text: string) => void }).handleSearch( 'ada' )
-
-            // Assert
-            expect( facade[ 'searchUsers' ] ).toHaveBeenCalledWith( 'ada' )
         } )
     } )
 } )

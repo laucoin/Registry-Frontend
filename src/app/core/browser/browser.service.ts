@@ -8,7 +8,7 @@ export const PREFERENCE_COOKIE_MAX_AGE_SECONDS: number = 60 * 60 * 24 * 365
 
 /**
  * Purpose: Single access point to the browser globals the application depends on.
- * Scope: Wraps location, viewport, scroll, color scheme, cookies, root element attributes and element lookup.
+ * Scope: Wraps location, viewport, scroll, page visibility, element intersection, color scheme, cookies, root element attributes and element lookup.
  * Limits: Holds no state and applies no application logic; it does not manage storage (see the storage helpers).
  */
 @Injectable( { providedIn: 'root' } )
@@ -39,6 +39,10 @@ export class BrowserService {
         return window.pageYOffset || document.documentElement.scrollTop
     }
 
+    public get pageVisible (): boolean {
+        return document.visibilityState !== 'hidden'
+    }
+
     public get preferredLanguages (): readonly string[] {
         return navigator.languages
     }
@@ -51,6 +55,24 @@ export class BrowserService {
         const onResize: () => void = (): void => listener( window.innerWidth )
         window.addEventListener( 'resize', onResize )
         return (): void => window.removeEventListener( 'resize', onResize )
+    }
+
+    public onVisibilityChange (listener: (visible: boolean) => void): () => void {
+        const onChange: () => void = (): void => listener( this.pageVisible )
+        document.addEventListener( 'visibilitychange', onChange )
+        return (): void => document.removeEventListener( 'visibilitychange', onChange )
+    }
+
+    public observeIntersection (element: Element, listener: (visible: boolean) => void): () => void {
+        if (typeof IntersectionObserver !== 'function') {
+            listener( true )
+            return (): void => undefined
+        }
+        const observer: IntersectionObserver = new IntersectionObserver(
+            (entries: IntersectionObserverEntry[]): void => listener( entries[ entries.length - 1 ].isIntersecting ),
+        )
+        observer.observe( element )
+        return (): void => observer.disconnect()
     }
 
     public onSystemThemeChange (listener: () => void): void {
@@ -97,8 +119,8 @@ export class BrowserService {
         document.documentElement.lang = language
     }
 
-    public highlightByDataValue (value: string): void {
-        const element: HTMLElement | null = document.querySelector( `[data-value="${ value }"]` )
+    public highlightByDataValue (value: string, root: ParentNode = document): void {
+        const element: HTMLElement | null = root.querySelector( `[data-value="${ value }"]` )
         if (element) {
             element.classList.add( HIGHLIGHT_CLASS )
             setTimeout( (): void => element.classList.remove( HIGHLIGHT_CLASS ), HIGHLIGHT_DURATION_MS )

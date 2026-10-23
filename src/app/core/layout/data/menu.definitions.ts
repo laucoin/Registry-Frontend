@@ -6,7 +6,12 @@ import { UserAuthorityEnum } from '@shared/models/enumeration/user-authority.enu
 
 export const APP_LEVEL_MENUS: MenuItemModel[] = [
 	{
+		label: 'navbar.app.home',
+		url: RegistryRouteEnum.HOME,
+	},
+	{
 		label: 'navbar.app.projects',
+		fallbackLabel: { unlessAuthority: UserAuthorityEnum.REGISTRY_PROJECT_R, label: 'navbar.app.my-projects' },
 		url: RegistryRouteEnum.PROJECTS,
 	},
 	{
@@ -21,11 +26,6 @@ export const USER_LEVEL_MENUS: MenuItemModel[] = [
 		label: 'navbar.user.my-acccount',
 		icon: { library: 'solid', name: 'gear' },
 		url: RegistryRouteEnum.MY_ACCOUNT,
-	},
-	{
-		label: 'navbar.user.profiles',
-		icon: { library: 'solid', name: 'id-badge' },
-		url: RegistryRouteEnum.MY_ACCOUNT_PROJECTS,
 	},
 	{
 		label: 'navbar.user.invitations',

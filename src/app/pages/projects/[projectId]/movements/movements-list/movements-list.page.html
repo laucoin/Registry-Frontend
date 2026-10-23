@@ -2,9 +2,13 @@
                  [lede]="'movements.list.subtitle' | transloco">
     {{ 'movements.list.title' | transloco }}
     @if (canCreate()) {
-        <sgdf-button slot="actions" variant="primary" [routerLink]="createRoute">
+        <sgdf-button slot="actions" variant="primary" [routerLink]="createRegisteredRoute">
             <sgdf-icon slot="prefix" name="plus" library="solid"/>
-            {{ 'global.actions.create' | transloco }}
+            {{ 'movements.list.create.registered' | transloco }}
+        </sgdf-button>
+        <sgdf-button slot="actions" variant="neutral" appearance="outlined" [routerLink]="createGuestRoute">
+            <sgdf-icon slot="prefix" name="plus" library="solid"/>
+            {{ 'movements.list.create.guest' | transloco }}
         </sgdf-button>
     }
 </sgdf-page-title>

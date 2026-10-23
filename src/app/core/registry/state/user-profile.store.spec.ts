@@ -33,38 +33,63 @@ describe( 'UserProfileStore', () => {
         store = TestBed.inject( UserProfileStore )
     } )
 
-    it( 'stores the fetched profiles page and the invitations page separately', () => {
+    it( 'stores the fetched invitations page', () => {
         // Arrange
         findUserProjectProfiles.mockReturnValue( of( PAGE ) )
 
         // Act
-        store.fetchProfilesPage( { page: 0, size: 10 } )
+        store.fetchInvitationsPage( { page: 0, size: 10 } )
 
         // Assert
-        expect( store.profiles.element() ).toEqual( PAGE )
-        expect( store.invitations.element() ).toBeUndefined()
-        expect( store.profiles.loading() ).toBe( false )
+        expect( store.invitations.element() ).toEqual( PAGE )
+        expect( store.invitations.loading() ).toBe( false )
     } )
 
-    it( 'appends the next batch to the profiles and to the invitations already shown', () => {
+    it( 'appends the next batch to the invitations already shown', () => {
         // Arrange
         const first: PageModel<UserInvitationModel> = { ...PAGE, size: 1, totalPages: 2 }
         const second: PageModel<UserInvitationModel> = { ...first, page: 1, content: [ { id: 'pp2' } as UserInvitationModel ] }
-        findUserProjectProfiles.mockReturnValueOnce( of( first ) ).mockReturnValueOnce( of( first ) )
-            .mockReturnValueOnce( of( second ) ).mockReturnValueOnce( of( second ) )
-        store.fetchProfilesPage( { page: 0, size: 1 } )
+        findUserProjectProfiles.mockReturnValueOnce( of( first ) ).mockReturnValueOnce( of( second ) )
         store.fetchInvitationsPage( { page: 0, size: 1 } )
 
         // Act
-        store.fetchProfilesPage( { page: 1, size: 1 } )
         store.fetchInvitationsPage( { page: 1, size: 1 } )
 
         // Assert
-        const ids: string[][] = [ store.profiles.element(), store.invitations.element() ].map( (shown: PageModel<UserInvitationModel> | undefined): string[] => shown!.content.map( (profile: UserInvitationModel): string => profile.id ) )
-        expect( ids ).toEqual( [ [ 'pp1', 'pp2' ], [ 'pp1', 'pp2' ] ] )
+        const ids: string[] = store.invitations.element()!.content.map( (profile: UserInvitationModel): string => profile.id )
+        expect( ids ).toEqual( [ 'pp1', 'pp2' ] )
     } )
 
-    it( 'keeps the error of a failed invitations fetch in the invitations block', () => {
+    it( 'updates the favorite of the project in every shown invitation', () => {
+        // Arrange
+        const page: PageModel<UserInvitationModel> = {
+            ...PAGE,
+            content: [
+                { id: 'pp1', project: { id: 'p1', name: 'Camp', favorite: false } } as UserInvitationModel,
+                { id: 'pp2', project: { id: 'p1', name: 'Camp', favorite: false } } as UserInvitationModel,
+                { id: 'pp3', project: { id: 'p2', name: 'Other', favorite: false } } as UserInvitationModel,
+            ],
+        }
+        findUserProjectProfiles.mockReturnValue( of( page ) )
+        store.fetchInvitationsPage( { page: 0, size: 10 } )
+
+        // Act
+        store.setProjectFavorite( 'p1', true )
+
+        // Assert
+        const favorites: (boolean | undefined)[] | undefined = store.invitations.element()?.content.map( (profile: UserInvitationModel): boolean | undefined => profile.project?.favorite )
+        expect( favorites ).toEqual( [ true, true, false ] )
+    } )
+
+    it( 'leaves the page untouched when none is shown', () => {
+        // Act
+        store.setProjectFavorite( 'p1', true )
+
+        // Assert
+        expect( store.invitations.element() ).toBeUndefined()
+    } )
+
+    it( 'keeps the error of a failed invitations fetch', () => {
         // Arrange
         findUserProjectProfiles.mockReturnValue( throwError( (): ErrorModel => ({ status: 500, title: 'Title', message: 'Message' }) as ErrorModel ) )
 
@@ -73,31 +98,30 @@ describe( 'UserProfileStore', () => {
 
         // Assert
         expect( store.invitations.error()?.summary ).toBe( 'Title' )
-        expect( store.profiles.error() ).toBeUndefined()
     } )
 
-    it( 'keeps a 503 failure in its block', () => {
+    it( 'keeps a 503 failure of the invitations fetch', () => {
         // Arrange
         const error: ErrorModel = { status: 503 } as ErrorModel
         findUserProjectProfiles.mockReturnValue( throwError( (): ErrorModel => error ) )
 
         // Act
-        store.fetchProfilesPage( { page: 0, size: 10 } )
+        store.fetchInvitationsPage( { page: 0, size: 10 } )
 
         // Assert
-        expect( store.profiles.error() ).toBeDefined()
+        expect( store.invitations.error() ).toBeDefined()
     } )
 
-    it( 'merges the search parameters of the profiles page', () => {
+    it( 'merges the search parameters of the invitations page', () => {
         // Arrange
         const params: { q: string, resetSearch: boolean } = { q: 'wolves', resetSearch: true }
 
         // Act
-        store.updateProfilesPageSearchParams( params )
+        store.updateInvitationsPageSearchParams( params )
 
         // Assert
-        expect( store.profiles.params.q() ).toBe( 'wolves' )
-        expect( store.profiles.params.status() ).toBeDefined()
+        expect( store.invitations.params.q() ).toBe( 'wolves' )
+        expect( store.invitations.params.status() ).toBeDefined()
     } )
 
     it( 'toggles the profile loader', () => {
@@ -113,16 +137,16 @@ describe( 'UserProfileStore', () => {
         expect( store.profile.loading() ).toBe( false )
     } )
 
-    it( 'forgets the loaded profiles on reset', () => {
+    it( 'forgets the loaded invitations on reset', () => {
         // Arrange
         findUserProjectProfiles.mockReturnValue( of( PAGE ) )
-        store.fetchProfilesPage( { page: 0, size: 10 } )
+        store.fetchInvitationsPage( { page: 0, size: 10 } )
 
         // Act
         store.reset()
 
         // Assert
-        expect( store.profiles.element() ).toBeUndefined()
+        expect( store.invitations.element() ).toBeUndefined()
     } )
 
     it( 'raises and lowers the profile loader', () => {

@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, InputSignal, OnDestroy, Signal, signal, WritableSignal} from '@angular/core'
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, input, InputSignal, OnDestroy, output, OutputEmitterRef, Signal, signal, WritableSignal } from '@angular/core'
 import {ParticipantFacade} from '@pages/projects/[projectId]/configuration/participants/data/state/participant.facade'
 import { FieldTree, FormField } from '@angular/forms/signals'
 import {
@@ -10,17 +10,18 @@ import {
 } from '@pages/projects/[projectId]/configuration/participants/participant-form/participant.form'
 import {CustomDatetimeModel} from '@shared/models/model/custom-datetime.model'
 import {UserModel} from '@shared/models/model/user.model'
-import {Button} from 'primeng/button'
-import {CardModule} from 'primeng/card'
-import {DividerModule} from 'primeng/divider'
 import {FormComponent} from '@shared/ui/common/form/form.component'
-import {FieldErrorComponent} from '@shared/ui/common/field-error/field-error.component'
-import {InputTextModule} from 'primeng/inputtext'
 import {TranslocoPipe} from '@jsverse/transloco'
+import '@sgdf/ui/card'
+import '@sgdf/ui/date-time-picker'
+import '@sgdf/ui/divider'
+import '@sgdf/ui/input'
+import '@sgdf/ui/option'
+import '@sgdf/ui/select'
+import { FieldErrorDirective } from '@shared/directives/field-error.directive'
+import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
+import { FormActionsComponent } from '@shared/ui/common/form-actions/form-actions.component'
 import {ParticipantModel} from '@shared/models/model/participant.model'
-import {RegistryRequiredDirective} from '@shared/directives/registry-required.directive'
-import {DatePicker} from 'primeng/datepicker'
-import {AutoComplete, AutoCompleteCompleteEvent} from 'primeng/autocomplete'
 import {SelectOptionModel} from '@shared/models/model/select-option.model'
 import {GroupModel} from '@shared/models/model/group.model'
 import {
@@ -28,17 +29,14 @@ import {
 } from '@shared/ui/common/select-elements-field/select-elements-field.component'
 import {GroupHelper} from '@shared/helpers/group.helper'
 import {ProjectModel} from '@shared/models/model/project.model'
-import {DateFormatPipe} from '@shared/helpers/pipe/date-format.pipe'
 import {ParticipantDto} from '@pages/projects/[projectId]/configuration/participants/data/dto/participant.dto'
-import {FormModelHelper, SelectableItem} from '@shared/helpers/form/form-model.helper'
+import {EventHelper} from '@shared/helpers/event.helper'
 import {BaseFormComponent} from '@shared/ui/base/base-form.component'
 import {withLoading} from '@shared/helpers/rx.helper'
 import {GenericHelper} from '@shared/helpers/generic.helper'
 import {FormTitlePipe} from '@shared/helpers/pipe/form-title.pipe'
 import {FormButtonPipe} from '@shared/helpers/pipe/form-button.pipe'
-import {DateTimeFieldComponent} from '@shared/ui/common/date-time-field/date-time-field.component'
 import {PluralTranslationPipe} from '@shared/helpers/pipe/plural-translation.pipe'
-import {FormIconPipe} from '@shared/helpers/pipe/form-icon.pipe'
 import { ETagHelper } from '@shared/helpers/etag.helper'
 
 /**
@@ -49,26 +47,18 @@ import { ETagHelper } from '@shared/helpers/etag.helper'
 @Component({
     selector: 'app-participant-form',
     imports: [
-        Button,
-        CardModule,
-        DividerModule,
         FormComponent,
-        FieldErrorComponent,
-        InputTextModule,
+        FormActionsComponent,
+        FieldErrorDirective,
+        SgdfFieldDirective,
         TranslocoPipe,
         FormField,
-        RegistryRequiredDirective,
-        DatePicker,
-        AutoComplete,
         SelectElementsFieldComponent,
-        DateFormatPipe,
         FormTitlePipe,
         FormButtonPipe,
-        DateTimeFieldComponent,
         PluralTranslationPipe,
-        FormIconPipe,
-
     ],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
     templateUrl: './participant-form.component.html',
 })
 export class ParticipantFormComponent extends BaseFormComponent implements OnDestroy {
@@ -87,10 +77,13 @@ export class ParticipantFormComponent extends BaseFormComponent implements OnDes
     public readonly redirect: InputSignal<boolean> = input(true)
     public readonly showTitle: InputSignal<boolean> = input(true)
     public readonly defaultGroup: InputSignal<GroupModel | undefined> = input()
+    public readonly cancelled: OutputEmitterRef<void> = output<void>()
 
-    protected readonly userOptions: Signal<SelectableItem<UserModel>[]> = computed(
-        (): SelectableItem<UserModel>[] => FormModelHelper.selectable( this.facade.searchedUsersMetadata() ),
-    )
+    protected readonly userChoices: Signal<SelectOptionModel<UserModel>[]> = computed((): SelectOptionModel<UserModel>[] => {
+        const searched: SelectOptionModel<UserModel>[] = this.facade.searchedUsersMetadata()
+        const chosen: SelectOptionModel<UserModel> | null = this.model().user
+        return chosen && !searched.some( (option: SelectOptionModel<UserModel>): boolean => option.value.id === chosen.value.id ) ? [ chosen, ...searched ] : searched
+    })
     protected readonly previousFirstName: WritableSignal<string | undefined> = signal(undefined)
     protected readonly previousLastName: WritableSignal<string | undefined> = signal(undefined)
 
@@ -143,11 +136,21 @@ export class ParticipantFormComponent extends BaseFormComponent implements OnDes
         this.save(editing ? this.facade.updateParticipant(this.participant()!.id, dto, ETagHelper.ifMatch(this.participant())) : this.facade.createParticipant(dto), this.redirect())
     }
 
-    protected handleUserSearch(searched: AutoCompleteCompleteEvent): void {
-        this.facade.searchUsers(searched.query)
+    protected cancel(): void {
+        if (this.redirect()) this.navigateToRedirectUri()
+        else this.cancelled.emit()
     }
 
-    protected handleGroupSearch(searched: AutoCompleteCompleteEvent): void {
+    protected handleUserSearch(query: string): void {
+        this.facade.searchUsers(query)
+    }
+
+    protected handleUserChoice(event: Event): void {
+        const id: string = EventHelper.valueOf( event )
+        this.handleUserSelection(this.userChoices().find( (option: SelectOptionModel<UserModel>): boolean => option.value.id === id ))
+    }
+
+    protected handleGroupSearch(searched: { query: string }): void {
         this.facade.searchGroups(searched.query)
     }
 

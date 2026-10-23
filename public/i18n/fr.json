@@ -173,6 +173,11 @@
     }
   },
   "global": {
+    "selection": {
+      "added": "{{name}} ajouté",
+      "removed": "{{name}} retiré",
+      "duplicate": "{{name}} est déjà sélectionné"
+    },
     "language": {
       "fr": "Français",
       "en": "English"
@@ -246,6 +251,7 @@
         "one": "1 seconde",
         "few": "{{count}} secondes"
       },
+      "few-seconds": "quelques secondes",
       "last-refresh": "Dernière actualisation le {{datetime}}",
       "element-created": "Créé le {{datetime}}",
       "element-created-user": "Créé le {{datetime}} par {{user}}",
@@ -286,6 +292,7 @@
       "skip-to-content": "Aller au contenu",
       "sign-out": "Déconnexion",
       "remove": "Retirer",
+      "remove-named": "Retirer {{name}}",
       "reset": "Réinitialiser",
       "add": "Ajouter",
       "clear": "Effacer",
@@ -338,6 +345,10 @@
       "description": "Une erreur empêche l'application de fonctionner. Vous pouvez réessayer ; si le problème persiste, contactez le support.",
       "cause": "Cause de l'erreur",
       "retry": "Réessayer"
+    },
+    "favorite": {
+      "add": "Ajouter {{name}} aux favoris",
+      "remove": "Retirer {{name}} des favoris"
     }
   },
   "project-home": {
@@ -488,7 +499,13 @@
     "search-and-filter": {
       "text": "Nom",
       "datetime": "Date & Heure",
-      "visibility": "Visibilité"
+      "visibility": "Visibilité",
+      "favorite": "Favoris",
+      "with-profile": "Profil"
+    },
+    "with-profile": {
+      "true": "Mes projets (avec un profil)",
+      "false": "Tous les projets"
     },
     "visible": {
       "true": "Visible",
@@ -512,7 +529,15 @@
         "option": {
           "one": "Option",
           "few": "Options"
-        }
+        },
+        "invitation": "Invitations"
+      },
+      "invitation": {
+        "created": {
+          "title": "Le projet “{{name}}” est déjà créé",
+          "message": "Il n’est plus possible de revenir en arrière : le projet existe dès maintenant. Invitez des utilisateurs à le rejoindre ou passez cette étape, vous pourrez toujours les inviter plus tard depuis la configuration du projet."
+        },
+        "skip": "Passer cette étape"
       },
       "name": "Nom",
       "begin-datetime": "Date & Heure de début",
@@ -537,9 +562,7 @@
         }
       },
       "placeholder": {
-        "name": "Ex : Camp D.F.C.I. Pionniers-Caravelles",
-        "date": "Ex : {{date}}",
-        "time": "Ex : {{date}}"
+        "name": "Ex : Camp D.F.C.I. Pionniers-Caravelles"
       }
     },
     "actions": {
@@ -597,15 +620,14 @@
         "title": "🕵️‍♀️ Aucun projet",
         "message": "Aucun projet n’a été trouvé."
       }
+    },
+    "favorite": {
+      "true": "Favoris",
+      "false": "Hors favoris"
     }
   },
   "project-profiles": {
     "pages": {
-      "profiles": {
-        "eyebrow": "Mon espace",
-        "title": "Mes projets",
-        "subtitle": "Les projets auxquels vous avez accès et le rôle que vous y tenez."
-      },
       "invitations": {
         "eyebrow": "Mon espace",
         "title": "Mes invitations",
@@ -625,7 +647,6 @@
       "status": "Statut",
       "visibility": "Disponibilité"
     },
-    "empty": "Tu ne sembles pas avoir de profil d'accès pour le moment. Tu peux en obtenir un en acceptant une invitation que tu as reçue ou en créant un projet.",
     "empty-invitation": "Tu ne sembles pas avoir d'invitation en attente de réponse. Tu peux en obtenir un en acceptant une invitation que tu as reçue ou en créant un projet.",
     "visible": {
       "true": "En cours de validité",
@@ -657,9 +678,7 @@
         "end-date-time": "Par défaut, le profil n’a pas de fin de validité."
       },
       "placeholder": {
-        "role": "Ex : {{role}}",
-        "date": "Ex : {{date}}",
-        "time": "Ex : {{date}}"
+        "role": "Ex : {{role}}"
       },
       "error": {
         "role": {
@@ -686,8 +705,7 @@
         "few": "Inviter des utilisateurs"
       },
       "create-project": "Créer un projet",
-      "profiles": "Voir mes profils d'accès",
-      "invitations": "Voir mes invitations",
+      "projects": "Voir mes projets",
       "edit": "Modifier",
       "enable": "Débloquer",
       "disable": "Bloquer",
@@ -784,7 +802,11 @@
   "movements": {
     "list": {
       "title": "Mouvements",
-      "subtitle": "Tous les mouvements du projet, avec ou sans activité rattachée."
+      "subtitle": "Tous les mouvements du projet, avec ou sans activité rattachée.",
+      "create": {
+        "registered": "Participants inscrits",
+        "guest": "Invités"
+      }
     },
     "history-page": {
       "subtitle": "Les mouvements du projet qui concernent cet élément."
@@ -832,7 +854,6 @@
       },
       "datetime": "Date & Heure",
       "type": "Type",
-      "content-kind": "Type de participant",
       "reason": {
         "name": "Motif",
         "empty-search": "Aucune raison trouvée"
@@ -1118,9 +1139,7 @@
         "user": "Ex : robert.baden-powell@exemple.com (Robert BADEN-POWELL)",
         "firstname": "Ex : Robert",
         "lastname": "Ex : BADEN-POWELL",
-        "birthday": "Ex : 22/02/1857",
-        "date": "Ex : {{date}}",
-        "time": "Ex : {{date}}"
+        "birthday": "Ex : 22/02/1857"
       }
     },
     "actions": {
@@ -1253,9 +1272,7 @@
         }
       },
       "placeholder": {
-        "name": "Ex : Pionniers-Caravelles - Charles de Foucauld Bondues",
-        "date": "Ex : {{date}}",
-        "time": "Ex : {{date}}"
+        "name": "Ex : Pionniers-Caravelles - Charles de Foucauld Bondues"
       }
     },
     "actions": {
@@ -1399,9 +1416,7 @@
       "placeholder": {
         "license-plate": "Ex : AB-123-CD",
         "brand": "Ex : Toyota",
-        "model": "Ex : Yaris",
-        "date": "Ex : {{date}}",
-        "time": "Ex : {{date}}"
+        "model": "Ex : Yaris"
       }
     },
     "actions": {
@@ -1534,9 +1549,7 @@
         "description": "Ex : Cette randonnée dans les Calanques de Marseille, est une activité de 3 heures. Durant cette activité, les participants pourront…",
         "duration": "Ex : 3h45",
         "allowed-min-participants": "Ex : 5",
-        "allowed-max-participants": "Ex : 15",
-        "date": "Ex : {{date}}",
-        "time": "Ex : {{date}}"
+        "allowed-max-participants": "Ex : 15"
       }
     },
     "actions": {
@@ -1801,12 +1814,13 @@
     "user": {
       "menu": "Menu du compte de {{name}}",
       "my-acccount": "Mon compte",
-      "profiles": "Mes projets",
       "invitations": "Mes invitations",
       "logout": "Se déconnecter"
     },
     "app": {
+      "home": "Accueil",
       "projects": "Projets",
+      "my-projects": "Mes projets",
       "users": "Utilisateurs"
     },
     "context": {

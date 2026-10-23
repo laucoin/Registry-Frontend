@@ -2,7 +2,7 @@ import { Location } from '@angular/common'
 import { TestBed } from '@angular/core/testing'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslocoService } from '@jsverse/transloco'
-import { BehaviorSubject, of } from 'rxjs'
+import { BehaviorSubject, of, throwError } from 'rxjs'
 import { Mock, beforeEach, describe, expect, it, vi } from 'vitest'
 import { ConfigModel } from '@core/config/model/config.model'
 import { RegistryConfig } from '@core/config/registry.config'
@@ -11,6 +11,7 @@ import { UiFacade } from '@core/registry/state/ui.facade'
 import { ProjectOptionModel } from '@shared/models/model/project-option.model'
 import { ProjectFacade } from '@pages/projects/data/state/project/project.facade'
 import { ProjectFormPage } from '@pages/projects/project-form/project-form.page'
+import { ProjectProfileFacade } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.facade'
 import { CustomDateFormatPipe } from '@shared/helpers/pipe/custom-date-format.pipe'
 import { autoMock } from '@shared/helpers/testing/auto-mock'
 import { PROJECT_DTO, WHEN_ETAG } from '@shared/helpers/testing/response-fixtures'
@@ -25,6 +26,12 @@ interface ProjectFormApi {
     loadError: () => { summary?: string } | undefined
     submit: () => void
     selectAll: (event: { checked: boolean }) => void
+    next: () => void
+    activeTab: () => number
+    invitationModel: { (): { role: string, users: { id: string }[] }, set: (value: object) => void }
+    createdProjectId: () => string | undefined
+    invite: () => void
+    skip: () => void
 }
 
 const OPTIONS: ProjectOptionModel[] = [
@@ -35,6 +42,7 @@ const OPTIONS: ProjectOptionModel[] = [
 
 describe( 'ProjectFormPage', () => {
     let facade: Record<string, Mock>
+    let profileFacade: Record<string, Mock>
     let project$: BehaviorSubject<ProjectModel | undefined>
     let current: ProjectModel | undefined
     let back: Mock<() => void>
@@ -42,6 +50,8 @@ describe( 'ProjectFormPage', () => {
 
     function create (id: string | undefined = undefined): ProjectFormApi {
         facade = autoMock()
+        profileFacade = autoMock()
+        profileFacade[ 'createProjectProfiles' ].mockReturnValue( of( { createdUserIds: [ 'u1' ], notCreatedUserIds: [] } ) )
         back = vi.fn()
         navigate = vi.fn( () => Promise.resolve( true ) )
         current = undefined
@@ -60,6 +70,7 @@ describe( 'ProjectFormPage', () => {
         TestBed.configureTestingModule( {
             providers: [
                 { provide: ProjectFacade, useValue: facade },
+                { provide: ProjectProfileFacade, useValue: profileFacade },
                 { provide: Location, useValue: { back } },
                 { provide: Router, useValue: { navigateByUrl: navigate } },
                 { provide: ActivatedRoute, useValue: { snapshot: { params: id ? { projectId: id } : {} } } },
@@ -188,6 +199,40 @@ describe( 'ProjectFormPage', () => {
         } )
     } )
 
+    describe( 'steps', () => {
+        it( 'starts on the information step', () => {
+            // Arrange
+            // Act
+            const page: ProjectFormApi = create()
+
+            // Assert
+            expect( page.activeTab() ).toBe( 1 )
+        } )
+
+        it( 'stays on the information step while the project information is invalid', () => {
+            // Arrange
+            const page: ProjectFormApi = create()
+
+            // Act
+            page.next()
+
+            // Assert
+            expect( page.activeTab() ).toBe( 1 )
+        } )
+
+        it( 'goes to the options step once the project information is valid', () => {
+            // Arrange
+            const page: ProjectFormApi = create()
+            page.model.set( { ...page.model(), name: 'Camp' } )
+
+            // Act
+            page.next()
+
+            // Assert
+            expect( page.activeTab() ).toBe( 2 )
+        } )
+    } )
+
     describe( 'saving', () => {
         it( 'does not save an invalid form', () => {
             // Arrange
@@ -228,7 +273,7 @@ describe( 'ProjectFormPage', () => {
             } )
         } )
 
-        it( 'creates the project and opens it', () => {
+        it( 'creates the project then offers to invite users instead of leaving', () => {
             // Arrange
             const page: ProjectFormApi = create()
             fillName( page )
@@ -238,7 +283,24 @@ describe( 'ProjectFormPage', () => {
 
             // Assert
             expect( facade[ 'createProject' ] ).toHaveBeenCalledTimes( 1 )
-            expect( navigate ).toHaveBeenCalledWith( expect.stringContaining( 'new1' ) )
+            expect( page.activeTab() ).toBe( 3 )
+            expect( page.createdProjectId() ).toBe( 'new1' )
+            expect( profileFacade[ 'fetchAssignableRoles' ] ).toHaveBeenCalledWith( 'new1' )
+            expect( navigate ).not.toHaveBeenCalled()
+        } )
+
+        it( 'goes back when the created project id is unknown', () => {
+            // Arrange
+            const page: ProjectFormApi = create()
+            facade[ 'createdProjectId' ].mockReturnValue( undefined )
+            fillName( page )
+
+            // Act
+            page.submit()
+
+            // Assert
+            expect( page.activeTab() ).toBe( 1 )
+            expect( back ).toHaveBeenCalledTimes( 1 )
         } )
 
         it( 'updates the loaded project and goes back', () => {
@@ -253,6 +315,79 @@ describe( 'ProjectFormPage', () => {
             // Assert
             expect( facade[ 'updateProject' ] ).toHaveBeenCalledWith( 'p1', expect.objectContaining( { name: 'Camp' } ), WHEN_ETAG )
             expect( back ).toHaveBeenCalledTimes( 1 )
+        } )
+    } )
+
+    describe( 'invitation step', () => {
+        function reachInvitation (): ProjectFormApi {
+            const page: ProjectFormApi = create()
+            fillName( page )
+            page.submit()
+            return page
+        }
+
+        it( 'opens the created project when the step is skipped', () => {
+            // Arrange
+            const page: ProjectFormApi = reachInvitation()
+
+            // Act
+            page.skip()
+
+            // Assert
+            expect( navigate ).toHaveBeenCalledWith( expect.stringContaining( 'new1' ) )
+            expect( profileFacade[ 'createProjectProfiles' ] ).not.toHaveBeenCalled()
+        } )
+
+        it( 'does not invite without role nor user', () => {
+            // Arrange
+            const page: ProjectFormApi = reachInvitation()
+
+            // Act
+            page.invite()
+
+            // Assert
+            expect( profileFacade[ 'createProjectProfiles' ] ).not.toHaveBeenCalled()
+            expect( navigate ).not.toHaveBeenCalled()
+        } )
+
+        it( 'invites the chosen users into the created project then opens it', () => {
+            // Arrange
+            const page: ProjectFormApi = reachInvitation()
+            page.invitationModel.set( { role: 'CHIEF', beginDateTime: null, endDateTime: null, users: [ { id: 'u1' } ] } )
+
+            // Act
+            page.invite()
+
+            // Assert
+            expect( profileFacade[ 'createProjectProfiles' ] ).toHaveBeenCalledWith(
+                { userIds: [ 'u1' ], role: 'CHIEF', startAccess: undefined, endAccess: undefined }, 'new1',
+            )
+            expect( navigate ).toHaveBeenCalledWith( expect.stringContaining( 'new1' ) )
+        } )
+
+        it( 'stays on the step when the invitation fails', () => {
+            // Arrange
+            const page: ProjectFormApi = reachInvitation()
+            profileFacade[ 'createProjectProfiles' ].mockReturnValue( throwError( (): object => ({ status: 500 }) ) )
+            page.invitationModel.set( { role: 'CHIEF', beginDateTime: null, endDateTime: null, users: [ { id: 'u1' } ] } )
+
+            // Act
+            page.invite()
+
+            // Assert
+            expect( navigate ).not.toHaveBeenCalled()
+            expect( page.activeTab() ).toBe( 3 )
+        } )
+
+        it( 'does nothing before the project is created', () => {
+            // Arrange
+            const page: ProjectFormApi = create()
+
+            // Act
+            page.invite()
+
+            // Assert
+            expect( profileFacade[ 'createProjectProfiles' ] ).not.toHaveBeenCalled()
         } )
     } )
 } )

@@ -7,7 +7,7 @@ import { StringHelper } from '@shared/helpers/string.helper'
 
 /**
  * Purpose: Formats a duration interval for display.
- * Scope: Shows the two largest units from days up and a clock format below.
+ * Scope: Shows the two largest units from days up and a clock format below; with `hideSeconds`, the clock shows hours and minutes only and under one minute says it is a few seconds.
  * Limits: Returns undefined for an empty interval.
  */
 @Pipe( {
@@ -20,8 +20,10 @@ export class IntervalPipe implements PipeTransform {
     public transform (
         value: IntervalModel | undefined,
         translationKey: string = 'global.date-and-time-format',
+        hideSeconds: boolean = false,
     ): string | undefined {
         if (!value) return undefined
+        if (hideSeconds && this.isUnderOneHour( value )) return this.formatShort( value, translationKey )
 
         switch (true) {
             case value.yearCount.value > 0:
@@ -31,13 +33,23 @@ export class IntervalPipe implements PipeTransform {
             case value.dayCount.value > 0:
                 return this.buildLabel( value.dayCount, value.hourCount, translationKey )
             case value.hourCount.value > 0:
-                return this.formatClock( [ value.hourCount, value.minuteCount, value.secondCount ] )
+                return this.formatClock( hideSeconds ? [ value.hourCount, value.minuteCount ] : [ value.hourCount, value.minuteCount, value.secondCount ] )
             case value.secondCount.value > 0:
             case value.minuteCount.value > 0:
                 return this.formatClock( [ value.minuteCount, value.secondCount ] )
             default:
                 return undefined
         }
+    }
+
+    private isUnderOneHour (value: IntervalModel): boolean {
+        return value.yearCount.value + value.monthCount.value + value.dayCount.value + value.hourCount.value === 0
+    }
+
+    private formatShort (value: IntervalModel, translationKey: string): string {
+        return value.minuteCount.value > 0
+            ? this.formatClock( [ value.hourCount, value.minuteCount ] )
+            : this.translateService.translate( `${translationKey}.few-seconds` )
     }
 
     private formatClock (units: SelectOptionModel<number>[]): string {

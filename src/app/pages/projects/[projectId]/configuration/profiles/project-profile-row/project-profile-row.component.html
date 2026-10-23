@@ -3,7 +3,13 @@
         <sgdf-avatar slot="start" shape="rounded" aria-hidden="true"
                      [variant]="isSelected(profile) ? 'success' : 'primary'"
                      [initials]="initials(profile)"/>
-        <span class="block truncate" [attr.title]="title(profile)">{{ title(profile) }}</span>
+        <span class="flex min-w-0 items-center gap-2">
+            @if (canFavorite(profile)) {
+                <app-favorite-toggle [favorite]="isFavorite(profile)" [name]="title(profile)"
+                                     (toggled)="toggleFavorite(profile)"/>
+            }
+            <span class="block truncate" [attr.title]="title(profile)">{{ title(profile) }}</span>
+        </span>
         <span slot="description" class="flex flex-wrap items-center gap-x-3">
             @if (profile.startAccess || profile.endAccess) {
                 <span class="inline-flex flex-wrap items-center gap-x-2">

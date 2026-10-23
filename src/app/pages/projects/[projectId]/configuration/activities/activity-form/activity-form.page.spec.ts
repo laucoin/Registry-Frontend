@@ -22,15 +22,17 @@ interface PageApi {
     error: () => unknown
 }
 
-const FILLED: ActivityFormModel = { name: 'Hike', description: 'd', duration: { hours: 2, minutes: 0 }, allowedParticipants: { lower: 1, upper: 5 }, beginDateTime: null, endDateTime: null }
+const FILLED: ActivityFormModel = { name: 'Hike', description: 'd', duration: 'PT2H', allowedParticipants: { lower: 1, upper: 5 }, beginDateTime: null, endDateTime: null }
 
 describe( 'ActivityFormPage', () => {
     let facade: Record<string, Mock>
     let back: Mock<() => void>
+    let navigate: Mock<(commands: string[]) => Promise<boolean>>
 
     function create (id: string | undefined): PageApi {
         facade = autoMock()
         back = vi.fn()
+        navigate = vi.fn( (): Promise<boolean> => { back(); return Promise.resolve( true ) } )
         facade[ 'fetchActivity' ].mockReturnValue( of( ACTIVITY_DTO ) )
         facade[ 'updateActivity' ].mockReturnValue( of( ACTIVITY_DTO ) )
         facade[ 'createActivity' ].mockReturnValue( of( ACTIVITY_DTO ) )
@@ -40,8 +42,8 @@ describe( 'ActivityFormPage', () => {
             providers: [
                 { provide: ActivityFacade, useValue: facade },
                 { provide: Location, useValue: { back } },
-                { provide: Router, useValue: { navigateByUrl: vi.fn( () => Promise.resolve( true ) ) } },
-                { provide: ActivatedRoute, useValue: { snapshot: { params: id ? { activityId: id } : {} } } },
+                { provide: Router, useValue: { navigateByUrl: vi.fn( () => Promise.resolve( true ) ), navigate: navigate } },
+                { provide: ActivatedRoute, useValue: { snapshot: { params: id ? { activityId: id } : {}, url: id ? [ { path: id }, { path: 'edit' } ] : [ { path: 'create' } ] } } },
                 { provide: SessionFacade, useValue: { selectedProject: signal( undefined ), currentUser: (): undefined => undefined } },
                 { provide: UiFacade, useValue: autoMock() },
                 { provide: CustomDateFormatPipe, useValue: { transform: (): string => '' } },
@@ -91,6 +93,29 @@ describe( 'ActivityFormPage', () => {
         expect( facade[ 'updateActivity' ] ).toHaveBeenCalledWith( 'a1', expect.objectContaining( { name: 'Hike', description: 'd', duration: 'PT2H', allowedParticipants: { lower: 1, upper: 5 } } ), WHEN_ETAG )
         expect( facade[ 'createActivity' ] ).not.toHaveBeenCalled()
         expect( back ).toHaveBeenCalledTimes( 1 )
+    } )
+
+    it( 'closes on the list from an edit route made of two segments', () => {
+        // Arrange
+        const page: PageApi = create( 'a1' )
+
+        // Act
+        page.submit()
+
+        // Assert
+        expect( navigate.mock.calls[ 0 ][ 0 ] ).toEqual( [ '../..' ] )
+    } )
+
+    it( 'closes on the list from a create route made of one segment', () => {
+        // Arrange
+        const page: PageApi = create( undefined )
+        page.model.set( FILLED )
+
+        // Act
+        page.submit()
+
+        // Assert
+        expect( navigate.mock.calls[ 0 ][ 0 ] ).toEqual( [ '..' ] )
     } )
 
     it( 'creates a activity from the filled form', () => {

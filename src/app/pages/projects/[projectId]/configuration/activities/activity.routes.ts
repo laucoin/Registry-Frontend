@@ -12,12 +12,10 @@ export const activityRoutes: Routes = [
         children: [
             {
                 path: '', component: ActivitiesListPage,
-            },
-            {
-                path: ActivityRoutesEnum.CREATE, component: ActivityFormPage,
-            },
-            {
-                path: ActivityRoutesEnum.EDIT, component: ActivityFormPage,
+                children: [
+                    { path: ActivityRoutesEnum.CREATE, component: ActivityFormPage },
+                    { path: ActivityRoutesEnum.EDIT, component: ActivityFormPage },
+                ],
             },
             {
                 path: ActivityRoutesEnum.MOVEMENTS, component: ActivityMovementsListPage,

@@ -87,12 +87,12 @@ export class ProjectProfileFacade extends GenericProjectElementFacade {
         }
     }
 
-    public searchUsers (q: string | undefined = undefined): void {
-        this.store.searchUsers( { projectId: this.selectedProjectId(), q: q } )
+    public searchUsers (q: string | undefined = undefined, projectId: string | undefined = this.selectedProjectId()): void {
+        this.store.searchUsers( { projectId: projectId, q: q } )
     }
 
-    public fetchAssignableRoles (): void {
-        this.store.fetchAssignableRoles( this.selectedProjectId() )
+    public fetchAssignableRoles (projectId: string | undefined = this.selectedProjectId()): void {
+        this.store.fetchAssignableRoles( projectId )
     }
 
     public fetchProjectProfile (id: string): Observable<ProjectProfileModel> {
@@ -101,11 +101,11 @@ export class ProjectProfileFacade extends GenericProjectElementFacade {
         )
     }
 
-    public createProjectProfiles (projectProfiles: ProjectProfilesDto): Observable<CreatedProjectProfiles> {
-        return this.api.createProjectProfiles( this.selectedProjectId(), projectProfiles ).pipe(
+    public createProjectProfiles (projectProfiles: ProjectProfilesDto, projectId: string | undefined = this.selectedProjectId()): Observable<CreatedProjectProfiles> {
+        return this.api.createProjectProfiles( projectId, projectProfiles ).pipe(
             tap( (creationStatus: CreatedProjectProfiles): void => {
                 this.notifyCreation( creationStatus )
-                this.refreshPage()
+                if (projectId === this.selectedProjectId()) this.refreshPage()
             } ),
         )
     }

@@ -2,7 +2,7 @@ import { patchState, StateSignals, WritableStateSource } from '@ngrx/signals'
 import { RxMethod, rxMethod } from '@ngrx/signals/rxjs-interop'
 import { catchError, defer, EMPTY, finalize, Observable, pipe, switchMap, tap } from 'rxjs'
 import { SelectOptionModel } from '@shared/models/model/select-option.model'
-import { ErrorSink, initialize, notifyOnError } from '@shared/helpers/rx.helper'
+import { ErrorSink, ignoreError, initialize, notifyOnError } from '@shared/helpers/rx.helper'
 import { SectionErrorsState } from '@shared/models/model/section-errors-state.model'
 import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
 import { ErrorModel } from '@shared/models/model/error.model'
@@ -42,6 +42,7 @@ interface PageFetcherHooks<R, P> {
     before?: (request: R) => void
     after?: (request: R, page: P) => void
     merge?: (current: P | undefined, fetched: P, request: R) => P
+    silent?: boolean
 }
 
 interface PageFetch<S extends object, K extends keyof S & string, R> {
@@ -56,6 +57,7 @@ interface PageFetch<S extends object, K extends keyof S & string, R> {
  * Purpose: Builds the rxMethod that loads one paged resource of a signal store.
  * Scope: Runs the given request with the current search parameters, scopes loading and errors to the block, then stores the page (merged with the shown one when a merge hook is given) and clears the reset flag.
  * Limits: Does not know the api; the caller gives the request. Optional hooks run before each request and after the page is stored; a hook that throws is reported and does not stop the method.
+ * The `silent` hook builds a background refresh: it sets no loading flag and keeps the shown page and its state untouched when the request fails.
  */
 export function pageFetcher<S extends object, K extends keyof S & string, R> (
     store: StoreRef<S>,
@@ -82,7 +84,7 @@ function fetchPage<S extends object, K extends keyof S & string, R> (fetch: Page
         return loadPage( fetch, request )
     } ).pipe(
         tap( (page: PageOf<S[K]>): void => commitPage( fetch, request, page ) ),
-        notifyOnError( fetch.errors ),
+        fetch.hooks.silent ? ignoreError() : notifyOnError( fetch.errors ),
     )
 }
 
@@ -94,11 +96,11 @@ function fetchPage<S extends object, K extends keyof S & string, R> (fetch: Page
 function loadPage<S extends object, K extends keyof S & string, R> (fetch: PageFetch<S, K, R>, request: R): Observable<PageOf<S[K]>> {
     const slice: ReturnType<typeof pageSlice> = pageSlice( fetch.store as never, fetch.key as never )
 
-    return defer(
+    const page$: Observable<PageOf<S[K]>> = defer(
         (): Observable<PageOf<S[K]>> => fetch.source( request, readBlock( fetch.store, fetch.key ).params as ParamsOf<S[K]> ),
-    ).pipe(
-        trackPage( slice as never ),
     )
+
+    return fetch.hooks.silent ? page$ : page$.pipe( trackPage( slice as never ) )
 }
 
 /**
@@ -291,6 +293,22 @@ export function elementFetcher<S extends object, K extends keyof S & string, R> 
 ): RxMethod<R> {
     return rxMethod<R>( pipe(
         switchMap( (request: R): Observable<ElementOf<S[K]>> => source( request ).pipe( trackElement( store, key ), keepElementError( store, key ) ) ),
+        tap( (element: ElementOf<S[K]>): void => patchState( store, (state: S) => ({ [ key ]: { ...state[ key ], element } }) as unknown as Partial<S> ) ),
+    ) )
+}
+
+/**
+ * Purpose: Builds the rxMethod that reloads one element of a signal store in the background.
+ * Scope: Stores the element when the request succeeds, without touching the loading flag or the error of the block.
+ * Limits: A failure is ignored and the shown element stays; the next refresh retries.
+ */
+export function silentElementFetcher<S extends object, K extends keyof S & string, R> (
+    store: StoreRef<S>,
+    key: K,
+    source: (request: R) => Observable<ElementOf<S[K]>>,
+): RxMethod<R> {
+    return rxMethod<R>( pipe(
+        switchMap( (request: R): Observable<ElementOf<S[K]>> => source( request ).pipe( ignoreError() ) ),
         tap( (element: ElementOf<S[K]>): void => patchState( store, (state: S) => ({ [ key ]: { ...state[ key ], element } }) as unknown as Partial<S> ) ),
     ) )
 }

@@ -1,29 +1,13 @@
 import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, input, InputSignal, Signal } from '@angular/core'
 import '@sgdf/ui/callout'
-import { ValidationError } from '@angular/forms/signals'
 import { TranslocoService } from '@jsverse/transloco'
-import { FieldErrorState, FieldStateHelper } from '@shared/helpers/form/field-state.helper'
-
-const TRANSLATION_KEYS: Record<string, string> = {
-    minLength: 'minlength',
-    maxLength: 'maxlength',
-}
-
-const ERROR_PARAMS: Record<string, [string, string][]> = {
-    min: [['min', 'min'], ['actual', 'actual']],
-    max: [['max', 'max'], ['actual', 'actual']],
-    minDate: [['min', 'min']],
-    maxDate: [['max', 'max']],
-    rangeMin: [['min', 'min'], ['actual', 'actual']],
-    rangeMax: [['max', 'max'], ['actual', 'actual']],
-    incompatibleReason: [['reason', 'reason']],
-    preRequiredOptions: [['for', 'for'], ['missing', 'missing']],
-}
+import { FieldErrorHelper } from '@shared/helpers/form/field-error.helper'
+import { FieldErrorState } from '@shared/helpers/form/field-state.helper'
 
 /**
  * Purpose: Displays the first error of one signal form field.
- * Scope: Translates the error kind under the given prefix with its parameters once the field is touched or dirty.
- * Limits: Shows nothing for a valid or untouched pristine field.
+ * Scope: Translates the error kind under the given prefix with its parameters once the field is touched or dirty; used for what has no `@sgdf/ui` field to carry the error (a range, a whole form).
+ * Limits: Shows nothing for a valid or untouched pristine field. A `@sgdf/ui` field shows its own error with the `appFieldError` directive.
  */
 @Component({
     selector: 'app-field-error',
@@ -37,36 +21,12 @@ export class FieldErrorComponent {
     public readonly translationPrefix: InputSignal<string> = input.required()
     public readonly translationArgs: InputSignal<object> = input({})
 
-    protected readonly errorText: Signal<string | undefined>
-
-    public constructor() {
-        this.errorText = computed((): string | undefined => {
-            if (!FieldStateHelper.showsError( this.field() )) return undefined
-            const state: FieldErrorState = this.field()()
-            const error: ValidationError | undefined = state.errors()[0]
-            return error ? this.translate( error, state.value() ) : undefined
-        })
-    }
-
-    private translate (error: ValidationError, value: unknown): string {
-        const key: string = TRANSLATION_KEYS[error.kind] ?? error.kind
-        return this.translateService.translate( `${this.translationPrefix()}.${key}`, this.buildParams( error, value ) )
-    }
-
-    private buildParams (error: ValidationError, value: unknown): object {
-        const mapped: [string, unknown][] = (ERROR_PARAMS[error.kind] ?? []).map(
-            ([param, property]: [string, string]): [string, unknown] => [param, this.property( error, property )],
-        )
-        return { ...this.translationArgs(), ...Object.fromEntries( mapped ), ...this.lengthParams( error, value ) }
-    }
-
-    private lengthParams (error: ValidationError, value: unknown): object {
-        const bounds: Record<string, unknown> = error as unknown as Record<string, unknown>
-        if (error.kind !== 'minLength' && error.kind !== 'maxLength') return {}
-        return { requiredLength: bounds[error.kind], actualLength: (value as { length?: number } | undefined)?.length }
-    }
-
-    private property (error: ValidationError, property: string): unknown {
-        return (error as unknown as Record<string, unknown>)[property] ?? ''
-    }
+    protected readonly errorText: Signal<string | undefined> = computed((): string | undefined =>
+        FieldErrorHelper.text(
+            this.field(),
+            this.translationPrefix(),
+            this.translationArgs(),
+            (key: string, params: object): string => this.translateService.translate( key, params ),
+        ),
+    )
 }

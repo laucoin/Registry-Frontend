@@ -13,7 +13,6 @@ import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
 import { ERROR_500, failing, pageOf, provideTestConfig } from '@shared/helpers/testing/test-fixtures'
 import { MovementTypeEnum } from '@shared/models/enumeration/movement-type.enum'
-import { ParticipantTypeEnum } from '@shared/models/enumeration/participant-type.enum'
 import { ErrorModel } from '@shared/models/model/error.model'
 import { MovementModel } from '@shared/models/model/movement.model'
 
@@ -101,10 +100,10 @@ describe( 'MovementFacade', () => {
 
     it( 'registers a movement of registered participants through the registered endpoint', () => {
         // Arrange
-        const movement: never = { contentType: ParticipantTypeEnum.REGISTERED } as never
+        const movement: never = {} as never
 
         // Act
-        facade.createMovement( movement ).subscribe()
+        facade.createRegisteredMovement( movement ).subscribe()
 
         // Assert
         expect( createMovement ).toHaveBeenCalledTimes( 1 )
@@ -113,22 +112,34 @@ describe( 'MovementFacade', () => {
 
     it( 'registers a movement of guests through the guests endpoint', () => {
         // Arrange
-        const movement: never = { contentType: ParticipantTypeEnum.GUEST } as never
+        const movement: never = {} as never
 
         // Act
-        facade.createMovement( movement ).subscribe()
+        facade.createGuestMovement( movement ).subscribe()
 
         // Assert
         expect( createGuestsMovement ).toHaveBeenCalledTimes( 1 )
         expect( createMovement ).not.toHaveBeenCalled()
     } )
 
-    it( 'updates guests movements through the guests endpoint', () => {
+    it( 'updates registered movements through the registered endpoint', () => {
         // Arrange
-        const movement: never = { contentType: ParticipantTypeEnum.GUEST } as never
+        const movement: never = {} as never
 
         // Act
-        facade.updateMovement( 'm1', movement ).subscribe()
+        facade.updateRegisteredMovement( 'm1', movement ).subscribe()
+
+        // Assert
+        expect( updateMovementById ).toHaveBeenCalledTimes( 1 )
+        expect( updateGuestsMovementById ).not.toHaveBeenCalled()
+    } )
+
+    it( 'updates guests movements through the guests endpoint', () => {
+        // Arrange
+        const movement: never = {} as never
+
+        // Act
+        facade.updateGuestMovement( 'm1', movement ).subscribe()
 
         // Assert
         expect( updateGuestsMovementById ).toHaveBeenCalledTimes( 1 )
@@ -137,10 +148,10 @@ describe( 'MovementFacade', () => {
 
     it( 'pluralizes the creation message by the number of people and counts them', () => {
         // Arrange
-        const movement: never = { contentType: ParticipantTypeEnum.REGISTERED } as never
+        const movement: never = {} as never
 
         // Act
-        facade.createMovement( movement ).subscribe()
+        facade.createRegisteredMovement( movement ).subscribe()
 
         // Assert
         expect( notify ).toHaveBeenCalledWith( expect.objectContaining( {
@@ -152,10 +163,10 @@ describe( 'MovementFacade', () => {
 
     it( 'uses the edit translation keys for an update', () => {
         // Arrange
-        const movement: never = { contentType: ParticipantTypeEnum.REGISTERED } as never
+        const movement: never = {} as never
 
         // Act
-        facade.updateMovement( 'm1', movement ).subscribe()
+        facade.updateRegisteredMovement( 'm1', movement ).subscribe()
 
         // Assert
         expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'movements.notifications.edit.IN.title' } ) )
@@ -181,7 +192,7 @@ describe( 'MovementFacade', () => {
         let received: ErrorModel | undefined
 
         // Act
-        facade.createMovement( { contentType: ParticipantTypeEnum.REGISTERED } as never ).subscribe( { error: (error: ErrorModel): void => { received = error } } )
+        facade.createRegisteredMovement( {} as never ).subscribe( { error: (error: ErrorModel): void => { received = error } } )
 
         // Assert
         expect( received ).toBe( ERROR_500 )

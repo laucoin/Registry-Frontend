@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, signal, WritableSignal } from '@angular/core'
+import { Component, CUSTOM_ELEMENTS_SCHEMA, inject, OnDestroy, signal, WritableSignal } from '@angular/core'
 import { GroupModel } from '@shared/models/model/group.model'
 import { FieldTree, FormField } from '@angular/forms/signals'
 import { GroupFacade } from '@pages/projects/[projectId]/configuration/groups/data/state/group.facade'
@@ -10,28 +10,27 @@ import {
     toGroupFormModel,
 } from '@pages/projects/[projectId]/configuration/groups/group-form/group.form'
 import { CustomDatetimeModel } from '@shared/models/model/custom-datetime.model'
-import { Button } from 'primeng/button'
-import { Card } from 'primeng/card'
 import { FormComponent } from '@shared/ui/common/form/form.component'
 import { FieldErrorComponent } from '@shared/ui/common/field-error/field-error.component'
-import { RegistryRequiredDirective } from '@shared/directives/registry-required.directive'
 import {TranslocoPipe} from '@jsverse/transloco'
-import { InputText } from 'primeng/inputtext'
-import { Divider } from 'primeng/divider'
+import '@sgdf/ui/card'
+import '@sgdf/ui/date-time-picker'
+import '@sgdf/ui/divider'
+import '@sgdf/ui/input'
+import { FieldErrorDirective } from '@shared/directives/field-error.directive'
+import { SgdfFieldDirective } from '@shared/directives/sgdf-field.directive'
+import { FormActionsComponent } from '@shared/ui/common/form-actions/form-actions.component'
 import {
     SelectElementsFieldComponent,
 } from '@shared/ui/common/select-elements-field/select-elements-field.component'
 import { ParticipantHelper } from '@shared/helpers/participant.helper'
 import { ProjectModel } from '@shared/models/model/project.model'
-import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
 import { BaseFormComponent } from '@shared/ui/base/base-form.component'
 import { withLoading } from '@shared/helpers/rx.helper'
 import { FormTitlePipe } from '@shared/helpers/pipe/form-title.pipe'
 import { FormButtonPipe } from '@shared/helpers/pipe/form-button.pipe'
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
-import { DateTimeFieldComponent } from '@shared/ui/common/date-time-field/date-time-field.component'
 import { GenericHelper } from '@shared/helpers/generic.helper'
-import { FormIconPipe } from '@shared/helpers/pipe/form-icon.pipe'
 import { ETagHelper } from '@shared/helpers/etag.helper'
 
 /**
@@ -42,24 +41,19 @@ import { ETagHelper } from '@shared/helpers/etag.helper'
 @Component( {
     selector: 'app-group-form',
     imports: [
-        Button,
-        Card,
         FormComponent,
+        FormActionsComponent,
         FieldErrorComponent,
-        RegistryRequiredDirective,
+        FieldErrorDirective,
+        SgdfFieldDirective,
         TranslocoPipe,
-        InputText,
         FormField,
-        Divider,
         SelectElementsFieldComponent,
-        DateFormatPipe,
         FormTitlePipe,
         FormButtonPipe,
         PluralTranslationPipe,
-        DateTimeFieldComponent,
-        FormIconPipe,
-
     ],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
     templateUrl: './group-form.page.html',
 } )
 export class GroupFormPage extends BaseFormComponent implements OnDestroy {

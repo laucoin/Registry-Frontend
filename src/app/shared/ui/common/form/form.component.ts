@@ -1,5 +1,5 @@
-import { Component, computed, input, InputSignal, Signal } from '@angular/core'
-import { ProgressSpinnerModule } from 'primeng/progressspinner'
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, input, InputSignal, Signal } from '@angular/core'
+import '@sgdf/ui/spinner'
 import { ErrorModel } from '@shared/models/model/error.model'
 import { FormErrorComponent } from '@shared/ui/common/form-error/form-error.component'
 
@@ -11,9 +11,9 @@ import { FormErrorComponent } from '@shared/ui/common/form-error/form-error.comp
 @Component( {
     selector: 'app-form',
     imports: [
-        ProgressSpinnerModule,
         FormErrorComponent,
     ],
+    schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
     templateUrl: './form.component.html',
 } )
 export class FormComponent {

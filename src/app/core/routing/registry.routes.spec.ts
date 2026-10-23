@@ -12,11 +12,12 @@ describe( 'routes', () => {
         return flatten( routes ).filter( (route: Route): boolean => !!route.loadComponent || !!route.loadChildren )
     }
 
-    it( 'loads the login, auth callback, account, users, projects, privacy and terms areas lazily', () => {
+    it( 'loads the login, auth callback, home, account, users, projects, privacy and terms areas lazily', () => {
         // Arrange
         const expected: string[] = [
             RegistryRouteEnum.LOGIN,
             RegistryRouteEnum.AUTH_CALLBACK,
+            '',
             RegistryRouteEnum.MY_ACCOUNT,
             RegistryRouteEnum.PROJECTS,
             RegistryRouteEnum.USERS,
@@ -55,5 +56,18 @@ describe( 'routes', () => {
 
         // Assert
         expect( unguarded ).toEqual( [] )
+    } )
+
+    it( 'guards the home page and sends unknown paths to it', () => {
+        // Arrange
+        const all: Route[] = flatten( routes )
+
+        // Act
+        const home: Route | undefined = all.find( (route: Route): boolean => route.path === '' && route.pathMatch === 'full' )
+        const fallback: Route | undefined = all.find( (route: Route): boolean => route.path === '**' )
+
+        // Assert
+        expect( home?.canActivate?.length ).toBeGreaterThan( 0 )
+        expect( fallback?.redirectTo ).toBe( '' )
     } )
 } )

@@ -6,6 +6,7 @@ import {
 	AccountPersonalDataComponent
 } from "@shared/ui/domain/my-account/account-personal-data/account-personal-data.component";
 import { AccountThemeComponent } from "@shared/ui/domain/my-account/account-theme/account-theme.component";
+import { AccountRefreshComponent } from "@shared/ui/domain/my-account/account-refresh/account-refresh.component";
 import '@sgdf/ui/page-title'
 
 /**
@@ -19,6 +20,7 @@ import '@sgdf/ui/page-title'
 		AccountInfoComponent,
 		AccountLanguageComponent,
 		AccountThemeComponent,
+		AccountRefreshComponent,
 		AccountPersonalDataComponent
 	],
 	providers: [provideTranslocoScope('my-account')],

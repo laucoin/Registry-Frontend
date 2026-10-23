@@ -19,7 +19,7 @@
           (updateRequired)="loadBatch($event)"
           (filtersReset)="resetFilters()">
     <ng-template appTemplate="search">
-        <form class="grid grid-cols-1 items-end gap-(--spacing--in-block-large) md:grid-cols-3"
+        <form class="grid grid-cols-1 items-end gap-(--spacing--in-block-large) md:grid-cols-4"
               (submit)="$event.preventDefault(); search()">
             <sgdf-input appSgdfField [label]="'projects.search-and-filter.text' | transloco"
                         [formField]="form.q"/>
@@ -32,7 +32,21 @@
                     <sgdf-option [value]="item.value | booleanChoice">{{ item.label }}</sgdf-option>
                 }
             </sgdf-select>
-            <div class="flex flex-wrap items-center justify-between gap-(--spacing--in-block) md:col-span-3">
+            <sgdf-select appSgdfField [label]="'projects.search-and-filter.favorite' | transloco"
+                         [formField]="form.isFavorite">
+                @for (item of facade.favoritesMetadata(); track item.label) {
+                    <sgdf-option [value]="item.value | booleanChoice">{{ item.label }}</sgdf-option>
+                }
+            </sgdf-select>
+            @if (canReadAll()) {
+                <sgdf-select appSgdfField [label]="'projects.search-and-filter.with-profile' | transloco"
+                             [formField]="form.withProfile">
+                    @for (item of facade.withProfilesMetadata(); track item.label) {
+                        <sgdf-option [value]="item.value | booleanChoice">{{ item.label }}</sgdf-option>
+                    }
+                </sgdf-select>
+            }
+            <div class="flex flex-wrap items-center justify-between gap-(--spacing--in-block) md:col-span-4">
                 <sgdf-button class="ms-auto" variant="primary" appearance="outlined" submit
                              [loading]="facade.projectsPageLoading()">
                     <sgdf-icon slot="prefix" name="magnifying-glass" library="solid"/>
@@ -49,7 +63,11 @@
             <sgdf-avatar slot="start" shape="rounded" variant="primary"
                          aria-hidden="true"
                          [initials]="initials(project)"/>
-            <span class="block truncate" [attr.title]="project.name">{{ project.name }}</span>
+            <span class="flex min-w-0 items-center gap-2">
+                <app-favorite-toggle [favorite]="!!project.favorite" [name]="project.name"
+                                     (toggled)="toggleFavorite(project)"/>
+                <span class="block truncate" [attr.title]="project.name">{{ project.name }}</span>
+            </span>
             @if (!project.visible) {
                 <span class="sr-only">({{ 'projects.visible.false' | transloco }})</span>
             }

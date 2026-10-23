@@ -184,6 +184,21 @@ describe( 'BrowserService', () => {
         expect( element.classList.contains( 'highlight' ) ).toBe( false )
     } )
 
+    it( 'highlights only the element inside the given root', () => {
+        // Arrange
+        vi.useFakeTimers()
+        document.body.innerHTML = '<div id="a"><i data-value="42"></i></div><div id="b"><i data-value="42"></i></div>'
+        const inside: Element = document.querySelector( '#b [data-value="42"]' )!
+        const outside: Element = document.querySelector( '#a [data-value="42"]' )!
+
+        // Act
+        service.highlightByDataValue( '42', document.querySelector( '#b' )! )
+
+        // Assert
+        expect( inside.classList.contains( 'highlight' ) ).toBe( true )
+        expect( outside.classList.contains( 'highlight' ) ).toBe( false )
+    } )
+
     it( 'ignores a highlight request for a missing element', () => {
         // Arrange
         document.body.innerHTML = ''

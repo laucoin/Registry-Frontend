@@ -18,6 +18,7 @@ import { AlertModel } from '@shared/models/model/alert.model';
 import { NotificationModel } from '@shared/models/model/notification.model';
 import { PageModel } from '@shared/models/model/page.model';
 import { ProjectActiveAlertComponent } from './project-active-alert.component';
+import { REFRESH_SERVICE_STUB } from '@shared/helpers/testing/refresh-service.stub';
 
 function alert(id: string, criticality: string | undefined, withCommunication: boolean = true): AlertModel {
 	return {
@@ -52,7 +53,7 @@ describe('ProjectActiveAlertComponent', () => {
 		error = signal<NotificationModel | undefined>(undefined);
 		communicationEnabled = signal(true);
 		fetchCurrentAlertsPage = vi.fn();
-		await MockBuilder(ProjectActiveAlertComponent)
+		await MockBuilder(ProjectActiveAlertComponent).provide(REFRESH_SERVICE_STUB)
 			.mock(TranslocoPipe, (key: string): string => key)
 			.mock(PluralTranslationPipe, (key: string): string => key)
 			.mock(DateFormatPipe, (): string => 'date')

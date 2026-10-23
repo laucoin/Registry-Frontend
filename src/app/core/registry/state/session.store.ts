@@ -30,6 +30,11 @@ export const SessionStore = signalStore(
             ? { currentUser: { ...state.currentUser, preferences: { ...state.currentUser.preferences, theme: theme } } }
             : state
         ) ),
+        setCurrentUserRefreshMode: (refreshMode: string): void => patchState( store, (state: SessionStoreModel) => (
+            state.currentUser
+            ? { currentUser: { ...state.currentUser, preferences: { ...state.currentUser.preferences, refreshMode: refreshMode } } }
+            : state
+        ) ),
         setCurrentProject: (id: string | undefined, project: ProjectModel | undefined): void => {
             patchState( store, { currentProject: { id: id, project: project } } )
         },

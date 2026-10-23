@@ -8,6 +8,7 @@ import { GenericHelper } from '@shared/helpers/generic.helper'
 import { StateHelper } from '@shared/helpers/state/state.helper'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { ThemeEnum } from '@shared/models/enumeration/theme.enum'
+import { RefreshModeEnum } from '@shared/models/enumeration/refresh-mode.enum'
 import { ConfirmationModel } from '@shared/models/model/confirmation.model'
 import { ErrorModel } from '@shared/models/model/error.model'
 import { NotificationModel } from '@shared/models/model/notification.model'
@@ -41,6 +42,7 @@ export class UiFacade {
 	)
 
 	public readonly theme: Signal<ThemeEnum> = this.ui.theme
+	public readonly refreshMode: Signal<RefreshModeEnum> = this.ui.refreshMode
 	public readonly tinyScreen: Signal<boolean> = computed((): boolean => this.ui.screenWidth() < 768)
 	public readonly pendingLanguage: Signal<string | undefined> = this.ui.pendingLanguage
 	public readonly globalError: Signal<NotificationModel | undefined> = this.ui.error
@@ -84,6 +86,10 @@ export class UiFacade {
 		if (GenericHelper.nonNull(theme)) {
 			this.ui.updateTheme(theme!)
 		}
+	}
+
+	public updateRefreshMode(refreshMode: RefreshModeEnum): void {
+		this.ui.updateRefreshMode(refreshMode)
 	}
 
 	public notify(message: NotificationModel): void {

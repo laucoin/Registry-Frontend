@@ -1,0 +1,9 @@
+<div class="flex items-center justify-center gap-[0.5rem] pt-[1rem]">
+    <sgdf-button variant="neutral" appearance="text" (click)="cancelled.emit()">
+        {{ 'global.actions.cancel' | transloco }}
+    </sgdf-button>
+    <sgdf-button variant="primary" submit [loading]="saving()">
+        <sgdf-icon slot="prefix" [name]="submitIcon()" library="solid"/>
+        {{ submitLabel() | transloco }}
+    </sgdf-button>
+</div>

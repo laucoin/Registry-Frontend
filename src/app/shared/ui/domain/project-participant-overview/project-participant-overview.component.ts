@@ -13,6 +13,8 @@ import { RouteHelper } from '@shared/helpers/route.helper';
 import { provideTranslocoScope, TranslocoPipe } from "@jsverse/transloco";
 import { SelectedProjectFacade } from '@pages/projects/data/state/selected-project/selected-project.facade';
 import { ProjectStatusModel } from '@shared/models/model/project-status.model';
+import { injectAutoRefresh } from '@shared/helpers/refresh/inject-auto-refresh';
+import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe';
 
 interface OverviewStat {
 	labelKey: string
@@ -28,6 +30,7 @@ interface OverviewStat {
 	changeDetection: ChangeDetectionStrategy.OnPush,
 	imports: [
 		TranslocoPipe,
+		DateFormatPipe,
 		RouterLink
 	],
 	selector: 'app-project-participant-overview',
@@ -38,6 +41,8 @@ interface OverviewStat {
 })
 export class ProjectParticipantOverviewComponent implements OnInit {
 	private readonly facade: SelectedProjectFacade = inject(SelectedProjectFacade);
+
+	private readonly autoRefresh: void = injectAutoRefresh('project-home/participants-status', 'live', (): void => this.facade.refreshParticipantsStatus());
 	private readonly sessionFacade: SessionFacade = inject(SessionFacade);
 
 	public readonly showLink: InputSignal<boolean> = input(true);
@@ -54,6 +59,7 @@ export class ProjectParticipantOverviewComponent implements OnInit {
 			{ labelKey: 'guestsPresent', value: status?.guests },
 		];
 	});
+	protected readonly lastRefresh: Signal<Date | undefined> = computed((): Date | undefined => this.facade.participantsStatus()?.lastRefresh);
 	protected readonly total: Signal<number | undefined> = computed((): number | undefined =>
 		this.facade.participantsStatus() ? this.stats().reduce((sum: number, it: OverviewStat): number => sum + (it.value ?? 0), 0) : undefined,
 	);

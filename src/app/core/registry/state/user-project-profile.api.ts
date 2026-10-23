@@ -1,4 +1,5 @@
-import {Injectable} from '@angular/core'
+import { Injectable } from '@angular/core'
+import { RegistryConfig } from '@core/config/registry.config'
 import { Observable, map } from 'rxjs'
 import {
     ProjectProfilePageParamsModel,
@@ -50,6 +51,11 @@ export class UserProjectProfileApi extends GenericApi {
         return this.http.post<ProjectResponseDto>(`${this.baseUrl}/${projectId}/support`, null).pipe(
             map( ProjectMapper.toModel ),
         )
+    }
+
+    public setProjectFavorite(projectId: string, favorite: boolean): Observable<void> {
+        const url: string = `${RegistryConfig.environment.backend.url}/api/v2/projects/${projectId}/favorite`
+        return favorite ? this.http.post<void>(url, null) : this.http.delete<void>(url)
     }
 
     public deleteUserProfileById(id: string): Observable<void> {

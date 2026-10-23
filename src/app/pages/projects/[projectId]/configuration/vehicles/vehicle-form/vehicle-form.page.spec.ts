@@ -27,10 +27,12 @@ const FILLED: VehicleFormModel = { licensePlate: 'AB-123-CD', brand: 'Ford', mod
 describe( 'VehicleFormPage', () => {
     let facade: Record<string, Mock>
     let back: Mock<() => void>
+    let navigate: Mock<(commands: string[]) => Promise<boolean>>
 
     function create (id: string | undefined): PageApi {
         facade = autoMock()
         back = vi.fn()
+        navigate = vi.fn( (): Promise<boolean> => { back(); return Promise.resolve( true ) } )
         facade[ 'fetchVehicle' ].mockReturnValue( of( VEHICLE_DTO ) )
         facade[ 'updateVehicle' ].mockReturnValue( of( VEHICLE_DTO ) )
         facade[ 'createVehicle' ].mockReturnValue( of( VEHICLE_DTO ) )
@@ -40,8 +42,8 @@ describe( 'VehicleFormPage', () => {
             providers: [
                 { provide: VehicleFacade, useValue: facade },
                 { provide: Location, useValue: { back } },
-                { provide: Router, useValue: { navigateByUrl: vi.fn( () => Promise.resolve( true ) ) } },
-                { provide: ActivatedRoute, useValue: { snapshot: { params: id ? { vehicleId: id } : {} } } },
+                { provide: Router, useValue: { navigateByUrl: vi.fn( () => Promise.resolve( true ) ), navigate: navigate } },
+                { provide: ActivatedRoute, useValue: { snapshot: { params: id ? { vehicleId: id } : {}, url: id ? [ { path: id }, { path: 'edit' } ] : [ { path: 'create' } ] } } },
                 { provide: SessionFacade, useValue: { selectedProject: signal( undefined ), currentUser: (): undefined => undefined } },
                 { provide: UiFacade, useValue: autoMock() },
                 { provide: CustomDateFormatPipe, useValue: { transform: (): string => '' } },
@@ -91,6 +93,29 @@ describe( 'VehicleFormPage', () => {
         expect( facade[ 'updateVehicle' ] ).toHaveBeenCalledWith( 'v1', expect.objectContaining( { licensePlate: 'AB-123', brand: 'Ford', model: 'T' } ), WHEN_ETAG )
         expect( facade[ 'createVehicle' ] ).not.toHaveBeenCalled()
         expect( back ).toHaveBeenCalledTimes( 1 )
+    } )
+
+    it( 'closes on the list from an edit route made of two segments', () => {
+        // Arrange
+        const page: PageApi = create( 'v1' )
+
+        // Act
+        page.submit()
+
+        // Assert
+        expect( navigate.mock.calls[ 0 ][ 0 ] ).toEqual( [ '../..' ] )
+    } )
+
+    it( 'closes on the list from a create route made of one segment', () => {
+        // Arrange
+        const page: PageApi = create( undefined )
+        page.model.set( FILLED )
+
+        // Act
+        page.submit()
+
+        // Assert
+        expect( navigate.mock.calls[ 0 ][ 0 ] ).toEqual( [ '..' ] )
     } )
 
     it( 'creates a vehicle from the filled form', () => {

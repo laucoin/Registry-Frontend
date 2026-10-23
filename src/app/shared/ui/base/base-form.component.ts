@@ -21,6 +21,8 @@ export abstract class BaseFormComponent extends GenericComponent {
 
     protected readonly subscriptions: Subscription = new Subscription()
 
+    protected readonly closesToParentRoute: boolean = false
+
     protected readonly loading: WritableSignal<boolean> = signal( false )
     protected readonly saving: WritableSignal<boolean> = signal( false )
     protected readonly error: WritableSignal<ErrorModel | undefined> = signal( undefined )
@@ -28,8 +30,6 @@ export abstract class BaseFormComponent extends GenericComponent {
     private destroyed: boolean = false
 
     protected readonly invalidFormMessage: string = this.translateService.translate( 'global.messages.invalid-form' )
-    protected readonly startDateExample: Date = BaseFormComponent.startDateExample
-    protected readonly endDateExample: Date = BaseFormComponent.endDateExample
 
     protected constructor () {
         super()
@@ -55,31 +55,6 @@ export abstract class BaseFormComponent extends GenericComponent {
         if (!RegistryConfig.environment.production) console.warn( this.invalidFormMessage, value )
     }
 
-    private static get startDateExample (): Date {
-        const now: Date = new Date()
-
-        if (now.getMonth() > 6) {
-            now.setFullYear( now.getFullYear() + 1 )
-        }
-
-        now.setMonth( 6, 20 )
-        now.setHours(
-            Math.floor( Math.random() * 23 ),
-            Math.floor( Math.random() * 59 ),
-        )
-        return now
-    }
-
-    private static get endDateExample (): Date {
-        const now: Date = this.startDateExample
-        now.setMonth( 7, 2 )
-        now.setHours(
-            Math.floor( Math.random() * 23 ),
-            Math.floor( Math.random() * 59 ),
-        )
-        return now
-    }
-
     protected abstract loadData (): void
 
     protected abstract handleLoadedElement (): void
@@ -93,7 +68,12 @@ export abstract class BaseFormComponent extends GenericComponent {
 
     protected navigateToRedirectUri (route: RegistryRouteEnum | undefined = undefined): void {
         if (GenericHelper.nonNull( route )) this.router.navigateByUrl( route! ).catch( (): void => this.location.back() )
+        else if (this.closesToParentRoute) this.router.navigate( this.parentRouteCommands(), { relativeTo: this.route } ).catch( console.error )
         else this.location.back()
+    }
+
+    private parentRouteCommands (): string[] {
+        return [ Array.from( { length: Math.max( 1, this.route.snapshot.url.length ) }, (): string => '..' ).join( '/' ) ]
     }
 
     protected abstract get idParam (): string | undefined

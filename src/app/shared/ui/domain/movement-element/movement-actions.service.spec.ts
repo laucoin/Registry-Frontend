@@ -127,4 +127,18 @@ describe('MovementActions', () => {
         expect(navigateByUrl).toHaveBeenCalledWith(expect.stringContaining('x1'))
         expect(navigateByUrl).toHaveBeenCalledWith(expect.stringContaining('p1'))
     })
+
+    it.each([
+        ['REGISTERED', '/edit/registered'],
+        ['GUEST', '/edit/guest'],
+    ])('opens the %s edition page of the movement', (contentType: string, suffix: string) => {
+        // Arrange
+        const edit: ElementActionModel = find({ ...VISIBLE, contentType } as unknown as MovementModel, 'edit')
+
+        // Act
+        edit.run()
+
+        // Assert
+        expect(navigateByUrl).toHaveBeenCalledWith(expect.stringContaining(suffix))
+    })
 })

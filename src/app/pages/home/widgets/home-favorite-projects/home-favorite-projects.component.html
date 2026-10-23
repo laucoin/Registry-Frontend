@@ -1,0 +1,52 @@
+<div class="mb-3 flex flex-wrap items-end justify-between gap-x-3 gap-y-1">
+    <div class="min-w-0">
+        <h2 class="m-0 text-lg font-semibold">{{ 'home.favorites.title' | transloco }}</h2>
+        @if (total() !== undefined) {
+            <small class="opacity-80">{{ 'home.favorites.summary' | pluralTranslation: total() | transloco: { count: total() } }}</small>
+        }
+    </div>
+    <sgdf-button size="small" appearance="text" [routerLink]="projectsLink">{{ 'home.favorites.seeAll' | transloco }}</sgdf-button>
+</div>
+
+@if (error(); as failure) {
+    <app-section-error [error]="failure" [retrying]="loading()" (retry)="reload()"/>
+}
+
+@if (showSkeleton()) {
+    <span class="sr-only" role="status">{{ 'global.list.loading' | transloco }}</span>
+    <div class="grid grid-cols-1 gap-(--spacing--in-block-large) sm:grid-cols-2 lg:grid-cols-3">
+        @for (card of skeletonCards; track card) {
+            <sgdf-skeleton shape="rounded" effect="pulse" aria-hidden="true" style="height: 10rem"/>
+        }
+    </div>
+} @else if (total() === 0) {
+    <p class="m-0 text-sm opacity-80">{{ 'home.favorites.empty' | transloco }}</p>
+} @else {
+    <div class="grid grid-cols-1 gap-(--spacing--in-block-large) sm:grid-cols-2 lg:grid-cols-3" data-testid="favorites-row">
+        @for (project of projects(); track project.id) {
+            <div class="relative min-w-0">
+                <sgdf-tile class="block h-full" [href]="link(project)" (click)="open($event, project)">
+                    <span slot="icon" class="text-sm font-semibold">{{ initials(project) }}</span>
+                    <span slot="title" class="block truncate pe-8" [attr.title]="project.name">{{ project.name }}</span>
+                    @if (summary(project); as summary) {
+                        <span class="block">{{ summary }}</span>
+                    }
+                    @if (project.status; as status) {
+                        <span class="mt-2 block"><sgdf-tag size="small" variant="neutral" appearance="soft">{{ status.label }}</sgdf-tag></span>
+                    }
+                    <small class="mt-2 block text-xs opacity-80">
+                        @if (period(project); as period) {
+                            {{ 'home.favorites.period' | transloco: period }}
+                        } @else {
+                            {{ 'home.favorites.permanent' | transloco }}
+                        }
+                        @if (project.lastEdition; as edition) {
+                            · {{ 'home.favorites.updated' | transloco }} <sgdf-relative-time [date]="edition.dateTime" sync/>
+                        }
+                    </small>
+                </sgdf-tile>
+                <app-favorite-toggle class="absolute right-2 top-2" [favorite]="true" [name]="project.name" (toggled)="remove(project)"/>
+            </div>
+        }
+    </div>
+}

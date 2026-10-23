@@ -1,5 +1,5 @@
 <sgdf-table class="h-full [&::part(grid)]:h-full [&::part(grid)]:table-fixed" appearance="soft">
-    <sgdf-table-row>
+    <sgdf-table-row class="h-px">
         <sgdf-table-cell header class="flex items-center gap-1">
             <sgdf-icon name="bell" library="solid"/>
             <h2 class="text-sm font-semibold uppercase">{{ 'projectHome.activeAlert.title' | transloco }}</h2>
@@ -10,7 +10,7 @@
     </sgdf-table-row>
 
     @if (alertFacade.alertCriticalityRule(); as rule) {
-        <sgdf-table-row>
+        <sgdf-table-row class="h-px">
             <sgdf-table-cell class="text-sm">{{ rule }}</sgdf-table-cell>
         </sgdf-table-row>
     }
@@ -43,7 +43,7 @@
                                 @if (card.alert.criticality?.label) {
                                     ·
                                 }
-                                {{ age | intervalFormat }}
+                                {{ age | intervalFormat: 'global.date-and-time-format' : true }}
                             }
                         </p>
                         @if (card.alert.lastCommunication; as last) {
@@ -68,7 +68,7 @@
         </sgdf-table-cell>
     </sgdf-table-row>
 
-    <sgdf-table-row>
+    <sgdf-table-row class="h-px">
         <sgdf-table-cell>
             <sgdf-button block size="small" appearance="text" data-testid="alerts-link" [routerLink]="alertsLink()">
                 @if (remaining() > 0) {

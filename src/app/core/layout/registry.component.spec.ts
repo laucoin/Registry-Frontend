@@ -6,23 +6,27 @@ import { Subject } from 'rxjs'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
 import { RegistryComponent } from '@core/layout/registry.component'
 import { UiFacade } from '@core/registry/state/ui.facade'
+import { ConfirmationModel } from '@shared/models/model/confirmation.model'
 import { NotificationModel } from '@shared/models/model/notification.model'
+import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 
 describe('RegistryComponent', () => {
 	let notifications: Subject<NotificationModel>
+	let confirmations: Subject<ConfirmationModel>
 	let create: Mock
 	let globalError: WritableSignal<NotificationModel | undefined>
 	let fixture: ComponentFixture<RegistryComponent>
 
 	beforeEach(async () => {
 		notifications = new Subject<NotificationModel>()
+		confirmations = new Subject<ConfirmationModel>()
 		create = vi.fn()
 		globalError = signal<NotificationModel | undefined>(undefined)
 		TestBed.configureTestingModule({
 			imports: [TranslocoTestingModule.forRoot({ langs: { fr: {} }, translocoConfig: { defaultLang: 'fr' } })],
 			providers: [
 				provideRouter([]),
-				{ provide: UiFacade, useValue: { notification: notifications.asObservable(), globalError } },
+				{ provide: UiFacade, useValue: { notification: notifications.asObservable(), confirmation: confirmations.asObservable(), globalError } },
 			],
 		})
 		fixture = TestBed.createComponent(RegistryComponent)
@@ -61,6 +65,21 @@ describe('RegistryComponent', () => {
 
 		// Assert
 		expect(create).toHaveBeenCalledWith('', { variant: 'primary', title: '', duration: undefined })
+	})
+
+	it('should open the confirmation dialog when a command asks for a confirmation', async () => {
+		// Arrange
+		const dialog: HTMLElement & { open: boolean, title: string } = fixture.nativeElement.querySelector('app-confirmation-dialog sgdf-dialog')
+		const before: boolean = dialog.open
+
+		// Act
+		confirmations.next({ header: 'Delete', message: 'Sure?', icon: '', acceptSeverity: SeverityEnum.DANGER, accept: vi.fn() })
+		await fixture.whenStable()
+
+		// Assert
+		expect(before).toBe(false)
+		expect(dialog.open).toBe(true)
+		expect(dialog.title).toBe('Delete')
 	})
 
 	it('should keep the routed pages while there is no global error', () => {

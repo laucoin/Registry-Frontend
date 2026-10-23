@@ -5,6 +5,7 @@ import { SelectedProjectFacade } from '@pages/projects/data/state/selected-proje
 import { NotificationModel } from '@shared/models/model/notification.model';
 import { PlannedMovementModel } from '@shared/models/model/planned-movement.model';
 import { ProjectUpcomingDepartureComponent } from './project-upcoming-departure.component';
+import { REFRESH_SERVICE_STUB } from '@shared/helpers/testing/refresh-service.stub';
 
 describe('ProjectUpcomingDepartureComponent', () => {
 	let fixture: ComponentFixture<ProjectUpcomingDepartureComponent>;
@@ -18,7 +19,7 @@ describe('ProjectUpcomingDepartureComponent', () => {
 		loading = signal(true);
 		error = signal<NotificationModel | undefined>(undefined);
 		load = vi.fn();
-		await MockBuilder(ProjectUpcomingDepartureComponent).provide({
+		await MockBuilder(ProjectUpcomingDepartureComponent).provide(REFRESH_SERVICE_STUB).provide({
 			provide: SelectedProjectFacade,
 			useValue: { plannedDepartures: movements, plannedDeparturesLoading: loading, plannedDeparturesError: error, fetchPlannedDepartures: load },
 		});

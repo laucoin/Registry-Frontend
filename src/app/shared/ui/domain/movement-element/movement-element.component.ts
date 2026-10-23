@@ -1,3 +1,4 @@
+import { ParticipantTypeEnum } from '@shared/models/enumeration/participant-type.enum'
 import { KeyValuePipe, NgTemplateOutlet, TitleCasePipe, UpperCasePipe } from '@angular/common'
 import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, input, InputSignal, model, ModelSignal, Signal } from '@angular/core'
 import { TranslocoPipe } from '@jsverse/transloco'
@@ -11,6 +12,7 @@ import '@sgdf/ui/list-item'
 import '@sgdf/ui/skeleton'
 import '@sgdf/ui/tag'
 import { MovementContentDto } from '@pages/projects/[projectId]/movements/data/dto/movement-content.dto'
+import { GuestMovementDto } from '@pages/projects/[projectId]/movements/data/dto/guest-movement.dto'
 import { MovementDto } from '@pages/projects/[projectId]/movements/data/dto/movement.dto'
 import { MovementFacade } from '@pages/projects/[projectId]/movements/data/state/movement.facade'
 import {
@@ -167,19 +169,33 @@ export class MovementElementComponent extends GenericElementComponent {
     }
 
     protected reverseMovement(content: MovementContentModel[]): void {
-        const reverseMovement: MovementDto = {
+        const type: string = this.movement().type.value === MovementTypeEnum.IN ? MovementTypeEnum.OUT : MovementTypeEnum.IN
+        this.run(this.movement().contentType === ParticipantTypeEnum.GUEST
+                 ? this.facade.createGuestMovement(this.reverseGuestMovement(type, content))
+                 : this.facade.createRegisteredMovement(this.reverseRegisteredMovement(type, content)))
+    }
+
+    private reverseRegisteredMovement(type: string, content: MovementContentModel[]): MovementDto {
+        return {
             dateTime: new Date(),
-            type: this.movement().type.value === MovementTypeEnum.IN ? MovementTypeEnum.OUT : MovementTypeEnum.IN,
+            type,
             reason: undefined,
             activityId: undefined,
-            contentType: this.movement().contentType,
             content: content.map((c: MovementContentModel): MovementContentDto => ({
                 poolName: c.poolName,
                 participantId: c.participant?.id,
                 vehicleId: c.vehicle?.id,
             })),
+        }
+    }
+
+    private reverseGuestMovement(type: string, content: MovementContentModel[]): GuestMovementDto {
+        return {
+            dateTime: new Date(),
+            type,
+            reason: undefined,
+            content: content.map((c: MovementContentModel): { participantId: string } => ({ participantId: c.participant?.id })),
             guests: [],
         }
-        this.run(this.facade.createMovement(reverseMovement))
     }
 }

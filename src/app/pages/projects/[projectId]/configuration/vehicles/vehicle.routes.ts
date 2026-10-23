@@ -12,12 +12,10 @@ export const vehicleRoutes: Routes = [
         children: [
             {
                 path: '', component: VehiclesListPage,
-            },
-            {
-                path: VehicleRoutesEnum.CREATE, component: VehicleFormPage,
-            },
-            {
-                path: VehicleRoutesEnum.EDIT, component: VehicleFormPage,
+                children: [
+                    { path: VehicleRoutesEnum.CREATE, component: VehicleFormPage },
+                    { path: VehicleRoutesEnum.EDIT, component: VehicleFormPage },
+                ],
             },
             {
                 path: VehicleRoutesEnum.MOVEMENTS, component: VehicleMovementsListPage,

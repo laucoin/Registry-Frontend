@@ -1,3 +1,5 @@
+import { UserProfileFacade } from '@core/registry/state/user-profile.facade'
+import { FavoriteToggleComponent } from '@shared/ui/common/favorite-toggle/favorite-toggle.component'
 import { Component, CUSTOM_ELEMENTS_SCHEMA, inject, input, InputSignal, Signal, TemplateRef, viewChild } from '@angular/core'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { TranslocoPipe } from '@jsverse/transloco'
@@ -25,7 +27,7 @@ type TagVariant = 'success' | 'info' | 'warning' | 'danger'
  */
 @Component({
     selector: 'app-project-profile-row',
-    imports: [TranslocoPipe, CustomDateFormatPipe, ElementActionsComponent],
+    imports: [TranslocoPipe, CustomDateFormatPipe, ElementActionsComponent, FavoriteToggleComponent],
     providers: [ProjectProfileActions],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     host: { hidden: '' },
@@ -34,6 +36,7 @@ type TagVariant = 'success' | 'info' | 'warning' | 'danger'
 export class ProjectProfileRowComponent {
     protected readonly actions: ProjectProfileActions = inject(ProjectProfileActions)
     private readonly sessionFacade: SessionFacade = inject(SessionFacade)
+    private readonly userProfileFacade: UserProfileFacade = inject(UserProfileFacade)
 
     public readonly view: InputSignal<'user' | 'project'> = input.required()
     public readonly template: Signal<TemplateRef<unknown>> = viewChild.required<TemplateRef<unknown>>('row')
@@ -56,6 +59,18 @@ export class ProjectProfileRowComponent {
 
     protected awaitsAnswer(profile: ListedProfileModel): boolean {
         return profile.status.value === ProfileStatusEnum.INVITED && (!isProjectProfile( profile ) || profile.user.id === this.sessionFacade.currentUser()?.id)
+    }
+
+    protected canFavorite(profile: ListedProfileModel): boolean {
+        return !isProjectProfile( profile ) && !!profile.project && !this.awaitsAnswer( profile )
+    }
+
+    protected isFavorite(profile: ListedProfileModel): boolean {
+        return !isProjectProfile( profile ) && !!profile.project?.favorite
+    }
+
+    protected toggleFavorite(profile: ListedProfileModel): void {
+        if (!isProjectProfile( profile )) this.userProfileFacade.toggleProjectFavorite( profile )
     }
 
     protected availabilityVariant(profile: ListedProfileModel): TagVariant {

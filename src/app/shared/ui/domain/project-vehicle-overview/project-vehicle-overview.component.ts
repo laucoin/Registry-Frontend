@@ -13,6 +13,8 @@ import { RouteHelper } from '@shared/helpers/route.helper';
 import { provideTranslocoScope, TranslocoPipe } from "@jsverse/transloco";
 import { SelectedProjectFacade } from '@pages/projects/data/state/selected-project/selected-project.facade';
 import { VehicleStatusModel } from '@shared/models/model/vehicle-status.model';
+import { injectAutoRefresh } from '@shared/helpers/refresh/inject-auto-refresh';
+import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe';
 
 interface OverviewStat {
 	labelKey: string
@@ -28,6 +30,7 @@ interface OverviewStat {
 	changeDetection: ChangeDetectionStrategy.OnPush,
 	imports: [
 		TranslocoPipe,
+		DateFormatPipe,
 		RouterLink
 	],
 	selector: 'app-project-vehicle-overview',
@@ -38,6 +41,8 @@ interface OverviewStat {
 })
 export class ProjectVehicleOverviewComponent implements OnInit {
 	private readonly facade: SelectedProjectFacade = inject(SelectedProjectFacade);
+
+	private readonly autoRefresh: void = injectAutoRefresh('project-home/vehicles-status', 'live', (): void => this.facade.refreshVehiclesStatus());
 	private readonly sessionFacade: SessionFacade = inject(SessionFacade);
 
 	public readonly showLink: InputSignal<boolean> = input(true);
@@ -53,6 +58,7 @@ export class ProjectVehicleOverviewComponent implements OnInit {
 			{ labelKey: 'out', value: status?.absent },
 		];
 	});
+	protected readonly lastRefresh: Signal<Date | undefined> = computed((): Date | undefined => this.facade.vehiclesStatus()?.lastRefresh);
 	protected readonly total: Signal<number | undefined> = computed((): number | undefined => {
 		const status: VehicleStatusModel | undefined = this.facade.vehiclesStatus();
 		return status && status.present + status.absent;

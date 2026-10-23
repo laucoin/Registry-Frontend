@@ -32,6 +32,7 @@ describe( 'UserProfileFacade', () => {
     let manageAcceptance: Mock<UserProjectProfileApi['manageUserProjectProfileAcceptance']>
     let deleteProfile: Mock<UserProjectProfileApi['deleteUserProfileById']>
     let createSupport: Mock<UserProjectProfileApi['createSupportProjectProfile']>
+    let setProjectFavorite: Mock<UserProjectProfileApi['setProjectFavorite']>
     let findProfilesPage: Mock<UserProjectProfileApi['findUserProjectProfiles']>
     let fetchCurrentUser: Mock<() => Observable<void>>
     let notify: Mock<(message: unknown) => void>
@@ -41,6 +42,7 @@ describe( 'UserProfileFacade', () => {
         manageAcceptance = vi.fn( () => of( { id: 'pp1', status: { value: 'ACCEPTED' } } as unknown as UserInvitationModel ) )
         deleteProfile = vi.fn( () => of( undefined ) )
         createSupport = vi.fn( () => of( { id: 'p1', name: 'Camp', profile: { id: 'pp2' } } as ProjectModel ) )
+        setProjectFavorite = vi.fn( () => of( undefined ) )
         findProfilesPage = vi.fn( () => of( EMPTY_PAGE ) )
         fetchCurrentUser = vi.fn( () => of( undefined ) )
         notify = vi.fn()
@@ -55,6 +57,7 @@ describe( 'UserProfileFacade', () => {
                 manageUserProjectProfileAcceptance: manageAcceptance,
                 deleteUserProfileById: deleteProfile,
                 createSupportProjectProfile: createSupport,
+                setProjectFavorite,
                 findUserProjectProfiles: findProfilesPage,
             },
         }
@@ -79,23 +82,23 @@ describe( 'UserProfileFacade', () => {
     } )
 
     describe( 'pages', () => {
-        it( 'fetches the requested profiles page', () => {
+        it( 'fetches the requested invitations page', () => {
             // Arrange
             const page: number = 3
 
             // Act
-            facade.fetchProjectProfilesPage( page, 10 )
+            facade.fetchProjectProfileInvitationPage( page, 10 )
 
             // Assert
             expect( findProfilesPage ).toHaveBeenCalledWith( 3, 10, expect.anything() )
         } )
 
-        it( 'restarts from the first page after the profiles search changed', () => {
+        it( 'restarts from the first page after the invitations search changed', () => {
             // Arrange
-            facade.inputProfilesPageSearchParameters( 'wolves', undefined, undefined )
+            facade.inputInvitationsPageSearchParameters( 'wolves', undefined )
 
             // Act
-            facade.fetchProjectProfilesPage( 4, 10 )
+            facade.fetchProjectProfileInvitationPage( 4, 10 )
 
             // Assert
             expect( findProfilesPage ).toHaveBeenCalledWith( 0, 10, expect.anything() )
@@ -114,9 +117,9 @@ describe( 'UserProfileFacade', () => {
             expect( facade.userProjectProfileInvitationsPageQueryParam() ).toBe( 'wolves' )
         } )
 
-        it( 'forgets the loaded profiles once the user is gone', () => {
+        it( 'forgets the loaded invitations once the user is gone', () => {
             // Arrange
-            facade.fetchProjectProfilesPage( 0, 10 )
+            facade.fetchProjectProfileInvitationPage( 0, 10 )
             TestBed.tick()
 
             // Act
@@ -124,23 +127,23 @@ describe( 'UserProfileFacade', () => {
             TestBed.tick()
 
             // Assert
-            expect( store.profiles.element() ).toBeUndefined()
+            expect( store.invitations.element() ).toBeUndefined()
         } )
 
-        it( 'keeps the loaded profiles while the user is known', () => {
+        it( 'keeps the loaded invitations while the user is known', () => {
             // Arrange
-            facade.fetchProjectProfilesPage( 0, 10 )
+            facade.fetchProjectProfileInvitationPage( 0, 10 )
 
             // Act
             TestBed.tick()
 
             // Assert
-            expect( facade.userProjectProfilesPage() ).toEqual( EMPTY_PAGE )
+            expect( facade.userProjectProfileInvitationsPage() ).toEqual( EMPTY_PAGE )
         } )
     } )
 
     describe( 'profile commands', () => {
-        it( 'notifies and refreshes the user and both pages after an invitation answer', () => {
+        it( 'notifies and refreshes the user and the invitations page after an invitation answer', () => {
             // Arrange
 
             // Act
@@ -150,7 +153,7 @@ describe( 'UserProfileFacade', () => {
             expect( manageAcceptance ).toHaveBeenCalledWith( 'pp1', true )
             expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'project-profiles.notifications.acceptance.ACCEPTED.title' } ) )
             expect( fetchCurrentUser ).toHaveBeenCalledTimes( 1 )
-            expect( findProfilesPage ).toHaveBeenCalledTimes( 2 )
+            expect( findProfilesPage ).toHaveBeenCalledTimes( 1 )
         } )
 
         it( 'notifies the failure of an invitation answer', () => {
@@ -165,7 +168,48 @@ describe( 'UserProfileFacade', () => {
             expect( fetchCurrentUser ).not.toHaveBeenCalled()
         } )
 
-        it( 'notifies and refreshes after the deletion of a profile', () => {
+        it( 'toggles the favorite of the project of a profile and shows it in the loaded invitations', () => {
+            // Arrange
+            const profile: UserInvitationModel = { id: 'pp1', project: { id: 'p1', name: 'Camp', favorite: false } } as UserInvitationModel
+            findProfilesPage.mockReturnValue( of( { ...EMPTY_PAGE, content: [ profile ] } ) )
+            facade.fetchProjectProfileInvitationPage( 0, 10 )
+
+            // Act
+            facade.toggleProjectFavorite( profile )
+
+            // Assert
+            expect( setProjectFavorite ).toHaveBeenCalledWith( 'p1', true )
+            expect( facade.userProjectProfileInvitationsPage()?.content[ 0 ]?.project?.favorite ).toBe( true )
+        } )
+
+        it( 'removes the favorite when the project already is one', () => {
+            // Act
+            facade.toggleProjectFavorite( { id: 'pp1', project: { id: 'p1', name: 'Camp', favorite: true } } as UserInvitationModel )
+
+            // Assert
+            expect( setProjectFavorite ).toHaveBeenCalledWith( 'p1', false )
+        } )
+
+        it( 'does nothing for a profile without project', () => {
+            // Act
+            facade.toggleProjectFavorite( { id: 'pp1', project: undefined } as UserInvitationModel )
+
+            // Assert
+            expect( setProjectFavorite ).not.toHaveBeenCalled()
+        } )
+
+        it( 'notifies the failure of a favorite change', () => {
+            // Arrange
+            setProjectFavorite.mockReturnValue( failing( FAILURE ) )
+
+            // Act
+            facade.toggleProjectFavorite( { id: 'pp1', project: { id: 'p1', name: 'Camp', favorite: false } } as UserInvitationModel )
+
+            // Assert
+            expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'Title' } ) )
+        } )
+
+        it( 'notifies after the deletion of a profile', () => {
             // Arrange
             let completed: boolean = false
 
@@ -178,7 +222,7 @@ describe( 'UserProfileFacade', () => {
             expect( completed ).toBe( true )
         } )
 
-        it( 'completes without refreshing when the deletion fails', () => {
+        it( 'completes without reloading the user when the deletion fails', () => {
             // Arrange
             deleteProfile.mockReturnValue( failing( FAILURE ) )
             let completed: boolean = false
@@ -216,18 +260,5 @@ describe( 'UserProfileFacade', () => {
             // Assert
             expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { sticky: true } ) )
         } )
-    } )
-
-    it( 'reloads every shown batch of the profiles in one request after a profile is deleted', () => {
-        // Arrange
-        findProfilesPage.mockReturnValue( of( { ...EMPTY_PAGE, page: 2 } ) )
-        facade.fetchProjectProfilesPage( 2, 10 )
-        findProfilesPage.mockClear()
-
-        // Act
-        facade.deleteUserProjectProfile( { id: 'pp1', project: { name: 'Camp' } } as UserInvitationModel ).subscribe()
-
-        // Assert
-        expect( findProfilesPage ).toHaveBeenCalledWith( 0, 30, expect.anything() )
     } )
 } )
