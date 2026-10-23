@@ -98,15 +98,15 @@ export class GroupMemberListPage implements OnDestroy {
     )
 
     protected readonly activeFilters: Signal<number> = computed( (): number => [
-        StringHelper.isNotNullNorBlank( this.facade.groupMembersPageTextSearchedParam() ),
-        this.facade.groupMembersPageStatusSearchedParam() !== undefined,
-        this.facade.groupMembersPageVisibilitySearchedParam() !== undefined,
+        StringHelper.isNotNullNorBlank( this.facade.groupMembersPageQueryParam() ),
+        this.facade.groupMembersPageStatusParam() !== undefined,
+        this.facade.groupMembersPageIsVisibleParam() !== undefined,
     ].filter( Boolean ).length )
 
     protected readonly model: WritableSignal<GroupMemberListSearchModel> = signal( toGroupMemberListSearchModel( {
-        textSearched: this.facade.groupMembersPageTextSearchedParam(),
-        statusSearched: this.facade.groupMembersPageStatusSearchedParam(),
-        visibilitySearched: this.facade.groupMembersPageVisibilitySearchedParam(),
+        q: this.facade.groupMembersPageQueryParam(),
+        status: this.facade.groupMembersPageStatusParam(),
+        isVisible: this.facade.groupMembersPageIsVisibleParam(),
     } ) )
     protected readonly form: FieldTree<GroupMemberListSearchModel> = createSearchForm( this.model )
 
@@ -155,17 +155,17 @@ export class GroupMemberListPage implements OnDestroy {
 
     protected search (): void {
         const search: ReturnType<typeof toGroupMemberListSearchParams> = toGroupMemberListSearchParams( this.model() )
-        this.facade.inputMembersPageSearchParameters( search.textSearched, search.statusSearched, search.visibilitySearched )
+        this.facade.inputMembersPageSearchParameters( search.q, search.status, search.isVisible )
         this.facade.fetchGroupMembersPage( this.groupId(), 0, undefined )
     }
 
     protected resetFilters (): void {
-        this.model.set( { textSearched: '', statusSearched: '', visibilitySearched: '' } )
+        this.model.set( { q: '', status: '', isVisible: '' } )
         this.search()
     }
 
     protected loadBatch (pageEvent: PageEventModel): void {
-        this.facade.fetchGroupMembersPage( this.groupId(), pageEvent.pageNumber, pageEvent.pageSize )
+        this.facade.fetchGroupMembersPage( this.groupId(), pageEvent.page, pageEvent.size )
     }
 
     protected handleSearch (searched: string | undefined): void {

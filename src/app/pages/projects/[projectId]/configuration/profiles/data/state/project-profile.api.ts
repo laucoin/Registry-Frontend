@@ -18,6 +18,7 @@ import { PageMapper } from '@shared/mappers/page.mapper'
 import { ProjectProfileMapper } from '@shared/mappers/project-profile.mapper'
 import { UserMapper } from '@shared/mappers/user.mapper'
 import { PageResponseDto } from '@shared/models/dto/response/page.response.dto'
+import { ETagHelper } from '@shared/helpers/etag.helper'
 
 /**
  * Purpose: Sends the HTTP requests of the project profile domain.
@@ -29,19 +30,19 @@ import { PageResponseDto } from '@shared/models/dto/response/page.response.dto'
 })
 export class ProjectProfileApi extends GenericProjectApi {
     public constructor() {
-        super(`/api/v1/projects/${SELECT_PROFILE_PROJECT_ID}/profiles`)
+        super(`/api/v2/projects/${SELECT_PROFILE_PROJECT_ID}/profiles`)
     }
 
     public findProjectProfiles(
         projectId: string | undefined,
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
         params: ProjectProfilePageParamsModel,
     ): Observable<PageModel<ProjectProfileModel>> {
         return this.http.get<PageResponseDto<ProjectProfileResponseDto>>(
             `${this.buildRequestBaseUrl(projectId)}?${QueryHelper.buildQueryParams(
-                pageNumber,
-                pageSize,
+                page,
+                size,
                 params,
             ).toString()}`,
         ).pipe(
@@ -57,12 +58,12 @@ export class ProjectProfileApi extends GenericProjectApi {
 
     public searchUsers(
         projectId: string | undefined,
-        textSearched: string | undefined,
+        q: string | undefined,
     ): Observable<UserModel[]> {
         return this.http.get<UserResponseDto[]>(
-            `${this.buildRequestBaseUrl(projectId)}/search/users${textSearched ? '?' + new HttpParams().set(
-                'textSearched',
-                textSearched,
+            `${this.buildRequestBaseUrl(projectId)}/search/users${q ? '?' + new HttpParams().set(
+                'q',
+                q,
             ).toString() : ''}`,
         ).pipe(
             map( (dtos: UserResponseDto[]): UserModel[] => dtos.map( UserMapper.toModel ) ),
@@ -84,20 +85,21 @@ export class ProjectProfileApi extends GenericProjectApi {
         projectId: string | undefined,
         id: string,
         profile: ProjectProfileDto,
+        ifMatch?: string,
     ): Observable<ProjectProfileModel> {
-        return this.http.patch<ProjectProfileResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}`, profile).pipe(
+        return this.http.patch<ProjectProfileResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}`, profile, ETagHelper.options(ifMatch)).pipe(
             map( ProjectProfileMapper.toModel ),
         )
     }
 
     public blockProjectProfileById(projectId: string | undefined, id: string): Observable<ProjectProfileModel> {
-        return this.http.patch<ProjectProfileResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/block`, null).pipe(
+        return this.http.post<ProjectProfileResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/block`, null).pipe(
             map( ProjectProfileMapper.toModel ),
         )
     }
 
     public unblockProjectProfileById(projectId: string | undefined, id: string): Observable<ProjectProfileModel> {
-        return this.http.patch<ProjectProfileResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/unblock`, null).pipe(
+        return this.http.post<ProjectProfileResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/unblock`, null).pipe(
             map( ProjectProfileMapper.toModel ),
         )
     }

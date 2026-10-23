@@ -45,6 +45,7 @@ import { ElementActionsComponent } from '@shared/ui/common/element-actions/eleme
 @Component({
     selector: 'sgdf-list-item[appMovementElement], app-movement-element',
     providers: [MovementActions],
+    host: { '[disabled]': '!movement().visible' },
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     imports: [
         ElementActionsComponent,

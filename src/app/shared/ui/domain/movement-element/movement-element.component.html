@@ -3,6 +3,9 @@
     <sgdf-icon slot="icon" [name]="typeIconName()" library="solid"/>
 </sgdf-avatar>
 <span class="block truncate" [attr.title]="typeAndReason()">{{ typeAndReason() }}</span>
+@if (!movement().visible) {
+    <span class="sr-only">({{ 'movements.visible.false' | transloco }})</span>
+}
 <span slot="description" class="flex flex-wrap items-center gap-x-3">
     <span class="inline-flex items-center gap-1">
         <sgdf-icon name="clock" library="regular"/>
@@ -36,9 +39,6 @@
     }
 </span>
 <span slot="end" class="flex flex-wrap items-center gap-2">
-    @if (!movement().visible) {
-        <sgdf-tag appearance="outlined" pill>{{ 'movements.visible.false' | transloco }}</sgdf-tag>
-    }
     @if (reversibleAuthorized() && total() > 0) {
         <sgdf-button size="small" variant="info" appearance="outlined"
                      (click)="confirmMovementReversion(movement().content)">

@@ -1,5 +1,5 @@
 import { signal } from '@angular/core'
-import { TestBed } from '@angular/core/testing'
+import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslocoService } from '@jsverse/transloco'
 import { of } from 'rxjs'
@@ -26,6 +26,7 @@ function hideEvent (own: boolean): Event {
 describe( 'AlertElementComponent', () => {
     let confirm: Mock<(confirmation: { accept: () => void }) => void>
     let facade: Record<string, Mock>
+    let fixture: ComponentFixture<AlertElementComponent>
 
     function create (element: object): AlertElementComponent {
         confirm = vi.fn()
@@ -46,7 +47,7 @@ describe( 'AlertElementComponent', () => {
             ],
         } )
         TestBed.overrideComponent( AlertElementComponent, { set: { template: '', imports: [], providers: [ AlertActions ], styleUrl: undefined, styleUrls: [] } } )
-        const fixture: ReturnType<typeof TestBed.createComponent<AlertElementComponent>> = TestBed.createComponent( AlertElementComponent )
+        fixture = TestBed.createComponent( AlertElementComponent )
         fixture.componentRef.setInput( 'alert', element )
         return fixture.componentInstance
     }
@@ -85,6 +86,21 @@ describe( 'AlertElementComponent', () => {
         // Assert
         expect( ids ).toContain( 'enable' )
         expect( ids ).not.toContain( 'disable' )
+    } )
+
+    it( 'disables the host of a hidden element only', () => {
+        // Arrange
+        create( { ...ELEMENT, visible: false } )
+
+        // Act
+        fixture.detectChanges()
+        const hiddenDisabled: boolean = fixture.nativeElement.disabled
+        fixture.componentRef.setInput( 'alert', ELEMENT )
+        fixture.detectChanges()
+
+        // Assert
+        expect( hiddenDisabled ).toBe( true )
+        expect( fixture.nativeElement.disabled ).toBe( false )
     } )
 
     it( 'asks for a confirmation before deleting, then deletes the element', () => {

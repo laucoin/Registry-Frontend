@@ -22,21 +22,22 @@ interface ActivityMovementsPageRequest extends ActivitiesPageRequest {
 }
 
 const defaultActivityStore: ActivityStoreModel = {
+    sectionErrors: {},
     activities: PageStateHelper.initial<ActivityPageParamsModel, ActivityModel>( {
         resetSearch: false,
-        textSearched: undefined,
-        visibilitySearched: undefined,
-        availabilitySearched: undefined,
-        dateTimeSearched: undefined,
+        q: undefined,
+        isVisible: undefined,
+        isAvailable: undefined,
+        at: undefined,
     } ),
     movements: PageStateHelper.initial<MovementPageParamsModel, MovementModel>( {
         resetSearch: false,
-        currentMovements: false,
-        visibilitySearched: undefined,
-        linkedToActivity: undefined,
-        typeSearched: undefined,
-        startDateTimeSearched: undefined,
-        endDateTimeSearched: undefined,
+        isCurrent: false,
+        isVisible: undefined,
+        hasActivity: undefined,
+        type: undefined,
+        from: undefined,
+        to: undefined,
     } ),
     metadata: {
         availabilities: [
@@ -62,14 +63,14 @@ export const ActivityStore = signalStore(
     withProfileScope<ActivityStoreModel>( defaultActivityStore ),
     withMethods( (store, api = inject( ActivityApi ), movementApi = inject( MovementApi ), errors = inject( ErrorReporter )) => ({
         fetchActivitiesPage: pageFetcher( store, 'activities', (request: ActivitiesPageRequest, params: ActivityPageParamsModel) =>
-            api.findActivities( request.projectId, request.pageNumber, request.pageSize, params ), errors, { merge: CumulativePageHelper.merge } ),
+            api.findActivities( request.projectId, request.page, request.size, params ), errors, { merge: CumulativePageHelper.merge } ),
         updateActivitiesPageSearchParams: paramsUpdater( store, 'activities' ),
         updateActivityMovementsPageSearchParams: paramsUpdater( store, 'movements' ),
-        fetchActivityMovementsContents: movementContentsFetcher( store, movementApi, errors ),
+        fetchActivityMovementsContents: movementContentsFetcher( store, movementApi ),
     }) ),
     withMethods( (store, api = inject( ActivityApi ), errors = inject( ErrorReporter )) => ({
         fetchActivityMovementsPage: pageFetcher( store, 'movements', (request: ActivityMovementsPageRequest, params: MovementPageParamsModel) =>
-            api.findActivityMovements( request.projectId, request.id, request.pageNumber, request.pageSize, params ), errors, {
+            api.findActivityMovements( request.projectId, request.id, request.page, request.size, params ), errors, {
             merge: CumulativePageHelper.merge,
             after: contentsRequester( store.fetchActivityMovementsContents ),
         } ),

@@ -54,13 +54,13 @@ export class UsersListPage {
     protected readonly userActions: UserActions = inject(UserActions)
 
     protected readonly activeFilters: Signal<number> = computed((): number => [
-        StringHelper.isNotNullNorBlank(this.facade.usersPageTextSearchedParam()),
-        this.facade.actualUsersPageVisibilitySearchedParam() !== undefined,
+        StringHelper.isNotNullNorBlank(this.facade.usersPageQueryParam()),
+        this.facade.actualUsersPageIsVisibleParam() !== undefined,
     ].filter(Boolean).length)
 
     protected readonly model: WritableSignal<UsersListSearchModel> = signal(toUsersListSearchModel({
-        textSearched: this.facade.usersPageTextSearchedParam(),
-        visibilitySearched: this.facade.actualUsersPageVisibilitySearchedParam(),
+        q: this.facade.usersPageQueryParam(),
+        isVisible: this.facade.actualUsersPageIsVisibleParam(),
     }))
     protected readonly form: FieldTree<UsersListSearchModel> = createSearchForm(this.model)
 
@@ -70,17 +70,17 @@ export class UsersListPage {
 
     protected search(): void {
         const search: ReturnType<typeof toUsersListSearchParams> = toUsersListSearchParams(this.model())
-        this.facade.inputPageSearchParameters(search.textSearched, search.visibilitySearched)
+        this.facade.inputPageSearchParameters(search.q, search.isVisible)
         this.facade.fetchUsersPage(0, undefined)
     }
 
     protected resetFilters(): void {
-        this.model.set({ textSearched: '', visibilitySearched: '' })
+        this.model.set({ q: '', isVisible: '' })
         this.search()
     }
 
     protected loadBatch(pageEvent: PageEventModel): void {
-        this.facade.fetchUsersPage(pageEvent.pageNumber, pageEvent.pageSize)
+        this.facade.fetchUsersPage(pageEvent.page, pageEvent.size)
     }
 
     protected fullName(user: UserModel): string {

@@ -1,7 +1,7 @@
 export interface GroupPageParamsModel {
     resetSearch: boolean
-    textSearched: string | undefined
-    presenceSearched: boolean | undefined
-    visibilitySearched: boolean | undefined
-    dateTimeSearched: string | undefined
+    q: string | undefined
+    isPresent: boolean | undefined
+    isVisible: boolean | undefined
+    at: string | undefined
 }

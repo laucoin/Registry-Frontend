@@ -10,7 +10,7 @@ import { GroupModel } from '@shared/models/model/group.model'
 import { GroupStore } from '@pages/projects/[projectId]/configuration/groups/data/state/group.store'
 import { DateHelper } from '@shared/helpers/date.helper'
 import { GroupApi } from '@pages/projects/[projectId]/configuration/groups/data/state/group.api'
-import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/rx.helper'
+import { notifyOnError } from '@shared/helpers/rx.helper'
 import { CommandEvent } from '@shared/helpers/facade/command-event.service'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { AddedGroupMembersDto } from '@shared/models/dto/added-group-members.dto'
@@ -39,15 +39,15 @@ export class GroupFacade extends GenericProjectElementFacade {
 
     public readonly groupsPageResetSearch: Signal<boolean> = this.store.groups.params.resetSearch
 
-    public readonly groupsPageTextSearchedParam: Signal<string | undefined> = this.store.groups.params.textSearched
+    public readonly groupsPageQueryParam: Signal<string | undefined> = this.store.groups.params.q
 
-    public readonly groupsPageDateTimeSearchedParam: Signal<Date | undefined> = computed( () =>
-            DateHelper.buildDate( this.store.groups.params.dateTimeSearched() ),
+    public readonly groupsPageAtParam: Signal<Date | undefined> = computed( () =>
+            DateHelper.buildDate( this.store.groups.params.at() ),
         )
 
-    public readonly groupsPagePresenceSearchedParam: Signal<boolean | undefined> = this.store.groups.params.presenceSearched
+    public readonly groupsPageIsPresentParam: Signal<boolean | undefined> = this.store.groups.params.isPresent
 
-    public readonly groupsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.groups.params.visibilitySearched
+    public readonly groupsPageIsVisibleParam: Signal<boolean | undefined> = this.store.groups.params.isVisible
 
     public readonly groupMembersPage: Signal<PageModel<ParticipantModel> | undefined> = this.store.members.element
 
@@ -59,11 +59,11 @@ export class GroupFacade extends GenericProjectElementFacade {
 
     public readonly groupMembersPageResetSearch: Signal<boolean> = this.store.members.params.resetSearch
 
-    public readonly groupMembersPageTextSearchedParam: Signal<string | undefined> = this.store.members.params.textSearched
+    public readonly groupMembersPageQueryParam: Signal<string | undefined> = this.store.members.params.q
 
-    public readonly groupMembersPageStatusSearchedParam: Signal<string | undefined> = this.store.members.params.statusSearched
+    public readonly groupMembersPageStatusParam: Signal<string | undefined> = this.store.members.params.status
 
-    public readonly groupMembersPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.members.params.visibilitySearched
+    public readonly groupMembersPageIsVisibleParam: Signal<boolean | undefined> = this.store.members.params.isVisible
 
     public readonly searchedParticipantsMetadata: Signal<SelectOptionModel<ParticipantModel>[]> = this.store.metadata.searched
 
@@ -82,67 +82,67 @@ export class GroupFacade extends GenericProjectElementFacade {
         )
 
     public fetchGroupsPage (
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
     ): void {
-        const index: number | undefined = this.groupsPageResetSearch() ? 0 : pageNumber
-        this.store.fetchGroupsPage( { projectId: this.selectedProjectId(), pageNumber: index, pageSize: pageSize } )
+        const index: number | undefined = this.groupsPageResetSearch() ? 0 : page
+        this.store.fetchGroupsPage( { projectId: this.selectedProjectId(), page: index, size: size } )
     }
 
     public inputPageSearchParameters (
-        textSearched: string | undefined,
-        dateTimeSearched: Date | undefined,
-        presenceSearched: boolean | undefined,
-        visibilitySearched: boolean | undefined,
+        q: string | undefined,
+        at: Date | undefined,
+        isPresent: boolean | undefined,
+        isVisible: boolean | undefined,
     ): void {
-        const resetSearch: boolean = this.groupsPageTextSearchedParam() != textSearched
-                                     || this.groupsPagePresenceSearchedParam() != presenceSearched
-                                     || this.groupsPageDateTimeSearchedParam() != dateTimeSearched?.toISOString()
-                                     || this.groupsPageVisibilitySearchedParam() != visibilitySearched
+        const resetSearch: boolean = this.groupsPageQueryParam() != q
+                                     || this.groupsPageIsPresentParam() != isPresent
+                                     || this.groupsPageAtParam()?.toISOString() != at?.toISOString()
+                                     || this.groupsPageIsVisibleParam() != isVisible
 
         if (resetSearch) {
             this.store.updateGroupsPageSearchParams( {
                 resetSearch: resetSearch,
-                textSearched: textSearched,
-                presenceSearched: presenceSearched,
-                visibilitySearched: visibilitySearched,
-                dateTimeSearched: dateTimeSearched?.toISOString(),
+                q: q,
+                isPresent: isPresent,
+                isVisible: isVisible,
+                at: at?.toISOString(),
             } )
         }
     }
 
     public fetchGroupMembersPage (
         id: string,
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
     ): void {
-        const index: number | undefined = this.groupMembersPageResetSearch() ? 0 : pageNumber
-        this.store.fetchGroupMembersPage( { projectId: this.selectedProjectId(), id: id, pageNumber: index, pageSize: pageSize } )
+        const index: number | undefined = this.groupMembersPageResetSearch() ? 0 : page
+        this.store.fetchGroupMembersPage( { projectId: this.selectedProjectId(), id: id, page: index, size: size } )
     }
 
     public inputMembersPageSearchParameters (
-        textSearched: string | undefined,
-        statusSearched: string | undefined,
-        visibilitySearched: boolean | undefined,
+        q: string | undefined,
+        status: string | undefined,
+        isVisible: boolean | undefined,
     ): void {
-        const resetSearch: boolean = this.groupMembersPageTextSearchedParam() != textSearched
-                                     || this.groupMembersPageStatusSearchedParam() != statusSearched
-                                     || this.groupMembersPageVisibilitySearchedParam() != visibilitySearched
+        const resetSearch: boolean = this.groupMembersPageQueryParam() != q
+                                     || this.groupMembersPageStatusParam() != status
+                                     || this.groupMembersPageIsVisibleParam() != isVisible
 
         if (resetSearch) {
             this.store.updateGroupMembersPageSearchParams( {
                 resetSearch: resetSearch,
-                visibilitySearched: visibilitySearched,
-                statusSearched: statusSearched,
-                textSearched: textSearched,
+                isVisible: isVisible,
+                status: status,
+                q: q,
             } )
         }
     }
 
     public searchParticipants (
-        textSearched: string | undefined = undefined,
+        q: string | undefined = undefined,
     ): void {
-        this.store.searchParticipants( { projectId: this.selectedProjectId(), textSearched: textSearched } )
+        this.store.searchParticipants( { projectId: this.selectedProjectId(), q: q } )
     }
 
     public fetchGroup (id: string): Observable<GroupModel> {
@@ -153,14 +153,12 @@ export class GroupFacade extends GenericProjectElementFacade {
 
     public createGroup (group: GroupDto): Observable<GroupModel> {
         return this.api.createGroup( this.selectedProjectId(), group ).pipe(
-            notifyUnavailableOnly( this.uiFacade ),
             tap( (created: GroupModel): void => this.onCommandSuccess( 'create', created ) ),
         )
     }
 
-    public updateGroup (id: string, group: GroupDto): Observable<GroupModel> {
-        return this.api.updateGroupById( this.selectedProjectId(), id, group ).pipe(
-            notifyUnavailableOnly( this.uiFacade ),
+    public updateGroup (id: string, group: GroupDto, ifMatch?: string): Observable<GroupModel> {
+        return this.api.updateGroupById( this.selectedProjectId(), id, group, ifMatch ).pipe(
             tap( (updated: GroupModel): void => this.onCommandSuccess( 'update', updated ) ),
         )
     }
@@ -211,12 +209,12 @@ export class GroupFacade extends GenericProjectElementFacade {
         )
     }
 
-    public removeMemberFromGroup (id: string, participant: ParticipantModel): Observable<GroupModel> {
+    public removeMemberFromGroup (id: string, participant: ParticipantModel): Observable<void> {
         return this.api.removeMemberFromGroupById( this.selectedProjectId(), id, participant.id ).pipe(
             notifyOnError( this.uiFacade ),
-            tap( (group: GroupModel): void => {
+            tap( (): void => {
                 this.notifySuccess( 'groups.notifications.remove-member', 'pi pi-user-minus', {
-                    name: group?.name,
+                    name: participant.groups?.find( (group: GroupModel): boolean => group.id === id )?.name,
                     firstName: participant.firstName,
                     lastName: participant.lastName,
                 } )

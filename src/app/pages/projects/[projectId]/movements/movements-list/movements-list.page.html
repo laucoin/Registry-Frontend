@@ -23,18 +23,18 @@
               (submit)="$event.preventDefault(); search()">
             <sgdf-date-time-picker appSgdfField with-time
                                    [label]="'movements.search-and-filter.start-datetime' | transloco"
-                                   [formField]="form.startDateTimeSearched"/>
+                                   [formField]="form.from"/>
             <sgdf-date-time-picker appSgdfField with-time
                                    [label]="'movements.search-and-filter.end-datetime' | transloco"
-                                   [formField]="form.endDateTimeSearched"/>
+                                   [formField]="form.to"/>
             <sgdf-select appSgdfField [label]="'movements.search-and-filter.type' | transloco"
-                         [formField]="form.typeSearched">
+                         [formField]="form.type">
                 @for (item of facade.movementTypesMetadata(); track item.label) {
                     <sgdf-option [value]="item.value ?? ''">{{ item.label }}</sgdf-option>
                 }
             </sgdf-select>
             <sgdf-select appSgdfField [label]="'movements.search-and-filter.visibility' | transloco"
-                         [formField]="form.visibilitySearched">
+                         [formField]="form.isVisible">
                 @for (item of facade.visibilitiesMetadata(); track item.label) {
                     <sgdf-option [value]="item.value | booleanChoice">{{ item.label }}</sgdf-option>
                 }

@@ -14,7 +14,7 @@ import { GroupFormPage } from '@pages/projects/[projectId]/configuration/groups/
 import { GroupFormModel } from '@pages/projects/[projectId]/configuration/groups/group-form/group.form'
 import { CustomDateFormatPipe } from '@shared/helpers/pipe/custom-date-format.pipe'
 import { autoMock } from '@shared/helpers/testing/auto-mock'
-import { GROUP_DTO, PARTICIPANT_DTO } from '@shared/helpers/testing/response-fixtures'
+import { GROUP_DTO, PARTICIPANT_DTO, WHEN_ETAG } from '@shared/helpers/testing/response-fixtures'
 
 interface PageApi {
     submit: () => void
@@ -88,7 +88,7 @@ describe( 'GroupFormPage', () => {
         page.submit()
 
         // Assert
-        expect( facade[ 'updateGroup' ] ).toHaveBeenCalledWith( 'g1', expect.objectContaining( { name: 'Wolves', members: [ 'pa1' ] } ) )
+        expect( facade[ 'updateGroup' ] ).toHaveBeenCalledWith( 'g1', expect.objectContaining( { name: 'Wolves', members: [ 'pa1' ] } ), WHEN_ETAG )
         expect( facade[ 'createGroup' ] ).not.toHaveBeenCalled()
         expect( back ).toHaveBeenCalledTimes( 1 )
     } )

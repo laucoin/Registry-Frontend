@@ -1,5 +1,7 @@
+import { SectionErrorsHelper } from '@shared/helpers/store/section-errors.helper'
 import { computed, inject, Injectable, Signal } from '@angular/core'
 import { Observable, tap } from 'rxjs'
+import { BrowserService } from '@core/browser/browser.service'
 import { PageModel } from '@shared/models/model/page.model'
 import { ParticipantModel } from '@shared/models/model/participant.model'
 import { ParticipantDto } from '@pages/projects/[projectId]/configuration/participants/data/dto/participant.dto'
@@ -11,7 +13,7 @@ import { GenericProjectElementFacade } from '@shared/helpers/facade/generic-proj
 import { MovementModel } from '@shared/models/model/movement.model'
 import { DateHelper } from '@shared/helpers/date.helper'
 import { ParticipantApi } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.api'
-import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/rx.helper'
+import { notifyOnError } from '@shared/helpers/rx.helper'
 import { CommandEvent } from '@shared/helpers/facade/command-event.service'
 import { UserModel } from '@shared/models/model/user.model'
 import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum'
@@ -28,6 +30,12 @@ export class ParticipantFacade extends GenericProjectElementFacade {
 
     private readonly api: ParticipantApi = inject( ParticipantApi )
 
+    private readonly browser: BrowserService = inject( BrowserService )
+
+    public readonly metadataErrors: Signal<Record<string, NotificationModel | undefined>> = SectionErrorsHelper.metadata( this.store.sectionErrors )
+
+    public readonly movementsContentsError: Signal<NotificationModel | undefined> = SectionErrorsHelper.of( this.store.sectionErrors, 'contents' )
+
     public readonly participantsPage: Signal<PageModel<ParticipantModel> | undefined> = this.store.participants.element
 
     public readonly participantsPageLoading: Signal<boolean> = this.store.participants.loading
@@ -38,11 +46,11 @@ export class ParticipantFacade extends GenericProjectElementFacade {
 
     public readonly participantsPageResetSearch: Signal<boolean> = this.store.participants.params.resetSearch
 
-    public readonly participantsPageTextSearchedParam: Signal<string | undefined> = this.store.participants.params.textSearched
+    public readonly participantsPageQueryParam: Signal<string | undefined> = this.store.participants.params.q
 
-    public readonly participantsPageStatusSearchedParam: Signal<string | undefined> = this.store.participants.params.statusSearched
+    public readonly participantsPageStatusParam: Signal<string | undefined> = this.store.participants.params.status
 
-    public readonly participantsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.participants.params.visibilitySearched
+    public readonly participantsPageIsVisibleParam: Signal<boolean | undefined> = this.store.participants.params.isVisible
 
     public readonly participantMovementsPage: Signal<PageModel<MovementModel> | undefined> = this.store.movements.element
 
@@ -54,17 +62,17 @@ export class ParticipantFacade extends GenericProjectElementFacade {
 
     public readonly participantMovementsPageResetSearch: Signal<boolean> = this.store.movements.params.resetSearch
 
-    public readonly participantMovementsPageTypeSearchedParam: Signal<string | undefined> = this.store.movements.params.typeSearched
+    public readonly participantMovementsPageTypeParam: Signal<string | undefined> = this.store.movements.params.type
 
-    public readonly participantMovementsPageStartDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
-            DateHelper.buildDate( this.store.movements.params.startDateTimeSearched() ),
+    public readonly participantMovementsPageFromParam: Signal<Date | undefined> = computed( (): Date | undefined =>
+            DateHelper.buildDate( this.store.movements.params.from() ),
         )
 
-    public readonly participantMovementsPageEndDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
-            DateHelper.buildDate( this.store.movements.params.endDateTimeSearched() ),
+    public readonly participantMovementsPageToParam: Signal<Date | undefined> = computed( (): Date | undefined =>
+            DateHelper.buildDate( this.store.movements.params.to() ),
         )
 
-    public readonly participantMovementsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.movements.params.visibilitySearched
+    public readonly participantMovementsPageIsVisibleParam: Signal<boolean | undefined> = this.store.movements.params.isVisible
 
     public readonly searchedUsersMetadata: Signal<SelectOptionModel<UserModel>[]> = this.store.metadata.searchedUsers
 
@@ -80,39 +88,39 @@ export class ParticipantFacade extends GenericProjectElementFacade {
         )
 
     public fetchParticipantsPage (
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
     ): void {
-        const index: number | undefined = this.participantsPageResetSearch() ? 0 : pageNumber
-        this.store.fetchParticipantsPage( { projectId: this.selectedProjectId(), pageNumber: index, pageSize: pageSize } )
+        const index: number | undefined = this.participantsPageResetSearch() ? 0 : page
+        this.store.fetchParticipantsPage( { projectId: this.selectedProjectId(), page: index, size: size } )
     }
 
     public inputPageSearchParameters (
-        textSearched: string | undefined,
-        statusSearched: string | undefined,
-        visibilitySearched: boolean | undefined,
+        q: string | undefined,
+        status: string | undefined,
+        isVisible: boolean | undefined,
     ): void {
-        const resetSearch: boolean = this.participantsPageTextSearchedParam() != textSearched
-                                     || this.participantsPageStatusSearchedParam() != statusSearched
-                                     || this.participantsPageVisibilitySearchedParam() != visibilitySearched
+        const resetSearch: boolean = this.participantsPageQueryParam() != q
+                                     || this.participantsPageStatusParam() != status
+                                     || this.participantsPageIsVisibleParam() != isVisible
 
         if (resetSearch) {
             this.store.updateParticipantsPageSearchParams( {
                 resetSearch: resetSearch,
-                visibilitySearched: visibilitySearched,
-                statusSearched: statusSearched,
-                textSearched: textSearched,
+                isVisible: isVisible,
+                status: status,
+                q: q,
             } )
         }
     }
 
     public fetchParticipantMovementsPage (
         id: string,
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
     ): void {
-        const index: number | undefined = this.participantMovementsPageResetSearch() ? 0 : pageNumber
-        this.store.fetchParticipantMovementsPage( { projectId: this.selectedProjectId(), id: id, pageNumber: index, pageSize: pageSize } )
+        const index: number | undefined = this.participantMovementsPageResetSearch() ? 0 : page
+        this.store.fetchParticipantMovementsPage( { projectId: this.selectedProjectId(), id: id, page: index, size: size } )
     }
 
     public reloadParticipantMovementsPage (id: string): void {
@@ -124,39 +132,39 @@ export class ParticipantFacade extends GenericProjectElementFacade {
     }
 
     public inputMovementsPageSearchParameters (
-        typeSearched: string | undefined,
-        startDateTimeSearched: Date | undefined,
-        endDateTimeSearched: Date | undefined,
-        visibilitySearched: boolean | undefined,
+        type: string | undefined,
+        from: Date | undefined,
+        to: Date | undefined,
+        isVisible: boolean | undefined,
     ): void {
-        const resetSearch: boolean = this.participantMovementsPageTypeSearchedParam() != typeSearched
-                                     || this.participantMovementsPageStartDateTimeSearchedParam() != startDateTimeSearched?.toISOString()
-                                     || this.participantMovementsPageEndDateTimeSearchedParam() != endDateTimeSearched?.toISOString()
-                                     || this.participantMovementsPageVisibilitySearchedParam() != visibilitySearched
+        const resetSearch: boolean = this.participantMovementsPageTypeParam() != type
+                                     || this.participantMovementsPageFromParam()?.toISOString() != from?.toISOString()
+                                     || this.participantMovementsPageToParam()?.toISOString() != to?.toISOString()
+                                     || this.participantMovementsPageIsVisibleParam() != isVisible
 
         if (resetSearch) {
             this.store.updateParticipantMovementsPageSearchParams( {
                 resetSearch: resetSearch,
-                visibilitySearched: visibilitySearched,
-                currentMovements: false,
-                linkedToActivity: undefined,
-                typeSearched: typeSearched,
-                startDateTimeSearched: startDateTimeSearched?.toISOString(),
-                endDateTimeSearched: endDateTimeSearched?.toISOString(),
+                isVisible: isVisible,
+                isCurrent: false,
+                hasActivity: undefined,
+                type: type,
+                from: from?.toISOString(),
+                to: to?.toISOString(),
             } )
         }
     }
 
     public searchUsers (
-        textSearched: string | undefined = undefined,
+        q: string | undefined = undefined,
     ): void {
-        this.store.searchUsers( { projectId: this.selectedProjectId(), textSearched: textSearched } )
+        this.store.searchUsers( { projectId: this.selectedProjectId(), q: q } )
     }
 
     public searchGroups (
-        textSearched: string | undefined = undefined,
+        q: string | undefined = undefined,
     ): void {
-        this.store.searchGroups( { projectId: this.selectedProjectId(), textSearched: textSearched } )
+        this.store.searchGroups( { projectId: this.selectedProjectId(), q: q } )
     }
 
     public handleParticipantFirstPageReload (): Observable<unknown> {
@@ -175,14 +183,12 @@ export class ParticipantFacade extends GenericProjectElementFacade {
 
     public createParticipant (participant: ParticipantDto): Observable<ParticipantModel> {
         return this.api.createParticipant( this.selectedProjectId(), participant ).pipe(
-            notifyUnavailableOnly( this.uiFacade ),
             tap( (created: ParticipantModel): void => this.onCommandSuccess( 'create', created ) ),
         )
     }
 
-    public updateParticipant (id: string, participant: ParticipantDto): Observable<ParticipantModel> {
-        return this.api.updateParticipantById( this.selectedProjectId(), id, participant ).pipe(
-            notifyUnavailableOnly( this.uiFacade ),
+    public updateParticipant (id: string, participant: ParticipantDto, ifMatch?: string): Observable<ParticipantModel> {
+        return this.api.updateParticipantById( this.selectedProjectId(), id, participant, ifMatch ).pipe(
             tap( (updated: ParticipantModel): void => this.onCommandSuccess( 'update', updated ) ),
         )
     }
@@ -198,6 +204,13 @@ export class ParticipantFacade extends GenericProjectElementFacade {
         return this.api.enableParticipantById( this.selectedProjectId(), id ).pipe(
             notifyOnError( this.uiFacade ),
             tap( (enabled: ParticipantModel): void => this.onCommandSuccess( 'enable', enabled ) ),
+        )
+    }
+
+    public exportParticipant (participant: ParticipantModel): Observable<unknown> {
+        return this.api.exportParticipantById( this.selectedProjectId(), participant.id ).pipe(
+            notifyOnError( this.uiFacade ),
+            tap( (data: unknown): void => this.browser.downloadJson( data, `registry-participant-${ participant.id }.json` ) ),
         )
     }
 

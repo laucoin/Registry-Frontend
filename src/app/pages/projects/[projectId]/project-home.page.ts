@@ -1,61 +1,83 @@
-import { Component, computed, Signal } from '@angular/core'
-import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs'
-import {TranslocoPipe} from '@jsverse/transloco'
-import { DashboardComponent } from '@pages/projects/[projectId]/dashboard/dashboard.component'
-import { CurrentActivitiesComponent } from '@pages/projects/[projectId]/current-activities/current-activities.component'
-import { CurrentMovementsComponent } from '@pages/projects/[projectId]/current-movements/current-movements.component'
-import { GenericComponent } from '@shared/ui/base/generic.component'
-import { GenericHelper } from '@shared/helpers/generic.helper'
-import { ParamMap } from '@angular/router'
-import { toSignal } from '@angular/core/rxjs-interop'
-import { CurrentAlertsComponent } from '@pages/projects/[projectId]/current-alerts/current-alerts.component'
+import { Component, CUSTOM_ELEMENTS_SCHEMA, inject, Signal } from '@angular/core'
+import { SessionFacade } from "@core/registry/state/session.facade";
+import { provideTranslocoScope, TranslocoPipe } from "@jsverse/transloco";
+import { ProjectOptionEnum } from "@shared/models/enumeration/project-option.enum";
+import { ProjectModel } from "@shared/models/model/project.model";
+import { ProjectActiveAlertComponent } from "@shared/ui/domain/project-active-alert/project-active-alert.component";
+import { ProjectBirthdayComponent } from "@shared/ui/domain/project-birthday/project-birthday.component";
+import {
+	ProjectOperationalMonitoringComponent
+} from "@shared/ui/domain/project-operational-monitoring/project-operational-monitoring.component";
+import {
+	ProjectParticipantOverviewComponent
+} from "@shared/ui/domain/project-participant-overview/project-participant-overview.component";
+import {
+	ProjectParticipantRegularizationComponent
+} from "@shared/ui/domain/project-participant-regularization/project-participant-regularization.component";
+import {
+	ProjectUpcomingArrivalComponent
+} from "@shared/ui/domain/project-upcoming-arrival/project-upcoming-arrival.component";
+import {
+	ProjectUpcomingDepartureComponent
+} from "@shared/ui/domain/project-upcoming-departure/project-upcoming-departure.component";
+import {
+	ProjectVehicleOverviewComponent
+} from "@shared/ui/domain/project-vehicle-overview/project-vehicle-overview.component";
 
 /**
  * Purpose: Home page of the selected project.
  * Scope: Loads the project home information and shows the dashboard.
  * Limits: Reads through the selected project facade only.
  */
-@Component( {
-    selector: 'app-project-home',
-    imports: [
-        Tabs,
-        TabList,
-        Tab,
-        TabPanels,
-        TabPanel,
-        TranslocoPipe,
-        DashboardComponent,
-        CurrentActivitiesComponent,
-        CurrentMovementsComponent,
-        CurrentAlertsComponent,
-    ],
-    templateUrl: './project-home.page.html',
-} )
-export class ProjectHomePage extends GenericComponent {
-    protected readonly tabParam: string = 'tab'
-    protected readonly tab: string[] = [
-        'dashboard',
-        'activities',
-        'movements',
-    ]
-    private readonly queryParams: Signal<ParamMap | undefined> = toSignal( this.route.queryParamMap )
-    protected readonly currentTab: Signal<string> = computed( (): string => {
-        const param: string | null | undefined = this.queryParams()?.get( this.tabParam )
-        if (GenericHelper.isNull( param ) || !this.tab.includes( param! )) {
-            return this.tab[0]!
-        }
-        return param!
-    } )
+@Component({
+	selector: 'app-project-home',
+	schemas: [CUSTOM_ELEMENTS_SCHEMA],
+	providers: [provideTranslocoScope('project-home')],
+	imports: [
+		TranslocoPipe,
+		ProjectParticipantOverviewComponent,
+		ProjectParticipantRegularizationComponent,
+		ProjectActiveAlertComponent,
+		ProjectUpcomingArrivalComponent,
+		ProjectUpcomingDepartureComponent,
+		ProjectBirthdayComponent,
+		ProjectOperationalMonitoringComponent,
+		ProjectVehicleOverviewComponent,
+		ProjectUpcomingDepartureComponent
+	],
+	templateUrl: './project-home.page.html',
+})
+export class ProjectHomePage {
+	private readonly sessionFacade: SessionFacade = inject(SessionFacade)
 
-    protected navigate (tab: string | number | undefined): void {
-        if (!tab) {
-            return
-        }
+	protected readonly project: Signal<ProjectModel | undefined> = this.sessionFacade.selectedProject
+	protected readonly hasVehicleOption: Signal<boolean> = this.sessionFacade.selectedProjectHasOption(ProjectOptionEnum.VEHICLE)
+	protected readonly hasAlertOption: Signal<boolean> = this.sessionFacade.selectedProjectHasOption(ProjectOptionEnum.ALERT)
 
-        this.router.navigate( [], {
-            relativeTo: this.route,
-            queryParams: { [this.tabParam]: tab },
-            queryParamsHandling: 'merge',
-        } ).then()
-    }
+	// protected readonly tabParam: string = 'tab'
+	// protected readonly tab: string[] = [
+	// 	'dashboard',
+	// 	'activities',
+	// 	'movements',
+	// ]
+	// private readonly queryParams: Signal<ParamMap | undefined> = toSignal(this.route.queryParamMap)
+	// protected readonly currentTab: Signal<string> = computed((): string => {
+	// 	const param: string | null | undefined = this.queryParams()?.get(this.tabParam)
+	// 	if (GenericHelper.isNull(param) || !this.tab.includes(param!)) {
+	// 		return this.tab[0]!
+	// 	}
+	// 	return param!
+	// })
+	//
+	// protected navigate(tab: string | number | undefined): void {
+	// 	if (!tab) {
+	// 		return
+	// 	}
+	//
+	// 	this.router.navigate([], {
+	// 		relativeTo: this.route,
+	// 		queryParams: { [this.tabParam]: tab },
+	// 		queryParamsHandling: 'merge',
+	// 	}).then()
+	// }
 }

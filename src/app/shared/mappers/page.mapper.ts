@@ -10,10 +10,11 @@ import { PageModel } from '@shared/models/model/page.model'
 export class PageMapper {
     public static toModel<D, M extends GenericModel> (dto: PageResponseDto<D>, mapContent: (element: D) => M): PageModel<M> {
         return {
-            pageNumber: dto.pageNumber,
-            pageSize: dto.pageSize,
+            page: dto.page,
+            size: dto.size,
             totalElements: dto.totalElements,
             totalPages: dto.totalPages,
+            hasNext: dto.hasNext,
             content: dto.content.map( mapContent ),
             lastRefresh: dto.lastRefresh,
         }

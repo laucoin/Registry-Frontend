@@ -1,3 +1,4 @@
+import { SectionErrorsHelper } from '@shared/helpers/store/section-errors.helper'
 import { computed, inject, Injectable, Signal } from '@angular/core'
 import { toObservable } from '@angular/core/rxjs-interop'
 import { finalize, Observable, switchMap, tap } from 'rxjs'
@@ -30,6 +31,10 @@ export class ProjectFacade extends GenericFacade {
     private readonly uiFacade: UiFacade = inject( UiFacade )
     private readonly sessionFacade: SessionFacade = inject( SessionFacade )
 
+    public readonly metadataErrors: Signal<Record<string, NotificationModel | undefined>> = SectionErrorsHelper.metadata( this.store.sectionErrors )
+
+    public readonly projectError: Signal<NotificationModel | undefined> = this.store.project.error
+
     public readonly projectsPage: Signal<PageModel<ProjectModel> | undefined> = this.store.projects.element
 
     public readonly projectsPageLoading: Signal<boolean> = this.store.projects.loading
@@ -40,13 +45,12 @@ export class ProjectFacade extends GenericFacade {
 
     private readonly projectsPageResetSearch: Signal<boolean> = this.store.projects.params.resetSearch
 
-    public readonly projectsPageTextSearchedParam: Signal<string | undefined> = this.store.projects.params.textSearched
+    public readonly projectsPageQueryParam: Signal<string | undefined> = this.store.projects.params.q
 
-    public readonly projectsPageDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined => DateHelper.buildDate( this.store.projects.params.dateTimeSearched() ) )
+    public readonly projectsPageAtParam: Signal<Date | undefined> = computed( (): Date | undefined => DateHelper.buildDate( this.store.projects.params.at() ) )
 
-    public readonly projectsPageWithProfileSearchedParam: Signal<boolean | undefined> = this.store.projects.params.withProfile
 
-    public readonly projectsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.projects.params.visibilitySearched
+    public readonly projectsPageIsVisibleParam: Signal<boolean | undefined> = this.store.projects.params.isVisible
 
     public readonly projectOptionsMetadata: Signal<ProjectOptionModel[]> = this.store.metadata.options
 
@@ -72,31 +76,28 @@ export class ProjectFacade extends GenericFacade {
     }
 
     public fetchProjectsPage (
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
     ): void {
-        const index: number | undefined = this.projectsPageResetSearch() ? 0 : pageNumber
-        this.store.fetchProjectsPage( { pageNumber: index, pageSize: pageSize } )
+        const index: number | undefined = this.projectsPageResetSearch() ? 0 : page
+        this.store.fetchProjectsPage( { page: index, size: size } )
     }
 
     public inputPageSearchParameters (
-        textSearched: string | undefined,
-        dateTimeSearched: Date | undefined,
-        withProfile: boolean,
-        visibilitySearched: boolean | undefined,
+        q: string | undefined,
+        at: Date | undefined,
+        isVisible: boolean | undefined,
     ): void {
-        const resetSearch: boolean = this.projectsPageTextSearchedParam() != textSearched
-                                     || this.projectsPageDateTimeSearchedParam() != dateTimeSearched?.toISOString()
-                                     || this.projectsPageWithProfileSearchedParam() != withProfile
-                                     || this.projectsPageVisibilitySearchedParam() != visibilitySearched
+        const resetSearch: boolean = this.projectsPageQueryParam() != q
+                                     || this.projectsPageAtParam()?.toISOString() != at?.toISOString()
+                                     || this.projectsPageIsVisibleParam() != isVisible
 
         if (resetSearch) {
             this.store.updateProjectsPageSearchParams( {
                 resetSearch: resetSearch,
-                visibilitySearched: visibilitySearched,
-                textSearched: textSearched,
-                withProfile: withProfile,
-                dateTimeSearched: dateTimeSearched?.toISOString(),
+                isVisible: isVisible,
+                q: q,
+                at: at?.toISOString(),
             } )
         }
     }
@@ -121,8 +122,8 @@ export class ProjectFacade extends GenericFacade {
         )
     }
 
-    public updateProject (id: string, project: ProjectDto): Observable<ProjectModel> {
-        return this.api.updateProjectById( id, project ).pipe(
+    public updateProject (id: string, project: ProjectDto, ifMatch?: string): Observable<ProjectModel> {
+        return this.api.updateProjectById( id, project, ifMatch ).pipe(
             this.trackProjectLoader,
             notifyOnError( this.uiFacade ),
             tap( (updated: ProjectModel): void => {

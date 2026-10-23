@@ -1,5 +1,5 @@
 export interface UserPageParamsModel {
     resetSearch: boolean
-    textSearched: string | undefined
-    visibilitySearched: boolean | undefined
+    q: string | undefined
+    isVisible: boolean | undefined
 }

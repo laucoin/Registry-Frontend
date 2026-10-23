@@ -20,7 +20,7 @@ import { CurrentUserMapper } from '@shared/mappers/current-user.mapper'
 })
 export class SecurityApi extends GenericApi {
     public constructor() {
-        super('/api/v1/authentication')
+        super('/api/v2/authentication')
     }
 
     public getLoginUri(redirectUri: string): Observable<AuthenticationUriModel> {

@@ -5,7 +5,6 @@ import { ErrorReporter } from '@core/registry/state/error-reporter'
 import { UserApi } from '@pages/users/data/state/user.api'
 import { UserStore } from '@pages/users/data/state/user.store'
 import { ERROR_500, ERROR_503, failing, pageOf } from '@shared/helpers/testing/test-fixtures'
-import { ErrorModel } from '@shared/models/model/error.model'
 import { UserModel } from '@shared/models/model/user.model'
 
 describe( 'UserStore', () => {
@@ -13,19 +12,17 @@ describe( 'UserStore', () => {
     let findUsers: Mock<UserApi['findUsers']>
     let findUserById: Mock<UserApi['findUserById']>
     let getAssignableUserRoles: Mock<UserApi['getAssignableUserRoles']>
-    let setGlobalError: Mock<(error: ErrorModel) => void>
     let notify: Mock<(message: unknown) => void>
 
     beforeEach( () => {
         findUsers = vi.fn()
         findUserById = vi.fn()
         getAssignableUserRoles = vi.fn()
-        setGlobalError = vi.fn()
         notify = vi.fn()
         TestBed.configureTestingModule( {
             providers: [
                 { provide: UserApi, useValue: { findUsers, findUserById, getAssignableUserRoles } },
-                { provide: ErrorReporter, useValue: { setGlobalError, notify } },
+                { provide: ErrorReporter, useValue: { notify } },
             ],
         } )
         store = TestBed.inject( UserStore )
@@ -37,7 +34,7 @@ describe( 'UserStore', () => {
         findUsers.mockReturnValue( of( pageOf<UserModel>( [ { id: 'u1' } as UserModel ] ) ) )
 
         // Act
-        store.fetchUsersPage( { pageNumber: 0, pageSize: 10 } )
+        store.fetchUsersPage( { page: 0, size: 10 } )
 
         // Assert
         expect( store.users.element()?.content ).toHaveLength( 1 )
@@ -48,12 +45,12 @@ describe( 'UserStore', () => {
     it( 'appends the next batch to the users already shown', () => {
         // Arrange
         findUsers
-            .mockReturnValueOnce( of( { ...pageOf<UserModel>( [ { id: 'u1' } as UserModel ] ), pageSize: 1, totalPages: 2 } ) )
-            .mockReturnValueOnce( of( { ...pageOf<UserModel>( [ { id: 'u2' } as UserModel ], 1 ), pageSize: 1, totalPages: 2 } ) )
-        store.fetchUsersPage( { pageNumber: 0, pageSize: 1 } )
+            .mockReturnValueOnce( of( { ...pageOf<UserModel>( [ { id: 'u1' } as UserModel ] ), size: 1, totalPages: 2 } ) )
+            .mockReturnValueOnce( of( { ...pageOf<UserModel>( [ { id: 'u2' } as UserModel ], 1 ), size: 1, totalPages: 2 } ) )
+        store.fetchUsersPage( { page: 0, size: 1 } )
 
         // Act
-        store.fetchUsersPage( { pageNumber: 1, pageSize: 1 } )
+        store.fetchUsersPage( { page: 1, size: 1 } )
 
         // Assert
         expect( store.users.element()?.content.map( (user: UserModel): string => user.id ) ).toEqual( [ 'u1', 'u2' ] )
@@ -64,23 +61,22 @@ describe( 'UserStore', () => {
         findUsers.mockReturnValue( failing( ERROR_500 ) )
 
         // Act
-        store.fetchUsersPage( { pageNumber: 0, pageSize: 10 } )
+        store.fetchUsersPage( { page: 0, size: 10 } )
 
         // Assert
         expect( store.users.error()?.summary ).toBe( 'Title' )
         expect( store.users.element() ).toBeUndefined()
     } )
 
-    it( 'reports a 503 as the global error', () => {
+    it( 'keeps a 503 failure in its block', () => {
         // Arrange
         findUsers.mockReturnValue( failing( ERROR_503 ) )
 
         // Act
-        store.fetchUsersPage( { pageNumber: 0, pageSize: 10 } )
+        store.fetchUsersPage( { page: 0, size: 10 } )
 
         // Assert
-        expect( setGlobalError ).toHaveBeenCalledWith( ERROR_503 )
-        expect( store.users.error() ).toBeUndefined()
+        expect( store.users.error() ).toBeDefined()
     } )
 
     it( 'loads a single user and ends the loading state', () => {
@@ -95,7 +91,7 @@ describe( 'UserStore', () => {
         expect( store.user.loading() ).toBe( false )
     } )
 
-    it( 'notifies a failed user fetch and keeps the store usable', () => {
+    it( 'clears the failure of a user fetch when the next one succeeds', () => {
         // Arrange
         findUserById.mockReturnValueOnce( failing( ERROR_500 ) )
         findUserById.mockReturnValueOnce( of( { id: 'u2' } as UserModel ) )
@@ -105,7 +101,7 @@ describe( 'UserStore', () => {
         store.fetchUser( 'u2' )
 
         // Assert
-        expect( notify ).toHaveBeenCalledTimes( 1 )
+        expect( store.user.error() ).toBeUndefined()
         expect( store.user.element()?.id ).toBe( 'u2' )
     } )
 

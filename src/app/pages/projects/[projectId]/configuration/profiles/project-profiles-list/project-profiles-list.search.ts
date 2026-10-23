@@ -1,17 +1,17 @@
 import { BooleanChoice, fromBooleanChoice, toBooleanChoice } from '@shared/helpers/form/boolean-choice'
 
 interface ProjectProfilesListSearch {
-    textSearched: string | undefined
-    dateTimeSearched: Date | undefined
-    statusSearched: string | undefined
-    availabilitySearched: boolean | undefined
+    q: string | undefined
+    at: Date | undefined
+    status: string | undefined
+    isAvailable: boolean | undefined
 }
 
 export interface ProjectProfilesListSearchModel {
-    textSearched: string
-    dateTimeSearched: Date | null
-    statusSearched: string
-    availabilitySearched: BooleanChoice
+    q: string
+    at: Date | null
+    status: string
+    isAvailable: BooleanChoice
 }
 
 /**
@@ -21,10 +21,10 @@ export interface ProjectProfilesListSearchModel {
  */
 export function toProjectProfilesListSearchModel (params: ProjectProfilesListSearch): ProjectProfilesListSearchModel {
     return {
-        textSearched: params.textSearched ?? '',
-        dateTimeSearched: params.dateTimeSearched ?? null,
-        statusSearched: params.statusSearched ?? '',
-        availabilitySearched: toBooleanChoice( params.availabilitySearched ),
+        q: params.q ?? '',
+        at: params.at ?? null,
+        status: params.status ?? '',
+        isAvailable: toBooleanChoice( params.isAvailable ),
     }
 }
 
@@ -35,9 +35,9 @@ export function toProjectProfilesListSearchModel (params: ProjectProfilesListSea
  */
 export function toProjectProfilesListSearchParams (model: ProjectProfilesListSearchModel): ProjectProfilesListSearch {
     return {
-        textSearched: model.textSearched === '' ? undefined : model.textSearched,
-        dateTimeSearched: model.dateTimeSearched ?? undefined,
-        statusSearched: model.statusSearched === '' ? undefined : model.statusSearched,
-        availabilitySearched: fromBooleanChoice( model.availabilitySearched ),
+        q: model.q === '' ? undefined : model.q,
+        at: model.at ?? undefined,
+        status: model.status === '' ? undefined : model.status,
+        isAvailable: fromBooleanChoice( model.isAvailable ),
     }
 }

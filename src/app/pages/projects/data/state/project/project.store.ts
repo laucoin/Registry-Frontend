@@ -15,15 +15,16 @@ import { ProjectModel } from '@shared/models/model/project.model'
 const defaultProject: ElementRequestInformationModel<ProjectModel> = {
     element: undefined,
     loading: false,
+    error: undefined,
 }
 
 const defaultProjectStore: ProjectStoreModel = {
+    sectionErrors: {},
     projects: PageStateHelper.initial<ProjectPageParamsModel, ProjectModel>( {
         resetSearch: false,
-        textSearched: undefined,
-        visibilitySearched: undefined,
-        withProfile: true,
-        dateTimeSearched: undefined,
+        q: undefined,
+        isVisible: undefined,
+        at: undefined,
     } ),
     project: defaultProject,
     createdProjectId: undefined,
@@ -45,13 +46,13 @@ const defaultProjectStore: ProjectStoreModel = {
 export const ProjectStore = signalStore(
     withState<ProjectStoreModel>( defaultProjectStore ),
     withMethods( (store, api = inject( ProjectApi ), errors = inject( ErrorReporter )) => ({
-        fetchProjectOptions: metadataFetcher<ProjectStoreModel, 'options', void, ProjectOptionModel[]>( store, 'options', () => api.getAvailableProjectOptions(), errors ),
+        fetchProjectOptions: metadataFetcher<ProjectStoreModel, 'options', void, ProjectOptionModel[]>( store, 'options', () => api.getAvailableProjectOptions() ),
         fetchProjectsPage: pageFetcher( store, 'projects', (request: CumulativePageRequest, params: ProjectPageParamsModel) =>
-            api.findProjects( request.pageNumber, request.pageSize, params ), errors, { merge: CumulativePageHelper.merge } ),
+            api.findProjects( request.page, request.size, params ), errors, { merge: CumulativePageHelper.merge } ),
         updateProjectsPageSearchParams: paramsUpdater( store, 'projects' ),
         startProjectLoader: loaderToggle( store, 'project', true ),
         stopProjectLoader: loaderToggle( store, 'project', false ),
-        fetchProject: elementFetcher( store, 'project', (id: string) => api.findProjectById( id ), errors ),
+        fetchProject: elementFetcher( store, 'project', (id: string) => api.findProjectById( id ) ),
         resetProject: (): void => patchState( store, { project: defaultProject } ),
         setCreatedProjectId: (id: string | undefined): void => patchState( store, { createdProjectId: id } ),
     }) ),

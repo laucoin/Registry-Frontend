@@ -1,7 +1,10 @@
 <ng-template #row let-group>
-    <sgdf-list-item>
+    <sgdf-list-item [disabled]="!group.visible">
         <sgdf-avatar slot="start" variant="primary" shape="rounded" aria-hidden="true" [initials]="initials(group)"/>
         <span class="block truncate" [attr.title]="group.name">{{ group.name }}</span>
+        @if (!group.visible) {
+            <span class="sr-only">({{ 'groups.visible.false' | transloco }})</span>
+        }
         <span slot="description" class="flex flex-wrap items-center gap-x-3">
             <span>
                 {{ 'groups.member' | pluralTranslation: group.membersCount | transloco: { count: group.membersCount } }}
@@ -16,9 +19,6 @@
             }
         </span>
         <span slot="end" class="flex flex-wrap items-center gap-2">
-            @if (!group.visible) {
-                <sgdf-tag appearance="outlined" pill>{{ 'groups.visible.false' | transloco }}</sgdf-tag>
-            }
             @if (group.status; as status) {
                 <sgdf-tag appearance="soft" pill [variant]="statusVariant(group)">{{ status.label }}</sgdf-tag>
             }

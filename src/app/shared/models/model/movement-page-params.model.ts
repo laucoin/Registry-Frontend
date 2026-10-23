@@ -1,9 +1,9 @@
 export interface MovementPageParamsModel {
     resetSearch: boolean
-    currentMovements: boolean
-    linkedToActivity: boolean | undefined
-    visibilitySearched: boolean | undefined
-    typeSearched: string | undefined
-    startDateTimeSearched: string | undefined
-    endDateTimeSearched: string | undefined
+    isCurrent: boolean
+    hasActivity: boolean | undefined
+    isVisible: boolean | undefined
+    type: string | undefined
+    from: string | undefined
+    to: string | undefined
 }

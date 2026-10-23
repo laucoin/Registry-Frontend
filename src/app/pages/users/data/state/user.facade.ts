@@ -1,3 +1,4 @@
+import { SectionErrorsHelper } from '@shared/helpers/store/section-errors.helper'
 import { computed, inject, Injectable, Signal } from '@angular/core'
 import { toObservable } from '@angular/core/rxjs-interop'
 import { finalize, Observable, tap } from 'rxjs'
@@ -7,6 +8,7 @@ import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { NotificationModel } from '@shared/models/model/notification.model'
 import { GenericFacade } from '@shared/helpers/facade/generic.facade'
 import { UserApi } from '@pages/users/data/state/user.api'
+import { BrowserService } from '@core/browser/browser.service'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { StateHelper } from '@shared/helpers/state/state.helper'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
@@ -24,6 +26,11 @@ export class UserFacade extends GenericFacade {
     private readonly store: InstanceType<typeof UserStore> = inject( UserStore )
     private readonly api: UserApi = inject( UserApi )
     private readonly uiFacade: UiFacade = inject( UiFacade )
+    private readonly browser: BrowserService = inject( BrowserService )
+
+    public readonly metadataErrors: Signal<Record<string, NotificationModel | undefined>> = SectionErrorsHelper.metadata( this.store.sectionErrors )
+
+    public readonly userError: Signal<NotificationModel | undefined> = this.store.user.error
 
     public readonly usersPage: Signal<PageModel<UserModel> | undefined> = this.store.users.element
 
@@ -35,9 +42,9 @@ export class UserFacade extends GenericFacade {
 
     public readonly usersPageResetSearch: Signal<boolean> = this.store.users.params.resetSearch
 
-    public readonly usersPageTextSearchedParam: Signal<string | undefined> = this.store.users.params.textSearched
+    public readonly usersPageQueryParam: Signal<string | undefined> = this.store.users.params.q
 
-    public readonly actualUsersPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.users.params.visibilitySearched
+    public readonly actualUsersPageIsVisibleParam: Signal<boolean | undefined> = this.store.users.params.isVisible
 
     public readonly user: Signal<UserModel | undefined> = this.store.user.element
 
@@ -55,25 +62,25 @@ export class UserFacade extends GenericFacade {
         )
 
     public fetchUsersPage (
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
     ): void {
-        const index: number | undefined = this.usersPageResetSearch() ? 0 : pageNumber
-        this.store.fetchUsersPage( { pageNumber: index, pageSize: pageSize } )
+        const index: number | undefined = this.usersPageResetSearch() ? 0 : page
+        this.store.fetchUsersPage( { page: index, size: size } )
     }
 
     public inputPageSearchParameters (
-        textSearched: string | undefined,
-        visibilitySearched: boolean | undefined,
+        q: string | undefined,
+        isVisible: boolean | undefined,
     ): void {
-        const resetSearch: boolean = this.usersPageTextSearchedParam() != textSearched
-                                     || this.actualUsersPageVisibilitySearchedParam() != visibilitySearched
+        const resetSearch: boolean = this.usersPageQueryParam() != q
+                                     || this.actualUsersPageIsVisibleParam() != isVisible
 
         if (resetSearch) {
             this.store.updateUsersPageSearchParams( {
                 resetSearch: resetSearch,
-                textSearched: textSearched,
-                visibilitySearched: visibilitySearched,
+                q: q,
+                isVisible: isVisible,
             } )
         }
     }
@@ -114,11 +121,10 @@ export class UserFacade extends GenericFacade {
         ).subscribe()
     }
 
-    public impersonateUser (user: UserModel): void {
-        this.api.impersonateUserById( user.id ).pipe(
-            this.trackUserLoader,
+    public exportUser (user: UserModel): void {
+        this.api.exportUserById( user.id ).pipe(
             notifyOnError( this.uiFacade ),
-            tap( (): void => this.onCommandSuccess( 'impersonate', user ) ),
+            tap( (data: unknown): void => this.browser.downloadJson( data, `registry-user-${ user.id }.json` ) ),
         ).subscribe()
     }
 

@@ -53,15 +53,15 @@ export class ProfilesListPage {
     protected readonly invitationsRoute: string = `/${RegistryRouteEnum.USERS_INVITATIONS}`
 
     protected readonly activeFilters: Signal<number> = computed((): number => [
-        StringHelper.isNotNullNorBlank(this.userProfileFacade.userProjectProfilesPageTextSearchParam()),
-        this.userProfileFacade.userProjectProfilesPageDateTimeSearchParam() !== undefined,
-        this.userProfileFacade.userProjectProfilesPageAvailabilitySearchParam() !== undefined,
+        StringHelper.isNotNullNorBlank(this.userProfileFacade.userProjectProfilesPageQueryParam()),
+        this.userProfileFacade.userProjectProfilesPageAtParam() !== undefined,
+        this.userProfileFacade.userProjectProfilesPageIsAvailableParam() !== undefined,
     ].filter(Boolean).length)
 
     protected readonly model: WritableSignal<ProfilesListSearchModel> = signal(toProfilesListSearchModel({
-        textSearched: this.userProfileFacade.userProjectProfilesPageTextSearchParam(),
-        dateTimeSearched: this.userProfileFacade.userProjectProfilesPageDateTimeSearchParam(),
-        availabilitySearched: this.userProfileFacade.userProjectProfilesPageAvailabilitySearchParam(),
+        q: this.userProfileFacade.userProjectProfilesPageQueryParam(),
+        at: this.userProfileFacade.userProjectProfilesPageAtParam(),
+        isAvailable: this.userProfileFacade.userProjectProfilesPageIsAvailableParam(),
     }))
     protected readonly form: FieldTree<ProfilesListSearchModel> = createSearchForm(this.model)
 
@@ -71,16 +71,16 @@ export class ProfilesListPage {
 
     protected search(): void {
         const search: ReturnType<typeof toProfilesListSearchParams> = toProfilesListSearchParams(this.model())
-        this.userProfileFacade.inputProfilesPageSearchParameters(search.textSearched, search.availabilitySearched, search.dateTimeSearched)
+        this.userProfileFacade.inputProfilesPageSearchParameters(search.q, search.isAvailable, search.at)
         this.userProfileFacade.fetchProjectProfilesPage(0, undefined)
     }
 
     protected resetFilters(): void {
-        this.model.set({ textSearched: '', dateTimeSearched: null, availabilitySearched: '' })
+        this.model.set({ q: '', at: null, isAvailable: '' })
         this.search()
     }
 
     protected loadBatch(pageEvent: PageEventModel): void {
-        this.userProfileFacade.fetchProjectProfilesPage(pageEvent.pageNumber, pageEvent.pageSize)
+        this.userProfileFacade.fetchProjectProfilesPage(pageEvent.page, pageEvent.size)
     }
 }

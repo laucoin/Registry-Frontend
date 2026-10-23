@@ -4,7 +4,6 @@ import { of } from 'rxjs'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
 import { BrowserService } from '@core/browser/browser.service'
 import { LanguageService } from '@core/language/language.service'
-import { LocalStorageUtils } from '@shared/helpers/local-storage.helper'
 import { LOCALE } from '@shared/helpers/request.helper'
 
 describe( 'LanguageService', () => {
@@ -12,16 +11,17 @@ describe( 'LanguageService', () => {
     let load: Mock
     let setActiveLang: Mock
     let setRootLanguage: Mock
+    let writeCookie: Mock
 
     beforeEach( () => {
         load = vi.fn( () => of( {} ) )
         setActiveLang = vi.fn()
         setRootLanguage = vi.fn()
-        localStorage.clear()
+        writeCookie = vi.fn()
         TestBed.configureTestingModule( {
             providers: [
                 { provide: TranslocoService, useValue: { load, setActiveLang, getActiveLang: (): string => 'fr' } },
-                { provide: BrowserService, useValue: { setRootLanguage } },
+                { provide: BrowserService, useValue: { setRootLanguage, writeCookie } },
             ],
         } )
         service = TestBed.inject( LanguageService )
@@ -47,7 +47,7 @@ describe( 'LanguageService', () => {
         expect( load ).toHaveBeenCalledWith( 'en' )
         expect( setActiveLang ).toHaveBeenCalledWith( 'en' )
         expect( setRootLanguage ).toHaveBeenCalledWith( 'en' )
-        expect( LocalStorageUtils.get( LOCALE ) ).toBe( 'en' )
+        expect( writeCookie ).toHaveBeenCalledWith( LOCALE, 'en', 31536000 )
     } )
 
     it( 'remembers the language without activating it', () => {
@@ -57,7 +57,7 @@ describe( 'LanguageService', () => {
         service.remember( 'en' )
 
         // Assert
-        expect( LocalStorageUtils.get( LOCALE ) ).toBe( 'en' )
+        expect( writeCookie ).toHaveBeenCalledWith( LOCALE, 'en', 31536000 )
         expect( setActiveLang ).not.toHaveBeenCalled()
     } )
 } )

@@ -57,6 +57,7 @@ const STATUS_ICONS: Record<string, string> = {
 @Component( {
     selector: 'sgdf-list-item[appAlertElement], app-alert-element',
     providers: [AlertActions],
+    host: { '[disabled]': '!alert().visible' },
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     imports: [
         ElementActionsComponent,

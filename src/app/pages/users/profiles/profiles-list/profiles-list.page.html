@@ -18,16 +18,16 @@
         <form class="grid grid-cols-1 items-end gap-(--spacing--in-block-large) md:grid-cols-3"
               (submit)="$event.preventDefault(); search()">
             <sgdf-input appSgdfField [label]="'preferences.search-and-filter.text' | transloco"
-                        [formField]="form.textSearched"/>
+                        [formField]="form.q"/>
             <sgdf-select appSgdfField [label]="'project-profiles.search-and-filter.visibility' | transloco"
-                         [formField]="form.availabilitySearched">
+                         [formField]="form.isAvailable">
                 @for (item of facade.projectProfilesAvailabilitiesMetadata(); track item.label) {
                     <sgdf-option [value]="item.value | booleanChoice">{{ item.label }}</sgdf-option>
                 }
             </sgdf-select>
             <sgdf-date-time-picker appSgdfField with-time
                                    [label]="'preferences.search-and-filter.datetime' | transloco"
-                                   [formField]="form.dateTimeSearched"/>
+                                   [formField]="form.at"/>
             <div class="flex justify-end md:col-span-3">
                 <sgdf-button variant="primary" appearance="outlined" submit
                              [loading]="userProfileFacade.userProjectProfilesPageLoading()">

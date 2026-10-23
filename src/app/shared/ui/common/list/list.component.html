@@ -29,16 +29,7 @@
     }
 
     @if (error(); as failure) {
-        <sgdf-callout variant="danger" role="alert"
-                      [title]="failure.summary ? (failure.summary | transloco) : ('global.notifications.UNKNOWN_ERROR.title' | transloco)">
-            <div class="flex flex-wrap items-center justify-between gap-(--spacing--in-block)">
-                <span>{{ failure.detail ? (failure.detail | transloco) : ('global.notifications.UNKNOWN_ERROR.message' | transloco) }}</span>
-                <sgdf-button size="small" variant="danger" appearance="outlined" [loading]="loading() || loadingMore()"
-                             (click)="retry()">
-                    {{ 'global.list.retry' | transloco }}
-                </sgdf-button>
-            </div>
-        </sgdf-callout>
+        <app-section-error [error]="failure" [retrying]="loading() || loadingMore()" (retry)="retry()"/>
     }
 
     @if (showSkeleton()) {

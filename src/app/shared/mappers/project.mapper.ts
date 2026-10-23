@@ -1,5 +1,6 @@
 import { ProjectModel } from '@shared/models/model/project.model'
 import { ProjectResponseDto } from '@shared/models/dto/response/project.response.dto'
+import { CurrentProjectProfileMapper } from '@shared/mappers/current-project-profile.mapper'
 import { GenericMapper } from '@shared/mappers/generic.mapper'
 
 /**
@@ -16,6 +17,9 @@ export class ProjectMapper {
             begin: dto.begin,
             end: dto.end,
             options: dto.options,
+            counts: dto.counts ? { ...dto.counts } : undefined,
+            favorite: dto.favorite,
+            profile: dto.profile ? CurrentProjectProfileMapper.toModel( dto.profile ) : undefined,
         }
     }
 }

@@ -65,17 +65,17 @@ export class GroupsListPage {
     ))
 
     protected readonly activeFilters: Signal<number> = computed((): number => [
-        StringHelper.isNotNullNorBlank(this.facade.groupsPageTextSearchedParam()),
-        this.facade.groupsPageDateTimeSearchedParam() !== undefined,
-        this.facade.groupsPagePresenceSearchedParam() !== undefined,
-        this.facade.groupsPageVisibilitySearchedParam() !== undefined,
+        StringHelper.isNotNullNorBlank(this.facade.groupsPageQueryParam()),
+        this.facade.groupsPageAtParam() !== undefined,
+        this.facade.groupsPageIsPresentParam() !== undefined,
+        this.facade.groupsPageIsVisibleParam() !== undefined,
     ].filter(Boolean).length)
 
     protected readonly model: WritableSignal<GroupsListSearchModel> = signal(toGroupsListSearchModel({
-        textSearched: this.facade.groupsPageTextSearchedParam(),
-        dateTimeSearched: this.facade.groupsPageDateTimeSearchedParam(),
-        presenceSearched: this.facade.groupsPagePresenceSearchedParam(),
-        visibilitySearched: this.facade.groupsPageVisibilitySearchedParam(),
+        q: this.facade.groupsPageQueryParam(),
+        at: this.facade.groupsPageAtParam(),
+        isPresent: this.facade.groupsPageIsPresentParam(),
+        isVisible: this.facade.groupsPageIsVisibleParam(),
     }))
     protected readonly form: FieldTree<GroupsListSearchModel> = createSearchForm(this.model)
 
@@ -85,16 +85,16 @@ export class GroupsListPage {
 
     protected search(): void {
         const search: ReturnType<typeof toGroupsListSearchParams> = toGroupsListSearchParams(this.model())
-        this.facade.inputPageSearchParameters(search.textSearched, search.dateTimeSearched, search.presenceSearched, search.visibilitySearched)
+        this.facade.inputPageSearchParameters(search.q, search.at, search.isPresent, search.isVisible)
         this.facade.fetchGroupsPage(0, undefined)
     }
 
     protected resetFilters(): void {
-        this.model.set({ textSearched: '', dateTimeSearched: null, presenceSearched: '', visibilitySearched: '' })
+        this.model.set({ q: '', at: null, isPresent: '', isVisible: '' })
         this.search()
     }
 
     protected loadBatch(pageEvent: PageEventModel): void {
-        this.facade.fetchGroupsPage(pageEvent.pageNumber, pageEvent.pageSize)
+        this.facade.fetchGroupsPage(pageEvent.page, pageEvent.size)
     }
 }

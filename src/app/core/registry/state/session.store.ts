@@ -1,18 +1,18 @@
 import { patchState, signalStore, withMethods, withState } from '@ngrx/signals'
 import { CurrentUserModel } from '@shared/models/model/current-user.model'
-import { ProjectProfileModel } from '@shared/models/model/project-profile.model'
+import { ProjectModel } from '@shared/models/model/project.model'
 
 interface SessionStoreModel {
     currentUser: CurrentUserModel | undefined
     currentProject: {
         id: string | undefined
-        profile: ProjectProfileModel | undefined
+        project: ProjectModel | undefined
     }
 }
 
 const defaultSessionStore: SessionStoreModel = {
     currentUser: undefined,
-    currentProject: { id: undefined, profile: undefined },
+    currentProject: { id: undefined, project: undefined },
 }
 
 /**
@@ -30,8 +30,8 @@ export const SessionStore = signalStore(
             ? { currentUser: { ...state.currentUser, preferences: { ...state.currentUser.preferences, theme: theme } } }
             : state
         ) ),
-        setCurrentProject: (id: string | undefined, profile: ProjectProfileModel | undefined): void => {
-            patchState( store, { currentProject: { id: id, profile: profile } } )
+        setCurrentProject: (id: string | undefined, project: ProjectModel | undefined): void => {
+            patchState( store, { currentProject: { id: id, project: project } } )
         },
         reset: (): void => patchState( store, defaultSessionStore ),
     }) ),

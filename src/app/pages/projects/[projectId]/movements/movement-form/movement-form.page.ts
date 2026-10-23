@@ -55,6 +55,7 @@ import {PresenceStatusEnum} from '@shared/models/enumeration/presence-status.enu
 
 import {withLoading} from '@shared/helpers/rx.helper'
 import {FormErrorComponent} from '@shared/ui/common/form-error/form-error.component'
+import { ETagHelper } from '@shared/helpers/etag.helper'
 
 /**
  * Purpose: Page with the form to create or edit a movement.
@@ -175,7 +176,7 @@ export class MovementFormPage extends BaseFormComponent implements OnDestroy {
     }
 
     private applyMovement(movement: MovementModel | undefined): void {
-        this.contextProject.set(movement?.project || this.sessionFacade.selectedProject())
+        this.contextProject.set( this.sessionFacade.selectedProject() )
         if (movement) this.model.set(toMovementFormModel(movement))
     }
 
@@ -190,7 +191,7 @@ export class MovementFormPage extends BaseFormComponent implements OnDestroy {
         }
 
         const dto: MovementDto = toMovementDto(this.model())
-        this.save(this.movement() ? this.facade.updateMovement(this.movement()!.id, dto) : this.facade.createMovement(dto))
+        this.save(this.movement() ? this.facade.updateMovement(this.movement()!.id, dto, ETagHelper.ifMatch(this.movement())) : this.facade.createMovement(dto))
     }
 
     private sectionsValid(): boolean {
@@ -202,18 +203,18 @@ export class MovementFormPage extends BaseFormComponent implements OnDestroy {
         return validity.every(Boolean)
     }
 
-    protected handleReasonsAndActivitiesSearch(textSearched: string | undefined): void {
+    protected handleReasonsAndActivitiesSearch(q: string | undefined): void {
         this.facade.searchReasonsAndActivities(
-            textSearched,
+            q,
             this.model().information.type,
             this.model().information.contentType,
         )
     }
 
-    protected handleParticipantsAndGroupsSearch(textSearched: string | undefined): void {
+    protected handleParticipantsAndGroupsSearch(q: string | undefined): void {
         this.facade.searchParticipantsAndGroups(
             this.model().information.contentType,
-            textSearched,
+            q,
         )
     }
 

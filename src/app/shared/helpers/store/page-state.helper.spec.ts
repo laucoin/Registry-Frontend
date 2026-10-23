@@ -1,3 +1,4 @@
+import { NotificationModel } from '@shared/models/model/notification.model'
 import { describe, it, expect } from 'vitest'
 import { PageStateHelper } from './page-state.helper'
 import { ErrorModel } from '@shared/models/model/error.model'
@@ -27,5 +28,16 @@ describe( 'PageStateHelper', () => {
         // Assert
         expect( result.error?.summary ).toBe( 'T' )
         expect( result.loading ).toBe( false )
+    } )
+
+    it( 'turns a backend error into the notification a section shows', () => {
+        // Arrange
+        const error: ErrorModel = { title: 'T', message: 'M', status: 503 } as ErrorModel
+
+        // Act
+        const notification: NotificationModel = PageStateHelper.toNotification( error )
+
+        // Assert
+        expect( notification ).toEqual( expect.objectContaining( { severity: 'error', summary: 'T', detail: 'M' } ) )
     } )
 } )

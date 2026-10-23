@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, signal, WritableSignal } from '@angular/core'
+import { Component, computed, inject, OnDestroy, Signal, signal, WritableSignal } from '@angular/core'
 import { FieldTree, FormField } from '@angular/forms/signals'
 import { UserModel } from '@shared/models/model/user.model'
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
@@ -13,11 +13,13 @@ import { Select } from 'primeng/select'
 import { BaseFormComponent } from '@shared/ui/base/base-form.component'
 import { filter, map } from 'rxjs'
 import { FieldErrorComponent } from '@shared/ui/common/field-error/field-error.component'
+import { NotificationModel } from '@shared/models/model/notification.model'
+import { SectionErrorComponent } from '@shared/ui/common/section-error/section-error.component'
 import { createUserForm, toUserFormModel, UserFormModel } from '@pages/users/user-form/user.form'
 
 /**
  * Purpose: Page with the form to create or edit a user.
- * Scope: Builds the form, submits it through the facade and navigates back.
+ * Scope: Builds the form, submits it through the facade and navigates back; shows the failure of the user or roles load instead of the form.
  * Limits: Holds no domain state and never calls the backend.
  */
 @Component( {
@@ -31,6 +33,7 @@ import { createUserForm, toUserFormModel, UserFormModel } from '@pages/users/use
         Select,
         FormField,
         FieldErrorComponent,
+        SectionErrorComponent,
     ],
     templateUrl: './user-form.page.html',
 } )
@@ -39,6 +42,9 @@ export class UserFormPage extends BaseFormComponent implements OnDestroy {
 
     protected readonly model: WritableSignal<UserFormModel> = signal( toUserFormModel() )
     protected readonly form: FieldTree<UserFormModel> = createUserForm( this.model )
+    protected readonly loadError: Signal<NotificationModel | undefined> = computed( (): NotificationModel | undefined =>
+        this.facade.userError() ?? this.facade.metadataErrors()[ 'assignableRoles' ],
+    )
 
     public constructor () {
         super()

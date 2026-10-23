@@ -20,6 +20,7 @@ import {Button} from 'primeng/button'
 import {Select, SelectModule} from 'primeng/select'
 import {DateFormatPipe} from '@shared/helpers/pipe/date-format.pipe'
 import {DateTimeFieldComponent} from '@shared/ui/common/date-time-field/date-time-field.component'
+import { ETagHelper } from '@shared/helpers/etag.helper'
 
 /**
  * Purpose: Page with the form to create or edit a project profile edition.
@@ -78,7 +79,7 @@ export class ProjectProfileEditionFormPage extends GenericProjectProfileFormComp
 
         if (this.saving() || this.loading() || !this.projectProfile()) return
 
-        this.save(this.facade.updateProjectProfile(this.projectProfile()!.id, toProjectProfileDto(this.model())))
+        this.save(this.facade.updateProjectProfile(this.projectProfile()!.id, toProjectProfileDto(this.model()), ETagHelper.ifMatch(this.projectProfile())))
     }
 
     public ngOnDestroy(): void {

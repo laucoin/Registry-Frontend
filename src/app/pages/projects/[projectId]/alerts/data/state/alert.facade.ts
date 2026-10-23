@@ -1,3 +1,4 @@
+import { SectionErrorsHelper } from '@shared/helpers/store/section-errors.helper'
 import { computed, Injectable, Signal, inject } from '@angular/core'
 import { PageModel } from '@shared/models/model/page.model'
 import { AlertStore } from '@pages/projects/[projectId]/alerts/data/state/alert.store'
@@ -5,7 +6,7 @@ import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { NotificationModel } from '@shared/models/model/notification.model'
 import { DateHelper } from '@shared/helpers/date.helper'
 import { AlertApi } from '@pages/projects/[projectId]/movements/data/state/alert.api'
-import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/rx.helper'
+import { notifyOnError } from '@shared/helpers/rx.helper'
 import { CommandEvent } from '@shared/helpers/facade/command-event.service'
 import { Observable, tap } from 'rxjs'
 import { GenericProjectElementFacade } from '@shared/helpers/facade/generic-project-element.facade'
@@ -27,6 +28,8 @@ export class AlertFacade extends GenericProjectElementFacade {
 
     private readonly api: AlertApi = inject( AlertApi )
 
+    public readonly metadataErrors: Signal<Record<string, NotificationModel | undefined>> = SectionErrorsHelper.metadata( this.store.sectionErrors )
+
     public readonly alertsPage: Signal<PageModel<AlertModel> | undefined> = this.store.alerts.element
 
     public readonly alertsPageLoading: Signal<boolean> = this.store.alerts.loading
@@ -37,18 +40,18 @@ export class AlertFacade extends GenericProjectElementFacade {
 
     private readonly alertsPageResetSearch: Signal<boolean> = this.store.alerts.params.resetSearch
 
-    public readonly alertsPageTextSearchedParam: Signal<string | undefined> = this.store.alerts.params.textSearched
+    public readonly alertsPageQueryParam: Signal<string | undefined> = this.store.alerts.params.q
 
-    public readonly alertsPageStatusSearchedParam: Signal<string | undefined> = this.store.alerts.params.statusSearched
+    public readonly alertsPageStatusParam: Signal<string | undefined> = this.store.alerts.params.status
 
-    public readonly alertsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.alerts.params.visibilitySearched
+    public readonly alertsPageIsVisibleParam: Signal<boolean | undefined> = this.store.alerts.params.isVisible
 
-    public readonly alertsPageStartDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
-            DateHelper.buildDate( this.store.alerts.params.startDateTimeSearched() ),
+    public readonly alertsPageFromParam: Signal<Date | undefined> = computed( (): Date | undefined =>
+            DateHelper.buildDate( this.store.alerts.params.from() ),
         )
 
-    public readonly alertsPageEndDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
-            DateHelper.buildDate( this.store.alerts.params.endDateTimeSearched() ),
+    public readonly alertsPageToParam: Signal<Date | undefined> = computed( (): Date | undefined =>
+            DateHelper.buildDate( this.store.alerts.params.to() ),
         )
 
     public readonly alertCommunicationsPage: Signal<PageModel<CommunicationModel> | undefined> = this.store.communications.element
@@ -61,16 +64,16 @@ export class AlertFacade extends GenericProjectElementFacade {
 
     private readonly alertCommunicationsPageResetSearch: Signal<boolean> = this.store.communications.params.resetSearch
 
-    public readonly alertCommunicationsPageTextSearchedParam: Signal<string | undefined> = this.store.communications.params.textSearched
+    public readonly alertCommunicationsPageQueryParam: Signal<string | undefined> = this.store.communications.params.q
 
-    public readonly alertCommunicationsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.communications.params.visibilitySearched
+    public readonly alertCommunicationsPageIsVisibleParam: Signal<boolean | undefined> = this.store.communications.params.isVisible
 
-    public readonly alertCommunicationsPageStartDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
-            DateHelper.buildDate( this.store.communications.params.startDateTimeSearched() ),
+    public readonly alertCommunicationsPageFromParam: Signal<Date | undefined> = computed( (): Date | undefined =>
+            DateHelper.buildDate( this.store.communications.params.from() ),
         )
 
-    public readonly alertCommunicationsPageEndDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
-            DateHelper.buildDate( this.store.communications.params.endDateTimeSearched() ),
+    public readonly alertCommunicationsPageToParam: Signal<Date | undefined> = computed( (): Date | undefined =>
+            DateHelper.buildDate( this.store.communications.params.to() ),
         )
 
     public readonly visibilitiesMetadata: Signal<SelectOptionModel<boolean | undefined>[]> = computed( () =>
@@ -83,65 +86,65 @@ export class AlertFacade extends GenericProjectElementFacade {
     public readonly alertStatusMetadata: Signal<SelectOptionModel<AlertStatusEnum | undefined>[]> = this.store.metadata.status
 
     public fetchAlertsPage (
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
     ): void {
-        const index: number | undefined = this.alertsPageResetSearch() ? 0 : pageNumber
-        this.store.fetchAlertsPage( { projectId: this.selectedProjectId(), pageNumber: index, pageSize: pageSize } )
+        const index: number | undefined = this.alertsPageResetSearch() ? 0 : page
+        this.store.fetchAlertsPage( { projectId: this.selectedProjectId(), page: index, size: size } )
     }
 
     public inputPageSearchParameters (
-        textSearched: string | undefined,
-        statusSearched: string | undefined,
-        visibilitySearched: boolean | undefined,
-        startDateTimeSearched: Date | undefined,
-        endDateTimeSearched: Date | undefined,
+        q: string | undefined,
+        status: string | undefined,
+        isVisible: boolean | undefined,
+        from: Date | undefined,
+        to: Date | undefined,
     ): void {
-        const resetSearch: boolean = this.alertsPageTextSearchedParam() != textSearched
-                                     || this.alertsPageStatusSearchedParam() != statusSearched
-                                     || this.alertsPageVisibilitySearchedParam() != visibilitySearched
-                                     || this.alertsPageStartDateTimeSearchedParam() != startDateTimeSearched?.toISOString()
-                                     || this.alertsPageEndDateTimeSearchedParam() != endDateTimeSearched?.toISOString()
+        const resetSearch: boolean = this.alertsPageQueryParam() != q
+                                     || this.alertsPageStatusParam() != status
+                                     || this.alertsPageIsVisibleParam() != isVisible
+                                     || this.alertsPageFromParam()?.toISOString() != from?.toISOString()
+                                     || this.alertsPageToParam()?.toISOString() != to?.toISOString()
 
         if (resetSearch) {
             this.store.updateAlertsPageSearchParams( {
                 resetSearch: resetSearch,
-                textSearched: textSearched,
-                statusSearched: statusSearched,
-                visibilitySearched: visibilitySearched,
-                startDateTimeSearched: startDateTimeSearched?.toISOString(),
-                endDateTimeSearched: endDateTimeSearched?.toISOString(),
+                q: q,
+                status: status,
+                isVisible: isVisible,
+                from: from?.toISOString(),
+                to: to?.toISOString(),
             } )
         }
     }
 
     public fetchAlertCommunicationsPage (
         id: string,
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
     ): void {
-        const index: number | undefined = this.alertCommunicationsPageResetSearch() ? 0 : pageNumber
-        this.store.fetchAlertCommunicationsPage( { projectId: this.selectedProjectId(), id: id, pageNumber: index, pageSize: pageSize } )
+        const index: number | undefined = this.alertCommunicationsPageResetSearch() ? 0 : page
+        this.store.fetchAlertCommunicationsPage( { projectId: this.selectedProjectId(), id: id, page: index, size: size } )
     }
 
     public inputCommunicationsPageSearchParameters (
-        textSearched: string | undefined,
-        visibilitySearched: boolean | undefined,
-        startDateTimeSearched: Date | undefined,
-        endDateTimeSearched: Date | undefined,
+        q: string | undefined,
+        isVisible: boolean | undefined,
+        from: Date | undefined,
+        to: Date | undefined,
     ): void {
-        const resetSearch: boolean = this.alertCommunicationsPageTextSearchedParam() != textSearched
-                                     || this.alertCommunicationsPageVisibilitySearchedParam() != visibilitySearched
-                                     || this.alertCommunicationsPageStartDateTimeSearchedParam() != startDateTimeSearched?.toISOString()
-                                     || this.alertCommunicationsPageEndDateTimeSearchedParam() != endDateTimeSearched?.toISOString()
+        const resetSearch: boolean = this.alertCommunicationsPageQueryParam() != q
+                                     || this.alertCommunicationsPageIsVisibleParam() != isVisible
+                                     || this.alertCommunicationsPageFromParam()?.toISOString() != from?.toISOString()
+                                     || this.alertCommunicationsPageToParam()?.toISOString() != to?.toISOString()
 
         if (resetSearch) {
             this.store.updateAlertCommunicationsPageSearchParams( {
                 resetSearch: resetSearch,
-                textSearched: textSearched,
-                visibilitySearched: visibilitySearched,
-                startDateTimeSearched: startDateTimeSearched?.toISOString(),
-                endDateTimeSearched: endDateTimeSearched?.toISOString(),
+                q: q,
+                isVisible: isVisible,
+                from: from?.toISOString(),
+                to: to?.toISOString(),
             } )
         }
     }
@@ -170,14 +173,12 @@ export class AlertFacade extends GenericProjectElementFacade {
 
     public createAlert (alert: AlertDto): Observable<AlertModel> {
         return this.api.createAlert( this.selectedProjectId(), alert ).pipe(
-            notifyUnavailableOnly( this.uiFacade ),
             tap( (created: AlertModel): void => this.onCommandSuccess( 'create', created ) ),
         )
     }
 
     public updateAlert (id: string, alert: AlertDto): Observable<AlertModel> {
         return this.api.updateAlertById( this.selectedProjectId(), id, alert ).pipe(
-            notifyUnavailableOnly( this.uiFacade ),
             tap( (updated: AlertModel): void => this.onCommandSuccess( 'update', updated ) ),
         )
     }

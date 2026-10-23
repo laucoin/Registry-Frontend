@@ -12,7 +12,7 @@ import { ParticipantFacade } from '@pages/projects/[projectId]/configuration/par
 import { ParticipantFormComponent } from '@pages/projects/[projectId]/configuration/participants/participant-form/participant-form.component'
 import { CustomDateFormatPipe } from '@shared/helpers/pipe/custom-date-format.pipe'
 import { autoMock } from '@shared/helpers/testing/auto-mock'
-import { GROUP_DTO, PARTICIPANT_DTO, USER_DTO } from '@shared/helpers/testing/response-fixtures'
+import { GROUP_DTO, PARTICIPANT_DTO, USER_DTO, WHEN_ETAG } from '@shared/helpers/testing/response-fixtures'
 
 interface FieldApi {
     disabled: () => boolean
@@ -116,7 +116,7 @@ describe( 'ParticipantFormComponent', () => {
             page.submit()
 
             // Assert
-            expect( facade[ 'updateParticipant' ] ).toHaveBeenCalledWith( 'pa1', expect.objectContaining( { groupIds: [ 'g1' ] } ) )
+            expect( facade[ 'updateParticipant' ] ).toHaveBeenCalledWith( 'pa1', expect.objectContaining( { groupIds: [ 'g1' ] } ), WHEN_ETAG )
             expect( facade[ 'createParticipant' ] ).not.toHaveBeenCalled()
         } )
     } )

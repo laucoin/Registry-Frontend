@@ -22,6 +22,7 @@ import { PageMapper } from '@shared/mappers/page.mapper'
 import { ParticipantMapper } from '@shared/mappers/participant.mapper'
 import { UserMapper } from '@shared/mappers/user.mapper'
 import { PageResponseDto } from '@shared/models/dto/response/page.response.dto'
+import { ETagHelper } from '@shared/helpers/etag.helper'
 
 /**
  * Purpose: Sends the HTTP requests of the participant domain.
@@ -33,19 +34,19 @@ import { PageResponseDto } from '@shared/models/dto/response/page.response.dto'
 })
 export class ParticipantApi extends GenericProjectApi {
     public constructor() {
-        super(`/api/v1/projects/${SELECT_PROFILE_PROJECT_ID}/participants`)
+        super(`/api/v2/projects/${SELECT_PROFILE_PROJECT_ID}/participants`)
     }
 
     public findParticipants(
         projectId: string | undefined,
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
         params: ParticipantPageParamsModel,
     ): Observable<PageModel<ParticipantModel>> {
         return this.http.get<PageResponseDto<ParticipantResponseDto>>(
             `${this.buildRequestBaseUrl(projectId)}?${QueryHelper.buildQueryParams(
-                pageNumber,
-                pageSize,
+                page,
+                size,
                 params,
             ).toString()}`,
         ).pipe(
@@ -61,12 +62,12 @@ export class ParticipantApi extends GenericProjectApi {
 
     public searchUsers(
         projectId: string | undefined,
-        textSearched: string | undefined,
+        q: string | undefined,
     ): Observable<UserModel[]> {
         return this.http.get<UserResponseDto[]>(
-            `${this.buildRequestBaseUrl(projectId)}/search/users${textSearched ? '?' + new HttpParams().set(
-                'textSearched',
-                textSearched,
+            `${this.buildRequestBaseUrl(projectId)}/search/users${q ? '?' + new HttpParams().set(
+                'q',
+                q,
             ).toString() : ''}`,
         ).pipe(
             map( (dtos: UserResponseDto[]): UserModel[] => dtos.map( UserMapper.toModel ) ),
@@ -75,12 +76,12 @@ export class ParticipantApi extends GenericProjectApi {
 
     public searchGroups(
         projectId: string | undefined,
-        textSearched: string | undefined,
+        q: string | undefined,
     ): Observable<GroupModel[]> {
         return this.http.get<GroupResponseDto[]>(
-            `${this.buildRequestBaseUrl(projectId)}/search/groups${textSearched ? '?' + new HttpParams().set(
-                'textSearched',
-                textSearched,
+            `${this.buildRequestBaseUrl(projectId)}/search/groups${q ? '?' + new HttpParams().set(
+                'q',
+                q,
             ).toString() : ''}`,
         ).pipe(
             map( (dtos: GroupResponseDto[]): GroupModel[] => dtos.map( GroupMapper.toModel ) ),
@@ -90,14 +91,14 @@ export class ParticipantApi extends GenericProjectApi {
     public findParticipantMovements(
         projectId: string | undefined,
         id: string,
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
         params: MovementPageParamsModel,
     ): Observable<PageModel<MovementModel>> {
         return this.http.get<PageResponseDto<MovementResponseDto>>(
             `${this.buildRequestBaseUrl(projectId)}/${id}/movements?${QueryHelper.buildQueryParams(
-                pageNumber,
-                pageSize,
+                page,
+                size,
                 params,
             ).toString()}`,
         ).pipe(
@@ -126,22 +127,27 @@ export class ParticipantApi extends GenericProjectApi {
         projectId: string | undefined,
         id: string,
         participant: ParticipantDto,
+        ifMatch?: string,
     ): Observable<ParticipantModel> {
-        return this.http.patch<ParticipantResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}`, participant).pipe(
+        return this.http.patch<ParticipantResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}`, participant, ETagHelper.options(ifMatch)).pipe(
             map( ParticipantMapper.toModel ),
         )
     }
 
     public disableParticipantById(projectId: string | undefined, id: string): Observable<ParticipantModel> {
-        return this.http.patch<ParticipantResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/disable`, null).pipe(
+        return this.http.post<ParticipantResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/disable`, null).pipe(
             map( ParticipantMapper.toModel ),
         )
     }
 
     public enableParticipantById(projectId: string | undefined, id: string): Observable<ParticipantModel> {
-        return this.http.patch<ParticipantResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/enable`, null).pipe(
+        return this.http.post<ParticipantResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/enable`, null).pipe(
             map( ParticipantMapper.toModel ),
         )
+    }
+
+    public exportParticipantById(projectId: string | undefined, id: string): Observable<unknown> {
+        return this.http.get<unknown>(`${this.buildRequestBaseUrl(projectId)}/${id}/export`)
     }
 
     public deleteParticipantById(projectId: string | undefined, id: string): Observable<void> {

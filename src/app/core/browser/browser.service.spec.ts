@@ -35,6 +35,24 @@ describe( 'BrowserService', () => {
         expect( location.hash ).toBe( target )
     } )
 
+    it( 'downloads the content as a named JSON file', () => {
+        // Arrange
+        const createObjectURL: Mock = vi.fn( () => 'blob:test' )
+        const revokeObjectURL: Mock = vi.fn()
+        vi.stubGlobal( 'URL', { createObjectURL, revokeObjectURL } )
+        const click: Mock = vi.spyOn( HTMLAnchorElement.prototype, 'click' ).mockImplementation( () => undefined )
+
+        // Act
+        service.downloadJson( { a: 1 }, 'data.json' )
+
+        // Assert
+        expect( createObjectURL ).toHaveBeenCalledOnce()
+        expect( click ).toHaveBeenCalledOnce()
+        expect( revokeObjectURL ).toHaveBeenCalledWith( 'blob:test' )
+        click.mockRestore()
+        vi.unstubAllGlobals()
+    } )
+
     it( 'reloads the page', () => {
         // Arrange
         const reload: Mock = vi.fn()
@@ -200,5 +218,27 @@ describe( 'BrowserService', () => {
 
         // Assert
         expect( listener ).not.toHaveBeenCalled()
+    } )
+
+    it( 'writes then reads a cookie', () => {
+        // Arrange
+        const name: string = 'registry-test'
+
+        // Act
+        service.writeCookie( name, 'dark mode', 60 )
+
+        // Assert
+        expect( service.readCookie( name ) ).toBe( 'dark mode' )
+    } )
+
+    it( 'reads nothing when the cookie does not exist', () => {
+        // Arrange
+        const name: string = 'registry-missing'
+
+        // Act
+        const value: string | undefined = service.readCookie( name )
+
+        // Assert
+        expect( value ).toBeUndefined()
     } )
 } )

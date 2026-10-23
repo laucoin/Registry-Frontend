@@ -16,15 +16,17 @@ import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.p
 import { AddedGroupMembersDto } from '@shared/models/dto/added-group-members.dto'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { GroupModel } from '@shared/models/model/group.model'
+import { ParticipantModel } from '@shared/models/model/participant.model'
 import { PageModel } from '@shared/models/model/page.model'
 
-const EMPTY_PAGE: PageModel<GroupModel> = { pageNumber: 2, pageSize: 10, totalElements: 0, totalPages: 1, content: [], lastRefresh: new Date() }
+const EMPTY_PAGE: PageModel<GroupModel> = { page: 2, size: 10, totalElements: 0, totalPages: 1, hasNext: false, content: [], lastRefresh: new Date() }
 
 describe( 'GroupFacade', () => {
     let facade: GroupFacade
     let findGroups: Mock<GroupApi['findGroups']>
     let createGroup: Mock<GroupApi['createGroup']>
     let addMembersToGroupById: Mock<GroupApi['addMembersToGroupById']>
+    let removeMemberFromGroupById: Mock<GroupApi['removeMemberFromGroupById']>
     let notify: Mock<(message: unknown) => void>
     let commandEvents: CommandEventService
 
@@ -33,14 +35,15 @@ describe( 'GroupFacade', () => {
         findGroups = vi.fn( () => of( EMPTY_PAGE ) )
         createGroup = vi.fn()
         addMembersToGroupById = vi.fn()
+        removeMemberFromGroupById = vi.fn( () => of( undefined ) )
         notify = vi.fn()
         TestBed.configureTestingModule( {
             providers: [
                 GroupFacade,
                 GroupStore,
-                { provide: GroupApi, useValue: { findGroups, createGroup, addMembersToGroupById, findGroupMembersByGroupId: vi.fn( () => of( EMPTY_PAGE ) ) } },
+                { provide: GroupApi, useValue: { findGroups, createGroup, addMembersToGroupById, removeMemberFromGroupById, findGroupMembersByGroupId: vi.fn( () => of( EMPTY_PAGE ) ) } },
                 { provide: SessionFacade, useValue: { currentProjectId: signal( 'p1' ) } },
-                { provide: UiFacade, useValue: { notify, setGlobalError: vi.fn() } },
+                { provide: UiFacade, useValue: { notify } },
                 { provide: PluralTranslationPipe, useValue: { transform: (key: string, count: number): string => `${key}:${count}` } },
                 { provide: TranslocoService, useValue: { translate: (key: string): string => `t:${key}` } },
             ],
@@ -51,10 +54,10 @@ describe( 'GroupFacade', () => {
 
     it( 'fetches the requested groups page for the selected project', () => {
         // Arrange
-        const pageNumber: number = 3
+        const page: number = 3
 
         // Act
-        facade.fetchGroupsPage( pageNumber, 10 )
+        facade.fetchGroupsPage( page, 10 )
 
         // Assert
         expect( findGroups ).toHaveBeenCalledWith( 'p1', 3, 10, expect.anything() )
@@ -71,6 +74,20 @@ describe( 'GroupFacade', () => {
         expect( findGroups ).toHaveBeenCalledWith( 'p1', 0, 10, expect.anything() )
     } )
 
+    it( 'keeps the shown page when the same date is searched again', () => {
+        // Arrange
+        const at: Date = new Date( '2026-10-13T10:00:00.000Z' )
+        facade.inputPageSearchParameters( undefined, at, undefined, undefined )
+        facade.fetchGroupsPage( 0, 10 )
+
+        // Act
+        facade.inputPageSearchParameters( undefined, new Date( at ), undefined, undefined )
+        facade.fetchGroupsPage( 3, 10 )
+
+        // Assert
+        expect( findGroups ).toHaveBeenLastCalledWith( 'p1', 3, 10, expect.anything() )
+    } )
+
     it( 'does not touch the search parameters when nothing changed', () => {
         // Arrange
         facade.inputPageSearchParameters( 'scouts', undefined, undefined, undefined )
@@ -80,7 +97,7 @@ describe( 'GroupFacade', () => {
         facade.inputPageSearchParameters( 'scouts', undefined, undefined, undefined )
 
         // Assert
-        expect( facade.groupsPageTextSearchedParam() ).toBe( 'scouts' )
+        expect( facade.groupsPageQueryParam() ).toBe( 'scouts' )
         expect( facade.groupsPageResetSearch() ).toBe( false )
     } )
 
@@ -131,6 +148,18 @@ describe( 'GroupFacade', () => {
         facade.addMembersToGroup( 'g1', [ 'm1' ] ).subscribe()
 
         // Assert
+        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { severity: SeverityEnum.SUCCESS } ) )
+    } )
+
+    it( 'names the group shown on the participant in the removal notification', () => {
+        // Arrange
+        const participant: ParticipantModel = { id: 'm1', firstName: 'Ada', lastName: 'Lovelace', groups: [ { id: 'g1', name: 'Scouts' } as GroupModel ] } as ParticipantModel
+
+        // Act
+        facade.removeMemberFromGroup( 'g1', participant ).subscribe()
+
+        // Assert
+        expect( removeMemberFromGroupById ).toHaveBeenCalledWith( 'p1', 'g1', 'm1' )
         expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { severity: SeverityEnum.SUCCESS } ) )
     } )
 

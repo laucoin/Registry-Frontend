@@ -1,4 +1,5 @@
-import { Component } from '@angular/core'
+import '@sgdf/ui/button'
+import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core'
 import { RouterOutlet } from "@angular/router";
 import { TranslocoPipe } from '@jsverse/transloco';
 import { FooterComponent } from "@core/layout/footer/footer.component";
@@ -11,6 +12,7 @@ import { NavbarComponent } from "@core/layout/navbar/navbar.component";
  */
 @Component({
 	selector: 'app-main',
+	schemas: [CUSTOM_ELEMENTS_SCHEMA],
 	templateUrl: './main.component.html',
 	styleUrl: './main.component.css',
 	imports: [

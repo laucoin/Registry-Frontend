@@ -1,13 +1,13 @@
 import { fromBooleanChoice, toBooleanChoice, BooleanChoice } from '@shared/helpers/form/boolean-choice'
 
 interface UsersListSearch {
-    textSearched: string | undefined
-    visibilitySearched: boolean | undefined
+    q: string | undefined
+    isVisible: boolean | undefined
 }
 
 export interface UsersListSearchModel {
-    textSearched: string
-    visibilitySearched: BooleanChoice
+    q: string
+    isVisible: BooleanChoice
 }
 
 /**
@@ -17,8 +17,8 @@ export interface UsersListSearchModel {
  */
 export function toUsersListSearchModel (params: UsersListSearch): UsersListSearchModel {
     return {
-        textSearched: params.textSearched ?? '',
-        visibilitySearched: toBooleanChoice( params.visibilitySearched ),
+        q: params.q ?? '',
+        isVisible: toBooleanChoice( params.isVisible ),
     }
 }
 
@@ -29,7 +29,7 @@ export function toUsersListSearchModel (params: UsersListSearch): UsersListSearc
  */
 export function toUsersListSearchParams (model: UsersListSearchModel): UsersListSearch {
     return {
-        textSearched: model.textSearched === '' ? undefined : model.textSearched,
-        visibilitySearched: fromBooleanChoice( model.visibilitySearched ),
+        q: model.q === '' ? undefined : model.q,
+        isVisible: fromBooleanChoice( model.isVisible ),
     }
 }

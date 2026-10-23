@@ -1,7 +1,7 @@
 import { MovementModel } from '@shared/models/model/movement.model'
 import { MovementResponseDto } from '@shared/models/dto/response/movement.response.dto'
 import { ActivityMapper } from '@shared/mappers/activity.mapper'
-import { GenericProjectMapper } from '@shared/mappers/generic-project.mapper'
+import { GenericMapper } from '@shared/mappers/generic.mapper'
 import { MovementContentMapper } from '@shared/mappers/movement-content.mapper'
 import { MovementReasonMapper } from '@shared/mappers/movement-reason.mapper'
 
@@ -13,7 +13,7 @@ import { MovementReasonMapper } from '@shared/mappers/movement-reason.mapper'
 export class MovementMapper {
     public static toModel (dto: MovementResponseDto): MovementModel {
         return {
-            ...GenericProjectMapper.toOptionalModel( dto ),
+            ...GenericMapper.toModel( dto ),
             dateTime: dto.dateTime,
             type: dto.type,
             reason: dto.reason ? MovementReasonMapper.toModel( dto.reason ) : undefined,

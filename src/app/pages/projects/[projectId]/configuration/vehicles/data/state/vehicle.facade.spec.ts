@@ -20,7 +20,6 @@ describe( 'VehicleFacade', () => {
     let createVehicle: Mock<VehicleApi['createVehicle']>
     let enableVehicleById: Mock<VehicleApi['enableVehicleById']>
     let notify: Mock<(message: unknown) => void>
-    let setGlobalError: Mock<(error: ErrorModel) => void>
 
     beforeEach( () => {
         provideTestConfig()
@@ -28,7 +27,6 @@ describe( 'VehicleFacade', () => {
         createVehicle = vi.fn()
         enableVehicleById = vi.fn()
         notify = vi.fn()
-        setGlobalError = vi.fn()
         TestBed.configureTestingModule( {
             providers: [
                 VehicleFacade,
@@ -37,7 +35,7 @@ describe( 'VehicleFacade', () => {
                 { provide: MovementApi, useValue: { findMovementsContents: vi.fn( () => of( [] ) ) } },
                 { provide: MetadataApi, useValue: { getPresencesStatus: vi.fn( () => of( [] ) ) } },
                 { provide: SessionFacade, useValue: { currentProjectId: signal( 'p1' ) } },
-                { provide: UiFacade, useValue: { notify, setGlobalError } },
+                { provide: UiFacade, useValue: { notify } },
                 { provide: TranslocoService, useValue: { translate: (key: string): string => `t:${key}`, langChanges$: new Subject<string>().asObservable() } },
             ],
         } )
@@ -48,10 +46,10 @@ describe( 'VehicleFacade', () => {
 
     it( 'fetches the requested page for the selected project', () => {
         // Arrange
-        const pageNumber: number = 3
+        const page: number = 3
 
         // Act
-        facade.fetchVehiclesPage( pageNumber, 10 )
+        facade.fetchVehiclesPage( page, 10 )
 
         // Assert
         expect( findVehicles ).toHaveBeenCalledWith( 'p1', 3, 10, expect.anything() )
@@ -104,15 +102,16 @@ describe( 'VehicleFacade', () => {
         expect( notify ).not.toHaveBeenCalled()
     } )
 
-    it( 'reports a 503 on creation globally', () => {
+    it( 'rethrows a 503 on creation for the form to display', () => {
         // Arrange
         createVehicle.mockReturnValue( failing( ERROR_503 ) )
+        let received: unknown
 
         // Act
-        facade.createVehicle( {} as never ).subscribe()
+        facade.createVehicle( {} as never ).subscribe( { error: (error: unknown): void => { received = error } } )
 
         // Assert
-        expect( setGlobalError ).toHaveBeenCalledWith( ERROR_503 )
+        expect( received ).toBe( ERROR_503 )
     } )
 
     it( 'notifies a failed enable instead of rethrowing it', () => {

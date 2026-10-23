@@ -1,8 +1,7 @@
 import { inject, Injectable } from '@angular/core'
 import { TranslocoService } from '@jsverse/transloco'
 import { Observable, tap } from 'rxjs'
-import { BrowserService } from '@core/browser/browser.service'
-import { LocalStorageUtils } from '@shared/helpers/local-storage.helper'
+import { BrowserService, PREFERENCE_COOKIE_MAX_AGE_SECONDS } from '@core/browser/browser.service'
 import { LOCALE } from '@shared/helpers/request.helper'
 
 /**
@@ -26,7 +25,7 @@ export class LanguageService {
     }
 
     public remember (language: string): void {
-        LocalStorageUtils.set( LOCALE, language )
+        this.browser.writeCookie( LOCALE, language, PREFERENCE_COOKIE_MAX_AGE_SECONDS )
     }
 
     private activate (language: string): void {

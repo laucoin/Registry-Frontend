@@ -1,15 +1,15 @@
 import { BooleanChoice, fromBooleanChoice, toBooleanChoice } from '@shared/helpers/form/boolean-choice'
 
 interface GroupMemberListSearch {
-    textSearched: string | undefined
-    statusSearched: string | undefined
-    visibilitySearched: boolean | undefined
+    q: string | undefined
+    status: string | undefined
+    isVisible: boolean | undefined
 }
 
 export interface GroupMemberListSearchModel {
-    textSearched: string
-    statusSearched: string
-    visibilitySearched: BooleanChoice
+    q: string
+    status: string
+    isVisible: BooleanChoice
 }
 
 /**
@@ -19,9 +19,9 @@ export interface GroupMemberListSearchModel {
  */
 export function toGroupMemberListSearchModel (params: GroupMemberListSearch): GroupMemberListSearchModel {
     return {
-        textSearched: params.textSearched ?? '',
-        statusSearched: params.statusSearched ?? '',
-        visibilitySearched: toBooleanChoice( params.visibilitySearched ),
+        q: params.q ?? '',
+        status: params.status ?? '',
+        isVisible: toBooleanChoice( params.isVisible ),
     }
 }
 
@@ -32,8 +32,8 @@ export function toGroupMemberListSearchModel (params: GroupMemberListSearch): Gr
  */
 export function toGroupMemberListSearchParams (model: GroupMemberListSearchModel): GroupMemberListSearch {
     return {
-        textSearched: model.textSearched === '' ? undefined : model.textSearched,
-        statusSearched: model.statusSearched === '' ? undefined : model.statusSearched,
-        visibilitySearched: fromBooleanChoice( model.visibilitySearched ),
+        q: model.q === '' ? undefined : model.q,
+        status: model.status === '' ? undefined : model.status,
+        isVisible: fromBooleanChoice( model.isVisible ),
     }
 }

@@ -1,6 +1,6 @@
 import { ParticipantModel } from '@shared/models/model/participant.model'
 import { ParticipantResponseDto } from '@shared/models/dto/response/participant.response.dto'
-import { GenericProjectMapper } from '@shared/mappers/generic-project.mapper'
+import { GenericMapper } from '@shared/mappers/generic.mapper'
 import { GroupMapper } from '@shared/mappers/group.mapper'
 import { UserMapper } from '@shared/mappers/user.mapper'
 
@@ -12,7 +12,7 @@ import { UserMapper } from '@shared/mappers/user.mapper'
 export class ParticipantMapper {
     public static toModel (dto: ParticipantResponseDto): ParticipantModel {
         return {
-            ...GenericProjectMapper.toOptionalModel( dto ),
+            ...GenericMapper.toModel( dto ),
             firstName: dto.firstName,
             lastName: dto.lastName,
             birthday: dto.birthday,
@@ -22,8 +22,9 @@ export class ParticipantMapper {
             status: dto.status,
             startAvailability: dto.startAvailability,
             endAvailability: dto.endAvailability,
+            effectiveArrival: dto.effectiveArrival,
+            effectiveDeparture: dto.effectiveDeparture,
             user: dto.user ? UserMapper.toModel( dto.user ) : undefined,
-            purged: dto.purged,
         }
     }
 }

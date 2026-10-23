@@ -1,17 +1,17 @@
 import { BooleanChoice, fromBooleanChoice, toBooleanChoice } from '@shared/helpers/form/boolean-choice'
 
 interface ActivitiesListSearch {
-    textSearched: string | undefined
-    dateTimeSearched: Date | undefined
-    availabilitySearched: boolean | undefined
-    visibilitySearched: boolean | undefined
+    q: string | undefined
+    at: Date | undefined
+    isAvailable: boolean | undefined
+    isVisible: boolean | undefined
 }
 
 export interface ActivitiesListSearchModel {
-    textSearched: string
-    dateTimeSearched: Date | null
-    availabilitySearched: BooleanChoice
-    visibilitySearched: BooleanChoice
+    q: string
+    at: Date | null
+    isAvailable: BooleanChoice
+    isVisible: BooleanChoice
 }
 
 /**
@@ -21,10 +21,10 @@ export interface ActivitiesListSearchModel {
  */
 export function toActivitiesListSearchModel (params: ActivitiesListSearch): ActivitiesListSearchModel {
     return {
-        textSearched: params.textSearched ?? '',
-        dateTimeSearched: params.dateTimeSearched ?? null,
-        availabilitySearched: toBooleanChoice( params.availabilitySearched ),
-        visibilitySearched: toBooleanChoice( params.visibilitySearched ),
+        q: params.q ?? '',
+        at: params.at ?? null,
+        isAvailable: toBooleanChoice( params.isAvailable ),
+        isVisible: toBooleanChoice( params.isVisible ),
     }
 }
 
@@ -35,9 +35,9 @@ export function toActivitiesListSearchModel (params: ActivitiesListSearch): Acti
  */
 export function toActivitiesListSearchParams (model: ActivitiesListSearchModel): ActivitiesListSearch {
     return {
-        textSearched: model.textSearched === '' ? undefined : model.textSearched,
-        dateTimeSearched: model.dateTimeSearched ?? undefined,
-        availabilitySearched: fromBooleanChoice( model.availabilitySearched ),
-        visibilitySearched: fromBooleanChoice( model.visibilitySearched ),
+        q: model.q === '' ? undefined : model.q,
+        at: model.at ?? undefined,
+        isAvailable: fromBooleanChoice( model.isAvailable ),
+        isVisible: fromBooleanChoice( model.isVisible ),
     }
 }

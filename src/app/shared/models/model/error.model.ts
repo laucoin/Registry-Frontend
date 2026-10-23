@@ -10,10 +10,10 @@ export class ErrorModel extends Error {
     public constructor (error: HttpErrorResponse) {
         super()
 
-        this.status = error.error?.statusCode ?? error.status
-        this.name = error.error?.statusName ?? error.name
+        this.status = error.error?.status ?? error.status
+        this.name = error.name
         this.code = error.error?.code
         this.title = error.error?.title
-        this.message = error.error?.message
+        this.message = error.error?.detail ?? error.message
     }
 }

@@ -48,19 +48,19 @@ export class AlertsListPage {
     protected readonly facade: AlertFacade = inject(AlertFacade)
 
     protected readonly activeFilters: Signal<number> = computed((): number => [
-        this.facade.alertsPageTextSearchedParam() !== undefined,
-        this.facade.alertsPageStatusSearchedParam() !== undefined,
-        this.facade.alertsPageVisibilitySearchedParam() !== undefined,
-        this.facade.alertsPageStartDateTimeSearchedParam() !== undefined,
-        this.facade.alertsPageEndDateTimeSearchedParam() !== undefined,
+        this.facade.alertsPageQueryParam() !== undefined,
+        this.facade.alertsPageStatusParam() !== undefined,
+        this.facade.alertsPageIsVisibleParam() !== undefined,
+        this.facade.alertsPageFromParam() !== undefined,
+        this.facade.alertsPageToParam() !== undefined,
     ].filter(Boolean).length)
 
     protected readonly model: WritableSignal<AlertsListSearchModel> = signal(toAlertsListSearchModel({
-        textSearched: this.facade.alertsPageTextSearchedParam(),
-        statusSearched: this.facade.alertsPageStatusSearchedParam(),
-        visibilitySearched: this.facade.alertsPageVisibilitySearchedParam(),
-        startDateTimeSearched: this.facade.alertsPageStartDateTimeSearchedParam(),
-        endDateTimeSearched: this.facade.alertsPageEndDateTimeSearchedParam(),
+        q: this.facade.alertsPageQueryParam(),
+        status: this.facade.alertsPageStatusParam(),
+        isVisible: this.facade.alertsPageIsVisibleParam(),
+        from: this.facade.alertsPageFromParam(),
+        to: this.facade.alertsPageToParam(),
     }))
     protected readonly form: FieldTree<AlertsListSearchModel> = createSearchForm(this.model)
 
@@ -71,21 +71,21 @@ export class AlertsListPage {
     protected search(): void {
         const search: ReturnType<typeof toAlertsListSearchParams> = toAlertsListSearchParams(this.model())
         this.facade.inputPageSearchParameters(
-            search.textSearched,
-            search.statusSearched,
-            search.visibilitySearched,
-            search.startDateTimeSearched,
-            search.endDateTimeSearched,
+            search.q,
+            search.status,
+            search.isVisible,
+            search.from,
+            search.to,
         )
         this.facade.fetchAlertsPage(0, undefined)
     }
 
     protected resetFilters(): void {
-        this.model.set({ textSearched: '', statusSearched: '', visibilitySearched: '', startDateTimeSearched: null, endDateTimeSearched: null })
+        this.model.set({ q: '', status: '', isVisible: '', from: null, to: null })
         this.search()
     }
 
     protected loadBatch(pageEvent: PageEventModel): void {
-        this.facade.fetchAlertsPage(pageEvent.pageNumber, pageEvent.pageSize)
+        this.facade.fetchAlertsPage(pageEvent.page, pageEvent.size)
     }
 }

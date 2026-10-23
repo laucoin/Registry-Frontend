@@ -17,6 +17,7 @@ import { GroupMapper } from '@shared/mappers/group.mapper'
 import { PageMapper } from '@shared/mappers/page.mapper'
 import { ParticipantMapper } from '@shared/mappers/participant.mapper'
 import { PageResponseDto } from '@shared/models/dto/response/page.response.dto'
+import { ETagHelper } from '@shared/helpers/etag.helper'
 
 /**
  * Purpose: Sends the HTTP requests of the group domain.
@@ -28,19 +29,19 @@ import { PageResponseDto } from '@shared/models/dto/response/page.response.dto'
 })
 export class GroupApi extends GenericProjectApi {
     public constructor() {
-        super(`/api/v1/projects/${SELECT_PROFILE_PROJECT_ID}/groups`)
+        super(`/api/v2/projects/${SELECT_PROFILE_PROJECT_ID}/groups`)
     }
 
     public findGroups(
         projectId: string | undefined,
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
         params: GroupPageParamsModel,
     ): Observable<PageModel<GroupModel>> {
         return this.http.get<PageResponseDto<GroupResponseDto>>(
             `${this.buildRequestBaseUrl(projectId)}?${QueryHelper.buildQueryParams(
-                pageNumber,
-                pageSize,
+                page,
+                size,
                 params,
             ).toString()}`,
         ).pipe(
@@ -51,14 +52,14 @@ export class GroupApi extends GenericProjectApi {
     public findGroupMembersByGroupId(
         projectId: string | undefined,
         id: string | undefined,
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
         params: ParticipantPageParamsModel,
     ): Observable<PageModel<ParticipantModel>> {
         return this.http.get<PageResponseDto<ParticipantResponseDto>>(
             `${this.buildRequestBaseUrl(projectId)}/${id}/members?${QueryHelper.buildQueryParams(
-                pageNumber,
-                pageSize,
+                page,
+                size,
                 params,
             ).toString()}`,
         ).pipe(
@@ -74,12 +75,12 @@ export class GroupApi extends GenericProjectApi {
 
     public searchParticipants(
         projectId: string | undefined,
-        textSearched: string | undefined,
+        q: string | undefined,
     ): Observable<ParticipantModel[]> {
         return this.http.get<ParticipantResponseDto[]>(
-            `${this.buildRequestBaseUrl(projectId)}/search/participants${textSearched ? '?' + new HttpParams().set(
-                'textSearched',
-                textSearched,
+            `${this.buildRequestBaseUrl(projectId)}/search/participants${q ? '?' + new HttpParams().set(
+                'q',
+                q,
             ).toString() : ''}`,
         ).pipe(
             map( (dtos: ParticipantResponseDto[]): ParticipantModel[] => dtos.map( ParticipantMapper.toModel ) ),
@@ -96,8 +97,9 @@ export class GroupApi extends GenericProjectApi {
         projectId: string | undefined,
         id: string,
         group: GroupDto,
+        ifMatch?: string,
     ): Observable<GroupModel> {
-        return this.http.patch<GroupResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}`, group).pipe(
+        return this.http.patch<GroupResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}`, group, ETagHelper.options(ifMatch)).pipe(
             map( GroupMapper.toModel ),
         )
     }
@@ -107,7 +109,7 @@ export class GroupApi extends GenericProjectApi {
         id: string,
         memberIds: string[],
     ): Observable<AddedGroupMembersDto> {
-        return this.http.patch<AddedGroupMembersDto>(
+        return this.http.post<AddedGroupMembersDto>(
             `${this.buildRequestBaseUrl(projectId)}/${id}/members`,
             memberIds,
         )
@@ -117,20 +119,18 @@ export class GroupApi extends GenericProjectApi {
         projectId: string | undefined,
         id: string,
         memberId: string,
-    ): Observable<GroupModel> {
-        return this.http.delete<GroupResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/members/${memberId}`).pipe(
-            map( GroupMapper.toModel ),
-        )
+    ): Observable<void> {
+        return this.http.delete<void>(`${this.buildRequestBaseUrl(projectId)}/${id}/members/${memberId}`)
     }
 
     public disableGroupById(projectId: string | undefined, id: string): Observable<GroupModel> {
-        return this.http.patch<GroupResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/disable`, null).pipe(
+        return this.http.post<GroupResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/disable`, null).pipe(
             map( GroupMapper.toModel ),
         )
     }
 
     public enableGroupById(projectId: string | undefined, id: string): Observable<GroupModel> {
-        return this.http.patch<GroupResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/enable`, null).pipe(
+        return this.http.post<GroupResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/enable`, null).pipe(
             map( GroupMapper.toModel ),
         )
     }

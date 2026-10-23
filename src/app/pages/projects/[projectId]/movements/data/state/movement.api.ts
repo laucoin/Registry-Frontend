@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core'
-import { Observable, map } from 'rxjs'
+import { Observable, forkJoin, map, of } from 'rxjs'
 import {PageModel} from '@shared/models/model/page.model'
 import {GenericProjectApi} from '@shared/helpers/api/generic-project.api'
 import {SELECT_PROFILE_PROJECT_ID} from '@shared/helpers/request.helper'
@@ -14,6 +14,7 @@ import {
 import {VehicleModel} from '@shared/models/model/vehicle.model'
 import {MovementContentModel} from '@shared/models/model/movement-content.model'
 import {PairModel} from '@shared/models/model/pair.model'
+import {ArrayHelper} from '@shared/helpers/array.helper'
 import {GenericHelper} from '@shared/helpers/generic.helper'
 import {StringHelper} from '@shared/helpers/string.helper'
 import {MovementReasonModel} from '@shared/models/model/movement-reason.model'
@@ -42,6 +43,7 @@ import { VehicleMapper } from '@shared/mappers/vehicle.mapper'
 import { VehicleStatusMapper } from '@shared/mappers/vehicle-status.mapper'
 import { PageResponseDto } from '@shared/models/dto/response/page.response.dto'
 import { PairResponseDto } from '@shared/models/dto/response/pair.response.dto'
+import { ETagHelper } from '@shared/helpers/etag.helper'
 
 /**
  * Purpose: Sends the HTTP requests of the movement domain.
@@ -52,20 +54,22 @@ import { PairResponseDto } from '@shared/models/dto/response/pair.response.dto'
     providedIn: 'root',
 })
 export class MovementApi extends GenericProjectApi {
+    private static readonly MAX_CONTENT_IDS: number = 80
+
     public constructor() {
-        super(`/api/v1/projects/${SELECT_PROFILE_PROJECT_ID}/movements`)
+        super(`/api/v2/projects/${SELECT_PROFILE_PROJECT_ID}/movements`)
     }
 
     public findMovements(
         projectId: string | undefined,
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
         params: MovementPageParamsModel,
     ): Observable<PageModel<MovementModel>> {
         return this.http.get<PageResponseDto<MovementResponseDto>>(
             `${this.buildRequestBaseUrl(projectId)}?${QueryHelper.buildQueryParams(
-                pageNumber,
-                pageSize,
+                page,
+                size,
                 params,
             ).toString()}`,
         ).pipe(
@@ -76,14 +80,26 @@ export class MovementApi extends GenericProjectApi {
     public findMovementsContents(
         projectId: string | undefined,
         movementIds: string[],
-        currentMovements: boolean,
+        isCurrent: boolean,
     ): Observable<PairModel<MovementContentModel[]>[]> {
-        let builtParams: HttpParams = new HttpParams().set('currentMovements', currentMovements)
-        if (GenericHelper.nonNull(movementIds)) {
-            movementIds.forEach((movementId: string): void => {
-                builtParams = builtParams.append('movementIds', movementId)
-            })
-        }
+        if (ArrayHelper.isNullOrEmpty( movementIds )) return of( [] )
+
+        return forkJoin(
+            ArrayHelper.chunk( movementIds, MovementApi.MAX_CONTENT_IDS ).map( (ids: string[]): Observable<PairModel<MovementContentModel[]>[]> => this.findContentsChunk( projectId, ids, isCurrent ) ),
+        ).pipe(
+            map( (chunks: PairModel<MovementContentModel[]>[][]): PairModel<MovementContentModel[]>[] => chunks.flat() ),
+        )
+    }
+
+    private findContentsChunk(
+        projectId: string | undefined,
+        movementIds: string[],
+        isCurrent: boolean,
+    ): Observable<PairModel<MovementContentModel[]>[]> {
+        let builtParams: HttpParams = new HttpParams().set('isCurrent', isCurrent)
+        movementIds.forEach((movementId: string): void => {
+            builtParams = builtParams.append('movementIds', movementId)
+        })
 
         return this.http.get<PairResponseDto<MovementContentResponseDto[]>[]>(
             `${this.buildRequestBaseUrl(projectId)}/contents?${builtParams.toString()}`,
@@ -99,14 +115,14 @@ export class MovementApi extends GenericProjectApi {
     public findMovementCommunications(
         projectId: string | undefined,
         id: string,
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
         params: CommunicationPageParamsModel,
     ): Observable<PageModel<CommunicationModel>> {
         return this.http.get<PageResponseDto<CommunicationResponseDto>>(
             `${this.buildRequestBaseUrl(projectId)}/${id}/communications?${QueryHelper.buildQueryParams(
-                pageNumber,
-                pageSize,
+                page,
+                size,
                 params,
             ).toString()}`,
         ).pipe(
@@ -134,17 +150,17 @@ export class MovementApi extends GenericProjectApi {
 
     public searchReasonsAndActivities(
         projectId: string | undefined,
-        textSearched: string | undefined,
-        typeSearched: string,
-        contentTypeSearched: ParticipantTypeEnum,
+        q: string | undefined,
+        type: string,
+        contentType: ParticipantTypeEnum,
     ): Observable<MovementReasonModel[]> {
         let params: HttpParams = new HttpParams()
-            .set('typeSearched', typeSearched)
-            .set('contentTypeSearched', contentTypeSearched.toString())
+            .set('type', type)
+            .set('contentType', contentType.toString())
 
-        if (StringHelper.isNotNullNorBlank(textSearched)) params = params.set(
-            'textSearched',
-            textSearched!,
+        if (StringHelper.isNotNullNorBlank(q)) params = params.set(
+            'q',
+            q!,
         )
 
         return this.http.get<MovementReasonResponseDto[]>(
@@ -156,12 +172,12 @@ export class MovementApi extends GenericProjectApi {
 
     public searchParticipantsAndGroups(
         projectId: string | undefined,
-        typeSearched: ParticipantTypeEnum,
-        textSearched: string | undefined,
+        type: ParticipantTypeEnum,
+        q: string | undefined,
     ): Observable<MovementParticipantsAndGroupsModel> {
-        let params: HttpParams = new HttpParams().set('contentTypeSearched', typeSearched.toString())
+        let params: HttpParams = new HttpParams().set('contentType', type.toString())
 
-        if (GenericHelper.nonNull(textSearched)) params = params.set('textSearched', textSearched!)
+        if (GenericHelper.nonNull(q)) params = params.set('q', q!)
 
         return this.http.get<MovementParticipantsAndGroupsResponseDto>(
             `${this.buildRequestBaseUrl(projectId)}/search/participants-and-groups?${params.toString()}`,
@@ -172,12 +188,12 @@ export class MovementApi extends GenericProjectApi {
 
     public searchVehicles(
         projectId: string | undefined,
-        textSearched: string | undefined,
+        q: string | undefined,
     ): Observable<VehicleModel[]> {
         return this.http.get<VehicleResponseDto[]>(
-            `${this.buildRequestBaseUrl(projectId)}/search/vehicles${textSearched ? '?' + new HttpParams().set(
-                'textSearched',
-                textSearched,
+            `${this.buildRequestBaseUrl(projectId)}/search/vehicles${q ? '?' + new HttpParams().set(
+                'q',
+                q,
             ).toString() : ''}`,
         ).pipe(
             map( (dtos: VehicleResponseDto[]): VehicleModel[] => dtos.map( VehicleMapper.toModel ) ),
@@ -194,8 +210,9 @@ export class MovementApi extends GenericProjectApi {
         projectId: string | undefined,
         id: string,
         movement: MovementDto,
+        ifMatch?: string,
     ): Observable<MovementModel> {
-        return this.http.patch<MovementResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}`, movement).pipe(
+        return this.http.patch<MovementResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}`, movement, ETagHelper.options(ifMatch)).pipe(
             map( MovementMapper.toModel ),
         )
     }
@@ -210,20 +227,21 @@ export class MovementApi extends GenericProjectApi {
         projectId: string | undefined,
         id: string,
         movement: MovementDto,
+        ifMatch?: string,
     ): Observable<MovementModel> {
-        return this.http.patch<MovementResponseDto>(`${this.buildRequestBaseUrl(projectId)}/guests/${id}`, movement).pipe(
+        return this.http.patch<MovementResponseDto>(`${this.buildRequestBaseUrl(projectId)}/guests/${id}`, movement, ETagHelper.options(ifMatch)).pipe(
             map( MovementMapper.toModel ),
         )
     }
 
     public disableMovementById(projectId: string | undefined, id: string): Observable<MovementModel> {
-        return this.http.patch<MovementResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/disable`, null).pipe(
+        return this.http.post<MovementResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/disable`, null).pipe(
             map( MovementMapper.toModel ),
         )
     }
 
     public enableMovementById(projectId: string | undefined, id: string): Observable<MovementModel> {
-        return this.http.patch<MovementResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/enable`, null).pipe(
+        return this.http.post<MovementResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/enable`, null).pipe(
             map( MovementMapper.toModel ),
         )
     }

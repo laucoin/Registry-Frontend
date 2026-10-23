@@ -15,6 +15,7 @@ import { ActivityMapper } from '@shared/mappers/activity.mapper'
 import { MovementMapper } from '@shared/mappers/movement.mapper'
 import { PageMapper } from '@shared/mappers/page.mapper'
 import { PageResponseDto } from '@shared/models/dto/response/page.response.dto'
+import { ETagHelper } from '@shared/helpers/etag.helper'
 
 /**
  * Purpose: Sends the HTTP requests of the activity domain.
@@ -26,19 +27,19 @@ import { PageResponseDto } from '@shared/models/dto/response/page.response.dto'
 })
 export class ActivityApi extends GenericProjectApi {
     public constructor() {
-        super(`/api/v1/projects/${SELECT_PROFILE_PROJECT_ID}/activities`)
+        super(`/api/v2/projects/${SELECT_PROFILE_PROJECT_ID}/activities`)
     }
 
     public findActivities(
         projectId: string | undefined,
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
         params: ActivityPageParamsModel,
     ): Observable<PageModel<ActivityModel>> {
         return this.http.get<PageResponseDto<ActivityResponseDto>>(
             `${this.buildRequestBaseUrl(projectId)}?${QueryHelper.buildQueryParams(
-                pageNumber,
-                pageSize,
+                page,
+                size,
                 params,
             ).toString()}`,
         ).pipe(
@@ -55,14 +56,14 @@ export class ActivityApi extends GenericProjectApi {
     public findActivityMovements(
         projectId: string | undefined,
         id: string,
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
         params: MovementPageParamsModel,
     ): Observable<PageModel<MovementModel>> {
         return this.http.get<PageResponseDto<MovementResponseDto>>(
             `${this.buildRequestBaseUrl(projectId)}/${id}/movements?${QueryHelper.buildQueryParams(
-                pageNumber,
-                pageSize,
+                page,
+                size,
                 params,
             ).toString()}`,
         ).pipe(
@@ -80,20 +81,21 @@ export class ActivityApi extends GenericProjectApi {
         projectId: string | undefined,
         id: string,
         activity: ActivityDto,
+        ifMatch?: string,
     ): Observable<ActivityModel> {
-        return this.http.patch<ActivityResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}`, activity).pipe(
+        return this.http.patch<ActivityResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}`, activity, ETagHelper.options(ifMatch)).pipe(
             map( ActivityMapper.toModel ),
         )
     }
 
     public disableActivityById(projectId: string | undefined, id: string): Observable<ActivityModel> {
-        return this.http.patch<ActivityResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/disable`, null).pipe(
+        return this.http.post<ActivityResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/disable`, null).pipe(
             map( ActivityMapper.toModel ),
         )
     }
 
     public enableActivityById(projectId: string | undefined, id: string): Observable<ActivityModel> {
-        return this.http.patch<ActivityResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/enable`, null).pipe(
+        return this.http.post<ActivityResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/enable`, null).pipe(
             map( ActivityMapper.toModel ),
         )
     }

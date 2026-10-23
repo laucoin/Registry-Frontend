@@ -4,36 +4,36 @@ import { toVehiclesListSearchModel, toVehiclesListSearchParams } from '@pages/pr
 describe('vehicles-list search mapping', () => {
     it('turns absent parameters into empty form values', () => {
         // Arrange
-        const params: Parameters<typeof toVehiclesListSearchModel>[0] = { textSearched: undefined, dateTimeSearched: undefined, statusSearched: undefined, visibilitySearched: undefined }
+        const params: Parameters<typeof toVehiclesListSearchModel>[0] = { q: undefined, at: undefined, status: undefined, isVisible: undefined }
 
         // Act
         const model: ReturnType<typeof toVehiclesListSearchModel> = toVehiclesListSearchModel(params)
 
         // Assert
-        expect(model).toEqual({ textSearched: '', dateTimeSearched: null, statusSearched: '', visibilitySearched: '' })
+        expect(model).toEqual({ q: '', at: null, status: '', isVisible: '' })
     })
 
     it('turns the filled parameters into form values and back', () => {
         // Arrange
         const when: Date = new Date(2026, 9, 3)
-        const params: Parameters<typeof toVehiclesListSearchModel>[0] = { textSearched: 'camp', dateTimeSearched: when, statusSearched: 'IN', visibilitySearched: false }
+        const params: Parameters<typeof toVehiclesListSearchModel>[0] = { q: 'camp', at: when, status: 'IN', isVisible: false }
 
         // Act
         const model: ReturnType<typeof toVehiclesListSearchModel> = toVehiclesListSearchModel(params)
 
         // Assert
-        expect(model.visibilitySearched).toBe('false')
+        expect(model.isVisible).toBe('false')
         expect(toVehiclesListSearchParams(model)).toEqual(params)
     })
 
     it('turns empty form values into absent parameters', () => {
         // Arrange
-        const model: ReturnType<typeof toVehiclesListSearchModel> = { textSearched: '', dateTimeSearched: null, statusSearched: '', visibilitySearched: '' }
+        const model: ReturnType<typeof toVehiclesListSearchModel> = { q: '', at: null, status: '', isVisible: '' }
 
         // Act
         const params: ReturnType<typeof toVehiclesListSearchParams> = toVehiclesListSearchParams(model)
 
         // Assert
-        expect(params).toEqual({ textSearched: undefined, dateTimeSearched: undefined, statusSearched: undefined, visibilitySearched: undefined })
+        expect(params).toEqual({ q: undefined, at: undefined, status: undefined, isVisible: undefined })
     })
 })

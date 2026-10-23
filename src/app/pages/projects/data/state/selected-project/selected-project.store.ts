@@ -2,7 +2,6 @@ import { inject } from '@angular/core'
 import { patchState, signalStore, withMethods, withState } from '@ngrx/signals'
 import { RxMethod, rxMethod } from '@ngrx/signals/rxjs-interop'
 import { catchError, EMPTY, finalize, map, Observable, pipe, switchMap, tap } from 'rxjs'
-import { NotificationModel } from '@shared/models/model/notification.model'
 import { ErrorReporter } from '@core/registry/state/error-reporter'
 import { ProjectStatusModel } from '@shared/models/model/project-status.model'
 import { SelectedProjectStoreModel } from '@pages/projects/data/model/selected-project-store.model'
@@ -11,9 +10,9 @@ import { ParticipantApi } from '@pages/projects/[projectId]/configuration/partic
 import { AlertApi } from '@pages/projects/[projectId]/movements/data/state/alert.api'
 import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
 import { MovementHelper } from '@shared/helpers/movement.helper'
-import { ErrorSink, initialize, notifyOnError, reportError } from '@shared/helpers/rx.helper'
+import { initialize } from '@shared/helpers/rx.helper'
 import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
-import { MovementContentsRequest, pageFetcher, StoreRef } from '@shared/helpers/store/paged-store.methods'
+import { BIRTHDAYS_SECTION, contentsSection, MovementContentsRequest, pageFetcher, StoreRef, trackSectionError } from '@shared/helpers/store/paged-store.methods'
 import { PageSlice, trackPage } from '@shared/helpers/store/track-page.operator'
 import { withProfileScope } from '@shared/helpers/store/with-profile-scope.feature'
 import { AlertStatusEnum } from '@shared/models/enumeration/alert-status.enum'
@@ -28,53 +27,46 @@ import { PairModel } from '@shared/models/model/pair.model'
 import { ParticipantModel } from '@shared/models/model/participant.model'
 import { CumulativePageHelper, CumulativePageRequest } from '@shared/helpers/store/cumulative-page.helper'
 
-type CurrentMovementsKey = keyof SelectedProjectStoreModel['currentMovements']
+type CurrentMovementsKey = keyof SelectedProjectStoreModel['isCurrent']
 type StatusKey = keyof SelectedProjectStoreModel['status']
-type MovementsBlock = SelectedProjectStoreModel['currentMovements'][CurrentMovementsKey]
+type MovementsBlock = SelectedProjectStoreModel['isCurrent'][CurrentMovementsKey]
 type Ref = StoreRef<SelectedProjectStoreModel>
 
 interface CurrentPageRequest extends CumulativePageRequest {
     projectId: string | undefined
 }
 
-const currentMovementsBlock = (linkedToActivity: boolean): MovementsBlock =>
+const currentMovementsBlock = (hasActivity: boolean): MovementsBlock =>
     PageStateHelper.initial<MovementPageParamsModel, MovementModel>( {
         resetSearch: false,
-        currentMovements: true,
-        linkedToActivity: linkedToActivity,
-        visibilitySearched: undefined,
-        typeSearched: undefined,
-        startDateTimeSearched: undefined,
-        endDateTimeSearched: undefined,
+        isCurrent: true,
+        hasActivity: hasActivity,
+        isVisible: undefined,
+        type: undefined,
+        from: undefined,
+        to: undefined,
     } )
 
 const defaultSelectedProjectStore: SelectedProjectStoreModel = {
+    sectionErrors: {},
     status: {
         participants: { element: undefined, loading: false, error: undefined },
         vehicles: { element: undefined, loading: false, error: undefined },
     },
     alerts: PageStateHelper.initial<AlertPageParamsModel, AlertModel>( {
         resetSearch: false,
-        textSearched: undefined,
-        statusSearched: AlertStatusEnum.IN_PROGRESS,
-        visibilitySearched: true,
-        startDateTimeSearched: undefined,
-        endDateTimeSearched: undefined,
+        q: undefined,
+        status: AlertStatusEnum.IN_PROGRESS,
+        isVisible: true,
+        from: undefined,
+        to: undefined,
     } ),
     birthdays: [],
-    currentMovements: {
+    isCurrent: {
         withoutActivity: currentMovementsBlock( false ),
         withActivity: currentMovementsBlock( true ),
     },
 }
-
-const buildToast = (error: ErrorModel): NotificationModel => ({
-    severity: 'error',
-    summary: error.title,
-    detail: error.message,
-    icon: 'pi pi-exclamation-triangle',
-    closable: true,
-})
 
 function patchStatus (store: Ref, key: StatusKey, patch: Partial<SelectedProjectStoreModel['status'][StatusKey]>): void {
     patchState( store, (state: SelectedProjectStoreModel) => ({
@@ -84,44 +76,40 @@ function patchStatus (store: Ref, key: StatusKey, patch: Partial<SelectedProject
 
 function patchCurrentMovements (store: Ref, key: CurrentMovementsKey, update: (block: MovementsBlock) => MovementsBlock): void {
     patchState( store, (state: SelectedProjectStoreModel) => ({
-        currentMovements: { ...state.currentMovements, [ key ]: update( state.currentMovements[ key ] ) },
+        isCurrent: { ...state.isCurrent, [ key ]: update( state.isCurrent[ key ] ) },
     }) )
 }
 
 function currentMovementsSlice (store: Ref, key: CurrentMovementsKey): PageSlice<MovementsBlock> {
     return {
-        read: (): MovementsBlock => store.currentMovements()[ key ],
+        read: (): MovementsBlock => store.isCurrent()[ key ],
         write: (block: MovementsBlock): void => patchCurrentMovements( store, key, (): MovementsBlock => block ),
     }
 }
 
-function statusFetcher<T> (store: Ref, key: StatusKey, source: (projectId: string | undefined) => Observable<T>, errors: ErrorSink): RxMethod<string | undefined> {
+function statusFetcher<T> (store: Ref, key: StatusKey, source: (projectId: string | undefined) => Observable<T>): RxMethod<string | undefined> {
     return rxMethod<string | undefined>( pipe(
         switchMap( (projectId: string | undefined): Observable<T> => source( projectId ).pipe(
             initialize( (): void => patchStatus( store, key, { loading: true } ) ),
             finalize( (): void => patchStatus( store, key, { loading: false } ) ),
-            catchError( (error: ErrorModel): Observable<never> => reportStatusError( store, key, errors, error ) ),
+            catchError( (error: ErrorModel): Observable<never> => reportStatusError( store, key, error ) ),
         ) ),
         tap( (element: T): void => patchStatus( store, key, { element: element as never } ) ),
     ) )
 }
 
-function reportStatusError (store: Ref, key: StatusKey, errors: ErrorSink, error: ErrorModel): Observable<never> {
-    if (error.status === 503) {
-        reportError( errors, error )
-    } else {
-        patchStatus( store, key, { error: buildToast( error ) } )
-    }
+function reportStatusError (store: Ref, key: StatusKey, error: ErrorModel): Observable<never> {
+    patchStatus( store, key, { error: PageStateHelper.toNotification( error ) } )
     return EMPTY
 }
 
-function currentMovementsContents (store: Ref, key: CurrentMovementsKey, movementApi: MovementApi, errors: ErrorSink): RxMethod<MovementContentsRequest> {
+function currentMovementsContents (store: Ref, key: CurrentMovementsKey, movementApi: MovementApi): RxMethod<MovementContentsRequest> {
     return rxMethod<MovementContentsRequest>( pipe(
         switchMap( (request: MovementContentsRequest): Observable<PairModel<MovementContentModel[]>[]> => movementApi.findMovementsContents(
             request.projectId,
             request.movementIds,
-            store.currentMovements()[ key ].params.currentMovements,
-        ).pipe( notifyOnError( errors ) ) ),
+            store.isCurrent()[ key ].params.isCurrent,
+        ).pipe( trackSectionError( store, contentsSection( key ) ) ) ),
         tap( (contents: PairModel<MovementContentModel[]>[]): void => patchCurrentMovements( store, key, (block: MovementsBlock) => mergeContents( block, contents ) ) ),
     ) )
 }
@@ -135,12 +123,11 @@ function currentMovementsPage (
     store: Ref,
     key: CurrentMovementsKey,
     movementApi: MovementApi,
-    errors: ErrorSink,
     fetchContents: (request: MovementContentsRequest) => void,
 ): RxMethod<CurrentPageRequest> {
     return rxMethod<CurrentPageRequest>( pipe(
         switchMap( (request: CurrentPageRequest): Observable<{ request: CurrentPageRequest, page: PageModel<MovementModel> }> =>
-            fetchCurrentMovements( store, key, movementApi, errors, request ),
+            fetchCurrentMovements( store, key, movementApi, request ),
         ),
         tap( ({ request, page }: { request: CurrentPageRequest, page: PageModel<MovementModel> }): void => {
             patchCurrentMovements( store, key, (block: MovementsBlock): MovementsBlock => ({ ...block, element: CumulativePageHelper.merge( block.element, page, request ) }) )
@@ -153,12 +140,11 @@ function fetchCurrentMovements (
     store: Ref,
     key: CurrentMovementsKey,
     movementApi: MovementApi,
-    errors: ErrorSink,
     request: CurrentPageRequest,
 ): Observable<{ request: CurrentPageRequest, page: PageModel<MovementModel> }> {
-    const params: MovementPageParamsModel = store.currentMovements()[ key ].params
-    return movementApi.findMovements( request.projectId, request.pageNumber, request.pageSize, params ).pipe(
-        trackPage( errors, currentMovementsSlice( store, key ) ),
+    const params: MovementPageParamsModel = store.isCurrent()[ key ].params
+    return movementApi.findMovements( request.projectId, request.page, request.size, params ).pipe(
+        trackPage( currentMovementsSlice( store, key ) ),
         map( (page: PageModel<MovementModel>) => ({ request, page }) ),
     )
 }
@@ -169,13 +155,10 @@ function requestContents (fetchContents: (request: MovementContentsRequest) => v
     }
 }
 
-function fetchParticipantsBirthdays (store: Ref, participantApi: ParticipantApi, errors: ErrorSink): RxMethod<string | undefined> {
+function fetchParticipantsBirthdays (store: Ref, participantApi: ParticipantApi): RxMethod<string | undefined> {
     return rxMethod<string | undefined>( pipe(
         switchMap( (projectId: string | undefined): Observable<ParticipantModel[]> => participantApi.findParticipantsBirthdays( projectId ).pipe(
-            catchError( (error: ErrorModel): Observable<never> => {
-                reportError( errors, error )
-                return EMPTY
-            } ),
+            trackSectionError( store, BIRTHDAYS_SECTION ),
         ) ),
         tap( (participants: ParticipantModel[]): void => patchState( store, { birthdays: participants } ) ),
     ) )
@@ -189,17 +172,17 @@ function fetchParticipantsBirthdays (store: Ref, participantApi: ParticipantApi,
 export const SelectedProjectStore = signalStore(
     withState<SelectedProjectStoreModel>( defaultSelectedProjectStore ),
     withProfileScope<SelectedProjectStoreModel>( defaultSelectedProjectStore ),
-    withMethods( (store, movementApi = inject( MovementApi ), participantApi = inject( ParticipantApi ), errors = inject( ErrorReporter )) => ({
-        fetchParticipantsStatus: statusFetcher<ProjectStatusModel>( store, 'participants', (projectId: string | undefined) => movementApi.findParticipantsStatus( projectId ), errors ),
-        fetchVehiclesStatus: statusFetcher<VehicleStatusModel>( store, 'vehicles', (projectId: string | undefined) => movementApi.findVehiclesStatus( projectId ), errors ),
-        fetchParticipantsBirthdays: fetchParticipantsBirthdays( store, participantApi, errors ),
-        fetchCurrentMovementsWithoutActivityContents: currentMovementsContents( store, 'withoutActivity', movementApi, errors ),
-        fetchCurrentMovementsWithActivityContents: currentMovementsContents( store, 'withActivity', movementApi, errors ),
+    withMethods( (store, movementApi = inject( MovementApi ), participantApi = inject( ParticipantApi )) => ({
+        fetchParticipantsStatus: statusFetcher<ProjectStatusModel>( store, 'participants', (projectId: string | undefined) => movementApi.findParticipantsStatus( projectId ) ),
+        fetchVehiclesStatus: statusFetcher<VehicleStatusModel>( store, 'vehicles', (projectId: string | undefined) => movementApi.findVehiclesStatus( projectId ) ),
+        fetchParticipantsBirthdays: fetchParticipantsBirthdays( store, participantApi ),
+        fetchCurrentMovementsWithoutActivityContents: currentMovementsContents( store, 'withoutActivity', movementApi ),
+        fetchCurrentMovementsWithActivityContents: currentMovementsContents( store, 'withActivity', movementApi ),
     }) ),
     withMethods( (store, movementApi = inject( MovementApi ), alertApi = inject( AlertApi ), errors = inject( ErrorReporter )) => ({
-        fetchCurrentMovementsPageWithoutActivity: currentMovementsPage( store, 'withoutActivity', movementApi, errors, store.fetchCurrentMovementsWithoutActivityContents ),
-        fetchCurrentMovementsPageWithActivity: currentMovementsPage( store, 'withActivity', movementApi, errors, store.fetchCurrentMovementsWithActivityContents ),
+        fetchCurrentMovementsPageWithoutActivity: currentMovementsPage( store, 'withoutActivity', movementApi, store.fetchCurrentMovementsWithoutActivityContents ),
+        fetchCurrentMovementsPageWithActivity: currentMovementsPage( store, 'withActivity', movementApi, store.fetchCurrentMovementsWithActivityContents ),
         fetchCurrentAlertsPage: pageFetcher( store, 'alerts', (request: CurrentPageRequest, params: AlertPageParamsModel) =>
-            alertApi.findAlerts( request.projectId, request.pageNumber, request.pageSize, params ), errors ),
+            alertApi.findAlerts( request.projectId, request.page, request.size, params ), errors ),
     }) ),
 )

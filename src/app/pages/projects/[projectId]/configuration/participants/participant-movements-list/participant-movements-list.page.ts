@@ -65,17 +65,17 @@ export class ParticipantMovementsListPage implements OnDestroy {
     })
 
     protected readonly activeFilters: Signal<number> = computed((): number => [
-        this.facade.participantMovementsPageTypeSearchedParam() !== undefined,
-        this.facade.participantMovementsPageStartDateTimeSearchedParam() !== undefined,
-        this.facade.participantMovementsPageEndDateTimeSearchedParam() !== undefined,
-        this.facade.participantMovementsPageVisibilitySearchedParam() !== undefined,
+        this.facade.participantMovementsPageTypeParam() !== undefined,
+        this.facade.participantMovementsPageFromParam() !== undefined,
+        this.facade.participantMovementsPageToParam() !== undefined,
+        this.facade.participantMovementsPageIsVisibleParam() !== undefined,
     ].filter(Boolean).length)
 
     protected readonly model: WritableSignal<ParticipantMovementsListSearchModel> = signal(toParticipantMovementsListSearchModel({
-        typeSearched: this.facade.participantMovementsPageTypeSearchedParam(),
-        startDateTimeSearched: this.facade.participantMovementsPageStartDateTimeSearchedParam(),
-        endDateTimeSearched: this.facade.participantMovementsPageEndDateTimeSearchedParam(),
-        visibilitySearched: this.facade.participantMovementsPageVisibilitySearchedParam(),
+        type: this.facade.participantMovementsPageTypeParam(),
+        from: this.facade.participantMovementsPageFromParam(),
+        to: this.facade.participantMovementsPageToParam(),
+        isVisible: this.facade.participantMovementsPageIsVisibleParam(),
     }))
     protected readonly form: FieldTree<ParticipantMovementsListSearchModel> = createSearchForm(this.model)
 
@@ -109,21 +109,21 @@ export class ParticipantMovementsListPage implements OnDestroy {
     protected search(): void {
         const search: ReturnType<typeof toParticipantMovementsListSearchParams> = toParticipantMovementsListSearchParams(this.model())
         this.facade.inputMovementsPageSearchParameters(
-            search.typeSearched,
-            search.startDateTimeSearched,
-            search.endDateTimeSearched,
-            search.visibilitySearched,
+            search.type,
+            search.from,
+            search.to,
+            search.isVisible,
         )
         this.facade.fetchParticipantMovementsPage(this.id(), 0, undefined)
     }
 
     protected resetFilters(): void {
-        this.model.set({ typeSearched: '', startDateTimeSearched: null, endDateTimeSearched: null, visibilitySearched: '' })
+        this.model.set({ type: '', from: null, to: null, isVisible: '' })
         this.search()
     }
 
     protected loadBatch(pageEvent: PageEventModel): void {
-        this.facade.fetchParticipantMovementsPage(this.id(), pageEvent.pageNumber, pageEvent.pageSize)
+        this.facade.fetchParticipantMovementsPage(this.id(), pageEvent.page, pageEvent.size)
     }
 
     public ngOnDestroy(): void {

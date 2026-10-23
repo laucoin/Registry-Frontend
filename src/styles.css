@@ -17,6 +17,15 @@ html {
     min-width: var(--layout--min-width);
 }
 
+:root {
+    background-color: var(--sgdf-nav-bg, var(--sgdf-color-default));
+}
+
+body {
+    min-height: 100vh;
+    background-color: var(--sgdf-color-bg-default);
+}
+
 sgdf-table-cell[header] > h2 {
     display: inline;
     margin: 0;

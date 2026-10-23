@@ -8,5 +8,4 @@ export interface UserModel extends GenericModel {
     role: SelectOptionModel<string> | undefined
     birthday: Date
     lastLogin?: Date
-    purged: boolean
 }

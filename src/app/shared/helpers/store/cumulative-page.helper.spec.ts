@@ -1,15 +1,16 @@
 import { describe, expect, it } from 'vitest'
-import { CumulativePageHelper } from '@shared/helpers/store/cumulative-page.helper'
+import { CumulativePageHelper, CumulativePageRequest } from '@shared/helpers/store/cumulative-page.helper'
 import { GenericModel } from '@shared/models/model/generic.model'
 import { PageModel } from '@shared/models/model/page.model'
 
 const item = (id: string): GenericModel => ({ id }) as GenericModel
 
-const page = (ids: string[], pageNumber: number, pageSize: number, totalElements: number): PageModel<GenericModel> => ({
-    pageNumber,
-    pageSize,
+const page = (ids: string[], page: number, size: number, totalElements: number): PageModel<GenericModel> => ({
+    page,
+    size,
     totalElements,
-    totalPages: Math.ceil( totalElements / pageSize ),
+    totalPages: Math.ceil( totalElements / size ),
+    hasNext: page + 1 < Math.ceil( totalElements / size ),
     content: ids.map( item ),
     lastRefresh: new Date(),
 })
@@ -22,12 +23,12 @@ describe( 'CumulativePageHelper', () => {
             const fetched: PageModel<GenericModel> = page( [ 'c', 'd' ], 1, 2, 5 )
 
             // Act
-            const merged: PageModel<GenericModel> = CumulativePageHelper.merge( current, fetched, { pageNumber: 1, pageSize: 2 } )
+            const merged: PageModel<GenericModel> = CumulativePageHelper.merge( current, fetched, { page: 1, size: 2 } )
 
             // Assert
             expect( merged.content.map( (it: GenericModel): string => it.id ) ).toEqual( [ 'a', 'b', 'c', 'd' ] )
-            expect( merged.pageNumber ).toBe( 1 )
-            expect( merged.pageSize ).toBe( 2 )
+            expect( merged.page ).toBe( 1 )
+            expect( merged.size ).toBe( 2 )
         } )
 
         it( 'replaces the shown page when the first batch is requested again', () => {
@@ -36,7 +37,7 @@ describe( 'CumulativePageHelper', () => {
             const fetched: PageModel<GenericModel> = page( [ 'x', 'y' ], 0, 2, 2 )
 
             // Act
-            const merged: PageModel<GenericModel> = CumulativePageHelper.merge( current, fetched, { pageNumber: 0, pageSize: 2 } )
+            const merged: PageModel<GenericModel> = CumulativePageHelper.merge( current, fetched, { page: 0, size: 2 } )
 
             // Assert
             expect( merged ).toBe( fetched )
@@ -47,7 +48,7 @@ describe( 'CumulativePageHelper', () => {
             const fetched: PageModel<GenericModel> = page( [ 'a' ], 0, 2, 1 )
 
             // Act
-            const merged: PageModel<GenericModel> = CumulativePageHelper.merge( undefined, fetched, { pageNumber: undefined, pageSize: undefined } )
+            const merged: PageModel<GenericModel> = CumulativePageHelper.merge( undefined, fetched, { page: undefined, size: undefined } )
 
             // Assert
             expect( merged ).toBe( fetched )
@@ -58,12 +59,13 @@ describe( 'CumulativePageHelper', () => {
             const fetched: PageModel<GenericModel> = page( [ 'a', 'b', 'c' ], 0, 4, 5 )
 
             // Act
-            const merged: PageModel<GenericModel> = CumulativePageHelper.merge( undefined, fetched, { pageNumber: 0, pageSize: 4, batchSize: 2 } )
+            const merged: PageModel<GenericModel> = CumulativePageHelper.merge( undefined, fetched, { page: 0, size: 4, batchSize: 2 } )
 
             // Assert
-            expect( merged.pageSize ).toBe( 2 )
-            expect( merged.pageNumber ).toBe( 1 )
+            expect( merged.size ).toBe( 2 )
+            expect( merged.page ).toBe( 1 )
             expect( merged.totalPages ).toBe( 3 )
+            expect( merged.hasNext ).toBe( true )
         } )
 
         it( 'keeps one batch when a reload comes back empty', () => {
@@ -71,10 +73,10 @@ describe( 'CumulativePageHelper', () => {
             const fetched: PageModel<GenericModel> = page( [], 0, 4, 0 )
 
             // Act
-            const merged: PageModel<GenericModel> = CumulativePageHelper.merge( undefined, fetched, { pageNumber: 0, pageSize: 4, batchSize: 2 } )
+            const merged: PageModel<GenericModel> = CumulativePageHelper.merge( undefined, fetched, { page: 0, size: 4, batchSize: 2 } )
 
             // Assert
-            expect( merged.pageNumber ).toBe( 0 )
+            expect( merged.page ).toBe( 0 )
         } )
     } )
 
@@ -87,7 +89,7 @@ describe( 'CumulativePageHelper', () => {
             const request: ReturnType<typeof CumulativePageHelper.reloadRequest> = CumulativePageHelper.reloadRequest( current )
 
             // Assert
-            expect( request ).toEqual( { pageNumber: 0, pageSize: 4, batchSize: 2 } )
+            expect( request ).toEqual( { page: 0, size: 4, batchSize: 2 } )
         } )
 
         it( 'asks for the default first batch when nothing is shown', () => {
@@ -98,7 +100,42 @@ describe( 'CumulativePageHelper', () => {
             const request: ReturnType<typeof CumulativePageHelper.reloadRequest> = CumulativePageHelper.reloadRequest( current )
 
             // Assert
-            expect( request ).toEqual( { pageNumber: undefined, pageSize: undefined } )
+            expect( request ).toEqual( { page: undefined, size: undefined } )
+        } )
+    } )
+
+    describe( 'reloadRequest', () => {
+        it( 'asks for every shown batch in one request', () => {
+            // Arrange
+            const current: PageModel<GenericModel> = page( [ 'a', 'b' ], 2, 20, 100 )
+
+            // Act
+            const request: CumulativePageRequest = CumulativePageHelper.reloadRequest( current )
+
+            // Assert
+            expect( request ).toEqual( { page: 0, size: 60, batchSize: 20 } )
+        } )
+
+        it( 'stays under the page size cap of the backend, on a whole batch', () => {
+            // Arrange
+            const current: PageModel<GenericModel> = page( [ 'a' ], 11, 30, 1000 )
+
+            // Act
+            const request: CumulativePageRequest = CumulativePageHelper.reloadRequest( current )
+
+            // Assert
+            expect( request ).toEqual( { page: 0, size: 180, batchSize: 30 } )
+        } )
+
+        it( 'asks for nothing specific when no page is shown', () => {
+            // Arrange
+            const current: PageModel<GenericModel> | undefined = undefined
+
+            // Act
+            const request: CumulativePageRequest = CumulativePageHelper.reloadRequest( current )
+
+            // Assert
+            expect( request ).toEqual( { page: undefined, size: undefined } )
         } )
     } )
 

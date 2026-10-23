@@ -17,7 +17,6 @@ import {
 } from '@shared/helpers/store/testing/test-paged.store'
 import { ErrorSink } from '@shared/helpers/rx.helper'
 import { MovementContentsApi } from '@shared/helpers/store/paged-store.methods'
-import { ErrorModel } from '@shared/models/model/error.model'
 import { GenericModel } from '@shared/models/model/generic.model'
 import { MovementContentModel } from '@shared/models/model/movement-content.model'
 import { MovementModel } from '@shared/models/model/movement.model'
@@ -29,7 +28,6 @@ describe( 'paged store methods', () => {
     let itemSource: Mock<ItemSource>
     let labelsSource: Mock<LabelsSource>
     let findMovementsContents: Mock<MovementContentsApi['findMovementsContents']>
-    let setGlobalError: Mock<(error: ErrorModel) => void>
     let notify: Mock<(message: unknown) => void>
 
     beforeEach( () => {
@@ -38,7 +36,6 @@ describe( 'paged store methods', () => {
         itemSource = vi.fn()
         labelsSource = vi.fn()
         findMovementsContents = vi.fn( () => of( [] ) )
-        setGlobalError = vi.fn()
         notify = vi.fn()
         TestBed.configureTestingModule( {
             providers: [
@@ -47,7 +44,7 @@ describe( 'paged store methods', () => {
                 { provide: MOVEMENTS_SOURCE, useValue: movementsSource },
                 { provide: ITEM_SOURCE, useValue: itemSource },
                 { provide: LABELS_SOURCE, useValue: labelsSource },
-                { provide: TEST_ERRORS, useValue: { setGlobalError, notify } as ErrorSink },
+                { provide: TEST_ERRORS, useValue: { notify } as ErrorSink },
                 { provide: MOVEMENT_CONTENTS_API, useValue: { findMovementsContents } },
             ],
         } )
@@ -57,8 +54,8 @@ describe( 'paged store methods', () => {
     describe( 'pageFetcher merge hook', () => {
         it( 'stores the shown page merged with the fetched one', () => {
             // Arrange
-            const first: ReturnType<typeof pageOf<GenericModel>> = { ...pageOf<GenericModel>( [ { id: 'a' } as GenericModel ] ), pageSize: 1 }
-            const second: ReturnType<typeof pageOf<GenericModel>> = { ...pageOf<GenericModel>( [ { id: 'b' } as GenericModel ], 1 ), pageSize: 1 }
+            const first: ReturnType<typeof pageOf<GenericModel>> = { ...pageOf<GenericModel>( [ { id: 'a' } as GenericModel ] ), size: 1 }
+            const second: ReturnType<typeof pageOf<GenericModel>> = { ...pageOf<GenericModel>( [ { id: 'b' } as GenericModel ], 1 ), size: 1 }
             itemsSource.mockReturnValueOnce( of( first ) ).mockReturnValueOnce( of( second ) )
             store.fetchAppendedItems( { n: 0 } )
 
@@ -137,7 +134,7 @@ describe( 'paged store methods', () => {
             expect( store.items.element() ).toBeDefined()
         } )
 
-        it( 'reports a 503 globally instead of keeping it in the block', () => {
+        it( 'keeps a 503 failure in its block', () => {
             // Arrange
             itemsSource.mockReturnValue( failing( ERROR_503 ) )
 
@@ -145,8 +142,7 @@ describe( 'paged store methods', () => {
             store.fetchItems( { n: 1 } )
 
             // Assert
-            expect( setGlobalError ).toHaveBeenCalledWith( ERROR_503 )
-            expect( store.items.error() ).toBeUndefined()
+            expect( store.items.error() ).toBeDefined()
         } )
     } )
 
@@ -193,6 +189,36 @@ describe( 'paged store methods', () => {
             expect( store.movements.element()?.content[ 1 ].content ).toHaveLength( 1 )
         } )
 
+        it( 'fetches only the contents of the page that just arrived', () => {
+            // Arrange
+            movementsSource.mockReturnValueOnce( of( pageOf<MovementModel>( [ { id: 'm1' } as MovementModel ] ) ) )
+            movementsSource.mockReturnValueOnce( of( pageOf<MovementModel>( [ { id: 'm2' } as MovementModel ], 1 ) ) )
+            store.fetchMovements( { projectId: 'p1' } )
+            findMovementsContents.mockClear()
+
+            // Act
+            store.fetchMovements( { projectId: 'p1' } )
+
+            // Assert
+            expect( findMovementsContents ).toHaveBeenCalledOnce()
+            expect( findMovementsContents ).toHaveBeenCalledWith( 'p1', [ 'm2' ], true )
+        } )
+
+        it( 'keeps the contents already loaded when the next page arrives', () => {
+            // Arrange
+            movementsSource.mockReturnValueOnce( of( pageOf<MovementModel>( [ { id: 'm1' } as MovementModel ] ) ) )
+            movementsSource.mockReturnValueOnce( of( pageOf<MovementModel>( [ { id: 'm2' } as MovementModel ], 1 ) ) )
+            findMovementsContents.mockReturnValueOnce( of( [ { first: 'm1', second: [ { id: 'c' } as unknown as MovementContentModel ] } ] ) )
+            store.fetchMovements( { projectId: 'p1' } )
+
+            // Act
+            store.fetchMovements( { projectId: 'p1' } )
+
+            // Assert
+            expect( store.movements.element()?.content[ 0 ].content ).toHaveLength( 1 )
+            expect( store.movements.element()?.content[ 1 ].content ).toEqual( [] )
+        } )
+
         it( 'does not fetch contents for an empty page', () => {
             // Arrange
             movementsSource.mockReturnValue( of( pageOf<MovementModel>( [] ) ) )
@@ -204,7 +230,7 @@ describe( 'paged store methods', () => {
             expect( findMovementsContents ).not.toHaveBeenCalled()
         } )
 
-        it( 'notifies a failed contents fetch and keeps the page as it was', () => {
+        it( 'keeps a failed contents fetch in the section error and the page as it was', () => {
             // Arrange
             movementsSource.mockReturnValue( of( pageOf<MovementModel>( [ { id: 'm1' } as MovementModel ] ) ) )
             findMovementsContents.mockReturnValue( failing( ERROR_500 ) )
@@ -213,7 +239,7 @@ describe( 'paged store methods', () => {
             store.fetchMovements( { projectId: 'p1' } )
 
             // Assert
-            expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'Title' } ) )
+            expect( store.sectionErrors()[ 'contents' ]?.summary ).toBe( 'Title' )
             expect( store.movements.element()?.content[ 0 ].id ).toBe( 'm1' )
         } )
 
@@ -242,7 +268,7 @@ describe( 'paged store methods', () => {
             expect( store.item.loading() ).toBe( false )
         } )
 
-        it( 'notifies a failed element fetch, ends the loading state and keeps the previous element', () => {
+        it( 'keeps a failed element fetch in the block, ends the loading state and keeps the previous element', () => {
             // Arrange
             itemSource.mockReturnValueOnce( of( { id: 'x' } as GenericModel ) )
             itemSource.mockReturnValueOnce( failing( ERROR_500 ) )
@@ -252,7 +278,7 @@ describe( 'paged store methods', () => {
             store.fetchItem( 'y' )
 
             // Assert
-            expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'Title' } ) )
+            expect( store.item.error()?.summary ).toBe( 'Title' )
             expect( store.item.loading() ).toBe( false )
             expect( store.item.element()?.id ).toBe( 'x' )
         } )
@@ -281,7 +307,7 @@ describe( 'paged store methods', () => {
             expect( store.metadata.labels() ).toEqual( [ '-', 'a', 'b' ] )
         } )
 
-        it( 'notifies a failed metadata fetch and keeps the previous list', () => {
+        it( 'keeps a failed metadata fetch in the section error and the previous list', () => {
             // Arrange
             labelsSource.mockReturnValueOnce( of( [ 'a' ] ) )
             labelsSource.mockReturnValueOnce( failing( ERROR_500 ) )
@@ -291,8 +317,36 @@ describe( 'paged store methods', () => {
             store.fetchLabels( 'x' )
 
             // Assert
-            expect( notify ).toHaveBeenCalledTimes( 1 )
+            expect( store.sectionErrors()[ 'metadata.labels' ]?.summary ).toBe( 'Title' )
             expect( store.metadata.labels() ).toEqual( [ '-', 'a' ] )
+        } )
+
+        it( 'clears the section error of a metadata list when the next fetch succeeds', () => {
+            // Arrange
+            labelsSource.mockReturnValueOnce( failing( ERROR_500 ) )
+            labelsSource.mockReturnValueOnce( of( [ 'a' ] ) )
+            store.fetchLabels( 'x' )
+
+            // Act
+            store.fetchLabels( 'x' )
+
+            // Assert
+            expect( store.sectionErrors()[ 'metadata.labels' ] ).toBeUndefined()
+            expect( store.metadata.labels() ).toEqual( [ '-', 'a' ] )
+        } )
+
+        it( 'clears the error of an element block when the next fetch succeeds', () => {
+            // Arrange
+            itemSource.mockReturnValueOnce( failing( ERROR_500 ) )
+            itemSource.mockReturnValueOnce( of( { id: 'y' } as GenericModel ) )
+            store.fetchItem( 'x' )
+
+            // Act
+            store.fetchItem( 'y' )
+
+            // Assert
+            expect( store.item.error() ).toBeUndefined()
+            expect( store.item.element()?.id ).toBe( 'y' )
         } )
     } )
 } )

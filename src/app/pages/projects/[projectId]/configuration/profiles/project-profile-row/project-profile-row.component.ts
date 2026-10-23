@@ -10,6 +10,7 @@ import { ProjectProfileActions } from '@pages/projects/[projectId]/configuration
 import { CustomDateFormatPipe } from '@shared/helpers/pipe/custom-date-format.pipe'
 import { AvailabilityStatusEnum } from '@shared/models/enumeration/availability-status.enum'
 import { ProfileStatusEnum } from '@shared/models/enumeration/profile-status.enum'
+import { isProjectProfile, ListedProfileModel, profileProjectId } from '@shared/models/model/listed-profile.model'
 import { ProjectProfileModel } from '@shared/models/model/project-profile.model'
 import { ElementActionsComponent } from '@shared/ui/common/element-actions/element-actions.component'
 
@@ -39,29 +40,29 @@ export class ProjectProfileRowComponent {
 
     protected readonly ProfileStatusEnum: typeof ProfileStatusEnum = ProfileStatusEnum
 
-    protected title(profile: ProjectProfileModel): string {
-        return this.view() === 'user' ? profile.project.name : this.userName(profile)
+    protected title(profile: ListedProfileModel): string {
+        return isProjectProfile( profile ) ? this.userName( profile ) : profile.project?.name ?? ''
     }
 
-    protected initials(profile: ProjectProfileModel): string {
+    protected initials(profile: ListedProfileModel): string {
         const words: string[] = this.title(profile).trim().split(/\s+/)
         const letters: string = words.length > 1 ? words.slice(0, INITIALS_LENGTH).map((word: string): string => word[0]).join('') : words[0].slice(0, INITIALS_LENGTH)
         return letters.toUpperCase()
     }
 
-    protected isSelected(profile: ProjectProfileModel): boolean {
-        return this.sessionFacade.selectedProject()?.id === profile.project.id
+    protected isSelected(profile: ListedProfileModel): boolean {
+        return this.sessionFacade.selectedProject()?.id === profileProjectId( profile )
     }
 
-    protected awaitsAnswer(profile: ProjectProfileModel): boolean {
-        return profile.status.value === ProfileStatusEnum.INVITED && profile.user.id === this.sessionFacade.currentUser()?.id
+    protected awaitsAnswer(profile: ListedProfileModel): boolean {
+        return profile.status.value === ProfileStatusEnum.INVITED && (!isProjectProfile( profile ) || profile.user.id === this.sessionFacade.currentUser()?.id)
     }
 
-    protected availabilityVariant(profile: ProjectProfileModel): TagVariant {
+    protected availabilityVariant(profile: ListedProfileModel): TagVariant {
         return profile.availabilityStatus?.value === AvailabilityStatusEnum.AVAILABLE ? 'success' : 'info'
     }
 
-    protected statusVariant(profile: ProjectProfileModel): TagVariant {
+    protected statusVariant(profile: ListedProfileModel): TagVariant {
         switch (profile.status.value) {
             case ProfileStatusEnum.ACCEPTED:
                 return 'success'

@@ -39,6 +39,7 @@ import {FormButtonPipe} from '@shared/helpers/pipe/form-button.pipe'
 import {DateTimeFieldComponent} from '@shared/ui/common/date-time-field/date-time-field.component'
 import {PluralTranslationPipe} from '@shared/helpers/pipe/plural-translation.pipe'
 import {FormIconPipe} from '@shared/helpers/pipe/form-icon.pipe'
+import { ETagHelper } from '@shared/helpers/etag.helper'
 
 /**
  * Purpose: Form fields of a participant.
@@ -121,7 +122,7 @@ export class ParticipantFormComponent extends BaseFormComponent implements OnDes
     }
 
     private applyParticipant(participant: ParticipantModel | undefined): void {
-        this.contextProject.set(participant?.project || this.sessionFacade.selectedProject())
+        this.contextProject.set( this.sessionFacade.selectedProject() )
         if (!participant) return
         this.model.set(toParticipantFormModel(participant))
         if (participant.user) this.handleUserSelection(this.model().user)
@@ -139,7 +140,7 @@ export class ParticipantFormComponent extends BaseFormComponent implements OnDes
         }
 
         const dto: ParticipantDto = toParticipantDto(this.model(), this.defaultGroup())
-        this.save(editing ? this.facade.updateParticipant(this.participant()!.id, dto) : this.facade.createParticipant(dto), this.redirect())
+        this.save(editing ? this.facade.updateParticipant(this.participant()!.id, dto, ETagHelper.ifMatch(this.participant())) : this.facade.createParticipant(dto), this.redirect())
     }
 
     protected handleUserSearch(searched: AutoCompleteCompleteEvent): void {

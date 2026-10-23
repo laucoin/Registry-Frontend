@@ -1,3 +1,4 @@
+import { RegistryConfig } from '@core/config/registry.config'
 import {Injectable} from '@angular/core'
 import { Observable, map } from 'rxjs'
 import {ProjectModel} from '@shared/models/model/project.model'
@@ -13,6 +14,7 @@ import { PageMapper } from '@shared/mappers/page.mapper'
 import { ProjectMapper } from '@shared/mappers/project.mapper'
 import { ProjectOptionMapper } from '@shared/mappers/project-option.mapper'
 import { PageResponseDto } from '@shared/models/dto/response/page.response.dto'
+import { ETagHelper } from '@shared/helpers/etag.helper'
 
 /**
  * Purpose: Sends the HTTP requests of the project domain.
@@ -24,16 +26,16 @@ import { PageResponseDto } from '@shared/models/dto/response/page.response.dto'
 })
 export class ProjectApi extends GenericApi {
     public constructor() {
-        super('/api/v1/projects')
+        super('/api/v2/projects')
     }
 
     public findProjects(
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
         params: ProjectPageParamsModel,
     ): Observable<PageModel<ProjectModel>> {
         return this.http.get<PageResponseDto<ProjectResponseDto>>(
-            `${this.baseUrl}?${QueryHelper.buildQueryParams(pageNumber, pageSize, params).toString()}`,
+            `${this.baseUrl}?${QueryHelper.buildQueryParams(page, size, params).toString()}`,
         ).pipe(
             map( (dto: PageResponseDto<ProjectResponseDto>): PageModel<ProjectModel> => PageMapper.toModel( dto, ProjectMapper.toModel ) ),
         )
@@ -46,7 +48,7 @@ export class ProjectApi extends GenericApi {
     }
 
     public getAvailableProjectOptions(): Observable<ProjectOptionModel[]> {
-        return this.http.get<ProjectOptionResponseDto[]>(`${this.baseUrl}/options`).pipe(
+        return this.http.get<ProjectOptionResponseDto[]>(`${RegistryConfig.environment.backend.url}/api/v2/metadata/projects/options`).pipe(
             map( (dtos: ProjectOptionResponseDto[]): ProjectOptionModel[] => dtos.map( ProjectOptionMapper.toModel ) ),
         )
     }
@@ -57,20 +59,22 @@ export class ProjectApi extends GenericApi {
         )
     }
 
-    public updateProjectById(id: string, project: ProjectDto): Observable<ProjectModel> {
-        return this.http.patch<ProjectResponseDto>(`${this.baseUrl}/${id}`, project).pipe(
+    public updateProjectById(id: string, project: ProjectDto,
+        ifMatch?: string,
+    ): Observable<ProjectModel> {
+        return this.http.patch<ProjectResponseDto>(`${this.baseUrl}/${id}`, project, ETagHelper.options(ifMatch)).pipe(
             map( ProjectMapper.toModel ),
         )
     }
 
     public disableProjectById(id: string): Observable<ProjectModel> {
-        return this.http.patch<ProjectResponseDto>(`${this.baseUrl}/${id}/disable`, null).pipe(
+        return this.http.post<ProjectResponseDto>(`${this.baseUrl}/${id}/disable`, null).pipe(
             map( ProjectMapper.toModel ),
         )
     }
 
     public enableProjectById(id: string): Observable<ProjectModel> {
-        return this.http.patch<ProjectResponseDto>(`${this.baseUrl}/${id}/enable`, null).pipe(
+        return this.http.post<ProjectResponseDto>(`${this.baseUrl}/${id}/enable`, null).pipe(
             map( ProjectMapper.toModel ),
         )
     }

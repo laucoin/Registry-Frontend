@@ -29,7 +29,7 @@ describe('ParticipantActions', () => {
     beforeEach(() => {
         RegistryConfig.config = { enabledActions: Object.values(ElementActionEnum) } as never
         authorities = signal(['p1_REGISTRY_PROJECT_PARTICIPANT_U', 'p1_REGISTRY_PROJECT_PARTICIPANT_D', 'p1_REGISTRY_PROJECT_PARTICIPANT_HISTORY_R'])
-        facade = { disableParticipant: vi.fn(() => of(undefined)), enableParticipant: vi.fn(() => of(undefined)), deleteParticipant: vi.fn(() => of(undefined)) }
+        facade = { disableParticipant: vi.fn(() => of(undefined)), enableParticipant: vi.fn(() => of(undefined)), deleteParticipant: vi.fn(() => of(undefined)), exportParticipant: vi.fn(() => of(undefined)) }
         groupFacade = { removeMemberFromGroup: vi.fn(() => of(undefined)) }
         confirm = vi.fn()
         navigateByUrl = vi.fn(() => Promise.resolve(true))
@@ -38,7 +38,7 @@ describe('ParticipantActions', () => {
                 ParticipantActions,
                 { provide: ParticipantFacade, useValue: facade },
                 { provide: GroupFacade, useValue: groupFacade },
-                { provide: SessionFacade, useValue: { currentUser: (): unknown => ({ authorities: authorities() }), selectedProject: (): unknown => ({ id: 'p1' }), currentProjectId: (): string => 'p1' } },
+                { provide: SessionFacade, useValue: { currentUser: (): unknown => ({ id: 'me', authorities: authorities() }), selectedProject: (): unknown => ({ id: 'p1' }), currentProjectId: (): string => 'p1' } },
                 { provide: UiFacade, useValue: { confirm } },
                 { provide: Router, useValue: { navigateByUrl } },
                 { provide: TranslocoService, useValue: { translate: (key: string): string => key } },
@@ -55,7 +55,7 @@ describe('ParticipantActions', () => {
         return actions.actionsFor(element).find((action: ElementActionModel): boolean => action.id === id)!
     }
 
-    it('offers the history, edit, hide and delete commands for a visible element', () => {
+    it('offers the history, edit, hide, export and delete commands for a visible element', () => {
         // Arrange
         const element: ParticipantModel = VISIBLE
 
@@ -63,7 +63,7 @@ describe('ParticipantActions', () => {
         const shown: string[] = ids(element)
 
         // Assert
-        expect(shown).toEqual(['movements-history', 'edit', 'disable', 'delete'])
+        expect(shown).toEqual(['movements-history', 'edit', 'disable', 'export', 'delete'])
     })
 
     it('offers show instead of hide and no deletion for a hidden participant', () => {
@@ -74,7 +74,7 @@ describe('ParticipantActions', () => {
         const shown: string[] = ids(element)
 
         // Assert
-        expect(shown).toEqual(['movements-history', 'edit', 'enable'])
+        expect(shown).toEqual(['movements-history', 'edit', 'enable', 'export'])
     })
 
     it('leaves out the commands that are not enabled in the configuration', () => {
@@ -86,6 +86,41 @@ describe('ParticipantActions', () => {
 
         // Assert
         expect(shown).toEqual(['edit'])
+    })
+
+    it('disables the export for a user who is neither an administrator nor the linked user', () => {
+        // Arrange
+        const element: ParticipantModel = { ...VISIBLE, user: { id: 'other' } } as ParticipantModel
+
+        // Act
+        const disabled: boolean = find(element, 'export').disabled
+
+        // Assert
+        expect(disabled).toBe(true)
+    })
+
+    it('allows the export to the user linked to the participant', () => {
+        // Arrange
+        const element: ParticipantModel = { ...VISIBLE, user: { id: 'me' } } as ParticipantModel
+
+        // Act
+        const disabled: boolean = find(element, 'export').disabled
+
+        // Assert
+        expect(disabled).toBe(false)
+    })
+
+    it('allows the export to a project administrator and runs it', () => {
+        // Arrange
+        authorities.set(['p1_REGISTRY_PROJECT_PARTICIPANT_EXPORT'])
+        const exportAction: ElementActionModel = find(VISIBLE, 'export')
+
+        // Act
+        exportAction.run()
+
+        // Assert
+        expect(exportAction.disabled).toBe(false)
+        expect(facade['exportParticipant']).toHaveBeenCalledWith(VISIBLE)
     })
 
     it('disables the commands the user has no authority for', () => {
@@ -140,7 +175,7 @@ describe('ParticipantActions', () => {
         const shown: string[] = ids(element, 'g1')
 
         // Assert
-        expect(shown).toEqual(['movements-history', 'edit', 'disable', 'remove-member', 'delete'])
+        expect(shown).toEqual(['movements-history', 'edit', 'disable', 'remove-member', 'export', 'delete'])
     })
 
     it('asks for a confirmation before removing a member, then calls the group facade', () => {

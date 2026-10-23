@@ -1,7 +1,6 @@
 export interface ProjectPageParamsModel {
     resetSearch: boolean
-    visibilitySearched: boolean | undefined
-    textSearched: string | undefined
-    withProfile: boolean
-    dateTimeSearched: string | undefined
+    isVisible: boolean | undefined
+    q: string | undefined
+    at: string | undefined
 }

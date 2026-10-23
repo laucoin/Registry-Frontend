@@ -62,7 +62,7 @@ export class UserElementComponent extends GenericElementComponent {
 		this.updateRoleAction(),
 		this.disableAction(),
 		this.enableAction(),
-		this.impersonateAction(),
+		this.exportAction(),
 		this.deleteAction(),
 	])
 
@@ -112,19 +112,13 @@ export class UserElementComponent extends GenericElementComponent {
 		}
 	}
 
-	private impersonateAction(): MenuEntryModel {
+	private exportAction(): MenuEntryModel {
 		return {
-			label: 'users.actions.impersonate',
-			icon: 'pi pi-eraser',
-			disabled: !this.hasAuthority(UserAuthorityEnum.REGISTRY_USER_D),
-			visible: this.actionIsEnable(ElementActionEnum.USER_IMPERSONATE) && !this.isCurrentUser(),
-			command: this.confirmThen(
-				'users.actions.confirmations.impersonate',
-				'pi pi-exclamation-circle',
-				this.user(),
-				SeverityEnum.DANGER,
-				(): void => this.facade.impersonateUser(this.user()),
-			),
+			label: 'users.actions.export',
+			icon: 'pi pi-download',
+			disabled: !this.hasAuthority(UserAuthorityEnum.REGISTRY_USER_R),
+			visible: this.actionIsEnable(ElementActionEnum.USER_EXPORT),
+			command: (): void => this.facade.exportUser(this.user()),
 		}
 	}
 

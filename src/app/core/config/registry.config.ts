@@ -1,5 +1,5 @@
 import { EnvironmentProviders, inject, Injectable, Injector, provideAppInitializer, Provider } from '@angular/core'
-import { BrowserService } from '@core/browser/browser.service'
+import { BrowserService, PREFERENCE_COOKIE_MAX_AGE_SECONDS } from '@core/browser/browser.service'
 import { ConfigModel } from '@core/config/model/config.model';
 import { EnvironmentModel } from '@core/config/model/environment.model'
 import { RegistryTranslationLoader } from '@core/config/registry-translation.loader'
@@ -11,7 +11,6 @@ import {
     TranslocoService
 } from '@jsverse/transloco'
 import { GenericHelper } from '@shared/helpers/generic.helper'
-import { LocalStorageUtils } from '@shared/helpers/local-storage.helper'
 import { LOCALE } from '@shared/helpers/request.helper'
 import { StringHelper } from '@shared/helpers/string.helper'
 import { firstValueFrom } from 'rxjs'
@@ -20,7 +19,7 @@ import { version } from '../../../../package.json';
 /**
  * Purpose: Loads the runtime configuration and builds the providers that depend on it.
  * Scope: Owns the config and environment JSON loading, the Transloco configuration.
- * Limits: Nothing is compiled into the bundle; it does not read user preferences beyond the browser locale.
+ * Limits: Nothing is compiled into the bundle; it does not read user preferences beyond the remembered or browser locale.
  */
 @Injectable({
 	providedIn: 'root',
@@ -56,16 +55,15 @@ export class RegistryConfig {
 		return response.json()
 	}
 
-	private static resolveLocale(preferredLanguages: readonly string[]): string {
-		let lang: string | undefined = LocalStorageUtils.get(LOCALE)?.toString()
+	private static resolveLocale(browser: BrowserService): string {
+		let lang: string | undefined = browser.readCookie(LOCALE)
 
 		if (GenericHelper.nonNull(lang) && lang && !RegistryConfig.config.languages.includes(lang)) {
-			LocalStorageUtils.delete(LOCALE)
 			lang = undefined
 		}
 
 		if (GenericHelper.isNull(lang) || !RegistryConfig.config.languages.includes(lang!)) {
-			preferredLanguages.forEach((nextLang: string): void => {
+			browser.preferredLanguages.forEach((nextLang: string): void => {
 				if (RegistryConfig.config.languages.includes(nextLang) && !lang) {
 					lang = nextLang
 				}
@@ -73,15 +71,15 @@ export class RegistryConfig {
 		}
 
 		lang = lang ?? RegistryConfig.config.defaultLanguage
-		LocalStorageUtils.set(LOCALE, lang)
+		browser.writeCookie(LOCALE, lang, PREFERENCE_COOKIE_MAX_AGE_SECONDS)
 
 		return lang
 	}
 
-	private static buildTranslocoConfig(preferredLanguages: readonly string[]): TranslocoConfig {
+	private static buildTranslocoConfig(browser: BrowserService): TranslocoConfig {
 		return translocoConfig({
 			availableLangs: RegistryConfig.config.languages,
-			defaultLang: RegistryConfig.resolveLocale(preferredLanguages),
+			defaultLang: RegistryConfig.resolveLocale(browser),
 			fallbackLang: RegistryConfig.config.defaultLanguage,
 			reRenderOnLangChange: true,
 			prodMode: RegistryConfig.environment.production,
@@ -93,7 +91,7 @@ export class RegistryConfig {
 			provideTransloco({ config: {}, loader: RegistryTranslationLoader }),
 			{
 				provide: TRANSLOCO_CONFIG,
-				useFactory: (): TranslocoConfig => RegistryConfig.buildTranslocoConfig(inject(BrowserService).preferredLanguages)
+				useFactory: (): TranslocoConfig => RegistryConfig.buildTranslocoConfig(inject(BrowserService))
 			},
 			provideAppInitializer(async (): Promise<unknown> => {
 				const injector: Injector = inject(Injector)

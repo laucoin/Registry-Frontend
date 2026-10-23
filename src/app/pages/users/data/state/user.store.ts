@@ -14,13 +14,15 @@ import { UserModel } from '@shared/models/model/user.model'
 const defaultUser: ElementRequestInformationModel<UserModel> = {
     element: undefined,
     loading: false,
+    error: undefined,
 }
 
 const defaultUserStore: UserStoreModel = {
+    sectionErrors: {},
     users: PageStateHelper.initial<UserPageParamsModel, UserModel>( {
         resetSearch: false,
-        textSearched: undefined,
-        visibilitySearched: undefined,
+        q: undefined,
+        isVisible: undefined,
     } ),
     user: defaultUser,
     metadata: {
@@ -43,13 +45,13 @@ export const UserStore = signalStore(
     withState<UserStoreModel>( defaultUserStore ),
     withMethods( (store, api = inject( UserApi ), errors = inject( ErrorReporter )) => ({
         fetchUsersPage: pageFetcher( store, 'users', (request: CumulativePageRequest, params: UserPageParamsModel) =>
-            api.findUsers( request.pageNumber, request.pageSize, params ), errors, { merge: CumulativePageHelper.merge } ),
+            api.findUsers( request.page, request.size, params ), errors, { merge: CumulativePageHelper.merge } ),
         updateUsersPageSearchParams: paramsUpdater( store, 'users' ),
         startUserLoader: loaderToggle( store, 'user', true ),
         stopUserLoader: loaderToggle( store, 'user', false ),
-        fetchUser: elementFetcher( store, 'user', (id: string) => api.findUserById( id ), errors ),
+        fetchUser: elementFetcher( store, 'user', (id: string) => api.findUserById( id ) ),
         resetUser: (): void => patchState( store, { user: defaultUser } ),
         fetchAssignableRoles: metadataFetcher<UserStoreModel, 'assignableRoles', void, SelectOptionModel<string>[]>( store, 'assignableRoles', () =>
-            api.getAssignableUserRoles().pipe( trackElement( store, 'user' ) ), errors ),
+            api.getAssignableUserRoles().pipe( trackElement( store, 'user' ) )),
     }) ),
 )

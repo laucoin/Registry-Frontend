@@ -2,9 +2,6 @@ import {Injectable} from '@angular/core'
 import { Observable, map } from 'rxjs'
 import {GenericProjectApi} from '@shared/helpers/api/generic-project.api'
 import {SELECT_PROFILE_PROJECT_ID} from '@shared/helpers/request.helper'
-import {PageModel} from '@shared/models/model/page.model'
-import {QueryHelper} from '@shared/helpers/query.helper'
-import {CommunicationPageParamsModel} from '@pages/projects/[projectId]/movements/communication/data/model/communication-page-params.model'
 import {CommunicationModel} from '@shared/models/model/communication.model'
 import {CommunicationDto} from '@pages/projects/[projectId]/movements/communication/data/dto/communication.dto'
 import {HttpParams} from '@angular/common/http'
@@ -16,8 +13,7 @@ import { MovementResponseDto } from '@shared/models/dto/response/movement.respon
 import { AlertMapper } from '@shared/mappers/alert.mapper'
 import { CommunicationMapper } from '@shared/mappers/communication.mapper'
 import { MovementMapper } from '@shared/mappers/movement.mapper'
-import { PageMapper } from '@shared/mappers/page.mapper'
-import { PageResponseDto } from '@shared/models/dto/response/page.response.dto'
+import { ETagHelper } from '@shared/helpers/etag.helper'
 
 /**
  * Purpose: Sends the HTTP requests of the communication domain.
@@ -29,24 +25,7 @@ import { PageResponseDto } from '@shared/models/dto/response/page.response.dto'
 })
 export class CommunicationApi extends GenericProjectApi {
     public constructor() {
-        super(`/api/v1/projects/${SELECT_PROFILE_PROJECT_ID}/communications`)
-    }
-
-    public findCommunications(
-        projectId: string | undefined,
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
-        params: CommunicationPageParamsModel,
-    ): Observable<PageModel<CommunicationModel>> {
-        return this.http.get<PageResponseDto<CommunicationResponseDto>>(
-            `${this.buildRequestBaseUrl(projectId)}?${QueryHelper.buildQueryParams(
-                pageNumber,
-                pageSize,
-                params,
-            ).toString()}`,
-        ).pipe(
-            map( (dto: PageResponseDto<CommunicationResponseDto>): PageModel<CommunicationModel> => PageMapper.toModel( dto, CommunicationMapper.toModel ) ),
-        )
+        super(`/api/v2/projects/${SELECT_PROFILE_PROJECT_ID}/communications`)
     }
 
     public findCommunicationById(projectId: string | undefined, id: string): Observable<CommunicationModel> {
@@ -57,12 +36,12 @@ export class CommunicationApi extends GenericProjectApi {
 
     public searchMovements(
         projectId: string | undefined,
-        textSearched: string | undefined,
+        q: string | undefined,
     ): Observable<MovementModel[]> {
         return this.http.get<MovementResponseDto[]>(
-            `${this.buildRequestBaseUrl(projectId)}/search/movements${textSearched ? '?' + new HttpParams().set(
-                'textSearched',
-                textSearched,
+            `${this.buildRequestBaseUrl(projectId)}/search/movements${q ? '?' + new HttpParams().set(
+                'q',
+                q,
             ).toString() : ''}`,
         ).pipe(
             map( (dtos: MovementResponseDto[]): MovementModel[] => dtos.map( MovementMapper.toModel ) ),
@@ -71,12 +50,12 @@ export class CommunicationApi extends GenericProjectApi {
 
     public searchAlerts(
         projectId: string | undefined,
-        textSearched: string | undefined,
+        q: string | undefined,
     ): Observable<AlertModel[]> {
         return this.http.get<AlertResponseDto[]>(
-            `${this.buildRequestBaseUrl(projectId)}/search/alerts${textSearched ? '?' + new HttpParams().set(
-                'textSearched',
-                textSearched,
+            `${this.buildRequestBaseUrl(projectId)}/search/alerts${q ? '?' + new HttpParams().set(
+                'q',
+                q,
             ).toString() : ''}`,
         ).pipe(
             map( (dtos: AlertResponseDto[]): AlertModel[] => dtos.map( AlertMapper.toModel ) ),
@@ -96,20 +75,21 @@ export class CommunicationApi extends GenericProjectApi {
         projectId: string | undefined,
         id: string,
         communication: CommunicationDto,
+        ifMatch?: string,
     ): Observable<CommunicationModel> {
-        return this.http.patch<CommunicationResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}`, communication).pipe(
+        return this.http.patch<CommunicationResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}`, communication, ETagHelper.options(ifMatch)).pipe(
             map( CommunicationMapper.toModel ),
         )
     }
 
     public disableCommunicationById(projectId: string | undefined, id: string): Observable<CommunicationModel> {
-        return this.http.patch<CommunicationResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/disable`, null).pipe(
+        return this.http.post<CommunicationResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/disable`, null).pipe(
             map( CommunicationMapper.toModel ),
         )
     }
 
     public enableCommunicationById(projectId: string | undefined, id: string): Observable<CommunicationModel> {
-        return this.http.patch<CommunicationResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/enable`, null).pipe(
+        return this.http.post<CommunicationResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}/enable`, null).pipe(
             map( CommunicationMapper.toModel ),
         )
     }

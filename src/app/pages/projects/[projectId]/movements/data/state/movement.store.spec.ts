@@ -10,7 +10,6 @@ import { MovementStore } from '@pages/projects/[projectId]/movements/data/state/
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
 import { ERROR_500, ERROR_503, failing, pageOf } from '@shared/helpers/testing/test-fixtures'
 import { ParticipantTypeEnum } from '@shared/models/enumeration/participant-type.enum'
-import { ErrorModel } from '@shared/models/model/error.model'
 import { GroupModel } from '@shared/models/model/group.model'
 import { MovementContentModel } from '@shared/models/model/movement-content.model'
 import { MovementModel } from '@shared/models/model/movement.model'
@@ -26,7 +25,6 @@ describe( 'MovementStore', () => {
     let searchVehicles: Mock<MovementApi['searchVehicles']>
     let getMovementsTypes: Mock<MetadataApi['getMovementsTypes']>
     let getParticipantsTypes: Mock<MetadataApi['getParticipantsTypes']>
-    let setGlobalError: Mock<(error: ErrorModel) => void>
     let notify: Mock<(message: unknown) => void>
     let langChanges: Subject<string>
 
@@ -38,7 +36,6 @@ describe( 'MovementStore', () => {
         searchVehicles = vi.fn()
         getMovementsTypes = vi.fn( () => of( [ { label: 'In', value: 'IN' } ] ) ) as unknown as Mock<MetadataApi['getMovementsTypes']>
         getParticipantsTypes = vi.fn( () => of( [ { label: 'Registered', value: ParticipantTypeEnum.REGISTERED } ] ) )
-        setGlobalError = vi.fn()
         notify = vi.fn()
         langChanges = new Subject<string>()
         TestBed.configureTestingModule( {
@@ -46,7 +43,7 @@ describe( 'MovementStore', () => {
                 MovementStore,
                 { provide: MovementApi, useValue: { findMovements, findMovementsContents, findMovementCommunications, searchParticipantsAndGroups, searchVehicles } },
                 { provide: MetadataApi, useValue: { getMovementsTypes, getParticipantsTypes } },
-                { provide: ErrorReporter, useValue: { setGlobalError, notify } },
+                { provide: ErrorReporter, useValue: { notify } },
                 { provide: TranslocoService, useValue: { langChanges$: langChanges.asObservable(), translate: (key: string): string => key } },
                 { provide: PluralTranslationPipe, useValue: { transform: (key: string, count: unknown[]): string => `${key}:${count?.length}` } },
             ],
@@ -87,7 +84,7 @@ describe( 'MovementStore', () => {
         findMovementsContents.mockReturnValue( of( [ { first: 'm2', second: [ { id: 'c' } as unknown as MovementContentModel ] } ] ) )
 
         // Act
-        store.fetchMovementsPage( { projectId: 'p1', pageNumber: 0, pageSize: 10 } )
+        store.fetchMovementsPage( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
         expect( findMovementsContents ).toHaveBeenCalledWith( 'p1', [ 'm1', 'm2' ], false )
@@ -100,7 +97,7 @@ describe( 'MovementStore', () => {
         findMovements.mockReturnValue( of( pageOf<MovementModel>( [] ) ) )
 
         // Act
-        store.fetchMovementsPage( { projectId: 'p1', pageNumber: 0, pageSize: 10 } )
+        store.fetchMovementsPage( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
         expect( findMovementsContents ).not.toHaveBeenCalled()
@@ -111,22 +108,22 @@ describe( 'MovementStore', () => {
         findMovements.mockReturnValue( failing( ERROR_500 ) )
 
         // Act
-        store.fetchMovementsPage( { projectId: 'p1', pageNumber: 0, pageSize: 10 } )
+        store.fetchMovementsPage( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
         expect( store.movements.error()?.summary ).toBe( 'Title' )
         expect( store.movementCommunications.error() ).toBeUndefined()
     } )
 
-    it( 'reports a 503 on the movements fetch as the global error', () => {
+    it( 'keeps a 503 failure in its block', () => {
         // Arrange
         findMovements.mockReturnValue( failing( ERROR_503 ) )
 
         // Act
-        store.fetchMovementsPage( { projectId: 'p1', pageNumber: 0, pageSize: 10 } )
+        store.fetchMovementsPage( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
-        expect( setGlobalError ).toHaveBeenCalledWith( ERROR_503 )
+        expect( store.movements.error() ).toBeDefined()
     } )
 
     it( 'only lists visible communications by default', () => {
@@ -134,7 +131,7 @@ describe( 'MovementStore', () => {
         const expected: boolean = true
 
         // Act
-        const visibility: boolean | undefined = store.movementCommunications.params.visibilitySearched()
+        const visibility: boolean | undefined = store.movementCommunications.params.isVisible()
 
         // Assert
         expect( visibility ).toBe( expected )
@@ -145,7 +142,7 @@ describe( 'MovementStore', () => {
         findMovementCommunications.mockReturnValue( of( pageOf<CommunicationModel>( [ { id: 'c1' } as CommunicationModel ] ) ) )
 
         // Act
-        store.fetchMovementCommunicationsPage( { projectId: 'p1', id: 'm1', pageNumber: 0, pageSize: 10 } )
+        store.fetchMovementCommunicationsPage( { projectId: 'p1', id: 'm1', page: 0, size: 10 } )
 
         // Assert
         expect( store.movementCommunications.element()?.content ).toHaveLength( 1 )
@@ -160,7 +157,7 @@ describe( 'MovementStore', () => {
         } ) )
 
         // Act
-        store.searchParticipantsAndGroups( { projectId: 'p1', contentTypeSearched: ParticipantTypeEnum.REGISTERED, textSearched: 'a' } )
+        store.searchParticipantsAndGroups( { projectId: 'p1', contentType: ParticipantTypeEnum.REGISTERED, q: 'a' } )
 
         // Assert
         const labels: (string | undefined)[] = store.metadata.searchedParticipantsAndGroups().map( (group: { label?: string }): string | undefined => group.label )
@@ -175,7 +172,7 @@ describe( 'MovementStore', () => {
         searchParticipantsAndGroups.mockReturnValue( of( { participants: [], groups: [] } ) )
 
         // Act
-        store.searchParticipantsAndGroups( { projectId: 'p1', contentTypeSearched: ParticipantTypeEnum.REGISTERED, textSearched: 'a' } )
+        store.searchParticipantsAndGroups( { projectId: 'p1', contentType: ParticipantTypeEnum.REGISTERED, q: 'a' } )
 
         // Assert
         expect( store.metadata.searchedParticipantsAndGroups() ).toEqual( [] )
@@ -186,23 +183,23 @@ describe( 'MovementStore', () => {
         searchVehicles.mockReturnValue( of( [ { id: 'v1', licensePlate: 'AB-123', brand: 'Ford', model: 'T' } as VehicleModel ] ) )
 
         // Act
-        store.searchVehicles( { projectId: 'p1', textSearched: 'ab' } )
+        store.searchVehicles( { projectId: 'p1', q: 'ab' } )
 
         // Assert
         expect( store.metadata.searchedVehicles() ).toHaveLength( 1 )
     } )
 
-    it( 'notifies a failed vehicle search and keeps the previous results', () => {
+    it( 'keeps a failed vehicle search in the section error and keeps the previous results', () => {
         // Arrange
         searchVehicles.mockReturnValueOnce( of( [ { id: 'v1', licensePlate: 'AB-123' } as VehicleModel ] ) )
         searchVehicles.mockReturnValueOnce( failing( ERROR_500 ) )
-        store.searchVehicles( { projectId: 'p1', textSearched: 'a' } )
+        store.searchVehicles( { projectId: 'p1', q: 'a' } )
 
         // Act
-        store.searchVehicles( { projectId: 'p1', textSearched: 'ab' } )
+        store.searchVehicles( { projectId: 'p1', q: 'ab' } )
 
         // Assert
-        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'Title' } ) )
+        expect( store.sectionErrors()[ 'metadata.searchedVehicles' ]?.summary ).toBe( 'Title' )
         expect( store.metadata.searchedVehicles() ).toHaveLength( 1 )
     } )
 } )

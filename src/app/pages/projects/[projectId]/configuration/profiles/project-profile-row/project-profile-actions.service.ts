@@ -8,6 +8,7 @@ import { ElementActionEnum } from '@shared/models/enumeration/element-action.enu
 import { ProfileStatusEnum } from '@shared/models/enumeration/profile-status.enum'
 import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
+import { isProjectProfile, ListedProfileModel, profileProjectId } from '@shared/models/model/listed-profile.model'
 import { ProjectProfileModel } from '@shared/models/model/project-profile.model'
 
 /**
@@ -16,15 +17,15 @@ import { ProjectProfileModel } from '@shared/models/model/project-profile.model'
  * Limits: Holds no state; it only reads the session and calls the profile facades. The backend still checks every command.
  */
 @Injectable()
-export class ProjectProfileActions extends ElementActionsBase<ProjectProfileModel> {
+export class ProjectProfileActions extends ElementActionsBase<ListedProfileModel> {
     protected readonly translationPrefix: string = 'project-profiles'
 
     private readonly facade: ProjectProfileFacade = inject(ProjectProfileFacade)
     private readonly userProfileFacade: UserProfileFacade = inject(UserProfileFacade)
     private readonly router: Router = inject(Router)
 
-    protected specsFor(profile: ProjectProfileModel): ElementActionSpec[] {
-        const own: boolean = this.sessionFacade.currentUser()?.id === profile.user.id
+    protected specsFor(profile: ListedProfileModel): ElementActionSpec[] {
+        const own: boolean = !isProjectProfile( profile ) || this.sessionFacade.currentUser()?.id === profile.user.id
         return [
             this.selectSpec(profile, own),
             this.editSpec(profile, own),
@@ -34,7 +35,7 @@ export class ProjectProfileActions extends ElementActionsBase<ProjectProfileMode
         ]
     }
 
-    public manageAcceptance(profile: ProjectProfileModel, status: ProfileStatusEnum): void {
+    public manageAcceptance(profile: ListedProfileModel, status: ProfileStatusEnum): void {
         const accepted: boolean = status === ProfileStatusEnum.ACCEPTED
         this.confirmation.confirm(
             `project-profiles.actions.confirmations.${status}`,
@@ -45,18 +46,19 @@ export class ProjectProfileActions extends ElementActionsBase<ProjectProfileMode
         )
     }
 
-    private selectSpec(profile: ProjectProfileModel, own: boolean): ElementActionSpec {
+    private selectSpec(profile: ListedProfileModel, own: boolean): ElementActionSpec {
+        const projectId: string | undefined = profileProjectId( profile )
         return {
             id: 'select',
             icon: 'arrow-right',
             enabledAction: ElementActionEnum.PROJECT_PROFILE_SELECT,
-            shown: own && this.sessionFacade.selectedProject()?.id !== profile.project.id,
+            shown: own && projectId !== undefined && this.sessionFacade.selectedProject()?.id !== projectId,
             allowed: true,
-            run: (): void => this.navigate(RegistryRouteEnum.PROJECT.replace(':projectId', profile.project.id)),
+            run: (): void => this.navigate(RegistryRouteEnum.PROJECT.replace(':projectId', projectId ?? '')),
         }
     }
 
-    private editSpec(profile: ProjectProfileModel, own: boolean): ElementActionSpec {
+    private editSpec(profile: ListedProfileModel, own: boolean): ElementActionSpec {
         return {
             id: 'edit',
             icon: 'pen-to-square',
@@ -71,29 +73,29 @@ export class ProjectProfileActions extends ElementActionsBase<ProjectProfileMode
         }
     }
 
-    private blockSpec(profile: ProjectProfileModel, own: boolean): ElementActionSpec {
+    private blockSpec(profile: ListedProfileModel, own: boolean): ElementActionSpec {
         return {
             id: 'disable',
             icon: 'ban',
             enabledAction: ElementActionEnum.PROJECT_PROFILE_BLOCK,
             shown: !own && profile.visible && profile.status?.value === ProfileStatusEnum.ACCEPTED,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_U),
-            confirmation: { severity: SeverityEnum.WARNING, icon: 'pi pi-exclamation-triangle', accept: (): void => this.run(this.facade.blockProjectProfile(profile)) },
+            confirmation: { severity: SeverityEnum.WARNING, icon: 'pi pi-exclamation-triangle', accept: (): void => this.run(this.facade.blockProjectProfile(profile as ProjectProfileModel)) },
         }
     }
 
-    private unblockSpec(profile: ProjectProfileModel, own: boolean): ElementActionSpec {
+    private unblockSpec(profile: ListedProfileModel, own: boolean): ElementActionSpec {
         return {
             id: 'enable',
             icon: 'rotate-right',
             enabledAction: ElementActionEnum.PROJECT_PROFILE_UNBLOCK,
             shown: !own && !profile.visible,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_U),
-            confirmation: { severity: SeverityEnum.INFO, icon: 'pi pi-info-circle', accept: (): void => this.run(this.facade.unblockProjectProfile(profile)) },
+            confirmation: { severity: SeverityEnum.INFO, icon: 'pi pi-info-circle', accept: (): void => this.run(this.facade.unblockProjectProfile(profile as ProjectProfileModel)) },
         }
     }
 
-    private deleteSpec(profile: ProjectProfileModel): ElementActionSpec {
+    private deleteSpec(profile: ListedProfileModel): ElementActionSpec {
         return {
             id: 'delete',
             icon: 'trash',

@@ -1,3 +1,4 @@
+import { SectionErrorsHelper } from '@shared/helpers/store/section-errors.helper'
 import { computed, inject, Injectable, Signal } from '@angular/core'
 import { Observable, tap } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
@@ -12,7 +13,7 @@ import { GenericProjectElementFacade } from '@shared/helpers/facade/generic-proj
 import { VehicleModel } from '@shared/models/model/vehicle.model'
 import { DateHelper } from '@shared/helpers/date.helper'
 import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
-import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/rx.helper'
+import { notifyOnError } from '@shared/helpers/rx.helper'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
@@ -36,6 +37,10 @@ export class MovementFacade extends GenericProjectElementFacade {
     private readonly pluralTranslationPipe: PluralTranslationPipe = inject( PluralTranslationPipe )
     private readonly datePipe: DateFormatPipe = inject( DateFormatPipe )
 
+    public readonly metadataErrors: Signal<Record<string, NotificationModel | undefined>> = SectionErrorsHelper.metadata( this.store.sectionErrors )
+
+    public readonly movementsContentsError: Signal<NotificationModel | undefined> = SectionErrorsHelper.of( this.store.sectionErrors, 'contents' )
+
     public readonly movementsPage: Signal<PageModel<MovementModel> | undefined> = this.store.movements.element
 
     public readonly movementsPageLoading: Signal<boolean> = this.store.movements.loading
@@ -46,17 +51,17 @@ export class MovementFacade extends GenericProjectElementFacade {
 
     private readonly movementsPageResetSearch: Signal<boolean> = this.store.movements.params.resetSearch
 
-    public readonly movementsPageTypeSearchedParam: Signal<string | undefined> = this.store.movements.params.typeSearched
+    public readonly movementsPageTypeParam: Signal<string | undefined> = this.store.movements.params.type
 
-    public readonly movementsPageStartDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
-            DateHelper.buildDate( this.store.movements.params.startDateTimeSearched() ),
+    public readonly movementsPageFromParam: Signal<Date | undefined> = computed( (): Date | undefined =>
+            DateHelper.buildDate( this.store.movements.params.from() ),
         )
 
-    public readonly movementsPageEndDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
-            DateHelper.buildDate( this.store.movements.params.endDateTimeSearched() ),
+    public readonly movementsPageToParam: Signal<Date | undefined> = computed( (): Date | undefined =>
+            DateHelper.buildDate( this.store.movements.params.to() ),
         )
 
-    public readonly movementsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.movements.params.visibilitySearched
+    public readonly movementsPageIsVisibleParam: Signal<boolean | undefined> = this.store.movements.params.isVisible
 
     public readonly movementCommunicationsPage: Signal<PageModel<CommunicationModel> | undefined> = this.store.movementCommunications.element
 
@@ -68,16 +73,16 @@ export class MovementFacade extends GenericProjectElementFacade {
 
     private readonly movementCommunicationsPageResetSearch: Signal<boolean> = this.store.movementCommunications.params.resetSearch
 
-    public readonly movementCommunicationsPageTextSearchedParam: Signal<string | undefined> = this.store.movementCommunications.params.textSearched
+    public readonly movementCommunicationsPageQueryParam: Signal<string | undefined> = this.store.movementCommunications.params.q
 
-    public readonly movementCommunicationsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.movementCommunications.params.visibilitySearched
+    public readonly movementCommunicationsPageIsVisibleParam: Signal<boolean | undefined> = this.store.movementCommunications.params.isVisible
 
-    public readonly movementCommunicationsPageStartDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
-            DateHelper.buildDate( this.store.movementCommunications.params.startDateTimeSearched() ),
+    public readonly movementCommunicationsPageFromParam: Signal<Date | undefined> = computed( (): Date | undefined =>
+            DateHelper.buildDate( this.store.movementCommunications.params.from() ),
         )
 
-    public readonly movementCommunicationsPageEndDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
-            DateHelper.buildDate( this.store.movementCommunications.params.endDateTimeSearched() ),
+    public readonly movementCommunicationsPageToParam: Signal<Date | undefined> = computed( (): Date | undefined =>
+            DateHelper.buildDate( this.store.movementCommunications.params.to() ),
         )
 
     public readonly searchedReasonAndActivityMetadata: Signal<MovementReasonModel[]> = this.store.metadata.searchedReasonsAndActivities
@@ -98,11 +103,11 @@ export class MovementFacade extends GenericProjectElementFacade {
         )
 
     public fetchMovementsPage (
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
     ): void {
-        const index: number | undefined = this.movementsPageResetSearch() ? 0 : pageNumber
-        this.store.fetchMovementsPage( { projectId: this.selectedProjectId(), pageNumber: index, pageSize: pageSize } )
+        const index: number | undefined = this.movementsPageResetSearch() ? 0 : page
+        this.store.fetchMovementsPage( { projectId: this.selectedProjectId(), page: index, size: size } )
     }
 
     public fetchMovementsContents (movementIds: string[]): void {
@@ -110,86 +115,86 @@ export class MovementFacade extends GenericProjectElementFacade {
     }
 
     public inputPageSearchParameters (
-        typeSearched: string | undefined,
-        startDateTimeSearched: Date | undefined,
-        endDateTimeSearched: Date | undefined,
-        visibilitySearched: boolean | undefined,
+        type: string | undefined,
+        from: Date | undefined,
+        to: Date | undefined,
+        isVisible: boolean | undefined,
     ): void {
-        const resetSearch: boolean = this.movementsPageTypeSearchedParam() != typeSearched
-                                     || this.movementsPageStartDateTimeSearchedParam() != startDateTimeSearched?.toISOString()
-                                     || this.movementsPageEndDateTimeSearchedParam() != endDateTimeSearched?.toISOString()
-                                     || this.movementsPageVisibilitySearchedParam() != visibilitySearched
+        const resetSearch: boolean = this.movementsPageTypeParam() != type
+                                     || this.movementsPageFromParam()?.toISOString() != from?.toISOString()
+                                     || this.movementsPageToParam()?.toISOString() != to?.toISOString()
+                                     || this.movementsPageIsVisibleParam() != isVisible
 
         if (resetSearch) {
             this.store.updateMovementsPageSearchParams( {
                 resetSearch: resetSearch,
-                visibilitySearched: visibilitySearched,
-                currentMovements: false,
-                linkedToActivity: undefined,
-                typeSearched: typeSearched,
-                startDateTimeSearched: startDateTimeSearched?.toISOString(),
-                endDateTimeSearched: endDateTimeSearched?.toISOString(),
+                isVisible: isVisible,
+                isCurrent: false,
+                hasActivity: undefined,
+                type: type,
+                from: from?.toISOString(),
+                to: to?.toISOString(),
             } )
         }
     }
 
     public fetchMovementCommunicationsPage (
         id: string,
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
     ): void {
-        const index: number | undefined = this.movementCommunicationsPageResetSearch() ? 0 : pageNumber
-        this.store.fetchMovementCommunicationsPage( { projectId: this.selectedProjectId(), id: id, pageNumber: index, pageSize: pageSize } )
+        const index: number | undefined = this.movementCommunicationsPageResetSearch() ? 0 : page
+        this.store.fetchMovementCommunicationsPage( { projectId: this.selectedProjectId(), id: id, page: index, size: size } )
     }
 
     public inputMovementCommunicationsPageSearchParameters (
-        textSearched: string | undefined,
-        visibilitySearched: boolean | undefined,
-        startDateTimeSearched: Date | undefined,
-        endDateTimeSearched: Date | undefined,
+        q: string | undefined,
+        isVisible: boolean | undefined,
+        from: Date | undefined,
+        to: Date | undefined,
     ): void {
-        const resetSearch: boolean = this.movementCommunicationsPageTextSearchedParam() != textSearched
-                                     || this.movementCommunicationsPageVisibilitySearchedParam() != visibilitySearched
-                                     || this.movementCommunicationsPageStartDateTimeSearchedParam() != startDateTimeSearched?.toISOString()
-                                     || this.movementCommunicationsPageEndDateTimeSearchedParam() != endDateTimeSearched?.toISOString()
+        const resetSearch: boolean = this.movementCommunicationsPageQueryParam() != q
+                                     || this.movementCommunicationsPageIsVisibleParam() != isVisible
+                                     || this.movementCommunicationsPageFromParam()?.toISOString() != from?.toISOString()
+                                     || this.movementCommunicationsPageToParam()?.toISOString() != to?.toISOString()
 
         if (resetSearch) {
             this.store.updateMovementCommunicationsPageSearchParams( {
                 resetSearch: resetSearch,
-                visibilitySearched: visibilitySearched,
-                textSearched: textSearched,
-                startDateTimeSearched: startDateTimeSearched?.toISOString(),
-                endDateTimeSearched: endDateTimeSearched?.toISOString(),
+                isVisible: isVisible,
+                q: q,
+                from: from?.toISOString(),
+                to: to?.toISOString(),
             } )
         }
     }
 
     public searchReasonsAndActivities (
-        textSearched: string | undefined = undefined,
-        typeSearched: string,
-        contentTypeSearched: ParticipantTypeEnum,
+        q: string | undefined = undefined,
+        type: string,
+        contentType: ParticipantTypeEnum,
     ): void {
         this.store.searchReasonsAndActivities( {
             projectId: this.selectedProjectId(),
-            textSearched: textSearched,
-            typeSearched: typeSearched,
-            contentTypeSearched: contentTypeSearched,
+            q: q,
+            type: type,
+            contentType: contentType,
         } )
     }
 
     public searchParticipantsAndGroups (
-        contentTypeSearched: ParticipantTypeEnum,
-        textSearched: string | undefined = undefined,
+        contentType: ParticipantTypeEnum,
+        q: string | undefined = undefined,
     ): void {
         this.store.searchParticipantsAndGroups( {
             projectId: this.selectedProjectId(),
-            contentTypeSearched: contentTypeSearched,
-            textSearched: textSearched,
+            contentType: contentType,
+            q: q,
         } )
     }
 
-    public searchVehicles (textSearched: string | undefined = undefined): void {
-        this.store.searchVehicles( { projectId: this.selectedProjectId(), textSearched: textSearched } )
+    public searchVehicles (q: string | undefined = undefined): void {
+        this.store.searchVehicles( { projectId: this.selectedProjectId(), q: q } )
     }
 
     public fetchMovementTypes (): void {
@@ -228,18 +233,16 @@ export class MovementFacade extends GenericProjectElementFacade {
             : this.api.createGuestsMovement( this.selectedProjectId(), movement )
 
         return request.pipe(
-            notifyUnavailableOnly( this.uiFacade ),
             tap( (created: MovementModel): void => this.onCommandSuccess( 'create', created ) ),
         )
     }
 
-    public updateMovement (id: string, movement: MovementDto): Observable<MovementModel> {
+    public updateMovement (id: string, movement: MovementDto, ifMatch?: string): Observable<MovementModel> {
         const request: Observable<MovementModel> = movement.contentType === ParticipantTypeEnum.REGISTERED
-            ? this.api.updateMovementById( this.selectedProjectId(), id, movement )
-            : this.api.updateGuestsMovementById( this.selectedProjectId(), id, movement )
+            ? this.api.updateMovementById( this.selectedProjectId(), id, movement, ifMatch )
+            : this.api.updateGuestsMovementById( this.selectedProjectId(), id, movement, ifMatch )
 
         return request.pipe(
-            notifyUnavailableOnly( this.uiFacade ),
             tap( (updated: MovementModel): void => this.onCommandSuccess( 'update', updated ) ),
         )
     }

@@ -73,19 +73,17 @@ export class ProjectsListPage {
     protected readonly hiddenProject: WritableSignal<ProjectModel | undefined> = signal(undefined)
 
     protected readonly canCreate: Signal<boolean> = this.canWith(UserAuthorityEnum.REGISTRY_PROJECT_C)
-    protected readonly canFilterByProfile: Signal<boolean> = this.canWith(UserAuthorityEnum.REGISTRY_PROJECT_R)
 
     protected readonly activeFilters: Signal<number> = computed((): number => [
-        StringHelper.isNotNullNorBlank(this.facade.projectsPageTextSearchedParam()),
-        this.facade.projectsPageDateTimeSearchedParam() !== undefined,
-        this.facade.projectsPageVisibilitySearchedParam() !== undefined,
+        StringHelper.isNotNullNorBlank(this.facade.projectsPageQueryParam()),
+        this.facade.projectsPageAtParam() !== undefined,
+        this.facade.projectsPageIsVisibleParam() !== undefined,
     ].filter(Boolean).length)
 
     protected readonly model: WritableSignal<ProjectsListSearchModel> = signal(toProjectsListSearchModel({
-        textSearched: this.facade.projectsPageTextSearchedParam(),
-        dateTimeSearched: this.facade.projectsPageDateTimeSearchedParam(),
-        withProfile: this.facade.projectsPageWithProfileSearchedParam(),
-        visibilitySearched: this.facade.projectsPageVisibilitySearchedParam(),
+        q: this.facade.projectsPageQueryParam(),
+        at: this.facade.projectsPageAtParam(),
+        isVisible: this.facade.projectsPageIsVisibleParam(),
     }))
     protected readonly form: FieldTree<ProjectsListSearchModel> = createSearchForm(this.model)
 
@@ -96,10 +94,9 @@ export class ProjectsListPage {
     protected search(): void {
         const search: ReturnType<typeof toProjectsListSearchParams> = toProjectsListSearchParams(this.model())
         this.facade.inputPageSearchParameters(
-            search.textSearched,
-            search.dateTimeSearched,
-            search.withProfile ?? false,
-            search.visibilitySearched,
+            search.q,
+            search.at,
+            search.isVisible,
         )
         this.facade.fetchProjectsPage(0, undefined)
     }
@@ -107,15 +104,15 @@ export class ProjectsListPage {
     protected resetFilters(): void {
         this.model.update((model: ProjectsListSearchModel): ProjectsListSearchModel => ({
             ...model,
-            textSearched: '',
-            dateTimeSearched: null,
-            visibilitySearched: '',
+            q: '',
+            at: null,
+            isVisible: '',
         }))
         this.search()
     }
 
     protected loadBatch(pageEvent: PageEventModel): void {
-        this.facade.fetchProjectsPage(pageEvent.pageNumber, pageEvent.pageSize)
+        this.facade.fetchProjectsPage(pageEvent.page, pageEvent.size)
     }
 
     protected initials(project: ProjectModel): string {

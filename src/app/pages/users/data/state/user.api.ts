@@ -1,4 +1,3 @@
-import {HttpParams} from '@angular/common/http'
 import {Injectable} from '@angular/core'
 import { Observable, map } from 'rxjs'
 import {PageModel} from '@shared/models/model/page.model'
@@ -22,16 +21,16 @@ import { PageResponseDto } from '@shared/models/dto/response/page.response.dto'
 })
 export class UserApi extends GenericApi {
     public constructor() {
-        super('/api/v1/users')
+        super('/api/v2/users')
     }
 
     public findUsers(
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
         params: UserPageParamsModel,
     ): Observable<PageModel<UserModel>> {
         return this.http.get<PageResponseDto<UserResponseDto>>(
-            `${this.baseUrl}?${QueryHelper.buildQueryParams(pageNumber, pageSize, params).toString()}`,
+            `${this.baseUrl}?${QueryHelper.buildQueryParams(page, size, params).toString()}`,
         ).pipe(
             map( (dto: PageResponseDto<UserResponseDto>): PageModel<UserModel> => PageMapper.toModel( dto, UserMapper.toModel ) ),
         )
@@ -48,31 +47,33 @@ export class UserApi extends GenericApi {
     }
 
     public updateUserRole(id: string, role: string | undefined): Observable<UserModel> {
-        let params: HttpParams = new HttpParams()
-        if (role) {
-            params = params.set('role', role)
-        }
-        return this.http.patch<UserResponseDto>(`${this.baseUrl}/${id}/role?${params.toString()}`, null).pipe(
+        return this.http.patch<UserResponseDto>(`${this.baseUrl}/${id}/role`, { role: role ?? null }).pipe(
             map( UserMapper.toModel ),
         )
     }
 
     public blockUserById(id: string): Observable<UserModel> {
-        return this.http.patch<UserResponseDto>(`${this.baseUrl}/${id}/block`, null).pipe(
+        return this.http.post<UserResponseDto>(`${this.baseUrl}/${id}/block`, null).pipe(
             map( UserMapper.toModel ),
         )
     }
 
     public unblockUserById(id: string): Observable<UserModel> {
-        return this.http.patch<UserResponseDto>(`${this.baseUrl}/${id}/unblock`, null).pipe(
+        return this.http.post<UserResponseDto>(`${this.baseUrl}/${id}/unblock`, null).pipe(
             map( UserMapper.toModel ),
         )
     }
 
-    public impersonateUserById(id: string): Observable<UserModel> {
-        return this.http.patch<UserResponseDto>(`${this.baseUrl}/${id}/impersonate`, null).pipe(
-            map( UserMapper.toModel ),
-        )
+    public exportCurrentUser(): Observable<unknown> {
+        return this.http.get<unknown>(`${this.baseUrl}/current/export`)
+    }
+
+    public exportUserById(id: string): Observable<unknown> {
+        return this.http.get<unknown>(`${this.baseUrl}/${id}/export`)
+    }
+
+    public deleteCurrentUser(): Observable<void> {
+        return this.http.delete<void>(`${this.baseUrl}/current`)
     }
 
     public deleteUserById(id: string): Observable<void> {

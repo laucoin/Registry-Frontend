@@ -18,7 +18,7 @@ import { ProjectOptionIconPipe } from '@shared/helpers/pipe/project-option-icon.
 import { autoMock } from '@shared/helpers/testing/auto-mock'
 import { projectOptionChecker } from '@shared/helpers/testing/test-fixtures'
 import { ProjectModel } from '@shared/models/model/project.model'
-import { ALERT_DTO, COMMUNICATION_DTO, MOVEMENT_DTO } from '@shared/helpers/testing/response-fixtures'
+import { ALERT_DTO, COMMUNICATION_DTO, MOVEMENT_DTO, WHEN_ETAG } from '@shared/helpers/testing/response-fixtures'
 import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
 import { CommunicationFormComponent } from '@shared/ui/domain/communication-form/communication-form.component'
 
@@ -47,6 +47,7 @@ interface CommunicationFormApi {
     selectAlert: (key: string) => void
     movementChoices: () => { label: string, value: { id: string } }[]
     selectedMovementKey: () => string
+    searchError: () => { summary?: string } | undefined
 }
 
 describe( 'CommunicationFormComponent', () => {
@@ -63,6 +64,7 @@ describe( 'CommunicationFormComponent', () => {
         communication$ = new BehaviorSubject<object | undefined>( undefined )
         facade[ 'communication$' ] = communication$ as never
         facade[ 'communication' ].mockImplementation( () => current )
+        facade[ 'metadataErrors' ].mockReturnValue( {} )
         facade[ 'createCommunication' ].mockReturnValue( of( {} ) )
         facade[ 'updateCommunication' ].mockReturnValue( of( {} ) )
         alertFacade[ 'createAlert' ].mockReturnValue( of( {} ) )
@@ -95,6 +97,32 @@ describe( 'CommunicationFormComponent', () => {
 
     beforeEach( () => {
         TestBed.resetTestingModule()
+    } )
+
+    describe( 'search failures', () => {
+        it( 'exposes the failure of the movements search', () => {
+            // Arrange
+            const page: CommunicationFormApi = create()
+            facade[ 'metadataErrors' ].mockReturnValue( { searchedMovements: { summary: 'Movements down' } } )
+
+            // Act
+            const error: { summary?: string } | undefined = page.searchError()
+
+            // Assert
+            expect( error?.summary ).toBe( 'Movements down' )
+        } )
+
+        it( 'exposes the failure of the alerts search', () => {
+            // Arrange
+            const page: CommunicationFormApi = create()
+            facade[ 'metadataErrors' ].mockReturnValue( { searchedAlerts: { summary: 'Alerts down' } } )
+
+            // Act
+            const error: { summary?: string } | undefined = page.searchError()
+
+            // Assert
+            expect( error?.summary ).toBe( 'Alerts down' )
+        } )
     } )
 
     describe( 'available actions', () => {
@@ -223,7 +251,7 @@ describe( 'CommunicationFormComponent', () => {
             page.submit()
 
             // Assert
-            expect( facade[ 'updateCommunication' ] ).toHaveBeenCalledWith( 'c1', expect.objectContaining( { dateTime: '2026-01-01T10:00:00.000Z' } ) )
+            expect( facade[ 'updateCommunication' ] ).toHaveBeenCalledWith( 'c1', expect.objectContaining( { dateTime: '2026-01-01T10:00:00.000Z' } ), WHEN_ETAG )
         } )
 
         it( 'creates a new alert when the user asked for one', () => {

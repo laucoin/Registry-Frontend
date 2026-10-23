@@ -24,18 +24,18 @@
         <form class="grid grid-cols-1 items-end gap-(--spacing--in-block-large) md:grid-cols-2"
               (submit)="$event.preventDefault(); search()">
             <sgdf-input appSgdfField [label]="'project-profiles.search-and-filter.text.user' | transloco"
-                        [formField]="form.textSearched"/>
+                        [formField]="form.q"/>
             <sgdf-date-time-picker appSgdfField with-time
                                    [label]="'project-profiles.search-and-filter.datetime' | transloco"
-                                   [formField]="form.dateTimeSearched"/>
+                                   [formField]="form.at"/>
             <sgdf-select appSgdfField [label]="'project-profiles.search-and-filter.status' | transloco"
-                         [formField]="form.statusSearched">
+                         [formField]="form.status">
                 @for (item of facade.projectProfilesStatusMetadata(); track item.label) {
                     <sgdf-option [value]="item.value ?? ''">{{ item.label }}</sgdf-option>
                 }
             </sgdf-select>
             <sgdf-select appSgdfField [label]="'project-profiles.search-and-filter.visibility' | transloco"
-                         [formField]="form.availabilitySearched">
+                         [formField]="form.isAvailable">
                 @for (item of facade.projectProfilesAvailabilitiesMetadata(); track item.label) {
                     <sgdf-option [value]="item.value | booleanChoice">{{ item.label }}</sgdf-option>
                 }

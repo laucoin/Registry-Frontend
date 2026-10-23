@@ -1,6 +1,6 @@
 import { VehicleModel } from '@shared/models/model/vehicle.model'
 import { VehicleResponseDto } from '@shared/models/dto/response/vehicle.response.dto'
-import { GenericProjectMapper } from '@shared/mappers/generic-project.mapper'
+import { GenericMapper } from '@shared/mappers/generic.mapper'
 
 /**
  * Purpose: Converts a Vehicle response of the backend into the Vehicle model.
@@ -10,7 +10,7 @@ import { GenericProjectMapper } from '@shared/mappers/generic-project.mapper'
 export class VehicleMapper {
     public static toModel (dto: VehicleResponseDto): VehicleModel {
         return {
-            ...GenericProjectMapper.toOptionalModel( dto ),
+            ...GenericMapper.toModel( dto ),
             licensePlate: dto.licensePlate,
             brand: dto.brand,
             model: dto.model,

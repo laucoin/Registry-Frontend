@@ -61,8 +61,8 @@ export class AlertCommunicationsListComponent implements OnInit, OnDestroy {
         this.subscriptions.add( events.pipe(
             tap( (): void => this.facade.fetchAlertCommunicationsPage(
                 this.alert().id,
-                this.facade.alertCommunicationsPage()?.pageNumber,
-                this.facade.alertCommunicationsPage()?.pageSize,
+                this.facade.alertCommunicationsPage()?.page,
+                this.facade.alertCommunicationsPage()?.size,
             ) ),
         ).subscribe() )
     }

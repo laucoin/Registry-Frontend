@@ -104,9 +104,11 @@
       "title": "12. Conservation et suppression des données",
       "body": [
         "Les modalités de conservation des données sont détaillées dans la politique de confidentialité. En résumé :",
-        "les données d'un Participant (identité et présences) sont conservées au minimum 12 mois à compter de leur enregistrement : ce délai ne peut pas être raccourci sur demande, y compris par le Responsable de projet, car il correspond à la finalité même du registre décrite à l'article 5 (traçabilité des présences en cas d'incident) ;",
+        "les données d'un Participant (identité et présences) sont conservées au minimum 12 mois à compter de leur dernière activité enregistrée (dernière présence ou, à défaut, création du Participant) : ce délai ne peut pas être raccourci sur demande, y compris par le Responsable de projet, car il correspond à la finalité même du registre décrite à l'article 5 (traçabilité des présences en cas d'incident) ;",
         "un Projet resté inactif pendant 12 mois est ensuite automatiquement supprimé, avec l'ensemble des données de Participants qu'il contient ;",
-        "au sein d'un Projet resté actif, un Participant resté inactif pendant 12 mois (aucune présence enregistrée le concernant) est également supprimé individuellement, dès lors que le délai minimal de 12 mois évoqué ci-dessus est écoulé."
+        "au sein d'un Projet resté actif, un Participant resté inactif pendant 12 mois (aucune présence enregistrée le concernant) est également supprimé individuellement, dès lors que le délai minimal de 12 mois évoqué ci-dessus est écoulé ;",
+        "les présences, alertes et communications, ainsi que les véhicules, activités et groupes vides, sont supprimés automatiquement 12 mois après leur dernière modification, afin d'éviter de conserver des données devenues incohérentes ;",
+        "un Compte resté inactif (aucune connexion) pendant 12 mois est automatiquement supprimé, sauf s'il s'agit du dernier administrateur de l'Application ou de l'unique administrateur d'un Projet."
       ]
     },
     "accountDeletion": {
@@ -114,7 +116,7 @@
       "body": [
         "Tu peux à tout moment demander la suppression de ton Compte, notamment depuis l'Application lorsque cette fonctionnalité est disponible, ou en écrivant à <a href=\"mailto:{{ creatorEmail }}\">{{ creatorEmail }}</a>.",
         "Si tu es l'unique administrateur d'un ou plusieurs Projets, ton Compte ne peut pas être supprimé tant que tu n'as pas désigné un autre administrateur pour chacun de ces Projets, ou supprimé ces Projets toi-même : cette condition préalable évite qu'un Projet partagé avec d'autres Utilisateurs ne se retrouve sans administrateur et donc inutilisable.",
-        "La suppression de ton Compte n'entraîne pas automatiquement la suppression des Projets que tu as créés ni des données de Participants qu'ils contiennent, dont tu restes responsable en tant que Responsable de projet tant qu'ils existent."
+        "La suppression de ton Compte n'entraîne pas automatiquement la suppression des Projets que tu as créés ni des données de Participants qu'ils contiennent, dont tu restes responsable en tant que Responsable de projet tant qu'ils existent. La suppression d'un Compte est définitive : aucune donnée de ce Compte n'est conservée sous forme anonymisée."
       ]
     },
     "changes": {

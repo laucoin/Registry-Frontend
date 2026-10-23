@@ -46,6 +46,9 @@ export class NavbarComponent {
 	)
 
 	protected readonly selectedProject: Signal<ProjectModel | undefined> = this.sessionFacade.selectedProject
+	protected readonly projectHomeUrl: Signal<string> = computed((): string =>
+		RegistryRouteEnum.PROJECT.replace(':projectId', this.sessionFacade.currentProjectId() ?? ''),
+	)
 	protected readonly currentUser: Signal<CurrentUserModel | undefined> = this.sessionFacade.currentUser
 	protected readonly userFullName: Signal<string> = computed((): string => {
 		const user: CurrentUserModel | undefined = this.currentUser()

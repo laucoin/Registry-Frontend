@@ -31,6 +31,8 @@ describe('UiFacade', () => {
 				viewportWidth: 1280,
 				onViewportResize: (listener: (width: number) => void): (() => void) => { resize = listener; return (): void => undefined },
 				setRootTheme,
+				readCookie: (): undefined => undefined,
+				writeCookie: vi.fn(),
 				reload,
 				setRootLanguage: vi.fn(),
 			},

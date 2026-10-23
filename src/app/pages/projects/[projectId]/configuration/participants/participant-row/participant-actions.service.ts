@@ -12,7 +12,7 @@ import { ParticipantModel } from '@shared/models/model/participant.model'
 
 /**
  * Purpose: Tells which commands a participant of a list offers to the signed-in user and runs them.
- * Scope: Builds the action menu (movements history, edit, hide, show, remove from a group, delete) with its confirmations; the group to remove a member from is the optional context.
+ * Scope: Builds the action menu (movements history, edit, hide, show, remove from a group, data export, delete) with its confirmations; the group to remove a member from is the optional context.
  * Limits: Holds no state; it only reads the session and calls the participant and group facades. The backend still checks every command.
  */
 @Injectable()
@@ -31,6 +31,7 @@ export class ParticipantActions extends ElementActionsBase<ParticipantModel, str
             this.hideSpec(participant),
             this.showSpec(participant),
             this.removeMemberSpec(participant, groupId),
+            this.exportSpec(participant),
             this.deleteSpec(participant),
         ]
     }
@@ -88,6 +89,21 @@ export class ParticipantActions extends ElementActionsBase<ParticipantModel, str
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_U),
             confirmation: { severity: SeverityEnum.WARNING, icon: 'pi pi-exclamation-triangle', accept: (): void => this.run(this.groupFacade!.removeMemberFromGroup(groupId!, participant)) },
         }
+    }
+
+    private exportSpec(participant: ParticipantModel): ElementActionSpec {
+        return {
+            id: 'export',
+            icon: 'file-export',
+            enabledAction: ElementActionEnum.PARTICIPANT_EXPORT,
+            shown: true,
+            allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_EXPORT) || this.isLinkedToCurrentUser(participant),
+            run: (): void => this.run(this.facade.exportParticipant(participant)),
+        }
+    }
+
+    private isLinkedToCurrentUser(participant: ParticipantModel): boolean {
+        return participant.user !== undefined && participant.user.id === this.sessionFacade.currentUser()?.id
     }
 
     private deleteSpec(participant: ParticipantModel): ElementActionSpec {

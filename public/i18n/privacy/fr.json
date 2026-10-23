@@ -20,7 +20,7 @@
       "body": ["L'Application traite les catégories de données suivantes :"],
       "list": [
         "Données de Compte : identifiant, e-mail, prénom et nom, transmis par {{ organizationName }} lors de la connexion (authentification unique SSO).",
-        "Données techniques de connexion : cookies strictement nécessaires à l'authentification (session) et à la protection contre les attaques CSRF (voir section 8 « Cookies »).",
+        "Données techniques de connexion : cookies strictement nécessaires à l'authentification (session) et à la protection contre les attaques CSRF, et cookies de préférence du thème d'affichage et de la langue (voir section 8 « Cookies »).",
         "Données de Participants : nom, prénom, date de naissance et présences (entrées/sorties) à un Projet, saisies par un Utilisateur."
       ]
     },
@@ -56,16 +56,16 @@
     "retention": {
       "title": "7. Durées de conservation",
       "body": [
-        "Les données de ton Compte sont conservées tant que ton Compte existe, et supprimées lorsque tu en demandes la suppression (voir section 11). Si tu es l'unique administrateur d'un ou plusieurs Projets, la suppression de ton Compte est conditionnée à la désignation d'un autre administrateur pour ces Projets, ou à leur suppression, afin d'éviter qu'un Projet partagé avec d'autres Utilisateurs ne devienne inutilisable.",
-        "Les données d'un Participant (identité et présences) sont conservées au minimum 12 mois à compter de leur enregistrement. Conformément au principe de conservation limitée du RGPD (article 5), une donnée peut être conservée aussi longtemps que la finalité qui la justifie le nécessite : ce délai minimal correspond à la finalité de registre de traçabilité décrite à la section 3, et ne peut donc pas être raccourci sur simple demande avant son terme, y compris par le Responsable de projet.",
-        "Passé ce délai minimal, un Projet resté inactif pendant 12 mois est automatiquement supprimé, avec l'ensemble des données de Participants qu'il contient ; au sein d'un Projet resté actif, un Participant resté inactif pendant 12 mois (aucune présence enregistrée le concernant) est également supprimé individuellement."
+        "Les données de ton Compte sont conservées tant que ton Compte existe, et supprimées lorsque tu en demandes la suppression (voir section 11). Si tu es l'unique administrateur d'un ou plusieurs Projets, la suppression de ton Compte est conditionnée à la désignation d'un autre administrateur pour ces Projets, ou à leur suppression, afin d'éviter qu'un Projet partagé avec d'autres Utilisateurs ne devienne inutilisable. Un Compte resté inactif (aucune connexion) pendant 12 mois est automatiquement supprimé, sauf s'il s'agit du dernier administrateur de l'Application ou de l'unique administrateur d'un Projet : dans ce cas le Compte est conservé tant qu'un autre administrateur n'a pas été désigné. Tu peux également supprimer ton Compte toi-même à tout moment, aux conditions décrites ci-dessus.",
+        "Les données d'un Participant (identité et présences) sont conservées au minimum 12 mois à compter de leur dernière activité enregistrée (dernière présence ou, à défaut, création du Participant). Conformément au principe de conservation limitée du RGPD (article 5), une donnée peut être conservée aussi longtemps que la finalité qui la justifie le nécessite : ce délai minimal correspond à la finalité de registre de traçabilité décrite à la section 3, et ne peut donc pas être raccourci sur simple demande avant son terme, y compris par le Responsable de projet.",
+        "Passé ce délai minimal, un Projet resté inactif pendant 12 mois est automatiquement supprimé, avec l'ensemble des données de Participants qu'il contient ; au sein d'un Projet resté actif, un Participant resté inactif pendant 12 mois (aucune présence enregistrée le concernant) est également supprimé individuellement. Pour éviter de conserver des données devenues incohérentes (par exemple une présence dont le Participant a été supprimé), les présences, alertes et communications, ainsi que les véhicules, activités et groupes vides, sont eux aussi supprimés automatiquement 12 mois après leur dernière modification."
       ]
     },
     "cookies": {
       "title": "8. Cookies",
       "body": [
-        "L'Application utilise uniquement des cookies strictement nécessaires à son fonctionnement : un cookie de session pour maintenir ta connexion, et un jeton de protection contre les attaques CSRF. Aucun cookie de mesure d'audience, de publicité ou de traçage n'est utilisé.",
-        "Ces cookies étant strictement nécessaires au fonctionnement du service, leur dépôt ne nécessite pas ton consentement préalable, conformément à la réglementation applicable (article 82 de la loi Informatique et Libertés)."
+        "L'Application utilise uniquement des cookies strictement nécessaires à son fonctionnement ou à la personnalisation de son interface : un cookie de session pour maintenir ta connexion, un jeton de protection contre les attaques CSRF, et deux cookies de préférence mémorisant le thème d'affichage (clair, sombre ou système) et la langue que tu as choisis, afin de les appliquer dès l'ouverture de l'Application, avant ta connexion. Ces cookies de préférence sont conservés 12 mois et ne contiennent aucune donnée personnelle. Aucun cookie de mesure d'audience, de publicité ou de traçage n'est utilisé.",
+        "Ces cookies étant strictement nécessaires au fonctionnement du service ou limités à des préférences d'affichage que tu as toi-même choisies, leur dépôt ne nécessite pas ton consentement préalable, conformément à la réglementation applicable (article 82 de la loi Informatique et Libertés)."
       ]
     },
     "security": {

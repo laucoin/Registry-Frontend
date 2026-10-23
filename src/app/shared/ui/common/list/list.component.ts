@@ -28,6 +28,7 @@ import { GenericModel } from '@shared/models/model/generic.model'
 import { NotificationModel } from '@shared/models/model/notification.model'
 import { PageEventModel } from '@shared/models/model/page-event.model'
 import { PageModel } from '@shared/models/model/page.model'
+import { SectionErrorComponent } from '@shared/ui/common/section-error/section-error.component'
 
 const DEFAULT_PAGE_SIZE: number = 20
 const SKELETON_ROWS: number = 6
@@ -39,7 +40,7 @@ const SKELETON_ROWS: number = 6
  */
 @Component({
 	selector: 'app-list',
-	imports: [NgTemplateOutlet, TranslocoPipe, DateFormatPipe],
+	imports: [NgTemplateOutlet, TranslocoPipe, DateFormatPipe, SectionErrorComponent],
 	schemas: [CUSTOM_ELEMENTS_SCHEMA],
 	templateUrl: './list.component.html',
 })
@@ -58,18 +59,18 @@ export class ListComponent<T extends GenericModel> {
 
 	protected readonly skeletonRows: readonly number[] = Array.from({ length: SKELETON_ROWS }, (_: unknown, index: number): number => index)
 
-	protected readonly pageSize: Signal<number> = computed((): number => this.elementPage()?.pageSize ?? DEFAULT_PAGE_SIZE)
+	protected readonly size: Signal<number> = computed((): number => this.elementPage()?.size ?? DEFAULT_PAGE_SIZE)
 	protected readonly hasMore: Signal<boolean> = computed((): boolean => CumulativePageHelper.hasMore(this.elementPage()))
 	protected readonly isEmpty: Signal<boolean> = computed((): boolean => this.elementPage()?.content.length === 0 && !this.loading())
 	protected readonly showSkeleton: Signal<boolean> = computed((): boolean => this.loading() && !this.elementPage()?.content.length)
 
 	protected loadMore(): void {
-		this.updateRequired.emit({ pageNumber: (this.elementPage()?.pageNumber ?? -1) + 1, pageSize: this.pageSize() })
+		this.updateRequired.emit({ page: (this.elementPage()?.page ?? -1) + 1, size: this.size() })
 	}
 
 	protected retry(): void {
 		const shown: PageModel<T> | undefined = this.elementPage()
-		this.updateRequired.emit({ pageNumber: shown ? shown.pageNumber + 1 : 0, pageSize: this.pageSize() })
+		this.updateRequired.emit({ page: shown ? shown.page + 1 : 0, size: this.size() })
 	}
 
 	protected getTemplate(name: string): TemplateRef<unknown> | null {

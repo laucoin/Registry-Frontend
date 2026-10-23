@@ -65,17 +65,17 @@ export class VehiclesListPage {
     ))
 
     protected readonly activeFilters: Signal<number> = computed((): number => [
-        StringHelper.isNotNullNorBlank(this.facade.vehiclesPageTextSearchedParam()),
-        this.facade.vehiclesPageDateTimeSearchedParam() !== undefined,
-        this.facade.vehiclesPageStatusSearchedParam() !== undefined,
-        this.facade.vehiclesPageVisibilitySearchedParam() !== undefined,
+        StringHelper.isNotNullNorBlank(this.facade.vehiclesPageQueryParam()),
+        this.facade.vehiclesPageAtParam() !== undefined,
+        this.facade.vehiclesPageStatusParam() !== undefined,
+        this.facade.vehiclesPageIsVisibleParam() !== undefined,
     ].filter(Boolean).length)
 
     protected readonly model: WritableSignal<VehiclesListSearchModel> = signal(toVehiclesListSearchModel({
-        textSearched: this.facade.vehiclesPageTextSearchedParam(),
-        dateTimeSearched: this.facade.vehiclesPageDateTimeSearchedParam(),
-        statusSearched: this.facade.vehiclesPageStatusSearchedParam(),
-        visibilitySearched: this.facade.vehiclesPageVisibilitySearchedParam(),
+        q: this.facade.vehiclesPageQueryParam(),
+        at: this.facade.vehiclesPageAtParam(),
+        status: this.facade.vehiclesPageStatusParam(),
+        isVisible: this.facade.vehiclesPageIsVisibleParam(),
     }))
     protected readonly form: FieldTree<VehiclesListSearchModel> = createSearchForm(this.model)
 
@@ -85,16 +85,16 @@ export class VehiclesListPage {
 
     protected search(): void {
         const search: ReturnType<typeof toVehiclesListSearchParams> = toVehiclesListSearchParams(this.model())
-        this.facade.inputPageSearchParameters(search.textSearched, search.dateTimeSearched, search.statusSearched, search.visibilitySearched)
+        this.facade.inputPageSearchParameters(search.q, search.at, search.status, search.isVisible)
         this.facade.fetchVehiclesPage(0, undefined)
     }
 
     protected resetFilters(): void {
-        this.model.set({ textSearched: '', dateTimeSearched: null, statusSearched: '', visibilitySearched: '' })
+        this.model.set({ q: '', at: null, status: '', isVisible: '' })
         this.search()
     }
 
     protected loadBatch(pageEvent: PageEventModel): void {
-        this.facade.fetchVehiclesPage(pageEvent.pageNumber, pageEvent.pageSize)
+        this.facade.fetchVehiclesPage(pageEvent.page, pageEvent.size)
     }
 }

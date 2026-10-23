@@ -427,7 +427,7 @@
       "update-role": "Changer son rôle",
       "enable": "Débloquer",
       "disable": "Bloquer",
-      "impersonate": "Anonymiser",
+      "export": "Exporter les données",
       "delete": "Supprimer",
       "confirmations": {
         "disable": {
@@ -437,10 +437,6 @@
         "enable": {
           "title": "Débloquer l’utilisateur",
           "message": "Attention ! Tu vas débloquer un utilisateur. {{element.firstName}} {{element.lastName}} pourra à nouveau se connecter. Ce changement peut mettre quelques instants à être appliqué partout."
-        },
-        "impersonate": {
-          "title": "Anonymiser l’utilisateur",
-          "message": "Attention ! Tu vas anonymiser un utilisateur. Tous les profils et participants associés à {{element.firstName}} {{element.lastName}} seront également anonymisé."
         },
         "delete": {
           "title": "Supprimer l’utilisateur",
@@ -461,10 +457,6 @@
       "enable": {
         "title": "⛓️‍💥 Utilisateur débloqué",
         "message": "{{firstName}} {{lastName}} a été débloqué, il peut à nouveau se connecter."
-      },
-      "impersonate": {
-        "title": "🕵️‍♂️ Utilisateur anonymisé",
-        "message": "{{firstName}} {{lastName}} a été anonymisé, il ne peut plus se connecter et les informations le concernant ont été anonymisées."
       },
       "delete": {
         "title": "🗑️ Utilisateur supprimé",
@@ -496,8 +488,7 @@
     "search-and-filter": {
       "text": "Nom",
       "datetime": "Date & Heure",
-      "visibility": "Visibilité",
-      "with-profile": "Avec un profil"
+      "visibility": "Visibilité"
     },
     "visible": {
       "true": "Visible",
@@ -1138,6 +1129,7 @@
       "edit": "Modifier",
       "disable": "Masquer",
       "enable": "Démasquer",
+      "export": "Exporter les données",
       "delete": "Supprimer",
       "confirmations": {
         "remove-member": {

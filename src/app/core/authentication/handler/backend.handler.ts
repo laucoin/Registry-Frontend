@@ -19,6 +19,7 @@ import { CURRENT_USER_ID, SELECT_PROFILE_PROJECT_ID } from '@shared/helpers/requ
 
 const CSRF_TOKEN_HEADER: string = 'X-XSRF-TOKEN'
 const ACCEPT_LANGUAGE_HEADER: string = 'Accept-Language'
+const CREDENTIAL_FREE_PATHS: string[] = ['/api/v2/metadata/']
 let csrfToken: string | undefined
 
 let refreshTokenInProgress$: Observable<void> | null = null
@@ -55,7 +56,7 @@ const UNAVAILABLE_STATUSES: number[] = [0, 502, 503]
 
 /**
  * Purpose: Single HTTP interceptor for every request to the backend.
- * Scope: Adds credentials, the CSRF token and the display language, resolves url placeholders, refreshes the token once on a 401 then replays, and maps 0/502/503 to a service unavailable error.
+ * Scope: Adds credentials (except on the public metadata endpoints, so the backend skips authentication), the CSRF token and the display language, resolves url placeholders, refreshes the token once on a 401 then replays, and maps 0/502/503 to a service unavailable error.
  * Limits: Does not touch other origins; the refresh endpoint and the no-auth paths are never refreshed or replayed.
  */
 export const backendHandler: HttpInterceptorFn = (
@@ -84,10 +85,14 @@ function authenticate(req: HttpRequest<unknown>, sessionFacade: SessionFacade, l
 	const url: string = formatUrlIfNeeded(sessionFacade, req.url)
 	const localizedRequest: HttpRequest<unknown> = req.clone({
 		url: url,
-		withCredentials: true,
+		withCredentials: !isCredentialFree(url),
 		setHeaders: { [ACCEPT_LANGUAGE_HEADER]: language },
 	})
 	return withCsrfToken(localizedRequest)
+}
+
+function isCredentialFree(url: string): boolean {
+	return CREDENTIAL_FREE_PATHS.some((path: string): boolean => url.startsWith(`${RegistryConfig.environment.backend.url}${path}`))
 }
 
 function withCsrfToken(req: HttpRequest<unknown>): HttpRequest<unknown> {

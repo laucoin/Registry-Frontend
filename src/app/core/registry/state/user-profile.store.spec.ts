@@ -6,29 +6,28 @@ import { UserProfileStore } from '@core/registry/state/user-profile.store'
 import { UserProjectProfileApi } from '@core/registry/state/user-project-profile.api'
 import { ErrorModel } from '@shared/models/model/error.model'
 import { PageModel } from '@shared/models/model/page.model'
-import { ProjectProfileModel } from '@shared/models/model/project-profile.model'
+import { UserInvitationModel } from '@shared/models/model/user-invitation.model'
 
-const PAGE: PageModel<ProjectProfileModel> = {
-    pageNumber: 0,
-    pageSize: 10,
+const PAGE: PageModel<UserInvitationModel> = {
+    page: 0,
+    size: 10,
     totalElements: 1,
     totalPages: 1,
-    content: [ { id: 'pp1' } as ProjectProfileModel ],
+    hasNext: false,
+    content: [ { id: 'pp1' } as UserInvitationModel ],
     lastRefresh: new Date(),
 }
 
 describe( 'UserProfileStore', () => {
     let store: InstanceType<typeof UserProfileStore>
     let findUserProjectProfiles: Mock<UserProjectProfileApi['findUserProjectProfiles']>
-    let setGlobalError: Mock<(error: ErrorModel) => void>
 
     beforeEach( () => {
         findUserProjectProfiles = vi.fn()
-        setGlobalError = vi.fn()
         TestBed.configureTestingModule( {
             providers: [
                 { provide: UserProjectProfileApi, useValue: { findUserProjectProfiles } },
-                { provide: ErrorReporter, useValue: { setGlobalError, notify: vi.fn() } },
+                { provide: ErrorReporter, useValue: { notify: vi.fn() } },
             ],
         } )
         store = TestBed.inject( UserProfileStore )
@@ -39,7 +38,7 @@ describe( 'UserProfileStore', () => {
         findUserProjectProfiles.mockReturnValue( of( PAGE ) )
 
         // Act
-        store.fetchProfilesPage( { pageNumber: 0, pageSize: 10 } )
+        store.fetchProfilesPage( { page: 0, size: 10 } )
 
         // Assert
         expect( store.profiles.element() ).toEqual( PAGE )
@@ -49,19 +48,19 @@ describe( 'UserProfileStore', () => {
 
     it( 'appends the next batch to the profiles and to the invitations already shown', () => {
         // Arrange
-        const first: PageModel<ProjectProfileModel> = { ...PAGE, pageSize: 1, totalPages: 2 }
-        const second: PageModel<ProjectProfileModel> = { ...first, pageNumber: 1, content: [ { id: 'pp2' } as ProjectProfileModel ] }
+        const first: PageModel<UserInvitationModel> = { ...PAGE, size: 1, totalPages: 2 }
+        const second: PageModel<UserInvitationModel> = { ...first, page: 1, content: [ { id: 'pp2' } as UserInvitationModel ] }
         findUserProjectProfiles.mockReturnValueOnce( of( first ) ).mockReturnValueOnce( of( first ) )
             .mockReturnValueOnce( of( second ) ).mockReturnValueOnce( of( second ) )
-        store.fetchProfilesPage( { pageNumber: 0, pageSize: 1 } )
-        store.fetchInvitationsPage( { pageNumber: 0, pageSize: 1 } )
+        store.fetchProfilesPage( { page: 0, size: 1 } )
+        store.fetchInvitationsPage( { page: 0, size: 1 } )
 
         // Act
-        store.fetchProfilesPage( { pageNumber: 1, pageSize: 1 } )
-        store.fetchInvitationsPage( { pageNumber: 1, pageSize: 1 } )
+        store.fetchProfilesPage( { page: 1, size: 1 } )
+        store.fetchInvitationsPage( { page: 1, size: 1 } )
 
         // Assert
-        const ids: string[][] = [ store.profiles.element(), store.invitations.element() ].map( (shown: PageModel<ProjectProfileModel> | undefined): string[] => shown!.content.map( (profile: ProjectProfileModel): string => profile.id ) )
+        const ids: string[][] = [ store.profiles.element(), store.invitations.element() ].map( (shown: PageModel<UserInvitationModel> | undefined): string[] => shown!.content.map( (profile: UserInvitationModel): string => profile.id ) )
         expect( ids ).toEqual( [ [ 'pp1', 'pp2' ], [ 'pp1', 'pp2' ] ] )
     } )
 
@@ -70,36 +69,35 @@ describe( 'UserProfileStore', () => {
         findUserProjectProfiles.mockReturnValue( throwError( (): ErrorModel => ({ status: 500, title: 'Title', message: 'Message' }) as ErrorModel ) )
 
         // Act
-        store.fetchInvitationsPage( { pageNumber: 0, pageSize: 10 } )
+        store.fetchInvitationsPage( { page: 0, size: 10 } )
 
         // Assert
         expect( store.invitations.error()?.summary ).toBe( 'Title' )
         expect( store.profiles.error() ).toBeUndefined()
     } )
 
-    it( 'reports a 503 as the global error', () => {
+    it( 'keeps a 503 failure in its block', () => {
         // Arrange
         const error: ErrorModel = { status: 503 } as ErrorModel
         findUserProjectProfiles.mockReturnValue( throwError( (): ErrorModel => error ) )
 
         // Act
-        store.fetchProfilesPage( { pageNumber: 0, pageSize: 10 } )
+        store.fetchProfilesPage( { page: 0, size: 10 } )
 
         // Assert
-        expect( setGlobalError ).toHaveBeenCalledWith( error )
-        expect( store.profiles.error() ).toBeUndefined()
+        expect( store.profiles.error() ).toBeDefined()
     } )
 
     it( 'merges the search parameters of the profiles page', () => {
         // Arrange
-        const params: { textSearched: string, resetSearch: boolean } = { textSearched: 'wolves', resetSearch: true }
+        const params: { q: string, resetSearch: boolean } = { q: 'wolves', resetSearch: true }
 
         // Act
         store.updateProfilesPageSearchParams( params )
 
         // Assert
-        expect( store.profiles.params.textSearched() ).toBe( 'wolves' )
-        expect( store.profiles.params.statusSearched() ).toBeDefined()
+        expect( store.profiles.params.q() ).toBe( 'wolves' )
+        expect( store.profiles.params.status() ).toBeDefined()
     } )
 
     it( 'toggles the profile loader', () => {
@@ -118,7 +116,7 @@ describe( 'UserProfileStore', () => {
     it( 'forgets the loaded profiles on reset', () => {
         // Arrange
         findUserProjectProfiles.mockReturnValue( of( PAGE ) )
-        store.fetchProfilesPage( { pageNumber: 0, pageSize: 10 } )
+        store.fetchProfilesPage( { page: 0, size: 10 } )
 
         // Act
         store.reset()

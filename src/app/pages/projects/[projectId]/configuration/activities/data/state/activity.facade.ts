@@ -1,3 +1,4 @@
+import { SectionErrorsHelper } from '@shared/helpers/store/section-errors.helper'
 import { computed, inject, Injectable, Signal } from '@angular/core'
 import { Observable, tap } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
@@ -10,7 +11,7 @@ import { GenericProjectElementFacade } from '@shared/helpers/facade/generic-proj
 import { MovementModel } from '@shared/models/model/movement.model'
 import { DateHelper } from '@shared/helpers/date.helper'
 import { ActivityApi } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.api'
-import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/rx.helper'
+import { notifyOnError } from '@shared/helpers/rx.helper'
 import { CumulativePageHelper } from '@shared/helpers/store/cumulative-page.helper'
 
 /**
@@ -24,31 +25,33 @@ export class ActivityFacade extends GenericProjectElementFacade {
 
     private readonly store: InstanceType<typeof ActivityStore> = inject( ActivityStore )
 
+    public readonly movementsContentsError: Signal<NotificationModel | undefined> = SectionErrorsHelper.of( this.store.sectionErrors, 'contents' )
+
     public readonly activitiesPage: Signal<PageModel<ActivityModel> | undefined> = this.store.activities.element
     public readonly activitiesPageLoading: Signal<boolean> = this.store.activities.loading
     public readonly activitiesPageSilentLoading: Signal<boolean> = this.store.activities.silentLoading
     public readonly activitiesPageError: Signal<NotificationModel | undefined> = this.store.activities.error
     private readonly activitiesPageResetSearch: Signal<boolean> = this.store.activities.params.resetSearch
-    public readonly activitiesPageTextSearchedParam: Signal<string | undefined> = this.store.activities.params.textSearched
-    public readonly activitiesPageDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
-        DateHelper.buildDate( this.store.activities.params.dateTimeSearched() ),
+    public readonly activitiesPageQueryParam: Signal<string | undefined> = this.store.activities.params.q
+    public readonly activitiesPageAtParam: Signal<Date | undefined> = computed( (): Date | undefined =>
+        DateHelper.buildDate( this.store.activities.params.at() ),
     )
-    public readonly activitiesPageAvailabilitySearchedParam: Signal<boolean | undefined> = this.store.activities.params.availabilitySearched
-    public readonly activitiesPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.activities.params.visibilitySearched
+    public readonly activitiesPageIsAvailableParam: Signal<boolean | undefined> = this.store.activities.params.isAvailable
+    public readonly activitiesPageIsVisibleParam: Signal<boolean | undefined> = this.store.activities.params.isVisible
 
     public readonly activityMovementsPage: Signal<PageModel<MovementModel> | undefined> = this.store.movements.element
     public readonly activityMovementsPageLoading: Signal<boolean> = this.store.movements.loading
     public readonly activityMovementsPageSilentLoading: Signal<boolean> = this.store.movements.silentLoading
     public readonly activityMovementsPageError: Signal<NotificationModel | undefined> = this.store.movements.error
     public readonly activityMovementsPageResetSearch: Signal<boolean> = this.store.movements.params.resetSearch
-    public readonly activityMovementsPageTypeSearchedParam: Signal<string | undefined> = this.store.movements.params.typeSearched
-    public readonly activityMovementsPageStartDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
-        DateHelper.buildDate( this.store.movements.params.startDateTimeSearched() ),
+    public readonly activityMovementsPageTypeParam: Signal<string | undefined> = this.store.movements.params.type
+    public readonly activityMovementsPageFromParam: Signal<Date | undefined> = computed( (): Date | undefined =>
+        DateHelper.buildDate( this.store.movements.params.from() ),
     )
-    public readonly activityMovementsPageEndDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
-        DateHelper.buildDate( this.store.movements.params.endDateTimeSearched() ),
+    public readonly activityMovementsPageToParam: Signal<Date | undefined> = computed( (): Date | undefined =>
+        DateHelper.buildDate( this.store.movements.params.to() ),
     )
-    public readonly activityMovementsPageVisibilitySearchedParam: Signal<boolean | undefined> = this.store.movements.params.visibilitySearched
+    public readonly activityMovementsPageIsVisibleParam: Signal<boolean | undefined> = this.store.movements.params.isVisible
 
     public readonly availabilitiesMetadata: Signal<SelectOptionModel<boolean | undefined>[]> = this.translated( this.store.metadata.availabilities )
     public readonly visibilitiesMetadata: Signal<SelectOptionModel<boolean | undefined>[]> = this.translated( this.store.metadata.visibilities )
@@ -63,42 +66,42 @@ export class ActivityFacade extends GenericProjectElementFacade {
     }
 
     public fetchActivitiesPage (
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
     ): void {
-        const index: number | undefined = this.activitiesPageResetSearch() ? 0 : pageNumber
-        this.store.fetchActivitiesPage( { projectId: this.selectedProjectId(), pageNumber: index, pageSize: pageSize } )
+        const index: number | undefined = this.activitiesPageResetSearch() ? 0 : page
+        this.store.fetchActivitiesPage( { projectId: this.selectedProjectId(), page: index, size: size } )
     }
 
     public inputPageSearchParameters (
-        textSearched: string | undefined,
-        dateTimeSearched: Date | undefined,
-        availabilitySearched: boolean | undefined,
-        visibilitySearched: boolean | undefined,
+        q: string | undefined,
+        at: Date | undefined,
+        isAvailable: boolean | undefined,
+        isVisible: boolean | undefined,
     ): void {
-        const resetSearch: boolean = this.activitiesPageTextSearchedParam() != textSearched
-                                     || this.activitiesPageDateTimeSearchedParam() != dateTimeSearched?.toISOString()
-                                     || this.activitiesPageAvailabilitySearchedParam() != availabilitySearched
-                                     || this.activitiesPageVisibilitySearchedParam() != visibilitySearched
+        const resetSearch: boolean = this.activitiesPageQueryParam() != q
+                                     || this.activitiesPageAtParam()?.toISOString() != at?.toISOString()
+                                     || this.activitiesPageIsAvailableParam() != isAvailable
+                                     || this.activitiesPageIsVisibleParam() != isVisible
 
         if (resetSearch) {
             this.store.updateActivitiesPageSearchParams( {
                 resetSearch: resetSearch,
-                visibilitySearched: visibilitySearched,
-                textSearched: textSearched,
-                availabilitySearched: availabilitySearched,
-                dateTimeSearched: dateTimeSearched?.toISOString(),
+                isVisible: isVisible,
+                q: q,
+                isAvailable: isAvailable,
+                at: at?.toISOString(),
             } )
         }
     }
 
     public fetchActivityMovementsPage (
         id: string,
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
     ): void {
-        const index: number | undefined = this.activityMovementsPageResetSearch() ? 0 : pageNumber
-        this.store.fetchActivityMovementsPage( { projectId: this.selectedProjectId(), id: id, pageNumber: index, pageSize: pageSize } )
+        const index: number | undefined = this.activityMovementsPageResetSearch() ? 0 : page
+        this.store.fetchActivityMovementsPage( { projectId: this.selectedProjectId(), id: id, page: index, size: size } )
     }
 
     public reloadActivityMovementsPage (id: string): void {
@@ -110,25 +113,25 @@ export class ActivityFacade extends GenericProjectElementFacade {
     }
 
     public inputMovementsPageSearchParameters (
-        typeSearched: string | undefined,
-        startDateTimeSearched: Date | undefined,
-        endDateTimeSearched: Date | undefined,
-        visibilitySearched: boolean | undefined,
+        type: string | undefined,
+        from: Date | undefined,
+        to: Date | undefined,
+        isVisible: boolean | undefined,
     ): void {
-        const resetSearch: boolean = this.activityMovementsPageTypeSearchedParam() != typeSearched
-                                     || this.activityMovementsPageStartDateTimeSearchedParam() != startDateTimeSearched?.toISOString()
-                                     || this.activityMovementsPageEndDateTimeSearchedParam() != endDateTimeSearched?.toISOString()
-                                     || this.activityMovementsPageVisibilitySearchedParam() != visibilitySearched
+        const resetSearch: boolean = this.activityMovementsPageTypeParam() != type
+                                     || this.activityMovementsPageFromParam()?.toISOString() != from?.toISOString()
+                                     || this.activityMovementsPageToParam()?.toISOString() != to?.toISOString()
+                                     || this.activityMovementsPageIsVisibleParam() != isVisible
 
         if (resetSearch) {
             this.store.updateActivityMovementsPageSearchParams( {
                 resetSearch: resetSearch,
-                visibilitySearched: visibilitySearched,
-                currentMovements: false,
-                linkedToActivity: true,
-                typeSearched: typeSearched,
-                startDateTimeSearched: startDateTimeSearched?.toISOString(),
-                endDateTimeSearched: endDateTimeSearched?.toISOString(),
+                isVisible: isVisible,
+                isCurrent: false,
+                hasActivity: true,
+                type: type,
+                from: from?.toISOString(),
+                to: to?.toISOString(),
             } )
         }
     }
@@ -141,14 +144,12 @@ export class ActivityFacade extends GenericProjectElementFacade {
 
     public createActivity (activity: ActivityDto): Observable<ActivityModel> {
         return this.api.createActivity( this.selectedProjectId(), activity ).pipe(
-            notifyUnavailableOnly( this.uiFacade ),
             tap( (created: ActivityModel): void => this.onCommandSuccess( 'create', created ) ),
         )
     }
 
-    public updateActivity (id: string, activity: ActivityDto): Observable<ActivityModel> {
-        return this.api.updateActivityById( this.selectedProjectId(), id, activity ).pipe(
-            notifyUnavailableOnly( this.uiFacade ),
+    public updateActivity (id: string, activity: ActivityDto, ifMatch?: string): Observable<ActivityModel> {
+        return this.api.updateActivityById( this.selectedProjectId(), id, activity, ifMatch ).pipe(
             tap( (updated: ActivityModel): void => this.onCommandSuccess( 'edit', updated ) ),
         )
     }

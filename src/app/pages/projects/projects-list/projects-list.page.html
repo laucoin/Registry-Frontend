@@ -22,22 +22,17 @@
         <form class="grid grid-cols-1 items-end gap-(--spacing--in-block-large) md:grid-cols-3"
               (submit)="$event.preventDefault(); search()">
             <sgdf-input appSgdfField [label]="'projects.search-and-filter.text' | transloco"
-                        [formField]="form.textSearched"/>
+                        [formField]="form.q"/>
             <sgdf-date-time-picker appSgdfField with-time
                                    [label]="'projects.search-and-filter.datetime' | transloco"
-                                   [formField]="form.dateTimeSearched"/>
+                                   [formField]="form.at"/>
             <sgdf-select appSgdfField [label]="'projects.search-and-filter.visibility' | transloco"
-                         [formField]="form.visibilitySearched">
+                         [formField]="form.isVisible">
                 @for (item of facade.visibilitiesMetadata(); track item.label) {
                     <sgdf-option [value]="item.value | booleanChoice">{{ item.label }}</sgdf-option>
                 }
             </sgdf-select>
             <div class="flex flex-wrap items-center justify-between gap-(--spacing--in-block) md:col-span-3">
-                @if (canFilterByProfile()) {
-                    <sgdf-switch appSgdfField [formField]="form.withProfile">
-                        {{ 'projects.search-and-filter.with-profile' | transloco }}
-                    </sgdf-switch>
-                }
                 <sgdf-button class="ms-auto" variant="primary" appearance="outlined" submit
                              [loading]="facade.projectsPageLoading()">
                     <sgdf-icon slot="prefix" name="magnifying-glass" library="solid"/>
@@ -86,7 +81,7 @@
                                 )</span>
                         </sgdf-button>
                     } @else {
-                        <sgdf-tag appearance="outlined" pill>
+                        <sgdf-tag appearance="outlined" variant="neutral" pill>
                             {{
                                 'projects.options' | pluralTranslation: options | transloco: {
                                     name: options[0]?.label,

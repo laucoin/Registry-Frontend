@@ -44,40 +44,41 @@ interface MovementCommunicationsPageRequest extends MovementsPageRequest {
 
 interface SearchReasonsAndActivitiesRequest {
     projectId: string | undefined
-    textSearched: string | undefined
-    typeSearched: string
-    contentTypeSearched: ParticipantTypeEnum
+    q: string | undefined
+    type: string
+    contentType: ParticipantTypeEnum
 }
 
 interface SearchParticipantsAndGroupsRequest {
     projectId: string | undefined
-    contentTypeSearched: ParticipantTypeEnum
-    textSearched: string | undefined
+    contentType: ParticipantTypeEnum
+    q: string | undefined
 }
 
 interface SearchVehiclesRequest {
     projectId: string | undefined
-    textSearched: string | undefined
+    q: string | undefined
 }
 
 type SectionLabel = (key: string, items: unknown[]) => string
 
 const defaultMovementStore: MovementStoreModel = {
+    sectionErrors: {},
     movements: PageStateHelper.initial<MovementPageParamsModel, MovementModel>( {
         resetSearch: false,
-        currentMovements: false,
-        linkedToActivity: undefined,
-        visibilitySearched: undefined,
-        typeSearched: undefined,
-        startDateTimeSearched: undefined,
-        endDateTimeSearched: undefined,
+        isCurrent: false,
+        hasActivity: undefined,
+        isVisible: undefined,
+        type: undefined,
+        from: undefined,
+        to: undefined,
     } ),
     movementCommunications: PageStateHelper.initial<CommunicationPageParamsModel, CommunicationModel>( {
         resetSearch: false,
-        visibilitySearched: true,
-        textSearched: undefined,
-        startDateTimeSearched: undefined,
-        endDateTimeSearched: undefined,
+        isVisible: true,
+        q: undefined,
+        from: undefined,
+        to: undefined,
     } ),
     metadata: {
         types: [],
@@ -124,38 +125,38 @@ export const MovementStore = signalStore(
             types: current.metadata.types,
         },
     }) ),
-    withMethods( (store, metadataApi = inject( MetadataApi ), movementApi = inject( MovementApi ), errors = inject( ErrorReporter )) => ({
+    withMethods( (store, metadataApi = inject( MetadataApi ), movementApi = inject( MovementApi )) => ({
         fetchMovementTypes: metadataFetcher<MovementStoreModel, 'types', void, SelectOptionModel<MovementTypeEnum>[]>(
-            store, 'types', () => metadataApi.getMovementsTypes(), errors, withEmptyOption,
+            store, 'types', () => metadataApi.getMovementsTypes(), withEmptyOption,
         ),
         fetchParticipantTypes: metadataFetcher<MovementStoreModel, 'participantTypes', void, SelectOptionModel<ParticipantTypeEnum>[]>(
-            store, 'participantTypes', () => metadataApi.getParticipantsTypes(), errors,
+            store, 'participantTypes', () => metadataApi.getParticipantsTypes(),
         ),
-        fetchMovementsContents: movementContentsFetcher( store, movementApi, errors ),
+        fetchMovementsContents: movementContentsFetcher( store, movementApi ),
         updateMovementsPageSearchParams: paramsUpdater( store, 'movements' ),
         updateMovementCommunicationsPageSearchParams: paramsUpdater( store, 'movementCommunications' ),
     }) ),
     withMethods( (store, api = inject( MovementApi ), errors = inject( ErrorReporter )) => ({
         fetchMovementsPage: pageFetcher( store, 'movements', (request: MovementsPageRequest, params: MovementPageParamsModel) =>
-            api.findMovements( request.projectId, request.pageNumber, request.pageSize, params ), errors, {
+            api.findMovements( request.projectId, request.page, request.size, params ), errors, {
             merge: CumulativePageHelper.merge,
             after: contentsRequester( store.fetchMovementsContents ),
         } ),
         fetchMovementCommunicationsPage: pageFetcher( store, 'movementCommunications', (request: MovementCommunicationsPageRequest, params: CommunicationPageParamsModel) =>
-            api.findMovementCommunications( request.projectId, request.id, request.pageNumber, request.pageSize, params ), errors ),
+            api.findMovementCommunications( request.projectId, request.id, request.page, request.size, params ), errors ),
         searchReasonsAndActivities: metadataFetcher<MovementStoreModel, 'searchedReasonsAndActivities', SearchReasonsAndActivitiesRequest, MovementReasonModel[]>(
             store, 'searchedReasonsAndActivities', (request: SearchReasonsAndActivitiesRequest) =>
-                api.searchReasonsAndActivities( request.projectId, request.textSearched, request.typeSearched, request.contentTypeSearched ), errors,
+                api.searchReasonsAndActivities( request.projectId, request.q, request.type, request.contentType ),
         ),
         searchVehicles: metadataFetcher<MovementStoreModel, 'searchedVehicles', SearchVehiclesRequest, VehicleModel[]>(
-            store, 'searchedVehicles', (request: SearchVehiclesRequest) => api.searchVehicles( request.projectId, request.textSearched ), errors,
+            store, 'searchedVehicles', (request: SearchVehiclesRequest) => api.searchVehicles( request.projectId, request.q ),
             (vehicles: VehicleModel[]): SelectOptionModel<VehicleModel>[] => vehicles.map( VehicleHelper.toSelectItem ),
         ),
     }) ),
-    withMethods( (store, api = inject( MovementApi ), errors = inject( ErrorReporter ), translateService = inject( TranslocoService ), plural = inject( PluralTranslationPipe )) => ({
+    withMethods( (store, api = inject( MovementApi ), translateService = inject( TranslocoService ), plural = inject( PluralTranslationPipe )) => ({
         searchParticipantsAndGroups: metadataFetcher<MovementStoreModel, 'searchedParticipantsAndGroups', SearchParticipantsAndGroupsRequest, MovementParticipantsAndGroupsModel>(
             store, 'searchedParticipantsAndGroups', (request: SearchParticipantsAndGroupsRequest) =>
-                api.searchParticipantsAndGroups( request.projectId, request.contentTypeSearched, request.textSearched ), errors,
+                api.searchParticipantsAndGroups( request.projectId, request.contentType, request.q ),
             (result: MovementParticipantsAndGroupsModel): SelectOptionGroupModel<ParticipantModel | GroupModel>[] =>
                 toSearchedSections( result, (key: string, items: unknown[]): string => translateService.translate( plural.transform( key, items ) ) ),
         ),

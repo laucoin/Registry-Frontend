@@ -36,7 +36,7 @@ describe( 'ProjectFacade', () => {
                 ProjectStore,
                 { provide: ProjectApi, useValue: { findProjects, createProject, updateProjectById, disableProjectById } },
                 { provide: SessionFacade, useValue: { currentProjectId, fetchCurrentUser } },
-                { provide: UiFacade, useValue: { notify, setGlobalError: vi.fn() } },
+                { provide: UiFacade, useValue: { notify } },
                 { provide: TranslocoService, useValue: { translate: (key: string): string => `t:${key}` } },
             ],
         } )
@@ -47,10 +47,10 @@ describe( 'ProjectFacade', () => {
 
     it( 'fetches the requested projects page', () => {
         // Arrange
-        const pageNumber: number = 2
+        const page: number = 2
 
         // Act
-        facade.fetchProjectsPage( pageNumber, 10 )
+        facade.fetchProjectsPage( page, 10 )
 
         // Assert
         expect( findProjects ).toHaveBeenCalledWith( 2, 10, expect.anything() )
@@ -71,7 +71,7 @@ describe( 'ProjectFacade', () => {
 
     it( 'restarts from the first page when the search changed', () => {
         // Arrange
-        facade.inputPageSearchParameters( 'camp', undefined, true, undefined )
+        facade.inputPageSearchParameters( 'camp', undefined, undefined )
 
         // Act
         facade.fetchProjectsPage( 3, 10 )
@@ -82,7 +82,7 @@ describe( 'ProjectFacade', () => {
 
     it( 'keeps the requested page when the search criteria are the same', () => {
         // Arrange
-        facade.inputPageSearchParameters( undefined, undefined, true, undefined )
+        facade.inputPageSearchParameters( undefined, undefined, undefined )
 
         // Act
         facade.fetchProjectsPage( 3, 10 )
@@ -166,5 +166,16 @@ describe( 'ProjectFacade', () => {
 
         // Assert
         expect( findProjects ).toHaveBeenCalledWith( 0, 20, expect.anything() )
+    } )
+
+    it( 'exposes the failure of the project fetch', () => {
+        // Arrange
+        Object.assign( TestBed.inject( ProjectApi ), { findProjectById: vi.fn( () => failing( ERROR_500 ) ) } )
+
+        // Act
+        facade.fetchProject( 'p1' )
+
+        // Assert
+        expect( facade.projectError()?.summary ).toBe( 'Title' )
     } )
 } )

@@ -1,10 +1,10 @@
 import { AvailabilityStatusEnum } from '@shared/models/enumeration/availability-status.enum'
 import { CustomDatetimeModel } from '@shared/models/model/custom-datetime.model'
-import { OptionalProjectResponseDto } from '@shared/models/dto/response/generic-project.response.dto'
+import { GenericResponseDto } from '@shared/models/dto/response/generic.response.dto'
 import { NumericRangeModel } from '@shared/models/model/numeric-range.model'
 import { SelectOptionModel } from '@shared/models/model/select-option.model'
 
-export interface ActivityResponseDto extends OptionalProjectResponseDto {
+export interface ActivityResponseDto extends GenericResponseDto {
     name: string
     status: SelectOptionModel<AvailabilityStatusEnum> | undefined
     description: string | undefined

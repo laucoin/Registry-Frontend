@@ -8,7 +8,6 @@ import { ProjectProfileApi } from '@pages/projects/[projectId]/configuration/pro
 import { ProjectProfileStore } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.store'
 import { ERROR_500, ERROR_503, failing, pageOf } from '@shared/helpers/testing/test-fixtures'
 import { ProfileStatusEnum } from '@shared/models/enumeration/profile-status.enum'
-import { ErrorModel } from '@shared/models/model/error.model'
 import { ProjectProfileModel } from '@shared/models/model/project-profile.model'
 import { UserModel } from '@shared/models/model/user.model'
 
@@ -18,7 +17,6 @@ describe( 'ProjectProfileStore', () => {
     let searchUsers: Mock<ProjectProfileApi['searchUsers']>
     let getAssignableProjectProfileRoles: Mock<ProjectProfileApi['getAssignableProjectProfileRoles']>
     let getProfilesStatus: Mock<MetadataApi['getProfilesStatus']>
-    let setGlobalError: Mock<(error: ErrorModel) => void>
     let notify: Mock<(message: unknown) => void>
     let langChanges: Subject<string>
 
@@ -27,7 +25,6 @@ describe( 'ProjectProfileStore', () => {
         searchUsers = vi.fn()
         getAssignableProjectProfileRoles = vi.fn()
         getProfilesStatus = vi.fn( () => of( [ { label: 'Invited', value: ProfileStatusEnum.INVITED } ] ) )
-        setGlobalError = vi.fn()
         notify = vi.fn()
         langChanges = new Subject<string>()
         TestBed.configureTestingModule( {
@@ -35,7 +32,7 @@ describe( 'ProjectProfileStore', () => {
                 ProjectProfileStore,
                 { provide: ProjectProfileApi, useValue: { findProjectProfiles, searchUsers, getAssignableProjectProfileRoles } },
                 { provide: MetadataApi, useValue: { getProfilesStatus } },
-                { provide: ErrorReporter, useValue: { setGlobalError, notify } },
+                { provide: ErrorReporter, useValue: { notify } },
                 { provide: TranslocoService, useValue: { langChanges$: langChanges.asObservable() } },
             ],
         } )
@@ -72,7 +69,7 @@ describe( 'ProjectProfileStore', () => {
         findProjectProfiles.mockReturnValue( of( pageOf<ProjectProfileModel>( [ { id: 'pp1' } as ProjectProfileModel ] ) ) )
 
         // Act
-        store.fetchProjectProfilesPage( { projectId: 'p1', pageNumber: 0, pageSize: 10 } )
+        store.fetchProjectProfilesPage( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
         expect( store.projectProfiles.element()?.content ).toHaveLength( 1 )
@@ -82,12 +79,12 @@ describe( 'ProjectProfileStore', () => {
     it( 'appends the next batch to the profiles already shown', () => {
         // Arrange
         findProjectProfiles
-            .mockReturnValueOnce( of( { ...pageOf<ProjectProfileModel>( [ { id: 'pp1' } as ProjectProfileModel ] ), pageSize: 1, totalPages: 2 } ) )
-            .mockReturnValueOnce( of( { ...pageOf<ProjectProfileModel>( [ { id: 'pp2' } as ProjectProfileModel ], 1 ), pageSize: 1, totalPages: 2 } ) )
-        store.fetchProjectProfilesPage( { projectId: 'p1', pageNumber: 0, pageSize: 1 } )
+            .mockReturnValueOnce( of( { ...pageOf<ProjectProfileModel>( [ { id: 'pp1' } as ProjectProfileModel ] ), size: 1, totalPages: 2 } ) )
+            .mockReturnValueOnce( of( { ...pageOf<ProjectProfileModel>( [ { id: 'pp2' } as ProjectProfileModel ], 1 ), size: 1, totalPages: 2 } ) )
+        store.fetchProjectProfilesPage( { projectId: 'p1', page: 0, size: 1 } )
 
         // Act
-        store.fetchProjectProfilesPage( { projectId: 'p1', pageNumber: 1, pageSize: 1 } )
+        store.fetchProjectProfilesPage( { projectId: 'p1', page: 1, size: 1 } )
 
         // Assert
         expect( store.projectProfiles.element()?.content.map( (profile: ProjectProfileModel): string => profile.id ) ).toEqual( [ 'pp1', 'pp2' ] )
@@ -98,21 +95,21 @@ describe( 'ProjectProfileStore', () => {
         findProjectProfiles.mockReturnValue( failing( ERROR_500 ) )
 
         // Act
-        store.fetchProjectProfilesPage( { projectId: 'p1', pageNumber: 0, pageSize: 10 } )
+        store.fetchProjectProfilesPage( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
         expect( store.projectProfiles.error()?.summary ).toBe( 'Title' )
     } )
 
-    it( 'reports a 503 on the profiles fetch as the global error', () => {
+    it( 'keeps a 503 failure in its block', () => {
         // Arrange
         findProjectProfiles.mockReturnValue( failing( ERROR_503 ) )
 
         // Act
-        store.fetchProjectProfilesPage( { projectId: 'p1', pageNumber: 0, pageSize: 10 } )
+        store.fetchProjectProfilesPage( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
-        expect( setGlobalError ).toHaveBeenCalledWith( ERROR_503 )
+        expect( store.projectProfiles.error() ).toBeDefined()
     } )
 
     it( 'turns the searched users into select items', () => {
@@ -120,7 +117,7 @@ describe( 'ProjectProfileStore', () => {
         searchUsers.mockReturnValue( of( [ { id: 'u1', email: 'a@b.c', firstName: 'Ada', lastName: 'L' } as UserModel ] ) )
 
         // Act
-        store.searchUsers( { projectId: 'p1', textSearched: 'ada' } )
+        store.searchUsers( { projectId: 'p1', q: 'ada' } )
 
         // Assert
         expect( store.metadata.searched()[ 0 ].label ).toBe( 'a@b.c (Ada L)' )
@@ -138,7 +135,7 @@ describe( 'ProjectProfileStore', () => {
         expect( store.metadata.roles() ).toEqual( [ { label: 'Chief', value: 'CHIEF' } ] )
     } )
 
-    it( 'notifies a failed role fetch and keeps the previous roles', () => {
+    it( 'keeps a failed role fetch in the section error and keeps the previous roles', () => {
         // Arrange
         getAssignableProjectProfileRoles.mockReturnValueOnce( of( [ { label: 'Chief', value: 'CHIEF' } ] ) )
         getAssignableProjectProfileRoles.mockReturnValueOnce( failing( ERROR_500 ) )
@@ -148,7 +145,7 @@ describe( 'ProjectProfileStore', () => {
         store.fetchAssignableRoles( 'p1' )
 
         // Assert
-        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'Title' } ) )
+        expect( store.sectionErrors()[ 'metadata.roles' ]?.summary ).toBe( 'Title' )
         expect( store.metadata.roles() ).toHaveLength( 1 )
     } )
 } )

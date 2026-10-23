@@ -34,7 +34,7 @@ import { autoMock } from '@shared/helpers/testing/auto-mock'
 interface BatchListApi {
     search: () => void
     resetFilters: () => void
-    loadBatch: (event: { pageNumber: number, pageSize: number }) => void
+    loadBatch: (event: { page: number, size: number }) => void
     model: { (): Record<string, unknown>, set: (value: Record<string, unknown>) => void }
 }
 
@@ -68,7 +68,7 @@ const CASES: BatchListCase[] = [
 function withUnsetSearchParams (facade: Record<string, Mock>): Record<string, Mock> {
     return new Proxy( facade, {
         get: (target: Record<string, Mock>, key: string | symbol): Mock | undefined =>
-            typeof key === 'string' && /Search(ed)?Param$/.test( key ) ? vi.fn( (): undefined => undefined ) : target[ key as string ],
+            typeof key === 'string' && /(Query|At|From|To|IsVisible|IsPresent|IsAvailable|Status|Type)Param$/.test( key ) ? vi.fn( (): undefined => undefined ) : target[ key as string ],
     } )
 }
 
@@ -117,7 +117,7 @@ describe( 'batch list pages', () => {
         fetched( item ).mockClear()
 
         // Act
-        page.loadBatch( { pageNumber: 3, pageSize: 5 } )
+        page.loadBatch( { page: 3, size: 5 } )
 
         // Assert
         expect( fetched( item ).mock.calls[ 0 ].slice( -2 ) ).toEqual( [ 3, 5 ] )

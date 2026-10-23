@@ -11,6 +11,7 @@ import { PairMapper } from '@shared/mappers/pair.mapper'
 import { ParticipantMapper } from '@shared/mappers/participant.mapper'
 import { ProjectMapper } from '@shared/mappers/project.mapper'
 import { ProjectProfileMapper } from '@shared/mappers/project-profile.mapper'
+import { UserInvitationMapper } from '@shared/mappers/user-invitation.mapper'
 import { UserMapper } from '@shared/mappers/user.mapper'
 import { VehicleMapper } from '@shared/mappers/vehicle.mapper'
 import { ActivityResponseDto } from '@shared/models/dto/response/activity.response.dto'
@@ -23,6 +24,7 @@ import { PageResponseDto } from '@shared/models/dto/response/page.response.dto'
 import { ParticipantResponseDto } from '@shared/models/dto/response/participant.response.dto'
 import { ProjectResponseDto } from '@shared/models/dto/response/project.response.dto'
 import { ProjectProfileResponseDto } from '@shared/models/dto/response/project-profile.response.dto'
+import { UserInvitationResponseDto } from '@shared/models/dto/response/user-invitation.response.dto'
 import { UserResponseDto } from '@shared/models/dto/response/user.response.dto'
 import { VehicleResponseDto } from '@shared/models/dto/response/vehicle.response.dto'
 
@@ -58,10 +60,10 @@ describe( 'mappers', () => {
         expect( model.email ).toBe( 'g@x.test' )
     } )
 
-    it( 'maps a project profile with its user and project', () => {
+    it( 'maps a project profile with its user and project id', () => {
         // Arrange
         const dto: ProjectProfileResponseDto = {
-            id: 'pp1', visible: true, creation: HISTORY, lastEdition: HISTORY, project: PROJECT, user: USER,
+            id: 'pp1', visible: true, creation: HISTORY, lastEdition: HISTORY, projectId: 'p1', user: USER,
             role: { label: 'Chief', value: 'CHIEF' }, availabilityStatus: { label: 'x', value: 'AVAILABLE' as never }, status: { label: 'y', value: 'ACCEPTED' as never },
             startAccess: undefined, endAccess: { date: '2026-02-01', time: '10:00:00' },
         }
@@ -71,14 +73,14 @@ describe( 'mappers', () => {
 
         // Assert
         expect( model.user.email ).toBe( 'g@x.test' )
-        expect( model.project.name ).toBe( 'Camp' )
+        expect( model.projectId ).toBe( 'p1' )
         expect( model.endAccess ).toEqual( { date: '2026-02-01', time: '10:00:00' } )
     } )
 
     it( 'maps a participant with its groups and its user, and leaves missing parts undefined', () => {
         // Arrange
         const group: GroupResponseDto = {
-            id: 'g1', visible: true, creation: HISTORY, lastEdition: HISTORY, project: PROJECT,
+            id: 'g1', visible: true, creation: HISTORY, lastEdition: HISTORY,
             name: 'Wolves', status: undefined, startAvailability: undefined, endAvailability: undefined,
             membersCount: 1, insideMembersCount: 1, outsideMembersCount: 0, members: undefined,
         }
@@ -98,7 +100,7 @@ describe( 'mappers', () => {
     it( 'maps a group with its members', () => {
         // Arrange
         const dto: GroupResponseDto = {
-            id: 'g1', visible: true, creation: HISTORY, lastEdition: HISTORY, project: PROJECT,
+            id: 'g1', visible: true, creation: HISTORY, lastEdition: HISTORY,
             name: 'Wolves', status: undefined, startAvailability: undefined, endAvailability: undefined,
             membersCount: 1, insideMembersCount: 1, outsideMembersCount: 0, members: [ PARTICIPANT ],
         }
@@ -114,11 +116,11 @@ describe( 'mappers', () => {
     it( 'maps a vehicle and an activity field by field', () => {
         // Arrange
         const vehicle: VehicleResponseDto = {
-            id: 'v1', visible: true, creation: HISTORY, lastEdition: HISTORY, project: PROJECT,
+            id: 'v1', visible: true, creation: HISTORY, lastEdition: HISTORY,
             licensePlate: 'AB-123', brand: 'Ford', model: 'T', status: { label: 'In', value: 'IN' as never }, startAvailability: undefined, endAvailability: undefined,
         }
         const activity: ActivityResponseDto = {
-            id: 'a1', visible: true, creation: HISTORY, lastEdition: HISTORY, project: PROJECT,
+            id: 'a1', visible: true, creation: HISTORY, lastEdition: HISTORY,
             name: 'Hike', status: undefined, description: 'd', duration: { label: '2h', value: 'PT2H' }, allowedParticipants: { lower: 1, upper: 5 },
             startAvailability: undefined, endAvailability: undefined,
         }
@@ -135,11 +137,11 @@ describe( 'mappers', () => {
     it( 'maps a movement with its content, reason and linked activity', () => {
         // Arrange
         const activity: ActivityResponseDto = {
-            id: 'a1', visible: true, creation: HISTORY, lastEdition: HISTORY, project: PROJECT,
+            id: 'a1', visible: true, creation: HISTORY, lastEdition: HISTORY,
             name: 'Hike', status: undefined, description: undefined, duration: undefined, allowedParticipants: undefined, startAvailability: undefined, endAvailability: undefined,
         }
         const dto: MovementResponseDto = {
-            id: 'm1', visible: true, creation: HISTORY, lastEdition: HISTORY, project: PROJECT,
+            id: 'm1', visible: true, creation: HISTORY, lastEdition: HISTORY,
             dateTime: WHEN, type: { label: 'In', value: 'IN' as never }, reason: { label: 'Arrival', value: 'r1', kind: 'REASON' },
             activity: { label: 'Hike', value: activity }, contentType: 'REGISTERED' as never,
             content: [ { poolName: 'car 1', participant: PARTICIPANT, vehicle: undefined } ],
@@ -159,14 +161,14 @@ describe( 'mappers', () => {
     it( 'maps an alert with its communications, each pointing back to a movement', () => {
         // Arrange
         const movement: MovementResponseDto = {
-            id: 'm1', visible: true, creation: HISTORY, lastEdition: HISTORY, project: PROJECT,
+            id: 'm1', visible: true, creation: HISTORY, lastEdition: HISTORY,
             dateTime: WHEN, type: { label: 'In', value: 'IN' as never }, reason: undefined, activity: undefined, contentType: 'GUEST' as never, content: [],
         }
         const communication: CommunicationResponseDto = {
-            id: 'c1', visible: true, creation: HISTORY, lastEdition: HISTORY, project: PROJECT, dateTime: WHEN, message: 'hello', movement, alert: undefined,
+            id: 'c1', visible: true, creation: HISTORY, lastEdition: HISTORY, dateTime: WHEN, message: 'hello', movement, alert: undefined,
         }
         const dto: AlertResponseDto = {
-            id: 'al1', visible: true, creation: HISTORY, lastEdition: HISTORY, project: PROJECT,
+            id: 'al1', visible: true, creation: HISTORY, lastEdition: HISTORY,
             dateTime: WHEN, title: 'Fire', status: { label: 'In progress', value: 'IN_PROGRESS' as never }, communications: [ communication ],
         }
 
@@ -182,14 +184,14 @@ describe( 'mappers', () => {
 
     it( 'maps the elements of a page and keeps the paging fields', () => {
         // Arrange
-        const dto: PageResponseDto<ProjectResponseDto> = { pageNumber: 2, pageSize: 10, totalElements: 21, totalPages: 3, content: [ PROJECT ], lastRefresh: WHEN }
+        const dto: PageResponseDto<ProjectResponseDto> = { page: 2, size: 10, totalElements: 21, totalPages: 3, hasNext: true, content: [ PROJECT ], lastRefresh: WHEN }
 
         // Act
         const page: ReturnType<typeof PageMapper.toModel<ProjectResponseDto, ReturnType<typeof ProjectMapper.toModel>>> = PageMapper.toModel( dto, ProjectMapper.toModel )
 
         // Assert
         expect( page.content[ 0 ].name ).toBe( 'Camp' )
-        expect( [ page.pageNumber, page.pageSize, page.totalElements, page.totalPages ] ).toEqual( [ 2, 10, 21, 3 ] )
+        expect( [ page.page, page.size, page.totalElements, page.totalPages, page.hasNext ] ).toEqual( [ 2, 10, 21, 3, true ] )
         expect( page.lastRefresh ).toBe( WHEN )
     } )
 
@@ -203,6 +205,57 @@ describe( 'mappers', () => {
         // Assert
         expect( pair.first ).toBe( 'm1' )
         expect( pair.second[ 0 ].email ).toBe( 'g@x.test' )
+    } )
+
+    it( 'maps a project with the current user profile, and without when the user has none', () => {
+        // Arrange
+        const profile: ProjectResponseDto[ 'profile' ] = {
+            id: 'pp1', visible: true, creation: HISTORY, lastEdition: HISTORY,
+            role: { label: 'Chief', value: 'CHIEF' }, availabilityStatus: { label: 'x', value: 'AVAILABLE' as never }, status: { label: 'y', value: 'ACCEPTED' as never },
+            startAccess: undefined, endAccess: { date: '2026-02-01', time: '10:00:00' },
+        }
+
+        // Act
+        const withProfile: ReturnType<typeof ProjectMapper.toModel> = ProjectMapper.toModel( { ...PROJECT, profile: profile } )
+        const withoutProfile: ReturnType<typeof ProjectMapper.toModel> = ProjectMapper.toModel( PROJECT )
+
+        // Assert
+        expect( withProfile.profile?.role.value ).toBe( 'CHIEF' )
+        expect( withProfile.profile?.endAccess ).toEqual( { date: '2026-02-01', time: '10:00:00' } )
+        expect( withoutProfile.profile ).toBeUndefined()
+    } )
+
+    it( 'maps the resource counts and the favorite flag of a project, and leaves them undefined when absent', () => {
+        // Arrange
+        const withoutCounts: ProjectResponseDto = { ...PROJECT, counts: undefined, favorite: undefined }
+
+        // Act
+        const model: ReturnType<typeof ProjectMapper.toModel> = ProjectMapper.toModel( PROJECT )
+        const bare: ReturnType<typeof ProjectMapper.toModel> = ProjectMapper.toModel( withoutCounts )
+
+        // Assert
+        expect( model.counts ).toEqual( PROJECT.counts )
+        expect( model.favorite ).toBe( true )
+        expect( [ bare.counts, bare.favorite ] ).toEqual( [ undefined, undefined ] )
+    } )
+
+    it( 'maps a user invitation with its project summary, and without when absent', () => {
+        // Arrange
+        const dto: UserInvitationResponseDto = {
+            id: 'pp1', visible: true, creation: HISTORY, lastEdition: HISTORY,
+            project: { id: 'p1', name: 'Camp', begin: { date: '2026-01-01', time: undefined }, end: undefined },
+            role: { label: 'Chief', value: 'CHIEF' }, availabilityStatus: { label: 'x', value: 'AVAILABLE' as never }, status: { label: 'y', value: 'INVITED' as never },
+            startAccess: undefined, endAccess: undefined,
+        }
+
+        // Act
+        const model: ReturnType<typeof UserInvitationMapper.toModel> = UserInvitationMapper.toModel( dto )
+        const withoutProject: ReturnType<typeof UserInvitationMapper.toModel> = UserInvitationMapper.toModel( { ...dto, project: undefined } )
+
+        // Assert
+        expect( model.project?.name ).toBe( 'Camp' )
+        expect( model.status.value ).toBe( 'INVITED' )
+        expect( withoutProject.project ).toBeUndefined()
     } )
 
     it( 'maps the light entities nested in a response, which carry no history', () => {
@@ -219,6 +272,19 @@ describe( 'mappers', () => {
         expect( project.name ).toBe( PROJECT.name )
     } )
 
+    it( 'maps the effective arrival and departure dates of a participant', () => {
+        // Arrange
+        const departed: ParticipantResponseDto = { ...PARTICIPANT, effectiveDeparture: WHEN }
+
+        // Act
+        const model: ReturnType<typeof ParticipantMapper.toModel> = ParticipantMapper.toModel( departed )
+        const arrived: ReturnType<typeof ParticipantMapper.toModel> = ParticipantMapper.toModel( PARTICIPANT )
+
+        // Assert
+        expect( [ model.effectiveArrival, model.effectiveDeparture ] ).toEqual( [ WHEN, WHEN ] )
+        expect( arrived.effectiveDeparture ).toBeUndefined()
+    } )
+
     it( 'maps a participant whose groups only carry a name, an id and a visibility', () => {
         // Arrange
         const lightGroup: object = { id: 'g1', name: 'Wolves', visible: true }
@@ -228,6 +294,6 @@ describe( 'mappers', () => {
         const model: ReturnType<typeof ParticipantMapper.toModel> = ParticipantMapper.toModel( dto )
 
         // Assert
-        expect( model.groups?.[ 0 ] ).toMatchObject( { id: 'g1', name: 'Wolves', project: undefined, creation: undefined } )
+        expect( model.groups?.[ 0 ] ).toMatchObject( { id: 'g1', name: 'Wolves', creation: undefined } )
     } )
 } )

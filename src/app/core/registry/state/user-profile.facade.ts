@@ -14,7 +14,8 @@ import { ErrorModel } from '@shared/models/model/error.model'
 import { NotificationModel } from '@shared/models/model/notification.model'
 import { CumulativePageHelper } from '@shared/helpers/store/cumulative-page.helper'
 import { PageModel } from '@shared/models/model/page.model'
-import { ProjectProfileModel } from '@shared/models/model/project-profile.model'
+import { UserInvitationModel } from '@shared/models/model/user-invitation.model'
+import { ProjectModel } from '@shared/models/model/project.model'
 
 /**
  * Purpose: Public entry point for the project profiles and invitations of the signed-in user and the commands acting on them.
@@ -30,25 +31,25 @@ export class UserProfileFacade {
     private readonly profileReset: ProfileResetService = inject(ProfileResetService)
     private readonly userProjectProfileApi: UserProjectProfileApi = inject(UserProjectProfileApi)
 
-    public readonly userProjectProfilesPage: Signal<PageModel<ProjectProfileModel> | undefined> = this.store.profiles.element
+    public readonly userProjectProfilesPage: Signal<PageModel<UserInvitationModel> | undefined> = this.store.profiles.element
     public readonly userProjectProfilesPageLoading: Signal<boolean> = this.store.profiles.loading
     public readonly userProjectProfilesPageSilentLoading: Signal<boolean> = this.store.profiles.silentLoading
     public readonly userProjectProfilesPageError: Signal<NotificationModel | undefined> = this.store.profiles.error
     public readonly userProjectProfilesPageResetSearch: Signal<boolean> = this.store.profiles.params.resetSearch
-    public readonly userProjectProfilesPageTextSearchParam: Signal<string | undefined> = this.store.profiles.params.textSearched
-    public readonly userProjectProfilesPageDateTimeSearchParam: Signal<Date | undefined> = computed((): Date | undefined =>
-        DateHelper.buildDate(this.store.profiles.params.dateTimeSearched()),
+    public readonly userProjectProfilesPageQueryParam: Signal<string | undefined> = this.store.profiles.params.q
+    public readonly userProjectProfilesPageAtParam: Signal<Date | undefined> = computed((): Date | undefined =>
+        DateHelper.buildDate(this.store.profiles.params.at()),
     )
-    public readonly userProjectProfilesPageAvailabilitySearchParam: Signal<boolean | undefined> = this.store.profiles.params.availabilitySearched
+    public readonly userProjectProfilesPageIsAvailableParam: Signal<boolean | undefined> = this.store.profiles.params.isAvailable
 
-    public readonly userProjectProfileInvitationsPage: Signal<PageModel<ProjectProfileModel> | undefined> = this.store.invitations.element
+    public readonly userProjectProfileInvitationsPage: Signal<PageModel<UserInvitationModel> | undefined> = this.store.invitations.element
     public readonly userProjectProfileInvitationsPageLoading: Signal<boolean> = this.store.invitations.loading
     public readonly userProjectProfileInvitationsPageSilentLoading: Signal<boolean> = this.store.invitations.silentLoading
     public readonly userProjectProfileInvitationsPageError: Signal<NotificationModel | undefined> = this.store.invitations.error
     public readonly userProjectProfileInvitationsPageResetSearch: Signal<boolean> = this.store.invitations.params.resetSearch
-    public readonly userProjectProfileInvitationsPageTextSearchParam: Signal<string | undefined> = this.store.invitations.params.textSearched
-    public readonly userProjectProfileInvitationsPageDateTimeSearchParam: Signal<Date | undefined> = computed((): Date | undefined =>
-        DateHelper.buildDate(this.store.invitations.params.dateTimeSearched()),
+    public readonly userProjectProfileInvitationsPageQueryParam: Signal<string | undefined> = this.store.invitations.params.q
+    public readonly userProjectProfileInvitationsPageAtParam: Signal<Date | undefined> = computed((): Date | undefined =>
+        DateHelper.buildDate(this.store.invitations.params.at()),
     )
 
     public constructor() {
@@ -57,47 +58,47 @@ export class UserProfileFacade {
         })
     }
 
-    public fetchProjectProfilesPage(pageNumber: number | undefined, pageSize: number | undefined): void {
-        const index: number | undefined = this.userProjectProfilesPageResetSearch() ? 0 : pageNumber
-        this.store.fetchProfilesPage({pageNumber: index, pageSize: pageSize})
+    public fetchProjectProfilesPage(page: number | undefined, size: number | undefined): void {
+        const index: number | undefined = this.userProjectProfilesPageResetSearch() ? 0 : page
+        this.store.fetchProfilesPage({page: index, size: size})
     }
 
     public inputProfilesPageSearchParameters(
-        textSearched: string | undefined,
-        availabilitySearched: boolean | undefined,
-        dateTimeSearched: Date | undefined,
+        q: string | undefined,
+        isAvailable: boolean | undefined,
+        at: Date | undefined,
     ): void {
-        const resetSearch: boolean = this.userProjectProfilesPageTextSearchParam() != textSearched
-            || this.userProjectProfilesPageAvailabilitySearchParam() != availabilitySearched
-            || this.userProjectProfilesPageDateTimeSearchParam() != dateTimeSearched?.toISOString()
+        const resetSearch: boolean = this.userProjectProfilesPageQueryParam() != q
+            || this.userProjectProfilesPageIsAvailableParam() != isAvailable
+            || this.userProjectProfilesPageAtParam()?.toISOString() != at?.toISOString()
 
         if (resetSearch) {
             this.store.updateProfilesPageSearchParams({
                 resetSearch: resetSearch,
-                textSearched: textSearched,
-                availabilitySearched: availabilitySearched,
-                dateTimeSearched: dateTimeSearched?.toISOString(),
+                q: q,
+                isAvailable: isAvailable,
+                at: at?.toISOString(),
             })
         }
     }
 
-    public fetchProjectProfileInvitationPage(pageNumber: number | undefined, pageSize: number | undefined): void {
-        const index: number | undefined = this.userProjectProfileInvitationsPageResetSearch() ? 0 : pageNumber
-        this.store.fetchInvitationsPage({pageNumber: index, pageSize: pageSize})
+    public fetchProjectProfileInvitationPage(page: number | undefined, size: number | undefined): void {
+        const index: number | undefined = this.userProjectProfileInvitationsPageResetSearch() ? 0 : page
+        this.store.fetchInvitationsPage({page: index, size: size})
     }
 
     public inputInvitationsPageSearchParameters(
-        textSearched: string | undefined,
-        dateTimeSearched: Date | undefined,
+        q: string | undefined,
+        at: Date | undefined,
     ): void {
-        const resetSearch: boolean = this.userProjectProfileInvitationsPageTextSearchParam() != textSearched
-            || this.userProjectProfileInvitationsPageDateTimeSearchParam() != dateTimeSearched?.toISOString()
+        const resetSearch: boolean = this.userProjectProfileInvitationsPageQueryParam() != q
+            || this.userProjectProfileInvitationsPageAtParam()?.toISOString() != at?.toISOString()
 
         if (resetSearch) {
             this.store.updateInvitationsPageSearchParams({
                 resetSearch: resetSearch,
-                textSearched: textSearched,
-                dateTimeSearched: dateTimeSearched?.toISOString(),
+                q: q,
+                at: at?.toISOString(),
             })
         }
     }
@@ -106,12 +107,12 @@ export class UserProfileFacade {
         this.userProjectProfileApi.manageUserProjectProfileAcceptance(id, accepted).pipe(
             initialize((): void => this.store.startProfileLoader()),
             finalize((): void => this.store.stopProfileLoader()),
-            tap((profile: ProjectProfileModel): void => this.onInvitationManaged(profile)),
+            tap((profile: UserInvitationModel): void => this.onInvitationManaged(profile)),
             catchError((error: ErrorModel): Observable<never> => this.reportError$(error)),
         ).subscribe()
     }
 
-    public deleteUserProjectProfile(profile: ProjectProfileModel): Observable<void> {
+    public deleteUserProjectProfile(profile: UserInvitationModel): Observable<void> {
         return eager(
             this.userProjectProfileApi.deleteUserProfileById(profile.id).pipe(
                 initialize((): void => this.store.startProfileLoader()),
@@ -127,14 +128,14 @@ export class UserProfileFacade {
 
         return eager(
             this.userProjectProfileApi.createSupportProjectProfile(projectId).pipe(
-                tap((profile: ProjectProfileModel): void => this.onSupportProfileCreated(profile)),
+                tap((project: ProjectModel): void => this.onSupportProfileCreated(project)),
                 switchMap((): Observable<void> => this.sessionFacade.fetchCurrentUser()),
                 catchError((error: ErrorModel): Observable<void> => this.reportError$(error)),
             ),
         )
     }
 
-    private onInvitationManaged(profile: ProjectProfileModel): void {
+    private onInvitationManaged(profile: UserInvitationModel): void {
         this.notifyProfile(
             `project-profiles.notifications.acceptance.${profile.status.value}.title`,
             `project-profiles.notifications.acceptance.${profile.status.value}.message`,
@@ -145,25 +146,25 @@ export class UserProfileFacade {
         this.refreshInvitationsPage()
     }
 
-    private onProfileDeleted(profile: ProjectProfileModel): void {
+    private onProfileDeleted(profile: UserInvitationModel): void {
         this.notifyProfile(
             'project-profiles.notifications.delete.title',
             'project-profiles.notifications.delete.message.myself',
             'pi pi-user',
-            {name: profile.project.name},
+            {name: profile.project?.name},
         )
         this.sessionFacade.fetchCurrentUser()
         this.refreshProfilesPage()
     }
 
-    private onSupportProfileCreated(profile: ProjectProfileModel): void {
+    private onSupportProfileCreated(project: ProjectModel): void {
         this.notifyProfile(
             'projects.notifications.create-support.title',
             'projects.notifications.create-support.message',
             'pi pi-user-plus',
             {
-                name: profile?.project?.name,
-                end: this.datePipe.transform(profile?.endAccess),
+                name: project?.name,
+                end: this.datePipe.transform(project?.profile?.endAccess),
             },
         )
     }

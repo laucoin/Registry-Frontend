@@ -1,5 +1,5 @@
 import { Signal, signal } from '@angular/core'
-import { TestBed } from '@angular/core/testing'
+import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslocoService } from '@jsverse/transloco'
 import { of } from 'rxjs'
@@ -26,6 +26,7 @@ function hideEvent (own: boolean): Event {
 describe( 'MovementElementComponent', () => {
     let confirm: Mock<(confirmation: { accept: () => void }) => void>
     let facade: Record<string, Mock>
+    let fixture: ComponentFixture<MovementElementComponent>
 
     function create (element: object): MovementElementComponent {
         confirm = vi.fn()
@@ -46,7 +47,7 @@ describe( 'MovementElementComponent', () => {
             ],
         } )
         TestBed.overrideComponent( MovementElementComponent, { set: { template: '', imports: [], providers: [ MovementActions ], styleUrl: undefined, styleUrls: [] } } )
-        const fixture: ReturnType<typeof TestBed.createComponent<MovementElementComponent>> = TestBed.createComponent( MovementElementComponent )
+        fixture = TestBed.createComponent( MovementElementComponent )
         fixture.componentRef.setInput( 'movement', element )
         return fixture.componentInstance
     }
@@ -85,6 +86,21 @@ describe( 'MovementElementComponent', () => {
         // Assert
         expect( ids ).toContain( 'enable' )
         expect( ids ).not.toContain( 'disable' )
+    } )
+
+    it( 'disables the host of a hidden element only', () => {
+        // Arrange
+        create( { ...ELEMENT, visible: false } )
+
+        // Act
+        fixture.detectChanges()
+        const hiddenDisabled: boolean = fixture.nativeElement.disabled
+        fixture.componentRef.setInput( 'movement', ELEMENT )
+        fixture.detectChanges()
+
+        // Assert
+        expect( hiddenDisabled ).toBe( true )
+        expect( fixture.nativeElement.disabled ).toBe( false )
     } )
 
     it( 'asks for a confirmation before deleting, then deletes the element', () => {

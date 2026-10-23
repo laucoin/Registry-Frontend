@@ -65,17 +65,17 @@ export class VehicleMovementsListPage implements OnDestroy {
     })
 
     protected readonly activeFilters: Signal<number> = computed((): number => [
-        this.facade.vehicleMovementsPageTypeSearchedParam() !== undefined,
-        this.facade.vehicleMovementsPageStartDateTimeSearchedParam() !== undefined,
-        this.facade.vehicleMovementsPageEndDateTimeSearchedParam() !== undefined,
-        this.facade.vehicleMovementsPageVisibilitySearchedParam() !== undefined,
+        this.facade.vehicleMovementsPageTypeParam() !== undefined,
+        this.facade.vehicleMovementsPageFromParam() !== undefined,
+        this.facade.vehicleMovementsPageToParam() !== undefined,
+        this.facade.vehicleMovementsPageIsVisibleParam() !== undefined,
     ].filter(Boolean).length)
 
     protected readonly model: WritableSignal<VehicleMovementsListSearchModel> = signal(toVehicleMovementsListSearchModel({
-        typeSearched: this.facade.vehicleMovementsPageTypeSearchedParam(),
-        startDateTimeSearched: this.facade.vehicleMovementsPageStartDateTimeSearchedParam(),
-        endDateTimeSearched: this.facade.vehicleMovementsPageEndDateTimeSearchedParam(),
-        visibilitySearched: this.facade.vehicleMovementsPageVisibilitySearchedParam(),
+        type: this.facade.vehicleMovementsPageTypeParam(),
+        from: this.facade.vehicleMovementsPageFromParam(),
+        to: this.facade.vehicleMovementsPageToParam(),
+        isVisible: this.facade.vehicleMovementsPageIsVisibleParam(),
     }))
     protected readonly form: FieldTree<VehicleMovementsListSearchModel> = createSearchForm(this.model)
 
@@ -109,21 +109,21 @@ export class VehicleMovementsListPage implements OnDestroy {
     protected search(): void {
         const search: ReturnType<typeof toVehicleMovementsListSearchParams> = toVehicleMovementsListSearchParams(this.model())
         this.facade.inputMovementsPageSearchParameters(
-            search.typeSearched,
-            search.startDateTimeSearched,
-            search.endDateTimeSearched,
-            search.visibilitySearched,
+            search.type,
+            search.from,
+            search.to,
+            search.isVisible,
         )
         this.facade.fetchVehicleMovementsPage(this.id(), 0, undefined)
     }
 
     protected resetFilters(): void {
-        this.model.set({ typeSearched: '', startDateTimeSearched: null, endDateTimeSearched: null, visibilitySearched: '' })
+        this.model.set({ type: '', from: null, to: null, isVisible: '' })
         this.search()
     }
 
     protected loadBatch(pageEvent: PageEventModel): void {
-        this.facade.fetchVehicleMovementsPage(this.id(), pageEvent.pageNumber, pageEvent.pageSize)
+        this.facade.fetchVehicleMovementsPage(this.id(), pageEvent.page, pageEvent.size)
     }
 
     public ngOnDestroy(): void {

@@ -11,7 +11,9 @@
         <div slot="context" class="flex min-w-0 items-center gap-3 text-white">
             <span class="hidden opacity-60 md:block" aria-hidden="true">/</span>
             <span class="sr-only">{{ 'navbar.context.project' | transloco }}</span>
-            <strong class="max-w-64 truncate" [attr.title]="project.name">{{ project.name }}</strong>
+            <a [routerLink]="projectHomeUrl()" class="min-w-0 text-white! no-underline!">
+                <strong class="block max-w-64 truncate" [attr.title]="project.name">{{ project.name }}</strong>
+            </a>
         </div>
     }
 

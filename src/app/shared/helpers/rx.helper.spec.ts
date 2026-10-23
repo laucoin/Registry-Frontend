@@ -2,24 +2,22 @@ import { signal, WritableSignal } from '@angular/core'
 import { EMPTY, Observable, of, Subject, throwError } from 'rxjs'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
 import { UiFacade } from '@core/registry/state/ui.facade'
-import { eager, initialize, notifyOnError, notifyUnavailableOnly, reportError, withLoading } from '@shared/helpers/rx.helper'
+import { eager, initialize, notifyOnError, reportError, withLoading } from '@shared/helpers/rx.helper'
 import { ERROR_500, ERROR_503 } from '@shared/helpers/testing/test-fixtures'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { ErrorModel } from '@shared/models/model/error.model'
 
 describe( 'rx helpers', () => {
-    let setGlobalError: Mock<(error: ErrorModel) => void>
     let notify: Mock<(message: unknown) => void>
     let uiFacade: UiFacade
 
     beforeEach( () => {
-        setGlobalError = vi.fn()
         notify = vi.fn()
-        uiFacade = { setGlobalError, notify } as unknown as UiFacade
+        uiFacade = { notify } as unknown as UiFacade
     } )
 
     describe( 'reportError', () => {
-        it( 'turns a 503 into the global error', () => {
+        it( 'shows a 503 as a sticky error toast like any other error', () => {
             // Arrange
             const error: ErrorModel = ERROR_503
 
@@ -27,8 +25,7 @@ describe( 'rx helpers', () => {
             reportError( uiFacade, error )
 
             // Assert
-            expect( setGlobalError ).toHaveBeenCalledWith( error )
-            expect( notify ).not.toHaveBeenCalled()
+            expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { severity: SeverityEnum.ERROR, sticky: true } ) )
         } )
 
         it( 'falls back on the unknown error title when the failure has none', () => {
@@ -51,7 +48,6 @@ describe( 'rx helpers', () => {
 
             // Assert
             expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { severity: SeverityEnum.ERROR, summary: 'Title', detail: 'Message', sticky: true } ) )
-            expect( setGlobalError ).not.toHaveBeenCalled()
         } )
     } )
 
@@ -79,32 +75,6 @@ describe( 'rx helpers', () => {
             // Assert
             expect( notify ).toHaveBeenCalledTimes( 1 )
             expect( received ).toEqual( [] )
-            expect( completed ).toBe( true )
-        } )
-    } )
-
-    describe( 'notifyUnavailableOnly', () => {
-        it( 'rethrows an error other than 503 for the form to display', () => {
-            // Arrange
-            let received: ErrorModel | undefined
-
-            // Act
-            throwError( (): ErrorModel => ERROR_500 ).pipe( notifyUnavailableOnly( uiFacade ) ).subscribe( { error: (error: ErrorModel): void => { received = error } } )
-
-            // Assert
-            expect( received ).toBe( ERROR_500 )
-            expect( notify ).not.toHaveBeenCalled()
-        } )
-
-        it( 'reports a 503 globally and completes silently', () => {
-            // Arrange
-            let completed: boolean = false
-
-            // Act
-            throwError( (): ErrorModel => ERROR_503 ).pipe( notifyUnavailableOnly( uiFacade ) ).subscribe( { complete: (): void => { completed = true } } )
-
-            // Assert
-            expect( setGlobalError ).toHaveBeenCalledWith( ERROR_503 )
             expect( completed ).toBe( true )
         } )
     } )

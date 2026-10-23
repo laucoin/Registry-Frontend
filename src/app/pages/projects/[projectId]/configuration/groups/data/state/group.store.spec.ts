@@ -10,24 +10,22 @@ import { PageModel } from '@shared/models/model/page.model'
 import { ParticipantModel } from '@shared/models/model/participant.model'
 
 function pageOf<T extends GroupModel | ParticipantModel> (content: T[]): PageModel<T> {
-    return { pageNumber: 0, pageSize: 10, totalElements: content.length, totalPages: 1, content: content, lastRefresh: new Date() }
+    return { page: 0, size: 10, totalElements: content.length, totalPages: 1, hasNext: false, content: content, lastRefresh: new Date() }
 }
 
 describe( 'GroupStore', () => {
     let store: InstanceType<typeof GroupStore>
     let findGroups: Mock<GroupApi['findGroups']>
     let findGroupMembersByGroupId: Mock<GroupApi['findGroupMembersByGroupId']>
-    let setGlobalError: Mock<(error: ErrorModel) => void>
 
     beforeEach( () => {
         findGroups = vi.fn()
         findGroupMembersByGroupId = vi.fn()
-        setGlobalError = vi.fn()
         TestBed.configureTestingModule( {
             providers: [
                 GroupStore,
                 { provide: GroupApi, useValue: { findGroups, findGroupMembersByGroupId } },
-                { provide: ErrorReporter, useValue: { setGlobalError, notify: vi.fn() } },
+                { provide: ErrorReporter, useValue: { notify: vi.fn() } },
             ],
         } )
         store = TestBed.inject( GroupStore )
@@ -36,12 +34,12 @@ describe( 'GroupStore', () => {
     it( 'appends the next batch to the groups already shown', () => {
         // Arrange
         findGroups
-            .mockReturnValueOnce( of( { ...pageOf<GroupModel>( [ { id: 'a1' } as GroupModel ] ), pageSize: 1, totalPages: 2 } ) )
-            .mockReturnValueOnce( of( { ...pageOf<GroupModel>( [ { id: 'a2' } as GroupModel ] ), pageNumber: 1, pageSize: 1, totalPages: 2 } ) )
-        store.fetchGroupsPage( { projectId: 'p1', pageNumber: 0, pageSize: 1 } )
+            .mockReturnValueOnce( of( { ...pageOf<GroupModel>( [ { id: 'a1' } as GroupModel ] ), size: 1, totalPages: 2 } ) )
+            .mockReturnValueOnce( of( { ...pageOf<GroupModel>( [ { id: 'a2' } as GroupModel ] ), page: 1, size: 1, totalPages: 2 } ) )
+        store.fetchGroupsPage( { projectId: 'p1', page: 0, size: 1 } )
 
         // Act
-        store.fetchGroupsPage( { projectId: 'p1', pageNumber: 1, pageSize: 1 } )
+        store.fetchGroupsPage( { projectId: 'p1', page: 1, size: 1 } )
 
         // Assert
         expect( store.groups.element()?.content.map( (element: GroupModel): string => element.id ) ).toEqual( [ 'a1', 'a2' ] )
@@ -53,7 +51,7 @@ describe( 'GroupStore', () => {
         findGroups.mockReturnValue( of( page ) )
 
         // Act
-        store.fetchGroupsPage( { projectId: 'p1', pageNumber: 0, pageSize: 10 } )
+        store.fetchGroupsPage( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
         expect( store.groups.element() ).toEqual( page )
@@ -66,7 +64,7 @@ describe( 'GroupStore', () => {
         findGroups.mockReturnValue( throwError( (): ErrorModel => ({ status: 500, title: 'Title', message: 'Message' }) as ErrorModel ) )
 
         // Act
-        store.fetchGroupsPage( { projectId: 'p1', pageNumber: 0, pageSize: 10 } )
+        store.fetchGroupsPage( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
         expect( store.groups.error()?.summary ).toBe( 'Title' )
@@ -74,17 +72,16 @@ describe( 'GroupStore', () => {
         expect( store.groups.loading() ).toBe( false )
     } )
 
-    it( 'reports a 503 globally and leaves the groups block untouched', () => {
+    it( 'keeps a 503 failure in its block', () => {
         // Arrange
         const error: ErrorModel = { status: 503, title: 'Down', message: 'Down' } as ErrorModel
         findGroups.mockReturnValue( throwError( (): ErrorModel => error ) )
 
         // Act
-        store.fetchGroupsPage( { projectId: 'p1', pageNumber: 0, pageSize: 10 } )
+        store.fetchGroupsPage( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
-        expect( setGlobalError ).toHaveBeenCalledWith( error )
-        expect( store.groups.error() ).toBeUndefined()
+        expect( store.groups.error() ).toBeDefined()
     } )
 
     it( 'keeps fetching after a failure', () => {
@@ -92,10 +89,10 @@ describe( 'GroupStore', () => {
         const page: PageModel<GroupModel> = pageOf<GroupModel>( [] )
         findGroups.mockReturnValueOnce( throwError( (): ErrorModel => ({ status: 500 }) as ErrorModel ) )
         findGroups.mockReturnValueOnce( of( page ) )
-        store.fetchGroupsPage( { projectId: 'p1', pageNumber: 0, pageSize: 10 } )
+        store.fetchGroupsPage( { projectId: 'p1', page: 0, size: 10 } )
 
         // Act
-        store.fetchGroupsPage( { projectId: 'p1', pageNumber: 0, pageSize: 10 } )
+        store.fetchGroupsPage( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
         expect( store.groups.element() ).toEqual( page )
@@ -104,11 +101,11 @@ describe( 'GroupStore', () => {
     it( 'resets the members block when another group is requested', () => {
         // Arrange
         findGroupMembersByGroupId.mockReturnValue( of( pageOf<ParticipantModel>( [ { id: 'm1' } as ParticipantModel ] ) ) )
-        store.fetchGroupMembersPage( { projectId: 'p1', id: 'a', pageNumber: 0, pageSize: 10 } )
+        store.fetchGroupMembersPage( { projectId: 'p1', id: 'a', page: 0, size: 10 } )
         findGroupMembersByGroupId.mockReturnValue( throwError( (): ErrorModel => ({ status: 500 }) as ErrorModel ) )
 
         // Act
-        store.fetchGroupMembersPage( { projectId: 'p1', id: 'b', pageNumber: 0, pageSize: 10 } )
+        store.fetchGroupMembersPage( { projectId: 'p1', id: 'b', page: 0, size: 10 } )
 
         // Assert
         expect( store.members.groupId() ).toBe( 'b' )
@@ -117,7 +114,7 @@ describe( 'GroupStore', () => {
 
     it( 'replaces the groups search parameters', () => {
         // Arrange
-        const params: ReturnType<typeof store.groups.params> = { ...store.groups.params(), textSearched: 'scouts', resetSearch: true }
+        const params: ReturnType<typeof store.groups.params> = { ...store.groups.params(), q: 'scouts', resetSearch: true }
 
         // Act
         store.updateGroupsPageSearchParams( params )

@@ -4,35 +4,35 @@ import { toUsersListSearchModel, toUsersListSearchParams } from '@pages/users/us
 describe('users list search mapping', () => {
     it('turns absent parameters into empty form values', () => {
         // Arrange
-        const params: Parameters<typeof toUsersListSearchModel>[0] = { textSearched: undefined, visibilitySearched: undefined }
+        const params: Parameters<typeof toUsersListSearchModel>[0] = { q: undefined, isVisible: undefined }
 
         // Act
         const model: ReturnType<typeof toUsersListSearchModel> = toUsersListSearchModel(params)
 
         // Assert
-        expect(model).toEqual({ textSearched: '', visibilitySearched: '' })
+        expect(model).toEqual({ q: '', isVisible: '' })
     })
 
     it('turns the visibility into the value of its select option and back', () => {
         // Arrange
-        const blocked: Parameters<typeof toUsersListSearchModel>[0] = { textSearched: 'ada', visibilitySearched: false }
+        const blocked: Parameters<typeof toUsersListSearchModel>[0] = { q: 'ada', isVisible: false }
 
         // Act
         const model: ReturnType<typeof toUsersListSearchModel> = toUsersListSearchModel(blocked)
 
         // Assert
-        expect(model.visibilitySearched).toBe('false')
+        expect(model.isVisible).toBe('false')
         expect(toUsersListSearchParams(model)).toEqual(blocked)
     })
 
     it('turns empty form values into absent parameters', () => {
         // Arrange
-        const model: ReturnType<typeof toUsersListSearchModel> = { textSearched: '', visibilitySearched: '' }
+        const model: ReturnType<typeof toUsersListSearchModel> = { q: '', isVisible: '' }
 
         // Act
         const params: ReturnType<typeof toUsersListSearchParams> = toUsersListSearchParams(model)
 
         // Assert
-        expect(params).toEqual({ textSearched: undefined, visibilitySearched: undefined })
+        expect(params).toEqual({ q: undefined, isVisible: undefined })
     })
 })

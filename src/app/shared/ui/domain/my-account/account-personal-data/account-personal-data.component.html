@@ -1,6 +1,6 @@
 <sgdf-table appearance="soft">
     <sgdf-table-row>
-        <sgdf-table-cell header>
+        <sgdf-table-cell header class="flex items-center gap-1">
             <sgdf-icon name="shield-halved" library="solid"/>
             <h2>{{ 'myAccount.personalData.title' | transloco }}</h2>
         </sgdf-table-cell>
@@ -17,30 +17,64 @@
                     </a>
                 </sgdf-callout>
 
-                <sgdf-callout variant="info" without-icon>
+                <sgdf-callout class="h-full [&::part(base)]:h-full [&::part(content)]:h-full [&::part(message)]:h-full" variant="info" without-icon>
                     <span slot="title" class="inline-flex flex-wrap items-center gap-2">
                         {{ 'myAccount.personalData.extract.title' | transloco }}
-                        <sgdf-tag variant="neutral">{{ 'myAccount.personalData.comingSoon' | transloco }}</sgdf-tag>
                     </span>
-                    <p class="mt-0 mb-3 font-normal">{{ 'myAccount.personalData.extract.description' | transloco }}</p>
-                    <sgdf-button variant="neutral" appearance="outlined" disabled>
-                        <sgdf-icon slot="prefix" name="download" library="solid"/>
-                        {{ 'myAccount.personalData.extract.action' | transloco }}
-                    </sgdf-button>
+                    <div class="flex h-full flex-col">
+                        <p class="mt-0 mb-3 font-normal">{{ 'myAccount.personalData.extract.description' | transloco }}</p>
+                        <sgdf-button class="mt-auto self-start" variant="neutral" appearance="outlined" (click)="exportData()">
+                            <sgdf-icon slot="prefix" name="download" library="solid"/>
+                            {{ 'myAccount.personalData.extract.action' | transloco }}
+                        </sgdf-button>
+                    </div>
                 </sgdf-callout>
 
-                <sgdf-callout variant="info" without-icon>
+                <sgdf-callout class="h-full [&::part(base)]:h-full [&::part(content)]:h-full [&::part(message)]:h-full" variant="info" without-icon>
                     <span slot="title" class="inline-flex flex-wrap items-center gap-2">
                         {{ 'myAccount.personalData.delete.title' | transloco }}
-                        <sgdf-tag variant="neutral">{{ 'myAccount.personalData.comingSoon' | transloco }}</sgdf-tag>
                     </span>
-                    <p class="mt-0 mb-3 font-normal">{{ 'myAccount.personalData.delete.description' | transloco }}</p>
-                    <sgdf-button variant="danger" appearance="solid" disabled>
-                        <sgdf-icon slot="prefix" name="trash" library="solid"/>
-                        {{ 'myAccount.personalData.delete.action' | transloco }}
-                    </sgdf-button>
+                    <div class="flex h-full flex-col">
+                        <p class="mt-0 mb-3 font-normal">{{ 'myAccount.personalData.delete.description' | transloco }}</p>
+                        <p class="mt-0 mb-3 text-sm font-normal">{{ 'myAccount.personalData.delete.adminNote' | transloco }}</p>
+                        <sgdf-button class="mt-auto self-start" variant="danger" appearance="solid" (click)="deletionConfirmationOpen.set(true)">
+                            <sgdf-icon slot="prefix" name="trash" library="solid"/>
+                            {{ 'myAccount.personalData.delete.action' | transloco }}
+                        </sgdf-button>
+                    </div>
                 </sgdf-callout>
             </div>
         </sgdf-table-cell>
     </sgdf-table-row>
 </sgdf-table>
+
+<sgdf-dialog light-dismiss
+             [open]="deletionConfirmationOpen()"
+             [title]="'myAccount.personalData.delete.confirmation.title' | transloco"
+             (sgdf-hide)="closeDeletionConfirmation($event)">
+    @let phrase = 'myAccount.personalData.delete.confirmation.phrase' | transloco;
+    <!-- The dialog redefines --spacing, which Tailwind's scale is built on: fixed values keep the gaps readable -->
+    <div class="flex flex-col items-start gap-[0.75rem] text-left">
+        <p class="m-0">{{ 'myAccount.personalData.delete.confirmation.intro' | transloco }}</p>
+        <p class="m-0 font-semibold">{{ 'myAccount.personalData.delete.confirmation.listIntro' | transloco }}</p>
+        <ul class="m-0 list-disc pl-[1.5rem]">
+            <li>{{ 'myAccount.personalData.delete.confirmation.items.profile' | transloco }}</li>
+            <li>{{ 'myAccount.personalData.delete.confirmation.items.access' | transloco }}</li>
+        </ul>
+        <p class="m-0 font-semibold">{{ 'myAccount.personalData.delete.confirmation.irreversible' | transloco }}</p>
+        <p class="m-0">{{ 'myAccount.personalData.delete.confirmation.scope' | transloco: { organization: organization } }}</p>
+        <p class="m-0">{{ 'myAccount.personalData.delete.confirmation.reconnect' | transloco }}</p>
+        <sgdf-input class="w-full"
+                    [label]="'myAccount.personalData.delete.confirmation.typeToConfirm' | transloco: { phrase: phrase }"
+                    [value]="deletionConfirmationText()"
+                    (input)="onDeletionConfirmationInput($event)"/>
+    </div>
+    <sgdf-button slot="footer" variant="neutral" appearance="outlined" (click)="deletionConfirmationOpen.set(false)">
+        {{ 'myAccount.personalData.delete.confirmation.cancel' | transloco }}
+    </sgdf-button>
+    <sgdf-button slot="footer" variant="danger" appearance="solid"
+                 [disabled]="!deletionPhraseTyped(phrase)" (click)="deleteAccount(phrase)">
+        <sgdf-icon slot="prefix" name="trash" library="solid"/>
+        {{ 'myAccount.personalData.delete.confirmation.accept' | transloco }}
+    </sgdf-button>
+</sgdf-dialog>

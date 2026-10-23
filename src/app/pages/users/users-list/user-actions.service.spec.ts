@@ -28,7 +28,7 @@ describe('UserActions', () => {
         RegistryConfig.config = { enabledActions: Object.values(ElementActionEnum) } as never
         authorities = signal(['REGISTRY_USER_U', 'REGISTRY_USER_D'])
         currentUserId = signal('u1')
-        facade = { bockUser: vi.fn(), unblockUser: vi.fn(), impersonateUser: vi.fn(), deleteUser: vi.fn() }
+        facade = { bockUser: vi.fn(), unblockUser: vi.fn(), deleteUser: vi.fn() }
         confirm = vi.fn()
         navigateByUrl = vi.fn(() => Promise.resolve(true))
         TestBed.configureTestingModule({
@@ -56,7 +56,7 @@ describe('UserActions', () => {
         const ids: string[] = actions.actionsFor(user).map((action: ElementActionModel): string => action.id)
 
         // Assert
-        expect(ids).toEqual(['update-role', 'disable', 'impersonate', 'delete'])
+        expect(ids).toEqual(['update-role', 'disable', 'delete'])
     })
 
     it('offers unblock instead of block for a blocked user', () => {
@@ -67,7 +67,7 @@ describe('UserActions', () => {
         const ids: string[] = actions.actionsFor(user).map((action: ElementActionModel): string => action.id)
 
         // Assert
-        expect(ids).toEqual(['update-role', 'enable', 'impersonate', 'delete'])
+        expect(ids).toEqual(['update-role', 'enable', 'delete'])
     })
 
     it('offers nothing on the account of the signed-in user', () => {
@@ -97,10 +97,10 @@ describe('UserActions', () => {
         authorities.set(['REGISTRY_USER_U'])
 
         // Act
-        const flags: boolean[] = ['update-role', 'disable', 'impersonate', 'delete'].map((id: string): boolean => find(ACTIVE, id)!.disabled)
+        const flags: boolean[] = ['update-role', 'disable', 'delete'].map((id: string): boolean => find(ACTIVE, id)!.disabled)
 
         // Assert
-        expect(flags).toEqual([false, false, true, true])
+        expect(flags).toEqual([false, false, true])
     })
 
     it('opens the role edition route of the user', () => {
@@ -117,7 +117,6 @@ describe('UserActions', () => {
     it.each([
         ['disable', 'bockUser', SeverityEnum.WARNING, ACTIVE, 'u2'],
         ['enable', 'unblockUser', SeverityEnum.INFO, BLOCKED, 'u2'],
-        ['impersonate', 'impersonateUser', SeverityEnum.DANGER, ACTIVE, ACTIVE],
         ['delete', 'deleteUser', SeverityEnum.DANGER, ACTIVE, ACTIVE],
     ])('asks for a confirmation before running %s, then calls the facade', (id: string, call: string, severity: SeverityEnum, user: UserModel, argument: unknown) => {
         // Arrange

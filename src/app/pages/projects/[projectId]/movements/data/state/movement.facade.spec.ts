@@ -54,7 +54,7 @@ describe( 'MovementFacade', () => {
                 { provide: DateFormatPipe, useValue: { transform: (): string => '01/01' } },
                 { provide: PluralTranslationPipe, useValue: { transform: (key: string, count: unknown[]): string => `${key}:${count?.length}` } },
                 { provide: SessionFacade, useValue: { currentProjectId: signal( 'p1' ) } },
-                { provide: UiFacade, useValue: { notify, setGlobalError: vi.fn() } },
+                { provide: UiFacade, useValue: { notify } },
                 { provide: TranslocoService, useValue: { translate: (key: string): string => `t:${key}`, langChanges$: new Subject<string>().asObservable() } },
             ],
         } )
@@ -66,10 +66,10 @@ describe( 'MovementFacade', () => {
 
     it( 'fetches the requested page for the selected project', () => {
         // Arrange
-        const pageNumber: number = 3
+        const page: number = 3
 
         // Act
-        facade.fetchMovementsPage( pageNumber, 10 )
+        facade.fetchMovementsPage( page, 10 )
 
         // Assert
         expect( findMovements ).toHaveBeenCalledWith( 'p1', 3, 10, expect.anything() )
@@ -198,6 +198,6 @@ describe( 'MovementFacade', () => {
         facade.reloadMovementsPage()
 
         // Assert
-        expect( findMovements ).toHaveBeenCalledWith( 'p1', 0, facade.movementsPage()!.pageSize * 2, expect.anything() )
+        expect( findMovements ).toHaveBeenCalledWith( 'p1', 0, facade.movementsPage()!.size * 2, expect.anything() )
     } )
 } )

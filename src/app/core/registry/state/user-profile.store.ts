@@ -9,14 +9,14 @@ import { ProfileStatusEnum } from '@shared/models/enumeration/profile-status.enu
 import { CumulativePageHelper, CumulativePageRequest } from '@shared/helpers/store/cumulative-page.helper'
 import { ElementRequestInformationModel } from '@shared/models/model/element-request-information.model'
 import { PageRequestInformationModel } from '@shared/models/model/page-request-information.model'
-import { ProjectProfileModel } from '@shared/models/model/project-profile.model'
+import { UserInvitationModel } from '@shared/models/model/user-invitation.model'
 
-type ProfilesPage = PageRequestInformationModel<UserProjectProfilePageParamsModel, ProjectProfileModel>
+type ProfilesPage = PageRequestInformationModel<UserProjectProfilePageParamsModel, UserInvitationModel>
 
 interface UserProfileState {
     profiles: ProfilesPage
     invitations: ProfilesPage
-    profile: ElementRequestInformationModel<ProjectProfileModel>
+    profile: ElementRequestInformationModel<UserInvitationModel>
 }
 
 /**
@@ -24,18 +24,18 @@ interface UserProfileState {
  * Scope: Fills the other criteria with their empty values.
  * Limits: Does not read the store.
  */
-const pageParams = (statusSearched: ProfileStatusEnum): UserProjectProfilePageParamsModel => ({
+const pageParams = (status: ProfileStatusEnum): UserProjectProfilePageParamsModel => ({
     resetSearch: false,
-    availabilitySearched: undefined,
-    statusSearched: statusSearched,
-    textSearched: undefined,
-    dateTimeSearched: undefined,
+    isAvailable: undefined,
+    status: status,
+    q: undefined,
+    at: undefined,
 })
 
 const defaultUserProfileState: UserProfileState = {
-    profiles: PageStateHelper.initial<UserProjectProfilePageParamsModel, ProjectProfileModel>( pageParams( ProfileStatusEnum.ACCEPTED ) ),
-    invitations: PageStateHelper.initial<UserProjectProfilePageParamsModel, ProjectProfileModel>( pageParams( ProfileStatusEnum.INVITED ) ),
-    profile: { element: undefined, loading: false },
+    profiles: PageStateHelper.initial<UserProjectProfilePageParamsModel, UserInvitationModel>( pageParams( ProfileStatusEnum.ACCEPTED ) ),
+    invitations: PageStateHelper.initial<UserProjectProfilePageParamsModel, UserInvitationModel>( pageParams( ProfileStatusEnum.INVITED ) ),
+    profile: { element: undefined, loading: false, error: undefined },
 }
 
 /**
@@ -48,9 +48,9 @@ export const UserProfileStore = signalStore(
     withState<UserProfileState>( defaultUserProfileState ),
     withMethods( (store, api = inject( UserProjectProfileApi ), errors = inject( ErrorReporter )) => ({
         fetchProfilesPage: pageFetcher( store, 'profiles', (request: CumulativePageRequest, params: UserProjectProfilePageParamsModel) =>
-            api.findUserProjectProfiles( request.pageNumber, request.pageSize, params ), errors, { merge: CumulativePageHelper.merge } ),
+            api.findUserProjectProfiles( request.page, request.size, params ), errors, { merge: CumulativePageHelper.merge } ),
         fetchInvitationsPage: pageFetcher( store, 'invitations', (request: CumulativePageRequest, params: UserProjectProfilePageParamsModel) =>
-            api.findUserProjectProfiles( request.pageNumber, request.pageSize, params ), errors, { merge: CumulativePageHelper.merge } ),
+            api.findUserProjectProfiles( request.page, request.size, params ), errors, { merge: CumulativePageHelper.merge } ),
         updateProfilesPageSearchParams: paramsMerger( store, 'profiles' ),
         updateInvitationsPageSearchParams: paramsMerger( store, 'invitations' ),
         startProfileLoader: loaderToggle( store, 'profile', true ),

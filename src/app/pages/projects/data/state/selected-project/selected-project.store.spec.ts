@@ -10,7 +10,6 @@ import { SelectedProjectStore } from '@pages/projects/data/state/selected-projec
 import { ERROR_500, ERROR_503, failing, pageOf } from '@shared/helpers/testing/test-fixtures'
 import { AlertStatusEnum } from '@shared/models/enumeration/alert-status.enum'
 import { AlertModel } from '@shared/models/model/alert.model'
-import { ErrorModel } from '@shared/models/model/error.model'
 import { MovementContentModel } from '@shared/models/model/movement-content.model'
 import { MovementModel } from '@shared/models/model/movement.model'
 import { ParticipantModel } from '@shared/models/model/participant.model'
@@ -23,7 +22,6 @@ describe( 'SelectedProjectStore', () => {
     let findVehiclesStatus: Mock<MovementApi['findVehiclesStatus']>
     let findAlerts: Mock<AlertApi['findAlerts']>
     let findParticipantsBirthdays: Mock<ParticipantApi['findParticipantsBirthdays']>
-    let setGlobalError: Mock<(error: ErrorModel) => void>
     let notify: Mock<(message: unknown) => void>
 
     beforeEach( () => {
@@ -33,7 +31,6 @@ describe( 'SelectedProjectStore', () => {
         findVehiclesStatus = vi.fn()
         findAlerts = vi.fn()
         findParticipantsBirthdays = vi.fn()
-        setGlobalError = vi.fn()
         notify = vi.fn()
         TestBed.configureTestingModule( {
             providers: [
@@ -41,7 +38,7 @@ describe( 'SelectedProjectStore', () => {
                 { provide: MovementApi, useValue: { findMovements, findMovementsContents, findParticipantsStatus, findVehiclesStatus } },
                 { provide: AlertApi, useValue: { findAlerts } },
                 { provide: ParticipantApi, useValue: { findParticipantsBirthdays } },
-                { provide: ErrorReporter, useValue: { setGlobalError, notify } },
+                { provide: ErrorReporter, useValue: { notify } },
             ],
         } )
         store = TestBed.inject( SelectedProjectStore )
@@ -55,8 +52,8 @@ describe( 'SelectedProjectStore', () => {
         const params: ReturnType<typeof store.alerts.params> = store.alerts.params()
 
         // Assert
-        expect( params.statusSearched ).toBe( expectedStatus )
-        expect( params.visibilitySearched ).toBe( true )
+        expect( params.status ).toBe( expectedStatus )
+        expect( params.isVisible ).toBe( true )
     } )
 
     it( 'stores the participants status and ends its loading state', () => {
@@ -85,7 +82,7 @@ describe( 'SelectedProjectStore', () => {
         expect( store.status.vehicles.loading() ).toBe( false )
     } )
 
-    it( 'reports a 503 on a status fetch as the global error', () => {
+    it( 'keeps a 503 on a status fetch in the status block', () => {
         // Arrange
         findParticipantsStatus.mockReturnValue( failing( ERROR_503 ) )
 
@@ -93,8 +90,7 @@ describe( 'SelectedProjectStore', () => {
         store.fetchParticipantsStatus( 'p1' )
 
         // Assert
-        expect( setGlobalError ).toHaveBeenCalledWith( ERROR_503 )
-        expect( store.status.participants.error() ).toBeUndefined()
+        expect( store.status.participants.error() ).toBeDefined()
     } )
 
     it( 'stores the birthdays of the participants', () => {
@@ -108,7 +104,7 @@ describe( 'SelectedProjectStore', () => {
         expect( store.birthdays() ).toHaveLength( 1 )
     } )
 
-    it( 'notifies a failed birthdays fetch and keeps the previous ones', () => {
+    it( 'keeps a failed birthdays fetch in the section error and keeps the previous ones', () => {
         // Arrange
         findParticipantsBirthdays.mockReturnValueOnce( of( [ { id: 'pa1' } as ParticipantModel ] ) )
         findParticipantsBirthdays.mockReturnValueOnce( failing( ERROR_500 ) )
@@ -118,7 +114,7 @@ describe( 'SelectedProjectStore', () => {
         store.fetchParticipantsBirthdays( 'p1' )
 
         // Assert
-        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'Title' } ) )
+        expect( store.sectionErrors()[ 'birthdays' ]?.summary ).toBe( 'Title' )
         expect( store.birthdays() ).toHaveLength( 1 )
     } )
 
@@ -128,13 +124,13 @@ describe( 'SelectedProjectStore', () => {
         findMovementsContents.mockReturnValue( of( [ { first: 'm1', second: [ { id: 'c1' } as unknown as MovementContentModel ] } ] ) )
 
         // Act
-        store.fetchCurrentMovementsPageWithoutActivity( { projectId: 'p1', pageNumber: 0, pageSize: 10 } )
+        store.fetchCurrentMovementsPageWithoutActivity( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
-        expect( findMovements ).toHaveBeenCalledWith( 'p1', 0, 10, expect.objectContaining( { currentMovements: true, linkedToActivity: false } ) )
+        expect( findMovements ).toHaveBeenCalledWith( 'p1', 0, 10, expect.objectContaining( { isCurrent: true, hasActivity: false } ) )
         expect( findMovementsContents ).toHaveBeenCalledWith( 'p1', [ 'm1' ], true )
-        expect( store.currentMovements.withoutActivity.element()?.content[ 0 ].content ).toHaveLength( 1 )
-        expect( store.currentMovements.withActivity.element() ).toBeUndefined()
+        expect( store.isCurrent.withoutActivity.element()?.content[ 0 ].content ).toHaveLength( 1 )
+        expect( store.isCurrent.withActivity.element() ).toBeUndefined()
     } )
 
     it( 'asks for the movements linked to an activity for the with-activity block', () => {
@@ -142,10 +138,10 @@ describe( 'SelectedProjectStore', () => {
         findMovements.mockReturnValue( of( pageOf<MovementModel>( [] ) ) )
 
         // Act
-        store.fetchCurrentMovementsPageWithActivity( { projectId: 'p1', pageNumber: 0, pageSize: 10 } )
+        store.fetchCurrentMovementsPageWithActivity( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
-        expect( findMovements ).toHaveBeenCalledWith( 'p1', 0, 10, expect.objectContaining( { linkedToActivity: true } ) )
+        expect( findMovements ).toHaveBeenCalledWith( 'p1', 0, 10, expect.objectContaining( { hasActivity: true } ) )
         expect( findMovementsContents ).not.toHaveBeenCalled()
     } )
 
@@ -154,25 +150,25 @@ describe( 'SelectedProjectStore', () => {
         findMovements.mockReturnValue( failing( ERROR_500 ) )
 
         // Act
-        store.fetchCurrentMovementsPageWithActivity( { projectId: 'p1', pageNumber: 0, pageSize: 10 } )
+        store.fetchCurrentMovementsPageWithActivity( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
-        expect( store.currentMovements.withActivity.error()?.summary ).toBe( 'Title' )
-        expect( store.currentMovements.withoutActivity.error() ).toBeUndefined()
-        expect( store.currentMovements.withActivity.loading() ).toBe( false )
+        expect( store.isCurrent.withActivity.error()?.summary ).toBe( 'Title' )
+        expect( store.isCurrent.withoutActivity.error() ).toBeUndefined()
+        expect( store.isCurrent.withActivity.loading() ).toBe( false )
     } )
 
-    it( 'notifies a failed contents fetch and leaves the movements page as it was', () => {
+    it( 'keeps a failed contents fetch in the section error and leaves the movements page as it was', () => {
         // Arrange
         findMovements.mockReturnValue( of( pageOf<MovementModel>( [ { id: 'm1' } as MovementModel ] ) ) )
         findMovementsContents.mockReturnValue( failing( ERROR_500 ) )
 
         // Act
-        store.fetchCurrentMovementsPageWithoutActivity( { projectId: 'p1', pageNumber: 0, pageSize: 10 } )
+        store.fetchCurrentMovementsPageWithoutActivity( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
-        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'Title' } ) )
-        expect( store.currentMovements.withoutActivity.element()?.content[ 0 ].id ).toBe( 'm1' )
+        expect( store.sectionErrors()[ 'contents.withoutActivity' ]?.summary ).toBe( 'Title' )
+        expect( store.isCurrent.withoutActivity.element()?.content[ 0 ].id ).toBe( 'm1' )
     } )
 
     it( 'stores the current alerts page', () => {
@@ -180,24 +176,24 @@ describe( 'SelectedProjectStore', () => {
         findAlerts.mockReturnValue( of( pageOf<AlertModel>( [ { id: 'al1' } as AlertModel ] ) ) )
 
         // Act
-        store.fetchCurrentAlertsPage( { projectId: 'p1', pageNumber: 0, pageSize: 10 } )
+        store.fetchCurrentAlertsPage( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
         expect( store.alerts.element()?.content ).toHaveLength( 1 )
     } )
 
-    it( 'keeps a failed alerts fetch in the alerts block and reports a 503 globally', () => {
+    it( 'keeps a failed alerts fetch in the alerts block, a 503 included', () => {
         // Arrange
         findAlerts.mockReturnValueOnce( failing( ERROR_500 ) )
         findAlerts.mockReturnValueOnce( failing( ERROR_503 ) )
 
         // Act
-        store.fetchCurrentAlertsPage( { projectId: 'p1', pageNumber: 0, pageSize: 10 } )
+        store.fetchCurrentAlertsPage( { projectId: 'p1', page: 0, size: 10 } )
         const keptError: string | undefined = store.alerts.error()?.summary
-        store.fetchCurrentAlertsPage( { projectId: 'p1', pageNumber: 0, pageSize: 10 } )
+        store.fetchCurrentAlertsPage( { projectId: 'p1', page: 0, size: 10 } )
 
         // Assert
         expect( keptError ).toBe( 'Title' )
-        expect( setGlobalError ).toHaveBeenCalledWith( ERROR_503 )
+        expect( store.alerts.error() ).toBeDefined()
     } )
 } )

@@ -15,7 +15,7 @@ import { PreferencesMapper } from '@shared/mappers/preferences.mapper'
 })
 export class PreferencesApi extends GenericApi {
     public constructor() {
-        super('/api/v1/users/preferences')
+        super('/api/v2/users/preferences')
     }
 
     public updateTheme(theme: string): Observable<PreferencesModel> {

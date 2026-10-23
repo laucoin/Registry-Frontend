@@ -15,12 +15,14 @@ import { ProfileStatusEnum } from '@shared/models/enumeration/profile-status.enu
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { ElementActionModel } from '@shared/models/model/element-action.model'
 import { ProjectProfileModel } from '@shared/models/model/project-profile.model'
+import { UserInvitationModel } from '@shared/models/model/user-invitation.model'
 
 const OTHER: ProjectProfileModel = {
-    id: 'pp1', visible: true, user: { id: 'u2' }, project: { id: 'p1', name: 'Camp' }, status: { value: ProfileStatusEnum.ACCEPTED },
+    id: 'pp1', visible: true, user: { id: 'u2' }, projectId: 'p1', status: { value: ProfileStatusEnum.ACCEPTED },
 } as ProjectProfileModel
 const OWN: ProjectProfileModel = { ...OTHER, user: { id: 'u1' } } as ProjectProfileModel
 const BLOCKED: ProjectProfileModel = { ...OTHER, visible: false }
+const INVITATION: UserInvitationModel = { id: 'pp2', visible: true, project: { id: 'p2', name: 'Other camp' }, status: { value: ProfileStatusEnum.INVITED } } as UserInvitationModel
 
 describe('ProjectProfileActions', () => {
     let actions: ProjectProfileActions
@@ -156,5 +158,26 @@ describe('ProjectProfileActions', () => {
         expect(beforeAccept).toBe(0)
         expect(confirm.mock.calls[0][0].acceptSeverity).toBe(severity)
         expect(userProfileFacade.manageProjectInvitationAcceptance).toHaveBeenCalledWith('pp1', accepted)
+    })
+    it('treats a profile listed from the user side as an own profile', () => {
+        // Arrange
+        const profile: UserInvitationModel = INVITATION
+
+        // Act
+        const shown: string[] = actions.actionsFor(profile).map((action: ElementActionModel): string => action.id)
+
+        // Assert
+        expect(shown).toContain('select')
+        expect(shown).not.toContain('edit')
+        expect(shown).not.toContain('disable')
+        expect(shown).toContain('delete')
+    })
+
+    it('opens the project of a profile listed from the user side', () => {
+        // Act
+        actions.actionsFor(INVITATION).find((action: ElementActionModel): boolean => action.id === 'select')!.run!()
+
+        // Assert
+        expect(navigateByUrl).toHaveBeenCalledWith(expect.stringContaining('p2'))
     })
 })

@@ -1,9 +1,11 @@
+import { SectionErrorsHelper } from '@shared/helpers/store/section-errors.helper'
 import { computed, Injectable, Signal, inject } from '@angular/core'
 import { Observable, tap } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
 import { GenericProjectElementFacade } from '@shared/helpers/facade/generic-project-element.facade'
 import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { NotificationModel } from '@shared/models/model/notification.model'
+import { isProjectProfile, ListedProfileModel } from '@shared/models/model/listed-profile.model'
 import { ProjectProfileModel } from '@shared/models/model/project-profile.model'
 import { ProjectProfileStore } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.store'
 import { ProjectProfileDto } from '@pages/projects/[projectId]/configuration/profiles/data/dto/project-profile.dto'
@@ -12,7 +14,7 @@ import { UserModel } from '@shared/models/model/user.model'
 import { DateHelper } from '@shared/helpers/date.helper'
 import { ProfileStatusEnum } from '@shared/models/enumeration/profile-status.enum'
 import { ProjectProfileApi } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.api'
-import { notifyOnError, notifyUnavailableOnly } from '@shared/helpers/rx.helper'
+import { notifyOnError } from '@shared/helpers/rx.helper'
 import { CommandEvent } from '@shared/helpers/facade/command-event.service'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { CreatedProjectProfiles } from '@pages/projects/[projectId]/configuration/profiles/data/dto/created-project-profiles.dto'
@@ -31,17 +33,19 @@ export class ProjectProfileFacade extends GenericProjectElementFacade {
 
     private readonly store: InstanceType<typeof ProjectProfileStore> = inject( ProjectProfileStore )
 
+    public readonly metadataErrors: Signal<Record<string, NotificationModel | undefined>> = SectionErrorsHelper.metadata( this.store.sectionErrors )
+
     public readonly projectProfilesPage: Signal<PageModel<ProjectProfileModel> | undefined> = this.store.projectProfiles.element
     public readonly projectProfilesPageLoading: Signal<boolean> = this.store.projectProfiles.loading
     public readonly projectProfilesPageSilentLoading: Signal<boolean> = this.store.projectProfiles.silentLoading
     public readonly projectProfilesPageError: Signal<NotificationModel | undefined> = this.store.projectProfiles.error
     private readonly projectProfilesPageResetSearch: Signal<boolean> = this.store.projectProfiles.params.resetSearch
-    public readonly projectProfilesPageTextSearchedParam: Signal<string | undefined> = this.store.projectProfiles.params.textSearched
-    public readonly projectProfilesPageDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
-        DateHelper.buildDate( this.store.projectProfiles.params.dateTimeSearched() ),
+    public readonly projectProfilesPageQueryParam: Signal<string | undefined> = this.store.projectProfiles.params.q
+    public readonly projectProfilesPageAtParam: Signal<Date | undefined> = computed( (): Date | undefined =>
+        DateHelper.buildDate( this.store.projectProfiles.params.at() ),
     )
-    public readonly projectProfilesPageAvailabilitySearchedParam: Signal<boolean | undefined> = this.store.projectProfiles.params.availabilitySearched
-    public readonly projectProfilesPageStatusSearchedParam: Signal<string | undefined> = this.store.projectProfiles.params.statusSearched
+    public readonly projectProfilesPageIsAvailableParam: Signal<boolean | undefined> = this.store.projectProfiles.params.isAvailable
+    public readonly projectProfilesPageStatusParam: Signal<string | undefined> = this.store.projectProfiles.params.status
 
     public readonly searchedUsersMetadata: Signal<SelectOptionModel<UserModel>[]> = this.store.metadata.searched
     public readonly projectProfileAssignableRolesMetadata: Signal<SelectOptionModel<string>[]> = this.store.metadata.roles
@@ -54,37 +58,37 @@ export class ProjectProfileFacade extends GenericProjectElementFacade {
     )
 
     public fetchProjectProfilesPage (
-        pageNumber: number | undefined,
-        pageSize: number | undefined,
+        page: number | undefined,
+        size: number | undefined,
     ): void {
-        const index: number | undefined = this.projectProfilesPageResetSearch() ? 0 : pageNumber
-        this.store.fetchProjectProfilesPage( { projectId: this.selectedProjectId(), pageNumber: index, pageSize: pageSize } )
+        const index: number | undefined = this.projectProfilesPageResetSearch() ? 0 : page
+        this.store.fetchProjectProfilesPage( { projectId: this.selectedProjectId(), page: index, size: size } )
     }
 
     public inputPageSearchParameters (
-        textSearched: string | undefined,
-        dateTimeSearched: Date | undefined,
-        statusSearched: ProfileStatusEnum | undefined,
-        availabilitySearched: boolean | undefined,
+        q: string | undefined,
+        at: Date | undefined,
+        status: ProfileStatusEnum | undefined,
+        isAvailable: boolean | undefined,
     ): void {
-        const resetSearch: boolean = this.projectProfilesPageTextSearchedParam() != textSearched
-                                     || this.projectProfilesPageDateTimeSearchedParam() != dateTimeSearched?.toISOString()
-                                     || this.projectProfilesPageStatusSearchedParam() != statusSearched
-                                     || this.projectProfilesPageAvailabilitySearchedParam() != availabilitySearched
+        const resetSearch: boolean = this.projectProfilesPageQueryParam() != q
+                                     || this.projectProfilesPageAtParam()?.toISOString() != at?.toISOString()
+                                     || this.projectProfilesPageStatusParam() != status
+                                     || this.projectProfilesPageIsAvailableParam() != isAvailable
 
         if (resetSearch) {
             this.store.updateProjectProfilesPageSearchParams( {
                 resetSearch: resetSearch,
-                statusSearched: statusSearched,
-                availabilitySearched: availabilitySearched,
-                textSearched: textSearched,
-                dateTimeSearched: dateTimeSearched?.toISOString(),
+                status: status,
+                isAvailable: isAvailable,
+                q: q,
+                at: at?.toISOString(),
             } )
         }
     }
 
-    public searchUsers (textSearched: string | undefined = undefined): void {
-        this.store.searchUsers( { projectId: this.selectedProjectId(), textSearched: textSearched } )
+    public searchUsers (q: string | undefined = undefined): void {
+        this.store.searchUsers( { projectId: this.selectedProjectId(), q: q } )
     }
 
     public fetchAssignableRoles (): void {
@@ -99,7 +103,6 @@ export class ProjectProfileFacade extends GenericProjectElementFacade {
 
     public createProjectProfiles (projectProfiles: ProjectProfilesDto): Observable<CreatedProjectProfiles> {
         return this.api.createProjectProfiles( this.selectedProjectId(), projectProfiles ).pipe(
-            notifyUnavailableOnly( this.uiFacade ),
             tap( (creationStatus: CreatedProjectProfiles): void => {
                 this.notifyCreation( creationStatus )
                 this.refreshPage()
@@ -138,9 +141,8 @@ export class ProjectProfileFacade extends GenericProjectElementFacade {
         )
     }
 
-    public updateProjectProfile (id: string, projectProfile: ProjectProfileDto): Observable<ProjectProfileModel> {
-        return this.api.updateProjectProfileById( this.selectedProjectId(), id, projectProfile ).pipe(
-            notifyUnavailableOnly( this.uiFacade ),
+    public updateProjectProfile (id: string, projectProfile: ProjectProfileDto, ifMatch?: string): Observable<ProjectProfileModel> {
+        return this.api.updateProjectProfileById( this.selectedProjectId(), id, projectProfile, ifMatch ).pipe(
             tap( (updated: ProjectProfileModel): void => this.onCommandSuccess( 'update', updated ) ),
         )
     }
@@ -159,14 +161,14 @@ export class ProjectProfileFacade extends GenericProjectElementFacade {
         )
     }
 
-    public deleteProjectProfile (profile: ProjectProfileModel): Observable<void> {
+    public deleteProjectProfile (profile: ListedProfileModel): Observable<void> {
         return this.api.deleteProjectProfileById( undefined, profile.id ).pipe(
             notifyOnError( this.uiFacade ),
             tap( (): void => this.onCommandSuccess( 'delete', profile ) ),
         )
     }
 
-    private onCommandSuccess (command: CommandEvent, profile: ProjectProfileModel): void {
+    private onCommandSuccess (command: CommandEvent, profile: ListedProfileModel): void {
         this.notifyMessage(
             SeverityEnum.SUCCESS,
             `project-profiles.notifications.${ command === 'update' ? 'edit' : command }.title`,
@@ -175,9 +177,9 @@ export class ProjectProfileFacade extends GenericProjectElementFacade {
             : `project-profiles.notifications.${ command === 'update' ? 'edit' : command }.message`,
             'pi pi-key',
             {
-                firstName: profile?.user?.firstName,
-                lastName: profile?.user?.lastName,
-                name: profile?.project?.name,
+                firstName: isProjectProfile( profile ) ? profile.user?.firstName : undefined,
+                lastName: isProjectProfile( profile ) ? profile.user?.lastName : undefined,
+                name: this.sessionFacade.selectedProject()?.name,
             },
         )
         this.refreshPage()

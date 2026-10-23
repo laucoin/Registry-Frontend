@@ -10,12 +10,11 @@ import { CommunicationApi } from '@pages/projects/[projectId]/movements/communic
 import { CommunicationFacade } from '@pages/projects/[projectId]/movements/communication/data/state/communication.facade'
 import { CommunicationStore } from '@pages/projects/[projectId]/movements/communication/data/state/communication.store'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
-import { ERROR_500, failing, pageOf, provideTestConfig } from '@shared/helpers/testing/test-fixtures'
+import { ERROR_500, failing, provideTestConfig } from '@shared/helpers/testing/test-fixtures'
 import { ErrorModel } from '@shared/models/model/error.model'
 
 describe( 'CommunicationFacade', () => {
     let facade: CommunicationFacade
-    let findCommunications: Mock<CommunicationApi['findCommunications']>
     let createCommunication: Mock<CommunicationApi['createCommunication']>
     let updateCommunicationById: Mock<CommunicationApi['updateCommunicationById']>
     let disableCommunicationById: Mock<CommunicationApi['disableCommunicationById']>
@@ -23,7 +22,6 @@ describe( 'CommunicationFacade', () => {
 
     beforeEach( () => {
         provideTestConfig()
-        findCommunications = vi.fn( () => of( pageOf<CommunicationModel>( [], 2 ) ) )
         createCommunication = vi.fn()
         updateCommunicationById = vi.fn()
         disableCommunicationById = vi.fn()
@@ -32,41 +30,17 @@ describe( 'CommunicationFacade', () => {
             providers: [
                 CommunicationFacade,
                 CommunicationStore,
-                { provide: CommunicationApi, useValue: { findCommunications, createCommunication, updateCommunicationById, disableCommunicationById } },
+                { provide: CommunicationApi, useValue: { createCommunication, updateCommunicationById, disableCommunicationById } },
                 { provide: DateFormatPipe, useValue: { transform: (): string => '01/01' } },
                 { provide: SessionFacade, useValue: { currentProjectId: signal( 'p1' ) } },
-                { provide: UiFacade, useValue: { notify, setGlobalError: vi.fn() } },
+                { provide: UiFacade, useValue: { notify } },
                 { provide: TranslocoService, useValue: { translate: (key: string): string => `t:${key}` } },
             ],
         } )
         facade = TestBed.inject( CommunicationFacade )
-        facade.fetchCommunicationsPage( 2, 10 )
-        findCommunications.mockClear()
     } )
 
-    it( 'fetches the requested page for the selected project', () => {
-        // Arrange
-        const pageNumber: number = 3
-
-        // Act
-        facade.fetchCommunicationsPage( pageNumber, 10 )
-
-        // Assert
-        expect( findCommunications ).toHaveBeenCalledWith( 'p1', 3, 10, expect.anything() )
-    } )
-
-    it( 'restarts from the first page when the search changed', () => {
-        // Arrange
-        facade.inputPageSearchParameters( 'radio', undefined, undefined, undefined )
-
-        // Act
-        facade.fetchCommunicationsPage( 4, 10 )
-
-        // Assert
-        expect( findCommunications ).toHaveBeenCalledWith( 'p1', 0, 10, expect.anything() )
-    } )
-
-    it( 'stays silent on creation but refreshes the page and announces it', () => {
+    it( 'stays silent on creation and announces it', () => {
         // Arrange
         const received: string[] = []
         facade.handleCommunicationFirstPageReload().subscribe( (event: unknown): number => received.push( (event as { command: string }).command ) )
@@ -78,7 +52,6 @@ describe( 'CommunicationFacade', () => {
         // Assert
         expect( notify ).not.toHaveBeenCalled()
         expect( received ).toEqual( [ 'create' ] )
-        expect( findCommunications ).toHaveBeenCalledWith( 'p1', 2, 10, expect.anything() )
     } )
 
     it( 'stays silent on update and announces it for the current page', () => {
@@ -116,6 +89,16 @@ describe( 'CommunicationFacade', () => {
 
         // Assert
         expect( received ).toBe( ERROR_500 )
-        expect( findCommunications ).not.toHaveBeenCalled()
+    } )
+
+    it( 'exposes the failure of the communication fetch', () => {
+        // Arrange
+        Object.assign( TestBed.inject( CommunicationApi ), { findCommunicationById: vi.fn( () => failing( ERROR_500 ) ) } )
+
+        // Act
+        facade.fetchCommunication( 'c1' )
+
+        // Assert
+        expect( facade.communicationError()?.summary ).toBe( 'Title' )
     } )
 } )

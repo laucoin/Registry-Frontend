@@ -1,7 +1,7 @@
 import { PreferencesApi } from '@core/registry/state/preferences.api'
 import { ApiCase, describeApi, expectMapped } from '@shared/helpers/testing/api-test.helper'
 
-const BASE: string = '/api/v1/users/preferences'
+const BASE: string = '/api/v2/users/preferences'
 const PREFERENCES: object = { userId: 'u1', theme: 'DARK', language: 'fr' }
 
 const CASES: ApiCase<PreferencesApi>[] = [

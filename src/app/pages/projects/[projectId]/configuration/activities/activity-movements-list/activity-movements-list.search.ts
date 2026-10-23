@@ -1,17 +1,17 @@
 import { BooleanChoice, fromBooleanChoice, toBooleanChoice } from '@shared/helpers/form/boolean-choice'
 
 interface ActivityMovementsListSearch {
-    typeSearched: string | undefined
-    startDateTimeSearched: Date | undefined
-    endDateTimeSearched: Date | undefined
-    visibilitySearched: boolean | undefined
+    type: string | undefined
+    from: Date | undefined
+    to: Date | undefined
+    isVisible: boolean | undefined
 }
 
 export interface ActivityMovementsListSearchModel {
-    typeSearched: string
-    startDateTimeSearched: Date | null
-    endDateTimeSearched: Date | null
-    visibilitySearched: BooleanChoice
+    type: string
+    from: Date | null
+    to: Date | null
+    isVisible: BooleanChoice
 }
 
 /**
@@ -21,10 +21,10 @@ export interface ActivityMovementsListSearchModel {
  */
 export function toActivityMovementsListSearchModel (params: ActivityMovementsListSearch): ActivityMovementsListSearchModel {
     return {
-        typeSearched: params.typeSearched ?? '',
-        startDateTimeSearched: params.startDateTimeSearched ?? null,
-        endDateTimeSearched: params.endDateTimeSearched ?? null,
-        visibilitySearched: toBooleanChoice( params.visibilitySearched ),
+        type: params.type ?? '',
+        from: params.from ?? null,
+        to: params.to ?? null,
+        isVisible: toBooleanChoice( params.isVisible ),
     }
 }
 
@@ -35,9 +35,9 @@ export function toActivityMovementsListSearchModel (params: ActivityMovementsLis
  */
 export function toActivityMovementsListSearchParams (model: ActivityMovementsListSearchModel): ActivityMovementsListSearch {
     return {
-        typeSearched: model.typeSearched === '' ? undefined : model.typeSearched,
-        startDateTimeSearched: model.startDateTimeSearched ?? undefined,
-        endDateTimeSearched: model.endDateTimeSearched ?? undefined,
-        visibilitySearched: fromBooleanChoice( model.visibilitySearched ),
+        type: model.type === '' ? undefined : model.type,
+        from: model.from ?? undefined,
+        to: model.to ?? undefined,
+        isVisible: fromBooleanChoice( model.isVisible ),
     }
 }
