@@ -1,6 +1,6 @@
 import { Component, inject, input, InputSignal, OnDestroy, signal, WritableSignal} from '@angular/core'
 import {ParticipantFacade} from '@pages/projects/[projectId]/configuration/participants/data/state/participant.facade'
-import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms'
+import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidatorFn, Validators} from '@angular/forms'
 import {RegistryValidators} from '@shared/helpers/registry.validator'
 import {ParticipantDto} from '@pages/projects/[projectId]/configuration/participants/data/dto/participant.dto'
 import {Button} from 'primeng/button'
@@ -35,6 +35,11 @@ import {DateTimeFieldComponent} from '@shared/ui/common/date-time-field/date-tim
 import {PluralTranslationPipe} from '@shared/helpers/pipe/plural-translation.pipe'
 import {FormIconPipe} from '@shared/helpers/pipe/form-icon.pipe'
 
+/**
+ * Purpose: Form fields of a participant.
+ * Scope: Builds the participant fields shared by creation and edition.
+ * Limits: Does not submit; the participant page does.
+ */
 @Component({
     selector: 'app-participant-form',
     imports: [
@@ -102,23 +107,9 @@ export class ParticipantFormComponent extends GenericFormComponent<ParticipantMo
 
     protected initForm(): FormGroup {
         return this.formBuilder.group({
-            firstName: this.formBuilder.control(
-                undefined,
-                [Validators.required, Validators.maxLength(150), RegistryValidators.nonBlank()],
-            ),
-            lastName: this.formBuilder.control(
-                undefined,
-                [Validators.required, Validators.maxLength(150), RegistryValidators.nonBlank()],
-            ),
-            birthday: this.formBuilder.control(
-                undefined,
-                [
-                    Validators.required, RegistryValidators.maxDateTime(
-                    DateHelper.toCustomDateTime(new Date())!,
-                    undefined,
-                ),
-                ],
-            ),
+            firstName: this.nameControl(),
+            lastName: this.nameControl(),
+            birthday: this.formBuilder.control(undefined, [Validators.required, this.notInTheFuture()]),
             user: this.formBuilder.control(undefined),
             groups: this.formBuilder.control(undefined),
             beginDateTime: this.formBuilder.control(undefined, [RegistryValidators.dateRequiredForTime()]),
@@ -128,6 +119,17 @@ export class ParticipantFormComponent extends GenericFormComponent<ParticipantMo
         })
     }
 
+    private nameControl(): FormControl {
+        return this.formBuilder.control(
+            undefined,
+            [Validators.required, Validators.maxLength(150), RegistryValidators.nonBlank()],
+        )
+    }
+
+    private notInTheFuture(): ValidatorFn {
+        return RegistryValidators.maxDateTime(DateHelper.toCustomDateTime(new Date())!, undefined)
+    }
+
     protected handleLoadedElement(): void {
         if (!GenericHelper.nonNull(this.idParam)) {
             this.applyParticipant(undefined)
@@ -135,7 +137,7 @@ export class ParticipantFormComponent extends GenericFormComponent<ParticipantMo
     }
 
     private applyParticipant(participant: ParticipantModel | undefined): void {
-        const contextProject: ProjectModel | undefined = participant?.project || this.registryFacade.selectedProject()
+        const contextProject: ProjectModel | undefined = participant?.project || this.sessionFacade.selectedProject()
         this.addProjectDateValidators(contextProject, this.beginDateTime)
         this.addProjectDateValidators(contextProject, this.endDateTime)
         this.fillForm(participant)

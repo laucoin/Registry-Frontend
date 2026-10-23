@@ -1,10 +1,10 @@
-@if (ProjectHelper.hasOption(registryFacade.selectedProject(), ProjectOptionEnum.ALERT)) {
+@if (ProjectHelper.hasOption(sessionFacade.selectedProject(), ProjectOptionEnum.ALERT)) {
     <app-current-alerts />
 }
 <p-tabs [value]='currentTab()' (valueChange)='navigate($event)' scrollable>
     <p-tablist>
         <p-tab value='dashboard'>{{ 'project-home.dashboard.title' | transloco }}</p-tab>
-        @if (ProjectHelper.hasOption(registryFacade.selectedProject(), ProjectOptionEnum.ACTIVITY)) {
+        @if (ProjectHelper.hasOption(sessionFacade.selectedProject(), ProjectOptionEnum.ACTIVITY)) {
             <p-tab value='activities'>{{ 'project-home.activity-in-progress.title' | transloco }}</p-tab>
         }
         <p-tab value='movements'>{{ 'project-home.movements-in-progress.title' | transloco }}</p-tab>
@@ -15,7 +15,7 @@
                 <app-dashboard />
             </div>
         </p-tabpanel>
-        @if (ProjectHelper.hasOption(registryFacade.selectedProject(), ProjectOptionEnum.ACTIVITY)) {
+        @if (ProjectHelper.hasOption(sessionFacade.selectedProject(), ProjectOptionEnum.ACTIVITY)) {
             <p-tabpanel value='activities'>
                 <div class='ps-4 pe-4'>
                     <app-current-activities />

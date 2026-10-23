@@ -12,6 +12,11 @@ import { RouterLink } from '@angular/router'
 import { Subscription, tap } from 'rxjs'
 import { AlertFacade } from '@pages/projects/[projectId]/alerts/data/state/alert.facade'
 
+/**
+ * Purpose: Widget listing the alerts in progress.
+ * Scope: Displays the current alerts of the selected project.
+ * Limits: Reads through the selected project facade only.
+ */
 @Component( {
     selector: 'app-current-alerts',
     imports: [

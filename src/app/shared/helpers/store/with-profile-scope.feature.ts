@@ -2,7 +2,11 @@ import { DestroyRef, inject } from '@angular/core'
 import { getState, patchState, signalStoreFeature, type, withHooks } from '@ngrx/signals'
 import { ProfileResetService } from '@shared/helpers/store/profile-reset.service'
 
-// Resets the store to its initial state on a profile switch; `preserve` keeps data that survives it.
+/**
+ * Purpose: Signal store feature that resets a store on a profile switch.
+ * Scope: Registers the store reset with the profile reset service and unregisters it on destroy.
+ * Limits: Preserved data is chosen by the store; it does not reset on route changes.
+ */
 export function withProfileScope<S extends object> (initial: S, preserve?: (current: S) => Partial<S>) {
     return signalStoreFeature(
         { state: type<S>() },

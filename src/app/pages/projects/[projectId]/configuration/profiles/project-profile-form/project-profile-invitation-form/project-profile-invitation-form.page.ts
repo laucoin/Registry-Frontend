@@ -25,6 +25,11 @@ import {DateTimeFieldComponent} from '@shared/ui/common/date-time-field/date-tim
 import {UserModel} from '@shared/models/model/user.model'
 import {RegistryValidators} from '@shared/helpers/registry.validator'
 
+/**
+ * Purpose: Page with the form to create or edit a project profile invitation.
+ * Scope: Builds the form, submits it through the facade and navigates back.
+ * Limits: Holds no domain state and never calls the backend.
+ */
 @Component({
     selector: 'app-project-profile-invitation-form',
     imports: [

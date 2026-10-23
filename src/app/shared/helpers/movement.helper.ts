@@ -4,6 +4,11 @@ import { MovementContentModel } from '@shared/models/model/movement-content.mode
 import { SelectItem } from 'primeng/api'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
 
+/**
+ * Purpose: Presents movements.
+ * Scope: Merges loaded contents into a page of movements, builds activity options and splits adults, children and pools.
+ * Limits: No state; it does not load contents.
+ */
 export class MovementHelper {
     public static rebuildPageWithContent (
         movements: MovementModel[],

@@ -5,6 +5,11 @@ import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.p
 import { SelectItem } from 'primeng/api'
 import { StringHelper } from '@shared/helpers/string.helper'
 
+/**
+ * Purpose: Formats a duration interval for display.
+ * Scope: Shows the two largest units from days up and a clock format below.
+ * Limits: Returns undefined for an empty interval.
+ */
 @Pipe( {
     name: 'intervalFormat', standalone: true,
 } )
@@ -25,21 +30,18 @@ export class IntervalPipe implements PipeTransform {
                 return this.buildLabel( value.monthCount, value.dayCount, translationKey )
             case value.dayCount.value > 0:
                 return this.buildLabel( value.dayCount, value.hourCount, translationKey )
-            case value.hourCount.value > 0: {
-                const formattedHourCount: string = StringHelper.formatDigits( value.hourCount.value, 2 )
-                const formattedMinuteCount: string = StringHelper.formatDigits( value.minuteCount.value, 2 )
-                const formattedSecondCount: string = StringHelper.formatDigits( value.secondCount.value, 2 )
-                return `${formattedHourCount}:${formattedMinuteCount}:${formattedSecondCount}`
-            }
+            case value.hourCount.value > 0:
+                return this.formatClock( [ value.hourCount, value.minuteCount, value.secondCount ] )
             case value.secondCount.value > 0:
-            case value.minuteCount.value > 0: {
-                const formattedMinuteCount: string = StringHelper.formatDigits( value.minuteCount.value, 2 )
-                const formattedSecondCount: string = StringHelper.formatDigits( value.secondCount.value, 2 )
-                return `${formattedMinuteCount}:${formattedSecondCount}`
-            }
+            case value.minuteCount.value > 0:
+                return this.formatClock( [ value.minuteCount, value.secondCount ] )
             default:
                 return undefined
         }
+    }
+
+    private formatClock (units: SelectItem<number>[]): string {
+        return units.map( (unit: SelectItem<number>): string => StringHelper.formatDigits( unit.value, 2 ) ).join( ':' )
     }
 
     private buildLabel (first: SelectItem<number>, second: SelectItem<number>, translationKey: string): string {

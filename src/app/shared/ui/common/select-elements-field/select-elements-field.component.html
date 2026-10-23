@@ -22,7 +22,7 @@
     @for (element of (multiple() ? multipleValue() : GenericHelper.nonNull(simpleValue()) ? [ simpleValue() ] : []); track element!.id) {
         <li class='item list-item w-full flex items-center justify-between' [attr.data-value]='element!.id'>
             <div class='ms-4'>{{ selectItemBuilder()(element!).label }}</div>
-            <p-button icon='pi pi-times'
+            <p-button [ariaLabel]='"global.actions.remove" | transloco' icon='pi pi-times'
                       size='small'
                       rounded
                       text

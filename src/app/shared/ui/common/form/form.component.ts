@@ -4,6 +4,11 @@ import { FormGroup } from '@angular/forms'
 import { ErrorModel } from '@shared/models/model/error.model'
 import { FormErrorComponent } from '@shared/ui/common/form-error/form-error.component'
 
+/**
+ * Purpose: Wrapper of a form with a title, a loader and action buttons.
+ * Scope: Projects the fields and shows the saving state.
+ * Limits: Owns no form model; the page provides it.
+ */
 @Component( {
     selector: 'app-form',
     imports: [

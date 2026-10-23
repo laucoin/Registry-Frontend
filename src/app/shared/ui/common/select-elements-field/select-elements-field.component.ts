@@ -3,6 +3,7 @@ import {
     computed,
     ContentChildren,
     forwardRef,
+    inject,
     input,
     InputSignal,
     output,
@@ -19,10 +20,18 @@ import { RegistryTemplateDirective } from '@shared/directives/registry-template.
 import { SelectItem } from 'primeng/api'
 import { BaseModel } from '@shared/models/model/base.model'
 import { GenericHelper } from '@shared/helpers/generic.helper'
+import { BrowserService } from '@core/browser/browser.service'
+import { TranslocoPipe } from '@jsverse/transloco'
 
+/**
+ * Purpose: Form field selecting one or several searched elements.
+ * Scope: Searches with a debounced query, shows the selection and highlights duplicates.
+ * Limits: Owns no data source; the parent provides the search and the options.
+ */
 @Component( {
     selector: 'app-select-elements-field',
     imports: [
+        TranslocoPipe,
         ReactiveFormsModule,
         Button,
         FormsModule,
@@ -40,6 +49,7 @@ import { GenericHelper } from '@shared/helpers/generic.helper'
     styleUrl: './select-elements-field.component.css',
 } )
 export class SelectElementsFieldComponent<T extends BaseModel> implements ControlValueAccessor {
+    private readonly browser: BrowserService = inject( BrowserService )
     @ContentChildren( RegistryTemplateDirective ) public templates: QueryList<RegistryTemplateDirective> | undefined
 
     protected readonly GenericHelper: typeof GenericHelper = GenericHelper
@@ -96,11 +106,7 @@ export class SelectElementsFieldComponent<T extends BaseModel> implements Contro
     }
 
     protected highlightDuplicated (elementId: string): void {
-        const element: HTMLElement | null = document.querySelector( `[data-value="${elementId}"]` )
-        if (element) {
-            element.classList.add( 'highlight' )
-            setTimeout( () => element.classList.remove( 'highlight' ), 1000 )
-        }
+        this.browser.highlightByDataValue( elementId )
     }
 
     protected onInputChange (value: T | T[] | undefined): void {

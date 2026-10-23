@@ -30,6 +30,11 @@ import {MenuItem} from 'primeng/api'
 import {Subscription, tap} from 'rxjs'
 import {AvailabilityStatusEnum} from '@shared/models/enumeration/availability-status.enum'
 
+/**
+ * Purpose: Card presenting one project with its actions.
+ * Scope: Renders the details, the actions menu and the confirmations of the element.
+ * Limits: Receives the element as an input and calls the facade for commands; it holds no list state.
+ */
 @Component({
     selector: 'app-project-element',
     imports: [
@@ -57,8 +62,15 @@ export class ProjectElementComponent extends GenericElementComponent implements 
     public readonly actionMenuVisible: InputSignal<boolean> = input(true)
     public readonly project: InputSignal<ProjectModel> = input.required()
 
-    protected readonly actions: Signal<MenuItem[]> = computed((): MenuItem[] => [
-        {
+    protected readonly actions: Signal<MenuItem[]> = computed( (): MenuItem[] => [
+        this.editAction(),
+        this.disableAction(),
+        this.enableAction(),
+        this.deleteAction(),
+    ] )
+
+    private editAction(): MenuItem {
+        return {
             label: 'projects.actions.edit',
             icon: 'pi pi-pen-to-square',
             disabled: !this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_U, this.project().id),
@@ -68,59 +80,56 @@ export class ProjectElementComponent extends GenericElementComponent implements 
                     RegistryRouteEnum.PROJECTS_EDITION.replace(':projectId', this.project().id),
                 ).catch(console.error)
             },
-        },
-        {
+        }
+    }
+
+    private disableAction(): MenuItem {
+        return {
             label: 'projects.actions.disable',
             icon: 'pi pi-eye-slash',
             disabled: !this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_U, this.project().id),
             visible: this.actionIsEnable(ElementActionEnum.PROJECT_DISABLE) && this.project().visible,
-            command: (): void => {
-                this.confirmationService.confirm(
-                    this.buildConfirmation(
-                        'projects.actions.confirmations.disable',
-                        'pi pi-exclamation-triangle',
-                        this.project(),
-                        SeverityEnum.WARNING,
-                        (): void => this.facade.disableProject(this.project().id),
-                    ),
-                )
-            },
-        },
-        {
+            command: this.confirmThen(
+                'projects.actions.confirmations.disable',
+                'pi pi-exclamation-triangle',
+                this.project(),
+                SeverityEnum.WARNING,
+                (): void => this.facade.disableProject(this.project().id),
+            ),
+        }
+    }
+
+    private enableAction(): MenuItem {
+        return {
             label: 'projects.actions.enable',
             icon: 'pi pi-replay',
             disabled: !this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_U, this.project().id),
             visible: this.actionIsEnable(ElementActionEnum.PROJECT_ENABLE) && !this.project().visible,
-            command: (): void => {
-                this.confirmationService.confirm(
-                    this.buildConfirmation(
-                        'projects.actions.confirmations.enable',
-                        'pi pi-info-circle',
-                        this.project(),
-                        SeverityEnum.INFO,
-                        (): void => this.facade.enableProject(this.project().id),
-                    ),
-                )
-            },
-        },
-        {
+            command: this.confirmThen(
+                'projects.actions.confirmations.enable',
+                'pi pi-info-circle',
+                this.project(),
+                SeverityEnum.INFO,
+                (): void => this.facade.enableProject(this.project().id),
+            ),
+        }
+    }
+
+    private deleteAction(): MenuItem {
+        return {
             label: 'projects.actions.delete',
             icon: 'pi pi-trash',
             disabled: !this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_D, this.project().id),
             visible: this.actionIsEnable(ElementActionEnum.PROJECT_DELETE),
-            command: (): void => {
-                this.confirmationService.confirm(
-                    this.buildConfirmation(
-                        'projects.actions.confirmations.delete',
-                        'pi pi-exclamation-triangle',
-                        this.project(),
-                        SeverityEnum.DANGER,
-                        (): void => this.facade.deleteProject(this.project()),
-                    ),
-                )
-            },
-        },
-    ])
+            command: this.confirmThen(
+                'projects.actions.confirmations.delete',
+                'pi pi-exclamation-triangle',
+                this.project(),
+                SeverityEnum.DANGER,
+                (): void => this.facade.deleteProject(this.project()),
+            ),
+        }
+    }
 
     protected readonly joinable: Signal<boolean> = computed((): boolean => this.hasAnyProjectAuthority(this.project()))
     protected readonly supportable: Signal<boolean> = computed((): boolean =>
@@ -134,7 +143,7 @@ export class ProjectElementComponent extends GenericElementComponent implements 
     )
 
     private hasAnyProjectAuthority(element: ProjectModel): boolean {
-        return this.registryFacade.currentUser()!.authorities.some(
+        return this.sessionFacade.currentUser()!.authorities.some(
             (authority: string): boolean => authority.startsWith(`${element.id}_REGISTRY_PROJECT`),
         )
     }

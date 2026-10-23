@@ -4,6 +4,11 @@ import { SplitTimeModel } from '@shared/models/model/split-time.model'
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms'
 import { Select } from 'primeng/select'
 
+/**
+ * Purpose: Form field editing a duration.
+ * Scope: Edits hours and minutes and exposes an ISO duration.
+ * Limits: Validation is done by the form validators.
+ */
 @Component( {
     selector: 'app-duration-field',
     imports: [

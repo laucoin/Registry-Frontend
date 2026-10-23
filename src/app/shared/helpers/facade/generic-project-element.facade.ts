@@ -1,16 +1,23 @@
 import { GenericFacade } from '@shared/helpers/facade/generic.facade'
-import { RegistryFacade } from '@core/registry/state/registry.facade'
+import { UiFacade } from '@core/registry/state/ui.facade'
+import { SessionFacade } from '@core/registry/state/session.facade'
 import { inject, Signal } from '@angular/core'
 import { StateHelper } from '@shared/helpers/state/state.helper'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { CommandEvent, CommandEventService } from '@shared/helpers/facade/command-event.service'
 
+/**
+ * Purpose: Base of the facades of project elements.
+ * Scope: Provides the selected project id, the UI and session facades, and success notifications for commands.
+ * Limits: Abstract; each domain facade owns its own state access.
+ */
 export abstract class GenericProjectElementFacade extends GenericFacade {
-    protected readonly registryFacade: RegistryFacade = inject( RegistryFacade )
+    protected readonly uiFacade: UiFacade = inject( UiFacade )
+    protected readonly sessionFacade: SessionFacade = inject( SessionFacade )
     protected readonly commandEvents: CommandEventService = inject( CommandEventService )
 
     public get selectedProjectId (): Signal<string | undefined> {
-        return this.registryFacade.currentProjectId
+        return this.sessionFacade.currentProjectId
     }
 
     protected notifyMessage (
@@ -20,7 +27,7 @@ export abstract class GenericProjectElementFacade extends GenericFacade {
         icon: string,
         data: object,
     ): void {
-        this.registryFacade.notify( StateHelper.buildNotificationMessage( severity, summary, detail, icon, data ) )
+        this.uiFacade.notify( StateHelper.buildNotificationMessage( severity, summary, detail, icon, data ) )
     }
 
     protected notifySuccess (translationPrefix: string, icon: string, data: object): void {

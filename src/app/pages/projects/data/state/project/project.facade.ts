@@ -8,6 +8,8 @@ import { ProjectStore } from '@pages/projects/data/state/project/project.store'
 import { ProjectDto } from '@pages/projects/data/dto/project.dto'
 import { ProjectApi } from '@pages/projects/data/state/project.api'
 import { RegistryFacade } from '@core/registry/state/registry.facade'
+import { SessionFacade } from '@core/registry/state/session.facade'
+import { UiFacade } from '@core/registry/state/ui.facade'
 import { StateHelper } from '@shared/helpers/state/state.helper'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { initialize, notifyOnError } from '@shared/helpers/rx.helper'
@@ -15,11 +17,18 @@ import { ProjectModel } from '@shared/models/model/project.model'
 import { ProjectOptionModel } from '@pages/projects/data/model/project-option.model'
 import { DateHelper } from '@shared/helpers/date.helper'
 
+/**
+ * Purpose: Public entry point of the project domain for pages, components and guards.
+ * Scope: Exposes the project store as signals, forwards its queries and runs the project commands with their notifications.
+ * Limits: Holds no state of its own and builds no HTTP request itself.
+ */
 @Injectable()
 export class ProjectFacade extends GenericFacade {
     private readonly store: InstanceType<typeof ProjectStore> = inject( ProjectStore )
     private readonly api: ProjectApi = inject( ProjectApi )
     private readonly registryFacade: RegistryFacade = inject( RegistryFacade )
+    private readonly uiFacade: UiFacade = inject( UiFacade )
+    private readonly sessionFacade: SessionFacade = inject( SessionFacade )
 
     public readonly projectsPage: Signal<PageModel<ProjectModel> | undefined> = this.store.projects.element
 
@@ -103,7 +112,7 @@ export class ProjectFacade extends GenericFacade {
     public createProject (project: ProjectDto): Observable<unknown> {
         return this.api.createProject( project ).pipe(
             this.trackProjectLoader,
-            notifyOnError( this.registryFacade ),
+            notifyOnError( this.uiFacade ),
             tap( (created: ProjectModel): void => {
                 this.store.setCreatedProjectId( created.id )
                 this.onCommandSuccess( 'create', created )
@@ -115,10 +124,10 @@ export class ProjectFacade extends GenericFacade {
     public updateProject (id: string, project: ProjectDto): Observable<ProjectModel> {
         return this.api.updateProjectById( id, project ).pipe(
             this.trackProjectLoader,
-            notifyOnError( this.registryFacade ),
+            notifyOnError( this.uiFacade ),
             tap( (updated: ProjectModel): void => {
                 this.onCommandSuccess( 'edit', updated )
-                if (this.registryFacade.currentProjectId() == updated.id) {
+                if (this.sessionFacade.currentProjectId() == updated.id) {
                     this.registryFacade.fetchCurrentUser()
                 }
             } ),
@@ -128,7 +137,7 @@ export class ProjectFacade extends GenericFacade {
     public disableProject (id: string): void {
         this.api.disableProjectById( id ).pipe(
             this.trackProjectLoader,
-            notifyOnError( this.registryFacade ),
+            notifyOnError( this.uiFacade ),
             tap( (project: ProjectModel): void => this.onCommandSuccess( 'disable', project, true ) ),
         ).subscribe()
     }
@@ -136,7 +145,7 @@ export class ProjectFacade extends GenericFacade {
     public enableProject (id: string): void {
         this.api.enableProjectById( id ).pipe(
             this.trackProjectLoader,
-            notifyOnError( this.registryFacade ),
+            notifyOnError( this.uiFacade ),
             tap( (project: ProjectModel): void => this.onCommandSuccess( 'enable', project, true ) ),
         ).subscribe()
     }
@@ -144,7 +153,7 @@ export class ProjectFacade extends GenericFacade {
     public deleteProject (element: ProjectModel): void {
         this.api.deleteProjectById( element.id ).pipe(
             this.trackProjectLoader,
-            notifyOnError( this.registryFacade ),
+            notifyOnError( this.uiFacade ),
             tap( (): void => this.onCommandSuccess( 'delete', element, true ) ),
         ).subscribe()
     }
@@ -155,7 +164,7 @@ export class ProjectFacade extends GenericFacade {
     )
 
     private onCommandSuccess (command: string, project: ProjectModel, refreshUser: boolean = false): void {
-        this.registryFacade.notify( StateHelper.buildNotificationMessage(
+        this.uiFacade.notify( StateHelper.buildNotificationMessage(
             SeverityEnum.SUCCESS,
             `projects.notifications.${ command }.title`,
             `projects.notifications.${ command }.message`,

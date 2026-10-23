@@ -22,7 +22,13 @@ import { toSignal } from '@angular/core/rxjs-interop'
 import { ProjectOptionIconPipe } from '@shared/helpers/pipe/project-option-icon.pipe'
 import { Dialog } from 'primeng/dialog'
 import { InfoComponent } from '@shared/ui/common/info/info.component'
+import { BrowserService } from '@core/browser/browser.service'
 
+/**
+ * Purpose: Top navigation bar.
+ * Scope: Owns the menus, the context menu, the user menu and the hide-on-scroll behaviour.
+ * Limits: Filters items by the current user authorities for display only; the backend is the security boundary.
+ */
 @Component( {
     selector: 'app-navbar',
     imports: [
@@ -43,6 +49,7 @@ import { InfoComponent } from '@shared/ui/common/info/info.component'
 } )
 export class NavbarComponent extends GenericComponent {
     private readonly iconOption: ProjectOptionIconPipe = inject( ProjectOptionIconPipe )
+    private readonly browser: BrowserService = inject( BrowserService )
 
     protected readonly maxMenuTextLength: number = 26
     protected readonly userMenuItems: Signal<MenuItem[]> = computed( (): MenuItem[] => [
@@ -64,7 +71,7 @@ export class NavbarComponent extends GenericComponent {
         {
             label: 'global.menu.help',
             icon: 'pi pi-question-circle',
-            visible: this.registryFacade.tinyScreen(),
+            visible: this.uiFacade.tinyScreen(),
             command: (): void => {
                 this.helpDialogOpened = true
             },
@@ -108,66 +115,88 @@ export class NavbarComponent extends GenericComponent {
             requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_ALERT_R,
             requiredProjectOption: ProjectOptionEnum.ALERT,
         },
-        {
+        this.configurationMenu(),
+    ] )
+
+    private configurationMenu (): MenuItemModel {
+        return {
             label: 'global.menu.configuration',
             icon: 'pi pi-cog',
             requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_R,
-            items: [
-                {
-                    label: 'global.menu.edit-project',
-                    icon: 'pi pi-pen-to-square',
-                    url: this.projectUrl( RegistryRouteEnum.PROJECTS_EDITION ),
-                    requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_U,
-                },
-                {
-                    label: 'global.menu.project-profiles',
-                    icon: 'pi pi-unlock',
-                    url: this.projectUrl( RegistryRouteEnum.PROJECTS_CONFIGURATION_PROFILES ),
-                    requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_R,
-                },
-                {
-                    label: 'global.menu.participants',
-                    icon: 'pi pi-user',
-                    url: this.projectUrl( RegistryRouteEnum.PROJECTS_CONFIGURATION_PARTICIPANTS ),
-                    requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_R,
-                },
-                {
-                    label: 'global.menu.groups',
-                    icon: 'pi pi-users',
-                    url: this.projectUrl( RegistryRouteEnum.PROJECTS_CONFIGURATION_GROUPS ),
-                    requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_R,
-                },
-                {
-                    label: 'global.menu.vehicles',
-                    icon: this.iconOption.transform( ProjectOptionEnum.VEHICLE ),
-                    url: this.projectUrl( RegistryRouteEnum.PROJECTS_CONFIGURATION_VEHICLES ),
-                    requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_VEHICLE_R,
-                    requiredProjectOption: ProjectOptionEnum.VEHICLE,
-                },
-                {
-                    label: 'global.menu.activities',
-                    icon: this.iconOption.transform( ProjectOptionEnum.ACTIVITY ),
-                    url: this.projectUrl( RegistryRouteEnum.PROJECTS_CONFIGURATION_ACTIVITIES ),
-                    requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_ACTIVITY_R,
-                    requiredProjectOption: ProjectOptionEnum.ACTIVITY,
-                },
-            ],
-        },
-    ] )
+            items: this.configurationMenuItems(),
+        }
+    }
+
+    private configurationMenuItems (): MenuItemModel[] {
+        return [ ...this.projectMenuItems(), ...this.peopleMenuItems(), ...this.optionMenuItems() ]
+    }
+
+    private projectMenuItems (): MenuItemModel[] {
+        return [
+            {
+                label: 'global.menu.edit-project',
+                icon: 'pi pi-pen-to-square',
+                url: this.projectUrl( RegistryRouteEnum.PROJECTS_EDITION ),
+                requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_U,
+            },
+            {
+                label: 'global.menu.project-profiles',
+                icon: 'pi pi-unlock',
+                url: this.projectUrl( RegistryRouteEnum.PROJECTS_CONFIGURATION_PROFILES ),
+                requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_R,
+            },
+        ]
+    }
+
+    private peopleMenuItems (): MenuItemModel[] {
+        return [
+            {
+                label: 'global.menu.participants',
+                icon: 'pi pi-user',
+                url: this.projectUrl( RegistryRouteEnum.PROJECTS_CONFIGURATION_PARTICIPANTS ),
+                requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_R,
+            },
+            {
+                label: 'global.menu.groups',
+                icon: 'pi pi-users',
+                url: this.projectUrl( RegistryRouteEnum.PROJECTS_CONFIGURATION_GROUPS ),
+                requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_R,
+            },
+        ]
+    }
+
+    private optionMenuItems (): MenuItemModel[] {
+        return [
+            {
+                label: 'global.menu.vehicles',
+                icon: this.iconOption.transform( ProjectOptionEnum.VEHICLE ),
+                url: this.projectUrl( RegistryRouteEnum.PROJECTS_CONFIGURATION_VEHICLES ),
+                requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_VEHICLE_R,
+                requiredProjectOption: ProjectOptionEnum.VEHICLE,
+            },
+            {
+                label: 'global.menu.activities',
+                icon: this.iconOption.transform( ProjectOptionEnum.ACTIVITY ),
+                url: this.projectUrl( RegistryRouteEnum.PROJECTS_CONFIGURATION_ACTIVITIES ),
+                requiredProjectAuthority: ProjectAuthorityEnum.REGISTRY_PROJECT_ACTIVITY_R,
+                requiredProjectOption: ProjectOptionEnum.ACTIVITY,
+            },
+        ]
+    }
     protected readonly contextMenuItems: Signal<MenuItem[]>
 
     protected readonly displayName: Signal<string> = computed( (): string =>
         StringHelper.truncate(
-            StringHelper.toTitleCase( this.registryFacade.currentUser()?.firstName ) + ' ' + this.registryFacade.currentUser()?.lastName?.toUpperCase(),
+            StringHelper.toTitleCase( this.sessionFacade.currentUser()?.firstName ) + ' ' + this.sessionFacade.currentUser()?.lastName?.toUpperCase(),
             this.maxMenuTextLength,
         ),
     )
     protected readonly initials: Signal<string> = computed( (): string => StringHelper.truncate(
-        this.registryFacade.currentUser()?.firstName,
+        this.sessionFacade.currentUser()?.firstName,
         1,
-    ) + StringHelper.truncate( this.registryFacade.currentUser()?.lastName, 1 ) )
+    ) + StringHelper.truncate( this.sessionFacade.currentUser()?.lastName, 1 ) )
 
-    protected readonly role: Signal<string | undefined> = computed( (): string | undefined => this.registryFacade.currentUser()?.role?.label )
+    protected readonly role: Signal<string | undefined> = computed( (): string | undefined => this.sessionFacade.currentUser()?.role?.label )
 
     private readonly activeRoute: Signal<unknown> = toSignal( this.router.events )
     protected readonly showContextMenu: Signal<boolean> = computed( (): boolean => {
@@ -181,11 +210,11 @@ export class NavbarComponent extends GenericComponent {
     public constructor () {
         super()
         this.menuItems = computed( (): MenuItem[] => this.showContextMenu() ? [] : this.filterMenuItems(
-            this.registryFacade.currentUser(),
+            this.sessionFacade.currentUser(),
             this.allMenuItems(),
         ) )
         this.contextMenuItems = computed( (): MenuItem[] => this.filterMenuItems(
-            this.registryFacade.currentUser(),
+            this.sessionFacade.currentUser(),
             this.allContextMenuItems(),
         ) )
     }
@@ -196,7 +225,7 @@ export class NavbarComponent extends GenericComponent {
         return menuItems
             .filter( (item: MenuItemModel): boolean => CurrentUserHelper.isFeasible(
                 currentUser,
-                this.registryFacade.selectedProject(),
+                this.sessionFacade.selectedProject(),
                 item,
             ) )
             .map( (menuItem: MenuItemModel): MenuItem => ({
@@ -207,9 +236,13 @@ export class NavbarComponent extends GenericComponent {
             }) )
     }
 
+    protected isRouteActive (route: RegistryRouteEnum): boolean {
+        return StringHelper.isRouteActive( route, this.browser.pathname )
+    }
+
     @HostListener( 'window:scroll', [] )
     public handleWindowScroll (): void {
-        const currentScrollPosition: number = window.pageYOffset || document.documentElement.scrollTop
+        const currentScrollPosition: number = this.browser.scrollOffset
 
         if (currentScrollPosition > this.lastScrollPosition() && currentScrollPosition > 25) {
             // Scrolling DOWN
@@ -223,7 +256,7 @@ export class NavbarComponent extends GenericComponent {
     }
 
     private projectUrl (route: RegistryRouteEnum): string {
-        return route.replace( ':projectId', this.registryFacade.currentProjectId() ?? '' )
+        return route.replace( ':projectId', this.sessionFacade.currentProjectId() ?? '' )
     }
 
     protected backToProjects (): void {

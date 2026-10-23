@@ -15,6 +15,11 @@ import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { AddedGroupMembersDto } from '@shared/models/dto/added-group-members.dto'
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
 
+/**
+ * Purpose: Public entry point of the group domain for pages, components and guards.
+ * Scope: Exposes the group store as signals, forwards its queries and runs the group commands with their notifications.
+ * Limits: Holds no state of its own and builds no HTTP request itself.
+ */
 @Injectable()
 export class GroupFacade extends GenericProjectElementFacade {
     private readonly store: InstanceType<typeof GroupStore> = inject( GroupStore )
@@ -140,41 +145,41 @@ export class GroupFacade extends GenericProjectElementFacade {
 
     public fetchGroup (id: string): Observable<GroupModel> {
         return this.api.findGroupById( this.selectedProjectId(), id ).pipe(
-            notifyOnError( this.registryFacade ),
+            notifyOnError( this.uiFacade ),
         )
     }
 
     public createGroup (group: GroupDto): Observable<GroupModel> {
         return this.api.createGroup( this.selectedProjectId(), group ).pipe(
-            notifyUnavailableOnly( this.registryFacade ),
+            notifyUnavailableOnly( this.uiFacade ),
             tap( (created: GroupModel): void => this.onCommandSuccess( 'create', created ) ),
         )
     }
 
     public updateGroup (id: string, group: GroupDto): Observable<GroupModel> {
         return this.api.updateGroupById( this.selectedProjectId(), id, group ).pipe(
-            notifyUnavailableOnly( this.registryFacade ),
+            notifyUnavailableOnly( this.uiFacade ),
             tap( (updated: GroupModel): void => this.onCommandSuccess( 'update', updated ) ),
         )
     }
 
     public disableGroup (id: string): Observable<GroupModel> {
         return this.api.disableGroupById( this.selectedProjectId(), id ).pipe(
-            notifyOnError( this.registryFacade ),
+            notifyOnError( this.uiFacade ),
             tap( (disabled: GroupModel): void => this.onCommandSuccess( 'disable', disabled ) ),
         )
     }
 
     public enableGroup (id: string): Observable<GroupModel> {
         return this.api.enableGroupById( this.selectedProjectId(), id ).pipe(
-            notifyOnError( this.registryFacade ),
+            notifyOnError( this.uiFacade ),
             tap( (enabled: GroupModel): void => this.onCommandSuccess( 'enable', enabled ) ),
         )
     }
 
     public deleteGroup (group: GroupModel): Observable<void> {
         return this.api.deleteGroupById( undefined, group.id ).pipe(
-            notifyOnError( this.registryFacade ),
+            notifyOnError( this.uiFacade ),
             tap( (): void => this.onCommandSuccess( 'delete', group ) ),
         )
     }
@@ -188,7 +193,7 @@ export class GroupFacade extends GenericProjectElementFacade {
 
     public addMembersToGroup (id: string, memberIds: string[]): Observable<AddedGroupMembersDto> {
         return this.api.addMembersToGroupById( this.selectedProjectId(), id, memberIds ).pipe(
-            notifyOnError( this.registryFacade ),
+            notifyOnError( this.uiFacade ),
             tap( (response: AddedGroupMembersDto): void => {
                 const added: number = response.members.length
                 const partial: boolean = memberIds.length != added
@@ -207,7 +212,7 @@ export class GroupFacade extends GenericProjectElementFacade {
 
     public removeMemberFromGroup (id: string, participant: ParticipantModel): Observable<GroupModel> {
         return this.api.removeMemberFromGroupById( this.selectedProjectId(), id, participant.id ).pipe(
-            notifyOnError( this.registryFacade ),
+            notifyOnError( this.uiFacade ),
             tap( (group: GroupModel): void => {
                 this.notifySuccess( 'groups.notifications.remove-member', 'pi pi-user-minus', {
                     name: group?.name,

@@ -31,6 +31,11 @@ import { FormTitlePipe } from '@shared/helpers/pipe/form-title.pipe'
 import { FormIconPipe } from '@shared/helpers/pipe/form-icon.pipe'
 import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
 
+/**
+ * Purpose: Page with the form to create or edit a project.
+ * Scope: Builds the form, submits it through the facade and navigates back.
+ * Limits: Holds no domain state and never calls the backend.
+ */
 @Component( {
     selector: 'app-project-form',
     imports: [

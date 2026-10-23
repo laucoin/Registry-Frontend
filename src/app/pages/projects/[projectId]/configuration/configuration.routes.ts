@@ -9,12 +9,11 @@ import { MovementStore } from '@pages/projects/[projectId]/movements/data/state/
 import { ParticipantStore } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.store'
 import { GroupFacade } from '@pages/projects/[projectId]/configuration/groups/data/state/group.facade'
 import { GroupStore } from '@pages/projects/[projectId]/configuration/groups/data/state/group.store'
-import { vehicleOptionGuard } from '@core/authentication/guard/vehicle-option.guard'
 import { VehicleFacade } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.facade'
 import { VehicleStore } from '@pages/projects/[projectId]/configuration/vehicles/data/state/vehicle.store'
-import { activityOptionGuard } from '@core/authentication/guard/activity-option.guard'
 import { ActivityFacade } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.facade'
 import { ActivityStore } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.store'
+import { vehicleOptionGuard, activityOptionGuard } from '@core/authentication/guard/project-option.guard'
 
 export const configurationRoutes: Routes = [
     {

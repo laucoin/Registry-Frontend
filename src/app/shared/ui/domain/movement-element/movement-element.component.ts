@@ -41,6 +41,11 @@ import {
     MovementCommunicationsListComponent,
 } from '@pages/projects/[projectId]/movements/movement-communications-list/movement-communications-list.component'
 
+/**
+ * Purpose: Card presenting one movement with its actions.
+ * Scope: Renders the details, the actions menu and the confirmations of the element.
+ * Limits: Receives the element as an input and calls the facade for commands; it holds no list state.
+ */
 @Component({
     selector: 'app-movement-element',
     imports: [
@@ -99,70 +104,74 @@ export class MovementElementComponent extends GenericElementComponent {
     public readonly communicable: InputSignal<boolean> = input(false)
     public readonly vehicleId: InputSignal<string | undefined> = input()
 
-    protected readonly actions: Signal<MenuItem[]> = computed((): MenuItem[] => [
-        {
+    protected readonly actions: Signal<MenuItem[]> = computed( (): MenuItem[] => [
+        this.editAction(),
+        this.disableAction(),
+        this.enableAction(),
+        this.deleteAction(),
+    ] )
+
+    private editAction(): MenuItem {
+        return {
             label: 'movements.actions.edit',
             icon: 'pi pi-pen-to-square',
             disabled: !this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_MOVEMENT_U),
             visible: this.actionIsEnable(ElementActionEnum.MOVEMENT_UPDATE),
             command: (): void => {
                 this.router.navigateByUrl(
-                    RegistryRouteEnum.PROJECTS_MOVEMENTS_EDITION.replace(':movementId', this.movement().id).replace(':projectId', this.registryFacade.currentProjectId() ?? ''),
+                    RegistryRouteEnum.PROJECTS_MOVEMENTS_EDITION.replace(':movementId', this.movement().id).replace(':projectId', this.sessionFacade.currentProjectId() ?? ''),
                 ).catch(console.error)
             },
-        },
-        {
+        }
+    }
+
+    private disableAction(): MenuItem {
+        return {
             label: 'movements.actions.disable',
             icon: 'pi pi-eye-slash',
             disabled: this.busy() || !this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_MOVEMENT_U),
             visible: this.actionIsEnable(ElementActionEnum.MOVEMENT_DISABLE) && this.movement().visible,
-            command: (): void => {
-                this.confirmationService.confirm(
-                    this.buildConfirmation(
-                        'movements.actions.confirmations.disable',
-                        'pi pi-exclamation-triangle',
-                        this.movement(),
-                        SeverityEnum.WARNING,
-                        (): void => this.run(this.facade.disableMovement(this.movement().id)),
-                    ),
-                )
-            },
-        },
-        {
+            command: this.confirmThen(
+                'movements.actions.confirmations.disable',
+                'pi pi-exclamation-triangle',
+                this.movement(),
+                SeverityEnum.WARNING,
+                (): void => this.run(this.facade.disableMovement(this.movement().id)),
+            ),
+        }
+    }
+
+    private enableAction(): MenuItem {
+        return {
             label: 'movements.actions.enable',
             icon: 'pi pi-replay',
             disabled: this.busy() || !this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_MOVEMENT_U),
             visible: this.actionIsEnable(ElementActionEnum.MOVEMENT_ENABLE) && !this.movement().visible,
-            command: (): void => {
-                this.confirmationService.confirm(
-                    this.buildConfirmation(
-                        'movements.actions.confirmations.enable',
-                        'pi pi-info-circle',
-                        this.movement(),
-                        SeverityEnum.INFO,
-                        (): void => this.run(this.facade.enableMovement(this.movement().id)),
-                    ),
-                )
-            },
-        },
-        {
+            command: this.confirmThen(
+                'movements.actions.confirmations.enable',
+                'pi pi-info-circle',
+                this.movement(),
+                SeverityEnum.INFO,
+                (): void => this.run(this.facade.enableMovement(this.movement().id)),
+            ),
+        }
+    }
+
+    private deleteAction(): MenuItem {
+        return {
             label: 'movements.actions.delete',
             icon: 'pi pi-trash',
             disabled: this.busy() || !this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_MOVEMENT_D),
             visible: this.actionIsEnable(ElementActionEnum.MOVEMENT_DELETE),
-            command: (): void => {
-                this.confirmationService.confirm(
-                    this.buildConfirmation(
-                        'movements.actions.confirmations.delete',
-                        'pi pi-exclamation-triangle',
-                        this.movement(),
-                        SeverityEnum.DANGER,
-                        (): void => this.run(this.facade.deleteMovement(this.movement())),
-                    ),
-                )
-            },
-        },
-    ])
+            command: this.confirmThen(
+                'movements.actions.confirmations.delete',
+                'pi pi-exclamation-triangle',
+                this.movement(),
+                SeverityEnum.DANGER,
+                (): void => this.run(this.facade.deleteMovement(this.movement())),
+            ),
+        }
+    }
 
     protected readonly reversibleAuthorized: Signal<boolean> = computed((): boolean =>
         this.reversible()

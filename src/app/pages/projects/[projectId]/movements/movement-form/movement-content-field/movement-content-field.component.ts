@@ -22,8 +22,14 @@ import { Button } from 'primeng/button'
 import { ParticipantHelper } from '@shared/helpers/participant.helper'
 import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum'
 import {TranslocoPipe} from '@jsverse/transloco'
-import { RegistryFacade } from '@core/registry/state/registry.facade'
+import { UiFacade } from '@core/registry/state/ui.facade'
+import { BrowserService } from '@core/browser/browser.service'
 
+/**
+ * Purpose: Form field editing the content of a movement.
+ * Scope: Selects registered participants, groups or guests and their pools.
+ * Limits: Does not save; the movement form does.
+ */
 @Component( {
     selector: 'app-movement-content-field',
     imports: [
@@ -42,7 +48,8 @@ import { RegistryFacade } from '@core/registry/state/registry.facade'
     styleUrl: './movement-content-field.component.css',
 } )
 export class MovementContentFieldComponent implements ControlValueAccessor {
-    protected readonly registryFacade: RegistryFacade = inject( RegistryFacade )
+    protected readonly uiFacade: UiFacade = inject( UiFacade )
+    private readonly browser: BrowserService = inject( BrowserService )
     protected readonly ParticipantHelper: typeof ParticipantHelper = ParticipantHelper
     protected readonly Object: typeof Object = Object
 
@@ -144,11 +151,7 @@ export class MovementContentFieldComponent implements ControlValueAccessor {
     }
 
     protected highlightDuplicated (participantId: string): void {
-        const element: HTMLElement | null = document.querySelector( `[data-value="${participantId}"]` )
-        if (element) {
-            element.classList.add( 'highlight' )
-            setTimeout( () => element.classList.remove( 'highlight' ), 1000 )
-        }
+        this.browser.highlightByDataValue( participantId )
     }
 
     private onInputChange (value: MovementContentModel[]): void {

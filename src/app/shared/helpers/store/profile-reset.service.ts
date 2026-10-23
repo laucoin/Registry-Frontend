@@ -1,6 +1,10 @@
 import { Injectable } from '@angular/core'
 
-// Route-scoped signal stores register here so a profile switch can reset them all synchronously.
+/**
+ * Purpose: Lets route-scoped stores reset together on a profile switch.
+ * Scope: Keeps the registered reset callbacks and runs them all.
+ * Limits: Does not decide when a profile switch happens.
+ */
 @Injectable( { providedIn: 'root' } )
 export class ProfileResetService {
     private readonly resets: Set<() => void> = new Set<() => void>()

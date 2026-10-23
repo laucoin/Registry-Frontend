@@ -1,25 +1,20 @@
 import { inject } from '@angular/core'
-import { patchState, signalStore, withMethods, withProps, withState } from '@ngrx/signals'
-import { rxMethod } from '@ngrx/signals/rxjs-interop'
-import { catchError, EMPTY, finalize, Observable, pipe, switchMap, tap } from 'rxjs'
+import { patchState, signalStore, withMethods, withState } from '@ngrx/signals'
 import { SelectItem } from 'primeng/api'
-import { PageModel } from '@shared/models/model/page.model'
-import { MovementModel } from '@shared/models/model/movement.model'
-import { AlertModel } from '@shared/models/model/alert.model'
-import { ErrorModel } from '@shared/models/model/error.model'
-import { ElementRequestInformationModel } from '@shared/models/model/element-request-information.model'
+import { ErrorReporter } from '@core/registry/state/error-reporter'
 import { CommunicationPageParamsModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication-page-params.model'
-import { CommunicationModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
 import { CommunicationStoreModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication-store.model'
+import { CommunicationModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
 import { CommunicationApi } from '@pages/projects/[projectId]/movements/communication/data/state/communication.api'
-import { RegistryFacade } from '@core/registry/state/registry.facade'
-import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
-import { MovementHelper } from '@shared/helpers/movement.helper'
 import { AlertHelper } from '@shared/helpers/alert.helper'
-import { StateHelper } from '@shared/helpers/state/state.helper'
-import { initialize, notifyOnError, reportError } from '@shared/helpers/rx.helper'
+import { MovementHelper } from '@shared/helpers/movement.helper'
+import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
 import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
+import { elementFetcher, metadataFetcher, pageFetcher, paramsUpdater, trackElement } from '@shared/helpers/store/paged-store.methods'
 import { withProfileScope } from '@shared/helpers/store/with-profile-scope.feature'
+import { AlertModel } from '@shared/models/model/alert.model'
+import { ElementRequestInformationModel } from '@shared/models/model/element-request-information.model'
+import { MovementModel } from '@shared/models/model/movement.model'
 
 interface CommunicationsPageRequest {
     projectId: string | undefined
@@ -62,113 +57,34 @@ const defaultCommunicationStore: CommunicationStoreModel = {
     },
 }
 
+/**
+ * Purpose: Holds the communication state.
+ * Scope: Owns the data of the communication pages and resources with their loading and error flags, and fetches them through the communication api.
+ * Limits: Reached through the communication facade; it does not format data or notify the user of command results.
+ */
 export const CommunicationStore = signalStore(
     withState<CommunicationStoreModel>( defaultCommunicationStore ),
     withProfileScope<CommunicationStoreModel>( defaultCommunicationStore ),
-    withProps( () => ({
-        api: inject( CommunicationApi ),
-        registryFacade: inject( RegistryFacade ),
-        datePipe: inject( DateFormatPipe ),
+    withMethods( (store, api = inject( CommunicationApi ), errors = inject( ErrorReporter )) => ({
+        fetchCommunicationsPage: pageFetcher( store, 'communications', (request: CommunicationsPageRequest, params: CommunicationPageParamsModel) =>
+            api.findCommunications( request.projectId, request.pageNumber, request.pageSize, params ), errors ),
+        updateCommunicationsPageSearchParams: paramsUpdater( store, 'communications' ),
+        fetchCommunication: elementFetcher( store, 'communication', (request: CommunicationRequest) =>
+            api.findCommunicationById( request.projectId, request.id ), errors ),
+        resetCommunication: (): void => patchState( store, { communication: defaultCommunication } ),
     }) ),
-    withMethods( (store) => {
-        const trackElementLoader = <T>(source: Observable<T>): Observable<T> => source.pipe(
-            initialize( (): void => patchState( store, (state: CommunicationStoreModel) => ({
-                communication: StateHelper.updateElementLoader( state.communication, true ),
-            }) ) ),
-            finalize( (): void => patchState( store, (state: CommunicationStoreModel) => ({
-                communication: StateHelper.updateElementLoader( state.communication, false ),
-            }) ) ),
-        )
-
-        return {
-            fetchCommunicationsPage: rxMethod<CommunicationsPageRequest>( pipe(
-                switchMap( (request: CommunicationsPageRequest): Observable<PageModel<CommunicationModel>> => store.api.findCommunications(
-                    request.projectId,
-                    request.pageNumber,
-                    request.pageSize,
-                    store.communications.params(),
-                ).pipe(
-                    initialize( (): void => patchState( store, (state: CommunicationStoreModel) => ({
-                        communications: StateHelper.updatePageLoader( state.communications, true ),
-                    }) ) ),
-                    finalize( (): void => patchState( store, (state: CommunicationStoreModel) => ({
-                        communications: StateHelper.updatePageLoader( state.communications, false ),
-                    }) ) ),
-                    catchError( (error: ErrorModel): Observable<never> => {
-                        if (error.status === 503) {
-                            reportError( store.registryFacade, error )
-                        } else {
-                            patchState( store, (state: CommunicationStoreModel) => ({
-                                communications: PageStateHelper.withError( state.communications, error ),
-                            }) )
-                        }
-                        return EMPTY
-                    } ),
-                ) ),
-                tap( (page: PageModel<CommunicationModel>): void => patchState( store, (state: CommunicationStoreModel) => ({
-                    communications: {
-                        ...state.communications,
-                        params: { ...state.communications.params, resetSearch: false },
-                        element: page,
-                    },
-                }) ) ),
-            ) ),
-
-            updateCommunicationsPageSearchParams: (params: CommunicationPageParamsModel): void => {
-                patchState( store, (state: CommunicationStoreModel) => ({
-                    communications: { ...state.communications, params: params },
-                }) )
-            },
-
-            fetchCommunication: rxMethod<CommunicationRequest>( pipe(
-                switchMap( (request: CommunicationRequest): Observable<CommunicationModel> =>
-                    store.api.findCommunicationById( request.projectId, request.id ).pipe(
-                        trackElementLoader,
-                        notifyOnError( store.registryFacade ),
-                    ),
-                ),
-                tap( (communication: CommunicationModel): void => patchState( store, (state: CommunicationStoreModel) => ({
-                    communication: { ...state.communication, element: communication },
-                }) ) ),
-            ) ),
-
-            searchMovements: rxMethod<SearchRequest>( pipe(
-                switchMap( (request: SearchRequest): Observable<MovementModel[]> =>
-                    store.api.searchMovements( request.projectId, request.textSearched ).pipe(
-                        trackElementLoader,
-                        notifyOnError( store.registryFacade ),
-                    ),
-                ),
-                tap( (movements: MovementModel[]): void => patchState( store, (state: CommunicationStoreModel) => ({
-                    metadata: {
-                        ...state.metadata,
-                        searchedMovements: movements.map( (movement: MovementModel): SelectItem<MovementModel> =>
-                            MovementHelper.toActivitySelectItem( movement, store.datePipe ),
-                        ),
-                    },
-                }) ) ),
-            ) ),
-
-            searchAlerts: rxMethod<SearchRequest>( pipe(
-                switchMap( (request: SearchRequest): Observable<AlertModel[]> =>
-                    store.api.searchAlerts( request.projectId, request.textSearched ).pipe(
-                        trackElementLoader,
-                        notifyOnError( store.registryFacade ),
-                    ),
-                ),
-                tap( (alerts: AlertModel[]): void => patchState( store, (state: CommunicationStoreModel) => ({
-                    metadata: {
-                        ...state.metadata,
-                        searchedAlerts: alerts.map( (alert: AlertModel): SelectItem<AlertModel> =>
-                            AlertHelper.toSelectItem( alert, store.datePipe ),
-                        ),
-                    },
-                }) ) ),
-            ) ),
-
-            resetCommunication: (): void => {
-                patchState( store, { communication: defaultCommunication } )
-            },
-        }
-    } ),
+    withMethods( (store, api = inject( CommunicationApi ), errors = inject( ErrorReporter ), datePipe = inject( DateFormatPipe )) => ({
+        searchMovements: metadataFetcher<CommunicationStoreModel, 'searchedMovements', SearchRequest, MovementModel[]>(
+            store, 'searchedMovements',
+            (request: SearchRequest) => api.searchMovements( request.projectId, request.textSearched ).pipe( trackElement( store, 'communication' ) ),
+            errors,
+            (movements: MovementModel[]): SelectItem<MovementModel>[] => movements.map( (movement: MovementModel): SelectItem<MovementModel> => MovementHelper.toActivitySelectItem( movement, datePipe ) ),
+        ),
+        searchAlerts: metadataFetcher<CommunicationStoreModel, 'searchedAlerts', SearchRequest, AlertModel[]>(
+            store, 'searchedAlerts',
+            (request: SearchRequest) => api.searchAlerts( request.projectId, request.textSearched ).pipe( trackElement( store, 'communication' ) ),
+            errors,
+            (alerts: AlertModel[]): SelectItem<AlertModel>[] => alerts.map( (alert: AlertModel): SelectItem<AlertModel> => AlertHelper.toSelectItem( alert, datePipe ) ),
+        ),
+    }) ),
 )

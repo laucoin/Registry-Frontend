@@ -7,6 +7,11 @@ import {RegistryConfig} from '@core/config/registry.config'
 import {GenericHelper} from '@shared/helpers/generic.helper'
 import {SeverityEnum} from '@shared/models/enumeration/severity.enum'
 
+/**
+ * Purpose: Builds loader states and notification messages.
+ * Scope: Computes page and element loading flags and notification options with their configured life.
+ * Limits: Holds no state of its own.
+ */
 export class StateHelper {
     public static updatePageLoader<P, M extends GenericModel>(
         requestInformation: PageRequestInformationModel<P, M>,

@@ -5,14 +5,14 @@
                 @if (showContextMenu()) {
                     <p-button text rounded class='return-project' (onClick)='backToProjects()' (keydown.enter)='backToProjects()'
                               icon='pi pi-arrow-left'
-                              [label]='registryFacade.tinyScreen() ? "" : registryFacade.selectedProject()?.name'></p-button>
+                              [label]='uiFacade.tinyScreen() ? "" : sessionFacade.selectedProject()?.name'></p-button>
                 } @else {
                     <a [tabIndex]='-1'
                        [routerLink]='RegistryRouteEnum.PROJECTS.toString()'
                        [attr.href]='RegistryRouteEnum.PROJECTS.toString()'>
                         <img
                                 [alt]="'global.menu.projects' | transloco"
-                                [src]='registryFacade.logoPath()!'
+                                [src]='uiFacade.logoPath()!'
                                 class='cursor-pointer h-15 w-auto max-w-none'
                                 height='60' />
                     </a>
@@ -21,7 +21,7 @@
         </ng-template>
         <ng-template #item let-item>
             <a class='menu-item card main-bar-card clickable-card cursor-pointer'
-               [class.router-active-card]='StringHelper.isRouteActive(item.url)'
+               [class.router-active-card]='isRouteActive(item.url)'
                [routerLink]='item.url'
                [attr.href]='item.url'>
                 <i [class]='item.icon'></i>
@@ -29,20 +29,21 @@
             </a>
         </ng-template>
         <ng-template #end>
-            @if (!registryFacade.tinyScreen()) {
+            @if (!uiFacade.tinyScreen()) {
                 <p-button (onClick)='helpDialogOpened = true'
                           class='information-button'
                           text
                           rounded
                           severity='secondary'
                           icon='pi pi-question-circle'
+                  [ariaLabel]='"global.actions.help" | transloco'
                           size='small'
                           styleClass='me-3' />
             }
-            @if (registryFacade.currentUser()) {
-                <p-button (onClick)='userMenu.toggle($event)' severity='secondary' [text]='registryFacade.tinyScreen()'>
+            @if (sessionFacade.currentUser()) {
+                <p-button (onClick)='userMenu.toggle($event)' severity='secondary' [text]='uiFacade.tinyScreen()'>
                     <p-avatar [textContent]='initials()' shape='circle' />
-                    @if (!registryFacade.tinyScreen()) {
+                    @if (!uiFacade.tinyScreen()) {
                         <div>
                             <b>{{ displayName() }}</b>
                             @if (role()) {
@@ -62,7 +63,7 @@
         <p-menubar [model]='contextMenuItems()'>
             <ng-template #item let-item>
                 <a class='context-menu-item card clickable-card cursor-pointer'
-                   [class.router-active-card]='GenericHelper.nonNull(item.url) ? StringHelper.isRouteActive(item.url) : false'
+                   [class.router-active-card]='GenericHelper.nonNull(item.url) ? isRouteActive(item.url) : false'
                    [routerLink]='item.url'
                    [attr.href]='item.url'>
                     <i [class]='item.icon'></i>
@@ -76,18 +77,20 @@
     }
 </div>
 
-<div [style]='{ "height": showContextMenu() ? "140px" : "82px" }'></div>
+<div [class]='showContextMenu() ? "h-[140px]" : "h-[82px]"'></div>
 
-<p-dialog
-        class='text-justify'
-        modal
-        [header]='"global.welcome.title" | transloco'
-        [breakpoints]='breakpoint'
-        [(visible)]='helpDialogOpened'
-        [draggable]='false'
-        [resizable]='false'>
-    <app-info />
-</p-dialog>
+@defer (when helpDialogOpened) {
+    <p-dialog
+            class='text-justify'
+            modal
+            [header]='"global.welcome.title" | transloco'
+            [breakpoints]='breakpoint'
+            [(visible)]='helpDialogOpened'
+            [draggable]='false'
+            [resizable]='false'>
+        <app-info />
+    </p-dialog>
+}
 
 <p-popover #userMenu appendTo='body'>
     <p-menu [model]='userMenuItems()'

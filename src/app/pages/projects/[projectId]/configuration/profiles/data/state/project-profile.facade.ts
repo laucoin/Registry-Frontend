@@ -17,6 +17,11 @@ import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { CreatedProjectProfiles } from '@pages/projects/[projectId]/configuration/profiles/data/dto/created-project-profiles.dto'
 import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.pipe'
 
+/**
+ * Purpose: Public entry point of the project profile domain for pages, components and guards.
+ * Scope: Exposes the project profile store as signals, forwards its queries and runs the project profile commands with their notifications.
+ * Limits: Holds no state of its own and builds no HTTP request itself.
+ */
 @Injectable()
 export class ProjectProfileFacade extends GenericProjectElementFacade {
     private readonly api: ProjectProfileApi = inject( ProjectProfileApi )
@@ -86,69 +91,75 @@ export class ProjectProfileFacade extends GenericProjectElementFacade {
 
     public fetchProjectProfile (id: string): Observable<ProjectProfileModel> {
         return this.api.findProjectProfileById( this.selectedProjectId(), id ).pipe(
-            notifyOnError( this.registryFacade ),
+            notifyOnError( this.uiFacade ),
         )
     }
 
     public createProjectProfiles (projectProfiles: ProjectProfilesDto): Observable<CreatedProjectProfiles> {
         return this.api.createProjectProfiles( this.selectedProjectId(), projectProfiles ).pipe(
-            notifyUnavailableOnly( this.registryFacade ),
+            notifyUnavailableOnly( this.uiFacade ),
             tap( (creationStatus: CreatedProjectProfiles): void => {
-                const created: number = creationStatus?.createdUserIds?.length ?? 0
-                const notCreated: number = creationStatus?.notCreatedUserIds?.length ?? 0
-                if (notCreated > 0) {
-                    const prefixKey: string = 'project-profiles.notifications.partial-invitation'
-                    this.notifyMessage(
-                        SeverityEnum.WARNING,
-                        this.pluralTranslationPipe.transform( prefixKey + '.title', created ),
-                        this.pluralTranslationPipe.transform( prefixKey + '.message', created ),
-                        'pi pi-key',
-                        { asked: created + notCreated, created: created },
-                    )
-                } else {
-                    this.notifyMessage(
-                        SeverityEnum.SUCCESS,
-                        this.pluralTranslationPipe.transform(
-                            'project-profiles.notifications.create.title',
-                            creationStatus.createdUserIds,
-                        ),
-                        this.pluralTranslationPipe.transform(
-                            'project-profiles.notifications.create.message',
-                            creationStatus.createdUserIds,
-                        ),
-                        'pi pi-key',
-                        { created: created },
-                    )
-                }
+                this.notifyCreation( creationStatus )
                 this.refreshPage()
             } ),
         )
     }
 
+    private notifyCreation (creationStatus: CreatedProjectProfiles): void {
+        const created: number = creationStatus?.createdUserIds?.length ?? 0
+        const notCreated: number = creationStatus?.notCreatedUserIds?.length ?? 0
+        if (notCreated > 0) {
+            this.notifyPartialCreation( created, notCreated )
+        } else {
+            this.notifyFullCreation( creationStatus, created )
+        }
+    }
+
+    private notifyPartialCreation (created: number, notCreated: number): void {
+        const prefixKey: string = 'project-profiles.notifications.partial-invitation'
+        this.notifyMessage(
+            SeverityEnum.WARNING,
+            this.pluralTranslationPipe.transform( prefixKey + '.title', created ),
+            this.pluralTranslationPipe.transform( prefixKey + '.message', created ),
+            'pi pi-key',
+            { asked: created + notCreated, created: created },
+        )
+    }
+
+    private notifyFullCreation (creationStatus: CreatedProjectProfiles, created: number): void {
+        this.notifyMessage(
+            SeverityEnum.SUCCESS,
+            this.pluralTranslationPipe.transform( 'project-profiles.notifications.create.title', creationStatus.createdUserIds ),
+            this.pluralTranslationPipe.transform( 'project-profiles.notifications.create.message', creationStatus.createdUserIds ),
+            'pi pi-key',
+            { created: created },
+        )
+    }
+
     public updateProjectProfile (id: string, projectProfile: ProjectProfileDto): Observable<ProjectProfileModel> {
         return this.api.updateProjectProfileById( this.selectedProjectId(), id, projectProfile ).pipe(
-            notifyUnavailableOnly( this.registryFacade ),
+            notifyUnavailableOnly( this.uiFacade ),
             tap( (updated: ProjectProfileModel): void => this.onCommandSuccess( 'update', updated ) ),
         )
     }
 
     public blockProjectProfile (profile: ProjectProfileModel): Observable<ProjectProfileModel> {
         return this.api.blockProjectProfileById( this.selectedProjectId(), profile.id ).pipe(
-            notifyOnError( this.registryFacade ),
+            notifyOnError( this.uiFacade ),
             tap( (): void => this.onCommandSuccess( 'disable', profile ) ),
         )
     }
 
     public unblockProjectProfile (profile: ProjectProfileModel): Observable<ProjectProfileModel> {
         return this.api.unblockProjectProfileById( this.selectedProjectId(), profile.id ).pipe(
-            notifyOnError( this.registryFacade ),
+            notifyOnError( this.uiFacade ),
             tap( (): void => this.onCommandSuccess( 'enable', profile ) ),
         )
     }
 
     public deleteProjectProfile (profile: ProjectProfileModel): Observable<void> {
         return this.api.deleteProjectProfileById( undefined, profile.id ).pipe(
-            notifyOnError( this.registryFacade ),
+            notifyOnError( this.uiFacade ),
             tap( (): void => this.onCommandSuccess( 'delete', profile ) ),
         )
     }

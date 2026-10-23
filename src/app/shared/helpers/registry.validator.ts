@@ -8,6 +8,11 @@ import { DateHelper } from '@shared/helpers/date.helper'
 import { StringHelper } from '@shared/helpers/string.helper'
 import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
 
+/**
+ * Purpose: Reactive form validators of the application.
+ * Scope: Provides blank, date, range and option-dependent validators.
+ * Limits: Validates on the client for usability; the backend validates again.
+ */
 export class RegistryValidators {
     public static nonBlank (): ValidatorFn {
         return (control: AbstractControl): ValidationErrors | null => {

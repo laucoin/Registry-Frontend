@@ -24,7 +24,7 @@
                             </ng-template>
                         </p-auto-complete>
                     </div>
-                    <p-button icon='pi pi-times'
+                    <p-button [ariaLabel]='"global.actions.remove" | transloco' icon='pi pi-times'
                               size='small'
                               severity='danger'
                               rounded
@@ -61,7 +61,7 @@
                             </ng-template>
                         </p-auto-complete>
                     </div>
-                    <p-button icon='pi pi-times'
+                    <p-button [ariaLabel]='"global.actions.remove" | transloco' icon='pi pi-times'
                               size='small'
                               severity='danger'
                               rounded
@@ -86,7 +86,7 @@
                                (keydown.enter)='submit()'
                                [formControl]='newAlertTitle' />
                     </div>
-                    <p-button icon='pi pi-times'
+                    <p-button [ariaLabel]='"global.actions.remove" | transloco' icon='pi pi-times'
                               size='small'
                               severity='danger'
                               rounded
@@ -105,9 +105,9 @@
     <app-form-error [error]='error()' />
     <div class='flex items-start' [formGroup]='form'>
         @if (GenericHelper.nonNull(facade.communication())) {
-            <p-button (onClick)='resetForm()' class='me-2' icon='pi pi-times' rounded text />
+            <p-button [ariaLabel]='"global.actions.reset" | transloco' (onClick)='resetForm()' class='me-2' icon='pi pi-times' rounded text />
         } @else {
-            <p-button [disabled]='actions().length === 0' (onClick)='menu.toggle($event)' class='me-2' icon='pi pi-plus' rounded
+            <p-button [ariaLabel]='"global.actions.add" | transloco' [disabled]='actions().length === 0' (onClick)='menu.toggle($event)' class='me-2' icon='pi pi-plus' rounded
                       text />
         }
         <div class='field-container'>
@@ -125,7 +125,7 @@
                                   [invalid]='FormHelper.invalid(form)'
                                   translationPrefix='communications.form.error.link' />
         </div>
-        <p-button class='ms-2' outlined rounded severity='success'
+        <p-button [ariaLabel]='(GenericHelper.nonNull(facade.communication()) ? "global.actions.edit" : "global.actions.create") | transloco' class='ms-2' outlined rounded severity='success'
                   [icon]='GenericHelper.nonNull(facade.communication()) ? "pi pi-check" : "pi pi-send"'
                   [disabled]='saving()'
                   (onClick)='submit()' />

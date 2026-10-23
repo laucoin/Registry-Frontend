@@ -1,6 +1,11 @@
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
 import { GenericHelper } from '@shared/helpers/generic.helper'
 
+/**
+ * Purpose: String and route utilities.
+ * Scope: Cache busting, truncation, blank checks, number conversion, digit padding, title case and active route detection.
+ * Limits: No translation and no browser access; the path is passed in.
+ */
 export class StringHelper {
     public static addCacheBustingToUrl (url: string): string {
         const separator: string = url.includes( '?' ) ? '&' : '?'
@@ -41,9 +46,9 @@ export class StringHelper {
         return value.toString().padStart( range, '0' )
     }
 
-    public static isRouteActive (route: RegistryRouteEnum): boolean {
+    public static isRouteActive (route: RegistryRouteEnum, pathname: string): boolean {
         const castedRoute: string = StringHelper.sanitizeRoute( route )
-        const currentUri: string = StringHelper.sanitizeRoute( location.pathname )
+        const currentUri: string = StringHelper.sanitizeRoute( pathname )
         const isUserRoute: boolean = RegistryRouteEnum.USERS.includes( castedRoute )
 
         switch (true) {

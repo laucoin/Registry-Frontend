@@ -30,6 +30,11 @@ import { ParticipantFormComponent } from '@pages/projects/[projectId]/configurat
 import { ElementSkeletonComponent } from '@shared/ui/common/element-skeleton/element-skeleton.component'
 import { Card } from 'primeng/card'
 
+/**
+ * Purpose: Page listing the group member with search and lazy loading.
+ * Scope: Binds the list component to the facade and reloads on command events.
+ * Limits: Holds no domain state and never calls the backend.
+ */
 @Component( {
     selector: 'app-group-member-list',
     imports: [
@@ -103,30 +108,21 @@ export class GroupMemberListPage extends GenericListComponent implements OnDestr
                 switchMap( (): Observable<GroupModel> => this.facade.fetchGroup( this.route.snapshot.params['groupId'] ) ),
             ).subscribe( (group: GroupModel): void => this.group.set( group ) ),
         )
-
-        this.subscriptions.add(
-            this.participantFacade.handleParticipantFirstPageReload().pipe(
-                tap( (): void => {
-                    this.createMemberFormLayerOpened = false
-                    this.facade.fetchGroupMembersPage(
-                        this.route.snapshot.params['groupId'],
-                        undefined,
-                        undefined)
-                } ),
-            ).subscribe(),
+        this.reloadMembersOn( this.participantFacade.handleParticipantFirstPageReload(), undefined, undefined )
+        this.reloadMembersOn(
+            this.participantFacade.handleParticipantCurrentPageReload(),
+            () => this.facade.groupMembersPage()?.pageNumber,
+            () => this.facade.groupMembersPage()?.pageSize,
         )
+    }
 
-        this.subscriptions.add(
-            this.participantFacade.handleParticipantCurrentPageReload().pipe(
-                tap( (): void => {
-                    this.createMemberFormLayerOpened = false
-                    this.facade.fetchGroupMembersPage(
-                        this.route.snapshot.params['groupId'],
-                        this.facade.groupsPage()?.pageNumber,
-                        this.facade.groupsPage()?.pageSize)
-                } ),
-            ).subscribe(),
-        )
+    private reloadMembersOn (events: Observable<unknown>, pageNumber: (() => number | undefined) | undefined, pageSize: (() => number | undefined) | undefined): void {
+        this.subscriptions.add( events.pipe(
+            tap( (): void => {
+                this.createMemberFormLayerOpened = false
+                this.facade.fetchGroupMembersPage( this.route.snapshot.params['groupId'], pageNumber?.(), pageSize?.() )
+            } ),
+        ).subscribe() )
     }
 
     protected initAddMembersForm (): void {

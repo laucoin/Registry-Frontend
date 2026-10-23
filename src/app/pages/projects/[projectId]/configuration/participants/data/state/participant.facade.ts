@@ -15,6 +15,11 @@ import { CommandEvent } from '@shared/helpers/facade/command-event.service'
 import { UserModel } from '@shared/models/model/user.model'
 import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.enum'
 
+/**
+ * Purpose: Public entry point of the participant domain for pages, components and guards.
+ * Scope: Exposes the participant store as signals, forwards its queries and runs the participant commands with their notifications.
+ * Limits: Holds no state of its own and builds no HTTP request itself.
+ */
 @Injectable()
 export class ParticipantFacade extends GenericProjectElementFacade {
     private readonly store: InstanceType<typeof ParticipantStore> = inject( ParticipantStore )
@@ -158,41 +163,41 @@ export class ParticipantFacade extends GenericProjectElementFacade {
 
     public fetchParticipant (id: string): Observable<ParticipantModel> {
         return this.api.findParticipantById( this.selectedProjectId(), id ).pipe(
-            notifyOnError( this.registryFacade ),
+            notifyOnError( this.uiFacade ),
         )
     }
 
     public createParticipant (participant: ParticipantDto): Observable<ParticipantModel> {
         return this.api.createParticipant( this.selectedProjectId(), participant ).pipe(
-            notifyUnavailableOnly( this.registryFacade ),
+            notifyUnavailableOnly( this.uiFacade ),
             tap( (created: ParticipantModel): void => this.onCommandSuccess( 'create', created ) ),
         )
     }
 
     public updateParticipant (id: string, participant: ParticipantDto): Observable<ParticipantModel> {
         return this.api.updateParticipantById( this.selectedProjectId(), id, participant ).pipe(
-            notifyUnavailableOnly( this.registryFacade ),
+            notifyUnavailableOnly( this.uiFacade ),
             tap( (updated: ParticipantModel): void => this.onCommandSuccess( 'update', updated ) ),
         )
     }
 
     public disableParticipant (id: string): Observable<ParticipantModel> {
         return this.api.disableParticipantById( this.selectedProjectId(), id ).pipe(
-            notifyOnError( this.registryFacade ),
+            notifyOnError( this.uiFacade ),
             tap( (disabled: ParticipantModel): void => this.onCommandSuccess( 'disable', disabled ) ),
         )
     }
 
     public enableParticipant (id: string): Observable<ParticipantModel> {
         return this.api.enableParticipantById( this.selectedProjectId(), id ).pipe(
-            notifyOnError( this.registryFacade ),
+            notifyOnError( this.uiFacade ),
             tap( (enabled: ParticipantModel): void => this.onCommandSuccess( 'enable', enabled ) ),
         )
     }
 
     public deleteParticipant (participant: ParticipantModel): Observable<void> {
         return this.api.deleteParticipantById( undefined, participant.id ).pipe(
-            notifyOnError( this.registryFacade ),
+            notifyOnError( this.uiFacade ),
             tap( (): void => this.onCommandSuccess( 'delete', participant ) ),
         )
     }

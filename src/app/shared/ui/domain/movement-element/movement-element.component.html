@@ -3,18 +3,18 @@
                   [actionMenuVisible]='actionMenuVisible()'
                   [icon]='movement().type.value === MovementTypeEnum.OUT ? "pi pi-arrow-up" : "pi pi-arrow-down"'>
     <div class='element-card'>
-        <div class='type flex' [class.justify-center]='registryFacade.tinyScreen()'>
+        <div class='type flex' [class.justify-center]='uiFacade.tinyScreen()'>
             <app-severity-tag
                     [severity]='movement().type.value === MovementTypeEnum.OUT ? SeverityEnum.WARNING : SeverityEnum.SUCCESS'
                     [value]='typeAndReason()'/>
         </div>
-        <div class='datetime flex' [class.justify-center]='registryFacade.tinyScreen()'>
+        <div class='datetime flex' [class.justify-center]='uiFacade.tinyScreen()'>
             <app-severity-circle class='me-2'
                                  [severity]='movement().visible ? SeverityEnum.SUCCESS : SeverityEnum.DANGER'/>
             <b>{{ movement().dateTime | dateFormat: 'datetime' }}</b>
         </div>
         <div class='content flex'
-             [class.justify-center]='registryFacade.tinyScreen()'>
+             [class.justify-center]='uiFacade.tinyScreen()'>
             <div class='flex items-center'>
                 @switch (true) {
                     @case (total() <= 0) {
@@ -41,7 +41,7 @@
             </div>
         </div>
         @if (reversibleAuthorized()) {
-            <div class='flex reverse-action' [class.justify-center]='registryFacade.tinyScreen()'>
+            <div class='flex reverse-action' [class.justify-center]='uiFacade.tinyScreen()'>
                 @if (total() <= 0) {
                     <p-skeleton width='10rem' borderRadius='1rem'/>
                 } @else {
@@ -58,7 +58,7 @@
         }
     </div>
     @if (communication()) {
-        <div class='mt-4 flex items-center' [class.justify-center]='registryFacade.tinyScreen()'>
+        <div class='mt-4 flex items-center' [class.justify-center]='uiFacade.tinyScreen()'>
             <p-button (onClick)='communicationsLayerOpened.set(true)'
                       [icon]='ProjectOptionEnum.COMMUNICATION | optionIcon'
                       [label]='"movements.communication.see-communication" | transloco'
@@ -220,7 +220,7 @@
           modal
           maximizable
           appendTo='body'
-          (onShow)='registryFacade.tinyScreen() ? dialog.maximized.set(true) : null'
+          (onShow)='uiFacade.tinyScreen() ? dialog.maximized.set(true) : null'
           [breakpoints]='breakpoint'
           [(visible)]='communicationsLayerOpened'>
     <ng-template #header>

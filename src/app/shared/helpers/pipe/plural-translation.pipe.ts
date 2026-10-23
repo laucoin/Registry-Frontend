@@ -1,6 +1,11 @@
 import { inject, Pipe, PipeTransform } from '@angular/core'
 import {TranslocoService} from '@jsverse/transloco'
 
+/**
+ * Purpose: Picks the plural form of a translation key.
+ * Scope: Chooses zero, one, two or few from a number or a list length.
+ * Limits: Returns a key; translation is done by the caller.
+ */
 @Pipe( {
     name: 'pluralTranslation', standalone: true, pure: false,
 } )

@@ -12,6 +12,11 @@ import { Button } from 'primeng/button'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { GenericElementComponent } from '@shared/ui/base/generic-element.component'
 
+/**
+ * Purpose: User settings page.
+ * Scope: Lets the user choose a theme and a language.
+ * Limits: Saves through the registry facade only.
+ */
 @Component( {
     selector: 'app-setting',
     imports: [
@@ -32,14 +37,14 @@ import { GenericElementComponent } from '@shared/ui/base/generic-element.compone
 } )
 export class SettingPage extends GenericElementComponent {
     protected themeControl: FormControl = new FormControl( this.registryFacade.currentUserTheme() )
-    protected languageControl: FormControl = new FormControl( this.registryFacade.currentUserLanguage() )
+    protected languageControl: FormControl = new FormControl( this.sessionFacade.currentUserLanguage() )
 
     protected confirmImpersonate (): void {
         this.confirmationService.confirm(
             this.buildConfirmation(
                 'settings.actions.confirmations.impersonate',
                 'pi pi-exclamation-triangle',
-                this.registryFacade.currentUser(),
+                this.sessionFacade.currentUser(),
                 SeverityEnum.DANGER,
                 (): void => this.registryFacade.impersonateCurrentUser(),
             ),

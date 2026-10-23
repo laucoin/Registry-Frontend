@@ -20,7 +20,6 @@ import {
     ProjectProfileFacade,
 } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.facade'
 import {RegistryRouteEnum} from '@core/routing/registry-route.enum'
-import {CurrentUserModel} from '@shared/models/model/current-user.model'
 import {SeverityTagComponent} from '@shared/ui/common/severity-tag/severity-tag.component'
 import {GenericElementComponent} from '@shared/ui/base/generic-element.component'
 import {CustomDateFormatPipe} from '@shared/helpers/pipe/custom-date-format.pipe'
@@ -31,6 +30,11 @@ import {ProjectAuthorityEnum} from '@shared/models/enumeration/project-authority
 import {ElementActionEnum} from '@shared/models/enumeration/element-action.enum'
 import {AvailabilityStatusEnum} from '@shared/models/enumeration/availability-status.enum'
 
+/**
+ * Purpose: Card presenting one project profile with its actions.
+ * Scope: Renders the details, the actions menu and the confirmations of the element.
+ * Limits: Receives the element as an input and calls the facade for commands; it holds no list state.
+ */
 @Component({
     selector: 'app-project-profile-element',
     imports: [
@@ -58,86 +62,91 @@ export class ProjectProfileElementComponent extends GenericElementComponent impl
     public readonly view: InputSignal<'user' | 'project'> = input.required()
     public readonly profile: InputSignal<ProjectProfileModel> = input.required()
 
-    protected readonly actions: Signal<MenuItem[]> = computed((): MenuItem[] => {
-        const currentUser: CurrentUserModel | undefined = this.registryFacade.currentUser()
-        const isCurrentUserProfile: boolean = currentUser?.id === this.profile().user.id
-        const isSelectedProfile: boolean = this.registryFacade.selectedProject()?.id === this.profile().project.id
+    private readonly isCurrentUserProfile: Signal<boolean> = computed((): boolean => this.sessionFacade.currentUser()?.id === this.profile().user.id)
+    private readonly isSelectedProfile: Signal<boolean> = computed((): boolean => this.sessionFacade.selectedProject()?.id === this.profile().project.id)
 
-        return [
-            {
+    protected readonly actions: Signal<MenuItem[]> = computed((): MenuItem[] => [
+        this.selectAction(),
+        this.editAction(),
+        this.disableAction(),
+        this.enableAction(),
+        this.deleteAction(),
+    ])
+
+    private selectAction(): MenuItem {
+        return {
                 label: 'project-profiles.actions.select',
                 icon: 'pi pi-arrow-right',
-                visible: isCurrentUserProfile && !isSelectedProfile && this.actionIsEnable(ElementActionEnum.PROJECT_PROFILE_SELECT),
+                visible: this.isCurrentUserProfile() && !this.isSelectedProfile() && this.actionIsEnable(ElementActionEnum.PROJECT_PROFILE_SELECT),
                 command: (): void => {
                     this.router.navigateByUrl(
                         RegistryRouteEnum.PROJECT.replace(':projectId', this.profile().project.id),
                     ).catch(console.error)
                 },
-            },
-            {
+            }
+    }
+
+    private editAction(): MenuItem {
+        return {
                 label: 'project-profiles.actions.edit',
                 icon: 'pi pi-pen-to-square',
                 disabled: !this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_U),
-                visible: !isCurrentUserProfile && this.actionIsEnable(ElementActionEnum.PROJECT_PROFILE_UPDATE),
+                visible: !this.isCurrentUserProfile() && this.actionIsEnable(ElementActionEnum.PROJECT_PROFILE_UPDATE),
                 command: (): void => {
                     this.router.navigateByUrl(
-                        RegistryRouteEnum.PROJECTS_CONFIGURATION_PROFILES_EDITION.replace(':profileId', this.profile().id).replace(':projectId', this.registryFacade.currentProjectId() ?? ''),
+                        RegistryRouteEnum.PROJECTS_CONFIGURATION_PROFILES_EDITION.replace(':profileId', this.profile().id).replace(':projectId', this.sessionFacade.currentProjectId() ?? ''),
                     ).catch(console.error)
                 },
-            },
-            {
+            }
+    }
+
+    private disableAction(): MenuItem {
+        return {
                 label: 'project-profiles.actions.disable',
                 icon: 'pi pi-ban',
                 disabled: this.busy() || !this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_U),
-                visible: !isCurrentUserProfile && this.actionIsEnable(ElementActionEnum.PROJECT_PROFILE_BLOCK) && this.profile().visible && this.profile().status?.value === ProfileStatusEnum.ACCEPTED,
-                command: (): void => {
-                    this.confirmationService.confirm(
-                        this.buildConfirmation(
-                            'project-profiles.actions.confirmations.disable',
-                            'pi pi-exclamation-triangle',
-                            this.profile(),
-                            SeverityEnum.WARNING,
-                            (): void => this.run(this.facade.blockProjectProfile(this.profile())),
-                        ),
-                    )
-                },
-            },
-            {
+                visible: !this.isCurrentUserProfile() && this.actionIsEnable(ElementActionEnum.PROJECT_PROFILE_BLOCK) && this.profile().visible && this.profile().status?.value === ProfileStatusEnum.ACCEPTED,
+                command: this.confirmThen(
+                    'project-profiles.actions.confirmations.disable',
+                    'pi pi-exclamation-triangle',
+                    this.profile(),
+                    SeverityEnum.WARNING,
+                    (): void => this.run(this.facade.blockProjectProfile(this.profile())),
+                ),
+            }
+    }
+
+    private enableAction(): MenuItem {
+        return {
                 label: 'project-profiles.actions.enable',
                 icon: 'pi pi-replay',
                 disabled: this.busy() || !this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_U),
-                visible: !isCurrentUserProfile && this.actionIsEnable(ElementActionEnum.PROJECT_PROFILE_UNBLOCK) && !this.profile().visible,
-                command: (): void => {
-                    this.confirmationService.confirm(
-                        this.buildConfirmation(
-                            'project-profiles.actions.confirmations.enable',
-                            'pi pi-info-circle',
-                            this.profile(),
-                            SeverityEnum.INFO,
-                            (): void => this.run(this.facade.unblockProjectProfile(this.profile())),
-                        ),
-                    )
-                },
-            },
-            {
+                visible: !this.isCurrentUserProfile() && this.actionIsEnable(ElementActionEnum.PROJECT_PROFILE_UNBLOCK) && !this.profile().visible,
+                command: this.confirmThen(
+                    'project-profiles.actions.confirmations.enable',
+                    'pi pi-info-circle',
+                    this.profile(),
+                    SeverityEnum.INFO,
+                    (): void => this.run(this.facade.unblockProjectProfile(this.profile())),
+                ),
+            }
+    }
+
+    private deleteAction(): MenuItem {
+        return {
                 label: 'project-profiles.actions.delete',
                 icon: 'pi pi-trash',
                 disabled: this.busy() || !this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_D),
                 visible: this.actionIsEnable(ElementActionEnum.PROJECT_PROFILE_DELETE),
-                command: (): void => {
-                    this.confirmationService.confirm(
-                        this.buildConfirmation(
-                            'project-profiles.actions.confirmations.delete',
-                            'pi pi-exclamation-triangle',
-                            this.profile(),
-                            SeverityEnum.DANGER,
-                            (): void => this.run(this.facade.deleteProjectProfile(this.profile())),
-                        ),
-                    )
-                },
-            },
-        ]
-    })
+                command: this.confirmThen(
+                    'project-profiles.actions.confirmations.delete',
+                    'pi pi-exclamation-triangle',
+                    this.profile(),
+                    SeverityEnum.DANGER,
+                    (): void => this.run(this.facade.deleteProjectProfile(this.profile())),
+                ),
+            }
+    }
 
     protected readonly availabilityStatusSeverity: Signal<SeverityEnum> = computed((): SeverityEnum =>
         this.profile().availabilityStatus?.value === AvailabilityStatusEnum.AVAILABLE ? SeverityEnum.SUCCESS : SeverityEnum.INFO,

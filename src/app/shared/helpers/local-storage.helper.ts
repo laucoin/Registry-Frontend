@@ -1,5 +1,10 @@
 import { StorageUtils } from '@shared/helpers/storage.helper'
 
+/**
+ * Purpose: Typed access to the local storage.
+ * Scope: Wraps the storage utilities on localStorage.
+ * Limits: Not for sensitive data; it does not expire values.
+ */
 export class LocalStorageUtils {
     public static get (key: string): unknown {
         return StorageUtils.get( localStorage, key )

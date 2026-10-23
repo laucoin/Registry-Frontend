@@ -21,6 +21,11 @@ import { MessageComponent } from '@shared/ui/common/message/message.component'
 import { SeverityTagComponent } from '@shared/ui/common/severity-tag/severity-tag.component'
 import { DateHelper } from '@shared/helpers/date.helper'
 
+/**
+ * Purpose: Dialog that presents the details of an element.
+ * Scope: Hosts the projected content in a modal.
+ * Limits: Owns no data; the parent provides it.
+ */
 @Component( {
     selector: 'app-dialog-element',
     imports: [
@@ -46,65 +51,69 @@ export class DialogElementComponent extends GenericElementComponent {
     public readonly nextAuthorId: InputSignal<string | undefined> = input()
 
     protected readonly actions: Signal<MenuItem[]> = computed( (): MenuItem[] => [
-        {
+        this.editAction(),
+        this.disableAction(),
+        this.enableAction(),
+        this.deleteAction(),
+    ] )
+
+    private editAction(): MenuItem {
+        return {
             label: 'communications.actions.edit',
             icon: 'pi pi-pen-to-square',
             disabled: !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_COMMUNICATION_U ),
             visible: this.actionIsEnable( ElementActionEnum.COMMUNICATION_UPDATE ),
             command: (): void => this.facade.fetchCommunication( this.communication().id ),
-        },
-        {
+        }
+    }
+
+    private disableAction(): MenuItem {
+        return {
             label: 'communications.actions.disable',
             icon: 'pi pi-eye-slash',
             disabled: this.busy() || !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_COMMUNICATION_U ),
             visible: this.actionIsEnable(ElementActionEnum.COMMUNICATION_DISABLE ) && this.communication().visible,
-            command: (): void => {
-                this.confirmationService.confirm(
-                    this.buildConfirmation(
-                        'communications.actions.confirmations.disable',
-                        'pi pi-exclamation-triangle',
-                        this.communication(),
-                        SeverityEnum.WARNING,
-                        (): void => this.run(this.facade.disableCommunication(this.communication().id)),
-                    ),
-                )
-            },
-        },
-        {
+            command: this.confirmThen(
+                'communications.actions.confirmations.disable',
+                'pi pi-exclamation-triangle',
+                this.communication(),
+                SeverityEnum.WARNING,
+                (): void => this.run(this.facade.disableCommunication(this.communication().id)),
+            ),
+        }
+    }
+
+    private enableAction(): MenuItem {
+        return {
             label: 'communications.actions.enable',
             icon: 'pi pi-replay',
             disabled: this.busy() || !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_COMMUNICATION_U ),
             visible: this.actionIsEnable(ElementActionEnum.COMMUNICATION_ENABLE ) && !this.communication().visible,
-            command: (): void => {
-                this.confirmationService.confirm(
-                    this.buildConfirmation(
-                        'communications.actions.confirmations.enable',
-                        'pi pi-info-circle',
-                        this.communication(),
-                        SeverityEnum.INFO,
-                        (): void => this.run(this.facade.enableCommunication(this.communication().id)),
-                    ),
-                )
-            },
-        },
-        {
+            command: this.confirmThen(
+                'communications.actions.confirmations.enable',
+                'pi pi-info-circle',
+                this.communication(),
+                SeverityEnum.INFO,
+                (): void => this.run(this.facade.enableCommunication(this.communication().id)),
+            ),
+        }
+    }
+
+    private deleteAction(): MenuItem {
+        return {
             label: 'communications.actions.delete',
             icon: 'pi pi-trash',
             disabled: this.busy() || !this.hasProjectAuthority( ProjectAuthorityEnum.REGISTRY_PROJECT_COMMUNICATION_D ),
             visible: this.actionIsEnable(ElementActionEnum.COMMUNICATION_DELETE ),
-            command: (): void => {
-                this.confirmationService.confirm(
-                    this.buildConfirmation(
-                        'communications.actions.confirmations.delete',
-                        'pi pi-exclamation-triangle',
-                        this.communication(),
-                        SeverityEnum.INFO,
-                        (): void => this.run(this.facade.deleteCommunication(this.communication())),
-                    ),
-                )
-            },
-        },
-    ] )
+            command: this.confirmThen(
+                'communications.actions.confirmations.delete',
+                'pi pi-exclamation-triangle',
+                this.communication(),
+                SeverityEnum.INFO,
+                (): void => this.run(this.facade.deleteCommunication(this.communication())),
+            ),
+        }
+    }
 
     protected readonly firstAuthorMessage: Signal<boolean> = computed( (): boolean =>
         CommunicationHelper.getAuthorId( this.communication() ) !== this.previousAuthorId(),
@@ -115,7 +124,7 @@ export class DialogElementComponent extends GenericElementComponent {
     )
 
     protected readonly authorIsCurrentUser: Signal<boolean> = computed(
-        (): boolean => this.buildAuthorIsCurrentUser( this.communication(), this.registryFacade.currentUser() ),
+        (): boolean => this.buildAuthorIsCurrentUser( this.communication(), this.sessionFacade.currentUser() ),
     )
 
     protected readonly authorName: Signal<string> = computed( (): string => this.buildAuthorName( this.communication() ) )

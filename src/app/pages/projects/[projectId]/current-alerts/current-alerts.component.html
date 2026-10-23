@@ -20,7 +20,7 @@
                 } @else {
                     <div class='h-full flex items-center'>
                         <p-button severity='secondary' [label]='"project-home.alerts.see-more" | transloco' icon='pi pi-search-plus'
-                                  [routerLink]='"/" + RegistryRouteEnum.PROJECTS_ALERTS.replace(":projectId", registryFacade.currentProjectId() ?? "")' class='w-full'
+                                  [routerLink]='"/" + RegistryRouteEnum.PROJECTS_ALERTS.replace(":projectId", sessionFacade.currentProjectId() ?? "")' class='w-full'
                                   iconPos='top' />
                     </div>
                 }

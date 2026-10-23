@@ -1,6 +1,6 @@
 <div class='flex'>
     <div class='date'>
-        <p-date-picker [touchUI]='registryFacade.tinyScreen()'
+        <p-date-picker [touchUI]='uiFacade.tinyScreen()'
                        [class.invalid]='invalid()'
                        [placeholder]='datePlaceholder()'
                        [inputId]='inputId() + "_date"'
@@ -15,7 +15,7 @@
                        showIcon />
     </div>
     <div class='time'>
-        <p-date-picker [touchUI]='registryFacade.tinyScreen()'
+        <p-date-picker [touchUI]='uiFacade.tinyScreen()'
                        [class.invalid]='invalid()'
                        [placeholder]='timePlaceholder()'
                        [inputId]='inputId() + "_time"'

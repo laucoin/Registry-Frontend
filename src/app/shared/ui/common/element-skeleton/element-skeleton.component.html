@@ -1,5 +1,5 @@
 <div [class.flex-col]='layout() === "grid"' class='flex items-center'>
-    @if (withIcon() && !registryFacade.tinyScreen()) {
+    @if (withIcon() && !uiFacade.tinyScreen()) {
         <p-skeleton shape='circle' height='48px' width='48px' />
     }
     <div [class.text-center]='layout() === "grid"'

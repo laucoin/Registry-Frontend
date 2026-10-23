@@ -13,7 +13,7 @@ import { SelectedProjectFacade } from '@pages/projects/data/state/selected-proje
 import { SelectedProjectStore } from '@pages/projects/data/state/selected-project/selected-project.store'
 import { ParticipantFacade } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.facade'
 import { ParticipantStore } from '@pages/projects/[projectId]/configuration/participants/data/state/participant.store'
-import { alertOptionGuard } from '@core/authentication/guard/activity-alert-option.guard'
+import { alertOptionGuard } from '@core/authentication/guard/project-option.guard'
 import { AlertStore } from '@pages/projects/[projectId]/alerts/data/state/alert.store'
 import { AlertFacade } from '@pages/projects/[projectId]/alerts/data/state/alert.facade'
 import { AlertsListPage } from '@pages/projects/[projectId]/alerts/alerts-list/alerts-list.page'

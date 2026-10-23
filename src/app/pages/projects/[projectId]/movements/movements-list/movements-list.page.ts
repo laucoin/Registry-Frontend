@@ -15,6 +15,11 @@ import {Button} from 'primeng/button'
 import {DatePicker} from 'primeng/datepicker'
 import {GenericListComponent} from '@shared/ui/base/generic-list.component'
 
+/**
+ * Purpose: Page listing the movements with search and lazy loading.
+ * Scope: Binds the list component to the facade and reloads on command events.
+ * Limits: Holds no domain state and never calls the backend.
+ */
 @Component({
     selector: 'app-movements-list',
     templateUrl: './movements-list.page.html',

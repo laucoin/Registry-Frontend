@@ -5,7 +5,7 @@
         [draggable]='false'
         [resizable]='false'
         [(visible)]='visible'
-        [position]='registryFacade.tinyScreen() ? "bottom" : "right"'
+        [position]='uiFacade.tinyScreen() ? "bottom" : "right"'
         [style]='dialogStyle'>
     <ng-template #header>
         @if (getTemplate('header')) {

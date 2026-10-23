@@ -2,11 +2,9 @@ import { computed, inject, Injectable, Signal } from '@angular/core'
 import { Router } from '@angular/router'
 import {TranslocoService} from '@jsverse/transloco'
 import { PrimeNG } from 'primeng/config'
-import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import {
     catchError,
     EMPTY,
-    filter,
     finalize,
     map,
     mergeMap,
@@ -19,36 +17,35 @@ import {
 } from 'rxjs'
 import { CurrentUserModel } from '@shared/models/model/current-user.model'
 import { ProjectProfileModel } from '@shared/models/model/project-profile.model'
-import { ProjectModel } from '@shared/models/model/project.model'
 import { PageModel } from '@shared/models/model/page.model'
 import { ErrorModel } from '@shared/models/model/error.model'
 import { AuthenticationUriModel } from '@shared/models/model/authentication-uri.model'
 import { PreferencesModel } from '@shared/models/model/preferences.model'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { ThemeEnum } from '@shared/models/enumeration/theme.enum'
-import { RegistryConfig } from '@core/config/registry.config'
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
 import { SecurityApi } from '@core/authentication/service/security.api'
 import { CurrentUserHelper } from '@core/authentication/tool/current-user.helper'
 import { UserApi } from '@pages/users/data/state/user.api'
 import { UserProjectProfileApi } from '@core/registry/state/user-project-profile.api'
 import { PreferencesApi } from '@core/registry/state/preferences.api'
-import { UiStore } from '@core/registry/state/ui.store'
-import { NotificationStore } from '@core/registry/state/notification.store'
-import { MetadataStore } from '@core/registry/state/metadata.store'
+import { BrowserService } from '@core/browser/browser.service'
+import { UiFacade } from '@core/registry/state/ui.facade'
+import { SessionFacade } from '@core/registry/state/session.facade'
 import { SessionStore } from '@core/registry/state/session.store'
-import { UserProfileStore } from '@core/registry/state/user-profile.store'
 import { CustomDateFormatPipe } from '@shared/helpers/pipe/custom-date-format.pipe'
 import { ProfileResetService } from '@shared/helpers/store/profile-reset.service'
-import { selectState } from '@shared/helpers/store/state-observable.helper'
 import { StateHelper } from '@shared/helpers/state/state.helper'
 import { SessionStorageUtils } from '@shared/helpers/session-storage.helper'
 import { REDIRECT_URI } from '@shared/helpers/request.helper'
-import { DateHelper } from '@shared/helpers/date.helper'
-import { StringHelper } from '@shared/helpers/string.helper'
 import { GenericHelper } from '@shared/helpers/generic.helper'
 import { initialize, reportError } from '@shared/helpers/rx.helper'
 
+/**
+ * Purpose: Orchestrates the flows that cross the session and the shell: sign-in and sign-out, current user and project loading, theme and language preferences, profile commands.
+ * Scope: Calls the backend APIs for those flows and updates the session store and the UI facade accordingly.
+ * Limits: Holds no display or session state of its own; consumers read state from the UI and session facades.
+ */
 @Injectable()
 export class RegistryFacade {
     private readonly translateService: TranslocoService = inject(TranslocoService)
@@ -56,184 +53,60 @@ export class RegistryFacade {
     private readonly router: Router = inject(Router)
     private readonly datePipe: CustomDateFormatPipe = inject(CustomDateFormatPipe)
     private readonly profileReset: ProfileResetService = inject(ProfileResetService)
+    private readonly uiFacade: UiFacade = inject(UiFacade)
+    private readonly browser: BrowserService = inject(BrowserService)
+    private readonly sessionFacade: SessionFacade = inject(SessionFacade)
 
     private readonly securityApi: SecurityApi = inject(SecurityApi)
     private readonly userApi: UserApi = inject(UserApi)
     private readonly userProjectProfileApi: UserProjectProfileApi = inject(UserProjectProfileApi)
     private readonly preferencesApi: PreferencesApi = inject(PreferencesApi)
 
-    private readonly ui: InstanceType<typeof UiStore> = inject(UiStore)
-    private readonly notifications: InstanceType<typeof NotificationStore> = inject(NotificationStore)
-    private readonly metadata: InstanceType<typeof MetadataStore> = inject(MetadataStore)
     private readonly session: InstanceType<typeof SessionStore> = inject(SessionStore)
-    private readonly profiles: InstanceType<typeof UserProfileStore> = inject(UserProfileStore)
 
     private pendingProject: { subscription: Subscription, done: ReplaySubject<void> } | undefined = undefined
 
-    private readonly onlineMessage: ToastMessageOptions = StateHelper.buildNotificationMessage(
-        SeverityEnum.SUCCESS,
-        'global.notifications.ONLINE.title',
-        'global.notifications.ONLINE.message',
-        'pi pi-sort-alt',
-    )
-    private readonly offlineMessage: ToastMessageOptions = StateHelper.buildNotificationMessage(
-        SeverityEnum.WARNING,
-        'global.notifications.OFFLINE.title',
-        'global.notifications.OFFLINE.message',
-        'pi pi-sort-alt-slash',
-    )
-
-    public readonly theme: Signal<ThemeEnum> = this.ui.theme
-    public readonly tinyScreen: Signal<boolean> = computed((): boolean => this.ui.screenWidth() < 768)
-    public readonly globalLoading: Signal<boolean> = this.ui.loading
-    public readonly globalError: Signal<ToastMessageOptions | undefined> = this.ui.error
-    private readonly online: Signal<boolean | undefined> = this.ui.online
-
-    public readonly logoPath: Signal<string> = computed((): string => {
-        switch (true) {
-            case this.theme() === ThemeEnum.DARK && this.tinyScreen():
-                return RegistryConfig.config.logo.small.dark
-            case this.theme() === ThemeEnum.DARK && !this.tinyScreen():
-                return RegistryConfig.config.logo.normal.dark
-            case this.theme() === ThemeEnum.LIGHT && this.tinyScreen():
-                return RegistryConfig.config.logo.small.light
-            default:
-                return RegistryConfig.config.logo.normal.light
-        }
-    })
-
-    public readonly notification: Observable<ToastMessageOptions> = this.notifications.messages$()
-
-    public readonly currentUser: Signal<CurrentUserModel | undefined> = this.session.currentUser
-    public readonly currentUser$: Observable<CurrentUserModel> = selectState(
-        this.session,
-        (state: { currentUser: CurrentUserModel | undefined }): CurrentUserModel | undefined => state.currentUser,
-    ).pipe(
-        filter((user: CurrentUserModel | undefined): boolean => GenericHelper.nonNull(user)),
-        map((user: CurrentUserModel | undefined): CurrentUserModel => user!),
-    )
-
     public readonly currentUserTheme: Signal<ThemeEnum | undefined> = computed((): ThemeEnum | undefined => {
-        const userTheme: string | undefined = this.currentUser()?.preferences?.theme
-        return GenericHelper.nonNull(userTheme) ? CurrentUserHelper.mapThemeToEnum(userTheme!) : this.ui.theme()
+        const userTheme: string | undefined = this.sessionFacade.currentUser()?.preferences?.theme
+        return GenericHelper.nonNull(userTheme) ? CurrentUserHelper.mapThemeToEnum(userTheme!) : this.uiFacade.theme()
     })
-    public readonly currentUserLanguage: Signal<string> = computed((): string =>
-        this.currentUser()?.preferences?.language ?? RegistryConfig.config.defaultLanguage,
-    )
-    public readonly selectedProject: Signal<ProjectModel | undefined> = computed((): ProjectModel | undefined =>
-        this.session.currentProject.profile()?.project,
-    )
-    public readonly currentProjectId: Signal<string | undefined> = this.session.currentProject.id
-
-    public readonly userProjectProfilesPage: Signal<PageModel<ProjectProfileModel> | undefined> = this.profiles.profiles.element
-    public readonly userProjectProfilesPageLoading: Signal<boolean> = this.profiles.profiles.loading
-    public readonly userProjectProfilesPageSilentLoading: Signal<boolean> = this.profiles.profiles.silentLoading
-    public readonly userProjectProfilesPageError: Signal<ToastMessageOptions | undefined> = this.profiles.profiles.error
-    public readonly userProjectProfilesPageResetSearch: Signal<boolean> = this.profiles.profiles.params.resetSearch
-    public readonly userProjectProfilesPageTextSearchParam: Signal<string | undefined> = this.profiles.profiles.params.textSearched
-    public readonly userProjectProfilesPageDateTimeSearchParam: Signal<Date | undefined> = computed((): Date | undefined =>
-        DateHelper.buildDate(this.profiles.profiles.params.dateTimeSearched()),
-    )
-    public readonly userProjectProfilesPageAvailabilitySearchParam: Signal<boolean | undefined> = this.profiles.profiles.params.availabilitySearched
-
-    public readonly userProjectProfileInvitationsPage: Signal<PageModel<ProjectProfileModel> | undefined> = this.profiles.invitations.element
-    public readonly userProjectProfileInvitationsPageLoading: Signal<boolean> = this.profiles.invitations.loading
-    public readonly userProjectProfileInvitationsPageSilentLoading: Signal<boolean> = this.profiles.invitations.silentLoading
-    public readonly userProjectProfileInvitationsPageError: Signal<ToastMessageOptions | undefined> = this.profiles.invitations.error
-    public readonly userProjectProfileInvitationsPageResetSearch: Signal<boolean> = this.profiles.invitations.params.resetSearch
-    public readonly userProjectProfileInvitationsPageTextSearchParam: Signal<string | undefined> = this.profiles.invitations.params.textSearched
-    public readonly userProjectProfileInvitationsPageDateTimeSearchParam: Signal<Date | undefined> = computed((): Date | undefined =>
-        DateHelper.buildDate(this.profiles.invitations.params.dateTimeSearched()),
-    )
-
-    public readonly themesMetadata: Signal<SelectItem<ThemeEnum>[]> = this.metadata.themes
-    public readonly languagesMetadata: Signal<SelectItem<string>[]> = computed((): SelectItem<string>[] =>
-        this.metadata.languages().map((lang: SelectItem<string>): SelectItem<string> => ({
-            ...lang,
-            label: this.translateService.translate(lang.label!),
-        })),
-    )
-
-    public startGlobalLoader(): void {
-        this.ui.startGlobalLoader()
-    }
-
-    public stopGlobalLoader(): void {
-        this.ui.stopGlobalLoader()
-    }
-
-    public setGlobalError(error: ErrorModel): void {
-        this.ui.setGlobalError(error)
-    }
-
-    public updateNetwork(online: boolean): void {
-        if (this.online() != undefined) {
-            this.notify(online ? this.onlineMessage : this.offlineMessage)
-        }
-        this.ui.updateNetwork(online)
-    }
-
-    public updateScreenWidth(screenWidth: number): void {
-        this.ui.updateScreenWidth(screenWidth)
-    }
-
-    public notify(message: ToastMessageOptions): void {
-        if (message.summary?.endsWith('401')) {
-            return
-        }
-
-        let formattedMessage: ToastMessageOptions = message
-        if (StringHelper.isNullOrBlank(message.detail) && StringHelper.isNullOrBlank(message.summary)) {
-            formattedMessage = {
-                ...message,
-                detail: this.translateService.translate('global.notifications.UNKNOWN_ERROR'),
-            }
-        }
-
-        this.notifications.notify(formattedMessage)
-    }
-
-    public startCurrentUserActionLoader(): void {
-        this.session.startActionLoader()
-    }
-
-    public stopCurrentUserActionLoader(): void {
-        this.session.stopActionLoader()
-    }
 
     public login(): void {
-        SessionStorageUtils.set(REDIRECT_URI, location.pathname)
+        SessionStorageUtils.set(REDIRECT_URI, this.browser.pathname)
         this.session.reset()
-        this.profiles.reset()
 
-        this.securityApi.getLoginUri(`${location.origin}/${RegistryRouteEnum.AUTH_CALLBACK}`).pipe(
-            initialize((): void => this.ui.startGlobalLoader()),
-            finalize((): void => this.ui.stopGlobalLoader()),
+        this.securityApi.getLoginUri(`${this.browser.origin}/${RegistryRouteEnum.AUTH_CALLBACK}`).pipe(
+            initialize((): void => this.uiFacade.startGlobalLoader()),
+            finalize((): void => this.uiFacade.stopGlobalLoader()),
             tap((uri: AuthenticationUriModel): void => {
-                window.location.href = uri.uri
+                this.browser.redirect(uri.uri)
             }),
             catchError((error: ErrorModel): Observable<never> => this.globalError$(error)),
         ).subscribe()
     }
 
     public logout(): void {
-        this.securityApi.getLogoutUri(location.origin).pipe(
-            initialize((): void => this.ui.startGlobalLoader()),
-            finalize((): void => this.ui.stopGlobalLoader()),
+        this.securityApi.getLogoutUri(this.browser.origin).pipe(
+            initialize((): void => this.uiFacade.startGlobalLoader()),
+            finalize((): void => this.uiFacade.stopGlobalLoader()),
             tap((uri: AuthenticationUriModel): void => {
-                window.location.href = uri.uri
+                this.browser.redirect(uri.uri)
             }),
             catchError((error: ErrorModel): Observable<never> => this.globalError$(error)),
         ).subscribe()
     }
 
+    public refreshToken(): Observable<void> {
+        return this.securityApi.refreshToken()
+    }
+
     public fetchToken(authorizationCode: string): void {
         this.securityApi.fetchToken({
             authorizationCode: authorizationCode,
-            redirectUri: `${location.origin}/${RegistryRouteEnum.AUTH_CALLBACK}`,
+            redirectUri: `${this.browser.origin}/${RegistryRouteEnum.AUTH_CALLBACK}`,
         }).pipe(
-            initialize((): void => this.ui.startGlobalLoader()),
-            finalize((): void => this.ui.stopGlobalLoader()),
+            initialize((): void => this.uiFacade.startGlobalLoader()),
+            finalize((): void => this.uiFacade.stopGlobalLoader()),
             mergeMap((): Observable<CurrentUserModel> => this.securityApi.fetchCurrentUser()),
             tap((currentUser: CurrentUserModel): void => this.onCurrentUser(currentUser)),
             tap((): void => {
@@ -249,12 +122,12 @@ export class RegistryFacade {
     public fetchCurrentUser(): Observable<void> {
         return this.eager(
             this.securityApi.fetchCurrentUser().pipe(
-                initialize((): void => this.ui.startGlobalLoader()),
-                finalize((): void => this.ui.stopGlobalLoader()),
+                initialize((): void => this.uiFacade.startGlobalLoader()),
+                finalize((): void => this.uiFacade.stopGlobalLoader()),
                 tap((currentUser: CurrentUserModel): void => this.onCurrentUser(currentUser)),
                 map((): void => undefined),
                 catchError((error: ErrorModel): Observable<void> => {
-                    this.ui.setGlobalError(error)
+                    this.uiFacade.setGlobalError(error)
                     return of(undefined)
                 }),
             ),
@@ -270,61 +143,10 @@ export class RegistryFacade {
         ).subscribe()
     }
 
-    public fetchProjectProfilesPage(pageNumber: number | undefined, pageSize: number | undefined): void {
-        const index: number | undefined = this.userProjectProfilesPageResetSearch() ? 0 : pageNumber
-        this.profiles.fetchProfilesPage({pageNumber: index, pageSize: pageSize})
-    }
-
-    public inputProfilesPageSearchParameters(
-        textSearched: string | undefined,
-        availabilitySearched: boolean | undefined,
-        dateTimeSearched: Date | undefined,
-    ): void {
-        const resetSearch: boolean = this.userProjectProfilesPageTextSearchParam() != textSearched
-            || this.userProjectProfilesPageAvailabilitySearchParam() != availabilitySearched
-            || this.userProjectProfilesPageDateTimeSearchParam() != dateTimeSearched?.toISOString()
-
-        if (resetSearch) {
-            this.profiles.updateProfilesPageSearchParams({
-                resetSearch: resetSearch,
-                textSearched: textSearched,
-                availabilitySearched: availabilitySearched,
-                dateTimeSearched: dateTimeSearched?.toISOString(),
-            })
-        }
-    }
-
-    public fetchProjectProfileInvitationPage(pageNumber: number | undefined, pageSize: number | undefined): void {
-        const index: number | undefined = this.userProjectProfileInvitationsPageResetSearch() ? 0 : pageNumber
-        this.profiles.fetchInvitationsPage({pageNumber: index, pageSize: pageSize})
-    }
-
-    public inputInvitationsPageSearchParameters(
-        textSearched: string | undefined,
-        dateTimeSearched: Date | undefined,
-    ): void {
-        const resetSearch: boolean = this.userProjectProfileInvitationsPageTextSearchParam() != textSearched
-            || this.userProjectProfileInvitationsPageDateTimeSearchParam() != dateTimeSearched?.toISOString()
-
-        if (resetSearch) {
-            this.profiles.updateInvitationsPageSearchParams({
-                resetSearch: resetSearch,
-                textSearched: textSearched,
-                dateTimeSearched: dateTimeSearched?.toISOString(),
-            })
-        }
-    }
-
-    public updateTheme(theme: ThemeEnum | undefined): void {
-        if (GenericHelper.nonNull(theme)) {
-            this.ui.updateTheme(theme!)
-        }
-    }
-
     public updateCurrentUserTheme(theme: ThemeEnum | undefined): void {
         if (GenericHelper.isNull(theme)) return
 
-        this.ui.updateTheme(theme!)
+        this.uiFacade.updateTheme(theme!)
         this.preferencesApi.updateTheme(CurrentUserHelper.mapThemeToString(theme!)).pipe(
             tap((preferences: PreferencesModel): void => this.session.setCurrentUserTheme(preferences.theme)),
             catchError((error: ErrorModel): Observable<never> => this.reportError$(error)),
@@ -344,8 +166,8 @@ export class RegistryFacade {
 
     public manageProjectInvitationAcceptance(id: string, accepted: boolean): void {
         this.userProjectProfileApi.manageUserProjectProfileAcceptance(id, accepted).pipe(
-            initialize((): void => this.profiles.startProfileLoader()),
-            finalize((): void => this.profiles.stopProfileLoader()),
+            initialize((): void => this.session.startProfileLoader()),
+            finalize((): void => this.session.stopProfileLoader()),
             tap((profile: ProjectProfileModel): void => {
                 this.notifyProfile(
                     `project-profiles.notifications.acceptance.${profile.status.value}.title`,
@@ -372,12 +194,12 @@ export class RegistryFacade {
 
         const done: ReplaySubject<void> = new ReplaySubject<void>(1)
         const subscription: Subscription = this.userProjectProfileApi.findUserProjectProfileByProjectId(projectId!).pipe(
-            initialize((): void => this.ui.startGlobalLoader()),
-            finalize((): void => this.ui.stopGlobalLoader()),
+            initialize((): void => this.uiFacade.startGlobalLoader()),
+            finalize((): void => this.uiFacade.stopGlobalLoader()),
             tap((profile: ProjectProfileModel): void => this.session.setCurrentProject(projectId, profile)),
             map((): void => undefined),
             catchError((error: ErrorModel): Observable<void> => {
-                this.ui.setGlobalError(error)
+                this.uiFacade.setGlobalError(error)
                 return of(undefined)
             }),
         ).subscribe(done)
@@ -389,8 +211,8 @@ export class RegistryFacade {
     public deleteUserProjectProfile(profile: ProjectProfileModel): Observable<void> {
         return this.eager(
             this.userProjectProfileApi.deleteUserProfileById(profile.id).pipe(
-                initialize((): void => this.profiles.startProfileLoader()),
-                finalize((): void => this.profiles.stopProfileLoader()),
+                initialize((): void => this.session.startProfileLoader()),
+                finalize((): void => this.session.stopProfileLoader()),
                 tap((): void => {
                     this.notifyProfile(
                         'project-profiles.notifications.delete.title',
@@ -430,8 +252,8 @@ export class RegistryFacade {
         this.session.setCurrentUser(currentUser)
 
         const userTheme: ThemeEnum = CurrentUserHelper.mapThemeToEnum(currentUser.preferences.theme)
-        if (userTheme !== this.ui.theme()) {
-            this.ui.updateTheme(userTheme)
+        if (userTheme !== this.uiFacade.theme()) {
+            this.uiFacade.updateTheme(userTheme)
         }
 
         const userLanguage: string | undefined = currentUser.preferences.language
@@ -443,6 +265,7 @@ export class RegistryFacade {
     private applyLanguage(language: string): void {
         this.translateService.load(language).pipe(
             tap((): TranslocoService => this.translateService.setActiveLang(language)),
+            tap((): void => this.uiFacade.updateLanguage(language)),
             tap((): void => this.primeConfig.setTranslation(this.translateService.translateObject('prime-ng'))),
             tap((): void => this.reloadTranslatedData()),
             catchError((error: ErrorModel): Observable<never> => this.reportError$(error)),
@@ -450,17 +273,17 @@ export class RegistryFacade {
     }
 
     private notifyProfile(summary: string, detail: string, icon: string, data?: object): void {
-        this.notify(StateHelper.buildNotificationMessage(SeverityEnum.SUCCESS, summary, detail, icon, data))
+        this.uiFacade.notify(StateHelper.buildNotificationMessage(SeverityEnum.SUCCESS, summary, detail, icon, data))
     }
 
     private refreshProfilesPage(): void {
-        const page: PageModel<ProjectProfileModel> | undefined = this.userProjectProfilesPage()
-        this.fetchProjectProfilesPage(page?.pageNumber, page?.pageSize)
+        const page: PageModel<ProjectProfileModel> | undefined = this.sessionFacade.userProjectProfilesPage()
+        this.sessionFacade.fetchProjectProfilesPage(page?.pageNumber, page?.pageSize)
     }
 
     private refreshInvitationsPage(): void {
-        const page: PageModel<ProjectProfileModel> | undefined = this.userProjectProfileInvitationsPage()
-        this.fetchProjectProfileInvitationPage(page?.pageNumber, page?.pageSize)
+        const page: PageModel<ProjectProfileModel> | undefined = this.sessionFacade.userProjectProfileInvitationsPage()
+        this.sessionFacade.fetchProjectProfileInvitationPage(page?.pageNumber, page?.pageSize)
     }
 
     private releasePendingProject(): void {
@@ -479,12 +302,12 @@ export class RegistryFacade {
     }
 
     private globalError$(error: ErrorModel): Observable<never> {
-        this.ui.setGlobalError(error)
+        this.uiFacade.setGlobalError(error)
         return EMPTY
     }
 
     private reportError$(error: ErrorModel): Observable<never> {
-        reportError(this, error)
+        reportError(this.uiFacade, error)
         return EMPTY
     }
 }

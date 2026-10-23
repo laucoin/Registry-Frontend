@@ -1,6 +1,6 @@
 import { Component, inject, OnDestroy, signal, WritableSignal } from '@angular/core'
 import {ActivityFacade} from '@pages/projects/[projectId]/configuration/activities/data/state/activity.facade'
-import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms'
+import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidatorFn, Validators} from '@angular/forms'
 import {RegistryValidators} from '@shared/helpers/registry.validator'
 import {ActivityDto} from '@pages/projects/[projectId]/configuration/activities/data/dto/activity.dto'
 import {Button} from 'primeng/button'
@@ -29,6 +29,11 @@ import {GenericHelper} from '@shared/helpers/generic.helper'
 import {DateTimeFieldComponent} from '@shared/ui/common/date-time-field/date-time-field.component'
 import {FormIconPipe} from '@shared/helpers/pipe/form-icon.pipe'
 
+/**
+ * Purpose: Page with the form to create or edit a activity.
+ * Scope: Builds the form, submits it through the facade and navigates back.
+ * Limits: Holds no domain state and never calls the backend.
+ */
 @Component({
     selector: 'app-activity-form',
     imports: [
@@ -89,25 +94,23 @@ export class ActivityFormPage extends GenericFormComponent<ActivityModel, Activi
                 undefined,
                 [Validators.required, Validators.maxLength(150), RegistryValidators.nonBlank()],
             ),
-            description: this.formBuilder.control(
-                undefined,
-                [Validators.maxLength(2000)],
-            ),
+            description: this.formBuilder.control(undefined, [Validators.maxLength(2000)]),
             duration: this.formBuilder.control(undefined, []),
-            allowedParticipants: this.formBuilder.control(
-                undefined,
-                [
-                    RegistryValidators.numericRange(),
-                    RegistryValidators.numericRangeMin(1),
-                    RegistryValidators.numericRangeMax(2147483647),
-                    RegistryValidators.numericRangeBothDefined(),
-                ],
-            ),
+            allowedParticipants: this.formBuilder.control(undefined, this.allowedParticipantsValidators()),
             beginDateTime: this.formBuilder.control(undefined, [RegistryValidators.dateRequiredForTime()]),
             endDateTime: this.formBuilder.control(undefined, [RegistryValidators.dateRequiredForTime()]),
         }, {
             validators: [RegistryValidators.beginDateBeforeEndDate('beginDateTime', 'endDateTime')],
         })
+    }
+
+    private allowedParticipantsValidators(): ValidatorFn[] {
+        return [
+            RegistryValidators.numericRange(),
+            RegistryValidators.numericRangeMin(1),
+            RegistryValidators.numericRangeMax(2147483647),
+            RegistryValidators.numericRangeBothDefined(),
+        ]
     }
 
     protected handleLoadedElement(): void {
@@ -117,7 +120,7 @@ export class ActivityFormPage extends GenericFormComponent<ActivityModel, Activi
     }
 
     private applyActivity(activity: ActivityModel | undefined): void {
-        const contextProject: ProjectModel | undefined = activity?.project || this.registryFacade.selectedProject()
+        const contextProject: ProjectModel | undefined = activity?.project || this.sessionFacade.selectedProject()
         this.addProjectDateValidators(contextProject, this.beginDateTime)
         this.addProjectDateValidators(contextProject, this.endDateTime)
         this.fillForm(activity)

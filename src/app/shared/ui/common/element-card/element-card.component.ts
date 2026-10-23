@@ -17,6 +17,11 @@ import {GenericComponent} from '@shared/ui/base/generic.component'
 import {DateFormatPipe} from '@shared/helpers/pipe/date-format.pipe'
 import {MenuItem} from 'primeng/api'
 
+/**
+ * Purpose: Card frame shared by every element of a list.
+ * Scope: Renders the header, the actions menu and the content slot.
+ * Limits: No domain logic; actions are provided by the parent.
+ */
 @Component({
     selector: 'app-element-card',
     imports: [

@@ -4,18 +4,18 @@
                   [icon]='statusIcon()'>
     <div class='element-card' [class.flex-col]='carouselView()'>
         <div class='flex' [class.title]='!carouselView()'
-             [class.justify-center]='registryFacade.tinyScreen()'>
+             [class.justify-center]='uiFacade.tinyScreen()'>
             <app-severity-circle class='me-2'
                                  [severity]='alert().visible ? SeverityEnum.SUCCESS : SeverityEnum.DANGER'/>
             {{ alert().title | titlecase }}
         </div>
         <div class='flex'
              [class.datetime]='!carouselView()'
-             [class.justify-center]='registryFacade.tinyScreen()'>
+             [class.justify-center]='uiFacade.tinyScreen()'>
             {{ alert().dateTime | dateFormat: 'datetime' }}
         </div>
         @if (!carouselView() && addButtonVisible()) {
-            <div class='flex communications' [class.justify-center]='registryFacade.tinyScreen()'>
+            <div class='flex communications' [class.justify-center]='uiFacade.tinyScreen()'>
                 <p-button size='small'
                           rounded
                           outlined
@@ -26,7 +26,7 @@
             </div>
         }
         <div class='flex' [class.status]='!carouselView()'
-             [class.justify-center]='registryFacade.tinyScreen()'>
+             [class.justify-center]='uiFacade.tinyScreen()'>
             <app-severity-tag [value]='statusLabel()' [severity]='statusSeverity()'/>
         </div>
     </div>
@@ -47,7 +47,7 @@
           modal
           maximizable
           appendTo='body'
-          (onShow)='registryFacade.tinyScreen() ? dialog.maximized.set(true) : null'
+          (onShow)='uiFacade.tinyScreen() ? dialog.maximized.set(true) : null'
           [breakpoints]='breakpoint'
           [(visible)]='communicationsLayerOpened'>
     <ng-template #header>

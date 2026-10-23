@@ -1,6 +1,11 @@
 import { GenericHelper } from '@shared/helpers/generic.helper'
 import { Utils } from '@shared/helpers/json.helper'
 
+/**
+ * Purpose: Typed access to a Web Storage object.
+ * Scope: Reads, writes, checks, deletes and clears while preserving objects as JSON.
+ * Limits: Stores only strings and objects; other values are stored as empty text.
+ */
 export class StorageUtils {
     public static get (storage: Storage, key: string): unknown {
         const item: string | null = storage.getItem( key )

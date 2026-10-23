@@ -1,19 +1,14 @@
 import { inject } from '@angular/core'
-import { patchState, signalStore, withMethods, withProps, withState } from '@ngrx/signals'
-import { rxMethod } from '@ngrx/signals/rxjs-interop'
-import { catchError, EMPTY, finalize, Observable, pipe, switchMap, tap } from 'rxjs'
-import { PageModel } from '@shared/models/model/page.model'
-import { ProjectModel } from '@shared/models/model/project.model'
-import { ElementRequestInformationModel } from '@shared/models/model/element-request-information.model'
-import { ErrorModel } from '@shared/models/model/error.model'
+import { patchState, signalStore, withMethods, withState } from '@ngrx/signals'
+import { ErrorReporter } from '@core/registry/state/error-reporter'
 import { ProjectOptionModel } from '@pages/projects/data/model/project-option.model'
 import { ProjectPageParamsModel } from '@pages/projects/data/model/project-page-params.model'
 import { ProjectStoreModel } from '@pages/projects/data/model/project-store.model'
 import { ProjectApi } from '@pages/projects/data/state/project.api'
-import { RegistryFacade } from '@core/registry/state/registry.facade'
-import { StateHelper } from '@shared/helpers/state/state.helper'
-import { initialize, notifyOnError, reportError } from '@shared/helpers/rx.helper'
 import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
+import { elementFetcher, loaderToggle, metadataFetcher, pageFetcher, paramsUpdater } from '@shared/helpers/store/paged-store.methods'
+import { ElementRequestInformationModel } from '@shared/models/model/element-request-information.model'
+import { ProjectModel } from '@shared/models/model/project.model'
 
 interface ProjectsPageRequest {
     pageNumber: number | undefined
@@ -45,87 +40,22 @@ const defaultProjectStore: ProjectStoreModel = {
     },
 }
 
+/**
+ * Purpose: Holds the project state.
+ * Scope: Owns the data of the project pages and resources with their loading and error flags, and fetches them through the project api.
+ * Limits: Reached through the project facade; it does not format data or notify the user of command results.
+ */
 export const ProjectStore = signalStore(
     withState<ProjectStoreModel>( defaultProjectStore ),
-    withProps( () => ({
-        api: inject( ProjectApi ),
-        registryFacade: inject( RegistryFacade ),
-    }) ),
-    withMethods( (store) => ({
-        fetchProjectOptions: rxMethod<void>( pipe(
-            switchMap( (): Observable<ProjectOptionModel[]> => store.api.getAvailableProjectOptions().pipe(
-                notifyOnError( store.registryFacade ),
-            ) ),
-            tap( (options: ProjectOptionModel[]): void => patchState( store, (state: ProjectStoreModel) => ({
-                metadata: { ...state.metadata, options: options },
-            }) ) ),
-        ) ),
-
-        fetchProjectsPage: rxMethod<ProjectsPageRequest>( pipe(
-            switchMap( (request: ProjectsPageRequest): Observable<PageModel<ProjectModel>> => store.api.findProjects(
-                request.pageNumber,
-                request.pageSize,
-                store.projects.params(),
-            ).pipe(
-                initialize( (): void => patchState( store, (state: ProjectStoreModel) => ({
-                    projects: StateHelper.updatePageLoader( state.projects, true ),
-                }) ) ),
-                finalize( (): void => patchState( store, (state: ProjectStoreModel) => ({
-                    projects: StateHelper.updatePageLoader( state.projects, false ),
-                }) ) ),
-                catchError( (error: ErrorModel): Observable<never> => {
-                    if (error.status === 503) {
-                        reportError( store.registryFacade, error )
-                    } else {
-                        patchState( store, (state: ProjectStoreModel) => ({
-                            projects: PageStateHelper.withError( state.projects, error ),
-                        }) )
-                    }
-                    return EMPTY
-                } ),
-            ) ),
-            tap( (page: PageModel<ProjectModel>): void => patchState( store, (state: ProjectStoreModel) => ({
-                projects: {
-                    ...state.projects,
-                    params: { ...state.projects.params, resetSearch: false },
-                    element: page,
-                },
-            }) ) ),
-        ) ),
-
-        updateProjectsPageSearchParams: (params: ProjectPageParamsModel): void => {
-            patchState( store, (state: ProjectStoreModel) => ({ projects: { ...state.projects, params: params } }) )
-        },
-
-        startProjectLoader: (): void => {
-            patchState( store, (state: ProjectStoreModel) => ({ project: StateHelper.updateElementLoader( state.project, true ) }) )
-        },
-
-        stopProjectLoader: (): void => {
-            patchState( store, (state: ProjectStoreModel) => ({ project: StateHelper.updateElementLoader( state.project, false ) }) )
-        },
-
-        fetchProject: rxMethod<string>( pipe(
-            switchMap( (id: string): Observable<ProjectModel> => store.api.findProjectById( id ).pipe(
-                initialize( (): void => patchState( store, (state: ProjectStoreModel) => ({
-                    project: StateHelper.updateElementLoader( state.project, true ),
-                }) ) ),
-                finalize( (): void => patchState( store, (state: ProjectStoreModel) => ({
-                    project: StateHelper.updateElementLoader( state.project, false ),
-                }) ) ),
-                notifyOnError( store.registryFacade ),
-            ) ),
-            tap( (project: ProjectModel): void => patchState( store, (state: ProjectStoreModel) => ({
-                project: { ...state.project, element: project },
-            }) ) ),
-        ) ),
-
-        resetProject: (): void => {
-            patchState( store, { project: defaultProject } )
-        },
-
-        setCreatedProjectId: (id: string | undefined): void => {
-            patchState( store, { createdProjectId: id } )
-        },
+    withMethods( (store, api = inject( ProjectApi ), errors = inject( ErrorReporter )) => ({
+        fetchProjectOptions: metadataFetcher<ProjectStoreModel, 'options', void, ProjectOptionModel[]>( store, 'options', () => api.getAvailableProjectOptions(), errors ),
+        fetchProjectsPage: pageFetcher( store, 'projects', (request: ProjectsPageRequest, params: ProjectPageParamsModel) =>
+            api.findProjects( request.pageNumber, request.pageSize, params ), errors ),
+        updateProjectsPageSearchParams: paramsUpdater( store, 'projects' ),
+        startProjectLoader: loaderToggle( store, 'project', true ),
+        stopProjectLoader: loaderToggle( store, 'project', false ),
+        fetchProject: elementFetcher( store, 'project', (id: string) => api.findProjectById( id ), errors ),
+        resetProject: (): void => patchState( store, { project: defaultProject } ),
+        setCreatedProjectId: (id: string | undefined): void => patchState( store, { createdProjectId: id } ),
     }) ),
 )

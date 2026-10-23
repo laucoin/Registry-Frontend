@@ -48,6 +48,11 @@ import {PresenceStatusEnum} from '@shared/models/enumeration/presence-status.enu
 import {withLoading} from '@shared/helpers/rx.helper'
 import {FormErrorComponent} from '@shared/ui/common/form-error/form-error.component'
 
+/**
+ * Purpose: Page with the form to create or edit a movement.
+ * Scope: Builds the form, submits it through the facade and navigates back.
+ * Limits: Holds no domain state and never calls the backend.
+ */
 @Component({
     selector: 'app-movement-form',
     imports: [
@@ -102,7 +107,7 @@ export class MovementFormPage extends GenericFormComponent<MovementModel, Moveme
     protected readonly isContentSelection: WritableSignal<boolean> = signal(true)
     protected readonly selectedReason: WritableSignal<MovementReasonModel | undefined> = signal(undefined)
     private readonly hasVehicleOption: Signal<boolean> = computed((): boolean => ProjectHelper.hasOption(
-        this.registryFacade.selectedProject(),
+        this.sessionFacade.selectedProject(),
         ProjectOptionEnum.VEHICLE,
     ))
     protected readonly isEligibleToVehicle: Signal<boolean> = computed((): boolean =>
@@ -185,7 +190,11 @@ export class MovementFormPage extends GenericFormComponent<MovementModel, Moveme
         this.reason.patchValue(undefined)
 
         this.isContentSelection.set(contentType == ParticipantTypeEnum.REGISTERED || type == 'OUT')
+        this.updateContentRules()
+        this.updateReasonRules(type, contentType)
+    }
 
+    private updateContentRules(): void {
         if (this.isContentSelection()) {
             this.guestContent.clear()
             this.guestContent.clearValidators()
@@ -195,7 +204,9 @@ export class MovementFormPage extends GenericFormComponent<MovementModel, Moveme
             this.guestContent.addValidators([Validators.required])
             if (this.guestContent.length == 0) this.addGuest()
         }
+    }
 
+    private updateReasonRules(type: string | undefined, contentType: string): void {
         this.reasonRequired.set(
             type == MovementTypeEnum.OUT && contentType == ParticipantTypeEnum.REGISTERED ||
             type == MovementTypeEnum.IN && contentType == ParticipantTypeEnum.GUEST,
@@ -215,7 +226,7 @@ export class MovementFormPage extends GenericFormComponent<MovementModel, Moveme
     }
 
     private applyMovement(movement: MovementModel | undefined): void {
-        const contextProject: ProjectModel | undefined = movement?.project || this.registryFacade.selectedProject()
+        const contextProject: ProjectModel | undefined = movement?.project || this.sessionFacade.selectedProject()
         this.addProjectDateValidators(contextProject, this.dateTime)
         this.fillForm(movement)
     }

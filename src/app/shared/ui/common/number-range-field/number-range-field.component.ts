@@ -8,10 +8,17 @@ import {TranslocoService} from '@jsverse/transloco'
 import { NumericRangeModel } from '@pages/projects/[projectId]/configuration/activities/data/model/numeric-range.model'
 import { GenericHelper } from '@shared/helpers/generic.helper'
 import { StringHelper } from '@shared/helpers/string.helper'
+import { TranslocoPipe } from '@jsverse/transloco'
 
+/**
+ * Purpose: Form field editing a numeric range.
+ * Scope: Edits a minimum and a maximum and exposes them as a form value.
+ * Limits: Validation is done by the form validators.
+ */
 @Component( {
     selector: 'app-number-range-field',
     imports: [
+        TranslocoPipe,
         FormsModule,
         ReactiveFormsModule,
         Button,

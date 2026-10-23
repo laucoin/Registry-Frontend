@@ -3,6 +3,11 @@ import {TranslocoPipe} from '@jsverse/transloco'
 import { ErrorModel } from '@shared/models/model/error.model'
 import { MessageModule } from 'primeng/message'
 
+/**
+ * Purpose: Displays the error of a whole form.
+ * Scope: Shows the message the backend returned for the submit.
+ * Limits: Field-level errors are shown by the field error component.
+ */
 @Component({
 	selector: 'app-form-error',
 	imports: [

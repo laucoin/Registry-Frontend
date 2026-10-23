@@ -1,24 +1,16 @@
 import { inject } from '@angular/core'
-import { patchState, signalStore, withMethods, withProps, withState } from '@ngrx/signals'
-import { rxMethod } from '@ngrx/signals/rxjs-interop'
-import { catchError, EMPTY, finalize, map, Observable, pipe, switchMap, tap } from 'rxjs'
-import { PageModel } from '@shared/models/model/page.model'
-import { MovementModel } from '@shared/models/model/movement.model'
-import { PairModel } from '@shared/models/model/pair.model'
-import { MovementContentModel } from '@shared/models/model/movement-content.model'
-import { ErrorModel } from '@shared/models/model/error.model'
-import { ActivityModel } from '@shared/models/model/activity.model'
+import { signalStore, withMethods, withState } from '@ngrx/signals'
+import { ErrorReporter } from '@core/registry/state/error-reporter'
 import { ActivityPageParamsModel } from '@pages/projects/[projectId]/configuration/activities/data/model/activity-page-params.model'
-import { MovementPageParamsModel } from '@shared/models/model/movement-page-params.model'
 import { ActivityStoreModel } from '@pages/projects/[projectId]/configuration/activities/data/model/activity-store.model'
 import { ActivityApi } from '@pages/projects/[projectId]/configuration/activities/data/state/activity.api'
 import { MovementApi } from '@pages/projects/[projectId]/movements/data/state/movement.api'
-import { RegistryFacade } from '@core/registry/state/registry.facade'
-import { MovementHelper } from '@shared/helpers/movement.helper'
-import { StateHelper } from '@shared/helpers/state/state.helper'
-import { initialize, notifyOnError, reportError } from '@shared/helpers/rx.helper'
 import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
+import { contentsRequester, movementContentsFetcher, pageFetcher, paramsUpdater } from '@shared/helpers/store/paged-store.methods'
 import { withProfileScope } from '@shared/helpers/store/with-profile-scope.feature'
+import { ActivityModel } from '@shared/models/model/activity.model'
+import { MovementModel } from '@shared/models/model/movement.model'
+import { MovementPageParamsModel } from '@shared/models/model/movement-page-params.model'
 
 interface ActivitiesPageRequest {
     projectId: string | undefined
@@ -28,11 +20,6 @@ interface ActivitiesPageRequest {
 
 interface ActivityMovementsPageRequest extends ActivitiesPageRequest {
     id: string
-}
-
-interface ActivityMovementsContentsRequest {
-    projectId: string | undefined
-    movementIds: string[]
 }
 
 const defaultActivityStore: ActivityStoreModel = {
@@ -66,126 +53,25 @@ const defaultActivityStore: ActivityStoreModel = {
     },
 }
 
+/**
+ * Purpose: Holds the activity state.
+ * Scope: Owns the data of the activity pages and resources with their loading and error flags, and fetches them through the activity api.
+ * Limits: Reached through the activity facade; it does not format data or notify the user of command results.
+ */
 export const ActivityStore = signalStore(
     withState<ActivityStoreModel>( defaultActivityStore ),
     withProfileScope<ActivityStoreModel>( defaultActivityStore ),
-    withProps( () => ({
-        api: inject( ActivityApi ),
-        movementApi: inject( MovementApi ),
-        registryFacade: inject( RegistryFacade ),
+    withMethods( (store, api = inject( ActivityApi ), movementApi = inject( MovementApi ), errors = inject( ErrorReporter )) => ({
+        fetchActivitiesPage: pageFetcher( store, 'activities', (request: ActivitiesPageRequest, params: ActivityPageParamsModel) =>
+            api.findActivities( request.projectId, request.pageNumber, request.pageSize, params ), errors ),
+        updateActivitiesPageSearchParams: paramsUpdater( store, 'activities' ),
+        updateActivityMovementsPageSearchParams: paramsUpdater( store, 'movements' ),
+        fetchActivityMovementsContents: movementContentsFetcher( store, movementApi, errors ),
     }) ),
-    withMethods( (store) => {
-        const fetchMovementsContents = rxMethod<ActivityMovementsContentsRequest>( pipe(
-            switchMap( (request: ActivityMovementsContentsRequest): Observable<PairModel<MovementContentModel[]>[]> =>
-                store.movementApi.findMovementsContents(
-                    request.projectId,
-                    request.movementIds,
-                    store.movements.params.currentMovements(),
-                ).pipe( notifyOnError( store.registryFacade ) ),
-            ),
-            tap( (contents: PairModel<MovementContentModel[]>[]): void => patchState( store, (state: ActivityStoreModel) => {
-                if (!state.movements.element) return state
-                return {
-                    movements: {
-                        ...state.movements,
-                        element: {
-                            ...state.movements.element,
-                            content: MovementHelper.rebuildPageWithContent( state.movements.element.content, contents ),
-                        },
-                    },
-                }
-            }) ),
-        ) )
-
-        return {
-            fetchActivitiesPage: rxMethod<ActivitiesPageRequest>( pipe(
-                switchMap( (request: ActivitiesPageRequest): Observable<PageModel<ActivityModel>> => store.api.findActivities(
-                    request.projectId,
-                    request.pageNumber,
-                    request.pageSize,
-                    store.activities.params(),
-                ).pipe(
-                    initialize( (): void => patchState( store, (state: ActivityStoreModel) => ({
-                        activities: StateHelper.updatePageLoader( state.activities, true ),
-                    }) ) ),
-                    finalize( (): void => patchState( store, (state: ActivityStoreModel) => ({
-                        activities: StateHelper.updatePageLoader( state.activities, false ),
-                    }) ) ),
-                    catchError( (error: ErrorModel): Observable<never> => {
-                        if (error.status === 503) {
-                            reportError( store.registryFacade, error )
-                        } else {
-                            patchState( store, (state: ActivityStoreModel) => ({
-                                activities: PageStateHelper.withError( state.activities, error ),
-                            }) )
-                        }
-                        return EMPTY
-                    } ),
-                ) ),
-                tap( (page: PageModel<ActivityModel>): void => patchState( store, (state: ActivityStoreModel) => ({
-                    activities: {
-                        ...state.activities,
-                        params: { ...state.activities.params, resetSearch: false },
-                        element: page,
-                    },
-                }) ) ),
-            ) ),
-
-            updateActivitiesPageSearchParams: (params: ActivityPageParamsModel): void => {
-                patchState( store, (state: ActivityStoreModel) => ({ activities: { ...state.activities, params: params } }) )
-            },
-
-            fetchActivityMovementsPage: rxMethod<ActivityMovementsPageRequest>( pipe(
-                switchMap( (request: ActivityMovementsPageRequest): Observable<{
-                    request: ActivityMovementsPageRequest
-                    page: PageModel<MovementModel>
-                }> => store.api.findActivityMovements(
-                    request.projectId,
-                    request.id,
-                    request.pageNumber,
-                    request.pageSize,
-                    store.movements.params(),
-                ).pipe(
-                    initialize( (): void => patchState( store, (state: ActivityStoreModel) => ({
-                        movements: StateHelper.updatePageLoader( state.movements, true ),
-                    }) ) ),
-                    finalize( (): void => patchState( store, (state: ActivityStoreModel) => ({
-                        movements: StateHelper.updatePageLoader( state.movements, false ),
-                    }) ) ),
-                    catchError( (error: ErrorModel): Observable<never> => {
-                        if (error.status === 503) {
-                            reportError( store.registryFacade, error )
-                        } else {
-                            patchState( store, (state: ActivityStoreModel) => ({
-                                movements: PageStateHelper.withError( state.movements, error ),
-                            }) )
-                        }
-                        return EMPTY
-                    } ),
-                    map( (page: PageModel<MovementModel>) => ({ request, page }) ),
-                ) ),
-                tap( ({ request, page }): void => {
-                    patchState( store, (state: ActivityStoreModel) => ({
-                        movements: {
-                            ...state.movements,
-                            params: { ...state.movements.params, resetSearch: false },
-                            element: page,
-                        },
-                    }) )
-                    if (page.content.length > 0) {
-                        fetchMovementsContents( {
-                            projectId: request.projectId,
-                            movementIds: page.content.map( (movement: MovementModel): string => movement.id ),
-                        } )
-                    }
-                } ),
-            ) ),
-
-            fetchActivityMovementsContents: fetchMovementsContents,
-
-            updateActivityMovementsPageSearchParams: (params: MovementPageParamsModel): void => {
-                patchState( store, (state: ActivityStoreModel) => ({ movements: { ...state.movements, params: params } }) )
-            },
-        }
-    } ),
+    withMethods( (store, api = inject( ActivityApi ), errors = inject( ErrorReporter )) => ({
+        fetchActivityMovementsPage: pageFetcher( store, 'movements', (request: ActivityMovementsPageRequest, params: MovementPageParamsModel) =>
+            api.findActivityMovements( request.projectId, request.id, request.pageNumber, request.pageSize, params ), errors, {
+            after: contentsRequester( store.fetchActivityMovementsContents ),
+        } ),
+    }) ),
 )

@@ -22,6 +22,11 @@ import {ProjectAuthorityEnum} from '@shared/models/enumeration/project-authority
 import {ElementActionEnum} from '@shared/models/enumeration/element-action.enum'
 import {MenuItem} from 'primeng/api'
 
+/**
+ * Purpose: Card presenting one participant with its actions.
+ * Scope: Renders the details, the actions menu and the confirmations of the element.
+ * Limits: Receives the element as an input and calls the facade for commands; it holds no list state.
+ */
 @Component({
     selector: 'app-participant-element',
     imports: [
@@ -52,8 +57,17 @@ export class ParticipantElementComponent extends GenericElementComponent {
     public readonly groupIdToRemove: InputSignal<string | undefined> = input()
     public readonly participant: InputSignal<ParticipantModel> = input.required()
 
-    protected readonly actions: Signal<MenuItem[]> = computed((): MenuItem[] => [
-        {
+    protected readonly actions: Signal<MenuItem[]> = computed( (): MenuItem[] => [
+        this.movementsHistoryAction(),
+        this.editAction(),
+        this.disableAction(),
+        this.enableAction(),
+        this.removeMemberAction(),
+        this.deleteAction(),
+    ] )
+
+    private movementsHistoryAction(): MenuItem {
+        return {
             label: 'participants.actions.movements-history',
             icon: 'pi pi-history',
             disabled: !this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_HISTORY_R),
@@ -63,11 +77,14 @@ export class ParticipantElementComponent extends GenericElementComponent {
                     RegistryRouteEnum.PROJECTS_CONFIGURATION_PARTICIPANTS_MOVEMENTS.replace(
                         ':participantId',
                         this.participant().id,
-                    ).replace(':projectId', this.registryFacade.currentProjectId() ?? ''),
+                    ).replace(':projectId', this.sessionFacade.currentProjectId() ?? ''),
                 ).catch(console.error)
             },
-        },
-        {
+        }
+    }
+
+    private editAction(): MenuItem {
+        return {
             label: 'participants.actions.edit',
             icon: 'pi pi-pen-to-square',
             disabled: !this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_U),
@@ -77,82 +94,78 @@ export class ParticipantElementComponent extends GenericElementComponent {
                     RegistryRouteEnum.PROJECTS_CONFIGURATION_PARTICIPANTS_EDITION.replace(
                         ':participantId',
                         this.participant().id,
-                    ).replace(':projectId', this.registryFacade.currentProjectId() ?? ''),
+                    ).replace(':projectId', this.sessionFacade.currentProjectId() ?? ''),
                 ).catch(console.error)
             },
-        },
-        {
+        }
+    }
+
+    private disableAction(): MenuItem {
+        return {
             label: 'participants.actions.disable',
             icon: 'pi pi-eye-slash',
             disabled: this.busy() || !this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_U),
             visible: this.actionIsEnable(ElementActionEnum.PARTICIPANT_DISABLE) && this.participant().visible,
-            command: (): void => {
-                this.confirmationService.confirm(
-                    this.buildConfirmation(
-                        'participants.actions.confirmations.disable',
-                        'pi pi-exclamation-triangle',
-                        this.participant(),
-                        SeverityEnum.WARNING,
-                        (): void => this.run(this.facade.disableParticipant(this.participant().id)),
-                    ),
-                )
-            },
-        },
-        {
+            command: this.confirmThen(
+                'participants.actions.confirmations.disable',
+                'pi pi-exclamation-triangle',
+                this.participant(),
+                SeverityEnum.WARNING,
+                (): void => this.run(this.facade.disableParticipant(this.participant().id)),
+            ),
+        }
+    }
+
+    private enableAction(): MenuItem {
+        return {
             label: 'participants.actions.enable',
             icon: 'pi pi-replay',
             disabled: this.busy() || !this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_U),
             visible: this.actionIsEnable(ElementActionEnum.PARTICIPANT_ENABLE) && !this.participant().visible,
-            command: (): void => {
-                this.confirmationService.confirm(
-                    this.buildConfirmation(
-                        'participants.actions.confirmations.enable',
-                        'pi pi-info-circle',
-                        this.participant(),
-                        SeverityEnum.INFO,
-                        (): void => this.run(this.facade.enableParticipant(this.participant().id)),
-                    ),
-                )
-            },
-        },
-        {
+            command: this.confirmThen(
+                'participants.actions.confirmations.enable',
+                'pi pi-info-circle',
+                this.participant(),
+                SeverityEnum.INFO,
+                (): void => this.run(this.facade.enableParticipant(this.participant().id)),
+            ),
+        }
+    }
+
+    private removeMemberAction(): MenuItem {
+        return {
             label: 'participants.actions.remove-member',
             icon: 'pi pi-user-minus',
             disabled: this.busy() || !this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_U),
             visible: this.actionIsEnable(ElementActionEnum.PARTICIPANT_REMOVE_FROM_GROUP) && GenericHelper.nonNull(this.groupIdToRemove()),
-            command: (): void => {
-                this.confirmationService.confirm(
-                    this.buildConfirmation(
-                        'participants.actions.confirmations.remove-member',
-                        'pi pi-exclamation-triangle',
-                        this.participant(),
-                        SeverityEnum.WARNING,
-                        (): void => this.run(this.groupFacade!.removeMemberFromGroup(
-                            this.groupIdToRemove()!,
-                            this.participant(),
-                        )),
-                    ),
-                )
-            },
-        },
-        {
+            command: this.confirmThen(
+                'participants.actions.confirmations.remove-member',
+                'pi pi-exclamation-triangle',
+                this.participant(),
+                SeverityEnum.WARNING,
+                (): void => this.run(this.groupFacade!.removeMemberFromGroup(
+                this.groupIdToRemove()!,
+                this.participant(),
+                )),
+            ),
+        }
+    }
+
+    private deleteAction(): MenuItem {
+        return {
             label: 'participants.actions.delete',
             icon: 'pi pi-trash',
             disabled: this.busy() || !this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_D),
             visible: this.actionIsEnable(ElementActionEnum.PARTICIPANT_DELETE) && this.participant().visible,
-            command: (): void => {
-                this.confirmationService.confirm(
-                    this.buildConfirmation(
-                        'participants.actions.confirmations.delete',
-                        'pi pi-exclamation-triangle',
-                        this.participant(),
-                        SeverityEnum.DANGER,
-                        (): void => this.run(this.facade.deleteParticipant(this.participant())),
-                    ),
-                )
-            },
-        },
-    ])
+            command: this.confirmThen(
+                'participants.actions.confirmations.delete',
+                'pi pi-exclamation-triangle',
+                this.participant(),
+                SeverityEnum.DANGER,
+                (): void => this.run(this.facade.deleteParticipant(this.participant())),
+            ),
+        }
+    }
 
     protected readonly participantStatusSeverity: Signal<SeverityEnum> = computed((): SeverityEnum => {
         switch (this.participant().status.value) {

@@ -14,6 +14,11 @@ import { AlertStatusEnum } from '@shared/models/enumeration/alert-status.enum'
 import { CommunicationModel } from '@pages/projects/[projectId]/movements/communication/data/model/communication.model'
 
 
+/**
+ * Purpose: Public entry point of the alert domain for pages, components and guards.
+ * Scope: Exposes the alert store as signals, forwards its queries and runs the alert commands with their notifications.
+ * Limits: Holds no state of its own and builds no HTTP request itself.
+ */
 @Injectable()
 export class AlertFacade extends GenericProjectElementFacade {
     private readonly store: InstanceType<typeof AlertStore> = inject( AlertStore )
@@ -113,7 +118,7 @@ export class AlertFacade extends GenericProjectElementFacade {
         pageNumber: number | undefined,
         pageSize: number | undefined,
     ): void {
-        const index: number | undefined = this.alertsPageResetSearch() ? 0 : pageNumber
+        const index: number | undefined = this.alertCommunicationsPageResetSearch() ? 0 : pageNumber
         this.store.fetchAlertCommunicationsPage( { projectId: this.selectedProjectId(), id: id, pageNumber: index, pageSize: pageSize } )
     }
 
@@ -157,48 +162,48 @@ export class AlertFacade extends GenericProjectElementFacade {
 
     public fetchAlert (id: string): Observable<AlertModel> {
         return this.api.findAlertById( this.selectedProjectId(), id ).pipe(
-            notifyOnError( this.registryFacade ),
+            notifyOnError( this.uiFacade ),
         )
     }
 
     public createAlert (alert: AlertDto): Observable<AlertModel> {
         return this.api.createAlert( this.selectedProjectId(), alert ).pipe(
-            notifyUnavailableOnly( this.registryFacade ),
+            notifyUnavailableOnly( this.uiFacade ),
             tap( (created: AlertModel): void => this.onCommandSuccess( 'create', created ) ),
         )
     }
 
     public updateAlert (id: string, alert: AlertDto): Observable<AlertModel> {
         return this.api.updateAlertById( this.selectedProjectId(), id, alert ).pipe(
-            notifyUnavailableOnly( this.registryFacade ),
+            notifyUnavailableOnly( this.uiFacade ),
             tap( (updated: AlertModel): void => this.onCommandSuccess( 'update', updated ) ),
         )
     }
 
     public disableAlert (id: string): Observable<AlertModel> {
         return this.api.disableAlertById( this.selectedProjectId(), id ).pipe(
-            notifyOnError( this.registryFacade ),
+            notifyOnError( this.uiFacade ),
             tap( (disabled: AlertModel): void => this.onCommandSuccess( 'disable', disabled ) ),
         )
     }
 
     public enableAlert (id: string): Observable<AlertModel> {
         return this.api.enableAlertById( this.selectedProjectId(), id ).pipe(
-            notifyOnError( this.registryFacade ),
+            notifyOnError( this.uiFacade ),
             tap( (enabled: AlertModel): void => this.onCommandSuccess( 'enable', enabled ) ),
         )
     }
 
     public deleteAlert (alert: AlertModel): Observable<void> {
         return this.api.deleteAlertById( undefined, alert.id ).pipe(
-            notifyOnError( this.registryFacade ),
+            notifyOnError( this.uiFacade ),
             tap( (): void => this.onCommandSuccess( 'delete', alert ) ),
         )
     }
 
     public updateAlertStatus (id: string, status: AlertStatusEnum): Observable<AlertModel> {
         return this.api.updateAlertStatusById( this.selectedProjectId(), id, status ).pipe(
-            notifyOnError( this.registryFacade ),
+            notifyOnError( this.uiFacade ),
             tap( (updated: AlertModel): void => this.onCommandSuccess( 'status', updated ) ),
         )
     }

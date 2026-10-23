@@ -12,6 +12,11 @@ import {Select} from 'primeng/select'
 import {TranslocoPipe} from '@jsverse/transloco'
 import {AlertElementComponent} from '@shared/ui/domain/alert-element/alert-element.component'
 
+/**
+ * Purpose: Page listing the alerts with search and lazy loading.
+ * Scope: Binds the list component to the facade and reloads on command events.
+ * Limits: Holds no domain state and never calls the backend.
+ */
 @Component({
     selector: 'app-alerts-list',
     imports: [

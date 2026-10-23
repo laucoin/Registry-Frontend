@@ -16,6 +16,11 @@ import { MovementModel } from '@shared/models/model/movement.model'
 import { AlertModel } from '@shared/models/model/alert.model'
 
 
+/**
+ * Purpose: Public entry point of the communication domain for pages, components and guards.
+ * Scope: Exposes the communication store as signals, forwards its queries and runs the communication commands with their notifications.
+ * Limits: Holds no state of its own and builds no HTTP request itself.
+ */
 @Injectable()
 export class CommunicationFacade extends GenericProjectElementFacade {
     private readonly store: InstanceType<typeof CommunicationStore> = inject( CommunicationStore )
@@ -122,35 +127,35 @@ export class CommunicationFacade extends GenericProjectElementFacade {
 
     public createCommunication (communication: CommunicationDto): Observable<CommunicationModel> {
         return this.api.createCommunication( this.selectedProjectId(), communication ).pipe(
-            notifyUnavailableOnly( this.registryFacade ),
+            notifyUnavailableOnly( this.uiFacade ),
             tap( (created: CommunicationModel): void => this.onCommandSuccess( 'create', created ) ),
         )
     }
 
     public updateCommunication (id: string, communication: CommunicationDto): Observable<CommunicationModel> {
         return this.api.updateCommunicationById( this.selectedProjectId(), id, communication ).pipe(
-            notifyUnavailableOnly( this.registryFacade ),
+            notifyUnavailableOnly( this.uiFacade ),
             tap( (updated: CommunicationModel): void => this.onCommandSuccess( 'update', updated ) ),
         )
     }
 
     public disableCommunication (id: string): Observable<CommunicationModel> {
         return this.api.disableCommunicationById( this.selectedProjectId(), id ).pipe(
-            notifyOnError( this.registryFacade ),
+            notifyOnError( this.uiFacade ),
             tap( (disabled: CommunicationModel): void => this.onCommandSuccess( 'disable', disabled ) ),
         )
     }
 
     public enableCommunication (id: string): Observable<CommunicationModel> {
         return this.api.enableCommunicationById( this.selectedProjectId(), id ).pipe(
-            notifyOnError( this.registryFacade ),
+            notifyOnError( this.uiFacade ),
             tap( (enabled: CommunicationModel): void => this.onCommandSuccess( 'enable', enabled ) ),
         )
     }
 
     public deleteCommunication (communication: CommunicationModel): Observable<void> {
         return this.api.deleteCommunicationById( undefined, communication.id ).pipe(
-            notifyOnError( this.registryFacade ),
+            notifyOnError( this.uiFacade ),
             tap( (): void => this.onCommandSuccess( 'delete', communication ) ),
         )
     }

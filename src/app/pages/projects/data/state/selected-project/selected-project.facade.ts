@@ -5,7 +5,7 @@ import { VehicleStatusModel } from '@pages/projects/data/model/vehicle-status.mo
 import { PageModel } from '@shared/models/model/page.model'
 import { MovementModel } from '@shared/models/model/movement.model'
 import { DateHelper } from '@shared/helpers/date.helper'
-import { RegistryFacade } from '@core/registry/state/registry.facade'
+import { SessionFacade } from '@core/registry/state/session.facade'
 import { GenericFacade } from '@shared/helpers/facade/generic.facade'
 import { SelectedProjectStore } from '@pages/projects/data/state/selected-project/selected-project.store'
 import { ParticipantModel } from '@shared/models/model/participant.model'
@@ -13,9 +13,14 @@ import { ProjectHelper } from '@shared/helpers/project.helper'
 import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
 import { AlertModel } from '@shared/models/model/alert.model'
 
+/**
+ * Purpose: Public entry point of the selected project domain for pages, components and guards.
+ * Scope: Exposes the selected project store as signals, forwards its queries and runs the selected project commands with their notifications.
+ * Limits: Holds no state of its own and builds no HTTP request itself.
+ */
 @Injectable()
 export class SelectedProjectFacade extends GenericFacade {
-    private readonly registryFacade: RegistryFacade = inject( RegistryFacade )
+    private readonly sessionFacade: SessionFacade = inject( SessionFacade )
     private readonly store: InstanceType<typeof SelectedProjectStore> = inject( SelectedProjectStore )
 
     public readonly participantsStatus: Signal<ProjectStatusModel | undefined> = this.store.status.participants.element
@@ -40,8 +45,6 @@ export class SelectedProjectFacade extends GenericFacade {
 
     public readonly currentMovementsPageWithoutActivity: Signal<PageModel<MovementModel> | undefined> = this.store.currentMovements.withoutActivity.element
 
-    private readonly currentMovementsPageWithoutActivityResetSearch: Signal<boolean> = this.store.currentMovements.withoutActivity.params.resetSearch
-
     public readonly currentMovementsPageWithoutActivityStartDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
             DateHelper.buildDate( this.store.currentMovements.withoutActivity.params.startDateTimeSearched() ),
         )
@@ -57,8 +60,6 @@ export class SelectedProjectFacade extends GenericFacade {
     public readonly currentMovementsPageWithActivityError: Signal<ToastMessageOptions | undefined> = this.store.currentMovements.withActivity.error
 
     public readonly currentMovementsPageWithActivity: Signal<PageModel<MovementModel> | undefined> = this.store.currentMovements.withActivity.element
-
-    private readonly currentMovementsPageWithActivityResetSearch: Signal<boolean> = this.store.currentMovements.withActivity.params.resetSearch
 
     public readonly currentMovementsPageWithActivityStartDateTimeSearchedParam: Signal<Date | undefined> = computed( (): Date | undefined =>
             DateHelper.buildDate( this.store.currentMovements.withActivity.params.startDateTimeSearched() ),
@@ -76,7 +77,7 @@ export class SelectedProjectFacade extends GenericFacade {
         const projectId: string | undefined = this.selectedProjectId()
         this.store.fetchParticipantsStatus( projectId )
         this.store.fetchParticipantsBirthdays( projectId )
-        if (ProjectHelper.hasOption( this.registryFacade.selectedProject(), ProjectOptionEnum.VEHICLE )) {
+        if (ProjectHelper.hasOption( this.sessionFacade.selectedProject(), ProjectOptionEnum.VEHICLE )) {
             this.store.fetchVehiclesStatus( projectId )
         }
     }
@@ -114,6 +115,6 @@ export class SelectedProjectFacade extends GenericFacade {
     }
 
     private get selectedProjectId (): Signal<string | undefined> {
-        return this.registryFacade.currentProjectId
+        return this.sessionFacade.currentProjectId
     }
 }

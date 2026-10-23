@@ -6,17 +6,22 @@ import { UserModel } from '@shared/models/model/user.model'
 import { SelectItem, ToastMessageOptions } from 'primeng/api'
 import { GenericFacade } from '@shared/helpers/facade/generic.facade'
 import { UserApi } from '@pages/users/data/state/user.api'
-import { RegistryFacade } from '@core/registry/state/registry.facade'
+import { UiFacade } from '@core/registry/state/ui.facade'
 import { StateHelper } from '@shared/helpers/state/state.helper'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { initialize, notifyOnError } from '@shared/helpers/rx.helper'
 import { UserStore } from '@pages/users/data/state/user.store'
 
+/**
+ * Purpose: Public entry point of the user domain for pages, components and guards.
+ * Scope: Exposes the user store as signals, forwards its queries and runs the user commands with their notifications.
+ * Limits: Holds no state of its own and builds no HTTP request itself.
+ */
 @Injectable()
 export class UserFacade extends GenericFacade {
     private readonly store: InstanceType<typeof UserStore> = inject( UserStore )
     private readonly api: UserApi = inject( UserApi )
-    private readonly registryFacade: RegistryFacade = inject( RegistryFacade )
+    private readonly uiFacade: UiFacade = inject( UiFacade )
 
     public readonly usersPage: Signal<PageModel<UserModel> | undefined> = this.store.users.element
 
@@ -86,7 +91,7 @@ export class UserFacade extends GenericFacade {
     public updateUserRole (id: string, role: string | undefined): Observable<UserModel> {
         return this.api.updateUserRole( id, role ).pipe(
             this.trackUserLoader,
-            notifyOnError( this.registryFacade ),
+            notifyOnError( this.uiFacade ),
             tap( (user: UserModel): void => this.onCommandSuccess( 'update-role', user ) ),
         )
     }
@@ -94,7 +99,7 @@ export class UserFacade extends GenericFacade {
     public bockUser (id: string): void {
         this.api.blockUserById( id ).pipe(
             this.trackUserLoader,
-            notifyOnError( this.registryFacade ),
+            notifyOnError( this.uiFacade ),
             tap( (user: UserModel): void => this.onCommandSuccess( 'disable', user ) ),
         ).subscribe()
     }
@@ -102,7 +107,7 @@ export class UserFacade extends GenericFacade {
     public unblockUser (id: string): void {
         this.api.unblockUserById( id ).pipe(
             this.trackUserLoader,
-            notifyOnError( this.registryFacade ),
+            notifyOnError( this.uiFacade ),
             tap( (user: UserModel): void => this.onCommandSuccess( 'enable', user ) ),
         ).subscribe()
     }
@@ -110,7 +115,7 @@ export class UserFacade extends GenericFacade {
     public impersonateUser (user: UserModel): void {
         this.api.impersonateUserById( user.id ).pipe(
             this.trackUserLoader,
-            notifyOnError( this.registryFacade ),
+            notifyOnError( this.uiFacade ),
             tap( (): void => this.onCommandSuccess( 'impersonate', user ) ),
         ).subscribe()
     }
@@ -118,7 +123,7 @@ export class UserFacade extends GenericFacade {
     public deleteUser (user: UserModel): void {
         this.api.deleteUserById( user.id ).pipe(
             this.trackUserLoader,
-            notifyOnError( this.registryFacade ),
+            notifyOnError( this.uiFacade ),
             tap( (): void => this.onCommandSuccess( 'delete', user ) ),
         ).subscribe()
     }
@@ -129,7 +134,7 @@ export class UserFacade extends GenericFacade {
     )
 
     private onCommandSuccess (command: string, user: UserModel): void {
-        this.registryFacade.notify( StateHelper.buildNotificationMessage(
+        this.uiFacade.notify( StateHelper.buildNotificationMessage(
             SeverityEnum.SUCCESS,
             `users.notifications.${ command }.title`,
             `users.notifications.${ command }.message`,

@@ -18,6 +18,11 @@ import {GenericHelper} from '@shared/helpers/generic.helper'
 import {StringHelper} from '@shared/helpers/string.helper'
 import {RouterLink} from '@angular/router'
 
+/**
+ * Purpose: Page listing the profiles with search and lazy loading.
+ * Scope: Binds the list component to the facade and reloads on command events.
+ * Limits: Holds no domain state and never calls the backend.
+ */
 @Component({
     selector: 'app-profiles-list',
     imports: [
@@ -41,9 +46,9 @@ export class ProfilesListPage extends GenericListComponent {
     protected readonly facade: ProjectProfileFacade = inject(ProjectProfileFacade)
 
     protected readonly hasFilters: Signal<boolean> = computed((): boolean =>
-        StringHelper.isNotNullNorBlank(this.registryFacade.userProjectProfilesPageTextSearchParam())
-        || GenericHelper.nonNull(this.registryFacade.userProjectProfilesPageDateTimeSearchParam())
-        || GenericHelper.nonNull(this.registryFacade.userProjectProfilesPageAvailabilitySearchParam()),
+        StringHelper.isNotNullNorBlank(this.sessionFacade.userProjectProfilesPageTextSearchParam())
+        || GenericHelper.nonNull(this.sessionFacade.userProjectProfilesPageDateTimeSearchParam())
+        || GenericHelper.nonNull(this.sessionFacade.userProjectProfilesPageAvailabilitySearchParam()),
     )
 
     public constructor() {
@@ -51,24 +56,24 @@ export class ProfilesListPage extends GenericListComponent {
 
         this.form = this.initForm()
 
-        this.registryFacade.fetchProjectProfilesPage(undefined, undefined)
+        this.sessionFacade.fetchProjectProfilesPage(undefined, undefined)
     }
 
     protected initForm(): FormGroup {
         return this.formBuilder.group({
-            textSearched: this.formBuilder.control(this.registryFacade.userProjectProfilesPageTextSearchParam()),
-            dateTimeSearched: this.formBuilder.control(this.registryFacade.userProjectProfilesPageDateTimeSearchParam()),
-            availabilitySearched: this.formBuilder.control(this.registryFacade.userProjectProfilesPageAvailabilitySearchParam()),
+            textSearched: this.formBuilder.control(this.sessionFacade.userProjectProfilesPageTextSearchParam()),
+            dateTimeSearched: this.formBuilder.control(this.sessionFacade.userProjectProfilesPageDateTimeSearchParam()),
+            availabilitySearched: this.formBuilder.control(this.sessionFacade.userProjectProfilesPageAvailabilitySearchParam()),
         })
     }
 
     protected loadPage(pageEvent: PageEventModel): void {
-        this.registryFacade.inputProfilesPageSearchParameters(
+        this.sessionFacade.inputProfilesPageSearchParameters(
             this.textSearched.value,
             this.availabilitySearched.value,
             this.dateTimeSearched.value,
         )
-        this.registryFacade.fetchProjectProfilesPage(pageEvent.pageNumber, pageEvent.pageSize)
+        this.sessionFacade.fetchProjectProfilesPage(pageEvent.pageNumber, pageEvent.pageSize)
     }
 
     protected get textSearched(): FormControl {

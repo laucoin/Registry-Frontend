@@ -8,6 +8,11 @@ const optionIcons: Map<ProjectOptionEnum, string> = new Map<ProjectOptionEnum, s
     [ ProjectOptionEnum.ALERT, 'pi pi-exclamation-triangle' ],
 ] )
 
+/**
+ * Purpose: Gives the icon of a project option.
+ * Scope: Maps each option to its icon class.
+ * Limits: Returns an empty text for an unknown option.
+ */
 @Pipe( {
     name: 'optionIcon', standalone: true,
 } )

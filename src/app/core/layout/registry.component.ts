@@ -1,8 +1,7 @@
 import { Component, HostListener, inject, OnDestroy} from '@angular/core'
 import {TranslocoPipe} from '@jsverse/transloco'
 import {ConfirmationService, MessageService, ToastMessageOptions} from 'primeng/api'
-import {BlockUIModule} from 'primeng/blockui'
-import {ConfirmDialogModule} from 'primeng/confirmdialog'
+import {ConfirmDialog} from 'primeng/confirmdialog'
 import {ProgressSpinnerModule} from 'primeng/progressspinner'
 import {ToastModule} from 'primeng/toast'
 import {Subscription} from 'rxjs'
@@ -12,19 +11,24 @@ import {Button} from 'primeng/button'
 import {Dialog} from 'primeng/dialog'
 import {Divider} from 'primeng/divider'
 import {GenericComponent} from '@shared/ui/base/generic.component'
+import {BrowserService} from '@core/browser/browser.service'
 import {NavbarComponent} from '@core/shell/navbar/navbar.component'
 import {RouterOutlet} from '@angular/router'
 import {ThemeEnum} from '@shared/models/enumeration/theme.enum'
 import {SeverityInformationComponent} from '@shared/ui/common/severity-information/severity-information.component'
 import {GenericHelper} from '@shared/helpers/generic.helper'
 
+/**
+ * Purpose: Root component of the application.
+ * Scope: Hosts the navbar, the router outlet, the global loading and error states, the toast and the legal dialogs.
+ * Limits: Holds no domain data; it reads the shell state from the UI and registry facades.
+ */
 @Component({
     selector: 'app-root',
     imports: [
         TranslocoPipe,
-        ConfirmDialogModule,
+        ConfirmDialog,
         ToastModule,
-        BlockUIModule,
         ProgressSpinnerModule,
         Button,
         Dialog,
@@ -42,7 +46,8 @@ export class RegistryComponent extends GenericComponent implements OnDestroy {
     private readonly subscriptions: Subscription = new Subscription()
 
     protected readonly currentYear: number = new Date().getFullYear()
-    protected readonly currentHost: string = location.host
+    private readonly browser: BrowserService = inject(BrowserService)
+    protected readonly currentHost: string = this.browser.host
 
     private readonly primeConfig: PrimeNG = inject(PrimeNG)
     private readonly notifyService: MessageService = inject(MessageService)
@@ -60,13 +65,14 @@ export class RegistryComponent extends GenericComponent implements OnDestroy {
 
     private initTranslation(): void {
         this.primeConfig.setTranslation(this.translateService.translateObject('prime-ng'))
+        this.uiFacade.updateLanguage(this.translateService.getActiveLang())
     }
 
     private handleThemeChanges(): void {
-        this.registryFacade.updateTheme(GenericHelper.navigatorTheme)
-        GenericHelper.themeMediaQuery.addEventListener('change', (): void => {
+        this.uiFacade.updateTheme(this.browser.systemTheme)
+        this.browser.onSystemThemeChange((): void => {
             if (GenericHelper.isNull(this.registryFacade.currentUserTheme()) || this.registryFacade.currentUserTheme() === ThemeEnum.SYSTEM) {
-                this.registryFacade.updateTheme(GenericHelper.navigatorTheme)
+                this.uiFacade.updateTheme(this.browser.systemTheme)
             }
         })
     }
@@ -74,12 +80,12 @@ export class RegistryComponent extends GenericComponent implements OnDestroy {
     @HostListener('window:online')
     @HostListener('window:offline')
     public handleNetwork(): void {
-        this.registryFacade.updateNetwork(navigator.onLine)
+        this.uiFacade.updateNetwork(this.browser.online)
     }
 
     @HostListener('window:resize')
     public handleResize(): void {
-        this.registryFacade.updateScreenWidth(window.innerWidth)
+        this.uiFacade.updateScreenWidth(this.browser.viewportWidth)
     }
 
     protected logout(): void {
@@ -88,7 +94,7 @@ export class RegistryComponent extends GenericComponent implements OnDestroy {
 
     private handleNotification(): void {
         this.subscriptions.add(
-            this.registryFacade.notification.subscribe((message: ToastMessageOptions): void => {
+            this.uiFacade.notification.subscribe((message: ToastMessageOptions): void => {
                 this.notifyService.add(message)
             }),
         )

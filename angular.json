@@ -39,11 +39,13 @@
                             "budgets": [
                                 {
                                     "type": "initial",
-                                    "maximumWarning": "500kB"
+                                    "maximumWarning": "900kB",
+                                    "maximumError": "1mb"
                                 },
                                 {
                                     "type": "anyComponentStyle",
-                                    "maximumWarning": "2kB"
+                                    "maximumWarning": "4kB",
+                                    "maximumError": "8kB"
                                 }
                             ],
                             "outputHashing": "all",
@@ -84,7 +86,23 @@
                     "options": {
                         "tsConfig": "tsconfig.spec.json",
                         "runner": "vitest",
-                        "buildTarget": "::development"
+                        "buildTarget": "::development",
+                        "coverageInclude": ["src/app/**/*.ts"],
+                        "coverageExclude": [
+                            "src/app/**/*.spec.ts",
+                            "src/app/**/testing/**",
+                            "src/app/**/*.model.ts",
+                            "src/app/**/*.dto.ts",
+                            "src/app/**/*.enum.ts",
+                            "src/app/**/*.const.ts"
+                        ],
+                        "coverageReporters": ["text-summary", "html"],
+                        "coverageThresholds": {
+                            "statements": 79,
+                            "branches": 72,
+                            "functions": 75,
+                            "lines": 80
+                        }
                     }
                 },
                 "lint": {

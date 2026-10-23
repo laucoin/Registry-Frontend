@@ -10,6 +10,11 @@ import { Subscription, tap } from 'rxjs'
 import { CommunicationFacade } from '@pages/projects/[projectId]/movements/communication/data/state/communication.facade'
 import {TranslocoPipe} from '@jsverse/transloco'
 
+/**
+ * Purpose: List of the communications of an alert.
+ * Scope: Loads and displays the communications of one alert with search.
+ * Limits: Reads through the alert facade only.
+ */
 @Component( {
     selector: 'app-alert-communications-list',
     imports: [

@@ -8,6 +8,11 @@ import {ProfileStatusEnum} from '@shared/models/enumeration/profile-status.enum'
 import {PresenceStatusEnum} from '@shared/models/enumeration/presence-status.enum'
 import {AlertStatusEnum} from '@shared/models/enumeration/alert-status.enum'
 
+/**
+ * Purpose: Sends the HTTP requests of the metadata domain.
+ * Scope: Builds the urls and the query parameters and returns the backend responses.
+ * Limits: Holds no state and handles no error; stores and facades do.
+ */
 @Injectable({
     providedIn: 'root',
 })

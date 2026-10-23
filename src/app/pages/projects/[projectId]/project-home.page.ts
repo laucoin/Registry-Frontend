@@ -10,6 +10,11 @@ import { ParamMap } from '@angular/router'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { CurrentAlertsComponent } from '@pages/projects/[projectId]/current-alerts/current-alerts.component'
 
+/**
+ * Purpose: Home page of the selected project.
+ * Scope: Loads the project home information and shows the dashboard.
+ * Limits: Reads through the selected project facade only.
+ */
 @Component( {
     selector: 'app-project-home',
     imports: [

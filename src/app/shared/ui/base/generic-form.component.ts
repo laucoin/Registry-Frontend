@@ -12,6 +12,11 @@ import { Location } from '@angular/common'
 import { GenericHelper } from '@shared/helpers/generic.helper'
 import { RegistryConfig } from '@core/config/registry.config'
 
+/**
+ * Purpose: Base class of the create and edit forms.
+ * Scope: Handles validation, saving state, error display and navigation after submit.
+ * Limits: Abstract; each form defines its fields and its facade calls.
+ */
 export abstract class GenericFormComponent<M, D> extends GenericComponent {
     protected readonly datePipe: CustomDateFormatPipe = inject( CustomDateFormatPipe )
     private readonly location: Location = inject( Location )

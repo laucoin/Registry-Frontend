@@ -4,34 +4,34 @@
                   [icon]='ProjectOptionEnum.ACTIVITY | optionIcon'>
     <div class='element-card'>
         <div class='activity-info flex flex-col justify-center basis-full xl:basis-[30%]'>
-            <div class='activity-name flex' [class.justify-center]='registryFacade.tinyScreen()'>
+            <div class='activity-name flex' [class.justify-center]='uiFacade.tinyScreen()'>
                 <app-severity-circle class='me-2' [severity]='activity().visible ? SeverityEnum.SUCCESS : SeverityEnum.DANGER' />
                 {{ activity().name }}
             </div>
             @if (activity().startAvailability) {
-                <div class='flex mt-1 items-center' [class.justify-center]='registryFacade.tinyScreen()'>
+                <div class='flex mt-1 items-center' [class.justify-center]='uiFacade.tinyScreen()'>
                     <i class='pi pi-play-circle'></i>
                     <span class='ms-1'>{{ activity().startAvailability | customDateFormat }}</span>
                 </div>
             }
             @if (activity().endAvailability) {
                 <div class='flex items-center'
-                     [class.justify-center]='registryFacade.tinyScreen()'
+                     [class.justify-center]='uiFacade.tinyScreen()'
                      [class.mt-1]='!activity().startAvailability'>
                     <i class='pi pi-stop-circle'></i>
                     <span class='ms-1'>{{ activity().endAvailability | customDateFormat }}</span>
                 </div>
             }
         </div>
-        <div class='participants flex basis-1/2 xl:basis-[20%]' [class.justify-center]='registryFacade.tinyScreen()'>
+        <div class='participants flex basis-1/2 xl:basis-[20%]' [class.justify-center]='uiFacade.tinyScreen()'>
             <p-tag icon='pi pi-hourglass' [value]='activity().duration?.label' />
         </div>
-        <div class='duration flex basis-1/2 xl:basis-[20%]' [class.justify-center]='registryFacade.tinyScreen()'>
+        <div class='duration flex basis-1/2 xl:basis-[20%]' [class.justify-center]='uiFacade.tinyScreen()'>
             <p-tag icon='pi pi-users'
                    [value]='activity().allowedParticipants ? activity().allowedParticipants!.lower + "-" +
                    activity().allowedParticipants!.upper : "activities.participant.zero" | transloco' />
         </div>
-        <div class='status flex basis-1/2 xl:basis-[30%]' [class.justify-center]='registryFacade.tinyScreen()'>
+        <div class='status flex basis-1/2 xl:basis-[30%]' [class.justify-center]='uiFacade.tinyScreen()'>
             @if (activity().status) {
                 <app-severity-tag [severity]='statusSeverity()' [value]='activity().status!.label' />
             }

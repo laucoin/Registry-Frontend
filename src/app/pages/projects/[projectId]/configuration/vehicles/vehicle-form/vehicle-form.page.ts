@@ -24,6 +24,11 @@ import {GenericHelper} from '@shared/helpers/generic.helper'
 import {DateTimeFieldComponent} from '@shared/ui/common/date-time-field/date-time-field.component'
 import {FormIconPipe} from '@shared/helpers/pipe/form-icon.pipe'
 
+/**
+ * Purpose: Page with the form to create or edit a vehicle.
+ * Scope: Builds the form, submits it through the facade and navigates back.
+ * Limits: Holds no domain state and never calls the backend.
+ */
 @Component({
     selector: 'app-vehicle-form',
     imports: [
@@ -103,7 +108,7 @@ export class VehicleFormPage extends GenericFormComponent<VehicleModel, VehicleD
     }
 
     private applyVehicle(vehicle: VehicleModel | undefined): void {
-        const contextProject: ProjectModel | undefined = vehicle?.project || this.registryFacade.selectedProject()
+        const contextProject: ProjectModel | undefined = vehicle?.project || this.sessionFacade.selectedProject()
         this.addProjectDateValidators(contextProject, this.beginDateTime)
         this.addProjectDateValidators(contextProject, this.endDateTime)
         this.fillForm(vehicle)

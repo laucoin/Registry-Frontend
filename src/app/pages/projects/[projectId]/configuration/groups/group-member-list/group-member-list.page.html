@@ -1,7 +1,7 @@
 <div class='mb-2'>
     @if (groupLoading()) {
         <p-card>
-            <app-element-skeleton [withIcon]='true' [layout]='registryFacade.tinyScreen() ? "grid" : "list"' />
+            <app-element-skeleton [withIcon]='true' [layout]='uiFacade.tinyScreen() ? "grid" : "list"' />
         </p-card>
     } @else if (group()) {
         <app-group-element [group]='group()!' [actionMenuVisible]='false' />
@@ -59,23 +59,23 @@
         <app-participant-element [participant]='participant' [groupIdToRemove]='group()?.id' />
     </ng-template>
     <ng-template appTemplate='creation'>
-        @if (CurrentUserHelper.hasProjectAuthority(registryFacade.currentUser(), facade.selectedProjectId(), ProjectAuthority.REGISTRY_PROJECT_GROUP_U)) {
+        @if (CurrentUserHelper.hasProjectAuthority(sessionFacade.currentUser(), facade.selectedProjectId(), ProjectAuthority.REGISTRY_PROJECT_GROUP_U)) {
             <p-button (onClick)='initAddMembersForm()'
                       class='m-1'
                       severity='info'
                       rounded
                       outlined
-                      [label]='registryFacade.tinyScreen() ? "" : "groups.actions.add-members" | transloco'
+                      [label]='uiFacade.tinyScreen() ? "" : "groups.actions.add-members" | transloco'
                       icon='pi pi-user-plus' />
         }
-        @if (CurrentUserHelper.hasProjectAuthority(registryFacade.currentUser(), facade.selectedProjectId(), ProjectAuthority.REGISTRY_PROJECT_PARTICIPANT_C)
-             && CurrentUserHelper.hasProjectAuthority(registryFacade.currentUser(), facade.selectedProjectId(), ProjectAuthority.REGISTRY_PROJECT_GROUP_U)) {
+        @if (CurrentUserHelper.hasProjectAuthority(sessionFacade.currentUser(), facade.selectedProjectId(), ProjectAuthority.REGISTRY_PROJECT_PARTICIPANT_C)
+             && CurrentUserHelper.hasProjectAuthority(sessionFacade.currentUser(), facade.selectedProjectId(), ProjectAuthority.REGISTRY_PROJECT_GROUP_U)) {
             <p-button (onClick)='initCreateMemberForm()'
                       class='m-1'
                       severity='success'
                       rounded
                       outlined
-                      [label]='registryFacade.tinyScreen() ? "" : "groups.actions.create-member" | transloco'
+                      [label]='uiFacade.tinyScreen() ? "" : "groups.actions.create-member" | transloco'
                       icon='pi pi-plus' />
         }
     </ng-template>

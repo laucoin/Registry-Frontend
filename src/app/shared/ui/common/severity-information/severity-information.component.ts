@@ -10,6 +10,11 @@ enum InformationImageEnum {
     DESERT = 'no_data'
 }
 
+/**
+ * Purpose: Illustrated message for an error or an information state.
+ * Scope: Shows an image, a title, a text and projected actions for a severity.
+ * Limits: Purely visual; the message is given by the parent.
+ */
 @Component({
     selector: 'app-severity-information',
     imports: [TranslocoPipe, MessageModule, MessageComponent],

@@ -70,7 +70,7 @@
             </ng-template>
         </p-card>
     }
-    @if (ProjectHelper.hasOption(registryFacade.selectedProject(), ProjectOptionEnum.VEHICLE) && GenericHelper.isNull(facade.vehiclesStatusError())) {
+    @if (ProjectHelper.hasOption(sessionFacade.selectedProject(), ProjectOptionEnum.VEHICLE) && GenericHelper.isNull(facade.vehiclesStatusError())) {
         <p-card class='total-vehicle basis-full md:basis-1/2'>
             <ng-template #title>
                 <div class='flex justify-center items-center'>
@@ -136,16 +136,16 @@
                               [icon]='participant.type.value === ParticipantTypeEnum.REGISTERED ? "pi pi-user" : "pi pi-user-plus"'>
                 <div class='element-card'>
                     <div>
-                        <div class='flex' [class.justify-center]='registryFacade.tinyScreen()'>
+                        <div class='flex' [class.justify-center]='uiFacade.tinyScreen()'>
                             <app-severity-circle class='me-2'
                                                  [severity]='participant.visible ? SeverityEnum.SUCCESS : SeverityEnum.DANGER' />
                             {{ (participant.firstName | titlecase) + ' ' + (participant.lastName | uppercase) }}
                         </div>
                     </div>
-                    <div class='flex' [class.justify-center]='registryFacade.tinyScreen()'>
+                    <div class='flex' [class.justify-center]='uiFacade.tinyScreen()'>
                         <app-severity-tag [value]='participant.birthday | dateFormat: "date"' />
                     </div>
-                    <div class='status flex' [class.justify-center]='registryFacade.tinyScreen()'>
+                    <div class='status flex' [class.justify-center]='uiFacade.tinyScreen()'>
                         <app-severity-tag [severity]='participant.status.value === PresenceStatusEnum.OUT ? SeverityEnum.WARNING : SeverityEnum.SUCCESS'
                                           [value]='participant.status.label' />
                     </div>

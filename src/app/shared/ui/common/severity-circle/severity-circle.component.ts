@@ -1,6 +1,11 @@
 import { Component, computed, input, InputSignal, Signal } from '@angular/core'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 
+/**
+ * Purpose: Coloured circle showing a severity.
+ * Scope: Maps a severity to a colour.
+ * Limits: Purely visual.
+ */
 @Component( {
     selector: 'app-severity-circle',
     templateUrl: './severity-circle.component.html',

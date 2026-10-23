@@ -2,9 +2,14 @@ import { Component, forwardRef, inject, input, InputSignal, signal, WritableSign
 import { DatePicker } from 'primeng/datepicker'
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms'
 import { CustomDatetimeModel } from '@shared/models/model/custom-datetime.model'
-import { RegistryFacade } from '@core/registry/state/registry.facade'
+import { UiFacade } from '@core/registry/state/ui.facade'
 import { DateHelper } from '@shared/helpers/date.helper'
 
+/**
+ * Purpose: Form field editing a custom date time.
+ * Scope: Splits a date and a time and exposes them as a form value.
+ * Limits: Validation is done by the form validators.
+ */
 @Component( {
     selector: 'app-date-time-field',
     imports: [
@@ -22,7 +27,7 @@ import { DateHelper } from '@shared/helpers/date.helper'
     styleUrl: './date-time-field.component.css',
 } )
 export class DateTimeFieldComponent implements ControlValueAccessor {
-    protected readonly registryFacade: RegistryFacade = inject( RegistryFacade )
+    protected readonly uiFacade: UiFacade = inject( UiFacade )
 
     public readonly inputId: InputSignal<string | undefined> = input()
     public readonly invalid: InputSignal<boolean> = input( false )

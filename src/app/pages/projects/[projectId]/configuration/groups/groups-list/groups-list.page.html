@@ -20,7 +20,7 @@
                                fluid
                                showButtonBar
                                [showTime]='true'
-                               [touchUI]='registryFacade.tinyScreen()'
+                               [touchUI]='uiFacade.tinyScreen()'
                                (onBlur)='loadPage(pageEvent)'
                                [formControl]='dateTimeSearched' />
             </div>
@@ -60,12 +60,12 @@
         <app-group-element [group]='group' />
     </ng-template>
     <ng-template appTemplate='creation'>
-        @if (CurrentUserHelper.hasProjectAuthority(registryFacade.currentUser(), facade.selectedProjectId(), ProjectAuthority.REGISTRY_PROJECT_GROUP_C)) {
+        @if (CurrentUserHelper.hasProjectAuthority(sessionFacade.currentUser(), facade.selectedProjectId(), ProjectAuthority.REGISTRY_PROJECT_GROUP_C)) {
             <p-button class='m-1'
                       severity='success'
                       outlined
                       rounded
-                      [label]='registryFacade.tinyScreen() ? "" : "global.actions.create" | transloco'
+                      [label]='uiFacade.tinyScreen() ? "" : "global.actions.create" | transloco'
                       icon='pi pi-plus'
                       [routerLink]='GroupRoutesEnum.CREATE' />
         }
