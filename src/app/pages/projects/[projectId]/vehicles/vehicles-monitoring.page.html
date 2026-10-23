@@ -5,7 +5,7 @@
 <div class="mt-(--spacing--block) flex flex-col gap-(--spacing--block)">
     <app-project-vehicle-overview class="hidden md:block" [showLink]="false"/>
 
-    <app-list emptyMessagePrefix="vehicles.notifications.EMPTY"
+    <app-list data-testid="vehicles-monitoring-list" emptyMessagePrefix="vehicles.notifications.EMPTY"
               [label]="'projectHome.vehiclesPage.title' | transloco"
               [elementPage]="facade.vehiclesPage()"
               [error]="facade.vehiclesPageError()"
@@ -15,18 +15,18 @@
               (updateRequired)="loadBatch($event)"
               (filtersReset)="resetFilters()">
         <ng-template appTemplate="search">
-            <form class="grid grid-cols-1 items-end gap-(--spacing--in-block-large) md:grid-cols-2"
+            <form data-testid="vehicles-monitoring-search-form" class="grid grid-cols-1 items-end gap-(--spacing--in-block-large) md:grid-cols-2"
                   (submit)="$event.preventDefault(); search()">
-                <sgdf-input appSgdfField [label]="'vehicles.search-and-filter.text' | transloco"
+                <sgdf-input data-testid="vehicles-monitoring-q-input" appSgdfField [label]="'vehicles.search-and-filter.text' | transloco"
                             [formField]="form.q"/>
-                <sgdf-select appSgdfField [label]="'vehicles.search-and-filter.availability' | transloco"
+                <sgdf-select data-testid="vehicles-monitoring-status-select" appSgdfField [label]="'vehicles.search-and-filter.availability' | transloco"
                              [formField]="form.status">
                     @for (item of facade.presencesStatusMetadata(); track item.label) {
                         <sgdf-option [value]="item.value ?? ''">{{ item.label }}</sgdf-option>
                     }
                 </sgdf-select>
                 <div class="flex justify-end md:col-span-2">
-                    <sgdf-button variant="primary" appearance="outlined" submit
+                    <sgdf-button data-testid="vehicles-monitoring-search-submit" variant="primary" appearance="outlined" submit
                                  [loading]="facade.vehiclesPageLoading()">
                         <sgdf-icon slot="prefix" name="magnifying-glass" library="solid"/>
                         {{ 'global.actions.search' | transloco }}
@@ -36,7 +36,7 @@
         </ng-template>
 
         <ng-template appTemplate="element" let-vehicle>
-            <sgdf-list-item appMonitoringRow [row]="rowOf(vehicle)"/>
+            <sgdf-list-item data-testid="vehicle-row" [attr.data-id]="vehicle.id" appMonitoringRow [row]="rowOf(vehicle)"/>
         </ng-template>
     </app-list>
 </div>

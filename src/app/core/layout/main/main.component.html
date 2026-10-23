@@ -1,6 +1,6 @@
 <div class="main-layout">
     <div class="fixed left-4 top-4 z-50 -translate-y-[200%] focus-within:translate-y-0">
-        <sgdf-button variant="primary" href="#main-content" (click)="focusContent($event, content)">
+        <sgdf-button data-testid="main-skip-to-content-button" variant="primary" href="#main-content" (click)="focusContent($event, content)">
             {{ 'global.actions.skip-to-content' | transloco }}
         </sgdf-button>
     </div>

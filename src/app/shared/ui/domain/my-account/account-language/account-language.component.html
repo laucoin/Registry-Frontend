@@ -15,7 +15,7 @@
             } @else if (availableLanguages.length === 2) {
                 <sgdf-button-group class="flex w-full" [label]="'myAccount.language.choose' | transloco">
                     @for (language of availableLanguages; track language) {
-                        <sgdf-button class="flex-1" variant="primary"
+                        <sgdf-button data-testid="account-language-option-button" class="flex-1" variant="primary"
                                      block
                                      [appearance]="language === currentLanguage() ? 'solid' : 'outlined'"
                                      [attr.aria-pressed]="language === currentLanguage()"
@@ -30,7 +30,7 @@
                     }
                 </sgdf-button-group>
             } @else {
-                <sgdf-select
+                <sgdf-select data-testid="account-language-select"
                         appearance="outlined"
                         without-label
                         [label]="'myAccount.language.title' | transloco"

@@ -1,9 +1,9 @@
-<sgdf-callout variant="danger" role="alert"
+<sgdf-callout data-testid="section-error-callout" variant="danger" role="alert"
               [title]="error().summary || ('global.notifications.UNKNOWN_ERROR.title' | transloco)">
     <div class="flex flex-wrap items-center justify-between gap-(--spacing--in-block)">
         <span>{{ error().detail || ('global.notifications.UNKNOWN_ERROR.message' | transloco) }}</span>
         @if (retryable()) {
-            <sgdf-button size="small" variant="danger" appearance="outlined" [loading]="retrying()" (click)="retry.emit()">
+            <sgdf-button data-testid="section-error-retry-button" size="small" variant="danger" appearance="outlined" [loading]="retrying()" (click)="retry.emit()">
                 {{ 'global.list.retry' | transloco }}
             </sgdf-button>
         }

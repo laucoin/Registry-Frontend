@@ -39,7 +39,7 @@
     @if (showLink()) {
         <sgdf-table-row class="h-px">
             <sgdf-table-cell class="align-bottom">
-                <sgdf-button block size="small" appearance="text" [routerLink]="link()">
+                <sgdf-button data-testid="project-vehicle-overview-see-all-button" block size="small" appearance="text" [routerLink]="link()">
                     {{ 'projectHome.vehicleOverview.seeAll' | transloco }}
                 </sgdf-button>
             </sgdf-table-cell>

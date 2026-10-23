@@ -6,7 +6,7 @@
     <app-project-participant-overview class="hidden md:block" [showLink]="false"/>
 
     @if (groups.myGroupsPageError(); as failure) {
-        <app-section-error [error]="failure" [retrying]="groups.myGroupsPageLoading()" (retry)="fetchFirstMyGroups()"/>
+        <app-section-error data-testid="participants-monitoring-error" [error]="failure" [retrying]="groups.myGroupsPageLoading()" (retry)="fetchFirstMyGroups()"/>
     }
 
     <div class="flex flex-col gap-(--spacing--in-block-small)">
@@ -14,7 +14,7 @@
             <span role="status" class="font-semibold">
                 {{ 'projectHome.participantsPage.checked' | pluralTranslation: checkedIds().size | transloco: { count: checkedIds().size } }}
             </span>
-            <sgdf-button size="small" appearance="outlined" [disabled]="checkedIds().size === 0" (click)="uncheckAll()">
+            <sgdf-button data-testid="participants-monitoring-uncheck-all-button" size="small" appearance="outlined" [disabled]="checkedIds().size === 0" (click)="uncheckAll()">
                 {{ 'projectHome.participantsPage.uncheckAll' | transloco }}
             </sgdf-button>
         </div>
@@ -25,9 +25,9 @@
     </div>
 
     @if (ready()) {
-        <sgdf-tab-group appearance="text" [attr.active]="activeTab()" (sgdf-tab-show)="onTabShow($event)">
+        <sgdf-tab-group data-testid="participants-monitoring-tabs" appearance="text" [attr.active]="activeTab()" (sgdf-tab-show)="onTabShow($event)">
             @for (tab of tabs(); track tab) {
-                <sgdf-tab [panel]="tab">
+                <sgdf-tab data-testid="participants-monitoring-tab" [panel]="tab">
                     {{ 'projectHome.participantsPage.tabs.' + tab | transloco }}
                     @if (counts()[tab] !== undefined) {
                         <sgdf-badge>{{ counts()[tab] }}</sgdf-badge>
@@ -67,7 +67,7 @@
 
             <sgdf-tab-panel name="individual">
                 @if (activeTab() === 'individual') {
-                    <app-list emptyMessagePrefix="participants.notifications.EMPTY"
+                    <app-list data-testid="participants-monitoring-individual-list" emptyMessagePrefix="participants.notifications.EMPTY"
                               [label]="'projectHome.participantsPage.tabs.individual' | transloco"
                               [elementPage]="participants.participantsPage()"
                               [error]="participants.participantsPageError()"
@@ -77,18 +77,18 @@
                               (updateRequired)="loadParticipants($event)"
                               (filtersReset)="resetFilters()">
                         <ng-template appTemplate="search">
-                            <form class="grid grid-cols-1 items-end gap-(--spacing--in-block-large) md:grid-cols-2"
+                            <form data-testid="participants-monitoring-search-form" class="grid grid-cols-1 items-end gap-(--spacing--in-block-large) md:grid-cols-2"
                                   (submit)="$event.preventDefault(); search()">
-                                <sgdf-input appSgdfField [label]="'participants.search-and-filter.text' | transloco"
+                                <sgdf-input data-testid="participants-monitoring-q-input" appSgdfField [label]="'participants.search-and-filter.text' | transloco"
                                             [formField]="form.q"/>
-                                <sgdf-select appSgdfField [label]="'participants.search-and-filter.status' | transloco"
+                                <sgdf-select data-testid="participants-monitoring-status-select" appSgdfField [label]="'participants.search-and-filter.status' | transloco"
                                              [formField]="form.status">
                                     @for (item of participants.presencesStatusMetadata(); track item.label) {
                                         <sgdf-option [value]="item.value ?? ''">{{ item.label }}</sgdf-option>
                                     }
                                 </sgdf-select>
                                 <div class="flex justify-end md:col-span-2">
-                                    <sgdf-button variant="primary" appearance="outlined" submit
+                                    <sgdf-button data-testid="participants-monitoring-search-submit" variant="primary" appearance="outlined" submit
                                                  [loading]="participants.participantsPageLoading()">
                                         <sgdf-icon slot="prefix" name="magnifying-glass" library="solid"/>
                                         {{ 'global.actions.search' | transloco }}
@@ -98,7 +98,7 @@
                         </ng-template>
 
                         <ng-template appTemplate="element" let-participant>
-                            <sgdf-list-item appMonitoringRow [row]="rowOf(participant)" [selectable]="true"
+                            <sgdf-list-item data-testid="participant-row" [attr.data-id]="participant.id" appMonitoringRow [row]="rowOf(participant)" [selectable]="true"
                                             [checked]="checkedIds().has(participant.id)"
                                             (checkedChange)="setChecked({ ids: [participant.id], checked: $event })"/>
                         </ng-template>

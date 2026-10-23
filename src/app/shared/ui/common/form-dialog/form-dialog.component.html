@@ -1,5 +1,5 @@
-<form novalidate (submit)="$event.preventDefault(); submitted.emit()">
-    <sgdf-dialog open
+<form data-testid="form-dialog-form" novalidate (submit)="$event.preventDefault(); submitted.emit()">
+    <sgdf-dialog data-testid="form-dialog-modal" open
                  [class.dialog-fullscreen]="uiFacade.tinyScreen()"
                  [title]="title() ?? ''"
                  (sgdf-hide)="hidden($event)">
@@ -9,14 +9,14 @@
             </div>
         } @else {
             <div class="flex flex-col gap-[0.75rem] text-left">
-                <app-form-error [error]="error()"/>
+                <app-form-error data-testid="form-dialog-error" [error]="error()"/>
                 <ng-content/>
             </div>
         }
-        <sgdf-button slot="footer" variant="neutral" appearance="text" (click)="closed.emit()">
+        <sgdf-button data-testid="form-dialog-cancel-button" slot="footer" variant="neutral" appearance="text" (click)="closed.emit()">
             {{ 'global.actions.cancel' | transloco }}
         </sgdf-button>
-        <sgdf-button slot="footer" variant="primary" submit [loading]="saving()" [disabled]="loading()">
+        <sgdf-button data-testid="form-dialog-submit" slot="footer" variant="primary" submit [loading]="saving()" [disabled]="loading()">
             <sgdf-icon slot="prefix" [name]="submitIcon()" library="solid"/>
             {{ submitLabel() | transloco }}
         </sgdf-button>

@@ -1,5 +1,5 @@
 <sgdf-navbar torn [label]="'navbar.label.main' | transloco" [attr.subnav-label]="'navbar.label.project' | transloco">
-    <a slot="brand" [routerLink]="RegistryRouteEnum.HOME"
+    <a data-testid="navbar-home-link" slot="brand" [routerLink]="RegistryRouteEnum.HOME"
        [attr.aria-label]="application.name"
        class="flex items-center gap-3 no-underline!">
         <sgdf-icon class="text-3xl [--picto-color:white]" name="logo-symbole" library="sgdf-picto"/>
@@ -11,7 +11,7 @@
         <div slot="context" class="flex min-w-0 items-center gap-3 text-white">
             <span class="hidden opacity-60 md:block" aria-hidden="true">/</span>
             <span class="sr-only">{{ 'navbar.context.project' | transloco }}</span>
-            <a [routerLink]="projectHomeUrl()" class="min-w-0 text-white! no-underline!">
+            <a data-testid="navbar-project-home-link" [routerLink]="projectHomeUrl()" class="min-w-0 text-white! no-underline!">
                 <strong class="block max-w-64 truncate" [attr.title]="project.name">{{ project.name }}</strong>
             </a>
         </div>
@@ -27,7 +27,7 @@
     }
     @if (currentUser(); as user) {
         <sgdf-menu slot="actions" placement="bottom-end">
-            <button slot="trigger"
+            <button data-testid="navbar-account-menu-button" slot="trigger"
                     type="button"
                     class="flex cursor-pointer items-center gap-3 border-0 bg-transparent p-0 text-left font-[inherit] text-inherit"
                     [attr.aria-label]="'navbar.user.menu' | transloco: { name: userFullName() }">
@@ -59,7 +59,7 @@
 
 <ng-template #navItem let-menu let-slot="slot">
     @let current = activeMenuUrl() === menu.url;
-    <sgdf-nav-item [slot]="slot" [routerLink]="menu.url" [current]="current">
+    <sgdf-nav-item data-testid="navbar-nav-link" [slot]="slot" [routerLink]="menu.url" [current]="current">
         @if (menu.icon) {
             <sgdf-icon slot="icon" [attr.name]="menu.icon.name" [library]="menu.icon.library"></sgdf-icon>
         }
@@ -68,7 +68,7 @@
 </ng-template>
 
 <ng-template #menuItem let-menu let-variant="variant" let-action="action">
-    <sgdf-menu-item [routerLink]="menu.url" [attr.variant]="variant" (click)="action?.()">
+    <sgdf-menu-item data-testid="navbar-account-menu-item" [routerLink]="menu.url" [attr.variant]="variant" (click)="action?.()">
         <sgdf-icon slot="icon" [attr.name]="menu.icon.name" [library]="menu.icon.library"></sgdf-icon>
         {{ menu.label | transloco }}
     </sgdf-menu-item>

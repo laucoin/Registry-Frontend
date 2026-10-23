@@ -31,7 +31,7 @@
                                 (click)='menu.toggle($event)'
                                 [model]='actions()'>
                             <ng-template #item let-item>
-                                <a pRipple class='flex items-center py-2 px-4 cursor-pointer'>
+                                <a data-testid="element-card-popover-menu-link" pRipple class='flex items-center py-2 px-4 cursor-pointer'>
                                     <span [class]='item.icon'></span>&nbsp;
                                     <span class='ms-2'>{{ item.label | transloco }}</span>
                                 </a>
@@ -57,7 +57,7 @@
     @if (actions().length > 0 && actionMenuVisible()) {
         <p-context-menu [target]='elementCard' [model]='actions()'>
             <ng-template #item let-item>
-                <a pRipple class='flex items-center p-2 cursor-pointer'>
+                <a data-testid="element-card-context-menu-link" pRipple class='flex items-center p-2 cursor-pointer'>
                     <span [class]='item.icon'></span>&nbsp;
                     <span class='ms-2'>{{ item.label | transloco }}</span>
                 </a>

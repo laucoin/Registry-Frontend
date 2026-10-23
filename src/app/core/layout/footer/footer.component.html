@@ -10,7 +10,7 @@
         © {{ creationYear }} - {{ currentYear }} 
         @let creator = application.creator;
         @if (creator?.website; as website) {
-            <a [href]="website" target="_blank" rel="noopener noreferrer">{{ creator?.name }}<span class="sr-only"> ({{ 'footer.new-tab' | transloco }})</span></a>
+            <a data-testid="footer-creator-link" [href]="website" target="_blank" rel="noopener noreferrer">{{ creator?.name }}<span class="sr-only"> ({{ 'footer.new-tab' | transloco }})</span></a>
         } @else {
             {{ creator?.name }}
         }
@@ -20,14 +20,14 @@
             {{ 'footer.version' | transloco : { version: application.version } }}
         </span>
     }
-    <a slot="legal" [routerLink]="privacyRoute">{{ 'footer.privacy.name' | transloco }}</a>
-    <a slot="legal" [routerLink]="termsRoute">{{ 'footer.terms.name' | transloco }}</a>
+    <a data-testid="footer-privacy-link" slot="legal" [routerLink]="privacyRoute">{{ 'footer.privacy.name' | transloco }}</a>
+    <a data-testid="footer-terms-link" slot="legal" [routerLink]="termsRoute">{{ 'footer.terms.name' | transloco }}</a>
     @if (application.support.documentationUrl; as documentationUrl) {
-        <a slot="legal" [href]="documentationUrl" target="_blank"
+        <a data-testid="footer-documentation-link" slot="legal" [href]="documentationUrl" target="_blank"
            rel="noopener noreferrer">{{ 'footer.documentation' | transloco }}<span class="sr-only"> ({{ 'footer.new-tab' | transloco }})</span></a>
     }
     @if (application.support.issuesUrl; as issuesUrl) {
-        <a slot="legal" [href]="issuesUrl" target="_blank"
+        <a data-testid="footer-support-link" slot="legal" [href]="issuesUrl" target="_blank"
            rel="noopener noreferrer">{{ 'footer.support' | transloco }}<span class="sr-only"> ({{ 'footer.new-tab' | transloco }})</span></a>
     }
 </sgdf-footer>

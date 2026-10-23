@@ -1,9 +1,9 @@
 @if (error(); as failure) {
-    <app-section-error [error]="failure" [retrying]="loading() || loadingMore()" (retry)="retry()"/>
+    <app-section-error data-testid="group-status-list-groups-error" [error]="failure" [retrying]="loading() || loadingMore()" (retry)="retry()"/>
 }
 
 @if (showSkeleton()) {
-    <sgdf-accordion appearance="soft" aria-busy="true" [attr.aria-label]="'global.list.loading' | transloco">
+    <sgdf-accordion data-testid="group-status-list-loading-accordion" appearance="soft" aria-busy="true" [attr.aria-label]="'global.list.loading' | transloco">
         @for (row of skeletonRows; track row) {
             <sgdf-accordion-item>
                 <sgdf-skeleton slot="title" shape="rounded" effect="pulse" style="width: 40%; height: 1rem"/>
@@ -12,12 +12,12 @@
     </sgdf-accordion>
 } @else if (isEmpty()) {
     @if (!error()) {
-        <sgdf-callout variant="neutral" [title]="'projectHome.groupStatus.empty.title' | transloco">
+        <sgdf-callout data-testid="group-status-list-empty-callout" variant="neutral" [title]="'projectHome.groupStatus.empty.title' | transloco">
             {{ 'projectHome.groupStatus.empty.message' | transloco }}
         </sgdf-callout>
     }
 } @else if (groupPage(); as page) {
-    <sgdf-accordion mode="multiple" appearance="soft" heading-level="2">
+    <sgdf-accordion data-testid="group-status-list-accordion" mode="multiple" appearance="soft" heading-level="2">
         @for (group of page.content; track group.id) {
             <sgdf-accordion-item [expanded]="onlyGroup()" (sgdf-after-expand)="opened(group)">
                 <span slot="title" class="flex flex-wrap items-center gap-2">
@@ -43,7 +43,7 @@
                 </span>
                 @if (members(group); as block) {
                     @if (block.error; as failure) {
-                        <app-section-error [error]="failure" [retrying]="block.loading || block.silentLoading" (retry)="retryMembers(group)"/>
+                        <app-section-error data-testid="group-status-list-members-error" [error]="failure" [retrying]="block.loading || block.silentLoading" (retry)="retryMembers(group)"/>
                     }
                     @if (block.loading && !block.element) {
                         <sgdf-list appearance="text" aria-busy="true" [label]="'global.list.loading' | transloco">
@@ -62,13 +62,13 @@
                         } @else {
                             <sgdf-list appearance="text" [label]="'projectHome.groupStatus.membersOf' | transloco: { name: group.name }">
                                 @for (row of rows(group); track row.id) {
-                                    <sgdf-list-item appMonitoringRow [row]="row" [selectable]="true"
+                                    <sgdf-list-item data-testid="group-status-list-member-row" appMonitoringRow [row]="row" [selectable]="true"
                                                     [checked]="checkedIds().has(row.id)"
                                                     (checkedChange)="rowCheckedChange(row.id, $event)"/>
                                 }
                             </sgdf-list>
                             @if (hasMoreMembers(group)) {
-                                <app-load-more [loadedCount]="members.content.length" [total]="members.totalElements"
+                                <app-load-more data-testid="group-status-list-members-load-more" [loadedCount]="members.content.length" [total]="members.totalElements"
                                                [loading]="block.silentLoading" [autoLoad]="!block.error"
                                                (loadMore)="loadMoreMembers(group)"/>
                             }
@@ -79,7 +79,7 @@
         }
     </sgdf-accordion>
     @if (hasMore()) {
-        <app-load-more class="mt-(--spacing--block) block" [loadedCount]="page.content.length" [total]="page.totalElements"
+        <app-load-more data-testid="group-status-list-groups-load-more" class="mt-(--spacing--block) block" [loadedCount]="page.content.length" [total]="page.totalElements"
                        [loading]="loadingMore() || membersLoading()" [autoLoad]="!error()" (loadMore)="loadMore()"/>
     }
 }

@@ -1,5 +1,5 @@
 <div class="flex flex-col gap-[0.75rem]">
-    <sgdf-select appSgdfField required
+    <sgdf-select data-testid="project-profile-invitation-fields-role-select" appSgdfField required
                  [label]="'project-profiles.form.role' | transloco"
                  [loading]="!facade.projectProfileAssignableRolesMetadata()"
                  [placeholder]="'project-profiles.form.placeholder.role' | transloco: {
@@ -14,24 +14,24 @@
         }
     </sgdf-select>
     <div class="grid gap-[0.75rem] md:grid-cols-2">
-        <sgdf-date-time-picker appSgdfField with-time value-format="separate"
+        <sgdf-date-time-picker data-testid="project-profile-invitation-fields-begin-date-time-picker" appSgdfField with-time value-format="separate"
                                [label]="'project-profiles.form.begin-datetime' | transloco"
                                [hint]="'project-profiles.form.hint.begin-date-time' | transloco"
                                [formField]="fields().beginDateTime"
                                [appFieldError]="fields().beginDateTime" translationPrefix="project-profiles.form.error.begin-datetime"/>
-        <sgdf-date-time-picker appSgdfField with-time value-format="separate"
+        <sgdf-date-time-picker data-testid="project-profile-invitation-fields-end-date-time-picker" appSgdfField with-time value-format="separate"
                                [label]="'project-profiles.form.end-datetime' | transloco"
                                [hint]="'project-profiles.form.hint.end-date-time' | transloco"
                                [formField]="fields().endDateTime"
                                [appFieldError]="fields().endDateTime" translationPrefix="project-profiles.form.error.end-datetime"/>
     </div>
     @if (fields().beginDateTime().valid() && fields().endDateTime().valid()) {
-        <app-field-error [field]="fields()" translationPrefix="project-profiles.form.error.date-range"/>
+        <app-field-error data-testid="project-profile-invitation-fields-date-range-error" [field]="fields()" translationPrefix="project-profiles.form.error.date-range"/>
     }
     <sgdf-divider/>
     <div>
         <h3 class="m-0 text-base font-semibold">{{ 'project-profiles.form.users' | pluralTranslation: fields().users().value() | transloco }}</h3>
-        <app-select-elements-field [formField]="fields().users"
+        <app-select-elements-field data-testid="project-profile-invitation-fields-users-field" [formField]="fields().users"
                                    [label]="'project-profiles.form.users.search' | transloco"
                                    [selectionLabel]="'project-profiles.form.users.selected' | pluralTranslation: fields().users().value().length | transloco"
                                    [emptyMessage]="'project-profiles.form.users.empty' | transloco"
@@ -39,6 +39,6 @@
                                    [suggestions]="facade.searchedUsersMetadata()"
                                    [selectItemBuilder]="UserHelper.toSelectItem"
                                    (handleSearch)="handleSearch($event)"/>
-        <app-field-error [field]="fields().users" translationPrefix="project-profiles.form.error.users"/>
+        <app-field-error data-testid="project-profile-invitation-fields-users-error" [field]="fields().users" translationPrefix="project-profiles.form.error.users"/>
     </div>
 </div>

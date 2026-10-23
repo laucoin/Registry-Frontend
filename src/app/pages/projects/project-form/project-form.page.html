@@ -1,5 +1,5 @@
 @if (loadError(); as error) {
-    <app-section-error [error]="error" [retrying]="facade.projectLoading()" (retry)="loadData()"/>
+    <app-section-error data-testid="project-form-error" [error]="error" [retrying]="facade.projectLoading()" (retry)="loadData()"/>
 } @else if (!form().touched() && facade.projectLoading()) {
     <div class="flex justify-center">
         <sgdf-spinner/>
@@ -10,7 +10,7 @@
     } @else {
         <h1>{{ 'projects.form.title' | formTitle: facade.project() | transloco : { name: facade.project()?.name } }}</h1>
     }
-    <sgdf-stepper linear [active]="'step-' + activeTab()" [label]="'projects.form.title' | formTitle: facade.project() | transloco : { name: facade.project()?.name }">
+    <sgdf-stepper data-testid="project-form-stepper" linear [active]="'step-' + activeTab()" [label]="'projects.form.title' | formTitle: facade.project() | transloco : { name: facade.project()?.name }">
         <sgdf-step name="step-1" [completed]="activeTab() > 1">{{ 'projects.form.subtitle.information' | transloco }}</sgdf-step>
         <sgdf-step name="step-2" [completed]="activeTab() > 2">{{ 'projects.form.subtitle.option' | pluralTranslation: facade.projectOptionsMetadata() | transloco }}</sgdf-step>
         @if (!idParam) {
@@ -19,60 +19,60 @@
     </sgdf-stepper>
 
     @if (activeTab() === 1) {
-        <form class="mt-[1rem]" (submit)="$event.preventDefault(); next()">
+        <form data-testid="project-form-information-form" class="mt-[1rem]" (submit)="$event.preventDefault(); next()">
             <div class="flex flex-col gap-[0.75rem]">
-                <sgdf-input appSgdfField required
+                <sgdf-input data-testid="project-form-name-input" appSgdfField required
                             [label]="'projects.form.name' | transloco"
                             [placeholder]="'projects.form.placeholder.name' | transloco"
                             [formField]="form.name"
                             [appFieldError]="form.name" translationPrefix="projects.form.error.name"/>
                 <div class="grid gap-[0.75rem] md:grid-cols-2">
-                    <sgdf-date-time-picker appSgdfField with-time value-format="separate"
+                    <sgdf-date-time-picker data-testid="project-form-begin-date-time-picker" appSgdfField with-time value-format="separate"
                                            [label]="'projects.form.begin-datetime' | transloco"
                                            [formField]="form.beginDateTime"
                                            [appFieldError]="form.beginDateTime" translationPrefix="projects.form.error.begin-datetime"/>
-                    <sgdf-date-time-picker appSgdfField with-time value-format="separate"
+                    <sgdf-date-time-picker data-testid="project-form-end-date-time-picker" appSgdfField with-time value-format="separate"
                                            [label]="'projects.form.end-datetime' | transloco"
                                            [formField]="form.endDateTime"
                                            [appFieldError]="form.endDateTime" translationPrefix="projects.form.error.end-datetime"/>
                 </div>
                 @if (form.beginDateTime().valid() && form.endDateTime().valid()) {
-                    <app-field-error [field]="form" translationPrefix="projects.form.error.date-range"/>
+                    <app-field-error data-testid="project-form-date-range-error" [field]="form" translationPrefix="projects.form.error.date-range"/>
                 }
             </div>
             <div class="flex items-center justify-between pt-[1rem]">
-                <sgdf-button variant="neutral" appearance="text" (click)="navigateToRedirectUri()">
+                <sgdf-button data-testid="project-form-information-cancel-button" variant="neutral" appearance="text" (click)="navigateToRedirectUri()">
                     {{ 'global.actions.cancel' | transloco }}
                 </sgdf-button>
-                <sgdf-button variant="primary" appearance="outlined" submit [attr.label]="'global.actions.next' | transloco">
+                <sgdf-button data-testid="project-form-information-next-submit" variant="primary" appearance="outlined" submit [attr.label]="'global.actions.next' | transloco">
                     {{ uiFacade.tinyScreen() ? '' : ('global.actions.next' | transloco) }}
                     <sgdf-icon slot="suffix" name="arrow-right" library="solid"/>
                 </sgdf-button>
             </div>
         </form>
     } @else if (activeTab() === 3) {
-        <sgdf-callout class="mt-[1rem]" variant="success" [title]="'projects.form.invitation.created.title' | transloco : { name: createdProjectName() }">
+        <sgdf-callout data-testid="project-form-created-callout" class="mt-[1rem]" variant="success" [title]="'projects.form.invitation.created.title' | transloco : { name: createdProjectName() }">
             {{ 'projects.form.invitation.created.message' | transloco }}
         </sgdf-callout>
-        <form class="mt-[1rem]" (submit)="$event.preventDefault(); invite()">
+        <form data-testid="project-form-invitation-form" class="mt-[1rem]" (submit)="$event.preventDefault(); invite()">
             <sgdf-card>
                 <app-project-profile-invitation-fields [fields]="invitationForm" [projectId]="createdProjectId()"/>
             </sgdf-card>
             <div class="flex items-center justify-between pt-[1rem]">
-                <sgdf-button variant="neutral" appearance="text" [disabled]="saving()" (click)="skip()" [attr.label]="'projects.form.invitation.skip' | transloco">
+                <sgdf-button data-testid="project-form-invitation-skip-button" variant="neutral" appearance="text" [disabled]="saving()" (click)="skip()" [attr.label]="'projects.form.invitation.skip' | transloco">
                     {{ 'projects.form.invitation.skip' | transloco }}
                     <sgdf-icon slot="suffix" name="arrow-right" library="solid"/>
                 </sgdf-button>
-                <sgdf-button variant="primary" submit [loading]="saving()" [attr.label]="'project-profiles.actions.invite-user' | pluralTranslation: invitationModel().users.length | transloco">
+                <sgdf-button data-testid="project-form-invitation-submit" variant="primary" submit [loading]="saving()" [attr.label]="'project-profiles.actions.invite-user' | pluralTranslation: invitationModel().users.length | transloco">
                     <sgdf-icon slot="prefix" name="user-plus" library="solid"/>
                     {{ uiFacade.tinyScreen() ? '' : ('project-profiles.actions.invite-user' | pluralTranslation: invitationModel().users.length | transloco) }}
                 </sgdf-button>
             </div>
         </form>
     } @else {
-        <form class="mt-[1rem]" (submit)="$event.preventDefault(); submit()">
+        <form data-testid="project-form-options-form" class="mt-[1rem]" (submit)="$event.preventDefault(); submit()">
             <div class="flex justify-end">
-                <sgdf-checkbox [checked]="allSelected() === true"
+                <sgdf-checkbox data-testid="project-form-select-all-checkbox" [checked]="allSelected() === true"
                                [indeterminate]="allSelected() === undefined"
                                (change)="selectAll({ checked: $any($event.target).checked })">
                     {{ 'projects.options.select-all' | transloco }}
@@ -80,7 +80,7 @@
             </div>
             <sgdf-divider/>
             @for (option of facade.projectOptionsMetadata(); track option.value) {
-                <sgdf-switch appSgdfField class="py-[0.5rem]" [formField]="optionsForm[option.value]">
+                <sgdf-switch data-testid="project-form-option-switch" appSgdfField class="py-[0.5rem]" [formField]="optionsForm[option.value]">
                     <span class="flex items-center gap-[0.5rem]">
                         <sgdf-icon [name]="option.value | optionIcon: 'sgdf'" library="solid"/>
                         <span>{{ option.ask }} <b>({{ option.label }})</b></span>
@@ -92,16 +92,16 @@
             }
             @let missingPreRequired = optionsForm().getError('preRequiredOptions');
             @if (missingPreRequired) {
-                <sgdf-callout variant="danger" role="alert">
+                <sgdf-callout data-testid="project-form-options-error" variant="danger" role="alert">
                     {{ 'projects.form.error.options.preRequiredOptions' | transloco: missingPreRequired }}
                 </sgdf-callout>
             }
             <div class="flex items-center justify-between pt-[1rem]">
-                <sgdf-button variant="neutral" appearance="text" (click)="activeTab.set(1)" [attr.label]="'global.actions.previous' | transloco">
+                <sgdf-button data-testid="project-form-options-previous-button" variant="neutral" appearance="text" (click)="activeTab.set(1)" [attr.label]="'global.actions.previous' | transloco">
                     <sgdf-icon slot="prefix" name="arrow-left" library="solid"/>
                     {{ uiFacade.tinyScreen() ? '' : ('global.actions.previous' | transloco) }}
                 </sgdf-button>
-                <sgdf-button variant="primary" submit [loading]="saving()" [attr.label]="facade.project() | formButton | transloco">
+                <sgdf-button data-testid="project-form-options-submit" variant="primary" submit [loading]="saving()" [attr.label]="facade.project() | formButton | transloco">
                     <sgdf-icon slot="prefix" [name]="facade.project() ? 'pen-to-square' : 'plus'" library="solid"/>
                     {{ uiFacade.tinyScreen() ? '' : (facade.project() | formButton | transloco) }}
                 </sgdf-button>

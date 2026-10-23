@@ -1,5 +1,5 @@
 <ng-template #row let-group>
-    <sgdf-list-item [disabled]="!group.visible">
+    <sgdf-list-item data-testid="group-row" [attr.data-id]="group.id" [disabled]="!group.visible">
         <sgdf-avatar slot="start" variant="primary" shape="rounded" aria-hidden="true" [initials]="initials(group)"/>
         <span class="block truncate" [attr.title]="group.name">{{ group.name }}</span>
         @if (!group.visible) {
@@ -23,7 +23,7 @@
                 <sgdf-tag appearance="soft" pill [variant]="statusVariant(group)">{{ status.label }}</sgdf-tag>
             }
             @if (actions.primaryFor(group); as primary) {
-                <sgdf-button size="small" appearance="outlined" variant="primary"
+                <sgdf-button data-testid="group-row-button" size="small" appearance="outlined" variant="primary"
                              [attr.aria-disabled]="primary.disabled ? 'true' : null"
                              (click)="primary.disabled ? null : primary.run()">
                     <sgdf-icon slot="prefix" [name]="primary.icon" library="solid"/>
@@ -31,6 +31,6 @@
                 </sgdf-button>
             }
         </span>
-        <app-element-actions slot="actions" [subject]="group.name" [actions]="actions.menuFor(group)"/>
+        <app-element-actions data-testid="group-row-actions" slot="actions" [subject]="group.name" [actions]="actions.menuFor(group)"/>
     </sgdf-list-item>
 </ng-template>

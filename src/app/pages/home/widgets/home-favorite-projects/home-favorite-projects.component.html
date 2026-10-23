@@ -5,11 +5,11 @@
             <small class="opacity-80">{{ 'home.favorites.summary' | pluralTranslation: total() | transloco: { count: total() } }}</small>
         }
     </div>
-    <sgdf-button size="small" appearance="text" [routerLink]="projectsLink">{{ 'home.favorites.seeAll' | transloco }}</sgdf-button>
+    <sgdf-button data-testid="home-favorite-projects-see-all-button" size="small" appearance="text" [routerLink]="projectsLink">{{ 'home.favorites.seeAll' | transloco }}</sgdf-button>
 </div>
 
 @if (error(); as failure) {
-    <app-section-error [error]="failure" [retrying]="loading()" (retry)="reload()"/>
+    <app-section-error data-testid="home-favorite-projects-error" [error]="failure" [retrying]="loading()" (retry)="reload()"/>
 }
 
 @if (showSkeleton()) {
@@ -22,10 +22,10 @@
 } @else if (total() === 0) {
     <p class="m-0 text-sm opacity-80">{{ 'home.favorites.empty' | transloco }}</p>
 } @else {
-    <div class="grid grid-cols-1 gap-(--spacing--in-block-large) sm:grid-cols-2 lg:grid-cols-3" data-testid="favorites-row">
+    <div class="grid grid-cols-1 gap-(--spacing--in-block-large) sm:grid-cols-2 lg:grid-cols-3" data-testid="home-favorite-projects-grid">
         @for (project of projects(); track project.id) {
             <div class="relative min-w-0">
-                <sgdf-tile class="block h-full" [href]="link(project)" (click)="open($event, project)">
+                <sgdf-tile data-testid="home-favorite-projects-tile" class="block h-full" [href]="link(project)" (click)="open($event, project)">
                     <span slot="icon" class="text-sm font-semibold">{{ initials(project) }}</span>
                     <span slot="title" class="block truncate pe-8" [attr.title]="project.name">{{ project.name }}</span>
                     @if (summary(project); as summary) {
@@ -45,7 +45,7 @@
                         }
                     </small>
                 </sgdf-tile>
-                <app-favorite-toggle class="absolute right-2 top-2" [favorite]="true" [name]="project.name" (toggled)="remove(project)"/>
+                <app-favorite-toggle data-testid="home-favorite-projects-toggle" class="absolute right-2 top-2" [favorite]="true" [name]="project.name" (toggled)="remove(project)"/>
             </div>
         }
     </div>

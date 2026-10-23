@@ -1,11 +1,11 @@
 <ng-template #row let-profile>
-    <sgdf-list-item [disabled]="!profile.visible">
+    <sgdf-list-item data-testid="profile-row" [attr.data-id]="profile.id" [disabled]="!profile.visible">
         <sgdf-avatar slot="start" shape="rounded" aria-hidden="true"
                      [variant]="isSelected(profile) ? 'success' : 'primary'"
                      [initials]="initials(profile)"/>
         <span class="flex min-w-0 items-center gap-2">
             @if (canFavorite(profile)) {
-                <app-favorite-toggle [favorite]="isFavorite(profile)" [name]="title(profile)"
+                <app-favorite-toggle data-testid="project-profile-row-toggle" [favorite]="isFavorite(profile)" [name]="title(profile)"
                                      (toggled)="toggleFavorite(profile)"/>
             }
             <span class="block truncate" [attr.title]="title(profile)">{{ title(profile) }}</span>
@@ -22,11 +22,11 @@
         <span slot="end" class="flex flex-wrap items-center gap-2">
             <sgdf-tag appearance="outlined" pill>{{ profile.role.label }}</sgdf-tag>
             @if (awaitsAnswer(profile)) {
-                <sgdf-button size="small" variant="danger" appearance="outlined"
+                <sgdf-button data-testid="project-profile-row-reject-button" size="small" variant="danger" appearance="outlined"
                              (click)="actions.manageAcceptance(profile, ProfileStatusEnum.REJECTED)">
                     {{ 'project-profiles.actions.reject' | transloco }}
                 </sgdf-button>
-                <sgdf-button size="small" variant="success"
+                <sgdf-button data-testid="project-profile-row-accept-button" size="small" variant="success"
                              (click)="actions.manageAcceptance(profile, ProfileStatusEnum.ACCEPTED)">
                     {{ 'project-profiles.actions.accept' | transloco }}
                 </sgdf-button>
@@ -37,6 +37,6 @@
                 <sgdf-tag appearance="soft" pill [variant]="statusVariant(profile)">{{ profile.status.label }}</sgdf-tag>
             }
         </span>
-        <app-element-actions slot="actions" [subject]="title(profile)" [actions]="actions.actionsFor(profile)"/>
+        <app-element-actions data-testid="project-profile-row-actions" slot="actions" [subject]="title(profile)" [actions]="actions.actionsFor(profile)"/>
     </sgdf-list-item>
 </ng-template>

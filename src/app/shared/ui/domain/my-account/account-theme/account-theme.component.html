@@ -10,7 +10,7 @@
         <sgdf-table-cell row-header>
             <sgdf-button-group class="flex w-full" [label]="'myAccount.theme.choose' | transloco">
                 @for (choice of choices; track choice.theme) {
-                    <sgdf-button class="flex-1" variant="primary"
+                    <sgdf-button data-testid="account-theme-choice-button" class="flex-1" variant="primary"
                                  block
                                  [appearance]="choice.theme === currentTheme() ? 'solid' : 'outlined'"
                                  [attr.aria-pressed]="choice.theme === currentTheme()"

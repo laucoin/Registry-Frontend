@@ -1,10 +1,10 @@
-<sgdf-dialog light-dismiss
+<sgdf-dialog data-testid="overdue-participants-dialog-modal" light-dismiss
              [class.dialog-fullscreen]="uiFacade.tinyScreen()"
              [open]="open()"
              [title]="'projectHome.participantRegularization.title' | transloco"
              (sgdf-hide)="closed($event)">
     @if (open()) {
-        <app-list emptyMessagePrefix="projectHome.participantRegularization.dialogEmpty"
+        <app-list data-testid="overdue-participants-dialog-list" emptyMessagePrefix="projectHome.participantRegularization.dialogEmpty"
                   [label]="'projectHome.participantRegularization.title' | transloco"
                   [elementPage]="facade.overdueParticipantsListPage()"
                   [error]="facade.overdueParticipantsListError()"
@@ -12,7 +12,7 @@
                   [loadingMore]="facade.overdueParticipantsListSilentLoading()"
                   (updateRequired)="loadBatch($event)">
             <ng-template appTemplate="element" let-participant>
-                <sgdf-list-item appRegularizationRow [participant]="participant"/>
+                <sgdf-list-item data-testid="participant-row" [attr.data-id]="participant.id" appRegularizationRow [participant]="participant"/>
             </ng-template>
         </app-list>
     }

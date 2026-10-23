@@ -34,7 +34,7 @@
                 <span>({{ 'global.updated' | transloco }})</span>
             }
             <time [attr.datetime]="communication().dateTime">{{ communication().dateTime | dateFormat: 'datetime' }}</time>
-            <app-element-actions [subject]="authorName()" [actions]="actions()"/>
+            <app-element-actions data-testid="dialog-element-actions" [subject]="authorName()" [actions]="actions()"/>
         </div>
     </div>
 </div>

@@ -12,7 +12,7 @@
     @if (error(); as failure) {
         <sgdf-table-row class="h-px">
             <sgdf-table-cell>
-                <app-section-error [error]="failure" [retrying]="loading()" (retry)="reload()"/>
+                <app-section-error data-testid="home-invitations-error" [error]="failure" [retrying]="loading()" (retry)="reload()"/>
             </sgdf-table-cell>
         </sgdf-table-row>
     }
@@ -40,11 +40,11 @@
                             <small class="opacity-80">{{ 'home.invitations.invitedAs' | transloco: { role: invitation.role.label } }}</small>
                         </div>
                         <span class="flex gap-2">
-                            <sgdf-button size="small" appearance="outlined" variant="neutral" (click)="answer(invitation, false)">
+                            <sgdf-button data-testid="home-invitations-refuse-button" size="small" appearance="outlined" variant="neutral" (click)="answer(invitation, false)">
                                 {{ 'home.invitations.refuse' | transloco }}
                                 <span class="sr-only">({{ invitation.project?.name }})</span>
                             </sgdf-button>
-                            <sgdf-button size="small" variant="success" (click)="answer(invitation, true)">
+                            <sgdf-button data-testid="home-invitations-accept-button" size="small" variant="success" (click)="answer(invitation, true)">
                                 {{ 'home.invitations.accept' | transloco }}
                                 <span class="sr-only">({{ invitation.project?.name }})</span>
                             </sgdf-button>
@@ -60,7 +60,7 @@
 
     <sgdf-table-row class="h-px">
         <sgdf-table-cell>
-            <sgdf-button block size="small" appearance="text" [routerLink]="invitationsLink">{{ 'home.invitations.seeAll' | transloco }}</sgdf-button>
+            <sgdf-button data-testid="home-invitations-see-all-button" block size="small" appearance="text" [routerLink]="invitationsLink">{{ 'home.invitations.seeAll' | transloco }}</sgdf-button>
         </sgdf-table-cell>
     </sgdf-table-row>
 </sgdf-table>

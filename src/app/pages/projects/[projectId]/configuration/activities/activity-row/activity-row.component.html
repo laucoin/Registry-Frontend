@@ -1,5 +1,5 @@
 <ng-template #row let-activity>
-    <sgdf-list-item [disabled]="!activity.visible">
+    <sgdf-list-item data-testid="activity-row" [attr.data-id]="activity.id" [disabled]="!activity.visible">
         <sgdf-avatar slot="start" variant="primary" shape="rounded" aria-hidden="true" [initials]="initials(activity)"/>
         <span class="block truncate" [attr.title]="title(activity)">{{ title(activity) }}</span>
         @if (!activity.visible) {
@@ -31,7 +31,7 @@
                 <sgdf-tag appearance="soft" pill [variant]="statusVariant(activity)">{{ status.label }}</sgdf-tag>
             }
             @if (actions.primaryFor(activity); as primary) {
-                <sgdf-button size="small" appearance="outlined" variant="primary"
+                <sgdf-button data-testid="activity-row-button" size="small" appearance="outlined" variant="primary"
                              [attr.aria-disabled]="primary.disabled ? 'true' : null"
                              (click)="primary.disabled ? null : primary.run()">
                     <sgdf-icon slot="prefix" [name]="primary.icon" library="solid"/>
@@ -39,6 +39,6 @@
                 </sgdf-button>
             }
         </span>
-        <app-element-actions slot="actions" [subject]="title(activity)" [actions]="actions.menuFor(activity)"/>
+        <app-element-actions data-testid="activity-row-actions" slot="actions" [subject]="title(activity)" [actions]="actions.menuFor(activity)"/>
     </sgdf-list-item>
 </ng-template>

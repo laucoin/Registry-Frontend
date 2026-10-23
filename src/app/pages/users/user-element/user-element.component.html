@@ -6,7 +6,7 @@
         <div class='user-info basis-full xl:basis-[30%]'>
             <div class='user-name flex'
                  [class.justify-center]='uiFacade.tinyScreen()'>
-                <button type='button'
+                <button data-testid="user-element-button" type='button'
                         class='cursor-pointer hover:underline'
                         (click)='copied()'
                         [cdkCopyToClipboard]='user().email'>

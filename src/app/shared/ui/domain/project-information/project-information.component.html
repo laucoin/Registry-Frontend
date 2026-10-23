@@ -48,7 +48,7 @@
         @if (canEdit()) {
             <sgdf-table-row>
                 <sgdf-table-cell class="text-right">
-                    <sgdf-button size="small" appearance="outlined" [routerLink]="editUrl()">
+                    <sgdf-button data-testid="project-information-edit-button" size="small" appearance="outlined" [routerLink]="editUrl()">
                         <sgdf-icon slot="prefix" name="pen" library="solid"/>
                         {{ 'projectInformation.edit' | transloco }}
                     </sgdf-button>

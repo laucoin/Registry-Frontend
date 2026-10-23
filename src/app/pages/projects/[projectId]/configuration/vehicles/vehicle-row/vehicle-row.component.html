@@ -1,5 +1,5 @@
 <ng-template #row let-vehicle>
-    <sgdf-list-item [disabled]="!vehicle.visible">
+    <sgdf-list-item data-testid="vehicle-row" [attr.data-id]="vehicle.id" [disabled]="!vehicle.visible">
         <sgdf-avatar slot="start" variant="primary" shape="rounded" aria-hidden="true" [initials]="initials(vehicle)"/>
         <span class="block truncate" [attr.title]="title(vehicle)">{{ title(vehicle) }}</span>
         @if (!vehicle.visible) {
@@ -18,7 +18,7 @@
         <span slot="end" class="flex flex-wrap items-center gap-2">
             <sgdf-tag appearance="soft" pill [variant]="statusVariant(vehicle)">{{ vehicle.status.label }}</sgdf-tag>
             @if (actions.primaryFor(vehicle); as primary) {
-                <sgdf-button size="small" appearance="outlined" variant="primary"
+                <sgdf-button data-testid="vehicle-row-button" size="small" appearance="outlined" variant="primary"
                              [attr.aria-disabled]="primary.disabled ? 'true' : null"
                              (click)="primary.disabled ? null : primary.run()">
                     <sgdf-icon slot="prefix" [name]="primary.icon" library="solid"/>
@@ -26,6 +26,6 @@
                 </sgdf-button>
             }
         </span>
-        <app-element-actions slot="actions" [subject]="title(vehicle)" [actions]="actions.menuFor(vehicle)"/>
+        <app-element-actions data-testid="vehicle-row-actions" slot="actions" [subject]="title(vehicle)" [actions]="actions.menuFor(vehicle)"/>
     </sgdf-list-item>
 </ng-template>

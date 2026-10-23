@@ -6,7 +6,7 @@
         {{ 'global.list.loaded-count' | transloco: { count: loadedCount(), total: total() } }}
     </span>
     <div #sentinel aria-hidden="true" class="h-px w-full"></div>
-    <sgdf-button appearance="outlined" [loading]="loading()" (click)="loadMore.emit()">
+    <sgdf-button data-testid="load-more-load-more-button" appearance="outlined" [loading]="loading()" (click)="loadMore.emit()">
         {{ 'global.list.load-more' | transloco }}
     </sgdf-button>
 </div>

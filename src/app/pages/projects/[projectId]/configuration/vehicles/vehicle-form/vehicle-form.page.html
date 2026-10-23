@@ -1,4 +1,4 @@
-<app-form-dialog [title]="'vehicles.form.title' | formTitle: vehicle() | transloco : {
+<app-form-dialog data-testid="vehicle-form-dialog" [title]="'vehicles.form.title' | formTitle: vehicle() | transloco : {
                      registration: vehicle()?.licensePlate,
                      brand: vehicle()?.brand,
                      model: vehicle()?.model,
@@ -10,36 +10,36 @@
                  [error]="error()"
                  (submitted)="submit()"
                  (closed)="navigateToRedirectUri()">
-    <sgdf-input appSgdfField required mask="aa-999-aa"
+    <sgdf-input data-testid="vehicle-form-license-plate-input" appSgdfField required mask="aa-999-aa"
                 [label]="'vehicles.form.license-plate' | transloco"
                 [placeholder]="'vehicles.form.placeholder.license-plate' | transloco"
                 [formField]="form.licensePlate"
                 [appFieldError]="form.licensePlate" translationPrefix="vehicles.form.error.license-plate"/>
     <div class="grid gap-[0.75rem] md:grid-cols-2">
-        <sgdf-input appSgdfField required
+        <sgdf-input data-testid="vehicle-form-brand-input" appSgdfField required
                     [label]="'vehicles.form.brand' | transloco"
                     [placeholder]="'vehicles.form.placeholder.brand' | transloco"
                     [formField]="form.brand"
                     [appFieldError]="form.brand" translationPrefix="vehicles.form.error.brand"/>
-        <sgdf-input appSgdfField required
+        <sgdf-input data-testid="vehicle-form-model-input" appSgdfField required
                     [label]="'vehicles.form.model' | transloco"
                     [placeholder]="'vehicles.form.placeholder.model' | transloco"
                     [formField]="form.model"
                     [appFieldError]="form.model" translationPrefix="vehicles.form.error.model"/>
     </div>
     <div class="grid gap-[0.75rem] md:grid-cols-2">
-        <sgdf-date-time-picker appSgdfField with-time value-format="separate"
+        <sgdf-date-time-picker data-testid="vehicle-form-begin-date-time-picker" appSgdfField with-time value-format="separate"
                                [label]="'vehicles.form.begin-datetime' | transloco"
                                [hint]="'vehicles.form.hint.begin-date-time' | transloco"
                                [formField]="form.beginDateTime"
                                [appFieldError]="form.beginDateTime" translationPrefix="vehicles.form.error.begin-datetime"/>
-        <sgdf-date-time-picker appSgdfField with-time value-format="separate"
+        <sgdf-date-time-picker data-testid="vehicle-form-end-date-time-picker" appSgdfField with-time value-format="separate"
                                [label]="'vehicles.form.end-datetime' | transloco"
                                [hint]="'vehicles.form.hint.end-date-time' | transloco"
                                [formField]="form.endDateTime"
                                [appFieldError]="form.endDateTime" translationPrefix="vehicles.form.error.end-datetime"/>
     </div>
     @if (form.beginDateTime().valid() && form.endDateTime().valid()) {
-        <app-field-error [field]="form" translationPrefix="vehicles.form.error.date-range"/>
+        <app-field-error data-testid="vehicle-form-date-range-error" [field]="form" translationPrefix="vehicles.form.error.date-range"/>
     }
 </app-form-dialog>

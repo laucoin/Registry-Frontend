@@ -13,7 +13,7 @@
     <nav class="grid grid-cols-[repeat(auto-fill,minmax(min(100%,24rem),1fr))] gap-(--spacing--block)"
          [attr.aria-label]="'projectConfiguration.title' | transloco">
         @for (tile of tiles(); track tile.key) {
-            <sgdf-tile [routerLink]="tile.url">
+            <sgdf-tile data-testid="configuration-tile" [routerLink]="tile.url">
                 <sgdf-icon slot="icon" [attr.name]="tile.icon.name" [library]="tile.icon.library"/>
                 <span slot="title"
                       class="whitespace-nowrap">{{ 'projectConfiguration.tiles.' + tile.key + '.title' | transloco }}</span>

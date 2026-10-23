@@ -10,7 +10,7 @@
         <sgdf-table-cell row-header>
             <sgdf-button-group class="flex w-full" [label]="'myAccount.refresh.choose' | transloco">
                 @for (choice of choices; track choice.mode) {
-                    <sgdf-button class="flex-1" variant="primary"
+                    <sgdf-button data-testid="account-refresh-mode-button" class="flex-1" variant="primary"
                                  block
                                  [appearance]="choice.mode === currentMode() ? 'solid' : 'outlined'"
                                  [attr.aria-pressed]="choice.mode === currentMode()"

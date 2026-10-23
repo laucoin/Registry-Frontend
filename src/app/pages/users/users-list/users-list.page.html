@@ -3,7 +3,7 @@
     {{ 'users.list.title' | transloco }}
 </sgdf-page-title>
 
-<app-list class="mt-(--spacing--block) block"
+<app-list data-testid="users-list-list" class="mt-(--spacing--block) block"
           emptyMessagePrefix="users.notifications.EMPTY"
           [elementPage]="facade.usersPage()"
           [error]="facade.usersPageError()"
@@ -13,18 +13,18 @@
           (updateRequired)="loadBatch($event)"
           (filtersReset)="resetFilters()">
     <ng-template appTemplate="search">
-        <form class="grid grid-cols-1 items-end gap-(--spacing--in-block-large) md:grid-cols-2"
+        <form data-testid="users-list-search-form" class="grid grid-cols-1 items-end gap-(--spacing--in-block-large) md:grid-cols-2"
               (submit)="$event.preventDefault(); search()">
-            <sgdf-input appSgdfField [label]="'users.search-and-filter.text' | transloco"
+            <sgdf-input data-testid="users-list-q-input" appSgdfField [label]="'users.search-and-filter.text' | transloco"
                         [formField]="form.q"/>
-            <sgdf-select appSgdfField [label]="'users.search-and-filter.visibility' | transloco"
+            <sgdf-select data-testid="users-list-is-visible-select" appSgdfField [label]="'users.search-and-filter.visibility' | transloco"
                          [formField]="form.isVisible">
                 @for (item of facade.statusMetadata(); track item.label) {
                     <sgdf-option [value]="item.value | booleanChoice">{{ item.label }}</sgdf-option>
                 }
             </sgdf-select>
             <div class="flex justify-end md:col-span-2">
-                <sgdf-button variant="primary" appearance="outlined" submit
+                <sgdf-button data-testid="users-list-search-submit" variant="primary" appearance="outlined" submit
                              [loading]="facade.usersPageLoading()">
                     <sgdf-icon slot="prefix" name="magnifying-glass" library="solid"/>
                     {{ 'global.actions.search' | transloco }}
@@ -34,12 +34,12 @@
     </ng-template>
 
     <ng-template appTemplate="element" let-user>
-        <sgdf-list-item [disabled]="!user.visible">
+        <sgdf-list-item data-testid="user-row" [attr.data-id]="user.id" [disabled]="!user.visible">
             <sgdf-avatar slot="start" variant="primary" aria-hidden="true" [initials]="initials(user)"/>
             <span class="block truncate" [attr.title]="fullName(user)">{{ fullName(user) }}</span>
             <span slot="description" class="flex flex-wrap items-center gap-x-2">
                 <span class="truncate">{{ user.email }}</span>
-                <sgdf-copy-button [value]="user.email" [label]="'users.actions.copy-email' | transloco: { element: user }"/>
+                <sgdf-copy-button data-testid="users-list-copy-email-copy" [value]="user.email" [label]="'users.actions.copy-email' | transloco: { element: user }"/>
                 <span>·</span>
                 @if (user.lastLogin) {
                     <span class="inline-flex items-center gap-1">
@@ -58,7 +58,7 @@
                     {{ user | visibilityName: 'users' | transloco }}
                 </sgdf-tag>
             </span>
-            <app-element-actions slot="actions" [subject]="fullName(user)" [actions]="userActions.actionsFor(user)"/>
+            <app-element-actions data-testid="users-list-actions" slot="actions" [subject]="fullName(user)" [actions]="userActions.actionsFor(user)"/>
         </sgdf-list-item>
     </ng-template>
 </app-list>

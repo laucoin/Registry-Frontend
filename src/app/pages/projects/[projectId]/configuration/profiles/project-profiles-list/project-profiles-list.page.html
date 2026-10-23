@@ -2,7 +2,7 @@
                  [lede]="'project-profiles.pages.project.subtitle' | transloco">
     {{ 'project-profiles.pages.project.title' | transloco }}
     @if (canInvite()) {
-        <sgdf-button slot="actions" variant="primary" [routerLink]="inviteRoute">
+        <sgdf-button data-testid="project-profiles-list-few-button" slot="actions" variant="primary" [routerLink]="inviteRoute">
             <sgdf-icon slot="prefix" name="user-plus" library="solid"/>
             {{ 'project-profiles.actions.invite-user.few' | transloco }}
         </sgdf-button>
@@ -11,7 +11,7 @@
 
 <app-project-profile-row #row view="project"/>
 
-<app-list class="mt-(--spacing--block) block"
+<app-list data-testid="project-profiles-list-list" class="mt-(--spacing--block) block"
           emptyMessagePrefix="project-profiles.notifications.EMPTY"
           [elementPage]="facade.projectProfilesPage()"
           [error]="facade.projectProfilesPageError()"
@@ -21,27 +21,27 @@
           (updateRequired)="loadBatch($event)"
           (filtersReset)="resetFilters()">
     <ng-template appTemplate="search">
-        <form class="grid grid-cols-1 items-end gap-(--spacing--in-block-large) md:grid-cols-2"
+        <form data-testid="project-profiles-list-search-form" class="grid grid-cols-1 items-end gap-(--spacing--in-block-large) md:grid-cols-2"
               (submit)="$event.preventDefault(); search()">
-            <sgdf-input appSgdfField [label]="'project-profiles.search-and-filter.text.user' | transloco"
+            <sgdf-input data-testid="project-profiles-list-q-input" appSgdfField [label]="'project-profiles.search-and-filter.text.user' | transloco"
                         [formField]="form.q"/>
-            <sgdf-date-time-picker appSgdfField with-time
+            <sgdf-date-time-picker data-testid="project-profiles-list-at-picker" appSgdfField with-time
                                    [label]="'project-profiles.search-and-filter.datetime' | transloco"
                                    [formField]="form.at"/>
-            <sgdf-select appSgdfField [label]="'project-profiles.search-and-filter.status' | transloco"
+            <sgdf-select data-testid="project-profiles-list-status-select" appSgdfField [label]="'project-profiles.search-and-filter.status' | transloco"
                          [formField]="form.status">
                 @for (item of facade.projectProfilesStatusMetadata(); track item.label) {
                     <sgdf-option [value]="item.value ?? ''">{{ item.label }}</sgdf-option>
                 }
             </sgdf-select>
-            <sgdf-select appSgdfField [label]="'project-profiles.search-and-filter.visibility' | transloco"
+            <sgdf-select data-testid="project-profiles-list-is-available-select" appSgdfField [label]="'project-profiles.search-and-filter.visibility' | transloco"
                          [formField]="form.isAvailable">
                 @for (item of facade.projectProfilesAvailabilitiesMetadata(); track item.label) {
                     <sgdf-option [value]="item.value | booleanChoice">{{ item.label }}</sgdf-option>
                 }
             </sgdf-select>
             <div class="flex justify-end md:col-span-2">
-                <sgdf-button variant="primary" appearance="outlined" submit
+                <sgdf-button data-testid="project-profiles-list-search-submit" variant="primary" appearance="outlined" submit
                              [loading]="facade.projectProfilesPageLoading()">
                     <sgdf-icon slot="prefix" name="magnifying-glass" library="solid"/>
                     {{ 'global.actions.search' | transloco }}

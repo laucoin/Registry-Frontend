@@ -160,7 +160,7 @@ describe('ProjectActiveAlertComponent', () => {
 		await render();
 
 		// Act
-		const target: string = ngMocks.input('[data-testid="alerts-link"]', 'routerLink');
+		const target: string = ngMocks.input('[data-testid="project-active-alert-link"]', 'routerLink');
 
 		// Assert
 		expect(target).toBe('/projects/p1/alerts');

@@ -1,7 +1,7 @@
 <sgdf-page-title [eyebrow]="'home.eyebrow' | transloco" [lede]="'home.subtitle' | transloco">
     {{ 'home.greeting' | transloco: { name: firstName() } }}
     @if (canCreate()) {
-        <sgdf-button slot="actions" variant="primary" [routerLink]="createRoute">
+        <sgdf-button data-testid="home-create-button" slot="actions" variant="primary" [routerLink]="createRoute">
             <sgdf-icon slot="prefix" name="plus" library="solid"/>
             {{ 'home.create' | transloco }}
         </sgdf-button>

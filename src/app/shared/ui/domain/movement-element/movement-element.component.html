@@ -15,12 +15,12 @@
         @case (total() <= 0) {
             <sgdf-skeleton shape="rounded" effect="pulse" class="inline-block h-4 w-40"/>
         } @case (!!driver()) {
-            <sgdf-button size="small" appearance="text" (click)="participantsLayerOpened.set(true)">
+            <sgdf-button data-testid="movement-element-driver-button" size="small" appearance="text" (click)="participantsLayerOpened.set(true)">
                 <sgdf-icon slot="prefix" name="car" library="solid"/>
                 {{ driverName() | truncate: 30 }}
             </sgdf-button>
         } @default {
-            <sgdf-button size="small" appearance="text" (click)="participantsLayerOpened.set(true)">
+            <sgdf-button data-testid="movement-element-participants-button" size="small" appearance="text" (click)="participantsLayerOpened.set(true)">
                 {{
                     'movements.content' | pluralTranslation: total() |
                         transloco: {
@@ -40,7 +40,7 @@
 </span>
 <span slot="end" class="flex flex-wrap items-center gap-2">
     @if (reversibleAuthorized() && total() > 0) {
-        <sgdf-button size="small" variant="info" appearance="outlined"
+        <sgdf-button data-testid="movement-element-reverse-all-button" size="small" variant="info" appearance="outlined"
                      (click)="confirmMovementReversion(movement().content)">
             <sgdf-icon slot="prefix" [name]="reversedIconName()" library="solid"/>
             {{ ('movements.actions.reverse.' + movement().type.value) | transloco }}
@@ -48,13 +48,13 @@
         </sgdf-button>
     }
     @if (communication()) {
-        <sgdf-button size="small" variant="info" appearance="outlined" (click)="communicationsLayerOpened.set(true)">
+        <sgdf-button data-testid="movement-element-communications-button" size="small" variant="info" appearance="outlined" (click)="communicationsLayerOpened.set(true)">
             <sgdf-icon slot="prefix" name="comments" library="regular"/>
             {{ 'movements.communication.see-communication' | transloco }}
         </sgdf-button>
     }
 </span>
-<app-element-actions slot="actions" [subject]="typeAndReason()" [actions]="actionMenuVisible() ? actions() : []"/>
+<app-element-actions data-testid="movement-element-actions" slot="actions" [subject]="typeAndReason()" [actions]="actionMenuVisible() ? actions() : []"/>
 
 <ng-template #people let-contents>
     <sgdf-list appearance="text" [label]="'movements.content-layer-title' | pluralTranslation: contents | transloco">
@@ -68,7 +68,7 @@
                     <sgdf-tag slot="description" appearance="outlined" pill>{{ VehicleHelper.toSelectItem(content.vehicle).label }}</sgdf-tag>
                 }
                 @if (reversibleAuthorized()) {
-                    <sgdf-button slot="end" size="small" variant="info" appearance="outlined"
+                    <sgdf-button data-testid="movement-element-reverse-one-button" slot="end" size="small" variant="info" appearance="outlined"
                                  (click)="reverseOne(content)">
                         <sgdf-icon slot="prefix" [name]="reversedIconName()" library="solid"/>
                         {{ ('movements.actions.reverse.' + movement().type.value) | transloco }}
@@ -80,22 +80,22 @@
     </sgdf-list>
 </ng-template>
 
-<sgdf-drawer light-dismiss
+<sgdf-drawer data-testid="movement-element-participants-drawer" light-dismiss
              [open]="participantsLayerOpened()"
              [class.drawer-sheet]="uiFacade.tinyScreen()"
              [placement]="uiFacade.tinyScreen() ? 'bottom' : 'right'"
              [title]="'movements.content-layer-title' | pluralTranslation: movement().content | transloco"
              (sgdf-hide)="closeParticipants($event)">
-    <sgdf-tab-group>
-        <sgdf-tab panel="all">{{ 'global.people.all' | transloco }} ({{ total() }})</sgdf-tab>
+    <sgdf-tab-group data-testid="movement-element-tabs">
+        <sgdf-tab data-testid="movement-element-all-tab" panel="all">{{ 'global.people.all' | transloco }} ({{ total() }})</sgdf-tab>
         @if (adults().length > 0) {
-            <sgdf-tab panel="adults">{{ 'global.people.major' | pluralTranslation: adults() | transloco }} ({{ adults().length }})</sgdf-tab>
+            <sgdf-tab data-testid="movement-element-adults-tab" panel="adults">{{ 'global.people.major' | pluralTranslation: adults() | transloco }} ({{ adults().length }})</sgdf-tab>
         }
         @if (children().length > 0) {
-            <sgdf-tab panel="children">{{ 'global.people.minor' | pluralTranslation: children() | transloco }} ({{ children().length }})</sgdf-tab>
+            <sgdf-tab data-testid="movement-element-children-tab" panel="children">{{ 'global.people.minor' | pluralTranslation: children() | transloco }} ({{ children().length }})</sgdf-tab>
         }
         @for (pool of pools() | keyvalue; track pool.key) {
-            <sgdf-tab [panel]="'pool-' + pool.key">{{ pool.key }} ({{ pool.value.length }})</sgdf-tab>
+            <sgdf-tab data-testid="movement-element-pool-tab" [panel]="'pool-' + pool.key">{{ pool.key }} ({{ pool.value.length }})</sgdf-tab>
         }
         <sgdf-tab-panel name="all">
             <ng-container [ngTemplateOutlet]="people" [ngTemplateOutletContext]="{ $implicit: movement().content }"/>
@@ -114,15 +114,15 @@
     </sgdf-tab-group>
 </sgdf-drawer>
 
-<sgdf-drawer light-dismiss
+<sgdf-drawer data-testid="movement-element-communications-drawer" light-dismiss
              [open]="communicationsLayerOpened()"
              [class.drawer-sheet]="uiFacade.tinyScreen()"
              [placement]="uiFacade.tinyScreen() ? 'bottom' : 'right'"
              [title]="'movements.communication.layer.title' | transloco: { movement: movement().reason?.label ?? typeAndReason() }"
              (sgdf-hide)="closeCommunications($event)">
-    <app-element-actions slot="header-actions" [subject]="typeAndReason()" [actions]="actions()"/>
+    <app-element-actions data-testid="movement-element-drawer-actions" slot="header-actions" [subject]="typeAndReason()" [actions]="actions()"/>
     @if (communicationsLayerOpened()) {
         <app-movement-communications-list [movement]="movement()"/>
-        <app-communication-form slot="footer" [initialMovement]="movement()"/>
+        <app-communication-form data-testid="movement-element-communication-form" slot="footer" [initialMovement]="movement()"/>
     }
 </sgdf-drawer>

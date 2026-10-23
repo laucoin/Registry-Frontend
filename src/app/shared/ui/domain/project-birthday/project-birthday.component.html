@@ -12,7 +12,7 @@
     <sgdf-table-row>
         <sgdf-table-cell class="h-full p-0 align-top">
             @if (error(); as failure) {
-                <app-section-error [error]="failure" [retrying]="loading()" (retry)="reload()"/>
+                <app-section-error data-testid="project-birthday-error" [error]="failure" [retrying]="loading()" (retry)="reload()"/>
             }
 
             @if (loading() && total() === undefined) {

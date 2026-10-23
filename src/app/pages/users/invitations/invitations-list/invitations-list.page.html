@@ -5,7 +5,7 @@
 
 <app-project-profile-row #row view="user"/>
 
-<app-list class="mt-(--spacing--block) block"
+<app-list data-testid="invitations-list-list" class="mt-(--spacing--block) block"
           emptyMessagePrefix="project-profiles.notifications.EMPTY"
           [elementPage]="userProfileFacade.userProjectProfileInvitationsPage()"
           [error]="userProfileFacade.userProjectProfileInvitationsPageError()"
@@ -15,15 +15,15 @@
           (updateRequired)="loadBatch($event)"
           (filtersReset)="resetFilters()">
     <ng-template appTemplate="search">
-        <form class="grid grid-cols-1 items-end gap-(--spacing--in-block-large) md:grid-cols-2"
+        <form data-testid="invitations-list-search-form" class="grid grid-cols-1 items-end gap-(--spacing--in-block-large) md:grid-cols-2"
               (submit)="$event.preventDefault(); search()">
-            <sgdf-input appSgdfField [label]="'preferences.search-and-filter.text' | transloco"
+            <sgdf-input data-testid="invitations-list-q-input" appSgdfField [label]="'preferences.search-and-filter.text' | transloco"
                         [formField]="form.q"/>
-            <sgdf-date-time-picker appSgdfField with-time
+            <sgdf-date-time-picker data-testid="invitations-list-at-picker" appSgdfField with-time
                                    [label]="'preferences.search-and-filter.datetime' | transloco"
                                    [formField]="form.at"/>
             <div class="flex justify-end md:col-span-2">
-                <sgdf-button variant="primary" appearance="outlined" submit
+                <sgdf-button data-testid="invitations-list-search-submit" variant="primary" appearance="outlined" submit
                              [loading]="userProfileFacade.userProjectProfileInvitationsPageLoading()">
                     <sgdf-icon slot="prefix" name="magnifying-glass" library="solid"/>
                     {{ 'global.actions.search' | transloco }}
@@ -37,15 +37,15 @@
     </ng-template>
 
     <ng-template appTemplate="empty">
-        <sgdf-callout variant="neutral" [title]="'project-profiles.notifications.EMPTY-INVITATION.message' | transloco">
+        <sgdf-callout data-testid="invitations-list-empty-callout" variant="neutral" [title]="'project-profiles.notifications.EMPTY-INVITATION.message' | transloco">
             <div class="flex flex-col items-start gap-(--spacing--in-block)">
                 <span>{{ 'project-profiles.empty-invitation' | transloco }}</span>
                 <span class="flex flex-wrap items-center gap-2">
-                    <sgdf-button size="small" variant="primary" [routerLink]="createRoute">
+                    <sgdf-button data-testid="invitations-list-create-project-button" size="small" variant="primary" [routerLink]="createRoute">
                         <sgdf-icon slot="prefix" name="plus" library="solid"/>
                         {{ 'project-profiles.actions.create-project' | transloco }}
                     </sgdf-button>
-                    <sgdf-button size="small" appearance="outlined" [routerLink]="projectsRoute">
+                    <sgdf-button data-testid="invitations-list-projects-button" size="small" appearance="outlined" [routerLink]="projectsRoute">
                         <sgdf-icon slot="prefix" name="folder-open" library="solid"/>
                         {{ 'project-profiles.actions.projects' | transloco }}
                     </sgdf-button>

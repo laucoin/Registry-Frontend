@@ -21,16 +21,16 @@
                 {{ 'login.title' | transloco }}
             </sgdf-page-title>
 
-            <sgdf-button class="mt-6 w-full" variant="primary" size="large"
+            <sgdf-button data-testid="login-submit-button" class="mt-6 w-full" variant="primary" size="large"
                          [loading]="redirecting()" [disabled]="redirecting()" (click)="login()">
                 {{ 'login.submit' | transloco }}
             </sgdf-button>
 
             <p class="mt-7 text-center text-xs leading-relaxed">
                 {{ 'login.legalPrefix' | transloco }}
-                <a class="underline" [routerLink]="termsRoute">{{ 'login.terms' | transloco }}</a>
+                <a data-testid="login-terms-link" class="underline" [routerLink]="termsRoute">{{ 'login.terms' | transloco }}</a>
                 {{ 'login.legalMiddle' | transloco }}
-                <a class="underline" [routerLink]="privacyRoute">{{ 'login.privacy' | transloco }}</a>.
+                <a data-testid="login-privacy-link" class="underline" [routerLink]="privacyRoute">{{ 'login.privacy' | transloco }}</a>.
             </p>
         </div>
     </section>

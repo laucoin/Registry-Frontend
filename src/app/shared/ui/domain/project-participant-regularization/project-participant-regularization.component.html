@@ -12,7 +12,7 @@
     <sgdf-table-row>
         <sgdf-table-cell class="h-full p-0 align-top">
             @if (error(); as failure) {
-                <app-section-error [error]="failure" [retrying]="loading()" (retry)="reload()"/>
+                <app-section-error data-testid="project-participant-regularization-error" [error]="failure" [retrying]="loading()" (retry)="reload()"/>
             }
 
             @if (loading() && total() === undefined) {
@@ -29,7 +29,7 @@
             } @else if (total() !== undefined) {
                 <sgdf-list appearance="text" [label]="'projectHome.participantRegularization.title' | transloco">
                     @for (participant of participants(); track participant.id) {
-                        <sgdf-list-item appRegularizationRow [participant]="participant"/>
+                        <sgdf-list-item data-testid="project-participant-regularization-row" appRegularizationRow [participant]="participant"/>
                     }
                 </sgdf-list>
             }
@@ -38,7 +38,7 @@
 
     <sgdf-table-row class="h-px">
         <sgdf-table-cell class="align-bottom">
-            <sgdf-button block size="small" appearance="text" (click)="listOpen.set(true)">
+            <sgdf-button data-testid="project-participant-regularization-see-all-button" block size="small" appearance="text" (click)="listOpen.set(true)">
                 @if (remaining() > 0) {
                     {{ 'projectHome.participantRegularization.seeRemaining' | pluralTranslation: remaining() | transloco: { count: remaining() } }}
                 } @else {

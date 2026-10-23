@@ -1,9 +1,9 @@
 @if (actions().length > 0) {
     <sgdf-menu placement="bottom-end">
-        <sgdf-icon-button slot="trigger" name="ellipsis-vertical" library="solid"
+        <sgdf-icon-button data-testid="element-actions-button" slot="trigger" name="ellipsis-vertical" library="solid"
                           [label]="triggerLabel()"/>
         @for (action of actions(); track action.id) {
-            <sgdf-menu-item [disabled]="action.disabled"
+            <sgdf-menu-item data-testid="element-actions-item" [disabled]="action.disabled"
                             [attr.variant]="action.danger ? 'danger' : null"
                             (click)="action.run()">
                 <sgdf-icon slot="icon" [attr.name]="action.icon" library="solid"/>

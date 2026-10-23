@@ -2,14 +2,14 @@
     <div class="mb-[0.25rem] text-sm font-semibold" aria-hidden="true">{{ label() }}</div>
 }
 <div role="group" class="grid grid-cols-2 gap-[0.75rem]" [attr.id]="inputId()" [attr.aria-label]="label()">
-    <sgdf-number-input without-steppers with-clear
+    <sgdf-number-input data-testid="number-range-field-min-input" without-steppers with-clear
                        [label]="minLabel()"
                        [placeholder]="minPlaceholder()"
                        [disabled]="disabled()"
                        [value]="minValue()?.toString() ?? ''"
                        (input)="onInputMin($any($event.target).value || null)"
                        (focusout)="touch.emit()"/>
-    <sgdf-number-input without-steppers with-clear
+    <sgdf-number-input data-testid="number-range-field-max-input" without-steppers with-clear
                        [label]="maxLabel()"
                        [placeholder]="maxPlaceholder()"
                        [disabled]="disabled()"

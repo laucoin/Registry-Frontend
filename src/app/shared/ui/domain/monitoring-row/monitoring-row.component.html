@@ -1,6 +1,6 @@
 <span slot="start" class="flex items-center gap-3">
     @if (selectable()) {
-        <sgdf-checkbox size="small" [checked]="checked()" (change)="checkedChange.emit($any($event.target).checked)">
+        <sgdf-checkbox data-testid="monitoring-row-checkbox" size="small" [checked]="checked()" (change)="checkedChange.emit($any($event.target).checked)">
             <span class="sr-only">{{ 'projectHome.participantsPage.check' | transloco: { name: row().title } }}</span>
         </sgdf-checkbox>
     }

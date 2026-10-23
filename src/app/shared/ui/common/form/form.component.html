@@ -6,6 +6,6 @@
     @if (title() && showTitle()) {
         <h1>{{ title() }}</h1>
     }
-    <app-form-error [error]="error()"/>
+    <app-form-error data-testid="form-error" [error]="error()"/>
     <ng-content/>
 }

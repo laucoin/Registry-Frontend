@@ -1,4 +1,4 @@
-<app-form-dialog [title]="'users.form.title' | transloco: { firstName: facade.user()?.firstName, lastName: facade.user()?.lastName }"
+<app-form-dialog data-testid="user-form-modal" [title]="'users.form.title' | transloco: { firstName: facade.user()?.firstName, lastName: facade.user()?.lastName }"
                  submitLabel="global.actions.edit"
                  [loading]="facade.userLoading()"
                  [saving]="saving()"
@@ -6,9 +6,9 @@
                  (submitted)="submit()"
                  (closed)="navigateToRedirectUri()">
     @if (loadError(); as error) {
-        <app-section-error [error]="error" [retrying]="facade.userLoading()" (retry)="loadData()"/>
+        <app-section-error data-testid="user-form-error" [error]="error" [retrying]="facade.userLoading()" (retry)="loadData()"/>
     } @else {
-        <sgdf-select appSgdfField required
+        <sgdf-select data-testid="user-form-role-select" appSgdfField required
                      [label]="'users.form.role' | transloco"
                      [hint]="'users.form.hint.role' | transloco"
                      [formField]="form.role"

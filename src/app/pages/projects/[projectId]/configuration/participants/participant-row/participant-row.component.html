@@ -1,5 +1,5 @@
 <ng-template #row let-participant>
-    <sgdf-list-item [disabled]="!participant.visible">
+    <sgdf-list-item data-testid="participant-row" [attr.data-id]="participant.id" [disabled]="!participant.visible">
         <sgdf-avatar slot="start" variant="primary" aria-hidden="true" [initials]="initials(participant)"/>
         <span class="block truncate" [attr.title]="fullName(participant)">{{ fullName(participant) }}</span>
         @if (!participant.visible) {
@@ -8,7 +8,7 @@
         <span slot="description" class="flex flex-wrap items-center gap-x-3">
             @if (participant.groups?.[0]; as group) {
                 @if (otherGroups(participant) > 0) {
-                    <sgdf-button size="small" appearance="text" (click)="groupsOf.set(participant)">
+                    <sgdf-button data-testid="participant-row-groups-of-button" size="small" appearance="text" (click)="groupsOf.set(participant)">
                         {{
                             'participants.group' | pluralTranslation: otherGroups(participant) + 1 | transloco: {
                                 name: group.name,
@@ -31,7 +31,7 @@
         <span slot="end" class="flex flex-wrap items-center gap-2">
             <sgdf-tag appearance="soft" pill [variant]="statusVariant(participant)">{{ participant.status.label }}</sgdf-tag>
             @if (actions.primaryFor(participant, groupId()); as primary) {
-                <sgdf-button size="small" appearance="outlined" variant="primary"
+                <sgdf-button data-testid="participant-row-button" size="small" appearance="outlined" variant="primary"
                              [attr.aria-disabled]="primary.disabled ? 'true' : null"
                              (click)="primary.disabled ? null : primary.run()">
                     <sgdf-icon slot="prefix" [name]="primary.icon" library="solid"/>
@@ -39,11 +39,11 @@
                 </sgdf-button>
             }
         </span>
-        <app-element-actions slot="actions" [subject]="fullName(participant)" [actions]="actions.menuFor(participant, groupId())"/>
+        <app-element-actions data-testid="participant-row-actions" slot="actions" [subject]="fullName(participant)" [actions]="actions.menuFor(participant, groupId())"/>
     </sgdf-list-item>
 </ng-template>
 
-<sgdf-dialog light-dismiss
+<sgdf-dialog data-testid="participant-row-dialog" light-dismiss
              [open]="!!groupsOf()"
              [title]="'participants.group-layer-title' | pluralTranslation: groupsOf()?.groups | transloco"
              (sgdf-hide)="closeDialog($event)">

@@ -9,9 +9,9 @@
     <sgdf-table-row>
         <sgdf-table-cell class="align-top pt-0">
             @if (tabs().length > 1) {
-                <sgdf-tab-group appearance="text">
+                <sgdf-tab-group data-testid="project-operational-monitoring-tabs" appearance="text">
                     @for (tab of tabs(); track tab.key) {
-                        <sgdf-tab [panel]="tab.key">
+                        <sgdf-tab data-testid="project-operational-monitoring-tab" [panel]="tab.key">
                             {{ 'projectHome.operationalMonitoring.tabs.' + tab.key | transloco }}
                             @if (tab.page(); as page) {
                                 <sgdf-badge>{{ page.totalElements }}</sgdf-badge>
@@ -35,7 +35,7 @@
 </sgdf-table>
 
 <ng-template #monitoringList let-tab>
-    <app-list [emptyMessagePrefix]="'projectHome.operationalMonitoring.empty.' + tab.key"
+    <app-list data-testid="project-operational-monitoring-list" [emptyMessagePrefix]="'projectHome.operationalMonitoring.empty.' + tab.key"
               [label]="'projectHome.operationalMonitoring.tabs.' + tab.key | transloco"
               [elementPage]="tab.page()"
               [error]="tab.error()"
@@ -43,7 +43,7 @@
               [loadingMore]="tab.silentLoading()"
               (updateRequired)="loadBatch(tab, $event)">
         <ng-template appTemplate="element" let-movement>
-            <sgdf-list-item appMovementElement
+            <sgdf-list-item data-testid="movement-row" [attr.data-id]="movement.id" appMovementElement
                             [movement]="movement"
                             [communicable]="true"
                             [actionMenuVisible]="false"/>

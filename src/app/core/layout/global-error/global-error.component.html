@@ -3,7 +3,7 @@
         <sgdf-page-title [eyebrow]="'global.error.eyebrow' | transloco" [lede]="'global.error.description' | transloco">
             {{ 'global.error.title' | transloco }}
         </sgdf-page-title>
-        <sgdf-callout class="w-full" variant="danger" role="alert"
+        <sgdf-callout data-testid="global-error-callout" class="w-full" variant="danger" role="alert"
                       [title]="error().summary ? error().summary : ('global.notifications.UNKNOWN_ERROR.title' | transloco)">
             <div class="flex flex-col gap-2">
                 <small class="uppercase text-xs opacity-80">{{ 'global.error.cause' | transloco }}</small>
@@ -16,7 +16,7 @@
                 </span>
             </div>
         </sgdf-callout>
-        <sgdf-button variant="primary" size="large" (click)="retry()">
+        <sgdf-button data-testid="global-error-retry-button" variant="primary" size="large" (click)="retry()">
             <sgdf-icon slot="prefix" name="rotate-right" library="solid"/>
             {{ 'global.error.retry' | transloco }}
         </sgdf-button>

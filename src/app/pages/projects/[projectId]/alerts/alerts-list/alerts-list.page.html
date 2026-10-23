@@ -3,7 +3,7 @@
     {{ 'alerts.list.title' | transloco }}
 </sgdf-page-title>
 
-<app-list class="mt-(--spacing--block) block"
+<app-list data-testid="alerts-list-list" class="mt-(--spacing--block) block"
           emptyMessagePrefix="alerts.notifications.EMPTY"
           [elementPage]="facade.alertsPage()"
           [error]="facade.alertsPageError()"
@@ -13,30 +13,30 @@
           (updateRequired)="loadBatch($event)"
           (filtersReset)="resetFilters()">
     <ng-template appTemplate="search">
-        <form class="grid grid-cols-1 items-end gap-(--spacing--in-block-large) md:grid-cols-2"
+        <form data-testid="alerts-list-search-form" class="grid grid-cols-1 items-end gap-(--spacing--in-block-large) md:grid-cols-2"
               (submit)="$event.preventDefault(); search()">
-            <sgdf-input appSgdfField class="md:col-span-2" [label]="'alerts.search-and-filter.text' | transloco"
+            <sgdf-input data-testid="alerts-list-q-input" appSgdfField class="md:col-span-2" [label]="'alerts.search-and-filter.text' | transloco"
                         [formField]="form.q"/>
-            <sgdf-select appSgdfField [label]="'alerts.search-and-filter.status' | transloco"
+            <sgdf-select data-testid="alerts-list-status-select" appSgdfField [label]="'alerts.search-and-filter.status' | transloco"
                          [formField]="form.status">
                 @for (item of facade.alertStatusMetadata(); track item.label) {
                     <sgdf-option [value]="item.value ?? ''">{{ item.label }}</sgdf-option>
                 }
             </sgdf-select>
-            <sgdf-select appSgdfField [label]="'alerts.search-and-filter.visibility' | transloco"
+            <sgdf-select data-testid="alerts-list-is-visible-select" appSgdfField [label]="'alerts.search-and-filter.visibility' | transloco"
                          [formField]="form.isVisible">
                 @for (item of facade.visibilitiesMetadata(); track item.label) {
                     <sgdf-option [value]="item.value | booleanChoice">{{ item.label }}</sgdf-option>
                 }
             </sgdf-select>
-            <sgdf-date-time-picker appSgdfField with-time
+            <sgdf-date-time-picker data-testid="alerts-list-from-picker" appSgdfField with-time
                                    [label]="'alerts.search-and-filter.start-datetime' | transloco"
                                    [formField]="form.from"/>
-            <sgdf-date-time-picker appSgdfField with-time
+            <sgdf-date-time-picker data-testid="alerts-list-to-picker" appSgdfField with-time
                                    [label]="'alerts.search-and-filter.end-datetime' | transloco"
                                    [formField]="form.to"/>
             <div class="flex justify-end md:col-span-2">
-                <sgdf-button variant="primary" appearance="outlined" submit
+                <sgdf-button data-testid="alerts-list-search-submit" variant="primary" appearance="outlined" submit
                              [loading]="facade.alertsPageLoading()">
                     <sgdf-icon slot="prefix" name="magnifying-glass" library="solid"/>
                     {{ 'global.actions.search' | transloco }}
@@ -46,6 +46,6 @@
     </ng-template>
 
     <ng-template appTemplate="element" let-alert>
-        <sgdf-list-item appAlertElement [alert]="alert"/>
+        <sgdf-list-item data-testid="alert-row" [attr.data-id]="alert.id" appAlertElement [alert]="alert"/>
     </ng-template>
 </app-list>

@@ -2,7 +2,7 @@
                  [lede]="'participants.list.subtitle' | transloco">
     {{ 'participants.list.title' | transloco }}
     @if (canCreate()) {
-        <sgdf-button slot="actions" variant="primary" [routerLink]="createRoute">
+        <sgdf-button data-testid="participants-list-create-button" slot="actions" variant="primary" [routerLink]="createRoute">
             <sgdf-icon slot="prefix" name="plus" library="solid"/>
             {{ 'global.actions.create' | transloco }}
         </sgdf-button>
@@ -11,7 +11,7 @@
 
 <app-participant-row #row/>
 
-<app-list class="mt-(--spacing--block) block"
+<app-list data-testid="participants-list-list" class="mt-(--spacing--block) block"
           emptyMessagePrefix="participants.notifications.EMPTY"
           [elementPage]="facade.participantsPage()"
           [error]="facade.participantsPageError()"
@@ -21,24 +21,24 @@
           (updateRequired)="loadBatch($event)"
           (filtersReset)="resetFilters()">
     <ng-template appTemplate="search">
-        <form class="grid grid-cols-1 items-end gap-(--spacing--in-block-large) md:grid-cols-3"
+        <form data-testid="participants-list-search-form" class="grid grid-cols-1 items-end gap-(--spacing--in-block-large) md:grid-cols-3"
               (submit)="$event.preventDefault(); search()">
-            <sgdf-input appSgdfField [label]="'participants.search-and-filter.text' | transloco"
+            <sgdf-input data-testid="participants-list-q-input" appSgdfField [label]="'participants.search-and-filter.text' | transloco"
                         [formField]="form.q"/>
-            <sgdf-select appSgdfField [label]="'participants.search-and-filter.status' | transloco"
+            <sgdf-select data-testid="participants-list-status-select" appSgdfField [label]="'participants.search-and-filter.status' | transloco"
                          [formField]="form.status">
                 @for (item of facade.presencesStatusMetadata(); track item.label) {
                     <sgdf-option [value]="item.value ?? ''">{{ item.label }}</sgdf-option>
                 }
             </sgdf-select>
-            <sgdf-select appSgdfField [label]="'participants.search-and-filter.visibility' | transloco"
+            <sgdf-select data-testid="participants-list-is-visible-select" appSgdfField [label]="'participants.search-and-filter.visibility' | transloco"
                          [formField]="form.isVisible">
                 @for (item of facade.visibilitiesMetadata(); track item.label) {
                     <sgdf-option [value]="item.value | booleanChoice">{{ item.label }}</sgdf-option>
                 }
             </sgdf-select>
             <div class="flex justify-end md:col-span-3">
-                <sgdf-button variant="primary" appearance="outlined" submit
+                <sgdf-button data-testid="participants-list-search-submit" variant="primary" appearance="outlined" submit
                              [loading]="facade.participantsPageLoading()">
                     <sgdf-icon slot="prefix" name="magnifying-glass" library="solid"/>
                     {{ 'global.actions.search' | transloco }}

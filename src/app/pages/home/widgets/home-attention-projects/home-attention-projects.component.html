@@ -12,7 +12,7 @@
     @if (error(); as failure) {
         <sgdf-table-row class="h-px">
             <sgdf-table-cell>
-                <app-section-error [error]="failure" [retrying]="loading()" (retry)="reload()"/>
+                <app-section-error data-testid="home-attention-projects-error" [error]="failure" [retrying]="loading()" (retry)="reload()"/>
             </sgdf-table-cell>
         </sgdf-table-row>
     }
@@ -34,7 +34,7 @@
         @for (project of projects(); track project.id) {
             <sgdf-table-row class="h-px">
                 <sgdf-table-cell>
-                    <a class="flex items-center justify-between gap-3 no-underline! hover:no-underline!" [routerLink]="link(project)">
+                    <a data-testid="home-attention-projects-project-link" class="flex items-center justify-between gap-3 no-underline! hover:no-underline!" [routerLink]="link(project)">
                         <span class="flex min-w-0 items-center gap-3">
                             <sgdf-avatar shape="rounded" variant="primary" size="small" aria-hidden="true" [initials]="initials(project)"/>
                             <strong class="truncate" [attr.title]="project.name">{{ project.name }}</strong>
