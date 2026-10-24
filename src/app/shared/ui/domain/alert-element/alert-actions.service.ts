@@ -7,9 +7,9 @@ import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { AlertModel } from '@shared/models/model/alert.model'
 
 /**
- * Purpose: Tells which commands an alert offers to the signed-in user and runs them.
- * Scope: Builds the action menu (resolve, cancel, reopen, hide, show, delete) with its confirmations.
- * Limits: Holds no state; it only reads the session and calls the alert facade. The backend still checks every command.
+ * Purpose: Indique quelles commandes une alerte offre à l'utilisateur connecté et les exécute.
+ * Scope: Construit le menu d'actions (résoudre, annuler, rouvrir, masquer, réafficher, supprimer) avec ses confirmations.
+ * Limits: Ne détient aucun état ; lit seulement la session et appelle la facade des alertes. Le backend vérifie toujours chaque commande.
  */
 @Injectable()
 export class AlertActions extends ElementActionsBase<AlertModel> {

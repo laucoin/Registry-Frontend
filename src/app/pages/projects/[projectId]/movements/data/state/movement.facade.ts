@@ -25,9 +25,9 @@ import { CommunicationModel } from '@shared/models/model/communication.model'
 import { CumulativePageHelper } from '@shared/helpers/store/cumulative-page.helper'
 
 /**
- * Purpose: Public entry point of the movement domain for pages, components and guards.
- * Scope: Exposes the movement store as signals, forwards its queries and runs the movement commands with their notifications.
- * Limits: Holds no state of its own and builds no HTTP request itself.
+ * Purpose: Point d'entrée public du domaine des mouvements pour les pages, composants et guards.
+ * Scope: Expose le store des mouvements sous forme de signals, relaie ses requêtes et exécute les commandes de mouvement avec leurs notifications.
+ * Limits: Ne détient aucun état propre et ne construit aucune requête HTTP lui-même.
  */
 @Injectable()
 export class MovementFacade extends GenericProjectElementFacade {

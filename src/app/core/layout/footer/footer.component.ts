@@ -10,9 +10,9 @@ import '@sgdf/ui/avatar'
 import '@sgdf/ui/footer'
 
 /**
- * Purpose: Footer of the application.
- * Scope: Shows the legal links, the optional support link and the creator credits from the runtime configuration.
- * Limits: Holds no state and does not fetch anything; the links come from the configuration and the routes.
+ * Purpose: Pied de page de l'application.
+ * Scope: Affiche les liens légaux, le lien de support optionnel et les crédits du créateur issus de la configuration d'exécution.
+ * Limits: Ne détient aucun état et ne récupère rien ; les liens viennent de la configuration et des routes.
  */
 @Component({
 	selector: 'app-footer',

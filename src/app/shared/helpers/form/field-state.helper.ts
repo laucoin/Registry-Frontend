@@ -9,9 +9,9 @@ export interface FieldErrorState {
 }
 
 /**
- * Purpose: Tells when the state of a signal form field must be shown as in error.
- * Scope: Applies the single display rule shared by the error messages and the invalid styling of the fields.
- * Limits: Reads the field state only; it neither validates nor changes it.
+ * Purpose: Indique quand l'état d'un champ de signal form doit être affiché comme en erreur.
+ * Scope: Applique la règle d'affichage unique partagée par les messages d'erreur et le style invalide des champs.
+ * Limits: Lit uniquement l'état du champ ; ne le valide ni ne le modifie.
  */
 export class FieldStateHelper {
     public static showsError (field: () => FieldErrorState): boolean {

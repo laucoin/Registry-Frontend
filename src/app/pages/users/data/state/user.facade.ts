@@ -17,9 +17,9 @@ import { UserStore } from '@pages/users/data/state/user.store'
 import { CumulativePageHelper } from '@shared/helpers/store/cumulative-page.helper'
 
 /**
- * Purpose: Public entry point of the user domain for pages, components and guards.
- * Scope: Exposes the user store as signals, forwards its queries and runs the user commands with their notifications.
- * Limits: Holds no state of its own and builds no HTTP request itself.
+ * Purpose: Point d'entrée public du domaine des utilisateurs pour les pages, composants et guards.
+ * Scope: Expose le store des utilisateurs sous forme de signals, relaie ses requêtes et exécute les commandes d'utilisateur avec leurs notifications.
+ * Limits: Ne détient aucun état propre et ne construit aucune requête HTTP lui-même.
  */
 @Injectable()
 export class UserFacade extends GenericFacade {

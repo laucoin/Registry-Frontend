@@ -22,9 +22,9 @@ interface OverviewStat {
 }
 
 /**
- * Purpose: Shows the head count of the project vehicles by presence status.
- * Scope: Loads the vehicles status of the selected project, displays its counters and total, and links to the detail page unless the link is hidden.
- * Limits: Reads the selected project facade only; a failed load leaves the counters empty and nothing is retried.
+ * Purpose: Affiche l'effectif des véhicules du projet par statut de présence.
+ * Scope: Charge le statut des véhicules du projet sélectionné, affiche ses compteurs et son total, et renvoie vers la page de détail sauf si le lien est masqué.
+ * Limits: Lit uniquement la facade du projet sélectionné ; un chargement échoué laisse les compteurs vides et rien n'est réessayé.
  */
 @Component({
 	imports: [

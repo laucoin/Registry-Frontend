@@ -47,9 +47,9 @@ import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.p
 import { ParticipantFormComponent } from '@pages/projects/[projectId]/configuration/participants/participant-form/participant-form.component'
 
 /**
- * Purpose: Page listing the members of a group with search and a "load more" trigger, and the forms to add or create members.
- * Scope: Binds the list component to the group facade, owns the search form, gives the list the row template of a participant and opens the add and create member layers.
- * Limits: Holds no domain state and never calls the backend.
+ * Purpose: Page listant les membres d'un groupe avec recherche et déclencheur « charger plus », et les formulaires d'ajout ou de création de membres.
+ * Scope: Lie le composant de liste à la facade des groupes, possède le formulaire de recherche, donne à la liste le template de ligne d'un participant et ouvre les couches d'ajout et de création de membres.
+ * Limits: Ne détient aucun état de domaine et n'appelle jamais le backend.
  */
 @Component( {
     selector: 'app-group-member-list',

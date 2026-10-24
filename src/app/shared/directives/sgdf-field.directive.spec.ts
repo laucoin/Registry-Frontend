@@ -196,7 +196,7 @@ describe('SgdfFieldDirective', () => {
             ['winter', '2026-01-15', '09:30', '08:30:00.000Z'],
             ['summer', '2026-07-15', '09:30', '07:30:00.000Z'],
         ])('sends the local time of a %s date as the UTC time of that date', async (_season: string, date: string, local: string, utc: string) => {
-            // Arrange : the case comes from the table
+            // Arrange : le cas vient de la table
             const { fixture }: ReturnType<typeof create> = create()
             const picker: FieldElement = fixture.nativeElement.querySelector('#custom')
 
@@ -212,7 +212,7 @@ describe('SgdfFieldDirective', () => {
             ['winter', '2026-01-15', '08:30:00.000Z', '09:30'],
             ['summer', '2026-07-15', '07:30:00.000Z', '09:30'],
         ])('shows in local time the UTC time of a %s date', async (_season: string, date: string, utc: string, local: string) => {
-            // Arrange : the case comes from the table
+            // Arrange : le cas vient de la table
             const { fixture }: ReturnType<typeof create> = create()
             const picker: FieldElement = fixture.nativeElement.querySelector('#custom')
 

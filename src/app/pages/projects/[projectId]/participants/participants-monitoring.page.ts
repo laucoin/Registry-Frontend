@@ -43,9 +43,9 @@ const TAB_PARAM: string = 'tab'
 const STATUS_PARAM: string = 'status'
 
 /**
- * Purpose: Page tracking where the participants are: through my groups, through every group, or one by one.
- * Scope: Shows the participant counters on desktop above the tabs, lets the roll call tick participants, groups and rows alike, keeps the active tab in the url and loads the first batch of every tab when displayed, so that the counters of the tabs show together and the tabs do not jump. The tab of my groups exists only when the user has some.
- * Limits: Holds no domain state, only the ticks of the roll call, which live in the page and are lost on reload; the group status and participant facades own the data. The members of a group are loaded when its section opens.
+ * Purpose: Page de suivi de l'endroit où se trouvent les participants : par mes groupes, par tous les groupes, ou un par un.
+ * Scope: Affiche les compteurs de participants sur ordinateur au-dessus des onglets, laisse l'appel cocher participants, groupes et lignes indifféremment, garde l'onglet actif dans l'url et charge le premier lot de chaque onglet à l'affichage, pour que les compteurs des onglets s'affichent ensemble et que les onglets ne sautent pas. L'onglet de mes groupes n'existe que si l'utilisateur en a.
+ * Limits: Ne détient aucun état de domaine, seulement les coches de l'appel, qui vivent dans la page et sont perdues au rechargement ; les facades de statut de groupe et de participant possèdent les données. Les membres d'un groupe sont chargés à l'ouverture de sa section.
  */
 @Component({
     selector: 'app-participants-monitoring',

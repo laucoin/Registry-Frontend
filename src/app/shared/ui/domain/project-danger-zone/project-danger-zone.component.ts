@@ -18,9 +18,9 @@ import { ProjectModel } from '@shared/models/model/project.model'
 const NAME_MAX_LENGTH: number = 50
 
 /**
- * Purpose: Offers the irreversible or restrictive commands of the selected project: hide, show again and delete.
- * Scope: Shows each command the signed-in user may run, behind the same confirmations as the project list; the deletion asks to type a phrase.
- * Limits: Renders nothing when the user may run none of them; the backend still checks every command.
+ * Purpose: Propose les commandes irréversibles ou restrictives du projet sélectionné : masquer, réafficher et supprimer.
+ * Scope: Affiche chaque commande que l'utilisateur connecté peut exécuter, derrière les mêmes confirmations que la liste des projets ; la suppression demande de saisir une phrase.
+ * Limits: N'affiche rien quand l'utilisateur ne peut en exécuter aucune ; le backend vérifie toujours chaque commande.
  */
 @Component({
 	imports: [TranslocoPipe],

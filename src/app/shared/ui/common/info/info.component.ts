@@ -2,9 +2,9 @@ import { Component } from '@angular/core'
 import {TranslocoPipe} from '@jsverse/transloco'
 
 /**
- * Purpose: Welcome and help content.
- * Scope: Explains the application to the user.
- * Limits: Static content; it does not read data.
+ * Purpose: Contenu d'accueil et d'aide.
+ * Scope: Explique l'application à l'utilisateur.
+ * Limits: Contenu statique ; ne lit aucune donnée.
  */
 @Component( {
     selector: 'app-info',

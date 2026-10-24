@@ -9,9 +9,9 @@ import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { MovementModel } from '@shared/models/model/movement.model'
 
 /**
- * Purpose: Tells which commands a movement offers to the signed-in user and runs them.
- * Scope: Builds the action menu (edit, hide, show, delete) with its confirmations.
- * Limits: Holds no state; it only reads the session and calls the movement facade. The backend still checks every command.
+ * Purpose: Indique quelles commandes un mouvement offre à l'utilisateur connecté et les exécute.
+ * Scope: Construit le menu d'actions (modifier, masquer, réafficher, supprimer) avec ses confirmations.
+ * Limits: Ne détient aucun état ; lit seulement la session et appelle la facade des mouvements. Le backend vérifie toujours chaque commande.
  */
 @Injectable()
 export class MovementActions extends ElementActionsBase<MovementModel> {

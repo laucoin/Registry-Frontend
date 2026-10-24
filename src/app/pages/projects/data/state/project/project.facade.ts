@@ -22,9 +22,9 @@ import { CumulativePageHelper } from '@shared/helpers/store/cumulative-page.help
 import { DateHelper } from '@shared/helpers/date.helper'
 
 /**
- * Purpose: Public entry point of the project domain for pages, components and guards.
- * Scope: Exposes the project store as signals, forwards its queries and runs the project commands with their notifications.
- * Limits: Holds no state of its own and builds no HTTP request itself.
+ * Purpose: Point d'entrée public du domaine des projets pour les pages, composants et guards.
+ * Scope: Expose le store des projets sous forme de signals, relaie ses requêtes et exécute les commandes de projet avec leurs notifications.
+ * Limits: Ne détient aucun état propre et ne construit aucune requête HTTP lui-même.
  */
 @Injectable()
 export class ProjectFacade extends GenericFacade {

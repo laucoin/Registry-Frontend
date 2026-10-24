@@ -1,7 +1,7 @@
 /**
- * Purpose: Small array utilities.
- * Scope: Inclusion check that treats a missing value as satisfied, emptiness check and splitting into chunks.
- * Limits: Not a general purpose array library.
+ * Purpose: Petits utilitaires de tableaux.
+ * Scope: Vérification d'inclusion qui traite une valeur manquante comme satisfaite, vérification de vide et découpage en blocs.
+ * Limits: Pas une bibliothèque de tableaux généraliste.
  */
 export class ArrayHelper {
     public static includes (array: unknown[], value: unknown, strict: boolean = false): boolean {

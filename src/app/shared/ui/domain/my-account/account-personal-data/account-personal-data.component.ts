@@ -15,9 +15,9 @@ import '@sgdf/ui/table-cell'
 import '@sgdf/ui/table-row'
 
 /**
- * Purpose: Presents the GDPR rights of the signed-in user: the data extract and the account deletion.
- * Scope: Displays both actions with their explanation and a link to the privacy page.
- * Limits: The extract downloads the JSON export at once; the account deletion runs behind a confirmation dialog.
+ * Purpose: Présente les droits RGPD de l'utilisateur connecté : l'extraction des données et la suppression du compte.
+ * Scope: Affiche les deux actions avec leur explication et un lien vers la page de confidentialité.
+ * Limits: L'extraction télécharge l'export JSON immédiatement ; la suppression du compte passe par un dialogue de confirmation.
  */
 @Component({
 	imports: [

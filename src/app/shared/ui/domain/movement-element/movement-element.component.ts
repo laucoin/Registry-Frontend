@@ -36,9 +36,9 @@ import { ElementActionsComponent } from '@shared/ui/common/element-actions/eleme
 import { EllipsisDirective } from '@shared/directives/ellipsis.directive'
 
 /**
- * Purpose: List item presenting one movement with its actions; used as an attribute of `sgdf-list-item`.
- * Scope: Renders the details, the action menu and the layers listing the people and the communications of the movement.
- * Limits: Receives the element as an input; its commands run through the action menu and it holds no list state.
+ * Purpose: Élément de liste présentant un mouvement avec ses actions ; utilisé comme attribut de `sgdf-list-item`.
+ * Scope: Affiche le détail, le menu d'actions et les couches listant les personnes et les communications du mouvement.
+ * Limits: Reçoit l'élément en entrée ; ses commandes passent par le menu d'actions et il ne détient aucun état de liste.
  */
 @Component({
     selector: 'sgdf-list-item[appMovementElement], app-movement-element',

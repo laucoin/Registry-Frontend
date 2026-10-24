@@ -7,9 +7,9 @@ import {GenericHelper} from '@shared/helpers/generic.helper'
 import {RegistryRouteEnum} from '@core/routing/registry-route.enum'
 
 /**
- * Purpose: Base class of the components that need the shared facades and helpers.
- * Scope: Provides the UI and session facades, routing and translation.
- * Limits: Abstract; it holds no view logic.
+ * Purpose: Classe de base des composants qui ont besoin des facades et helpers partagés.
+ * Scope: Fournit les facades UI et de session, le routage et la traduction.
+ * Limits: Abstrait ; ne contient aucune logique de vue.
  */
 export abstract class GenericComponent {
     protected readonly RegistryRouteEnum: typeof RegistryRouteEnum = RegistryRouteEnum

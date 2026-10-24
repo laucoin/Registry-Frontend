@@ -11,9 +11,9 @@ import { AuthenticationUriMapper } from '@shared/mappers/authentication-uri.mapp
 import { CurrentUserMapper } from '@shared/mappers/current-user.mapper'
 
 /**
- * Purpose: Sends the HTTP requests of the security domain.
- * Scope: Builds the urls and the query parameters and returns the backend responses.
- * Limits: Holds no state and handles no error; stores and facades do.
+ * Purpose: Envoie les requêtes HTTP du domaine de la sécurité.
+ * Scope: Construit les urls et les paramètres de requête et renvoie les réponses du backend.
+ * Limits: Ne détient aucun état et ne gère aucune erreur ; les stores et les facades le font.
  */
 @Injectable({
     providedIn: 'root',

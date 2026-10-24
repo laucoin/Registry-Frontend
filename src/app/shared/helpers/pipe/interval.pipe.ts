@@ -6,9 +6,9 @@ import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { StringHelper } from '@shared/helpers/string.helper'
 
 /**
- * Purpose: Formats a duration interval for display.
- * Scope: Shows the two largest units from days up and a clock format below; with `hideSeconds`, the clock shows hours and minutes only and under one minute says it is a few seconds.
- * Limits: Returns undefined for an empty interval.
+ * Purpose: Formate un intervalle de durée pour l'affichage.
+ * Scope: Affiche les deux plus grandes unités à partir des jours et un format d'horloge en dessous ; avec `hideSeconds`, l'horloge n'affiche que les heures et les minutes et indique « quelques secondes » sous une minute.
+ * Limits: Renvoie undefined pour un intervalle vide.
  */
 @Pipe( {
     name: 'intervalFormat', standalone: true, pure: false,

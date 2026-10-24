@@ -49,9 +49,9 @@ const VARIANTS: Record<AlertCriticalityEnum, AlertVariant> = {
 }
 
 /**
- * Purpose: Shows the open alerts of the project, the most critical first, with their automatic criticality.
- * Scope: Loads the first open alerts, displays each with its criticality, age and last communication, and opens the communications of an alert in a drawer.
- * Limits: Shows no more than a few alerts and counts the others; reads the selected project and alert facades only.
+ * Purpose: Affiche les alertes ouvertes du projet, les plus critiques en premier, avec leur criticité automatique.
+ * Scope: Charge les premières alertes ouvertes, affiche chacune avec sa criticité, son ancienneté et sa dernière communication, et ouvre les communications d'une alerte dans un tiroir.
+ * Limits: N'affiche que quelques alertes et compte les autres ; lit uniquement les facades du projet sélectionné et des alertes.
  */
 @Component({
 	imports: [

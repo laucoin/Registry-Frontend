@@ -1,9 +1,9 @@
 :root {
-    /* --- Layout constants --- */
+    /* --- Constantes de mise en page --- */
     --layout--content-width: 90rem;
     --layout--min-width: 340px;
 
-    /* --- Spacing constants --- */
+    /* --- Constantes d'espacement --- */
     --spacing--in-block-small: 0.5rem;
     --spacing--in-block: 0.75rem;
     --spacing--in-block-large: 1rem;
@@ -58,7 +58,7 @@ sgdf-dialog::part(footer) {
     justify-content: flex-end;
 }
 
-/* Texts that overflow end with an ellipsis; the elements of the app use the appEllipsis directive for their own texts */
+/* Les textes qui débordent se terminent par une ellipse ; les éléments de l'app utilisent la directive appEllipsis pour leurs propres textes */
 sgdf-page-title::part(base) {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;

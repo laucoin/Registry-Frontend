@@ -4,9 +4,9 @@ import { SessionFacade } from '@core/registry/state/session.facade'
 import { ProjectAuthorityEnum } from '@shared/models/enumeration/project-authority.enum'
 
 /**
- * Purpose: Renders its host only when the signed-in user holds a project authority on the selected project.
- * Scope: Reads the current user and the selected project of the session; used to hide the hidden-elements filter from the roles that cannot re-enable them.
- * Limits: A usability aid only; the backend re-checks every request.
+ * Purpose: N'affiche son hôte que si l'utilisateur connecté détient une autorité de projet sur le projet sélectionné.
+ * Scope: Lit l'utilisateur courant et le projet sélectionné de la session ; sert à masquer le filtre des éléments masqués aux rôles qui ne peuvent pas les réactiver.
+ * Limits: Simple aide à l'usage ; le backend revérifie chaque requête.
  */
 @Directive( {
     selector: '[appIfProjectAuthority]',

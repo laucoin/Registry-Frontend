@@ -1,4 +1,4 @@
-// Asks for a confirmation before pushing to a protected branch, rewriting remote history or deleting a remote branch.
+// Demande une confirmation avant de pousser vers une branche protégée, de réécrire l'historique distant ou de supprimer une branche distante.
 import { execFileSync, spawnSync } from 'node:child_process';
 import { createReadStream, openSync, readFileSync } from 'node:fs';
 import { createInterface } from 'node:readline';

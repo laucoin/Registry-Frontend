@@ -14,9 +14,9 @@ import { UserHelper } from '@shared/helpers/user.helper'
 import { SelectElementsFieldComponent } from '@shared/ui/common/select-elements-field/select-elements-field.component'
 
 /**
- * Purpose: Fields of an invitation to a project: the role, the access period and the invited users.
- * Scope: Binds the fields of the given invitation form, searches the users to invite for the given project or the selected one, and shows the assignable roles loaded by its host.
- * Limits: Owns no form model, loads no role and never submits; the page that hosts it does.
+ * Purpose: Champs d'une invitation à un projet : le rôle, la période d'accès et les utilisateurs invités.
+ * Scope: Lie les champs du formulaire d'invitation donné, recherche les utilisateurs à inviter pour le projet donné ou le projet sélectionné, et affiche les rôles assignables chargés par son hôte.
+ * Limits: Ne possède aucun modèle de formulaire, ne charge aucun rôle et ne soumet jamais ; la page qui l'héberge le fait.
  */
 @Component( {
     selector: 'app-project-profile-invitation-fields',

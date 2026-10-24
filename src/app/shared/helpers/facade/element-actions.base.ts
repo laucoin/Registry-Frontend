@@ -17,9 +17,9 @@ export interface ElementActionSpec {
 }
 
 /**
- * Purpose: Base of the services that tell which commands a list element offers.
- * Scope: Turns the action specs of an element into menu actions, keeps those shown and enabled by the configuration, disables the unauthorised ones, puts the confirmation in front of the commands that need one and gives the subclasses the project authority check and the command runner.
- * Limits: Abstract; the commands it runs report their own failures through the facade; each domain says which actions exist, who may run them and what they do, and may pass a context (such as the group a member is listed in). The backend still checks every command.
+ * Purpose: Base des services qui indiquent les commandes offertes par un élément de liste.
+ * Scope: Transforme les spécifications d'action d'un élément en actions de menu, garde celles affichées et activées par la configuration, désactive les non autorisées, place la confirmation devant les commandes qui en ont besoin et donne aux sous-classes la vérification d'autorité de projet et l'exécuteur de commande.
+ * Limits: Abstrait ; les commandes qu'il exécute signalent elles-mêmes leurs échecs via la facade ; chaque domaine dit quelles actions existent, qui peut les exécuter et ce qu'elles font, et peut passer un contexte (comme le groupe dans lequel un membre est listé). Le backend vérifie toujours chaque commande.
  */
 export abstract class ElementActionsBase<T, C = void> {
     protected readonly confirmation: ElementConfirmationService = inject(ElementConfirmationService)

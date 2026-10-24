@@ -17,9 +17,9 @@ import { ElementActionsComponent } from '@shared/ui/common/element-actions/eleme
 import { DateHelper } from '@shared/helpers/date.helper'
 
 /**
- * Purpose: Chat bubble presenting one communication, aligned to the side of its author.
- * Scope: Renders the author, the linked alert, the message, its date and the action menu of the communication.
- * Limits: Owns no list state; the parent gives the neighbouring authors so consecutive messages are grouped.
+ * Purpose: Bulle de discussion présentant une communication, alignée du côté de son auteur.
+ * Scope: Affiche l'auteur, l'alerte liée, le message, sa date et le menu d'actions de la communication.
+ * Limits: Ne possède aucun état de liste ; le parent donne les auteurs voisins pour que les messages consécutifs soient groupés.
  */
 @Component( {
     selector: 'app-dialog-element',

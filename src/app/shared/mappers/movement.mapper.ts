@@ -6,9 +6,9 @@ import { MovementContentMapper } from '@shared/mappers/movement-content.mapper'
 import { MovementReasonMapper } from '@shared/mappers/movement-reason.mapper'
 
 /**
- * Purpose: Converts a Movement response of the backend into the Movement model.
- * Scope: Copies each field and delegates the nested entities to their own mappers.
- * Limits: Does not validate, rename or compute any value; the backend contract is trusted.
+ * Purpose: Convertit une réponse Movement du backend en modèle Movement.
+ * Scope: Copie chaque champ et délègue les entités imbriquées à leurs propres mappers.
+ * Limits: Ne valide, ne renomme ni ne calcule aucune valeur ; le contrat du backend est considéré comme fiable.
  */
 export class MovementMapper {
     public static toModel (dto: MovementResponseDto): MovementModel {

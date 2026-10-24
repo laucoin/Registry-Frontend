@@ -18,9 +18,9 @@ import { SectionErrorComponent } from '@shared/ui/common/section-error/section-e
 import { createUserForm, toUserFormModel, UserFormModel } from '@pages/users/user-form/user.form'
 
 /**
- * Purpose: Dialog page with the form to edit a user, opened over the users list.
- * Scope: Builds the form, submits it through the facade and navigates back; shows the failure of the user or roles load instead of the form.
- * Limits: Holds no domain state and never calls the backend.
+ * Purpose: Page en dialogue avec le formulaire d'édition d'un utilisateur, ouverte au-dessus de la liste des utilisateurs.
+ * Scope: Construit le formulaire, le soumet via la facade et navigue en arrière ; affiche l'échec du chargement de l'utilisateur ou des rôles à la place du formulaire.
+ * Limits: Ne détient aucun état de domaine et n'appelle jamais le backend.
  */
 @Component( {
     selector: 'app-user-form',

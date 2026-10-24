@@ -16,8 +16,9 @@ on this Angular Client-Side Rendering (CSR) project.
   what is at stake, the relevant code or spec reference (`file:line`), 2–4 options each with its consequences and
   trade-offs, and a recommended option placed first. Group related decisions in a single call. Do not ask when a
   convention of this document or the existing code already settles the point.
-- **Code & Comments:** All source code, variable names, functions, inline comments, and commit messages **must** be
-  written in **US English**.
+- **Code & Comments:** All source code, variable names, functions, and commit messages **must** be written in
+  **US English**. Comments (inline comments and JSDoc blocks) and the project's markdown documentation **must** be
+  written in **French**.
 - **Strict Scope:** Address only the requested task. Do not refactor surrounding code or fix unrelated items.
 
 ---

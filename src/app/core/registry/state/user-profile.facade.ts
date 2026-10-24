@@ -18,9 +18,9 @@ import { UserInvitationModel } from '@shared/models/model/user-invitation.model'
 import { ProjectModel } from '@shared/models/model/project.model'
 
 /**
- * Purpose: Public entry point for the project profiles and invitations of the signed-in user and the commands acting on them.
- * Scope: Exposes the user profile store as signals, forwards its paging and search commands and calls the backend to accept, delete or create a profile.
- * Limits: Does not know how the user signs in nor which project is selected; the session facade does.
+ * Purpose: Point d'entrée public des profils de projet et des invitations de l'utilisateur connecté et des commandes qui les concernent.
+ * Scope: Expose le store des profils utilisateur sous forme de signals, relaie ses commandes de pagination et de recherche et appelle le backend pour accepter, supprimer ou créer un profil.
+ * Limits: Ne sait pas comment l'utilisateur se connecte ni quel projet est sélectionné ; la facade de session le sait.
  */
 @Injectable()
 export class UserProfileFacade {

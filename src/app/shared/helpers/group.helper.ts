@@ -2,9 +2,9 @@ import { GroupModel } from '@shared/models/model/group.model'
 import { SelectOptionModel } from '@shared/models/model/select-option.model'
 
 /**
- * Purpose: Builds select items for groups.
- * Scope: Pure mapping from a group to a select item.
- * Limits: No state and no translation.
+ * Purpose: Construit les select items des groupes.
+ * Scope: Mapping pur d'un groupe vers un select item.
+ * Limits: Aucun état et aucune traduction.
  */
 export class GroupHelper {
     public static toSelectItem (group: GroupModel): SelectOptionModel<GroupModel> {

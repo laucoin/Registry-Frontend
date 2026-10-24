@@ -4,9 +4,9 @@ import {Translation, TranslocoLoader} from '@jsverse/transloco'
 import {Observable} from 'rxjs'
 
 /**
- * Purpose: Loads the translation files of a language from the static assets.
- * Scope: Resolves `i18n/<lang>.json` through the shared HTTP client.
- * Limits: Does not cache, select the active language or handle missing keys.
+ * Purpose: Charge les fichiers de traduction d'une langue depuis les assets statiques.
+ * Scope: Résout `i18n/<lang>.json` via le client HTTP partagé.
+ * Limits: Ne met pas en cache, ne choisit pas la langue active et ne gère pas les clés manquantes.
  */
 @Injectable({providedIn: 'root'})
 export class RegistryTranslationLoader implements TranslocoLoader {

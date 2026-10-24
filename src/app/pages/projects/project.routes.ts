@@ -29,9 +29,9 @@ import { AlertFacade } from '@pages/projects/[projectId]/alerts/data/state/alert
 import { AlertsListPage } from '@pages/projects/[projectId]/alerts/alerts-list/alerts-list.page'
 
 /**
- * Purpose: Declares the routes below a project.
- * Scope: Maps the project pages, forms and configuration areas to their lazy components.
- * Limits: Holds no navigation logic; the guards and the pages own it.
+ * Purpose: Déclare les routes situées sous un projet.
+ * Scope: Mappe les pages, formulaires et espaces de configuration du projet vers leurs composants chargés paresseusement.
+ * Limits: Ne détient aucune logique de navigation ; les guards et les pages la possèdent.
  */
 export const projectRoutes: Routes = [
     {

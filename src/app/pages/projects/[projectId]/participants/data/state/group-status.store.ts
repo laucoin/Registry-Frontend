@@ -29,9 +29,9 @@ const defaultGroupStatusStore: GroupStatusStoreModel = {
 }
 
 /**
- * Purpose: Holds the group status state.
- * Scope: Owns the pages of my groups and of all the groups, with their presence counters, and the pages of on-site members of the groups that were opened, each with its loading and error flags, and fetches them through the group status api.
- * Limits: Reached through the group status facade; it does not format data or notify the user of command results. The members of a group are fetched on demand only.
+ * Purpose: Détient l'état du statut des groupes.
+ * Scope: Possède les pages de mes groupes et de tous les groupes, avec leurs compteurs de présence, et les pages de membres sur site des groupes ouverts, chacune avec ses drapeaux de chargement et d'erreur, et les récupère via l'api du statut des groupes.
+ * Limits: Atteint via la facade du statut des groupes ; ne formate pas les données et ne notifie pas l'utilisateur du résultat des commandes. Les membres d'un groupe ne sont récupérés qu'à la demande.
  */
 export const GroupStatusStore = signalStore(
     withState<GroupStatusStoreModel>( defaultGroupStatusStore ),

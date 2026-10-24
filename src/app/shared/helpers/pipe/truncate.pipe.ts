@@ -2,9 +2,9 @@ import { Pipe, PipeTransform } from '@angular/core'
 import { StringHelper } from '@shared/helpers/string.helper'
 
 /**
- * Purpose: Truncates text for display.
- * Scope: Cuts after a length and appends a trail.
- * Limits: Does not break on word boundaries.
+ * Purpose: Tronque un texte pour l'affichage.
+ * Scope: Coupe après une longueur et ajoute une marque de fin.
+ * Limits: Ne coupe pas aux limites des mots.
  */
 @Pipe( {
     name: 'truncate', standalone: true,

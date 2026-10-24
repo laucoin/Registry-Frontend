@@ -6,9 +6,9 @@ import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { CommunicationModel } from '@shared/models/model/communication.model'
 
 /**
- * Purpose: Tells which commands a communication offers to the signed-in user and runs them.
- * Scope: Builds the action menu (edit, hide, show, delete) with its confirmations.
- * Limits: Holds no state; it only reads the session and calls the communication facade. The backend still checks every command.
+ * Purpose: Indique quelles commandes une communication offre à l'utilisateur connecté et les exécute.
+ * Scope: Construit le menu d'actions (modifier, masquer, réafficher, supprimer) avec ses confirmations.
+ * Limits: Ne détient aucun état ; lit seulement la session et appelle la facade des communications. Le backend vérifie toujours chaque commande.
  */
 @Injectable()
 export class CommunicationActions extends ElementActionsBase<CommunicationModel> {

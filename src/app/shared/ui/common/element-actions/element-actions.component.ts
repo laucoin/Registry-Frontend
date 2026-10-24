@@ -7,9 +7,9 @@ import '@sgdf/ui/menu-item'
 import { ElementActionModel } from '@shared/models/model/element-action.model'
 
 /**
- * Purpose: Menu of the commands a list element offers.
- * Scope: Shows a trigger and one item per action, marks the dangerous and the unavailable ones and runs the chosen one.
- * Limits: Shows nothing without an action; it decides neither which actions exist nor whether they are allowed.
+ * Purpose: Menu des commandes offertes par un élément de liste.
+ * Scope: Affiche un déclencheur et un item par action, marque les actions dangereuses et indisponibles et exécute celle qui est choisie.
+ * Limits: N'affiche rien sans action ; ne décide ni des actions existantes ni de leur autorisation.
  */
 @Component({
     selector: 'app-element-actions',

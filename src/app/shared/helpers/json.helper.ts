@@ -1,9 +1,9 @@
 import { GenericHelper } from '@shared/helpers/generic.helper'
 
 /**
- * Purpose: JSON detection utilities.
- * Scope: Tells whether a text is a JSON object and whether a value is an object.
- * Limits: Does not parse for callers.
+ * Purpose: Utilitaires de détection de JSON.
+ * Scope: Indique si un texte est un objet JSON et si une valeur est un objet.
+ * Limits: N'analyse pas à la place des appelants.
  */
 export class Utils {
     public static isJson (item: string | null): boolean {

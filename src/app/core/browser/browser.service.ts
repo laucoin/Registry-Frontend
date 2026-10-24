@@ -7,9 +7,9 @@ const HIGHLIGHT_DURATION_MS: number = 1000
 export const PREFERENCE_COOKIE_MAX_AGE_SECONDS: number = 60 * 60 * 24 * 365
 
 /**
- * Purpose: Single access point to the browser globals the application depends on.
- * Scope: Wraps location, viewport, scroll, page visibility, element intersection, color scheme, cookies, root element attributes, the canonical link and element lookup.
- * Limits: Holds no state and applies no application logic; it does not manage storage (see the storage helpers).
+ * Purpose: Point d'accès unique aux globaux du navigateur dont dépend l'application.
+ * Scope: Enveloppe location, viewport, scroll, visibilité de la page, intersection d'éléments, schéma de couleurs, cookies, attributs de l'élément racine, lien canonical et recherche d'éléments.
+ * Limits: Ne détient aucun état et n'applique aucune logique applicative ; ne gère pas le stockage (voir les helpers de stockage).
  */
 @Injectable( { providedIn: 'root' } )
 export class BrowserService {

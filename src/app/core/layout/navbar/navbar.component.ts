@@ -20,9 +20,9 @@ import '@sgdf/ui/nav-item'
 import '@sgdf/ui/navbar'
 
 /**
- * Purpose: Top navigation bar of the application.
- * Scope: Renders the application menus, the project sub-navigation and the account menu the user is allowed to see.
- * Limits: Does not decide which menus are visible; the menu service does, for display only.
+ * Purpose: Barre de navigation supérieure de l'application.
+ * Scope: Affiche les menus de l'application, la sous-navigation du projet et le menu du compte que l'utilisateur a le droit de voir.
+ * Limits: Ne décide pas des menus visibles ; le service de menus le fait, pour l'affichage uniquement.
  */
 @Component({
 	selector: 'app-navbar',

@@ -5,9 +5,9 @@ import { Router } from '@angular/router'
 const FIRST_NAVIGATION_ID: number = 1
 
 /**
- * Purpose: Wires the back button of a page title to the previous page of the history.
- * Scope: Listens to the sgdf-back event of its host and goes back, or to the root when the page was the entry point.
- * Limits: Does not decide what the root redirects to; the routes and guards do.
+ * Purpose: Relie le bouton retour d'un titre de page à la page précédente de l'historique.
+ * Scope: Écoute l'événement sgdf-back de son hôte et revient en arrière, ou à la racine quand la page était le point d'entrée.
+ * Limits: Ne décide pas de la redirection de la racine ; les routes et les guards le font.
  */
 @Directive( {
     selector: '[appBackNavigation]',

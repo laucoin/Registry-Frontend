@@ -5,9 +5,9 @@ import { BrowserService, PREFERENCE_COOKIE_MAX_AGE_SECONDS } from '@core/browser
 import { LOCALE } from '@shared/helpers/request.helper'
 
 /**
- * Purpose: Applies the display language everywhere the application reads it.
- * Scope: Loads and activates the translations, sets the document language read by @sgdf/ui and remembers the choice for the next start.
- * Limits: Does not call the backend or save the user's preferences, and does not reload the page.
+ * Purpose: Applique la langue d'affichage partout où l'application la lit.
+ * Scope: Charge et active les traductions, positionne la langue du document lue par @sgdf/ui et mémorise le choix pour le prochain démarrage.
+ * Limits: N'appelle pas le backend, n'enregistre pas les préférences de l'utilisateur et ne recharge pas la page.
  */
 @Injectable( { providedIn: 'root' } )
 export class LanguageService {

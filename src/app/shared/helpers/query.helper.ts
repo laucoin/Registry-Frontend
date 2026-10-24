@@ -2,9 +2,9 @@ import { HttpParams } from '@angular/common/http'
 import { GenericHelper } from '@shared/helpers/generic.helper'
 
 /**
- * Purpose: Builds the query string of paged requests.
- * Scope: Adds page number, page size and the defined search criteria, never the reset flag.
- * Limits: Does not encode complex values; callers pass primitives.
+ * Purpose: Construit la query string des requêtes paginées.
+ * Scope: Ajoute le numéro de page, la taille de page et les critères de recherche définis, jamais le drapeau de réinitialisation.
+ * Limits: N'encode pas les valeurs complexes ; les appelants passent des primitives.
  */
 export class QueryHelper {
     public static buildQueryParams (

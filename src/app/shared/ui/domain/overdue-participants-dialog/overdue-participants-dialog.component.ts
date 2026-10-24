@@ -13,9 +13,9 @@ import { RegularizationRowComponent } from '@shared/ui/domain/regularization-row
 const PAGE_SIZE: number = 20
 
 /**
- * Purpose: Dialog listing every participant whose presence went past the planned end, earliest planned end first.
- * Scope: Loads the first batch each time it opens, then the next ones as the user scrolls or asks for them; takes the whole screen on a small one.
- * Limits: Reads the selected project facade only; it neither edits a participant nor leaves the page.
+ * Purpose: Dialogue listant chaque participant dont la présence a dépassé la fin prévue, fin prévue la plus ancienne en premier.
+ * Scope: Charge le premier lot à chaque ouverture, puis les suivants quand l'utilisateur défile ou les demande ; occupe tout l'écran sur un petit écran.
+ * Limits: Lit uniquement la facade du projet sélectionné ; ne modifie aucun participant et ne quitte pas la page.
  */
 @Component({
 	selector: 'app-overdue-participants-dialog',

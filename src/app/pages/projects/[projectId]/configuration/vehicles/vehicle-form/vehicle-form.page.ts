@@ -26,9 +26,9 @@ import {GenericHelper} from '@shared/helpers/generic.helper'
 import { ETagHelper } from '@shared/helpers/etag.helper'
 
 /**
- * Purpose: Dialog page with the form to create or edit a vehicle, opened over the vehicles list.
- * Scope: Builds the form, submits it through the facade and navigates back.
- * Limits: Holds no domain state and never calls the backend.
+ * Purpose: Page en dialogue avec le formulaire de création ou d'édition d'un véhicule, ouverte au-dessus de la liste des véhicules.
+ * Scope: Construit le formulaire, le soumet via la facade et navigue en arrière.
+ * Limits: Ne détient aucun état de domaine et n'appelle jamais le backend.
  */
 @Component({
     selector: 'app-vehicle-form',

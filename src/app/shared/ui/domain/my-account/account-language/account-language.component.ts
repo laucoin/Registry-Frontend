@@ -11,9 +11,9 @@ import '@sgdf/ui/table-cell'
 import '@sgdf/ui/table-row'
 
 /**
- * Purpose: Lets the signed-in user pick the display language of the application.
- * Scope: Shows the configured languages as buttons, or as a select past two, and forwards the choice and shows which language is being saved.
- * Limits: Does not decide which languages exist, load translations or persist anything itself; the session facade does.
+ * Purpose: Permet à l'utilisateur connecté de choisir la langue d'affichage de l'application.
+ * Scope: Affiche les langues configurées sous forme de boutons, ou de select au-delà de deux, relaie le choix et montre quelle langue est en cours d'enregistrement.
+ * Limits: Ne décide pas des langues existantes, ne charge pas les traductions et ne persiste rien lui-même ; la facade de session le fait.
  */
 @Component({
 	imports: [

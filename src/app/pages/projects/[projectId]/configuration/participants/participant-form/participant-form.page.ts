@@ -4,9 +4,9 @@ import {
 } from '@pages/projects/[projectId]/configuration/participants/participant-form/participant-form.component'
 
 /**
- * Purpose: Page with the form to create or edit a participant.
- * Scope: Builds the form, submits it through the facade and navigates back.
- * Limits: Holds no domain state and never calls the backend.
+ * Purpose: Page avec le formulaire de création ou d'édition d'un participant.
+ * Scope: Construit le formulaire, le soumet via la facade et navigue en arrière.
+ * Limits: Ne détient aucun état de domaine et n'appelle jamais le backend.
  */
 @Component({
 	imports: [

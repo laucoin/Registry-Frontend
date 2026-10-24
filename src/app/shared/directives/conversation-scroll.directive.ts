@@ -2,9 +2,9 @@ import { DestroyRef, Directive, effect, ElementRef, inject, input, InputSignal, 
 import { CommunicationModel } from '@shared/models/model/communication.model'
 
 /**
- * Purpose: Gives a list of communications the behaviour of a messaging conversation, the latest message at the bottom.
- * Scope: Applied as `[appConversationScroll]="communications"` (oldest first); scrolls to the latest message when it changes, emits `loadOlder` when the top is reached and keeps the reader on the same message once older ones are added above.
- * Limits: Does not load anything; the host decides whether older messages exist.
+ * Purpose: Donne à une liste de communications le comportement d'une conversation de messagerie, le dernier message en bas.
+ * Scope: Appliqué sous la forme `[appConversationScroll]="communications"` (le plus ancien d'abord) ; défile jusqu'au dernier message quand il change, émet `loadOlder` quand le haut est atteint et garde le lecteur sur le même message une fois des messages plus anciens ajoutés au-dessus.
+ * Limits: Ne charge rien ; l'hôte décide s'il existe des messages plus anciens.
  */
 @Directive({
     selector: '[appConversationScroll]',
@@ -58,7 +58,7 @@ export class ConversationScrollDirective {
 
             if (items.length > 0) {
                 this.ready = true
-                // Observing again reports the current state, so a list too short to scroll still loads older messages.
+                // Observer à nouveau signale l'état courant, donc une liste trop courte pour défiler charge quand même les messages plus anciens.
                 this.observer?.unobserve( this.sentinel )
                 this.observer?.observe( this.sentinel )
             }

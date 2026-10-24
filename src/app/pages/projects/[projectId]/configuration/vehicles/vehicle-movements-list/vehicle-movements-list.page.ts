@@ -32,9 +32,9 @@ import { ListComponent } from '@shared/ui/common/list/list.component'
 import { MovementElementComponent } from '@shared/ui/domain/movement-element/movement-element.component'
 
 /**
- * Purpose: Page listing the movements of one vehicle with search and a "load more" trigger.
- * Scope: Binds the list component to the vehicle facade, owns the search form, shows the name of the vehicle and reloads when a movement changes.
- * Limits: Holds no domain state and never calls the backend.
+ * Purpose: Page listant les mouvements d'un véhicule avec recherche et déclencheur « charger plus ».
+ * Scope: Lie le composant de liste à la facade des véhicules, possède le formulaire de recherche, affiche le nom du véhicule et recharge quand un mouvement change.
+ * Limits: Ne détient aucun état de domaine et n'appelle jamais le backend.
  */
 @Component({
     selector: 'app-vehicle-movements-list',

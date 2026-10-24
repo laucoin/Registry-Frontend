@@ -2,9 +2,9 @@ import { GenericApi } from '@shared/helpers/api/generic.api'
 import { SELECT_PROFILE_PROJECT_ID } from '@shared/helpers/request.helper'
 
 /**
- * Purpose: Sends the HTTP requests of the generic project domain.
- * Scope: Builds the urls and the query parameters and returns the backend responses.
- * Limits: Holds no state and handles no error; stores and facades do.
+ * Purpose: Envoie les requêtes HTTP du domaine generic project.
+ * Scope: Construit les urls et les paramètres de requête et renvoie les réponses du backend.
+ * Limits: Ne détient aucun état et ne gère aucune erreur ; les stores et les facades le font.
  */
 export abstract class GenericProjectApi extends GenericApi {
     protected constructor (baseUrl: string | undefined = undefined) {

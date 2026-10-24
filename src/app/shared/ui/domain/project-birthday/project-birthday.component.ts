@@ -28,9 +28,9 @@ interface BirthdayRow {
 }
 
 /**
- * Purpose: Shows the participants whose birthday is today.
- * Scope: Loads the birthdays of the selected project, lists the first ones with their age and group, and says how many more there are.
- * Limits: Reads the selected project facade only; it shows no more than a few rows and links to no page.
+ * Purpose: Affiche les participants dont c'est l'anniversaire aujourd'hui.
+ * Scope: Charge les anniversaires du projet sélectionné, liste les premiers avec leur âge et leur groupe, et dit combien il y en a d'autres.
+ * Limits: Lit uniquement la facade du projet sélectionné ; n'affiche que quelques lignes et ne renvoie vers aucune page.
  */
 @Component({
 	imports: [

@@ -14,9 +14,9 @@ interface SgdfFieldElement extends HTMLElement {
 const LOCAL_DATE_TIME: RegExp = /^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2}))?$/
 
 /**
- * Purpose: Lets signal forms (`[formField]`) drive the `@sgdf/ui` form elements: `sgdf-input`, `sgdf-textarea`, `sgdf-select`, `sgdf-switch`, `sgdf-checkbox` and `sgdf-date-time-picker`.
- * Scope: Applied with the `appSgdfField` attribute next to `[formField]`. Writes the model value to the element, reads it back on `input` and `change`, reports touch on focus out and the disabled state. The switch and the checkbox hold a boolean and the date time picker a local `Date`.
- * Limits: Maps no value of its own: a select holds the string of its option. The picker uses the combined value format and holds a `Date`, or the separate one (`value-format="separate"`) and holds a `CustomDatetimeModel`, whose time stays UTC like the API's while the picker shows it local.
+ * Purpose: Permet aux signal forms (`[formField]`) de piloter les éléments de formulaire `@sgdf/ui` : `sgdf-input`, `sgdf-textarea`, `sgdf-select`, `sgdf-switch`, `sgdf-checkbox` et `sgdf-date-time-picker`.
+ * Scope: Appliquée avec l'attribut `appSgdfField` à côté de `[formField]`. Écrit la valeur du modèle dans l'élément, la relit sur `input` et `change`, signale le touch à la perte de focus et l'état désactivé. Le switch et la checkbox détiennent un booléen et le sélecteur de date-heure une `Date` locale.
+ * Limits: Ne mappe aucune valeur : un select détient la chaîne de son option. Le sélecteur utilise le format de valeur combiné et détient une `Date`, ou le format séparé (`value-format="separate"`) et détient un `CustomDatetimeModel`, dont l'heure reste en UTC comme celle de l'API alors que le sélecteur l'affiche en local.
  */
 @Directive({
     selector: '[appSgdfField]',

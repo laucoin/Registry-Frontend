@@ -2,9 +2,9 @@ import { CommunicationModel } from '@shared/models/model/communication.model'
 import { StringHelper } from '@shared/helpers/string.helper'
 
 /**
- * Purpose: Identifies the author of a communication and of its neighbours in a conversation.
- * Scope: Picks the movement or the last editor, whichever is identifiable.
- * Limits: No state; it does not load the author.
+ * Purpose: Identifie l'auteur d'une communication et de ses voisines dans une conversation.
+ * Scope: Choisit le mouvement ou le dernier éditeur, selon celui qui est identifiable.
+ * Limits: Aucun état ; ne charge pas l'auteur.
  */
 export class CommunicationHelper {
     public static getAuthorId (communication: CommunicationModel): string | undefined {

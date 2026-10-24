@@ -11,9 +11,9 @@ import { initialize } from '@shared/helpers/rx.helper'
 type PageBlock = PageRequestInformationModel<unknown, GenericModel>
 
 /**
- * Purpose: Gives read and write access to one page block of a signal store state.
- * Scope: Lets generic operators update the loading and error state of a single paged resource.
- * Limits: Does not own any state; it only forwards to the store it was built from.
+ * Purpose: Donne un accès en lecture et en écriture à un bloc de page de l'état d'un signal store.
+ * Scope: Permet à des opérateurs génériques de mettre à jour l'état de chargement et d'erreur d'une seule ressource paginée.
+ * Limits: Ne possède aucun état ; ne fait que relayer vers le store dont il est issu.
  */
 export interface PageSlice<B extends PageBlock> {
     read: () => B
@@ -21,9 +21,9 @@ export interface PageSlice<B extends PageBlock> {
 }
 
 /**
- * Purpose: Gives a page block of a store the read and write access the page operators need.
- * Scope: Reads the block of a key and patches it back.
- * Limits: Only wraps the store; it does not fetch anything.
+ * Purpose: Donne à un bloc de page d'un store l'accès en lecture et en écriture dont les opérateurs de page ont besoin.
+ * Scope: Lit le bloc d'une clé et le réécrit.
+ * Limits: Ne fait qu'envelopper le store ; ne récupère rien.
  */
 export function pageSlice<S extends object, K extends keyof S & string>(
     store: WritableStateSource<S> & { [P in K]: Signal<S[P]> },
@@ -36,9 +36,9 @@ export function pageSlice<S extends object, K extends keyof S & string>(
 }
 
 /**
- * Purpose: Scopes the loading flags and the failure of a page request to the given page block.
- * Scope: Marks the block loading while in flight, then stores any error in the block.
- * Limits: Swallows the error (completes empty) so the surrounding rxMethod stays alive; it does not fetch anything.
+ * Purpose: Borne les drapeaux de chargement et l'échec d'une requête de page au bloc de page donné.
+ * Scope: Marque le bloc en chargement pendant la requête, puis stocke toute erreur dans le bloc.
+ * Limits: Avale l'erreur (se termine vide) pour que le rxMethod englobant reste vivant ; ne récupère rien.
  */
 export const trackPage = <B extends PageBlock>(slice: PageSlice<B>) =>
     <T> (source: Observable<T>): Observable<T> => source.pipe(
@@ -48,9 +48,9 @@ export const trackPage = <B extends PageBlock>(slice: PageSlice<B>) =>
     )
 
 /**
- * Purpose: Starts or stops the loading state of a page block.
- * Scope: Clears the previous error when a load starts.
- * Limits: Does not touch the page itself.
+ * Purpose: Démarre ou arrête l'état de chargement d'un bloc de page.
+ * Scope: Efface l'erreur précédente quand un chargement démarre.
+ * Limits: Ne touche pas à la page elle-même.
  */
 function setLoading<B extends PageBlock>(slice: PageSlice<B>, loading: boolean): void {
     const block: B = slice.read()
@@ -59,9 +59,9 @@ function setLoading<B extends PageBlock>(slice: PageSlice<B>, loading: boolean):
 }
 
 /**
- * Purpose: Keeps a page fetch failure in its block.
- * Scope: Writes the error next to the page so the UI shows it below the elements.
- * Limits: Always ends the stream without a value so the calling method stays usable.
+ * Purpose: Conserve l'échec de récupération d'une page dans son bloc.
+ * Scope: Écrit l'erreur à côté de la page pour que l'UI l'affiche sous les éléments.
+ * Limits: Termine toujours le flux sans valeur pour que la méthode appelante reste utilisable.
  */
 function handleFailure<B extends PageBlock>(slice: PageSlice<B>, error: ErrorModel): Observable<never> {
     const block: B = slice.read()

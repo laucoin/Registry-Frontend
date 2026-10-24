@@ -54,9 +54,9 @@ const defaultActivityStore: ActivityStoreModel = {
 }
 
 /**
- * Purpose: Holds the activity state.
- * Scope: Owns the data of the activity pages and resources with their loading and error flags, and fetches them through the activity api.
- * Limits: Reached through the activity facade; it does not format data or notify the user of command results.
+ * Purpose: Détient l'état des activités.
+ * Scope: Possède les données des pages et ressources d'activités avec leurs drapeaux de chargement et d'erreur, et les récupère via l'api des activités.
+ * Limits: Atteint via la facade des activités ; ne formate pas les données et ne notifie pas l'utilisateur du résultat des commandes.
  */
 export const ActivityStore = signalStore(
     withState<ActivityStoreModel>( defaultActivityStore ),

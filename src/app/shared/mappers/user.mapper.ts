@@ -3,9 +3,9 @@ import { UserResponseDto } from '@shared/models/dto/response/user.response.dto'
 import { GenericMapper } from '@shared/mappers/generic.mapper'
 
 /**
- * Purpose: Converts a User response of the backend into the User model.
- * Scope: Copies each field and delegates the nested entities to their own mappers.
- * Limits: Does not validate, rename or compute any value; the backend contract is trusted.
+ * Purpose: Convertit une réponse User du backend en modèle User.
+ * Scope: Copie chaque champ et délègue les entités imbriquées à leurs propres mappers.
+ * Limits: Ne valide, ne renomme ni ne calcule aucune valeur ; le contrat du backend est considéré comme fiable.
  */
 export class UserMapper {
     public static toModel (dto: UserResponseDto): UserModel {

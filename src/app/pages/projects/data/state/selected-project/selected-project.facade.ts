@@ -13,9 +13,9 @@ import { PlannedMovementModel } from '@shared/models/model/planned-movement.mode
 import { CumulativePageHelper } from '@shared/helpers/store/cumulative-page.helper'
 
 /**
- * Purpose: Public entry point of the selected project domain for pages, components and guards.
- * Scope: Exposes the selected project store as signals, forwards its queries and runs the selected project commands with their notifications.
- * Limits: Holds no state of its own and builds no HTTP request itself.
+ * Purpose: Point d'entrée public du domaine du projet sélectionné pour les pages, composants et guards.
+ * Scope: Expose le store du projet sélectionné sous forme de signals, relaie ses requêtes et exécute les commandes du projet sélectionné avec leurs notifications.
+ * Limits: Ne détient aucun état propre et ne construit aucune requête HTTP lui-même.
  */
 @Injectable()
 export class SelectedProjectFacade extends GenericFacade {

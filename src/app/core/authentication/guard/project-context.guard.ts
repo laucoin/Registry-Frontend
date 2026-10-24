@@ -18,9 +18,9 @@ interface GuardContext {
 }
 
 /**
- * Purpose: Selects the project of the `:projectId` route parameter for the routes below it.
- * Scope: Checks the user has an authority on the project and loads it, and answers "project not found" before redirecting to the projects list when it does not exist, when the user has no right on it or when it cannot be loaded: the message never tells which.
- * Limits: A usability aid only; the backend re-checks access, and the deactivate guard only clears the selection.
+ * Purpose: Sélectionne le projet du paramètre de route `:projectId` pour les routes qui en dépendent.
+ * Scope: Vérifie que l'utilisateur a une autorité sur le projet et le charge, et répond « projet introuvable » avant de rediriger vers la liste des projets quand il n'existe pas, que l'utilisateur n'a aucun droit dessus ou qu'il ne peut pas être chargé : le message ne dit jamais lequel.
+ * Limits: Simple aide à l'usage ; le backend revérifie l'accès, et le guard de désactivation ne fait que vider la sélection.
  */
 export const projectContextGuard: CanActivateFn = (route: ActivatedRouteSnapshot): Observable<boolean | UrlTree> => {
     const context: GuardContext = {

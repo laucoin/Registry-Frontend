@@ -7,9 +7,9 @@ import { NotificationModel } from '@shared/models/model/notification.model'
 import { PageModel } from '@shared/models/model/page.model'
 
 /**
- * Purpose: Public entry point of the group status domain for pages and components.
- * Scope: Exposes the pages of my groups and of all the groups, and the on-site members of the opened groups, as signals and forwards their queries.
- * Limits: Holds no state of its own and builds no HTTP request itself.
+ * Purpose: Point d'entrée public du domaine du statut des groupes pour les pages et composants.
+ * Scope: Expose les pages de mes groupes et de tous les groupes, ainsi que les membres sur site des groupes ouverts, sous forme de signals et relaie leurs requêtes.
+ * Limits: Ne détient aucun état propre et ne construit aucune requête HTTP lui-même.
  */
 @Injectable()
 export class GroupStatusFacade extends GenericProjectElementFacade {

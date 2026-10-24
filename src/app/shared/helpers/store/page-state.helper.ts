@@ -4,9 +4,9 @@ import { ErrorModel } from '@shared/models/model/error.model'
 import { PageRequestInformationModel } from '@shared/models/model/page-request-information.model'
 
 /**
- * Purpose: Builds and updates page request state blocks.
- * Scope: Creates the initial block of a paged resource, attaches an error to it and turns a backend error into the notification a section shows.
- * Limits: Pure functions; stores own the state.
+ * Purpose: Construit et met à jour les blocs d'état de requête de page.
+ * Scope: Crée le bloc initial d'une ressource paginée, lui attache une erreur et transforme une erreur du backend en la notification qu'affiche une section.
+ * Limits: Fonctions pures ; les stores possèdent l'état.
  */
 export class PageStateHelper {
     public static initial<P, M extends GenericModel> (params: P): PageRequestInformationModel<P, M> {

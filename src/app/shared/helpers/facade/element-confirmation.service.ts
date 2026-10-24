@@ -4,9 +4,9 @@ import { UiFacade } from '@core/registry/state/ui.facade'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 
 /**
- * Purpose: Asks the user to confirm a command on a list element.
- * Scope: Builds the confirmation from the `<prefix>.title` and `<prefix>.message` translations of the element and hands it to the UI; a typed confirmation also carries the `<prefix>.phrase` the user has to type.
- * Limits: Does not run the command itself; the accept callback does.
+ * Purpose: Demande à l'utilisateur de confirmer une commande sur un élément de liste.
+ * Scope: Construit la confirmation à partir des traductions `<prefix>.title` et `<prefix>.message` de l'élément et la remet à l'UI ; une confirmation avec saisie porte aussi la `<prefix>.phrase` que l'utilisateur doit saisir.
+ * Limits: N'exécute pas la commande lui-même ; le callback d'acceptation le fait.
  */
 @Injectable({ providedIn: 'root' })
 export class ElementConfirmationService {

@@ -4,9 +4,9 @@ import { MovementParticipantsAndGroupsResponseDto } from '@shared/models/dto/res
 import { MovementParticipantsAndGroupsModel } from '@shared/models/model/movement-participants-and-groups.model'
 
 /**
- * Purpose: Converts the participants and groups found by a search into their model.
- * Scope: Delegates each participant and each group to its own mapper.
- * Limits: Does not validate, rename or compute any value; the backend contract is trusted.
+ * Purpose: Convertit les participants et groupes trouvés par une recherche en leur modèle.
+ * Scope: Délègue chaque participant et chaque groupe à son propre mapper.
+ * Limits: Ne valide, ne renomme ni ne calcule aucune valeur ; le contrat du backend est considéré comme fiable.
  */
 export class MovementParticipantsAndGroupsMapper {
     public static toModel (dto: MovementParticipantsAndGroupsResponseDto): MovementParticipantsAndGroupsModel {

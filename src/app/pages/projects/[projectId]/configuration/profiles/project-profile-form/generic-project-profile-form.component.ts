@@ -3,9 +3,9 @@ import { ProjectProfileFacade } from '@pages/projects/[projectId]/configuration/
 import { BaseFormComponent } from '@shared/ui/base/base-form.component'
 
 /**
- * Purpose: Shared base of the project profile invitation and edition pages.
- * Scope: Provides the profile facade and loads the assignable roles.
- * Limits: Does not own a form model; the concrete pages do.
+ * Purpose: Base partagée des pages d'invitation et d'édition de profil de projet.
+ * Scope: Fournit la facade de profil et charge les rôles assignables.
+ * Limits: Ne possède pas de modèle de formulaire ; les pages concrètes le font.
  */
 export abstract class GenericProjectProfileFormComponent extends BaseFormComponent {
     protected readonly facade: ProjectProfileFacade = inject( ProjectProfileFacade )
@@ -15,7 +15,7 @@ export abstract class GenericProjectProfileFormComponent extends BaseFormCompone
     }
 
     protected handleLoadedElement (): void {
-        // the form is filled once the profile is fetched, see loadData
+        // le formulaire est rempli une fois le profil récupéré, voir loadData
     }
 
     protected get idParam (): string | undefined {

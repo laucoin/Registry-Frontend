@@ -12,9 +12,9 @@ import { DialogElementComponent } from '@shared/ui/domain/dialog-element/dialog-
 import { Observable, tap } from 'rxjs'
 
 /**
- * Purpose: List of the communications of an alert.
- * Scope: Loads the communications of one alert and reloads them when a communication changes.
- * Limits: Reads through the alert and communication facades only.
+ * Purpose: Liste des communications d'une alerte.
+ * Scope: Charge les communications d'une alerte et les recharge quand une communication change.
+ * Limits: Lit uniquement via les facades des alertes et des communications.
  */
 @Component({
 	selector: 'app-alert-communications-list',

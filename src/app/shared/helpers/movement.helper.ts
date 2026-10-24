@@ -5,9 +5,9 @@ import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
 
 /**
- * Purpose: Presents movements.
- * Scope: Merges loaded contents into a page of movements, builds activity options and splits adults, children and pools.
- * Limits: No state; it does not load contents.
+ * Purpose: Présente les mouvements.
+ * Scope: Fusionne les contenus chargés dans une page de mouvements, construit les options d'activité et répartit adultes, enfants et bassins.
+ * Limits: Aucun état ; ne charge pas les contenus.
  */
 export class MovementHelper {
     public static rebuildPageWithContent (

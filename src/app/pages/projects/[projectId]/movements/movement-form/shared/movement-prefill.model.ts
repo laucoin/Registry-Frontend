@@ -3,9 +3,9 @@ import { MovementContentModel } from '@shared/models/model/movement-content.mode
 import { MovementReasonModel } from '@shared/models/model/movement-reason.model'
 
 /**
- * Purpose: What a movement form starts with when it is opened from the project home.
- * Scope: The type, the reason and the participants known from a planned movement or a presence to regularize.
- * Limits: Carries no date; the form keeps the current time.
+ * Purpose: Ce avec quoi démarre un formulaire de mouvement ouvert depuis l'accueil du projet.
+ * Scope: Le type, le motif et les participants connus d'un mouvement prévu ou d'une présence à régulariser.
+ * Limits: Ne porte aucune date ; le formulaire garde l'heure courante.
  */
 export interface MovementPrefillModel {
     type: MovementTypeEnum

@@ -2,8 +2,8 @@ import { of } from 'rxjs'
 import { vi, Mock } from 'vitest'
 
 /**
- * Builds a stand-in for a facade whose members are created on first use.
- * Every member is a spy that returns an observable emitting an empty object, which suits both commands and signals read as functions.
+ * Construit un substitut de facade dont les membres sont créés à la première utilisation.
+ * Chaque membre est un spy qui renvoie un observable émettant un objet vide, ce qui convient aussi bien aux commandes qu'aux signals lus comme des fonctions.
  */
 export function autoMock (): Record<string, Mock> {
     const members: Record<string, Mock> = {}

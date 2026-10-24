@@ -4,9 +4,9 @@ import {TranslocoPipe} from '@jsverse/transloco'
 import { ErrorModel } from '@shared/models/model/error.model'
 
 /**
- * Purpose: Displays the error of a whole form.
- * Scope: Shows the message the backend returned for the submit.
- * Limits: Field-level errors are shown by the field error component.
+ * Purpose: Affiche l'erreur d'un formulaire entier.
+ * Scope: Affiche le message renvoyé par le backend pour la soumission.
+ * Limits: Les erreurs au niveau des champs sont affichées par le composant d'erreur de champ.
  */
 @Component({
 	selector: 'app-form-error',

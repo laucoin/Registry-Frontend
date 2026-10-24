@@ -4,9 +4,9 @@ import { PreferencesMapper } from '@shared/mappers/preferences.mapper'
 import { UserMapper } from '@shared/mappers/user.mapper'
 
 /**
- * Purpose: Converts a CurrentUser response of the backend into the CurrentUser model.
- * Scope: Copies each field and delegates the nested entities to their own mappers.
- * Limits: Does not validate, rename or compute any value; the backend contract is trusted.
+ * Purpose: Convertit une réponse CurrentUser du backend en modèle CurrentUser.
+ * Scope: Copie chaque champ et délègue les entités imbriquées à leurs propres mappers.
+ * Limits: Ne valide, ne renomme ni ne calcule aucune valeur ; le contrat du backend est considéré comme fiable.
  */
 export class CurrentUserMapper {
     public static toModel (dto: CurrentUserResponseDto): CurrentUserModel {

@@ -16,9 +16,9 @@ const defaultSessionStore: SessionStoreModel = {
 }
 
 /**
- * Purpose: Holds the signed-in user and the selected project.
- * Scope: Owns the session state; tokens are never held here.
- * Limits: The backend brokers the OIDC exchange, so this store keeps only the resulting user; it does not authenticate nor hold the user's profiles.
+ * Purpose: Détient l'utilisateur connecté et le projet sélectionné.
+ * Scope: Possède l'état de session ; les jetons ne sont jamais détenus ici.
+ * Limits: Le backend orchestre l'échange OIDC, ce store ne conserve donc que l'utilisateur obtenu ; il n'authentifie pas et ne détient pas les profils de l'utilisateur.
  */
 export const SessionStore = signalStore(
     { providedIn: 'root' },

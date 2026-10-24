@@ -5,18 +5,18 @@ import { ErrorModel } from '@shared/models/model/error.model'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 
 /**
- * Purpose: Contract of what stores and facades use to report a failure to the user.
- * Scope: Offers the notification toast.
- * Limits: Declares the one command only; the implementations live in the UI state.
+ * Purpose: Contrat de ce que les stores et facades utilisent pour signaler un échec à l'utilisateur.
+ * Scope: Propose le toast de notification.
+ * Limits: Déclare uniquement la commande ; les implémentations vivent dans l'état de l'UI.
  */
 export interface ErrorSink {
     notify (message: NotificationModel): void
 }
 
 /**
- * Purpose: Runs a callback each time the source is subscribed.
- * Scope: Defers the subscription so the callback runs first.
- * Limits: Does not run anything when the source completes; use finalize for that.
+ * Purpose: Exécute un callback à chaque abonnement à la source.
+ * Scope: Diffère l'abonnement pour que le callback s'exécute d'abord.
+ * Limits: N'exécute rien quand la source se termine ; utiliser finalize pour cela.
  */
 export const initialize = (onSubscribe: () => void) => <T> (source: Observable<T>): Observable<T> => defer( () => {
     onSubscribe()
@@ -24,9 +24,9 @@ export const initialize = (onSubscribe: () => void) => <T> (source: Observable<T
 } )
 
 /**
- * Purpose: Scopes a loading flag to a source.
- * Scope: Raises the flag on subscription and lowers it when the source ends, fails or is cancelled.
- * Limits: Does not handle the error; the source still fails.
+ * Purpose: Borne un drapeau de chargement à une source.
+ * Scope: Lève le drapeau à l'abonnement et l'abaisse quand la source se termine, échoue ou est annulée.
+ * Limits: Ne gère pas l'erreur ; la source échoue toujours.
  */
 export const withLoading = (loading: WritableSignal<boolean>) => <T> (source: Observable<T>): Observable<T> => defer( () => {
     loading.set( true )
@@ -34,9 +34,9 @@ export const withLoading = (loading: WritableSignal<boolean>) => <T> (source: Ob
 } )
 
 /**
- * Purpose: Shows a failure to the user.
- * Scope: Raises a sticky error toast.
- * Limits: Does not stop or recover the stream; the caller does.
+ * Purpose: Affiche un échec à l'utilisateur.
+ * Scope: Lève un toast d'erreur persistant.
+ * Limits: N'arrête ni ne récupère le flux ; l'appelant le fait.
  */
 export const reportError = (errorSink: ErrorSink, error: ErrorModel): void => {
     errorSink.notify( {
@@ -49,9 +49,9 @@ export const reportError = (errorSink: ErrorSink, error: ErrorModel): void => {
 }
 
 /**
- * Purpose: Reports a failed source and completes it without emitting.
- * Scope: Shows a toast.
- * Limits: Does not retry.
+ * Purpose: Signale une source en échec et la termine sans rien émettre.
+ * Scope: Affiche un toast.
+ * Limits: Ne réessaie pas.
  */
 export const notifyOnError = (errorSink: ErrorSink) => <T> (source: Observable<T>): Observable<T> => source.pipe(
     catchError( (error: ErrorModel): Observable<never> => {
@@ -61,18 +61,18 @@ export const notifyOnError = (errorSink: ErrorSink) => <T> (source: Observable<T
 )
 
 /**
- * Purpose: Drops the failure of a source and completes it without emitting.
- * Scope: Lets a background refresh fail without any toast or error state.
- * Limits: Reports nothing; the caller retries on its own schedule.
+ * Purpose: Abandonne l'échec d'une source et la termine sans rien émettre.
+ * Scope: Laisse un rafraîchissement en arrière-plan échouer sans toast ni état d'erreur.
+ * Limits: Ne signale rien ; l'appelant réessaie selon son propre calendrier.
  */
 export const ignoreError = () => <T> (source: Observable<T>): Observable<T> => source.pipe(
     catchError( (): Observable<never> => EMPTY ),
 )
 
 /**
- * Purpose: Runs a source right away, like a dispatched action.
- * Scope: Replays the outcome to the callers, who may ignore it or chain on it.
- * Limits: Does not cancel the source when the callers unsubscribe.
+ * Purpose: Exécute une source immédiatement, comme une action dispatchée.
+ * Scope: Rejoue l'issue aux appelants, qui peuvent l'ignorer ou s'y enchaîner.
+ * Limits: N'annule pas la source quand les appelants se désabonnent.
  */
 export const eager = <T> (source: Observable<T>): Observable<T> => {
     const result: ReplaySubject<T> = new ReplaySubject<T>()

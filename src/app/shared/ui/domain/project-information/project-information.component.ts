@@ -18,9 +18,9 @@ import { ProjectModel } from '@shared/models/model/project.model'
 import { SelectOptionModel } from '@shared/models/model/select-option.model'
 
 /**
- * Purpose: Shows the identity of the selected project: name, period, status and options.
- * Scope: Reads the selected project of the session and links to its edition when the user may edit it.
- * Limits: Reads the session facade only; never calls the backend.
+ * Purpose: Affiche l'identité du projet sélectionné : nom, période, statut et options.
+ * Scope: Lit le projet sélectionné de la session et renvoie vers son édition quand l'utilisateur peut le modifier.
+ * Limits: Lit uniquement la facade de session ; n'appelle jamais le backend.
  */
 @Component({
 	imports: [TranslocoPipe, DateFormatPipe, RouterLink],

@@ -12,9 +12,9 @@ import { IntervalModel } from '@shared/models/model/interval.model'
 import { ParticipantModel } from '@shared/models/model/participant.model'
 
 /**
- * Purpose: List item presenting a participant whose presence went past the planned end; used as an attribute of `sgdf-list-item`.
- * Scope: Shows the name, the planned end and how long the participant has been present.
- * Limits: Receives the participant and holds no state; a click opens the movement form prefilled with a departure of that participant.
+ * Purpose: Élément de liste présentant un participant dont la présence a dépassé la fin prévue ; utilisé comme attribut de `sgdf-list-item`.
+ * Scope: Affiche le nom, la fin prévue et la durée de présence du participant.
+ * Limits: Reçoit le participant et ne détient aucun état ; un clic ouvre le formulaire de mouvement prérempli avec un départ de ce participant.
  */
 @Component({
 	selector: 'sgdf-list-item[appRegularizationRow], app-regularization-row',

@@ -9,9 +9,9 @@ import { MonitoringRowModel } from '@shared/models/model/monitoring-row.model'
 import { EllipsisDirective } from '@shared/directives/ellipsis.directive'
 
 /**
- * Purpose: List item presenting the presence status of a participant or a vehicle; used as an attribute of `sgdf-list-item`.
- * Scope: Puts the status first, through the color of the avatar and a tag with the status label, then the title and the description. Offers a checkbox in front of the row when it is selectable, to count the participants during a roll call.
- * Limits: Receives a ready-made row and holds no state, the checked state included; it neither loads nor edits anything.
+ * Purpose: Élément de liste présentant le statut de présence d'un participant ou d'un véhicule ; utilisé comme attribut de `sgdf-list-item`.
+ * Scope: Place le statut en premier, via la couleur de l'avatar et un tag avec le libellé du statut, puis le titre et la description. Offre une case à cocher devant la ligne quand elle est sélectionnable, pour compter les participants pendant un appel.
+ * Limits: Reçoit une ligne toute prête et ne détient aucun état, y compris l'état coché ; ne charge ni ne modifie rien.
  */
 @Component({
 	selector: 'sgdf-list-item[appMonitoringRow], app-monitoring-row',

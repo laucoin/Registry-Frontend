@@ -3,9 +3,9 @@ import { RefreshKind } from '@shared/helpers/refresh/refresh.config'
 import { RefreshService } from '@shared/helpers/refresh/refresh.service'
 
 /**
- * Purpose: Keeps a component's data fresh with one line in the component.
- * Scope: Registers the component's host element in the refresh service for the lifetime of the component.
- * Limits: Must be called in an injection context of a component; `reload` must be a silent reload (no loader, no error state).
+ * Purpose: Garde les données d'un composant à jour avec une seule ligne dans le composant.
+ * Scope: Enregistre l'élément hôte du composant dans le service de rafraîchissement pour la durée de vie du composant.
+ * Limits: Doit être appelé dans un contexte d'injection de composant ; `reload` doit être un rechargement silencieux (ni loader, ni état d'erreur).
  */
 export function injectAutoRefresh (key: string, kind: RefreshKind, reload: () => void): void {
     const host: Element = inject<ElementRef<Element>>( ElementRef ).nativeElement

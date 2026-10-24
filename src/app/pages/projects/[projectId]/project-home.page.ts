@@ -37,9 +37,9 @@ import {
 } from "@shared/ui/domain/project-vehicle-overview/project-vehicle-overview.component";
 
 /**
- * Purpose: Home page of the selected project.
- * Scope: Loads the project home information, shows the dashboard and offers the shortcuts to create a movement or an alert.
- * Limits: Reads through the selected project facade only.
+ * Purpose: Page d'accueil du projet sélectionné.
+ * Scope: Charge les informations d'accueil du projet, affiche le tableau de bord et propose les raccourcis de création d'un mouvement ou d'une alerte.
+ * Limits: Lit uniquement via la facade du projet sélectionné.
  */
 @Component({
 	selector: 'app-project-home',

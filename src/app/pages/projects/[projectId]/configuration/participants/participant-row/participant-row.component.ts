@@ -20,9 +20,9 @@ const INITIALS_LENGTH: number = 2
 type TagVariant = 'success' | 'warning' | 'neutral'
 
 /**
- * Purpose: Row template of a participant in a list, with the dialog listing the groups of a participant.
- * Scope: Holds the `sgdf-list-item` of a participant (name, groups, availability dates, presence status and action menu) and exposes it as a template the list pages render inside their own list.
- * Limits: Renders no row by itself; the page decides where the template is used. Commands are delegated to ParticipantActions.
+ * Purpose: Template de ligne d'un participant dans une liste, avec le dialogue listant les groupes d'un participant.
+ * Scope: Contient le `sgdf-list-item` d'un participant (nom, groupes, dates de disponibilité, statut de présence et menu d'actions) et l'expose comme un template que les pages de liste affichent dans leur propre liste.
+ * Limits: N'affiche aucune ligne par lui-même ; la page décide où le template est utilisé. Les commandes sont déléguées à ParticipantActions.
  */
 @Component({
     selector: 'app-participant-row',

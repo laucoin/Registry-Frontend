@@ -4,9 +4,9 @@ import { PlannedMovementResponseDto } from '@shared/models/dto/response/planned-
 import { PlannedMovementModel } from '@shared/models/model/planned-movement.model'
 
 /**
- * Purpose: Converts a planned movement response of the backend into the planned movement model.
- * Scope: Copies each field and delegates the nested entities to their own mappers.
- * Limits: Does not validate, rename or compute any value; the backend contract is trusted.
+ * Purpose: Convertit une réponse de mouvement prévu du backend en modèle de mouvement prévu.
+ * Scope: Copie chaque champ et délègue les entités imbriquées à leurs propres mappers.
+ * Limits: Ne valide, ne renomme ni ne calcule aucune valeur ; le contrat du backend est considéré comme fiable.
  */
 export class PlannedMovementMapper {
     public static toModel (dto: PlannedMovementResponseDto): PlannedMovementModel {

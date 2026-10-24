@@ -10,9 +10,9 @@ import { ThemeEnum } from '@shared/models/enumeration/theme.enum'
 import { RefreshModeEnum } from '@shared/models/enumeration/refresh-mode.enum'
 
 /**
- * Purpose: Answers authority, project option and theme questions about the current user.
- * Scope: Pure functions over the user model: feasibility of an action, authority lookups and theme mapping.
- * Limits: Never enforces anything; the backend is the only security boundary.
+ * Purpose: Répond aux questions d'autorité, d'option de projet et de thème sur l'utilisateur courant.
+ * Scope: Fonctions pures sur le modèle utilisateur : faisabilité d'une action, recherche d'autorités et mapping de thème.
+ * Limits: N'impose jamais rien ; le backend est la seule frontière de sécurité.
  */
 export class CurrentUserHelper {
     public static isFeasible (

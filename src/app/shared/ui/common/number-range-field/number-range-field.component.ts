@@ -7,9 +7,9 @@ import { GenericHelper } from '@shared/helpers/generic.helper'
 import { StringHelper } from '@shared/helpers/string.helper'
 
 /**
- * Purpose: Form field editing a numeric range.
- * Scope: Edits a minimum and a maximum and exposes them as the value of a signal form field.
- * Limits: Validation is done by the form rules.
+ * Purpose: Champ de formulaire éditant une plage numérique.
+ * Scope: Édite un minimum et un maximum et les expose comme valeur d'un champ de signal form.
+ * Limits: La validation est faite par les règles du formulaire.
  */
 @Component( {
     selector: 'app-number-range-field',

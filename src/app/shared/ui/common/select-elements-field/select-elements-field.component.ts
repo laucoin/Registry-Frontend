@@ -33,7 +33,7 @@ import { EllipsisDirective } from '@shared/directives/ellipsis.directive'
 
 const identities: WeakMap<object, string> = new WeakMap<object, string>()
 
-// Elements without an id must not collide with each other: each object gets its own stable key.
+// Les éléments sans id ne doivent pas entrer en collision : chaque objet reçoit sa propre clé stable.
 function identityOf (element: unknown): string {
     if (typeof element !== 'object' || element === null) return String( element )
     if (!identities.has( element )) identities.set( element, `identity-${ crypto.randomUUID() }` )
@@ -41,9 +41,9 @@ function identityOf (element: unknown): string {
 }
 
 /**
- * Purpose: Form field selecting several searched elements.
- * Scope: Asks the parent to search as the user types, picks one suggestion at a time into the selection list, highlights a duplicate, and can expand a suggestion into several elements shown under a removable group.
- * Limits: Owns no data source; the parent provides the search, the options, the expansion and the grouping.
+ * Purpose: Champ de formulaire sélectionnant plusieurs éléments recherchés.
+ * Scope: Demande au parent de rechercher pendant la saisie, choisit une suggestion à la fois dans la liste de sélection, met en évidence un doublon, et peut déplier une suggestion en plusieurs éléments affichés sous un groupe supprimable.
+ * Limits: Ne possède aucune source de données ; le parent fournit la recherche, les options, le dépliage et le regroupement.
  */
 @Component( {
     selector: 'app-select-elements-field',

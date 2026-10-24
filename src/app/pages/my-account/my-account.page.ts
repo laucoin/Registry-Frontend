@@ -10,9 +10,9 @@ import { AccountRefreshComponent } from "@shared/ui/domain/my-account/account-re
 import '@sgdf/ui/page-title'
 
 /**
- * Purpose: Account page of the signed-in user.
- * Scope: Composes the information, language, theme and personal data sections.
- * Limits: Holds no state of its own; each section reads the session through its own component.
+ * Purpose: Page de compte de l'utilisateur connecté.
+ * Scope: Compose les sections d'informations, de langue, de thème et de données personnelles.
+ * Limits: Ne détient aucun état propre ; chaque section lit la session via son propre composant.
  */
 @Component({
 	imports: [

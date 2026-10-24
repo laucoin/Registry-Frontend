@@ -33,9 +33,9 @@ interface MonitoringTab {
 }
 
 /**
- * Purpose: Tracks what is happening on the project through the movements in progress with an activity and the other ones.
- * Scope: Loads the first batch of every tab at once so counts and lists are ready when a tab is shown, then lets the list load more. Without the activity option only the other movements remain, shown as a single list instead of a tab.
- * Limits: The participant, group and vehicle statuses live in their own pages; it reads the selected project facade only.
+ * Purpose: Suit ce qui se passe sur le projet via les mouvements en cours avec une activité et les autres.
+ * Scope: Charge d'un coup le premier lot de chaque onglet pour que les compteurs et les listes soient prêts à l'affichage d'un onglet, puis laisse la liste en charger davantage. Sans l'option activité, seuls restent les autres mouvements, affichés comme une seule liste au lieu d'un onglet.
+ * Limits: Les statuts des participants, des groupes et des véhicules vivent dans leurs propres pages ; lit uniquement la facade du projet sélectionné.
  */
 @Component({
 	imports: [

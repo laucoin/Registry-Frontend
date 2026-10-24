@@ -60,9 +60,9 @@ import { FormComponent } from '@shared/ui/common/form/form.component'
 import { SelectElementsFieldComponent } from '@shared/ui/common/select-elements-field/select-elements-field.component'
 
 /**
- * Purpose: Page with the form to create or edit a movement of guests.
- * Scope: Walks through the information and content steps, registers arriving guests or selects leaving ones, submits through the facade and navigates back.
- * Limits: Holds no domain state, never calls the backend and has no vehicle step.
+ * Purpose: Page avec le formulaire de création ou d'édition d'un mouvement d'invités.
+ * Scope: Parcourt les étapes d'information et de contenu, enregistre les invités qui arrivent ou sélectionne ceux qui partent, soumet via la facade et navigue en arrière.
+ * Limits: Ne détient aucun état de domaine, n'appelle jamais le backend et n'a pas d'étape véhicule.
  */
 @Component( {
     selector: 'app-guest-movement-form',

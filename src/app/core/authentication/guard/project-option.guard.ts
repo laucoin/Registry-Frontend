@@ -7,9 +7,9 @@ import { GenericHelper } from '@shared/helpers/generic.helper'
 import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
 
 /**
- * Purpose: Builds route guards that only let through projects having a given option enabled.
- * Scope: Waits for the current user to be known, then checks the options of the selected project.
- * Limits: A usability aid only; the backend re-checks the option on every request.
+ * Purpose: Construit des guards de route qui ne laissent passer que les projets ayant une option donnée activée.
+ * Scope: Attend que l'utilisateur courant soit connu, puis vérifie les options du projet sélectionné.
+ * Limits: Simple aide à l'usage ; le backend revérifie l'option à chaque requête.
  */
 export function projectOptionGuard (option: ProjectOptionEnum): CanActivateFn {
     return (): Observable<boolean | UrlTree> | boolean | UrlTree => {

@@ -30,9 +30,9 @@ import { PageEventModel } from '@shared/models/model/page-event.model'
 import { ListComponent } from '@shared/ui/common/list/list.component'
 
 /**
- * Purpose: Page listing the participants of the selected project with search and a "load more" trigger.
- * Scope: Binds the list component to the participant facade, owns the search form and gives the list the row template of a participant.
- * Limits: Holds no domain state and never calls the backend.
+ * Purpose: Page listant les participants du projet sélectionné avec recherche et déclencheur « charger plus ».
+ * Scope: Lie le composant de liste à la facade des participants, possède le formulaire de recherche et donne à la liste le template de ligne d'un participant.
+ * Limits: Ne détient aucun état de domaine et n'appelle jamais le backend.
  */
 @Component({
     selector: 'app-participants-list',

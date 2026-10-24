@@ -21,9 +21,9 @@ import { EllipsisDirective } from '@shared/directives/ellipsis.directive'
 const PAGE_SIZE: number = 3
 
 /**
- * Purpose: Shows the pending project invitations of the signed-in user on the home page.
- * Scope: Loads the first invitations, lets the user accept or refuse each one, and links to the full list.
- * Limits: Reads the user profile facade only; it shows a few rows and counts the others.
+ * Purpose: Affiche sur la page d'accueil les invitations à des projets en attente de l'utilisateur connecté.
+ * Scope: Charge les premières invitations, laisse l'utilisateur accepter ou refuser chacune, et renvoie vers la liste complète.
+ * Limits: Lit uniquement la facade des profils utilisateur ; affiche quelques lignes et compte les autres.
  */
 @Component({
 	selector: 'app-home-invitations',

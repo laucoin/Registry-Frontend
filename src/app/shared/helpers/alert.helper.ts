@@ -4,9 +4,9 @@ import { AlertModel } from '@shared/models/model/alert.model'
 import { AlertStatusEnum } from '@shared/models/enumeration/alert-status.enum'
 
 /**
- * Purpose: Presents alerts.
- * Scope: Builds alert select items and maps an alert status to a tag variant.
- * Limits: No state; the date is formatted by the given pipe.
+ * Purpose: Présente les alertes.
+ * Scope: Construit les select items d'alerte et mappe un statut d'alerte vers une variante de tag.
+ * Limits: Aucun état ; la date est formatée par le pipe donné.
  */
 export class AlertHelper {
     public static toSelectItem (alert: AlertModel, datePipe: DateFormatPipe): SelectOptionModel<AlertModel> {

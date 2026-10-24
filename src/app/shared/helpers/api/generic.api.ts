@@ -3,9 +3,9 @@ import {inject} from '@angular/core'
 import {RegistryConfig} from '@core/config/registry.config'
 
 /**
- * Purpose: Sends the HTTP requests of the generic domain.
- * Scope: Builds the urls and the query parameters and returns the backend responses.
- * Limits: Holds no state and handles no error; stores and facades do.
+ * Purpose: Envoie les requêtes HTTP du domaine generic.
+ * Scope: Construit les urls et les paramètres de requête et renvoie les réponses du backend.
+ * Limits: Ne détient aucun état et ne gère aucune erreur ; les stores et les facades le font.
  */
 export abstract class GenericApi {
     protected readonly baseUrl: string

@@ -32,9 +32,9 @@ const defaultUserProfileState: UserProfileState = {
 }
 
 /**
- * Purpose: Holds the invitations of the signed-in user.
- * Scope: Owns the paged fetches of the user's own invitations and the loading state of a profile command.
- * Limits: Knows nothing about the signed-in user or the selected project; the session store holds those.
+ * Purpose: Détient les invitations de l'utilisateur connecté.
+ * Scope: Possède les récupérations paginées des invitations propres à l'utilisateur et l'état de chargement d'une commande de profil.
+ * Limits: Ne sait rien de l'utilisateur connecté ni du projet sélectionné ; le store de session les détient.
  */
 export const UserProfileStore = signalStore(
     { providedIn: 'root' },

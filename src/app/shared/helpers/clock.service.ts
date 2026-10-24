@@ -1,9 +1,9 @@
 import { DestroyRef, inject, Injectable, Signal, signal, WritableSignal } from '@angular/core'
 
 /**
- * Purpose: Shared one-second clock for live counters.
- * Scope: Exposes the current timestamp as a signal refreshed every second, with one timer for the whole application.
- * Limits: Second precision only; the timer lives as long as the application.
+ * Purpose: Horloge partagée à la seconde pour les compteurs en direct.
+ * Scope: Expose l'horodatage courant sous forme de signal rafraîchi chaque seconde, avec un seul minuteur pour toute l'application.
+ * Limits: Précision à la seconde uniquement ; le minuteur vit aussi longtemps que l'application.
  */
 @Injectable( { providedIn: 'root' } )
 export class ClockService {

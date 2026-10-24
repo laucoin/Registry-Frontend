@@ -3,9 +3,9 @@ import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
 
 /**
- * Purpose: Project option checks.
- * Scope: Tells whether a project has a given option.
- * Limits: A usability aid; the backend re-checks the option.
+ * Purpose: Vérifications des options de projet.
+ * Scope: Indique si un projet possède une option donnée.
+ * Limits: Simple aide à l'usage ; le backend revérifie l'option.
  */
 export class ProjectHelper {
     public static hasOption (project: ProjectModel | undefined, option: ProjectOptionEnum | undefined): boolean {

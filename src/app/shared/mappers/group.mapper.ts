@@ -4,9 +4,9 @@ import { GenericMapper } from '@shared/mappers/generic.mapper'
 import { ParticipantMapper } from '@shared/mappers/participant.mapper'
 
 /**
- * Purpose: Converts a Group response of the backend into the Group model.
- * Scope: Copies each field and delegates the nested entities to their own mappers.
- * Limits: Does not validate, rename or compute any value; the backend contract is trusted.
+ * Purpose: Convertit une réponse Group du backend en modèle Group.
+ * Scope: Copie chaque champ et délègue les entités imbriquées à leurs propres mappers.
+ * Limits: Ne valide, ne renomme ni ne calcule aucune valeur ; le contrat du backend est considéré comme fiable.
  */
 export class GroupMapper {
     public static toModel (dto: GroupResponseDto): GroupModel {

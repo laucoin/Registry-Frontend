@@ -9,9 +9,9 @@ import { UserAuthorityEnum } from '@shared/models/enumeration/user-authority.enu
 import { UserModel } from '@shared/models/model/user.model'
 
 /**
- * Purpose: Tells which commands a user of the list offers to the signed-in user and runs them.
- * Scope: Builds the action menu (change the role, block, unblock, delete) with its confirmations; nobody can act on their own account.
- * Limits: Holds no state; it only reads the session and calls the user facade. The backend still checks every command.
+ * Purpose: Indique quelles commandes un utilisateur de la liste offre à l'utilisateur connecté et les exécute.
+ * Scope: Construit le menu d'actions (changer le rôle, bloquer, débloquer, supprimer) avec ses confirmations ; personne ne peut agir sur son propre compte.
+ * Limits: Ne détient aucun état ; lit seulement la session et appelle la facade des utilisateurs. Le backend vérifie toujours chaque commande.
  */
 @Injectable()
 export class UserActions extends ElementActionsBase<UserModel> {

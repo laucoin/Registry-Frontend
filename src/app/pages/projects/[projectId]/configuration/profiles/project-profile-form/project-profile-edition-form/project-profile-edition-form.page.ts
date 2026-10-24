@@ -22,9 +22,9 @@ import {GenericProjectProfileFormComponent} from '@pages/projects/[projectId]/co
 import { ETagHelper } from '@shared/helpers/etag.helper'
 
 /**
- * Purpose: Dialog page with the form to edit a project profile, opened over the profiles list.
- * Scope: Builds the form, submits it through the facade and navigates back.
- * Limits: Holds no domain state and never calls the backend.
+ * Purpose: Page en dialogue avec le formulaire d'édition d'un profil de projet, ouverte au-dessus de la liste des profils.
+ * Scope: Construit le formulaire, le soumet via la facade et navigue en arrière.
+ * Limits: Ne détient aucun état de domaine et n'appelle jamais le backend.
  */
 @Component({
     selector: 'app-project-profile-edition-form',

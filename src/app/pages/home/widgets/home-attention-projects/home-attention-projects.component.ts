@@ -20,9 +20,9 @@ const INITIALS_LENGTH: number = 3
 const DANGER_ALERTS: number = 2
 
 /**
- * Purpose: Shows the projects that have active alerts, the most alerted first, on the home page.
- * Scope: Loads the projects sorted by active alerts, keeps those with at least one, and links each to its alerts.
- * Limits: Reads the home facade only; the backend does the sorting and only the alert count is shown.
+ * Purpose: Affiche sur la page d'accueil les projets qui ont des alertes actives, les plus alertés en premier.
+ * Scope: Charge les projets triés par alertes actives, garde ceux qui en ont au moins une, et renvoie chacun vers ses alertes.
+ * Limits: Lit uniquement la facade d'accueil ; le backend fait le tri et seul le nombre d'alertes est affiché.
  */
 @Component({
 	selector: 'app-home-attention-projects',

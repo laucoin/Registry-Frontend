@@ -36,9 +36,9 @@ export type ItemSource = (id: string) => Observable<GenericModel>
 export type LabelsSource = (prefix: string) => Observable<string[]>
 
 /**
- * Purpose: Injection tokens that give the test store its sources, errors and api.
- * Scope: One token per source the paged store builders call.
- * Limits: Test fixtures only.
+ * Purpose: Jetons d'injection qui donnent au store de test ses sources, ses erreurs et son api.
+ * Scope: Un jeton par source appelée par les builders de stores paginés.
+ * Limits: Fixtures de test uniquement.
  */
 export const ITEM_SOURCE: InjectionToken<ItemSource> = new InjectionToken<ItemSource>( 'item source' )
 export const LABELS_SOURCE: InjectionToken<LabelsSource> = new InjectionToken<LabelsSource>( 'labels source' )
@@ -48,9 +48,9 @@ export const MOVEMENT_CONTENTS_API: InjectionToken<MovementContentsApi> = new In
 export const TEST_ERRORS: InjectionToken<ErrorSink> = new InjectionToken<ErrorSink>( 'errors' )
 
 /**
- * Purpose: Signal store used to test the paged store builders.
- * Scope: Exposes one method per builder, wired to injectable sources.
- * Limits: Test double only; it holds no business rule.
+ * Purpose: Signal store utilisé pour tester les builders de stores paginés.
+ * Scope: Expose une méthode par builder, câblée sur des sources injectables.
+ * Limits: Double de test uniquement ; ne porte aucune règle métier.
  */
 export const TestPagedStore = signalStore(
     withState<TestPagedState>( {

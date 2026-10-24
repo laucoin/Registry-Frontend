@@ -1,7 +1,7 @@
 /**
- * Purpose: Completes the jsdom environment used by the unit tests.
- * Scope: Gives the form-associated custom elements of @sgdf/ui the ElementInternals members jsdom lacks the dialog elements the methods that open and close them and the animation list the web components read.
- * Limits: Stubs only; every element is valid, nothing is validated or submitted and a dialog is not rendered in the top layer.
+ * Purpose: Complète l'environnement jsdom utilisé par les tests unitaires.
+ * Scope: Donne aux custom elements associés aux formulaires de @sgdf/ui les membres d'ElementInternals que jsdom n'a pas, aux éléments de dialogue les méthodes qui les ouvrent et les ferment, et la liste d'animations que lisent les web components.
+ * Limits: Simples substituts ; chaque élément est valide, rien n'est validé ni soumis et un dialogue n'est pas affiché dans la top layer.
  */
 const attachInternals: typeof HTMLElement.prototype.attachInternals = HTMLElement.prototype.attachInternals
 

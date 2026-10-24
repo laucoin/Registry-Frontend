@@ -2,9 +2,9 @@ import { inject } from '@angular/core'
 import {TranslocoService} from '@jsverse/transloco'
 
 /**
- * Purpose: Base of the facades that translate labels.
- * Scope: Provides label translation that leaves the empty option as it is.
- * Limits: Abstract; holds no state.
+ * Purpose: Base des facades qui traduisent des libellés.
+ * Scope: Fournit une traduction de libellés qui laisse l'option vide telle quelle.
+ * Limits: Abstrait ; ne détient aucun état.
  */
 export abstract class GenericFacade {
     private static readonly EMPTY_OPTION_LABEL: string = '-'

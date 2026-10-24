@@ -1,9 +1,9 @@
 import { GenericModel } from '@shared/models/model/generic.model'
 
 /**
- * Purpose: Builds the If-Match precondition of an update from the element the user is editing.
- * Scope: Derives the entity tag from the last edition of the element, as the backend does, and turns it into request options.
- * Limits: Sends nothing for an element without last edition; the backend then skips the precondition.
+ * Purpose: Construit la précondition If-Match d'une mise à jour à partir de l'élément que l'utilisateur édite.
+ * Scope: Dérive l'entity tag de la dernière édition de l'élément, comme le fait le backend, et le transforme en options de requête.
+ * Limits: N'envoie rien pour un élément sans dernière édition ; le backend ignore alors la précondition.
  */
 export class ETagHelper {
     public static ifMatch (element: GenericModel | undefined): string | undefined {

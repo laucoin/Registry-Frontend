@@ -12,9 +12,9 @@ import '@sgdf/ui/icon'
 import '@sgdf/ui/page-title'
 
 /**
- * Purpose: Sign-in page of the application.
- * Scope: Presents the application and starts the sign-in through the session facade.
- * Limits: Does not handle the identity provider callback; the auth callback page does.
+ * Purpose: Page de connexion de l'application.
+ * Scope: Présente l'application et démarre la connexion via la facade de session.
+ * Limits: Ne gère pas le callback du fournisseur d'identité ; la page de callback d'authentification le fait.
  */
 @Component({
 	schemas: [CUSTOM_ELEMENTS_SCHEMA],

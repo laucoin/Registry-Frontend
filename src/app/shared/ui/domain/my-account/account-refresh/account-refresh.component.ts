@@ -12,9 +12,9 @@ import '@sgdf/ui/table-cell'
 import '@sgdf/ui/table-row'
 
 /**
- * Purpose: Lets the signed-in user pick how often the data on screen is refreshed in the background.
- * Scope: Shows the refresh modes as buttons, marks the active one and forwards the selection to the session facade.
- * Limits: Does not run the refresh nor persist the choice; the refresh service and the session facade do.
+ * Purpose: Permet à l'utilisateur connecté de choisir la fréquence de rafraîchissement en arrière-plan des données à l'écran.
+ * Scope: Affiche les modes de rafraîchissement sous forme de boutons, marque le mode actif et relaie la sélection à la facade de session.
+ * Limits: N'exécute pas le rafraîchissement et ne persiste pas le choix ; le service de rafraîchissement et la facade de session le font.
  */
 @Component({
 	imports: [

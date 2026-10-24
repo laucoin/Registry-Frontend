@@ -22,9 +22,9 @@ const INITIALS_LENGTH: number = 2
 type TagVariant = 'success' | 'info' | 'warning' | 'danger'
 
 /**
- * Purpose: Row template of a project profile in a list, seen from the user or from the project.
- * Scope: Holds the `sgdf-list-item` of a profile (name, access dates, role, availability, status, invitation answer and action menu) and exposes it as a template the list pages render inside their own list.
- * Limits: Renders nothing by itself; the page decides where the template is used. Commands are delegated to ProjectProfileActions.
+ * Purpose: Template de ligne d'un profil de projet dans une liste, vu depuis l'utilisateur ou depuis le projet.
+ * Scope: Contient le `sgdf-list-item` d'un profil (nom, dates d'accès, rôle, disponibilité, statut, réponse à l'invitation et menu d'actions) et l'expose comme un template que les pages de liste affichent dans leur propre liste.
+ * Limits: N'affiche rien par lui-même ; la page décide où le template est utilisé. Les commandes sont déléguées à ProjectProfileActions.
  */
 @Component({
     selector: 'app-project-profile-row',

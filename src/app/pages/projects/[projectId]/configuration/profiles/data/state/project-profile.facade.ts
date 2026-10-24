@@ -21,9 +21,9 @@ import { PluralTranslationPipe } from '@shared/helpers/pipe/plural-translation.p
 import { CumulativePageHelper } from '@shared/helpers/store/cumulative-page.helper'
 
 /**
- * Purpose: Public entry point of the project profile domain for pages, components and guards.
- * Scope: Exposes the project profile store as signals, forwards its queries and runs the project profile commands with their notifications.
- * Limits: Holds no state of its own and builds no HTTP request itself.
+ * Purpose: Point d'entrée public du domaine des profils de projet pour les pages, composants et guards.
+ * Scope: Expose le store des profils de projet sous forme de signals, relaie ses requêtes et exécute les commandes de profil de projet avec leurs notifications.
+ * Limits: Ne détient aucun état propre et ne construit aucune requête HTTP lui-même.
  */
 @Injectable()
 export class ProjectProfileFacade extends GenericProjectElementFacade {

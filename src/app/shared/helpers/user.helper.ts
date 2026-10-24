@@ -2,9 +2,9 @@ import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { UserModel } from '@shared/models/model/user.model'
 
 /**
- * Purpose: Builds select items for users.
- * Scope: Pure mapping from a user to a select item.
- * Limits: No state and no translation.
+ * Purpose: Construit les select items des utilisateurs.
+ * Scope: Mapping pur d'un utilisateur vers un select item.
+ * Limits: Aucun état et aucune traduction.
  */
 export class UserHelper {
     public static toSelectItem (user: UserModel): SelectOptionModel<UserModel> {

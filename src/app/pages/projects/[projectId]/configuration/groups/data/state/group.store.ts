@@ -95,9 +95,9 @@ function searchParticipants (store: GroupStoreRef, api: GroupApi, errors: ErrorS
 }
 
 /**
- * Purpose: Holds the group state.
- * Scope: Owns the data of the group pages and resources with their loading and error flags, and fetches them through the group api.
- * Limits: Reached through the group facade; it does not format data or notify the user of command results.
+ * Purpose: Détient l'état des groupes.
+ * Scope: Possède les données des pages et ressources de groupes avec leurs drapeaux de chargement et d'erreur, et les récupère via l'api des groupes.
+ * Limits: Atteint via la facade des groupes ; ne formate pas les données et ne notifie pas l'utilisateur du résultat des commandes.
  */
 export const GroupStore = signalStore(
     withState<GroupStoreModel>( defaultGroupStore ),

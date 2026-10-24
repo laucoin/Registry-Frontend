@@ -56,9 +56,9 @@ interface InterceptionContext {
 const UNAVAILABLE_STATUSES: number[] = [0, 502, 503]
 
 /**
- * Purpose: Single HTTP interceptor for every request to the backend.
- * Scope: Adds credentials (except on the public metadata endpoints, so the backend skips authentication), the CSRF token and the display language, resolves url placeholders, refreshes the token once on a 401 then replays, and maps 0/502/503 to a service unavailable error.
- * Limits: Does not touch other origins; the refresh endpoint and the no-auth paths are never refreshed or replayed. Keeps the CSRF token of authenticated responses only: the backend derives it from the access token, so it is meaningless on the requests sent without credentials.
+ * Purpose: Intercepteur HTTP unique pour chaque requête vers le backend.
+ * Scope: Ajoute les identifiants (sauf sur les endpoints de métadonnées publics, pour que le backend saute l'authentification), le jeton CSRF et la langue d'affichage, résout les placeholders d'url, rafraîchit le jeton une fois sur un 401 puis rejoue, et mappe 0/502/503 vers une erreur de service indisponible.
+ * Limits: Ne touche pas aux autres origines ; l'endpoint de rafraîchissement et les chemins sans authentification ne sont jamais rafraîchis ni rejoués. Ne conserve que le jeton CSRF des réponses authentifiées : le backend le dérive du jeton d'accès, il n'a donc aucun sens sur les requêtes envoyées sans identifiants.
  */
 export const backendHandler: HttpInterceptorFn = (
 	req: HttpRequest<unknown>,
@@ -109,7 +109,7 @@ function handleError(error: HttpErrorResponse, context: InterceptionContext): Ob
 	if (context.authenticatedRequest.withCredentials) captureCsrfToken(error.headers)
 
 	if (error.status === 401 && isNoAuthPath(context.request.url)) {
-		// The refresh failure already sends the user to the login in refreshAccessToken.
+		// L'échec du rafraîchissement envoie déjà l'utilisateur vers la connexion dans refreshAccessToken.
 		if (!context.request.url.includes(REFRESH_PATH)) context.sessionFacade.redirectToLogin()
 		return throwError((): ErrorModel => new ErrorModel(error))
 	}

@@ -8,9 +8,9 @@ import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { ActivityModel } from '@shared/models/model/activity.model'
 
 /**
- * Purpose: Tells which commands a activity of a list offers to the signed-in user and runs them.
- * Scope: Builds the action menu (movements history, edit, hide, show, delete) with its confirmations.
- * Limits: Holds no state; it only reads the session and calls the activity facade. The backend still checks every command.
+ * Purpose: Indique quelles commandes une activité d'une liste offre à l'utilisateur connecté et les exécute.
+ * Scope: Construit le menu d'actions (historique des mouvements, modifier, masquer, réafficher, supprimer) avec ses confirmations.
+ * Limits: Ne détient aucun état ; lit seulement la session et appelle la facade des activités. Le backend vérifie toujours chaque commande.
  */
 @Injectable()
 export class ActivityActions extends ElementActionsBase<ActivityModel> {

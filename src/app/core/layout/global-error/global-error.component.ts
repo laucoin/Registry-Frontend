@@ -8,9 +8,9 @@ import '@sgdf/ui/icon'
 import '@sgdf/ui/page-title'
 
 /**
- * Purpose: Full-page error shown when the whole application is blocked.
- * Scope: Displays the error and its backend cause and offers a retry that reloads the application.
- * Limits: Does not decide when the application is blocked nor which error is shown; the UI facade does.
+ * Purpose: Erreur pleine page affichée quand toute l'application est bloquée.
+ * Scope: Affiche l'erreur et sa cause côté backend et propose un nouvel essai qui recharge l'application.
+ * Limits: Ne décide pas du moment où l'application est bloquée ni de l'erreur affichée ; la facade UI le fait.
  */
 @Component({
 	selector: 'app-global-error',

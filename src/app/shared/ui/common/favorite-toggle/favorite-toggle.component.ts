@@ -3,9 +3,9 @@ import { Component, CUSTOM_ELEMENTS_SCHEMA, input, InputSignal, output, OutputEm
 import { TranslocoPipe } from '@jsverse/transloco'
 
 /**
- * Purpose: Star button that tells whether a project is a favorite and toggles it.
- * Scope: Shows a filled amber star for a favorite and an outlined neutral one otherwise, with an accessible name and pressed state, and emits when the user clicks it.
- * Limits: Holds no state and calls no api; the parent runs the command and passes the new state back.
+ * Purpose: Bouton étoile qui indique si un projet est favori et bascule ce statut.
+ * Scope: Affiche une étoile ambre pleine pour un favori et une étoile neutre contourée sinon, avec un nom accessible et un état pressé, et émet quand l'utilisateur clique dessus.
+ * Limits: Ne détient aucun état et n'appelle aucune api ; le parent exécute la commande et renvoie le nouvel état.
  */
 @Component({
 	selector: 'app-favorite-toggle',

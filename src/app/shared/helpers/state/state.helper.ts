@@ -9,9 +9,9 @@ import {GenericHelper} from '@shared/helpers/generic.helper'
 import {SeverityEnum} from '@shared/models/enumeration/severity.enum'
 
 /**
- * Purpose: Builds loader states and notification messages.
- * Scope: Computes page and element loading flags and notification options with their configured life.
- * Limits: Holds no state of its own.
+ * Purpose: Construit les états de loader et les messages de notification.
+ * Scope: Calcule les drapeaux de chargement de page et d'élément et les options de notification avec leur durée de vie configurée.
+ * Limits: Ne détient aucun état propre.
  */
 export class StateHelper {
     public static updatePageLoader<P, M extends GenericModel>(

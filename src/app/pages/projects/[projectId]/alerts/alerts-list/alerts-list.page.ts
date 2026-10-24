@@ -26,9 +26,9 @@ import { ListComponent } from '@shared/ui/common/list/list.component'
 import { AlertElementComponent } from '@shared/ui/domain/alert-element/alert-element.component'
 
 /**
- * Purpose: Page listing the alerts of the selected project with search and a "load more" trigger.
- * Scope: Binds the list component to the alert facade and owns the search form; each row is an alert element.
- * Limits: Holds no domain state and never calls the backend.
+ * Purpose: Page listant les alertes du projet sélectionné avec recherche et déclencheur « charger plus ».
+ * Scope: Lie le composant de liste à la facade des alertes et possède le formulaire de recherche ; chaque ligne est un élément d'alerte.
+ * Limits: Ne détient aucun état de domaine et n'appelle jamais le backend.
  */
 @Component({
     selector: 'app-alerts-list',

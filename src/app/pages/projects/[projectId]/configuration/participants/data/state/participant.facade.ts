@@ -19,9 +19,9 @@ import { PresenceStatusEnum } from '@shared/models/enumeration/presence-status.e
 import { CumulativePageHelper } from '@shared/helpers/store/cumulative-page.helper'
 
 /**
- * Purpose: Public entry point of the participant domain for pages, components and guards.
- * Scope: Exposes the participant store as signals, forwards its queries and runs the participant commands with their notifications.
- * Limits: Holds no state of its own and builds no HTTP request itself.
+ * Purpose: Point d'entrée public du domaine des participants pour les pages, composants et guards.
+ * Scope: Expose le store des participants sous forme de signals, relaie ses requêtes et exécute les commandes de participant avec leurs notifications.
+ * Limits: Ne détient aucun état propre et ne construit aucune requête HTTP lui-même.
  */
 @Injectable()
 export class ParticipantFacade extends GenericProjectElementFacade {

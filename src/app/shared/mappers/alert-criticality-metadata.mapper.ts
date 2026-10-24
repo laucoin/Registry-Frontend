@@ -2,9 +2,9 @@ import { AlertCriticalityMetadataResponseDto } from '@shared/models/dto/response
 import { AlertCriticalityMetadataModel } from '@shared/models/model/alert-criticality-metadata.model'
 
 /**
- * Purpose: Converts the alert criticality metadata response of the backend into its model.
- * Scope: Copies the levels and the sentence describing how the criticality is computed.
- * Limits: Does not validate, rename or compute any value; the backend contract is trusted.
+ * Purpose: Convertit la réponse de métadonnées de criticité d'alerte du backend en son modèle.
+ * Scope: Copie les niveaux et la phrase décrivant comment la criticité est calculée.
+ * Limits: Ne valide, ne renomme ni ne calcule aucune valeur ; le contrat du backend est considéré comme fiable.
  */
 export class AlertCriticalityMetadataMapper {
     public static toModel (dto: AlertCriticalityMetadataResponseDto): AlertCriticalityMetadataModel {

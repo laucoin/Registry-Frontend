@@ -5,9 +5,9 @@ import '@sgdf/ui/callout'
 import { NotificationModel } from '@shared/models/model/notification.model'
 
 /**
- * Purpose: Shows the failure of one section of a page, with a retry action.
- * Scope: Renders the title and the backend message of the error in a danger callout and emits the retry request when the failure can be retried.
- * Limits: Owns no state and does not reload anything; the page decides what a retry does.
+ * Purpose: Affiche l'échec d'une section d'une page, avec une action de nouvel essai.
+ * Scope: Affiche le titre et le message du backend de l'erreur dans un callout danger et émet la demande de nouvel essai quand l'échec peut être réessayé.
+ * Limits: Ne possède aucun état et ne recharge rien ; la page décide de ce que fait un nouvel essai.
  */
 @Component({
 	selector: 'app-section-error',

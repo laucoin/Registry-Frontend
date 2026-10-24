@@ -1,9 +1,9 @@
 import { Pipe, PipeTransform } from '@angular/core'
 
 /**
- * Purpose: Gives the translation key of a form title.
- * Scope: Suffixes a base key with edit or create.
- * Limits: Returns a key; translation is done by the caller.
+ * Purpose: Donne la clé de traduction du titre d'un formulaire.
+ * Scope: Ajoute à une clé de base le suffixe edit ou create.
+ * Limits: Renvoie une clé ; la traduction est faite par l'appelant.
  */
 @Pipe( {
     name: 'formTitle', standalone: true,

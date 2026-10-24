@@ -63,7 +63,7 @@ module.exports = tsEslint.config(
         },
     },
     {
-        // @ngrx/signals stores and features rely on inferred types; annotating them adds nothing.
+        // Les stores et features @ngrx/signals reposent sur des types inférés ; les annoter n'apporte rien.
         files: [ '**/*.store.ts', 'src/app/shared/helpers/store/*.feature.ts' ],
         rules: {
             '@typescript-eslint/typedef': 'off',

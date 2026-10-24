@@ -22,9 +22,9 @@ import { injectAutoRefresh } from '@shared/helpers/refresh/inject-auto-refresh';
 const PAGE_SIZE: number = 5
 
 /**
- * Purpose: Lists the participants whose presence went past the planned end and needs regularizing.
- * Scope: Loads the first on-site participants in the overdue status, earliest planned end first, with how long they have been present, and counts the others.
- * Limits: Shows no more than a few rows and opens the dialog listing all of them; reads the selected project facade only.
+ * Purpose: Liste les participants dont la présence a dépassé la fin prévue et doit être régularisée.
+ * Scope: Charge les premiers participants sur site au statut en dépassement, fin prévue la plus ancienne en premier, avec la durée de leur présence, et compte les autres.
+ * Limits: N'affiche que quelques lignes et ouvre le dialogue qui les liste toutes ; lit uniquement la facade du projet sélectionné.
  */
 @Component({
 	imports: [

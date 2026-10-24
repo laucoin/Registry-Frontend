@@ -3,9 +3,9 @@ import { GenericModel } from '@shared/models/model/generic.model'
 import { GenericHelper } from '@shared/helpers/generic.helper'
 
 /**
- * Purpose: Gives the translation key of the visibility of an element.
- * Scope: Appends visible.true or visible.false to an optional prefix.
- * Limits: Returns a key; translation is done by the caller.
+ * Purpose: Donne la clé de traduction de la visibilité d'un élément.
+ * Scope: Ajoute visible.true ou visible.false à un préfixe optionnel.
+ * Limits: Renvoie une clé ; la traduction est faite par l'appelant.
  */
 @Pipe( {
     name: 'visibilityName', standalone: true,

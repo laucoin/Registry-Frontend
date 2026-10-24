@@ -5,9 +5,9 @@ import { ProjectProfileFacade } from '@pages/projects/[projectId]/configuration/
 import { ProjectProfileStore } from '@pages/projects/[projectId]/configuration/profiles/data/state/project-profile.store'
 
 /**
- * Purpose: Declares the routes of the my-account area.
- * Scope: Maps the account page and the user's invitations.
- * Limits: Holds no navigation logic; the guards and the pages own it.
+ * Purpose: Déclare les routes de l'espace mon compte.
+ * Scope: Mappe la page de compte et les invitations de l'utilisateur.
+ * Limits: Ne détient aucune logique de navigation ; les guards et les pages la possèdent.
  */
 export const myAccountRoutes: Routes = [
     { path: '', title: 'seo.myAccount', component: MyAccountPage },

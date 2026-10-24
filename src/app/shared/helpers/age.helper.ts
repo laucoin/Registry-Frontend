@@ -1,7 +1,7 @@
 /**
- * Purpose: Computes the age of a person.
- * Scope: Counts the full years between an ISO birth date and a given day.
- * Limits: Pure function; an invalid birth date gives no age.
+ * Purpose: Calcule l'âge d'une personne.
+ * Scope: Compte les années pleines entre une date de naissance ISO et un jour donné.
+ * Limits: Fonction pure ; une date de naissance invalide ne donne aucun âge.
  */
 export class AgeHelper {
     public static ageOn (birthday: string, today: Date): number | undefined {

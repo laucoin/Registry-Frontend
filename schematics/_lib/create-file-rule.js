@@ -1,9 +1,9 @@
 const { strings, SchematicsException } = require('@angular-devkit/schematics')
 
 /**
- * Purpose: Builds the schematic rule that creates one source file named after the requested name.
- * Scope: Resolves the target path, the dasherized file name and the classified class name.
- * Limits: Creates a single file and never overwrites an existing one.
+ * Purpose: Construit la règle de schematic qui crée un fichier source nommé d'après le nom demandé.
+ * Scope: Résout le chemin cible, le nom de fichier en kebab-case et le nom de classe en PascalCase.
+ * Limits: Crée un seul fichier et n'écrase jamais un fichier existant.
  */
 function createFileRule(options, { suffix, classSuffix, defaultPath, render }) {
     const dasherizedName = strings.dasherize(options.name)
@@ -21,10 +21,10 @@ function createFileRule(options, { suffix, classSuffix, defaultPath, render }) {
 }
 
 /**
- * Builds the file-level JSDoc header required on every non-trivial unit.
+ * Construit l'en-tête JSDoc de fichier requis sur toute unité non triviale.
  */
 function header(purpose) {
-    return `/**\n * Purpose: ${purpose}\n * Scope: <what it owns / is responsible for>\n * Limits: <what it deliberately does not do>\n */\n`
+    return `/**\n * Purpose: ${purpose}\n * Scope: <ce qu'il possède / dont il est responsable>\n * Limits: <ce qu'il ne fait volontairement pas>\n */\n`
 }
 
 exports.createFileRule = createFileRule

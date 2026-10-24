@@ -15,9 +15,9 @@ import {PluralTranslationPipe} from '@shared/helpers/pipe/plural-translation.pip
 import {ProjectProfileInvitationFieldsComponent} from '@pages/projects/[projectId]/configuration/profiles/project-profile-form/project-profile-invitation-fields/project-profile-invitation-fields.component'
 
 /**
- * Purpose: Page with the form to create or edit a project profile invitation.
- * Scope: Builds the form, submits it through the facade and navigates back.
- * Limits: Holds no domain state and never calls the backend.
+ * Purpose: Page avec le formulaire de création ou d'édition d'une invitation à un profil de projet.
+ * Scope: Construit le formulaire, le soumet via la facade et navigue en arrière.
+ * Limits: Ne détient aucun état de domaine et n'appelle jamais le backend.
  */
 @Component({
     selector: 'app-project-profile-invitation-form',

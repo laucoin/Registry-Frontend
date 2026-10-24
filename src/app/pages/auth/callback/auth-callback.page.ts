@@ -6,9 +6,9 @@ import { TranslocoService } from '@jsverse/transloco'
 import { ErrorModel } from '@shared/models/model/error.model'
 
 /**
- * Purpose: Landing page of the identity provider redirect.
- * Scope: Exchanges the authorization code for a session through the registry facade, or shows the global error when the provider sent none.
- * Limits: Shows nothing of its own while the exchange runs; reads the redirect once.
+ * Purpose: Page d'atterrissage de la redirection du fournisseur d'identité.
+ * Scope: Échange le code d'autorisation contre une session via la facade du registry, ou affiche l'erreur globale quand le fournisseur n'en a envoyé aucun.
+ * Limits: N'affiche rien de propre pendant l'échange ; lit la redirection une seule fois.
  */
 @Component( {
     selector: 'app-auth-callback',

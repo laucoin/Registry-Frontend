@@ -19,9 +19,9 @@ export interface ApiCase<A> {
 }
 
 /**
- * Purpose: Runs a table of cases against one api through the HTTP testing backend.
- * Scope: Checks the verb, the url, the body and the mapping of the response of every case.
- * Limits: Does not test the backend; responses are the fixtures given by each case.
+ * Purpose: Exécute une table de cas contre une api via le backend de test HTTP.
+ * Scope: Vérifie le verbe, l'url, le corps et le mapping de la réponse de chaque cas.
+ * Limits: Ne teste pas le backend ; les réponses sont les fixtures données par chaque cas.
  */
 export function describeApi<A> (label: string, type: Type<A>, cases: ApiCase<A>[]): void {
     describe( label, () => {

@@ -5,9 +5,9 @@ import { FieldErrorHelper } from '@shared/helpers/form/field-error.helper'
 import { FieldErrorState } from '@shared/helpers/form/field-state.helper'
 
 /**
- * Purpose: Displays the first error of one signal form field.
- * Scope: Translates the error kind under the given prefix with its parameters once the field is touched or dirty; used for what has no `@sgdf/ui` field to carry the error (a range, a whole form).
- * Limits: Shows nothing for a valid or untouched pristine field. A `@sgdf/ui` field shows its own error with the `appFieldError` directive.
+ * Purpose: Affiche la première erreur d'un champ de signal form.
+ * Scope: Traduit le type d'erreur sous le préfixe donné avec ses paramètres une fois le champ touché ou modifié ; utilisé pour ce qui n'a pas de champ `@sgdf/ui` pour porter l'erreur (une plage, un formulaire entier).
+ * Limits: N'affiche rien pour un champ valide ou vierge et non touché. Un champ `@sgdf/ui` affiche sa propre erreur avec la directive `appFieldError`.
  */
 @Component({
     selector: 'app-field-error',

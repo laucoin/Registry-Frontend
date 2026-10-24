@@ -19,9 +19,9 @@ const VARIANTS: Record<string, string> = {
 }
 
 /**
- * Purpose: Asks the user to confirm a command before it runs.
- * Scope: Opens a modal dialog for each confirmation request of the UI facade, colored by its severity; runs the request's `accept` only when the user confirms, after typing its phrase when it has one.
- * Limits: Shows one request at a time (a new one replaces the pending one) and does not build the request: the element actions do.
+ * Purpose: Demande à l'utilisateur de confirmer une commande avant son exécution.
+ * Scope: Ouvre un dialogue modal pour chaque demande de confirmation de la facade UI, coloré selon sa sévérité ; n'exécute l'`accept` de la demande que si l'utilisateur confirme, après avoir saisi sa phrase quand elle en a une.
+ * Limits: Affiche une seule demande à la fois (une nouvelle remplace celle en attente) et ne construit pas la requête : les actions de l'élément le font.
  */
 @Component({
 	selector: 'app-confirmation-dialog',

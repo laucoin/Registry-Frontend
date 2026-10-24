@@ -19,9 +19,9 @@ interface TranslatedPage extends PageSeoModel {
 }
 
 /**
- * Purpose: Sets the document title and the search engine metadata of the active route, in the active language.
- * Scope: Translates the route title, publishes description, Open Graph, Twitter and canonical tags for public routes, and marks every other route noindex.
- * Limits: Does not decide which routes are public (a route is public when its data carries a description key) and does not build the sitemap.
+ * Purpose: Positionne le titre du document et les métadonnées pour les moteurs de recherche de la route active, dans la langue active.
+ * Scope: Traduit le titre de la route, publie les balises description, Open Graph, Twitter et canonical pour les routes publiques, et marque toute autre route noindex.
+ * Limits: Ne décide pas des routes publiques (une route est publique quand ses données portent une clé de description) et ne construit pas le sitemap.
  */
 @Injectable( { providedIn: 'root' } )
 export class RegistryTitleStrategy extends TitleStrategy {

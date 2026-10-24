@@ -3,9 +3,9 @@ import { UserInvitationResponseDto } from '@shared/models/dto/response/user-invi
 import { GenericMapper } from '@shared/mappers/generic.mapper'
 
 /**
- * Purpose: Converts a user invitation response of the backend into the UserInvitation model.
- * Scope: Copies each field and the project summary.
- * Limits: Does not validate, rename or compute any value; the backend contract is trusted.
+ * Purpose: Convertit une réponse d'invitation d'utilisateur du backend en modèle UserInvitation.
+ * Scope: Copie chaque champ et le résumé du projet.
+ * Limits: Ne valide, ne renomme ni ne calcule aucune valeur ; le contrat du backend est considéré comme fiable.
  */
 export class UserInvitationMapper {
     public static toModel (dto: UserInvitationResponseDto): UserInvitationModel {

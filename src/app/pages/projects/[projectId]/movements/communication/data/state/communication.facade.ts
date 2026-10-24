@@ -17,9 +17,9 @@ import { AlertModel } from '@shared/models/model/alert.model'
 
 
 /**
- * Purpose: Public entry point of the communication domain for pages, components and guards.
- * Scope: Exposes the communication store as signals, forwards its queries and runs the communication commands with their notifications.
- * Limits: Holds no state of its own and builds no HTTP request itself.
+ * Purpose: Point d'entrée public du domaine des communications pour les pages, composants et guards.
+ * Scope: Expose le store des communications sous forme de signals, relaie ses requêtes et exécute les commandes de communication avec leurs notifications.
+ * Limits: Ne détient aucun état propre et ne construit aucune requête HTTP lui-même.
  */
 @Injectable()
 export class CommunicationFacade extends GenericProjectElementFacade {
@@ -103,7 +103,7 @@ export class CommunicationFacade extends GenericProjectElementFacade {
         )
     }
 
-    // Creating or editing a communication is silent (the form resets itself); the other commands notify.
+    // Créer ou modifier une communication est silencieux (le formulaire se réinitialise de lui-même) ; les autres commandes notifient.
     private onCommandSuccess (command: CommandEvent, communication: CommunicationModel): void {
         if (command !== 'create' && command !== 'update') {
             this.onCommandSucceeded(

@@ -21,9 +21,9 @@ import { PageEventModel } from '@shared/models/model/page-event.model'
 import { ListComponent } from '@shared/ui/common/list/list.component'
 
 /**
- * Purpose: Page listing the invitations of the signed-in user with search and a "load more" trigger.
- * Scope: Binds the list component to the user profile facade, owns the search form and gives the list the row template of a project profile.
- * Limits: Holds no domain state and never calls the backend.
+ * Purpose: Page listant les invitations de l'utilisateur connecté avec recherche et déclencheur « charger plus ».
+ * Scope: Lie le composant de liste à la facade des profils utilisateur, possède le formulaire de recherche et donne à la liste le template de ligne d'un profil de projet.
+ * Limits: Ne détient aucun état de domaine et n'appelle jamais le backend.
  */
 @Component({
     selector: 'app-invitations-list',

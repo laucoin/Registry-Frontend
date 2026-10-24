@@ -6,9 +6,9 @@ import { GenericHelper } from '@shared/helpers/generic.helper'
 import { DateHelper } from '@shared/helpers/date.helper'
 
 /**
- * Purpose: Formats a custom date time as date, time or both.
- * Scope: Picks the translated pattern from what the value contains.
- * Limits: Returns undefined for an empty value.
+ * Purpose: Formate une date-heure personnalisée en date, en heure ou les deux.
+ * Scope: Choisit le motif traduit selon ce que contient la valeur.
+ * Limits: Renvoie undefined pour une valeur vide.
  */
 @Pipe( {
     name: 'customDateFormat', standalone: true, pure: false,

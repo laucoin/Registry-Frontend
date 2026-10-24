@@ -3,9 +3,9 @@ import { ActivityResponseDto } from '@shared/models/dto/response/activity.respon
 import { GenericMapper } from '@shared/mappers/generic.mapper'
 
 /**
- * Purpose: Converts a Activity response of the backend into the Activity model.
- * Scope: Copies each field and delegates the nested entities to their own mappers.
- * Limits: Does not validate, rename or compute any value; the backend contract is trusted.
+ * Purpose: Convertit une réponse Activity du backend en modèle Activity.
+ * Scope: Copie chaque champ et délègue les entités imbriquées à leurs propres mappers.
+ * Limits: Ne valide, ne renomme ni ne calcule aucune valeur ; le contrat du backend est considéré comme fiable.
  */
 export class ActivityMapper {
     public static toModel (dto: ActivityResponseDto): ActivityModel {

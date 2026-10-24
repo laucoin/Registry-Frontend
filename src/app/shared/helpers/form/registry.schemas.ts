@@ -27,9 +27,9 @@ function toCustomDateTime (value: CustomDatetimeModel | Date): CustomDatetimeMod
 }
 
 /**
- * Purpose: Signal form validation rules of the application, using the error codes of the translations.
- * Scope: Provides blank, date, range, option-dependent and cross-field rules applied to schema paths.
- * Limits: Validates on the client for usability; the backend validates again.
+ * Purpose: Règles de validation des signal forms de l'application, utilisant les codes d'erreur des traductions.
+ * Scope: Fournit des règles de blancs, de dates, de plages, dépendantes des options et inter-champs appliquées aux chemins du schéma.
+ * Limits: Valide côté client pour l'usage ; le backend valide à nouveau.
  */
 export class RegistrySchemas {
     public static nonBlank (path: SchemaPath<string>): void {
@@ -51,7 +51,7 @@ export class RegistrySchemas {
     }
 
     public static requiredList<T> (path: SchemaPath<T[]>, when: (ctx: FieldContext<T[]>) => boolean = (): boolean => true): void {
-        // Angular's `required` never fails on an empty array; it only marks the field as required for the control.
+        // Le `required` d'Angular n'échoue jamais sur un tableau vide ; il marque seulement le champ comme requis pour le contrôle.
         required( path, { when } )
         validate( path, (ctx: FieldContext<T[]>): RegistryError | null =>
             ctx.value().length === 0 && when( ctx ) ? registryError( 'required' ) : null )

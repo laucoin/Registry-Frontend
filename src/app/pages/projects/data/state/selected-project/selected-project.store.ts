@@ -184,9 +184,9 @@ function requestContents (fetchContents: (request: MovementContentsRequest) => v
 }
 
 /**
- * Purpose: Holds the selected project state.
- * Scope: Owns the data of the selected project pages and resources with their loading and error flags, and fetches them through the selected project api.
- * Limits: Reached through the selected project facade; it does not format data or notify the user of command results.
+ * Purpose: Détient l'état du projet sélectionné.
+ * Scope: Possède les données des pages et ressources du projet sélectionné avec leurs drapeaux de chargement et d'erreur, et les récupère via l'api du projet sélectionné.
+ * Limits: Atteint via la facade du projet sélectionné ; ne formate pas les données et ne notifie pas l'utilisateur du résultat des commandes.
  */
 export const SelectedProjectStore = signalStore(
     withState<SelectedProjectStoreModel>( defaultSelectedProjectStore ),

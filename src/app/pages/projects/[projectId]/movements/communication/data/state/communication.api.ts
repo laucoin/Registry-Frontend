@@ -16,9 +16,9 @@ import { MovementMapper } from '@shared/mappers/movement.mapper'
 import { ETagHelper } from '@shared/helpers/etag.helper'
 
 /**
- * Purpose: Sends the HTTP requests of the communication domain.
- * Scope: Builds the urls and the query parameters and returns the backend responses.
- * Limits: Holds no state and handles no error; stores and facades do.
+ * Purpose: Envoie les requêtes HTTP du domaine des communications.
+ * Scope: Construit les urls et les paramètres de requête et renvoie les réponses du backend.
+ * Limits: Ne détient aucun état et ne gère aucune erreur ; les stores et les facades le font.
  */
 @Injectable({
     providedIn: 'root',

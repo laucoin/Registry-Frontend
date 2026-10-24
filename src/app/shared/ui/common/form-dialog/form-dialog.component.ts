@@ -10,9 +10,9 @@ import { ErrorModel } from '@shared/models/model/error.model'
 import { FormErrorComponent } from '@shared/ui/common/form-error/form-error.component'
 
 /**
- * Purpose: Dialog shell of a short create or edit form, opened by its own route over the list.
- * Scope: Shows the title, the load spinner, the submit error and the cancel and submit buttons; asks the page to submit or to close.
- * Limits: Owns no form model and never navigates; the page decides what submit and close do. A click outside never closes it, to keep the input.
+ * Purpose: Coque de dialogue d'un court formulaire de création ou d'édition, ouverte par sa propre route au-dessus de la liste.
+ * Scope: Affiche le titre, le spinner de chargement, l'erreur de soumission et les boutons d'annulation et de soumission ; demande à la page de soumettre ou de fermer.
+ * Limits: Ne possède aucun modèle de formulaire et ne navigue jamais ; la page décide de ce que font la soumission et la fermeture. Un clic à l'extérieur ne le ferme jamais, pour conserver la saisie.
  */
 @Component({
 	selector: 'app-form-dialog',

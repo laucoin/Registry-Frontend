@@ -4,9 +4,9 @@ import { CommunicationMapper } from '@shared/mappers/communication.mapper'
 import { GenericMapper } from '@shared/mappers/generic.mapper'
 
 /**
- * Purpose: Converts a Alert response of the backend into the Alert model.
- * Scope: Copies each field and delegates the nested entities to their own mappers.
- * Limits: Does not validate, rename or compute any value; the backend contract is trusted.
+ * Purpose: Convertit une réponse Alert du backend en modèle Alert.
+ * Scope: Copie chaque champ et délègue les entités imbriquées à leurs propres mappers.
+ * Limits: Ne valide, ne renomme ni ne calcule aucune valeur ; le contrat du backend est considéré comme fiable.
  */
 export class AlertMapper {
     public static toModel (dto: AlertResponseDto): AlertModel {

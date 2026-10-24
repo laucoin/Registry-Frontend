@@ -9,9 +9,9 @@ interface CommandEventMessage {
 }
 
 /**
- * Purpose: Broadcasts command events between facades of different routes.
- * Scope: Emits and filters events by scope and command from one root-wide subject, because element facades are provided per route and listeners must not depend on the facade instance that ran the command.
- * Limits: Carries no payload and no history.
+ * Purpose: Diffuse des événements de commande entre les facades de routes différentes.
+ * Scope: Émet et filtre les événements par portée et commande depuis un subject unique à l'échelle de la racine, car les facades d'éléments sont fournies par route et les écouteurs ne doivent pas dépendre de l'instance de facade qui a exécuté la commande.
+ * Limits: Ne porte ni données ni historique.
  */
 @Injectable( { providedIn: 'root' } )
 export class CommandEventService {

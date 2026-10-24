@@ -4,9 +4,9 @@ import { ParticipantMapper } from '@shared/mappers/participant.mapper'
 import { VehicleMapper } from '@shared/mappers/vehicle.mapper'
 
 /**
- * Purpose: Converts a MovementContent response of the backend into the MovementContent model.
- * Scope: Copies each field and delegates the nested entities to their own mappers.
- * Limits: Does not validate, rename or compute any value; the backend contract is trusted.
+ * Purpose: Convertit une réponse MovementContent du backend en modèle MovementContent.
+ * Scope: Copie chaque champ et délègue les entités imbriquées à leurs propres mappers.
+ * Limits: Ne valide, ne renomme ni ne calcule aucune valeur ; le contrat du backend est considéré comme fiable.
  */
 export class MovementContentMapper {
     public static toModel (dto: MovementContentResponseDto): MovementContentModel {

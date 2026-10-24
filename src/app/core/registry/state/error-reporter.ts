@@ -4,9 +4,9 @@ import { NotificationStore } from '@core/registry/state/notification.store'
 import { ErrorSink } from '@shared/helpers/rx.helper'
 
 /**
- * Purpose: Lets stores report failures to the user without depending on a facade.
- * Scope: Forwards a notification to the notification store.
- * Limits: Does not own the global error; the session does.
+ * Purpose: Permet aux stores de signaler des échecs à l'utilisateur sans dépendre d'une facade.
+ * Scope: Transmet une notification au store des notifications.
+ * Limits: Ne possède pas l'erreur globale ; la session la possède.
  */
 @Injectable( { providedIn: 'root' } )
 export class ErrorReporter implements ErrorSink {

@@ -27,9 +27,9 @@ const SHORTCUTS: readonly QuickAccess[] = [
 ]
 
 /**
- * Purpose: Offers shortcuts to the main areas of the application on the home page.
- * Scope: Shows the shortcuts the signed-in user is allowed to use, as a grid of buttons, plus the documentation and support links when the configuration gives their url.
- * Limits: Reads the session only; the routes and their guards still decide access.
+ * Purpose: Propose sur la page d'accueil des raccourcis vers les principaux espaces de l'application.
+ * Scope: Affiche les raccourcis que l'utilisateur connecté a le droit d'utiliser, sous forme de grille de boutons, ainsi que les liens de documentation et de support quand la configuration en donne l'url.
+ * Limits: Lit uniquement la session ; les routes et leurs guards décident toujours de l'accès.
  */
 @Component({
 	selector: 'app-home-quick-access',

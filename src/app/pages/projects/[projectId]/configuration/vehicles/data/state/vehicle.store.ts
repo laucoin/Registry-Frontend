@@ -66,9 +66,9 @@ const defaultVehicleStore: VehicleStoreModel = {
 }
 
 /**
- * Purpose: Holds the vehicle state.
- * Scope: Owns the data of the vehicle pages and resources with their loading and error flags, and fetches them through the vehicle api.
- * Limits: Reached through the vehicle facade; it does not format data or notify the user of command results.
+ * Purpose: Détient l'état des véhicules.
+ * Scope: Possède les données des pages et ressources de véhicules avec leurs drapeaux de chargement et d'erreur, et les récupère via l'api des véhicules.
+ * Limits: Atteint via la facade des véhicules ; ne formate pas les données et ne notifie pas l'utilisateur du résultat des commandes.
  */
 export const VehicleStore = signalStore(
     withState<VehicleStoreModel>( defaultVehicleStore ),

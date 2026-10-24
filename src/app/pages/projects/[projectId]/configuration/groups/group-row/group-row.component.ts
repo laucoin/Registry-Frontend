@@ -16,9 +16,9 @@ import { EllipsisDirective } from '@shared/directives/ellipsis.directive'
 const INITIALS_LENGTH: number = 2
 
 /**
- * Purpose: Row template of a group in a list.
- * Scope: Holds the `sgdf-list-item` of a group (name, members, availability dates, status and action menu) and exposes it as a template the list pages render inside their own list.
- * Limits: Renders nothing by itself; the page decides where the template is used. Commands are delegated to GroupActions.
+ * Purpose: Template de ligne d'un groupe dans une liste.
+ * Scope: Contient le `sgdf-list-item` d'un groupe (nom, membres, dates de disponibilité, statut et menu d'actions) et l'expose comme un template que les pages de liste affichent dans leur propre liste.
+ * Limits: N'affiche rien par lui-même ; la page décide où le template est utilisé. Les commandes sont déléguées à GroupActions.
  */
 @Component({
     selector: 'app-group-row',

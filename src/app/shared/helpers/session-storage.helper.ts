@@ -1,9 +1,9 @@
 import { StorageUtils } from '@shared/helpers/storage.helper'
 
 /**
- * Purpose: Typed access to the session storage.
- * Scope: Wraps the storage utilities on sessionStorage.
- * Limits: Not for sensitive data; values live until the tab closes.
+ * Purpose: Accès typé au session storage.
+ * Scope: Enveloppe les utilitaires de stockage sur sessionStorage.
+ * Limits: Pas pour les données sensibles ; les valeurs vivent jusqu'à la fermeture de l'onglet.
  */
 export class SessionStorageUtils {
     public static get (key: string): unknown {

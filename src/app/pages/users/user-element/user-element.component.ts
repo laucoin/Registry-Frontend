@@ -12,9 +12,9 @@ import '@sgdf/ui/tag'
 const INITIALS_LENGTH: number = 2
 
 /**
- * Purpose: Summary of one user: name, email, birthday, role and visibility.
- * Scope: Renders the details of the given user as a single list item.
- * Limits: Receives the user as an input; it offers no action and holds no state.
+ * Purpose: Résumé d'un utilisateur : nom, e-mail, anniversaire, rôle et visibilité.
+ * Scope: Affiche le détail de l'utilisateur donné comme un seul élément de liste.
+ * Limits: Reçoit l'utilisateur en entrée ; n'offre aucune action et ne détient aucun état.
  */
 @Component({
 	selector: 'app-user-element',

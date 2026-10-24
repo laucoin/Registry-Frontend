@@ -112,9 +112,9 @@ function toSearchedSections (result: MovementParticipantsAndGroupsModel, label: 
 }
 
 /**
- * Purpose: Holds the movement state.
- * Scope: Owns the data of the movement pages and resources with their loading and error flags, and fetches them through the movement api.
- * Limits: Reached through the movement facade; it does not format data or notify the user of command results.
+ * Purpose: Détient l'état des mouvements.
+ * Scope: Possède les données des pages et ressources de mouvements avec leurs drapeaux de chargement et d'erreur, et les récupère via l'api des mouvements.
+ * Limits: Atteint via la facade des mouvements ; ne formate pas les données et ne notifie pas l'utilisateur du résultat des commandes.
  */
 export const MovementStore = signalStore(
     withState<MovementStoreModel>( defaultMovementStore ),

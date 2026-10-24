@@ -1,7 +1,7 @@
 /**
- * Purpose: Null checks shared across the application.
- * Scope: Provides isNull and nonNull.
- * Limits: Nothing else; browser access lives in the browser service.
+ * Purpose: Vérifications de nullité partagées dans l'application.
+ * Scope: Fournit isNull et nonNull.
+ * Limits: Rien d'autre ; l'accès au navigateur vit dans le service du navigateur.
  */
 export class GenericHelper {
     public static isNull = (value: unknown | undefined | null): boolean => value == undefined

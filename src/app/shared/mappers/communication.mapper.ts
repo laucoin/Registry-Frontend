@@ -5,9 +5,9 @@ import { GenericMapper } from '@shared/mappers/generic.mapper'
 import { MovementMapper } from '@shared/mappers/movement.mapper'
 
 /**
- * Purpose: Converts a Communication response of the backend into the Communication model.
- * Scope: Copies each field and delegates the nested entities to their own mappers.
- * Limits: Does not validate, rename or compute any value; the backend contract is trusted.
+ * Purpose: Convertit une réponse Communication du backend en modèle Communication.
+ * Scope: Copie chaque champ et délègue les entités imbriquées à leurs propres mappers.
+ * Limits: Ne valide, ne renomme ni ne calcule aucune valeur ; le contrat du backend est considéré comme fiable.
  */
 export class CommunicationMapper {
     public static toModel (dto: CommunicationResponseDto): CommunicationModel {

@@ -20,9 +20,9 @@ const ERROR_PARAMS: Record<string, [string, string][]> = {
 type FieldErrorTranslate = (key: string, params: object) => string
 
 /**
- * Purpose: Builds the translated message of the first error of a signal form field.
- * Scope: Applies the display rule of FieldStateHelper, maps the error kind to its key under a prefix and gives the messages their parameters.
- * Limits: Reads the field state only; it neither validates nor translates by itself, the caller passes its translate function.
+ * Purpose: Construit le message traduit de la première erreur d'un champ de signal form.
+ * Scope: Applique la règle d'affichage de FieldStateHelper, mappe le type d'erreur vers sa clé sous un préfixe et donne leurs paramètres aux messages.
+ * Limits: Lit uniquement l'état du champ ; ne valide ni ne traduit par lui-même, l'appelant passe sa fonction de traduction.
  */
 export class FieldErrorHelper {
     public static text (

@@ -53,9 +53,9 @@ import { NotificationModel } from '@shared/models/model/notification.model'
 import { SectionErrorComponent } from '@shared/ui/common/section-error/section-error.component'
 
 /**
- * Purpose: Page with the form to create or edit a project; a creation ends with an optional step inviting users to the new project.
- * Scope: Builds the forms, submits them through the facades and navigates away; shows the failure of the project or options load instead of the form. Once created, the project cannot be edited again from this page: the invitation step only skips or submits.
- * Limits: Holds no domain state and never calls the backend.
+ * Purpose: Page avec le formulaire de création ou d'édition d'un projet ; une création se termine par une étape facultative invitant des utilisateurs sur le nouveau projet.
+ * Scope: Construit les formulaires, les soumet via les facades et navigue ailleurs ; affiche l'échec du chargement du projet ou des options à la place du formulaire. Une fois créé, le projet ne peut plus être édité depuis cette page : l'étape d'invitation ne fait qu'être ignorée ou soumise.
+ * Limits: Ne détient aucun état de domaine et n'appelle jamais le backend.
  */
 @Component( {
     selector: 'app-project-form',

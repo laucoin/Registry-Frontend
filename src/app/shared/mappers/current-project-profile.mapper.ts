@@ -3,9 +3,9 @@ import { CurrentProjectProfileResponseDto } from '@shared/models/dto/response/cu
 import { GenericMapper } from '@shared/mappers/generic.mapper'
 
 /**
- * Purpose: Converts the current user's profile response of a project into its model.
- * Scope: Copies each field.
- * Limits: Does not validate, rename or compute any value; the backend contract is trusted.
+ * Purpose: Convertit la réponse de profil de l'utilisateur courant sur un projet en son modèle.
+ * Scope: Copie chaque champ.
+ * Limits: Ne valide, ne renomme ni ne calcule aucune valeur ; le contrat du backend est considéré comme fiable.
  */
 export class CurrentProjectProfileMapper {
     public static toModel (dto: CurrentProjectProfileResponseDto): CurrentProjectProfileModel {

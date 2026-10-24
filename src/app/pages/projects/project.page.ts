@@ -4,9 +4,9 @@ import { SessionFacade } from '@core/registry/state/session.facade'
 import { injectAutoRefresh } from '@shared/helpers/refresh/inject-auto-refresh'
 
 /**
- * Purpose: Routing shell of the project section.
- * Scope: Provides the facades and stores of the section to its child routes and keeps the counts of the selected project fresh.
- * Limits: Holds no data of its own.
+ * Purpose: Coque de routage de la section des projets.
+ * Scope: Fournit les facades et stores de la section à ses routes enfants et garde à jour les compteurs du projet sélectionné.
+ * Limits: Ne détient aucune donnée propre.
  */
 @Component( {
     selector: 'app-project',

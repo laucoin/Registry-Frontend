@@ -4,7 +4,7 @@ import { ActionableItemModel } from '@shared/models/model/actionable-item.model'
 
 export interface MenuItemModel extends ActionableItemModel {
 	label: string
-	/** Label shown instead of `label` when the user lacks the given authority. */
+	/** Libellé affiché à la place de `label` quand l'utilisateur n'a pas l'autorité donnée. */
 	fallbackLabel?: { unlessAuthority: UserAuthorityEnum; label: string }
 	icon?: {
 		library: string

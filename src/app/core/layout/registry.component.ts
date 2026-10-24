@@ -24,9 +24,9 @@ const VARIANTS: Record<string, string> = {
 }
 
 /**
- * Purpose: Root component of the application: hosts the routed pages, shows the notifications as toasts, hosts the confirmation dialog and swaps the pages for the global error when the whole application is blocked.
- * Scope: Translates each notification of the UI facade into a sgdf-toast and chooses between the routed pages and the global error.
- * Limits: Does not decide what is notified or what blocks the application, does not render the error nor the confirmations itself.
+ * Purpose: Composant racine de l'application : héberge les pages routées, affiche les notifications sous forme de toasts, héberge le dialogue de confirmation et remplace les pages par l'erreur globale quand toute l'application est bloquée.
+ * Scope: Traduit chaque notification de la facade UI en sgdf-toast et choisit entre les pages routées et l'erreur globale.
+ * Limits: Ne décide pas de ce qui est notifié ni de ce qui bloque l'application, et n'affiche ni l'erreur ni les confirmations lui-même.
  */
 @Component({
 	selector: 'app-root',

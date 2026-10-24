@@ -14,9 +14,9 @@ import { DialogElementComponent } from '@shared/ui/domain/dialog-element/dialog-
 import { Observable, tap } from 'rxjs'
 
 /**
- * Purpose: List of the communications of a movement.
- * Scope: Loads and displays the communications of one movement with search and actions.
- * Limits: Reads through the movement, communication and alert facades only.
+ * Purpose: Liste des communications d'un mouvement.
+ * Scope: Charge et affiche les communications d'un mouvement avec recherche et actions.
+ * Limits: Lit uniquement via les facades des mouvements, des communications et des alertes.
  */
 @Component({
 	selector: 'app-movement-communications-list',

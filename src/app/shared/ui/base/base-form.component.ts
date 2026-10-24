@@ -11,9 +11,9 @@ import { GenericHelper } from '@shared/helpers/generic.helper'
 import { RegistryConfig } from '@core/config/registry.config'
 
 /**
- * Purpose: Base class of the create and edit forms built on signal forms.
- * Scope: Handles validation, saving state, error display and navigation after submit.
- * Limits: Abstract; each form defines its model, its schema and its facade calls.
+ * Purpose: Classe de base des formulaires de création et d'édition construits sur les signal forms.
+ * Scope: Gère la validation, l'état d'enregistrement, l'affichage des erreurs et la navigation après la soumission.
+ * Limits: Abstrait ; chaque formulaire définit son modèle, son schéma et ses appels à la facade.
  */
 export abstract class BaseFormComponent extends GenericComponent {
     protected readonly datePipe: CustomDateFormatPipe = inject( CustomDateFormatPipe )
@@ -37,8 +37,8 @@ export abstract class BaseFormComponent extends GenericComponent {
         } )
     }
 
-    // Deliberately not tied to the component lifetime: once sent, a save must finish (toast, list refresh)
-    // even if the user navigates away; only the redirect is skipped.
+    // Volontairement non lié à la durée de vie du composant : une fois envoyée, une sauvegarde doit aboutir (toast, rafraîchissement de la liste)
+    // même si l'utilisateur navigue ailleurs ; seule la redirection est omise.
     protected save<T> (command: Observable<T>, redirect: boolean = true): void {
         this.error.set( undefined )
         command.pipe( withLoading( this.saving ) ).subscribe( {
@@ -49,7 +49,7 @@ export abstract class BaseFormComponent extends GenericComponent {
         } )
     }
 
-    // Form values may carry participants' personal data — kept out of the console in production.
+    // Les valeurs du formulaire peuvent porter des données personnelles de participants — tenues hors de la console en production.
     protected logInvalidForm (value: unknown): void {
         if (!RegistryConfig.environment.production) console.warn( this.invalidFormMessage, value )
     }

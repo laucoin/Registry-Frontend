@@ -36,9 +36,9 @@ const DEFAULT_PAGE_SIZE: number = 20
 const SKELETON_ROWS: number = 6
 
 /**
- * Purpose: Shows a lazily loaded list of elements with its search area, its loading, error and empty states and a "load more" trigger.
- * Scope: Renders the elements given by the page in an `sgdf-list` and emits the batch to fetch next, the retry and the filters reset.
- * Limits: Owns no data and no search form; the page supplies the page model, the templates (search, creation, element, empty) and decides what a request does.
+ * Purpose: Affiche une liste d'éléments chargée paresseusement avec sa zone de recherche, ses états de chargement, d'erreur et de vide et un déclencheur « charger plus ».
+ * Scope: Affiche les éléments donnés par la page dans un `sgdf-list` et émet le lot à récupérer ensuite, le nouvel essai et la réinitialisation des filtres.
+ * Limits: Ne possède ni donnée ni formulaire de recherche ; la page fournit le modèle de page, les templates (recherche, création, élément, vide) et décide de ce que fait une demande.
  */
 @Component({
 	selector: 'app-list',

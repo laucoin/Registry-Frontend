@@ -9,9 +9,9 @@ export interface InvitationsListSearchModel {
 }
 
 /**
- * Purpose: Converts the invitations list search parameters into the values bound to the search form.
- * Scope: Fills the empty parameters with the form defaults.
- * Limits: Does not validate the parameters.
+ * Purpose: Convertit les paramètres de recherche de la liste des invitations en valeurs liées au formulaire de recherche.
+ * Scope: Remplit les paramètres vides avec les valeurs par défaut du formulaire.
+ * Limits: Ne valide pas les paramètres.
  */
 export function toInvitationsListSearchModel (params: InvitationsListSearch): InvitationsListSearchModel {
     return {
@@ -21,9 +21,9 @@ export function toInvitationsListSearchModel (params: InvitationsListSearch): In
 }
 
 /**
- * Purpose: Converts the search form values into the invitations list search parameters.
- * Scope: Turns the empty form values into undefined parameters.
- * Limits: Does not validate the form values.
+ * Purpose: Convertit les valeurs du formulaire de recherche en paramètres de recherche de la liste des invitations.
+ * Scope: Transforme les valeurs vides du formulaire en paramètres undefined.
+ * Limits: Ne valide pas les valeurs du formulaire.
  */
 export function toInvitationsListSearchParams (model: InvitationsListSearchModel): InvitationsListSearch {
     return {

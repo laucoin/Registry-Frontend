@@ -4,9 +4,9 @@ import { ErrorModel } from '@shared/models/model/error.model'
 import { FormErrorComponent } from '@shared/ui/common/form-error/form-error.component'
 
 /**
- * Purpose: Wrapper of a form with a title, a loader and action buttons.
- * Scope: Projects the fields and shows the saving state.
- * Limits: Owns no form model; the page provides it.
+ * Purpose: Enveloppe d'un formulaire avec un titre, un loader et des boutons d'action.
+ * Scope: Projette les champs et affiche l'état d'enregistrement.
+ * Limits: Ne possède aucun modèle de formulaire ; la page le fournit.
  */
 @Component( {
     selector: 'app-form',

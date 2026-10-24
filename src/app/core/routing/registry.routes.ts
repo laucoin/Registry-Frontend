@@ -5,9 +5,9 @@ import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
 import { RouteSeoModel, SEO_DATA_KEY } from '@core/seo/route-seo.model'
 
 /**
- * Purpose: Declares the top-level routes of the application.
- * Scope: Lazy loads each page and applies the authentication guard to the signed-in areas.
- * Limits: Holds no navigation logic; the guards and the pages own it.
+ * Purpose: Déclare les routes de premier niveau de l'application.
+ * Scope: Charge chaque page paresseusement et applique le guard d'authentification aux espaces connectés.
+ * Limits: Ne détient aucune logique de navigation ; les guards et les pages la possèdent.
  */
 export const routes: Routes = [
 	{

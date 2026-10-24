@@ -65,9 +65,9 @@ import { FormComponent } from '@shared/ui/common/form/form.component'
 import { SelectElementsFieldComponent } from '@shared/ui/common/select-elements-field/select-elements-field.component'
 
 /**
- * Purpose: Page with the form to create or edit a movement of registered participants.
- * Scope: Walks through the information, content and vehicle steps, submits through the facade and navigates back.
- * Limits: Holds no domain state, never calls the backend and knows nothing about guests.
+ * Purpose: Page avec le formulaire de création ou d'édition d'un mouvement de participants inscrits.
+ * Scope: Parcourt les étapes d'information, de contenu et de véhicule, soumet via la facade et navigue en arrière.
+ * Limits: Ne détient aucun état de domaine, n'appelle jamais le backend et ne connaît rien des invités.
  */
 @Component( {
     selector: 'app-registered-movement-form',

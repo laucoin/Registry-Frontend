@@ -3,9 +3,9 @@ import { getState, patchState, signalStoreFeature, type, withHooks } from '@ngrx
 import { ProfileResetService } from '@shared/helpers/store/profile-reset.service'
 
 /**
- * Purpose: Signal store feature that resets a store on a profile switch.
- * Scope: Registers the store reset with the profile reset service and unregisters it on destroy.
- * Limits: Preserved data is chosen by the store; it does not reset on route changes.
+ * Purpose: Feature de signal store qui réinitialise un store lors d'un changement de profil.
+ * Scope: Enregistre la réinitialisation du store auprès du service de réinitialisation de profil et la désenregistre à la destruction.
+ * Limits: Les données conservées sont choisies par le store ; il ne se réinitialise pas aux changements de route.
  */
 export function withProfileScope<S extends object> (initial: S, preserve?: (current: S) => Partial<S>) {
     return signalStoreFeature(

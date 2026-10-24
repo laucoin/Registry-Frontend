@@ -1,9 +1,9 @@
 import { Directive, ElementRef, inject } from '@angular/core'
 
 /**
- * Purpose: Ends a text that overflows its container with an ellipsis.
- * Scope: Truncates the host on one line, lets it shrink inside a flex row, and shows the full text as a tooltip once the pointer is over a truncated host.
- * Limits: Does not override a title the host already has; a host that must wrap its text should not use it.
+ * Purpose: Termine par une ellipse un texte qui déborde de son conteneur.
+ * Scope: Tronque l'hôte sur une ligne, le laisse rétrécir dans une ligne flex, et affiche le texte complet en infobulle quand le pointeur survole un hôte tronqué.
+ * Limits: N'écrase pas un titre que l'hôte possède déjà ; un hôte dont le texte doit passer à la ligne ne doit pas l'utiliser.
  */
 @Directive( {
     selector: '[appEllipsis]',

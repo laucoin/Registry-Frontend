@@ -11,9 +11,9 @@ import { isProjectProfile, ListedProfileModel, profileProjectId } from '@shared/
 import { ProjectProfileModel } from '@shared/models/model/project-profile.model'
 
 /**
- * Purpose: Tells which commands a project profile of a list offers to the signed-in user and runs them.
- * Scope: Builds the action menu (select, edit, block, unblock, delete) with its confirmations, and answers an invitation after a confirmation; deleting one's own profile asks for a typed phrase.
- * Limits: Holds no state; it only reads the session and calls the profile facades. The backend still checks every command.
+ * Purpose: Indique quelles commandes un profil de projet d'une liste offre à l'utilisateur connecté et les exécute.
+ * Scope: Construit le menu d'actions (sélectionner, modifier, bloquer, débloquer, supprimer) avec ses confirmations, et répond à une invitation après confirmation ; supprimer son propre profil demande une phrase à saisir.
+ * Limits: Ne détient aucun état ; lit seulement la session et appelle les facades des profils. Le backend vérifie toujours chaque commande.
  */
 @Injectable()
 export class ProjectProfileActions extends ElementActionsBase<ListedProfileModel> {

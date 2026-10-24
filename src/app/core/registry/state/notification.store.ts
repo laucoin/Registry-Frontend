@@ -7,9 +7,9 @@ import { NotificationModel } from '@shared/models/model/notification.model'
 import { StringHelper } from '@shared/helpers/string.helper'
 
 /**
- * Purpose: Relays notifications and confirmation requests as events to their display components.
- * Scope: Owns one subject per kind so that every event reaches its listener, even several in the same tick; drops unauthorized notices and fills empty ones.
- * Limits: Holds no history; a late listener does not receive past messages.
+ * Purpose: Relaie les notifications et les demandes de confirmation sous forme d'événements vers leurs composants d'affichage.
+ * Scope: Possède un subject par type pour que chaque événement atteigne son écouteur, même plusieurs dans le même tick ; abandonne les avis non autorisés et remplit les vides.
+ * Limits: Ne détient aucun historique ; un écouteur tardif ne reçoit pas les messages passés.
  */
 export const NotificationStore = signalStore(
     { providedIn: 'root' },

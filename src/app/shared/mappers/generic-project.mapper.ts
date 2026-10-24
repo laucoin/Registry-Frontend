@@ -3,9 +3,9 @@ import { GenericProjectResponseDto } from '@shared/models/dto/response/generic-p
 import { GenericMapper } from '@shared/mappers/generic.mapper'
 
 /**
- * Purpose: Converts a GenericProject response of the backend into the GenericProject model.
- * Scope: Copies each field and keeps the id of the project the element belongs to.
- * Limits: Does not validate, rename or compute any value; the backend contract is trusted.
+ * Purpose: Convertit une réponse GenericProject du backend en modèle GenericProject.
+ * Scope: Copie chaque champ et conserve l'id du projet auquel l'élément appartient.
+ * Limits: Ne valide, ne renomme ni ne calcule aucune valeur ; le contrat du backend est considéré comme fiable.
  */
 export class GenericProjectMapper {
     public static toModel (dto: GenericProjectResponseDto): GenericProjectModel {

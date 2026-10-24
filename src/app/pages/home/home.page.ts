@@ -11,9 +11,9 @@ import { HomeQuickAccessComponent } from '@pages/home/widgets/home-quick-access/
 import { UserAuthorityEnum } from '@shared/models/enumeration/user-authority.enum'
 
 /**
- * Purpose: Global home page of the signed-in user.
- * Scope: Greets the user and lays out the home widgets: favorite projects, invitations, projects needing attention and quick access.
- * Limits: Loads nothing itself; each widget reads its own data.
+ * Purpose: Page d'accueil globale de l'utilisateur connecté.
+ * Scope: Accueille l'utilisateur et dispose les widgets d'accueil : projets favoris, invitations, projets nécessitant de l'attention et accès rapide.
+ * Limits: Ne charge rien lui-même ; chaque widget lit ses propres données.
  */
 @Component({
 	selector: 'app-home',

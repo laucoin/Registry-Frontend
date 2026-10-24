@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core'
 
 /**
- * Purpose: Lets route-scoped stores reset together on a profile switch.
- * Scope: Keeps the registered reset callbacks and runs them all.
- * Limits: Does not decide when a profile switch happens.
+ * Purpose: Permet aux stores limités à une route de se réinitialiser ensemble lors d'un changement de profil.
+ * Scope: Conserve les callbacks de réinitialisation enregistrés et les exécute tous.
+ * Limits: Ne décide pas du moment où un changement de profil a lieu.
  */
 @Injectable( { providedIn: 'root' } )
 export class ProfileResetService {

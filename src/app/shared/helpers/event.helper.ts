@@ -1,7 +1,7 @@
 /**
- * Purpose: Reads the events raised by the web components.
- * Scope: Tells whether an event comes from the element that listens to it and not from a nested one, and reads the value of the field that raised it.
- * Limits: No state; it does not stop the propagation.
+ * Purpose: Lit les événements levés par les web components.
+ * Scope: Indique si un événement vient de l'élément qui l'écoute et non d'un élément imbriqué, et lit la valeur du champ qui l'a levé.
+ * Limits: Aucun état ; n'arrête pas la propagation.
  */
 export class EventHelper {
     public static isFromHost (event: Event): boolean {

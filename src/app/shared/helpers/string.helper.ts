@@ -1,9 +1,9 @@
 import { GenericHelper } from '@shared/helpers/generic.helper'
 
 /**
- * Purpose: String utilities.
- * Scope: Cache busting, truncation, blank checks, number conversion, digit padding, and title case.
- * Limits: No translation and no browser access.
+ * Purpose: Utilitaires de chaînes.
+ * Scope: Invalidation de cache, troncature, vérifications de blancs, conversion de nombres, remplissage de chiffres et casse de titre.
+ * Limits: Aucune traduction et aucun accès au navigateur.
  */
 export class StringHelper {
     public static addCacheBustingToUrl (url: string): string {

@@ -25,9 +25,9 @@ const dayOf = (time: number): string => {
 }
 
 /**
- * Purpose: Reloads on-screen data in the background so it never stays stale.
- * Scope: Keeps the registered sources, follows whether the host element of each one is on screen, checks them on one global tick and reloads each one that is due: past its interval for its kind (set by the user's refresh mode) or, for day-bound data, past midnight. Does nothing for a source off screen, while the tab is hidden or the browser is offline, and checks again as soon as one of them changes.
- * Limits: Does not fetch anything itself (the registered `reload` does, silently) and ignores sources that are not registered; registration is done through `injectAutoRefresh`.
+ * Purpose: Recharge en arrière-plan les données à l'écran pour qu'elles ne soient jamais périmées.
+ * Scope: Conserve les sources enregistrées, suit si l'élément hôte de chacune est à l'écran, les vérifie sur un tick global unique et recharge chacune de celles qui sont dues : au-delà de son intervalle pour son type (fixé par le mode de rafraîchissement de l'utilisateur) ou, pour les données journalières, après minuit. Ne fait rien pour une source hors écran, quand l'onglet est caché ou que le navigateur est hors ligne, et revérifie dès que l'une d'elles change.
+ * Limits: Ne récupère rien lui-même (le `reload` enregistré le fait, en silence) et ignore les sources non enregistrées ; l'enregistrement passe par `injectAutoRefresh`.
  */
 @Injectable( { providedIn: 'root' } )
 export class RefreshService {
@@ -44,7 +44,7 @@ export class RefreshService {
         } )
     }
 
-    /** Registers a source that was just loaded and returns the function that unregisters it. */
+    /** Enregistre une source qui vient d'être chargée et renvoie la fonction qui la désenregistre. */
     public register (source: RefreshSourceModel): () => void {
         const now: number = Date.now()
         const entry: RefreshEntry = { ...source, lastRunAt: now, lastRunDay: dayOf( now ), visible: true }
@@ -59,7 +59,7 @@ export class RefreshService {
         }
     }
 
-    /** Reloads every source that is due and on screen; called on each tick and when visibility or the network changes. */
+    /** Recharge chaque source due et à l'écran ; appelé à chaque tick et quand la visibilité ou le réseau change. */
     public check (): void {
         if (!this.tabVisible || !this.browser.online) return
 

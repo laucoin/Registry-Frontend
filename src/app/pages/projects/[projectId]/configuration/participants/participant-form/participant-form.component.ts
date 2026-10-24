@@ -41,9 +41,9 @@ import {PluralTranslationPipe} from '@shared/helpers/pipe/plural-translation.pip
 import { ETagHelper } from '@shared/helpers/etag.helper'
 
 /**
- * Purpose: Form fields of a participant.
- * Scope: Builds the participant fields shared by creation and edition.
- * Limits: Does not submit; the participant page does.
+ * Purpose: Champs de formulaire d'un participant.
+ * Scope: Construit les champs de participant partagés par la création et l'édition.
+ * Limits: Ne soumet pas ; la page du participant le fait.
  */
 @Component({
     selector: 'app-participant-form',

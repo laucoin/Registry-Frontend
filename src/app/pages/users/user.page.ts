@@ -2,9 +2,9 @@ import { Component } from '@angular/core'
 import { RouterOutlet } from '@angular/router'
 
 /**
- * Purpose: Routing shell of the user section.
- * Scope: Renders the child routes of the section.
- * Limits: Holds no data of its own.
+ * Purpose: Coque de routage de la section des utilisateurs.
+ * Scope: Affiche les routes enfants de la section.
+ * Limits: Ne détient aucune donnée propre.
  */
 @Component( {
     selector: 'app-user',

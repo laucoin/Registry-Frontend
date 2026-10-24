@@ -23,9 +23,9 @@ interface UiStoreModel {
 }
 
 /**
- * Purpose: Holds the shell display state: theme, refresh mode, screen width, network, language change in flight and error.
- * Scope: Owns that state, remembers the theme in a cookie for the next visit, follows the viewport width and applies the theme on the document through the browser service.
- * Limits: Knows nothing about the user or the session and does not call the backend.
+ * Purpose: Détient l'état d'affichage de la coque : thème, mode de rafraîchissement, largeur d'écran, réseau, changement de langue en cours et erreur.
+ * Scope: Possède cet état, mémorise le thème dans un cookie pour la prochaine visite, suit la largeur du viewport et applique le thème sur le document via le service du navigateur.
+ * Limits: Ne sait rien de l'utilisateur ni de la session et n'appelle pas le backend.
  */
 export const UiStore = signalStore(
     { providedIn: 'root' },

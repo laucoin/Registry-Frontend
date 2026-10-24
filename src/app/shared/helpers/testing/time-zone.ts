@@ -5,9 +5,9 @@ interface NodeProcess {
 }
 
 /**
- * Purpose: Runs the tests of the enclosing `describe` in a fixed time zone.
- * Scope: Sets the `TZ` variable of the test process before each test and restores it after.
- * Limits: Only for tests; it relies on the Node process of the test runner.
+ * Purpose: Exécute les tests du `describe` englobant dans un fuseau horaire fixe.
+ * Scope: Positionne la variable `TZ` du processus de test avant chaque test et la restaure après.
+ * Limits: Uniquement pour les tests ; s'appuie sur le processus Node du lanceur de tests.
  */
 export function useTimeZone (zone: string): void {
     const env: Record<string, string | undefined> = (globalThis as unknown as { process: NodeProcess }).process.env

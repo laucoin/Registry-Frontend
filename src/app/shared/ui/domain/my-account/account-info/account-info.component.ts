@@ -12,9 +12,9 @@ import '@sgdf/ui/table-cell'
 import '@sgdf/ui/table-row'
 
 /**
- * Purpose: Shows the read-only identity of the signed-in user: name, e-mail, role and last sign-in.
- * Scope: Reads the current user from the session facade and displays a skeleton while it loads.
- * Limits: Edits nothing; these values belong to the identity provider.
+ * Purpose: Affiche l'identité en lecture seule de l'utilisateur connecté : nom, e-mail, rôle et dernière connexion.
+ * Scope: Lit l'utilisateur courant depuis la facade de session et affiche un squelette pendant son chargement.
+ * Limits: Ne modifie rien ; ces valeurs appartiennent au fournisseur d'identité.
  */
 @Component({
 	imports: [

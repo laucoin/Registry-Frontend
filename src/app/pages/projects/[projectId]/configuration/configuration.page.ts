@@ -15,9 +15,9 @@ import { ProjectDangerZoneComponent } from '@shared/ui/domain/project-danger-zon
 import { ProjectModel } from '@shared/models/model/project.model'
 
 /**
- * Purpose: Landing page of the project configuration.
- * Scope: Shows the project information and one tile per configuration area the user may open, with the counts of the selected project.
- * Limits: Reads the selected project only; never calls the backend.
+ * Purpose: Page d'atterrissage de la configuration du projet.
+ * Scope: Affiche les informations du projet et une tuile par espace de configuration que l'utilisateur peut ouvrir, avec les compteurs du projet sélectionné.
+ * Limits: Lit uniquement le projet sélectionné ; n'appelle jamais le backend.
  */
 @Component({
 	selector: 'app-configuration',
@@ -40,7 +40,7 @@ export class ConfigurationPage {
 		return this.project()?.counts?.[tile.count]
 	}
 
-	// Absolute: without the leading slash `routerLink` resolves the url from the current route and ends on the wildcard
+	// Absolu : sans le slash initial, `routerLink` résout l'url depuis la route courante et finit sur le wildcard
 	private resolveUrl(url: string): string {
 		return RouteHelper.absolute(url as RegistryRouteEnum).replace(':projectId', this.sessionFacade.currentProjectId() ?? '')
 	}

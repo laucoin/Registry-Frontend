@@ -29,9 +29,9 @@ import { ProjectVehicleOverviewComponent } from '@shared/ui/domain/project-vehic
 const PAGE_SIZE: number = 20
 
 /**
- * Purpose: Page tracking where the project vehicles are.
- * Scope: Shows the vehicle counters on desktop above a searchable list of the vehicles with their presence status and a "load more" trigger.
- * Limits: Holds no domain state; the vehicle facade owns it. Reachable only when the project has the vehicle option.
+ * Purpose: Page de suivi de l'endroit où se trouvent les véhicules du projet.
+ * Scope: Affiche les compteurs de véhicules sur ordinateur au-dessus d'une liste interrogeable des véhicules avec leur statut de présence et un déclencheur « charger plus ».
+ * Limits: Ne détient aucun état de domaine ; la facade des véhicules le possède. Accessible uniquement quand le projet a l'option véhicule.
  */
 @Component({
     selector: 'app-vehicles-monitoring',

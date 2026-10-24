@@ -29,9 +29,9 @@ import { ListComponent } from '@shared/ui/common/list/list.component'
 import { MovementElementComponent } from '@shared/ui/domain/movement-element/movement-element.component'
 
 /**
- * Purpose: Page listing the movements of the selected project with search and a "load more" trigger.
- * Scope: Binds the list component to the movement facade and owns the search form; each row is a movement element.
- * Limits: Holds no domain state and never calls the backend.
+ * Purpose: Page listant les mouvements du projet sélectionné avec recherche et déclencheur « charger plus ».
+ * Scope: Lie le composant de liste à la facade des mouvements et possède le formulaire de recherche ; chaque ligne est un élément de mouvement.
+ * Limits: Ne détient aucun état de domaine et n'appelle jamais le backend.
  */
 @Component({
     selector: 'app-movements-list',

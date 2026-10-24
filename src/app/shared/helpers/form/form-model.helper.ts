@@ -1,9 +1,9 @@
 import { SelectOptionModel } from '@shared/models/model/select-option.model'
 
 /**
- * Purpose: Builds the values a signal form model is made of.
- * Scope: Deep copies the objects and lists fed to a form so it can track them without touching their source, and exposes search suggestions whose selected value is the whole option.
- * Limits: Handles plain data only; values holding functions cannot be copied.
+ * Purpose: Construit les valeurs dont est fait le modèle d'un signal form.
+ * Scope: Copie en profondeur les objets et listes fournis à un formulaire pour qu'il puisse les suivre sans toucher à leur source, et expose des suggestions de recherche dont la valeur sélectionnée est l'option entière.
+ * Limits: Ne gère que des données simples ; les valeurs contenant des fonctions ne peuvent pas être copiées.
  */
 export interface SelectableItem<T> extends SelectOptionModel<T> {
     self: SelectOptionModel<T>

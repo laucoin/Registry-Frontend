@@ -31,9 +31,9 @@ interface PlannedMovementRow {
 }
 
 /**
- * Purpose: Card listing the movements planned for the day, used for the arrivals and for the departures.
- * Scope: Displays the first planned movements with who is concerned, how many people and at what time, plus the loading, error and empty states.
- * Limits: Holds no data and loads nothing; the parent feeds the movements and reacts to the retry. A click on a row opens the movement form prefilled with that movement.
+ * Purpose: Carte listant les mouvements prévus pour la journée, utilisée pour les arrivées et pour les départs.
+ * Scope: Affiche les premiers mouvements prévus avec les personnes concernées, leur nombre et l'heure, ainsi que les états de chargement, d'erreur et de vide.
+ * Limits: Ne détient aucune donnée et ne charge rien ; le parent fournit les mouvements et réagit au nouvel essai. Un clic sur une ligne ouvre le formulaire de mouvement prérempli avec ce mouvement.
  */
 @Component({
 	imports: [

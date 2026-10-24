@@ -69,9 +69,9 @@ enum AlertModulableFieldEnum {
 
 
 /**
- * Purpose: Form to create or edit a communication.
- * Scope: Links the communication to a movement or an alert and submits through the communication facade.
- * Limits: Does not decide where to navigate after submit.
+ * Purpose: Formulaire de création ou d'édition d'une communication.
+ * Scope: Lie la communication à un mouvement ou une alerte et la soumet via la facade des communications.
+ * Limits: Ne décide pas de la navigation après la soumission.
  */
 @Component( {
     selector: 'app-communication-form',

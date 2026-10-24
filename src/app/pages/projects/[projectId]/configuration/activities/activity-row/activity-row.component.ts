@@ -17,9 +17,9 @@ const INITIALS_LENGTH: number = 2
 type TagVariant = 'success' | 'info'
 
 /**
- * Purpose: Row template of a activity in a list.
- * Scope: Holds the `sgdf-list-item` of a activity (name, details, availability dates, status and action menu) and exposes it as a template the list pages render inside their own list.
- * Limits: Renders nothing by itself; the page decides where the template is used. Commands are delegated to ActivityActions.
+ * Purpose: Template de ligne d'une activité dans une liste.
+ * Scope: Contient le `sgdf-list-item` d'une activité (nom, détails, dates de disponibilité, statut et menu d'actions) et l'expose comme un template que les pages de liste affichent dans leur propre liste.
+ * Limits: N'affiche rien par lui-même ; la page décide où le template est utilisé. Les commandes sont déléguées à ActivityActions.
  */
 @Component({
     selector: 'app-activity-row',

@@ -49,9 +49,9 @@ import { ThemeChoiceModel } from '@shared/models/model/theme-choice.model'
 const UNAUTHORIZED_STATUS: number = 401
 
 /**
- * Purpose: Public entry point for the signed-in user and its session: sign-in and sign-out, current user, selected project, theme and language preferences.
- * Scope: Exposes the session store as signals, calls the backend for the session flows and applies the user's theme and language to the shell.
- * Limits: Does not handle the user's project profiles and invitations; the user profile facade does.
+ * Purpose: Point d'entrée public de l'utilisateur connecté et de sa session : connexion et déconnexion, utilisateur courant, projet sélectionné, préférences de thème et de langue.
+ * Scope: Expose le store de session sous forme de signals, appelle le backend pour les flux de session et applique le thème et la langue de l'utilisateur à la coque.
+ * Limits: Ne gère pas les profils de projet ni les invitations de l'utilisateur ; la facade des profils utilisateur le fait.
  */
 @Injectable( { providedIn: 'root' } )
 export class SessionFacade {
@@ -304,7 +304,7 @@ export class SessionFacade {
         ))
     }
 
-    // A refused authorization code (expired or already used) sends the user back to the login page: say why.
+    // Un code d'autorisation refusé (expiré ou déjà utilisé) renvoie l'utilisateur vers la page de connexion : dire pourquoi.
     private signInFailed$(error: ErrorModel): Observable<never> {
         if (error.status !== HttpStatusCode.Unauthorized) return this.globalError$(error)
         this.uiFacade.notify(StateHelper.buildNotificationMessage(

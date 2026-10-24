@@ -4,9 +4,9 @@ import { GenericProjectMapper } from '@shared/mappers/generic-project.mapper'
 import { UserMapper } from '@shared/mappers/user.mapper'
 
 /**
- * Purpose: Converts a ProjectProfile response of the backend into the ProjectProfile model.
- * Scope: Copies each field and delegates the nested entities to their own mappers.
- * Limits: Does not validate, rename or compute any value; the backend contract is trusted.
+ * Purpose: Convertit une réponse ProjectProfile du backend en modèle ProjectProfile.
+ * Scope: Copie chaque champ et délègue les entités imbriquées à leurs propres mappers.
+ * Limits: Ne valide, ne renomme ni ne calcule aucune valeur ; le contrat du backend est considéré comme fiable.
  */
 export class ProjectProfileMapper {
     public static toModel (dto: ProjectProfileResponseDto): ProjectProfileModel {

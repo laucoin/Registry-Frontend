@@ -1,7 +1,7 @@
 import { ProjectProfileModel } from '@shared/models/model/project-profile.model'
 import { UserInvitationModel } from '@shared/models/model/user-invitation.model'
 
-/** A profile as listed either from the project (with its user) or from the user (with its project summary). */
+/** Un profil tel que listé depuis le projet (avec son utilisateur) ou depuis l'utilisateur (avec le résumé de son projet). */
 export type ListedProfileModel = ProjectProfileModel | UserInvitationModel
 
 export function isProjectProfile (profile: ListedProfileModel): profile is ProjectProfileModel {

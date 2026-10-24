@@ -3,9 +3,9 @@ import {TranslocoService} from '@jsverse/transloco'
 import { DatePipe } from '@angular/common'
 
 /**
- * Purpose: Formats a date with the translated pattern of a type.
- * Scope: Supports date, time and datetime.
- * Limits: Returns undefined for an empty value.
+ * Purpose: Formate une date avec le motif traduit d'un type.
+ * Scope: Gère date, time et datetime.
+ * Limits: Renvoie undefined pour une valeur vide.
  */
 @Pipe( {
     name: 'dateFormat', standalone: true, pure: false,

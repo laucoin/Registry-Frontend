@@ -129,7 +129,7 @@ describe( 'BaseFormComponent', () => {
         [ 'an edit route of two segments', [ { path: 'v1' }, { path: 'edit' } ], [ '../..' ] ],
         [ 'a route without segment', [], [ '..' ] ],
     ] )( 'closes a dialog form on the parent route from %s', (_label: string, url: object[], expected: string[]) => {
-        // Arrange : the case comes from the table
+        // Arrange : le cas vient de la table
         TestBed.overrideProvider( ActivatedRoute, { useValue: { snapshot: { url } } } )
         const form: TestDialogForm = TestBed.runInInjectionContext( (): TestDialogForm => new TestDialogForm() )
 

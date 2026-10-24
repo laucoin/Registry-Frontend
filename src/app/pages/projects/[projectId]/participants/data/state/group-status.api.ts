@@ -17,9 +17,9 @@ const GROUPS_PARAMS: object = { hasOnSiteMembers: true, isVisible: true, sort: '
 const MEMBERS_PARAMS: object = { onSite: true, isVisible: true, sort: 'status' }
 
 /**
- * Purpose: Sends the HTTP requests of the group status domain: the groups with the presence counters of their on-site members, and those members.
- * Scope: Returns the visible groups of a project having members on site, or only those of the participant linked to the signed-in user, without their members; returns the on-site members of one group apart.
- * Limits: Holds no state and handles no error; stores and facades do.
+ * Purpose: Envoie les requêtes HTTP du domaine du statut des groupes : les groupes avec les compteurs de présence de leurs membres sur site, et ces membres.
+ * Scope: Renvoie les groupes visibles d'un projet ayant des membres sur site, ou seulement ceux du participant lié à l'utilisateur connecté, sans leurs membres ; renvoie à part les membres sur site d'un groupe.
+ * Limits: Ne détient aucun état et ne gère aucune erreur ; les stores et les facades le font.
  */
 @Injectable( { providedIn: 'root' } )
 export class GroupStatusApi extends GenericProjectApi {

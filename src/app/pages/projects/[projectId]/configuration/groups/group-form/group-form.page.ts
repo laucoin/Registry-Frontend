@@ -34,9 +34,9 @@ import { GenericHelper } from '@shared/helpers/generic.helper'
 import { ETagHelper } from '@shared/helpers/etag.helper'
 
 /**
- * Purpose: Page with the form to create or edit a group.
- * Scope: Builds the form, submits it through the facade and navigates back.
- * Limits: Holds no domain state and never calls the backend.
+ * Purpose: Page avec le formulaire de création ou d'édition d'un groupe.
+ * Scope: Construit le formulaire, le soumet via la facade et navigue en arrière.
+ * Limits: Ne détient aucun état de domaine et n'appelle jamais le backend.
  */
 @Component( {
     selector: 'app-group-form',

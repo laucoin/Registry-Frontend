@@ -51,7 +51,7 @@ describe( 'FieldErrorHelper', () => {
         [ 'incompatibleReason', { kind: 'incompatibleReason', reason: 'X' }, '', 'incompatibleReason', { reason: 'X' } ],
         [ 'preRequiredOptions', { kind: 'preRequiredOptions', for: 'A', missing: 'B' }, '', 'preRequiredOptions', { for: 'A', missing: 'B' } ],
     ] )( 'maps the %s error to its translation key and parameters', (_name: string, error: object, value: unknown, key: string, params: object) => {
-        // Arrange : the case comes from the table
+        // Arrange : le cas vient de la table
         const translate: Mock<(key: string, params: object) => string> = vi.fn( (): string => 'text' )
 
         // Act

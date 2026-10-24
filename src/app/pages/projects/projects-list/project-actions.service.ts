@@ -24,9 +24,9 @@ interface ProjectActionSpec {
 }
 
 /**
- * Purpose: Tells which commands a project of the list offers to the signed-in user and runs them.
- * Scope: Builds the action menu (edit, hide, show, delete) with its confirmations, and the join and support-profile commands of one project.
- * Limits: Holds no state; it only reads the session and calls the project and profile facades. The backend still checks every command.
+ * Purpose: Indique quelles commandes un projet de la liste offre à l'utilisateur connecté et les exécute.
+ * Scope: Construit le menu d'actions (modifier, masquer, réafficher, supprimer) avec ses confirmations, et les commandes de rejoindre et de profil de support d'un projet.
+ * Limits: Ne détient aucun état ; lit seulement la session et appelle les facades des projets et des profils. Le backend vérifie toujours chaque commande.
  */
 @Injectable()
 export class ProjectActions {

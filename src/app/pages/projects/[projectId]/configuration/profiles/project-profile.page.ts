@@ -2,9 +2,9 @@ import { Component } from '@angular/core'
 import { RouterOutlet } from '@angular/router'
 
 /**
- * Purpose: Routing shell of the project profile section.
- * Scope: Provides the facades and stores of the section to its child routes.
- * Limits: Holds no data of its own.
+ * Purpose: Coque de routage de la section des profils de projet.
+ * Scope: Fournit les facades et stores de la section à ses routes enfants.
+ * Limits: Ne détient aucune donnée propre.
  */
 @Component( {
     selector: 'app-project-profile',

@@ -31,9 +31,9 @@ import { PageEventModel } from '@shared/models/model/page-event.model'
 import { ListComponent } from '@shared/ui/common/list/list.component'
 
 /**
- * Purpose: Page listing the project profiles of the selected project with search and a "load more" trigger.
- * Scope: Binds the list component to the project profile facade, owns the search form and gives the list the row template of a project profile.
- * Limits: Holds no domain state and never calls the backend.
+ * Purpose: Page listant les profils de projet du projet sélectionné avec recherche et déclencheur « charger plus ».
+ * Scope: Lie le composant de liste à la facade des profils de projet, possède le formulaire de recherche et donne à la liste le template de ligne d'un profil de projet.
+ * Limits: Ne détient aucun état de domaine et n'appelle jamais le backend.
  */
 @Component({
     selector: 'app-project-profiles-list',

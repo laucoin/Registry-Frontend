@@ -9,9 +9,9 @@ const optionIcons: Map<ProjectOptionEnum, string> = new Map<ProjectOptionEnum, s
 ] )
 
 /**
- * Purpose: Gives the icon of a project option.
- * Scope: Maps each option to its `@sgdf/ui` solid icon name.
- * Limits: Returns an empty text for an unknown option.
+ * Purpose: Donne l'icône d'une option de projet.
+ * Scope: Mappe chaque option vers le nom de son icône solid `@sgdf/ui`.
+ * Limits: Renvoie un texte vide pour une option inconnue.
  */
 @Pipe( {
     name: 'optionIcon', standalone: true,

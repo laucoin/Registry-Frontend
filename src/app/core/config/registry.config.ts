@@ -19,9 +19,9 @@ import { firstValueFrom } from 'rxjs'
 import { version } from '../../../../package.json';
 
 /**
- * Purpose: Loads the runtime configuration and builds the providers that depend on it.
- * Scope: Owns the config and environment JSON loading, the Transloco configuration.
- * Limits: Nothing is compiled into the bundle; it does not read user preferences beyond the remembered or browser locale.
+ * Purpose: Charge la configuration d'exécution et construit les providers qui en dépendent.
+ * Scope: Possède le chargement des JSON de config et d'environnement, la configuration de Transloco.
+ * Limits: Rien n'est compilé dans le bundle ; ne lit pas les préférences de l'utilisateur au-delà de la locale mémorisée ou de celle du navigateur.
  */
 @Injectable({
 	providedIn: 'root',

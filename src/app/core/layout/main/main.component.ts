@@ -6,9 +6,9 @@ import { FooterComponent } from "@core/layout/footer/footer.component";
 import { NavbarComponent } from "@core/layout/navbar/navbar.component";
 
 /**
- * Purpose: Shell of the authenticated pages.
- * Scope: Frames the routed page between the navbar and the footer.
- * Limits: Holds no state and contains no business logic.
+ * Purpose: Coque des pages authentifiées.
+ * Scope: Encadre la page routée entre la barre de navigation et le pied de page.
+ * Limits: Ne détient aucun état et ne contient aucune logique métier.
  */
 @Component({
 	selector: 'app-main',

@@ -6,9 +6,9 @@ import { provideTranslocoScope, TranslocoPipe } from '@jsverse/transloco'
 import { BackNavigationDirective } from '@shared/directives/back-navigation.directive'
 
 /**
- * Purpose: Static terms-of-service page, personalized with the organization, creator and hosting information.
- * Scope: Renders the translated legal copy with the runtime configuration values interpolated.
- * Limits: Does not fetch data or hold any state of its own.
+ * Purpose: Page statique des conditions d'utilisation, personnalisée avec les informations de l'organisation, du créateur et de l'hébergement.
+ * Scope: Affiche le texte légal traduit avec les valeurs de la configuration d'exécution interpolées.
+ * Limits: Ne récupère aucune donnée et ne détient aucun état propre.
  */
 @Component({
 	selector: 'app-terms',

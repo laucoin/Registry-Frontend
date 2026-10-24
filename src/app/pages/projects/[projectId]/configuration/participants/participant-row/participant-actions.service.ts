@@ -10,9 +10,9 @@ import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
 import { ParticipantModel } from '@shared/models/model/participant.model'
 
 /**
- * Purpose: Tells which commands a participant of a list offers to the signed-in user and runs them.
- * Scope: Builds the action menu (movements history, edit, hide, show, remove from a group, data export, delete) with its confirmations; the group to remove a member from is the optional context.
- * Limits: Holds no state; it only reads the session and calls the participant and group facades. The backend still checks every command.
+ * Purpose: Indique quelles commandes un participant d'une liste offre à l'utilisateur connecté et les exécute.
+ * Scope: Construit le menu d'actions (historique des mouvements, modifier, masquer, réafficher, retirer d'un groupe, export des données, supprimer) avec ses confirmations ; le groupe dont retirer un membre est le contexte optionnel.
+ * Limits: Ne détient aucun état ; lit seulement la session et appelle les facades des participants et des groupes. Le backend vérifie toujours chaque commande.
  */
 @Injectable()
 export class ParticipantActions extends ElementActionsBase<ParticipantModel, string> {

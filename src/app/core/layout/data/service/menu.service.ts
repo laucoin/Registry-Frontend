@@ -10,9 +10,9 @@ import { ProjectModel } from '@shared/models/model/project.model'
 import { filter, map, startWith } from 'rxjs'
 
 /**
- * Purpose: Gives the navigation menus the signed-in user is allowed to see.
- * Scope: Filters the menu definitions by the user authorities and the project options, resolves the project urls and finds the menu matching the current url.
- * Limits: Filters for display only; the backend is the security boundary.
+ * Purpose: Donne les menus de navigation que l'utilisateur connecté a le droit de voir.
+ * Scope: Filtre les définitions de menus selon les autorités de l'utilisateur et les options du projet, résout les urls de projet et trouve le menu correspondant à l'url courante.
+ * Limits: Filtre pour l'affichage uniquement ; le backend est la frontière de sécurité.
  */
 @Injectable({ providedIn: 'root' })
 export class MenuService {

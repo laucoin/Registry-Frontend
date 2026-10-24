@@ -11,9 +11,9 @@ import '@sgdf/ui/table-cell'
 import '@sgdf/ui/table-row'
 
 /**
- * Purpose: Lets the signed-in user pick the light, dark or system theme of the application.
- * Scope: Shows the choices of the session facade as buttons, marks the active one and forwards the selection.
- * Limits: Does not decide which choices exist nor skip a redundant selection, set the theme on the document or persist it; the session facade does.
+ * Purpose: Permet à l'utilisateur connecté de choisir le thème clair, sombre ou système de l'application.
+ * Scope: Affiche les choix de la facade de session sous forme de boutons, marque le choix actif et relaie la sélection.
+ * Limits: Ne décide pas des choix existants, n'évite pas une sélection redondante, ne pose pas le thème sur le document et ne le persiste pas ; la facade de session le fait.
  */
 @Component({
 	imports: [

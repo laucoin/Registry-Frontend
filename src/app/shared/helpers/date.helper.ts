@@ -12,9 +12,9 @@ const MONTH_MS: number = 30 * DAY_MS
 const YEAR_MS: number = 12 * MONTH_MS
 
 /**
- * Purpose: Date, time and duration utilities shared by forms, filters and pipes.
- * Scope: Converts between dates, ISO date, time and duration strings and custom date times, compares and sorts them, and splits a span into units.
- * Limits: Works on the local clock for display and on UTC for transport; it does not format for the user.
+ * Purpose: Utilitaires de date, d'heure et de durée partagés par les formulaires, les filtres et les pipes.
+ * Scope: Convertit entre dates, date ISO, heure et chaînes de durée et dates-heures personnalisées, les compare et les trie, et découpe un intervalle en unités.
+ * Limits: Travaille sur l'horloge locale pour l'affichage et en UTC pour le transport ; ne formate pas pour l'utilisateur.
  */
 export class DateHelper {
     public static elapsedDays (from: Date | string, now: number): number {
@@ -74,7 +74,7 @@ export class DateHelper {
         return DateHelper.compareWith( actual, other, (a: CustomDatetimeModel, o: CustomDatetimeModel): boolean => ( DateHelper.toDate( a )?.getTime() ?? NaN ) >= ( DateHelper.toDate( o )?.getTime() ?? NaN ) )
     }
 
-    // Nothing to compare against never matches; a missing value always matches.
+    // Rien à comparer ne correspond jamais ; une valeur manquante correspond toujours.
     private static compareWith<T> (actual: T | undefined, other: T | undefined, matches: (actual: T, other: T) => boolean): boolean {
         if (GenericHelper.isNull( other )) return false
         return GenericHelper.isNull( actual ) || matches( actual!, other! )

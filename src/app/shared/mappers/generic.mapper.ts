@@ -3,9 +3,9 @@ import { GenericResponseDto } from '@shared/models/dto/response/generic.response
 import { HistoryMapper } from '@shared/mappers/history.mapper'
 
 /**
- * Purpose: Converts a Generic response of the backend into the Generic model.
- * Scope: Copies each field and delegates the nested entities to their own mappers.
- * Limits: Does not validate, rename or compute any value; the backend contract is trusted.
+ * Purpose: Convertit une réponse Generic du backend en modèle Generic.
+ * Scope: Copie chaque champ et délègue les entités imbriquées à leurs propres mappers.
+ * Limits: Ne valide, ne renomme ni ne calcule aucune valeur ; le contrat du backend est considéré comme fiable.
  */
 export class GenericMapper {
     public static toModel (dto: GenericResponseDto): GenericModel {

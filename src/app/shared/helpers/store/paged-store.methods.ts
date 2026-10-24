@@ -54,10 +54,10 @@ interface PageFetch<S extends object, K extends keyof S & string, R> {
 }
 
 /**
- * Purpose: Builds the rxMethod that loads one paged resource of a signal store.
- * Scope: Runs the given request with the current search parameters, scopes loading and errors to the block, then stores the page (merged with the shown one when a merge hook is given) and clears the reset flag.
- * Limits: Does not know the api; the caller gives the request. Optional hooks run before each request and after the page is stored; a hook that throws is reported and does not stop the method.
- * The `silent` hook builds a background refresh: it sets no loading flag and keeps the shown page and its state untouched when the request fails.
+ * Purpose: Construit le rxMethod qui charge une ressource paginée d'un signal store.
+ * Scope: Exécute la requête donnée avec les paramètres de recherche courants, borne le chargement et les erreurs au bloc, puis stocke la page (fusionnée avec celle affichée quand un hook de fusion est donné) et efface le drapeau de réinitialisation.
+ * Limits: Ne connaît pas l'api ; l'appelant fournit la requête. Des hooks optionnels s'exécutent avant chaque requête et après le stockage de la page ; un hook qui lève une exception est signalé et n'arrête pas la méthode.
+ * Le hook `silent` construit un rafraîchissement en arrière-plan : il ne positionne aucun drapeau de chargement et laisse la page affichée et son état intacts quand la requête échoue.
  */
 export function pageFetcher<S extends object, K extends keyof S & string, R> (
     store: StoreRef<S>,
@@ -74,9 +74,9 @@ export function pageFetcher<S extends object, K extends keyof S & string, R> (
 }
 
 /**
- * Purpose: Runs one page request of a paged resource.
- * Scope: Orders the before hook, the page loading, the commit and the error report.
- * Limits: The before hook runs inside the inner flow, so its exceptions are reported and never stop the method.
+ * Purpose: Exécute une requête de page d'une ressource paginée.
+ * Scope: Ordonne le hook before, le chargement de la page, le commit et le signalement d'erreur.
+ * Limits: Le hook before s'exécute dans le flux interne, ses exceptions sont donc signalées et n'arrêtent jamais la méthode.
  */
 function fetchPage<S extends object, K extends keyof S & string, R> (fetch: PageFetch<S, K, R>, request: R): Observable<PageOf<S[K]>> {
     return defer( (): Observable<PageOf<S[K]>> => {
@@ -89,9 +89,9 @@ function fetchPage<S extends object, K extends keyof S & string, R> (fetch: Page
 }
 
 /**
- * Purpose: Fetches the page of one request with the block's loading and error state.
- * Scope: Reads the search parameters when the request starts, after the before hook, and scopes loading to the block.
- * Limits: Does not store the page; the commit does.
+ * Purpose: Récupère la page d'une requête avec l'état de chargement et d'erreur du bloc.
+ * Scope: Lit les paramètres de recherche au départ de la requête, après le hook before, et borne le chargement au bloc.
+ * Limits: Ne stocke pas la page ; le commit le fait.
  */
 function loadPage<S extends object, K extends keyof S & string, R> (fetch: PageFetch<S, K, R>, request: R): Observable<PageOf<S[K]>> {
     const slice: ReturnType<typeof pageSlice> = pageSlice( fetch.store as never, fetch.key as never )
@@ -104,18 +104,18 @@ function loadPage<S extends object, K extends keyof S & string, R> (fetch: PageF
 }
 
 /**
- * Purpose: Reads the current state of one paged block of a store.
- * Scope: Returns the block under the given key.
- * Limits: Does not copy or narrow the block.
+ * Purpose: Lit l'état courant d'un bloc paginé d'un store.
+ * Scope: Renvoie le bloc sous la clé donnée.
+ * Limits: Ne copie ni ne restreint le bloc.
  */
 function readBlock<S extends object, K extends keyof S & string> (store: StoreRef<S>, key: K): PageBlock {
     return (store as unknown as Record<K, () => PageBlock>)[ key ]()
 }
 
 /**
- * Purpose: Stores a fetched page in its block.
- * Scope: Merges it with the shown page when a merge hook is given, stores it, then calls the after hook with the fetched page only.
- * Limits: Does not handle errors; the caller reports them.
+ * Purpose: Stocke une page récupérée dans son bloc.
+ * Scope: La fusionne avec la page affichée quand un hook de fusion est donné, la stocke, puis appelle le hook after avec la seule page récupérée.
+ * Limits: Ne gère pas les erreurs ; l'appelant les signale.
  */
 function commitPage<S extends object, K extends keyof S & string, R> (fetch: PageFetch<S, K, R>, request: R, fetched: PageOf<S[K]>): void {
     const current: PageOf<S[K]> | undefined = readBlock( fetch.store, fetch.key ).element as PageOf<S[K]> | undefined
@@ -125,9 +125,9 @@ function commitPage<S extends object, K extends keyof S & string, R> (fetch: Pag
 }
 
 /**
- * Purpose: Writes a page in its block and clears the reset flag.
- * Scope: Keeps the other fields of the block.
- * Limits: Does not merge pages.
+ * Purpose: Écrit une page dans son bloc et efface le drapeau de réinitialisation.
+ * Scope: Conserve les autres champs du bloc.
+ * Limits: Ne fusionne pas les pages.
  */
 function storePage<S extends object, K extends keyof S & string> (store: StoreRef<S>, key: K, page: unknown): void {
     patchState( store, (state: S) => ({
@@ -140,9 +140,9 @@ function storePage<S extends object, K extends keyof S & string> (store: StoreRe
 }
 
 /**
- * Purpose: Builds the function that replaces the search parameters of one paged resource.
- * Scope: Keeps the rest of the block and swaps its params.
- * Limits: Does not reload the page; callers decide.
+ * Purpose: Construit la fonction qui remplace les paramètres de recherche d'une ressource paginée.
+ * Scope: Conserve le reste du bloc et remplace ses paramètres.
+ * Limits: Ne recharge pas la page ; les appelants décident.
  */
 export function paramsUpdater<S extends object, K extends keyof S & string> (store: StoreRef<S>, key: K): (params: ParamsOf<S[K]>) => void {
     return (params: ParamsOf<S[K]>): void => {
@@ -151,9 +151,9 @@ export function paramsUpdater<S extends object, K extends keyof S & string> (sto
 }
 
 /**
- * Purpose: Builds the function that merges search parameters into those of one paged resource.
- * Scope: Keeps the parameters that are not given, such as a fixed status filter.
- * Limits: Does not reload the page; callers decide.
+ * Purpose: Construit la fonction qui fusionne des paramètres de recherche dans ceux d'une ressource paginée.
+ * Scope: Conserve les paramètres non fournis, comme un filtre de statut fixe.
+ * Limits: Ne recharge pas la page ; les appelants décident.
  */
 export function paramsMerger<S extends object, K extends keyof S & string> (store: StoreRef<S>, key: K): (params: Partial<ParamsOf<S[K]>>) => void {
     return (params: Partial<ParamsOf<S[K]>>): void => {
@@ -164,9 +164,9 @@ export function paramsMerger<S extends object, K extends keyof S & string> (stor
 }
 
 /**
- * Purpose: Builds the rxMethod that completes a page of movements with their contents.
- * Scope: Fetches the contents of the given movements and merges them into the stored movements page.
- * Limits: Leaves the page untouched when none is stored; a failure is kept under the `contents` section error.
+ * Purpose: Construit le rxMethod qui complète une page de mouvements avec leurs contenus.
+ * Scope: Récupère les contenus des mouvements donnés et les fusionne dans la page de mouvements stockée.
+ * Limits: Laisse la page intacte quand aucune n'est stockée ; un échec est conservé dans l'erreur de section `contents`.
  */
 export function movementContentsFetcher<S extends SectionErrorsState & { movements: MovementsBlock }> (
     store: StoreRef<S>,
@@ -185,9 +185,9 @@ export function movementContentsFetcher<S extends SectionErrorsState & { movemen
 }
 
 /**
- * Purpose: Merges fetched movement contents into the movements of the shown page.
- * Scope: Rebuilds the stored page with the fetched contents of its movements.
- * Limits: Returns the state unchanged when no page is stored.
+ * Purpose: Fusionne les contenus de mouvements récupérés dans les mouvements de la page affichée.
+ * Scope: Reconstruit la page stockée avec les contenus récupérés de ses mouvements.
+ * Limits: Renvoie l'état inchangé quand aucune page n'est stockée.
  */
 function mergeContents<S extends { movements: MovementsBlock }> (state: S, contents: PairModel<MovementContentModel[]>[]): Partial<S> | S {
     if (!state.movements.element) return state
@@ -196,9 +196,9 @@ function mergeContents<S extends { movements: MovementsBlock }> (state: S, conte
 }
 
 /**
- * Purpose: Builds the callback that fetches the contents of a freshly loaded page of movements.
- * Scope: Asks for the contents of the movements of the page that just arrived, unless it is empty.
- * Limits: Only triggers the fetch; the contents method stores the result.
+ * Purpose: Construit le callback qui récupère les contenus d'une page de mouvements fraîchement chargée.
+ * Scope: Demande les contenus des mouvements de la page qui vient d'arriver, sauf si elle est vide.
+ * Limits: Ne fait que déclencher la récupération ; la méthode des contenus stocke le résultat.
  */
 export function contentsRequester (fetchContents: (request: MovementContentsRequest) => void): (request: { projectId: string | undefined }, page: PageModel<MovementModel>) => void {
     return (request: { projectId: string | undefined }, page: PageModel<MovementModel>): void => {
@@ -219,9 +219,9 @@ export const contentsSection = (block: string): string => `${CONTENTS_SECTION}.$
 const metadataSection = (field: string): string => `metadata.${field}`
 
 /**
- * Purpose: Builds an operator that keeps the failure of a secondary fetch in the section errors of the store.
- * Scope: Clears the section error when the request starts, stores the failure and completes without emitting.
- * Limits: Does not notify the user; the page shows the section error.
+ * Purpose: Construit un opérateur qui conserve l'échec d'une récupération secondaire dans les erreurs de section du store.
+ * Scope: Efface l'erreur de section au départ de la requête, stocke l'échec et se termine sans rien émettre.
+ * Limits: Ne notifie pas l'utilisateur ; la page affiche l'erreur de section.
  */
 export function trackSectionError<S extends SectionErrorsState> (store: StoreRef<S>, section: string): <T> (source: Observable<T>) => Observable<T> {
     return <T> (source: Observable<T>): Observable<T> => source.pipe(
@@ -238,9 +238,9 @@ function setSectionError<S extends SectionErrorsState> (store: StoreRef<S>, sect
 }
 
 /**
- * Purpose: Builds an operator that scopes the loading flag of one element block to a request.
- * Scope: Raises the flag when the request starts and lowers it when it ends, whatever the outcome.
- * Limits: Does not handle errors; compose it with an error operator.
+ * Purpose: Construit un opérateur qui borne le drapeau de chargement d'un bloc d'élément à une requête.
+ * Scope: Lève le drapeau au départ de la requête et l'abaisse à sa fin, quelle que soit l'issue.
+ * Limits: Ne gère pas les erreurs ; à composer avec un opérateur d'erreur.
  */
 export function trackElement<S extends object, K extends keyof S & string> (store: StoreRef<S>, key: K): <T> (source: Observable<T>) => Observable<T> {
     return <T> (source: Observable<T>): Observable<T> => source.pipe(
@@ -250,18 +250,18 @@ export function trackElement<S extends object, K extends keyof S & string> (stor
 }
 
 /**
- * Purpose: Raises or lowers the loading flag of one element block.
- * Scope: Keeps the rest of the block.
- * Limits: Does not start or cancel any request.
+ * Purpose: Lève ou abaisse le drapeau de chargement d'un bloc d'élément.
+ * Scope: Conserve le reste du bloc.
+ * Limits: Ne démarre ni n'annule aucune requête.
  */
 function setElementLoading<S extends object, K extends keyof S & string> (store: StoreRef<S>, key: K, loading: boolean): void {
     patchState( store, (state: S) => ({ [ key ]: StateHelper.updateElementLoader( state[ key ] as ElementBlock as never, loading ) }) as unknown as Partial<S> )
 }
 
 /**
- * Purpose: Builds the function that sets the loading flag of one element block by hand.
- * Scope: Lets a facade scope the loader of an element to its own command.
- * Limits: Only toggles the flag; it never fetches.
+ * Purpose: Construit la fonction qui positionne à la main le drapeau de chargement d'un bloc d'élément.
+ * Scope: Permet à une facade de borner le loader d'un élément à sa propre commande.
+ * Limits: Ne fait que basculer le drapeau ; ne récupère jamais rien.
  */
 export function loaderToggle<S extends object, K extends keyof S & string> (store: StoreRef<S>, key: K, loading: boolean): () => void {
     return (): void => setElementLoading( store, key, loading )
@@ -282,9 +282,9 @@ function setElementError<S extends object, K extends keyof S & string> (store: S
 }
 
 /**
- * Purpose: Builds the rxMethod that loads one element of a signal store.
- * Scope: Scopes the loading flag to the element block, keeps a failure in the block's error and stores the element.
- * Limits: A failure leaves the previous element in place; the error is cleared when the next request starts.
+ * Purpose: Construit le rxMethod qui charge un élément d'un signal store.
+ * Scope: Borne le drapeau de chargement au bloc d'élément, conserve un échec dans l'erreur du bloc et stocke l'élément.
+ * Limits: Un échec laisse l'élément précédent en place ; l'erreur est effacée au départ de la requête suivante.
  */
 export function elementFetcher<S extends object, K extends keyof S & string, R> (
     store: StoreRef<S>,
@@ -298,9 +298,9 @@ export function elementFetcher<S extends object, K extends keyof S & string, R> 
 }
 
 /**
- * Purpose: Builds the rxMethod that reloads one element of a signal store in the background.
- * Scope: Stores the element when the request succeeds, without touching the loading flag or the error of the block.
- * Limits: A failure is ignored and the shown element stays; the next refresh retries.
+ * Purpose: Construit le rxMethod qui recharge un élément d'un signal store en arrière-plan.
+ * Scope: Stocke l'élément quand la requête réussit, sans toucher au drapeau de chargement ni à l'erreur du bloc.
+ * Limits: Un échec est ignoré et l'élément affiché reste en place ; le prochain rafraîchissement réessaie.
  */
 export function silentElementFetcher<S extends object, K extends keyof S & string, R> (
     store: StoreRef<S>,
@@ -314,9 +314,9 @@ export function silentElementFetcher<S extends object, K extends keyof S & strin
 }
 
 /**
- * Purpose: Builds the rxMethod that fills one metadata list of a signal store.
- * Scope: Fetches the values, optionally transforms them, and stores them under the metadata field.
- * Limits: A failure is kept under the section error of the field and the previous values stay.
+ * Purpose: Construit le rxMethod qui remplit une liste de métadonnées d'un signal store.
+ * Scope: Récupère les valeurs, les transforme éventuellement, et les stocke sous le champ de métadonnées.
+ * Limits: Un échec est conservé dans l'erreur de section du champ et les valeurs précédentes restent.
  */
 export function metadataFetcher<S extends SectionErrorsState & { metadata: object }, F extends keyof S[ 'metadata' ] & string, R, T> (
     store: StoreRef<S>,
@@ -331,9 +331,9 @@ export function metadataFetcher<S extends SectionErrorsState & { metadata: objec
 }
 
 /**
- * Purpose: Prepends the empty "no filter" option to a list of select items.
- * Scope: Lets filter dropdowns offer a neutral choice for fetched metadata.
- * Limits: Pure function; the empty option label is not translated here.
+ * Purpose: Ajoute en tête l'option vide « aucun filtre » à une liste de select items.
+ * Scope: Permet aux listes déroulantes de filtre de proposer un choix neutre pour les métadonnées récupérées.
+ * Limits: Fonction pure ; le libellé de l'option vide n'est pas traduit ici.
  */
 export function withEmptyOption<T> (items: SelectOptionModel<T>[]): SelectOptionModel<T | undefined>[] {
     return [ { label: '-', value: undefined }, ...items ]

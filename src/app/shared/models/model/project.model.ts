@@ -21,8 +21,8 @@ export interface ProjectModel extends GenericModel {
     end: CustomDatetimeModel | undefined,
     options: SelectOptionModel<ProjectOptionEnum>[] | undefined,
     counts: ProjectCountsModel | undefined,
-    /** Whether the signed-in user marked the project as a favorite; undefined when the backend does not tell. */
+    /** Indique si l'utilisateur connecté a marqué le projet comme favori ; undefined quand le backend ne le dit pas. */
     favorite: boolean | undefined,
-    /** The signed-in user's profile on this project, when the user has one. */
+    /** Le profil de l'utilisateur connecté sur ce projet, quand il en a un. */
     profile: CurrentProjectProfileModel | undefined,
 }

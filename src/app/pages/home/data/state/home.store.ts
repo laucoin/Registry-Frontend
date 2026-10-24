@@ -17,9 +17,9 @@ const defaultHomeStore: HomeStoreModel = {
 }
 
 /**
- * Purpose: Holds the state of the global home page.
- * Scope: Owns the favorite projects and the projects with the most active alerts, with their loading and error flags.
- * Limits: Reached through the home facade; it reads the project api and does not notify the user of command results.
+ * Purpose: Détient l'état de la page d'accueil globale.
+ * Scope: Possède les projets favoris et les projets ayant le plus d'alertes actives, avec leurs drapeaux de chargement et d'erreur.
+ * Limits: Atteint via la facade d'accueil ; lit l'api des projets et ne notifie pas l'utilisateur du résultat des commandes.
  */
 export const HomeStore = signalStore(
 	withState<HomeStoreModel>(defaultHomeStore),

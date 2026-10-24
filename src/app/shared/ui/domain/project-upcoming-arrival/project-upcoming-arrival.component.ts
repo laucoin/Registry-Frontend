@@ -7,9 +7,9 @@ import { PlannedMovementCardComponent } from '@shared/ui/domain/planned-movement
 import { injectAutoRefresh } from '@shared/helpers/refresh/inject-auto-refresh';
 
 /**
- * Purpose: Lists the arrivals planned today on the project.
- * Scope: Loads the planned arrivals of the selected project and gives them to the planned movement card.
- * Limits: Reads the selected project facade only; it shows no more than the card shows.
+ * Purpose: Liste les arrivées prévues aujourd'hui sur le projet.
+ * Scope: Charge les arrivées prévues du projet sélectionné et les donne à la carte des mouvements prévus.
+ * Limits: Lit uniquement la facade du projet sélectionné ; n'affiche rien de plus que la carte.
  */
 @Component({
 	imports: [

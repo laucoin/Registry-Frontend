@@ -12,9 +12,9 @@ const STATUS_VARIANTS: Record<PresenceStatusEnum, MonitoringStatusVariant> = {
 }
 
 /**
- * Purpose: Turns participants and vehicles into the rows of the monitoring lists.
- * Scope: Picks the title, the description and the color of the presence status, so every list shows a status the same way.
- * Limits: Pure functions; the status label comes from the backend and is never translated here.
+ * Purpose: Transforme les participants et les véhicules en lignes des listes de suivi.
+ * Scope: Choisit le titre, la description et la couleur du statut de présence, pour que chaque liste affiche un statut de la même façon.
+ * Limits: Fonctions pures ; le libellé du statut vient du backend et n'est jamais traduit ici.
  */
 export class MonitoringRowHelper {
     public static statusVariant (status: PresenceStatusEnum | undefined): MonitoringStatusVariant {

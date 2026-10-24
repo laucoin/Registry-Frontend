@@ -13,9 +13,9 @@ import { NotificationModel } from '@shared/models/model/notification.model'
 import { Observable } from 'rxjs'
 
 /**
- * Purpose: Public entry point for what the shell displays: theme, screen size, global error, language change in flight, toasts, display options.
- * Scope: Exposes the UI, notification and metadata stores as signals and forwards their commands.
- * Limits: Knows nothing about the user or the session; it does not call the backend.
+ * Purpose: Point d'entrée public de ce que la coque affiche : thème, taille d'écran, erreur globale, changement de langue en cours, toasts, options d'affichage.
+ * Scope: Expose les stores de l'UI, des notifications et des métadonnées sous forme de signals et relaie leurs commandes.
+ * Limits: Ne sait rien de l'utilisateur ni de la session ; n'appelle pas le backend.
  */
 @Injectable({ providedIn: 'root' })
 export class UiFacade {

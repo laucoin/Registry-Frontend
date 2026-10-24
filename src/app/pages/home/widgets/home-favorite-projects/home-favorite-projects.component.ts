@@ -20,9 +20,9 @@ import { injectAutoRefresh } from '@shared/helpers/refresh/inject-auto-refresh'
 const INITIALS_LENGTH: number = 3
 
 /**
- * Purpose: Shows the favorite projects of the signed-in user on the home page.
- * Scope: Loads the first favorites, shows each as a card with its counts and period, and removes a project from the favorites.
- * Limits: Reads the home facade only; it shows a few cards and links to the project list for the others.
+ * Purpose: Affiche les projets favoris de l'utilisateur connecté sur la page d'accueil.
+ * Scope: Charge les premiers favoris, affiche chacun sous forme de carte avec ses compteurs et sa période, et retire un projet des favoris.
+ * Limits: Lit uniquement la facade d'accueil ; affiche quelques cartes et renvoie vers la liste des projets pour les autres.
  */
 @Component({
 	selector: 'app-home-favorite-projects',

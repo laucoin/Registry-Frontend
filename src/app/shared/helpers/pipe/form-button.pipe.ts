@@ -1,9 +1,9 @@
 import { Pipe, PipeTransform } from '@angular/core'
 
 /**
- * Purpose: Gives the translation key of a form submit button.
- * Scope: Edit for an existing element, create otherwise.
- * Limits: Returns a key; translation is done by the caller.
+ * Purpose: Donne la clé de traduction du bouton de soumission d'un formulaire.
+ * Scope: Édition pour un élément existant, création sinon.
+ * Limits: Renvoie une clé ; la traduction est faite par l'appelant.
  */
 @Pipe( {
     name: 'formButton', standalone: true,

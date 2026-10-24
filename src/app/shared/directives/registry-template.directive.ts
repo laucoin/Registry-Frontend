@@ -1,9 +1,9 @@
 import { Directive, inject, input, InputSignal, TemplateRef } from '@angular/core'
 
 /**
- * Purpose: Names a template so that a parent component can pick it by name.
- * Scope: Exposes the template reference under a given name.
- * Limits: Does not render the template itself.
+ * Purpose: Nomme un template pour qu'un composant parent puisse le choisir par son nom.
+ * Scope: Expose la référence du template sous un nom donné.
+ * Limits: N'affiche pas le template lui-même.
  */
 @Directive( {
     selector: '[appTemplate]',

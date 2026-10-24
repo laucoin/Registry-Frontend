@@ -55,9 +55,9 @@ const defaultAlertStore: AlertStoreModel = {
 }
 
 /**
- * Purpose: Holds the alert state.
- * Scope: Owns the data of the alert pages and resources with their loading and error flags, and fetches them through the alert api.
- * Limits: Reached through the alert facade; it does not format data or notify the user of command results.
+ * Purpose: Détient l'état des alertes.
+ * Scope: Possède les données des pages et ressources d'alertes avec leurs drapeaux de chargement et d'erreur, et les récupère via l'api des alertes.
+ * Limits: Atteint via la facade des alertes ; ne formate pas les données et ne notifie pas l'utilisateur du résultat des commandes.
  */
 export const AlertStore = signalStore(
     withState<AlertStoreModel>( defaultAlertStore ),

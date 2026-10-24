@@ -5,9 +5,9 @@ import '@sgdf/ui/button'
 const OBSERVER_MARGIN: string = '200px'
 
 /**
- * Purpose: Triggers the loading of the next batch of a list, automatically when the end of the list gets close and manually through a button.
- * Scope: Renders the loaded count, an invisible sentinel watched by an IntersectionObserver and the "load more" button, which stays available for keyboard and assistive technology users.
- * Limits: Owns no data and fetches nothing; it only emits the request. Without IntersectionObserver, only the button works.
+ * Purpose: Déclenche le chargement du lot suivant d'une liste, automatiquement quand la fin de la liste approche et manuellement via un bouton.
+ * Scope: Affiche le nombre chargé, une sentinelle invisible surveillée par un IntersectionObserver et le bouton « charger plus », qui reste disponible pour les utilisateurs de clavier et de technologies d'assistance.
+ * Limits: Ne possède aucune donnée et ne récupère rien ; émet seulement la demande. Sans IntersectionObserver, seul le bouton fonctionne.
  */
 @Component({
 	selector: 'app-load-more',
@@ -38,7 +38,7 @@ export class LoadMoreComponent {
 			this.destroyRef.onDestroy((): void => this.observer?.disconnect())
 		})
 
-		// A finished batch may leave the sentinel visible: observing it again makes the observer report its state anew.
+		// Un lot terminé peut laisser la sentinelle visible : l'observer à nouveau fait signaler son état de nouveau.
 		effect((): void => {
 			const element: HTMLElement | undefined = this.sentinel()?.nativeElement
 			if (this.loading() || !this.autoLoad() || !element || !this.observer) {

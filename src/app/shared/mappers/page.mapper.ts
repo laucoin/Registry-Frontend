@@ -3,9 +3,9 @@ import { GenericModel } from '@shared/models/model/generic.model'
 import { PageModel } from '@shared/models/model/page.model'
 
 /**
- * Purpose: Converts a page response of the backend into a page model.
- * Scope: Copies the paging fields and converts each element with the given element mapper.
- * Limits: Does not know the element type; the caller provides its mapper.
+ * Purpose: Convertit une réponse de page du backend en modèle de page.
+ * Scope: Copie les champs de pagination et convertit chaque élément avec le mapper d'élément donné.
+ * Limits: Ne connaît pas le type d'élément ; l'appelant fournit son mapper.
  */
 export class PageMapper {
     public static toModel<D, M extends GenericModel> (dto: PageResponseDto<D>, mapContent: (element: D) => M): PageModel<M> {

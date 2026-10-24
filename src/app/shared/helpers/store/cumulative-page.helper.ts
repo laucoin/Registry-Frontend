@@ -8,9 +8,9 @@ export interface CumulativePageRequest {
 }
 
 /**
- * Purpose: Builds the page shown by a list that loads its elements batch after batch.
- * Scope: Appends a freshly fetched batch to the page already shown, or rebuilds the shown page from a single reload request.
- * Limits: Pure functions; a reload never asks for more rows than the backend page size cap, so only the rows under that cap are refreshed and the rows beyond it are kept as shown.
+ * Purpose: Construit la page affichée par une liste qui charge ses éléments lot après lot.
+ * Scope: Ajoute un lot fraîchement récupéré à la page déjà affichée, ou reconstruit la page affichée à partir d'une seule requête de rechargement.
+ * Limits: Fonctions pures ; un rechargement ne demande jamais plus de lignes que le plafond de taille de page du backend, donc seules les lignes sous ce plafond sont rafraîchies et celles au-delà sont conservées telles qu'affichées.
  */
 export class CumulativePageHelper {
     private static readonly MAX_PAGE_SIZE: number = 200

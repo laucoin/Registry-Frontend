@@ -31,9 +31,9 @@ import { EllipsisDirective } from '@shared/directives/ellipsis.directive'
 const INITIALS_LENGTH: number = 2
 
 /**
- * Purpose: Page listing the users with search and a "load more" trigger.
- * Scope: Binds the list component to the user facade and owns the search form; the commands on a user are delegated to UserActions.
- * Limits: Holds no domain state and never calls the backend.
+ * Purpose: Page listant les utilisateurs avec recherche et déclencheur « charger plus ».
+ * Scope: Lie le composant de liste à la facade des utilisateurs et possède le formulaire de recherche ; les commandes sur un utilisateur sont déléguées à UserActions.
+ * Limits: Ne détient aucun état de domaine et n'appelle jamais le backend.
  */
 @Component({
     selector: 'app-users-list',

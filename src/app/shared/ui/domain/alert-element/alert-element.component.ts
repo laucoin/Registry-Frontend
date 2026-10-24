@@ -36,13 +36,13 @@ const STATUS_ICONS: Record<string, string> = {
     [ AlertStatusEnum.RESOLVED ]: 'circle-check',
 }
 
-/** Zero-width characters a title may hold without showing anything. */
+/** Caractères de largeur nulle qu'un titre peut contenir sans rien afficher. */
 const INVISIBLE_CHARACTERS: RegExp = /[\u200B-\u200D\u2060\uFEFF]/g
 
 /**
- * Purpose: Presents one alert with its actions, as a list item (attribute of `sgdf-list-item`).
- * Scope: Renders the details, the action menu, the confirmations and the drawer listing the communications of the alert.
- * Limits: Receives the element as an input and calls the facade for commands; it holds no list state.
+ * Purpose: Présente une alerte avec ses actions, comme élément de liste (attribut de `sgdf-list-item`).
+ * Scope: Affiche le détail, le menu d'actions, les confirmations et le tiroir listant les communications de l'alerte.
+ * Limits: Reçoit l'élément en entrée et appelle la facade pour les commandes ; ne détient aucun état de liste.
  */
 @Component( {
     selector: 'sgdf-list-item[appAlertElement], app-alert-element',

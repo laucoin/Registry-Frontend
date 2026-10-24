@@ -15,9 +15,9 @@ export interface GroupsListSearchModel {
 }
 
 /**
- * Purpose: Converts the groups list search parameters into the values bound to the search form.
- * Scope: Fills the empty parameters with the form defaults.
- * Limits: Does not validate the parameters.
+ * Purpose: Convertit les paramètres de recherche de la liste des groupes en valeurs liées au formulaire de recherche.
+ * Scope: Remplit les paramètres vides avec les valeurs par défaut du formulaire.
+ * Limits: Ne valide pas les paramètres.
  */
 export function toGroupsListSearchModel (params: GroupsListSearch): GroupsListSearchModel {
     return {
@@ -29,9 +29,9 @@ export function toGroupsListSearchModel (params: GroupsListSearch): GroupsListSe
 }
 
 /**
- * Purpose: Converts the search form values into the groups list search parameters.
- * Scope: Turns the empty form values into undefined parameters.
- * Limits: Does not validate the form values.
+ * Purpose: Convertit les valeurs du formulaire de recherche en paramètres de recherche de la liste des groupes.
+ * Scope: Transforme les valeurs vides du formulaire en paramètres undefined.
+ * Limits: Ne valide pas les valeurs du formulaire.
  */
 export function toGroupsListSearchParams (model: GroupsListSearchModel): GroupsListSearch {
     return {

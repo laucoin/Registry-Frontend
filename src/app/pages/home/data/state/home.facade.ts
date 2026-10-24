@@ -12,9 +12,9 @@ const FAVORITES_SIZE: number = 3
 const ATTENTION_SIZE: number = 5
 
 /**
- * Purpose: Public entry point of the global home page for its widgets.
- * Scope: Exposes the favorite projects and the projects with active alerts as signals, forwards their queries and toggles a favorite.
- * Limits: Holds no state of its own; the other home data (invitations) comes from the user profile facade.
+ * Purpose: Point d'entrée public de la page d'accueil globale pour ses widgets.
+ * Scope: Expose les projets favoris et les projets avec alertes actives sous forme de signals, relaie leurs requêtes et bascule un favori.
+ * Limits: Ne détient aucun état propre ; les autres données de l'accueil (invitations) viennent de la facade des profils utilisateur.
  */
 @Injectable()
 export class HomeFacade extends GenericFacade {

@@ -18,9 +18,9 @@ import { PlannedMovementModel } from '@shared/models/model/planned-movement.mode
 const STATE_KEY: string = 'movementPrefill'
 
 /**
- * Purpose: Opens the movement form already filled in from the project home.
- * Scope: Builds the prefill of a planned movement, of a presence to regularize or of the reverse of a movement, navigates to the matching form and hands the prefill over through the navigation state.
- * Limits: Does not validate the prefill nor save anything; the form stays the one to check and submit.
+ * Purpose: Ouvre le formulaire de mouvement déjà rempli depuis l'accueil du projet.
+ * Scope: Construit le préremplissage d'un mouvement prévu, d'une présence à régulariser ou de l'inverse d'un mouvement, navigue vers le formulaire correspondant et lui transmet le préremplissage via l'état de navigation.
+ * Limits: Ne valide pas le préremplissage et n'enregistre rien ; le formulaire reste celui qui vérifie et soumet.
  */
 @Injectable( { providedIn: 'root' } )
 export class MovementPrefillService {

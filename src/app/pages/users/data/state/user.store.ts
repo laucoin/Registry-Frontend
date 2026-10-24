@@ -36,9 +36,9 @@ const defaultUserStore: UserStoreModel = {
 }
 
 /**
- * Purpose: Holds the user state.
- * Scope: Owns the data of the user pages and resources with their loading and error flags, and fetches them through the user api.
- * Limits: Reached through the user facade; it does not format data or notify the user of command results.
+ * Purpose: Détient l'état des utilisateurs.
+ * Scope: Possède les données des pages et ressources d'utilisateurs avec leurs drapeaux de chargement et d'erreur, et les récupère via l'api des utilisateurs.
+ * Limits: Atteint via la facade des utilisateurs ; ne formate pas les données et ne notifie pas l'utilisateur du résultat des commandes.
  */
 export const UserStore = signalStore(
     { providedIn: 'root' },

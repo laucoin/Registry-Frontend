@@ -4,9 +4,9 @@ import '@sgdf/ui/button'
 import '@sgdf/ui/icon'
 
 /**
- * Purpose: Cancel and submit buttons at the bottom of a form page.
- * Scope: Placed inside the `<form>`: the submit button submits it, so the Enter key of the fields does too; the cancel button asks the page to leave.
- * Limits: Owns no form state and never navigates.
+ * Purpose: Boutons d'annulation et de soumission en bas d'une page de formulaire.
+ * Scope: Placé à l'intérieur du `<form>` : le bouton de soumission le soumet, donc la touche Entrée des champs aussi ; le bouton d'annulation demande à la page de partir.
+ * Limits: Ne possède aucun état de formulaire et ne navigue jamais.
  */
 @Component({
 	selector: 'app-form-actions',

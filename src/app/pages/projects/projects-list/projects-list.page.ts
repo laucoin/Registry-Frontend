@@ -43,9 +43,9 @@ import { EllipsisDirective } from '@shared/directives/ellipsis.directive'
 const INITIALS_LENGTH: number = 2
 
 /**
- * Purpose: Page listing the projects the user can see, with search and a "load more" trigger.
- * Scope: Binds the list component to the project facade, owns the search form and the projects shown in the options and hidden-project dialogs.
- * Limits: Holds no domain state and never calls the backend; commands on a project are delegated to ProjectActions.
+ * Purpose: Page listant les projets que l'utilisateur peut voir, avec recherche et déclencheur « charger plus ».
+ * Scope: Lie le composant de liste à la facade des projets, possède le formulaire de recherche et les projets affichés dans les dialogues d'options et de projets masqués.
+ * Limits: Ne détient aucun état de domaine et n'appelle jamais le backend ; les commandes sur un projet sont déléguées à ProjectActions.
  */
 @Component({
     selector: 'app-projects-list',

@@ -4,9 +4,9 @@ import { TranslocoService } from '@jsverse/transloco'
 import { skip } from 'rxjs'
 
 /**
- * Purpose: Keeps translated store data in step with the active language.
- * Scope: Runs the loaders once, then again on every language change after the initial one.
- * Limits: Must be called in an injection context such as a store onInit hook; it does not cancel loaders in flight.
+ * Purpose: Garde les données traduites d'un store en phase avec la langue active.
+ * Scope: Exécute les loaders une fois, puis à nouveau à chaque changement de langue après le premier.
+ * Limits: Doit être appelé dans un contexte d'injection comme un hook onInit de store ; n'annule pas les loaders en cours.
  */
 export function refreshOnLanguageChange (...loaders: (() => void)[]): void {
     const translateService: TranslocoService = inject( TranslocoService )

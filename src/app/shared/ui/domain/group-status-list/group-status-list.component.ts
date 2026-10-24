@@ -40,9 +40,9 @@ export interface GroupMembersRequestModel {
 }
 
 /**
- * Purpose: Lists the groups with the presence counters of their on-site members, the members being shown when a group is opened.
- * Scope: Renders one accordion section per group, closed unless it is the only group, plus the loading, error, empty and load more states of a lazily loaded list, and asks for the members of a group when its section opens and for their next batches. Shows the checked state of the members, to count the participants during a roll call, and how many of each group are checked.
- * Limits: Owns no data and fetches nothing; the page decides what a request does, gives back the members it loaded and keeps the checked participants. The groups wait while a batch of members is loading.
+ * Purpose: Liste les groupes avec les compteurs de présence de leurs membres sur site, les membres étant affichés à l'ouverture d'un groupe.
+ * Scope: Affiche une section d'accordéon par groupe, fermée sauf s'il est le seul groupe, ainsi que les états de chargement, d'erreur, de vide et de « charger plus » d'une liste chargée paresseusement, et demande les membres d'un groupe à l'ouverture de sa section ainsi que leurs lots suivants. Montre l'état coché des membres, pour compter les participants pendant un appel, et combien de chaque groupe sont cochés.
+ * Limits: Ne possède aucune donnée et ne récupère rien ; la page décide de ce que fait une demande, redonne les membres qu'elle a chargés et garde les participants cochés. Les groupes attendent pendant le chargement d'un lot de membres.
  */
 @Component({
 	selector: 'app-group-status-list',
@@ -86,7 +86,7 @@ export class GroupStatusListComponent {
 		])))
 
 	public constructor() {
-		// A section opened by `expanded` does not announce itself: the only group asks for its members as soon as it is shown.
+		// Une section ouverte par `expanded` ne s'annonce pas : le seul groupe demande ses membres dès qu'il est affiché.
 		effect((): void => {
 			const page: PageModel<GroupModel> | undefined = this.groupPage();
 			if (page?.totalElements === 1 && page.content[0]) {

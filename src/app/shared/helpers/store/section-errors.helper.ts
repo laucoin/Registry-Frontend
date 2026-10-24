@@ -6,9 +6,9 @@ type SectionErrors = Record<string, NotificationModel | undefined>
 const METADATA_PREFIX: string = 'metadata.'
 
 /**
- * Purpose: Reads the section errors of a store as signals for the facades.
- * Scope: Gives the error of one section, or the errors of the metadata lists keyed by field.
- * Limits: Pure derivations; the fetchers write the errors.
+ * Purpose: Lit les erreurs de section d'un store sous forme de signals pour les facades.
+ * Scope: Donne l'erreur d'une section, ou les erreurs des listes de métadonnées indexées par champ.
+ * Limits: Dérivations pures ; les fetchers écrivent les erreurs.
  */
 export class SectionErrorsHelper {
     public static of (errors: Signal<SectionErrors>, section: string): Signal<NotificationModel | undefined> {
