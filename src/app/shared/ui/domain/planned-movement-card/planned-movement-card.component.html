@@ -18,14 +18,7 @@
             }
 
             @if (loading() && total() === undefined) {
-                <sgdf-list appearance="text" aria-busy="true" [label]="'global.list.loading' | transloco">
-                    @for (row of skeletonRows; track row) {
-                        <sgdf-list-item>
-                            <sgdf-skeleton slot="start" shape="circle" effect="pulse" style="width: 2.5rem; height: 2.5rem"/>
-                            <sgdf-skeleton shape="rounded" effect="pulse" style="width: 50%; height: 1rem"/>
-                        </sgdf-list-item>
-                    }
-                </sgdf-list>
+                <app-skeleton-list [rows]="3"/>
             } @else if (total() === 0) {
                 <p class="m-4 text-sm opacity-80">{{ emptyKey() | transloco }}</p>
             } @else if (total() !== undefined) {

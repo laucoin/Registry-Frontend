@@ -7,7 +7,6 @@ import '@sgdf/ui/button'
 import '@sgdf/ui/list'
 import '@sgdf/ui/list-item'
 import '@sgdf/ui/avatar'
-import '@sgdf/ui/skeleton'
 import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit, signal, Signal, WritableSignal } from '@angular/core';
 import { provideTranslocoScope, TranslocoPipe } from "@jsverse/transloco";
 import { SelectedProjectFacade } from '@pages/projects/data/state/selected-project/selected-project.facade';
@@ -18,6 +17,7 @@ import { SectionErrorComponent } from '@shared/ui/common/section-error/section-e
 import { OverdueParticipantsDialogComponent } from '@shared/ui/domain/overdue-participants-dialog/overdue-participants-dialog.component';
 import { RegularizationRowComponent } from '@shared/ui/domain/regularization-row/regularization-row.component';
 import { injectAutoRefresh } from '@shared/helpers/refresh/inject-auto-refresh';
+import { SkeletonListComponent } from '@shared/ui/common/skeleton-list/skeleton-list.component'
 
 const PAGE_SIZE: number = 5
 
@@ -28,6 +28,7 @@ const PAGE_SIZE: number = 5
  */
 @Component({
 	imports: [
+		SkeletonListComponent,
 		TranslocoPipe,
 		PluralTranslationPipe,
 		SectionErrorComponent,
@@ -51,7 +52,6 @@ export class ProjectParticipantRegularizationComponent implements OnInit {
 	protected readonly participants: Signal<ParticipantModel[]> = computed((): ParticipantModel[] => this.facade.overdueParticipantsPage()?.content ?? [])
 	protected readonly remaining: Signal<number> = computed((): number => Math.max(0, (this.total() ?? 0) - this.participants().length))
 	protected readonly listOpen: WritableSignal<boolean> = signal(false)
-	protected readonly skeletonRows: readonly number[] = [1, 2, 3]
 
 	public ngOnInit(): void {
 		this.reload()

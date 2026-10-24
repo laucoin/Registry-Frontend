@@ -1,3 +1,4 @@
+import { By } from '@angular/platform-browser';
 import { signal, WritableSignal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TranslocoPipe } from '@jsverse/transloco';
@@ -12,6 +13,7 @@ import { NotificationModel } from '@shared/models/model/notification.model';
 import { ParticipantModel } from '@shared/models/model/participant.model';
 import { ProjectBirthdayComponent } from './project-birthday.component';
 import { REFRESH_SERVICE_STUB } from '@shared/helpers/testing/refresh-service.stub';
+import { SkeletonListComponent } from '@shared/ui/common/skeleton-list/skeleton-list.component';
 
 function participants(count: number): ParticipantModel[] {
 	return Array.from({ length: count }, (_: unknown, index: number): ParticipantModel => ({ ...ParticipantMapper.toModel(PARTICIPANT_DTO), id: `p${index}`, firstName: `Name${index}` }));
@@ -101,7 +103,7 @@ describe('ProjectBirthdayComponent', () => {
 
 		// Act
 		await render();
-		const skeletons: number = fixture.nativeElement.querySelectorAll('sgdf-skeleton[shape="rounded"]').length;
+		const skeletons: number = ngMocks.input(fixture.debugElement.query(By.directive(SkeletonListComponent)), 'rows');
 
 		// Assert
 		expect(skeletons).toBe(3);

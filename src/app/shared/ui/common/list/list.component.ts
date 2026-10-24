@@ -31,9 +31,9 @@ import { PageEventModel } from '@shared/models/model/page-event.model'
 import { PageModel } from '@shared/models/model/page.model'
 import { LoadMoreComponent } from '@shared/ui/common/load-more/load-more.component'
 import { SectionErrorComponent } from '@shared/ui/common/section-error/section-error.component'
+import { SkeletonListComponent } from '@shared/ui/common/skeleton-list/skeleton-list.component'
 
 const DEFAULT_PAGE_SIZE: number = 20
-const SKELETON_ROWS: number = 6
 
 /**
  * Purpose: Affiche une liste d'éléments chargée paresseusement avec sa zone de recherche, ses états de chargement, d'erreur et de vide et un déclencheur « charger plus ».
@@ -42,7 +42,7 @@ const SKELETON_ROWS: number = 6
  */
 @Component({
 	selector: 'app-list',
-	imports: [NgTemplateOutlet, TranslocoPipe, DateFormatPipe, SectionErrorComponent, LoadMoreComponent],
+	imports: [NgTemplateOutlet, SkeletonListComponent, TranslocoPipe, DateFormatPipe, SectionErrorComponent, LoadMoreComponent],
 	schemas: [CUSTOM_ELEMENTS_SCHEMA],
 	templateUrl: './list.component.html',
 })
@@ -60,8 +60,6 @@ export class ListComponent<T extends GenericModel> {
 
 	public readonly updateRequired: OutputEmitterRef<PageEventModel> = output()
 	public readonly filtersReset: OutputEmitterRef<void> = output()
-
-	protected readonly skeletonRows: readonly number[] = Array.from({ length: SKELETON_ROWS }, (_: unknown, index: number): number => index)
 
 	protected readonly searchExpanded: Signal<boolean> = computed((): boolean => !this.uiFacade.tinyScreen())
 	protected readonly size: Signal<number> = computed((): number => this.elementPage()?.size ?? DEFAULT_PAGE_SIZE)

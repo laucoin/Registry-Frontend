@@ -13,6 +13,7 @@ import { PageModel } from '@shared/models/model/page.model'
 import { ListComponent } from '@shared/ui/common/list/list.component'
 import { LoadMoreComponent } from '@shared/ui/common/load-more/load-more.component'
 import { SectionErrorComponent } from '@shared/ui/common/section-error/section-error.component'
+import { SkeletonListComponent } from '@shared/ui/common/skeleton-list/skeleton-list.component'
 
 @Component({
     imports: [ListComponent, RegistryTemplateDirective],
@@ -74,6 +75,7 @@ describe('ListComponent', () => {
             .keep(RegistryTemplateDirective)
             .keep(SectionErrorComponent)
             .keep(LoadMoreComponent)
+            .keep(SkeletonListComponent)
             .mock(TranslocoPipe, (key: string): string => key)
             .mock(DateFormatPipe, (): string => 'date')
             .provide({ provide: UiFacade, useValue: { tinyScreen } })

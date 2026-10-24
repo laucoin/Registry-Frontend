@@ -1,3 +1,4 @@
+import { By } from '@angular/platform-browser';
 import type { Mock } from 'vitest';
 import { signal } from '@angular/core';
 import { MovementPrefillService } from '@pages/projects/[projectId]/movements/movement-form/shared/movement-prefill.service';
@@ -13,6 +14,7 @@ import { PlannedMovementMapper } from '@shared/mappers/planned-movement.mapper';
 import { NotificationModel } from '@shared/models/model/notification.model';
 import { PlannedMovementModel } from '@shared/models/model/planned-movement.model';
 import { PlannedMovementCardComponent } from './planned-movement-card.component';
+import { SkeletonListComponent } from '@shared/ui/common/skeleton-list/skeleton-list.component';
 
 function movement(overrides: Partial<PlannedMovementModel> = {}): PlannedMovementModel {
 	return { ...PlannedMovementMapper.toModel(PLANNED_MOVEMENT_DTO), ...overrides };
@@ -120,7 +122,7 @@ describe('PlannedMovementCardComponent', () => {
 		await render(movements, { loading: true });
 
 		// Assert
-		expect(fixture.nativeElement.querySelectorAll('sgdf-skeleton[shape="rounded"]').length).toBe(3);
+		expect(ngMocks.input(fixture.debugElement.query(By.directive(SkeletonListComponent)), 'rows')).toBe(3);
 		expect(fixture.nativeElement.querySelector('sgdf-tag')).toBeNull();
 	});
 

@@ -1,3 +1,4 @@
+import { By } from '@angular/platform-browser';
 import { signal, WritableSignal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TranslocoPipe } from '@jsverse/transloco';
@@ -13,6 +14,7 @@ import { PageModel } from '@shared/models/model/page.model';
 import { ParticipantModel } from '@shared/models/model/participant.model';
 import { ProjectParticipantRegularizationComponent } from './project-participant-regularization.component';
 import { REFRESH_SERVICE_STUB } from '@shared/helpers/testing/refresh-service.stub';
+import { SkeletonListComponent } from '@shared/ui/common/skeleton-list/skeleton-list.component';
 
 function participant(id: string): ParticipantModel {
 	return {
@@ -105,7 +107,7 @@ describe('ProjectParticipantRegularizationComponent', () => {
 
 		// Act
 		await render();
-		const skeletons: number = fixture.nativeElement.querySelectorAll('sgdf-skeleton[shape="rounded"]').length;
+		const skeletons: number = ngMocks.input(fixture.debugElement.query(By.directive(SkeletonListComponent)), 'rows');
 
 		// Assert
 		expect(skeletons).toBe(3);

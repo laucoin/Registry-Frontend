@@ -16,7 +16,7 @@
     <span class="sr-only" role="status">{{ 'global.list.loading' | transloco }}</span>
     <div class="grid grid-cols-1 gap-(--spacing--in-block-large) sm:grid-cols-2 lg:grid-cols-3">
         @for (card of skeletonCards; track card) {
-            <sgdf-skeleton shape="rounded" effect="pulse" aria-hidden="true" style="height: 10rem"/>
+            <sgdf-skeleton class="h-[10rem]" shape="rounded" effect="pulse" aria-hidden="true"/>
         }
     </div>
 } @else if (total() === 0) {

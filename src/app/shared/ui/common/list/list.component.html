@@ -5,7 +5,7 @@
                 {{ 'global.date-and-time-format.last-refresh' | transloco: { datetime: page.lastRefresh | dateFormat: 'datetime' } }}
             </small>
         } @else {
-            <sgdf-skeleton effect="pulse" shape="rounded" style="width: 12rem; height: 1rem"/>
+            <sgdf-skeleton class="w-[12rem] h-[1rem]" effect="pulse" shape="rounded"/>
         }
         @if (getTemplate('creation'); as creation) {
             <ng-container [ngTemplateOutlet]="creation"/>
@@ -33,16 +33,7 @@
     }
 
     @if (showSkeleton()) {
-        <sgdf-list [label]="'global.list.loading' | transloco" aria-busy="true" appearance="soft">
-            @for (row of skeletonRows; track row) {
-                <sgdf-list-item>
-                    <sgdf-skeleton slot="start" shape="circle" effect="pulse" style="width: 2.5rem; height: 2.5rem"/>
-                    <sgdf-skeleton shape="rounded" effect="pulse" style="width: 40%; height: 1rem"/>
-                    <sgdf-skeleton slot="description" shape="rounded" effect="pulse"
-                                   style="width: 65%; height: 0.75rem"/>
-                </sgdf-list-item>
-            }
-        </sgdf-list>
+        <app-skeleton-list [rows]="6" appearance="soft" [withDescription]="true"/>
     } @else if (isEmpty()) {
         @if (activeFilters() > 0) {
             <sgdf-callout data-testid="list-no-result-callout" variant="neutral" [title]="'global.list.no-result.title' | transloco">

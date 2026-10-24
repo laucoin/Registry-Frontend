@@ -22,6 +22,7 @@ import { LoadMoreComponent } from '@shared/ui/common/load-more/load-more.compone
 import { SectionErrorComponent } from '@shared/ui/common/section-error/section-error.component'
 import { MonitoringRowComponent } from '@shared/ui/domain/monitoring-row/monitoring-row.component'
 import { EllipsisDirective } from '@shared/directives/ellipsis.directive'
+import { SkeletonListComponent } from '@shared/ui/common/skeleton-list/skeleton-list.component'
 
 const DEFAULT_PAGE_SIZE: number = 20;
 const MEMBERS_PAGE_SIZE: number = 20;
@@ -46,7 +47,7 @@ export interface GroupMembersRequestModel {
  */
 @Component({
 	selector: 'app-group-status-list',
-	imports: [EllipsisDirective, TranslocoPipe, PluralTranslationPipe, SectionErrorComponent, MonitoringRowComponent, LoadMoreComponent],
+	imports: [SkeletonListComponent, EllipsisDirective, TranslocoPipe, PluralTranslationPipe, SectionErrorComponent, MonitoringRowComponent, LoadMoreComponent],
 	providers: [provideTranslocoScope('project-home')],
 	schemas: [CUSTOM_ELEMENTS_SCHEMA],
 	templateUrl: './group-status-list.component.html',
@@ -64,7 +65,7 @@ export class GroupStatusListComponent {
 	public readonly checkedChange: OutputEmitterRef<CheckedChangeModel> = output()
 
 	protected readonly skeletonRows: readonly number[] = Array.from({ length: SKELETON_ROWS }, (_: unknown, index: number): number => index)
-	protected readonly memberSkeletonRows: readonly number[] = Array.from({ length: MEMBER_SKELETON_ROWS }, (_: unknown, index: number): number => index)
+	protected readonly memberSkeletonRows: number = MEMBER_SKELETON_ROWS
 
 	protected readonly size: Signal<number> = computed((): number => this.groupPage()?.size ?? DEFAULT_PAGE_SIZE)
 	protected readonly hasMore: Signal<boolean> = computed((): boolean => CumulativePageHelper.hasMore(this.groupPage()))

@@ -6,7 +6,6 @@ import '@sgdf/ui/tag'
 import '@sgdf/ui/list'
 import '@sgdf/ui/list-item'
 import '@sgdf/ui/avatar'
-import '@sgdf/ui/skeleton'
 import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, input, InputSignal, output, OutputEmitterRef, Signal } from '@angular/core';
 import { provideTranslocoScope, TranslocoPipe } from "@jsverse/transloco";
 import { MovementPrefillService } from '@pages/projects/[projectId]/movements/movement-form/shared/movement-prefill.service';
@@ -18,6 +17,7 @@ import { NotificationModel } from '@shared/models/model/notification.model';
 import { ParticipantModel } from '@shared/models/model/participant.model';
 import { PlannedMovementModel } from '@shared/models/model/planned-movement.model';
 import { SectionErrorComponent } from '@shared/ui/common/section-error/section-error.component';
+import { SkeletonListComponent } from '@shared/ui/common/skeleton-list/skeleton-list.component'
 
 const MAX_DISPLAYED: number = 5
 
@@ -37,6 +37,7 @@ interface PlannedMovementRow {
  */
 @Component({
 	imports: [
+		SkeletonListComponent,
 		TranslocoPipe,
 		PluralTranslationPipe,
 		CustomDateFormatPipe,
@@ -62,7 +63,6 @@ export class PlannedMovementCardComponent {
 	public readonly rowVariant: InputSignal<'success' | 'warning'> = input<'success' | 'warning'>('success')
 	public readonly retry: OutputEmitterRef<void> = output<void>()
 
-	protected readonly skeletonRows: readonly number[] = [1, 2, 3]
 	protected readonly total: Signal<number | undefined> = computed((): number | undefined => this.movements()?.length)
 	protected readonly rows: Signal<PlannedMovementRow[]> = computed((): PlannedMovementRow[] =>
 		(this.movements() ?? []).slice(0, MAX_DISPLAYED).map((movement: PlannedMovementModel, index: number): PlannedMovementRow => this.toRow(movement, index)),

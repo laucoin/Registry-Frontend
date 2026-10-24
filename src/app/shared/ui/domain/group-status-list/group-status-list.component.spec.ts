@@ -1,3 +1,4 @@
+import { By } from '@angular/platform-browser';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { MockBuilder, ngMocks } from 'ng-mocks';
@@ -15,6 +16,7 @@ import { ParticipantModel } from '@shared/models/model/participant.model';
 import { PageStateHelper } from '@shared/helpers/store/page-state.helper';
 import { LoadMoreComponent } from '@shared/ui/common/load-more/load-more.component';
 import { CheckedChangeModel, GroupMembersRequestModel, GroupStatusListComponent } from './group-status-list.component';
+import { SkeletonListComponent } from '@shared/ui/common/skeleton-list/skeleton-list.component';
 
 const group: GroupModel = GroupMapper.toModel({ ...GROUP_DTO, membersCount: 4, onSiteMembersCount: 3, inMembersCount: 1, outMembersCount: 1, overdueMembersCount: 1 });
 const quiet: GroupModel = { ...group, id: 'g2', outMembersCount: 0, overdueMembersCount: 0 };
@@ -161,7 +163,7 @@ describe('GroupStatusListComponent', () => {
 		await render({ ...pageOf([group, quiet]), totalElements: 2 }, { members: { g1: block({ loading: true }) } });
 
 		// Act
-		const skeletons: number = fixture.nativeElement.querySelectorAll('sgdf-accordion-item sgdf-skeleton').length;
+		const skeletons: number = ngMocks.input(fixture.debugElement.query(By.directive(SkeletonListComponent)), 'rows');
 
 		// Assert
 		expect(skeletons).toBeGreaterThan(0);

@@ -6,7 +6,6 @@ import '@sgdf/ui/tag'
 import '@sgdf/ui/list'
 import '@sgdf/ui/list-item'
 import '@sgdf/ui/avatar'
-import '@sgdf/ui/skeleton'
 import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit, Signal } from '@angular/core';
 import { provideTranslocoScope, TranslocoPipe } from "@jsverse/transloco";
 import { SelectedProjectFacade } from '@pages/projects/data/state/selected-project/selected-project.facade';
@@ -17,6 +16,7 @@ import { NotificationModel } from '@shared/models/model/notification.model';
 import { ParticipantModel } from '@shared/models/model/participant.model';
 import { SectionErrorComponent } from '@shared/ui/common/section-error/section-error.component';
 import { injectAutoRefresh } from '@shared/helpers/refresh/inject-auto-refresh';
+import { SkeletonListComponent } from '@shared/ui/common/skeleton-list/skeleton-list.component'
 
 const MAX_DISPLAYED: number = 5
 
@@ -34,6 +34,7 @@ interface BirthdayRow {
  */
 @Component({
 	imports: [
+		SkeletonListComponent,
 		TranslocoPipe,
 		PluralTranslationPipe,
 		SectionErrorComponent
@@ -56,7 +57,6 @@ export class ProjectBirthdayComponent implements OnInit {
 		(this.facade.participantsBirthdays() ?? []).slice(0, MAX_DISPLAYED).map((participant: ParticipantModel): BirthdayRow => this.toRow(participant)),
 	)
 	protected readonly remaining: Signal<number> = computed((): number => Math.max(0, (this.total() ?? 0) - MAX_DISPLAYED))
-	protected readonly skeletonRows: readonly number[] = [1, 2, 3]
 
 	public ngOnInit(): void {
 		this.reload()

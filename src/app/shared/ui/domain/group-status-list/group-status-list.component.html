@@ -6,7 +6,7 @@
     <sgdf-accordion data-testid="group-status-list-loading-accordion" appearance="soft" aria-busy="true" [attr.aria-label]="'global.list.loading' | transloco">
         @for (row of skeletonRows; track row) {
             <sgdf-accordion-item>
-                <sgdf-skeleton slot="title" shape="rounded" effect="pulse" style="width: 40%; height: 1rem"/>
+                <sgdf-skeleton class="w-[40%] h-[1rem]" slot="title" shape="rounded" effect="pulse"/>
             </sgdf-accordion-item>
         }
     </sgdf-accordion>
@@ -46,14 +46,7 @@
                         <app-section-error data-testid="group-status-list-members-error" [error]="failure" [retrying]="block.loading || block.silentLoading" (retry)="retryMembers(group)"/>
                     }
                     @if (block.loading && !block.element) {
-                        <sgdf-list appearance="text" aria-busy="true" [label]="'global.list.loading' | transloco">
-                            @for (row of memberSkeletonRows; track row) {
-                                <sgdf-list-item>
-                                    <sgdf-skeleton slot="start" shape="circle" effect="pulse" style="width: 2.5rem; height: 2.5rem"/>
-                                    <sgdf-skeleton shape="rounded" effect="pulse" style="width: 40%; height: 1rem"/>
-                                </sgdf-list-item>
-                            }
-                        </sgdf-list>
+                        <app-skeleton-list [rows]="memberSkeletonRows"/>
                     } @else if (block.element; as members) {
                         @if (members.content.length === 0) {
                             @if (!block.error) {
