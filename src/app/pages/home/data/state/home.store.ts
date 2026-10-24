@@ -23,15 +23,16 @@ const defaultHomeStore: HomeStoreModel = {
  */
 export const HomeStore = signalStore(
 	withState<HomeStoreModel>(defaultHomeStore),
-	withMethods((store, api = inject(ProjectApi), errors = inject(ErrorReporter)) => ({
-		fetchFavorites: pageFetcher(store, 'favorites', (request: CumulativePageRequest, params: ProjectPageParamsModel) =>
-			api.findProjects(request.page, request.size, params), errors),
-		fetchAttention: pageFetcher(store, 'attention', (request: CumulativePageRequest, params: ProjectPageParamsModel) =>
-			api.findProjects(request.page, request.size, params), errors),
-		refreshFavorites: pageFetcher(store, 'favorites', (request: CumulativePageRequest, params: ProjectPageParamsModel) =>
-			api.findProjects(request.page, request.size, params), errors, { silent: true }),
-		refreshAttention: pageFetcher(store, 'attention', (request: CumulativePageRequest, params: ProjectPageParamsModel) =>
-			api.findProjects(request.page, request.size, params), errors, { silent: true }),
-		reset: (): void => patchState(store, defaultHomeStore),
-	})),
+	withMethods((store, api = inject(ProjectApi), errors = inject(ErrorReporter)) => {
+		const findProjects = (request: CumulativePageRequest, params: ProjectPageParamsModel): ReturnType<ProjectApi['findProjects']> =>
+			api.findProjects(request.page, request.size, params)
+
+		return {
+			fetchFavorites: pageFetcher(store, 'favorites', findProjects, errors),
+			fetchAttention: pageFetcher(store, 'attention', findProjects, errors),
+			refreshFavorites: pageFetcher(store, 'favorites', findProjects, errors, { silent: true }),
+			refreshAttention: pageFetcher(store, 'attention', findProjects, errors, { silent: true }),
+			reset: (): void => patchState(store, defaultHomeStore),
+		}
+	}),
 )

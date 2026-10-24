@@ -1,4 +1,4 @@
-import { patchState, StateSignals, WritableStateSource } from '@ngrx/signals'
+import { StateSignals, WritableStateSource } from '@ngrx/signals'
 import { RxMethod, rxMethod } from '@ngrx/signals/rxjs-interop'
 import { catchError, defer, EMPTY, finalize, Observable, pipe, switchMap, tap } from 'rxjs'
 import { SelectOptionModel } from '@shared/models/model/select-option.model'
@@ -8,6 +8,7 @@ import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
 import { ErrorModel } from '@shared/models/model/error.model'
 import { MovementHelper } from '@shared/helpers/movement.helper'
 import { StateHelper } from '@shared/helpers/state/state.helper'
+import { patchBlock, patchWith } from '@shared/helpers/store/patch-block.helper'
 import { pageSlice, trackPage } from '@shared/helpers/store/track-page.operator'
 import { GenericModel } from '@shared/models/model/generic.model'
 import { MovementPageParamsModel } from '@shared/models/model/movement-page-params.model'
@@ -130,13 +131,7 @@ function commitPage<S extends object, K extends keyof S & string, R> (fetch: Pag
  * Limits: Ne fusionne pas les pages.
  */
 function storePage<S extends object, K extends keyof S & string> (store: StoreRef<S>, key: K, page: unknown): void {
-    patchState( store, (state: S) => ({
-        [ key ]: {
-            ...state[ key ],
-            params: { ...(state[ key ] as PageBlock).params as object, resetSearch: false },
-            element: page,
-        },
-    }) as unknown as Partial<S> )
+    patchBlock( store, key, (block: S[ K ]) => ({ ...block, params: { ...(block as PageBlock).params as object, resetSearch: false }, element: page }) )
 }
 
 /**
@@ -146,7 +141,7 @@ function storePage<S extends object, K extends keyof S & string> (store: StoreRe
  */
 export function paramsUpdater<S extends object, K extends keyof S & string> (store: StoreRef<S>, key: K): (params: ParamsOf<S[K]>) => void {
     return (params: ParamsOf<S[K]>): void => {
-        patchState( store, (state: S) => ({ [ key ]: { ...state[ key ], params } }) as unknown as Partial<S> )
+        patchBlock( store, key, (block: S[ K ]) => ({ ...block, params }) )
     }
 }
 
@@ -157,9 +152,7 @@ export function paramsUpdater<S extends object, K extends keyof S & string> (sto
  */
 export function paramsMerger<S extends object, K extends keyof S & string> (store: StoreRef<S>, key: K): (params: Partial<ParamsOf<S[K]>>) => void {
     return (params: Partial<ParamsOf<S[K]>>): void => {
-        patchState( store, (state: S) => ({
-            [ key ]: { ...state[ key ], params: { ...(state[ key ] as PageBlock).params as object, ...params } },
-        }) as unknown as Partial<S> )
+        patchBlock( store, key, (block: S[ K ]) => ({ ...block, params: { ...(block as PageBlock).params as object, ...params } }) )
     }
 }
 
@@ -172,7 +165,7 @@ export function movementContentsFetcher<S extends SectionErrorsState & { movemen
     store: StoreRef<S>,
     movementApi: MovementContentsApi,
 ): RxMethod<MovementContentsRequest> {
-    const movements: () => MovementsBlock = (): MovementsBlock => (store as unknown as { movements: () => MovementsBlock }).movements()
+    const movements: () => MovementsBlock = (): MovementsBlock => readBlock( store, 'movements' ) as MovementsBlock
 
     return rxMethod<MovementContentsRequest>( pipe(
         switchMap( (request: MovementContentsRequest): Observable<PairModel<MovementContentModel[]>[]> => movementApi.findMovementsContents(
@@ -180,7 +173,7 @@ export function movementContentsFetcher<S extends SectionErrorsState & { movemen
             request.movementIds,
             movements().params.isCurrent,
         ).pipe( trackSectionError( store, CONTENTS_SECTION ) ) ),
-        tap( (contents: PairModel<MovementContentModel[]>[]): void => patchState( store, (state: S) => mergeContents( state, contents ) ) ),
+        tap( (contents: PairModel<MovementContentModel[]>[]): void => patchWith( store, (state: S) => mergeContents( state, contents ) ) ),
     ) )
 }
 
@@ -189,10 +182,10 @@ export function movementContentsFetcher<S extends SectionErrorsState & { movemen
  * Scope: Reconstruit la page stockée avec les contenus récupérés de ses mouvements.
  * Limits: Renvoie l'état inchangé quand aucune page n'est stockée.
  */
-function mergeContents<S extends { movements: MovementsBlock }> (state: S, contents: PairModel<MovementContentModel[]>[]): Partial<S> | S {
+function mergeContents<S extends { movements: MovementsBlock }> (state: S, contents: PairModel<MovementContentModel[]>[]): object {
     if (!state.movements.element) return state
     const content: MovementModel[] = MovementHelper.rebuildPageWithContent( state.movements.element.content, contents )
-    return { movements: { ...state.movements, element: { ...state.movements.element, content } } } as unknown as Partial<S>
+    return { movements: { ...state.movements, element: { ...state.movements.element, content } } }
 }
 
 /**
@@ -234,7 +227,7 @@ export function trackSectionError<S extends SectionErrorsState> (store: StoreRef
 }
 
 function setSectionError<S extends SectionErrorsState> (store: StoreRef<S>, section: string, error: NotificationModel | undefined): void {
-    patchState( store, (state: S) => ({ sectionErrors: { ...state.sectionErrors, [ section ]: error } }) as unknown as Partial<S> )
+    patchWith( store, (state: S) => ({ sectionErrors: { ...state.sectionErrors, [ section ]: error } }) )
 }
 
 /**
@@ -255,7 +248,7 @@ export function trackElement<S extends object, K extends keyof S & string> (stor
  * Limits: Ne démarre ni n'annule aucune requête.
  */
 function setElementLoading<S extends object, K extends keyof S & string> (store: StoreRef<S>, key: K, loading: boolean): void {
-    patchState( store, (state: S) => ({ [ key ]: StateHelper.updateElementLoader( state[ key ] as ElementBlock as never, loading ) }) as unknown as Partial<S> )
+    patchBlock( store, key, (block: S[ K ]) => StateHelper.updateElementLoader( block as ElementBlock as never, loading ) )
 }
 
 /**
@@ -278,7 +271,7 @@ function keepElementError<S extends object, K extends keyof S & string> (store: 
 }
 
 function setElementError<S extends object, K extends keyof S & string> (store: StoreRef<S>, key: K, error: NotificationModel | undefined): void {
-    patchState( store, (state: S) => ({ [ key ]: { ...state[ key ], error } }) as unknown as Partial<S> )
+    patchBlock( store, key, (block: S[ K ]) => ({ ...block, error }) )
 }
 
 /**
@@ -293,7 +286,7 @@ export function elementFetcher<S extends object, K extends keyof S & string, R> 
 ): RxMethod<R> {
     return rxMethod<R>( pipe(
         switchMap( (request: R): Observable<ElementOf<S[K]>> => source( request ).pipe( trackElement( store, key ), keepElementError( store, key ) ) ),
-        tap( (element: ElementOf<S[K]>): void => patchState( store, (state: S) => ({ [ key ]: { ...state[ key ], element } }) as unknown as Partial<S> ) ),
+        tap( (element: ElementOf<S[K]>): void => patchBlock( store, key, (block: S[ K ]) => ({ ...block, element }) ) ),
     ) )
 }
 
@@ -309,7 +302,7 @@ export function silentElementFetcher<S extends object, K extends keyof S & strin
 ): RxMethod<R> {
     return rxMethod<R>( pipe(
         switchMap( (request: R): Observable<ElementOf<S[K]>> => source( request ).pipe( ignoreError() ) ),
-        tap( (element: ElementOf<S[K]>): void => patchState( store, (state: S) => ({ [ key ]: { ...state[ key ], element } }) as unknown as Partial<S> ) ),
+        tap( (element: ElementOf<S[K]>): void => patchBlock( store, key, (block: S[ K ]) => ({ ...block, element }) ) ),
     ) )
 }
 
@@ -326,7 +319,7 @@ export function metadataFetcher<S extends SectionErrorsState & { metadata: objec
 ): RxMethod<R> {
     return rxMethod<R>( pipe(
         switchMap( (request: R): Observable<T> => source( request ).pipe( trackSectionError( store, metadataSection( field ) ) ) ),
-        tap( (value: T): void => patchState( store, (state: S) => ({ metadata: { ...state.metadata, [ field ]: transform( value ) } }) as unknown as Partial<S> ) ),
+        tap( (value: T): void => patchBlock( store, 'metadata', (metadata: S[ 'metadata' ]) => ({ ...metadata, [ field ]: transform( value ) }) ) ),
     ) )
 }
 

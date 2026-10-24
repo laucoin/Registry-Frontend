@@ -1,5 +1,5 @@
 import { Signal } from '@angular/core'
-import { patchState, WritableStateSource } from '@ngrx/signals'
+import { WritableStateSource } from '@ngrx/signals'
 import { catchError, EMPTY, finalize, Observable } from 'rxjs'
 import { ErrorModel } from '@shared/models/model/error.model'
 import { GenericModel } from '@shared/models/model/generic.model'
@@ -7,6 +7,7 @@ import { PageRequestInformationModel } from '@shared/models/model/page-request-i
 import { PageStateHelper } from '@shared/helpers/store/page-state.helper'
 import { StateHelper } from '@shared/helpers/state/state.helper'
 import { initialize } from '@shared/helpers/rx.helper'
+import { patchBlock } from '@shared/helpers/store/patch-block.helper'
 
 type PageBlock = PageRequestInformationModel<unknown, GenericModel>
 
@@ -31,7 +32,7 @@ export function pageSlice<S extends object, K extends keyof S & string>(
 ): PageSlice<S[K] & PageBlock> {
     return {
         read: (): S[K] & PageBlock => store[key]() as S[K] & PageBlock,
-        write: (block: S[K] & PageBlock): void => patchState( store, { [key]: block } as unknown as Partial<S> ),
+        write: (block: S[K] & PageBlock): void => patchBlock( store, key, (): object => block ),
     }
 }
 
