@@ -27,7 +27,7 @@
     </div>
     <sgdf-divider/>
     <div>
-        <h3 class="m-0 text-base font-semibold">{{ 'project-profiles.form.users' | pluralTranslation: fields().users().value() | transloco }}</h3>
+        <h2 class="section-title">{{ 'project-profiles.form.users' | pluralTranslation: fields().users().value() | transloco }}</h2>
         <app-select-elements-field data-testid="project-profile-invitation-fields-users-field" [formField]="fields().users" [appFieldError]="fields().users" translationPrefix="project-profiles.form.error.users"
                                    [label]="'project-profiles.form.users.search' | transloco"
                                    [selectionLabel]="'project-profiles.form.users.selected' | pluralTranslation: fields().users().value().length | transloco"

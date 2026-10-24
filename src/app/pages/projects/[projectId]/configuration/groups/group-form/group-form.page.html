@@ -24,7 +24,7 @@
                 </div>
                 <sgdf-divider/>
                 <div>
-                    <h3 class="m-0 text-base font-semibold">{{ 'groups.form.members' | pluralTranslation: model().participants | transloco }}</h3>
+                    <h2 class="section-title">{{ 'groups.form.members' | pluralTranslation: model().participants | transloco }}</h2>
                     <app-select-elements-field data-testid="group-form-participants-field" [formField]="form.participants" [appFieldError]="form.participants" translationPrefix="groups.form.error.members"
                                                [label]="'groups.form.members.search' | transloco"
                                                [suggestions]="facade.searchedParticipantsMetadata()"

@@ -62,7 +62,7 @@
                             }
                         </sgdf-select>
                         <sgdf-divider/>
-                        <h3 class="m-0 text-base font-semibold">{{ 'movements.form.content.guest' | pluralTranslation: model().content.guests.length | transloco }}</h3>
+                        <h2 class="section-title">{{ 'movements.form.content.guest' | pluralTranslation: model().content.guests.length | transloco }}</h2>
                         @for (guest of form.content.guests; track $index) {
                             <div class="flex items-start gap-[0.5rem]">
                                 <div class="flex flex-1 flex-col gap-[0.75rem]">
@@ -100,7 +100,7 @@
                         </div>
                         <app-field-error data-testid="guest-movement-form-guest-content-error" [field]="form.content.guests" translationPrefix="movements.form.error.guestContent"/>
                     } @else {
-                        <h3 class="m-0 text-base font-semibold">{{ 'movements.form.content.registered' | pluralTranslation: model().content.participants | transloco }}</h3>
+                        <h2 class="section-title">{{ 'movements.form.content.registered' | pluralTranslation: model().content.participants | transloco }}</h2>
                         <app-select-elements-field data-testid="guest-movement-form-participants-field" [formField]="form.content.participants" [appFieldError]="form.content.participants" translationPrefix="movements.form.error.participantContent"
                                                    [label]="'movements.form.content.registered.search' | transloco"
                                                    [suggestions]="suggestions()"

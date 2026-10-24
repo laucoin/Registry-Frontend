@@ -61,7 +61,7 @@
                     </div>
                     <sgdf-divider/>
                     <div>
-                        <h3 class="m-0 text-base font-semibold">{{ 'participants.form.groups' | pluralTranslation: model().groups.length | transloco }}</h3>
+                        <h2 class="section-title">{{ 'participants.form.groups' | pluralTranslation: model().groups.length | transloco }}</h2>
                         <app-select-elements-field data-testid="participant-form-groups-field" [formField]="form.groups"
                                                    [label]="'participants.form.groups.search' | transloco"
                                                    [selectItemBuilder]="GroupHelper.toSelectItem"

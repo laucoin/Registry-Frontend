@@ -67,7 +67,7 @@
              (sgdf-hide)="closeLayer($event, addMembersFormLayerOpened)">
     <form novalidate data-testid="group-member-list-add-members-form" class="flex flex-col gap-[0.75rem]" (submit)="$event.preventDefault(); addMembers()">
         <div>
-            <h3 class="m-0 text-base font-semibold">{{ 'groups.form.members' | pluralTranslation: addMembersModel().participants | transloco }}</h3>
+            <h2 class="section-title">{{ 'groups.form.members' | pluralTranslation: addMembersModel().participants | transloco }}</h2>
             <app-select-elements-field data-testid="group-member-list-participants-field" [formField]="addMembersForm.participants" [appFieldError]="addMembersForm.participants" translationPrefix="groups.form.error.add-members"
                                        [label]="'groups.form.members.search' | transloco"
                                        [suggestions]="facade.searchedParticipantsMetadata()"

@@ -31,6 +31,10 @@ sgdf-table-cell[header] > h2 {
     font: inherit;
 }
 
+h2.section-title {
+    font-size: var(--sgdf-text-2xl);
+}
+
 sgdf-menu-item {
     padding: 0.5em 1em;
 }
