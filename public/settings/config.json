@@ -1,7 +1,8 @@
 {
   "defaultLanguage": "fr",
   "languages": [
-    "fr"
+    "fr",
+    "en"
   ],
   "application": {
     "name": "Registry",

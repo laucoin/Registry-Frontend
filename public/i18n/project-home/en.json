@@ -1,0 +1,165 @@
+{
+  "eyebrow": "Dashboard",
+  "subtitle": "Operational view of the project",
+  "communicate": "Communicate",
+  "quickActions": {
+    "registeredMovement": "Registered participant check-in/check-out",
+    "guestMovement": "Guest check-in/check-out",
+    "alert": "New alert"
+  },
+  "participantOverview": {
+    "title": "Participants",
+    "total": "{{count}} in total",
+    "registeredPresent": "Registered present",
+    "registeredOut": "Registered checked out",
+    "guestsPresent": "Guests present",
+    "seeAll": "See participant monitoring"
+  },
+  "vehicleOverview": {
+    "title": "Vehicles",
+    "total": "{{count}} in total",
+    "present": "Present",
+    "out": "Checked out",
+    "seeAll": "See vehicle monitoring"
+  },
+  "participantRegularization": {
+    "title": "Attendance to regularize",
+    "seeAll": "See all attendance to regularize",
+    "empty": "No attendance to regularize",
+    "dialogEmpty": {
+      "title": "No attendance to regularize",
+      "message": "All attendance is up to date: no participant has exceeded their planned end of presence."
+    },
+    "plannedEnd": "Planned end on {{date}}",
+    "presentSince": "Present for {{duration}}",
+    "seeRemaining": {
+      "one": "See the other attendance to regularize",
+      "few": "See the {{count}} other attendances to regularize"
+    },
+    "total": {
+      "one": "{{count}} attendance",
+      "few": "{{count}} attendances"
+    }
+  },
+  "activeAlert": {
+    "title": "Open alerts",
+    "seeAll": "See all alerts",
+    "empty": "No open alert",
+    "untitled": "Untitled alert",
+    "seeRemaining": {
+      "one": "See the other alert",
+      "few": "See the {{count}} other alerts"
+    },
+    "lastCommunication": "Latest communication on {{date}}",
+    "total": {
+      "one": "{{count}} open alert",
+      "few": "{{count}} open alerts"
+    }
+  },
+  "upcomingArrival": {
+    "title": "Today’s arrivals",
+    "total": {
+      "one": "{{count}} arrival",
+      "few": "{{count}} arrivals"
+    },
+    "empty": "No arrival planned today"
+  },
+  "upcomingDeparture": {
+    "title": "Today’s departures",
+    "total": {
+      "one": "{{count}} departure",
+      "few": "{{count}} departures"
+    },
+    "empty": "No departure planned today"
+  },
+  "birthday": {
+    "title": "Today’s birthdays",
+    "age": "{{count}} years old",
+    "empty": "No birthday today",
+    "more": {
+      "one": "+ {{count}} other",
+      "few": "+ {{count}} others"
+    },
+    "total": {
+      "one": "{{count}} birthday",
+      "few": "{{count}} birthdays"
+    }
+  },
+  "operationalMonitoring": {
+    "title": "Operational monitoring",
+    "titleMovementsOnly": "Ongoing check-ins/check-outs",
+    "tabs": {
+      "activities": "Ongoing activities",
+      "otherMovements": "Other ongoing check-ins/check-outs"
+    },
+    "empty": {
+      "activities": {
+        "title": "No ongoing activity",
+        "message": "No check-in/check-out linked to an activity is ongoing."
+      },
+      "otherMovements": {
+        "title": "No other ongoing check-in/check-out",
+        "message": "No check-in/check-out without an activity is ongoing."
+      }
+    }
+  },
+  "monitoring": {
+    "overdueHint": "End of presence exceeded, check-out not recorded. Are they still here?"
+  },
+  "participantsPage": {
+    "title": "Participant monitoring",
+    "subtitle": "Where the project’s participants are",
+    "tabs": {
+      "mine": "My groups",
+      "groups": "By group",
+      "individual": "Individual"
+    },
+    "check": "Check {{name}}",
+    "checked": {
+      "zero": "{{count}} participants checked",
+      "one": "{{count}} participant checked",
+      "few": "{{count}} participants checked"
+    },
+    "uncheckAll": "Uncheck all",
+    "disclaimer": "Double-check this information: human error (oversight or typing mistake) can always occur."
+  },
+  "vehiclesPage": {
+    "title": "Vehicle monitoring",
+    "subtitle": "Where the project’s vehicles are"
+  },
+  "groupStatus": {
+    "members": {
+      "one": "{{count}} participant",
+      "few": "{{count}} participants"
+    },
+    "onSite": {
+      "one": "{{count}} on site",
+      "few": "{{count}} on site"
+    },
+    "outside": {
+      "one": "{{count}} checked out",
+      "few": "{{count}} checked out"
+    },
+    "overdue": {
+      "one": "{{count}} to regularize",
+      "few": "{{count}} to regularize"
+    },
+    "checkedOf": "{{checked}}/{{total}} checked",
+    "noMembers": "No participant on site in this group.",
+    "membersOf": "Participants of {{name}}",
+    "empty": {
+      "title": "No group",
+      "message": "No group has a participant present on the project."
+    }
+  },
+  "plannedMovement": {
+    "people": {
+      "one": "{{count}} person",
+      "few": "{{count}} people"
+    },
+    "more": {
+      "one": "+ {{count}} other",
+      "few": "+ {{count}} others"
+    }
+  }
+}

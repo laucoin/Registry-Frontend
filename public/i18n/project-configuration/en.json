@@ -1,0 +1,45 @@
+{
+  "eyebrow": "Configuration",
+  "title": "Project configuration",
+  "subtitle": "Manage the project’s participants, groups, vehicles and options.",
+  "tiles": {
+    "participants": {
+      "title": "Participants",
+      "description": "Registered people, guests and individual data"
+    },
+    "groups": {
+      "title": "Groups",
+      "description": "Units, teams and assignments"
+    },
+    "vehicles": {
+      "title": "Vehicles",
+      "description": "Fleet, drivers and capacities"
+    },
+    "activities": {
+      "title": "Activities",
+      "description": "Project program and check-in/check-out frameworks"
+    },
+    "profiles": {
+      "title": "Members",
+      "description": "Project-specific profiles: roles and access"
+    }
+  },
+  "dangerZone": {
+    "title": "Danger zone",
+    "disable": {
+      "title": "Hide the project",
+      "description": "While the project is hidden, no profile, check-in/check-out or participant can be created in it. You can unhide it at any time.",
+      "action": "Hide the project"
+    },
+    "enable": {
+      "title": "Show the project again",
+      "description": "The project is currently hidden. Making it visible allows creating profiles, check-ins/check-outs, participants, etc. in it again.",
+      "action": "Unhide the project"
+    },
+    "delete": {
+      "title": "Delete the project",
+      "description": "Permanently deletes the project along with all the items linked to it (profiles, check-ins/check-outs, participants, etc.). This action is irreversible.",
+      "action": "Delete the project"
+    }
+  }
+}

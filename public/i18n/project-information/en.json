@@ -1,0 +1,10 @@
+{
+  "title": "Project information",
+  "name": "Project name",
+  "period": "Period",
+  "periodValue": "From {{begin}} to {{end}}",
+  "status": "computed status: {{status}}",
+  "options": "Project options",
+  "noOptions": "No option",
+  "edit": "Edit…"
+}

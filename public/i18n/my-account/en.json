@@ -1,0 +1,72 @@
+{
+  "eyebrow": "Settings",
+  "selected": "selected",
+  "title": "My account",
+  "subtitle": "View your information and set the application’s language and theme.",
+  "info": {
+    "title": "Account information",
+    "name": "Full name",
+    "email": "Email address",
+    "role": "Role",
+    "lastLogin": "Last sign-in",
+    "empty": "Not provided",
+    "hint": "This information is provided by {{origin}} and cannot be edited here. Contact {{origin}} if changes are needed."
+  },
+  "language": {
+    "title": "Language",
+    "fr": "Français",
+    "en": "English",
+    "choose": "Choose the language",
+    "only": "No other language is available than {{language}}.",
+    "hint": "Display language of the interface."
+  },
+  "theme": {
+    "title": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "choose": "Choose the theme",
+    "hint": "“System” follows your device’s setting."
+  },
+  "refresh": {
+    "title": "Data refresh",
+    "off": "Off",
+    "eco": "Economy",
+    "normal": "Normal",
+    "fast": "Fast",
+    "choose": "Choose the refresh frequency",
+    "hint": "How often the displayed information (alerts, check-ins/check-outs, attendance…) is automatically reloaded without leaving the page. Only the data visible on screen is refreshed. Even when off, the day’s data (arrivals, departures, birthdays) is renewed at midnight."
+  },
+  "personalData": {
+    "title": "My personal data",
+    "gdprLabel": "GDPR",
+    "learnMore": "Learn more about how your data is used",
+    "extract": {
+      "title": "Get an extract of my data",
+      "description": "You will receive by email an archive containing all the data linked to your account: profile, project access, attendance, check-ins/check-outs and communications.",
+      "action": "Download my data"
+    },
+    "delete": {
+      "title": "Delete my account",
+      "description": "Permanently deletes your Registry account: your profile, your preferences and your access to your projects will be erased. A confirmation will be requested.",
+      "adminNote": "Not possible if you are the last administrator of the application or of a project: first appoint another administrator, or delete the project.",
+      "action": "Delete my account",
+      "confirmation": {
+        "title": "Delete my account",
+        "phrase": "delete my account",
+        "typeToConfirm": "To confirm, type “{{phrase}}”",
+        "cancel": "Cancel",
+        "accept": "Delete permanently",
+        "intro": "You are about to permanently delete your Registry account.",
+        "listIntro": "The following will be erased:",
+        "items": {
+          "profile": "your profile and your preferences",
+          "access": "your access to all your projects (the projects themselves are not deleted)"
+        },
+        "irreversible": "This data cannot be recovered.",
+        "scope": "Only your Registry account is affected, not your account with {{organization}}.",
+        "reconnect": "If you sign in again later, a blank account will be created: you will start from scratch, with no access to your former projects."
+      }
+    }
+  }
+}
