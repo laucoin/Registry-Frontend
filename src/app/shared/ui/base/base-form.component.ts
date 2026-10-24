@@ -8,7 +8,6 @@ import { DestroyRef, inject, signal, WritableSignal } from '@angular/core'
 import { CustomDateFormatPipe } from '@shared/helpers/pipe/custom-date-format.pipe'
 import { Location } from '@angular/common'
 import { GenericHelper } from '@shared/helpers/generic.helper'
-import { RegistryConfig } from '@core/config/registry.config'
 
 /**
  * Purpose: Classe de base des formulaires de création et d'édition construits sur les signal forms.
@@ -27,8 +26,6 @@ export abstract class BaseFormComponent extends GenericComponent {
     protected readonly error: WritableSignal<ErrorModel | undefined> = signal( undefined )
 
     private destroyed: boolean = false
-
-    protected readonly invalidFormMessage: string = this.translateService.translate( 'global.messages.invalid-form' )
 
     protected constructor () {
         super()
@@ -49,11 +46,6 @@ export abstract class BaseFormComponent extends GenericComponent {
         } )
     }
 
-    // Les valeurs du formulaire peuvent porter des données personnelles de participants — tenues hors de la console en production.
-    protected logInvalidForm (value: unknown): void {
-        if (!RegistryConfig.environment.production) console.warn( this.invalidFormMessage, value )
-    }
-
     protected abstract loadData (): void
 
     protected abstract handleLoadedElement (): void
@@ -67,7 +59,7 @@ export abstract class BaseFormComponent extends GenericComponent {
 
     protected navigateToRedirectUri (route: RegistryRouteEnum | undefined = undefined): void {
         if (GenericHelper.nonNull( route )) this.router.navigateByUrl( route! ).catch( (): void => this.location.back() )
-        else if (this.closesToParentRoute) this.router.navigate( this.parentRouteCommands(), { relativeTo: this.route } ).catch( console.error )
+        else if (this.closesToParentRoute) this.router.navigate( this.parentRouteCommands(), { relativeTo: this.route } ).catch( (): void => undefined )
         else this.location.back()
     }
 

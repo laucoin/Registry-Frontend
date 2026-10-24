@@ -112,6 +112,6 @@ export class ParticipantActions extends ElementActionsBase<ParticipantModel, str
     private navigate(route: RegistryRouteEnum, participant: ParticipantModel): void {
         this.router.navigateByUrl(
             route.replace(':participantId', participant.id).replace(':projectId', this.sessionFacade.currentProjectId() ?? ''),
-        ).catch((err: Error) => console.error(err))
+        ).catch((): void => undefined)
     }
 }

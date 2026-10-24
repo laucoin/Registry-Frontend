@@ -66,7 +66,6 @@ export class ProjectProfileEditionFormPage extends GenericProjectProfileFormComp
 
     protected submit(): void {
         if (!this.isFormValid(this.form)) {
-            this.logInvalidForm(this.model())
             return
         }
 

@@ -193,7 +193,6 @@ export class GuestMovementFormPage extends BaseFormComponent {
         if (this.saving() || this.loading()) return
         if (GenericHelper.nonNull( this.idParam ) && !this.movement()) return
         if (!this.isFormValid( this.form )) {
-            this.logInvalidForm( this.model() )
             return
         }
         const dto: GuestMovementDto = toGuestMovementDto( this.model() )

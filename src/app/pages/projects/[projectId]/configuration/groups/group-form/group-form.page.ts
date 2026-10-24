@@ -105,7 +105,6 @@ export class GroupFormPage extends BaseFormComponent {
         if (editing && !this.group()) return
 
         if (!this.isFormValid( this.form )) {
-            this.logInvalidForm( this.model() )
             return
         }
 

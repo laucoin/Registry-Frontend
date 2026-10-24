@@ -216,7 +216,7 @@ export class ProjectFacade extends GenericFacade {
         }
 
         if (this.sessionFacade.currentProjectId() === project.id) {
-            if (command === 'delete' || command === 'disable') this.router.navigateByUrl( RegistryRouteEnum.PROJECTS ).catch( console.error )
+            if (command === 'delete' || command === 'disable') this.router.navigateByUrl( RegistryRouteEnum.PROJECTS ).catch( (): void => undefined )
             else if (command === 'enable') this.sessionFacade.refreshCurrentProject()
         }
 

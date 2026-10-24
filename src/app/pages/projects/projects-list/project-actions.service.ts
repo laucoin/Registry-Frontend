@@ -54,7 +54,7 @@ export class ProjectActions {
 
 	public join(project: ProjectModel): void {
 		this.router.navigateByUrl(RegistryRouteEnum.PROJECT.replace(':projectId', project.id))
-			.catch((err: Error) => console.error(err))
+			.catch((): void => undefined)
 	}
 
 	public confirmSupportProfile(project: ProjectModel): void {
@@ -129,7 +129,7 @@ export class ProjectActions {
 	}
 
 	private edit(project: ProjectModel): void {
-		this.router.navigateByUrl(RegistryRouteEnum.PROJECTS_EDITION.replace(':projectId', project.id)).catch((err: Error) => console.error(err))
+		this.router.navigateByUrl(RegistryRouteEnum.PROJECTS_EDITION.replace(':projectId', project.id)).catch((): void => undefined)
 	}
 
 	private confirm(prefix: string, project: ProjectModel, severity: SeverityEnum, accept: () => void): void {

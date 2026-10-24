@@ -247,7 +247,6 @@ export class RegisteredMovementFormPage extends BaseFormComponent {
         if (this.saving() || this.loading()) return
         if (GenericHelper.nonNull( this.idParam ) && !this.movement()) return
         if (!this.sectionsValid()) {
-            this.logInvalidForm( this.model() )
             return
         }
         const dto: MovementDto = toRegisteredMovementDto( this.model() )

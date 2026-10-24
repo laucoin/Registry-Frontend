@@ -66,7 +66,7 @@ export class HomeFavoriteProjectsComponent implements OnInit {
 			return
 		}
 		event.preventDefault()
-		this.router.navigateByUrl(this.link(project)).catch((error: Error): void => console.error(error))
+		this.router.navigateByUrl(this.link(project)).catch((): void => undefined)
 	}
 
 	protected summary(project: ProjectModel): string | undefined {

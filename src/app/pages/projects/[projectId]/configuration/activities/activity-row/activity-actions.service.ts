@@ -83,6 +83,6 @@ export class ActivityActions extends ElementActionsBase<ActivityModel> {
     private navigate(route: RegistryRouteEnum, activity: ActivityModel): void {
         this.router.navigateByUrl(
             route.replace(':activityId', activity.id).replace(':projectId', this.sessionFacade.currentProjectId() ?? ''),
-        ).catch((err: Error) => console.error(err))
+        ).catch((): void => undefined)
     }
 }

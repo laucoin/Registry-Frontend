@@ -83,6 +83,6 @@ export class VehicleActions extends ElementActionsBase<VehicleModel> {
     private navigate(route: RegistryRouteEnum, vehicle: VehicleModel): void {
         this.router.navigateByUrl(
             route.replace(':vehicleId', vehicle.id).replace(':projectId', this.sessionFacade.currentProjectId() ?? ''),
-        ).catch((err: Error) => console.error(err))
+        ).catch((): void => undefined)
     }
 }

@@ -43,7 +43,6 @@ export class ProjectProfileInvitationFormPage extends GenericProjectProfileFormC
 
     protected submit(): void {
         if (!this.isFormValid(this.form)) {
-            this.logInvalidForm(this.model())
             return
         }
 

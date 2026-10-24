@@ -37,7 +37,7 @@ export class UserActions extends ElementActionsBase<UserModel> {
             shown: others,
             allowed: this.hasAuthority(UserAuthorityEnum.REGISTRY_USER_U),
             run: (): void => {
-                this.router.navigateByUrl(RegistryRouteEnum.USERS_EDITION.replace(':userId', user.id)).catch((err: Error) => console.error(err))
+                this.router.navigateByUrl(RegistryRouteEnum.USERS_EDITION.replace(':userId', user.id)).catch((): void => undefined)
             },
         }
     }

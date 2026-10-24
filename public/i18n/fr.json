@@ -8,10 +8,6 @@
       "removed": "{{name}} retiré",
       "duplicate": "{{name}} est déjà sélectionné"
     },
-    "language": {
-      "fr": "Français",
-      "en": "English"
-    },
     "list": {
       "active-filters": "{{count}} actif(s)",
       "loading": "Chargement de la liste",
@@ -73,10 +69,6 @@
       "element-last-update": "Modifié le {{datetime}}",
       "element-last-update-user": "Modifié le {{datetime}} par {{user}}"
     },
-    "img": {
-      "console_someone": "Image d’une personne consolée",
-      "no_data": "Image d’un virevoltant dans le désert"
-    },
     "people": {
       "all": "Tous",
       "major": {
@@ -89,7 +81,6 @@
       }
     },
     "form": {
-      "required": "Obligatoire",
       "range": {
         "min": "Min",
         "max": "Max"
@@ -105,19 +96,9 @@
       "search-and-filter": "Rechercher & Filtrer",
       "search": "Rechercher",
       "skip-to-content": "Aller au contenu",
-      "sign-out": "Déconnexion",
       "remove": "Retirer",
       "remove-named": "Retirer {{name}}",
-      "reset": "Réinitialiser",
-      "add": "Ajouter",
-      "clear": "Effacer",
-      "help": "Aide"
-    },
-    "messages": {
-      "loading": "Chargement en cours",
-      "not-implemented": "🙅‍♂️ La fonctionnalité n’est pas implémentée.",
-      "invalid-form": "🙅‍♂️ Le formulaire n’est pas valide.",
-      "invalid-action": "🙅‍♂️ L’action choisie n’est pas prise en charge."
+      "reset": "Réinitialiser"
     },
     "notifications": {
       "startup": {
@@ -422,7 +403,6 @@
       "true": "En cours de validité",
       "false": "Expiré"
     },
-    "manage-acceptance": "Veux-tu accepter cette invitation ?",
     "form": {
       "title": {
         "create": "Inviter au projet “{{name}}”",
@@ -600,7 +580,6 @@
         "title": "Communications",
         "subtitle": "Détail des communications avec {{movement}}"
       },
-      "no-message": "Aucun message",
       "see-communication": "Détail des communications",
       "last": "Dernière communication",
       "days": "{{count}} j",
@@ -1240,7 +1219,6 @@
       "visibility": "Visibilité"
     },
     "participant.zero": "Aucun participant",
-    "description": "Description : ",
     "available": {
       "true": "Disponible",
       "false": "Non-Disponible"
@@ -1366,10 +1344,6 @@
       "false": "Masqué"
     },
     "form": {
-      "title": {
-        "create": "Créer une communication",
-        "edit": "Modifier la communication du “{{dateTime}}”"
-      },
       "alert": {
         "title": "Alerte",
         "empty-search": "Aucune alerte trouvée",
@@ -1379,7 +1353,6 @@
         "title": "Activité",
         "empty-search": "Aucune activité trouvée"
       },
-      "datetime": "Date & Heure",
       "message": "Message",
       "hint": {
         "message": "Merci de ne pas mettre de données à caractère personnel dans ce message (ex : nom, prénom, numéro de téléphone, etc.).",

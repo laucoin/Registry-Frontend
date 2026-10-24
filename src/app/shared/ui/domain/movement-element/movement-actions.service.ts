@@ -70,6 +70,6 @@ export class MovementActions extends ElementActionsBase<MovementModel> {
                                            : RegistryRouteEnum.PROJECTS_MOVEMENTS_REGISTERED_EDITION
         this.router.navigateByUrl(
             edition.replace(':movementId', movement.id).replace(':projectId', this.sessionFacade.currentProjectId() ?? ''),
-        ).catch((err: Error) => console.error(err))
+        ).catch((): void => undefined)
     }
 }

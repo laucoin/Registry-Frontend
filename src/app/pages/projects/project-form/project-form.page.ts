@@ -135,7 +135,6 @@ export class ProjectFormPage extends BaseFormComponent {
         if (this.saving()) return
         const informationValid: boolean = this.isFormValid( this.form )
         if (!this.isFormValid( this.optionsForm ) || !informationValid) {
-            this.logInvalidForm( { ...this.model(), options: this.optionsModel() } )
             return
         }
 
@@ -167,7 +166,6 @@ export class ProjectFormPage extends BaseFormComponent {
         const projectId: string | undefined = this.createdProjectId()
         if (this.saving() || GenericHelper.isNull( projectId )) return
         if (!this.isFormValid( this.invitationForm )) {
-            this.logInvalidForm( this.invitationModel() )
             return
         }
 

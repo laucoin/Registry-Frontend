@@ -83,6 +83,6 @@ export class GroupActions extends ElementActionsBase<GroupModel> {
     private navigate(route: RegistryRouteEnum, group: GroupModel): void {
         this.router.navigateByUrl(
             route.replace(':groupId', group.id).replace(':projectId', this.sessionFacade.currentProjectId() ?? ''),
-        ).catch((err: Error) => console.error(err))
+        ).catch((): void => undefined)
     }
 }

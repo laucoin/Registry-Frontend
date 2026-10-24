@@ -5,7 +5,7 @@ import { GenericResponseDto } from '@shared/models/dto/response/generic.response
 import { ProjectOptionEnum } from '@shared/models/enumeration/project-option.enum'
 import { SelectOptionModel } from '@shared/models/model/select-option.model'
 
-export interface ProjectCountsResponseDto {
+interface ProjectCountsResponseDto {
     participants: number
     groups: number
     acceptedProfiles: number

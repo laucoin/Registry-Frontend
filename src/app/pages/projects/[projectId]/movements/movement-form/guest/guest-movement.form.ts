@@ -25,7 +25,7 @@ export interface MovementGuestModel {
     birthday: Date | null
 }
 
-export interface GuestContentModel {
+interface GuestContentModel {
     reason: MovementReasonModel | null
     participants: MovementContentModel[]
     guests: MovementGuestModel[]

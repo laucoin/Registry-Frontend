@@ -93,7 +93,6 @@ export class VehicleFormPage extends BaseFormComponent {
         if (editing && !this.vehicle()) return
 
         if (!this.isFormValid(this.form)) {
-            this.logInvalidForm(this.model())
             return
         }
 

@@ -101,7 +101,6 @@ export class ActivityFormPage extends BaseFormComponent {
         if (editing && !this.activity()) return
 
         if (!this.isFormValid(this.form)) {
-            this.logInvalidForm(this.model())
             return
         }
 

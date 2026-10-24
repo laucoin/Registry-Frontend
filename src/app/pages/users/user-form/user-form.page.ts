@@ -59,7 +59,7 @@ export class UserFormPage extends BaseFormComponent {
         this.facade.resetUser()
 
         if (!this.idParam) {
-            this.router.navigateByUrl( RegistryRouteEnum.USERS ).catch( console.error )
+            this.router.navigateByUrl( RegistryRouteEnum.USERS ).catch( (): void => undefined )
         } else {
             this.facade.fetchAssignableRoles()
             this.facade.fetchUser( this.idParam! )
@@ -79,7 +79,6 @@ export class UserFormPage extends BaseFormComponent {
 
     protected submit (): void {
         if (!this.isFormValid( this.form )) {
-            this.logInvalidForm( this.model() )
             return
         }
 

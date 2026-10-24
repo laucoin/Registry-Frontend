@@ -5,9 +5,9 @@ import { FieldTree, form, required, SchemaPathTree } from '@angular/forms/signal
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslocoService } from '@jsverse/transloco'
 import { Observable, Subject, of, throwError } from 'rxjs'
+import { RegistryConfig } from '@core/config/registry.config'
 import { Mock, afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { ConfigModel } from '@core/config/model/config.model'
-import { RegistryConfig } from '@core/config/registry.config'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
@@ -56,9 +56,6 @@ class TestForm extends BaseFormComponent {
         return this.isFormValid( form )
     }
 
-    public warnAbout (value: unknown): void {
-        this.logInvalidForm( value )
-    }
 }
 
 class TestDialogForm extends TestForm {
@@ -233,19 +230,5 @@ describe( 'BaseFormComponent', () => {
         // Assert
         expect( navigateByUrl ).toHaveBeenCalledWith( RegistryRouteEnum.PROJECTS )
         expect( back ).toHaveBeenCalledTimes( 1 )
-    } )
-
-    it( 'logs an invalid form outside production only', () => {
-        // Arrange
-        const form: TestForm = create()
-        const warn: ReturnType<typeof vi.spyOn> = vi.spyOn( console, 'warn' ).mockImplementation( (): void => undefined )
-
-        // Act
-        form.warnAbout( { a: 1 } )
-        RegistryConfig.environment.production = true
-        form.warnAbout( { a: 2 } )
-
-        // Assert
-        expect( warn ).toHaveBeenCalledTimes( 1 )
     } )
 } )

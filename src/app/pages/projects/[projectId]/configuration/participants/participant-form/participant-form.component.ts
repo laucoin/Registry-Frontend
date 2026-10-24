@@ -127,7 +127,6 @@ export class ParticipantFormComponent extends BaseFormComponent {
         if (editing && !this.participant()) return
 
         if (!this.isFormValid(this.form)) {
-            this.logInvalidForm(this.model())
             return
         }
 

@@ -105,6 +105,6 @@ export class ProjectProfileActions extends ElementActionsBase<ListedProfileModel
     }
 
     private navigate(url: string): void {
-        this.router.navigateByUrl(url).catch((err: Error) => console.error(err))
+        this.router.navigateByUrl(url).catch((): void => undefined)
     }
 }

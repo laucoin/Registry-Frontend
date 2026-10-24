@@ -20,7 +20,7 @@ import { ParticipantModel } from '@shared/models/model/participant.model'
 import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { VehicleModel } from '@shared/models/model/vehicle.model'
 
-export interface RegisteredContentModel {
+interface RegisteredContentModel {
     reason: MovementReasonModel | null
     participants: MovementContentModel[]
 }

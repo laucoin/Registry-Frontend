@@ -8,10 +8,6 @@
       "removed": "{{name}} removed",
       "duplicate": "{{name}} is already selected"
     },
-    "language": {
-      "fr": "Français",
-      "en": "English"
-    },
     "list": {
       "active-filters": "{{count}} active",
       "loading": "Loading the list",
@@ -73,10 +69,6 @@
       "element-last-update": "Updated on {{datetime}}",
       "element-last-update-user": "Updated on {{datetime}} by {{user}}"
     },
-    "img": {
-      "console_someone": "Image of a person being comforted",
-      "no_data": "Image of a tumbleweed in the desert"
-    },
     "people": {
       "all": "All",
       "major": {
@@ -89,7 +81,6 @@
       }
     },
     "form": {
-      "required": "Required",
       "range": {
         "min": "Min",
         "max": "Max"
@@ -105,19 +96,9 @@
       "search-and-filter": "Search & Filter",
       "search": "Search",
       "skip-to-content": "Skip to content",
-      "sign-out": "Sign out",
       "remove": "Remove",
       "remove-named": "Remove {{name}}",
-      "reset": "Reset",
-      "add": "Add",
-      "clear": "Clear",
-      "help": "Help"
-    },
-    "messages": {
-      "loading": "Loading",
-      "not-implemented": "🙅‍♂️ This feature is not implemented.",
-      "invalid-form": "🙅‍♂️ The form is not valid.",
-      "invalid-action": "🙅‍♂️ The chosen action is not supported."
+      "reset": "Reset"
     },
     "notifications": {
       "startup": {
@@ -422,7 +403,6 @@
       "true": "Currently valid",
       "false": "Expired"
     },
-    "manage-acceptance": "Do you want to accept this invitation?",
     "form": {
       "title": {
         "create": "Invite to the project “{{name}}”",
@@ -600,7 +580,6 @@
         "title": "Communications",
         "subtitle": "Details of the communications with {{movement}}"
       },
-      "no-message": "No message",
       "see-communication": "Communication details",
       "last": "Latest communication",
       "days": "{{count}} d",
@@ -1240,7 +1219,6 @@
       "visibility": "Visibility"
     },
     "participant.zero": "No participant",
-    "description": "Description: ",
     "available": {
       "true": "Available",
       "false": "Unavailable"
@@ -1366,10 +1344,6 @@
       "false": "Hidden"
     },
     "form": {
-      "title": {
-        "create": "Create a communication",
-        "edit": "Edit the communication of “{{dateTime}}”"
-      },
       "alert": {
         "title": "Alert",
         "empty-search": "No alert found",
@@ -1379,7 +1353,6 @@
         "title": "Activity",
         "empty-search": "No activity found"
       },
-      "datetime": "Date & Time",
       "message": "Message",
       "hint": {
         "message": "Please do not put personal data in this message (e.g. last name, first name, phone number, etc.).",

@@ -4,7 +4,7 @@ import { CustomDatetimeModel } from '@shared/models/model/custom-datetime.model'
 import { ProfileStatusEnum } from '@shared/models/enumeration/profile-status.enum'
 import { AvailabilityStatusEnum } from '@shared/models/enumeration/availability-status.enum'
 
-export interface InvitationProjectModel {
+interface InvitationProjectModel {
     id: string
     name: string
     begin: CustomDatetimeModel | undefined
