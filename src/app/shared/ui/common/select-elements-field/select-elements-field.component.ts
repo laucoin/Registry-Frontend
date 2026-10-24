@@ -65,9 +65,7 @@ export class SelectElementsFieldComponent<T extends object, S extends BaseModel 
 
     public readonly value: ModelSignal<T[]> = model<T[]>( [] )
     public readonly disabled: InputSignal<boolean> = input( false )
-    public readonly invalid: InputSignal<boolean> = input( false )
     public readonly touched: InputSignal<boolean> = input( false )
-    public readonly dirty: InputSignal<boolean> = input( false )
     public readonly required: InputSignal<boolean> = input( false )
     public readonly appFieldError: InputSignal<(() => FieldErrorState) | undefined> = input<(() => FieldErrorState) | undefined>()
     public readonly translationPrefix: InputSignal<string | undefined> = input<string | undefined>()

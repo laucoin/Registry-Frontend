@@ -1,5 +1,4 @@
 import { StringHelper } from '@shared/helpers/string.helper'
-import { SplitTimeModel } from '@shared/models/model/split-time.model'
 import { CustomDatetimeModel } from '@shared/models/model/custom-datetime.model'
 import { GenericHelper } from '@shared/helpers/generic.helper'
 import { IntervalModel } from '@shared/models/model/interval.model'
@@ -46,26 +45,6 @@ export class DateHelper {
         return new Date( date )
     }
 
-    public static sortDate (
-        dates: (CustomDatetimeModel | undefined)[],
-        ascending: boolean = true,
-        ignoreNull: boolean = false,
-    ): (CustomDatetimeModel | undefined)[] {
-        const toSort: (CustomDatetimeModel | undefined)[] = dates.filter( (date: CustomDatetimeModel | undefined): boolean =>
-            ignoreNull ? GenericHelper.nonNull( date?.date ) : true,
-        )
-
-        return toSort.sort( (a: CustomDatetimeModel | undefined, b: CustomDatetimeModel | undefined): 1 | -1 | 0 => {
-            if (DateHelper.isCustomBefore( a, b )) {
-                return ascending ? -1 : 1
-            } else if (DateHelper.isCustomDateAfter( a, b )) {
-                return ascending ? 1 : -1
-            } else {
-                return 0
-            }
-        } )
-    }
-
     public static isCustomBefore (
         actual: CustomDatetimeModel | undefined,
         other: CustomDatetimeModel | undefined,
@@ -75,13 +54,6 @@ export class DateHelper {
 
     public static isBefore (actual: Date | undefined, other: Date | undefined): boolean {
         return DateHelper.compareWith( actual, other, (a: Date, o: Date): boolean => new Date( a ).getTime() < new Date( o ).getTime() )
-    }
-
-    public static isBeforeOrEqual (
-        actual: CustomDatetimeModel | undefined,
-        other: CustomDatetimeModel | undefined,
-    ): boolean {
-        return DateHelper.compareWith( actual, other, (a: CustomDatetimeModel, o: CustomDatetimeModel): boolean => ( DateHelper.toDate( a )?.getTime() ?? NaN ) <= ( DateHelper.toDate( o )?.getTime() ?? NaN ) )
     }
 
     public static isCustomDateAfter (
@@ -175,40 +147,7 @@ export class DateHelper {
         return formattedValue
     }
 
-    public static toIsoDuration (hours: number | undefined, minutes: number | undefined): string | undefined {
-        switch (true) {
-            case !hours && !minutes:
-            case hours === 0 && minutes === 0:
-                return undefined
-            case !hours && !!minutes:
-                return `PT${minutes}M`
-            case !!hours && !minutes:
-                return `PT${hours}H`
-            case !!hours && !!minutes:
-                return `PT${hours}H${minutes}M`
-            default:
-                throw new Error( 'An error happen during ISO 8601 duration formatting' )
-        }
-    }
-
     private static durationISO8601Regex: RegExp = /P(T(?:(\d+)H)?(?:(\d+)M)?)?/
-
-    public static parseIsoDuration (duration: string | undefined): SplitTimeModel {
-        if (!duration) {
-            return { hours: undefined, minutes: undefined }
-        }
-
-        const match: RegExpMatchArray | null = duration.match( DateHelper.durationISO8601Regex )
-
-        if (!match) {
-            throw new Error( 'Invalid ISO 8601 duration format' )
-        }
-
-        return {
-            hours: match[2] ? parseInt( match[2] ) : 0,
-            minutes: match[3] ? parseInt( match[3] ) : 0,
-        }
-    }
 
     public static buildDateInterval (
         start: Date | undefined,

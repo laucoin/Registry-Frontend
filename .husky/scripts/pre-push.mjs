@@ -1,6 +1,6 @@
 // Asks for a confirmation before pushing to a protected branch, rewriting remote history or deleting a remote branch.
 import { execFileSync, spawnSync } from 'node:child_process';
-import { closeSync, createReadStream, openSync, readFileSync } from 'node:fs';
+import { createReadStream, openSync, readFileSync } from 'node:fs';
 import { createInterface } from 'node:readline';
 
 const protectedBranches = [ 'master', 'main', 'develop' ];
@@ -32,10 +32,11 @@ const confirm = (question) => new Promise((resolve) => {
         resolve(false);
         return;
     }
-    const rl = createInterface({ input: createReadStream(null, { fd }), output: process.stderr });
+    const input = createReadStream(null, { fd });
+    const rl = createInterface({ input, output: process.stderr });
     rl.question(`${ question } (y/N): `, (answer) => {
         rl.close();
-        closeSync(fd);
+        input.destroy();
         resolve(/^y(es)?$/i.test(answer.trim()));
     });
 });

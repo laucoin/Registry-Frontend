@@ -25,7 +25,6 @@ export class PageStateHelper {
             severity: 'error',
             summary: error.title,
             detail: error.message,
-            icon: 'pi pi-exclamation-triangle',
             closable: true,
         }
     }

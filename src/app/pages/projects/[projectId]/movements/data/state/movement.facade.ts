@@ -1,4 +1,3 @@
-import { SectionErrorsHelper } from '@shared/helpers/store/section-errors.helper'
 import { computed, inject, Injectable, Signal } from '@angular/core'
 import { Observable, tap } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
@@ -38,10 +37,6 @@ export class MovementFacade extends GenericProjectElementFacade {
     private readonly pluralTranslationPipe: PluralTranslationPipe = inject( PluralTranslationPipe )
     private readonly datePipe: DateFormatPipe = inject( DateFormatPipe )
 
-    public readonly metadataErrors: Signal<Record<string, NotificationModel | undefined>> = SectionErrorsHelper.metadata( this.store.sectionErrors )
-
-    public readonly movementsContentsError: Signal<NotificationModel | undefined> = SectionErrorsHelper.of( this.store.sectionErrors, 'contents' )
-
     public readonly movementsPage: Signal<PageModel<MovementModel> | undefined> = this.store.movements.element
 
     public readonly movementsPageLoading: Signal<boolean> = this.store.movements.loading
@@ -70,21 +65,7 @@ export class MovementFacade extends GenericProjectElementFacade {
 
     public readonly movementCommunicationsPageSilentLoading: Signal<boolean> = this.store.movementCommunications.silentLoading
 
-    public readonly movementCommunicationsPageError: Signal<NotificationModel | undefined> = this.store.movementCommunications.error
-
     private readonly movementCommunicationsPageResetSearch: Signal<boolean> = this.store.movementCommunications.params.resetSearch
-
-    public readonly movementCommunicationsPageQueryParam: Signal<string | undefined> = this.store.movementCommunications.params.q
-
-    public readonly movementCommunicationsPageIsVisibleParam: Signal<boolean | undefined> = this.store.movementCommunications.params.isVisible
-
-    public readonly movementCommunicationsPageFromParam: Signal<Date | undefined> = computed( (): Date | undefined =>
-            DateHelper.buildDate( this.store.movementCommunications.params.from() ),
-        )
-
-    public readonly movementCommunicationsPageToParam: Signal<Date | undefined> = computed( (): Date | undefined =>
-            DateHelper.buildDate( this.store.movementCommunications.params.to() ),
-        )
 
     public readonly searchedReasonAndActivityMetadata: Signal<MovementReasonModel[]> = this.store.metadata.searchedReasonsAndActivities
 
@@ -93,8 +74,6 @@ export class MovementFacade extends GenericProjectElementFacade {
     public readonly searchedVehicleMetadata: Signal<SelectOptionModel<VehicleModel>[]> = this.store.metadata.searchedVehicles
 
     public readonly movementTypesMetadata: Signal<SelectOptionModel<MovementTypeEnum | undefined>[]> = this.store.metadata.types
-
-    public readonly participantTypesMetadata: Signal<SelectOptionModel<ParticipantTypeEnum>[]> = this.store.metadata.participantTypes
 
     public readonly visibilitiesMetadata: Signal<SelectOptionModel<boolean | undefined>[]> = computed( () =>
             this.store.metadata.visibilities().map( (status: SelectOptionModel<boolean | undefined>) => ({
@@ -109,10 +88,6 @@ export class MovementFacade extends GenericProjectElementFacade {
     ): void {
         const index: number | undefined = this.movementsPageResetSearch() ? 0 : page
         this.store.fetchMovementsPage( { projectId: this.selectedProjectId(), page: index, size: size } )
-    }
-
-    public fetchMovementsContents (movementIds: string[]): void {
-        this.store.fetchMovementsContents( { projectId: this.selectedProjectId(), movementIds: movementIds } )
     }
 
     public inputPageSearchParameters (
@@ -159,28 +134,6 @@ export class MovementFacade extends GenericProjectElementFacade {
         this.store.fetchMovementCommunicationsPage( { projectId: this.selectedProjectId(), id: id, ...CumulativePageHelper.reloadRequest( this.movementCommunicationsPage() ) } )
     }
 
-    public inputMovementCommunicationsPageSearchParameters (
-        q: string | undefined,
-        isVisible: boolean | undefined,
-        from: Date | undefined,
-        to: Date | undefined,
-    ): void {
-        const resetSearch: boolean = this.movementCommunicationsPageQueryParam() != q
-                                     || this.movementCommunicationsPageIsVisibleParam() != isVisible
-                                     || this.movementCommunicationsPageFromParam()?.toISOString() != from?.toISOString()
-                                     || this.movementCommunicationsPageToParam()?.toISOString() != to?.toISOString()
-
-        if (resetSearch) {
-            this.store.updateMovementCommunicationsPageSearchParams( {
-                resetSearch: resetSearch,
-                isVisible: isVisible,
-                q: q,
-                from: from?.toISOString(),
-                to: to?.toISOString(),
-            } )
-        }
-    }
-
     public searchReasonsAndActivities (
         q: string | undefined = undefined,
         type: string,
@@ -215,22 +168,12 @@ export class MovementFacade extends GenericProjectElementFacade {
         }
     }
 
-    public fetchParticipantTypes (): void {
-        if (this.participantTypesMetadata().length === 0) {
-            this.store.fetchParticipantTypes()
-        }
-    }
-
     public handleMovementFirstPageReload (): Observable<unknown> {
         return this.commandEvents.on( 'movement', 'create', 'delete' )
     }
 
     public handleMovementCurrentPageReload (): Observable<unknown> {
         return this.commandEvents.on( 'movement', 'update', 'disable', 'enable' )
-    }
-
-    public handleMovementChanges (): Observable<unknown> {
-        return this.commandEvents.on( 'movement', 'create', 'update', 'delete', 'disable', 'enable' )
     }
 
     public fetchMovement (id: string): Observable<MovementModel> {
@@ -292,7 +235,6 @@ export class MovementFacade extends GenericProjectElementFacade {
             command === 'create'
             ? this.pluralTranslationPipe.transform( `${ prefix }.message`, movement.content )
             : `${ prefix }.message`,
-            'pi pi-sort-alt',
             {
                 datetime: this.datePipe.transform( movement?.dateTime, 'datetime' ),
                 participants: movement.content?.length ?? 0,

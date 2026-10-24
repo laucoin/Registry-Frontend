@@ -19,7 +19,7 @@ interface ProjectActionSpec {
 	icon: string
 	authority: ProjectAuthorityEnum
 	shown: boolean
-	confirmation?: { severity: SeverityEnum, icon: string, accept: () => void }
+	confirmation?: { severity: SeverityEnum, accept: () => void }
 	run?: () => void
 }
 
@@ -58,7 +58,7 @@ export class ProjectActions {
 	}
 
 	public confirmSupportProfile(project: ProjectModel): void {
-		this.confirm('projects.actions.confirmations.create-support', project, SeverityEnum.WARNING, 'pi pi-exclamation-triangle', (): void => this.createSupportProfile(project))
+		this.confirm('projects.actions.confirmations.create-support', project, SeverityEnum.WARNING, (): void => this.createSupportProfile(project))
 	}
 
 	private specsFor(project: ProjectModel): ProjectActionSpec[] {
@@ -83,7 +83,6 @@ export class ProjectActions {
 			shown: project.visible,
 			confirmation: {
 				severity: SeverityEnum.WARNING,
-				icon: 'pi pi-exclamation-triangle',
 				accept: (): void => this.facade.disableProject(project.id),
 			},
 		}
@@ -97,7 +96,6 @@ export class ProjectActions {
 			shown: !project.visible,
 			confirmation: {
 				severity: SeverityEnum.INFO,
-				icon: 'pi pi-info-circle',
 				accept: (): void => this.facade.enableProject(project.id),
 			},
 		}
@@ -111,7 +109,6 @@ export class ProjectActions {
 			shown: true,
 			confirmation: {
 				severity: SeverityEnum.DANGER,
-				icon: 'pi pi-exclamation-triangle',
 				accept: (): void => this.facade.deleteProject(project),
 			},
 		}
@@ -126,7 +123,7 @@ export class ProjectActions {
 			disabled: !CurrentUserHelper.hasProjectAuthority(this.sessionFacade.currentUser(), project.id, spec.authority),
 			danger: confirmation?.severity === SeverityEnum.DANGER,
 			run: confirmation
-				? (): void => this.confirm(`projects.actions.confirmations.${spec.id}`, project, confirmation.severity, confirmation.icon, confirmation.accept)
+				? (): void => this.confirm(`projects.actions.confirmations.${spec.id}`, project, confirmation.severity, confirmation.accept)
 				: spec.run!,
 		}
 	}
@@ -135,8 +132,8 @@ export class ProjectActions {
 		this.router.navigateByUrl(RegistryRouteEnum.PROJECTS_EDITION.replace(':projectId', project.id)).catch((err: Error) => console.error(err))
 	}
 
-	private confirm(prefix: string, project: ProjectModel, severity: SeverityEnum, icon: string, accept: () => void): void {
-		this.confirmation.confirm(prefix, project, severity, icon, accept)
+	private confirm(prefix: string, project: ProjectModel, severity: SeverityEnum, accept: () => void): void {
+		this.confirmation.confirm(prefix, project, severity, accept)
 	}
 
 	private createSupportProfile(project: ProjectModel): void {

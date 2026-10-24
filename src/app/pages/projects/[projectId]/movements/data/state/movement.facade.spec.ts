@@ -172,20 +172,6 @@ describe( 'MovementFacade', () => {
         expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'movements.notifications.edit.IN.title' } ) )
     } )
 
-    it( 'announces every change on the changes channel and refreshes the page', () => {
-        // Arrange
-        const changes: string[] = []
-        facade.handleMovementChanges().subscribe( (event: unknown): number => changes.push( (event as { command: string }).command ) )
-        disableMovementById.mockReturnValue( of( MOVEMENT ) )
-
-        // Act
-        facade.disableMovement( 'm1' ).subscribe()
-
-        // Assert
-        expect( changes ).toEqual( [ 'disable' ] )
-        expect( findMovements ).toHaveBeenCalledWith( 'p1', 0, 30, expect.anything() )
-    } )
-
     it( 'lets the form handle a creation error other than 503', () => {
         // Arrange
         createMovement.mockReturnValue( failing( ERROR_500 ) )

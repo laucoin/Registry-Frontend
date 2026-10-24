@@ -89,7 +89,6 @@ export class ProjectFormPage extends BaseFormComponent {
     protected readonly invitationForm: FieldTree<ProjectProfileInvitationFormModel> = createProjectProfileInvitationForm( this.invitationModel )
     protected readonly createdProjectId: WritableSignal<string | undefined> = signal( undefined )
     protected readonly createdProjectName: WritableSignal<string | undefined> = signal( undefined )
-    protected readonly nextNavigation: RegistryRouteEnum = RegistryRouteEnum.PROJECTS
     protected readonly activeTab: ModelSignal<number> = model<number>( 1 )
     protected readonly loadError: Signal<NotificationModel | undefined> = computed( (): NotificationModel | undefined =>
         this.facade.projectError() ?? this.facade.metadataErrors()[ 'options' ],

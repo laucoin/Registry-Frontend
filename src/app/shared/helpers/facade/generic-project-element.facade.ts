@@ -24,18 +24,16 @@ export abstract class GenericProjectElementFacade extends GenericFacade {
         severity: SeverityEnum,
         summary: string,
         detail: string,
-        icon: string,
         data: object,
     ): void {
-        this.uiFacade.notify( StateHelper.buildNotificationMessage( severity, summary, detail, icon, data ) )
+        this.uiFacade.notify( StateHelper.buildNotificationMessage( severity, summary, detail, data ) )
     }
 
-    protected notifySuccess (translationPrefix: string, icon: string, data: object): void {
+    protected notifySuccess (translationPrefix: string, data: object): void {
         this.notifyMessage(
             SeverityEnum.SUCCESS,
             `${ translationPrefix }.title`,
             `${ translationPrefix }.message`,
-            icon,
             data,
         )
     }
@@ -44,11 +42,10 @@ export abstract class GenericProjectElementFacade extends GenericFacade {
         scope: string,
         command: CommandEvent,
         translationPrefix: string,
-        icon: string,
         data: object,
     ): void {
         const key: string = command === 'update' ? 'edit' : command === 'status' ? 'edit-status' : command
-        this.notifySuccess( `${ translationPrefix }.${ key }`, icon, data )
+        this.notifySuccess( `${ translationPrefix }.${ key }`, data )
         this.commandEvents.emit( scope, command )
     }
 }

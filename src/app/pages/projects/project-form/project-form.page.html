@@ -83,7 +83,7 @@
             @for (option of facade.projectOptionsMetadata(); track option.value) {
                 <sgdf-switch data-testid="project-form-option-switch" appSgdfField class="py-[0.5rem]" [formField]="optionsForm[option.value]">
                     <span class="flex items-center gap-[0.5rem]">
-                        <sgdf-icon [name]="option.value | optionIcon: 'sgdf'" library="solid"/>
+                        <sgdf-icon [name]="option.value | optionIcon" library="solid"/>
                         <span>{{ option.ask }} <b>({{ option.label }})</b></span>
                     </span>
                 </sgdf-switch>

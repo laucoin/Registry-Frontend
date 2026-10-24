@@ -47,20 +47,4 @@ export class StringHelper {
         return value.toString().padStart( range, '0' )
     }
 
-    public static toTitleCase (str: string | undefined): string {
-        if (this.isNullOrBlank( str )) return ''
-        return str!.toLowerCase().split( ' ' ).map( (word: string): string => {
-            return (word.charAt( 0 ).toUpperCase() + word.slice( 1 ))
-        } ).join( ' ' )
-    }
-
-    public static formatAtLeastOnTwoDigits (num: number | undefined): string {
-        switch (true) {
-            case GenericHelper.isNull( num ):
-            case num! >= 100:
-                return num?.toString() ?? ''
-            default:
-                return ('0' + num).slice( -2 )
-        }
-    }
 }

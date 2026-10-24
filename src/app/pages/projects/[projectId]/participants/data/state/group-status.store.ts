@@ -18,7 +18,7 @@ interface GroupStatusPageRequest extends CumulativePageRequest {
     projectId: string | undefined
 }
 
-export interface GroupMembersRequest extends GroupStatusPageRequest {
+interface GroupMembersRequest extends GroupStatusPageRequest {
     groupId: string
 }
 

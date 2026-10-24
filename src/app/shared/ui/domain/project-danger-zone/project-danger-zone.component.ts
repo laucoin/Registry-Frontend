@@ -45,21 +45,21 @@ export class ProjectDangerZoneComponent {
 	protected readonly shown: Signal<boolean> = computed((): boolean => this.canDisable() || this.canEnable() || this.canDelete())
 
 	protected disable(): void {
-		this.ask('disable', SeverityEnum.WARNING, 'pi pi-exclamation-triangle', (project: ProjectModel): void => this.projectFacade.disableProject(project.id))
+		this.ask('disable', SeverityEnum.WARNING, (project: ProjectModel): void => this.projectFacade.disableProject(project.id))
 	}
 
 	protected enable(): void {
-		this.ask('enable', SeverityEnum.INFO, 'pi pi-info-circle', (project: ProjectModel): void => this.projectFacade.enableProject(project.id))
+		this.ask('enable', SeverityEnum.INFO, (project: ProjectModel): void => this.projectFacade.enableProject(project.id))
 	}
 
 	protected delete(): void {
-		this.ask('delete', SeverityEnum.DANGER, 'pi pi-exclamation-triangle', (project: ProjectModel): void => this.projectFacade.deleteProject(project), true)
+		this.ask('delete', SeverityEnum.DANGER, (project: ProjectModel): void => this.projectFacade.deleteProject(project), true)
 	}
 
-	private ask(id: string, severity: SeverityEnum, icon: string, accept: (project: ProjectModel) => void, typed: boolean = false): void {
+	private ask(id: string, severity: SeverityEnum, accept: (project: ProjectModel) => void, typed: boolean = false): void {
 		const project: ProjectModel | undefined = this.project()
 		if (!project) return
-		this.confirmation.confirm(`projects.actions.confirmations.${id}`, { ...project, name: StringHelper.truncate(project.name, NAME_MAX_LENGTH, '…') }, severity, icon, (): void => accept(project), typed)
+		this.confirmation.confirm(`projects.actions.confirmations.${id}`, { ...project, name: StringHelper.truncate(project.name, NAME_MAX_LENGTH, '…') }, severity, (): void => accept(project), typed)
 	}
 
 	private allowed(authority: ProjectAuthorityEnum): boolean {

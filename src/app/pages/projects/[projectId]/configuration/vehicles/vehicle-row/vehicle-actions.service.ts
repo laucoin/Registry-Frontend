@@ -56,7 +56,7 @@ export class VehicleActions extends ElementActionsBase<VehicleModel> {
             icon: 'eye-slash',
             shown: vehicle.visible,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_VEHICLE_U),
-            confirmation: { severity: SeverityEnum.WARNING, icon: 'pi pi-exclamation-triangle', accept: (): void => this.run(this.facade.disableVehicle(vehicle.id)) },
+            confirmation: { severity: SeverityEnum.WARNING, accept: (): void => this.run(this.facade.disableVehicle(vehicle.id)) },
         }
     }
 
@@ -66,7 +66,7 @@ export class VehicleActions extends ElementActionsBase<VehicleModel> {
             icon: 'rotate-right',
             shown: !vehicle.visible,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_VEHICLE_D),
-            confirmation: { severity: SeverityEnum.INFO, icon: 'pi pi-info-circle', accept: (): void => this.run(this.facade.enableVehicle(vehicle.id)) },
+            confirmation: { severity: SeverityEnum.INFO, accept: (): void => this.run(this.facade.enableVehicle(vehicle.id)) },
         }
     }
 
@@ -76,7 +76,7 @@ export class VehicleActions extends ElementActionsBase<VehicleModel> {
             icon: 'trash',
             shown: true,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_VEHICLE_D),
-            confirmation: { severity: SeverityEnum.DANGER, icon: 'pi pi-exclamation-triangle', accept: (): void => this.run(this.facade.deleteVehicle(vehicle)) },
+            confirmation: { severity: SeverityEnum.DANGER, accept: (): void => this.run(this.facade.deleteVehicle(vehicle)) },
         }
     }
 

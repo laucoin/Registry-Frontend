@@ -17,7 +17,7 @@ const ERROR_PARAMS: Record<string, [string, string][]> = {
     preRequiredOptions: [['for', 'for'], ['missing', 'missing']],
 }
 
-export type FieldErrorTranslate = (key: string, params: object) => string
+type FieldErrorTranslate = (key: string, params: object) => string
 
 /**
  * Purpose: Builds the translated message of the first error of a signal form field.

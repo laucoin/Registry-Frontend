@@ -208,7 +208,6 @@ export class ProjectFacade extends GenericFacade {
             SeverityEnum.SUCCESS,
             `projects.notifications.${ command }.title`,
             `projects.notifications.${ command }.message`,
-            'pi pi-calendar',
             { name: project.name },
         ) )
 

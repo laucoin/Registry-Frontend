@@ -1,4 +1,3 @@
-import { SectionErrorsHelper } from '@shared/helpers/store/section-errors.helper'
 import { computed, inject, Injectable, Signal } from '@angular/core'
 import { Observable, tap } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
@@ -24,8 +23,6 @@ export class ActivityFacade extends GenericProjectElementFacade {
     private readonly api: ActivityApi = inject( ActivityApi )
 
     private readonly store: InstanceType<typeof ActivityStore> = inject( ActivityStore )
-
-    public readonly movementsContentsError: Signal<NotificationModel | undefined> = SectionErrorsHelper.of( this.store.sectionErrors, 'contents' )
 
     public readonly activitiesPage: Signal<PageModel<ActivityModel> | undefined> = this.store.activities.element
     public readonly activitiesPageLoading: Signal<boolean> = this.store.activities.loading
@@ -108,10 +105,6 @@ export class ActivityFacade extends GenericProjectElementFacade {
         this.store.fetchActivityMovementsPage( { projectId: this.selectedProjectId(), id: id, ...CumulativePageHelper.reloadRequest( this.activityMovementsPage() ) } )
     }
 
-    public fetchActivityMovementsContent (movementIds: string[]): void {
-        this.store.fetchActivityMovementsContents( { projectId: this.selectedProjectId(), movementIds: movementIds } )
-    }
-
     public inputMovementsPageSearchParameters (
         type: string | undefined,
         from: Date | undefined,
@@ -176,7 +169,7 @@ export class ActivityFacade extends GenericProjectElementFacade {
     }
 
     private onCommandSuccess (command: string, activity: ActivityModel): void {
-        this.notifySuccess( `activities.notifications.${ command }`, 'pi pi-users', { name: activity?.name } )
+        this.notifySuccess( `activities.notifications.${ command }`, { name: activity?.name } )
 
         this.store.fetchActivitiesPage( { projectId: this.selectedProjectId(), ...CumulativePageHelper.reloadRequest( this.activitiesPage() ) } )
     }

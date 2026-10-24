@@ -31,7 +31,7 @@ import { ElementActionModel } from '@shared/models/model/element-action.model'
 import { ParticipantModel } from '@shared/models/model/participant.model'
 import { MovementContentModel } from '@shared/models/model/movement-content.model'
 import { MovementModel } from '@shared/models/model/movement.model'
-import { GenericElementComponent } from '@shared/ui/base/generic-element.component'
+import { GenericComponent } from '@shared/ui/base/generic.component'
 import { ElementActionsComponent } from '@shared/ui/common/element-actions/element-actions.component'
 import { EllipsisDirective } from '@shared/directives/ellipsis.directive'
 
@@ -61,7 +61,7 @@ import { EllipsisDirective } from '@shared/directives/ellipsis.directive'
     ],
     templateUrl: './movement-element.component.html',
 })
-export class MovementElementComponent extends GenericElementComponent {
+export class MovementElementComponent extends GenericComponent {
     private readonly actionsService: MovementActions = inject(MovementActions)
     private readonly clock: ClockService = inject(ClockService)
     protected readonly prefillService: MovementPrefillService = inject(MovementPrefillService)

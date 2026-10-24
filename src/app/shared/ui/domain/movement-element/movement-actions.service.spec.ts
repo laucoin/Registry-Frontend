@@ -17,7 +17,7 @@ describe('MovementActions', () => {
     let actions: MovementActions
     let authorities: WritableSignal<string[]>
     let facade: Record<string, Mock>
-    let confirm: Mock<(prefix: string, element: unknown, severity: unknown, icon: string, accept: () => void) => void>
+    let confirm: Mock<(prefix: string, element: unknown, severity: unknown, accept: () => void) => void>
     let navigateByUrl: Mock
 
     const find = (element: MovementModel, id: string): ElementActionModel =>
@@ -71,7 +71,7 @@ describe('MovementActions', () => {
 
         // Act
         action.run()
-        confirm.mock.calls[0][4]()
+        confirm.mock.calls[0][3]()
 
         // Assert
         expect(facade[call]).toHaveBeenCalledWith('x1')
@@ -83,7 +83,7 @@ describe('MovementActions', () => {
 
         // Act
         action.run()
-        confirm.mock.calls[0][4]()
+        confirm.mock.calls[0][3]()
 
         // Assert
         expect(facade['deleteMovement']).toHaveBeenCalledWith(VISIBLE)

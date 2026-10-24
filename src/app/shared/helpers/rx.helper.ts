@@ -43,7 +43,6 @@ export const reportError = (errorSink: ErrorSink, error: ErrorModel): void => {
         severity: SeverityEnum.ERROR,
         summary: error.title ?? 'global.notifications.UNKNOWN_ERROR.title',
         detail: error.message,
-        icon: 'pi pi-exclamation-triangle',
         closable: true,
         sticky: true,
     } )

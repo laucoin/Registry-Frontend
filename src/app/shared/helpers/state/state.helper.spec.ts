@@ -78,7 +78,7 @@ describe( 'StateHelper', () => {
         RegistryConfig.config.notification.duration.success = 3000
 
         // Act
-        const message: ReturnType<typeof StateHelper.buildNotificationMessage> = StateHelper.buildNotificationMessage( SeverityEnum.SUCCESS, 'title', 'detail', 'pi pi-check', { a: 1 } )
+        const message: ReturnType<typeof StateHelper.buildNotificationMessage> = StateHelper.buildNotificationMessage( SeverityEnum.SUCCESS, 'title', 'detail', { a: 1 } )
 
         // Assert
         expect( message ).toEqual( expect.objectContaining( { severity: 'success', summary: 'title', detail: 'detail', life: 3000, sticky: false, closable: true, data: { a: 1 } } ) )

@@ -1,12 +1,14 @@
+import { signal } from '@angular/core'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { provideRouter } from '@angular/router'
 import { RegistryConfig } from '@core/config/registry.config'
 import { FooterComponent } from '@core/layout/footer/footer.component'
+import { UiFacade } from '@core/registry/state/ui.facade'
 import { TranslocoTestingModule } from '@jsverse/transloco'
 import { beforeEach, describe, expect, it } from 'vitest'
 
 describe( 'FooterComponent', () => {
-    function create (issuesUrl: string | null): HTMLElement {
+    function create (issuesUrl: string | null, tinyScreen: boolean = false): HTMLElement {
         RegistryConfig.config = {
             application: {
                 name: 'Registry',
@@ -17,7 +19,7 @@ describe( 'FooterComponent', () => {
         } as typeof RegistryConfig.config
         TestBed.configureTestingModule( {
             imports: [ TranslocoTestingModule.forRoot( { langs: { fr: {} }, translocoConfig: { defaultLang: 'fr' } } ) ],
-            providers: [ provideRouter( [] ) ],
+            providers: [ provideRouter( [] ), { provide: UiFacade, useValue: { tinyScreen: signal( tinyScreen ) } } ],
         } )
         const fixture: ComponentFixture<FooterComponent> = TestBed.createComponent( FooterComponent )
         fixture.detectChanges()
@@ -62,6 +64,20 @@ describe( 'FooterComponent', () => {
 
         // Assert
         expect( hints ).toEqual( [ '(fr.footer.new-tab)', '(fr.footer.new-tab)' ] )
+    } )
+
+    it.each( [
+        [ 'wide', false, true ],
+        [ 'tiny', true, false ],
+    ] )( 'draws the torn edge only on a %s screen', (_label: string, tinyScreen: boolean, torn: boolean) => {
+        // Arrange
+        const footer: HTMLElement = create( null, tinyScreen )
+
+        // Act
+        const shown: boolean = (footer.querySelector( 'sgdf-footer' ) as HTMLElement & { torn: boolean }).torn
+
+        // Assert
+        expect( shown ).toBe( torn )
     } )
 
     it( 'hides the support link when no support url is configured', () => {

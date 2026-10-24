@@ -40,7 +40,7 @@ export class MovementActions extends ElementActionsBase<MovementModel> {
             icon: 'eye-slash',
             shown: movement.visible,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_MOVEMENT_U),
-            confirmation: { severity: SeverityEnum.WARNING, icon: 'pi pi-exclamation-triangle', accept: (): void => this.run(this.facade.disableMovement(movement.id)) },
+            confirmation: { severity: SeverityEnum.WARNING, accept: (): void => this.run(this.facade.disableMovement(movement.id)) },
         }
     }
 
@@ -50,7 +50,7 @@ export class MovementActions extends ElementActionsBase<MovementModel> {
             icon: 'rotate-right',
             shown: !movement.visible,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_MOVEMENT_D),
-            confirmation: { severity: SeverityEnum.INFO, icon: 'pi pi-info-circle', accept: (): void => this.run(this.facade.enableMovement(movement.id)) },
+            confirmation: { severity: SeverityEnum.INFO, accept: (): void => this.run(this.facade.enableMovement(movement.id)) },
         }
     }
 
@@ -60,7 +60,7 @@ export class MovementActions extends ElementActionsBase<MovementModel> {
             icon: 'trash',
             shown: true,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_MOVEMENT_D),
-            confirmation: { severity: SeverityEnum.DANGER, icon: 'pi pi-exclamation-triangle', accept: (): void => this.run(this.facade.deleteMovement(movement)) },
+            confirmation: { severity: SeverityEnum.DANGER, accept: (): void => this.run(this.facade.deleteMovement(movement)) },
         }
     }
 

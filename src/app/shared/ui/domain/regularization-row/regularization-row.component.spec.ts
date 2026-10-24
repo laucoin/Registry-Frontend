@@ -1,3 +1,4 @@
+import type { Mock } from 'vitest';
 import { signal } from '@angular/core';
 import { MovementPrefillService } from '@pages/projects/[projectId]/movements/movement-form/shared/movement-prefill.service';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -20,7 +21,7 @@ function participant(withEnd: boolean): ParticipantModel {
 
 describe('RegularizationRowComponent', () => {
 	let fixture: ComponentFixture<RegularizationRowComponent>;
-	const openRegularization = vi.fn();
+	const openRegularization: Mock<(value: unknown) => void> = vi.fn();
 
 	async function render(value: ParticipantModel): Promise<string> {
 		fixture.componentRef.setInput('participant', value);

@@ -215,33 +215,6 @@ describe( 'UserProfileFacade', () => {
             expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'Title' } ) )
         } )
 
-        it( 'notifies after the deletion of a profile', () => {
-            // Arrange
-            let completed: boolean = false
-
-            // Act
-            facade.deleteUserProjectProfile( { id: 'pp1', project: { name: 'Camp' } } as UserInvitationModel ).subscribe( { complete: (): void => { completed = true } } )
-
-            // Assert
-            expect( deleteProfile ).toHaveBeenCalledWith( 'pp1' )
-            expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'project-profiles.notifications.delete.title' } ) )
-            expect( completed ).toBe( true )
-        } )
-
-        it( 'completes without reloading the user when the deletion fails', () => {
-            // Arrange
-            deleteProfile.mockReturnValue( failing( FAILURE ) )
-            let completed: boolean = false
-
-            // Act
-            facade.deleteUserProjectProfile( { id: 'pp1', project: { name: 'Camp' } } as UserInvitationModel ).subscribe( { complete: (): void => { completed = true } } )
-
-            // Assert
-            expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'Title' } ) )
-            expect( fetchCurrentUser ).not.toHaveBeenCalled()
-            expect( completed ).toBe( true )
-        } )
-
         it( 'creates a support profile, resets the stores and reloads the user', () => {
             // Arrange
             let completed: boolean = false

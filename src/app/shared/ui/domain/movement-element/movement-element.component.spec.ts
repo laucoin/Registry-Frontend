@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslocoService } from '@jsverse/transloco'
 import { of } from 'rxjs'
-import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
+import { describe, expect, it, Mock, vi } from 'vitest'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { MovementFacade } from '@pages/projects/[projectId]/movements/data/state/movement.facade'
@@ -58,9 +58,6 @@ describe( 'MovementElementComponent', () => {
     function actionOf (component: MovementElementComponent, id: string): ElementActionModel {
         return (component as unknown as { actions: () => ElementActionModel[] }).actions().find( (action: ElementActionModel): boolean => action.id === id )!
     }
-
-    beforeEach( () => {
-    } )
 
     it( 'lists the actions of a visible element in a stable order', () => {
         // Arrange

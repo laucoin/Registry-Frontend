@@ -2,7 +2,6 @@ import { TestBed } from '@angular/core/testing'
 import { TranslocoService } from '@jsverse/transloco'
 import { of } from 'rxjs'
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest'
-import { BrowserService } from '@core/browser/browser.service'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { UserApi } from '@core/registry/state/user.api'
 import { UserFacade } from '@pages/users/data/state/user.facade'
@@ -15,8 +14,6 @@ describe( 'UserFacade', () => {
     let blockUserById: Mock<UserApi['blockUserById']>
     let updateUserRole: Mock<UserApi['updateUserRole']>
     let deleteUserById: Mock<UserApi['deleteUserById']>
-    let exportUserById: Mock<UserApi['exportUserById']>
-    let downloadJson: Mock<BrowserService['downloadJson']>
     let notify: Mock<(message: unknown) => void>
 
     beforeEach( () => {
@@ -25,13 +22,11 @@ describe( 'UserFacade', () => {
         blockUserById = vi.fn()
         updateUserRole = vi.fn()
         deleteUserById = vi.fn()
-        exportUserById = vi.fn()
-        downloadJson = vi.spyOn( BrowserService.prototype, 'downloadJson' ).mockReset().mockImplementation( (): void => undefined )
         notify = vi.fn()
         TestBed.configureTestingModule( {
             providers: [
                 UserFacade,
-                { provide: UserApi, useValue: { findUsers, blockUserById, updateUserRole, deleteUserById, exportUserById } },
+                { provide: UserApi, useValue: { findUsers, blockUserById, updateUserRole, deleteUserById } },
                 { provide: UiFacade, useValue: { notify } },
                 { provide: TranslocoService, useValue: { translate: (key: string): string => `t:${key}` } },
             ],
@@ -135,31 +130,6 @@ describe( 'UserFacade', () => {
         // Assert
         expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'users.notifications.delete.title' } ) )
         expect( findUsers ).toHaveBeenCalledTimes( 1 )
-    } )
-
-    it( 'downloads the export of a user', () => {
-        // Arrange
-        const data: unknown = { subjectType: 'USER' }
-        exportUserById.mockReturnValue( of( data ) )
-
-        // Act
-        facade.exportUser( { id: 'u1' } as UserModel )
-
-        // Assert
-        expect( exportUserById ).toHaveBeenCalledWith( 'u1' )
-        expect( downloadJson ).toHaveBeenCalledWith( data, 'registry-user-u1.json' )
-    } )
-
-    it( 'notifies the error and downloads nothing when the export fails', () => {
-        // Arrange
-        exportUserById.mockReturnValue( failing( ERROR_500 ) )
-
-        // Act
-        facade.exportUser( { id: 'u1' } as UserModel )
-
-        // Assert
-        expect( downloadJson ).not.toHaveBeenCalled()
-        expect( notify ).toHaveBeenCalled()
     } )
 
     it( 'exposes the failure of the user fetch', () => {

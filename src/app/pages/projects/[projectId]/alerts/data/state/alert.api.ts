@@ -65,24 +65,8 @@ export class AlertApi extends GenericProjectApi {
         )
     }
 
-    public findAlertById(projectId: string | undefined, id: string): Observable<AlertModel> {
-        return this.http.get<AlertResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}`).pipe(
-            map( AlertMapper.toModel ),
-        )
-    }
-
     public createAlert(projectId: string | undefined, alert: AlertDto): Observable<AlertModel> {
         return this.http.post<AlertResponseDto>(`${this.buildRequestBaseUrl(projectId)}`, alert).pipe(
-            map( AlertMapper.toModel ),
-        )
-    }
-
-    public updateAlertById(
-        projectId: string | undefined,
-        id: string,
-        alert: AlertDto,
-    ): Observable<AlertModel> {
-        return this.http.patch<AlertResponseDto>(`${this.buildRequestBaseUrl(projectId)}/${id}`, alert).pipe(
             map( AlertMapper.toModel ),
         )
     }

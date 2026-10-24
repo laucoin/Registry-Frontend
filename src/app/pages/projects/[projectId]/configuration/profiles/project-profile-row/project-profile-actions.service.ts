@@ -40,7 +40,6 @@ export class ProjectProfileActions extends ElementActionsBase<ListedProfileModel
             `project-profiles.actions.confirmations.${status}`,
             profile,
             accepted ? SeverityEnum.SUCCESS : SeverityEnum.DANGER,
-            accepted ? 'pi pi-info-circle' : 'pi pi-exclamation-triangle',
             (): void => this.userProfileFacade.manageProjectInvitationAcceptance(profile.id, accepted),
         )
     }
@@ -76,7 +75,7 @@ export class ProjectProfileActions extends ElementActionsBase<ListedProfileModel
             icon: 'ban',
             shown: !own && profile.visible && profile.status?.value === ProfileStatusEnum.ACCEPTED,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_U),
-            confirmation: { severity: SeverityEnum.WARNING, icon: 'pi pi-exclamation-triangle', accept: (): void => this.run(this.facade.blockProjectProfile(profile as ProjectProfileModel)) },
+            confirmation: { severity: SeverityEnum.WARNING, accept: (): void => this.run(this.facade.blockProjectProfile(profile as ProjectProfileModel)) },
         }
     }
 
@@ -86,7 +85,7 @@ export class ProjectProfileActions extends ElementActionsBase<ListedProfileModel
             icon: 'rotate-right',
             shown: !own && !profile.visible,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_U),
-            confirmation: { severity: SeverityEnum.INFO, icon: 'pi pi-info-circle', accept: (): void => this.run(this.facade.unblockProjectProfile(profile as ProjectProfileModel)) },
+            confirmation: { severity: SeverityEnum.INFO, accept: (): void => this.run(this.facade.unblockProjectProfile(profile as ProjectProfileModel)) },
         }
     }
 
@@ -98,7 +97,6 @@ export class ProjectProfileActions extends ElementActionsBase<ListedProfileModel
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PROFILE_D),
             confirmation: {
                 severity: SeverityEnum.DANGER,
-                icon: 'pi pi-exclamation-triangle',
                 accept: (): void => this.run(this.facade.deleteProjectProfile(profile)),
                 translationKey: own ? 'delete-own' : 'delete',
                 typed: own,

@@ -4,7 +4,6 @@
 [![CodeQL](https://github.com/laucoin/Registry-Frontend/actions/workflows/codeql.yml/badge.svg)](https://github.com/laucoin/Registry-Frontend/actions/workflows/codeql.yml)
 [![Angular](https://img.shields.io/badge/Angular-22-DD0031?logo=angular&logoColor=white)](https://angular.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
-[![PrimeNG](https://img.shields.io/badge/PrimeNG-22-0EA5E9)](https://primeng.org)
 [![pnpm](https://img.shields.io/badge/pnpm-F69220?logo=pnpm&logoColor=white)](https://pnpm.io)
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
@@ -166,7 +165,6 @@ pnpm lint   # eslint (angular-eslint)
 - Angular CLI [reference](https://angular.dev/tools/cli)
 - TypeScript [documentation](https://www.typescriptlang.org/docs/)
 - NGXS [documentation](https://www.ngxs.io/)
-- PrimeNG [documentation](https://primeng.org/)
 - Transloco [documentation](https://jsverse.gitbook.io/transloco)
 
 ## Contributing 💻

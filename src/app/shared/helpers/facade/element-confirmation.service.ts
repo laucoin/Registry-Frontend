@@ -13,11 +13,10 @@ export class ElementConfirmationService {
     private readonly uiFacade: UiFacade = inject(UiFacade)
     private readonly translateService: TranslocoService = inject(TranslocoService)
 
-    public confirm(prefix: string, element: unknown, severity: SeverityEnum, icon: string, accept: () => void, typed: boolean = false): void {
+    public confirm(prefix: string, element: unknown, severity: SeverityEnum, accept: () => void, typed: boolean = false): void {
         this.uiFacade.confirm({
             header: this.translateService.translate(`${prefix}.title`, { element: element }),
             message: this.translateService.translate(`${prefix}.message`, { element: element }),
-            icon: icon,
             acceptSeverity: severity,
             accept: accept,
             ...(typed && { phrase: this.translateService.translate(`${prefix}.phrase`, { element: element }) }),

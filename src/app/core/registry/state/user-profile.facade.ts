@@ -92,17 +92,6 @@ export class UserProfileFacade {
         ).subscribe()
     }
 
-    public deleteUserProjectProfile(profile: UserInvitationModel): Observable<void> {
-        return eager(
-            this.userProjectProfileApi.deleteUserProfileById(profile.id).pipe(
-                initialize((): void => this.store.startProfileLoader()),
-                finalize((): void => this.store.stopProfileLoader()),
-                tap((): void => this.onProfileDeleted(profile)),
-                catchError((error: ErrorModel): Observable<void> => this.reportError$(error)),
-            ),
-        )
-    }
-
     public createSupportProjectProfile(projectId: string): Observable<void> {
         this.profileReset.resetAll()
 
@@ -119,7 +108,6 @@ export class UserProfileFacade {
         this.notifyProfile(
             `project-profiles.notifications.acceptance.${profile.status.value}.title`,
             `project-profiles.notifications.acceptance.${profile.status.value}.message`,
-            'pi pi-user',
         )
         this.sessionFacade.fetchCurrentUser()
         this.refreshInvitationsPage()
@@ -129,7 +117,6 @@ export class UserProfileFacade {
         this.notifyProfile(
             'project-profiles.notifications.delete.title',
             'project-profiles.notifications.delete.message.myself',
-            'pi pi-user',
             {name: profile.project?.name},
         )
         this.sessionFacade.fetchCurrentUser()
@@ -139,7 +126,6 @@ export class UserProfileFacade {
         this.notifyProfile(
             'projects.notifications.create-support.title',
             'projects.notifications.create-support.message',
-            'pi pi-user-plus',
             {
                 name: project?.name,
                 end: this.datePipe.transform(project?.profile?.endAccess),
@@ -147,8 +133,8 @@ export class UserProfileFacade {
         )
     }
 
-    private notifyProfile(summary: string, detail: string, icon: string, data?: object): void {
-        this.uiFacade.notify(StateHelper.buildNotificationMessage(SeverityEnum.SUCCESS, summary, detail, icon, data))
+    private notifyProfile(summary: string, detail: string, data?: object): void {
+        this.uiFacade.notify(StateHelper.buildNotificationMessage(SeverityEnum.SUCCESS, summary, detail, data))
     }
 
     private refreshInvitationsPage(): void {

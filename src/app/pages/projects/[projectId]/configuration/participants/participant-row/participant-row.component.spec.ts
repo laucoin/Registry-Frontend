@@ -75,17 +75,17 @@ describe('ParticipantRowComponent', () => {
         expect(tags()).toEqual(['In'])
     })
 
-    it('should grey out a hidden participant and announce it to assistive technologies', async () => {
+    it('should grey out a hidden participant and label it with a visible tag', async () => {
         // Arrange
         await render({ ...ELEMENT, visible: false } as unknown as ParticipantModel)
 
         // Act
         const row: HTMLElement & { disabled: boolean } = fixture.nativeElement.querySelector('sgdf-list-item')
-        const notice: string | undefined = text('sgdf-list-item > .sr-only')
+        const notice: string | undefined = text('sgdf-list-item > [slot="end"] > sgdf-tag:first-child')
 
         // Assert
         expect(row.disabled).toBe(true)
-        expect(notice).toBe('(fr.participants.visible.false)')
+        expect(notice).toBe('fr.participants.visible.false')
     })
 
     it('should keep a visible participant enabled', async () => {

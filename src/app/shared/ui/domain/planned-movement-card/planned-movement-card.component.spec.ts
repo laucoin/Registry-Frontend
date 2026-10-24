@@ -1,3 +1,4 @@
+import type { Mock } from 'vitest';
 import { signal } from '@angular/core';
 import { MovementPrefillService } from '@pages/projects/[projectId]/movements/movement-form/shared/movement-prefill.service';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -18,7 +19,7 @@ function movement(overrides: Partial<PlannedMovementModel> = {}): PlannedMovemen
 }
 
 describe('PlannedMovementCardComponent', () => {
-	const openPlanned = vi.fn();
+	const openPlanned: Mock<(value: unknown) => void> = vi.fn();
 	let fixture: ComponentFixture<PlannedMovementCardComponent>;
 
 	async function render(movements: PlannedMovementModel[] | undefined, options: { loading?: boolean, error?: NotificationModel } = {}): Promise<void> {

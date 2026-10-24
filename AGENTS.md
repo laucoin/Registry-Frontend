@@ -27,8 +27,7 @@ on this Angular Client-Side Rendering (CSR) project.
 - **Framework:** Angular (latest version configured for **Client-Side Rendering - CSR**).
 - **Reactivity & State:** Strictly use **Angular Signals** (including `@ngrx/signals` `signalStore`, reactive forms with
   signals, `input()`, `output()`, etc.). Avoid legacy reactive patterns where modern signals are applicable.
-- **Design System:** `@sgdf/ui` (Web Awesome based web components) is the target. PrimeNG is the transitional design
-  system until the migration; do not introduce new PrimeNG-specific abstractions beyond what the current code needs.
+- **Design System:** `@sgdf/ui` (Web Awesome based web components).
 - **Styling:** Tailwind CSS v4 utility classes in templates (default breakpoints), native CSS for the remaining
   component styles. Bootstrap is not used. Beware the spacing scale: Tailwind steps are `n × 0.25rem`.
 - **`@sgdf/ui` first:** before building any UI, check what `@sgdf/ui` already provides (`custom-elements.json` and the
@@ -238,7 +237,7 @@ This exception is standing and does not require asking the user each time — ev
   public/settings/env.json via provideAppInitializer() prior to application bootstrap.
 - Theming: `@sgdf/ui` owns the theme. The mode (`light`, `dark`, or no attribute for the system) is set on `<html>` as the `data-theme`
   attribute, always via `BrowserService`; the `@sgdf/ui` entry point is never imported for it (it would pull the whole library). The SGDF tokens (`--sgdf-*`) belong to `@sgdf/ui`:
-  no theme key is added to `config.json`. PrimeNG ships without theme (`theme: 'none'`) until it is removed. Raise any
+  no theme key is added to `config.json`. Raise any
   change to this mechanism with the user rather than working around it silently.
 - Static Web Serving (CSR): Production output is hosted as pure static assets (e.g. NGINX / Caddy). Ensure web server
   fallback rules (URL rewriting to index.html) are configured for HTML5 client-side routing.

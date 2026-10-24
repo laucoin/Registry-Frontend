@@ -56,7 +56,7 @@ export class ActivityActions extends ElementActionsBase<ActivityModel> {
             icon: 'eye-slash',
             shown: activity.visible,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_ACTIVITY_U),
-            confirmation: { severity: SeverityEnum.WARNING, icon: 'pi pi-exclamation-triangle', accept: (): void => this.run(this.facade.disableActivity(activity.id)) },
+            confirmation: { severity: SeverityEnum.WARNING, accept: (): void => this.run(this.facade.disableActivity(activity.id)) },
         }
     }
 
@@ -66,7 +66,7 @@ export class ActivityActions extends ElementActionsBase<ActivityModel> {
             icon: 'rotate-right',
             shown: !activity.visible,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_ACTIVITY_D),
-            confirmation: { severity: SeverityEnum.INFO, icon: 'pi pi-info-circle', accept: (): void => this.run(this.facade.enableActivity(activity.id)) },
+            confirmation: { severity: SeverityEnum.INFO, accept: (): void => this.run(this.facade.enableActivity(activity.id)) },
         }
     }
 
@@ -76,7 +76,7 @@ export class ActivityActions extends ElementActionsBase<ActivityModel> {
             icon: 'trash',
             shown: true,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_ACTIVITY_D),
-            confirmation: { severity: SeverityEnum.DANGER, icon: 'pi pi-exclamation-triangle', accept: (): void => this.run(this.facade.deleteActivity(activity)) },
+            confirmation: { severity: SeverityEnum.DANGER, accept: (): void => this.run(this.facade.deleteActivity(activity)) },
         }
     }
 

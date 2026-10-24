@@ -7,9 +7,7 @@ const PARAMS: never = { resetSearch: false, q: 'x' } as never
 
 const CASES: ApiCase<AlertApi>[] = [
     { name: 'pages the elements with the search parameters', method: 'GET', url: new RegExp( `${BASE}\\?${PAGE_QUERY}&q=x$` ), call: (api: AlertApi) => api.findAlerts( 'p1', 0, 10, PARAMS ), response: pageDto( [ ALERT_DTO ] ), verify: expectMappedPage },
-    { name: 'finds an element by id', method: 'GET', url: `${BASE}/al1`, call: (api: AlertApi) => api.findAlertById( 'p1', 'al1' ), response: ALERT_DTO, verify: expectMapped },
     { name: 'creates an element', method: 'POST', url: BASE, body: { name: 'x' }, call: (api: AlertApi) => api.createAlert( 'p1', { name: 'x' } as never ), response: ALERT_DTO, verify: expectMapped },
-    { name: 'updates an element', method: 'PATCH', url: `${BASE}/al1`, body: { name: 'y' }, call: (api: AlertApi) => api.updateAlertById( 'p1', 'al1', { name: 'y' } as never ), response: ALERT_DTO, verify: expectMapped },
     { name: 'disables an element', method: 'POST', url: `${BASE}/al1/disable`, call: (api: AlertApi) => api.disableAlertById( 'p1', 'al1' ), response: ALERT_DTO, verify: expectMapped },
     { name: 'enables an element', method: 'POST', url: `${BASE}/al1/enable`, call: (api: AlertApi) => api.enableAlertById( 'p1', 'al1' ), response: ALERT_DTO, verify: expectMapped },
     { name: 'deletes an element', method: 'DELETE', url: `${BASE}/al1`, call: (api: AlertApi) => api.deleteAlertById( 'p1', 'al1' ) },

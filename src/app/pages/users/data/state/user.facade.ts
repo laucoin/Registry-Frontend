@@ -121,13 +121,6 @@ export class UserFacade extends GenericFacade {
         ).subscribe()
     }
 
-    public exportUser (user: UserModel): void {
-        this.api.exportUserById( user.id ).pipe(
-            notifyOnError( this.uiFacade ),
-            tap( (data: unknown): void => this.browser.downloadJson( data, `registry-user-${ user.id }.json` ) ),
-        ).subscribe()
-    }
-
     public deleteUser (user: UserModel): void {
         this.api.deleteUserById( user.id ).pipe(
             this.trackUserLoader,
@@ -146,7 +139,6 @@ export class UserFacade extends GenericFacade {
             SeverityEnum.SUCCESS,
             `users.notifications.${ command }.title`,
             `users.notifications.${ command }.message`,
-            'pi pi-users',
             { firstName: user.firstName, lastName: user.lastName },
         ) )
 

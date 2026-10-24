@@ -25,7 +25,7 @@ export class IfProjectAuthorityDirective {
         this.appIfProjectAuthority(),
     ) )
 
-    constructor () {
+    public constructor () {
         effect( (): void => {
             if (this.allowed() && !this.view) {
                 this.view = this.container.createEmbeddedView( this.template )

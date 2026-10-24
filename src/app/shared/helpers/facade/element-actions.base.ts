@@ -12,7 +12,7 @@ export interface ElementActionSpec {
     icon: string
     shown: boolean
     allowed: boolean
-    confirmation?: { severity: SeverityEnum, icon: string, accept: () => void, translationKey?: string, typed?: boolean }
+    confirmation?: { severity: SeverityEnum, accept: () => void, translationKey?: string, typed?: boolean }
     run?: () => void
 }
 
@@ -71,7 +71,6 @@ export abstract class ElementActionsBase<T, C = void> {
             `${this.translationPrefix}.actions.confirmations.${confirmation.translationKey ?? id}`,
             element,
             confirmation.severity,
-            confirmation.icon,
             confirmation.accept,
             confirmation.typed,
         )

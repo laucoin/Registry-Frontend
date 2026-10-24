@@ -6,7 +6,7 @@ import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
 import { CurrentUserModel } from '@shared/models/model/current-user.model'
 import {TranslocoPipe} from '@jsverse/transloco'
 import { CommunicationHelper } from '@shared/helpers/communication.helper'
-import { GenericElementComponent } from '@shared/ui/base/generic-element.component'
+import { GenericComponent } from '@shared/ui/base/generic.component'
 import '@sgdf/ui/avatar'
 import '@sgdf/ui/icon'
 import '@sgdf/ui/tag'
@@ -33,7 +33,7 @@ import { DateHelper } from '@shared/helpers/date.helper'
     templateUrl: './dialog-element.component.html',
     styleUrl: './dialog-element.component.css',
 } )
-export class DialogElementComponent extends GenericElementComponent {
+export class DialogElementComponent extends GenericComponent {
     private readonly actionsService: CommunicationActions = inject( CommunicationActions )
 
     public readonly alertVisible: InputSignal<boolean> = input( false )

@@ -83,7 +83,7 @@ describe( 'NotificationStore', () => {
         // Arrange
         const store: InstanceType<typeof NotificationStore> = TestBed.inject( NotificationStore )
         const received: ConfirmationModel[] = []
-        const confirmation: ConfirmationModel = { header: 'h', message: 'm', icon: 'i', acceptSeverity: SeverityEnum.DANGER, accept: (): void => undefined }
+        const confirmation: ConfirmationModel = { header: 'h', message: 'm', acceptSeverity: SeverityEnum.DANGER, accept: (): void => undefined }
         store.confirmations$().subscribe( (it: ConfirmationModel): number => received.push( it ) )
 
         // Act

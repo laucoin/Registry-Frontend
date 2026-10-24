@@ -39,10 +39,6 @@ export class BrowserService {
         return window.innerWidth
     }
 
-    public get scrollOffset (): number {
-        return window.pageYOffset || document.documentElement.scrollTop
-    }
-
     public get pageVisible (): boolean {
         return document.visibilityState !== 'hidden'
     }
@@ -77,10 +73,6 @@ export class BrowserService {
         )
         observer.observe( element )
         return (): void => observer.disconnect()
-    }
-
-    public onSystemThemeChange (listener: () => void): void {
-        this.lightSchemeQuery?.addEventListener( 'change', listener )
     }
 
     public redirect (url: string): void {

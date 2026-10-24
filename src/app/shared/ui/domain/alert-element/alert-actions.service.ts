@@ -37,7 +37,6 @@ export class AlertActions extends ElementActionsBase<AlertModel> {
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_ALERT_U),
             confirmation: {
                 severity: SeverityEnum.INFO,
-                icon: 'pi pi-info-circle',
                 translationKey: `status.${status}`,
                 accept: (): void => this.run(this.facade.updateAlertStatus(alert.id, status)),
             },
@@ -50,7 +49,7 @@ export class AlertActions extends ElementActionsBase<AlertModel> {
             icon: 'eye-slash',
             shown: alert.visible,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_ALERT_U),
-            confirmation: { severity: SeverityEnum.WARNING, icon: 'pi pi-exclamation-triangle', accept: (): void => this.run(this.facade.disableAlert(alert.id)) },
+            confirmation: { severity: SeverityEnum.WARNING, accept: (): void => this.run(this.facade.disableAlert(alert.id)) },
         }
     }
 
@@ -60,7 +59,7 @@ export class AlertActions extends ElementActionsBase<AlertModel> {
             icon: 'rotate-right',
             shown: !alert.visible,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_ALERT_D),
-            confirmation: { severity: SeverityEnum.INFO, icon: 'pi pi-info-circle', accept: (): void => this.run(this.facade.enableAlert(alert.id)) },
+            confirmation: { severity: SeverityEnum.INFO, accept: (): void => this.run(this.facade.enableAlert(alert.id)) },
         }
     }
 
@@ -70,7 +69,7 @@ export class AlertActions extends ElementActionsBase<AlertModel> {
             icon: 'trash',
             shown: true,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_ALERT_D),
-            confirmation: { severity: SeverityEnum.DANGER, icon: 'pi pi-exclamation-triangle', accept: (): void => this.run(this.facade.deleteAlert(alert)) },
+            confirmation: { severity: SeverityEnum.DANGER, accept: (): void => this.run(this.facade.deleteAlert(alert)) },
         }
     }
 }

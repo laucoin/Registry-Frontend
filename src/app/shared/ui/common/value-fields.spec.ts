@@ -45,22 +45,6 @@ describe( 'value fields', () => {
     describe.each( [
         [ 'number range', NumberRangeFieldComponent, {} ],
     ] as [ string, Type<unknown>, Record<string, unknown> ][] )( '%s field', (_name: string, type: Type<unknown>, inputs: Record<string, unknown>) => {
-        it.each( [
-            [ 'invalid and touched', { invalid: true, touched: true, dirty: false }, true ],
-            [ 'invalid and dirty', { invalid: true, touched: false, dirty: true }, true ],
-            [ 'invalid but untouched and pristine', { invalid: true, touched: false, dirty: false }, false ],
-            [ 'valid and touched', { invalid: false, touched: true, dirty: true }, false ],
-        ] )( 'shows the invalid state only for a field that is %s', (_label: string, state: Record<string, boolean>, expected: boolean) => {
-            // Arrange
-            const { field }: Handle<unknown> = create( type, { ...inputs, ...state } )
-
-            // Act
-            const shown: boolean = (field as unknown as { showInvalid: () => boolean }).showInvalid()
-
-            // Assert
-            expect( shown ).toBe( expected )
-        } )
-
         it( 'starts without a value and follows the disabled state of the form', () => {
             // Arrange
             const { fixture, field }: Handle<unknown> = create( type, inputs )

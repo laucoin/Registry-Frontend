@@ -1,149 +1,38 @@
-import { ClipboardModule } from '@angular/cdk/clipboard'
-import { TitleCasePipe, UpperCasePipe } from '@angular/common'
-import { Component, computed, inject, input, InputSignal, Signal } from '@angular/core'
-import { RegistryRouteEnum } from '@core/routing/registry-route.enum'
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, input, InputSignal, Signal } from '@angular/core'
 import { TranslocoPipe } from '@jsverse/transloco'
-import { UserFacade } from '@pages/users/data/state/user.facade'
 import { DateFormatPipe } from '@shared/helpers/pipe/date-format.pipe'
 import { VisibilityNamePipe } from '@shared/helpers/pipe/visibility.pipe'
-import { StateHelper } from '@shared/helpers/state/state.helper'
-import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
-import { UserAuthorityEnum } from '@shared/models/enumeration/user-authority.enum'
-import { MenuEntryModel } from '@shared/models/model/menu-entry.model'
 import { UserModel } from '@shared/models/model/user.model'
-import { GenericElementComponent } from '@shared/ui/base/generic-element.component'
-import { ElementCardComponent } from '@shared/ui/common/element-card/element-card.component'
-import { SeverityTagComponent } from '@shared/ui/common/severity-tag/severity-tag.component'
-import { ChipModule } from 'primeng/chip'
-import { IconFieldModule } from 'primeng/iconfield'
-import { InputIconModule } from 'primeng/inputicon'
-import { InputTextModule } from 'primeng/inputtext'
-import { ListboxModule } from 'primeng/listbox'
-import { TagModule } from 'primeng/tag'
-import { ToastModule } from 'primeng/toast'
+import '@sgdf/ui/avatar'
+import '@sgdf/ui/icon'
+import '@sgdf/ui/list'
+import '@sgdf/ui/list-item'
+import '@sgdf/ui/tag'
+
+const INITIALS_LENGTH: number = 2
 
 /**
- * Purpose: Card presenting one user with its actions.
- * Scope: Renders the details, the actions menu and the confirmations of the element.
- * Limits: Receives the element as an input and calls the facade for commands; it holds no list state.
+ * Purpose: Summary of one user: name, email, birthday, role and visibility.
+ * Scope: Renders the details of the given user as a single list item.
+ * Limits: Receives the user as an input; it offers no action and holds no state.
  */
 @Component({
 	selector: 'app-user-element',
-	imports: [
-		ChipModule,
-		ElementCardComponent,
-		TranslocoPipe,
-		ClipboardModule,
-		TitleCasePipe,
-		UpperCasePipe,
-		TagModule,
-		ToastModule,
-		IconFieldModule,
-		InputIconModule,
-		InputTextModule,
-		ListboxModule,
-		SeverityTagComponent,
-		DateFormatPipe,
-		VisibilityNamePipe,
-	],
+	imports: [TranslocoPipe, DateFormatPipe, VisibilityNamePipe],
+	schemas: [CUSTOM_ELEMENTS_SCHEMA],
 	templateUrl: './user-element.component.html',
-	styleUrl: './user-element.component.css',
 })
-export class UserElementComponent extends GenericElementComponent {
-	protected readonly facade: UserFacade = inject(UserFacade)
-
-	public readonly actionMenuVisible: InputSignal<boolean> = input(true)
+export class UserElementComponent {
 	public readonly user: InputSignal<UserModel> = input.required()
 
-	private readonly isCurrentUser: Signal<boolean> = computed((): boolean => this.sessionFacade.currentUser()?.id == this.user().id)
+	protected readonly fullName: Signal<string> = computed((): string => {
+		const user: UserModel = this.user()
+		return [user.firstName, user.lastName?.toUpperCase()].filter(Boolean).join(' ') || user.email
+	})
 
-	protected readonly actions: Signal<MenuEntryModel[]> = computed((): MenuEntryModel[] => [
-		this.updateRoleAction(),
-		this.disableAction(),
-		this.enableAction(),
-		this.exportAction(),
-		this.deleteAction(),
-	])
-
-	private updateRoleAction(): MenuEntryModel {
-		return {
-			label: 'users.actions.update-role',
-			icon: 'pi pi-user-edit',
-			disabled: !this.hasAuthority(UserAuthorityEnum.REGISTRY_USER_U),
-			visible: !this.isCurrentUser(),
-			command: (): void => {
-				this.router.navigateByUrl(
-					RegistryRouteEnum.USERS_EDITION.replace(':userId', this.user().id),
-				).catch((err: Error) => console.error(err))
-			},
-		}
-	}
-
-	private disableAction(): MenuEntryModel {
-		return {
-			label: 'users.actions.disable',
-			icon: 'pi pi-ban',
-			disabled: !this.hasAuthority(UserAuthorityEnum.REGISTRY_USER_U),
-			visible: this.user().visible && !this.isCurrentUser(),
-			command: this.confirmThen(
-				'users.actions.confirmations.disable',
-				'pi pi-exclamation-triangle',
-				this.user(),
-				SeverityEnum.WARNING,
-				(): void => this.facade.blockUser(this.user().id),
-			),
-		}
-	}
-
-	private enableAction(): MenuEntryModel {
-		return {
-			label: 'users.actions.enable',
-			icon: 'pi pi-replay',
-			disabled: !this.hasAuthority(UserAuthorityEnum.REGISTRY_USER_U),
-			visible: !this.user().visible && !this.isCurrentUser(),
-			command: this.confirmThen(
-				'users.actions.confirmations.enable',
-				'pi pi-info-circle',
-				this.user(),
-				SeverityEnum.INFO,
-				(): void => this.facade.unblockUser(this.user().id),
-			),
-		}
-	}
-
-	private exportAction(): MenuEntryModel {
-		return {
-			label: 'users.actions.export',
-			icon: 'pi pi-download',
-			disabled: !this.hasAuthority(UserAuthorityEnum.REGISTRY_USER_R),
-			visible: true,
-			command: (): void => this.facade.exportUser(this.user()),
-		}
-	}
-
-	private deleteAction(): MenuEntryModel {
-		return {
-			label: 'users.actions.delete',
-			icon: 'pi pi-trash',
-			disabled: !this.hasAuthority(UserAuthorityEnum.REGISTRY_USER_D),
-			visible: !this.isCurrentUser(),
-			command: this.confirmThen(
-				'users.actions.confirmations.delete',
-				'pi pi-exclamation-circle',
-				this.user(),
-				SeverityEnum.DANGER,
-				(): void => this.facade.deleteUser(this.user()),
-			),
-		}
-	}
-
-	protected copied(): void {
-		this.uiFacade.notify(StateHelper.buildNotificationMessage(
-			SeverityEnum.INFO,
-			undefined,
-			'users.notifications.email-copied',
-			undefined,
-			{ element: this.user() },
-		))
-	}
+	protected readonly initials: Signal<string> = computed((): string => {
+		const user: UserModel = this.user()
+		const letters: string = [user.firstName, user.lastName].map((name: string | undefined): string => name?.charAt(0) ?? '').join('')
+		return (letters || user.email.charAt(0)).slice(0, INITIALS_LENGTH).toUpperCase()
+	})
 }

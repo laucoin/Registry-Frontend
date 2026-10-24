@@ -22,12 +22,12 @@ Review the change I point you at (a diff, a file, or the current branch vs `main
 **Accessibility — top priority (see AGENTS.md § Accessibility)**
 - Semantic HTML (real `<button>`/`<a>`/landmarks/ordered headings); no click handlers on `<div>`/`<span>`.
 - Keyboard operable: tab order, visible focus, Enter/Space/Esc; focus outlines not removed without replacement.
-- Every control has a label/accessible name; icon-only buttons named; ARIA used only where HTML can't express it (PrimeNG a11y props preferred).
-- Loading/error/toast state announced (`aria-live`/PrimeNG messages); AA contrast in both themes; `prefers-reduced-motion` respected.
+- Every control has a label/accessible name; icon-only buttons named; ARIA used only where HTML can't express it.
+- Loading/error/toast state announced (`aria-live`); AA contrast in both themes; `prefers-reduced-motion` respected.
 
 **UX / UI (see AGENTS.md § UX/UI)**
 - Every action gives feedback (loading, disabled-while-pending, success/error, empty states) — no dead clicks or silent failures.
-- Reuses `shared/util-ui` + PrimeNG patterns for consistency; forms validate inline and preserve input on error; responsive across breakpoints.
+- Reuses `shared/util-ui` + `@sgdf/ui` patterns for consistency; forms validate inline and preserve input on error; responsive across breakpoints.
 - User-facing strings go through `@jsverse/transloco`, not hardcoded.
 
 **Performance (see AGENTS.md § Performance)**

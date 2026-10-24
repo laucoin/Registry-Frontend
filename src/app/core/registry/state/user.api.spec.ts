@@ -15,7 +15,6 @@ const CASES: ApiCase<UserApi>[] = [
     { name: 'blocks a user', method: 'POST', url: `${BASE}/u1/block`, call: (api: UserApi) => api.blockUserById( 'u1' ), response: USER_DTO, verify: expectMapped },
     { name: 'unblocks a user', method: 'POST', url: `${BASE}/u1/unblock`, call: (api: UserApi) => api.unblockUserById( 'u1' ), response: USER_DTO, verify: expectMapped },
     { name: 'exports the current user', method: 'GET', url: `${BASE}/current/export`, call: (api: UserApi) => api.exportCurrentUser() },
-    { name: 'exports a user', method: 'GET', url: `${BASE}/u1/export`, call: (api: UserApi) => api.exportUserById( 'u1' ) },
     { name: 'deletes a user', method: 'DELETE', url: `${BASE}/u1`, call: (api: UserApi) => api.deleteUserById( 'u1' ) },
 ]
 

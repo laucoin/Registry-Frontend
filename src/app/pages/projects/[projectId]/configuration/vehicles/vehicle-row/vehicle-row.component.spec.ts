@@ -65,17 +65,17 @@ describe('VehicleRowComponent', () => {
         expect(description).toContain('Renault Trafic')
     })
 
-    it('should grey out a hidden vehicle and announce it to assistive technologies', async () => {
+    it('should grey out a hidden vehicle and label it with a visible tag', async () => {
         // Arrange
         await render({ ...ELEMENT, visible: false } as unknown as VehicleModel)
 
         // Act
         const row: HTMLElement & { disabled: boolean } = fixture.nativeElement.querySelector('sgdf-list-item')
-        const notice: string | undefined = text('sgdf-list-item > .sr-only')
+        const notice: string | undefined = text('sgdf-list-item > [slot="end"] > sgdf-tag:first-child')
 
         // Assert
         expect(row.disabled).toBe(true)
-        expect(notice).toBe('(fr.vehicles.visible.false)')
+        expect(notice).toBe('fr.vehicles.visible.false')
     })
 
     it('should keep a visible vehicle enabled', async () => {

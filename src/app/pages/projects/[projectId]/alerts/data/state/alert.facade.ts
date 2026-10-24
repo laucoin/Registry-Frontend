@@ -1,4 +1,3 @@
-import { SectionErrorsHelper } from '@shared/helpers/store/section-errors.helper'
 import { computed, Injectable, Signal, inject } from '@angular/core'
 import { PageModel } from '@shared/models/model/page.model'
 import { AlertStore } from '@pages/projects/[projectId]/alerts/data/state/alert.store'
@@ -27,8 +26,6 @@ export class AlertFacade extends GenericProjectElementFacade {
     private readonly store: InstanceType<typeof AlertStore> = inject( AlertStore )
 
     private readonly api: AlertApi = inject( AlertApi )
-
-    public readonly metadataErrors: Signal<Record<string, NotificationModel | undefined>> = SectionErrorsHelper.metadata( this.store.sectionErrors )
 
     public readonly alertsPage: Signal<PageModel<AlertModel> | undefined> = this.store.alerts.element
 
@@ -60,21 +57,7 @@ export class AlertFacade extends GenericProjectElementFacade {
 
     public readonly alertCommunicationsPageSilentLoading: Signal<boolean> = this.store.communications.silentLoading
 
-    public readonly alertCommunicationsPageError: Signal<NotificationModel | undefined> = this.store.communications.error
-
     private readonly alertCommunicationsPageResetSearch: Signal<boolean> = this.store.communications.params.resetSearch
-
-    public readonly alertCommunicationsPageQueryParam: Signal<string | undefined> = this.store.communications.params.q
-
-    public readonly alertCommunicationsPageIsVisibleParam: Signal<boolean | undefined> = this.store.communications.params.isVisible
-
-    public readonly alertCommunicationsPageFromParam: Signal<Date | undefined> = computed( (): Date | undefined =>
-            DateHelper.buildDate( this.store.communications.params.from() ),
-        )
-
-    public readonly alertCommunicationsPageToParam: Signal<Date | undefined> = computed( (): Date | undefined =>
-            DateHelper.buildDate( this.store.communications.params.to() ),
-        )
 
     public readonly visibilitiesMetadata: Signal<SelectOptionModel<boolean | undefined>[]> = computed( () =>
             this.store.metadata.visibilities().map( (status: SelectOptionModel<boolean | undefined>) => ({
@@ -141,59 +124,13 @@ export class AlertFacade extends GenericProjectElementFacade {
         this.store.fetchAlertCommunicationsPage( { projectId: this.selectedProjectId(), id: id, ...CumulativePageHelper.reloadRequest( this.alertCommunicationsPage() ) } )
     }
 
-    public inputCommunicationsPageSearchParameters (
-        q: string | undefined,
-        isVisible: boolean | undefined,
-        from: Date | undefined,
-        to: Date | undefined,
-    ): void {
-        const resetSearch: boolean = this.alertCommunicationsPageQueryParam() != q
-                                     || this.alertCommunicationsPageIsVisibleParam() != isVisible
-                                     || this.alertCommunicationsPageFromParam()?.toISOString() != from?.toISOString()
-                                     || this.alertCommunicationsPageToParam()?.toISOString() != to?.toISOString()
-
-        if (resetSearch) {
-            this.store.updateAlertCommunicationsPageSearchParams( {
-                resetSearch: resetSearch,
-                q: q,
-                isVisible: isVisible,
-                from: from?.toISOString(),
-                to: to?.toISOString(),
-            } )
-        }
-    }
-
-    public handleAlertFirstPageReload (): Observable<unknown> {
-        return this.commandEvents.on( 'alert', 'create', 'delete' )
-    }
-
-    public handleAlertCurrentPageReload (): Observable<unknown> {
-        return this.commandEvents.on( 'alert', 'update', 'disable', 'enable' )
-    }
-
     public handleAlertCreation (): Observable<unknown> {
         return this.commandEvents.on( 'alert', 'create' )
-    }
-
-    public handleAlertChange (): Observable<unknown> {
-        return this.commandEvents.on( 'alert', 'create', 'update', 'status', 'disable', 'enable', 'delete' )
-    }
-
-    public fetchAlert (id: string): Observable<AlertModel> {
-        return this.api.findAlertById( this.selectedProjectId(), id ).pipe(
-            notifyOnError( this.uiFacade ),
-        )
     }
 
     public createAlert (alert: AlertDto): Observable<AlertModel> {
         return this.api.createAlert( this.selectedProjectId(), alert ).pipe(
             tap( (created: AlertModel): void => this.onCommandSuccess( 'create', created ) ),
-        )
-    }
-
-    public updateAlert (id: string, alert: AlertDto): Observable<AlertModel> {
-        return this.api.updateAlertById( this.selectedProjectId(), id, alert ).pipe(
-            tap( (updated: AlertModel): void => this.onCommandSuccess( 'update', updated ) ),
         )
     }
 
@@ -226,7 +163,7 @@ export class AlertFacade extends GenericProjectElementFacade {
     }
 
     private onCommandSuccess (command: CommandEvent, alert: AlertModel): void {
-        this.onCommandSucceeded( 'alert', command, 'alerts.notifications', 'pi pi-sort-alt', { title: alert?.title, status: alert?.status?.label } )
+        this.onCommandSucceeded( 'alert', command, 'alerts.notifications', { title: alert?.title, status: alert?.status?.label } )
 
         this.reloadAlertsPage()
     }

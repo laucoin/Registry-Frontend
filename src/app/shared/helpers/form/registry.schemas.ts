@@ -9,16 +9,11 @@ import { GenericHelper } from '@shared/helpers/generic.helper'
 import { DateHelper } from '@shared/helpers/date.helper'
 import { StringHelper } from '@shared/helpers/string.helper'
 
-export type RegistryError = ValidationError.WithoutFieldTree & Readonly<Record<string, unknown>>
+type RegistryError = ValidationError.WithoutFieldTree & Readonly<Record<string, unknown>>
 
 export interface ProjectDateContext {
     project: () => ProjectModel | undefined
     formatDate: (date: CustomDatetimeModel) => string | undefined
-}
-
-export interface DateRangeValue {
-    beginDateTime: CustomDatetimeModel | null
-    endDateTime: CustomDatetimeModel | null
 }
 
 type DateTimeValue = CustomDatetimeModel | Date | null

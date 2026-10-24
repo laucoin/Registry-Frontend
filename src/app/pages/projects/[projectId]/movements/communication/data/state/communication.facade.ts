@@ -110,7 +110,6 @@ export class CommunicationFacade extends GenericProjectElementFacade {
                 'communication',
                 command,
                 'communications.notifications',
-                'pi pi-sort-alt',
                 { datetime: this.datePipe.transform( communication?.dateTime, 'datetime' ) },
             )
         } else {

@@ -21,7 +21,7 @@ export interface ParticipantFormModel {
     endDateTime: CustomDatetimeModel | null
 }
 
-export interface PreviousNames {
+interface PreviousNames {
     firstName: string | undefined
     lastName: string | undefined
 }

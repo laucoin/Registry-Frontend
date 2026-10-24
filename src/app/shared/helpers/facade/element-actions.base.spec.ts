@@ -14,7 +14,7 @@ class FakeActions extends ElementActionsBase<{ id: string }> {
     protected specsFor(): ElementActionSpec[] {
         return [
             { id: 'open', icon: 'folder', shown: true, allowed: false, run: this.command },
-            { id: 'remove', icon: 'trash', shown: true, allowed: true, confirmation: { severity: SeverityEnum.DANGER, icon: 'x', accept: this.command } },
+            { id: 'remove', icon: 'trash', shown: true, allowed: true, confirmation: { severity: SeverityEnum.DANGER, accept: this.command } },
             { id: 'hidden', icon: 'eye', shown: false, allowed: true, run: this.command },
         ]
     }
@@ -62,7 +62,7 @@ describe('ElementActionsBase', () => {
         remove.run()
 
         // Assert
-        expect(confirm).toHaveBeenCalledWith('fake.actions.confirmations.remove', element, SeverityEnum.DANGER, 'x', actions.command, undefined)
+        expect(confirm).toHaveBeenCalledWith('fake.actions.confirmations.remove', element, SeverityEnum.DANGER, actions.command, undefined)
         expect(actions.command).not.toHaveBeenCalled()
     })
 
@@ -83,7 +83,7 @@ describe('ElementActionsBase', () => {
         // Arrange
         class KeyedActions extends FakeActions {
             protected override specsFor(): ElementActionSpec[] {
-                return [{ id: 'remove', icon: 'trash', shown: true, allowed: true, confirmation: { severity: SeverityEnum.INFO, icon: 'x', accept: this.command, translationKey: 'status.DONE' } }]
+                return [{ id: 'remove', icon: 'trash', shown: true, allowed: true, confirmation: { severity: SeverityEnum.INFO, accept: this.command, translationKey: 'status.DONE' } }]
             }
         }
         const keyed: KeyedActions = TestBed.runInInjectionContext((): KeyedActions => new KeyedActions())
@@ -99,7 +99,7 @@ describe('ElementActionsBase', () => {
         // Arrange
         class TypedActions extends FakeActions {
             protected override specsFor(): ElementActionSpec[] {
-                return [{ id: 'remove', icon: 'trash', shown: true, allowed: true, confirmation: { severity: SeverityEnum.DANGER, icon: 'x', accept: this.command, typed: true } }]
+                return [{ id: 'remove', icon: 'trash', shown: true, allowed: true, confirmation: { severity: SeverityEnum.DANGER, accept: this.command, typed: true } }]
             }
         }
         const typed: TypedActions = TestBed.runInInjectionContext((): TypedActions => new TypedActions())
@@ -108,6 +108,6 @@ describe('ElementActionsBase', () => {
         typed.actionsFor({ id: 'e1' })[0].run()
 
         // Assert
-        expect(confirm.mock.calls[0][5]).toBe(true)
+        expect(confirm.mock.calls[0][4]).toBe(true)
     })
 })

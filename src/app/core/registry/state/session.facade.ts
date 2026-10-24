@@ -300,7 +300,6 @@ export class SessionFacade {
             SeverityEnum.ERROR,
             'global.notifications.THEME_SAVE_FAILED.title',
             'global.notifications.THEME_SAVE_FAILED.message',
-            undefined,
             { reason: error.message },
         ))
     }
@@ -312,7 +311,6 @@ export class SessionFacade {
             SeverityEnum.WARNING,
             'global.notifications.sign-in-refused.title',
             'global.notifications.sign-in-refused.message',
-            'pi pi-sign-in',
         ))
         return EMPTY
     }

@@ -1,9 +1,7 @@
 import { computed, inject, Injectable, Signal } from '@angular/core'
 import { BrowserService } from '@core/browser/browser.service'
-import { MetadataStore } from '@core/registry/state/metadata.store'
 import { NotificationStore } from '@core/registry/state/notification.store'
 import { UiStore } from '@core/registry/state/ui.store'
-import { TranslocoService } from '@jsverse/transloco'
 import { GenericHelper } from '@shared/helpers/generic.helper'
 import { StateHelper } from '@shared/helpers/state/state.helper'
 import { SeverityEnum } from '@shared/models/enumeration/severity.enum'
@@ -12,7 +10,6 @@ import { RefreshModeEnum } from '@shared/models/enumeration/refresh-mode.enum'
 import { ConfirmationModel } from '@shared/models/model/confirmation.model'
 import { ErrorModel } from '@shared/models/model/error.model'
 import { NotificationModel } from '@shared/models/model/notification.model'
-import { SelectOptionModel } from '@shared/models/model/select-option.model'
 import { Observable } from 'rxjs'
 
 /**
@@ -22,23 +19,19 @@ import { Observable } from 'rxjs'
  */
 @Injectable({ providedIn: 'root' })
 export class UiFacade {
-	private readonly translateService: TranslocoService = inject(TranslocoService)
 	private readonly browser: BrowserService = inject(BrowserService)
 	private readonly ui: InstanceType<typeof UiStore> = inject(UiStore)
 	private readonly notifications: InstanceType<typeof NotificationStore> = inject(NotificationStore)
-	private readonly metadata: InstanceType<typeof MetadataStore> = inject(MetadataStore)
 
 	private readonly onlineMessage: NotificationModel = StateHelper.buildNotificationMessage(
 		SeverityEnum.SUCCESS,
 		'global.notifications.ONLINE.title',
 		'global.notifications.ONLINE.message',
-		'pi pi-sort-alt',
 	)
 	private readonly offlineMessage: NotificationModel = StateHelper.buildNotificationMessage(
 		SeverityEnum.WARNING,
 		'global.notifications.OFFLINE.title',
 		'global.notifications.OFFLINE.message',
-		'pi pi-sort-alt-slash',
 	)
 
 	public readonly theme: Signal<ThemeEnum> = this.ui.theme
@@ -50,14 +43,6 @@ export class UiFacade {
 
 	public readonly notification: Observable<NotificationModel> = this.notifications.messages$()
 	public readonly confirmation: Observable<ConfirmationModel> = this.notifications.confirmations$()
-
-	public readonly themesMetadata: Signal<SelectOptionModel<ThemeEnum>[]> = this.metadata.themes
-	public readonly languagesMetadata: Signal<SelectOptionModel<string>[]> = computed((): SelectOptionModel<string>[] =>
-		this.metadata.languages().map((lang: SelectOptionModel<string>): SelectOptionModel<string> => ({
-			...lang,
-			label: this.translateService.translate(lang.label!),
-		})),
-	)
 
 	public startLanguageChange(language: string): void {
 		this.ui.startLanguageChange(language)

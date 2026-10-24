@@ -185,7 +185,7 @@ export class GroupFacade extends GenericProjectElementFacade {
     }
 
     private onCommandSuccess (command: CommandEvent, group: GroupModel): void {
-        this.onCommandSucceeded( 'group', command, 'groups.notifications', 'pi pi-users', { name: group?.name } )
+        this.onCommandSucceeded( 'group', command, 'groups.notifications', { name: group?.name } )
 
         this.store.fetchGroupsPage( { projectId: this.selectedProjectId(), ...CumulativePageHelper.reloadRequest( this.groupsPage() ) } )
     }
@@ -201,7 +201,6 @@ export class GroupFacade extends GenericProjectElementFacade {
                     partial ? SeverityEnum.WARNING : SeverityEnum.SUCCESS,
                     this.pluralTranslationPipe.transform( prefixKey + '.title', added ),
                     this.pluralTranslationPipe.transform( prefixKey + '.message', added ),
-                    'pi pi-user-plus',
                     partial ? { asked: memberIds.length, added: added } : { added: added },
                 )
                 this.onMembersChanged( id )
@@ -213,7 +212,7 @@ export class GroupFacade extends GenericProjectElementFacade {
         return this.api.removeMemberFromGroupById( this.selectedProjectId(), id, participant.id ).pipe(
             notifyOnError( this.uiFacade ),
             tap( (): void => {
-                this.notifySuccess( 'groups.notifications.remove-member', 'pi pi-user-minus', {
+                this.notifySuccess( 'groups.notifications.remove-member', {
                     name: participant.groups?.find( (group: GroupModel): boolean => group.id === id )?.name,
                     firstName: participant.firstName,
                     lastName: participant.lastName,

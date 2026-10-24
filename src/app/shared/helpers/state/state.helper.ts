@@ -54,7 +54,6 @@ export class StateHelper {
         severity: SeverityEnum,
         summary: string | undefined,
         detail: string,
-        icon: string | undefined = undefined,
         data: object | undefined = undefined,
     ): NotificationModel {
         const life: number | undefined = this.notificationLife(severity)
@@ -63,7 +62,6 @@ export class StateHelper {
             summary: summary,
             detail: detail,
             data: data,
-            icon: icon,
             closable: true,
             life: life,
             sticky: !life,

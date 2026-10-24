@@ -5,6 +5,7 @@ import { RegistryConfig } from '@core/config/registry.config';
 import { MenuItemModel } from '@core/layout/data/model/menu-item.model';
 import { MenuService } from '@core/layout/data/service/menu.service';
 import { SessionFacade } from '@core/registry/state/session.facade';
+import { UiFacade } from '@core/registry/state/ui.facade';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { CurrentUserModel } from '@shared/models/model/current-user.model';
 import { ProjectModel } from '@shared/models/model/project.model';
@@ -19,6 +20,7 @@ describe('NavbarComponent', () => {
 	let projectMenus: WritableSignal<MenuItemModel[]>;
 	let selectedProject: WritableSignal<ProjectModel | undefined>;
 	let logout: ReturnType<typeof vi.fn>;
+	let tinyScreen: WritableSignal<boolean>;
 	let fixture: ComponentFixture<NavbarComponent>;
 
 	function userButton(): HTMLElement {
@@ -37,6 +39,7 @@ describe('NavbarComponent', () => {
 		projectMenus = signal<MenuItemModel[]>([]);
 		selectedProject = signal<ProjectModel | undefined>(undefined);
 		logout = vi.fn();
+		tinyScreen = signal(false);
 		await MockBuilder(NavbarComponent)
 			.keep(NgTemplateOutlet)
 			.mock(TranslocoPipe, (key: string): string => key)
@@ -50,7 +53,23 @@ describe('NavbarComponent', () => {
 					logoutMenu: LOGOUT_MENU,
 				},
 			})
+			.provide({ provide: UiFacade, useValue: { tinyScreen } })
 			.provide({ provide: SessionFacade, useValue: { currentUser, selectedProject, currentProjectId: signal<string | undefined>('42'), logout } });
+	});
+
+	it.each([
+		['wide', false, true],
+		['tiny', true, false],
+	])('should draw the torn edge only on a %s screen', async (_label: string, tiny: boolean, torn: boolean) => {
+		// Arrange
+		tinyScreen.set(tiny);
+		await render(undefined);
+
+		// Act
+		const shown: boolean = fixture.nativeElement.querySelector('sgdf-navbar').torn;
+
+		// Assert
+		expect(shown).toBe(torn);
 	});
 
 	it('should show the full name and the initials of the user', async () => {

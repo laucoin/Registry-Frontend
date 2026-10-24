@@ -6,7 +6,7 @@ import { UiFacade } from '@core/registry/state/ui.facade'
 import { REFRESH_INTERVALS, REFRESH_TICK_MS, RefreshKind } from '@shared/helpers/refresh/refresh.config'
 import { RefreshModeEnum } from '@shared/models/enumeration/refresh-mode.enum'
 
-export interface RefreshSourceModel {
+interface RefreshSourceModel {
     key: string
     kind: RefreshKind
     reload: () => void

@@ -67,7 +67,6 @@ function notifyProjectNotFound(uiFacade: UiFacade): void {
         summary: 'projects.notifications.NOT_FOUND.title',
         detail: 'projects.notifications.NOT_FOUND.message',
         closable: true,
-        icon: 'pi pi-search',
         life: RegistryConfig.config.notification.duration.error,
     } )
 }

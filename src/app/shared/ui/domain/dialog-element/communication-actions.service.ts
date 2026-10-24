@@ -36,7 +36,7 @@ export class CommunicationActions extends ElementActionsBase<CommunicationModel>
             icon: 'eye-slash',
             shown: communication.visible,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_COMMUNICATION_U),
-            confirmation: { severity: SeverityEnum.WARNING, icon: 'pi pi-exclamation-triangle', accept: (): void => this.run(this.facade.disableCommunication(communication.id)) },
+            confirmation: { severity: SeverityEnum.WARNING, accept: (): void => this.run(this.facade.disableCommunication(communication.id)) },
         }
     }
 
@@ -46,7 +46,7 @@ export class CommunicationActions extends ElementActionsBase<CommunicationModel>
             icon: 'rotate-right',
             shown: !communication.visible,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_COMMUNICATION_D),
-            confirmation: { severity: SeverityEnum.INFO, icon: 'pi pi-info-circle', accept: (): void => this.run(this.facade.enableCommunication(communication.id)) },
+            confirmation: { severity: SeverityEnum.INFO, accept: (): void => this.run(this.facade.enableCommunication(communication.id)) },
         }
     }
 
@@ -56,7 +56,7 @@ export class CommunicationActions extends ElementActionsBase<CommunicationModel>
             icon: 'trash',
             shown: true,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_COMMUNICATION_D),
-            confirmation: { severity: SeverityEnum.DANGER, icon: 'pi pi-exclamation-triangle', accept: (): void => this.run(this.facade.deleteCommunication(communication)) },
+            confirmation: { severity: SeverityEnum.DANGER, accept: (): void => this.run(this.facade.deleteCommunication(communication)) },
         }
     }
 }

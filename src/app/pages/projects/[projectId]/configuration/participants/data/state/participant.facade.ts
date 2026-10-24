@@ -1,4 +1,3 @@
-import { SectionErrorsHelper } from '@shared/helpers/store/section-errors.helper'
 import { computed, inject, Injectable, Signal } from '@angular/core'
 import { Observable, tap } from 'rxjs'
 import { BrowserService } from '@core/browser/browser.service'
@@ -31,10 +30,6 @@ export class ParticipantFacade extends GenericProjectElementFacade {
     private readonly api: ParticipantApi = inject( ParticipantApi )
 
     private readonly browser: BrowserService = inject( BrowserService )
-
-    public readonly metadataErrors: Signal<Record<string, NotificationModel | undefined>> = SectionErrorsHelper.metadata( this.store.sectionErrors )
-
-    public readonly movementsContentsError: Signal<NotificationModel | undefined> = SectionErrorsHelper.of( this.store.sectionErrors, 'contents' )
 
     public readonly participantsPage: Signal<PageModel<ParticipantModel> | undefined> = this.store.participants.element
 
@@ -125,10 +120,6 @@ export class ParticipantFacade extends GenericProjectElementFacade {
 
     public reloadParticipantMovementsPage (id: string): void {
         this.store.fetchParticipantMovementsPage( { projectId: this.selectedProjectId(), id: id, ...CumulativePageHelper.reloadRequest( this.participantMovementsPage() ) } )
-    }
-
-    public fetchParticipantMovementsContent (movementIds: string[]): void {
-        this.store.fetchParticipantMovementsContents( { projectId: this.selectedProjectId(), movementIds: movementIds } )
     }
 
     public inputMovementsPageSearchParameters (
@@ -222,7 +213,7 @@ export class ParticipantFacade extends GenericProjectElementFacade {
     }
 
     private onCommandSuccess (command: CommandEvent, participant: ParticipantModel): void {
-        this.onCommandSucceeded( 'participant', command, 'participants.notifications', 'pi pi-users', { firstName: participant?.firstName, lastName: participant?.lastName } )
+        this.onCommandSucceeded( 'participant', command, 'participants.notifications', { firstName: participant?.firstName, lastName: participant?.lastName } )
 
         this.store.fetchParticipantsPage( { projectId: this.selectedProjectId(), ...CumulativePageHelper.reloadRequest( this.participantsPage() ) } )
     }

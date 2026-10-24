@@ -16,7 +16,7 @@ export interface MovementFormContext extends ProjectDateContext {
     editing: () => boolean
 }
 
-export interface MovementReasonFields {
+interface MovementReasonFields {
     reason: string | undefined
     activityId: string | undefined
 }

@@ -212,11 +212,11 @@ type ElementOf<B> = B extends ElementRequestInformationModel<infer M> ? M : neve
 
 type ElementBlock = ElementRequestInformationModel<unknown>
 
-export const CONTENTS_SECTION: string = 'contents'
+const CONTENTS_SECTION: string = 'contents'
 
 export const contentsSection = (block: string): string => `${CONTENTS_SECTION}.${block}`
 
-export const metadataSection = (field: string): string => `metadata.${field}`
+const metadataSection = (field: string): string => `metadata.${field}`
 
 /**
  * Purpose: Builds an operator that keeps the failure of a secondary fetch in the section errors of the store.

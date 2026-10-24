@@ -21,9 +21,7 @@ export class NumberRangeFieldComponent implements FormValueControl<NumericRangeM
 
     public readonly value: ModelSignal<NumericRangeModel | null> = model<NumericRangeModel | null>( null )
     public readonly disabled: InputSignal<boolean> = input( false )
-    public readonly invalid: InputSignal<boolean> = input( false )
     public readonly touched: InputSignal<boolean> = input( false )
-    public readonly dirty: InputSignal<boolean> = input( false )
     public readonly touch: OutputEmitterRef<void> = output<void>()
 
     public readonly inputId: InputSignal<string | undefined> = input()
@@ -36,7 +34,6 @@ export class NumberRangeFieldComponent implements FormValueControl<NumericRangeM
 
     protected readonly minValue: Signal<number | null> = computed( (): number | null => this.value()?.lower ?? null )
     protected readonly maxValue: Signal<number | null> = computed( (): number | null => this.value()?.upper ?? null )
-    protected readonly showInvalid: Signal<boolean> = computed( (): boolean => this.invalid() && (this.touched() || this.dirty()) )
 
     protected onInputMin ( min: number | string | null ): void {
         this.onInputChange( StringHelper.toNumber( min ), this.value()?.upper )

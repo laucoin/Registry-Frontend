@@ -48,7 +48,7 @@ export class UserActions extends ElementActionsBase<UserModel> {
             icon: 'ban',
             shown: others && user.visible,
             allowed: this.hasAuthority(UserAuthorityEnum.REGISTRY_USER_U),
-            confirmation: { severity: SeverityEnum.WARNING, icon: 'pi pi-exclamation-triangle', accept: (): void => this.facade.blockUser(user.id) },
+            confirmation: { severity: SeverityEnum.WARNING, accept: (): void => this.facade.blockUser(user.id) },
         }
     }
 
@@ -58,7 +58,7 @@ export class UserActions extends ElementActionsBase<UserModel> {
             icon: 'rotate-right',
             shown: others && !user.visible,
             allowed: this.hasAuthority(UserAuthorityEnum.REGISTRY_USER_U),
-            confirmation: { severity: SeverityEnum.INFO, icon: 'pi pi-info-circle', accept: (): void => this.facade.unblockUser(user.id) },
+            confirmation: { severity: SeverityEnum.INFO, accept: (): void => this.facade.unblockUser(user.id) },
         }
     }
 
@@ -68,7 +68,7 @@ export class UserActions extends ElementActionsBase<UserModel> {
             icon: 'trash',
             shown: others,
             allowed: this.hasAuthority(UserAuthorityEnum.REGISTRY_USER_D),
-            confirmation: { severity: SeverityEnum.DANGER, icon: 'pi pi-exclamation-circle', accept: (): void => this.facade.deleteUser(user) },
+            confirmation: { severity: SeverityEnum.DANGER, accept: (): void => this.facade.deleteUser(user) },
         }
     }
 

@@ -3,7 +3,6 @@ import { TestBed } from '@angular/core/testing'
 import { BrowserService } from '@core/browser/browser.service'
 import { ConfigModel } from '@core/config/model/config.model'
 import { RegistryConfig } from '@core/config/registry.config'
-import { MetadataStore } from '@core/registry/state/metadata.store'
 import { NotificationStore } from '@core/registry/state/notification.store'
 import { UiFacade } from '@core/registry/state/ui.facade'
 import { TranslocoService } from '@jsverse/transloco'
@@ -69,7 +68,6 @@ describe('UiFacade', () => {
 		facade = TestBed.inject(UiFacade)
 		received = []
 		TestBed.inject(NotificationStore).messages$().subscribe((message: NotificationModel): number => received.push(message))
-		TestBed.inject(MetadataStore)
 	})
 
 	it('considers screens narrower than 768 pixels tiny', () => {
@@ -83,19 +81,6 @@ describe('UiFacade', () => {
 		// Assert
 		expect(tiny).toBe(true)
 		expect(facade.tinyScreen()).toBe(false)
-	})
-
-	it('translates the language labels', () => {
-		// Arrange
-		const expected: (string | undefined)[] = ['t:global.language.fr', 't:global.language.en']
-
-		// Act
-		const labels: (string | undefined)[] = facade.languagesMetadata().map((item: {
-			label?: string
-		}): string | undefined => item.label)
-
-		// Assert
-		expect(labels).toEqual(expected)
 	})
 
 	it('reloads the application', () => {
@@ -202,7 +187,6 @@ describe('UiFacade', () => {
 		const confirmation: ConfirmationModel = {
 			header: 'h',
 			message: 'm',
-			icon: 'i',
 			acceptSeverity: SeverityEnum.WARNING,
 			accept: (): void => undefined
 		}

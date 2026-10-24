@@ -1,11 +1,9 @@
-import { SectionErrorsHelper } from '@shared/helpers/store/section-errors.helper'
-import { computed, inject, Injectable, Signal } from '@angular/core'
+import { inject, Injectable, Signal } from '@angular/core'
 import { ProjectStatusModel } from '@shared/models/model/project-status.model'
 import { NotificationModel } from '@shared/models/model/notification.model'
 import { VehicleStatusModel } from '@shared/models/model/vehicle-status.model'
 import { PageModel } from '@shared/models/model/page.model'
 import { MovementModel } from '@shared/models/model/movement.model'
-import { DateHelper } from '@shared/helpers/date.helper'
 import { SessionFacade } from '@core/registry/state/session.facade'
 import { GenericFacade } from '@shared/helpers/facade/generic.facade'
 import { SelectedProjectStore } from '@pages/projects/data/state/selected-project/selected-project.store'
@@ -24,21 +22,9 @@ export class SelectedProjectFacade extends GenericFacade {
     private readonly sessionFacade: SessionFacade = inject( SessionFacade )
     private readonly store: InstanceType<typeof SelectedProjectStore> = inject( SelectedProjectStore )
 
-    public readonly currentMovementsWithoutActivityContentsError: Signal<NotificationModel | undefined> = SectionErrorsHelper.of( this.store.sectionErrors, 'contents.withoutActivity' )
-
-    public readonly currentMovementsWithActivityContentsError: Signal<NotificationModel | undefined> = SectionErrorsHelper.of( this.store.sectionErrors, 'contents.withActivity' )
-
     public readonly participantsStatus: Signal<ProjectStatusModel | undefined> = this.store.status.participants.element
 
-    public readonly participantsStatusLoading: Signal<boolean> = this.store.status.participants.loading
-
-    public readonly participantsStatusError: Signal<NotificationModel | undefined> = this.store.status.participants.error
-
     public readonly vehiclesStatus: Signal<VehicleStatusModel | undefined> = this.store.status.vehicles.element
-
-    public readonly vehiclesStatusLoading: Signal<boolean> = this.store.status.vehicles.loading
-
-    public readonly vehiclesStatusError: Signal<NotificationModel | undefined> = this.store.status.vehicles.error
 
     public readonly participantsBirthdays: Signal<ParticipantModel[] | undefined> = this.store.birthdays.element
 
@@ -54,14 +40,6 @@ export class SelectedProjectFacade extends GenericFacade {
 
     public readonly currentMovementsPageWithoutActivity: Signal<PageModel<MovementModel> | undefined> = this.store.isCurrent.withoutActivity.element
 
-    public readonly currentMovementsPageWithoutActivityFromParam: Signal<Date | undefined> = computed( (): Date | undefined =>
-            DateHelper.buildDate( this.store.isCurrent.withoutActivity.params.from() ),
-        )
-
-    public readonly currentMovementsPageWithoutActivityToParam: Signal<Date | undefined> = computed( (): Date | undefined =>
-            DateHelper.buildDate( this.store.isCurrent.withoutActivity.params.to() ),
-        )
-
     public readonly currentMovementsPageWithActivityLoading: Signal<boolean> = this.store.isCurrent.withActivity.loading
 
     public readonly currentMovementsPageWithActivitySilentLoading: Signal<boolean> = this.store.isCurrent.withActivity.silentLoading
@@ -69,14 +47,6 @@ export class SelectedProjectFacade extends GenericFacade {
     public readonly currentMovementsPageWithActivityError: Signal<NotificationModel | undefined> = this.store.isCurrent.withActivity.error
 
     public readonly currentMovementsPageWithActivity: Signal<PageModel<MovementModel> | undefined> = this.store.isCurrent.withActivity.element
-
-    public readonly currentMovementsPageWithActivityFromParam: Signal<Date | undefined> = computed( (): Date | undefined =>
-            DateHelper.buildDate( this.store.isCurrent.withActivity.params.from() ),
-        )
-
-    public readonly currentMovementsPageWithActivityToParam: Signal<Date | undefined> = computed( (): Date | undefined =>
-            DateHelper.buildDate( this.store.isCurrent.withActivity.params.to() ),
-        )
 
     public readonly plannedArrivals: Signal<PlannedMovementModel[] | undefined> = this.store.arrivals.element
 
@@ -146,28 +116,12 @@ export class SelectedProjectFacade extends GenericFacade {
         } )
     }
 
-    public reloadCurrentMovementsPageWithoutActivity (): void {
-        this.store.fetchCurrentMovementsPageWithoutActivity( { projectId: this.selectedProjectId(), ...CumulativePageHelper.reloadRequest( this.currentMovementsPageWithoutActivity() ) } )
-    }
-
-    public fetchCurrentMovementsWithoutActivityDetails (movementIds: string[]): void {
-        this.store.fetchCurrentMovementsWithoutActivityContents( { projectId: this.selectedProjectId(), movementIds: movementIds } )
-    }
-
     public fetchCurrentMovementsPageWithActivity (page: number | undefined, size: number | undefined): void {
         this.store.fetchCurrentMovementsPageWithActivity( {
             projectId: this.selectedProjectId(),
             page: page,
             size: size,
         } )
-    }
-
-    public reloadCurrentMovementsPageWithActivity (): void {
-        this.store.fetchCurrentMovementsPageWithActivity( { projectId: this.selectedProjectId(), ...CumulativePageHelper.reloadRequest( this.currentMovementsPageWithActivity() ) } )
-    }
-
-    public fetchCurrentMovementsWithActivityDetails (movementIds: string[]): void {
-        this.store.fetchCurrentMovementsWithActivityContents( { projectId: this.selectedProjectId(), movementIds: movementIds } )
     }
 
     public fetchCurrentAlertsPage (page: number | undefined, size: number | undefined): void {

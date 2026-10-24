@@ -2,3 +2,10 @@ sgdf-footer {
     --content-width: var(--layout--content-width);
     --padding-inline: var(--spacing--page-gutter);
 }
+
+@media (max-width: 767px) {
+    sgdf-footer a {
+        display: inline-block;
+        padding-block: 0.75rem;
+    }
+}

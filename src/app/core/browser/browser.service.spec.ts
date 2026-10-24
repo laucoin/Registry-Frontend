@@ -96,17 +96,6 @@ describe( 'BrowserService', () => {
         expect( service.preferredLanguages ).toBe( navigator.languages )
     } )
 
-    it( 'reads the vertical scroll offset of the page', () => {
-        // Arrange
-        vi.spyOn( window, 'pageYOffset', 'get' ).mockReturnValue( 120 )
-
-        // Act
-        const offset: number = service.scrollOffset
-
-        // Assert
-        expect( offset ).toBe( 120 )
-    } )
-
     it.each( [
         [ ThemeEnum.DARK, 'dark' ],
         [ ThemeEnum.LIGHT, 'light' ],
@@ -156,20 +145,6 @@ describe( 'BrowserService', () => {
 
         // Assert
         expect( theme ).toBe( ThemeEnum.LIGHT )
-    } )
-
-    it( 'notifies the listener when the system theme changes', () => {
-        // Arrange
-        const addEventListener: Mock<(type: string, listener: () => void) => void> = vi.fn()
-        window.matchMedia = ((): FakeQuery => ({ matches: true, addEventListener }) ) as unknown as typeof window.matchMedia
-        const fresh: BrowserService = new BrowserService()
-        const listener: () => void = vi.fn()
-
-        // Act
-        fresh.onSystemThemeChange( listener )
-
-        // Assert
-        expect( addEventListener ).toHaveBeenCalledWith( 'change', listener )
     } )
 
     it( 'highlights an element by its data value then removes the highlight', () => {

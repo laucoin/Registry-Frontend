@@ -26,13 +26,12 @@ describe( 'ElementConfirmationService', () => {
         const accept: () => void = vi.fn()
 
         // Act
-        service.confirm( 'users.actions.confirmations.delete', { name: 'Ada' }, SeverityEnum.DANGER, 'pi pi-trash', accept )
+        service.confirm( 'users.actions.confirmations.delete', { name: 'Ada' }, SeverityEnum.DANGER, accept )
 
         // Assert
         expect( confirm ).toHaveBeenCalledWith( {
             header: 'users.actions.confirmations.delete.title:Ada',
             message: 'users.actions.confirmations.delete.message:Ada',
-            icon: 'pi pi-trash',
             acceptSeverity: SeverityEnum.DANGER,
             accept,
         } )
@@ -43,7 +42,7 @@ describe( 'ElementConfirmationService', () => {
         const accept: () => void = vi.fn()
 
         // Act
-        service.confirm( 'users.actions.confirmations.delete', { name: 'Ada' }, SeverityEnum.DANGER, 'pi pi-trash', accept, true )
+        service.confirm( 'users.actions.confirmations.delete', { name: 'Ada' }, SeverityEnum.DANGER, accept, true )
 
         // Assert
         expect( confirm.mock.calls[0][0].phrase ).toBe( 'users.actions.confirmations.delete.phrase:Ada' )

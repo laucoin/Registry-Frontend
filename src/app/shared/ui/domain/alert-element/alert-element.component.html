@@ -1,68 +1,30 @@
-@if (carouselView()) {
-    <app-element-card [element]='alert()'
-                      [actions]='cardActions()'
-                      [actionMenuVisible]='actionMenuVisible()'
-                      [icon]='statusIcon()'>
-        <div class='element-card flex-col'>
-            <div class='flex' [class.justify-center]='uiFacade.tinyScreen()'>
-                <app-severity-circle class='me-2'
-                                     [severity]='alert().visible ? SeverityEnum.SUCCESS : SeverityEnum.DANGER'/>
-                @if (titleBlank()) {
-                    <span class="italic opacity-70">{{ 'alerts.untitled' | transloco }}</span>
-                } @else {
-                    {{ alert().title | titlecase }}
-                }
-            </div>
-            <div class='flex' [class.justify-center]='uiFacade.tinyScreen()'>
-                {{ alert().dateTime | dateFormat: 'datetime' }}
-            </div>
-            <div class='flex' [class.justify-center]='uiFacade.tinyScreen()'>
-                <app-severity-tag [value]='statusLabel()' [severity]='statusSeverity()'/>
-            </div>
-        </div>
-        @if (carouselView() && addButtonVisible()) {
-            <div class='mt-4 flex items-center justify-center'>
-                <p-button size='small'
-                          rounded
-                          outlined
-                          [severity]='isInProgress() ? "info" : "secondary"' [label]='(isInProgress() ?"alerts.actions.add-communication"
-                           : "alerts.actions.communications") | transloco'
-                          [icon]='ProjectOptionEnum.COMMUNICATION | optionIcon'
-                          (onClick)='communicationsLayerOpened.set(true)'/>
-            </div>
-        }
-    </app-element-card>
+<sgdf-avatar slot="start" shape="rounded" aria-hidden="true" [variant]="statusVariant()">
+    <sgdf-icon slot="icon" [name]="statusIconName()" library="solid"/>
+</sgdf-avatar>
+@if (titleBlank()) {
+    <span class="block truncate italic" style="color: var(--sgdf-color-text-light)">{{ 'alerts.untitled' | transloco }}</span>
 } @else {
-    <sgdf-avatar slot="start" shape="rounded" aria-hidden="true" [variant]="statusVariant()">
-        <sgdf-icon slot="icon" [name]="statusIconName()" library="solid"/>
-    </sgdf-avatar>
-    @if (titleBlank()) {
-        <span class="block truncate italic" style="color: var(--sgdf-color-text-light)">{{ 'alerts.untitled' | transloco }}</span>
-    } @else {
-        <span appEllipsis>{{ alert().title | titlecase }}</span>
-    }
-    @if (!alert().visible) {
-        <span class="sr-only">({{ 'alerts.visible.false' | transloco }})</span>
-    }
-    <span slot="description" class="inline-flex items-center gap-1">
-        <sgdf-icon name="clock" library="regular"/>
-        {{ alert().dateTime | dateFormat: 'datetime' }}
-    </span>
-    <span slot="end" class="flex flex-wrap items-center gap-2">
-        <sgdf-tag appearance="soft" pill [variant]="statusVariant()">{{ statusLabel() }}</sgdf-tag>
-        @if (addButtonVisible()) {
-            <sgdf-button data-testid="alert-element-communications-button" size="small" appearance="outlined" [variant]="isInProgress() ? 'info' : 'neutral'"
-                         (click)="communicationsLayerOpened.set(true)">
-                <sgdf-icon slot="prefix" name="comments" library="regular"/>
-                {{ (isInProgress() ? 'alerts.actions.add-communication' : 'alerts.actions.communications') | transloco }}
-                <span class="sr-only">({{ accessibleTitle() }})</span>
-            </sgdf-button>
-        }
-    </span>
-    <app-element-actions data-testid="alert-element-actions" slot="actions" [subject]="accessibleTitle()" [actions]="actionMenuVisible() ? actions() : []"/>
+    <span appEllipsis>{{ alert().title | titlecase }}</span>
 }
-
-
+<span slot="description" class="inline-flex items-center gap-1">
+    <sgdf-icon name="clock" library="regular"/>
+    {{ alert().dateTime | dateFormat: 'datetime' }}
+</span>
+<span slot="end" class="flex flex-wrap items-center gap-2">
+    @if (!alert().visible) {
+        <sgdf-tag appearance="outlined" variant="neutral" pill>{{ 'alerts.visible.false' | transloco }}</sgdf-tag>
+    }
+    <sgdf-tag appearance="soft" pill [variant]="statusVariant()">{{ statusLabel() }}</sgdf-tag>
+    @if (addButtonVisible()) {
+        <sgdf-button data-testid="alert-element-communications-button" size="small" appearance="outlined" [variant]="isInProgress() ? 'info' : 'neutral'"
+                     (click)="communicationsLayerOpened.set(true)">
+            <sgdf-icon slot="prefix" name="comments" library="regular"/>
+            {{ (isInProgress() ? 'alerts.actions.add-communication' : 'alerts.actions.communications') | transloco }}
+            <span class="sr-only">({{ accessibleTitle() }})</span>
+        </sgdf-button>
+    }
+</span>
+<app-element-actions data-testid="alert-element-actions" slot="actions" [subject]="accessibleTitle()" [actions]="actionMenuVisible() ? actions() : []"/>
 
 <sgdf-drawer data-testid="alert-element-communications-drawer" light-dismiss
              [open]="communicationsLayerOpened()"

@@ -1,4 +1,3 @@
-import { SectionErrorsHelper } from '@shared/helpers/store/section-errors.helper'
 import { computed, Injectable, Signal, inject } from '@angular/core'
 import { Observable, tap } from 'rxjs'
 import { PageModel } from '@shared/models/model/page.model'
@@ -32,8 +31,6 @@ export class ProjectProfileFacade extends GenericProjectElementFacade {
     private readonly pluralTranslationPipe: PluralTranslationPipe = inject( PluralTranslationPipe )
 
     private readonly store: InstanceType<typeof ProjectProfileStore> = inject( ProjectProfileStore )
-
-    public readonly metadataErrors: Signal<Record<string, NotificationModel | undefined>> = SectionErrorsHelper.metadata( this.store.sectionErrors )
 
     public readonly projectProfilesPage: Signal<PageModel<ProjectProfileModel> | undefined> = this.store.projectProfiles.element
     public readonly projectProfilesPageLoading: Signal<boolean> = this.store.projectProfiles.loading
@@ -126,7 +123,6 @@ export class ProjectProfileFacade extends GenericProjectElementFacade {
             SeverityEnum.WARNING,
             this.pluralTranslationPipe.transform( prefixKey + '.title', created ),
             this.pluralTranslationPipe.transform( prefixKey + '.message', created ),
-            'pi pi-key',
             { asked: created + notCreated, created: created },
         )
     }
@@ -136,7 +132,6 @@ export class ProjectProfileFacade extends GenericProjectElementFacade {
             SeverityEnum.SUCCESS,
             this.pluralTranslationPipe.transform( 'project-profiles.notifications.create.title', creationStatus.createdUserIds ),
             this.pluralTranslationPipe.transform( 'project-profiles.notifications.create.message', creationStatus.createdUserIds ),
-            'pi pi-key',
             { created: created },
         )
     }
@@ -175,7 +170,6 @@ export class ProjectProfileFacade extends GenericProjectElementFacade {
             command === 'delete'
             ? 'project-profiles.notifications.delete.message.other'
             : `project-profiles.notifications.${ command === 'update' ? 'edit' : command }.message`,
-            'pi pi-key',
             {
                 firstName: isProjectProfile( profile ) ? profile.user?.firstName : undefined,
                 lastName: isProjectProfile( profile ) ? profile.user?.lastName : undefined,

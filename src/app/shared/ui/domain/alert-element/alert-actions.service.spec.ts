@@ -14,7 +14,7 @@ const alertOf = (status: AlertStatusEnum, visible: boolean = true): AlertModel =
 
 describe('AlertActions', () => {
     let actions: AlertActions
-    let confirm: Mock<(prefix: string, element: unknown, severity: unknown, icon: string, accept: () => void) => void>
+    let confirm: Mock<(prefix: string, element: unknown, severity: unknown, accept: () => void) => void>
     let updateAlertStatus: Mock
     let disableAlert: Mock
     let enableAlert: Mock
@@ -69,7 +69,7 @@ describe('AlertActions', () => {
 
         // Act
         resolve.run()
-        confirm.mock.calls[0][4]()
+        confirm.mock.calls[0][3]()
 
         // Assert
         expect(confirm.mock.calls[0][0]).toBe('alerts.actions.confirmations.status.RESOLVED')
@@ -96,7 +96,7 @@ describe('AlertActions', () => {
 
         // Act
         action.run()
-        confirm.mock.calls[0][4]()
+        confirm.mock.calls[0][3]()
 
         // Assert
         expect(confirm.mock.calls[0][0]).toBe(`alerts.actions.confirmations.status.${target}`)
@@ -113,7 +113,7 @@ describe('AlertActions', () => {
 
         // Act
         action.run()
-        confirm.mock.calls[0][4]()
+        confirm.mock.calls[0][3]()
 
         // Assert
         expect(call()).toHaveBeenCalledTimes(1)

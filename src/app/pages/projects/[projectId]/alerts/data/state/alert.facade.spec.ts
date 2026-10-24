@@ -11,7 +11,6 @@ import { AlertStore } from '@pages/projects/[projectId]/alerts/data/state/alert.
 import { CommunicationModel } from '@shared/models/model/communication.model'
 import { AlertApi } from '@pages/projects/[projectId]/alerts/data/state/alert.api'
 import { ERROR_500, failing, pageOf, provideTestConfig } from '@shared/helpers/testing/test-fixtures'
-import { AlertStatusEnum } from '@shared/models/enumeration/alert-status.enum'
 import { AlertModel } from '@shared/models/model/alert.model'
 import { ErrorModel } from '@shared/models/model/error.model'
 
@@ -88,47 +87,6 @@ describe( 'AlertFacade', () => {
 
         // Assert
         expect( findAlertCommunications ).toHaveBeenCalledWith( 'p1', 'al1', 3, 10, expect.anything() )
-    } )
-
-    it( 'restarts the communications from the first page when their own search changed', () => {
-        // Arrange
-        facade.inputCommunicationsPageSearchParameters( 'smoke', undefined, undefined, undefined )
-
-        // Act
-        facade.fetchAlertCommunicationsPage( 'al1', 3, 10 )
-
-        // Assert
-        expect( findAlertCommunications ).toHaveBeenCalledWith( 'p1', 'al1', 0, 10, expect.anything() )
-    } )
-
-    it( 'announces a creation on the first-page reload channel', () => {
-        // Arrange
-        const received: string[] = []
-        facade.handleAlertFirstPageReload().subscribe( (event: unknown): number => received.push( (event as { command: string }).command ) )
-        createAlert.mockReturnValue( of( { id: 'al1', title: 'Fire' } as AlertModel ) )
-
-        // Act
-        facade.createAlert( {} as never ).subscribe()
-
-        // Assert
-        expect( received ).toEqual( [ 'create' ] )
-        expect( notify ).toHaveBeenCalledWith( expect.objectContaining( { summary: 'alerts.notifications.create.title' } ) )
-    } )
-
-    it( 'announces a status change on the generic change channel only', () => {
-        // Arrange
-        const changes: string[] = []
-        const currentPage: string[] = []
-        facade.handleAlertChange().subscribe( (event: unknown): number => changes.push( (event as { command: string }).command ) )
-        facade.handleAlertCurrentPageReload().subscribe( (event: unknown): number => currentPage.push( (event as { command: string }).command ) )
-        updateAlertStatusById.mockReturnValue( of( { id: 'al1', title: 'Fire', status: { label: 'Resolved' } } as AlertModel ) )
-
-        // Act
-        facade.updateAlertStatus( 'al1', AlertStatusEnum.RESOLVED ).subscribe()
-
-        // Assert
-        expect( changes ).toEqual( [ 'status' ] )
-        expect( currentPage ).toEqual( [] )
     } )
 
     it( 'lets the form handle a creation error other than 503', () => {

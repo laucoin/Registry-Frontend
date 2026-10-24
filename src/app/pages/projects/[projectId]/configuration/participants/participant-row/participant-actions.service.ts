@@ -61,7 +61,7 @@ export class ParticipantActions extends ElementActionsBase<ParticipantModel, str
             icon: 'eye-slash',
             shown: participant.visible,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_U),
-            confirmation: { severity: SeverityEnum.WARNING, icon: 'pi pi-exclamation-triangle', accept: (): void => this.run(this.facade.disableParticipant(participant.id)) },
+            confirmation: { severity: SeverityEnum.WARNING, accept: (): void => this.run(this.facade.disableParticipant(participant.id)) },
         }
     }
 
@@ -71,7 +71,7 @@ export class ParticipantActions extends ElementActionsBase<ParticipantModel, str
             icon: 'rotate-right',
             shown: !participant.visible,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_D),
-            confirmation: { severity: SeverityEnum.INFO, icon: 'pi pi-info-circle', accept: (): void => this.run(this.facade.enableParticipant(participant.id)) },
+            confirmation: { severity: SeverityEnum.INFO, accept: (): void => this.run(this.facade.enableParticipant(participant.id)) },
         }
     }
 
@@ -81,7 +81,7 @@ export class ParticipantActions extends ElementActionsBase<ParticipantModel, str
             icon: 'user-minus',
             shown: GenericHelper.nonNull(groupId),
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_U),
-            confirmation: { severity: SeverityEnum.WARNING, icon: 'pi pi-exclamation-triangle', accept: (): void => this.run(this.groupFacade!.removeMemberFromGroup(groupId!, participant)) },
+            confirmation: { severity: SeverityEnum.WARNING, accept: (): void => this.run(this.groupFacade!.removeMemberFromGroup(groupId!, participant)) },
         }
     }
 
@@ -105,7 +105,7 @@ export class ParticipantActions extends ElementActionsBase<ParticipantModel, str
             icon: 'trash',
             shown: participant.visible,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_PARTICIPANT_D),
-            confirmation: { severity: SeverityEnum.DANGER, icon: 'pi pi-exclamation-triangle', accept: (): void => this.run(this.facade.deleteParticipant(participant)) },
+            confirmation: { severity: SeverityEnum.DANGER, accept: (): void => this.run(this.facade.deleteParticipant(participant)) },
         }
     }
 

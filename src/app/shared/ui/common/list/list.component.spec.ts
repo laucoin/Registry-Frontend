@@ -1,5 +1,6 @@
 import { Component, signal, WritableSignal } from '@angular/core'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
+import { UiFacade } from '@core/registry/state/ui.facade'
 import { TranslocoPipe } from '@jsverse/transloco'
 import { MockBuilder } from 'ng-mocks'
 import { beforeEach, describe, expect, it } from 'vitest'
@@ -55,6 +56,7 @@ const pageOf = (ids: string[], page: number, totalElements: number): PageModel<G
 describe('ListComponent', () => {
     let fixture: ComponentFixture<HostComponent>
     let host: HostComponent
+    let tinyScreen: WritableSignal<boolean>
 
     const render = async (): Promise<void> => {
         fixture.detectChanges()
@@ -66,6 +68,7 @@ describe('ListComponent', () => {
     const calloutTitle = (): string | undefined => (query('sgdf-callout') as (HTMLElement & { title?: string }) | null)?.title
 
     beforeEach(async () => {
+        tinyScreen = signal(false)
         await MockBuilder(HostComponent)
             .keep(ListComponent)
             .keep(RegistryTemplateDirective)
@@ -73,6 +76,7 @@ describe('ListComponent', () => {
             .keep(LoadMoreComponent)
             .mock(TranslocoPipe, (key: string): string => key)
             .mock(DateFormatPipe, (): string => 'date')
+            .provide({ provide: UiFacade, useValue: { tinyScreen } })
         fixture = TestBed.createComponent(HostComponent)
         host = fixture.componentInstance
     })
@@ -109,6 +113,21 @@ describe('ListComponent', () => {
 
         // Assert
         expect(query('sgdf-accordion-item .search-slot')).not.toBeNull()
+    })
+
+    it.each([
+        ['wide', false, true],
+        ['tiny', true, false],
+    ])('opens the search area by default only on a %s screen', async (_label: string, tiny: boolean, expanded: boolean) => {
+        // Arrange
+        tinyScreen.set(tiny)
+        host.page.set(pageOf(['a'], 0, 1))
+
+        // Act
+        await render()
+
+        // Assert
+        expect((query('sgdf-accordion-item') as HTMLElement & { expanded: boolean }).expanded).toBe(expanded)
     })
 
     it('shows the custom empty template when there is no element and no filter', async () => {

@@ -72,13 +72,13 @@ describe('ProjectDangerZoneComponent', () => {
 
 		// Act
 		component.delete()
-		const accept: () => void = confirm.mock.calls[0][4]
+		const accept: () => void = confirm.mock.calls[0][3]
 		accept()
 
 		// Assert
 		expect(confirm.mock.calls[0][0]).toBe('projects.actions.confirmations.delete')
 		expect(confirm.mock.calls[0][2]).toBe(SeverityEnum.DANGER)
-		expect(confirm.mock.calls[0][5]).toBe(true)
+		expect(confirm.mock.calls[0][4]).toBe(true)
 		expect(deleteProject).toHaveBeenCalledWith(selectedProject())
 	})
 })

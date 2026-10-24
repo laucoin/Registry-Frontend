@@ -73,7 +73,7 @@ describe('RegistryComponent', () => {
 		const before: boolean = dialog.open
 
 		// Act
-		confirmations.next({ header: 'Delete', message: 'Sure?', icon: '', acceptSeverity: SeverityEnum.DANGER, accept: vi.fn() })
+		confirmations.next({ header: 'Delete', message: 'Sure?', acceptSeverity: SeverityEnum.DANGER, accept: vi.fn() })
 		await fixture.whenStable()
 
 		// Assert

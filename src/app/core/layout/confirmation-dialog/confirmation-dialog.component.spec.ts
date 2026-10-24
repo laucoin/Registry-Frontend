@@ -20,7 +20,7 @@ describe('ConfirmationDialogComponent', () => {
 	let requests: Subject<ConfirmationModel>
 	let accept: Mock<() => void>
 
-	const request = (acceptSeverity: SeverityEnum): ConfirmationModel => ({ header: 'Delete', message: 'Sure?', icon: 'pi pi-trash', acceptSeverity, accept })
+	const request = (acceptSeverity: SeverityEnum): ConfirmationModel => ({ header: 'Delete', message: 'Sure?', acceptSeverity, accept })
 
 	function create(): DialogApi {
 		TestBed.configureTestingModule({ providers: [{ provide: UiFacade, useValue: { confirmation: requests.asObservable() } }] })

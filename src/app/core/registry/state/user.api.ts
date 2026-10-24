@@ -68,10 +68,6 @@ export class UserApi extends GenericApi {
         return this.http.get<unknown>(`${this.baseUrl}/current/export`)
     }
 
-    public exportUserById(id: string): Observable<unknown> {
-        return this.http.get<unknown>(`${this.baseUrl}/${id}/export`)
-    }
-
     public deleteCurrentUser(): Observable<void> {
         return this.http.delete<void>(`${this.baseUrl}/current`)
     }

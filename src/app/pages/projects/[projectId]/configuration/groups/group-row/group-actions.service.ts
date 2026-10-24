@@ -56,7 +56,7 @@ export class GroupActions extends ElementActionsBase<GroupModel> {
             icon: 'eye-slash',
             shown: group.visible,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_U),
-            confirmation: { severity: SeverityEnum.WARNING, icon: 'pi pi-exclamation-triangle', accept: (): void => this.run(this.facade.disableGroup(group.id)) },
+            confirmation: { severity: SeverityEnum.WARNING, accept: (): void => this.run(this.facade.disableGroup(group.id)) },
         }
     }
 
@@ -66,7 +66,7 @@ export class GroupActions extends ElementActionsBase<GroupModel> {
             icon: 'rotate-right',
             shown: !group.visible,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_D),
-            confirmation: { severity: SeverityEnum.INFO, icon: 'pi pi-info-circle', accept: (): void => this.run(this.facade.enableGroup(group.id)) },
+            confirmation: { severity: SeverityEnum.INFO, accept: (): void => this.run(this.facade.enableGroup(group.id)) },
         }
     }
 
@@ -76,7 +76,7 @@ export class GroupActions extends ElementActionsBase<GroupModel> {
             icon: 'trash',
             shown: true,
             allowed: this.hasProjectAuthority(ProjectAuthorityEnum.REGISTRY_PROJECT_GROUP_D),
-            confirmation: { severity: SeverityEnum.DANGER, icon: 'pi pi-exclamation-triangle', accept: (): void => this.run(this.facade.deleteGroup(group)) },
+            confirmation: { severity: SeverityEnum.DANGER, accept: (): void => this.run(this.facade.deleteGroup(group)) },
         }
     }
 

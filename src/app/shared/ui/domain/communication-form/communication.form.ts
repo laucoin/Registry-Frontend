@@ -15,7 +15,7 @@ export interface CommunicationFormModel {
     newAlertTitle: string
 }
 
-export interface CommunicationFormContext {
+interface CommunicationFormContext {
     newAlert: () => boolean
 }
 

@@ -80,26 +80,4 @@ describe( 'StringHelper', () => {
         expect( padded ).toBe( '007' )
     } )
 
-    it( 'formats on at least two digits without cutting longer numbers', () => {
-        // Arrange
-        const samples: (number | undefined)[] = [ 5, 42, 100, undefined ]
-
-        // Act
-        const results: string[] = samples.map( (num: number | undefined): string => StringHelper.formatAtLeastOnTwoDigits( num ) )
-
-        // Assert
-        expect( results ).toEqual( [ '05', '42', '100', '' ] )
-    } )
-
-    it( 'title-cases every word and tolerates empty text', () => {
-        // Arrange
-        const text: string = 'jEAN-pierre DUPONT'
-
-        // Act
-        const result: string = StringHelper.toTitleCase( text )
-
-        // Assert
-        expect( result ).toBe( 'Jean-pierre Dupont' )
-        expect( StringHelper.toTitleCase( undefined ) ).toBe( '' )
-    } )
 } )
