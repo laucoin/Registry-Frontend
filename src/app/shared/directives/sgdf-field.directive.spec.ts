@@ -117,8 +117,7 @@ describe('SgdfFieldDirective', () => {
         // Arrange
         const { fixture }: ReturnType<typeof create> = create()
         const picker: FieldElement = fixture.nativeElement.querySelector('#custom')
-        const localNineThirty: Date = new Date()
-        localNineThirty.setHours(9, 30, 0, 0)
+        const localNineThirty: Date = new Date(2026, 9, 4, 9, 30)
 
         // Act
         fixture.componentInstance.model.update((m: HostModel): HostModel => ({ ...m, custom: { date: '2026-10-03', time: undefined } }))
